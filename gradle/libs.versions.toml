@@ -71,6 +71,8 @@ sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", versi
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+# Tests only: a fake HTTP engine answering in memory (the AI connector of the server is tested against it).
+ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor" }
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
 postgresql-jdbc = { module = "org.postgresql:postgresql", version.ref = "postgresqlJdbc" }
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
