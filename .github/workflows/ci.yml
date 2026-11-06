@@ -59,6 +59,9 @@ jobs:
     env:
       PPF_TEST_KEYSTORE: ${{ github.workspace }}/ppf-test.keystore
       PPF_TEST_KEYSTORE_PASSWORD: ${{ secrets.PPF_TEST_KEYSTORE_PASSWORD }}
+      # Public fingerprint of the shared test signing certificate (not a secret: it is
+      # readable in every APK). Checked on the APK sent to phones when the key is available.
+      PPF_TEST_CERT_SHA256: 9f80e2560cc787485d982656cbebcb814f8c26431dc0ab3467359849132ee91f
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
@@ -77,19 +80,22 @@ jobs:
         if: ${{ env.PPF_TEST_KEYSTORE_PASSWORD != '' }}
         run: echo "${{ secrets.PPF_TEST_KEYSTORE_B64 }}" | base64 -d > "$PPF_TEST_KEYSTORE"
       - name: Build, test and package
-        run: ./gradlew build :android:assembleDebug :desktop:packageDeb :server:buildFatJar --console=plain
+        run: ./gradlew build :android:assemblePreview :desktop:packageDeb :server:buildFatJar --console=plain
       - name: Forbidden dependency groups
         run: bash tools/check-dependencies.sh
-      - name: APK contents (resources and native libraries)
-        run: bash tools/check-apk.sh android/build/outputs/apk/debug/android-debug.apk
+      - name: APK contents, not debuggable, test signature
+        run: |
+          cert_check=()
+          if [ -n "$PPF_TEST_KEYSTORE_PASSWORD" ]; then cert_check=(--cert-sha256 "$PPF_TEST_CERT_SHA256"); fi
+          bash tools/check-apk.sh android/build/outputs/apk/preview/android-preview.apk --not-debuggable "${cert_check[@]}"
       - name: Remove the test signing key
         if: always()
         run: rm -f "$PPF_TEST_KEYSTORE"
-      - name: Upload APK (Android, test signature)
+      - name: Upload APK (Android test version, not debuggable, test signature)
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ppf-android-apk
-          path: android/build/outputs/apk/debug/*.apk
+          path: android/build/outputs/apk/preview/*.apk
           if-no-files-found: error
       - name: Upload desktop app (Linux .deb)
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
