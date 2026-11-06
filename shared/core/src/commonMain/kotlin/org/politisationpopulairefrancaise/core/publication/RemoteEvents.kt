@@ -12,6 +12,17 @@ data class RemoteFilter(
     val limit: Int = 200,
 )
 
+/** Events carrying a tag named [name] whose value is [value] (for example `p` = a public key). */
+data class TagFilter(val name: String, val value: String) {
+    init {
+        require(name.isNotEmpty() && ':' !in name) { "A tag name is a non-empty string without colon" }
+        require(value.isNotEmpty()) { "A tag value is a non-empty string" }
+    }
+
+    /** The server's query parameter form: `tag=<name>:<value>` (the value may contain colons). */
+    val parameter: String get() = "$name:$value"
+}
+
 sealed interface FetchResult {
     data class Events(val events: List<SignedEvent>) : FetchResult
 
@@ -21,4 +32,13 @@ sealed interface FetchResult {
 /** A publication destination that can also be read: the server now, Nostr relays later. */
 interface RemoteEvents : PublicationPort {
     suspend fun fetch(filter: RemoteFilter): FetchResult
+
+    /**
+     * Like [fetch], restricted to events carrying tags: several values for one tag name match any
+     * of them, different names must all match (NIP-01 filter semantics). On the server this is the
+     * repeatable `tag=<name>:<value>` parameter, combinable with kinds, since, until and limit.
+     * Sources that cannot filter by tag answer [FetchResult.Unavailable].
+     */
+    suspend fun fetchByTags(tags: List<TagFilter>, filter: RemoteFilter = RemoteFilter()): FetchResult =
+        FetchResult.Unavailable(UnsupportedOperationException("This source cannot filter events by tag"))
 }

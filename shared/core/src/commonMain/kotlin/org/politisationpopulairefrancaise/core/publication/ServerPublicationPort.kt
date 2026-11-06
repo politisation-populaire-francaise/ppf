@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.core.publication
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -48,15 +49,15 @@ class ServerPublicationPort(
         }
     }
 
-    override suspend fun fetch(filter: RemoteFilter): FetchResult {
+    override suspend fun fetch(filter: RemoteFilter): FetchResult = fetchEvents(filter, emptyList())
+
+    override suspend fun fetchByTags(tags: List<TagFilter>, filter: RemoteFilter): FetchResult = fetchEvents(filter, tags)
+
+    private suspend fun fetchEvents(filter: RemoteFilter, tags: List<TagFilter>): FetchResult {
         val response: HttpResponse = try {
             client.get("$baseUrl/api/v1/events") {
-                filter.kinds.forEach { parameter("kind", it) }
-                filter.authors.forEach { parameter("author", it) }
-                filter.identifiers.forEach { parameter("identifier", it) }
-                filter.since?.let { parameter("since", it) }
-                filter.until?.let { parameter("until", it) }
-                parameter("limit", filter.limit)
+                applyFilter(filter)
+                tags.forEach { parameter("tag", it.parameter) }
             }
         } catch (e: CancellationException) {
             throw e
@@ -72,6 +73,15 @@ class ServerPublicationPort(
             return FetchResult.Unavailable(e)
         }
         return FetchResult.Events(events)
+    }
+
+    private fun HttpRequestBuilder.applyFilter(filter: RemoteFilter) {
+        filter.kinds.forEach { parameter("kind", it) }
+        filter.authors.forEach { parameter("author", it) }
+        filter.identifiers.forEach { parameter("identifier", it) }
+        filter.since?.let { parameter("since", it) }
+        filter.until?.let { parameter("until", it) }
+        parameter("limit", filter.limit)
     }
 
     class ServerException(val status: Int) : RuntimeException("Server answered $status")
