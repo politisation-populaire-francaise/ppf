@@ -12,15 +12,26 @@ data class RemoteFilter(
     val limit: Int = 200,
 )
 
-/** Events carrying a tag named [name] whose value is [value] (for example `p` = a public key). */
+/**
+ * Events carrying a tag named [name] whose value is [value] (for example `p` = a public key).
+ * The bounds are those of the server: a name of 1 to 64 characters, a value of at most 1024 bytes.
+ */
 data class TagFilter(val name: String, val value: String) {
     init {
-        require(name.isNotEmpty() && ':' !in name) { "A tag name is a non-empty string without colon" }
-        require(value.isNotEmpty()) { "A tag value is a non-empty string" }
+        require(name.length in 1..MAX_NAME_LENGTH && ':' !in name) { "A tag name has 1 to $MAX_NAME_LENGTH characters and no colon" }
+        require(value.isNotEmpty() && value.encodeToByteArray().size <= MAX_VALUE_BYTES) { "A tag value has 1 to $MAX_VALUE_BYTES bytes" }
     }
 
     /** The server's query parameter form: `tag=<name>:<value>` (the value may contain colons). */
     val parameter: String get() = "$name:$value"
+
+    companion object {
+        const val MAX_NAME_LENGTH: Int = 64
+        const val MAX_VALUE_BYTES: Int = 1024
+
+        /** The server accepts at most this many `tag` parameters in one request. */
+        const val MAX_PER_REQUEST: Int = 20
+    }
 }
 
 sealed interface FetchResult {

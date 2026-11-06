@@ -11,14 +11,14 @@ import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 
-/** What happened to the gift wraps of one sent message (one wrap per participant, sender included). */
+/** What happened to the deliveries of one sent message (one gift wrap per participant, sender included). */
 data class SendReport(
     val message: ChatMessage,
     /** Wraps the server accepted. */
     val delivered: Int = 0,
-    /** Wraps kept on the device because the server could not be reached; [MessagingService.flushOutgoing] retries them. */
+    /** Deliveries kept on the device because the server could not take them now; [MessagingService.flushOutgoing] retries them. */
     val queued: Int = 0,
-    /** Wraps the server refused for good; the recipient will not get this message. */
+    /** Wraps the server refused for good; the participant will not get this message. */
     val rejected: Int = 0,
 )
 
@@ -30,7 +30,7 @@ data class ReceiveReport(val stored: Int = 0, val duplicates: Int = 0, val ignor
 
 /**
  * What a pull from the server produced; [reachable] is false when the server could not be contacted,
- * [complete] is false when the page limit stopped the pull before the oldest wraps (the next pull
+ * [complete] is false when the page budget stopped the pull before the oldest wraps (the next pull
  * starts again from the same date).
  */
 data class PullReport(
@@ -58,31 +58,31 @@ class MessagingService(
     val publicKey: PublicKey get() = signer.publicKey
 
     /**
-     * Sends [text] to [recipients]: stores the message locally, builds one gift wrap per participant
-     * (the user included, so that other devices of the user receive it too), queues them and tries to
-     * publish them. Wraps the server cannot take right now stay queued for [flushOutgoing].
+     * Sends [text] to [recipients]: builds one gift wrap per participant (the user included, so that
+     * their other devices receive it too), then stores the message, records the deliveries and tries
+     * to publish the wraps. Deliveries the server cannot take right now wait for [flushOutgoing],
+     * which wraps them again with fresh dates. Nothing is stored if the text is too long or a
+     * recipient key is not a valid secp256k1 point (`IllegalArgumentException`).
      */
     suspend fun send(text: String, recipients: Collection<PublicKey>, subject: String? = null, replyTo: String? = null): SendReport {
         val message = ChatMessage.compose(signer.publicKey, recipients, text, clock(), subject, replyTo)
+        val wraps = message.participants.map { it to wrapFor(message, it) }
         store.store(message, read = true)
-        val rumor = message.toRumor()
-        val now = clock()
-        val wraps = message.participants.map { hex -> GiftWrap.wrapFor(rumor, signer, PublicKey.fromHex(hex), now) }
-        wraps.forEach { store.queueOutgoing(it, message.id) }
+        message.participants.forEach { store.queueOutgoing(message.id, it) }
         var report = SendReport(message)
         var unreachable = false
-        for (wrap in wraps) {
+        for ((recipient, wrap) in wraps) {
             if (unreachable) {
                 report = report.copy(queued = report.queued + 1)
                 continue
             }
             when (remote.publish(wrap)) {
                 is PublicationResult.Accepted -> {
-                    store.removeOutgoing(wrap.id)
+                    store.removeOutgoing(message.id, recipient)
                     report = report.copy(delivered = report.delivered + 1)
                 }
                 is PublicationResult.Rejected -> {
-                    store.removeOutgoing(wrap.id)
+                    store.removeOutgoing(message.id, recipient)
                     report = report.copy(rejected = report.rejected + 1)
                 }
                 is PublicationResult.Unavailable -> {
@@ -94,18 +94,35 @@ class MessagingService(
         return report
     }
 
-    /** Retries the queued wraps, oldest first; stops at the first network failure. */
+    /**
+     * Retries the pending deliveries, oldest first, each with a brand new gift wrap (fresh one-time
+     * key and fresh random dates, so that a message written offline is dated like a new one and is
+     * not missed by the recipients' pull window). Stops at the first network failure.
+     */
     suspend fun flushOutgoing(): FlushReport {
         var report = FlushReport()
         val pending = store.outgoing()
-        for ((index, outgoing) in pending.withIndex()) {
-            when (remote.publish(outgoing.wrap)) {
+        for ((index, delivery) in pending.withIndex()) {
+            val message = store.find(delivery.messageId)
+            if (message == null || message.author != signer.publicKey.hex) {
+                // The conversation was deleted meanwhile, or the message belongs to another identity.
+                if (message == null) store.removeOutgoing(delivery.messageId, delivery.recipient)
+                continue
+            }
+            val wrap = try {
+                wrapFor(message, delivery.recipient)
+            } catch (e: IllegalArgumentException) {
+                store.removeOutgoing(delivery.messageId, delivery.recipient)
+                report = report.copy(rejected = report.rejected + 1)
+                continue
+            }
+            when (remote.publish(wrap)) {
                 is PublicationResult.Accepted -> {
-                    store.removeOutgoing(outgoing.wrap.id)
+                    store.removeOutgoing(delivery.messageId, delivery.recipient)
                     report = report.copy(delivered = report.delivered + 1)
                 }
                 is PublicationResult.Rejected -> {
-                    store.removeOutgoing(outgoing.wrap.id)
+                    store.removeOutgoing(delivery.messageId, delivery.recipient)
                     report = report.copy(rejected = report.rejected + 1)
                 }
                 is PublicationResult.Unavailable -> return report.copy(remaining = pending.size - index, reachable = false)
@@ -118,11 +135,13 @@ class MessagingService(
      * Opens wraps addressed to the user and stores the chat messages they carry. Anything that is
      * not an authentic wrap for this key, carrying a well-formed chat message that names the user,
      * is counted as ignored and dropped without an exception. The user's own messages (the copies
-     * wrapped for themselves) are stored as read.
+     * wrapped for themselves) are stored as read. A date in the future is brought back to now, so
+     * that no sender can pin a conversation at the top of the list.
      */
     fun receive(wraps: List<SignedEvent>): ReceiveReport {
         var report = ReceiveReport()
         val me = signer.publicKey.hex
+        val latestAcceptable = clock() + FUTURE_TOLERANCE_SECONDS
         for (wrap in wraps) {
             val message = try {
                 val rumor = GiftWrap.unwrap(wrap, signer)
@@ -131,7 +150,7 @@ class MessagingService(
                 throw e
             } catch (e: Exception) {
                 null
-            }
+            }?.let { if (it.createdAt > latestAcceptable) it.copy(createdAt = latestAcceptable) else it }
             report = when {
                 message == null -> report.copy(ignored = report.ignored + 1)
                 store.store(message, read = message.author == me) == MessageStoreOutcome.STORED -> report.copy(stored = report.stored + 1)
@@ -145,9 +164,11 @@ class MessagingService(
      * Fetches the wraps addressed to the user (`tag=p:<key>`, kind 1059) and stores their messages.
      * Wrap dates are randomized up to two days in the past, so each pull asks from the previous
      * complete pull minus that window and a margin; duplicates are harmless. Pages through the
-     * server's limit, newest first. The first pull of a device fetches the whole history.
+     * server's limit, newest first; the first pull of a device fetches the whole history (the server
+     * keeps at most 1000 wraps per recipient, which the default page budget covers).
      */
-    suspend fun pull(pageSize: Int = 200, maxPages: Int = 10): PullReport {
+    suspend fun pull(pageSize: Int = DEFAULT_PAGE_SIZE, maxPages: Int = DEFAULT_MAX_PAGES): PullReport {
+        val size = pageSize.coerceIn(1, SERVER_MAX_LIMIT)
         val startedAt = clock()
         val since = store.lastPullAt()?.let { it - GiftWrap.TIMESTAMP_JITTER_SECONDS - CLOCK_SKEW_MARGIN_SECONDS }
         val tags = listOf(TagFilter("p", signer.publicKey.hex))
@@ -155,27 +176,46 @@ class MessagingService(
         var fetched = 0
         var received = ReceiveReport()
         repeat(maxPages) {
-            val filter = RemoteFilter(kinds = listOf(EventKinds.GIFT_WRAP), since = since, until = until, limit = pageSize)
+            val filter = RemoteFilter(kinds = listOf(EventKinds.GIFT_WRAP), since = since, until = until, limit = size)
             val page = when (val result = remote.fetchByTags(tags, filter)) {
                 is FetchResult.Unavailable -> return PullReport(fetched, received, reachable = false, complete = false)
                 is FetchResult.Events -> result.events
             }
             fetched += page.size
             received += receive(page)
-            // The next page is everything at or before the oldest date seen; when that date does not
-            // move, the server has nothing older (or many wraps share one second: the next pull gets them).
-            val oldest = page.minOfOrNull { it.createdAt }
-            if (page.size < pageSize || oldest == until) {
+            if (page.size < size) {
                 store.setLastPullAt(startedAt)
                 return PullReport(fetched, received)
             }
-            until = oldest
+            // Newest first, inclusive bounds: the next page starts at the oldest date seen. When that
+            // date does not move, the whole page shares one second (a flood of wraps with one chosen
+            // date): step past that second rather than stop, so that a flood cannot hide older wraps.
+            val oldest = page.minOf { it.createdAt }
+            until = if (oldest == until) oldest - 1 else oldest
         }
         return PullReport(fetched, received, complete = false)
+    }
+
+    private suspend fun wrapFor(message: ChatMessage, recipientHex: String): SignedEvent {
+        val recipient = PublicKey.fromHex(recipientHex)
+        return try {
+            GiftWrap.wrapFor(message.toRumor(), signer, recipient, clock())
+        } catch (e: Nip44Exception) {
+            throw IllegalArgumentException("Recipient $recipientHex is not a valid public key", e)
+        }
     }
 
     private companion object {
         /** Tolerance for clocks that disagree between the device and the server. */
         const val CLOCK_SKEW_MARGIN_SECONDS = 60 * 60L
+
+        /** A received message dated further in the future than this is dated now instead. */
+        const val FUTURE_TOLERANCE_SECONDS = 15 * 60L
+
+        const val DEFAULT_PAGE_SIZE = 200
+        const val DEFAULT_MAX_PAGES = 10
+
+        /** The server never returns more than this many events per request. */
+        const val SERVER_MAX_LIMIT = 500
     }
 }

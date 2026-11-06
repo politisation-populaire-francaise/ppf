@@ -111,12 +111,15 @@ object Nip44 {
             val expectedMac = HmacSha256.compute(keys.hmacKey, nonce, ciphertext)
             if (!constantTimeEquals(expectedMac, mac)) throw Nip44Exception("Invalid MAC")
             val padded = ChaCha20.process(keys.chachaKey, keys.chachaNonce, ciphertext)
-            val plaintext = unpad(padded, maxPlaintextBytes)
-            padded.fill(0)
-            return try {
-                plaintext.decodeToString(throwOnInvalidSequence = true)
+            var plaintext: ByteArray? = null
+            try {
+                plaintext = unpad(padded, maxPlaintextBytes)
+                return plaintext.decodeToString(throwOnInvalidSequence = true)
             } catch (e: CharacterCodingException) {
                 throw Nip44Exception("Plaintext is not valid UTF-8", e)
+            } finally {
+                padded.fill(0)
+                plaintext?.fill(0)
             }
         } finally {
             keys.wipe()

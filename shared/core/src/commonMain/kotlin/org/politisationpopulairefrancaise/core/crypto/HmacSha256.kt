@@ -12,14 +12,16 @@ object HmacSha256 {
 
     /** HMAC of the concatenation of [messages] under [key] (any key length; longer keys are hashed first). */
     fun compute(key: ByteArray, vararg messages: ByteArray): ByteArray {
-        val normalizedKey = if (key.size > BLOCK_SIZE) Crypto.sha256(key) else key
+        val hashedKey = if (key.size > BLOCK_SIZE) Crypto.sha256(key) else null
+        val normalizedKey = hashedKey ?: key
         val innerPad = ByteArray(BLOCK_SIZE)
-        val outerPad = ByteArray(BLOCK_SIZE)
+        val outerInput = ByteArray(BLOCK_SIZE + OUTPUT_SIZE)
         for (i in 0 until BLOCK_SIZE) {
             val k = if (i < normalizedKey.size) normalizedKey[i].toInt() else 0
             innerPad[i] = (k xor 0x36).toByte()
-            outerPad[i] = (k xor 0x5c).toByte()
+            outerInput[i] = (k xor 0x5c).toByte()
         }
+        hashedKey?.fill(0)
         val innerInput = ByteArray(BLOCK_SIZE + messages.sumOf { it.size })
         innerPad.copyInto(innerInput)
         var offset = BLOCK_SIZE
@@ -28,10 +30,12 @@ object HmacSha256 {
             offset += message.size
         }
         val innerHash = Crypto.sha256(innerInput)
-        val result = Crypto.sha256(outerPad + innerHash)
+        innerHash.copyInto(outerInput, BLOCK_SIZE)
+        val result = Crypto.sha256(outerInput)
         innerPad.fill(0)
-        outerPad.fill(0)
         innerInput.fill(0)
+        innerHash.fill(0)
+        outerInput.fill(0)
         return result
     }
 }

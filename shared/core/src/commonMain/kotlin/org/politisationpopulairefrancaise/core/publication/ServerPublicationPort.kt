@@ -40,6 +40,8 @@ class ServerPublicationPort(
         }
         return when (response.status.value) {
             in 200..299 -> PublicationResult.Accepted(event.id)
+            // Rate limited: not a refusal of this event, keep it and retry after the delay the server gives.
+            429 -> PublicationResult.Unavailable(ServerException(429, response.headers["Retry-After"]?.trim()?.toLongOrNull()))
             in 500..599 -> PublicationResult.Unavailable(ServerException(response.status.value))
             else -> {
                 val error = runCatching { json.decodeFromString(ApiErrorBody.serializer(), response.bodyAsText()) }.getOrNull()
@@ -54,6 +56,7 @@ class ServerPublicationPort(
     override suspend fun fetchByTags(tags: List<TagFilter>, filter: RemoteFilter): FetchResult = fetchEvents(filter, tags)
 
     private suspend fun fetchEvents(filter: RemoteFilter, tags: List<TagFilter>): FetchResult {
+        require(tags.size <= TagFilter.MAX_PER_REQUEST) { "The server accepts at most ${TagFilter.MAX_PER_REQUEST} tag filters per request" }
         val response: HttpResponse = try {
             client.get("$baseUrl/api/v1/events") {
                 applyFilter(filter)
@@ -84,7 +87,8 @@ class ServerPublicationPort(
         parameter("limit", filter.limit)
     }
 
-    class ServerException(val status: Int) : RuntimeException("Server answered $status")
+    /** A server answer that is not a final decision on the event; [retryAfterSeconds] comes from `Retry-After` when given. */
+    class ServerException(val status: Int, val retryAfterSeconds: Long? = null) : RuntimeException("Server answered $status")
 
     @Serializable
     private data class ApiErrorBody(val error: String, val message: String = "")

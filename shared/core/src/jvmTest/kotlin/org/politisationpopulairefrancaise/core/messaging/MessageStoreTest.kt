@@ -1,6 +1,5 @@
 package org.politisationpopulairefrancaise.core.messaging
 
-import kotlinx.coroutines.test.runTest
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import kotlin.test.Test
@@ -60,7 +59,9 @@ class MessageStoreTest {
         val conversationId = messages[0].conversationId
         assertEquals(messages, store.messages(conversationId))
         assertEquals(messages.takeLast(2), store.messages(conversationId, limit = 2))
-        assertEquals(messages.take(3).takeLast(2), store.messages(conversationId, limit = 2, before = 400))
+        assertEquals(messages.take(3).takeLast(2), store.messages(conversationId, limit = 2, before = messages[3]))
+        assertEquals(messages.take(1), store.messages(conversationId, limit = 2, before = messages[1]))
+        assertEquals(emptyList(), store.messages(conversationId, before = messages[0]))
         assertEquals(emptyList(), store.messages("nope"))
         // An older message arriving late does not move the conversation back in time.
         store.store(ChatMessage.compose(bob, listOf(alice), "late", createdAt = 50))
@@ -96,20 +97,21 @@ class MessageStoreTest {
     }
 
     @Test
-    fun outgoingWrapsAndPullCursorArePersisted() = runTest {
-        val sender = LocalMessagingSigner(IdentityKeys.generate())
-        val message = ChatMessage.compose(sender.publicKey, listOf(bob), "x", createdAt = 100)
-        val wrap1 = GiftWrap.wrapFor(message.toRumor(), sender, bob, now = 1_700_000_000)
-        val wrap2 = GiftWrap.wrapFor(message.toRumor(), sender, sender.publicKey, now = 1_700_000_000)
+    fun pendingDeliveriesAndPullCursorArePersisted() {
+        val message = ChatMessage.compose(alice, listOf(bob), "x", createdAt = 100)
+        store.store(message, read = true)
         assertEquals(0, store.outgoingCount())
-        store.queueOutgoing(wrap1, message.id)
-        store.queueOutgoing(wrap2, message.id)
-        // Queued in the same second: both come back, by id.
-        assertEquals(setOf(OutgoingWrap(wrap1, message.id), OutgoingWrap(wrap2, message.id)), store.outgoing().toSet())
-        assertEquals(store.outgoing().map { it.wrap.id }.sorted(), store.outgoing().map { it.wrap.id })
-        store.removeOutgoing(wrap1.id)
-        assertEquals(listOf(OutgoingWrap(wrap2, message.id)), store.outgoing())
+        store.queueOutgoing(message.id, bob.hex)
+        store.queueOutgoing(message.id, alice.hex)
+        store.queueOutgoing(message.id, alice.hex)
+        // Queued in the same second: both come back, by message then recipient; duplicates are ignored.
+        assertEquals(listOf(OutgoingMessage(message.id, alice.hex), OutgoingMessage(message.id, bob.hex)).sortedBy { it.recipient }, store.outgoing())
+        store.removeOutgoing(message.id, bob.hex)
+        assertEquals(listOf(OutgoingMessage(message.id, alice.hex)), store.outgoing())
         assertEquals(1, store.outgoingCount())
+        // Deleting the conversation drops its pending deliveries too.
+        store.deleteConversation(message.conversationId)
+        assertEquals(0, store.outgoingCount())
 
         assertNull(store.lastPullAt())
         store.setLastPullAt(123)

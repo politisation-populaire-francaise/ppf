@@ -31,15 +31,16 @@ CREATE TABLE message (
 CREATE INDEX message_conversation_created_at ON message(conversation_id, created_at DESC, id);
 CREATE INDEX message_conversation_unread ON message(conversation_id, is_read);
 
--- Gift wraps of the user's own messages waiting to be accepted by the server (one per participant).
-CREATE TABLE outgoing_wrap (
-    id TEXT NOT NULL PRIMARY KEY,
+-- Deliveries of the user's own messages still to be accepted by the server, one row per participant.
+-- The gift wrap itself is built at sending time, so that a message written offline gets fresh dates.
+CREATE TABLE outgoing_message (
     message_id TEXT NOT NULL,
-    event TEXT NOT NULL,
-    queued_at INTEGER NOT NULL
+    recipient TEXT NOT NULL,
+    queued_at INTEGER NOT NULL,
+    PRIMARY KEY (message_id, recipient)
 );
 
-CREATE INDEX outgoing_wrap_queued_at ON outgoing_wrap(queued_at, id);
+CREATE INDEX outgoing_message_queued_at ON outgoing_message(queued_at, message_id, recipient);
 
 -- Small named values of the messaging module, such as the date of the last pull.
 CREATE TABLE messaging_state (
@@ -80,7 +81,10 @@ selectMessages:
 SELECT * FROM message WHERE conversation_id = ? ORDER BY created_at DESC, id ASC LIMIT ?;
 
 selectMessagesBefore:
-SELECT * FROM message WHERE conversation_id = ? AND created_at < ? ORDER BY created_at DESC, id ASC LIMIT ?;
+SELECT * FROM message
+WHERE conversation_id = :conversationId
+  AND (created_at < :createdAt OR (created_at = :createdAt AND id > :id))
+ORDER BY created_at DESC, id ASC LIMIT :limit;
 
 markConversationRead:
 UPDATE message SET is_read = 1 WHERE conversation_id = ? AND is_read = 0;
@@ -97,17 +101,20 @@ SELECT COUNT(*) FROM message;
 deleteMessagesOf:
 DELETE FROM message WHERE conversation_id = ?;
 
-insertOutgoingWrap:
-INSERT INTO outgoing_wrap(id, message_id, event, queued_at) VALUES (?, ?, ?, ?);
+insertOutgoing:
+INSERT OR IGNORE INTO outgoing_message(message_id, recipient, queued_at) VALUES (?, ?, ?);
 
-selectOutgoingWraps:
-SELECT * FROM outgoing_wrap ORDER BY queued_at ASC, id ASC;
+selectOutgoing:
+SELECT * FROM outgoing_message ORDER BY queued_at ASC, message_id ASC, recipient ASC;
 
-deleteOutgoingWrap:
-DELETE FROM outgoing_wrap WHERE id = ?;
+deleteOutgoing:
+DELETE FROM outgoing_message WHERE message_id = ? AND recipient = ?;
 
-countOutgoingWraps:
-SELECT COUNT(*) FROM outgoing_wrap;
+deleteOutgoingOf:
+DELETE FROM outgoing_message WHERE message_id = ?;
+
+countOutgoing:
+SELECT COUNT(*) FROM outgoing_message;
 
 getState:
 SELECT value FROM messaging_state WHERE name = ?;

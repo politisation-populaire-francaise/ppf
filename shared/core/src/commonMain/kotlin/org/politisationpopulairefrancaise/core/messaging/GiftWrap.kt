@@ -65,13 +65,8 @@ object GiftWrap {
      */
     suspend fun seal(rumor: Rumor, sender: MessagingSigner, recipient: PublicKey, createdAt: Long = randomPastTimestamp()): SignedEvent {
         require(rumor.pubkey == sender.publicKey.hex) { "A seal is signed by the author of the rumor" }
-        val key = sender.conversationKey(recipient)
-        try {
-            val content = Nip44.encrypt(rumor.toJson(), key)
-            return sender.sign(UnsignedEvent.create(sender.publicKey, EventKinds.SEAL, createdAt, emptyList(), content))
-        } finally {
-            key.fill(0)
-        }
+        val content = sender.encrypt(recipient, rumor.toJson())
+        return sender.sign(UnsignedEvent.create(sender.publicKey, EventKinds.SEAL, createdAt, emptyList(), content))
     }
 
     /**
@@ -126,17 +121,10 @@ object GiftWrap {
 
     private fun decryptFrom(authorHex: String, payload: String, recipient: MessagingSigner, layer: String): String {
         val author = runCatching { PublicKey.fromHex(authorHex) }.getOrElse { throw GiftWrapException("Malformed $layer author", it) }
-        val key = try {
-            recipient.conversationKey(author)
-        } catch (e: Nip44Exception) {
-            throw GiftWrapException("Cannot derive the $layer key", e)
-        }
         try {
-            return Nip44.decrypt(payload, key)
+            return recipient.decrypt(author, payload)
         } catch (e: Nip44Exception) {
             throw GiftWrapException("Cannot decrypt the $layer", e)
-        } finally {
-            key.fill(0)
         }
     }
 

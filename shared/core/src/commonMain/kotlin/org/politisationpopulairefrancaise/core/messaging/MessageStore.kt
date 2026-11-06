@@ -4,13 +4,12 @@ import org.politisationpopulairefrancaise.core.db.FindConversation
 import org.politisationpopulairefrancaise.core.db.Message
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.db.SelectConversations
-import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 
 enum class MessageStoreOutcome { STORED, DUPLICATE }
 
-/** A gift wrap of the user's own message, not yet accepted by the server. */
-data class OutgoingWrap(val wrap: SignedEvent, val messageId: String)
+/** One delivery of the user's own message (to [recipient], hexadecimal key) not yet accepted by the server. */
+data class OutgoingMessage(val messageId: String, val recipient: String)
 
 /**
  * The device's copy of the user's conversations: decrypted messages, read marks, and the gift wraps
@@ -66,13 +65,13 @@ class MessageStore(private val database: PpfDatabase, private val clock: () -> L
 
     /**
      * The newest [limit] messages of a conversation, oldest first (ready to display). With [before],
-     * the messages older than that date: the next page when scrolling up.
+     * the messages that come before that one in the thread: the next page when scrolling up.
      */
-    fun messages(conversationId: String, limit: Int = 200, before: Long? = null): List<ChatMessage> {
+    fun messages(conversationId: String, limit: Int = 200, before: ChatMessage? = null): List<ChatMessage> {
         val rows = if (before == null) {
             queries.selectMessages(conversationId, limit.toLong()).executeAsList()
         } else {
-            queries.selectMessagesBefore(conversationId, before, limit.toLong()).executeAsList()
+            queries.selectMessagesBefore(conversationId, before.createdAt, before.id, limit.toLong()).executeAsList()
         }
         return rows.asReversed().map { it.toChatMessage() }
     }
@@ -86,23 +85,24 @@ class MessageStore(private val database: PpfDatabase, private val clock: () -> L
 
     fun count(): Long = queries.countMessages().executeAsOne()
 
-    /** Deletes a conversation and its messages from this device only. */
+    /** Deletes a conversation, its messages and their pending deliveries from this device only. */
     fun deleteConversation(id: String) = database.transaction {
+        queries.selectMessages(id, Long.MAX_VALUE).executeAsList().forEach { queries.deleteOutgoingOf(it.id) }
         queries.deleteMessagesOf(id)
         queries.deleteConversation(id)
     }
 
-    /** Queues a gift wrap of the user's own message until the server accepts it. */
-    fun queueOutgoing(wrap: SignedEvent, messageId: String) =
-        queries.insertOutgoingWrap(id = wrap.id, message_id = messageId, event = wrap.toJson(), queued_at = clock())
+    /** Records that the user's message [messageId] still has to reach [recipient] (hexadecimal key). */
+    fun queueOutgoing(messageId: String, recipient: String) =
+        queries.insertOutgoing(message_id = messageId, recipient = recipient, queued_at = clock())
 
-    /** Wraps still to send, oldest first. */
-    fun outgoing(): List<OutgoingWrap> =
-        queries.selectOutgoingWraps().executeAsList().map { OutgoingWrap(SignedEvent.fromJson(it.event), it.message_id) }
+    /** Deliveries still to make, oldest first. */
+    fun outgoing(): List<OutgoingMessage> =
+        queries.selectOutgoing().executeAsList().map { OutgoingMessage(it.message_id, it.recipient) }
 
-    fun removeOutgoing(wrapId: String) = queries.deleteOutgoingWrap(wrapId)
+    fun removeOutgoing(messageId: String, recipient: String) = queries.deleteOutgoing(messageId, recipient)
 
-    fun outgoingCount(): Long = queries.countOutgoingWraps().executeAsOne()
+    fun outgoingCount(): Long = queries.countOutgoing().executeAsOne()
 
     /** Date of the last pull that reached the server, in seconds; null before the first one. */
     fun lastPullAt(): Long? = queries.getState(LAST_PULL_AT).executeAsOneOrNull()

@@ -67,6 +67,13 @@ data class ChatMessage(
     }
 
     companion object {
+        /**
+         * Largest text of a message, in UTF-8 bytes. Two layers of padding, base64 and JSON turn a
+         * text into a gift wrap roughly 2.4 times larger; the server refuses events above 64 KiB, so
+         * the real ceiling is about 26 KiB. 16 KiB keeps a wide margin and is already very long for a chat.
+         */
+        const val MAX_TEXT_BYTES: Int = 16 * 1024
+
         /** A new message from [author] to [recipients] (the author may be listed, it is simply not duplicated). */
         fun compose(
             author: PublicKey,
@@ -77,6 +84,7 @@ data class ChatMessage(
             replyTo: String? = null,
         ): ChatMessage {
             require(text.isNotEmpty()) { "A message has a text" }
+            require(text.encodeToByteArray().size <= MAX_TEXT_BYTES) { "A message has at most $MAX_TEXT_BYTES bytes of text" }
             val others = recipients.map { it.hex }.filter { it != author.hex }.distinct()
             require(others.isNotEmpty()) { "A message has at least one recipient other than its author" }
             replyTo?.let { require(isLowercaseHex(it, 64)) { "replyTo is a 64-character lowercase hexadecimal event id" } }

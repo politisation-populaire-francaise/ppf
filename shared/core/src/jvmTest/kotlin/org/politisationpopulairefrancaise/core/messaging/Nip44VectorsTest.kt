@@ -108,6 +108,11 @@ class Nip44VectorsTest {
         }
     }
 
+    /**
+     * The vectors file predates the extended length prefix: the current NIP allows 65536 bytes and
+     * more, which our own limit (`Nip44.MAX_PLAINTEXT_BYTES`, 65535) refuses. The assertion therefore
+     * checks our limit for the three large values and the specification for the empty text.
+     */
     @Test
     fun invalidMessageLengthsAreRefused() {
         val lengths = invalid.getValue("encrypt_msg_lengths").jsonArray.map { it.jsonPrimitive.content.toInt() }

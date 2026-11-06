@@ -50,7 +50,7 @@ class SchemaMigrationTest {
                     val tables = statement.executeQuery("SELECT name FROM sqlite_master WHERE type = 'table'").use { rows ->
                         generateSequence { if (rows.next()) rows.getString(1) else null }.toSet()
                     }
-                    assertTrue(tables.containsAll(setOf("conversation", "message", "outgoing_wrap", "messaging_state")), tables.toString())
+                    assertTrue(tables.containsAll(setOf("conversation", "message", "outgoing_message", "messaging_state")), tables.toString())
                     val version = statement.executeQuery("PRAGMA user_version").use { rows -> rows.next(); rows.getLong(1) }
                     assertEquals(PpfDatabase.Schema.version, version)
                     assertTrue(version >= 3, "schema version $version")

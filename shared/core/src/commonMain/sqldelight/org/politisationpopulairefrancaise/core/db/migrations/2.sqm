@@ -26,14 +26,14 @@ CREATE TABLE message (
 CREATE INDEX message_conversation_created_at ON message(conversation_id, created_at DESC, id);
 CREATE INDEX message_conversation_unread ON message(conversation_id, is_read);
 
-CREATE TABLE outgoing_wrap (
-    id TEXT NOT NULL PRIMARY KEY,
+CREATE TABLE outgoing_message (
     message_id TEXT NOT NULL,
-    event TEXT NOT NULL,
-    queued_at INTEGER NOT NULL
+    recipient TEXT NOT NULL,
+    queued_at INTEGER NOT NULL,
+    PRIMARY KEY (message_id, recipient)
 );
 
-CREATE INDEX outgoing_wrap_queued_at ON outgoing_wrap(queued_at, id);
+CREATE INDEX outgoing_message_queued_at ON outgoing_message(queued_at, message_id, recipient);
 
 CREATE TABLE messaging_state (
     name TEXT NOT NULL PRIMARY KEY,
