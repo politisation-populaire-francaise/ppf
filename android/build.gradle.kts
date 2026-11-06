@@ -6,6 +6,21 @@ plugins {
     alias(libs.plugins.composeCompiler)
 }
 
+// Version code: the number of minutes between 1 January 2026 (UTC) and the last commit.
+// It grows with every commit, so each new APK installs as an update over the previous one
+// (Android refuses an older version code), and it is the same for every build of one commit,
+// on the owner's computer as in continuous integration (reproducible builds).
+// PPF_VERSION_CODE overrides it; without Git (source archive) it falls back to 1.
+val versionCodeEpochSeconds = 1_767_225_600L // 2026-01-01T00:00:00Z
+val commitVersionCode: Int = providers.environmentVariable("PPF_VERSION_CODE").orNull?.toInt()
+    ?: runCatching {
+        providers.exec {
+            commandLine("git", "log", "-1", "--format=%ct")
+            isIgnoreExitValue = true
+        }.standardOutput.asText.get().trim().toLong()
+    }.map { commitSeconds -> ((commitSeconds - versionCodeEpochSeconds) / 60).toInt().coerceAtLeast(1) }
+        .getOrDefault(1)
+
 android {
     namespace = "org.politisationpopulairefrancaise.app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -15,7 +30,7 @@ android {
         applicationId = "org.politisationpopulairefrancaise.app"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
+        versionCode = commitVersionCode
         versionName = "0.1.0"
 
         // Native libsecp256k1 is shipped per architecture; 32-bit x86 only exists on old emulators.
@@ -43,9 +58,24 @@ android {
     }
 
     buildTypes {
+        // Development build, for the computer only: debuggable, never sent to a phone.
         debug {
             applicationIdSuffix = ".test"
             versionNameSuffix = "-test"
+        }
+        // Test version sent to phones (owner and testers). Same identifier and same test
+        // signature as the debug build, so it installs over it as an update, but NOT debuggable:
+        // on a debuggable app anyone holding the phone with a USB cable can read the app's
+        // private files ("run-as") and attach a debugger (OWASP MASVS-RESILIENCE). Code shrinking
+        // (R8) stays off here until it can be checked on a real phone: a shrinking mistake only
+        // shows at runtime, and there is no Android emulator on the owner's computer.
+        create("preview") {
+            isDebuggable = false
+            isMinifyEnabled = false
+            applicationIdSuffix = ".test"
+            versionNameSuffix = "-test"
+            signingConfig = signingConfigs.getByName("debug")
+            matchingFallbacks += "release"
         }
         release {
             isMinifyEnabled = true
