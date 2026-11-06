@@ -18,6 +18,7 @@ import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.events.StoreOutcome
 import org.politisationpopulairefrancaise.server.events.TagIndex
+import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
 
 @Serializable
@@ -39,7 +40,7 @@ const val MAX_EVENT_BYTES: Long = 64 * 1024
  * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
-fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rateLimiter: RateLimiter) {
+fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rateLimiter: RateLimiter, groups: GroupDirectory? = null) {
     if (repository == null) {
         route("/api/v1/{...}") {
             handle {
@@ -48,6 +49,7 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rat
         }
         return
     }
+    val directory = groups ?: GroupDirectory(repository)
     route("/api/v1/events") {
         post {
             val declaredLength = call.request.contentLength() ?: 0
@@ -74,6 +76,12 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rat
             when (val decision = policy.check(event)) {
                 is PublicationPolicy.Decision.Refused ->
                     return@post call.respond(HttpStatusCode.fromValue(decision.status), ApiError(decision.error, decision.message))
+                PublicationPolicy.Decision.Allowed -> Unit
+            }
+            // Group rules that need the database: the group must exist, be open, or be managed by this key.
+            when (val admission = withContext(Dispatchers.IO) { directory.admit(event) }) {
+                is PublicationPolicy.Decision.Refused ->
+                    return@post call.respond(HttpStatusCode.fromValue(admission.status), ApiError(admission.error, admission.message))
                 PublicationPolicy.Decision.Allowed -> Unit
             }
             val outcome = withContext(Dispatchers.IO) { repository.store(event) }
@@ -133,7 +141,7 @@ fun parseTagFilters(raw: List<String>): Map<String, List<String>>? {
     return tags
 }
 
-private suspend fun io.ktor.server.routing.RoutingContext.badParameter(name: String) =
+internal suspend fun io.ktor.server.routing.RoutingContext.badParameter(name: String) =
     call.respond(HttpStatusCode.BadRequest, ApiError("bad_parameter", "Invalid value for \"$name\"."))
 
 private fun isLowercaseHex64(value: String): Boolean = value.length == 64 && value.all { it in '0'..'9' || it in 'a'..'f' }

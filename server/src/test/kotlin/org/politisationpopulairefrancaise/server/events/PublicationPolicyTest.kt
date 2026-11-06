@@ -6,6 +6,7 @@ import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.server.groups.GroupKinds
 import org.politisationpopulairefrancaise.server.relay.RelayKinds
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -45,6 +46,33 @@ class PublicationPolicyTest {
 
         val ephemeral = LocalEventSigner(editor).sign(kind = 20001, content = "x")
         assertEquals(400, assertIs<PublicationPolicy.Decision.Refused>(policy.check(ephemeral)).status)
+    }
+
+    @Test
+    fun groupDescriptionsNeedAnEditorKeyAndMembershipEventsAreRefused() = runBlocking {
+        val policy = PublicationPolicy(setOf(editor.publicKey.hex))
+        val description = listOf(listOf("d", "demo"), listOf("name", "[EXEMPLE] Collectif"))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = description)))
+        assertEquals(403, assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(citizen).sign(kind = GroupKinds.METADATA, tags = description))).status)
+        assertEquals(403, assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(citizen).sign(kind = GroupKinds.ADMINS, tags = description))).status)
+
+        for (badId in listOf(null, "", "with space", "é", "x".repeat(65))) {
+            val tags = if (badId == null) emptyList() else listOf(listOf("d", badId))
+            val refused = assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = tags)))
+            assertEquals("bad_group_id", refused.error, "id $badId")
+        }
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "a-b_c.d~E9")))))
+
+        val members = assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.MEMBERS, tags = listOf(listOf("d", "demo")))))
+        assertEquals("members_list_refused", members.error)
+        for (kind in listOf(9000, 9010, 9020, 9021, 9022)) {
+            assertEquals("unsupported_kind", assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = kind))).error)
+        }
+
+        val message = LocalEventSigner(citizen).sign(kind = GroupKinds.CHAT_MESSAGE, content = "x", tags = listOf(listOf("h", "demo")))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(message))
+        val orphan = LocalEventSigner(citizen).sign(kind = GroupKinds.CHAT_MESSAGE, content = "x")
+        assertEquals("missing_group", assertIs<PublicationPolicy.Decision.Refused>(policy.check(orphan)).error)
     }
 
     @Test

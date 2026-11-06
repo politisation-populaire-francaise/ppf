@@ -15,10 +15,12 @@ import io.ktor.server.routing.routing
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.HealthStatus
 import org.politisationpopulairefrancaise.server.api.eventsApi
+import org.politisationpopulairefrancaise.server.api.groupsApi
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
+import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.WrapRetention
@@ -70,6 +72,7 @@ fun Application.module(
         WrapRetention(repository, relay.wrapRetention).start(this, relay.cleanupInterval, log)
     }
     val rateLimiter = RateLimiter(relay.postRatePerMinute)
+    val groups = repository?.let(::GroupDirectory)
     install(ContentNegotiation) {
         json()
     }
@@ -101,7 +104,8 @@ fun Application.module(
                 ),
             )
         }
-        eventsApi(repository, policy, rateLimiter)
+        eventsApi(repository, policy, rateLimiter, groups)
+        groupsApi(groups)
         webRoutes()
     }
 }
