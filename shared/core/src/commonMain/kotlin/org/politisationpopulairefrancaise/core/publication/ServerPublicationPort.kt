@@ -30,7 +30,7 @@ class ServerPublicationPort(
     private val client: HttpClient,
     /** Origin of the server, without trailing slash, e.g. "https://politisation-populaire-francaise.org". */
     private val baseUrl: String,
-) : RemoteEvents, ProposalStatusSource {
+) : RemoteEvents, ProposalStatusSource, HeldStatusSource {
 
     override suspend fun publish(event: SignedEvent): PublicationResult {
         val response = try {
@@ -100,6 +100,29 @@ class ServerPublicationPort(
             throw e
         } catch (e: Exception) {
             ProposalStatuses.Unavailable(e)
+        }
+    }
+
+    /** `GET /api/v1/held?id=…`: where the author's held contents stand (contract of the Agir space). */
+    override suspend fun heldStatuses(ids: List<String>): HeldStatuses {
+        require(ids.size <= HeldStatusSource.MAX_IDS) { "At most ${HeldStatusSource.MAX_IDS} ids per request" }
+        if (ids.isEmpty()) return HeldStatuses.Known(emptyList())
+        val response: HttpResponse = try {
+            client.get("$baseUrl/api/v1/held") {
+                ids.forEach { parameter("id", it) }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return HeldStatuses.Unavailable(e)
+        }
+        if (response.status.value !in 200..299) return HeldStatuses.Unavailable(ServerException(response.status.value))
+        return try {
+            HeldStatuses.Known(json.decodeFromString(ListSerializer(HeldState.serializer()), response.bodyAsText()))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            HeldStatuses.Unavailable(e)
         }
     }
 
