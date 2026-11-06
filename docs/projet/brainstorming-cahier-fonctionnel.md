@@ -54,6 +54,25 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Mise en œuvre : type de contenu `revendication` (une idée en une ou deux phrases, un résumé, un argumentaire, un thème, un territoire, un statut parmi nouvelle, en débat, très soutenue, retenue, campagne) ; mur en cards avec Pour, Contre et Débat affichés mais désactivés ; trois revendications [EXEMPLE] signées, qui ne sont pas des positions de PPF.
 - Reste : proposer une revendication (DE-18, avec détection des doublons), vote et compteurs (méthode « une personne, une voix » à valider, protection anti-fraude), débat Pour, Contre, Mitigé (S-39, DE-20), tri et filtres (DE-01), baromètre (PR-07).
 
+### [2026-11-06] Revendications : vues, filtres et vérifications automatiques
+- Statut : Intégré le 2026-11-06 (cahier fonctionnel 1.3, M11 ; D-029, D-030) ; liste des thèmes À valider ; source des textes de loi et hébergement de l'IA : brainstorming du cahier des charges
+- Concerne : cahier-fonctionnel.md, M11 ; DE-01, DE-18, DE-19, DE-20 ; S-137 ; point d'attention n° 33
+- **Demande de la propriétaire (6 novembre 2026)** : l'utilisateur accède à différentes vues, personnalise ses propres vues et applique des filtres. « Filtre : par thème, par ville, popularité, nouveauté etc. Vue : thème société, médical, revendications portées par ceux que le user suit etc. » L'IA doit aussi gérer les problèmes possibles : doublons, loi déjà existante et en vigueur, etc.
+- Mise en œuvre (6 novembre 2026) :
+  - vues prêtes à l'emploi (Toutes, Comptes suivis, Mes revendications, Nationales, une vue par thème) et vues personnelles (nom, critères), rangées, renommées, retirées, rétablies ; enregistrées sur l'appareil seulement, car elles révèlent des centres d'intérêt politiques ;
+  - filtres de la session (thème, territoire, statut, auteurs, mots-clés), tri (nouveauté, popularité, mises à jour récentes), « Enregistrer comme vue » ;
+  - popularité provisoire : tant que le vote n'est pas ouvert, elle suit le statut donné par l'équipe (campagne, retenue, très soutenue, en débat, nouvelle) ; l'écran le dit ;
+  - formulaire guidé « Proposer une revendication » : la revendication en une ou deux phrases, pourquoi, ce qui est demandé, ce qui existe déjà, un à trois thèmes, le territoire, l'acceptation de la charte ; les revendications qui disent la même chose s'affichent pendant la saisie ;
+  - vérifications automatiques : règles du formulaire (longueur, une seule idée, thèmes, territoire, aucune coordonnée personnelle), seules à pouvoir bloquer l'envoi ; comparaison par les mots avec les revendications existantes (doublon, proche, déjà retenue ou devenue campagne), en tenant compte du territoire ; après l'envoi, sur le serveur, la même comparaison avec toutes les revendications, puis l'analyse par IA (doublon dit autrement, revendication contraire, loi en vigueur ou proposition de loi en discussion, plusieurs idées, hors sujet, personne visée, données personnelles, charte avec alertes rouge et orange) et la recherche dans les textes de loi, dès qu'elles seront en service ;
+  - l'IA ne fait que conseiller : elle ne bloque, ne publie et ne refuse rien ; chaque avis porte la mention « Analyse par IA, à confirmer par l'équipe » ; une référence de loi citée de mémoire par l'IA est marquée « Référence à vérifier » ; seules les sources officielles (Légifrance, Assemblée nationale, Sénat, EUR-Lex) peuvent être liées.
+- **À valider : la liste des thèmes**, proposée par l'équipe technique pour pouvoir coder les vues : Société, Santé, Éducation, Travail, Pouvoir d'achat, Logement, Transports, Environnement, Services publics, Démocratie et institutions, Justice et libertés, Impôts et finances publiques, Agriculture et alimentation, Numérique, Culture et médias. Ajouter un thème ne coûte rien ; en renommer un après le lancement oblige à convertir les vues enregistrées.
+- Points ouverts :
+  - popularité réelle et tri par débat ou par consensus : avec le vote (méthode « une personne, une voix » à valider) et le débat (DE-20) ;
+  - vue « Près de chez moi » : avec « Mon territoire » (code postal gardé sur l'appareil) ;
+  - statut des revendications citoyennes : aujourd'hui écrit dans l'événement signé par l'auteur (toujours « nouvelle ») ; quand l'équipe fera avancer une revendication, le statut devra venir d'une étiquette signée par la plateforme, pas de l'auteur ;
+  - relecture par l'équipe : la file d'attente existe sur le serveur, l'écran de l'équipe viendra avec le back-office de modération (M15, double authentification, journal d'audit) ;
+  - fusion des doublons (DE-19) : réunir les votes sans compter deux fois la même personne, quand le vote existera.
+
 ### [2026-11-06] Maquettes de l'interface communautaire : cercles, visibilité, collectifs, messagerie, bouton AIDE
 - Statut : À étudier
 - Concerne : cahier-fonctionnel.md, M18 (fil), M16 (comptes), AG-22 et S-120 (collectifs, suivre), TE-07 (cercles), phase 4 (messagerie)

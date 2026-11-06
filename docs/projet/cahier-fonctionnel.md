@@ -1,7 +1,7 @@
 # Politisation Populaire Française : cahier fonctionnel
 
-- Version : 1.0
-- Date : 4 novembre 2026
+- Version : 1.3
+- Date : 6 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-cahier-fonctionnel.md`.
 - Documents liés : `vision.md` (pourquoi), `cahier-des-charges.md` (exigences, architecture, cadre légal, planning).
 
@@ -119,6 +119,8 @@ Carte et chronologie des mouvements sociaux dans le monde liés à la vie chère
 - Vote : un compte, un vote, protection anti-fraude.
 - Regroupement par thème, assisté par IA et validé par l'équipe.
 - Synthèse publique, régulièrement mise à jour, des revendications prioritaires.
+- **Vues et filtres** (décision de la propriétaire du 6 novembre 2026) : une **vue** est un regard enregistré sur le mur : un thème (Société, Santé...), les revendications portées par les comptes que l'on suit, les siennes, les revendications nationales. Chacun compose ses propres vues, les nomme, les ordonne et les retire ; elles restent sur l'appareil. Un **filtre** affine pour un moment la vue en cours (thème, territoire, statut, auteurs, mots-clés) et un **tri** l'ordonne (nouveauté, popularité, mises à jour récentes) ; un ensemble de filtres peut être enregistré comme vue.
+- **Vérifications automatiques** d'une revendication proposée (demande de la propriétaire du 6 novembre 2026) : pendant la saisie puis après l'envoi, l'outil repère les doublons et les revendications proches, une loi déjà en vigueur ou en discussion, une revendication contraire, plusieurs idées dans une seule, les données personnelles et ce qui enfreint la charte. Il conseille l'auteur et prépare la relecture ; il ne publie ni ne refuse jamais rien : la relecture humaine décide.
 - Les revendications prioritaires alimentent les cahiers de doléances et le Programme du peuple (M13.3), le choix des campagnes et les mesures du Pacte démocratique (M13.5).
 
 ### M12. S'organiser (mobilisation)
@@ -224,4 +226,5 @@ Montrer les faits, sans affirmer de conclusion :
 |---|---|---|
 | 1.0 | 4 novembre 2026 | Création à partir des instructions initiales du projet et des échanges sur le bloc « Se politiser ». |
 | 1.1 | 6 novembre 2026 | Ajout du module M18 « Fil social » (écran par défaut en fil de réseau social, barre du bas fixe) et de la direction de design des fiches pratiques (encarts « En bref », « Légal », « Illégal »), décisions de la propriétaire du 6 novembre 2026 consignées dans les brainstormings. Copie locale modifiée par l'IA sur demande de la propriétaire ; à reporter dans le projet claude.ai. |
+| 1.3 | 6 novembre 2026 | M11 : vues et filtres du mur des revendications, vérifications automatiques des revendications proposées (doublons, loi déjà en vigueur, autres problèmes), demandes de la propriétaire du 6 novembre 2026 (D-029, D-030). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
 | 1.2 | 6 novembre 2026 | Barre du bas à cinq entrées (Fil, En direct, Carte, Messages, Revendications), vues du fil parcourues au doigt dont une vue « Revendications » (M18) ; messagerie confirmée dans les ambitions fonctionnelles avec ses trois vues (M14). Décisions de la propriétaire du 6 novembre 2026 (D-026). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
