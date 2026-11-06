@@ -7,9 +7,14 @@ import androidx.compose.ui.graphics.toAwtImage
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.captureToImage
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.isRoot
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
+import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
-import androidx.compose.ui.test.onRoot
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
@@ -18,6 +23,7 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
+import org.politisationpopulairefrancaise.ui.components.AuthorDialogTags
 import org.politisationpopulairefrancaise.ui.content.ContentTags
 import org.politisationpopulairefrancaise.ui.feed.FeedFilter
 import org.politisationpopulairefrancaise.ui.feed.FeedTags
@@ -40,10 +46,11 @@ class ScreenshotTest {
 
     private val directory: File? = System.getenv("PPF_SCREENSHOTS_DIR")?.takeIf { it.isNotBlank() }?.let(::File)
 
+    /** Writes the topmost root: the screen itself, or the dialog layer when one is open. */
     private fun ComposeUiTest.save(name: String) {
         val dir = directory ?: return
         dir.mkdirs()
-        ImageIO.write(onRoot().captureToImage().toAwtImage(), "png", File(dir, "$name.png"))
+        ImageIO.write(onAllNodes(isRoot()).onLast().captureToImage().toAwtImage(), "png", File(dir, "$name.png"))
     }
 
     private fun ComposeUiTest.waitForContents(store: LocalEventStore) {
@@ -53,16 +60,37 @@ class ScreenshotTest {
 
     private fun capture(width: Int, height: Int, dark: Boolean, prefix: String) = runComposeUiTest {
         if (directory == null) return@runComposeUiTest
-        val store = LocalEventStore(JvmDatabase.inMemory())
+        val dependencies = AppDependencies.withDatabase(InMemoryIdentityStore(), JvmDatabase.inMemory())
+        val store = dependencies.contentStore!!
         setContent {
             Box(Modifier.requiredSize(width.dp, height.dp)) {
                 PpfTheme(darkTheme = dark) {
-                    org.politisationpopulairefrancaise.ui.shell.AdaptiveShell(AppDependencies(InMemoryIdentityStore(), contentStore = store))
+                    org.politisationpopulairefrancaise.ui.shell.AdaptiveShell(dependencies)
                 }
             }
         }
         waitForContents(store)
         save("$prefix-fil")
+
+        // The "Suivis" view: empty first, then the author box, then filled once the example account is followed.
+        val firstPost = store.recent(kinds = listOf(1)).first().id.take(8)
+        onNodeWithTag(FeedTags.TAB + FeedFilter.SUIVIS.id).performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 5_000) { onAllNodesWithText("Vous ne suivez encore aucun compte", substring = true).fetchSemanticsNodes().isNotEmpty() }
+        save("$prefix-fil-suivis-vide")
+        onNodeWithTag(FeedTags.TAB + FeedFilter.ALL.id).performClick()
+        waitForIdle()
+        onAllNodesWithTag(FeedTags.AUTHOR + firstPost).onFirst().performScrollTo().performClick()
+        waitForIdle()
+        save("$prefix-fil-auteur")
+        onNodeWithTag(AuthorDialogTags.FOLLOW).performClick()
+        waitForIdle()
+        onNodeWithTag(FeedTags.TAB + FeedFilter.SUIVIS.id).performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 5_000) {
+            onAllNodes(hasTestTag(FeedTags.POST + firstPost) and hasAnyAncestor(hasTestTag(FeedTags.LIST + FeedFilter.SUIVIS.id))).fetchSemanticsNodes().isNotEmpty()
+        }
+        save("$prefix-fil-suivis")
 
         onNodeWithTag(FeedTags.TAB + FeedFilter.REVENDICATIONS.id).performClick()
         waitForIdle()
