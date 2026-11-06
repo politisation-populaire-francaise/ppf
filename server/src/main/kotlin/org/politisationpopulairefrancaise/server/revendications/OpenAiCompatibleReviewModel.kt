@@ -4,10 +4,11 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.cio.CIO
 import io.ktor.client.request.accept
 import io.ktor.client.request.bearerAuth
-import io.ktor.client.request.post
+import io.ktor.client.request.preparePost
 import io.ktor.client.request.setBody
 import io.ktor.client.statement.bodyAsChannel
 import io.ktor.http.ContentType
+import io.ktor.http.contentLength
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import io.ktor.utils.io.readBuffer
@@ -36,8 +37,8 @@ import org.politisationpopulairefrancaise.core.revendications.checks.ReviewReque
  * server (vLLM, llama.cpp, Ollama...) or a European pay-per-use service. The prompt and the strict
  * reading of the answer live in the shared core ([AiReview]); this class only carries them.
  *
- * What leaves the server: the texts of the proposal and of the closest existing demands, nothing
- * else. The addresses of the existing demands (which hold their authors' public keys) are replaced
+ * What leaves the server: the texts of the proposal and of the closest published demands, nothing
+ * else (the other pending proposals are kept away by [ProposalReviewer]). The addresses of the existing demands (which hold their authors' public keys) are replaced
  * by short aliases ("r1", "r2"...) and put back when the answer is read; no public key, no address,
  * no header of the citizen's request is ever sent. The deterministic rules have already refused
  * e-mail addresses, phone, bank and social security numbers before a proposal is queued.
@@ -85,17 +86,17 @@ class OpenAiCompatibleReviewModel(
         data object TooLarge : Exchange
     }
 
-    private suspend fun exchange(body: String): Exchange {
-        val response = client.post(config.chatCompletionsUrl) {
-            contentType(ContentType.Application.Json)
-            accept(ContentType.Application.Json)
-            config.apiKey?.let { bearerAuth(it) }
-            setBody(body)
-        }
-        if (!response.status.isSuccess()) return Exchange.HttpError(response.status.value)
+    /** The answer is streamed, not saved whole: at most [MAX_ANSWER_BYTES] are ever read. */
+    private suspend fun exchange(body: String): Exchange = client.preparePost(config.chatCompletionsUrl) {
+        contentType(ContentType.Application.Json)
+        accept(ContentType.Application.Json)
+        config.apiKey?.let { bearerAuth(it) }
+        setBody(body)
+    }.execute { response ->
+        if (!response.status.isSuccess()) return@execute Exchange.HttpError(response.status.value)
+        if ((response.contentLength() ?: 0) > MAX_ANSWER_BYTES) return@execute Exchange.TooLarge
         val bytes = response.bodyAsChannel().readBuffer(MAX_ANSWER_BYTES + 1).readByteArray()
-        if (bytes.size > MAX_ANSWER_BYTES) return Exchange.TooLarge
-        return Exchange.Answer(bytes.decodeToString())
+        if (bytes.size > MAX_ANSWER_BYTES) Exchange.TooLarge else Exchange.Answer(bytes.decodeToString())
     }
 
     private fun requestBody(messages: List<AiMessage>): String = buildJsonObject {
