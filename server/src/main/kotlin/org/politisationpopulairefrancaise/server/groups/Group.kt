@@ -6,7 +6,8 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 
 /**
  * Event kinds and tags of relay-based groups (NIP-29), the protocol of the collectives' rooms
- * chosen in D-027. First version: public open groups only.
+ * chosen in D-027. Current version: public open groups, which any account may create (D-028) by
+ * publishing a description that names a territory and accepts the charter of values.
  *
  * Extension points, in the order they are expected:
  * - membership: moderation events `put-user` (9000) and `remove-user` (9001), join and leave
@@ -18,7 +19,8 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
  * - `private` and `hidden` groups, which need reader authentication (NIP-42) before the relay can
  *   restrict who reads them; until then descriptions carrying these flags are refused;
  * - signing of 39000 by the relay's own key through the separate signing service, instead of the
- *   editorial keys used for now.
+ *   creator's key used for now;
+ * - duplicate detection by meaning (self-hosted model) and a posteriori moderation of the groups.
  */
 object GroupKinds {
     /** A chat message in a group; carries the group id in an `h` tag. */
@@ -43,6 +45,20 @@ object GroupKinds {
     /** The tag naming the group of an event sent to it. */
     const val GROUP_TAG: String = "h"
 
+    /** NIP-29 metadata tags. */
+    const val NAME_TAG: String = "name"
+    const val ABOUT_TAG: String = "about"
+    const val PICTURE_TAG: String = "picture"
+
+    /** PPF: the territory the group lives in (a town, a department, "France"); required (D-028). */
+    const val TERRITORY_TAG: String = "ppf-territory"
+
+    /** PPF: the version of the charter of values the creator accepted; required (D-028). */
+    const val CHARTER_TAG: String = "ppf-charter"
+
+    /** The only charter version accepted today. A new version will be accepted alongside, then alone. */
+    const val CHARTER_VERSION: String = "1.0"
+
     /** Metadata flags the relay cannot honour yet (they restrict reading to members). */
     val UNSUPPORTED_FLAGS: Set<String> = setOf("private", "hidden")
 
@@ -65,6 +81,9 @@ object GroupKinds {
  * descriptions are refused for now, so every stored group is public); it is open to messages
  * from anyone unless it carries `closed` or `restricted` (both need a membership that this
  * version does not track, so such groups refuse messages for now).
+ *
+ * [territory] and [charter] are the PPF additions of D-028; they are null only for descriptions
+ * stored before they became mandatory.
  */
 @Serializable
 data class Group(
@@ -72,11 +91,21 @@ data class Group(
     val name: String? = null,
     val about: String? = null,
     val picture: String? = null,
+    /** The territory as written by the creator (`ppf-territory`). */
+    val territory: String? = null,
+    /** The accepted charter version (`ppf-charter`), or null when the description does not carry the accepted one. */
+    val charter: String? = null,
     @SerialName("public") val isPublic: Boolean,
     @SerialName("open") val isOpen: Boolean,
     /** The signed metadata, so that clients can check who published it. */
     val event: SignedEvent,
 ) {
+    /** The name as compared for duplicates and searched (see [GroupNames]); empty without a usable name. */
+    val normalizedName: String get() = GroupNames.normalize(name.orEmpty())
+
+    /** The territory as compared for duplicates and searched; empty without a territory. */
+    val normalizedTerritory: String get() = GroupNames.normalize(territory.orEmpty())
+
     companion object {
         /** Reads a metadata event; null if it is not a well-formed group description (exactly one valid `d`). */
         fun from(event: SignedEvent): Group? {
@@ -86,9 +115,11 @@ data class Group(
             val flags = event.tags.mapNotNull { it.firstOrNull() }.toSet()
             return Group(
                 id = id,
-                name = event.firstTagValue("name"),
-                about = event.firstTagValue("about"),
-                picture = event.firstTagValue("picture"),
+                name = event.firstTagValue(GroupKinds.NAME_TAG),
+                about = event.firstTagValue(GroupKinds.ABOUT_TAG),
+                picture = event.firstTagValue(GroupKinds.PICTURE_TAG),
+                territory = event.firstTagValue(GroupKinds.TERRITORY_TAG),
+                charter = event.firstTagValue(GroupKinds.CHARTER_TAG)?.takeIf { it == GroupKinds.CHARTER_VERSION },
                 isPublic = "private" !in flags,
                 isOpen = "closed" !in flags && "restricted" !in flags,
                 event = event,

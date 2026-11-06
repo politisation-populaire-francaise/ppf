@@ -44,8 +44,9 @@ import javax.sql.DataSource
  * - PPF_ENVIRONMENT: "production", "preproduction" or "development" (default).
  * - DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD or DATABASE_PASSWORD_FILE: see [DatabaseConfig].
  * - PPF_EDITOR_KEYS: keys of the editorial team, see [PublicationPolicy].
- * - PPF_WRAP_RETENTION_DAYS, PPF_WRAP_CLEANUP_INTERVAL_MINUTES, PPF_WRAP_MAX_PER_RECIPIENT,
- *   PPF_POST_RATE_PER_MINUTE, PPF_POST_GLOBAL_RATE_PER_MINUTE: relay settings, see [RelayConfig].
+ * - PPF_WRAP_RETENTION_DAYS, PPF_WRAP_RETENTION_MAX_DAYS, PPF_WRAP_CLEANUP_INTERVAL_MINUTES,
+ *   PPF_WRAP_MAX_PER_RECIPIENT, PPF_POST_RATE_PER_MINUTE, PPF_POST_GLOBAL_RATE_PER_MINUTE: relay
+ *   settings, see [RelayConfig].
  * - PPF_PROPOSALS_MAX_PENDING_PER_KEY, PPF_PROPOSALS_PER_KEY_PER_DAY, PPF_PROPOSALS_MAX_PENDING,
  *   PPF_PROPOSALS_RETENTION_DAYS, PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES, PPF_AI_MAX_REVIEWS_PER_DAY:
  *   the review queue of citizen demands, see [RevendicationsConfig].
@@ -111,8 +112,9 @@ fun Application.module(
     if (repository == null) {
         log.info("No database configured: the events API answers 503 (health check and web pages work).")
     } else if (relay.cleanupInterval.isPositive()) {
-        // Encrypted envelopes are kept for a limited time; the task lives and dies with the application.
-        WrapRetention(repository, relay.wrapRetention).start(this, relay.cleanupInterval, log)
+        // Encrypted envelopes are kept for a limited time, set by each recipient within the server's
+        // bounds; the task lives and dies with the application.
+        WrapRetention(repository, relay).start(this, relay.cleanupInterval, log)
     }
     val limits = PostLimits(relay)
     val groups = repository?.let(::GroupDirectory)

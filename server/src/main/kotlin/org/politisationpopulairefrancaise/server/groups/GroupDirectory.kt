@@ -13,6 +13,12 @@ import java.util.Locale
  *
  * A group id belongs to the key that first described it: another key may not redefine it. Should
  * two keys ever claim the same id at the same instant, the earliest event (then the lowest id) wins.
+ * One name per territory (D-028): a description whose normalized name and territory are those of
+ * another group is refused, with the id of that group to join instead.
+ *
+ * Ceiling of this version: the directory works on the first [EventFilter.MAX_LIMIT] descriptions
+ * by date, loaded and compared in Kotlin; pagination and indexed search will come with the second
+ * version of the groups.
  */
 class GroupDirectory(private val events: EventRepository) {
 
@@ -38,12 +44,25 @@ class GroupDirectory(private val events: EventRepository) {
             ?.let(::canonical)
     }
 
+    /**
+     * Another group (another id) with the same normalized name and the same normalized territory
+     * as [group]; null when there is none, or when [group] has no usable name or territory. Among
+     * several (only possible through a race), the first by name then id.
+     */
+    fun findDuplicate(group: Group): Group? {
+        val name = group.normalizedName
+        val territory = group.normalizedTerritory
+        if (name.isEmpty() || territory.isEmpty()) return null
+        return list().firstOrNull { it.id != group.id && it.normalizedName == name && it.normalizedTerritory == territory }
+    }
+
     private fun canonical(candidates: Collection<Group>): Group =
         candidates.minWith(compareBy<Group>({ it.event.createdAt }, { it.event.id }))
 
     /**
      * Whether a verified, policy-approved event may enter the relay with respect to groups:
-     * - group metadata (39000): the id must be free or already managed by the same key;
+     * - group metadata (39000): the id must be free or already managed by the same key, and no other
+     *   group may bear the same name on the same territory (`group_exists`, with the id to join);
      * - companions of the metadata (39001, 39003...): the group must exist and be managed by the same key;
      * - any event carrying `h` tags: every named group must exist and be open.
      * Other events are not about groups and pass. The checks do not rely on the policy having run:
@@ -51,14 +70,22 @@ class GroupDirectory(private val events: EventRepository) {
      */
     fun admit(event: SignedEvent): Decision {
         if (event.kind == GroupKinds.METADATA) {
-            val id = event.tagValues("d").singleOrNull()?.takeIf(GroupKinds::isValidId)
+            val described = Group.from(event)
                 ?: return Decision.Refused(400, "bad_group_id", "A group description carries exactly one valid d tag.")
-            val existing = find(id) ?: return Decision.Allowed
-            return if (existing.event.pubkey == event.pubkey) {
-                Decision.Allowed
-            } else {
-                Decision.Refused(409, "group_taken", "Another key already manages a group with this id.")
+            val existing = find(described.id)
+            if (existing != null && existing.event.pubkey != event.pubkey) {
+                return Decision.Refused(409, "group_taken", "Another key already manages a group with this id.")
             }
+            val duplicate = findDuplicate(described)
+            if (duplicate != null) {
+                return Decision.Refused(
+                    409,
+                    "group_exists",
+                    "A group with this name already exists on this territory; join it instead of creating another one.",
+                    existing = duplicate.id,
+                )
+            }
+            return Decision.Allowed
         }
         if (GroupKinds.isGroupMetadata(event.kind)) {
             val group = event.tagValues("d").singleOrNull()?.let(::find)
