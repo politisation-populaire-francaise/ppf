@@ -336,7 +336,12 @@ class ContentLibrary(
         for (batch in ids.chunked(ProposalStatusSource.MAX_IDS)) {
             when (val answer = source.proposalStatuses(batch)) {
                 is ProposalStatuses.Unavailable -> break
-                is ProposalStatuses.Known -> fresh = fresh + answer.states.filter { it.id in batch }.associateBy { it.id }
+                // Once published, a demand's id is public and the server no longer serves its report:
+                // the one received while it waited is kept for its author.
+                is ProposalStatuses.Known -> fresh = fresh + answer.states.filter { it.id in batch }.associate { state ->
+                    val previous = fresh[state.id]?.report
+                    state.id to if (state.report == null && previous != null) state.copy(report = previous) else state
+                }
             }
         }
         val changed = fresh != proposalStates

@@ -82,9 +82,36 @@ Pas encore là : la synchronisation de cette liste entre vos appareils (sauvegar
 
 ### Tester les revendications et les messages (ajouté le 6 novembre 2026)
 
-1. Touchez **Revendications** dans la barre du bas. Trois revendications d'exemple s'affichent en cards : le statut (Nouvelle, En débat, Très soutenue), la revendication en une phrase, son résumé, son territoire et ses thèmes. Les boutons **Pour**, **Contre** et **Débat** sont grisés : ils s'activeront quand la méthode « une personne, une voix » sera validée. Touchez une card : l'argumentaire s'ouvre ; la flèche revient à la liste. Sur l'ordinateur, la liste et le détail sont côte à côte.
+1. Touchez **Revendications** dans la barre du bas. Huit revendications d'exemple s'affichent en cards : le statut (Nouvelle, En débat, Très soutenue), la revendication en une phrase, son résumé, son territoire et ses thèmes. Les boutons **Pour**, **Contre** et **Débat** sont grisés : ils s'activeront quand la méthode « une personne, une voix » sera validée. Touchez une card : l'argumentaire s'ouvre ; la flèche revient à la liste. Sur l'ordinateur, la liste et le détail sont côte à côte.
 2. Dans le Fil, l'onglet **Revendications** montre les mêmes cards.
 3. Touchez **Messages** dans la barre du bas. Trois onglets, **Privé**, **Collectifs**, **Flux**, se parcourent au doigt ; chacun explique ce qu'il contiendra. Le bouton « Nouvelle conversation » est grisé : aucune conversation n'est possible avant le choix du protocole de chiffrement (une entrée « À valider » vous attend dans le brainstorming du cahier des charges, avec ma recommandation).
+
+### Tester les vues et les filtres du mur (ajouté le 6 novembre 2026)
+
+1. Ouvrez « Revendications ». En haut, des onglets : Toutes, Comptes suivis, Société, Santé. Balayez l'écran vers la gauche ou touchez un onglet pour changer de vue. « Santé » ne montre que la revendication sur les médecins de garde.
+2. Dans « Toutes », touchez « Filtres ». Choisissez le thème « Éducation » : le bouton du bas indique « Afficher 3 revendications ». Touchez-le. La liste n'en montre plus que trois, une puce « Éducation » apparaît au-dessus ; touchez sa croix pour retirer le filtre, ou « Tout effacer ».
+3. Touchez « Tri : Nouveauté » et choisissez « Popularité » : en attendant l'ouverture des votes, l'ordre suit l'avancement (devenue campagne, retenue, très soutenue, en débat, nouvelle). Une phrase l'explique sous ce choix.
+4. Ouvrez « Filtres » dans la vue « Santé » : le thème Santé est verrouillé, avec « Défini par la vue « Santé » ».
+5. Dans « Toutes », mettez un filtre (par exemple le territoire « Métropole de Lyon »), puis « Enregistrer comme vue », donnez un nom et « Créer la vue ». Un nouvel onglet apparaît juste après « Toutes » et s'affiche. Fermez l'application et rouvrez-la : il est toujours là.
+6. Touchez « Personnaliser » : montez ou descendez les vues avec les flèches, renommez ou modifiez une vue personnalisée, retirez une vue, ajoutez-en une (« Ajouter une vue », par exemple « Nationales »), ou « Rétablir les vues par défaut » (une question vous est posée d'abord, « Garder mes vues » en premier).
+7. « Comptes suivis » : vide tant que vous ne suivez personne. Suivez le compte d'exemple depuis le fil (bouton « Suivre ») : les huit revendications d'exemple y apparaissent.
+8. Avec un compte, l'onglet « Mes revendications » apparaît à la fin.
+
+Vos vues restent sur votre appareil ; les filtres disparaissent quand l'application se ferme.
+
+### Proposer une revendication et voir les vérifications automatiques (ajouté le 6 novembre 2026)
+
+Il faut un compte (Mon espace) pour envoyer ; pour écrire et voir les vérifications, non.
+
+1. Dans « Revendications », touchez **Proposer une revendication**. Le formulaire s'ouvre : la revendication en une ou deux phrases, « En résumé », « Pourquoi », « Ce que la revendication demande », « Ce qui existe déjà », les thèmes (un à trois), le territoire, puis la charte.
+2. Écrivez comme revendication : « Cantine à un euro pour les familles modestes ». Pendant que vous tapez, un bloc **Revendications proches** apparaît sous le champ : « Cette revendication semble dire la même chose qu'une revendication existante », avec la revendication d'exemple sur les cantines. Touchez-la : elle s'ouvre ; touchez de nouveau « Proposer une revendication » : votre texte est toujours là.
+3. Écrivez à la place : « Augmenter le SMIC et baisser la TVA sur l'énergie ». Le bloc **Vérifications automatiques** dit « À vérifier : votre texte semble contenir plusieurs idées ».
+4. Écrivez un numéro de téléphone dans « Pourquoi » (par exemple 06 12 34 56 78) : « À corriger : retirez les coordonnées personnelles », et le bouton d'envoi se grise. Effacez-le.
+5. Sans thème choisi, le bouton reste grisé avec « Corrigez d'abord les points marqués À corriger » ; choisissez un thème, puis cochez « J'ai lu la charte et ma revendication la respecte » : le bouton **Envoyer pour relecture** s'active.
+6. Touchez-le. Sur votre téléphone, sans serveur, le message est « Revendication gardée sur cet appareil » : elle partira dès qu'un serveur répondra. Touchez « Retour aux revendications », puis l'onglet **Mes revendications** : votre revendication y est, avec le badge « En attente d'envoi ». Elle n'apparaît pas dans « Toutes » : rien n'est public avant la relecture par l'équipe.
+7. Sous les vérifications, une ligne rappelle ce qui se passe après l'envoi : comparaison avec toutes les revendications sur le serveur, puis recherche des lois en vigueur et analyse par IA dès qu'elles seront en service, et toujours une relecture par une personne.
+
+Sur l'ordinateur (pour qui veut aller plus loin) : avec le serveur de développement (`gradlew :server:runDev`) et l'application de bureau branchée dessus (`PPF_SERVER_URL=http://localhost:8080`), la revendication part au serveur et affiche « Revendication envoyée en relecture », puis « En relecture » dans « Mes revendications ». Le serveur de développement liste les propositions en attente avec leur rapport à l'adresse http://localhost:8080/dev/revendications/proposals (sur l'ordinateur seulement) ; je peux simuler la décision de l'équipe pour vous la montrer.
 
 ### Tester les fiches pratiques (ajouté le 5 novembre 2026, encarts le 6)
 

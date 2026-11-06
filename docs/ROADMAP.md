@@ -51,7 +51,7 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 | Annuaire des organisations (M3) | ⏳ | |
 | Observatoire (M2) | ⏳ | |
 | Signalement et modération (M15) | ⏳ | |
-| Mur des revendications (M11) | 🔄 | Mur en cards, détail et argumentaire, vue dans le fil, trois revendications [EXEMPLE] (6 novembre 2026). Vote, débat et proposition bloqués : méthode « une personne, une voix » à valider. |
+| Mur des revendications (M11) | 🔄 | Mur en cards, détail et argumentaire, vue dans le fil (6 novembre 2026) ; vues personnalisables, filtres et tri (D-029) ; formulaire de proposition avec vérifications automatiques pendant la saisie, relecture avant publication sur le serveur, suivi par l'auteur (D-030) ; huit revendications [EXEMPLE]. Reste : écran de relecture de l'équipe (avec M15), corpus juridique, IA (hébergement à décider), preuve de travail avant l'ouverture publique, statut posé par l'équipe, vote et débat (méthode « une personne, une voix » à valider), fusion des doublons. |
 
 ## Phases suivantes (résumé, à découper en MVP)
 
@@ -65,7 +65,8 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 
 ## Décisions en attente qui bloquent une étape
 
-- Hébergement du modèle d'IA de modération (phase 2).
+- Hébergement du modèle d'IA de modération et des vérifications des revendications (et, avec un prestataire, extension de la section 5.6 aux contenus envoyés pour publication).
+- Liste des thèmes du mur des revendications.
 - Barre du bas ou boutons flottants « Carte » et « AIDE » ; spécification du bouton AIDE.
 - Méthode « une personne, une voix » (mur des revendications, phase 1).
 - Prestataire de paiement (dons, adhésions).

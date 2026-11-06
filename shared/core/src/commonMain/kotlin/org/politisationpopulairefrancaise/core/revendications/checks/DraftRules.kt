@@ -27,8 +27,9 @@ object DraftRules {
         listOf(DraftField.WHY to draft.why, DraftField.ASKS to draft.asks, DraftField.EXISTING to draft.existing).forEach { (field, text) ->
             if (text.trim().length > SECTION_MAX) add(blocking(IssueKind.TOO_LONG, field))
         }
-        if (isShouting(title)) add(warning(IssueKind.ALL_CAPS, DraftField.TITLE))
-        if (title.length >= TITLE_MIN && hasSeveralIdeas(title)) add(warning(IssueKind.SEVERAL_IDEAS, DraftField.TITLE))
+        // The style hints only read a title of an acceptable length (no pattern runs on an oversized text).
+        if (title.length <= TITLE_MAX && isShouting(title)) add(warning(IssueKind.ALL_CAPS, DraftField.TITLE))
+        if (title.length in TITLE_MIN..TITLE_MAX && hasSeveralIdeas(title)) add(warning(IssueKind.SEVERAL_IDEAS, DraftField.TITLE))
 
         val known = draft.themes.filter { RevendicationThemes.byId(it) != null }.distinct()
         when {
@@ -83,8 +84,8 @@ object DraftRules {
     private val LIST_MARK = Regex("""(^|\s)(?:\d+[.)]|[-•*])\s+\S.*(\s(?:\d+[.)]|[-•*])\s+\S)""")
 
     private val PERSONAL_PATTERNS = listOf(
-        // e-mail address
-        Regex("""[A-Za-z0-9._%+-]+@[A-Za-z0-9-]+(?:\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}"""),
+        // e-mail address; every repetition is bounded so that a long text without "@" stays cheap to scan
+        Regex("""[A-Za-z0-9._%+-]{1,64}@[A-Za-z0-9-]{1,63}(?:\.[A-Za-z0-9-]{1,63}){0,8}\.[A-Za-z]{2,24}"""),
         // French phone number: 0X XX XX XX XX, +33 X XX XX XX XX, 0033...
         Regex("""(?:\+33\s?|0033\s?|\b0)[1-9](?:[\s.-]?\d{2}){4}\b"""),
         // IBAN: two letters, two check digits, then 11 to 30 letters or digits in groups

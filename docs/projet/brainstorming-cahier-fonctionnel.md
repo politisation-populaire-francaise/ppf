@@ -71,7 +71,10 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - vue « Près de chez moi » : avec « Mon territoire » (code postal gardé sur l'appareil) ;
   - statut des revendications citoyennes : aujourd'hui écrit dans l'événement signé par l'auteur (toujours « nouvelle ») ; quand l'équipe fera avancer une revendication, le statut devra venir d'une étiquette signée par la plateforme, pas de l'auteur ;
   - relecture par l'équipe : la file d'attente existe sur le serveur, l'écran de l'équipe viendra avec le back-office de modération (M15, double authentification, journal d'audit) ;
-  - fusion des doublons (DE-19) : réunir les votes sans compter deux fois la même personne, quand le vote existera.
+  - fusion des doublons (DE-19) : réunir les votes sans compter deux fois la même personne, quand le vote existera ;
+  - durée maximale d'une proposition jamais traitée par l'équipe (par exemple 90 jours, puis refus automatique avec un motif fixe) : à étudier ;
+  - une proposition refusée puis renvoyée à l'identique après 30 jours revient dans la file (l'empreinte du refus est oubliée) : acceptable ou empreinte à garder plus longtemps, à étudier ;
+  - preuve de travail auto-hébergée (type ALTCHA) avant l'ouverture au public : sans elle, des comptes créés en masse rempliraient la file en quelques minutes.
 
 ### [2026-11-06] Maquettes de l'interface communautaire : cercles, visibilité, collectifs, messagerie, bouton AIDE
 - Statut : À étudier
