@@ -1,0 +1,116 @@
+-- Encrypted messaging (NIP-17, decision D-027): conversations and decrypted messages, kept only on
+-- this device. The server never receives any of this; it only stores opaque gift wraps (kind 1059).
+-- Dialect: SQLite 3.18 (Android 8): no UPSERT, so insert-or-update is done in Kotlin transactions.
+-- The database file is protected by the application's private storage; its encryption by a code on
+-- desktop is still to do (S-43), like the identity file.
+
+-- A conversation is the set of its participants; its id is their public keys sorted and joined by
+-- commas (user included), so every participant computes the same id without any server.
+CREATE TABLE conversation (
+    id TEXT NOT NULL PRIMARY KEY,
+    subject TEXT,
+    subject_at INTEGER,
+    last_message_at INTEGER NOT NULL
+);
+
+CREATE INDEX conversation_last_message_at ON conversation(last_message_at DESC, id);
+
+-- A decrypted chat message; id is the rumor id, the same on every participant's device.
+CREATE TABLE message (
+    id TEXT NOT NULL PRIMARY KEY,
+    conversation_id TEXT NOT NULL,
+    author TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    received_at INTEGER NOT NULL,
+    subject TEXT,
+    reply_to TEXT,
+    is_read INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0
+);
+
+CREATE INDEX message_conversation_created_at ON message(conversation_id, created_at DESC, id);
+CREATE INDEX message_conversation_unread ON message(conversation_id, is_read);
+
+-- Gift wraps of the user's own messages waiting to be accepted by the server (one per participant).
+CREATE TABLE outgoing_wrap (
+    id TEXT NOT NULL PRIMARY KEY,
+    message_id TEXT NOT NULL,
+    event TEXT NOT NULL,
+    queued_at INTEGER NOT NULL
+);
+
+CREATE INDEX outgoing_wrap_queued_at ON outgoing_wrap(queued_at, id);
+
+-- Small named values of the messaging module, such as the date of the last pull.
+CREATE TABLE messaging_state (
+    name TEXT NOT NULL PRIMARY KEY,
+    value INTEGER NOT NULL
+);
+
+insertConversation:
+INSERT INTO conversation(id, subject, subject_at, last_message_at) VALUES (?, ?, ?, ?);
+
+findConversation:
+SELECT conversation.*,
+    (SELECT COUNT(*) FROM message WHERE message.conversation_id = conversation.id AND message.is_read = 0) AS unread_count
+FROM conversation WHERE id = ?;
+
+touchConversation:
+UPDATE conversation SET last_message_at = MAX(last_message_at, ?) WHERE id = ?;
+
+updateConversationSubject:
+UPDATE conversation SET subject = ?, subject_at = ? WHERE id = ?;
+
+selectConversations:
+SELECT conversation.*,
+    (SELECT COUNT(*) FROM message WHERE message.conversation_id = conversation.id AND message.is_read = 0) AS unread_count
+FROM conversation ORDER BY last_message_at DESC, id ASC LIMIT ?;
+
+deleteConversation:
+DELETE FROM conversation WHERE id = ?;
+
+insertMessage:
+INSERT INTO message(id, conversation_id, author, content, created_at, received_at, subject, reply_to, is_read)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+findMessage:
+SELECT * FROM message WHERE id = ?;
+
+selectMessages:
+SELECT * FROM message WHERE conversation_id = ? ORDER BY created_at DESC, id ASC LIMIT ?;
+
+selectMessagesBefore:
+SELECT * FROM message WHERE conversation_id = ? AND created_at < ? ORDER BY created_at DESC, id ASC LIMIT ?;
+
+markConversationRead:
+UPDATE message SET is_read = 1 WHERE conversation_id = ? AND is_read = 0;
+
+markMessageRead:
+UPDATE message SET is_read = 1 WHERE id = ?;
+
+countUnread:
+SELECT COUNT(*) FROM message WHERE is_read = 0;
+
+countMessages:
+SELECT COUNT(*) FROM message;
+
+deleteMessagesOf:
+DELETE FROM message WHERE conversation_id = ?;
+
+insertOutgoingWrap:
+INSERT INTO outgoing_wrap(id, message_id, event, queued_at) VALUES (?, ?, ?, ?);
+
+selectOutgoingWraps:
+SELECT * FROM outgoing_wrap ORDER BY queued_at ASC, id ASC;
+
+deleteOutgoingWrap:
+DELETE FROM outgoing_wrap WHERE id = ?;
+
+countOutgoingWraps:
+SELECT COUNT(*) FROM outgoing_wrap;
+
+getState:
+SELECT value FROM messaging_state WHERE name = ?;
+
+setState:
+INSERT OR REPLACE INTO messaging_state(name, value) VALUES (?, ?);
