@@ -17,7 +17,7 @@ class FollowStore(private val database: PpfDatabase, private val clock: () -> Lo
 
     /** Follows an account; following it again changes nothing (the first date is kept). */
     fun follow(pubkeyHex: String) {
-        requireKey(pubkeyHex)
+        require(isValidKey(pubkeyHex)) { "A followed key must be 64 lowercase hexadecimal characters" }
         queries.insert(pubkeyHex, clock())
     }
 
@@ -33,7 +33,13 @@ class FollowStore(private val database: PpfDatabase, private val clock: () -> Lo
 
     fun count(): Long = queries.countAll().executeAsOne()
 
-    private fun requireKey(pubkeyHex: String) {
-        require(isLowercaseHex(pubkeyHex, 64)) { "A followed key must be 64 lowercase hexadecimal characters" }
+    /** Forgets every followed account: called when the user erases the keys from the device. */
+    fun clear() {
+        queries.deleteAll()
+    }
+
+    companion object {
+        /** True for the only form a followed key may take: 64 lowercase hexadecimal characters. */
+        fun isValidKey(pubkeyHex: String): Boolean = isLowercaseHex(pubkeyHex, 64)
     }
 }

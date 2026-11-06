@@ -3,6 +3,7 @@
 -- server for the publications of the followed keys in small batches, in random order
 -- (brainstorming of the cahier fonctionnel, module M18). Who someone follows can reveal a political
 -- or union affiliation, a sensitive datum under article 9 of the GDPR.
+-- Added in schema version 2: existing databases get it through migrations/1.sqm.
 
 CREATE TABLE follow (
     pubkey TEXT NOT NULL PRIMARY KEY,
@@ -14,6 +15,9 @@ INSERT OR IGNORE INTO follow(pubkey, followed_at) VALUES (?, ?);
 
 deleteByPubkey:
 DELETE FROM follow WHERE pubkey = ?;
+
+deleteAll:
+DELETE FROM follow;
 
 countByPubkey:
 SELECT COUNT(*) FROM follow WHERE pubkey = ?;

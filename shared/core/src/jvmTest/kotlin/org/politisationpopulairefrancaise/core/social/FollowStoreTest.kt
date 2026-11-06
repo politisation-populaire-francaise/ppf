@@ -53,6 +53,21 @@ class FollowStoreTest {
         assertFailsWith<IllegalArgumentException> { store.follow(alice.take(63)) }
         assertFailsWith<IllegalArgumentException> { store.follow("") }
         assertEquals(0, store.count())
+        assertTrue(FollowStore.isValidKey(alice))
+        assertFalse(FollowStore.isValidKey(alice.uppercase()))
+        assertFalse(FollowStore.isValidKey("npub1" + "q".repeat(58)))
+    }
+
+    @Test
+    fun clearForgetsEveryFollowedAccount() {
+        store.follow(alice)
+        store.follow(bob)
+        store.clear()
+        assertEquals(0, store.count())
+        assertFalse(store.isFollowed(alice))
+        // Clearing an empty list is harmless.
+        store.clear()
+        assertEquals(emptyList(), store.all())
     }
 
     @Test
