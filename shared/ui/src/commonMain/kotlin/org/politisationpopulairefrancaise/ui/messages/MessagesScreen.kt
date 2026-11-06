@@ -30,8 +30,11 @@ import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.groups.GroupsLibrary
+import org.politisationpopulairefrancaise.ui.groups.rememberGroupsLibrary
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.core.WindowWidthClass
@@ -83,12 +86,21 @@ fun MessagesScreen(
     library: ContentLibrary,
     windowClass: WindowClass,
     modifier: Modifier = Modifier,
+    /** The rooms of collectives, kept by the shell for the whole run; a local one otherwise. */
+    groups: GroupsLibrary? = null,
+    onNavigate: (Space) -> Unit = {},
 ) {
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val views = MessagesView.entries
     val pagerState = rememberPagerState(pageCount = { views.size })
     val scope = rememberCoroutineScope()
+    val rooms = groups ?: rememberGroupsLibrary(dependencies)
+    // On phones and tablets an open room, or the creation of one, takes the whole screen.
+    if (collectivesTakeTheScreen(rooms, windowClass)) {
+        CollectivesFullScreen(rooms, session, windowClass, onNavigate, modifier)
+        return
+    }
     val tabs: @Composable (Modifier) -> Unit = { tabsModifier ->
         PpfTabs(
             labels = views.map { stringResource(it.tab) },
@@ -115,7 +127,7 @@ fun MessagesScreen(
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize(), key = { views[it].id }) { page ->
             when (views[page]) {
                 MessagesView.PRIVATE -> PrivatePage(dependencies, session, compact)
-                MessagesView.COLLECTIVES -> CollectivesPage(dependencies, session, compact)
+                MessagesView.COLLECTIVES -> CollectivesPage(rooms, session, windowClass, onNavigate)
                 MessagesView.FLOWS -> FlowsPage(dependencies, session, library, compact)
             }
         }

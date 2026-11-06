@@ -65,8 +65,10 @@ import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
+import org.politisationpopulairefrancaise.ui.account.MailboxSetting
 import org.politisationpopulairefrancaise.ui.account.MySpaceScreen
 import org.politisationpopulairefrancaise.ui.account.rememberAccountSession
+import org.politisationpopulairefrancaise.ui.account.rememberMailboxSetting
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.NavRow
 import org.politisationpopulairefrancaise.ui.components.NavSubRow
@@ -77,6 +79,8 @@ import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.content.rememberContentLibrary
 import org.politisationpopulairefrancaise.ui.feed.FeedScreen
+import org.politisationpopulairefrancaise.ui.groups.GroupsLibrary
+import org.politisationpopulairefrancaise.ui.groups.rememberGroupsLibrary
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.messages.MessagesScreen
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationViewsState
@@ -129,14 +133,21 @@ object ShellTags {
 fun AdaptiveShell(dependencies: AppDependencies) {
     var selected by rememberSaveable { mutableStateOf(Space.default) }
     val contentLibrary = rememberContentLibrary(dependencies)
-    // Erasing the keys also forgets the followed accounts (protection by default).
-    val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = contentLibrary::clearFollowed)
+    // The rooms of collectives, kept for the whole run (nothing is fetched before the view is shown).
+    val groupsLibrary = rememberGroupsLibrary(dependencies)
+    // Erasing the keys also forgets the followed accounts and the joined rooms (protection by default).
+    val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = {
+        contentLibrary.clearFollowed()
+        groupsLibrary.clearMemberships()
+    })
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
     val proposalComposer = remember(dependencies) { ProposalComposer(dependencies.contentStore, dependencies.remote) }
     val accountKey = (accountSession.state as? AccountUiState.Ready)?.publicKey?.hex
     LaunchedEffect(accountKey) { contentLibrary.setAccount(accountKey) }
+    // How long the server keeps the account's private messages (Mon espace, D-028).
+    val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
     val palette = PpfTheme.palette
 
     BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
@@ -152,6 +163,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 contentLibrary = contentLibrary,
                 revendicationViews = revendicationViews,
                 proposalComposer = proposalComposer,
+                groupsLibrary = groupsLibrary,
+                mailboxSetting = mailboxSetting,
                 windowClass = windowClass,
                 widthDp = maxWidth.value.toInt(),
                 heightDp = maxHeight.value.toInt(),
@@ -175,6 +188,8 @@ private fun SpaceContent(
     contentLibrary: ContentLibrary,
     revendicationViews: RevendicationViewsState,
     proposalComposer: ProposalComposer,
+    groupsLibrary: GroupsLibrary,
+    mailboxSetting: MailboxSetting,
     windowClass: WindowClass,
     widthDp: Int,
     heightDp: Int,
@@ -183,8 +198,8 @@ private fun SpaceContent(
     when (selected) {
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, windowClass, modifier)
-        Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier)
-        Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, windowClass, modifier)
+        Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
+        Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, windowClass, modifier, groups = groupsLibrary, onNavigate = onNavigate)
         Space.REVENDICATIONS -> RevendicationsScreen(
             contentLibrary,
             accountSession,
