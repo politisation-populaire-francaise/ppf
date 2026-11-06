@@ -118,4 +118,24 @@ class MessageStoreTest {
         store.setLastPullAt(456)
         assertEquals(456, store.lastPullAt())
     }
+
+    @Test
+    fun clearingForgetsEverythingIncludingThePullCursor() {
+        val withBob = ChatMessage.compose(alice, listOf(bob), "a", createdAt = 100)
+        val group = ChatMessage.compose(carol, listOf(alice, bob), "b", createdAt = 200, subject = "Sujet")
+        store.store(withBob, read = true)
+        store.store(group)
+        store.queueOutgoing(withBob.id, bob.hex)
+        store.setLastPullAt(456)
+
+        store.clear()
+        assertEquals(0, store.count())
+        assertEquals(emptyList(), store.conversations())
+        assertEquals(0, store.outgoingCount())
+        assertEquals(0, store.unreadCount())
+        assertNull(store.lastPullAt())
+        // The store keeps working afterwards, for the next account of the device.
+        assertEquals(MessageStoreOutcome.STORED, store.store(withBob))
+        assertEquals(1, store.count())
+    }
 }
