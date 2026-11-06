@@ -22,7 +22,7 @@ import org.politisationpopulairefrancaise.server.TEST_RELAY
 import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.module
-import org.politisationpopulairefrancaise.server.relay.RelayConfig
+import org.politisationpopulairefrancaise.server.relay.MailboxSettings
 import org.politisationpopulairefrancaise.server.relay.RelayKinds
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -180,6 +180,18 @@ class EventsApiTest {
             assertEquals(HttpStatusCode.BadRequest, response.status, tags.toString())
             assertEquals("bad_recipient", response.error())
         }
+    }
+
+    @Test
+    fun mailboxSettingsAreAcceptedFromAnyKeyAndOnlyTheNewestVersionIsKept() = testApplication {
+        application { module(TestDatabase.dataSource, NO_EDITORS, TEST_RELAY) }
+        fun tags(days: String) = listOf(listOf("d", MailboxSettings.IDENTIFIER), listOf(MailboxSettings.RETENTION_DAYS_TAG, days))
+        val v1 = signer.sign(kind = MailboxSettings.KIND, tags = tags("180"), createdAt = 1_700_000_000)
+        val v2 = signer.sign(kind = MailboxSettings.KIND, tags = tags("365"), createdAt = 1_700_000_100)
+        assertEquals(HttpStatusCode.Created, client.publish(v1).status)
+        assertEquals(HttpStatusCode.Created, client.publish(v2).status)
+        assertEquals(listOf(v2), client.list("kind=${MailboxSettings.KIND}&author=${signer.publicKey.hex}&identifier=${MailboxSettings.IDENTIFIER}"))
+        assertEquals("superseded", client.publish(v1).publishStatus())
     }
 
     @Test

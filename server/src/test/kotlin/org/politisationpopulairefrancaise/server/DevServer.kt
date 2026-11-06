@@ -38,8 +38,9 @@ const val DEMO_GROUP_ID: String = "collectif-demonstration"
 /**
  * Development server: a real PostgreSQL 17 started in-process (nothing to install), the bundled
  * example contents loaded (practical guides, demands of the wall, notes of the feed), their author
- * allowed to publish, and an example group described by a development key generated at each start
- * (and allowed as an editor for the session). Run from the repository root with
+ * allowed to publish, and two example rooms described by keys generated at each start (the first one
+ * also allowed as an editor for the session); any account may create more rooms, as in production.
+ * Run from the repository root with
  * `./gradlew :server:runDev`, then point the desktop app at it with PPF_SERVER_URL=http://localhost:8080.
  *
  * Demands proposed by citizens wait for review, as in production. For local tests only, the review
@@ -71,7 +72,7 @@ fun main() {
     val queue = ProposalQueue(dataSource, repository, revendications.clock)
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
     println(
-        "Development server: ${seeded.size} bundled content(s) loaded, example group \"$DEMO_GROUP_ID\" loaded, " +
+        "Development server: ${seeded.size} bundled content(s) loaded, example rooms \"$DEMO_GROUP_ID\" and \"atelier-logement-lyon\" loaded, " +
             "${editors.size} editor key(s), AI model ${if (revendications.model == null) "off" else "on"}, http://localhost:$port",
     )
     embeddedServer(Netty, port = port, host = "127.0.0.1") {
@@ -141,19 +142,36 @@ private suspend fun io.ktor.server.application.ApplicationCall.answer(id: String
     is DecisionOutcome.AlreadyDecided -> respond(HttpStatusCode.Conflict, ApiError("already_decided", "This proposal is already ${outcome.status.column}."))
 }
 
-/** The example group (public, open) and two example messages, all marked [EXEMPLE]. */
+/**
+ * Two example rooms (public, open, on a territory, charter accepted, as any account may create them)
+ * and two example messages in the first one, all marked [EXEMPLE]. The second room is created by
+ * another throwaway key, so that searching by territory and the refusal of a duplicate can be tried.
+ */
 private fun exampleGroup(developmentKey: LocalEventSigner): List<SignedEvent> = runBlocking {
     val now = System.currentTimeMillis() / 1000
     val description = developmentKey.sign(
         kind = GroupKinds.METADATA,
         tags = listOf(
             listOf("d", DEMO_GROUP_ID),
-            listOf("name", "[EXEMPLE] Collectif de démonstration"),
-            listOf("about", "[EXEMPLE] Salon public et ouvert du serveur de développement : tout compte peut y écrire. Les messages disparaissent à l'arrêt du serveur."),
+            listOf(GroupKinds.NAME_TAG, "[EXEMPLE] Collectif de démonstration"),
+            listOf(GroupKinds.ABOUT_TAG, "[EXEMPLE] Salon public et ouvert du serveur de développement : tout compte peut y écrire. Les messages disparaissent à l'arrêt du serveur."),
+            listOf(GroupKinds.TERRITORY_TAG, "France"),
+            listOf(GroupKinds.CHARTER_TAG, GroupKinds.CHARTER_VERSION),
         ),
         createdAt = now - 3_600,
     )
     val member = LocalEventSigner(IdentityKeys.generate())
+    val secondRoom = member.sign(
+        kind = GroupKinds.METADATA,
+        tags = listOf(
+            listOf("d", "atelier-logement-lyon"),
+            listOf(GroupKinds.NAME_TAG, "[EXEMPLE] Atelier logement"),
+            listOf(GroupKinds.ABOUT_TAG, "[EXEMPLE] Salon de démonstration rattaché à un territoire : on y prépare une permanence sur les loyers."),
+            listOf(GroupKinds.TERRITORY_TAG, "Lyon"),
+            listOf(GroupKinds.CHARTER_TAG, GroupKinds.CHARTER_VERSION),
+        ),
+        createdAt = now - 3_000,
+    )
     val welcome = developmentKey.sign(
         kind = GroupKinds.CHAT_MESSAGE,
         content = "[EXEMPLE] Bienvenue dans le salon de démonstration. Ici, on prépare la réunion publique de samedi.",
@@ -166,5 +184,5 @@ private fun exampleGroup(developmentKey: LocalEventSigner): List<SignedEvent> = 
         tags = listOf(listOf("h", DEMO_GROUP_ID)),
         createdAt = now - 900,
     )
-    listOf(description, welcome, reply)
+    listOf(description, secondRoom, welcome, reply)
 }

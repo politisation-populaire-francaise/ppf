@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.server.events
 import org.politisationpopulairefrancaise.core.signing.EventReplacement
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.TagsJson
+import org.politisationpopulairefrancaise.server.groups.GroupIndex
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -53,6 +54,27 @@ object TagIndex {
         .distinct()
 }
 
+/**
+ * A retention in days that each recipient may set for the events addressed to them, through an
+ * addressable event of theirs: the event `preferenceKind:<recipient>:preferenceIdentifier`, signed
+ * by the recipient, whose first tag named [daysTag] carries the number of days. The server bounds
+ * the value between [minDays] and [maxDays]; without a readable setting, [defaultDays] applies.
+ */
+data class RecipientRetention(
+    val defaultDays: Int,
+    val minDays: Int,
+    val maxDays: Int,
+    val preferenceKind: Int,
+    val preferenceIdentifier: String,
+    val daysTag: String,
+) {
+    init {
+        require(minDays >= 1) { "The minimum retention is at least one day" }
+        require(maxDays >= minDays) { "The maximum retention cannot be shorter than the minimum" }
+        require(defaultDays in minDays..maxDays) { "The default retention lies between the minimum and the maximum" }
+    }
+}
+
 enum class StoreOutcome {
     /** New event, now stored (possibly replacing an older version). */
     STORED,
@@ -68,7 +90,7 @@ enum class StoreOutcome {
  * Stores and reads signed events in PostgreSQL. Signature verification is the API's job, before
  * anything reaches this class. Replacement follows [EventReplacement], like the local database.
  */
-class EventRepository(private val dataSource: DataSource) {
+class EventRepository(internal val dataSource: DataSource) {
 
     fun store(event: SignedEvent): StoreOutcome = dataSource.connection.use { connection ->
         connection.autoCommit = false
@@ -131,6 +153,8 @@ class EventRepository(private val dataSource: DataSource) {
             insert.executeUpdate()
         }
         insertTags(connection, event)
+        // A group description also enters the directory of rooms (and leaves it with the event).
+        GroupIndex.write(connection, event)
         return StoreOutcome.STORED
     }
 
@@ -194,16 +218,47 @@ class EventRepository(private val dataSource: DataSource) {
     }
 
     /**
-     * Deletes the events of [kind] received by the server before [cutoff] (their tag rows go with
-     * them) and returns how many were deleted. Used for the limited retention of encrypted envelopes.
+     * Deletes the events of [kind] that have been on the server (by reception date, which only the
+     * server knows) longer than the retention of their recipient, named by the tag [recipientTag];
+     * their tag rows go with them. Returns how many were deleted.
+     *
+     * The retention of a recipient is read, in SQL, from their setting event described by [retention]
+     * (the first tag named `daysTag` of the addressable event `preferenceKind:<recipient>:preferenceIdentifier`),
+     * bounded to `minDays..maxDays`; a missing, unreadable (not 1 to 9 digits) or unparsable setting
+     * means `defaultDays`, as does an event without recipient tag. Nothing younger than `minDays` is
+     * ever deleted, which lets the partial index on `received_at` do the first cut.
      */
-    fun deleteReceivedBefore(kind: Int, cutoff: Instant): Int = dataSource.connection.use { connection ->
-        connection.prepareStatement("DELETE FROM events WHERE kind = ? AND received_at < ?").use { statement ->
-            statement.setInt(1, kind)
-            statement.setObject(2, cutoff.atOffset(ZoneOffset.UTC))
-            statement.executeUpdate()
+    fun deleteExpiredByRecipient(kind: Int, recipientTag: String, retention: RecipientRetention, now: Instant): Int =
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(
+                """
+                DELETE FROM events w
+                WHERE w.kind = ?
+                  AND w.received_at < ?
+                  AND w.received_at < ? - make_interval(days => LEAST(?, GREATEST(?, COALESCE((
+                        SELECT CASE WHEN t ->> 1 ~ '^[0-9]{1,9}$' THEN (t ->> 1)::int END
+                        FROM event_tags r
+                        JOIN events pref ON pref.address = ? || r.value || ?
+                        CROSS JOIN LATERAL jsonb_array_elements(pref.tags) WITH ORDINALITY AS x(t, n)
+                        WHERE r.event_id = w.id AND r.name = ? AND jsonb_typeof(t) = 'array' AND t ->> 0 = ?
+                        ORDER BY n LIMIT 1
+                      ), ?))))
+                """.trimIndent(),
+            ).use { statement ->
+                val nowUtc = now.atOffset(ZoneOffset.UTC)
+                statement.setInt(1, kind)
+                statement.setObject(2, nowUtc.minusDays(retention.minDays.toLong()))
+                statement.setObject(3, nowUtc)
+                statement.setInt(4, retention.maxDays)
+                statement.setInt(5, retention.minDays)
+                statement.setString(6, "${retention.preferenceKind}:")
+                statement.setString(7, ":${retention.preferenceIdentifier}")
+                statement.setString(8, recipientTag)
+                statement.setString(9, retention.daysTag)
+                statement.setInt(10, retention.defaultDays)
+                statement.executeUpdate()
+            }
         }
-    }
 
     /**
      * Keeps only the [keep] most recently received events of [kind] carrying the tag [name] = [value]
