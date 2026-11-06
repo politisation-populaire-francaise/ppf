@@ -101,6 +101,20 @@ SELECT COUNT(*) FROM message;
 deleteMessagesOf:
 DELETE FROM message WHERE conversation_id = ?;
 
+-- Forgetting everything when the keys are erased from the device: the conversations, their
+-- messages, the pending deliveries and the small values (the pull cursor) of that identity.
+deleteAllMessages:
+DELETE FROM message;
+
+deleteAllConversations:
+DELETE FROM conversation;
+
+deleteAllOutgoing:
+DELETE FROM outgoing_message;
+
+deleteAllState:
+DELETE FROM messaging_state;
+
 insertOutgoing:
 INSERT OR IGNORE INTO outgoing_message(message_id, recipient, queued_at) VALUES (?, ?, ?);
 

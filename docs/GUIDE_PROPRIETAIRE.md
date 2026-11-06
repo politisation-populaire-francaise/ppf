@@ -86,7 +86,7 @@ Pas encore là : la synchronisation de cette liste entre vos appareils (sauvegar
 
 1. Touchez **Revendications** dans la barre du bas. Huit revendications d'exemple s'affichent en cards : le statut (Nouvelle, En débat, Très soutenue), la revendication en une phrase, son résumé, son territoire et ses thèmes. Les boutons **Pour**, **Contre** et **Débat** sont grisés : ils s'activeront quand la méthode « une personne, une voix » sera validée. Touchez une card : l'argumentaire s'ouvre ; la flèche revient à la liste. Sur l'ordinateur, la liste et le détail sont côte à côte.
 2. Dans le Fil, l'onglet **Revendications** montre les mêmes cards.
-3. Touchez **Messages** dans la barre du bas. Trois onglets, **Privé**, **Collectifs**, **Flux**, se parcourent au doigt ; chacun explique ce qu'il contiendra. Le bouton « Nouvelle conversation » est grisé : aucune conversation n'est possible avant le choix du protocole de chiffrement (une entrée « À valider » vous attend dans le brainstorming du cahier des charges, avec ma recommandation).
+3. Touchez **Messages** dans la barre du bas : trois onglets, **Privé**, **Collectifs**, **Flux**, se parcourent au doigt (détail dans « Tester la messagerie » ci-dessous).
 
 ### Tester les vues et les filtres du mur (ajouté le 6 novembre 2026)
 
@@ -114,6 +114,79 @@ Il faut un compte (Mon espace) pour envoyer ; pour écrire et voir les vérifica
 7. Sous les vérifications, une ligne rappelle ce qui se passe après l'envoi : comparaison avec toutes les revendications sur le serveur, puis recherche des lois en vigueur et analyse par IA dès qu'elles seront en service, et toujours une relecture par une personne.
 
 Sur l'ordinateur (pour qui veut aller plus loin) : avec le serveur de développement (`gradlew :server:runDev`) et l'application de bureau branchée dessus (`PPF_SERVER_URL=http://localhost:8080`), la revendication part au serveur et affiche « Revendication envoyée en relecture », puis « En relecture » dans « Mes revendications ». Le serveur de développement liste les propositions en attente avec leur rapport à l'adresse http://localhost:8080/dev/revendications/proposals (sur l'ordinateur seulement) ; je peux simuler la décision de l'équipe pour vous la montrer.
+
+### Tester la messagerie (ajouté le 6 novembre 2026 au soir)
+
+### Ce qu'il faut savoir avant de commencer
+
+- Pour s'écrire, deux comptes doivent passer par le même serveur. Le serveur de développement ne fonctionne que sur votre ordinateur, et l'application Android n'est pas encore reliée à un serveur : **un échange entre votre téléphone et votre ordinateur n'est pas encore possible**. Il le sera quand le serveur de préproduction sera en ligne. Sur le téléphone, vous pouvez déjà écrire un message : il reste sur le téléphone, marqué « En attente d'envoi ».
+- Pour voir un vrai échange, le plus simple est d'ouvrir **deux fois l'application sur l'ordinateur, avec deux comptes d'essai**, reliées au serveur de développement. Chaque fenêtre garde ses données dans un dossier d'essai séparé : vos vraies données ne sont pas touchées.
+
+#### Conversations privées et flux sur le téléphone
+
+### Sur le téléphone Android (APK)
+
+1. Installez l'APK de cette version comme d'habitude, ouvrez l'application, créez un compte si ce n'est pas fait.
+2. Messages : la liste est vide et indique « Pas de serveur pour l'instant ». Vérifiez l'affichage plein écran : « Nouvelle conversation », collez une clé `npub1…` (par exemple celle d'un compte d'essai de l'ordinateur, envoyée par un moyen à vous), « Commencer », écrivez : le message s'affiche avec l'horloge « En attente d'envoi ». La flèche de retour en haut à gauche ramène à la liste.
+3. Onglet « Flux » : même essai qu'au point 12 ci-dessus.
+
+#### Salons des collectifs et conservation des messages sur le téléphone
+
+### Sur votre téléphone Android
+
+L'application installée sur le téléphone n'est encore reliée à aucun serveur : elle montre les salons enregistrés sur l'appareil (aucun pour l'instant) et explique que la création demande le serveur. Les essais complets (créer un salon, écrire, voir un doublon refusé) se feront sur l'ordinateur (ci-dessous), puis sur le téléphone dès que la préproduction existera.
+
+1. Installez le nouvel APK comme d'habitude, puis ouvrez l'application.
+2. Touchez **Messages** dans la barre du bas, puis l'onglet **Collectifs** (ou glissez le doigt de droite à gauche).
+3. Vous voyez : le champ « Rechercher un salon », le bouton bleu « Créer un salon », la ligne « Hors ligne : salons enregistrés sur l'appareil. », le titre « Mes salons » avec « Vous n'avez rejoint aucun salon pour l'instant. », puis « Aucun salon connu pour l'instant… », la carte « Vous ne trouvez pas votre collectif… » et, tout en bas, le rappel avec un cadenas : rejoindre un salon ne publie rien.
+4. Touchez le champ de recherche et écrivez « santé ». La ligne « Aucun salon ne correspond à « santé ». » apparaît, et le bouton de la carte devient « Créer le salon « santé » ». Touchez-le.
+5. Le formulaire prend tout l'écran. Vérifiez : le nom est déjà rempli avec « santé » ; un encadré jaune dit que l'appareil n'est relié à aucun serveur. Écrivez « Lyon » dans **Territoire** : la ligne « Identifiant du salon : sante-lyon » apparaît sous la description.
+6. Faites défiler : la charte (« Autorisé », « Interdit ») et la case « J'ai lu la charte de valeurs… », **décochée**. Touchez-la : elle se coche. Plus bas, si vous n'avez pas de compte, un encadré propose « Créer mon compte » ; si vous en avez un, un encadré jaune « Votre pseudonyme sera relié à ce salon », puis « Annuler » à gauche et « Créer le salon » à droite, grisé faute de serveur.
+7. Touchez la croix en haut à droite : vous revenez à la liste.
+8. Touchez votre avatar en haut à droite (**Mon espace**). Créez un compte si vous n'en avez pas (comme d'habitude). Faites défiler jusqu'à la carte **« Messages privés : conservation sur le serveur »** : « 3 mois » est choisi, avec la mention « Par défaut, la durée la plus protectrice », et la ligne « Vous n'avez rien choisi : le serveur garde vos enveloppes 3 mois. »
+9. Touchez **« 6 mois »** : une fenêtre « Garder vos enveloppes plus longtemps ? » s'ouvre. Touchez **Annuler** : « 3 mois » reste choisi.
+10. Touchez **« 1 an »**, puis **« Garder 1 an »** : « 1 an » est choisi et la ligne dit « Réglage enregistré sur cet appareil, en attente d'envoi au serveur. »
+11. Touchez **« 3 mois »** : aucune fenêtre (revenir à la durée la plus protectrice ne demande rien).
+12. Tournez le téléphone en paysage : les écrans se réorganisent sans rien perdre.
+
+#### Échanger un message entre deux comptes sur l'ordinateur
+
+### Échanger un message entre deux comptes sur l'ordinateur
+
+1. Ouvrez une fenêtre PowerShell dans le dossier `C:\Users\clair\Documents\PPF` (dans l'Explorateur, ouvrez ce dossier, puis Fichier, « Ouvrir Windows PowerShell »).
+2. Tapez `.\gradlew.bat :server:runDev` puis Entrée. Attendez la ligne qui se termine par `http://localhost:8080`. Laissez cette fenêtre ouverte : c'est le serveur. Il oublie tout quand on le ferme.
+3. Ouvrez une deuxième fenêtre PowerShell dans le même dossier et tapez `.\gradlew.bat :desktop:createDistributable` puis Entrée (une seule fois ; quelques minutes la première fois).
+4. Dans cette deuxième fenêtre, lancez le premier compte d'essai en collant ces trois lignes, puis Entrée :
+   ```
+   $env:APPDATA = "$env:USERPROFILE\ppf-essai-1"
+   $env:PPF_SERVER_URL = "http://localhost:8080"
+   & ".\desktop\build\compose\binaries\main\app\PolitisationPopulaireFrancaise\PolitisationPopulaireFrancaise.exe"
+   ```
+5. Ouvrez une troisième fenêtre PowerShell dans le même dossier et lancez le second compte de la même façon, avec `ppf-essai-2` à la place de `ppf-essai-1`.
+6. Dans chacune des deux fenêtres de l'application : Mon espace, « Créer mon compte », suivez les étapes (douze mots, que vous pouvez ne pas garder puisque ce sont des comptes d'essai).
+7. Dans la première fenêtre : Messages. En bas de la liste, sous « Votre clé publique, à donner aux personnes qui veulent vous écrire », sélectionnez la clé `npub1…` à la souris et copiez-la (Ctrl+C).
+8. Dans la seconde fenêtre : Messages, « Nouvelle conversation », cliquez dans le champ « npub1… ou clé hexadécimale », collez (Ctrl+V), puis « Commencer ». La conversation s'ouvre à droite de la liste. Écrivez un message (il doit commencer par [EXEMPLE]) et appuyez sur Entrée.
+9. Dans la première fenêtre : au plus tard 20 secondes après (ou tout de suite avec le bouton d'actualisation, la flèche en cercle à côté de « Conversations »), la conversation apparaît avec une pastille rouge « 1 ». Cliquez dessus : le message s'affiche, la pastille disparaît. Répondez : la réponse arrive dans la seconde fenêtre de la même façon.
+10. Hors ligne : fermez le serveur (dans sa fenêtre, Ctrl+C). Écrivez un message dans une des fenêtres : il s'affiche avec une petite horloge et la mention « Serveur injoignable ». Relancez le serveur (`.\gradlew.bat :server:runDev`) : à l'actualisation suivante, l'horloge disparaît et le message arrive de l'autre côté.
+11. Petit groupe : avec un troisième compte d'essai (`ppf-essai-3`), utilisez « Ajouter » dans « Nouvelle conversation » pour mettre deux clés ; donnez un sujet si vous voulez.
+12. Flux : dans le Fil, suivez Politisation Populaire Française avec le bouton « Suivre » d'une publication ; dans Messages, onglet « Flux », le compte apparaît ; cliquez dessus pour lire ses publications comme une conversation à sens unique.
+13. Explication : dans une conversation, le bouton « i » en haut à droite ouvre « Comment vos messages sont protégés ».
+14. Déconnexion : dans Mon espace, « Se déconnecter de cet appareil » prévient que les conversations seront effacées ; après confirmation, Messages invite de nouveau à créer un compte.
+15. À la fin, fermez les fenêtres. Les dossiers `ppf-essai-1`, `ppf-essai-2` (et `ppf-essai-3`) dans votre dossier personnel `C:\Users\clair` ne contiennent que ces comptes d'essai : vous pouvez les supprimer vous-même dans l'Explorateur.
+
+#### Salons des collectifs sur l'ordinateur
+
+Avec le serveur de développement lancé (étape 2 ci-dessus) et un compte d'essai ouvert (étape 4) :
+
+### Sur l'ordinateur, avec le serveur de développement (quand la branche du serveur des salons sera fusionnée)
+
+1. Lancez le serveur de développement : `gradlew :server:runDev`.
+2. Lancez l'application de bureau reliée à ce serveur : variable `PPF_SERVER_URL=http://localhost:8080`, puis `gradlew :desktop:run`.
+3. Créez un compte dans Mon espace, puis Messages, Collectifs, **Créer un salon** : le formulaire s'affiche à droite de la liste. Nom « [EXEMPLE] Collectif vélo », territoire « Lyon », cochez la charte, touchez **Créer le salon** : le salon s'ouvre à droite, il apparaît dans « Mes salons » avec « Rejoint ».
+4. Écrivez un message et touchez l'avion en papier : le message apparaît en bas, à droite, signé « Vous ».
+5. Recommencez la création avec « [EXEMPLE] Collectif vélo » et « lyon » : l'encadré **« Ce salon existe déjà »** propose **« Rejoindre ce salon »**. Touchez-le : le salon existant s'ouvre.
+6. Arrêtez le serveur, écrivez un message : il porte « En attente d'envoi ». Relancez le serveur et touchez le bouton « Actualiser les messages » (les deux flèches) : la mention disparaît.
+7. Dans Mon espace, choisissez « 6 mois » et confirmez : la ligne dit « Réglage enregistré sur le serveur. »
 
 ### Tester les fiches pratiques (ajouté le 5 novembre 2026, encarts le 6)
 

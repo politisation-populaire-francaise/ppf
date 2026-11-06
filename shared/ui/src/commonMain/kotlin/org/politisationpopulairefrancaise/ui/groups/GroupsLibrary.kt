@@ -1,0 +1,640 @@
+package org.politisationpopulairefrancaise.ui.groups
+
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+import kotlinx.coroutines.withContext
+import org.politisationpopulairefrancaise.core.groups.Group
+import org.politisationpopulairefrancaise.core.groups.GroupMessage
+import org.politisationpopulairefrancaise.core.groups.GroupStore
+import org.politisationpopulairefrancaise.core.local.LocalEventStore
+import org.politisationpopulairefrancaise.core.publication.FetchResult
+import org.politisationpopulairefrancaise.core.publication.GroupsResult
+import org.politisationpopulairefrancaise.core.publication.PublicationResult
+import org.politisationpopulairefrancaise.core.publication.RejectionReason
+import org.politisationpopulairefrancaise.core.publication.RemoteEvents
+import org.politisationpopulairefrancaise.core.publication.RemoteFilter
+import org.politisationpopulairefrancaise.core.publication.TagFilter
+import org.politisationpopulairefrancaise.core.signing.EventSigner
+import org.politisationpopulairefrancaise.core.sync.SyncService
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.ui.AppDependencies
+
+/** Where the rooms come from and whether the server could be reached. */
+sealed interface GroupsStatus {
+    /** Nothing asked yet: the rooms are loaded when the view is first shown. */
+    data object Idle : GroupsStatus
+
+    data object Loading : GroupsStatus
+
+    /** No database on this platform: nothing can be shown. */
+    data object Unavailable : GroupsStatus
+
+    /** No server configured: only the rooms already on the device. */
+    data object Offline : GroupsStatus
+
+    data object Synced : GroupsStatus
+
+    /** The server did not answer; what the device already holds is shown. */
+    data object Unreachable : GroupsStatus
+}
+
+/** What the creation form holds, kept while the user visits another view. */
+data class GroupDraft(
+    val name: String = "",
+    val territory: String = "",
+    val about: String = "",
+    /** Unticked until the user ticks it: the charter is never accepted on their behalf. */
+    val charterAccepted: Boolean = false,
+) {
+    /** The id the room would get, empty while the name holds no letter or digit. */
+    val proposedId: String get() = Group.idFor(name, territory)
+
+    val nameTooLong: Boolean get() = name.trim().length > Group.MAX_NAME_LENGTH
+    val territoryTooLong: Boolean get() = territory.trim().length > Group.MAX_TERRITORY_LENGTH
+    val aboutTooLong: Boolean get() = about.trim().length > Group.MAX_ABOUT_LENGTH
+
+    /** Every field the server requires is there and within bounds (the charter apart). */
+    val complete: Boolean
+        get() = proposedId.isNotEmpty() && territory.isNotBlank() && !nameTooLong && !territoryTooLong && !aboutTooLong
+}
+
+/** Why a room could not be created. */
+sealed interface CreationError {
+    /** A room of the same name exists on the same territory: the one to join. */
+    data class Exists(val existingId: String, val existingName: String) : CreationError
+
+    /** Every id tried is owned by another key. */
+    data object Taken : CreationError
+
+    /** The name holds no letter or digit, or a field is out of bounds. */
+    data object InvalidName : CreationError
+
+    /** No server, or no answer: creation needs the server to check duplicates. */
+    data object Offline : CreationError
+
+    data class Refused(val reason: RejectionReason) : CreationError
+}
+
+/** Why the server refused a message. */
+enum class SendError { CLOSED, NOT_FOUND, REFUSED }
+
+/**
+ * The rooms of collectives (NIP-29, decisions D-027 and D-028) as the screens need them: the rooms
+ * known to the device (descriptions pulled from the server, kept as events for offline reading),
+ * the ones the user joined (device only, never published), the room being read and its messages,
+ * the creation form.
+ *
+ * Joining is a local act: the server never receives any membership. Creating a room and posting a
+ * message are publications through the single publication port; a message written without network
+ * waits on the device (`pending`) and leaves with the next synchronization. Creating a room needs
+ * the server, which alone can tell whether the same room already exists.
+ *
+ * Nothing is asked of the server before the view is first shown ([ensureStarted]): a user who
+ * never opens the rooms spends no data on them.
+ */
+class GroupsLibrary(
+    private val store: LocalEventStore?,
+    private val remote: RemoteEvents?,
+    private val memberships: GroupStore?,
+    private val scope: CoroutineScope,
+    private val clock: () -> Long = ::currentEpochSeconds,
+    /** How long the search waits after the last key before asking the server. */
+    private val searchDelayMillis: Long = 400,
+) {
+    private val membershipWrites = Mutex()
+    private var started = false
+    private var searchJob: Job? = null
+
+    var status: GroupsStatus by mutableStateOf(GroupsStatus.Idle)
+        private set
+
+    /** Every room known on the device, by name. */
+    var groups: List<Group> by mutableStateOf(emptyList())
+        private set
+
+    /** What the user typed in the search field; filters [visible] on name, territory and description. */
+    var query: String by mutableStateOf("")
+        private set
+
+    /** The territory chosen among [territories], or null for all of them. */
+    var territoryFilter: String? by mutableStateOf(null)
+        private set
+
+    /** Ids of the rooms the user joined. Private: never sent as a list. */
+    var joined: Set<String> by mutableStateOf(emptySet())
+        private set
+
+    var selected: Group? by mutableStateOf(null)
+        private set
+
+    /** The messages of [selected], oldest first. */
+    var messages: List<GroupMessage> by mutableStateOf(emptyList())
+        private set
+
+    /** The user's own messages not yet accepted by the server. */
+    var pendingMessageIds: Set<String> by mutableStateOf(emptySet())
+        private set
+
+    var messagesStatus: GroupsStatus by mutableStateOf(GroupsStatus.Idle)
+        private set
+
+    var sendError: SendError? by mutableStateOf(null)
+        private set
+
+    /** What the user is typing in the open room. */
+    var messageDraft: String by mutableStateOf("")
+
+    var sending: Boolean by mutableStateOf(false)
+        private set
+
+    /** The creation form is open. */
+    var creating: Boolean by mutableStateOf(false)
+        private set
+
+    var creationDraft: GroupDraft by mutableStateOf(GroupDraft())
+        private set
+
+    var creationBusy: Boolean by mutableStateOf(false)
+        private set
+
+    var creationError: CreationError? by mutableStateOf(null)
+        private set
+
+    /** A server is configured (even if unreachable right now). */
+    val hasRemote: Boolean get() = remote != null
+
+    /** The rooms matching the search text. */
+    val visible: List<Group>
+        get() {
+            val text = Group.slugify(query.trim())
+            if (text.isEmpty()) return groups
+            return groups.filter { room ->
+                Group.slugify(room.name).contains(text) ||
+                    Group.slugify(room.territory ?: "").contains(text) ||
+                    Group.slugify(room.about ?: "").contains(text)
+            }
+        }
+
+    /** The joined rooms among [visible]: shown first. */
+    val mine: List<Group> get() = visible.filter { it.id in joined }
+
+    /** The territories of the joined rooms, normalized: suggestions on them come first. */
+    private val joinedTerritories: Set<String>
+        get() = groups.filter { it.id in joined }.mapNotNull { room -> room.territory?.let(Group::slugify)?.takeIf { it.isNotEmpty() } }.toSet()
+
+    /**
+     * The rooms to discover among [visible]: not joined, on the chosen territory if any, those on
+     * the territories of the joined rooms first, then by name.
+     */
+    val suggestions: List<Group>
+        get() {
+            val place = territoryFilter?.let(Group::slugify)
+            val near = joinedTerritories
+            return visible
+                .filter { it.id !in joined }
+                .filter { room -> place == null || room.territory?.let(Group::slugify) == place }
+                .sortedWith(compareBy<Group> { if (isNear(it, near)) 0 else 1 }.thenBy { it.displayName.lowercase() }.thenBy { it.id })
+        }
+
+    /** Whether [room] lies on the territory of a joined room. */
+    fun isNearJoined(room: Group): Boolean = isNear(room, joinedTerritories)
+
+    private fun isNear(room: Group, near: Set<String>): Boolean = room.territory?.let(Group::slugify)?.let { it in near } == true
+
+    /**
+     * The territories of the known rooms, as written by their creators, most rooms first: the
+     * suggestions by territory. At most [MAX_TERRITORIES].
+     */
+    val territories: List<String>
+        get() = groups
+            .mapNotNull { room -> room.territory?.trim()?.takeIf { it.isNotEmpty() } }
+            .groupBy(Group::slugify)
+            .filterKeys { it.isNotEmpty() }
+            .map { (_, labels) ->
+                // The spelling most rooms use ("Lyon" rather than "lyon").
+                val label = labels.groupingBy { it }.eachCount().entries
+                    .sortedWith(compareByDescending<Map.Entry<String, Int>> { it.value }.thenBy { it.key })
+                    .first().key
+                label to labels.size
+            }
+            .sortedWith(compareByDescending<Pair<String, Int>> { it.second }.thenBy { it.first.lowercase() })
+            .take(MAX_TERRITORIES)
+            .map { it.first }
+
+    /** Loads the rooms the first time the view is shown; later calls do nothing. */
+    fun ensureStarted() {
+        if (started) return
+        started = true
+        if (store == null) {
+            status = GroupsStatus.Unavailable
+            return
+        }
+        scope.launch {
+            loadMemberships()
+            reload(store)
+            if (remote == null) status = GroupsStatus.Offline else pullGroups(store, remote, query = null)
+        }
+    }
+
+    /** Asks the server again, with the current search text and territory (no effect without a server). */
+    fun refresh() {
+        val store = store ?: return
+        val remote = remote ?: return
+        scope.launch { pullGroups(store, remote, query = query, territory = territoryFilter) }
+    }
+
+    /** Filters the known rooms at once, and asks the server for more once the user stops typing. */
+    fun search(text: String) {
+        query = text
+        val store = store ?: return
+        val remote = remote ?: return
+        searchJob?.cancel()
+        if (text.isBlank()) return
+        searchJob = scope.launch {
+            delay(searchDelayMillis)
+            pullGroups(store, remote, query = text)
+        }
+    }
+
+    /** Keeps the suggestions of one territory (null: all of them) and asks the server for its rooms. */
+    fun selectTerritory(territory: String?) {
+        territoryFilter = territory?.trim()?.takeIf { it.isNotEmpty() }
+        val chosen = territoryFilter ?: return
+        val store = store ?: return
+        val remote = remote ?: return
+        scope.launch { pullGroups(store, remote, query = null, territory = chosen) }
+    }
+
+    fun isMember(groupId: String): Boolean = groupId in joined
+
+    /** Joins a room on this device. Nothing is published. */
+    fun join(groupId: String) {
+        if (!Group.isValidId(groupId) || groupId in joined) return
+        joined = joined + groupId
+        scope.launch { persistMembership { it.join(groupId) } }
+    }
+
+    /** Leaves a room on this device. Nothing is published; its messages stay readable. */
+    fun leave(groupId: String) {
+        if (groupId !in joined) return
+        joined = joined - groupId
+        scope.launch { persistMembership { it.leave(groupId) } }
+    }
+
+    /** Forgets every joined room, on the device too: for when the user erases the keys. */
+    fun clearMemberships() {
+        joined = emptySet()
+        scope.launch { persistMembership { it.clear() } }
+    }
+
+    /** Opens a room and fetches its new messages. */
+    fun open(group: Group) {
+        selected = group
+        messages = emptyList()
+        pendingMessageIds = emptySet()
+        sendError = null
+        messageDraft = ""
+        creating = false
+        scope.launch { pullMessages(group) }
+    }
+
+    fun close() {
+        selected = null
+        messages = emptyList()
+        sendError = null
+        messageDraft = ""
+    }
+
+    /** Fetches the new messages of the open room (no effect without a server). */
+    fun refreshMessages() {
+        val group = selected ?: return
+        scope.launch { pullMessages(group) }
+    }
+
+    /** Opens the creation form, its name prefilled with [name] (the search text, typically). */
+    fun beginCreation(name: String = query) {
+        creationError = null
+        if (!creating) creationDraft = GroupDraft(name = name.trim())
+        selected = null
+        creating = true
+    }
+
+    fun cancelCreation() {
+        creating = false
+        creationError = null
+        creationDraft = GroupDraft()
+    }
+
+    /** Edits the form; an error about the previous values goes away. */
+    fun updateDraft(draft: GroupDraft) {
+        creationDraft = draft
+        if (creationError != null && creationError !is CreationError.Offline) creationError = null
+    }
+
+    /** Dismisses the error of the last attempt, so that the user corrects the form. */
+    fun dismissCreationError() {
+        creationError = null
+    }
+
+    /**
+     * The known rooms that look like the one being described, for the search before creating:
+     * those on the same territory first. A hint only: the server's normalization differs (it keeps
+     * every Unicode letter and the example marker) and its `group_exists` answer is what counts.
+     */
+    fun similarTo(draft: GroupDraft): List<Group> {
+        val name = Group.slugify(draft.name)
+        if (name.length < MIN_SIMILAR_LENGTH) return emptyList()
+        val place = Group.slugify(draft.territory)
+        return groups
+            .filter { room ->
+                val roomName = Group.slugify(room.name)
+                roomName.contains(name) || (name.contains(roomName) && roomName.length >= MIN_SIMILAR_LENGTH)
+            }
+            .sortedWith(
+                compareBy<Group> { room -> if (place.isNotEmpty() && room.territory?.let(Group::slugify) == place) 0 else 1 }
+                    .thenBy { it.displayName.lowercase() },
+            )
+            .take(MAX_SIMILAR)
+    }
+
+    /** After a duplicate was refused: joins the existing room and opens it. */
+    fun joinExisting(groupId: String) {
+        join(groupId)
+        cancelCreation()
+        groups.firstOrNull { it.id == groupId }?.let(::open)
+    }
+
+    /**
+     * Describes the room of [creationDraft] and publishes it. The id joins the name and the
+     * territory; an id already known on the device, or owned by another key on the server, is
+     * replaced by a numbered one. On success the creator joins the room on this device and the room
+     * opens. On failure [creationError] says why and the form stays open with its values.
+     */
+    suspend fun create(signer: EventSigner): Group? {
+        if (creationBusy) return null
+        val draft = creationDraft
+        creationError = null
+        val store = store
+        val remote = remote
+        if (store == null || remote == null) {
+            creationError = CreationError.Offline
+            return null
+        }
+        if (!draft.complete || !draft.charterAccepted) {
+            creationError = CreationError.InvalidName
+            return null
+        }
+        val name = draft.name.trim()
+        val territory = draft.territory.trim()
+        val about = draft.about.trim().ifEmpty { null }
+        val base = draft.proposedId
+        // The rooms on the device that look alike are only a hint ([similarTo]): the server, with its
+        // own normalization, alone decides what a duplicate is (409 group_exists).
+        creationBusy = true
+        try {
+            var number = 1
+            var id = base
+            repeat(MAX_ID_ATTEMPTS) {
+                // An id known on the device belongs to another room, or would replace one of ours.
+                while (groups.any { it.id == id } && number < MAX_LOCAL_NUMBERS) {
+                    number++
+                    id = Group.numbered(base, number)
+                }
+                val unsigned = runCatching { Group.build(signer.publicKey, id, name, about, territory, createdAt = clock()) }.getOrNull()
+                    ?: run { creationError = CreationError.InvalidName; return null }
+                val event = signer.sign(unsigned)
+                when (val result = remote.publish(event)) {
+                    is PublicationResult.Accepted -> {
+                        val group = Group.from(event) ?: run { creationError = CreationError.InvalidName; return null }
+                        withContext(Dispatchers.Default) { store.store(event) }
+                        join(group.id)
+                        reload(store)
+                        creating = false
+                        creationDraft = GroupDraft()
+                        open(groups.firstOrNull { it.id == group.id } ?: group)
+                        return group
+                    }
+                    is PublicationResult.Unavailable -> {
+                        creationError = CreationError.Offline
+                        return null
+                    }
+                    is PublicationResult.Rejected -> when (result.reason) {
+                        RejectionReason.GROUP_TAKEN -> {
+                            number++
+                            id = Group.numbered(base, number)
+                        }
+                        RejectionReason.GROUP_EXISTS -> {
+                            val existingId = result.existing ?: id
+                            // The existing room may not be on the device yet: ask the server for its description.
+                            if (groups.none { it.id == existingId }) pullDescription(store, remote, existingId)
+                            val existing = groups.firstOrNull { it.id == existingId }
+                            creationError = CreationError.Exists(existingId, existing?.displayName ?: name)
+                            return null
+                        }
+                        else -> {
+                            creationError = CreationError.Refused(result.reason)
+                            return null
+                        }
+                    }
+                }
+            }
+            creationError = CreationError.Taken
+            return null
+        } finally {
+            creationBusy = false
+        }
+    }
+
+    /**
+     * Signs and stores [messageDraft] for the open room, joining it on this device; it leaves for
+     * the server at once when one answers, otherwise it waits on the device. False when there is
+     * nothing to send.
+     */
+    suspend fun send(signer: EventSigner): Boolean {
+        val group = selected ?: return false
+        val store = store ?: return false
+        if (sending) return false
+        val text = messageDraft
+        val unsigned = runCatching { GroupMessage.build(signer.publicKey, group.id, text, createdAt = clock()) }.getOrNull() ?: return false
+        sendError = null
+        sending = true
+        try {
+            val event = signer.sign(unsigned)
+            withContext(Dispatchers.Default) { store.store(event, pending = true) }
+            messageDraft = ""
+            join(group.id)
+            reloadMessages(store, group)
+            val remote = remote ?: return true
+            when (val result = remote.publish(event)) {
+                is PublicationResult.Accepted -> withContext(Dispatchers.Default) { store.markPublished(event.id) }
+                is PublicationResult.Unavailable -> messagesStatus = GroupsStatus.Unreachable // kept pending for the next synchronization
+                is PublicationResult.Rejected -> {
+                    withContext(Dispatchers.Default) { store.delete(event.id) }
+                    // Give the text back so that nothing typed is lost.
+                    if (messageDraft.isEmpty()) messageDraft = text
+                    sendError = when (result.reason) {
+                        RejectionReason.GROUP_CLOSED -> SendError.CLOSED
+                        RejectionReason.GROUP_NOT_FOUND -> SendError.NOT_FOUND
+                        else -> SendError.REFUSED
+                    }
+                }
+            }
+            reloadMessages(store, group)
+            return true
+        } finally {
+            sending = false
+        }
+    }
+
+    private suspend fun loadMemberships() {
+        val memberships = memberships ?: return
+        val stored = withContext(Dispatchers.Default) { memberships.all().toSet() }
+        // Rooms joined before the list was read (a quick tap) are kept.
+        joined = joined + stored
+    }
+
+    private suspend fun persistMembership(write: (GroupStore) -> Unit) {
+        val memberships = memberships ?: return
+        membershipWrites.withLock { withContext(Dispatchers.Default) { write(memberships) } }
+    }
+
+    /** Pulls the directory of rooms; every authentic description is kept on the device. */
+    private suspend fun pullGroups(store: LocalEventStore, remote: RemoteEvents, query: String?, territory: String? = null) {
+        status = GroupsStatus.Loading
+        val result = remote.fetchGroups(
+            query = query?.trim()?.takeIf { it.isNotEmpty() },
+            territory = territory?.trim()?.takeIf { it.isNotEmpty() },
+            limit = DIRECTORY_LIMIT,
+        )
+        status = when (result) {
+            is GroupsResult.Unavailable -> GroupsStatus.Unreachable
+            is GroupsResult.Groups -> {
+                withContext(Dispatchers.Default) {
+                    result.groups.forEach { room ->
+                        if (room.event.verify() && Group.from(room.event)?.id == room.id) store.store(room.event)
+                    }
+                }
+                GroupsStatus.Synced
+            }
+        }
+        reload(store)
+    }
+
+    /** Fetches the description of one room by its id (`GET /api/v1/events?kind=39000&identifier=…`) and keeps it if authentic. */
+    private suspend fun pullDescription(store: LocalEventStore, remote: RemoteEvents, groupId: String) {
+        val result = remote.fetch(RemoteFilter(kinds = listOf(Group.KIND), identifiers = listOf(groupId), limit = 1)) as? FetchResult.Events ?: return
+        withContext(Dispatchers.Default) {
+            result.events.forEach { event ->
+                if (Group.from(event)?.id == groupId && event.verify()) store.store(event)
+            }
+        }
+        reload(store)
+    }
+
+    /** Sends what waits on the device, then fetches the messages of [group] newer than the device's copy. */
+    private suspend fun pullMessages(group: Group) {
+        val store = store ?: return
+        val remote = remote
+        if (remote == null) {
+            messagesStatus = GroupsStatus.Offline
+            reloadMessages(store, group)
+            return
+        }
+        messagesStatus = GroupsStatus.Loading
+        reloadMessages(store, group)
+        val up = SyncService(store, remote).publishPending()
+        if (!up.reachable) {
+            messagesStatus = GroupsStatus.Unreachable
+            reloadMessages(store, group)
+            return
+        }
+        // From the newest message received from the server: the user's own unsent ones do not count.
+        val since = messages.filter { it.id !in pendingMessageIds }.maxOfOrNull { it.createdAt }
+        val filter = RemoteFilter(kinds = listOf(GroupMessage.KIND), since = since, limit = MESSAGES_PAGE)
+        messagesStatus = when (val result = remote.fetchByTags(listOf(TagFilter(GroupMessage.TAG_GROUP, group.id)), filter)) {
+            is FetchResult.Unavailable -> GroupsStatus.Unreachable
+            is FetchResult.Events -> {
+                withContext(Dispatchers.Default) {
+                    result.events.forEach { event ->
+                        if (GroupMessage.from(event)?.groupId == group.id && event.verify()) store.store(event)
+                    }
+                }
+                GroupsStatus.Synced
+            }
+        }
+        reloadMessages(store, group)
+    }
+
+    private suspend fun reload(store: LocalEventStore) {
+        val fresh = withContext(Dispatchers.Default) {
+            store.recent(kinds = listOf(Group.KIND), limit = DIRECTORY_LIMIT)
+                .mapNotNull(Group::from)
+                .sortedWith(compareBy<Group> { it.displayName.lowercase() }.thenBy { it.id })
+        }
+        groups = fresh
+        selected = selected?.let { current -> fresh.firstOrNull { it.id == current.id } ?: current }
+    }
+
+    private suspend fun reloadMessages(store: LocalEventStore, group: Group) {
+        val (fresh, pending) = withContext(Dispatchers.Default) {
+            val list = store.byTag(listOf(GroupMessage.KIND), GroupMessage.TAG_GROUP, group.id, limit = MESSAGES_PAGE)
+                .mapNotNull(GroupMessage::from)
+                .filter { it.groupId == group.id }
+                .distinctBy { it.id }
+                .sortedWith(compareBy<GroupMessage> { it.createdAt }.thenBy { it.id })
+            val waiting = store.pending().filter { it.kind == GroupMessage.KIND }.map { it.id }.toSet()
+            list to waiting
+        }
+        if (selected?.id != group.id) return
+        messages = fresh
+        pendingMessageIds = pending
+    }
+
+    companion object {
+        /** The server lists at most this many rooms; the device keeps as many. */
+        const val DIRECTORY_LIMIT: Int = 500
+
+        /** Messages asked for and shown per room. */
+        const val MESSAGES_PAGE: Int = 200
+
+        /** How many ids are tried on the server when the derived one belongs to another key. */
+        const val MAX_ID_ATTEMPTS: Int = 5
+
+        /** How far the numbering goes to skip the ids already known on the device. */
+        private const val MAX_LOCAL_NUMBERS: Int = 100
+
+        /** The territories offered as suggestions. */
+        const val MAX_TERRITORIES: Int = 12
+
+        /** The similar rooms shown in the creation form. */
+        const val MAX_SIMILAR: Int = 5
+
+        /** A typed name shorter than this (once normalized) is not compared yet. */
+        private const val MIN_SIMILAR_LENGTH: Int = 3
+    }
+}
+
+/** The rooms of collectives for the whole run of the application; nothing is fetched before the view is shown. */
+@Composable
+fun rememberGroupsLibrary(dependencies: AppDependencies): GroupsLibrary {
+    val scope = rememberCoroutineScope()
+    return remember(dependencies) {
+        GroupsLibrary(
+            store = dependencies.contentStore,
+            remote = dependencies.remote,
+            memberships = dependencies.database?.let(::GroupStore),
+            scope = scope,
+        )
+    }
+}

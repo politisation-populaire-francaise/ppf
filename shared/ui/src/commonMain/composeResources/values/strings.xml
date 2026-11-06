@@ -107,9 +107,7 @@ Populaire Française</string>
     <string name="messages_collectives_text">Les salons de vos collectifs : annonces, organisation, décisions, avec les rôles et la charte de chaque collectif.</string>
     <string name="messages_flows_title">Médias et élus suivis</string>
     <string name="messages_flows_text">Les publications des médias et des élus que vous suivez, rassemblées ici comme des conversations à sens unique.</string>
-    <string name="messages_coming">Bientôt disponible : cet écran montre l’organisation prévue, aucune conversation n’est encore possible.</string>
     <string name="messages_new">Nouvelle conversation</string>
-    <string name="messages_encrypted_note">Le protocole de chiffrement est en cours de choix. Il devra permettre des conversations lisibles par les seuls participants, vérifiables par QR code, et fonctionner sans Internet en manifestation.</string>
     <string name="feed_live_label">EN DIRECT</string>
     <string name="feed_compose_hint">Partager une publication…</string>
     <string name="feed_visibility_public">Visible par : tout le monde</string>
@@ -203,6 +201,6 @@ Populaire Française</string>
     <string name="account_reveal_phrase_warning">Assurez-vous que personne ne regarde votre écran. Quiconque voit ces douze mots peut prendre le contrôle de votre compte.</string>
     <string name="account_reveal_secret_warning">Votre clé secrète donne le contrôle total de votre compte. Ne la collez que dans une application de confiance compatible Nostr.</string>
     <string name="account_reveal_confirm">Afficher</string>
-    <string name="account_sign_out_warning">Vos clés seront effacées de cet appareil. Sans votre phrase de récupération, votre compte sera perdu pour toujours. La liste des comptes que vous suivez sera aussi effacée. Pour un usage quotidien, fermez simplement l’application.</string>
+    <string name="account_sign_out_warning">Vos clés seront effacées de cet appareil. Sans votre phrase de récupération, votre compte sera perdu pour toujours. La liste des comptes que vous suivez et celle de vos salons seront aussi effacées, ainsi que vos conversations privées enregistrées sur l’appareil (en restaurant votre compte, vous retrouverez celles que le serveur garde encore). Pour un usage quotidien, fermez simplement l’application.</string>
     <string name="account_sign_out_confirm">Effacer mes clés de cet appareil</string>
 </resources>

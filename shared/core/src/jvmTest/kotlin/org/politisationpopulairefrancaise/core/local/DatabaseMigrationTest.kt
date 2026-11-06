@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.core.local
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
+import org.politisationpopulairefrancaise.core.groups.GroupStore
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.revendications.RevendicationViewStore
 import org.politisationpopulairefrancaise.core.revendications.RevendicationViews
@@ -11,6 +12,7 @@ import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -54,6 +56,26 @@ class DatabaseMigrationTest {
         }
     }
 
+    /**
+     * Writes a version 5 database (the builds with the views of the demands wall, before the joined
+     * rooms): the version 1 schema migrated up to 5, with one saved view.
+     */
+    private fun writeVersion5Database(file: Path) {
+        writeVersion1Database(file)
+        val driver = JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}")
+        try {
+            PpfDatabase.Schema.migrate(driver, 1, 5)
+            driver.execute(
+                null,
+                "INSERT INTO revendication_view(id, position, name, query) VALUES ('national', 0, NULL, NULL)",
+                0,
+            )
+            driver.execute(null, "PRAGMA user_version = 5", 0)
+        } finally {
+            driver.close()
+        }
+    }
+
     private fun userVersion(file: Path): Long {
         val driver = JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}")
         try {
@@ -66,17 +88,23 @@ class DatabaseMigrationTest {
         }
     }
 
+    private fun tempDatabaseFile(): Path {
+        val file = Files.createTempFile("ppf-migration-", ".db")
+        Files.delete(file)
+        file.toFile().deleteOnExit()
+        return file
+    }
+
     @Test
-    fun theSchemaIsAtVersion5() {
-        // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm); 5: views of the demands wall (4.sqm).
-        assertEquals(5L, PpfDatabase.Schema.version)
+    fun theSchemaIsAtVersion6() {
+        // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
+        // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm).
+        assertEquals(6L, PpfDatabase.Schema.version)
     }
 
     @Test
     fun aVersion1DatabaseGainsTheFollowTableAndKeepsItsEvents() {
-        val file = Files.createTempFile("ppf-migration-", ".db")
-        Files.delete(file)
-        file.toFile().deleteOnExit()
+        val file = tempDatabaseFile()
         writeVersion1Database(file)
         assertEquals(1L, userVersion(file))
 
@@ -98,6 +126,35 @@ class DatabaseMigrationTest {
         assertEquals(null, views.layout())
         views.save(listOf(RevendicationViews.ALL, RevendicationViews.NATIONAL))
         assertEquals(listOf(RevendicationViews.ALL, RevendicationViews.NATIONAL), views.layout())
+
+        // And the table of the joined rooms (version 6).
+        val rooms = GroupStore(database)
+        assertEquals(0L, rooms.count())
+        rooms.join("collectif-demonstration")
+        assertTrue(rooms.isMember("collectif-demonstration"))
+    }
+
+    @Test
+    fun aVersion5DatabaseGainsTheJoinedRoomsAndKeepsItsViewsAndEvents() {
+        val file = tempDatabaseFile()
+        writeVersion5Database(file)
+        assertEquals(5L, userVersion(file))
+
+        val database = JvmDatabase.open(file)
+        assertEquals(6L, userVersion(file))
+
+        // The rows written at version 5 survive.
+        assertEquals("[EXEMPLE] ancienne note", assertNotNull(LocalEventStore(database).find(eventId)).content)
+        assertEquals(1L, RevendicationViewStore(database).count())
+
+        // The new table starts empty and works.
+        val rooms = GroupStore(database)
+        assertEquals(0L, rooms.count())
+        rooms.join("collectif-demonstration")
+        rooms.join("syndicat-demonstration")
+        assertEquals(listOf("syndicat-demonstration", "collectif-demonstration").toSet(), rooms.all().toSet())
+        rooms.leave("collectif-demonstration")
+        assertFalse(rooms.isMember("collectif-demonstration"))
     }
 
     @Test
@@ -106,5 +163,6 @@ class DatabaseMigrationTest {
         assertEquals(0L, FollowStore(database).count())
         assertEquals(0L, LocalEventStore(database).count())
         assertEquals(0L, RevendicationViewStore(database).count())
+        assertEquals(0L, GroupStore(database).count())
     }
 }

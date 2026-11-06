@@ -128,7 +128,13 @@ object AccountTags {
  * recovery phrase, restoration, and the identity once it exists. Everything stays on the device.
  */
 @Composable
-fun MySpaceScreen(session: AccountSession, windowClass: WindowClass, modifier: Modifier = Modifier) {
+fun MySpaceScreen(
+    session: AccountSession,
+    windowClass: WindowClass,
+    modifier: Modifier = Modifier,
+    /** How long the server keeps the account's private messages; hidden when null. */
+    mailbox: MailboxSetting? = null,
+) {
     val compact = windowClass.width == WindowWidthClass.COMPACT
     Column(
         modifier = modifier.fillMaxSize().background(PpfTheme.palette.surface1).verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp),
@@ -143,7 +149,7 @@ fun MySpaceScreen(session: AccountSession, windowClass: WindowClass, modifier: M
                 AccountUiState.NoAccount -> NoAccountCard(session)
                 is AccountUiState.Creating -> CreatingCard(session, state, windowClass)
                 is AccountUiState.Restoring -> RestoringCard(session, state)
-                is AccountUiState.Ready -> ReadyCards(session, state, windowClass)
+                is AccountUiState.Ready -> ReadyCards(session, state, windowClass, mailbox)
             }
         }
     }
@@ -312,7 +318,7 @@ private enum class PendingDialog { REVEAL_PHRASE, REVEAL_SECRET, SIGN_OUT }
 
 /** The account once it exists: profile card, identity and secrets, what others can see. */
 @Composable
-private fun ReadyCards(session: AccountSession, state: AccountUiState.Ready, windowClass: WindowClass) {
+private fun ReadyCards(session: AccountSession, state: AccountUiState.Ready, windowClass: WindowClass, mailbox: MailboxSetting?) {
     val palette = PpfTheme.palette
     var pending by remember { mutableStateOf<PendingDialog?>(null) }
     val hex = state.publicKey.hex
@@ -388,6 +394,8 @@ private fun ReadyCards(session: AccountSession, state: AccountUiState.Ready, win
     InfoBox(Lucide.Info) {
         Text(stringResource(Res.string.account_votes_explanation), style = MaterialTheme.typography.bodyMedium)
     }
+
+    if (mailbox != null) MailboxCard(mailbox, session)
 
     PpfTextButton(onClick = { pending = PendingDialog.SIGN_OUT }, text = stringResource(Res.string.account_sign_out), modifier = Modifier.testTag(AccountTags.SIGN_OUT), color = palette.accentInk)
 

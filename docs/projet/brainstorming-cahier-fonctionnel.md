@@ -42,6 +42,17 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - **Décision de la propriétaire (7 novembre 2026)** : tout compte peut créer le salon d'un collectif, d'un syndicat ou d'une association (laisser exister les initiatives citoyennes, ne pas être accusé de censure) ; le salon respecte la charte de valeurs ; les doublons (même but, même localité) sont évités pour ne pas disperser les citoyens.
 - Mise en œuvre : charte acceptée à la création (étiquette `ppf-charter`), territoire obligatoire (`ppf-territory`), refus des doublons par nom normalisé et territoire avec proposition du salon existant, recherche avant création. À étudier : rapprochement par le sens (modèle d'IA auto-hébergé, comme DE-19 pour les revendications), fusion de salons, modération a posteriori et signalement, rôles d'administrateurs du collectif (NIP-29, kinds 9000 à 9022).
 
+### [2026-11-06] Messagerie terminée : questions ouvertes
+- Statut : À étudier
+- Concerne : cahier-fonctionnel.md, M14 ; D-027, D-028, D-032
+- Mise en œuvre (6 novembre 2026, soir) : conversations privées de bout en bout, flux des comptes suivis, salons des collectifs, conservation réglable dans Mon espace ; le téléphone n'est pas encore relié à un serveur (il le sera avec la préproduction) : les échanges réels s'essaient sur l'ordinateur avec le serveur de développement.
+- Questions à trancher :
+  - **squat d'un nom de salon** : quelqu'un peut créer à l'avance « Collectif Éducation » à Lyon, puis le fermer ; le vrai collectif reçoit alors « ce salon existe déjà ». Options : reprise par l'équipe après signalement (avec journal d'audit), ne pas compter les salons fermés comme doublons, ou libérer un nom après une période sans activité. Recommandation : reprise par l'équipe, avec le back-office de modération ;
+  - **clé distincte pour un collectif** : créer un salon relie publiquement son pseudonyme au collectif ; proposer de créer le salon avec une seconde identité ? Recommandation : oui, quand les identités multiples arriveront (S-43 et suivants) ;
+  - **taille des conversations de groupe** : le protocole NIP-17 n'est pas fait pour de grands groupes ; limite proposée : 20 participants, au-delà un salon ;
+  - **référentiel des territoires** : « Lyon », « Lyon 3e » et « 69 » sont aujourd'hui trois territoires différents ; une liste de communes et de départements réduirait la dispersion ;
+  - **notifications** : sans elles, les messages n'arrivent que l'écran Messages ouvert (UnifiedPush avec ntfy auto-hébergé, prévu par le cahier des charges).
+
 ### [2026-11-07] Messagerie : conservation réglable par l'utilisateur
 - Statut : Intégré le 2026-11-07 (D-028)
 - Concerne : cahier-fonctionnel.md, M14 ; S-125

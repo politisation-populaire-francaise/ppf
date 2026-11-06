@@ -235,7 +235,7 @@ class FollowTest {
         waitForIdle()
         onNodeWithTag(AccountTags.SIGN_OUT).performScrollTo().performClick()
         waitForIdle()
-        assertTrue(seesText("La liste des comptes que vous suivez sera aussi effacée"))
+        assertTrue(seesText("La liste des comptes que vous suivez et celle de vos salons seront aussi effacées"))
         onNodeWithTag(AccountTags.DIALOG_CONFIRM).performClick()
         waitForIdle()
         waitUntil(timeoutMillis = 5_000) { hasNode(AccountTags.CREATE) }

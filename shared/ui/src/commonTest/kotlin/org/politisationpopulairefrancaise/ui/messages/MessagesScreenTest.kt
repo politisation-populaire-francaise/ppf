@@ -17,7 +17,10 @@ import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-/** The messages screen: its three views, swiped or chosen by tab, and nothing that pretends to work yet. */
+/**
+ * The messages screen: its three views, swiped or chosen by tab. Without a local database nor an
+ * account (the default dependencies), "Nouvelle conversation" stays disabled.
+ */
 @OptIn(ExperimentalTestApi::class)
 class MessagesScreenTest {
 
@@ -37,6 +40,7 @@ class MessagesScreenTest {
 
         onNodeWithTag(MessagesTags.TAB + MessagesView.COLLECTIVES.id).performClick()
         waitForIdle()
-        waitUntil(timeoutMillis = 5_000) { onAllNodesWithText("Collectifs, syndicats, associations").fetchSemanticsNodes().isNotEmpty() }
+        // The rooms of collectives (CollectivesScreenTest); without a database on this device, it says so.
+        waitUntil(timeoutMillis = 5_000) { onAllNodesWithText("Les salons ne sont pas disponibles sur cet appareil.").fetchSemanticsNodes().isNotEmpty() }
     }
 }
