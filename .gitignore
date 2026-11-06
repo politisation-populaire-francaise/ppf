@@ -39,3 +39,6 @@ ios/Pods/
 # JVM crash logs
 hs_err_pid*.log
 replay_pid*.log
+
+# Worktrees of parallel agent sessions (created by the Claude app inside the repository)
+.claude/worktrees/
