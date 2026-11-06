@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.core.local
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
+import org.politisationpopulairefrancaise.core.groups.GroupStore
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import java.nio.file.Files
@@ -65,9 +66,9 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion4() {
-        // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm).
-        assertEquals(4L, PpfDatabase.Schema.version)
+    fun theSchemaIsAtVersion5() {
+        // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm); 5: joined rooms (4.sqm).
+        assertEquals(5L, PpfDatabase.Schema.version)
     }
 
     @Test
@@ -90,6 +91,11 @@ class DatabaseMigrationTest {
         val events = LocalEventStore(database)
         assertEquals(1L, events.count())
         assertEquals("[EXEMPLE] ancienne note", assertNotNull(events.find(eventId)).content)
+        // Version 5: the joined rooms (4.sqm).
+        val rooms = GroupStore(database)
+        assertEquals(0L, rooms.count())
+        rooms.join("collectif-demonstration")
+        assertTrue(rooms.isMember("collectif-demonstration"))
     }
 
     @Test
@@ -97,5 +103,6 @@ class DatabaseMigrationTest {
         val database = JvmDatabase.inMemory()
         assertEquals(0L, FollowStore(database).count())
         assertEquals(0L, LocalEventStore(database).count())
+        assertEquals(0L, GroupStore(database).count())
     }
 }

@@ -1,0 +1,29 @@
+-- The rooms of collectives the user joined (NIP-29 groups, decisions D-027 and D-028). Joining a
+-- room publishes nothing: this list stays on the device and the server holds no list of members.
+-- Which collectives someone belongs to can reveal a political or union affiliation, a sensitive
+-- datum under article 9 of the GDPR. The descriptions (kind 39000) and messages (kind 9) of the
+-- rooms are kept as events in the `event` table, readable offline.
+-- Added in schema version 5: existing databases get it through migrations/4.sqm.
+
+CREATE TABLE group_membership (
+    group_id TEXT NOT NULL PRIMARY KEY,
+    joined_at INTEGER NOT NULL
+);
+
+insert:
+INSERT OR IGNORE INTO group_membership(group_id, joined_at) VALUES (?, ?);
+
+deleteByGroupId:
+DELETE FROM group_membership WHERE group_id = ?;
+
+deleteAll:
+DELETE FROM group_membership;
+
+countByGroupId:
+SELECT COUNT(*) FROM group_membership WHERE group_id = ?;
+
+selectAll:
+SELECT group_id FROM group_membership ORDER BY joined_at DESC, group_id ASC;
+
+countAll:
+SELECT COUNT(*) FROM group_membership;

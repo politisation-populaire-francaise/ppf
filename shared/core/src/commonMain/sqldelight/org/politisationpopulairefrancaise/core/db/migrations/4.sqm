@@ -1,0 +1,7 @@
+-- Schema version 4 to 5 (2026-11-07): the rooms of collectives the user joined (see Groups.sq, which
+-- is the reference for fresh installations; this file must stay identical to its CREATE statement).
+
+CREATE TABLE group_membership (
+    group_id TEXT NOT NULL PRIMARY KEY,
+    joined_at INTEGER NOT NULL
+);
