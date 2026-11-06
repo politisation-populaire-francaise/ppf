@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.ui.agir.calls
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -175,7 +176,8 @@ fun CallsScreen(
     var clearAnswers by remember { mutableStateOf(false) }
 
     // The caller's modifier may carry its own test tag (the first one wins): the screen's goes on an inner box.
-    Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
+    // The surface gives every text of the screen the ink of the theme (light and dark).
+    Surface(modifier.fillMaxSize(), color = PpfTheme.palette.surface1, contentColor = PpfTheme.palette.ink) {
         Box(Modifier.fillMaxSize().testTag(CallTags.SCREEN)) {
             if (composer.open) {
                 CallComposerScreen(
@@ -304,7 +306,8 @@ private fun Wall(
                     labels = tabs.map { stringResource(tabLabel(it)) },
                     selected = tabs.indexOf(tab),
                     onSelect = { library.tab = tabs[it] },
-                    modifier = Modifier.padding(horizontal = padding),
+                    // On a phone the three tabs may be wider than the screen: they scroll.
+                    modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = padding),
                     tagFor = { CallTags.TAB + tabs[it].name.lowercase() },
                 )
                 HorizontalDivider(color = palette.border)

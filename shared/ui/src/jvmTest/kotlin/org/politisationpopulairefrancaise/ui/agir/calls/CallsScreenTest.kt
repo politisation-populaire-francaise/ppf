@@ -58,7 +58,7 @@ class CallsScreenTest {
         inDetail("Assemblée de quartier sur la hausse des loyers").assertExists()
         // The fields of the type, and the date in Paris time.
         onNodeWithText("[EXEMPLE] Collectif fictif des locataires des Tilleuls").performScrollTo().assertExists()
-        inDetail("Le 14 novembre 2026 à 18 h 30").assertExists()
+        inDetail("Le 14 novembre 2026 à 18\u00A0h\u00A030").assertExists()
         onNodeWithTag(CallTags.COUNTDOWN).assertTextContains("Dans 8 jours")
     }
 
@@ -196,7 +196,7 @@ class CallsScreenTest {
         waitForIdle()
         onNodeWithTag(CallTags.ANSWER).performScrollTo().assertIsNotEnabled().assertTextContains("Je témoigne", substring = true)
         onNodeWithTag(CallTags.ANSWER_NOTE).assertTextContains("canal sécurisé", substring = true)
-        onNodeWithText("Du 31 octobre 2026 à 17 h au 31 octobre 2026 à 19 h").performScrollTo().assertExists()
+        onNodeWithText("Du 31 octobre 2026 à 17\u00A0h au 31 octobre 2026 à 19\u00A0h").performScrollTo().assertExists()
 
         val closed = harness.call(Examples.CLOSED)
         assertEquals(CallStatus.CLOSED, closed.status)

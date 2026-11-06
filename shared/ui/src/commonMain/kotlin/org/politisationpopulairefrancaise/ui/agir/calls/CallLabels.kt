@@ -195,15 +195,19 @@ internal fun parisDate(epochSeconds: Long): String {
     return CivilDate(moment.year, moment.month, moment.day).toFrench()
 }
 
-/** "18 h 30", "9 h", in Paris time (French typography). */
+/** "18 h 30", "9 h", in Paris time (French typography, no-break spaces so that the hour never splits). */
 internal fun parisHour(epochSeconds: Long): String {
     val moment = ParisTime.of(epochSeconds)
-    return if (moment.minute == 0) "${moment.hour} h" else "${moment.hour} h ${moment.minute.toString().padStart(2, '0')}"
+    return if (moment.minute == 0) "${moment.hour} h" else "${moment.hour} h ${moment.minute.toString().padStart(2, '0')}"
 }
 
-/** "14 novembre 2026 à 18 h 30". */
+/** "14 novembre 2026 à 18 h 30"; a deadline lasting the whole day (23:59) shows its date only. */
 @Composable
-internal fun parisDateTime(epochSeconds: Long): String = stringResource(Res.string.appels_date_time, parisDate(epochSeconds), parisHour(epochSeconds))
+internal fun parisDateTime(epochSeconds: Long): String {
+    val moment = ParisTime.of(epochSeconds)
+    if (moment.hour == CallDraft.END_OF_DAY.first && moment.minute == CallDraft.END_OF_DAY.second) return parisDate(epochSeconds)
+    return stringResource(Res.string.appels_date_time, parisDate(epochSeconds), parisHour(epochSeconds))
+}
 
 /** "1 000", "12 500": thousands separated by a narrow no-break space, as in French. */
 internal fun frenchNumber(value: Long): String {
