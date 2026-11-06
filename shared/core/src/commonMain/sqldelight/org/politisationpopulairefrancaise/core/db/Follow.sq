@@ -1,0 +1,25 @@
+-- The accounts the user follows (S-120, AG-22). This list is private: it stays on the device and is
+-- never sent to the server as a whole. The device assembles the "Suivis" view itself, asking the
+-- server for the publications of the followed keys in small batches, in random order
+-- (brainstorming of the cahier fonctionnel, module M18). Who someone follows can reveal a political
+-- or union affiliation, a sensitive datum under article 9 of the GDPR.
+
+CREATE TABLE follow (
+    pubkey TEXT NOT NULL PRIMARY KEY,
+    followed_at INTEGER NOT NULL
+);
+
+insert:
+INSERT OR IGNORE INTO follow(pubkey, followed_at) VALUES (?, ?);
+
+deleteByPubkey:
+DELETE FROM follow WHERE pubkey = ?;
+
+countByPubkey:
+SELECT COUNT(*) FROM follow WHERE pubkey = ?;
+
+selectAll:
+SELECT pubkey FROM follow ORDER BY followed_at DESC, pubkey ASC;
+
+countAll:
+SELECT COUNT(*) FROM follow;
