@@ -44,7 +44,7 @@ class RevendicationsScreenTest {
     fun bundledDemandsAreListedWithTheirStatusAndOpenBesideTheListOnWideWindows() = runComposeUiTest {
         val dependencies = dependencies()
         openWall(dependencies, width = 1000, height = 740)
-        assertEquals(3, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "revendication").size)
+        assertEquals(8, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "revendication").size)
         onNodeWithTag(RevendicationTags.CARD + "cantines-tarif-social").assertExists()
         onNodeWithTag(RevendicationTags.CARD + "lyon-transports-nuit").assertExists()
         onAllNodesWithText("Très soutenue").onFirst().assertExists()
