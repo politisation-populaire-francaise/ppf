@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Proposer une revendication (DE-18) et vérifications automatiques (demande de la propriétaire du 2026-11-06) -->
+    <string name="propose_button">Proposer une revendication</string>
+    <string name="propose_title">Proposer une revendication</string>
+    <string name="propose_close">Fermer le formulaire</string>
+    <string name="propose_intro">Une revendication, c’est une idée de changement, formulée simplement. Pendant que vous écrivez, l’application la compare aux revendications existantes. Après l’envoi, une personne de l’équipe la relit avant sa publication.</string>
+    <string name="propose_field_title">Votre revendication</string>
+    <string name="propose_field_title_help">Une idée, en une ou deux phrases. Par exemple : « Un médecin de garde joignable le soir dans chaque canton ».</string>
+    <string name="propose_field_title_placeholder">Ce qui doit changer</string>
+    <string name="propose_counter">%1$d sur %2$d caractères</string>
+    <string name="propose_field_summary">En résumé (facultatif)</string>
+    <string name="propose_field_summary_placeholder">Une phrase pour préciser la revendication</string>
+    <string name="propose_field_why">Pourquoi</string>
+    <string name="propose_field_why_placeholder">Ce qui ne va pas aujourd’hui, ce que vous constatez</string>
+    <string name="propose_field_asks">Ce que la revendication demande</string>
+    <string name="propose_field_asks_placeholder">Concrètement, ce qui doit être fait</string>
+    <string name="propose_field_existing">Ce qui existe déjà (facultatif)</string>
+    <string name="propose_field_existing_help">Si une loi ou un dispositif existe déjà, dites-le et expliquez ce qui manque : votre revendication peut demander qu’il soit appliqué, étendu ou modifié.</string>
+    <string name="propose_field_existing_placeholder">Lois, dispositifs, décisions que vous connaissez</string>
+    <string name="propose_field_themes">Thèmes (un à trois)</string>
+    <string name="propose_field_territory">Territoire concerné</string>
+    <string name="propose_field_territory_help">« France » pour une revendication nationale, ou une ville, un département, une région.</string>
+    <string name="propose_field_territory_placeholder">France</string>
+
+    <string name="propose_similar_title">Revendications proches</string>
+    <string name="propose_checks_title">Vérifications automatiques</string>
+    <string name="propose_checks_waiting">Écrivez votre revendication : les vérifications s’affichent ici au fil de la saisie.</string>
+    <string name="propose_checks_empty">Aucun problème repéré pour l’instant.</string>
+    <string name="propose_check_rules_done">Règles du formulaire : vérifiées.</string>
+    <string name="propose_check_similarity_done">Comparée aux %1$d revendications présentes sur cet appareil.</string>
+    <string name="propose_check_after_sending">Après l’envoi, sur le serveur : comparaison avec toutes les revendications, puis recherche des lois en vigueur et analyse par IA dès qu’elles seront en service. Une personne de l’équipe relit toujours avant la publication.</string>
+    <string name="propose_severity_blocking">À corriger</string>
+    <string name="propose_severity_warning">À vérifier</string>
+    <string name="propose_severity_info">Pour information</string>
+    <string name="propose_source_automatic">Vérification automatique</string>
+    <string name="propose_source_ai">Analyse par IA, à confirmer par l’équipe</string>
+    <string name="propose_related_open">Lire la revendication : %1$s</string>
+    <string name="propose_reference_unverified">Référence à vérifier</string>
+    <string name="propose_reference_verified">Source officielle</string>
+    <string name="propose_reference_status_en_vigueur">En vigueur</string>
+    <string name="propose_reference_status_a_venir">À venir</string>
+    <string name="propose_reference_status_abroge">Abrogé</string>
+    <string name="propose_reference_status_en_discussion">En discussion</string>
+    <string name="propose_alert_red">Alerte rouge</string>
+    <string name="propose_alert_orange">Alerte orange</string>
+
+    <string name="propose_charter_title">La charte de contenu</string>
+    <string name="propose_charter_allowed">Autorisé</string>
+    <string name="propose_charter_allowed_text">La critique du gouvernement, des institutions et des élus ; les revendications et propositions de réformes, y compris institutionnelles ; les témoignages, les analyses militantes et la satire.</string>
+    <string name="propose_charter_forbidden">Interdit</string>
+    <string name="propose_charter_forbidden_text">Les appels ou incitations à la violence, aux crimes ou aux délits ; la divulgation d’informations personnelles sur qui que ce soit ; le harcèlement et les menaces ; la diffamation ; la haine et la discrimination ; les contenus pédocriminels ou terroristes ; les contenus protégés reproduits sans autorisation ; les fausses informations délibérées.</string>
+    <string name="propose_charter_accept">J’ai lu la charte et ma revendication la respecte</string>
+
+    <string name="propose_send">Envoyer pour relecture</string>
+    <string name="propose_sending">Envoi en cours</string>
+    <string name="propose_need_account">Pour envoyer une revendication, il faut un compte. Il se crée en une minute, sans adresse électronique ni numéro de téléphone.</string>
+    <string name="propose_create_account">Créer mon compte</string>
+    <string name="propose_blocked_issues">Corrigez d’abord les points marqués « À corriger ».</string>
+    <string name="propose_blocked_charter">Cochez l’acceptation de la charte pour envoyer.</string>
+
+    <string name="propose_result_review_title">Revendication envoyée en relecture</string>
+    <string name="propose_result_review_text">Merci. Une personne de l’équipe va la relire avant sa publication. Vous suivez son avancement dans la vue « Mes revendications ».</string>
+    <string name="propose_result_waiting_title">Revendication gardée sur cet appareil</string>
+    <string name="propose_result_waiting_text">Le serveur ne répond pas pour l’instant : votre revendication partira automatiquement dès qu’il sera joignable, puis une personne de l’équipe la relira.</string>
+    <string name="propose_result_published_title">Revendication publiée</string>
+    <string name="propose_result_published_text">Votre compte fait partie de l’équipe éditoriale : la revendication est publiée directement.</string>
+    <string name="propose_result_refused_title">Revendication refusée par le serveur</string>
+    <string name="propose_result_refused_text">Le serveur n’a pas accepté cette revendication (règles du formulaire ou limite d’envois). Vérifiez-la, puis réessayez plus tard.</string>
+    <string name="propose_result_failed_title">Revendication non enregistrée</string>
+    <string name="propose_result_failed_text">L’application n’a pas pu enregistrer la revendication sur cet appareil. Votre texte est conservé : réessayez.</string>
+    <string name="propose_result_back">Retour aux revendications</string>
+    <string name="propose_result_again">Proposer une autre revendication</string>
+
+    <!-- Statut d’une revendication envoyée -->
+    <string name="proposal_status_pending">En relecture</string>
+    <string name="proposal_status_waiting">En attente d’envoi</string>
+    <string name="proposal_status_approved">Publiée</string>
+    <string name="proposal_status_rejected">Non publiée</string>
+    <string name="proposal_reason">Motif de l’équipe : %1$s</string>
+    <string name="proposal_report_title">Ce que les vérifications automatiques ont relevé</string>
+
+    <!-- Messages des vérifications, un par type de problème -->
+    <string name="issue_duplicate">Cette revendication semble dire la même chose qu’une revendication existante. Plutôt que de diviser les soutiens, vous pourrez soutenir l’existante dès l’ouverture du vote. Si la vôtre est différente, précisez en quoi avant de l’envoyer.</string>
+    <string name="issue_similar">Des revendications proches existent : lisez-les avant d’envoyer la vôtre.</string>
+    <string name="issue_already_advanced">Une revendication proche est déjà retenue dans le Programme du peuple ou devenue campagne : vous pourrez la soutenir.</string>
+    <string name="issue_existing_law">Un texte en vigueur semble déjà prévoir ce que vous demandez. Votre revendication peut alors demander qu’il soit appliqué, étendu ou modifié : dites-le dans « Ce qui existe déjà ».</string>
+    <string name="issue_pending_bill">Une proposition ou un projet de loi en discussion porte sur le même sujet.</string>
+    <string name="issue_contradiction">Votre revendication demande l’inverse d’une revendication existante. Les deux peuvent exister : le vote tranchera.</string>
+    <string name="issue_several_ideas">Votre texte semble contenir plusieurs idées. Une revendication, c’est une idée : proposez-les séparément, chacune aura plus de chances d’être soutenue.</string>
+    <string name="issue_too_short">Écrivez votre revendication en une phrase complète (15 caractères au moins).</string>
+    <string name="issue_too_long_title">Votre revendication dépasse 280 caractères : gardez l’essentiel, les détails vont dans « Pourquoi » et « Ce que la revendication demande ».</string>
+    <string name="issue_too_long_sentences">Une ou deux phrases suffisent pour la revendication : les détails vont plus bas.</string>
+    <string name="issue_too_long_field">Ce texte est trop long : %1$s.</string>
+    <string name="issue_all_caps">Évitez d’écrire tout en majuscules : le texte sera plus facile à lire.</string>
+    <string name="issue_missing_theme">Choisissez au moins un thème.</string>
+    <string name="issue_too_many_themes">Choisissez trois thèmes au plus.</string>
+    <string name="issue_missing_territory">Indiquez le territoire concerné.</string>
+    <string name="issue_personal_data">Retirez les coordonnées personnelles (adresse électronique, numéro de téléphone, de compte bancaire ou de sécurité sociale) : elles ne doivent jamais être publiées.</string>
+    <string name="issue_personal_data_ai">Le texte semble contenir des informations personnelles sur une personne (adresse, famille, identité complète, lieu de travail).</string>
+    <string name="issue_targets_person">Une revendication demande un changement de règles : elle ne vise pas une personne nommée.</string>
+    <string name="issue_charter">Le texte semble ne pas respecter la charte de contenu. L’équipe décidera lors de la relecture.</string>
+    <string name="issue_out_of_scope">Ce texte ne semble pas être une revendication de politique publique.</string>
+    <string name="issue_unclear">La revendication est difficile à comprendre telle qu’elle est écrite.</string>
+</resources>
