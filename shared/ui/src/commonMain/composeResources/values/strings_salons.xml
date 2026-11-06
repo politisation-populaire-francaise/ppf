@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rooms of collectives, unions and associations (NIP-29, decisions D-027 and D-028) and the
+     retention of private messages on the server, set in "Mon espace" (D-028). French, the user is
+     addressed with "vous", typographic apostrophe (’), no em dash. -->
+<resources>
+    <!-- Messages, "Collectifs" view: the list of rooms -->
+    <string name="groups_search_hint">Rechercher un salon</string>
+    <string name="groups_refresh">Actualiser les salons</string>
+    <string name="groups_create">Créer un salon</string>
+    <string name="groups_mine_title">Mes salons</string>
+    <string name="groups_mine_empty">Vous n’avez rejoint aucun salon pour l’instant.</string>
+    <string name="groups_suggestions_title">Salons à découvrir</string>
+    <string name="groups_near_title">Sur les territoires de vos salons</string>
+    <string name="groups_others_title">Autres salons</string>
+    <string name="groups_territories_label">Suggestions par territoire</string>
+    <string name="groups_territory_all">Tous les territoires</string>
+    <string name="groups_none">Aucun salon connu pour l’instant. Créez le premier, ou actualisez quand le serveur est joignable.</string>
+    <string name="groups_none_for_query">Aucun salon ne correspond à « %1$s ».</string>
+    <string name="groups_none_for_territory">Aucun autre salon connu sur ce territoire.</string>
+    <string name="groups_not_found_hint">Vous ne trouvez pas votre collectif, votre syndicat ou votre association ?</string>
+    <string name="groups_create_named">Créer le salon « %1$s »</string>
+    <string name="groups_join">Rejoindre</string>
+    <string name="groups_join_named">Rejoindre le salon %1$s</string>
+    <string name="groups_joined">Rejoint</string>
+    <string name="groups_leave">Quitter le salon</string>
+    <string name="groups_territory_unknown">Territoire non précisé</string>
+    <string name="groups_closed_badge">Fermé</string>
+    <string name="groups_membership_private">Rejoindre un salon ne publie rien : la liste de vos salons reste sur votre appareil et le serveur ne connaît pas les membres.</string>
+    <string name="groups_status_loading">Chargement des salons…</string>
+    <string name="groups_status_offline">Hors ligne : salons enregistrés sur l’appareil.</string>
+    <string name="groups_status_synced">À jour avec le serveur. Lisible sans réseau.</string>
+    <string name="groups_status_unreachable">Serveur injoignable : salons enregistrés sur l’appareil.</string>
+    <string name="groups_status_unavailable">Les salons ne sont pas disponibles sur cet appareil.</string>
+    <string name="groups_select_hint">Choisissez un salon dans la liste pour lire ses messages, ou créez celui de votre collectif.</string>
+
+    <!-- A room -->
+    <string name="groups_back">Retour aux salons</string>
+    <string name="groups_public_notice">Salon public et modéré : tout le monde peut lire ces messages, qui ne sont pas chiffrés de bout en bout, et voir le pseudonyme qui signe chacun d’eux. N’y écrivez rien de personnel.</string>
+    <string name="groups_about_more">Lire la suite</string>
+    <string name="groups_about_less">Réduire</string>
+    <string name="groups_messages_refresh">Actualiser les messages</string>
+    <string name="groups_messages_none">Aucun message pour l’instant.</string>
+    <string name="groups_messages_loading">Chargement des messages…</string>
+    <string name="groups_messages_unreachable">Serveur injoignable : messages enregistrés sur l’appareil. Les vôtres partiront dès qu’il répondra.</string>
+    <string name="groups_messages_offline">Hors ligne : vos messages partiront à la prochaine connexion au serveur, et ceux des autres arriveront alors.</string>
+    <string name="groups_message_hint">Écrire dans ce salon public</string>
+    <string name="groups_send">Envoyer</string>
+    <string name="groups_message_pending">En attente d’envoi</string>
+    <string name="groups_message_you">Vous</string>
+    <string name="groups_join_to_write">Rejoindre ce salon pour écrire</string>
+    <string name="groups_need_account_write">Pour écrire dans un salon, il faut un compte. Il se crée en une minute, sans adresse électronique ni numéro de téléphone. La lecture reste libre.</string>
+    <string name="groups_create_account">Créer mon compte</string>
+    <string name="groups_closed_room">Ce salon n’accepte pas de nouveaux messages.</string>
+    <string name="groups_send_failed_closed">Ce salon n’accepte plus de messages : le vôtre n’a pas été envoyé.</string>
+    <string name="groups_send_failed_not_found">Ce salon n’existe plus sur le serveur : votre message n’a pas été envoyé.</string>
+    <string name="groups_send_failed">Le serveur a refusé ce message. Il n’a pas été publié.</string>
+
+    <!-- Creating a room -->
+    <string name="groups_form_title">Créer un salon</string>
+    <string name="groups_form_close">Fermer la création du salon</string>
+    <string name="groups_form_intro">Un salon rassemble un collectif, un syndicat ou une association sur un territoire. Il est public : tout le monde peut le lire, tout compte peut y écrire, et il n’est pas chiffré de bout en bout. Un seul salon par nom et par territoire : vérifiez d’abord qu’il n’existe pas.</string>
+    <string name="groups_form_name">Nom du collectif</string>
+    <string name="groups_form_name_placeholder">Par exemple : Collectif santé du quartier</string>
+    <string name="groups_form_territory">Territoire</string>
+    <string name="groups_form_territory_help">Commune, département, région, ou « France » pour un salon national.</string>
+    <string name="groups_form_territory_placeholder">Par exemple : Lyon</string>
+    <string name="groups_form_about">Description (facultative)</string>
+    <string name="groups_form_about_placeholder">Le but du collectif, ses rendez-vous, comment y participer.</string>
+    <string name="groups_form_counter">%1$d sur %2$d</string>
+    <string name="groups_form_id">Identifiant du salon : %1$s</string>
+    <string name="groups_form_similar_title">Ces salons existent déjà</string>
+    <string name="groups_form_similar_text">Rejoindre un salon existant évite de disperser les personnes qui partagent le même but au même endroit.</string>
+    <string name="groups_form_charter_title">La charte de valeurs</string>
+    <string name="groups_form_charter_rooms">Le salon et tous ses messages respectent cette charte. Un salon qui s’en écarte peut être fermé par l’équipe de modération.</string>
+    <string name="groups_form_charter_accept">J’ai lu la charte de valeurs et ce salon la respectera</string>
+    <string name="groups_form_blocked_fields">Indiquez un nom et un territoire pour créer le salon.</string>
+    <string name="groups_form_blocked_charter">Cochez l’acceptation de la charte pour créer le salon.</string>
+    <string name="groups_form_submit">Créer le salon</string>
+    <string name="groups_form_submitting">Création en cours…</string>
+    <string name="groups_form_cancel">Annuler</string>
+    <string name="groups_form_need_account">Pour créer un salon, il faut un compte. Il se crée en une minute, sans adresse électronique ni numéro de téléphone.</string>
+    <string name="groups_form_no_server">Cet appareil n’est relié à aucun serveur : créer un salon n’est pas possible pour l’instant, car seul le serveur peut vérifier qu’il n’existe pas déjà.</string>
+    <string name="groups_form_exists_title">Ce salon existe déjà</string>
+    <string name="groups_form_exists">Un salon porte déjà ce nom sur ce territoire : « %1$s ». Rejoignez-le plutôt que d’en créer un second.</string>
+    <string name="groups_form_join_existing">Rejoindre ce salon</string>
+    <string name="groups_form_edit">Modifier ma saisie</string>
+    <string name="groups_form_taken">Cet identifiant est déjà utilisé par un autre salon. Précisez le nom ou le territoire.</string>
+    <string name="groups_form_invalid">Vérifiez le nom (une lettre ou un chiffre au moins), le territoire et la longueur des textes.</string>
+    <string name="groups_form_offline">Le serveur ne répond pas. La création d’un salon demande le serveur, qui vérifie qu’il n’existe pas déjà : réessayez quand le réseau sera revenu. Votre saisie est gardée.</string>
+    <string name="groups_form_rejected">Le serveur a refusé ce salon.</string>
+    <string name="groups_form_rejected_territory">Le serveur demande un territoire.</string>
+    <string name="groups_form_rejected_charter">Le serveur demande l’acceptation de la charte.</string>
+    <string name="groups_form_rejected_name">Le serveur demande un nom.</string>
+    <string name="groups_form_rejected_too_long">Le serveur trouve ce salon trop long à décrire. Raccourcissez le nom, le territoire ou la description.</string>
+    <string name="groups_form_identity_title">Votre pseudonyme sera relié à ce salon</string>
+    <string name="groups_form_identity_text">Le salon est publié signé par votre compte : tout le monde pourra voir que votre pseudonyme l’a créé. Créer le salon d’un collectif, d’un syndicat ou d’une association peut révéler un engagement politique, syndical ou associatif. Si vous ne voulez pas être relié à ce collectif, ne le créez pas avec ce compte.</string>
+
+    <!-- Mon espace: retention of private messages on the server (D-028) -->
+    <string name="account_mailbox_title">Messages privés : conservation sur le serveur</string>
+    <string name="account_mailbox_explanation">Chaque message privé qui vous est adressé attend sur le serveur dans une enveloppe chiffrée qu’il ne peut pas ouvrir : il ne sait ni qui vous écrit ni ce qui est écrit. Vos appareils récupèrent ces enveloppes ; le serveur les efface au bout de la durée choisie, comptée depuis leur arrivée. Vos appareils gardent leur copie sans limite.</string>
+    <string name="account_mailbox_3_months">3 mois</string>
+    <string name="account_mailbox_3_months_hint">Par défaut, la durée la plus protectrice</string>
+    <string name="account_mailbox_6_months">6 mois</string>
+    <string name="account_mailbox_1_year">1 an</string>
+    <string name="account_mailbox_longer_hint">Pour les longues absences</string>
+    <string name="account_mailbox_default">Vous n’avez rien choisi : le serveur garde vos enveloppes 3 mois.</string>
+    <string name="account_mailbox_saved">Réglage enregistré sur le serveur.</string>
+    <string name="account_mailbox_pending">Réglage enregistré sur cet appareil, en attente d’envoi au serveur.</string>
+    <string name="account_mailbox_rejected">Le serveur a refusé ce réglage : le précédent reste en vigueur.</string>
+    <string name="account_mailbox_saving">Enregistrement…</string>
+    <string name="account_mailbox_unavailable">Ce réglage n’est pas disponible sur cet appareil.</string>
+    <string name="account_mailbox_public">Ce réglage est envoyé au serveur sous la forme d’un événement signé, lisible par tous : il indique seulement la durée choisie, rien de vos conversations.</string>
+    <string name="account_mailbox_confirm_title">Garder vos enveloppes plus longtemps ?</string>
+    <string name="account_mailbox_confirm_text">Vos enveloppes chiffrées resteront %1$s sur le serveur. Il ne pourra toujours pas les lire, mais si votre clé secrète était un jour volée, davantage de messages anciens pourraient être lus. Vous pourrez revenir à 3 mois à tout moment.</string>
+    <string name="account_mailbox_confirm">Garder %1$s</string>
+    <string name="account_mailbox_cancel">Annuler</string>
+</resources>

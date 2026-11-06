@@ -40,6 +40,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.groups.GroupsLibrary
+import org.politisationpopulairefrancaise.ui.groups.rememberGroupsLibrary
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.core.WindowWidthClass
@@ -53,8 +55,6 @@ import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.desc_messages
 import org.politisationpopulairefrancaise.ui.resources.messages_collectives_text
 import org.politisationpopulairefrancaise.ui.resources.messages_collectives_title
-import org.politisationpopulairefrancaise.ui.resources.messages_coming
-import org.politisationpopulairefrancaise.ui.resources.messages_encrypted_note
 import org.politisationpopulairefrancaise.ui.resources.messages_flows_text
 import org.politisationpopulairefrancaise.ui.resources.messages_flows_title
 import org.politisationpopulairefrancaise.ui.resources.messages_new
@@ -95,7 +95,9 @@ fun MessagesScreen(
     messaging: MessagingSession,
     windowClass: WindowClass,
     modifier: Modifier = Modifier,
-    onNavigate: ((Space) -> Unit)? = null,
+    onNavigate: (Space) -> Unit = {},
+    /** The rooms of collectives, kept by the shell for the whole run; a local one otherwise. */
+    groups: GroupsLibrary? = null,
 ) {
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
@@ -124,6 +126,12 @@ fun MessagesScreen(
             },
             onDismiss = { composing = false },
         )
+    }
+    val rooms = groups ?: rememberGroupsLibrary(dependencies)
+    // On phones and tablets an open room, or the creation of one, takes the whole screen.
+    if (collectivesTakeTheScreen(rooms, windowClass)) {
+        CollectivesFullScreen(rooms, session, windowClass, onNavigate, modifier)
+        return
     }
     // On phones the open conversation or flow replaces the header, the tabs and the list.
     if (compact && (messaging.open != null || messaging.openFlow != null)) {
@@ -169,34 +177,8 @@ fun MessagesScreen(
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize(), key = { views[it].id }) { page ->
             when (views[page]) {
                 MessagesView.PRIVATE -> PrivatePage(session, messaging, trust, compact, onNavigate)
-                MessagesView.COLLECTIVES -> CollectivesPage(dependencies, session, compact)
+                MessagesView.COLLECTIVES -> CollectivesPage(rooms, session, windowClass, onNavigate)
                 MessagesView.FLOWS -> FlowsPage(library, messaging, trust, compact)
-            }
-        }
-    }
-}
-
-/** What a view will hold, shown until it exists: its icon, its title, its description. */
-@Composable
-internal fun PlannedView(view: MessagesView, compact: Boolean) {
-    val palette = PpfTheme.palette
-    Column(
-        modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp),
-    ) {
-        Column(Modifier.widthIn(max = 720.dp)) {
-            PpfCard(Modifier.fillMaxWidth()) {
-                Icon(view.icon, contentDescription = null, tint = palette.brand, modifier = Modifier.size(32.dp))
-                Spacer(Modifier.height(12.dp))
-                Text(stringResource(view.title), style = MaterialTheme.typography.titleMedium)
-                Spacer(Modifier.height(4.dp))
-                Text(stringResource(view.text), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
-                Spacer(Modifier.height(12.dp))
-                Text(stringResource(Res.string.messages_coming), style = MaterialTheme.typography.bodyMedium, color = palette.warning)
-            }
-            Spacer(Modifier.height(12.dp))
-            InfoBox(Lucide.ShieldCheck) {
-                Text(stringResource(Res.string.messages_encrypted_note), style = MaterialTheme.typography.bodyMedium)
             }
         }
     }

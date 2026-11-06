@@ -22,6 +22,14 @@ object EventKinds {
     /** Gift wrap: a seal encrypted again by a throwaway key, the only event the server sees. */
     const val GIFT_WRAP: Int = 1059
 
+    // Rooms of collectives (NIP-29, decisions D-027 and D-028) and user settings (NIP-78).
+    /** A message in a room: plain text, exactly one `h` tag naming the room. */
+    const val GROUP_CHAT: Int = 9
+    /** The description of a room, addressable by its `d` tag (the room id). */
+    const val GROUP_METADATA: Int = 39000
+    /** Application-specific data of a user, addressable by `d` (for example `ppf:mailbox`, the retention of private messages). */
+    const val APP_DATA: Int = 30078
+
     fun isRegular(kind: Int): Boolean = kind in 1000..9999 || kind in 4..44 || kind == 1 || kind == 2
     fun isReplaceable(kind: Int): Boolean = kind in 10000..19999 || kind == 0 || kind == 3
     fun isEphemeral(kind: Int): Boolean = kind in 20000..29999

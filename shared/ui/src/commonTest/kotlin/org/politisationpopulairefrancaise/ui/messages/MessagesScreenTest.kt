@@ -40,6 +40,7 @@ class MessagesScreenTest {
 
         onNodeWithTag(MessagesTags.TAB + MessagesView.COLLECTIVES.id).performClick()
         waitForIdle()
-        waitUntil(timeoutMillis = 5_000) { onAllNodesWithText("Collectifs, syndicats, associations").fetchSemanticsNodes().isNotEmpty() }
+        // The rooms of collectives (CollectivesScreenTest); without a database on this device, it says so.
+        waitUntil(timeoutMillis = 5_000) { onAllNodesWithText("Les salons ne sont pas disponibles sur cet appareil.").fetchSemanticsNodes().isNotEmpty() }
     }
 }
