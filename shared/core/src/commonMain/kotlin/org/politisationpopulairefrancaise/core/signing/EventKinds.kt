@@ -14,6 +14,14 @@ object EventKinds {
     const val DELETION_REQUEST: Int = 5
     const val LONG_FORM_ARTICLE: Int = 30023
 
+    // Encrypted messaging (NIP-17 and NIP-59, decision D-027).
+    /** Seal: a rumor encrypted for its recipient and signed by its real author; no tag. */
+    const val SEAL: Int = 13
+    /** Chat message rumor: never signed, only ever seen inside a seal. */
+    const val CHAT_MESSAGE: Int = 14
+    /** Gift wrap: a seal encrypted again by a throwaway key, the only event the server sees. */
+    const val GIFT_WRAP: Int = 1059
+
     fun isRegular(kind: Int): Boolean = kind in 1000..9999 || kind in 4..44 || kind == 1 || kind == 2
     fun isReplaceable(kind: Int): Boolean = kind in 10000..19999 || kind == 0 || kind == 3
     fun isEphemeral(kind: Int): Boolean = kind in 20000..29999
