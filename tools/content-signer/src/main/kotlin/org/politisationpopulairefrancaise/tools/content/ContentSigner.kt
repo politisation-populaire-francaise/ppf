@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.tools.content
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.comprendre.ParcoursFormat
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
@@ -28,7 +29,9 @@ import kotlin.system.exitProcess
 /**
  * Signs the editorial contents of the `content/` directory into events bundled with the app:
  * the Markdown files of `fiches` become NIP-23 articles (fiches.json), those of `revendications`
- * become demands (revendications.json), those of `fil` become short notes for the feed (fil.json).
+ * become demands (revendications.json), those of `parcours` become the courses of "Comprendre en
+ * 5 minutes" (parcours.json, refused if a step, a quiz, the « Et maintenant ? » block or the
+ * sources are missing or malformed), those of `fil` become short notes for the feed (fil.json).
  * See content/README.md for the front matter of each kind.
  * The signing key is read from the file named by PPF_CONTENT_KEY_FILE (default
  * ~/.ppf/content-example.nsec); it is created if missing. Dates come from the front matter, so
@@ -78,6 +81,25 @@ fun main(args: Array<String>) {
         )
     }.map { signer.signChecked(it) }
     write(output.resolve("revendications.json"), demands)
+
+    val courses = signAll(content.resolve("parcours")) { document ->
+        val problems = ParcoursFormat.parse(document.body).problems
+        require(problems.isEmpty()) { "${document.name}: invalid course:\n  " + problems.joinToString("\n  ") }
+        Article.build(
+            author = keys.publicKey,
+            slug = document.require("slug"),
+            title = document.require("title"),
+            summary = document.require("summary"),
+            topics = document.topics(),
+            type = ArticleType.PARCOURS,
+            origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
+            publishedAt = document.require("published_at").dateToEpochSeconds(),
+            updatedAt = document.require("updated_at").dateToEpochSeconds(),
+            body = document.body,
+            durationMinutes = document.require("duration").toIntOrNull() ?: error("${document.name}: duration must be a number of minutes"),
+        )
+    }.map { signer.signChecked(it) }
+    write(output.resolve("parcours.json"), courses)
 
     val notes = signAll(content.resolve("fil")) { document ->
         UnsignedEvent.create(
