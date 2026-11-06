@@ -55,7 +55,6 @@ import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.RevendicationStatus
 import org.politisationpopulairefrancaise.core.revendications.AuthorScope
-import org.politisationpopulairefrancaise.core.revendications.CustomRevendicationView
 import org.politisationpopulairefrancaise.core.revendications.RevendicationContext
 import org.politisationpopulairefrancaise.core.revendications.RevendicationQuery
 import org.politisationpopulairefrancaise.core.revendications.RevendicationSort

@@ -2,8 +2,8 @@ package org.politisationpopulairefrancaise.ui.revendications
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -26,7 +26,6 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
-import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
