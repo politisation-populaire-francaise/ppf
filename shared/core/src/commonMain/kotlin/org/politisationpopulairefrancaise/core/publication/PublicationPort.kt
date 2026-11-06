@@ -31,10 +31,11 @@ enum class RejectionReason {
 }
 
 /**
- * Keeps accepted events in memory. Used by tests and as the local, offline-first store until the
- * database arrives; it refuses anything whose signature does not check out, like every adapter must.
+ * Keeps accepted events in memory and serves them back like the server would (newest first, same
+ * filters). Used by tests and as the local, offline-first store until the database arrives; it
+ * refuses anything whose signature does not check out, like every adapter must.
  */
-class InMemoryPublicationPort : PublicationPort {
+class InMemoryPublicationPort : RemoteEvents {
     private val stored = LinkedHashMap<String, SignedEvent>()
 
     val events: List<SignedEvent> get() = stored.values.toList()
@@ -43,5 +44,22 @@ class InMemoryPublicationPort : PublicationPort {
         if (!event.verify()) return PublicationResult.Rejected(event.id, RejectionReason.INVALID_SIGNATURE)
         stored.getOrPut(event.id) { event }
         return PublicationResult.Accepted(event.id)
+    }
+
+    override suspend fun fetch(filter: RemoteFilter): FetchResult = fetchByTags(emptyList(), filter)
+
+    override suspend fun fetchByTags(tags: List<TagFilter>, filter: RemoteFilter): FetchResult {
+        val wanted = tags.groupBy({ it.name }, { it.value })
+        val matching = stored.values.asSequence()
+            .filter { filter.kinds.isEmpty() || it.kind in filter.kinds }
+            .filter { filter.authors.isEmpty() || it.pubkey in filter.authors }
+            .filter { filter.identifiers.isEmpty() || it.firstTagValue("d") in filter.identifiers }
+            .filter { event -> filter.since?.let { event.createdAt >= it } ?: true }
+            .filter { event -> filter.until?.let { event.createdAt <= it } ?: true }
+            .filter { event -> wanted.all { (name, values) -> event.tagValues(name).any { it in values } } }
+            .sortedWith(compareByDescending<SignedEvent> { it.createdAt }.thenBy { it.id })
+            .take(filter.limit.coerceAtLeast(0))
+            .toList()
+        return FetchResult.Events(matching)
     }
 }

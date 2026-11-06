@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.core.publication
 
 import io.ktor.client.HttpClient
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -39,6 +40,8 @@ class ServerPublicationPort(
         }
         return when (response.status.value) {
             in 200..299 -> PublicationResult.Accepted(event.id)
+            // Rate limited: not a refusal of this event, keep it and retry after the delay the server gives.
+            429 -> PublicationResult.Unavailable(ServerException(429, response.headers["Retry-After"]?.trim()?.toLongOrNull()))
             in 500..599 -> PublicationResult.Unavailable(ServerException(response.status.value))
             else -> {
                 val error = runCatching { json.decodeFromString(ApiErrorBody.serializer(), response.bodyAsText()) }.getOrNull()
@@ -48,15 +51,16 @@ class ServerPublicationPort(
         }
     }
 
-    override suspend fun fetch(filter: RemoteFilter): FetchResult {
+    override suspend fun fetch(filter: RemoteFilter): FetchResult = fetchEvents(filter, emptyList())
+
+    override suspend fun fetchByTags(tags: List<TagFilter>, filter: RemoteFilter): FetchResult = fetchEvents(filter, tags)
+
+    private suspend fun fetchEvents(filter: RemoteFilter, tags: List<TagFilter>): FetchResult {
+        require(tags.size <= TagFilter.MAX_PER_REQUEST) { "The server accepts at most ${TagFilter.MAX_PER_REQUEST} tag filters per request" }
         val response: HttpResponse = try {
             client.get("$baseUrl/api/v1/events") {
-                filter.kinds.forEach { parameter("kind", it) }
-                filter.authors.forEach { parameter("author", it) }
-                filter.identifiers.forEach { parameter("identifier", it) }
-                filter.since?.let { parameter("since", it) }
-                filter.until?.let { parameter("until", it) }
-                parameter("limit", filter.limit)
+                applyFilter(filter)
+                tags.forEach { parameter("tag", it.parameter) }
             }
         } catch (e: CancellationException) {
             throw e
@@ -74,7 +78,17 @@ class ServerPublicationPort(
         return FetchResult.Events(events)
     }
 
-    class ServerException(val status: Int) : RuntimeException("Server answered $status")
+    private fun HttpRequestBuilder.applyFilter(filter: RemoteFilter) {
+        filter.kinds.forEach { parameter("kind", it) }
+        filter.authors.forEach { parameter("author", it) }
+        filter.identifiers.forEach { parameter("identifier", it) }
+        filter.since?.let { parameter("since", it) }
+        filter.until?.let { parameter("until", it) }
+        parameter("limit", filter.limit)
+    }
+
+    /** A server answer that is not a final decision on the event; [retryAfterSeconds] comes from `Retry-After` when given. */
+    class ServerException(val status: Int, val retryAfterSeconds: Long? = null) : RuntimeException("Server answered $status")
 
     @Serializable
     private data class ApiErrorBody(val error: String, val message: String = "")

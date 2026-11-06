@@ -1,0 +1,123 @@
+-- Encrypted messaging (NIP-17, decision D-027): conversations and decrypted messages, kept only on
+-- this device. The server never receives any of this; it only stores opaque gift wraps (kind 1059).
+-- Dialect: SQLite 3.18 (Android 8): no UPSERT, so insert-or-update is done in Kotlin transactions.
+-- The database file is protected by the application's private storage; its encryption by a code on
+-- desktop is still to do (S-43), like the identity file.
+
+-- A conversation is the set of its participants; its id is their public keys sorted and joined by
+-- commas (user included), so every participant computes the same id without any server.
+CREATE TABLE conversation (
+    id TEXT NOT NULL PRIMARY KEY,
+    subject TEXT,
+    subject_at INTEGER,
+    last_message_at INTEGER NOT NULL
+);
+
+CREATE INDEX conversation_last_message_at ON conversation(last_message_at DESC, id);
+
+-- A decrypted chat message; id is the rumor id, the same on every participant's device.
+CREATE TABLE message (
+    id TEXT NOT NULL PRIMARY KEY,
+    conversation_id TEXT NOT NULL,
+    author TEXT NOT NULL,
+    content TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    received_at INTEGER NOT NULL,
+    subject TEXT,
+    reply_to TEXT,
+    is_read INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0
+);
+
+CREATE INDEX message_conversation_created_at ON message(conversation_id, created_at DESC, id);
+CREATE INDEX message_conversation_unread ON message(conversation_id, is_read);
+
+-- Deliveries of the user's own messages still to be accepted by the server, one row per participant.
+-- The gift wrap itself is built at sending time, so that a message written offline gets fresh dates.
+CREATE TABLE outgoing_message (
+    message_id TEXT NOT NULL,
+    recipient TEXT NOT NULL,
+    queued_at INTEGER NOT NULL,
+    PRIMARY KEY (message_id, recipient)
+);
+
+CREATE INDEX outgoing_message_queued_at ON outgoing_message(queued_at, message_id, recipient);
+
+-- Small named values of the messaging module, such as the date of the last pull.
+CREATE TABLE messaging_state (
+    name TEXT NOT NULL PRIMARY KEY,
+    value INTEGER NOT NULL
+);
+
+insertConversation:
+INSERT INTO conversation(id, subject, subject_at, last_message_at) VALUES (?, ?, ?, ?);
+
+findConversation:
+SELECT conversation.*,
+    (SELECT COUNT(*) FROM message WHERE message.conversation_id = conversation.id AND message.is_read = 0) AS unread_count
+FROM conversation WHERE id = ?;
+
+touchConversation:
+UPDATE conversation SET last_message_at = MAX(last_message_at, ?) WHERE id = ?;
+
+updateConversationSubject:
+UPDATE conversation SET subject = ?, subject_at = ? WHERE id = ?;
+
+selectConversations:
+SELECT conversation.*,
+    (SELECT COUNT(*) FROM message WHERE message.conversation_id = conversation.id AND message.is_read = 0) AS unread_count
+FROM conversation ORDER BY last_message_at DESC, id ASC LIMIT ?;
+
+deleteConversation:
+DELETE FROM conversation WHERE id = ?;
+
+insertMessage:
+INSERT INTO message(id, conversation_id, author, content, created_at, received_at, subject, reply_to, is_read)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+findMessage:
+SELECT * FROM message WHERE id = ?;
+
+selectMessages:
+SELECT * FROM message WHERE conversation_id = ? ORDER BY created_at DESC, id ASC LIMIT ?;
+
+selectMessagesBefore:
+SELECT * FROM message
+WHERE conversation_id = :conversationId
+  AND (created_at < :createdAt OR (created_at = :createdAt AND id > :id))
+ORDER BY created_at DESC, id ASC LIMIT :limit;
+
+markConversationRead:
+UPDATE message SET is_read = 1 WHERE conversation_id = ? AND is_read = 0;
+
+markMessageRead:
+UPDATE message SET is_read = 1 WHERE id = ?;
+
+countUnread:
+SELECT COUNT(*) FROM message WHERE is_read = 0;
+
+countMessages:
+SELECT COUNT(*) FROM message;
+
+deleteMessagesOf:
+DELETE FROM message WHERE conversation_id = ?;
+
+insertOutgoing:
+INSERT OR IGNORE INTO outgoing_message(message_id, recipient, queued_at) VALUES (?, ?, ?);
+
+selectOutgoing:
+SELECT * FROM outgoing_message ORDER BY queued_at ASC, message_id ASC, recipient ASC;
+
+deleteOutgoing:
+DELETE FROM outgoing_message WHERE message_id = ? AND recipient = ?;
+
+deleteOutgoingOf:
+DELETE FROM outgoing_message WHERE message_id = ?;
+
+countOutgoing:
+SELECT COUNT(*) FROM outgoing_message;
+
+getState:
+SELECT value FROM messaging_state WHERE name = ?;
+
+setState:
+INSERT OR REPLACE INTO messaging_state(name, value) VALUES (?, ?);
