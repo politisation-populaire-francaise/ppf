@@ -17,7 +17,7 @@ object TestDatabase {
 
     fun reset() {
         dataSource.connection.use { connection ->
-            connection.createStatement().use { it.executeUpdate("TRUNCATE events") }
+            connection.createStatement().use { it.executeUpdate("TRUNCATE events CASCADE") }
         }
     }
 }

@@ -4,23 +4,53 @@ import org.politisationpopulairefrancaise.core.signing.EventReplacement
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.TagsJson
 import java.sql.Connection
+import java.sql.PreparedStatement
 import java.sql.ResultSet
+import java.sql.SQLException
+import java.time.Instant
+import java.time.ZoneOffset
 import javax.sql.DataSource
 
-/** What callers may ask for; every list is a disjunction, the lists are conjoined. */
+/**
+ * What callers may ask for; every list is a disjunction, the lists are conjoined.
+ *
+ * [tags] maps a tag name to the accepted values: an event matches when, for every name, one of
+ * its tags with that name carries one of the values (`p` = recipient of an envelope, `h` = group
+ * of a message, `d` = identifier of a content...). [identifiers] is kept as a shorthand for the `d` tag.
+ */
 data class EventFilter(
     val kinds: List<Int> = emptyList(),
     val authors: List<String> = emptyList(),
     /** Values of the `d` tag (stable identifiers of addressable contents). */
     val identifiers: List<String> = emptyList(),
+    val tags: Map<String, List<String>> = emptyMap(),
     val since: Long? = null,
     val until: Long? = null,
     val limit: Int = DEFAULT_LIMIT,
 ) {
+    /** [tags] with [identifiers] folded into the `d` entry. */
+    fun allTags(): Map<String, List<String>> =
+        if (identifiers.isEmpty()) tags else tags + ("d" to (tags["d"].orEmpty() + identifiers))
+
     companion object {
         const val DEFAULT_LIMIT: Int = 50
         const val MAX_LIMIT: Int = 500
     }
+}
+
+/** Which tags are written to the lookup table (see V2__event_tags.sql) and may be filtered on. */
+object TagIndex {
+    const val MAX_NAME_LENGTH: Int = 64
+    const val MAX_VALUE_BYTES: Int = 1024
+
+    fun isIndexable(name: String, value: String): Boolean =
+        name.length in 1..MAX_NAME_LENGTH && value.encodeToByteArray().size <= MAX_VALUE_BYTES
+
+    /** The distinct (name, value) pairs of an event that go to the lookup table. */
+    fun rowsOf(event: SignedEvent): List<Pair<String, String>> = event.tags
+        .filter { it.size >= 2 && isIndexable(it[0], it[1]) }
+        .map { it[0] to it[1] }
+        .distinct()
 }
 
 enum class StoreOutcome {
@@ -46,6 +76,15 @@ class EventRepository(private val dataSource: DataSource) {
             val outcome = storeInTransaction(connection, event)
             connection.commit()
             outcome
+        } catch (e: SQLException) {
+            connection.rollback()
+            // Two versions of the same content (or the same event twice) arriving at the same
+            // instant: the second INSERT hits a unique index. Nothing to store, nothing to report.
+            if (e.sqlState == UNIQUE_VIOLATION) {
+                if (EventReplacement.replacementKey(event) != null) StoreOutcome.SUPERSEDED else StoreOutcome.DUPLICATE
+            } else {
+                throw e
+            }
         } catch (e: Exception) {
             connection.rollback()
             throw e
@@ -70,6 +109,7 @@ class EventRepository(private val dataSource: DataSource) {
                     if (!EventReplacement.supersedes(event.createdAt, event.id, existingCreatedAt, existingId)) {
                         return StoreOutcome.SUPERSEDED
                     }
+                    // The tag rows of the old version go with it (ON DELETE CASCADE).
                     connection.prepareStatement("DELETE FROM events WHERE id = ?").use { delete ->
                         delete.setString(1, existingId)
                         delete.executeUpdate()
@@ -90,7 +130,22 @@ class EventRepository(private val dataSource: DataSource) {
             insert.setString(8, address)
             insert.executeUpdate()
         }
+        insertTags(connection, event)
         return StoreOutcome.STORED
+    }
+
+    private fun insertTags(connection: Connection, event: SignedEvent) {
+        val rows = TagIndex.rowsOf(event)
+        if (rows.isEmpty()) return
+        connection.prepareStatement("INSERT INTO event_tags (event_id, name, value) VALUES (?, ?, ?) ON CONFLICT DO NOTHING").use { insert ->
+            rows.forEach { (name, value) ->
+                insert.setString(1, event.id)
+                insert.setString(2, name)
+                insert.setString(3, value)
+                insert.addBatch()
+            }
+            insert.executeBatch()
+        }
     }
 
     fun find(id: String): SignedEvent? = dataSource.connection.use { connection ->
@@ -104,7 +159,7 @@ class EventRepository(private val dataSource: DataSource) {
     /** Newest first; on equal dates, by id, so pages are stable. */
     fun query(filter: EventFilter): List<SignedEvent> = dataSource.connection.use { connection ->
         val conditions = mutableListOf<String>()
-        val binders = mutableListOf<(java.sql.PreparedStatement, Int) -> Unit>()
+        val binders = mutableListOf<(PreparedStatement, Int) -> Unit>()
         if (filter.kinds.isNotEmpty()) {
             conditions += "kind = ANY(?)"
             binders += { s, i -> s.setArray(i, connection.createArrayOf("integer", filter.kinds.toTypedArray())) }
@@ -113,9 +168,12 @@ class EventRepository(private val dataSource: DataSource) {
             conditions += "pubkey = ANY(?)"
             binders += { s, i -> s.setArray(i, connection.createArrayOf("text", filter.authors.toTypedArray())) }
         }
-        if (filter.identifiers.isNotEmpty()) {
-            conditions += "EXISTS (SELECT 1 FROM jsonb_array_elements(tags) t WHERE t->>0 = 'd' AND t->>1 = ANY(?))"
-            binders += { s, i -> s.setArray(i, connection.createArrayOf("text", filter.identifiers.toTypedArray())) }
+        // One EXISTS per tag name (conjunction); the values of a name form a disjunction.
+        for ((name, values) in filter.allTags()) {
+            if (values.isEmpty()) continue
+            conditions += "EXISTS (SELECT 1 FROM event_tags t WHERE t.event_id = events.id AND t.name = ? AND t.value = ANY(?))"
+            binders += { s, i -> s.setString(i, name) }
+            binders += { s, i -> s.setArray(i, connection.createArrayOf("text", values.toTypedArray())) }
         }
         filter.since?.let { since ->
             conditions += "created_at >= ?"
@@ -132,6 +190,40 @@ class EventRepository(private val dataSource: DataSource) {
             statement.setInt(binders.size + 1, limit)
             val rows = statement.executeQuery()
             buildList { while (rows.next()) add(rows.toEvent()) }
+        }
+    }
+
+    /**
+     * Deletes the events of [kind] received by the server before [cutoff] (their tag rows go with
+     * them) and returns how many were deleted. Used for the limited retention of encrypted envelopes.
+     */
+    fun deleteReceivedBefore(kind: Int, cutoff: Instant): Int = dataSource.connection.use { connection ->
+        connection.prepareStatement("DELETE FROM events WHERE kind = ? AND received_at < ?").use { statement ->
+            statement.setInt(1, kind)
+            statement.setObject(2, cutoff.atOffset(ZoneOffset.UTC))
+            statement.executeUpdate()
+        }
+    }
+
+    /**
+     * Keeps only the [keep] most recently received events of [kind] carrying the tag [name] = [value]
+     * and deletes the older ones; returns how many were deleted. Bounds the mailbox of one recipient.
+     */
+    fun keepNewestByTag(kind: Int, name: String, value: String, keep: Int): Int = dataSource.connection.use { connection ->
+        connection.prepareStatement(
+            """
+            DELETE FROM events WHERE id IN (
+                SELECT e.id FROM events e JOIN event_tags t ON t.event_id = e.id
+                WHERE e.kind = ? AND t.name = ? AND t.value = ?
+                ORDER BY e.received_at DESC, e.id ASC OFFSET ?
+            )
+            """.trimIndent(),
+        ).use { statement ->
+            statement.setInt(1, kind)
+            statement.setString(2, name)
+            statement.setString(3, value)
+            statement.setInt(4, keep.coerceAtLeast(0))
+            statement.executeUpdate()
         }
     }
 
@@ -155,5 +247,8 @@ class EventRepository(private val dataSource: DataSource) {
 
     private companion object {
         const val SELECT = "SELECT id, pubkey, created_at, kind, tags::text AS tags, content, sig FROM events"
+
+        /** PostgreSQL SQLSTATE of a unique index violation. */
+        const val UNIQUE_VIOLATION = "23505"
     }
 }

@@ -10,6 +10,7 @@ import org.politisationpopulairefrancaise.server.TestDatabase
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class EventRepositoryTest {
@@ -82,6 +83,78 @@ class EventRepositoryTest {
         assertEquals(listOf(a2, article), repository.query(EventFilter(limit = 2)))
         assertEquals(listOf(article), repository.query(EventFilter(identifiers = listOf("fiche", "autre"))))
         assertEquals(emptyList(), repository.query(EventFilter(kinds = listOf(EventKinds.DELETION_REQUEST))))
+    }
+
+    @Test
+    fun filtersByTagsOrWithinANameAndAcrossNames() {
+        val carol = "c".repeat(64)
+        val dave = "d".repeat(64)
+        val toCarol = note(alice, "1", 100, tags = listOf(listOf("p", carol)))
+        val toDave = note(alice, "2", 200, tags = listOf(listOf("p", dave), listOf("t", "greve")))
+        val toBoth = note(bob, "3", 300, tags = listOf(listOf("p", carol), listOf("p", dave), listOf("t", "greve")))
+        val untagged = note(bob, "4", 400)
+        listOf(toCarol, toDave, toBoth, untagged).forEach { assertEquals(StoreOutcome.STORED, repository.store(it)) }
+
+        assertEquals(listOf(toBoth, toCarol), repository.query(EventFilter(tags = mapOf("p" to listOf(carol)))))
+        // Several values of one name: either of them.
+        assertEquals(listOf(toBoth, toDave, toCarol), repository.query(EventFilter(tags = mapOf("p" to listOf(carol, dave)))))
+        // Several names: all of them.
+        assertEquals(listOf(toBoth), repository.query(EventFilter(tags = mapOf("p" to listOf(carol), "t" to listOf("greve")))))
+        // Combined with the other filters.
+        assertEquals(listOf(toCarol), repository.query(EventFilter(authors = listOf(alice.publicKey.hex), tags = mapOf("p" to listOf(carol)))))
+        assertEquals(listOf(toDave), repository.query(EventFilter(kinds = listOf(EventKinds.TEXT_NOTE), until = 250, tags = mapOf("t" to listOf("greve")))))
+        assertEquals(emptyList(), repository.query(EventFilter(tags = mapOf("p" to listOf("e".repeat(64))))))
+        assertEquals(emptyList(), repository.query(EventFilter(tags = mapOf("x" to listOf(carol)))))
+        // A value containing colons is matched as is.
+        val colon = note(alice, "5", 500, tags = listOf(listOf("a", "30023:$carol:fiche:droits")))
+        repository.store(colon)
+        assertEquals(listOf(colon), repository.query(EventFilter(tags = mapOf("a" to listOf("30023:$carol:fiche:droits")))))
+    }
+
+    @Test
+    fun tagRowsFollowTheirEvent() {
+        val v1 = article(alice, "fiche", "[EXEMPLE] v1", 1_000)
+        val v2 = article(alice, "fiche", "[EXEMPLE] v2", 2_000)
+        repository.store(v1)
+        repository.store(v2)
+        assertEquals(listOf(v2), repository.query(EventFilter(tags = mapOf("d" to listOf("fiche")))))
+        assertEquals(1, tagRows())
+
+        // Tags beyond the index limits are kept in the event but not indexed; duplicates are indexed once.
+        val huge = "x".repeat(2_000)
+        val event = note(alice, "6", 3_000, tags = listOf(listOf("t", huge), listOf("t", "a"), listOf("t", "a"), listOf("", "b"), listOf("alone")))
+        repository.store(event)
+        assertEquals(event, repository.find(event.id))
+        assertEquals(emptyList(), repository.query(EventFilter(tags = mapOf("t" to listOf(huge)))))
+        assertEquals(listOf(event), repository.query(EventFilter(tags = mapOf("t" to listOf("a")))))
+        assertEquals(2, tagRows())
+    }
+
+    @Test
+    fun keepsTheNewestEventsOfATagValue() {
+        val recipient = "f".repeat(64)
+        val wraps = (1..5).map { note(alice, "wrap $it", 1_000L + it, tags = listOf(listOf("p", recipient))) }
+        val other = note(bob, "other", 1, tags = listOf(listOf("p", "e".repeat(64))))
+        (wraps + other).forEach { assertEquals(StoreOutcome.STORED, repository.store(it)) }
+        assertNotNull(repository.find(wraps[0].id))
+
+        // Stored one after the other: the reception order is the storage order.
+        assertEquals(2, repository.keepNewestByTag(EventKinds.TEXT_NOTE, "p", recipient, keep = 3))
+        assertEquals(wraps.takeLast(3).map { it.id }.toSet(), repository.query(EventFilter(tags = mapOf("p" to listOf(recipient)))).map { it.id }.toSet())
+        assertNull(repository.find(wraps[0].id))
+        assertEquals(other, repository.find(other.id), "other tag values are untouched")
+        assertEquals(0, repository.keepNewestByTag(EventKinds.TEXT_NOTE, "p", recipient, keep = 3))
+        // Another kind with the same tag is not counted.
+        assertEquals(0, repository.keepNewestByTag(EventKinds.LONG_FORM_ARTICLE, "p", recipient, keep = 0))
+        assertEquals(4, repository.count())
+    }
+
+    private fun tagRows(): Int = TestDatabase.dataSource.connection.use { connection ->
+        connection.createStatement().use { statement ->
+            val rows = statement.executeQuery("SELECT count(*) FROM event_tags")
+            rows.next()
+            rows.getInt(1)
+        }
     }
 
     @Test

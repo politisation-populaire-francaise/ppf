@@ -10,6 +10,8 @@ import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.server.NO_EDITORS
+import org.politisationpopulairefrancaise.server.TEST_RELAY
 import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.module
 import kotlin.test.BeforeTest
@@ -27,7 +29,7 @@ class ServerPublicationPortTest {
 
     @Test
     fun publishesAndFetchesThroughTheRealApi() = testApplication {
-        application { module(TestDatabase.dataSource) }
+        application { module(TestDatabase.dataSource, NO_EDITORS, TEST_RELAY) }
         val port = ServerPublicationPort(client, baseUrl = "")
         val event = signer.sign(kind = EventKinds.TEXT_NOTE, content = "[EXEMPLE] via le port", createdAt = 1_700_000_000)
 
@@ -45,7 +47,7 @@ class ServerPublicationPortTest {
 
     @Test
     fun aServerWithoutDatabaseIsReportedUnavailable() = testApplication {
-        application { module(null) }
+        application { module(null, NO_EDITORS, TEST_RELAY) }
         val port = ServerPublicationPort(client, baseUrl = "")
         val event = signer.sign(kind = EventKinds.TEXT_NOTE, content = "x", createdAt = 1_700_000_000)
         assertIs<PublicationResult.Unavailable>(port.publish(event))
