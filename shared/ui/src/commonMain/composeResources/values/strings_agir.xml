@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Home of the "Agir" space: its rubrics, the rubrics in preparation and the screens that wait for
+     their module. French, the user is addressed with "vous", typographic apostrophe (’), no em dash. -->
+<resources>
+    <!-- Home -->
+    <string name="agir_intro">Se mobiliser, s’organiser, s’entraider, témoigner, communiquer même sans Internet : c’est ici que l’on passe à l’action, ensemble.</string>
+    <string name="agir_rubrics_title">Rubriques</string>
+
+    <string name="agir_agenda_title">Agenda des mobilisations</string>
+    <string name="agir_agenda_text">Manifestations, grèves, rassemblements, blocages et assemblées générales, près de chez vous et partout en France.</string>
+    <string name="agir_calls_title">Appels</string>
+    <string name="agir_calls_text">Se réunir, soutenir une cause, interpeller ses élus, chercher des bénévoles : les appels des citoyens et des organisations.</string>
+    <string name="agir_organisations_title">Organisations</string>
+    <string name="agir_organisations_text">Associations, syndicats, collectifs, legal teams, street medics et avocats bénévoles, vérifiés par l’équipe de PPF.</string>
+    <string name="agir_collectives_title">Collectifs</string>
+    <string name="agir_collectives_text">Les salons des collectifs, des syndicats et des associations, pour s’organiser ensemble. Les mêmes que dans Messages.</string>
+    <string name="agir_guides_title">Guides pour s’organiser</string>
+    <string name="agir_guides_text">Vos droits et les fiches pratiques sont dans l’espace « Comprendre ». Les guides pour créer une association ou déclarer une manifestation y sont en préparation.</string>
+
+    <!-- In preparation: honest, without a date -->
+    <string name="agir_soon_title">En préparation</string>
+    <string name="agir_soon_text">Ces rubriques sont prévues mais pas encore prêtes. Certaines attendent une décision ou l’avis d’un avocat : elles arriveront quand elles seront sûres pour vous.</string>
+    <string name="agir_soon_badge">En préparation</string>
+    <string name="agir_soon_state">Pas encore disponible</string>
+    <string name="agir_testify_title">Témoigner</string>
+    <string name="agir_testify_text">Photos, vidéos et récits envoyés par un canal sécurisé, vérifiés et anonymisés avant publication.</string>
+    <string name="agir_protest_mode_title">Mode manifestation</string>
+    <string name="agir_protest_mode_text">L’essentiel en un geste et hors ligne : vos droits, les numéros utiles, les premiers secours.</string>
+    <string name="agir_safety_title">Secours et sécurité en manifestation</string>
+    <string name="agir_safety_text">Coordonner les secours et la défense juridique, sans jamais remplacer le 15 ou le 112.</string>
+    <string name="agir_solidarity_title">Solidarité et caisses de grève</string>
+    <string name="agir_solidarity_text">Caisses de grève, solidarité juridique, entraide pour le covoiturage ou l’hébergement.</string>
+    <string name="agir_help_title">Je veux aider</string>
+    <string name="agir_help_text">Proposer ses compétences aux missions de bénévolat publiées par l’équipe.</string>
+    <string name="agir_material_title">Matériel militant</string>
+    <string name="agir_material_text">Tracts, affiches et visuels à imprimer, avec le territoire et la date d’une mobilisation.</string>
+    <string name="agir_offline_title">Messagerie sans Internet</string>
+    <string name="agir_offline_text">Communiquer de proche en proche en Bluetooth, chiffré, sans réseau ni serveur.</string>
+
+    <!-- Screens that wait for their module, and the way back -->
+    <string name="agir_back">Retour à Agir</string>
+    <string name="agir_pending_title">En préparation</string>
+    <string name="agir_pending_text">Cette rubrique arrive bientôt dans l’application. En attendant, retrouvez les annonces de mobilisation dans votre fil.</string>
+</resources>

@@ -69,6 +69,7 @@ import org.politisationpopulairefrancaise.ui.account.MailboxSetting
 import org.politisationpopulairefrancaise.ui.account.MySpaceScreen
 import org.politisationpopulairefrancaise.ui.account.rememberAccountSession
 import org.politisationpopulairefrancaise.ui.account.rememberMailboxSetting
+import org.politisationpopulairefrancaise.ui.agir.AgirScreen
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.NavRow
 import org.politisationpopulairefrancaise.ui.components.NavSubRow
@@ -208,6 +209,7 @@ private fun SpaceContent(
     when (selected) {
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, windowClass, modifier)
+        Space.AGIR -> AgirScreen(dependencies, contentLibrary, accountSession, windowClass, modifier, onNavigate, groups = groupsLibrary)
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
         Space.REVENDICATIONS -> RevendicationsScreen(

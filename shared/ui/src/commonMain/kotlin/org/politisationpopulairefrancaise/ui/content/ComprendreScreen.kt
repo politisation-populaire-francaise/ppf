@@ -58,6 +58,7 @@ import org.politisationpopulairefrancaise.ui.resources.content_type_fiche
 import org.politisationpopulairefrancaise.ui.resources.content_updated
 import org.politisationpopulairefrancaise.ui.resources.desc_comprendre
 import org.politisationpopulairefrancaise.ui.resources.guides_title
+import org.politisationpopulairefrancaise.ui.resources.organisations_content_type
 import org.politisationpopulairefrancaise.ui.resources.space_comprendre
 import org.politisationpopulairefrancaise.ui.resources.space_revendications
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
@@ -215,6 +216,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.DECRYPTAGE -> Res.string.content_type_decryptage
         ArticleType.ARTICLE -> Res.string.content_type_article
         ArticleType.REVENDICATION -> Res.string.space_revendications
+        ArticleType.ORGANISATION -> Res.string.organisations_content_type
     },
 )
 

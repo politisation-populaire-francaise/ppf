@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Directory of organisations (M3, AG-03) and the page of an organisation (AG-17, AG-22). French,
+     the user is addressed with "vous", typographic apostrophe (’), no em dash. -->
+<resources>
+    <!-- Directory -->
+    <string name="organisations_title">Organisations</string>
+    <string name="organisations_description">Associations, syndicats, collectifs, legal teams, street medics et avocats bénévoles, vérifiés par l’équipe de PPF.</string>
+    <string name="organisations_search_hint">Rechercher un nom, un mot</string>
+    <string name="organisations_near_label">Près de chez moi</string>
+    <string name="organisations_near_hint">Votre commune, département ou code postal</string>
+    <string name="organisations_near_private">Ce territoire reste sur votre appareil : il n’est jamais envoyé, ni enregistré.</string>
+    <string name="organisations_types_label">Type d’organisation</string>
+    <string name="organisations_type_all">Tous les types</string>
+    <string name="organisations_territories_label">Territoire</string>
+    <string name="organisations_territory_all">Tous les territoires</string>
+    <plurals name="organisations_count">
+        <item quantity="one">%1$d organisation</item>
+        <item quantity="other">%1$d organisations</item>
+    </plurals>
+    <string name="organisations_near_section">Près de chez vous</string>
+    <string name="organisations_national_section">Partout en France</string>
+    <string name="organisations_none">Aucune organisation ne correspond à votre recherche.</string>
+    <string name="organisations_empty">L’annuaire est vide pour l’instant.</string>
+    <string name="organisations_clear_filters">Effacer la recherche et les filtres</string>
+    <string name="organisations_refresh">Actualiser l’annuaire</string>
+    <string name="organisations_select_hint">Choisissez une organisation pour voir sa page.</string>
+    <string name="organisations_about_directory">Une organisation figure dans l’annuaire après vérification par l’équipe de PPF. L’annuaire n’accueille ni parti politique ni candidat.</string>
+    <string name="organisations_status_loading">Mise à jour de l’annuaire…</string>
+    <string name="organisations_status_unavailable">L’annuaire n’est pas disponible sur cet appareil.</string>
+    <string name="organisations_status_offline">Annuaire enregistré sur cet appareil, lisible sans connexion.</string>
+    <string name="organisations_status_synced">Annuaire à jour.</string>
+    <string name="organisations_status_unreachable">Serveur injoignable : voici l’annuaire enregistré sur cet appareil.</string>
+
+    <!-- Types: plural on the filters, singular on the badges -->
+    <string name="organisations_filter_association">Associations</string>
+    <string name="organisations_filter_syndicat">Syndicats</string>
+    <string name="organisations_filter_collectif">Collectifs</string>
+    <string name="organisations_filter_legal_team">Legal teams</string>
+    <string name="organisations_filter_street_medics">Street medics</string>
+    <string name="organisations_filter_avocats">Avocats bénévoles</string>
+    <string name="organisations_filter_other">Autres</string>
+    <string name="organisations_type_association">Association</string>
+    <string name="organisations_type_syndicat">Syndicat</string>
+    <string name="organisations_type_collectif">Collectif</string>
+    <string name="organisations_type_legal_team">Legal team</string>
+    <string name="organisations_type_street_medics">Street medics</string>
+    <string name="organisations_type_avocats">Avocats bénévoles</string>
+    <string name="organisations_type_other">Autre organisation</string>
+    <!-- The type of an entry where a content type is shown ("Comprendre"); such entries are never listed there. -->
+    <string name="organisations_content_type">Organisation</string>
+
+    <!-- Page of an organisation -->
+    <string name="organisation_back">Retour à l’annuaire</string>
+    <string name="organisation_verified">Vérifiée</string>
+    <string name="organisation_verified_on">Vérifiée par PPF le %1$s</string>
+    <string name="organisation_national">Partout en France</string>
+    <string name="organisation_territory">Territoire : %1$s</string>
+    <string name="organisation_follow_private">Votre abonnement reste sur votre appareil : personne d’autre ne sait que vous suivez cette organisation.</string>
+    <string name="organisation_no_account">Cette organisation n’a pas encore de compte sur PPF : il n’y a rien à suivre pour l’instant.</string>
+    <string name="organisation_presentation">Présentation</string>
+    <string name="organisation_contacts">Contacts</string>
+    <string name="organisation_contacts_none">Aucun contact public.</string>
+    <string name="organisation_call">Appeler le %1$s</string>
+    <string name="organisation_write">Écrire à %1$s</string>
+    <string name="organisation_visit">Ouvrir le site %1$s</string>
+    <string name="organisation_phone_label">Téléphone</string>
+    <string name="organisation_email_label">Courriel</string>
+    <string name="organisation_website_label">Site</string>
+    <string name="organisation_address_label">Adresse</string>
+    <string name="organisation_publications">Publications</string>
+    <string name="organisation_publications_none">Aucune publication de cette organisation sur cet appareil pour l’instant.</string>
+    <string name="organisation_publications_follow">Suivez-la pour retrouver ses publications ici et dans votre fil.</string>
+    <string name="organisation_agenda">Agenda de l’organisation</string>
+    <string name="organisation_agenda_soon">Agenda de l’organisation : bientôt.</string>
+    <string name="organisation_updated">Fiche mise à jour le %1$s</string>
+    <string name="organisation_origin_human">rédigée par l’équipe de PPF</string>
+    <string name="organisation_origin_ai">rédigée avec l’aide d’une IA</string>
+
+    <!-- Leaving PPF for a web site: the safe choice first -->
+    <string name="organisation_leave_title">Vous quittez PPF</string>
+    <string name="organisation_leave_text">Ce lien ouvre le site %1$s, hors de PPF. Ce site n’est pas contrôlé par PPF : il peut utiliser des traceurs et savoir que vous l’avez visité.</string>
+    <string name="organisation_leave_stay">Rester sur PPF</string>
+    <string name="organisation_leave_go">Ouvrir le site</string>
+</resources>
