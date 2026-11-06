@@ -6,7 +6,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import org.politisationpopulairefrancaise.core.identity.AndroidIdentityStore
 import org.politisationpopulairefrancaise.core.local.AndroidDatabase
-import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
 
@@ -15,9 +14,10 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        val dependencies = AppDependencies(
+        // One local database, opened once, shared by every store (contents, followed accounts).
+        val dependencies = AppDependencies.withDatabase(
             identityStore = AndroidIdentityStore(applicationContext),
-            contentStore = LocalEventStore(AndroidDatabase.open(applicationContext)),
+            database = AndroidDatabase.open(applicationContext),
             // No server yet: the application works with the contents bundled in the APK.
             remote = null,
         )
