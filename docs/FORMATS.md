@@ -119,6 +119,33 @@ Une revendication proposée par un citoyen est un contenu éditorial de type `30
 
 **Vues du mur, sur l'appareil seulement** : table locale `revendication_view(id, position, name, query)` ; une vue intégrée n'a ni nom ni requête (`tout`, `suivis`, `mes-revendications`, `nationales`, `theme:<id>`), une vue personnalisée (`custom:` et 16 caractères hexadécimaux) a un nom et une requête JSON `{"themes":[…],"territories":[…],"statuses":[…],"authors":"anyone"|"followed"|"mine","text":"…","sort":"newest"|"popular"|"updated"}` (valeurs par défaut omises, champs inconnus ignorés). Rien de tout cela n'est jamais envoyé au serveur.
 
+## 4 quinquies. Espace « Voir » : briques sourcées (D-033)
+
+Chaque brique est un contenu éditorial NIP-23 (type `30023`) : étiquettes communes de la section 4 bis (`d`, `title`, `summary`, `published_at`, `t`, `ppf-origin`), corps en Markdown lisible partout, `ppf-type` pour dire ce qu'elle est, puis des étiquettes structurées. Les étiquettes à plusieurs champs sont positionnelles ; un champ vide veut dire « inconnu ». Les dates sont au format `AAAA-MM-JJ`. Seules les briques signées par une clé de l'équipe éditoriale sont affichées ; une brique mal formée est ignorée.
+
+Étiquettes communes à plusieurs briques :
+
+| Étiquette | Champs |
+|---|---|
+| `ppf-source` | type de source, nom, adresse web, date |
+| `ppf-archive` | empreinte SHA-256 de l'original, preuve d'horodatage (`opentimestamps`, `rfc3161`), adresse de la copie archivée, date |
+| `ppf-correction` | date, motif (journal public des corrections) |
+| `ppf-next` | libellé, cible : adresse d'un contenu `30023:<clé>:<identifiant>` ou `space:<espace>` (« Et maintenant ? ») |
+| `a` | `30023:<clé>:<identifiant>`, champ vide, rôle : `personne`, `texte`, `indicateur` ou `cible` (contenu auquel répond un droit de réponse) |
+| `ppf-axis` | `mouvement`, `pouvoir` ou `libertes` |
+
+Types de source : `autorites`, `organisateurs`, `comptage-independant`, `medias`, `signalements`, `texte-officiel`, `justice`, `parlement`, `rapport`, `declaration`, `enquete-presse`. Niveaux de fiabilité : `elevee`, `moyenne`, `faible`.
+
+| `ppf-type` | Étiquettes propres |
+|---|---|
+| `indicateur` | `ppf-unit` (obligatoire), `ppf-rank` (ordre parmi les chiffres clés), `ppf-declarative` (`true` pour un indicateur déclaratif), `ppf-breakdown` (libellé de la part, par exemple « dont mineurs »), `ppf-accepted-source` (une par type retenu), `ppf-measure` : identifiant, date, valeur, type de source, nom de la source, adresse, fiabilité, occasion (« Journée du 18 septembre »), lieu, part. Le corps décrit la méthode. |
+| `fait` | `ppf-fact` (obligatoire) : `mobilisation`, `declaration-officielle`, `decision-officielle`, `reponse-gouvernement` (chronologie), `vote`, `promesse`, `discours-vote`, `affaire`, `declaration-contredite`, `argent-public`, `interets`, `influence`, `liberte` ; `ppf-date` (obligatoire), `ppf-place`, `ppf-fact-status` (obligatoire) : `etabli`, `allegue`, `enquete` ; `ppf-procedure` (obligatoire pour une affaire) : `enquete`, `mise-en-examen`, `proces`, `condamnation-premiere-instance`, `appel`, `condamnation-definitive`, `relaxe`, `non-lieu`, `classement-sans-suite` ; `ppf-sentence` et `ppf-sentence-served` (peine prononcée, peine exécutée) ; `ppf-promise` : `tenue`, `en-cours`, `abandonnee`, `contraire` ; `ppf-vote` : `pour`, `contre`, `abstention`, `non-votant`, `absent` ; `ppf-quote` (propos exacts) ; `ppf-liberty` : `interdiction-manifester`, `dissolution`, `loi-restrictive`, `surveillance`, `autre` ; `ppf-recourse` : `aucun`, `en-cours`, `suspendu`, `annule`, `rejete`. Tout fait qui porte `ppf-liberty` figure dans l'observatoire des libertés, quel que soit son type. |
+| `personne` | `ppf-role` (une par fonction) : `depute`, `senateur`, `eurodepute`, `ministre`, `president`, `maire`, `elu-local`, `autre` ; `ppf-group` ; `ppf-territory` ; `ppf-mandate` : intitulé, territoire, début, fin (vide si en cours). |
+| `texte` | `ppf-text-kind` (`projet` ou `proposition`), `ppf-stage` (obligatoire) : `depot`, `commission`, `assemblee`, `senat`, `cmp`, `lecture-definitive`, `adopte`, `conseil-constitutionnel`, `promulgue`, `rejete`, `retire` ; `ppf-stage-history` : étape, date ; `ppf-next-vote` : date, libellé ; `ppf-493` : date (une par recours à l'article 49.3) ; `ppf-impact` : catégorie de population, `gagne` / `perd` / `mitige`, effet, nom de la source, adresse. |
+| `mouvement` | `ppf-country` (obligatoire), `ppf-period` : début, fin ; `ppf-claim` (une par revendication), `ppf-result` (une par résultat obtenu). |
+| `dossier` | `ppf-axis` (un dossier sans axe n'est pas affiché dans « Voir »). |
+| `reponse` | `ppf-respondent` (nom de la personne qui répond, obligatoire) et un lien `a` de rôle `cible`. Le corps est la réponse. |
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.

@@ -115,6 +115,25 @@ Il faut un compte (Mon espace) pour envoyer ; pour écrire et voir les vérifica
 
 Sur l'ordinateur (pour qui veut aller plus loin) : avec le serveur de développement (`gradlew :server:runDev`) et l'application de bureau branchée dessus (`PPF_SERVER_URL=http://localhost:8080`), la revendication part au serveur et affiche « Revendication envoyée en relecture », puis « En relecture » dans « Mes revendications ». Le serveur de développement liste les propositions en attente avec leur rapport à l'adresse http://localhost:8080/dev/revendications/proposals (sur l'ordinateur seulement) ; je peux simuler la décision de l'équipe pour vous la montrer.
 
+### Tester l'espace « Voir » (ajouté le 6 novembre 2026, tard le soir)
+
+Tout ce que vous verrez est inventé et marqué [EXEMPLE] : personnes, pays, organisations et chiffres. Aucun compte n'est nécessaire, et tout marche sans réseau.
+
+1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Voir**. Trois onglets apparaissent : **Le mouvement**, **Le pouvoir**, **Libertés**. Faites glisser le doigt de droite à gauche pour passer de l'un à l'autre, comme dans le Fil.
+2. Dans « Le mouvement », la première carte « Manifestants lors des journées nationales » montre **trois chiffres côte à côte** (autorités, organisateurs, comptage indépendant) et l'étiquette « Sources divergentes ». Touchez-la.
+3. La fiche du chiffre s'ouvre : les trois sources avec leur fiabilité et un lien vers chacune, le graphique d'évolution (une courbe par source ; touchez un point pour voir les valeurs du jour), puis **Voir les données en tableau**. Plus bas : toutes les mesures, la méthode, la correction du 18 octobre, et « Et maintenant ? ».
+4. Touchez **Copier avec la source**, puis collez dans une note de votre téléphone : le texte emporte chaque source, sa date et la mention [EXEMPLE].
+5. Touchez **Suivre**, puis le **bouton retour** de votre téléphone : vous revenez à l'accueil de « Voir », où « Vos suivis » affiche ce chiffre. Cette liste reste sur votre téléphone.
+6. Sur la fiche « Interpellations », touchez « Et maintenant ? » puis **Que faire en garde à vue** : la fiche pratique s'ouvre dans « Comprendre ».
+7. Onglet **Le pouvoir** : touchez **Dominique Fictif**. Toutes les fiches ont les mêmes rubriques dans le même ordre (votes, promesses, discours et votes, affaires…), même vides. Dans « Affaires judiciaires », l'encadré de la **présomption d'innocence** ; touchez l'affaire : l'étape de la procédure (« Enquête en cours »), la correction du 5 juin, puis le **droit de réponse de Dominique Fictif** publié sous le contenu, et le bouton « Droit de réponse » qui explique la procédure.
+8. Touchez le **projet de loi relatif à l'ordre public** : l'étape (4 sur 7, Sénat), le prochain vote, les deux recours au 49.3, **Qui gagne, qui perd**, les votes des élus et les rencontres avec des représentants d'intérêts.
+9. Onglet **Libertés** : le tableau de bord des contre-pouvoirs, l'**observatoire des libertés publiques** (l'arrêté d'Exempleville apparaît ici et dans la chronologie : un même fait, deux endroits), les dossiers, le **journal des corrections**.
+10. Touchez **Établi, allégué, fiabilité : ce que veulent dire les étiquettes** : le lexique explique chaque étiquette et chaque étape d'une procédure.
+11. En haut, cherchez « temoin » (sans accent) : Sacha Témoin est trouvée.
+12. Le bouton retour du téléphone ferme maintenant la page ouverte, puis ramène au Fil, partout dans l'application (avant, il quittait l'application).
+
+Sur l'ordinateur, la fiche d'un chiffre ou d'un texte place la méthode et « Et maintenant ? » à côté du contenu quand la fenêtre est assez large ; la touche Échap fait comme le bouton retour.
+
 ### Tester la messagerie (ajouté le 6 novembre 2026 au soir)
 
 ### Ce qu'il faut savoir avant de commencer

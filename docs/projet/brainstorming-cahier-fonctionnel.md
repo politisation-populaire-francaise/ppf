@@ -6,6 +6,21 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-06] Espace « Voir » : première version et questions ouvertes
+- Statut : À valider
+- Concerne : cahier-fonctionnel.md (M2, M4, M9, M13.2 ; futur module M17 « Mettre en lumière ») ; vision.md (pilier « Voir »)
+- Contexte : demande de la propriétaire du 6 novembre 2026 : avancer les espaces que l'on peut déjà remplir, en commençant par « Voir », « ultra ergonomique », avec de petites fonctionnalités ajoutées en autonomie quand elles sont pertinentes.
+- Fait (D-033, contenus tous fictifs et marqués [EXEMPLE]) : trois onglets parcourus au doigt (le mouvement, le pouvoir, libertés) ; recherche ; chiffres clés avec toutes les sources côte à côte ; fiche d'indicateur (graphique, tableau, méthode, corrections) ; chronologie ; observatoire des libertés et tableau de bord des contre-pouvoirs ; fiches des responsables publics ; législomètre (étape, prochain vote, 49.3, qui gagne et qui perd, votes, influence) ; mouvements dans le monde ; dossiers ; droit de réponse ; journal des corrections ; lexique des étiquettes.
+- Ajouts faits en autonomie : « Suivre » un chiffre, une fiche ou un texte (liste sur l'appareil) ; « Copier avec la source » (un chiffre ne voyage jamais sans sa source) ; lexique des étiquettes ; bouton retour du système dans toute l'application ; barre de retour fixe en haut des pages longues.
+- Questions pour la propriétaire :
+  1. **Valider l'entrée M17 « Mettre en lumière »** (plus haut), dont « Voir : le pouvoir » applique déjà la méthode dans le code (statut établi, allégué, en cours d'enquête ; étape de la procédure ; présomption d'innocence ; droit de réponse ; journal des corrections). Sans cette validation, les rubriques « affaires », « déclarations contredites », « argent public » et « conflits d'intérêts » restent des démonstrations.
+  2. **Couleurs de jugement** : une promesse « tenue » est en vert et « contredite par les actes » en rouge ; « y gagne » en vert, « y perd » en rouge dans « Qui gagne, qui perd ». Les votes, eux, sont volontairement neutres (gris). Recommandation : garder ces couleurs, toujours accompagnées du mot, parce qu'elles décrivent un fait et non une opinion ; les remplacer par une couleur neutre si vous craignez un reproche de partialité.
+  3. **Qui figure dans « Responsables publics » au lancement** : tous les parlementaires (données ouvertes de l'Assemblée et du Sénat, prévues en phase 5 par le cahier des charges), seulement les ministres et les élus cités dans les contenus, ou les élus d'un territoire ? Recommandation : commencer par les personnes citées dans les contenus publiés, puis importer les données ouvertes.
+  4. **Indice de gravité des violences policières** : la grille reste « À étudier » (entrée plus haut) ; l'indicateur affiche seulement le nombre en attendant.
+  5. **Témoignages publiés** (VO-08) : ils rejoindront « Le mouvement » quand la modération existera ; d'accord ?
+  6. **Chiffres clés dans « En direct »** (MA-01) : reprendre les quatre premiers chiffres de « Voir » sur l'écran « En direct » ? Recommandation : oui, c'est le parcours « Découvrir en 30 secondes ».
+- Décision :
+
 ### [2026-11-06] Fil social : l'application comme premier réseau social de la vie politique
 - Statut : Intégré le 2026-11-06 (cahier fonctionnel 1.1, module M18) ; modalités détaillées À étudier
 - Concerne : cahier-fonctionnel.md (nouveau module M18, parcours clés) ; S-05 ; MA-03, S-120, S-121, S-23, S-37, S-38, S-39, AG-18, AG-22, TE-07
@@ -195,6 +210,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - double validation éditoriale avant publication ;
   - points juridiques à faire valider par un avocat : diffamation (base factuelle suffisante, prudence, bonne foi), amnistie et réhabilitation, réutilisation des décisions de justice en données ouvertes (pseudonymisation), droit à l'oubli.
 - Mise à jour du 2026-11-04 : dans la restructuration par espaces (entrée « Réorganiser le cahier fonctionnel par espaces »), ces fonctionnalités deviennent l'axe « Le pouvoir » et l'axe « Libertés et contre-pouvoirs » de l'espace « Voir ». Leur contenu et leur méthode restent valables.
+- Mise à jour du 2026-11-06 : la première version de « Voir » (D-033) applique la méthode dans le code, avec des contenus fictifs [EXEMPLE] seulement : aucun fait sans statut, aucune affaire sans l'étape de sa procédure, présomption d'innocence affichée, rubriques identiques pour toutes les personnes, droit de réponse, journal des corrections. Voir l'entrée « Espace Voir : première version et questions ouvertes ».
 - Décision :
 
 ### [2026-11-04] Canal sécurisé pour les lanceurs d'alerte

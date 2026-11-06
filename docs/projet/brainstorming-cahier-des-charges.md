@@ -252,6 +252,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **Revendication**, **Campagne**, **Engagement** (Pacte démocratique) ;
   - **Contenu éditorial** : article, fiche pratique, dossier, décryptage.
 - Exemple : une fausse information diffusée par un élu est un seul « fait sourcé » ; il apparaît à la fois dans la fiche de l'élu (Voir), dans le décryptage (Comprendre) et, si besoin, dans le fil d'actualité (Maintenant).
+- Mise à jour du 2026-11-06 : mise en œuvre technique pour l'espace « Voir » seulement (D-033, décision technique prise en autonomie) : indicateur et mesures, fait sourcé, personne publique, texte et votes, mouvement dans le monde, dossier, droit de réponse, au format NIP-23 avec des étiquettes structurées (`docs/FORMATS.md`, section 4 quinquies). Un même fait apparaît bien à plusieurs endroits sans être recopié. Les autres briques (organisation, événement de la carte, campagne, engagement du Pacte) restent à faire quand leurs espaces seront développés ; l'entrée reste « À valider » pour le principe général.
 - Décision :
 
 ### [2026-11-05] Identités, phrase de récupération et signature des contenus : choix techniques

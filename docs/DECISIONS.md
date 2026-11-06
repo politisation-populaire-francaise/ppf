@@ -237,3 +237,22 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : demande de la propriétaire ; aucune dépense ; aucune donnée nouvelle ne quitte l'appareil hormis ce que les décisions D-027 et D-028 prévoient.
 - À trancher par la propriétaire (brainstorming du cahier fonctionnel) : squat d'un nom de salon sur un territoire (modération par l'équipe, ou ne pas compter les salons fermés comme doublons) ; proposer une clé distincte pour créer un salon ; limite de taille des conversations de groupe.
 
+## D-033 (2026-11-06) Espace « Voir » : briques de contenu sourcées et format des données
+
+- Contexte : la propriétaire demande d'avancer les espaces qui peuvent déjà être remplis, en commençant par « Voir », « ultra ergonomique », conforme au cahier fonctionnel (M2, M4, M5 pour la partie publiée, M9, M13.2) et à la vision (trois axes : le mouvement, le pouvoir, les libertés et contre-pouvoirs).
+- Décisions techniques prises en autonomie, à confirmer par la propriétaire :
+  - **briques de contenu** (entrée « Briques de contenu communes », à valider) mises en œuvre pour « Voir » seulement : indicateur et ses mesures, fait sourcé, personne publique, texte de loi, mouvement dans le monde, dossier, droit de réponse. Un même fait apparaît à chaque endroit où il compte sans être recopié (un arrêté d'interdiction est à la fois dans la chronologie et dans l'observatoire des libertés ; un vote est sur la fiche de l'élu et sur celle du texte) ;
+  - **format** : chaque brique est un événement NIP-23 (type 30023) signé, dont le corps en Markdown reste lisible par n'importe quel client Nostr et dont les données structurées sont des étiquettes `ppf-…` (documenté dans `docs/FORMATS.md`, section 4 quinquies) ; les mesures d'un indicateur sont des étiquettes de l'indicateur (une nouvelle mesure est une nouvelle version, limite de 64 Kio par événement, soit plusieurs centaines de mesures ; au-delà, découpage par période) ;
+  - **seule l'équipe éditoriale publie dans « Voir »** : l'application n'affiche que les briques signées par une clé de confiance ;
+  - **garde-fous dans le code** (méthode du cahier fonctionnel et de l'entrée M17) : un fait sans statut (établi, allégué, en cours d'enquête) n'est pas affiché ; une affaire judiciaire sans l'étape de sa procédure n'est pas affichée ; la mention de la présomption d'innocence accompagne toute procédure non terminée par une condamnation définitive ; chaque fiche de personne présente les mêmes rubriques dans le même ordre ; les sources divergentes sont côte à côte, jamais fusionnées ; seules les adresses web (`https://`, `http://`) des sources sont ouvertes ; journal public des corrections ; droit de réponse publié sous le contenu ;
+  - **suivre un contenu** (chiffre, fiche, texte, fait) : liste gardée sur l'appareil seulement, sans compte (table locale `content_follow`, schéma local en version 7) ;
+  - **graphiques** dessinés par l'application (aucune bibliothèque) avec une palette de huit couleurs vérifiée pour le daltonisme et le contraste en mode clair et sombre ; chaque graphique a sa version en tableau ;
+  - **« Copier avec la source »** : un chiffre copié emporte toujours chaque source, son adresse, sa date et la mention [EXEMPLE] le cas échéant.
+- Raison : demande de la propriétaire ; aucune dépense ; aucune donnée nouvelle ne quitte l'appareil.
+- Contenus : 47 contenus d'exemple, tous fictifs et marqués [EXEMPLE] (personnes, organisations, pays et chiffres inventés). Les vrais contenus restent à rédiger par l'équipe éditoriale, avec la double validation et la relecture juridique prévues.
+
+## D-034 (2026-11-06) Bouton « retour » du système
+
+- Contexte : sur Android, le bouton ou le geste « retour » quittait l'application depuis n'importe quel écran, même avec une fiche ouverte.
+- Décision technique prise en autonomie : le retour du système (bouton et geste Android, touche Échap sur ordinateur) ferme d'abord ce qui est ouvert (page de « Voir », fiche pratique, revendication, formulaire de proposition, conversation, flux, salon), puis ramène au Fil depuis tout autre espace ; depuis le Fil, il quitte l'application comme avant. Bibliothèque `navigationevent-compose` de JetBrains (licence Apache 2.0), déjà apportée par Compose, déclarée pour être utilisée directement ; l'ancienne fonction `BackHandler` est dépréciée.
+- Raison : ergonomie de base sur Android ; aucune dépense.
