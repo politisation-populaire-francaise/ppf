@@ -15,7 +15,8 @@ Légende : ✅ fait, 🔄 en cours, ⏳ à faire, ⛔ bloqué (décision ou acti
 | Squelette du serveur Ktor avec `/health` | 🔄 | Module `server`, en-têtes de sécurité, aucune journalisation d'adresse IP. |
 | Squelette du site web (Ktor + kotlinx.html) | 🔄 | Module `web`, lisible sans JavaScript, manifeste PWA. |
 | `/infra` : production et préproduction séparées | 🔄 | Deux projets Compose, proxy Caddy, modèle WireGuard, limites mémoire. |
-| Intégration continue (APK, bureau, tests, secrets, traceurs) | 🔄 | GitHub Actions : Linux et Windows, gitleaks, vérification des tiers, Dependabot. |
+| Intégration continue (APK, bureau, tests, secrets, traceurs) | 🔄 | GitHub Actions : Linux et Windows, gitleaks, vérification des tiers, Dependabot. Depuis le 6 novembre 2026, l'APK publié est la version d'essai non débogable, numérotée à chaque commit, dont la signature de test est vérifiée (D-031). |
+| Distribution des versions de test Android sans avertissement | ⛔ | Guide d'installation pour les Samsung en place ; la suppression des avertissements passe par Google Play (25 dollars une fois), en attente de la propriétaire (brainstorming du cahier des charges, entrée du 2026-11-06). |
 | Documents techniques | 🔄 | ROADMAP, DECISIONS, THREAT_MODEL, REGISTRE_DONNEES, GUIDE_PROPRIETAIRE, CHANGELOG. |
 | Guide d'achat des noms de domaine | ✅ | `docs/guides/achat-domaines-hostinger.md` ; six domaines achetés le 5 novembre 2026. |
 | Guide du serveur KVM 1 (premier déploiement) | 🔄 | `docs/guides/serveur-hostinger-kvm1.md`, première version. |

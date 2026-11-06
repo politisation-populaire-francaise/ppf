@@ -21,18 +21,20 @@ Chaque version de test est un fichier `.apk`, produit par l'intégration continu
 3. En bas de la page, dans **« Artifacts »**, cliquez sur **« ppf-android-apk »** : un fichier `.zip` se télécharge.
 4. Envoyez ce fichier sur votre téléphone : par câble USB (copie dans le dossier « Téléchargements »), ou en vous l'envoyant à vous-même par un canal que vous contrôlez. Décompressez-le sur le téléphone (appui long sur le zip, « Extraire ») pour obtenir le `.apk`.
 
-Quand je produis l'APK sur votre ordinateur, il se trouve dans `C:\Users\clair\Documents\PPF\android\build\outputs\apk\debug\android-debug.apk` (version de test, identifiant `org.politisationpopulairefrancaise.app.test`, signée avec la clé de test).
+Quand je produis l'APK sur votre ordinateur, il se trouve dans `C:\Users\clair\Documents\PPF\android\build\outputs\apk\preview\android-preview.apk` : c'est la **version d'essai** (identifiant `org.politisationpopulairefrancaise.app.test`, signée avec la clé de test). Depuis le 6 novembre 2026, c'est le seul fichier à envoyer sur un téléphone. L'ancien fichier `android-debug.apk` reste réservé à l'ordinateur : il est « débogable », c'est-à-dire que n'importe qui branchant le téléphone par câble pourrait lire les fichiers privés de l'application (compte compris). La version d'essai ne l'est pas. Elle s'installe par-dessus l'ancienne version sans rien effacer, et chaque nouveau fichier porte un numéro de version plus grand que le précédent.
 
-### Installer l'APK (première fois)
+### Installer ou mettre à jour l'APK
 
-1. Sur le téléphone, ouvrez l'application **« Fichiers »** (ou « Mes fichiers »), dossier « Téléchargements », et touchez le fichier `.apk`.
-2. Android affiche « Pour votre sécurité, votre téléphone n'est pas autorisé à installer des applications inconnues provenant de cette source » : touchez **« Paramètres »**, activez **« Autoriser cette source »**, puis revenez en arrière.
-3. Touchez **« Installer »**. Si Google Play Protect propose d'analyser l'application, acceptez ou refusez : les deux fonctionnent.
-4. L'icône « Politisation Populaire Française » apparaît dans vos applications.
+Suivez le guide pas à pas `docs/guides/installer-version-test-android.md`, que vous pouvez aussi transmettre aux personnes qui testent avec vous (votre sœur, par exemple). En résumé :
 
-### Mettre à jour
+1. Sur un Samsung, désactivez le temps de l'installation le **Bloqueur automatique** (Paramètres, Sécurité et confidentialité, Bloqueur automatique).
+2. Dans **Mes fichiers**, touchez le fichier `.apk` ; la première fois, autorisez cette source.
+3. Si Google Play Protect propose d'**envoyer l'application pour analyse**, touchez **Envoyer** ; s'il parle de développeur inconnu, touchez **Plus de détails** puis **Installer quand même**. S'il parle de **code malveillant** (message rouge), n'installez pas et envoyez-moi une capture.
+4. Réactivez le Bloqueur automatique.
 
-Touchez le nouveau fichier `.apk` et confirmez **« Mettre à jour »**. Si le téléphone refuse avec un message sur la signature, dites-le-moi : c'est que les clés diffèrent, et je corrige.
+Ces avertissements viennent du fait que l'application ne passe pas encore par un magasin d'applications ; ils ne signalent pas un problème dans l'application. Seule une distribution par Google Play les fera disparaître : c'est une décision qui coûte 25 dollars, en attente de votre réponse (brainstorming du cahier des charges, entrée « Distribution des versions de test sur Android »).
+
+Si le téléphone refuse avec un message sur un **conflit de package** (signature), ne désinstallez rien et dites-le-moi : c'est que les clés diffèrent, et je corrige.
 
 ### Ce qu'il faut vérifier dans chaque version
 

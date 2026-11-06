@@ -170,7 +170,8 @@ Tout passe par le wrapper Gradle (`gradlew.bat` sous Windows, `./gradlew` ailleu
 | Besoin | Commande |
 |---|---|
 | Tout compiler et lancer tous les tests | `gradlew build` |
-| APK de test (signature de test partagée) | `gradlew :android:assembleDebug` puis `android/build/outputs/apk/debug/` |
+| APK de test à envoyer sur un téléphone (version d'essai non débogable, signature de test partagée) | `gradlew :android:assemblePreview` puis `android/build/outputs/apk/preview/android-preview.apk` |
+| APK de développement (débogable, ordinateur seulement, jamais envoyé sur un téléphone) | `gradlew :android:assembleDebug` puis `android/build/outputs/apk/debug/` |
 | Application de bureau, lancement direct | `gradlew :desktop:run` |
 | Application de bureau empaquetée (dossier, sans installateur) | `gradlew :desktop:createDistributable` puis `desktop/build/compose/binaries/main/app/` |
 | Installateur Windows (demande WiX, fait par l'intégration continue) | `gradlew :desktop:packageMsi` |
@@ -179,7 +180,7 @@ Tout passe par le wrapper Gradle (`gradlew.bat` sous Windows, `./gradlew` ailleu
 | Tests d'un seul module | `gradlew :shared:ui:jvmTest`, `gradlew :server:test`, etc. |
 | Vérification des traceurs et des tiers | `bash tools/check-no-trackers.sh` |
 | Vérification des dépendances interdites | `bash tools/check-dependencies.sh` |
-| Vérification du contenu de l'APK (ressources Compose, bibliothèques natives) | `bash tools/check-apk.sh android/build/outputs/apk/debug/android-debug.apk` |
+| Vérification du contenu de l'APK (ressources Compose, bibliothèques natives, non débogable, certificat de test) | `bash tools/check-apk.sh android/build/outputs/apk/preview/android-preview.apk --not-debuggable --cert-sha256 9f80e2560cc787485d982656cbebcb814f8c26431dc0ab3467359849132ee91f` |
 | Mise à jour des fichiers de verrouillage après un changement de dépendance | `gradlew build --write-locks` |
 | Détection des secrets avant commit | crochets locaux : `git config core.hooksPath .githooks` |
 | Déploiement en préproduction (sur le serveur) | `infra/scripts/deploy.sh preproduction` |
