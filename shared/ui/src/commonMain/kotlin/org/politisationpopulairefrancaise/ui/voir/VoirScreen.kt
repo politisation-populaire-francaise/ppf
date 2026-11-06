@@ -36,9 +36,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.navigationevent.NavigationEventInfo
-import androidx.navigationevent.compose.NavigationBackHandler
-import androidx.navigationevent.compose.rememberNavigationEventState
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.testTag
@@ -49,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
@@ -104,11 +102,7 @@ fun VoirScreen(
         reply = { reply = true },
     )
     // The system's back (Android button or gesture, Escape on a computer) closes the open page first.
-    NavigationBackHandler(
-        state = rememberNavigationEventState(NavigationEventInfo.None),
-        isBackEnabled = state.stack.isNotEmpty(),
-        onBackCompleted = { state.back() },
-    )
+    SystemBack(enabled = state.stack.isNotEmpty()) { state.back() }
 
     BoxWithConstraints(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
         // Cards of about 300 dp at least: one column on phones, two on tablets and small computer

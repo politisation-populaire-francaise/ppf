@@ -59,6 +59,7 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
@@ -162,6 +163,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // How long the server keeps the account's private messages (Mon espace, D-028).
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
     val palette = PpfTheme.palette
+    // The system's back leads from any space to the feed; the screens close what they opened first.
+    SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
     BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
         val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)

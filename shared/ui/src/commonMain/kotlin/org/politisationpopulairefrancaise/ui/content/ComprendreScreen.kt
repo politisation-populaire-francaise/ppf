@@ -26,6 +26,7 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.editorial.Article
@@ -81,6 +82,7 @@ fun ComprendreScreen(library: ContentLibrary, windowClass: WindowClass, modifier
     val twoPanes = windowClass.width == WindowWidthClass.EXPANDED
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val selected = library.selected
+    SystemBack(enabled = selected != null) { library.close() }
     // The panes carry their own test tags, so the host's modifier stays on this container.
     Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
         when {

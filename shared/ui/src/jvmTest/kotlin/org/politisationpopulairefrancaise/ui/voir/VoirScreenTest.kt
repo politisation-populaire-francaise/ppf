@@ -2,7 +2,10 @@ package org.politisationpopulairefrancaise.ui.voir
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
+import androidx.navigationevent.DirectNavigationEventInput
+import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
@@ -200,5 +203,33 @@ class VoirScreenTest {
         onNodeWithTag(VoirTags.GLOSSARY).assertExists()
         onNodeWithText("Allégué : affirmé par une source identifiée", substring = true).assertExists()
         onNodeWithText("Mise en examen : un juge d’instruction", substring = true).assertExists()
+    }
+
+    @Test
+    fun theSystemBackClosesThePageThenReturnsToTheFeed() = runComposeUiTest {
+        val input = DirectNavigationEventInput()
+        setContent {
+            val owner = LocalNavigationEventDispatcherOwner.current
+            DisposableEffect(owner) {
+                owner?.navigationEventDispatcher?.addInput(input)
+                onDispose { owner?.navigationEventDispatcher?.removeInput(input) }
+            }
+            Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies()) }
+        }
+        onNodeWithText("Voir").performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(VoirTags.card("manifestants-journees")).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithTag(VoirTags.card("manifestants-journees")).performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.detail("manifestants-journees")).assertExists()
+        // First back: the page closes, "Voir" stays.
+        runOnIdle { input.backCompleted() }
+        waitForIdle()
+        onNodeWithTag(VoirTags.detail("manifestants-journees")).assertDoesNotExist()
+        onNodeWithTag(VoirTags.tab(0)).assertExists()
+        // Second back: the feed, the default screen.
+        runOnIdle { input.backCompleted() }
+        waitForIdle()
+        onNodeWithTag(VoirTags.SCREEN).assertDoesNotExist()
     }
 }
