@@ -69,6 +69,7 @@ import org.politisationpopulairefrancaise.ui.account.MailboxSetting
 import org.politisationpopulairefrancaise.ui.account.MySpaceScreen
 import org.politisationpopulairefrancaise.ui.account.rememberAccountSession
 import org.politisationpopulairefrancaise.ui.account.rememberMailboxSetting
+import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaScreen
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.NavRow
 import org.politisationpopulairefrancaise.ui.components.NavSubRow
@@ -219,6 +220,7 @@ private fun SpaceContent(
             proposal = proposalComposer,
             onNavigate = onNavigate,
         )
+        Space.CARTE -> AgendaScreen(dependencies, accountSession, windowClass, modifier, onNavigate = onNavigate)
         else -> PlaceholderScreen(sectionFor(selected), windowClass, widthDp, heightDp, modifier)
     }
 }

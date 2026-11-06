@@ -75,7 +75,7 @@ class AdaptiveShellTest {
     fun tabletLayoutHasRailWithEveryEntry() = runComposeUiTest {
         setContent { Box(Modifier.requiredSize(800.dp, 740.dp)) { PpfApp() } }
         onNodeWithTag(ShellTags.SHELL_MEDIUM).assertExists()
-        onNodeWithTag(ShellTags.navItem(Space.CARTE)).performClick()
+        onNodeWithTag(ShellTags.navItem(Space.EN_DIRECT)).performClick()
         waitForIdle()
         onNodeWithText("Affichage tablette").assertExists()
         onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).assertExists()
