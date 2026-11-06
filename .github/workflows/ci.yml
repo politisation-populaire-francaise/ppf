@@ -1,0 +1,137 @@
+# Continuous integration: secrets, third parties, build, tests and installable artifacts.
+# Runs on every pull request and on every push to main. Public repository: standard
+# GitHub-hosted runners are free, but jobs stay lean (caching, cancelled when superseded).
+#
+# Every action is pinned to a commit SHA (supply-chain protection); the comment gives
+# the human-readable version. Dependabot proposes updates.
+# Gradle caching uses the open-source actions/cache, not gradle/actions v6, whose
+# caching component is proprietary and subject to separate terms.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GRADLE_OPTS: -Dorg.gradle.daemon=false
+
+jobs:
+  secrets:
+    name: Secrets
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Scan the whole history for secrets
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITLEAKS_ENABLE_SUMMARY: "true"
+
+  trackers:
+    name: Traceurs et tiers
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Forbidden third parties in sources and configuration
+        run: bash tools/check-no-trackers.sh
+      - name: Gradle wrapper integrity
+        run: |
+          version=$(sed -n 's#.*gradle-\([0-9.]*\)-bin.zip#\1#p' gradle/wrapper/gradle-wrapper.properties)
+          expected=$(curl -sSL "https://services.gradle.org/distributions/gradle-${version}-wrapper.jar.sha256")
+          actual=$(sha256sum gradle/wrapper/gradle-wrapper.jar | cut -d' ' -f1)
+          echo "Gradle $version, expected $expected, actual $actual"
+          test "$expected" = "$actual"
+
+  build:
+    name: Build Linux
+    runs-on: ubuntu-latest
+    env:
+      PPF_TEST_KEYSTORE: ${{ github.workspace }}/ppf-test.keystore
+      PPF_TEST_KEYSTORE_PASSWORD: ${{ secrets.PPF_TEST_KEYSTORE_PASSWORD }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Gradle cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties', '**/gradle.lockfile', '**/*.gradle.kts') }}
+          restore-keys: gradle-${{ runner.os }}-
+      - name: Restore the shared test signing key
+        if: ${{ env.PPF_TEST_KEYSTORE_PASSWORD != '' }}
+        run: echo "${{ secrets.PPF_TEST_KEYSTORE_B64 }}" | base64 -d > "$PPF_TEST_KEYSTORE"
+      - name: Build, test and package
+        run: ./gradlew build :android:assembleDebug :desktop:packageDeb :server:buildFatJar --console=plain
+      - name: Forbidden dependency groups
+        run: bash tools/check-dependencies.sh
+      - name: APK contents (resources and native libraries)
+        run: bash tools/check-apk.sh android/build/outputs/apk/debug/android-debug.apk
+      - name: Remove the test signing key
+        if: always()
+        run: rm -f "$PPF_TEST_KEYSTORE"
+      - name: Upload APK (Android, test signature)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ppf-android-apk
+          path: android/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+      - name: Upload desktop app (Linux .deb)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ppf-desktop-linux
+          path: desktop/build/compose/binaries/main/deb/*.deb
+          if-no-files-found: error
+      - name: Upload server (fat jar)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ppf-server
+          path: server/build/libs/ppf-server.jar
+          if-no-files-found: error
+      - name: Upload test reports
+        if: failure()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: test-reports
+          path: "**/build/reports/tests/**"
+
+  windows:
+    name: Build Windows
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-java@77dd5b2ce225ea11469928ac317850245a74ae78 # v6.2.0
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Gradle cache
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml', 'gradle/wrapper/gradle-wrapper.properties', '**/gradle.lockfile', '**/*.gradle.kts') }}
+          restore-keys: gradle-${{ runner.os }}-
+      - name: Package the Windows installer
+        run: ./gradlew :desktop:packageMsi --console=plain
+      - name: Upload desktop app (Windows .msi)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: ppf-desktop-windows
+          path: desktop/build/compose/binaries/main/msi/*.msi
+          if-no-files-found: error

@@ -1,0 +1,74 @@
+# Production. Started as its own Compose project: docker compose -p ppf-prod up -d
+# Nothing here is shared with the preproduction, except the edge network joined by the proxy.
+
+name: ppf-prod
+
+services:
+  server:
+    image: ${PPF_SERVER_IMAGE:-ppf-server:local}
+    restart: unless-stopped
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      PORT: "8080"
+      PPF_ENVIRONMENT: production
+      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      DATABASE_USER: ${POSTGRES_USER}
+      DATABASE_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    networks:
+      - internal
+      - edge
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+          cpus: "1.0"
+
+  db:
+    image: postgis/postgis:17-3.5
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    secrets:
+      - db_password
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    networks:
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    deploy:
+      resources:
+        limits:
+          memory: 768M
+          cpus: "1.0"
+
+secrets:
+  db_password:
+    file: ./secrets/db_password
+
+volumes:
+  db-data:
+
+networks:
+  internal:
+    internal: true
+  edge:
+    name: ppf-prod-edge

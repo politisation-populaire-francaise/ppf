@@ -1,0 +1,41 @@
+# Build outputs
+build/
+.gradle/
+.kotlin/
+*/build/
+**/build/
+out/
+
+# Local configuration (never committed)
+local.properties
+.env
+.env.*
+!.env.example
+keystore.properties
+
+# Keys and secrets
+*.keystore
+*.jks
+*.p12
+*.pem
+*.key
+secrets/
+
+# IDE and OS files
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Xcode (future iOS app)
+ios/**/xcuserdata/
+ios/**/*.xcworkspace/xcuserdata/
+ios/Pods/
+
+# Secret keys of example or real content signers (kept in the user profile, never here)
+*.nsec
+
+# JVM crash logs
+hs_err_pid*.log
+replay_pid*.log

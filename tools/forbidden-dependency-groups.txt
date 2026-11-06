@@ -1,0 +1,20 @@
+# Forbidden dependency groups (regular expressions, one per line): tracking, analytics,
+# advertising, crash reporting to third parties, proprietary push, proprietary maps.
+# Checked against the resolved dependency graph by tools/check-dependencies.sh.
+com\.google\.android\.gms
+com\.google\.firebase
+com\.google\.ads
+com\.google\.mlkit
+com\.facebook
+com\.crashlytics
+io\.sentry
+com\.mixpanel
+com\.segment
+com\.appsflyer
+com\.adjust
+com\.onesignal
+com\.braze
+com\.amplitude
+com\.bugsnag
+io\.branch
+com\.mapbox

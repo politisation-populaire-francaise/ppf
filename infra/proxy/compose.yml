@@ -1,0 +1,51 @@
+# Reverse proxy, the only process exposed to the Internet. Started as its own project:
+#   docker compose -p ppf-proxy up -d
+# It joins the edge network of each environment; it never reaches the databases.
+
+name: ppf-proxy
+
+services:
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_BIND_SERVICE
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+      # Preproduction: bound to the WireGuard address only, never to the public interface.
+      - "${WIREGUARD_SERVER_IP}:8443:8443"
+    environment:
+      PROD_DOMAIN: ${PROD_DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+      PREPROD_BASIC_AUTH_USER: ${PREPROD_BASIC_AUTH_USER}
+      PREPROD_BASIC_AUTH_HASH: ${PREPROD_BASIC_AUTH_HASH}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    networks:
+      - prod-edge
+      - preprod-edge
+    deploy:
+      resources:
+        limits:
+          memory: 128M
+          cpus: "0.5"
+
+volumes:
+  caddy-data:
+  caddy-config:
+
+networks:
+  prod-edge:
+    external: true
+    name: ppf-prod-edge
+  preprod-edge:
+    external: true
+    name: ppf-preprod-edge

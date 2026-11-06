@@ -1,0 +1,43 @@
+# Forbidden third parties, trackers and CDNs (case-insensitive regular expressions, one per line).
+# Any match in source, build or configuration files fails the build (tools/check-no-trackers.sh).
+# Rationale: cahier des charges, principle 6 ("Aucun traceur") and CLAUDE.md, section 7.
+googleapis\.com
+gstatic\.com
+googletagmanager
+google-analytics
+googlesyndication
+doubleclick
+firebase
+com\.google\.android\.gms
+play-services
+crashlytics
+recaptcha
+facebook\.(com|net)
+fbcdn\.net
+connect\.facebook
+instagram\.com/embed
+twitter\.com/widgets
+platform\.twitter
+cdnjs\.cloudflare\.com
+unpkg\.com
+jsdelivr\.net
+fonts\.googleapis
+fonts\.gstatic
+use\.fontawesome
+sentry\.io
+io\.sentry
+mixpanel
+segment\.(io|com)
+amplitude\.com
+hotjar
+appsflyer
+adjust\.com
+onesignal
+branch\.io
+intercom\.io
+newrelic
+datadoghq
+bugsnag
+api\.mapbox\.com
+hcaptcha
+marianne[ -]?libre

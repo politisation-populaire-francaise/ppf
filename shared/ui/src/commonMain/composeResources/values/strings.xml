@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Default language of the interface: French. Every visible text lives here.
+     French typography: the apostrophe is the typographic one (’), which also needs no escaping. -->
+<resources>
+    <string name="app_name">Politisation Populaire Française</string>
+    <string name="app_short_name">PPF</string>
+    <string name="app_wordmark">Politisation
+Populaire Française</string>
+    <string name="badge_example">[EXEMPLE]</string>
+
+    <string name="space_fil">Fil</string>
+    <string name="space_carte">Carte</string>
+    <string name="space_en_direct">En direct</string>
+    <string name="space_messages">Messages</string>
+    <string name="space_revendications">Revendications</string>
+    <!-- Same word on two lines, for the narrow labels of the bottom bar and of the rail. -->
+    <string name="space_revendications_bar">Revendi-\ncations</string>
+    <string name="space_voir">Voir</string>
+    <string name="space_comprendre">Comprendre</string>
+    <string name="space_agir">Agir</string>
+    <string name="space_decider">Décider</string>
+    <string name="space_mon_espace">Mon espace</string>
+
+    <string name="desc_fil">Les publications des comptes que vous suivez, les mobilisations et les contenus du moment.</string>
+    <string name="desc_carte">Manifestations, rassemblements et lieux utiles près de chez vous. Bientôt disponible.</string>
+    <string name="desc_en_direct">Ce qu’il faut savoir en moins de trente secondes : chiffres clés, prochaines mobilisations, alertes.</string>
+    <string name="desc_messages">Vos conversations privées et de groupe, les salons de vos collectifs, et les flux des médias et des élus que vous suivez.</string>
+    <string name="desc_revendications">Les citoyens proposent ce qui doit changer et votent : un compte, une voix. Les revendications les plus soutenues alimentent le Programme du peuple et le Pacte démocratique.</string>
+    <string name="desc_voir">Rendre visible, de façon chiffrée et sourcée, ce qui se passe et ce que fait le pouvoir.</string>
+    <string name="desc_comprendre">Qui décide de quoi, comment fonctionnent les institutions, vos droits, le vrai et le faux.</string>
+    <string name="desc_agir">Se mobiliser, s’organiser, s’entraider, témoigner, communiquer.</string>
+    <string name="desc_decider">Revendiquer, faire campagne, obliger les élus à s’engager, décider ensemble.</string>
+    <string name="desc_mon_espace">Votre tableau de bord personnel : votre territoire, vos suivis, vos votes. Tout reste sur votre appareil.</string>
+
+    <string name="action_open_menu">Ouvrir le menu</string>
+    <string name="action_close_menu">Fermer le menu</string>
+    <string name="action_search">Rechercher</string>
+    <string name="action_search_soon">Rechercher (bientôt disponible)</string>
+    <string name="action_notifications">Notifications</string>
+    <string name="action_notifications_soon">Notifications (bientôt disponibles)</string>
+    <string name="action_my_space">Mon espace</string>
+    <string name="action_map">Carte</string>
+    <string name="action_help">Aide</string>
+    <string name="action_settings">Paramètres</string>
+
+    <string name="layout_compact">Affichage téléphone</string>
+    <string name="layout_medium">Affichage tablette</string>
+    <string name="layout_expanded">Affichage ordinateur</string>
+    <string name="layout_landscape_hint">Hauteur réduite : mode paysage.</string>
+    <string name="layout_size">Largeur %1$d dp, hauteur %2$d dp.</string>
+    <string name="platform_label">Plateforme : %1$s %2$s.</string>
+    <string name="version_label">Version %1$s.</string>
+
+    <string name="skeleton_notice">[EXEMPLE] Squelette de la phase 0. Cet écran sert uniquement à vérifier l’affichage sur téléphone, tablette et ordinateur. Il ne contient aucun contenu réel.</string>
+
+    <string name="nav_disclaimer">Plateforme citoyenne indépendante, sans lien avec l’État ni le gouvernement.</string>
+    <string name="nav_search_soon">Recherche : bientôt disponible</string>
+
+    <!-- Encarts des contenus -->
+    <string name="callout_en_bref">En bref</string>
+    <string name="callout_legal">Légal</string>
+    <string name="callout_illegal">Illégal</string>
+    <string name="callout_attention">Attention</string>
+    <string name="callout_conseil">Conseils</string>
+
+    <!-- Fil -->
+    <string name="feed_title">Fil communautaire</string>
+    <string name="feed_tab_all">Tout</string>
+    <string name="feed_tab_ppf">Comptes PPF</string>
+    <string name="feed_tab_mine">Mes publications</string>
+    <string name="feed_tab_revendications">Revendications</string>
+
+    <!-- Revendications (M11) -->
+    <string name="revendications_intro">Ici, chaque revendication est une card : l’idée en une ou deux phrases, son thème, son territoire, son statut. Le vote Pour ou Contre ouvrira quand la méthode « une personne, une voix » aura été validée. Les revendications affichées sont des exemples, pas des positions de PPF.</string>
+    <string name="revendications_none">Aucune revendication pour l’instant.</string>
+    <string name="revendication_back">Retour aux revendications</string>
+    <string name="revendication_status_nouvelle">Nouvelle</string>
+    <string name="revendication_status_en_debat">En débat</string>
+    <string name="revendication_status_tres_soutenue">Très soutenue</string>
+    <string name="revendication_status_retenue">Retenue dans le Programme du peuple</string>
+    <string name="revendication_status_campagne">Devenue campagne</string>
+    <string name="revendication_vote_for">Pour</string>
+    <string name="revendication_vote_against">Contre</string>
+    <string name="revendication_debate">Débat</string>
+    <string name="revendication_vote_soon">Vote et débat ouverts après la validation de la méthode « une personne, une voix ».</string>
+    <string name="revendication_argument">Argumentaire</string>
+
+    <!-- Messages (M14 et bloc communautaire) -->
+    <string name="messages_tab_private">Privé</string>
+    <string name="messages_tab_collectives">Collectifs</string>
+    <string name="messages_tab_flows">Flux</string>
+    <string name="messages_private_title">Conversations privées et de groupe</string>
+    <string name="messages_private_text">Entre deux personnes ou en petit groupe, chiffrées de bout en bout : seuls les participants peuvent les lire, pas même PPF.</string>
+    <string name="messages_collectives_title">Collectifs, syndicats, associations</string>
+    <string name="messages_collectives_text">Les salons de vos collectifs : annonces, organisation, décisions, avec les rôles et la charte de chaque collectif.</string>
+    <string name="messages_flows_title">Médias et élus suivis</string>
+    <string name="messages_flows_text">Les publications des médias et des élus que vous suivez, rassemblées ici comme des conversations à sens unique.</string>
+    <string name="messages_coming">Bientôt disponible : cet écran montre l’organisation prévue, aucune conversation n’est encore possible.</string>
+    <string name="messages_new">Nouvelle conversation</string>
+    <string name="messages_encrypted_note">Le protocole de chiffrement est en cours de choix. Il devra permettre des conversations lisibles par les seuls participants, vérifiables par QR code, et fonctionner sans Internet en manifestation.</string>
+    <string name="feed_live_label">EN DIRECT</string>
+    <string name="feed_compose_hint">Partager une publication…</string>
+    <string name="feed_visibility_public">Visible par : tout le monde</string>
+    <string name="feed_public">Public</string>
+    <string name="feed_verified">Compte vérifié</string>
+    <string name="feed_relay">Relayer</string>
+    <string name="feed_publish">Publier</string>
+    <string name="feed_need_account">Tout se lit sans compte. Pour publier, réagir ou suivre des comptes, créez le vôtre : douze mots, aucun e-mail, aucun téléphone.</string>
+    <string name="feed_create_account">Créer mon compte</string>
+    <string name="feed_pending">En attente d’envoi au serveur</string>
+    <string name="feed_like">J’aime</string>
+    <string name="feed_comment">Commenter</string>
+    <string name="feed_share">Partager</string>
+    <string name="feed_badge_ppf">PPF</string>
+    <string name="feed_badge_you">Vous</string>
+    <string name="feed_topics">%1$s</string>
+    <string name="feed_empty">Aucune publication pour l’instant.</string>
+    <string name="feed_empty_filter">Aucune publication dans cette catégorie pour l’instant.</string>
+    <string name="feed_prototype_notice">[EXEMPLE] Prototype du fil : les réactions restent sur votre appareil ; commenter et partager arriveront après le cadrage de la vie privée.</string>
+    <string name="time_now">à l’instant</string>
+    <string name="time_minutes_ago">il y a %1$d min</string>
+    <string name="time_hours_ago">il y a %1$d h</string>
+    <string name="time_yesterday">hier</string>
+    <string name="time_days_ago">il y a %1$d jours</string>
+
+    <!-- Comprendre : fiches pratiques -->
+    <string name="guides_title">Fiches pratiques</string>
+    <string name="content_status_loading">Chargement…</string>
+    <string name="content_status_unavailable">Les contenus ne sont pas disponibles sur cet appareil.</string>
+    <string name="content_status_offline">Hors ligne : contenus intégrés à l’application, lisibles sans réseau.</string>
+    <string name="content_status_synced">À jour avec le serveur (%1$d nouveauté(s)). Lisible sans réseau.</string>
+    <string name="content_status_unreachable">Serveur injoignable : contenus enregistrés sur l’appareil.</string>
+    <string name="content_refresh">Actualiser</string>
+    <string name="content_none">Aucune fiche disponible pour l’instant.</string>
+    <string name="content_back">Retour à la liste</string>
+    <string name="content_type_fiche">Fiche pratique</string>
+    <string name="content_type_dossier">Dossier</string>
+    <string name="content_type_decryptage">Décryptage</string>
+    <string name="content_type_article">Article</string>
+    <string name="content_origin_human">Rédigé par un humain</string>
+    <string name="content_origin_ai">Produit avec l’aide d’une IA</string>
+    <string name="content_updated">Mis à jour le %1$s</string>
+    <string name="content_topics">Thèmes : %1$s</string>
+
+    <!-- Mon espace : le compte -->
+    <string name="account_loading">Chargement de votre compte…</string>
+    <string name="account_failed">Impossible de lire le compte enregistré sur cet appareil. Ne créez pas de nouveau compte avant d’avoir compris pourquoi : contactez l’équipe.</string>
+    <string name="account_intro_title">Un compte sans e-mail ni téléphone</string>
+    <string name="account_intro_text">Votre compte est une paire de clés créée sur cet appareil. Personne, pas même PPF, ne peut le relier à votre identité réelle. La seule façon de le retrouver sur un autre appareil est votre phrase de récupération de douze mots.</string>
+    <string name="account_create">Créer mon compte</string>
+    <string name="account_restore">J’ai déjà un compte</string>
+    <string name="account_cancel">Annuler</string>
+
+    <string name="account_phrase_title">Votre phrase de récupération</string>
+    <string name="account_phrase_warning">Notez ces douze mots sur papier, dans l’ordre, et rangez-les en lieu sûr. Ne les saisissez jamais ailleurs que dans cette application. Toute personne qui les possède peut agir en votre nom. PPF ne les connaît pas et ne pourra jamais vous les redonner.</string>
+    <string name="account_phrase_noted">J’ai noté ces douze mots</string>
+
+    <string name="account_verify_title">Vérification</string>
+    <string name="account_verify_instruction">Pour vérifier votre copie, saisissez les mots n° %1$d, %2$d et %3$d.</string>
+    <string name="account_verify_word_label">Mot n° %1$d</string>
+    <string name="account_verify_error">Un mot ne correspond pas. Vérifiez votre copie et réessayez.</string>
+    <string name="account_verify_submit">Valider</string>
+    <string name="account_review_phrase">Revoir la phrase</string>
+
+    <string name="account_restore_title">Restaurer mon compte</string>
+    <string name="account_restore_label">Vos douze mots, ou votre clé secrète (nsec…)</string>
+    <string name="account_restore_submit">Restaurer</string>
+    <string name="account_restore_error_word_count">Une phrase de récupération compte douze mots (ou 15, 18, 21, 24).</string>
+    <string name="account_restore_error_unknown_words">Ces mots ne font pas partie de la liste officielle : %1$s. Vérifiez l’orthographe.</string>
+    <string name="account_restore_error_checksum">Ces mots ne forment pas une phrase valide. Vérifiez leur ordre et leur orthographe.</string>
+    <string name="account_restore_error_key">Cette clé secrète n’est pas valide.</string>
+    <string name="account_restore_ambiguous">Cette phrase est valable en français et en anglais : dans quelle langue vous a-t-elle été donnée ?</string>
+    <string name="account_language_french">Français</string>
+    <string name="account_language_english">Anglais</string>
+
+    <string name="account_ready_title">Votre identité</string>
+    <string name="account_pseudonym_hint">Pseudonyme · avatar généré automatiquement</string>
+    <string name="account_visibility_title">Qui voit quoi</string>
+    <string name="account_votes_label">Mes votes et soutiens</string>
+    <string name="account_votes_never">Jamais visibles</string>
+    <string name="account_votes_explanation">Vos votes et soutiens sont anonymes : ils ne sont jamais reliés à votre profil, même pour l’équipe.</string>
+    <string name="account_public_key_label">Votre clé publique (identifiant public)</string>
+    <string name="account_public_key_explanation">Cette clé est un pseudonyme : elle ne dit rien de vous, mais elle relie entre eux tous les contenus que vous publierez. Votre clé secrète, elle, ne quitte jamais cet appareil.</string>
+    <string name="account_show_phrase">Afficher ma phrase de récupération</string>
+    <string name="account_show_secret">Afficher ma clé secrète</string>
+    <string name="account_no_phrase">Ce compte a été importé par sa clé secrète : il n’a pas de phrase de récupération dans l’application.</string>
+    <string name="account_secret_label">Votre clé secrète (nsec)</string>
+    <string name="account_hide">Masquer</string>
+    <string name="account_sign_out">Se déconnecter de cet appareil</string>
+    <string name="account_reveal_warning_title">Avant d’afficher</string>
+    <string name="account_reveal_phrase_warning">Assurez-vous que personne ne regarde votre écran. Quiconque voit ces douze mots peut prendre le contrôle de votre compte.</string>
+    <string name="account_reveal_secret_warning">Votre clé secrète donne le contrôle total de votre compte. Ne la collez que dans une application de confiance compatible Nostr.</string>
+    <string name="account_reveal_confirm">Afficher</string>
+    <string name="account_sign_out_warning">Vos clés seront effacées de cet appareil. Sans votre phrase de récupération, votre compte sera perdu pour toujours. Pour un usage quotidien, fermez simplement l’application.</string>
+    <string name="account_sign_out_confirm">Effacer mes clés de cet appareil</string>
+</resources>

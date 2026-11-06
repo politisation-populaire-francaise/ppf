@@ -1,0 +1,152 @@
+[
+    {
+        "id": "91245bf685148b4fd50e955607a1375f5abfd44554a73fdb2b81cb274ab04d56",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "cantines-tarif-social"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Un tarif de cantine à un euro pour les familles aux revenus modestes dans toutes les communes"
+            ],
+            [
+                "summary",
+                "Généraliser le tarif de cantine scolaire à un euro, aujourd'hui laissé au choix de chaque commune."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-status",
+                "nouvelle"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "education"
+            ],
+            [
+                "t",
+                "pouvoir-d-achat"
+            ]
+        ],
+        "content": "## Pourquoi\n\nLe dispositif « cantine à 1 euro » existe depuis 2019 pour les petites communes rurales qui le choisissent ; ailleurs, le tarif dépend de la commune.\n\n## Ce que la revendication demande\n\n- Un tarif plafond d'un euro par repas pour les familles sous un seuil de revenus, dans toutes les communes.\n- Une compensation de l'État aux communes.\n\nCette revendication d'exemple sert uniquement à montrer à quoi ressemble une card « nouvelle » du mur des revendications.\n",
+        "sig": "61b84456e1fdb35a38a50577c5307428bcd71a640df5fb1ffd9924bc6151322d2c0cfa63e0bf193bde99b444993c18883bb8c1a201538cb90e9fb60e583c1334"
+    },
+    {
+        "id": "c20ccc8ccbd3f5ac50d11d3fd0888d874d7f242d88ec797c72059ec6da433514",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "lyon-transports-nuit"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Des transports en commun toute la nuit le week-end dans la métropole de Lyon"
+            ],
+            [
+                "summary",
+                "Faire circuler métro et lignes de bus principales toute la nuit du vendredi et du samedi."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-status",
+                "tres-soutenue"
+            ],
+            [
+                "ppf-territory",
+                "Métropole de Lyon"
+            ],
+            [
+                "t",
+                "transports"
+            ],
+            [
+                "t",
+                "metropole"
+            ]
+        ],
+        "content": "## Pourquoi\n\nLes personnes qui travaillent la nuit, les étudiants et les soignants dépendent de lignes qui s'arrêtent avant minuit.\n\n## Ce que la revendication demande\n\n- Métro et lignes de bus structurantes en service continu les nuits du vendredi et du samedi.\n- Une expérimentation d'un an, évaluée publiquement.\n\nCette revendication d'exemple sert à montrer une card locale « très soutenue » ; les compteurs de votes n'apparaîtront qu'avec la méthode « une personne, une voix ».\n",
+        "sig": "2bd574607b6d0f325f79a870bc2ab4269712cdcd4eafc42d6bf107c23f1a36fbd766c674fe4861c00a7bce0f034e21e7877d72d6b13c74424ff3d3537a0053c9"
+    },
+    {
+        "id": "375dac726f1b21b066f5f03b4abd5620fa2ac5de85ddf094d687c8d8046f2461",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "transparence-agenda-elus"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Publier l'agenda des rendez-vous des élus avec les représentants d'intérêts"
+            ],
+            [
+                "summary",
+                "Chaque élu national publie, chaque semaine, la liste de ses rendez-vous avec des représentants d'intérêts : qui, quand, à quel sujet."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "transparence"
+            ],
+            [
+                "t",
+                "institutions"
+            ]
+        ],
+        "content": "## Pourquoi\n\nLes citoyens ne savent pas qui influence les décisions prises en leur nom. Le registre des représentants d'intérêts existe, mais il reste déclaratif et peu lisible.\n\n## Ce que la revendication demande\n\n- La publication hebdomadaire, en données ouvertes, de l'agenda des rendez-vous de chaque parlementaire et de chaque membre du gouvernement avec des représentants d'intérêts.\n- Un format commun, réutilisable par les médias et les associations.\n\n## Ce qui existe déjà\n\nLe répertoire des représentants d'intérêts tenu par la Haute Autorité pour la transparence de la vie publique (loi du 9 décembre 2016). Cette revendication d'exemple sert à montrer la structure d'une card : elle sera remplacée par les revendications réellement proposées et votées par les citoyens.\n",
+        "sig": "cf38fd64f16e19552facd07543c65b24b0d0ea50ca388f0489279667ac1b08d7654e366fb8a86ba19ebe27a31bffca6c3a881f6243d6b43c3cc58a0d569e91da"
+    }
+]

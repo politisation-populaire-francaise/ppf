@@ -1,0 +1,92 @@
+# Version catalog: the single place where dependency versions are declared.
+# Every version here was checked on 2026-11-05 against the official release pages
+# and the Kotlin Multiplatform compatibility guide (Kotlin 2.4.21: Gradle up to 9.7,
+# Android Gradle Plugin up to 9.3.x).
+
+[versions]
+kotlin = "2.4.21"
+agp = "9.3.3"
+compose = "1.12.2"
+# Material 3 is versioned separately by JetBrains; 1.12.0-alpha03 is the version officially
+# paired with Compose Multiplatform 1.12.x (release notes of 1.12.0). No stable 1.12 exists yet.
+composeMaterial3 = "1.12.0-alpha03"
+ktor = "3.6.1"
+kotlinxHtml = "0.12.0"
+kotlinxSerialization = "1.12.0"
+logback = "1.6.6"
+androidxActivity = "1.13.0"
+# Identities and content signatures (cahier des charges, section 3.2). Bitcoin Core's audited
+# libsecp256k1 (Schnorr BIP-340) wrapped for Kotlin Multiplatform by ACINQ, and ACINQ's bitcoin-kmp
+# for BIP-39 recovery phrases, BIP-32 derivation (NIP-06), SHA-256 and bech32 (NIP-19).
+# Apache 2.0; releases of August and September 2026, checked on Maven Central on 2026-11-05.
+secp256k1Kmp = "0.24.0"
+bitcoinKmp = "0.32.0"
+# Released in May 2026, checked on 2026-11-05 (Compose 1.12 declares 1.9.0; Gradle keeps the newest).
+kotlinxCoroutines = "1.11.0"
+# Server database access: plain JDBC with a connection pool and SQL migrations (all Apache 2.0,
+# versions checked on Maven Central on 2026-11-05). Tests run a real PostgreSQL 17 started in-process.
+# Local database of the applications (offline-first): SQLDelight, Apache 2.0, release of October 2026.
+sqldelight = "2.4.1"
+hikari = "7.1.0"
+postgresqlJdbc = "42.7.14"
+flyway = "13.12.1"
+zonkyEmbeddedPostgres = "2.2.2"
+zonkyPostgresBinaries = "17.11.0"
+
+# Compose 1.12 libraries require compiling against API 37 or later.
+android-compileSdk = "37"
+android-minSdk = "26"
+android-targetSdk = "36"
+
+[libraries]
+compose-runtime = { module = "org.jetbrains.compose.runtime:runtime", version.ref = "compose" }
+compose-foundation = { module = "org.jetbrains.compose.foundation:foundation", version.ref = "compose" }
+compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMaterial3" }
+compose-ui = { module = "org.jetbrains.compose.ui:ui", version.ref = "compose" }
+# Placeholder icons for the skeleton (self-contained, no network). The final icons will be our own drawings.
+compose-material-icons-core = { module = "org.jetbrains.compose.material:material-icons-core", version = "1.7.3" }
+compose-ui-test = { module = "org.jetbrains.compose.ui:ui-test", version.ref = "compose" }
+compose-components-resources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "compose" }
+kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html", version.ref = "kotlinxHtml" }
+androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-server-default-headers = { module = "io.ktor:ktor-server-default-headers", version.ref = "ktor" }
+ktor-server-html-builder = { module = "io.ktor:ktor-server-html-builder", version.ref = "ktor" }
+ktor-server-test-host = { module = "io.ktor:ktor-server-test-host", version.ref = "ktor" }
+ktor-serialization-kotlinx-json = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+secp256k1-kmp = { module = "fr.acinq.secp256k1:secp256k1-kmp", version.ref = "secp256k1Kmp" }
+# Native libsecp256k1 bindings: one artifact per platform family (Windows, Linux and macOS for the JVM; four ABIs for Android).
+secp256k1-kmp-jni-jvm = { module = "fr.acinq.secp256k1:secp256k1-kmp-jni-jvm", version.ref = "secp256k1Kmp" }
+secp256k1-kmp-jni-android = { module = "fr.acinq.secp256k1:secp256k1-kmp-jni-android", version.ref = "secp256k1Kmp" }
+bitcoin-kmp = { module = "fr.acinq.bitcoin:bitcoin-kmp", version.ref = "bitcoinKmp" }
+sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
+sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
+sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
+sqldelight-sqlite-driver = { module = "app.cash.sqldelight:sqlite-driver", version.ref = "sqldelight" }
+sqldelight-native-driver = { module = "app.cash.sqldelight:native-driver", version.ref = "sqldelight" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikari" }
+postgresql-jdbc = { module = "org.postgresql:postgresql", version.ref = "postgresqlJdbc" }
+flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
+flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
+zonky-embedded-postgres = { module = "io.zonky.test:embedded-postgres", version.ref = "zonkyEmbeddedPostgres" }
+zonky-postgres-binaries-bom = { module = "io.zonky.test.postgres:embedded-postgres-binaries-bom", version.ref = "zonkyPostgresBinaries" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+
+[plugins]
+kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "compose" }
+composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+androidApplication = { id = "com.android.application", version.ref = "agp" }
+androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+sqldelight = { id = "app.cash.sqldelight", version.ref = "sqldelight" }

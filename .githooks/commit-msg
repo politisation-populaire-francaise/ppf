@@ -1,0 +1,14 @@
+#!/bin/sh
+# Commit-msg hook: enforces the Conventional Commits format.
+# Example: feat(shared): add window size classes
+
+message_file="$1"
+first_line="$(head -n 1 "$message_file")"
+
+pattern='^(build|chore|ci|docs|feat|fix|perf|refactor|revert|style|test)(\([a-z0-9/_.-]+\))?!?: .{1,100}$'
+
+if ! printf '%s\n' "$first_line" | grep -Eq "$pattern"; then
+    echo "Commit refused: the first line must follow Conventional Commits, for example:" >&2
+    echo "  feat(server): add health endpoint" >&2
+    exit 1
+fi

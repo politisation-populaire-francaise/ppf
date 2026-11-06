@@ -1,0 +1,13 @@
+{
+  "name": "Politisation Populaire Française",
+  "short_name": "PPF",
+  "lang": "fr",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#fcfaf8",
+  "theme_color": "#9e2a3a",
+  "icons": [
+    { "src": "/static/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

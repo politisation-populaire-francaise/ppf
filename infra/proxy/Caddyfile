@@ -1,0 +1,48 @@
+# Caddy configuration: automatic HTTPS, strict headers, no access log (no IP addresses kept).
+
+{
+	email {$ACME_EMAIL}
+	# No access log anywhere: client addresses are never written.
+	log {
+		output discard
+	}
+}
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+}
+
+# Production, public.
+{$PROD_DOMAIN} {
+	import security_headers
+	encode zstd gzip
+	reverse_proxy ppf-prod-server-1:8080 {
+		# The application never sees the client address.
+		header_up -X-Forwarded-For
+		header_up -X-Real-IP
+	}
+}
+
+# The other extensions redirect to the main domain.
+www.{$PROD_DOMAIN} {
+	redir https://{$PROD_DOMAIN}{uri} permanent
+}
+
+# Preproduction: WireGuard address only (see compose.yml), password, internal certificate.
+:8443 {
+	tls internal
+	import security_headers
+	basic_auth {
+		{$PREPROD_BASIC_AUTH_USER} {$PREPROD_BASIC_AUTH_HASH}
+	}
+	reverse_proxy ppf-preprod-server-1:8080 {
+		header_up -X-Forwarded-For
+		header_up -X-Real-IP
+	}
+}

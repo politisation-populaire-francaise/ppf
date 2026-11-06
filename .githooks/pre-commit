@@ -1,0 +1,14 @@
+#!/bin/sh
+# Pre-commit hook: refuses a commit that contains a secret or a forbidden third party.
+# Enabled locally with: git config core.hooksPath .githooks
+
+if command -v gitleaks >/dev/null 2>&1; then
+    gitleaks git --pre-commit --staged --redact --no-banner || {
+        echo "Commit refused: a secret was detected (see above)." >&2
+        exit 1
+    }
+else
+    echo "warning: gitleaks is not installed, secrets were not checked." >&2
+fi
+
+sh tools/check-no-trackers.sh || exit 1

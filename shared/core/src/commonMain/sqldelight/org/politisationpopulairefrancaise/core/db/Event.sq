@@ -1,0 +1,73 @@
+-- Local copy of signed events (NIP-01): contents fetched from the server, kept for offline reading,
+-- and the user's own publications waiting to be sent (pending = 1). See docs/FORMATS.md.
+-- Dialect: SQLite 3.18 (Android 8), so tags are kept as JSON text and indexed through event_tag.
+
+CREATE TABLE event (
+    id TEXT NOT NULL PRIMARY KEY,
+    pubkey TEXT NOT NULL,
+    created_at INTEGER NOT NULL,
+    kind INTEGER NOT NULL,
+    tags TEXT NOT NULL,
+    content TEXT NOT NULL,
+    sig TEXT NOT NULL,
+    address TEXT,
+    received_at INTEGER NOT NULL,
+    pending INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0
+);
+
+CREATE INDEX event_kind_created_at ON event(kind, created_at DESC, id);
+CREATE INDEX event_pubkey_created_at ON event(pubkey, created_at DESC, id);
+CREATE UNIQUE INDEX event_address ON event(address);
+CREATE INDEX event_pending ON event(pending);
+
+CREATE TABLE event_tag (
+    event_id TEXT NOT NULL,
+    name TEXT NOT NULL,
+    value TEXT NOT NULL
+);
+
+CREATE INDEX event_tag_lookup ON event_tag(name, value, event_id);
+CREATE INDEX event_tag_event ON event_tag(event_id);
+
+insert:
+INSERT INTO event(id, pubkey, created_at, kind, tags, content, sig, address, received_at, pending)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+insertTag:
+INSERT INTO event_tag(event_id, name, value) VALUES (?, ?, ?);
+
+findById:
+SELECT * FROM event WHERE id = ?;
+
+findByAddress:
+SELECT * FROM event WHERE address = ?;
+
+deleteById:
+DELETE FROM event WHERE id = ?;
+
+deleteTagsOf:
+DELETE FROM event_tag WHERE event_id = ?;
+
+selectRecent:
+SELECT * FROM event ORDER BY created_at DESC, id ASC LIMIT ?;
+
+selectByKinds:
+SELECT * FROM event WHERE kind IN ? ORDER BY created_at DESC, id ASC LIMIT ?;
+
+selectByKindsAndTag:
+SELECT event.* FROM event
+JOIN event_tag ON event_tag.event_id = event.id
+WHERE event.kind IN ? AND event_tag.name = ? AND event_tag.value = ?
+ORDER BY event.created_at DESC, event.id ASC LIMIT ?;
+
+selectPending:
+SELECT * FROM event WHERE pending = 1 ORDER BY created_at ASC, id ASC;
+
+markPublished:
+UPDATE event SET pending = 0 WHERE id = ?;
+
+latestCreatedAt:
+SELECT MAX(created_at) FROM event WHERE kind IN ? AND pending = 0;
+
+countAll:
+SELECT COUNT(*) FROM event;

@@ -1,0 +1,72 @@
+# Feuille de route
+
+Suivi de l'avancement du planning du cahier des charges (section 10.2). Mise à jour à chaque étape livrée.
+
+Légende : ✅ fait, 🔄 en cours, ⏳ à faire, ⛔ bloqué (décision ou action en attente).
+
+## Phase 0 : fondations
+
+| Élément | État | Détail |
+|---|---|---|
+| Vérification de l'environnement de la propriétaire | ✅ | 5 novembre 2026 : Windows 11, Git, JDK 21, SDK Android, GitHub CLI installés. |
+| Dépôt GitHub public, branche principale protégée | 🔄 | Décision du 5 novembre 2026 : public dès le premier commit. Création en cours. |
+| Squelette Kotlin Multiplatform et Compose Multiplatform (Android, ordinateur, iOS déclaré) | 🔄 | Modules `shared/core`, `shared/ui`, `android`, `desktop`, `ios` (non compilé). |
+| Premier écran adaptatif (téléphone, tablette, ordinateur) | 🔄 | Coquille de navigation adaptée aux trois largeurs, tests automatiques des trois dispositions. |
+| Squelette du serveur Ktor avec `/health` | 🔄 | Module `server`, en-têtes de sécurité, aucune journalisation d'adresse IP. |
+| Squelette du site web (Ktor + kotlinx.html) | 🔄 | Module `web`, lisible sans JavaScript, manifeste PWA. |
+| `/infra` : production et préproduction séparées | 🔄 | Deux projets Compose, proxy Caddy, modèle WireGuard, limites mémoire. |
+| Intégration continue (APK, bureau, tests, secrets, traceurs) | 🔄 | GitHub Actions : Linux et Windows, gitleaks, vérification des tiers, Dependabot. |
+| Documents techniques | 🔄 | ROADMAP, DECISIONS, THREAT_MODEL, REGISTRE_DONNEES, GUIDE_PROPRIETAIRE, CHANGELOG. |
+| Guide d'achat des noms de domaine | ✅ | `docs/guides/achat-domaines-hostinger.md` ; six domaines achetés le 5 novembre 2026. |
+| Guide du serveur KVM 1 (premier déploiement) | 🔄 | `docs/guides/serveur-hostinger-kvm1.md`, première version. |
+| Déploiement d'un squelette en préproduction | ⛔ | Attend la location du serveur, au moment du premier déploiement. |
+| Modèles juridiques (mentions légales, confidentialité, CGU, charte, DSA) | ⏳ | Brouillons à produire, marqués « À FAIRE RELIRE PAR UN AVOCAT ». |
+| Découpage de la phase 1 en MVP | ⏳ | Après la version 2.0 du cahier fonctionnel (brainstorming). |
+
+## Phase 1 : fondations techniques obligatoires (cahier des charges, section 3.2)
+
+Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que tout le reste en dépend.
+
+| Élément | État | Détail |
+|---|---|---|
+| Identités par paires de clés (M16) | 🔄 | Module commun : génération, clés « npub » et « nsec », phrase de récupération de 12 mots (français par défaut), tests sur les vecteurs officiels. Écran « Mon espace » : création avec vérification de trois mots, restauration par phrase ou clé, affichage des secrets après avertissement, déconnexion avec effacement. Stockage : Android Keystore ; fichier privé sur ordinateur. Reste : trousseau iOS, chiffrement par code sur ordinateur et verrouillage (S-43), plusieurs identités, transfert par QR code (S-12). |
+| Signature des contenus | 🔄 | Format d'événement NIP-01, signature et vérification testées. Reste : service de signature séparé pour la clé de la plateforme, rotation et révocation. |
+| Port de publication unique | 🔄 | Interface, mise en œuvre en mémoire, adaptateur vers le serveur (client HTTP), file d'attente hors ligne et synchronisation. Reste : anti-spam (limitation de débit, preuve de travail), règles de publication par rôle. |
+| Identifiants stables et export JSON | 🔄 | `docs/FORMATS.md`, version 1, avec l'API du serveur. |
+| Archivage horodaté des engagements | ⏳ | Empreinte SHA-256 disponible ; horodatage (OpenTimestamps ou RFC 3161) à choisir. |
+| Offline-first : base locale | 🔄 | SQLDelight (D-020) : table des événements et de leurs étiquettes, remplacement des versions, publications en attente. Reste : branchement dans les écrans, purge et taille maximale du cache. |
+| Serveur : base PostgreSQL et API des événements | 🔄 | JDBC, HikariCP, Flyway (D-019) ; `POST` et `GET /api/v1/events` (D-021), tests sur PostgreSQL 17 réel ; règle de publication (contenus éditoriaux réservés aux clés d'éditeurs) ; serveur de développement avec PostgreSQL embarqué. Reste : déploiement en préproduction, anti-spam, modération. |
+
+## Phase 1 : premiers modules
+
+| Élément | État | Détail |
+|---|---|---|
+| Fil social (M18) : écran par défaut, publier, suivre, réagir, commenter, suggestions | 🔄 | Première version le 6 novembre 2026 : fil chronologique, publication de notes courtes par un compte (envoi au serveur dès qu'il répond), réactions locales [EXEMPLE], bandeau EN DIRECT, vues parcourues au doigt (Tout, Comptes PPF, Revendications, Mes publications). Reste : cadrage vie privée des réactions et des suggestions (brainstorming), commentaires, partage, suivre des comptes, vues Mon cercle, Collectifs, Suivis, Près de moi, images sans métadonnées, modération. |
+| Messagerie (M14) : privé, collectifs, flux | 🔄 | Écran et trois vues en place (6 novembre 2026), aucune conversation possible. Protocole décidé le 7 novembre 2026 (D-027) : NIP-17 pour le privé, NIP-29 pour les salons, MLS plus tard. Reste : chiffrement NIP-44 et enveloppes dans `shared/core`, relais côté serveur, écrans de conversation, vérification par QR code. |
+| Design et navigation (décisions du 6 novembre 2026, D-023 et D-025) | 🔄 | Identité visuelle des maquettes de la propriétaire appliquée (couleurs, Atkinson Hyperlegible, icônes Lucide, composants) sur téléphone, tablette et ordinateur, en clair et en sombre. Reste : son avis sur le rendu réel, barre du bas ou boutons flottants (brainstorming), bouton AIDE, illustrations propres. |
+| Fiches pratiques hors ligne (M6, CO-03, S-26) | 🔄 | Lecture dans « Comprendre » : trois fiches [EXEMPLE] signées et intégrées à l'application, liste et détail adaptatifs, origine et date affichées (D-022). Reste : contenus réels relus par un avocat, synchronisation depuis le serveur en production, choix des rubriques à télécharger, espace occupé. |
+| CMS éditorial (S-70, S-71) | ⏳ | Pour l'instant : fichiers Markdown dans `content/` signés par `tools/content-signer`. À venir : rédaction, relecture, validation, publication dans l'application pour les éditeurs. |
+| Carte et agenda (M1) | ⏳ | Dépend du choix des tuiles de carte (coût éventuel à soumettre à la propriétaire). |
+| Fil d'actualité (M6) | ⏳ | |
+| Annuaire des organisations (M3) | ⏳ | |
+| Observatoire (M2) | ⏳ | |
+| Signalement et modération (M15) | ⏳ | |
+| Mur des revendications (M11) | 🔄 | Mur en cards, détail et argumentaire, vue dans le fil, trois revendications [EXEMPLE] (6 novembre 2026). Vote, débat et proposition bloqués : méthode « une personne, une voix » à valider. |
+
+## Phases suivantes (résumé, à découper en MVP)
+
+- **Phase 1** : carte et agenda, observatoire, fiches pratiques hors ligne, annuaire, fil d'actualité, CMS, comptes pseudonymes, modération, signature des contenus ; mur des revendications, puis Pacte démocratique pour le début de 2027.
+- **Phase 2** : témoignages, documentation et chronologie, fiches des responsables, décryptage, pétitions, modération assistée par IA, comparateur présidentielle 2027, kit du candidat citoyen.
+- **Phase 3** : Nostr, miroirs statiques, adresse .onion, Tor dans l'application ; votations et assemblées citoyennes.
+- **Phase 4** : messagerie hors ligne bitchat.
+- **Phase 5** : votes des parlementaires sur 50 ans, international, éducation et bibliothèque complètes.
+- **Phase 6** : désignation citoyenne d'un candidat, après avis d'un avocat.
+- **iOS, hors phase** : compilation, tests et publication dès l'ouverture du compte Apple Developer.
+
+## Décisions en attente qui bloquent une étape
+
+- Hébergement du modèle d'IA de modération (phase 2).
+- Barre du bas ou boutons flottants « Carte » et « AIDE » ; spécification du bouton AIDE.
+- Méthode « une personne, une voix » (mur des revendications, phase 1).
+- Prestataire de paiement (dons, adhésions).
+- Navigation détaillée et briques de contenu communes (découpage en MVP).
