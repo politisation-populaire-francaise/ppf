@@ -92,6 +92,19 @@ class MessageStore(private val database: PpfDatabase, private val clock: () -> L
         queries.deleteConversation(id)
     }
 
+    /**
+     * Forgets every conversation of this device: messages, read marks, pending deliveries and the
+     * date of the last pull. Called when the keys are erased: all of it belonged to that identity,
+     * and a cursor left behind would make the next account on the device miss its own history
+     * (a restored account fetches its whole history again from the server).
+     */
+    fun clear() = database.transaction {
+        queries.deleteAllOutgoing()
+        queries.deleteAllMessages()
+        queries.deleteAllConversations()
+        queries.deleteAllState()
+    }
+
     /** Records that the user's message [messageId] still has to reach [recipient] (hexadecimal key). */
     fun queueOutgoing(messageId: String, recipient: String) =
         queries.insertOutgoing(message_id = messageId, recipient = recipient, queued_at = clock())

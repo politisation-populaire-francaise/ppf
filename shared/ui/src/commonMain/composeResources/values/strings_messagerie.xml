@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Private conversations (NIP-17, decision D-027) and the flows of followed accounts, in the
+     "Messages" screen. French, typographic apostrophe (’), no em dash. The rooms of collectives
+     have their own file. -->
+<resources>
+    <!-- Without an account, without a database, the state of the exchanges with the server. -->
+    <string name="messages_need_account">Tout se lit sans compte. Pour échanger des messages chiffrés de bout en bout, créez votre compte dans « Mon espace » : douze mots, aucun e-mail, aucun téléphone.</string>
+    <string name="messages_unavailable">Les messages ne sont pas disponibles sur cet appareil : il n’a pas de base de données locale pour les garder.</string>
+    <string name="messages_conversations_heading">Conversations</string>
+    <string name="messages_refresh">Actualiser les messages</string>
+    <string name="messages_status_offline">Pas de serveur pour l’instant : vos messages restent sur cet appareil, en attente d’envoi.</string>
+    <string name="messages_status_unreachable">Serveur injoignable : vos messages en attente partiront au prochain essai. Les conversations enregistrées sur l’appareil restent lisibles.</string>
+    <string name="messages_status_synced">À jour avec le serveur.</string>
+    <string name="messages_status_syncing">Relevé des messages…</string>
+
+    <!-- The list of conversations. -->
+    <string name="messages_empty">Aucune conversation pour l’instant. Avec « Nouvelle conversation », écrivez à un compte par sa clé npub ou choisissez un compte que vous suivez. Seuls les participants peuvent lire vos messages, pas même PPF.</string>
+    <string name="messages_retention_note">Le serveur ne garde que des enveloppes chiffrées, trois mois au minimum : un appareil resté absent plus longtemps peut manquer des messages.</string>
+    <string name="messages_select_hint">Choisissez une conversation, ou commencez-en une nouvelle.</string>
+    <string name="messages_group_participants">%1$d participants</string>
+    <plurals name="messages_unread_count">
+        <item quantity="one">%1$d message non lu</item>
+        <item quantity="other">%1$d messages non lus</item>
+    </plurals>
+    <string name="messages_open_conversation">Ouvrir la conversation</string>
+    <string name="messages_preview_mine">Vous : %1$s</string>
+    <string name="messages_my_key_label">Votre clé publique, à donner aux personnes qui veulent vous écrire :</string>
+    <string name="messages_local_note">La liste de vos conversations et de vos contacts reste sur cet appareil. Accusés de lecture et « en train d’écrire » n’existent pas : personne ne sait si vous avez lu.</string>
+
+    <!-- The open conversation. -->
+    <string name="messages_encrypted">Chiffré de bout en bout</string>
+    <string name="messages_compose_hint">Message chiffré</string>
+    <string name="messages_send">Envoyer</string>
+    <string name="messages_back">Retour aux conversations</string>
+    <string name="messages_pending">En attente d’envoi</string>
+    <string name="messages_first_message">Écrivez le premier message. Il sera chiffré pour %1$s : personne d’autre ne pourra le lire, pas même PPF.</string>
+    <string name="messages_send_error_recipient">Impossible de chiffrer pour ce destinataire : sa clé n’est pas valide.</string>
+    <string name="messages_send_error_long">Ce message est trop long : 16 Ko de texte au plus.</string>
+    <string name="messages_send_error_other">Le message n’a pas pu être enregistré. Réessayez.</string>
+    <string name="messages_subject">Sujet : %1$s</string>
+    <string name="messages_day_today">Aujourd’hui</string>
+    <string name="messages_day_yesterday">Hier</string>
+
+    <!-- How the messages are protected, and the known limit until MLS. -->
+    <string name="messages_encryption_open">Comment vos messages sont protégés</string>
+    <string name="messages_encryption_title">Comment vos messages sont protégés</string>
+    <string name="messages_encryption_text">Chaque message est chiffré sur votre appareil pour chacun des participants, puis glissé dans une enveloppe scellée qui cache l’expéditeur, l’heure réelle et le contenu (protocole NIP-17 de Nostr). Le serveur de PPF ne fait que transmettre ces enveloppes : il voit à quelle clé chacune est destinée, mais il ne peut pas lire les messages.</string>
+    <string name="messages_encryption_limit">Limites connues : si votre clé secrète ou vos douze mots sont un jour volés, vos anciens messages pourront être lus ; un serveur malveillant pourrait aussi deviner qui échange avec qui en observant les envois. Gardez vos douze mots en lieu sûr. Un protocole plus robuste (MLS) est prévu pour la suite.</string>
+    <string name="messages_encryption_verify">La vérification d’un contact par QR code arrive bientôt. En attendant, comparez sa clé npub par un autre moyen : en personne ou de vive voix.</string>
+    <string name="messages_encryption_close">Fermer</string>
+
+    <!-- "Nouvelle conversation". -->
+    <string name="messages_new_title">Nouvelle conversation</string>
+    <string name="messages_new_key_label">Clé publique du destinataire</string>
+    <string name="messages_new_key_hint">npub1… ou clé hexadécimale</string>
+    <string name="messages_new_key_help">Pour un petit groupe, ajoutez plusieurs clés, ou séparez-les par des espaces.</string>
+    <string name="messages_new_add">Ajouter</string>
+    <string name="messages_new_recipients">Destinataires</string>
+    <string name="messages_new_remove">Retirer %1$s</string>
+    <string name="messages_new_key_error">Cette clé n’est pas valide : vérifiez qu’elle commence par npub1 et qu’elle est complète.</string>
+    <string name="messages_new_key_self">C’est votre propre clé : choisissez un autre destinataire.</string>
+    <string name="messages_new_followed_label">Ou choisissez parmi les comptes que vous suivez</string>
+    <string name="messages_new_followed_none">Vous ne suivez encore aucun compte.</string>
+    <string name="messages_new_selected">Sélectionné</string>
+    <string name="messages_new_not_selected">Non sélectionné</string>
+    <string name="messages_new_subject_hint">Sujet (facultatif)</string>
+    <string name="messages_new_privacy">Les destinataires verront votre clé publique. Le serveur ne pourra ni lire vos messages, ni voir qui les écrit.</string>
+    <string name="messages_new_confirm">Commencer</string>
+    <string name="messages_new_cancel">Annuler</string>
+
+    <!-- The flows of the followed media and elected officials: one-way conversations. -->
+    <string name="flows_heading">Comptes suivis</string>
+    <string name="flows_empty">Suivez des médias et des élus depuis le fil : leurs publications apparaîtront ici comme des conversations à sens unique.</string>
+    <string name="flows_public">Flux public : vous recevez, vous ne répondez pas ici.</string>
+    <string name="flows_no_post">Aucune publication récente.</string>
+    <string name="flows_open">Lire les publications</string>
+    <string name="flows_back">Retour aux flux</string>
+    <string name="flows_select_hint">Choisissez un compte suivi pour lire ses publications.</string>
+    <string name="flows_refresh">Actualiser les flux</string>
+    <string name="flows_none_yet">Pas encore de publication de ce compte sur cet appareil.</string>
+</resources>

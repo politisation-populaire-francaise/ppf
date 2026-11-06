@@ -203,6 +203,6 @@ Populaire Française</string>
     <string name="account_reveal_phrase_warning">Assurez-vous que personne ne regarde votre écran. Quiconque voit ces douze mots peut prendre le contrôle de votre compte.</string>
     <string name="account_reveal_secret_warning">Votre clé secrète donne le contrôle total de votre compte. Ne la collez que dans une application de confiance compatible Nostr.</string>
     <string name="account_reveal_confirm">Afficher</string>
-    <string name="account_sign_out_warning">Vos clés seront effacées de cet appareil. Sans votre phrase de récupération, votre compte sera perdu pour toujours. La liste des comptes que vous suivez sera aussi effacée. Pour un usage quotidien, fermez simplement l’application.</string>
+    <string name="account_sign_out_warning">Vos clés seront effacées de cet appareil. Sans votre phrase de récupération, votre compte sera perdu pour toujours. La liste des comptes que vous suivez sera aussi effacée, ainsi que vos conversations privées enregistrées sur l’appareil (en restaurant votre compte, vous retrouverez celles que le serveur garde encore). Pour un usage quotidien, fermez simplement l’application.</string>
     <string name="account_sign_out_confirm">Effacer mes clés de cet appareil</string>
 </resources>

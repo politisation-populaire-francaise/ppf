@@ -17,6 +17,8 @@ import org.politisationpopulairefrancaise.core.identity.PhraseLanguage
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.core.identity.RecoveryPhrase
 import org.politisationpopulairefrancaise.core.identity.StoredIdentity
+import org.politisationpopulairefrancaise.core.messaging.LocalMessagingSigner
+import org.politisationpopulairefrancaise.core.messaging.MessagingSigner
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.text.normalizeNfkd
@@ -82,6 +84,12 @@ class AccountSession(
 
     /** Signs on behalf of the account, when there is one. */
     val signer: EventSigner? get() = keys?.let(::LocalEventSigner)
+
+    /**
+     * Signs and encrypts on behalf of the account for the private messages (NIP-17, decision
+     * D-027), when there is one. Like [signer], it never exposes the keys themselves.
+     */
+    val messagingSigner: MessagingSigner? get() = keys?.let(::LocalMessagingSigner)
 
     fun start() {
         scope.launch {
