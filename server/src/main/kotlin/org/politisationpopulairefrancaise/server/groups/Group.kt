@@ -59,6 +59,16 @@ object GroupKinds {
     /** The only charter version accepted today. A new version will be accepted alongside, then alone. */
     const val CHARTER_VERSION: String = "1.0"
 
+    /** Longest name and territory of a description, in characters (the app allows 80). */
+    const val MAX_NAME_LENGTH: Int = 100
+    const val MAX_TERRITORY_LENGTH: Int = 100
+
+    /**
+     * Largest description, once serialized (JSON of the signed event): enough for an `about` of a
+     * few thousand characters, small enough that the directory stays light to list.
+     */
+    const val MAX_DESCRIPTION_BYTES: Int = 8 * 1024
+
     /** Metadata flags the relay cannot honour yet (they restrict reading to members). */
     val UNSUPPORTED_FLAGS: Set<String> = setOf("private", "hidden")
 
@@ -105,6 +115,9 @@ data class Group(
 
     /** The territory as compared for duplicates and searched; empty without a territory. */
     val normalizedTerritory: String get() = GroupNames.normalize(territory.orEmpty())
+
+    /** The description as searched; empty without one. */
+    val normalizedAbout: String get() = GroupNames.normalize(about.orEmpty())
 
     companion object {
         /** Reads a metadata event; null if it is not a well-formed group description (exactly one valid `d`). */

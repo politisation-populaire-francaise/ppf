@@ -22,7 +22,8 @@ import org.politisationpopulairefrancaise.server.relay.RelayKinds
  *   open to every account) provided it carries exactly one valid `d` id, a non-empty `name`, a
  *   non-empty territory (`ppf-territory`), the accepted charter version (`ppf-charter` = 1.0) and
  *   none of the flags the relay cannot honour yet (`private`, `hidden`: reading would have to be
- *   restricted to members); `about` and `picture` are optional;
+ *   restricted to members); `about` and `picture` are optional; it stays small (at most
+ *   [GroupKinds.MAX_DESCRIPTION_BYTES] serialized, name and territory of at most 100 characters);
  * - the companions of a description (39001 admins, 39003 roles, 39004, 39005) stay reserved to the
  *   editorial keys until roles exist: an admins list published by anyone would tie keys to a group;
  * - member lists (39002) are refused: the server never holds nor publishes one (D-027);
@@ -78,6 +79,12 @@ class PublicationPolicy(private val editors: Set<String>) {
             Decision.Refused(400, "missing_territory", "A group description names its territory in a ${GroupKinds.TERRITORY_TAG} tag (a town, a department, \"France\").")
         event.kind == GroupKinds.METADATA && event.firstTagValue(GroupKinds.CHARTER_TAG) != GroupKinds.CHARTER_VERSION ->
             Decision.Refused(400, "missing_charter", "Creating a group means accepting the charter of values: a ${GroupKinds.CHARTER_TAG} tag with the value ${GroupKinds.CHARTER_VERSION}.")
+        event.kind == GroupKinds.METADATA && !fitsDescriptionBounds(event) ->
+            Decision.Refused(
+                400,
+                "description_too_long",
+                "A group description is at most ${GroupKinds.MAX_DESCRIPTION_BYTES} bytes, its name at most ${GroupKinds.MAX_NAME_LENGTH} characters and its territory at most ${GroupKinds.MAX_TERRITORY_LENGTH}.",
+            )
         event.kind == GroupKinds.CHAT_MESSAGE && event.tagValues(GroupKinds.GROUP_TAG).isEmpty() ->
             Decision.Refused(400, "missing_group", "A chat message names its group in an h tag.")
         event.tagValues(GroupKinds.GROUP_TAG).size > 1 ->
@@ -95,6 +102,12 @@ class PublicationPolicy(private val editors: Set<String>) {
     /** The first value of [tag] exists and keeps at least one letter or digit once normalized (so that it can be compared). */
     private fun hasUsableText(event: SignedEvent, tag: String): Boolean =
         event.firstTagValue(tag)?.let { GroupNames.normalize(it).isNotEmpty() } == true
+
+    /** A room description stays small: every account may create one and the directory lists them all. */
+    private fun fitsDescriptionBounds(event: SignedEvent): Boolean =
+        event.firstTagValue(GroupKinds.NAME_TAG).orEmpty().length <= GroupKinds.MAX_NAME_LENGTH &&
+            event.firstTagValue(GroupKinds.TERRITORY_TAG).orEmpty().length <= GroupKinds.MAX_TERRITORY_LENGTH &&
+            event.toJson().encodeToByteArray().size <= GroupKinds.MAX_DESCRIPTION_BYTES
 
     private fun hasExactlyOneRecipient(event: SignedEvent): Boolean {
         val recipients = event.tagValues("p")

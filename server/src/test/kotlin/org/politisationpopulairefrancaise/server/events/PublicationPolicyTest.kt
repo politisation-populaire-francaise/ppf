@@ -86,6 +86,24 @@ class PublicationPolicyTest {
         val secondCharter = description(charter = "0.9") + listOf(listOf(GroupKinds.CHARTER_TAG, "1.0"))
         assertEquals("missing_charter", assertIs<PublicationPolicy.Decision.Refused>(policy.check(signer.sign(kind = GroupKinds.METADATA, tags = secondCharter))).error)
 
+        // A description stays small: name, territory, and the whole event (content included).
+        val tooLong = listOf(
+            description(name = "n".repeat(GroupKinds.MAX_NAME_LENGTH + 1)),
+            description(territory = "t".repeat(GroupKinds.MAX_TERRITORY_LENGTH + 1)),
+            description() + listOf(listOf(GroupKinds.ABOUT_TAG, "a".repeat(GroupKinds.MAX_DESCRIPTION_BYTES))),
+        )
+        for (tags in tooLong) {
+            val refused = assertIs<PublicationPolicy.Decision.Refused>(policy.check(signer.sign(kind = GroupKinds.METADATA, tags = tags)))
+            assertEquals(400, refused.status)
+            assertEquals("description_too_long", refused.error)
+        }
+        val bigContent = signer.sign(kind = GroupKinds.METADATA, content = "x".repeat(GroupKinds.MAX_DESCRIPTION_BYTES), tags = description())
+        assertEquals("description_too_long", assertIs<PublicationPolicy.Decision.Refused>(policy.check(bigContent)).error)
+        val atBounds = description(name = "n".repeat(GroupKinds.MAX_NAME_LENGTH), territory = "t".repeat(GroupKinds.MAX_TERRITORY_LENGTH))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(signer.sign(kind = GroupKinds.METADATA, tags = atBounds)))
+        // Only descriptions are bounded this way: a long note is still fine.
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(signer.sign(kind = 1, content = "x".repeat(GroupKinds.MAX_DESCRIPTION_BYTES))))
+
         // The companions of a description (admins, roles) stay reserved to the editorial keys for now.
         val companion = listOf(listOf("d", "demo"), listOf("p", citizen.publicKey.hex, "admin"))
         assertEquals(403, assertIs<PublicationPolicy.Decision.Refused>(policy.check(signer.sign(kind = GroupKinds.ADMINS, tags = companion))).status)
