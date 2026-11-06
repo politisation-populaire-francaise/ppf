@@ -6,6 +6,7 @@ import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.server.relay.RelayKinds
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
@@ -44,5 +45,13 @@ class PublicationPolicyTest {
 
         val ephemeral = LocalEventSigner(editor).sign(kind = 20001, content = "x")
         assertEquals(400, assertIs<PublicationPolicy.Decision.Refused>(policy.check(ephemeral)).status)
+    }
+
+    @Test
+    fun encryptedEnvelopesAreAcceptedFromAnyKey() = runBlocking {
+        val policy = PublicationPolicy(emptySet())
+        val oneTimeKey = LocalEventSigner(IdentityKeys.generate())
+        val wrap = oneTimeKey.sign(kind = RelayKinds.GIFT_WRAP, content = "opaque", tags = listOf(listOf("p", citizen.publicKey.hex)))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(wrap))
     }
 }

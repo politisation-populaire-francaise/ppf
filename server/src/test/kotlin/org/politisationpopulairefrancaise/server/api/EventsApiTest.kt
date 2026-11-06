@@ -18,6 +18,8 @@ import org.politisationpopulairefrancaise.core.signing.sign
 import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.module
+import org.politisationpopulairefrancaise.server.relay.RelayConfig
+import org.politisationpopulairefrancaise.server.relay.RelayKinds
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -151,6 +153,71 @@ class EventsApiTest {
         }
         val tooMany = (1..21).joinToString("&") { "tag=t:$it" }
         assertEquals(HttpStatusCode.BadRequest, client.get("/api/v1/events?$tooMany").status)
+    }
+
+    @Test
+    fun relaysEncryptedEnvelopesToTheirRecipientWithoutOpeningThem() = testApplication {
+        application { module(TestDatabase.dataSource) }
+        // A gift wrap is signed by a one-time key and carries only the recipient and an opaque payload.
+        val oneTimeKey = LocalEventSigner(IdentityKeys.generate())
+        val recipient = IdentityKeys.generate().publicKey.hex
+        val other = IdentityKeys.generate().publicKey.hex
+        val payload = "AqF3bXQ4[EXEMPLE ciphertext NIP-44]" + "x".repeat(200)
+        val wrap = oneTimeKey.sign(kind = RelayKinds.GIFT_WRAP, content = payload, tags = listOf(listOf("p", recipient)), createdAt = 1_699_000_000)
+        val toOther = signer.sign(kind = RelayKinds.GIFT_WRAP, content = "y", tags = listOf(listOf("p", other)), createdAt = 1_699_000_001)
+
+        for (event in listOf(wrap, toOther)) {
+            val response = client.post("/api/v1/events") {
+                contentType(ContentType.Application.Json)
+                setBody(event.toJson())
+            }
+            assertEquals(HttpStatusCode.Created, response.status)
+        }
+        val inbox = Json.decodeFromString<List<SignedEvent>>(client.get("/api/v1/events?kind=1059&tag=p:$recipient").bodyAsText())
+        assertEquals(listOf(wrap), inbox, "stored byte for byte, including the opaque content")
+        assertEquals("[]", client.get("/api/v1/events?kind=1059&tag=p:${"0".repeat(64)}").bodyAsText())
+    }
+
+    @Test
+    fun limitsThePublicationRatePerKey() = testApplication {
+        application { module(TestDatabase.dataSource, relay = RelayConfig(postRatePerMinute = 3)) }
+        repeat(3) { index ->
+            val event = signer.sign(kind = EventKinds.TEXT_NOTE, content = "[EXEMPLE] $index", createdAt = 1_700_000_000L + index)
+            val response = client.post("/api/v1/events") {
+                contentType(ContentType.Application.Json)
+                setBody(event.toJson())
+            }
+            assertEquals(HttpStatusCode.Created, response.status)
+        }
+        val fourth = signer.sign(kind = EventKinds.TEXT_NOTE, content = "[EXEMPLE] 4", createdAt = 1_700_000_010)
+        val limited = client.post("/api/v1/events") {
+            contentType(ContentType.Application.Json)
+            setBody(fourth.toJson())
+        }
+        assertEquals(HttpStatusCode.TooManyRequests, limited.status)
+        assertEquals("rate_limited", Json.decodeFromString<ApiError>(limited.bodyAsText()).error)
+        assertEquals("20", limited.headers["Retry-After"], "one token every 20 seconds at 3 per minute")
+        assertEquals(HttpStatusCode.NotFound, client.get("/api/v1/events/${fourth.id}").status, "the refused event is not stored")
+
+        // Another key still publishes, and a forged event never spends the forged key's budget.
+        val someoneElse = LocalEventSigner(IdentityKeys.generate())
+        val accepted = client.post("/api/v1/events") {
+            contentType(ContentType.Application.Json)
+            setBody(someoneElse.sign(kind = EventKinds.TEXT_NOTE, content = "[EXEMPLE] autre", createdAt = 1_700_000_000).toJson())
+        }
+        assertEquals(HttpStatusCode.Created, accepted.status)
+        repeat(5) {
+            val forged = client.post("/api/v1/events") {
+                contentType(ContentType.Application.Json)
+                setBody(someoneElse.sign(kind = EventKinds.TEXT_NOTE, content = "x", createdAt = 1_700_000_000).copy(content = "forged $it").toJson())
+            }
+            assertEquals(HttpStatusCode.BadRequest, forged.status)
+        }
+        val stillAccepted = client.post("/api/v1/events") {
+            contentType(ContentType.Application.Json)
+            setBody(someoneElse.sign(kind = EventKinds.TEXT_NOTE, content = "[EXEMPLE] encore", createdAt = 1_700_000_001).toJson())
+        }
+        assertEquals(HttpStatusCode.Created, stillAccepted.status)
     }
 
     @Test

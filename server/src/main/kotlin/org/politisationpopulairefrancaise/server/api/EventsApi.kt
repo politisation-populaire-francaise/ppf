@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.server.api
 
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.contentLength
 import io.ktor.server.request.receiveText
@@ -17,6 +18,7 @@ import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.events.StoreOutcome
 import org.politisationpopulairefrancaise.server.events.TagIndex
+import org.politisationpopulairefrancaise.server.relay.RateLimiter
 
 @Serializable
 data class PublishResponse(val id: String, val status: String)
@@ -28,14 +30,16 @@ data class ApiError(val error: String, val message: String)
 const val MAX_EVENT_BYTES: Long = 64 * 1024
 
 /**
- * The signed-events API, the server side of the publication port:
+ * The signed-events API, the server side of the publication port and of the message relay:
  *
  * - POST /api/v1/events: publish one signed event (JSON body). Only events whose signature checks
- *   out and which the [PublicationPolicy] allows are stored; nothing is logged about the sender.
+ *   out, whose author is within the [RateLimiter] budget and which the [PublicationPolicy] allows
+ *   are stored; nothing is logged about the sender. Encrypted envelopes (kind 1059) are stored as
+ *   they are, never opened.
  * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
-fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy) {
+fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rateLimiter: RateLimiter) {
     if (repository == null) {
         route("/api/v1/{...}") {
             handle {
@@ -58,6 +62,14 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy) {
                 ?: return@post call.respond(HttpStatusCode.BadRequest, ApiError("malformed_event", "The body is not a signed event."))
             if (!event.verify()) {
                 return@post call.respond(HttpStatusCode.BadRequest, ApiError("invalid_signature", "The id or the signature does not match the content."))
+            }
+            // The budget is per authenticated public key (the signature was just checked), never per address.
+            when (val budget = rateLimiter.tryAcquire(event.pubkey)) {
+                is RateLimiter.Outcome.Limited -> {
+                    call.response.headers.append(HttpHeaders.RetryAfter, budget.retryAfterSeconds.toString())
+                    return@post call.respond(HttpStatusCode.TooManyRequests, ApiError("rate_limited", "Too many events from this key; try again later."))
+                }
+                RateLimiter.Outcome.Allowed -> Unit
             }
             when (val decision = policy.check(event)) {
                 is PublicationPolicy.Decision.Refused ->

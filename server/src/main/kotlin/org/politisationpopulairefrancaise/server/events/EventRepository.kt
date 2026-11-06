@@ -6,6 +6,8 @@ import org.politisationpopulairefrancaise.core.signing.TagsJson
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
+import java.time.Instant
+import java.time.ZoneOffset
 import javax.sql.DataSource
 
 /**
@@ -178,6 +180,18 @@ class EventRepository(private val dataSource: DataSource) {
             statement.setInt(binders.size + 1, limit)
             val rows = statement.executeQuery()
             buildList { while (rows.next()) add(rows.toEvent()) }
+        }
+    }
+
+    /**
+     * Deletes the events of [kind] received by the server before [cutoff] (their tag rows go with
+     * them) and returns how many were deleted. Used for the limited retention of encrypted envelopes.
+     */
+    fun deleteReceivedBefore(kind: Int, cutoff: Instant): Int = dataSource.connection.use { connection ->
+        connection.prepareStatement("DELETE FROM events WHERE kind = ? AND received_at < ?").use { statement ->
+            statement.setInt(1, kind)
+            statement.setObject(2, cutoff.atOffset(ZoneOffset.UTC))
+            statement.executeUpdate()
         }
     }
 

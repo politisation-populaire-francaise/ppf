@@ -19,6 +19,9 @@ import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
+import org.politisationpopulairefrancaise.server.relay.RateLimiter
+import org.politisationpopulairefrancaise.server.relay.RelayConfig
+import org.politisationpopulairefrancaise.server.relay.WrapRetention
 import org.politisationpopulairefrancaise.web.webRoutes
 import javax.sql.DataSource
 
@@ -29,6 +32,7 @@ import javax.sql.DataSource
  * - PPF_ENVIRONMENT: "production", "preproduction" or "development" (default).
  * - DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD or DATABASE_PASSWORD_FILE: see [DatabaseConfig].
  * - PPF_EDITOR_KEYS: keys of the editorial team, see [PublicationPolicy].
+ * - PPF_WRAP_RETENTION_DAYS, PPF_WRAP_CLEANUP_INTERVAL_MINUTES, PPF_POST_RATE_PER_MINUTE: relay settings, see [RelayConfig].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -53,10 +57,19 @@ fun main() {
  * Privacy rule: no request logging plugin is installed. Client addresses are never
  * written anywhere (cahier des charges, section 5.1).
  */
-fun Application.module(dataSource: DataSource? = null, policy: PublicationPolicy = PublicationPolicy.fromEnvironment()) {
-    if (dataSource == null) {
+fun Application.module(
+    dataSource: DataSource? = null,
+    policy: PublicationPolicy = PublicationPolicy.fromEnvironment(),
+    relay: RelayConfig = RelayConfig.fromEnvironment(),
+) {
+    val repository = dataSource?.let(::EventRepository)
+    if (repository == null) {
         log.info("No database configured: the events API answers 503 (health check and web pages work).")
+    } else if (relay.cleanupInterval.isPositive()) {
+        // Encrypted envelopes are kept for a limited time; the task lives and dies with the application.
+        WrapRetention(repository, relay.wrapRetention).start(this, relay.cleanupInterval, log)
     }
+    val rateLimiter = RateLimiter(relay.postRatePerMinute)
     install(ContentNegotiation) {
         json()
     }
@@ -88,7 +101,7 @@ fun Application.module(dataSource: DataSource? = null, policy: PublicationPolicy
                 ),
             )
         }
-        eventsApi(dataSource?.let(::EventRepository), policy)
+        eventsApi(repository, policy, rateLimiter)
         webRoutes()
     }
 }
