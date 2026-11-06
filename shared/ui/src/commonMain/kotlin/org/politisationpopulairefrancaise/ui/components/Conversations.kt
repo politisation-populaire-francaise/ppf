@@ -35,6 +35,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.input.key.KeyEventType
+import androidx.compose.ui.input.key.isShiftPressed
+import androidx.compose.ui.input.key.key
+import androidx.compose.ui.input.key.onPreviewKeyEvent
+import androidx.compose.ui.input.key.type
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -217,7 +223,9 @@ fun DaySeparator(label: String, modifier: Modifier = Modifier) {
  * One message. Others' bubbles sit on the left (card surface, 1 dp border, 16/16/16/6 dp corners,
  * the author's name in their avatar colour); the user's own sit on the right (brand background,
  * 16/16/6/16 dp corners). The hour stands at the bottom right in 12/16; [pending] adds a clock to
- * it, described for screen readers by [pendingDescription]. A bubble takes at most 82 % of the width.
+ * it, described for screen readers by [pendingDescription]. A bubble takes at most 82 % of the width
+ * and is read as one item by screen readers. [label] sits above the text (the [EXEMPLE] badge of a
+ * public flow).
  */
 @Composable
 fun MessageBubble(
@@ -231,6 +239,7 @@ fun MessageBubble(
     pendingDescription: String? = null,
     /** Applied to the clock icon, so that a test can find it. */
     pendingModifier: Modifier = Modifier,
+    label: (@Composable () -> Unit)? = null,
 ) {
     val palette = PpfTheme.palette
     val shape = if (mine) {
@@ -245,7 +254,7 @@ fun MessageBubble(
             color = if (mine) palette.brand else palette.surface2,
             contentColor = if (mine) palette.onBrand else palette.ink,
             border = if (mine) null else BorderStroke(1.dp, palette.border),
-            modifier = Modifier.widthIn(max = maxWidth * 0.82f),
+            modifier = Modifier.widthIn(max = maxWidth * 0.82f).semantics(mergeDescendants = true) { },
         ) {
             Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                 if (!mine && author != null) {
@@ -257,6 +266,10 @@ fun MessageBubble(
                         overflow = TextOverflow.Ellipsis,
                     )
                     Spacer(Modifier.height(2.dp))
+                }
+                if (label != null) {
+                    label()
+                    Spacer(Modifier.height(4.dp))
                 }
                 Text(text, style = MaterialTheme.typography.bodyLarge)
                 Spacer(Modifier.height(2.dp))
@@ -272,7 +285,11 @@ fun MessageBubble(
     }
 }
 
-/** The pill-shaped text field of a composer: page-coloured, fully rounded, grows up to five lines. */
+/**
+ * The pill-shaped text field of a composer: page-coloured, fully rounded, grows up to five lines.
+ * With [onSend], the keyboard's action key sends, and so does Enter on a physical keyboard
+ * (Shift+Enter starts a new line), as in chat applications on a computer.
+ */
 @Composable
 fun PpfPillTextField(
     value: String,
@@ -285,7 +302,14 @@ fun PpfPillTextField(
     BasicTextField(
         value = value,
         onValueChange = onValueChange,
-        modifier = modifier.semantics { contentDescription = placeholder },
+        modifier = modifier
+            .onPreviewKeyEvent { event ->
+                val enter = event.key == Key.Enter || event.key == Key.NumPadEnter
+                if (onSend == null || !enter || event.isShiftPressed) return@onPreviewKeyEvent false
+                if (event.type == KeyEventType.KeyDown) onSend()
+                true
+            }
+            .semantics { contentDescription = placeholder },
         textStyle = MaterialTheme.typography.bodyLarge.copy(color = palette.ink),
         cursorBrush = SolidColor(palette.brand),
         maxLines = 5,

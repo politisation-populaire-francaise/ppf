@@ -79,6 +79,8 @@ import org.politisationpopulairefrancaise.ui.content.rememberContentLibrary
 import org.politisationpopulairefrancaise.ui.feed.FeedScreen
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.messages.MessagesScreen
+import org.politisationpopulairefrancaise.ui.messages.MessagingSession
+import org.politisationpopulairefrancaise.ui.messages.rememberMessagingSession
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationViewsState
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationsScreen
 import org.politisationpopulairefrancaise.ui.revendications.rememberRevendicationViewsState
@@ -129,14 +131,19 @@ object ShellTags {
 fun AdaptiveShell(dependencies: AppDependencies) {
     var selected by rememberSaveable { mutableStateOf(Space.default) }
     val contentLibrary = rememberContentLibrary(dependencies)
-    // Erasing the keys also forgets the followed accounts (protection by default).
-    val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = contentLibrary::clearFollowed)
+    // The private conversations, kept for the whole run like the library (the open one survives a visit elsewhere).
+    val messaging = rememberMessagingSession(dependencies)
+    // Erasing the keys also forgets the followed accounts and the conversations on the device (protection by default).
+    val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = { contentLibrary.clearFollowed(); messaging.forgetAll() })
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
     val proposalComposer = remember(dependencies) { ProposalComposer(dependencies.contentStore, dependencies.remote) }
     val accountKey = (accountSession.state as? AccountUiState.Ready)?.publicKey?.hex
-    LaunchedEffect(accountKey) { contentLibrary.setAccount(accountKey) }
+    LaunchedEffect(accountKey) {
+        contentLibrary.setAccount(accountKey)
+        messaging.setAccount(accountSession.messagingSigner)
+    }
     val palette = PpfTheme.palette
 
     BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
@@ -150,6 +157,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 onNavigate = navigate,
                 accountSession = accountSession,
                 contentLibrary = contentLibrary,
+                messaging = messaging,
                 revendicationViews = revendicationViews,
                 proposalComposer = proposalComposer,
                 windowClass = windowClass,
@@ -173,6 +181,7 @@ private fun SpaceContent(
     onNavigate: (Space) -> Unit,
     accountSession: AccountSession,
     contentLibrary: ContentLibrary,
+    messaging: MessagingSession,
     revendicationViews: RevendicationViewsState,
     proposalComposer: ProposalComposer,
     windowClass: WindowClass,
@@ -184,7 +193,7 @@ private fun SpaceContent(
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, windowClass, modifier)
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier)
-        Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, windowClass, modifier)
+        Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate)
         Space.REVENDICATIONS -> RevendicationsScreen(
             contentLibrary,
             accountSession,

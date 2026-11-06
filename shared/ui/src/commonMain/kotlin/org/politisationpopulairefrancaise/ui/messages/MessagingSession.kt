@@ -6,8 +6,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -18,7 +20,6 @@ import org.politisationpopulairefrancaise.core.messaging.Conversation
 import org.politisationpopulairefrancaise.core.messaging.MessageStore
 import org.politisationpopulairefrancaise.core.messaging.MessagingService
 import org.politisationpopulairefrancaise.core.messaging.MessagingSigner
-import org.politisationpopulairefrancaise.core.messaging.Nip44Exception
 import org.politisationpopulairefrancaise.core.publication.FetchResult
 import org.politisationpopulairefrancaise.core.publication.PublicationResult
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
@@ -27,8 +28,7 @@ import org.politisationpopulairefrancaise.core.publication.TagFilter
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
-import org.politisationpopulairefrancaise.ui.account.AccountSession
-import org.politisationpopulairefrancaise.ui.account.AccountUiState
+import kotlin.concurrent.Volatile
 
 /** Where the private messages stand with the server, modelled on LibraryStatus. */
 sealed interface MessagingStatus {
@@ -43,6 +43,7 @@ sealed interface MessagingStatus {
     /** No server configured: messages are kept on the device and leave as soon as one answers. */
     data object Offline : MessagingStatus
 
+    /** The pending deliveries left and the wraps addressed to the user were fetched; [received] new messages. */
     data class Synced(val received: Int) : MessagingStatus
 
     /** The server did not answer; what the device already holds is shown. */
@@ -56,6 +57,9 @@ enum class SendError {
 
     /** More than [ChatMessage.MAX_TEXT_BYTES] bytes of text. */
     TOO_LONG,
+
+    /** Anything else (the keys were erased meanwhile, the database refused): nothing was stored. */
+    FAILED,
 }
 
 /** A conversation of the list with what the row shows: its last message and whether it still waits for the server. */
@@ -83,31 +87,49 @@ data class OpenConversation(
  * read from and written to the device's [MessageStore]; the server only ever sees gift wraps.
  * Nothing about reading leaves the device: no read receipt, no typing indicator (S-125).
  *
- * One instance lives while the messages screen is shown, for one account: it refreshes when the
- * screen opens, on demand, and every [REFRESH_PERIOD_SECONDS] while a conversation is open.
+ * One instance lives for the whole run of the application, like the content library, so that the
+ * open conversation and the messages waiting for the server survive a visit to another space. It
+ * follows the account of the device ([setAccount]) and forgets everything when the keys are erased
+ * ([forgetAll]). The screen asks the server when it opens, on demand, and every
+ * [REFRESH_PERIOD_SECONDS] while it stays shown.
  */
 class MessagingSession(
     private val store: MessageStore?,
-    private val signer: MessagingSigner?,
     private val remote: RemoteEvents?,
     private val scope: CoroutineScope,
 ) {
+    /** The account whose conversations are shown, with its service; replaced when the account changes. */
+    private class Account(val signer: MessagingSigner, val service: MessagingService) {
+        val key: String = signer.publicKey.hex
+    }
+
     /** Reads and writes on the store happen one at a time, off the main thread. */
     private val operations = Mutex()
 
-    private val service: MessagingService? =
-        if (store != null && signer != null) MessagingService(signer, store, remote ?: NoServer) else null
+    /**
+     * Read off the main thread by the work started for an account: work whose account is no longer
+     * this one stops without touching the store or the screen.
+     */
+    @Volatile
+    private var account: Account? = null
+
+    /** The erasing in progress after [forgetAll]; the next account waits for it. */
+    private var clearing: Job? = null
+
+    /** The account whose exchanges with the server are running, so that one pass at a time runs per account. */
+    private var syncing: Account? = null
 
     /** The user's public key, hexadecimal, when there is an account. */
-    val myKey: String? = signer?.publicKey?.hex
+    var myKey: String? by mutableStateOf(null)
+        private set
 
-    /** Whether messages can be written and read on this device: a database and an account. */
-    val canWrite: Boolean get() = service != null
+    /** Whether messages can be written on this device: a database and an account. */
+    val canWrite: Boolean get() = store != null && myKey != null
 
     /** Whether a server is configured; without one, every message waits on the device. */
     val hasServer: Boolean get() = remote != null
 
-    var status: MessagingStatus by mutableStateOf(MessagingStatus.Loading)
+    var status: MessagingStatus by mutableStateOf(if (store == null) MessagingStatus.Unavailable else MessagingStatus.NoAccount)
         private set
 
     /** True while the server is being asked; the refresh button shows it. */
@@ -131,26 +153,65 @@ class MessagingSession(
     var sendError: SendError? by mutableStateOf(null)
         private set
 
+    /**
+     * The followed account whose flow is open in the "Flux" view (public key, hexadecimal). Kept
+     * here so that it survives a visit to another space like the open conversation; only one of
+     * the two is open at a time, which is what a phone shows full screen.
+     */
+    var openFlow: String? by mutableStateOf(null)
+        private set
+
     val unreadTotal: Long get() = conversations.sumOf { it.conversation.unreadCount }
 
-    fun start() {
-        when {
-            store == null -> status = MessagingStatus.Unavailable
-            service == null -> status = MessagingStatus.NoAccount
-            else -> scope.launch {
-                reload()
-                if (remote == null) status = MessagingStatus.Offline else sync()
-            }
+    /**
+     * Follows the account of the device ([signer] is null without one). Another key shows that
+     * account's conversations and asks the server at once; the same key changes nothing.
+     */
+    fun setAccount(signer: MessagingSigner?) {
+        val key = signer?.publicKey?.hex
+        if (key == myKey) return
+        val store = store
+        val next = if (store != null && signer != null) Account(signer, MessagingService(signer, store, remote ?: NoServer)) else null
+        account = next
+        myKey = next?.key
+        clearView()
+        status = when {
+            store == null -> MessagingStatus.Unavailable
+            next == null -> MessagingStatus.NoAccount
+            else -> MessagingStatus.Loading
+        }
+        if (next != null) scope.launch { prepare(next) }
+    }
+
+    /**
+     * Forgets every conversation on this device, because the keys were erased: the screen at once,
+     * the store as soon as the work in progress ends (messages, read marks, pending deliveries and
+     * the pull cursor). Nothing of that account stays readable here (protection by default); the
+     * server keeps its gift wraps for the retention period, so restoring the account brings back
+     * what it still holds.
+     */
+    fun forgetAll() {
+        account = null
+        myKey = null
+        syncing = null
+        refreshing = false
+        clearView()
+        status = if (store == null) MessagingStatus.Unavailable else MessagingStatus.NoAccount
+        val store = store ?: return
+        val previous = clearing
+        clearing = scope.launch {
+            previous?.join()
+            safely { withContext(Dispatchers.Default) { operations.withLock { store.clear() } } }
         }
     }
 
-    /** Sends the pending deliveries, then fetches the wraps addressed to the user. No effect without a server. */
+    /** Sends the pending deliveries, then fetches the wraps addressed to the user. Without a server, reads the device again. */
     fun refresh() {
-        if (remote == null || service == null) return
-        scope.launch { sync() }
+        val current = account ?: return
+        scope.launch { if (remote == null) reload(current) else sync(current) }
     }
 
-    /** Opens a conversation of the list; its messages are marked read on the device only. */
+    /** Opens a conversation of the list. */
     fun open(conversation: Conversation) {
         openWith(conversation.participants, conversation.subject)
     }
@@ -160,13 +221,16 @@ class MessagingSession(
      * does not exist yet; [subject] is given to its first message. Anything but valid keys is ignored.
      */
     fun openWith(recipientsHex: Collection<String>, subject: String? = null) {
-        val me = myKey ?: return
-        val keys = (recipientsHex + me).filter { FollowStore.isValidKey(it) }.distinct().sorted()
+        val current = account ?: return
+        val keys = (recipientsHex + current.key).filter { FollowStore.isValidKey(it) }.distinct().sorted()
         if (keys.size < 2) return
         sendError = null
-        open = OpenConversation(Conversation.idOf(keys), keys, subject?.trim()?.takeIf { it.isNotEmpty() })
+        openFlow = null
+        val id = Conversation.idOf(keys)
+        val stored = conversations.firstOrNull { it.id == id }?.conversation?.subject
+        open = OpenConversation(id, keys, stored ?: subject?.trim()?.takeIf { it.isNotEmpty() })
         messages = emptyList()
-        scope.launch { reload() }
+        scope.launch { reload(current) }
     }
 
     fun close() {
@@ -175,19 +239,44 @@ class MessagingSession(
         sendError = null
     }
 
+    /** Shows the flow of a followed account (closes the open conversation). */
+    fun showFlow(pubkeyHex: String) {
+        close()
+        openFlow = pubkeyHex
+    }
+
+    fun closeFlow() {
+        openFlow = null
+    }
+
     /**
-     * Checks that a message can be encrypted for [pubkeyHex]: a valid secp256k1 point. Done before
-     * a conversation starts, so that a mistyped key is caught at once rather than at the first send.
+     * Called by the conversation screen while it shows the open conversation: its messages are
+     * marked read, on the device only (no read receipt ever leaves it).
+     */
+    fun markOpenRead() {
+        val current = account ?: return
+        val target = open ?: return
+        val store = store ?: return
+        val unread = conversations.firstOrNull { it.id == target.id }?.conversation?.unreadCount ?: 0L
+        if (unread == 0L) return
+        scope.launch {
+            safely { withContext(Dispatchers.Default) { operations.withLock { if (account === current) store.markRead(target.id) } } }
+            reload(current)
+        }
+    }
+
+    /**
+     * Checks that a message can be encrypted for [pubkeyHex]: a valid secp256k1 point, not the
+     * user's own key. Done before a conversation starts, so that a mistyped key is caught at once
+     * rather than at the first send.
      */
     fun canEncryptFor(pubkeyHex: String): Boolean {
-        val signer = signer ?: return false
+        val signer = account?.signer ?: return false
         if (!FollowStore.isValidKey(pubkeyHex) || pubkeyHex == myKey) return false
         return try {
             signer.encrypt(PublicKey.fromHex(pubkeyHex), "ok")
             true
-        } catch (e: Nip44Exception) {
-            false
-        } catch (e: IllegalArgumentException) {
+        } catch (e: Exception) {
             false
         }
     }
@@ -195,68 +284,125 @@ class MessagingSession(
     /**
      * Sends [text] in the open conversation: stored on the device at once, one gift wrap per
      * participant, deliveries the server cannot take now wait for the next refresh. Returns false
-     * when nothing was sent; [sendError] then says why when the text itself is the cause.
+     * when nothing was sent; [sendError] then says why.
      */
     suspend fun send(text: String): Boolean {
-        val service = service ?: return false
+        val current = account ?: return false
         val target = open ?: return false
         val content = text.trim()
         if (content.isEmpty()) return false
-        val recipients = target.others(myKey).map { PublicKey.fromHex(it) }
+        val recipients = target.others(current.key).map { PublicKey.fromHex(it) }
         // The subject travels with the first message of a conversation; the store keeps the newest one.
         val subject = target.subject?.takeIf { messages.isEmpty() }
         sendError = null
-        try {
-            withContext(Dispatchers.Default) { operations.withLock { service.send(content, recipients, subject) } }
+        val sent = try {
+            withContext(Dispatchers.Default) {
+                operations.withLock { if (account === current) current.service.send(content, recipients, subject) else null }
+            }
+        } catch (e: CancellationException) {
+            throw e
         } catch (e: IllegalArgumentException) {
             sendError = if (content.encodeToByteArray().size > ChatMessage.MAX_TEXT_BYTES) SendError.TOO_LONG else SendError.INVALID_RECIPIENT
             return false
+        } catch (e: Exception) {
+            sendError = SendError.FAILED
+            return false
         }
-        reload()
-        return true
+        reload(current)
+        return sent != null
     }
 
-    private suspend fun sync() {
-        val service = service ?: return
-        if (refreshing) return
+    private suspend fun prepare(current: Account) {
+        val store = store ?: return
+        clearing?.join()
+        // The store holds the conversations of one identity. Any other's (left by a former account
+        // whose keys disappeared without the application) must not become readable by this one;
+        // its pull cursor goes with them, and this account's history comes back from the server.
+        safely {
+            withContext(Dispatchers.Default) {
+                operations.withLock {
+                    if (account === current && store.conversations(Int.MAX_VALUE).any { current.key !in it.participants }) store.clear()
+                }
+            }
+        }
+        reload(current)
+        if (account !== current) return
+        if (remote == null) status = MessagingStatus.Offline else sync(current)
+    }
+
+    private suspend fun sync(current: Account) {
+        if (remote == null || syncing === current) return
+        syncing = current
         refreshing = true
         try {
-            val (flushed, pulled) = withContext(Dispatchers.Default) {
-                operations.withLock { service.flushOutgoing() to service.pull() }
+            val reports = safely {
+                withContext(Dispatchers.Default) {
+                    operations.withLock {
+                        if (account !== current) null else current.service.flushOutgoing() to current.service.pull()
+                    }
+                }
             }
-            reload()
-            status = if (flushed.reachable && pulled.reachable) MessagingStatus.Synced(pulled.received.stored) else MessagingStatus.Unreachable
+            reload(current)
+            if (account === current) {
+                status = if (reports != null && reports.first.reachable && reports.second.reachable) {
+                    MessagingStatus.Synced(reports.second.received.stored)
+                } else {
+                    MessagingStatus.Unreachable
+                }
+            }
         } finally {
-            refreshing = false
+            if (syncing === current) {
+                syncing = null
+                refreshing = false
+            }
         }
     }
 
-    /** Reads the list and the open thread again from the store; the open thread is marked read first. */
-    private suspend fun reload() {
+    private class Snapshot(val list: List<ConversationSummary>, val thread: List<ChatMessage>, val queued: Set<String>)
+
+    /** Reads the list and the open thread again from the store. */
+    private suspend fun reload(current: Account) {
         val store = store ?: return
-        val current = open
-        val (list, thread, queued) = withContext(Dispatchers.Default) {
-            operations.withLock {
-                if (current != null) store.markRead(current.id)
-                val queued = store.outgoing().map { it.messageId }.toSet()
-                val list = store.conversations().map { conversation ->
-                    val last = store.messages(conversation.id, limit = 1).lastOrNull()
-                    ConversationSummary(conversation, last, pending = last != null && last.id in queued)
+        val target = open
+        val snapshot = safely {
+            withContext(Dispatchers.Default) {
+                operations.withLock {
+                    if (account !== current) return@withLock null
+                    val queued = store.outgoing().map { it.messageId }.toSet()
+                    val list = store.conversations(LIST_LIMIT).filter { current.key in it.participants }.map { conversation ->
+                        val last = store.messages(conversation.id, limit = 1).lastOrNull()
+                        ConversationSummary(conversation, last, pending = last != null && last.id in queued)
+                    }
+                    val thread = target?.let { store.messages(it.id, THREAD_LIMIT) } ?: emptyList()
+                    Snapshot(list, thread, queued)
                 }
-                val thread = current?.let { store.messages(it.id) } ?: emptyList()
-                Triple(list, thread, queued)
             }
-        }
-        conversations = list
-        pending = queued
-        if (open?.id == current?.id) {
-            messages = thread
+        } ?: return
+        if (account !== current) return
+        conversations = snapshot.list
+        pending = snapshot.queued
+        val shown = open
+        if (shown != null && shown.id == target?.id) {
+            messages = snapshot.thread
             // A subject that arrived meanwhile wins over the one typed when the conversation was opened.
-            val stored = list.firstOrNull { it.id == current?.id }?.conversation
-            if (current != null && stored != null && stored.subject != null && stored.subject != current.subject) {
-                open = current.copy(subject = stored.subject)
-            }
+            val stored = snapshot.list.firstOrNull { it.id == shown.id }?.conversation?.subject
+            if (stored != null && stored != shown.subject) open = shown.copy(subject = stored)
         }
+    }
+
+    private fun clearView() {
+        conversations = emptyList()
+        pending = emptySet()
+        close()
+    }
+
+    /** Runs [block]; a failure (keys erased meanwhile, an unexpected answer) gives null rather than a crash. */
+    private suspend fun <T> safely(block: suspend () -> T): T? = try {
+        block()
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        null
     }
 
     /** Stands for the server when none is configured: everything waits on the device. */
@@ -267,25 +413,26 @@ class MessagingSession(
     }
 
     companion object {
-        /** While a conversation is open, the server is asked again this often. */
+        /** While the messages screen is shown, the server is asked again this often. */
         const val REFRESH_PERIOD_SECONDS: Int = 20
+
+        /** Conversations shown in the list, most recent first. */
+        const val LIST_LIMIT: Int = 200
+
+        /** Newest messages shown in a thread. */
+        const val THREAD_LIMIT: Int = 500
     }
 }
 
 /**
- * One session per account: it is built again when the account appears, changes or is erased, and
- * refreshes at once when a server is configured.
+ * The private conversations of the application, kept for the whole run (remembered by the shell,
+ * like the content library). The shell tells it the account of the device and calls
+ * [MessagingSession.forgetAll] when the keys are erased.
  */
 @Composable
-fun rememberMessagingSession(dependencies: AppDependencies, session: AccountSession): MessagingSession {
+fun rememberMessagingSession(dependencies: AppDependencies): MessagingSession {
     val scope = rememberCoroutineScope()
-    val accountKey = (session.state as? AccountUiState.Ready)?.publicKey?.hex
-    return remember(dependencies, accountKey) {
-        MessagingSession(
-            store = dependencies.database?.let(::MessageStore),
-            signer = session.messagingSigner,
-            remote = dependencies.remote,
-            scope = scope,
-        ).also { it.start() }
+    return remember(dependencies) {
+        MessagingSession(store = dependencies.database?.let(::MessageStore), remote = dependencies.remote, scope = scope)
     }
 }
