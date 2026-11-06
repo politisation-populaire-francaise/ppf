@@ -17,7 +17,10 @@ import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
 import kotlin.test.assertTrue
 
-/** The messages screen: its three views, swiped or chosen by tab, and nothing that pretends to work yet. */
+/**
+ * The messages screen: its three views, swiped or chosen by tab. Without a local database nor an
+ * account (the default dependencies), "Nouvelle conversation" stays disabled.
+ */
 @OptIn(ExperimentalTestApi::class)
 class MessagesScreenTest {
 
