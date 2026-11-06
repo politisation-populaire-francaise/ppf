@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.server.events
 import org.politisationpopulairefrancaise.core.signing.EventReplacement
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.TagsJson
+import org.politisationpopulairefrancaise.server.agir.AgendaIndex
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
 import java.sql.Connection
 import java.sql.PreparedStatement
@@ -155,6 +156,8 @@ class EventRepository(internal val dataSource: DataSource) {
         insertTags(connection, event)
         // A group description also enters the directory of rooms (and leaves it with the event).
         GroupIndex.write(connection, event)
+        // A mobilization also enters the agenda (and leaves it with the event).
+        AgendaIndex.write(connection, event)
         return StoreOutcome.STORED
     }
 
