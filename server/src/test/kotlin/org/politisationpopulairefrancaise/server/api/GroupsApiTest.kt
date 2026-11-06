@@ -15,6 +15,7 @@ import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.server.TEST_RELAY
 import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.Group
@@ -28,6 +29,7 @@ import kotlin.test.assertTrue
 class GroupsApiTest {
 
     private val editor = LocalEventSigner(IdentityKeys.generate())
+    private val otherEditor = LocalEventSigner(IdentityKeys.generate())
     private val citizen = LocalEventSigner(IdentityKeys.generate())
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -41,6 +43,9 @@ class GroupsApiTest {
 
     private suspend fun HttpResponse.error(): String = json.decodeFromString<ApiError>(bodyAsText()).error
 
+    private suspend fun HttpClient.messagesOf(groupId: String): List<SignedEvent> =
+        json.decodeFromString<List<SignedEvent>>(get("/api/v1/events?kind=9&tag=h:$groupId").bodyAsText())
+
     private suspend fun metadata(signer: LocalEventSigner, id: String, name: String, flags: List<String> = emptyList()): SignedEvent =
         signer.sign(
             kind = GroupKinds.METADATA,
@@ -48,9 +53,12 @@ class GroupsApiTest {
             createdAt = 1_700_000_000,
         )
 
+    private suspend fun message(signer: LocalEventSigner, content: String, vararg groupIds: String, createdAt: Long = 1): SignedEvent =
+        signer.sign(kind = GroupKinds.CHAT_MESSAGE, content = content, tags = groupIds.map { listOf("h", it) }, createdAt = createdAt)
+
     @Test
     fun describesListsAndServesOpenGroupsAndTheirMessages() = testApplication {
-        application { module(TestDatabase.dataSource, PublicationPolicy(setOf(editor.publicKey.hex))) }
+        application { module(TestDatabase.dataSource, PublicationPolicy(setOf(editor.publicKey.hex)), TEST_RELAY) }
 
         val fromCitizen = client.publish(metadata(citizen, "demo", "[EXEMPLE] Faux salon"))
         assertEquals(HttpStatusCode.Forbidden, fromCitizen.status)
@@ -60,9 +68,10 @@ class GroupsApiTest {
         val description = metadata(editor, "demo", "[EXEMPLE] Collectif")
         assertEquals(HttpStatusCode.Created, client.publish(description).status)
         assertEquals(HttpStatusCode.Created, client.publish(metadata(editor, "ferme", "[EXEMPLE] Fermé", flags = listOf("closed"))).status)
+        assertEquals(HttpStatusCode.Created, client.publish(metadata(editor, "ecole", "[EXEMPLE] École")).status)
 
         val groups = json.decodeFromString<List<Group>>(client.get("/api/v1/groups").bodyAsText())
-        assertEquals(listOf("demo", "ferme"), groups.map { it.id })
+        assertEquals(listOf("demo", "ecole", "ferme"), groups.map { it.id }, "sorted by name with French collation")
         assertEquals(Group("demo", "[EXEMPLE] Collectif", "[EXEMPLE] Un salon de démonstration", null, isPublic = true, isOpen = true, event = description), groups[0])
         assertTrue(client.get("/api/v1/groups").bodyAsText().contains("\"public\":true"), "JSON field names follow the tags")
         val one = client.get("/api/v1/groups/demo")
@@ -71,30 +80,45 @@ class GroupsApiTest {
         assertEquals(HttpStatusCode.NotFound, client.get("/api/v1/groups/inconnu").status)
         assertEquals("group_not_found", client.get("/api/v1/groups/inconnu").error())
         assertEquals(HttpStatusCode.BadRequest, client.get("/api/v1/groups/pas%20valide").status)
+        assertEquals(HttpStatusCode.BadRequest, client.get("/api/v1/groups/Demo").status, "ids are lowercase")
 
-        val hello = citizen.sign(kind = GroupKinds.CHAT_MESSAGE, content = "[EXEMPLE] Bonjour à toutes et tous", tags = listOf(listOf("h", "demo")), createdAt = 1_700_000_100)
-        val reply = editor.sign(kind = GroupKinds.CHAT_MESSAGE, content = "[EXEMPLE] Bienvenue", tags = listOf(listOf("h", "demo")), createdAt = 1_700_000_200)
+        val hello = message(citizen, "[EXEMPLE] Bonjour à toutes et tous", "demo", createdAt = 1_700_000_100)
+        val reply = message(editor, "[EXEMPLE] Bienvenue", "demo", createdAt = 1_700_000_200)
         assertEquals(HttpStatusCode.Created, client.publish(hello).status)
         assertEquals(HttpStatusCode.Created, client.publish(reply).status)
-        val messages = json.decodeFromString<List<SignedEvent>>(client.get("/api/v1/events?kind=9&tag=h:demo").bodyAsText())
-        assertEquals(listOf(reply, hello), messages)
-        assertEquals("[]", client.get("/api/v1/events?kind=9&tag=h:ferme").bodyAsText())
+        assertEquals(listOf(reply, hello), client.messagesOf("demo"))
+        assertEquals(emptyList(), client.messagesOf("ferme"))
 
-        val toClosed = client.publish(citizen.sign(kind = GroupKinds.CHAT_MESSAGE, content = "x", tags = listOf(listOf("h", "ferme")), createdAt = 1))
+        val toClosed = client.publish(message(citizen, "x", "ferme"))
         assertEquals(HttpStatusCode.Forbidden, toClosed.status)
         assertEquals("group_closed", toClosed.error())
-        val toUnknown = client.publish(citizen.sign(kind = GroupKinds.CHAT_MESSAGE, content = "x", tags = listOf(listOf("h", "inconnu")), createdAt = 1))
+        val toUnknown = client.publish(message(citizen, "x", "inconnu"))
         assertEquals(HttpStatusCode.NotFound, toUnknown.status)
         assertEquals("group_not_found", toUnknown.error())
-        val withoutGroup = client.publish(citizen.sign(kind = GroupKinds.CHAT_MESSAGE, content = "x", createdAt = 1))
+        val withoutGroup = client.publish(message(citizen, "x"))
         assertEquals(HttpStatusCode.BadRequest, withoutGroup.status)
         assertEquals("missing_group", withoutGroup.error())
     }
 
     @Test
-    fun refusesMemberListsMembershipEventsAndForeignRedefinitions() = testApplication {
-        val otherEditor = LocalEventSigner(IdentityKeys.generate())
-        application { module(TestDatabase.dataSource, PublicationPolicy(setOf(editor.publicKey.hex, otherEditor.publicKey.hex))) }
+    fun aMessageNamesOneGroupSoAClosedFeedCannotBeEnteredThroughAnOpenOne() = testApplication {
+        application { module(TestDatabase.dataSource, PublicationPolicy(setOf(editor.publicKey.hex)), TEST_RELAY) }
+        assertEquals(HttpStatusCode.Created, client.publish(metadata(editor, "demo", "[EXEMPLE] Ouvert")).status)
+        assertEquals(HttpStatusCode.Created, client.publish(metadata(editor, "ferme", "[EXEMPLE] Fermé", flags = listOf("closed"))).status)
+
+        val smuggled = client.publish(message(citizen, "[EXEMPLE] contrebande", "demo", "ferme"))
+        assertEquals(HttpStatusCode.BadRequest, smuggled.status)
+        assertEquals("multiple_groups", smuggled.error())
+        assertEquals(emptyList(), client.messagesOf("ferme"))
+        assertEquals(emptyList(), client.messagesOf("demo"))
+        // Any kind sent to several groups is refused the same way.
+        val note = client.publish(citizen.sign(kind = 1, content = "x", tags = listOf(listOf("h", "demo"), listOf("h", "ferme")), createdAt = 1))
+        assertEquals("multiple_groups", note.error())
+    }
+
+    @Test
+    fun refusesMemberListsMembershipEventsPrivateGroupsAndForeignRedefinitions() = testApplication {
+        application { module(TestDatabase.dataSource, PublicationPolicy(setOf(editor.publicKey.hex, otherEditor.publicKey.hex)), TEST_RELAY) }
         assertEquals(HttpStatusCode.Created, client.publish(metadata(editor, "demo", "[EXEMPLE] Collectif")).status)
 
         val members = client.publish(editor.sign(kind = GroupKinds.MEMBERS, tags = listOf(listOf("d", "demo"), listOf("p", citizen.publicKey.hex)), createdAt = 1))
@@ -110,11 +134,27 @@ class GroupsApiTest {
         val taken = client.publish(metadata(otherEditor, "demo", "[EXEMPLE] Usurpation"))
         assertEquals(HttpStatusCode.Conflict, taken.status)
         assertEquals("group_taken", taken.error())
-        val badId = client.publish(metadata(editor, "pas valide", "[EXEMPLE] Mauvais identifiant"))
-        assertEquals(HttpStatusCode.BadRequest, badId.status)
-        assertEquals("bad_group_id", badId.error())
+        // Nor through a second d tag hidden behind a free id.
+        val twoIds = otherEditor.sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "libre"), listOf("d", "demo"), listOf("name", "[EXEMPLE] Double")), createdAt = 1)
+        val hijack = client.publish(twoIds)
+        assertEquals(HttpStatusCode.BadRequest, hijack.status)
+        assertEquals("bad_group_id", hijack.error())
+        assertEquals("[EXEMPLE] Collectif", json.decodeFromString<Group>(client.get("/api/v1/groups/demo").bodyAsText()).name)
+
+        for (badId in listOf("pas valide", "Demo", "", "x".repeat(65))) {
+            val response = client.publish(metadata(editor, badId, "[EXEMPLE] Mauvais identifiant"))
+            assertEquals(HttpStatusCode.BadRequest, response.status, badId)
+            assertEquals("bad_group_id", response.error())
+        }
+
+        for (flag in listOf("private", "hidden")) {
+            val response = client.publish(metadata(editor, "secret", "[EXEMPLE] Secret", flags = listOf(flag)))
+            assertEquals(HttpStatusCode.BadRequest, response.status, flag)
+            assertEquals("unsupported_group_flag", response.error())
+        }
 
         // Nothing of all that was stored.
         assertEquals(1, json.decodeFromString<List<SignedEvent>>(client.get("/api/v1/events").bodyAsText()).size)
+        assertEquals(listOf("demo"), json.decodeFromString<List<Group>>(client.get("/api/v1/groups").bodyAsText()).map { it.id })
     }
 }

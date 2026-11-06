@@ -90,6 +90,25 @@ class GroupDirectoryTest {
         assertEquals(404, assertIs<Decision.Refused>(directory.admit(noteInGroup)).status)
         val plainNote = runBlocking { citizen.sign(kind = EventKinds.TEXT_NOTE, content = "x", createdAt = 1) }
         assertEquals(Decision.Allowed, directory.admit(plainNote))
+        // Every named group is checked, not only the first one (the policy refuses several h tags anyway).
+        val smuggled = runBlocking { citizen.sign(kind = GroupKinds.CHAT_MESSAGE, content = "x", tags = listOf(listOf("h", "demo"), listOf("h", "ferme")), createdAt = 1) }
+        assertEquals("group_closed", assertIs<Decision.Refused>(directory.admit(smuggled)).error)
+    }
+
+    @Test
+    fun aDescriptionWithSeveralIdsIsNotAGroupAndCannotHijackOne() {
+        repository.store(metadata(editor, "demo", "[EXEMPLE] Légitime", createdAt = 2_000))
+        val twoIds = runBlocking {
+            otherEditor.sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "libre"), listOf("d", "demo"), listOf("name", "[EXEMPLE] Double")), createdAt = 1_000)
+        }
+        assertEquals("bad_group_id", assertIs<Decision.Refused>(directory.admit(twoIds)).error)
+        val noId = runBlocking { editor.sign(kind = GroupKinds.METADATA, tags = listOf(listOf("name", "[EXEMPLE] Sans identifiant")), createdAt = 1) }
+        assertEquals("bad_group_id", assertIs<Decision.Refused>(directory.admit(noId)).error)
+        // Even if such an event reached the database, it would describe nothing.
+        repository.store(twoIds)
+        assertEquals("[EXEMPLE] Légitime", directory.find("demo")!!.name)
+        assertNull(directory.find("libre"))
+        assertEquals(listOf("demo"), directory.list().map { it.id })
     }
 
     @Test

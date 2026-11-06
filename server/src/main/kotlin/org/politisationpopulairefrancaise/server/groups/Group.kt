@@ -15,6 +15,8 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
  * - moderation: `edit-metadata` (9002), `delete-event` (9005), `delete-group` (9008), `create-invite`
  *   (9009), issued by the managing key or by admins (39001);
  * - timeline references (`previous` tag) once clients send them;
+ * - `private` and `hidden` groups, which need reader authentication (NIP-42) before the relay can
+ *   restrict who reads them; until then descriptions carrying these flags are refused;
  * - signing of 39000 by the relay's own key through the separate signing service, instead of the
  *   editorial keys used for now.
  */
@@ -41,8 +43,14 @@ object GroupKinds {
     /** The tag naming the group of an event sent to it. */
     const val GROUP_TAG: String = "h"
 
-    /** Group ids are short, URL-safe strings; the spec leaves the format to the relay. */
-    private val ID_PATTERN = Regex("[A-Za-z0-9._~-]{1,64}")
+    /** Metadata flags the relay cannot honour yet (they restrict reading to members). */
+    val UNSUPPORTED_FLAGS: Set<String> = setOf("private", "hidden")
+
+    /**
+     * Group ids are short, lowercase, URL-safe strings (the spec leaves the format to the relay).
+     * Lowercase only, so that two ids cannot differ by case alone and impersonate each other.
+     */
+    private val ID_PATTERN = Regex("[a-z0-9._~-]{1,64}")
 
     fun isValidId(id: String?): Boolean = id != null && ID_PATTERN.matches(id)
 
@@ -53,9 +61,10 @@ object GroupKinds {
 
 /**
  * What the relay knows about a group: its metadata event (kind 39000) read into fields. The
- * flags follow NIP-29: a group is public unless its metadata carries a `private` tag; it is open
- * to messages from anyone unless it carries `closed` or `restricted` (both need a membership that
- * this version does not track, so such groups refuse messages for now).
+ * flags follow NIP-29: a group is public unless its metadata carries a `private` tag (such
+ * descriptions are refused for now, so every stored group is public); it is open to messages
+ * from anyone unless it carries `closed` or `restricted` (both need a membership that this
+ * version does not track, so such groups refuse messages for now).
  */
 @Serializable
 data class Group(
@@ -69,10 +78,11 @@ data class Group(
     val event: SignedEvent,
 ) {
     companion object {
-        /** Reads a metadata event; null if it is not a well-formed group description. */
+        /** Reads a metadata event; null if it is not a well-formed group description (exactly one valid `d`). */
         fun from(event: SignedEvent): Group? {
             if (event.kind != GroupKinds.METADATA) return null
-            val id = event.firstTagValue("d")?.takeIf(GroupKinds::isValidId) ?: return null
+            val ids = event.tagValues("d")
+            val id = ids.singleOrNull()?.takeIf(GroupKinds::isValidId) ?: return null
             val flags = event.tags.mapNotNull { it.firstOrNull() }.toSet()
             return Group(
                 id = id,

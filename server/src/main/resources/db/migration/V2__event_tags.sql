@@ -16,12 +16,15 @@ CREATE TABLE event_tags (
 -- Lookup by tag, then by event id to join back to events.
 CREATE INDEX event_tags_name_value_idx ON event_tags (name, value, event_id);
 
--- Index the events already stored.
+-- Encrypted envelopes (kind 1059) are deleted by reception date: give that deletion an index.
+CREATE INDEX events_wrap_received_at_idx ON events (received_at) WHERE kind = 1059;
+
+-- Index the events already stored. The CASE keeps jsonb_array_length away from non-array
+-- elements (SQL does not short-circuit a WHERE), although the application only writes arrays.
 INSERT INTO event_tags (event_id, name, value)
 SELECT DISTINCT e.id, t ->> 0, t ->> 1
 FROM events e, jsonb_array_elements(e.tags) t
-WHERE jsonb_typeof(t) = 'array'
-  AND jsonb_array_length(t) >= 2
+WHERE CASE WHEN jsonb_typeof(t) = 'array' THEN jsonb_array_length(t) ELSE 0 END >= 2
   AND jsonb_typeof(t -> 0) = 'string'
   AND jsonb_typeof(t -> 1) = 'string'
   AND length(t ->> 0) BETWEEN 1 AND 64

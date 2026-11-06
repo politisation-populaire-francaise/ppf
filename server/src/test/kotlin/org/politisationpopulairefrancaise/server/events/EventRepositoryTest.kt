@@ -10,6 +10,7 @@ import org.politisationpopulairefrancaise.server.TestDatabase
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 
 class EventRepositoryTest {
@@ -127,6 +128,25 @@ class EventRepositoryTest {
         assertEquals(emptyList(), repository.query(EventFilter(tags = mapOf("t" to listOf(huge)))))
         assertEquals(listOf(event), repository.query(EventFilter(tags = mapOf("t" to listOf("a")))))
         assertEquals(2, tagRows())
+    }
+
+    @Test
+    fun keepsTheNewestEventsOfATagValue() {
+        val recipient = "f".repeat(64)
+        val wraps = (1..5).map { note(alice, "wrap $it", 1_000L + it, tags = listOf(listOf("p", recipient))) }
+        val other = note(bob, "other", 1, tags = listOf(listOf("p", "e".repeat(64))))
+        (wraps + other).forEach { assertEquals(StoreOutcome.STORED, repository.store(it)) }
+        assertNotNull(repository.find(wraps[0].id))
+
+        // Stored one after the other: the reception order is the storage order.
+        assertEquals(2, repository.keepNewestByTag(EventKinds.TEXT_NOTE, "p", recipient, keep = 3))
+        assertEquals(wraps.takeLast(3).map { it.id }.toSet(), repository.query(EventFilter(tags = mapOf("p" to listOf(recipient)))).map { it.id }.toSet())
+        assertNull(repository.find(wraps[0].id))
+        assertEquals(other, repository.find(other.id), "other tag values are untouched")
+        assertEquals(0, repository.keepNewestByTag(EventKinds.TEXT_NOTE, "p", recipient, keep = 3))
+        // Another kind with the same tag is not counted.
+        assertEquals(0, repository.keepNewestByTag(EventKinds.LONG_FORM_ARTICLE, "p", recipient, keep = 0))
+        assertEquals(4, repository.count())
     }
 
     private fun tagRows(): Int = TestDatabase.dataSource.connection.use { connection ->

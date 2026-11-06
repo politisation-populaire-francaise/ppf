@@ -56,12 +56,21 @@ class PublicationPolicyTest {
         assertEquals(403, assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(citizen).sign(kind = GroupKinds.METADATA, tags = description))).status)
         assertEquals(403, assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(citizen).sign(kind = GroupKinds.ADMINS, tags = description))).status)
 
-        for (badId in listOf(null, "", "with space", "é", "x".repeat(65))) {
+        for (badId in listOf(null, "", "with space", "é", "Demo", "x".repeat(65))) {
             val tags = if (badId == null) emptyList() else listOf(listOf("d", badId))
             val refused = assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = tags)))
             assertEquals("bad_group_id", refused.error, "id $badId")
         }
-        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "a-b_c.d~E9")))))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "a-b_c.d~e9")))))
+        // Exactly one id: a second d tag could point the description at someone else's group.
+        val twoIds = LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "libre"), listOf("d", "demo")))
+        assertEquals("bad_group_id", assertIs<PublicationPolicy.Decision.Refused>(policy.check(twoIds)).error)
+        // Flags the relay cannot honour yet.
+        for (flag in listOf("private", "hidden")) {
+            val flagged = LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "demo"), listOf(flag)))
+            assertEquals("unsupported_group_flag", assertIs<PublicationPolicy.Decision.Refused>(policy.check(flagged)).error, flag)
+        }
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "demo"), listOf("closed"), listOf("restricted")))))
 
         val members = assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.MEMBERS, tags = listOf(listOf("d", "demo")))))
         assertEquals("members_list_refused", members.error)
@@ -73,6 +82,24 @@ class PublicationPolicyTest {
         assertEquals(PublicationPolicy.Decision.Allowed, policy.check(message))
         val orphan = LocalEventSigner(citizen).sign(kind = GroupKinds.CHAT_MESSAGE, content = "x")
         assertEquals("missing_group", assertIs<PublicationPolicy.Decision.Refused>(policy.check(orphan)).error)
+        val twoGroups = LocalEventSigner(citizen).sign(kind = EventKinds.TEXT_NOTE, content = "x", tags = listOf(listOf("h", "demo"), listOf("h", "ferme")))
+        assertEquals("multiple_groups", assertIs<PublicationPolicy.Decision.Refused>(policy.check(twoGroups)).error)
+    }
+
+    @Test
+    fun refusesTagFloodsAndEnvelopesWithoutExactlyOneRecipient() = runBlocking {
+        val policy = PublicationPolicy(emptySet())
+        val signer = LocalEventSigner(citizen)
+        val flood = signer.sign(kind = EventKinds.TEXT_NOTE, tags = List(PublicationPolicy.MAX_TAGS + 1) { listOf("t", "a") })
+        assertEquals("too_many_tags", assertIs<PublicationPolicy.Decision.Refused>(policy.check(flood)).error)
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(signer.sign(kind = EventKinds.TEXT_NOTE, tags = List(PublicationPolicy.MAX_TAGS) { listOf("t", "a") })))
+
+        val recipient = editor.publicKey.hex
+        for (tags in listOf(emptyList(), listOf(listOf("p", recipient), listOf("p", recipient)), listOf(listOf("p", "short")), listOf(listOf("p", recipient.uppercase())))) {
+            val wrap = signer.sign(kind = RelayKinds.GIFT_WRAP, content = "opaque", tags = tags)
+            assertEquals("bad_recipient", assertIs<PublicationPolicy.Decision.Refused>(policy.check(wrap)).error, tags.toString())
+        }
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(signer.sign(kind = RelayKinds.GIFT_WRAP, content = "opaque", tags = listOf(listOf("p", recipient, "wss://relay.example")))))
     }
 
     @Test

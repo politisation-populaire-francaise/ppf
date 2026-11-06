@@ -50,6 +50,20 @@ class RateLimiterTest {
     }
 
     @Test
+    fun refundsGiveATokenBackWithoutOverfilling() {
+        repeat(60) { limiter.tryAcquire(alice) }
+        assertIs<RateLimiter.Outcome.Limited>(limiter.tryAcquire(alice))
+        limiter.refund(alice)
+        assertEquals(RateLimiter.Outcome.Allowed, limiter.tryAcquire(alice))
+        assertIs<RateLimiter.Outcome.Limited>(limiter.tryAcquire(alice))
+        // A full bucket stays full; an unknown key is ignored.
+        limiter.refund(bob)
+        limiter.refund("z".repeat(64))
+        repeat(60) { assertEquals(RateLimiter.Outcome.Allowed, limiter.tryAcquire(bob)) }
+        assertIs<RateLimiter.Outcome.Limited>(limiter.tryAcquire(bob))
+    }
+
+    @Test
     fun configurationRejectsNonsense() {
         assertFailsWith<IllegalArgumentException> { RateLimiter(permitsPerMinute = 0) }
         assertFailsWith<IllegalArgumentException> { RelayConfig(postRatePerMinute = 0) }

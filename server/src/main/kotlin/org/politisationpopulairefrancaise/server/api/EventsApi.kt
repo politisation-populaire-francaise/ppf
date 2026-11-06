@@ -6,6 +6,7 @@ import io.ktor.server.request.contentLength
 import io.ktor.server.request.receiveText
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
+import io.ktor.server.routing.RoutingCall
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.route
@@ -20,6 +21,8 @@ import org.politisationpopulairefrancaise.server.events.StoreOutcome
 import org.politisationpopulairefrancaise.server.events.TagIndex
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
+import org.politisationpopulairefrancaise.server.relay.RelayConfig
+import org.politisationpopulairefrancaise.server.relay.RelayKinds
 
 @Serializable
 data class PublishResponse(val id: String, val status: String)
@@ -30,17 +33,42 @@ data class ApiError(val error: String, val message: String)
 /** Events above this size are refused before being read in full. */
 const val MAX_EVENT_BYTES: Long = 64 * 1024
 
+/** At most this many `tag=` and `identifier=` parameters per request, so that a query stays cheap. */
+const val MAX_TAG_FILTERS: Int = 20
+
+/**
+ * The limits applied to POST /api/v1/events, all in memory and never tied to a client address:
+ * a budget per authenticated public key, a ceiling for the whole server (keys are free to mint),
+ * and the number of envelopes kept per recipient.
+ */
+class PostLimits(
+    val perKey: RateLimiter,
+    val global: RateLimiter,
+    val wrapMaxPerRecipient: Int,
+) {
+    constructor(config: RelayConfig) : this(
+        perKey = RateLimiter(config.postRatePerMinute),
+        global = RateLimiter(config.globalPostRatePerMinute, maxTrackedKeys = 1),
+        wrapMaxPerRecipient = config.wrapMaxPerRecipient,
+    )
+
+    companion object {
+        /** The single key of the global bucket; it cannot collide with a hex public key. */
+        const val GLOBAL_KEY: String = "*"
+    }
+}
+
 /**
  * The signed-events API, the server side of the publication port and of the message relay:
  *
  * - POST /api/v1/events: publish one signed event (JSON body). Only events whose signature checks
- *   out, whose author is within the [RateLimiter] budget and which the [PublicationPolicy] allows
- *   are stored; nothing is logged about the sender. Encrypted envelopes (kind 1059) are stored as
- *   they are, never opened.
+ *   out, which fit the [PostLimits] and which the [PublicationPolicy] and the [GroupDirectory]
+ *   allow are stored; nothing is logged about the sender. Encrypted envelopes (kind 1059) are
+ *   stored as they are, never opened.
  * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
-fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rateLimiter: RateLimiter, groups: GroupDirectory? = null) {
+fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, limits: PostLimits, groups: GroupDirectory? = null) {
     if (repository == null) {
         route("/api/v1/{...}") {
             handle {
@@ -62,15 +90,27 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rat
             }
             val event = runCatching { SignedEvent.fromJson(body) }.getOrNull()
                 ?: return@post call.respond(HttpStatusCode.BadRequest, ApiError("malformed_event", "The body is not a signed event."))
+            // A replay of a stored event costs nobody anything: neither a signature check nor a token.
+            // A body with a stored id but another content is not authentic: its id does not match it.
+            val stored = if (isLowercaseHex64(event.id)) withContext(Dispatchers.IO) { repository.find(event.id) } else null
+            if (stored != null) {
+                return@post if (stored.unsigned() == event.unsigned()) {
+                    call.respond(HttpStatusCode.OK, PublishResponse(event.id, "duplicate"))
+                } else {
+                    call.respond(HttpStatusCode.BadRequest, ApiError("invalid_signature", "The id or the signature does not match the content."))
+                }
+            }
+            // The server-wide ceiling comes before the signature check: it bounds the work a flood can cause.
+            when (val ceiling = limits.global.tryAcquire(PostLimits.GLOBAL_KEY)) {
+                is RateLimiter.Outcome.Limited -> return@post call.rateLimited(ceiling, "The server is receiving too many events; try again later.")
+                RateLimiter.Outcome.Allowed -> Unit
+            }
             if (!event.verify()) {
                 return@post call.respond(HttpStatusCode.BadRequest, ApiError("invalid_signature", "The id or the signature does not match the content."))
             }
             // The budget is per authenticated public key (the signature was just checked), never per address.
-            when (val budget = rateLimiter.tryAcquire(event.pubkey)) {
-                is RateLimiter.Outcome.Limited -> {
-                    call.response.headers.append(HttpHeaders.RetryAfter, budget.retryAfterSeconds.toString())
-                    return@post call.respond(HttpStatusCode.TooManyRequests, ApiError("rate_limited", "Too many events from this key; try again later."))
-                }
+            when (val budget = limits.perKey.tryAcquire(event.pubkey)) {
+                is RateLimiter.Outcome.Limited -> return@post call.rateLimited(budget, "Too many events from this key; try again later.")
                 RateLimiter.Outcome.Allowed -> Unit
             }
             when (val decision = policy.check(event)) {
@@ -86,9 +126,25 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rat
             }
             val outcome = withContext(Dispatchers.IO) { repository.store(event) }
             when (outcome) {
-                StoreOutcome.STORED -> call.respond(HttpStatusCode.Created, PublishResponse(event.id, "stored"))
-                StoreOutcome.DUPLICATE -> call.respond(HttpStatusCode.OK, PublishResponse(event.id, "duplicate"))
-                StoreOutcome.SUPERSEDED -> call.respond(HttpStatusCode.OK, PublishResponse(event.id, "superseded"))
+                StoreOutcome.STORED -> {
+                    if (event.kind == RelayKinds.GIFT_WRAP) {
+                        // One recipient per envelope (policy); the mailbox keeps the newest envelopes only.
+                        val recipient = event.firstTagValue("p")
+                        if (recipient != null) {
+                            withContext(Dispatchers.IO) { repository.keepNewestByTag(RelayKinds.GIFT_WRAP, "p", recipient, limits.wrapMaxPerRecipient) }
+                        }
+                    }
+                    call.respond(HttpStatusCode.Created, PublishResponse(event.id, "stored"))
+                }
+                StoreOutcome.DUPLICATE -> {
+                    limits.perKey.refund(event.pubkey)
+                    call.respond(HttpStatusCode.OK, PublishResponse(event.id, "duplicate"))
+                }
+                StoreOutcome.SUPERSEDED -> {
+                    // Replaying an old version of someone's content must not drain their budget.
+                    limits.perKey.refund(event.pubkey)
+                    call.respond(HttpStatusCode.OK, PublishResponse(event.id, "superseded"))
+                }
             }
         }
 
@@ -98,7 +154,10 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rat
             val authors = parameters.getAll("author").orEmpty()
             if (authors.any { !isLowercaseHex64(it) }) return@get badParameter("author")
             val identifiers = parameters.getAll("identifier").orEmpty()
-            val tags = parseTagFilters(parameters.getAll("tag").orEmpty()) ?: return@get badParameter("tag")
+            if (identifiers.any { !TagIndex.isIndexable("d", it) }) return@get badParameter("identifier")
+            val rawTags = parameters.getAll("tag").orEmpty()
+            if (identifiers.size + rawTags.size > MAX_TAG_FILTERS) return@get badParameter("tag")
+            val tags = parseTagFilters(rawTags) ?: return@get badParameter("tag")
             val since = parameters["since"]?.let { it.toLongOrNull() ?: return@get badParameter("since") }
             val until = parameters["until"]?.let { it.toLongOrNull() ?: return@get badParameter("until") }
             val limit = parameters["limit"]?.let { it.toIntOrNull() ?: return@get badParameter("limit") } ?: EventFilter.DEFAULT_LIMIT
@@ -119,9 +178,6 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, rat
     }
 }
 
-/** At most this many `tag=` parameters per request, so that a query stays cheap. */
-const val MAX_TAG_FILTERS: Int = 20
-
 /**
  * Parses repeatable `tag=<name>:<value>` parameters: the first colon separates the name from the
  * value, which may itself contain colons. Values of the same name are alternatives, different
@@ -139,6 +195,11 @@ fun parseTagFilters(raw: List<String>): Map<String, List<String>>? {
         tags.getOrPut(name) { mutableListOf() } += value
     }
     return tags
+}
+
+private suspend fun RoutingCall.rateLimited(outcome: RateLimiter.Outcome.Limited, message: String) {
+    response.headers.append(HttpHeaders.RetryAfter, outcome.retryAfterSeconds.toString())
+    respond(HttpStatusCode.TooManyRequests, ApiError("rate_limited", message))
 }
 
 internal suspend fun io.ktor.server.routing.RoutingContext.badParameter(name: String) =

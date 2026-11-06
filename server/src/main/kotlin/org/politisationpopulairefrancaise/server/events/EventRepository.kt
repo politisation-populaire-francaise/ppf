@@ -6,6 +6,7 @@ import org.politisationpopulairefrancaise.core.signing.TagsJson
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
+import java.sql.SQLException
 import java.time.Instant
 import java.time.ZoneOffset
 import javax.sql.DataSource
@@ -75,6 +76,15 @@ class EventRepository(private val dataSource: DataSource) {
             val outcome = storeInTransaction(connection, event)
             connection.commit()
             outcome
+        } catch (e: SQLException) {
+            connection.rollback()
+            // Two versions of the same content (or the same event twice) arriving at the same
+            // instant: the second INSERT hits a unique index. Nothing to store, nothing to report.
+            if (e.sqlState == UNIQUE_VIOLATION) {
+                if (EventReplacement.replacementKey(event) != null) StoreOutcome.SUPERSEDED else StoreOutcome.DUPLICATE
+            } else {
+                throw e
+            }
         } catch (e: Exception) {
             connection.rollback()
             throw e
@@ -195,6 +205,28 @@ class EventRepository(private val dataSource: DataSource) {
         }
     }
 
+    /**
+     * Keeps only the [keep] most recently received events of [kind] carrying the tag [name] = [value]
+     * and deletes the older ones; returns how many were deleted. Bounds the mailbox of one recipient.
+     */
+    fun keepNewestByTag(kind: Int, name: String, value: String, keep: Int): Int = dataSource.connection.use { connection ->
+        connection.prepareStatement(
+            """
+            DELETE FROM events WHERE id IN (
+                SELECT e.id FROM events e JOIN event_tags t ON t.event_id = e.id
+                WHERE e.kind = ? AND t.name = ? AND t.value = ?
+                ORDER BY e.received_at DESC, e.id ASC OFFSET ?
+            )
+            """.trimIndent(),
+        ).use { statement ->
+            statement.setInt(1, kind)
+            statement.setString(2, name)
+            statement.setString(3, value)
+            statement.setInt(4, keep.coerceAtLeast(0))
+            statement.executeUpdate()
+        }
+    }
+
     fun count(): Long = dataSource.connection.use { connection ->
         connection.createStatement().use { statement ->
             val rows = statement.executeQuery("SELECT count(*) FROM events")
@@ -215,5 +247,8 @@ class EventRepository(private val dataSource: DataSource) {
 
     private companion object {
         const val SELECT = "SELECT id, pubkey, created_at, kind, tags::text AS tags, content, sig FROM events"
+
+        /** PostgreSQL SQLSTATE of a unique index violation. */
+        const val UNIQUE_VIOLATION = "23505"
     }
 }
