@@ -148,6 +148,8 @@ class VoirScreenTest {
 
         onNodeWithTag(VoirTags.tab(2)).performClick()
         waitForIdle()
+        // A measure without an occasion is named by its date, the French way.
+        onNodeWithTag(VoirTags.card("recours-49-3")).assert(hasText("4 nov. 2026"))
         onNodeWithTag(VoirTags.seeAll("liberties")).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(VoirTags.card("chrono-arrete-interdiction-exempleville")).performScrollTo().assertExists()

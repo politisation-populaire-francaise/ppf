@@ -148,7 +148,8 @@ internal fun KeyFigureCard(indicator: Indicator, onOpen: () -> Unit, modifier: M
         }
         Spacer(Modifier.height(8.dp))
         Text(
-            latest.occasion + if (latest.occasion != latest.date.toIso()) " · ${latest.date.toFrenchShort()}" else "",
+            // A measure without an occasion is named by its date, written the French way.
+            if (latest.occasion == latest.date.toIso()) latest.date.toFrenchShort() else "${latest.occasion} · ${latest.date.toFrenchShort()}",
             style = MaterialTheme.typography.bodySmall,
             color = palette.inkSubtle,
             maxLines = 2,
