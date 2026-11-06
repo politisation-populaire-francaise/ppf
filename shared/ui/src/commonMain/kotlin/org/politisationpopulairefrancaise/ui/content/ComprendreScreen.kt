@@ -40,6 +40,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
+import org.politisationpopulairefrancaise.ui.resources.appels_title
 import org.politisationpopulairefrancaise.ui.resources.content_back
 import org.politisationpopulairefrancaise.ui.resources.content_none
 import org.politisationpopulairefrancaise.ui.resources.content_origin_ai
@@ -215,6 +216,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.DECRYPTAGE -> Res.string.content_type_decryptage
         ArticleType.ARTICLE -> Res.string.content_type_article
         ArticleType.REVENDICATION -> Res.string.space_revendications
+        ArticleType.APPEL -> Res.string.appels_title
     },
 )
 
