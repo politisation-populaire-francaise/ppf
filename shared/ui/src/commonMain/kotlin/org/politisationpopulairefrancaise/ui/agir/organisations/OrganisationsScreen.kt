@@ -213,7 +213,8 @@ private fun DirectoryList(library: OrganisationsLibrary, onBack: (() -> Unit)?, 
             }
         }
         item(key = "search") {
-            Column(Modifier.widthIn(max = 720.dp)) {
+            // On a card, so that the fields (page-coloured) stand out from the page.
+            PpfCard(Modifier.widthIn(max = 720.dp).fillMaxWidth(), contentPadding = PaddingValues(12.dp)) {
                 PpfTextField(
                     value = query.text,
                     onValueChange = library::search,

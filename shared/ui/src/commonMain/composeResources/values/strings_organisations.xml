@@ -54,7 +54,6 @@
     <string name="organisation_verified">Vérifiée</string>
     <string name="organisation_verified_on">Vérifiée par PPF le %1$s</string>
     <string name="organisation_national">Partout en France</string>
-    <string name="organisation_territory">Territoire : %1$s</string>
     <string name="organisation_follow_private">Votre abonnement reste sur votre appareil : personne d’autre ne sait que vous suivez cette organisation.</string>
     <string name="organisation_no_account">Cette organisation n’a pas encore de compte sur PPF : il n’y a rien à suivre pour l’instant.</string>
     <string name="organisation_presentation">Présentation</string>
