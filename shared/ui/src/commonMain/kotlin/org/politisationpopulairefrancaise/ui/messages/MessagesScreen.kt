@@ -104,13 +104,18 @@ fun MessagesScreen(windowClass: WindowClass, modifier: Modifier = Modifier) {
             }
         }
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize(), key = { views[it].id }) { page ->
-            MessagesPage(views[page], compact)
+            when (views[page]) {
+                MessagesView.PRIVATE -> PrivatePage(compact)
+                MessagesView.COLLECTIVES -> CollectivesPage(compact)
+                MessagesView.FLOWS -> FlowsPage(compact)
+            }
         }
     }
 }
 
+/** What a view will hold, shown until it exists: its icon, its title, its description. */
 @Composable
-private fun MessagesPage(view: MessagesView, compact: Boolean) {
+internal fun PlannedView(view: MessagesView, compact: Boolean) {
     val palette = PpfTheme.palette
     Column(
         modifier = Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp),

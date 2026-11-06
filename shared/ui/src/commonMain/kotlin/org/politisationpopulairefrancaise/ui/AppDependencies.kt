@@ -25,6 +25,11 @@ class AppDependencies(
      * Null keeps the list in memory for the life of the process only (tests, previews).
      */
     val followStore: FollowStore? = null,
+    /**
+     * The local database itself, for the stores that other modules build on it (messages, rooms);
+     * null means no local database.
+     */
+    val database: PpfDatabase? = null,
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -45,6 +50,7 @@ class AppDependencies(
             editorialTrust = editorialTrust,
             remote = remote,
             followStore = FollowStore(database),
+            database = database,
         )
     }
 }

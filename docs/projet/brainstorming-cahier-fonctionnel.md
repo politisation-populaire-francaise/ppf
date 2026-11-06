@@ -36,6 +36,17 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Mise en œuvre (6 novembre) : écran « Messages » avec les trois vues (Privé, Collectifs, Flux) parcourues au doigt, bouton « Nouvelle conversation » désactivé, explication du chiffrement ; aucune conversation possible tant que le protocole n'est pas choisi.
 - Points à cadrer : les « flux » des médias et des élus sont des comptes suivis (S-120, AG-22) dont les publications sont présentées comme des conversations à sens unique, sans réponse privée ; les salons de collectifs publics ne sont pas chiffrés de bout en bout (ils sont lisibles par tous et modérés), les salons réservés le sont ; la liste des conversations reste sur l'appareil ; signalement d'un message chiffré par son destinataire seulement (S-127).
 
+### [2026-11-07] Salons de collectifs : création ouverte, charte, doublons
+- Statut : Intégré le 2026-11-07 (D-028) ; détection par le sens À étudier
+- Concerne : cahier-fonctionnel.md, M14 ; S-129 à S-136 (collectifs) ; AG-47 à AG-53
+- **Décision de la propriétaire (7 novembre 2026)** : tout compte peut créer le salon d'un collectif, d'un syndicat ou d'une association (laisser exister les initiatives citoyennes, ne pas être accusé de censure) ; le salon respecte la charte de valeurs ; les doublons (même but, même localité) sont évités pour ne pas disperser les citoyens.
+- Mise en œuvre : charte acceptée à la création (étiquette `ppf-charter`), territoire obligatoire (`ppf-territory`), refus des doublons par nom normalisé et territoire avec proposition du salon existant, recherche avant création. À étudier : rapprochement par le sens (modèle d'IA auto-hébergé, comme DE-19 pour les revendications), fusion de salons, modération a posteriori et signalement, rôles d'administrateurs du collectif (NIP-29, kinds 9000 à 9022).
+
+### [2026-11-07] Messagerie : conservation réglable par l'utilisateur
+- Statut : Intégré le 2026-11-07 (D-028)
+- Concerne : cahier-fonctionnel.md, M14 ; S-125
+- **Décision de la propriétaire** : conservation des messages sur le serveur de trois mois au minimum, durée réglable par chaque utilisateur. Mise en œuvre : réglage dans Mon espace (3, 6 ou 12 mois), publié comme un événement NIP-78 signé que le serveur lit pour la boîte de l'utilisateur ; plafond haut du serveur à un an ; les appareils gardent leur copie déchiffrée sans limite.
+
 ### [2026-11-06] Revendications : vue du fil et accès dans la barre du bas
 - Statut : Intégré le 2026-11-06 (cahier fonctionnel 1.2, M18) ; vote et débat bloqués par la méthode « une personne, une voix »
 - Concerne : cahier-fonctionnel.md, M11, M18 ; DE-01, DE-18 à DE-21

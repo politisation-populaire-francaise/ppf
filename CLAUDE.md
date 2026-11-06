@@ -141,7 +141,9 @@ Si une meilleure option existe, propose-la avec ta justification **avant** de co
 
 **Identité visuelle (6 novembre 2026, D-025)** : celle des maquettes de la propriétaire ; jetons dans `PpfTheme.kt` (`PpfPalette`), police Atkinson Hyperlegible, icônes Lucide (`Lucide.kt` généré), composants communs dans `shared/ui/.../components`. Toute nouvelle vue se construit avec ces composants, sans couleur ni police en dur.
 
-**Choix encore ouverts** (consulte les brainstormings avant d'y toucher, ne code rien qui en dépend) : hébergement du modèle d'IA de modération, protocole de messagerie chiffrée, briques de contenu communes, méthode « une personne, une voix », prestataire de paiement (HelloAsso à confirmer), navigation détaillée (réécrite lors du découpage en MVP).
+**Décidé le 6 et 7 novembre 2026** (D-026 à D-028) : barre du bas à cinq entrées (Fil, En direct, Carte, Messages, Revendications), vues du fil parcourues au doigt ; messagerie option A (NIP-17 pour le privé, NIP-29 pour les salons, notre serveur comme relais, MLS plus tard derrière une interface) ; conservation des messages sur le serveur de trois mois au minimum, réglable par l'utilisateur ; création des salons ouverte à tous avec charte, territoire et refus des doublons.
+
+**Choix encore ouverts** (consulte les brainstormings avant d'y toucher, ne code rien qui en dépend) : hébergement du modèle d'IA de modération, briques de contenu communes, méthode « une personne, une voix », prestataire de paiement (HelloAsso à confirmer), navigation détaillée (réécrite lors du découpage en MVP).
 
 ### Structure du dépôt (adoptée le 5 novembre 2026)
 
