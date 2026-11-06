@@ -26,7 +26,6 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -57,6 +56,7 @@ import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.PpfPrimaryButton
+import org.politisationpopulairefrancaise.ui.components.PpfSelectableChip
 import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextField
 import org.politisationpopulairefrancaise.ui.icons.Lucide
@@ -270,10 +270,10 @@ private fun ColumnScope.Form(
     Field(stringResource(Res.string.propose_field_themes)) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             RevendicationThemes.ALL.forEach { theme ->
-                ThemeToggle(
+                PpfSelectableChip(
                     label = themeLabel(theme.id),
                     selected = theme.id in draft.themes,
-                    onToggle = { composer.toggleTheme(theme.id) },
+                    onClick = { composer.toggleTheme(theme.id) },
                     modifier = Modifier.testTag(ProposalTags.THEME + theme.id),
                 )
             }
@@ -340,30 +340,6 @@ private fun Field(label: String, help: String? = null, counter: String? = null, 
     }
     Spacer(Modifier.height(8.dp))
     content()
-}
-
-/** A theme the author picks or drops: a checkbox in the shape of a chip. */
-@Composable
-private fun ThemeToggle(label: String, selected: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
-    val palette = PpfTheme.palette
-    Surface(
-        modifier = modifier
-            .clip(MaterialTheme.shapes.extraSmall)
-            .toggleable(value = selected, role = Role.Checkbox, onValueChange = { onToggle() })
-            .heightIn(min = 44.dp),
-        shape = MaterialTheme.shapes.extraSmall,
-        color = if (selected) palette.brandTint else palette.surface2,
-        contentColor = if (selected) palette.brand else palette.ink,
-        border = androidx.compose.foundation.BorderStroke(1.dp, if (selected) palette.brand else palette.borderStrong),
-    ) {
-        Row(Modifier.padding(horizontal = 12.dp, vertical = 10.dp), verticalAlignment = Alignment.CenterVertically) {
-            if (selected) {
-                Icon(Lucide.Check, contentDescription = null, modifier = Modifier.size(16.dp))
-                Spacer(Modifier.width(6.dp))
-            }
-            Text(label, style = MaterialTheme.typography.labelLarge)
-        }
-    }
 }
 
 @Composable
