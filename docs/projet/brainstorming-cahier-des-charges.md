@@ -280,3 +280,15 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Option écartée : Galaxy Store (test fermé possible pour les comptes Samsung, mais statut de vendeur commercial demandé même pour une application gratuite, et utile aux seuls Samsung).
 - Recommandation : C tout de suite (déjà en place), puis A dès que la propriétaire accepte la dépense, et au plus tard avant l'ouverture des tests à plus de quelques personnes ou avant l'échéance de 2027.
 - Décision :
+
+### [2026-11-06] Décryptages : échelle des verdicts
+- Statut : À valider
+- Concerne : cahier-fonctionnel.md, M6 (« Décryptage des fausses informations : affirmation, verdict, explication, sources ») ; inventaire, CO-04 et CO-18 ; point d'attention n° 7
+- Description : avant de coder les décryptages (phase 2), il faut fixer la liste des verdicts affichés, toujours la même pour que le lecteur s'y retrouve et pour que la plateforme ne puisse pas être accusée de juger au cas par cas. Le point d'attention n° 7 demande d'écrire « déclaration contredite par les faits » plutôt que « mensonge » ou « fake news », sauf intention de tromper établie. Les verdicts portent sur une affirmation, jamais sur une personne.
+- Options :
+  - **A. Cinq verdicts** : « Exact », « Plutôt exact », « Trompeur » (vrai en partie, présenté de façon à induire en erreur), « Contredit par les faits », « Invérifiable » (pas de source fiable disponible). Avantages : nuancé, proche des pratiques des rédactions de vérification ; « Contredit par les faits » suit la méthode du point n° 7. Inconvénient : demande une méthode écrite pour distinguer « Plutôt exact » et « Trompeur ».
+  - **B. Trois verdicts** : « Exact », « Contredit par les faits », « Invérifiable ». Avantages : simple, lisible en un coup d'œil, peu contestable. Inconvénient : les affirmations à moitié vraies, très fréquentes, entrent mal dans les cases.
+  - **C. Pas d'étiquette, une phrase de conclusion rédigée** : le décryptage se termine par une conclusion libre. Avantage : souple. Inconvénients : pas de repère visuel, comparaisons impossibles, plus exposé au reproche de partialité.
+- Coût : aucun. Dans tous les cas : affirmation citée mot pour mot avec sa source et sa date, sources primaires, droit de réponse (VO-21) et journal des corrections (VO-22).
+- Recommandation : A, avec une page « Notre méthode » (PP-02) qui définit chaque verdict.
+- Décision :
