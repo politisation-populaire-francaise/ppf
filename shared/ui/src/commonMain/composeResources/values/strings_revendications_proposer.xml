@@ -27,8 +27,8 @@
     <string name="propose_checks_title">Vérifications automatiques</string>
     <string name="propose_checks_waiting">Écrivez votre revendication : les vérifications s’affichent ici au fil de la saisie.</string>
     <string name="propose_checks_empty">Aucun problème repéré pour l’instant.</string>
-    <string name="propose_check_rules_done">Règles du formulaire : vérifiées.</string>
-    <string name="propose_check_similarity_done">Comparée aux %1$d revendications présentes sur cet appareil.</string>
+    <string name="propose_check_rules_done">Règles du formulaire : vérification faite.</string>
+    <string name="propose_check_similarity_done">Comparaison faite avec les %1$d revendications présentes sur cet appareil.</string>
     <string name="propose_check_after_sending">Après l’envoi, sur le serveur : comparaison avec toutes les revendications, puis recherche des lois en vigueur et analyse par IA dès qu’elles seront en service. Une personne de l’équipe relit toujours avant la publication.</string>
     <string name="propose_severity_blocking">À corriger</string>
     <string name="propose_severity_warning">À vérifier</string>

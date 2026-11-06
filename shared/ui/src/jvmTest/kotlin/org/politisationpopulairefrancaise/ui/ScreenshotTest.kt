@@ -17,6 +17,7 @@ import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.Space
@@ -30,6 +31,7 @@ import org.politisationpopulairefrancaise.ui.feed.FeedTags
 import org.politisationpopulairefrancaise.ui.revendications.FilterPanelTags
 import org.politisationpopulairefrancaise.ui.revendications.ManageViewsTags
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationTags
+import org.politisationpopulairefrancaise.ui.revendications.propose.ProposalTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import java.io.File
@@ -131,6 +133,22 @@ class ScreenshotTest {
         onNodeWithTag(RevendicationTags.CARD + "lyon-transports-nuit").performScrollTo().performClick()
         waitForIdle()
         save("$prefix-revendication-detail")
+
+        // The proposal form, with a duplicate found while typing and the checks.
+        if (onAllNodesWithTag(RevendicationTags.BACK).fetchSemanticsNodes().isNotEmpty()) {
+            onNodeWithTag(RevendicationTags.BACK).performClick()
+            waitForIdle()
+        }
+        onAllNodes(hasTestTag(RevendicationTags.PROPOSE)).onFirst().performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ProposalTags.TITLE).performTextInput("Cantine à un euro pour les familles modestes")
+        waitForIdle()
+        save("$prefix-proposer")
+        onNodeWithTag(ProposalTags.CHECKS).performScrollTo()
+        waitForIdle()
+        save("$prefix-proposer-verifications")
+        onNodeWithTag(ProposalTags.CLOSE).performScrollTo().performClick()
+        waitForIdle()
 
         onNodeWithTag(ShellTags.navItem(Space.MESSAGES)).performClick()
         waitForIdle()
