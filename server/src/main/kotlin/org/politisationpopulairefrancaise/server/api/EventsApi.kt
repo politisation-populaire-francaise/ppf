@@ -23,6 +23,7 @@ import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.RelayKinds
+import org.politisationpopulairefrancaise.server.revendications.RevendicationProposals
 
 @Serializable
 data class PublishResponse(val id: String, val status: String)
@@ -64,11 +65,11 @@ class PostLimits(
  * - POST /api/v1/events: publish one signed event (JSON body). Only events whose signature checks
  *   out, which fit the [PostLimits] and which the [PublicationPolicy] and the [GroupDirectory]
  *   allow are stored; nothing is logged about the sender. Encrypted envelopes (kind 1059) are
- *   stored as they are, never opened.
+ *   stored as they are, never opened. A citizen demand goes to the review queue ([RevendicationProposals]).
  * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
-fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, limits: PostLimits, groups: GroupDirectory? = null) {
+fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, limits: PostLimits, groups: GroupDirectory? = null, proposals: RevendicationProposals? = null) {
     if (repository == null) {
         route("/api/v1/{...}") {
             handle {
@@ -112,6 +113,10 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
             when (val budget = limits.perKey.tryAcquire(event.pubkey)) {
                 is RateLimiter.Outcome.Limited -> return@post call.rateLimited(budget, "Too many events from this key; try again later.")
                 RateLimiter.Outcome.Allowed -> Unit
+            }
+            // A citizen demand is not published at once: it waits for the review of a person (202).
+            if (proposals != null && policy.isCitizenDemand(event)) {
+                return@post proposals.receive(call, event, limits.perKey)
             }
             when (val decision = policy.check(event)) {
                 is PublicationPolicy.Decision.Refused ->
