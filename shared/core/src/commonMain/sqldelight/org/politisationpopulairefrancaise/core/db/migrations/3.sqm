@@ -1,0 +1,7 @@
+-- Schema version 3 to 4 (2026-11-07): the cursors of the synchronization passes (see Event.sq, which
+-- is the reference for fresh installations; this file must stay identical to its CREATE statement).
+
+CREATE TABLE sync_cursor (
+    name TEXT NOT NULL PRIMARY KEY,
+    value INTEGER NOT NULL
+);

@@ -51,16 +51,41 @@ class SyncService(private val local: LocalEventStore, private val remote: Remote
     }
 
     /**
-     * Fetches events of [kinds] newer than what the device already holds and stores the authentic ones.
-     * The cursor is the newest `created_at` known locally: an event back-dated by its author could be
-     * missed, which a later server-side cursor will fix.
+     * Fetches events of [kinds] newer than this pass's own cursor and stores the authentic ones.
+     *
+     * The cursor belongs to the pass (table `sync_cursor`), not to the whole local store: events that
+     * arrive by other means (followed authors, bundled contents) never move it, so nothing published
+     * in between is skipped. It is advanced only after a complete pass, never beyond the current
+     * time (an event dated in the future would otherwise freeze the pull), and full pages are
+     * followed with `until` up to [maxPages] pages. A device from before the cursor existed starts
+     * from the newest event it holds. An event back-dated by its author below the cursor is still
+     * missed; a server-side cursor on the reception date would fix that.
      */
-    suspend fun pull(kinds: List<Int>, limit: Int = 200): SyncReport {
-        val since = local.latestCreatedAt(kinds)
-        return when (val result = remote.fetch(RemoteFilter(kinds = kinds, since = since, limit = limit))) {
-            is FetchResult.Unavailable -> SyncReport(reachable = false)
-            is FetchResult.Events -> SyncReport(pulled = storeAuthentic(result.events))
+    suspend fun pull(kinds: List<Int>, limit: Int = 200, maxPages: Int = 5): SyncReport {
+        val name = cursorName(kinds)
+        val since = local.cursor(name) ?: local.latestCreatedAt(kinds)
+        var until: Long? = null
+        var pulled = 0
+        var newest: Long? = null
+        var pages = 0
+        while (pages < maxPages) {
+            pages++
+            val result = remote.fetch(RemoteFilter(kinds = kinds, since = since, until = until, limit = limit))
+            val events = when (result) {
+                is FetchResult.Unavailable -> return SyncReport(pulled = pulled, reachable = false)
+                is FetchResult.Events -> result.events
+            }
+            pulled += storeAuthentic(events)
+            events.maxOfOrNull { it.createdAt }?.let { newest = maxOf(newest ?: it, it) }
+            if (events.size < limit) break
+            val oldest = events.minOf { it.createdAt }
+            if (until != null && oldest >= until) break // a whole page at one second: stop rather than loop
+            until = oldest
         }
+        val now = local.now()
+        val advanceTo = listOfNotNull(newest, since).maxOrNull()?.coerceAtMost(now)
+        if (advanceTo != null) local.setCursor(name, advanceTo)
+        return SyncReport(pulled = pulled)
     }
 
     /** Pushes then pulls. */
@@ -72,4 +97,9 @@ class SyncService(private val local: LocalEventStore, private val remote: Remote
 
     private fun storeAuthentic(events: List<SignedEvent>): Int =
         events.count { event -> event.verify() && local.store(event, pending = false) == LocalStoreOutcome.STORED }
+
+    companion object {
+        /** The name of the general pull's cursor for a set of kinds. */
+        fun cursorName(kinds: List<Int>): String = "pull:" + kinds.sorted().joinToString(",")
+    }
 }

@@ -75,6 +75,14 @@ class LocalEventStore(private val database: PpfDatabase, private val clock: () -
     fun latestCreatedAt(kinds: List<Int>): Long? =
         queries.latestCreatedAt(kinds.map(Int::toLong)).executeAsOneOrNull()?.MAX
 
+    /** Where the synchronization pass named [name] stopped, or null if it never ran. */
+    fun cursor(name: String): Long? = queries.selectCursor(name).executeAsOneOrNull()
+
+    fun setCursor(name: String, value: Long) = queries.upsertCursor(name, value)
+
+    /** The current time of the store's clock, seconds since 1970. */
+    fun now(): Long = clock()
+
     fun count(): Long = queries.countAll().executeAsOne()
 
     private fun Event.toSignedEvent(): SignedEvent = SignedEvent(

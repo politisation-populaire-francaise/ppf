@@ -65,8 +65,9 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion2() {
-        assertEquals(2L, PpfDatabase.Schema.version)
+    fun theSchemaIsAtVersion4() {
+        // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm).
+        assertEquals(4L, PpfDatabase.Schema.version)
     }
 
     @Test
@@ -78,7 +79,7 @@ class DatabaseMigrationTest {
         assertEquals(1L, userVersion(file))
 
         val database = JvmDatabase.open(file)
-        assertEquals(2L, userVersion(file))
+        assertEquals(PpfDatabase.Schema.version, userVersion(file))
 
         // The new table works, and the old rows are still there.
         val follows = FollowStore(database)

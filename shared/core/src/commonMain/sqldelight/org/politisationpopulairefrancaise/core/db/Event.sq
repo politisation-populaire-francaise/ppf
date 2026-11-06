@@ -29,6 +29,14 @@ CREATE TABLE event_tag (
 CREATE INDEX event_tag_lookup ON event_tag(name, value, event_id);
 CREATE INDEX event_tag_event ON event_tag(event_id);
 
+-- Where each synchronization pass stopped (name = the pass, value = seconds since 1970), so that
+-- events stored by other means (followed authors, bundled contents) never move the cursor of the
+-- general pull. Migration 3.sqm creates it on existing devices.
+CREATE TABLE sync_cursor (
+    name TEXT NOT NULL PRIMARY KEY,
+    value INTEGER NOT NULL
+);
+
 insert:
 INSERT INTO event(id, pubkey, created_at, kind, tags, content, sig, address, received_at, pending)
 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
@@ -68,6 +76,12 @@ UPDATE event SET pending = 0 WHERE id = ?;
 
 latestCreatedAt:
 SELECT MAX(created_at) FROM event WHERE kind IN ? AND pending = 0;
+
+selectCursor:
+SELECT value FROM sync_cursor WHERE name = ?;
+
+upsertCursor:
+INSERT OR REPLACE INTO sync_cursor(name, value) VALUES (?, ?);
 
 countAll:
 SELECT COUNT(*) FROM event;
