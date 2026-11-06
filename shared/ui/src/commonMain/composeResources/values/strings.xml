@@ -69,6 +69,19 @@ Populaire Française</string>
     <string name="feed_tab_ppf">Comptes PPF</string>
     <string name="feed_tab_mine">Mes publications</string>
     <string name="feed_tab_revendications">Revendications</string>
+    <string name="feed_tab_followed">Suivis</string>
+    <string name="feed_follow">Suivre</string>
+    <string name="feed_following">Suivi</string>
+    <string name="feed_unfollow">Ne plus suivre</string>
+    <string name="feed_follow_account">Suivre ce compte</string>
+    <string name="feed_unfollow_account">Ne plus suivre ce compte</string>
+    <string name="feed_author_open">Voir le compte</string>
+    <string name="feed_author_key_label">Clé publique (npub)</string>
+    <string name="feed_author_key_hint">Cette clé est un pseudonyme : elle ne dit rien de la personne, mais elle relie entre eux tous ses contenus.</string>
+    <string name="feed_author_close">Fermer</string>
+    <string name="feed_followed_empty">Vous ne suivez encore aucun compte. Touchez « Suivre » sur une publication, ou le nom de son auteur, pour retrouver ici ses publications.</string>
+    <string name="feed_followed_no_posts">Aucune publication récente des comptes que vous suivez.</string>
+    <string name="feed_followed_private">La liste des comptes que vous suivez reste sur votre appareil : elle n’est jamais envoyée au serveur.</string>
 
     <!-- Revendications (M11) -->
     <string name="revendications_intro">Ici, chaque revendication est une card : l’idée en une ou deux phrases, son thème, son territoire, son statut. Le vote Pour ou Contre ouvrira quand la méthode « une personne, une voix » aura été validée. Les revendications affichées sont des exemples, pas des positions de PPF.</string>
