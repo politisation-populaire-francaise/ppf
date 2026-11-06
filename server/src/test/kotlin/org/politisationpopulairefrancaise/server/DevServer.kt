@@ -1,31 +1,53 @@
 package org.politisationpopulairefrancaise.server
 
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import io.ktor.server.request.receiveText
+import io.ktor.server.response.respond
+import io.ktor.server.routing.get
+import io.ktor.server.routing.post
+import io.ktor.server.routing.route
+import io.ktor.server.routing.routing
 import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.runBlocking
-import kotlinx.serialization.builtins.ListSerializer
-import kotlinx.serialization.json.Json
+import kotlinx.coroutines.withContext
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.JsonElement
+import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.revendications.checks.ProposalReport
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupKinds
-import java.nio.file.Files
-import java.nio.file.Path
+import org.politisationpopulairefrancaise.server.revendications.DecisionOutcome
+import org.politisationpopulairefrancaise.server.revendications.ProposalQueue
+import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 
 /** Id of the example group of the development server; its messages are read with kind=9&tag=h:<id>. */
 const val DEMO_GROUP_ID: String = "collectif-demonstration"
 
 /**
  * Development server: a real PostgreSQL 17 started in-process (nothing to install), the bundled
- * example contents loaded, their author allowed to publish, and an example group described by a
- * development key generated at each start (and allowed as an editor for the session). Run from the
- * repository root with `./gradlew :server:runDev`, then point the desktop app at it with
- * PPF_SERVER_URL=http://localhost:8080.
+ * example contents loaded (practical guides, demands of the wall, notes of the feed), their author
+ * allowed to publish, and an example group described by a development key generated at each start
+ * (and allowed as an editor for the session). Run from the repository root with
+ * `./gradlew :server:runDev`, then point the desktop app at it with PPF_SERVER_URL=http://localhost:8080.
+ *
+ * Demands proposed by citizens wait for review, as in production. For local tests only, the review
+ * of the team is replaced by three routes without authentication (the real back-office, with
+ * two-factor authentication and an audit log, is to come):
+ * - GET /dev/revendications/proposals: the pending proposals with their full reports;
+ * - POST /dev/revendications/proposals/{id}/approve: publishes one;
+ * - POST /dev/revendications/proposals/{id}/reject, with the reason as the request body.
+ *
  * Never used in production: it listens on the local machine only and forgets everything on exit.
  */
 fun main() {
@@ -34,12 +56,7 @@ fun main() {
     val dataSource = postgres.postgresDatabase.also(Database::migrate)
     val repository = EventRepository(dataSource)
 
-    val bundled = Path.of("shared/ui/src/commonMain/composeResources/files/contents/fiches.json")
-    val seeded = if (Files.exists(bundled)) {
-        Json.decodeFromString(ListSerializer(SignedEvent.serializer()), Files.readString(bundled)).filter { it.verify() }
-    } else {
-        emptyList()
-    }
+    val seeded = BundledContents.loadAll()
     seeded.forEach(repository::store)
 
     // The development key exists only for this run; it is never written anywhere nor printed.
@@ -48,14 +65,79 @@ fun main() {
 
     val editors = PublicationPolicy.parseKeys(System.getenv(PublicationPolicy.EDITOR_KEYS_VARIABLE)) +
         seeded.map { it.pubkey } + developmentKey.publicKey.hex
+    // The same settings as production: an AI model only if PPF_AI_BASE_URL is set (for example a local model).
+    val revendications = RevendicationsSetup.fromEnvironment()
+    val queue = ProposalQueue(dataSource, repository, revendications.clock)
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
     println(
         "Development server: ${seeded.size} bundled content(s) loaded, example group \"$DEMO_GROUP_ID\" loaded, " +
-            "${editors.size} editor key(s), http://localhost:$port",
+            "${editors.size} editor key(s), AI model ${if (revendications.model == null) "off" else "on"}, http://localhost:$port",
     )
     embeddedServer(Netty, port = port, host = "127.0.0.1") {
-        module(dataSource, PublicationPolicy(editors))
+        module(dataSource, PublicationPolicy(editors), revendications = revendications)
+        routing { devReviewRoutes(queue) }
     }.start(wait = true)
+}
+
+/** A pending proposal as the development routes list it: everything the team will see. */
+@Serializable
+private data class DevProposal(
+    val id: String,
+    val address: String?,
+    val title: String?,
+    val summary: String?,
+    val territory: String?,
+    val themes: List<String>,
+    val body: String,
+    @SerialName("received_at") val receivedAt: Long,
+    val report: ProposalReport?,
+    val event: SignedEvent,
+)
+
+@Serializable
+private data class DevDecision(val id: String, val outcome: String)
+
+/** The development stand-in for the team's review (see [main]); 127.0.0.1 only. */
+private fun io.ktor.server.routing.Route.devReviewRoutes(queue: ProposalQueue) {
+    route("/dev/revendications/proposals") {
+        get {
+            val pending = withContext(Dispatchers.IO) { queue.pending() }.map { proposal ->
+                val article = Article.from(proposal.event)
+                DevProposal(
+                    id = proposal.id,
+                    address = article?.address?.toString(),
+                    title = article?.title,
+                    summary = article?.summary,
+                    territory = article?.territory,
+                    themes = article?.topics.orEmpty(),
+                    body = proposal.event.content,
+                    receivedAt = proposal.receivedAt,
+                    report = proposal.report,
+                    event = proposal.event,
+                )
+            }
+            call.respond(pending)
+        }
+        post("{id}/approve") {
+            val id = call.parameters["id"].orEmpty()
+            call.answer(id, withContext(Dispatchers.IO) { queue.approve(id) })
+        }
+        post("{id}/reject") {
+            val id = call.parameters["id"].orEmpty()
+            val reason = call.receiveText().trim()
+            if (reason.isEmpty() || reason.length > ProposalQueue.MAX_REASON_LENGTH) {
+                return@post call.respond(HttpStatusCode.BadRequest, ApiError("bad_reason", "Give the reason (1 to ${ProposalQueue.MAX_REASON_LENGTH} characters) as the request body."))
+            }
+            call.answer(id, withContext(Dispatchers.IO) { queue.reject(id, reason) })
+        }
+    }
+}
+
+private suspend fun io.ktor.server.application.ApplicationCall.answer(id: String, outcome: DecisionOutcome) = when (outcome) {
+    is DecisionOutcome.Approved -> respond(DevDecision(id, "approved (${outcome.stored.name.lowercase()})"))
+    DecisionOutcome.Rejected -> respond(DevDecision(id, "rejected"))
+    DecisionOutcome.NotFound -> respond(HttpStatusCode.NotFound, ApiError("not_found", "No proposal with this id."))
+    is DecisionOutcome.AlreadyDecided -> respond(HttpStatusCode.Conflict, ApiError("already_decided", "This proposal is already ${outcome.status.value}."))
 }
 
 /** The example group (public, open) and two example messages, all marked [EXEMPLE]. */
