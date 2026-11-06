@@ -17,23 +17,21 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
-import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
-import org.politisationpopulairefrancaise.ui.resources.app_name
 import org.politisationpopulairefrancaise.ui.resources.feed_author_close
 import org.politisationpopulairefrancaise.ui.resources.feed_author_key_hint
 import org.politisationpopulairefrancaise.ui.resources.feed_author_key_label
 import org.politisationpopulairefrancaise.ui.resources.feed_follow
-import org.politisationpopulairefrancaise.ui.resources.feed_follow_account
 import org.politisationpopulairefrancaise.ui.resources.feed_following
+import org.politisationpopulairefrancaise.ui.resources.feed_not_followed
 import org.politisationpopulairefrancaise.ui.resources.feed_unfollow
-import org.politisationpopulairefrancaise.ui.resources.feed_unfollow_account
 import org.politisationpopulairefrancaise.ui.resources.feed_verified
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
@@ -44,6 +42,7 @@ import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** Test tags of the author box. */
 object AuthorDialogTags {
+    const val TITLE = "author-dialog-title"
     const val KEY = "author-dialog-key"
     const val FOLLOW = "author-dialog-follow"
     const val CLOSE = "author-dialog-close"
@@ -51,28 +50,31 @@ object AuthorDialogTags {
 
 /**
  * "Suivre" when the account is not followed, "Suivi" with a check mark when it is; one touch
- * toggles. Screen readers hear the action ("Suivre ce compte" / "Ne plus suivre ce compte").
+ * toggles. The visible label stays the name of the button; screen readers also hear its state
+ * ("Suivi" / "Non suivi").
  */
 @Composable
 fun FollowButton(followed: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier, small: Boolean = true) {
-    val description = stringResource(if (followed) Res.string.feed_unfollow_account else Res.string.feed_follow_account)
+    val state = stringResource(if (followed) Res.string.feed_following else Res.string.feed_not_followed)
     PpfSecondaryButton(
         onClick = onToggle,
         text = stringResource(if (followed) Res.string.feed_following else Res.string.feed_follow),
         icon = if (followed) Lucide.Check else null,
         small = small,
-        modifier = modifier.semantics { contentDescription = description },
+        modifier = modifier.semantics { stateDescription = state },
     )
 }
 
 /**
- * The small box opened by touching an author's name or avatar: pseudonym, full selectable `npub`
- * key and the follow action. [followed] is null when the action is not offered (the user's own
- * account). Styled like the dialogs of "Mon espace".
+ * The small box opened by touching an author's name or avatar: [title] (the name shown on the
+ * card: application name for editorial accounts, "Vous" for oneself, the short pseudonym
+ * otherwise), the full selectable `npub` key and the follow action. [followed] is null when the
+ * action is not offered (the user's own account). Styled like the dialogs of "Mon espace".
  */
 @Composable
 fun AuthorDialog(
     pubkeyHex: String,
+    title: String,
     followed: Boolean?,
     onToggleFollow: () -> Unit,
     onDismiss: () -> Unit,
@@ -93,14 +95,14 @@ fun AuthorDialog(
                 Avatar(seed = pubkeyHex, letters = avatarLetters(pubkeyHex), size = 56.dp)
             }
         },
-        title = { Text(shortNpub(pubkeyHex), style = MaterialTheme.typography.titleMedium) },
+        title = { Text(title, style = MaterialTheme.typography.titleMedium, modifier = Modifier.testTag(AuthorDialogTags.TITLE)) },
         text = {
             Column {
                 if (editorial) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(Lucide.BadgeCheck, contentDescription = stringResource(Res.string.feed_verified), tint = palette.brand, modifier = Modifier.size(18.dp))
+                        Icon(Lucide.BadgeCheck, contentDescription = null, tint = palette.brand, modifier = Modifier.size(18.dp))
                         Spacer(Modifier.width(6.dp))
-                        Text(stringResource(Res.string.app_name), style = MaterialTheme.typography.titleSmall, color = palette.ink)
+                        Text(stringResource(Res.string.feed_verified), style = MaterialTheme.typography.labelLarge, color = palette.brand)
                     }
                     Spacer(Modifier.height(12.dp))
                 }

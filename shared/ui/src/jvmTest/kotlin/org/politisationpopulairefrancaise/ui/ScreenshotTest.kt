@@ -74,7 +74,7 @@ class ScreenshotTest {
 
         // The "Suivis" view: empty first, then the author box, then filled once the example account is followed.
         val firstPost = store.recent(kinds = listOf(1)).first().id.take(8)
-        onNodeWithTag(FeedTags.TAB + FeedFilter.SUIVIS.id).performClick()
+        onNodeWithTag(FeedTags.TAB + FeedFilter.FOLLOWED.id).performClick()
         waitForIdle()
         waitUntil(timeoutMillis = 5_000) { onAllNodesWithText("Vous ne suivez encore aucun compte", substring = true).fetchSemanticsNodes().isNotEmpty() }
         save("$prefix-fil-suivis-vide")
@@ -85,10 +85,10 @@ class ScreenshotTest {
         save("$prefix-fil-auteur")
         onNodeWithTag(AuthorDialogTags.FOLLOW).performClick()
         waitForIdle()
-        onNodeWithTag(FeedTags.TAB + FeedFilter.SUIVIS.id).performClick()
+        onNodeWithTag(FeedTags.TAB + FeedFilter.FOLLOWED.id).performClick()
         waitForIdle()
         waitUntil(timeoutMillis = 5_000) {
-            onAllNodes(hasTestTag(FeedTags.POST + firstPost) and hasAnyAncestor(hasTestTag(FeedTags.LIST + FeedFilter.SUIVIS.id))).fetchSemanticsNodes().isNotEmpty()
+            onAllNodes(hasTestTag(FeedTags.POST + firstPost) and hasAnyAncestor(hasTestTag(FeedTags.LIST + FeedFilter.FOLLOWED.id))).fetchSemanticsNodes().isNotEmpty()
         }
         save("$prefix-fil-suivis")
 

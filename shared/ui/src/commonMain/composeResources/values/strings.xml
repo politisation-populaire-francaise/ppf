@@ -73,13 +73,12 @@ Populaire Française</string>
     <string name="feed_follow">Suivre</string>
     <string name="feed_following">Suivi</string>
     <string name="feed_unfollow">Ne plus suivre</string>
-    <string name="feed_follow_account">Suivre ce compte</string>
-    <string name="feed_unfollow_account">Ne plus suivre ce compte</string>
+    <string name="feed_not_followed">Non suivi</string>
     <string name="feed_author_open">Voir le compte</string>
     <string name="feed_author_key_label">Clé publique (npub)</string>
     <string name="feed_author_key_hint">Cette clé est un pseudonyme : elle ne dit rien de la personne, mais elle relie entre eux tous ses contenus.</string>
     <string name="feed_author_close">Fermer</string>
-    <string name="feed_followed_empty">Vous ne suivez encore aucun compte. Touchez « Suivre » sur une publication, ou le nom de son auteur, pour retrouver ici ses publications.</string>
+    <string name="feed_followed_empty">Vous ne suivez encore aucun compte. Utilisez le bouton « Suivre » sur une publication, ou le nom de son auteur, pour retrouver ici ses publications.</string>
     <string name="feed_followed_no_posts">Aucune publication récente des comptes que vous suivez.</string>
     <string name="feed_followed_private">La liste des comptes que vous suivez reste sur votre appareil : elle n’est jamais envoyée au serveur.</string>
 
@@ -118,7 +117,7 @@ Populaire Française</string>
     <string name="feed_verified">Compte vérifié</string>
     <string name="feed_relay">Relayer</string>
     <string name="feed_publish">Publier</string>
-    <string name="feed_need_account">Tout se lit sans compte. Pour publier, réagir ou suivre des comptes, créez le vôtre : douze mots, aucun e-mail, aucun téléphone.</string>
+    <string name="feed_need_account">Tout se lit sans compte. Pour publier ou réagir, créez le vôtre : douze mots, aucun e-mail, aucun téléphone.</string>
     <string name="feed_create_account">Créer mon compte</string>
     <string name="feed_pending">En attente d’envoi au serveur</string>
     <string name="feed_like">J’aime</string>
@@ -204,6 +203,6 @@ Populaire Française</string>
     <string name="account_reveal_phrase_warning">Assurez-vous que personne ne regarde votre écran. Quiconque voit ces douze mots peut prendre le contrôle de votre compte.</string>
     <string name="account_reveal_secret_warning">Votre clé secrète donne le contrôle total de votre compte. Ne la collez que dans une application de confiance compatible Nostr.</string>
     <string name="account_reveal_confirm">Afficher</string>
-    <string name="account_sign_out_warning">Vos clés seront effacées de cet appareil. Sans votre phrase de récupération, votre compte sera perdu pour toujours. Pour un usage quotidien, fermez simplement l’application.</string>
+    <string name="account_sign_out_warning">Vos clés seront effacées de cet appareil. Sans votre phrase de récupération, votre compte sera perdu pour toujours. La liste des comptes que vous suivez sera aussi effacée. Pour un usage quotidien, fermez simplement l’application.</string>
     <string name="account_sign_out_confirm">Effacer mes clés de cet appareil</string>
 </resources>

@@ -22,6 +22,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.IdentityStore
@@ -34,8 +35,10 @@ import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
+import org.politisationpopulairefrancaise.ui.account.AccountTags
 import org.politisationpopulairefrancaise.ui.components.AuthorDialogTags
-import org.politisationpopulairefrancaise.ui.components.shortNpub
+import org.politisationpopulairefrancaise.ui.revendications.RevendicationTags
+import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -43,13 +46,14 @@ import kotlin.test.assertTrue
 
 /**
  * Following accounts from the feed (S-120): the button of a card, the author box, the "Suivis"
- * view, and the list kept on the device across launches. The five bundled posts share one author,
- * the example editorial account.
+ * view, the list kept on the device across launches and forgotten with the keys. The five bundled
+ * posts share one author, the example editorial account.
  */
 @OptIn(ExperimentalTestApi::class)
 class FollowTest {
 
     private val editor = EditorialTrust.EXAMPLE_EDITOR
+    private val phrase = RecoveryPhrase.parse("leader monkey parrot ring guide accident before fence cannon height naive bean")
 
     private fun ComposeUiTest.hasNode(tag: String): Boolean = onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty()
 
@@ -63,9 +67,14 @@ class FollowTest {
         onAllNodes(hasText(text, substring = true) and hasAnyAncestor(hasTestTag(FeedTags.LIST + filter.id))).fetchSemanticsNodes().isNotEmpty()
 
     /** Starts the application on [database] (contents and followed accounts share it) and waits for the bundled posts. */
-    private fun ComposeUiTest.launch(database: PpfDatabase, identity: IdentityStore = InMemoryIdentityStore()): LocalEventStore {
+    private fun ComposeUiTest.launch(
+        database: PpfDatabase,
+        identity: IdentityStore = InMemoryIdentityStore(),
+        width: Int = 1000,
+        height: Int = 740,
+    ): LocalEventStore {
         val dependencies = AppDependencies.withDatabase(identity, database)
-        setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
+        setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(dependencies) } }
         val store = dependencies.contentStore!!
         waitUntil(timeoutMillis = 10_000) { store.recent(kinds = listOf(1)).size == 5 }
         waitForIdle()
@@ -79,18 +88,20 @@ class FollowTest {
         onNodeWithTag(FeedTags.TAB + filter.id).assertIsSelected()
     }
 
+    private fun firstPostSuffix(store: LocalEventStore): String = store.recent(kinds = listOf(1)).first().id.take(8)
+
     @Test
     fun followingFromACardFillsTheFollowedViewAndUnfollowingEmptiesIt() = runComposeUiTest {
         val database = JvmDatabase.inMemory()
         val follows = FollowStore(database)
         val store = launch(database)
-        val suffix = store.recent(kinds = listOf(1)).first().id.take(8)
+        val suffix = firstPostSuffix(store)
 
         // The view sits right after "Tout" and, with nothing followed, explains how to follow.
-        openView(FeedFilter.SUIVIS)
-        waitUntil(timeoutMillis = 5_000) { viewHasText(FeedFilter.SUIVIS, "Vous ne suivez encore aucun compte") }
-        assertTrue(viewHasText(FeedFilter.SUIVIS, "reste sur votre appareil"))
-        inView(FeedFilter.SUIVIS, FeedTags.POST + suffix).assertCountEquals(0)
+        openView(FeedFilter.FOLLOWED)
+        waitUntil(timeoutMillis = 5_000) { viewHasText(FeedFilter.FOLLOWED, "Vous ne suivez encore aucun compte") }
+        assertTrue(viewHasText(FeedFilter.FOLLOWED, "reste sur votre appareil"))
+        inView(FeedFilter.FOLLOWED, FeedTags.POST + suffix).assertCountEquals(0)
 
         // Follow from the first card of "Tout", without any account.
         openView(FeedFilter.ALL)
@@ -102,15 +113,15 @@ class FollowTest {
         waitUntil(timeoutMillis = 5_000) { follows.all() == listOf(editor) }
 
         // The author's publications now fill the view.
-        openView(FeedFilter.SUIVIS)
-        waitUntil(timeoutMillis = 5_000) { inView(FeedFilter.SUIVIS, FeedTags.POST + suffix).fetchSemanticsNodes().isNotEmpty() }
-        assertFalse(viewHasText(FeedFilter.SUIVIS, "Vous ne suivez encore aucun compte"))
+        openView(FeedFilter.FOLLOWED)
+        waitUntil(timeoutMillis = 5_000) { inView(FeedFilter.FOLLOWED, FeedTags.POST + suffix).fetchSemanticsNodes().isNotEmpty() }
+        assertFalse(viewHasText(FeedFilter.FOLLOWED, "Vous ne suivez encore aucun compte"))
 
         // Unfollowing from a card of the view empties it again.
-        inView(FeedFilter.SUIVIS, FeedTags.FOLLOW + suffix).onFirst().performScrollTo().assert(hasText("Suivi")).performClick()
+        inView(FeedFilter.FOLLOWED, FeedTags.FOLLOW + suffix).onFirst().performScrollTo().assert(hasText("Suivi")).performClick()
         waitForIdle()
-        waitUntil(timeoutMillis = 5_000) { viewHasText(FeedFilter.SUIVIS, "Vous ne suivez encore aucun compte") }
-        inView(FeedFilter.SUIVIS, FeedTags.POST + suffix).assertCountEquals(0)
+        waitUntil(timeoutMillis = 5_000) { viewHasText(FeedFilter.FOLLOWED, "Vous ne suivez encore aucun compte") }
+        inView(FeedFilter.FOLLOWED, FeedTags.POST + suffix).assertCountEquals(0)
         waitUntil(timeoutMillis = 5_000) { follows.all().isEmpty() }
     }
 
@@ -119,12 +130,13 @@ class FollowTest {
         val database = JvmDatabase.inMemory()
         val follows = FollowStore(database)
         val store = launch(database)
-        val suffix = store.recent(kinds = listOf(1)).first().id.take(8)
+        val suffix = firstPostSuffix(store)
 
         onAllNodesWithTag(FeedTags.AUTHOR + suffix).onFirst().performScrollTo().performClick()
         waitForIdle()
+        // An editorial account is named like on its card; the key is shown in full.
+        onNodeWithTag(AuthorDialogTags.TITLE).assertTextEquals("Politisation Populaire Française")
         onNodeWithTag(AuthorDialogTags.KEY).assertTextEquals(PublicKey.fromHex(editor).npub)
-        onAllNodesWithText(shortNpub(editor)).onFirst().assertExists()
         onNodeWithTag(AuthorDialogTags.FOLLOW).assert(hasText("Suivre")).performClick()
         waitForIdle()
         // The box closes and the card reflects the new state.
@@ -155,17 +167,16 @@ class FollowTest {
         // Followed during a previous session of the application.
         FollowStore(database).follow(editor)
         val store = launch(database)
-        val suffix = store.recent(kinds = listOf(1)).first().id.take(8)
+        val suffix = firstPostSuffix(store)
 
         onAllNodesWithTag(FeedTags.FOLLOW + suffix).onFirst().performScrollTo().assert(hasText("Suivi"))
-        openView(FeedFilter.SUIVIS)
-        waitUntil(timeoutMillis = 5_000) { inView(FeedFilter.SUIVIS, FeedTags.POST + suffix).fetchSemanticsNodes().isNotEmpty() }
-        assertFalse(viewHasText(FeedFilter.SUIVIS, "Vous ne suivez encore aucun compte"))
+        openView(FeedFilter.FOLLOWED)
+        waitUntil(timeoutMillis = 5_000) { inView(FeedFilter.FOLLOWED, FeedTags.POST + suffix).fetchSemanticsNodes().isNotEmpty() }
+        assertFalse(viewHasText(FeedFilter.FOLLOWED, "Vous ne suivez encore aucun compte"))
     }
 
     @Test
     fun ownPublicationsOfferNoFollowButton() = runComposeUiTest {
-        val phrase = RecoveryPhrase.parse("leader monkey parrot ring guide accident before fence cannon height naive bean")
         val identity = InMemoryIdentityStore(StoredIdentity.of(phrase.deriveKeys(), phrase))
         val database = JvmDatabase.inMemory()
         val store = launch(database, identity)
@@ -181,10 +192,59 @@ class FollowTest {
         // The box still opens on one's own name, with the key but without the follow action.
         onAllNodesWithTag(FeedTags.AUTHOR + suffix).onFirst().performScrollTo().performClick()
         waitForIdle()
+        onNodeWithTag(AuthorDialogTags.TITLE).assertTextEquals("Vous")
         onNodeWithTag(AuthorDialogTags.KEY).assertTextEquals(phrase.deriveKeys().publicKey.npub)
         onNodeWithTag(AuthorDialogTags.FOLLOW).assertDoesNotExist()
         onNodeWithTag(AuthorDialogTags.CLOSE).performClick()
         waitForIdle()
         assertEquals(0, FollowStore(database).count())
+    }
+
+    @Test
+    fun onAPhoneFollowingWorksFromACardAndTheTabsScrollToTheLastView() = runComposeUiTest {
+        val database = JvmDatabase.inMemory()
+        val follows = FollowStore(database)
+        val store = launch(database, width = 360, height = 740)
+        val suffix = firstPostSuffix(store)
+
+        onAllNodesWithTag(FeedTags.FOLLOW + suffix).onFirst().performScrollTo().assert(hasText("Suivre")).performClick()
+        waitForIdle()
+        onAllNodesWithTag(FeedTags.FOLLOW + suffix).onFirst().assert(hasText("Suivi"))
+        waitUntil(timeoutMillis = 5_000) { follows.all() == listOf(editor) }
+
+        // Five tabs no longer fit in 360 dp: the row scrolls to the last one, which still opens its view.
+        onNodeWithTag(FeedTags.TAB + FeedFilter.REVENDICATIONS.id).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(FeedTags.TAB + FeedFilter.REVENDICATIONS.id).assertIsSelected()
+        waitUntil(timeoutMillis = 5_000) { hasNode(RevendicationTags.CARD + "lyon-transports-nuit") }
+    }
+
+    @Test
+    fun erasingTheKeysAlsoForgetsTheFollowedAccounts() = runComposeUiTest {
+        val identity = InMemoryIdentityStore(StoredIdentity.of(phrase.deriveKeys(), phrase))
+        val database = JvmDatabase.inMemory()
+        val follows = FollowStore(database)
+        val store = launch(database, identity)
+        val suffix = firstPostSuffix(store)
+        onAllNodesWithTag(FeedTags.FOLLOW + suffix).onFirst().performScrollTo().performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 5_000) { follows.isFollowed(editor) }
+
+        // Signing out warns that the followed accounts go too, then erases them with the keys.
+        onNodeWithTag(ShellTags.navItem(Space.MON_ESPACE)).performClick()
+        waitForIdle()
+        onNodeWithTag(AccountTags.SIGN_OUT).performScrollTo().performClick()
+        waitForIdle()
+        assertTrue(seesText("La liste des comptes que vous suivez sera aussi effacée"))
+        onNodeWithTag(AccountTags.DIALOG_CONFIRM).performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 5_000) { hasNode(AccountTags.CREATE) }
+        waitUntil(timeoutMillis = 5_000) { follows.count() == 0L }
+
+        // Back in the feed, the card offers to follow again.
+        onNodeWithTag(ShellTags.navItem(Space.FIL)).performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 5_000) { hasNode(FeedTags.FOLLOW + suffix) }
+        onAllNodesWithTag(FeedTags.FOLLOW + suffix).onFirst().performScrollTo().assert(hasText("Suivre"))
     }
 }

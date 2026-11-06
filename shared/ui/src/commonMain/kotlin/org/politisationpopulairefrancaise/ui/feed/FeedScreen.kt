@@ -42,6 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -122,7 +124,7 @@ object FeedTags {
 }
 
 /** The views of the feed, swiped from one to the next. More will come with circles, collectives and the map. */
-enum class FeedFilter(val id: String) { ALL("tout"), SUIVIS("suivis"), PPF("ppf"), REVENDICATIONS("revendications"), MINE("moi") }
+enum class FeedFilter(val id: String) { ALL("tout"), FOLLOWED("suivis"), PPF("ppf"), REVENDICATIONS("revendications"), MINE("moi") }
 
 /** Topic of the publications that feed the live banner. */
 const val LIVE_TOPIC = "en-direct"
@@ -243,9 +245,15 @@ fun FeedScreen(
 
     shownAuthor?.let { post ->
         val pubkey = post.event.pubkey
+        val mine = pubkey == myKey
         AuthorDialog(
             pubkeyHex = pubkey,
-            followed = if (pubkey == myKey) null else library.isFollowed(pubkey),
+            title = when {
+                post.editorial -> stringResource(Res.string.app_name)
+                mine -> stringResource(Res.string.feed_badge_you)
+                else -> shortNpub(pubkey)
+            },
+            followed = if (mine) null else library.isFollowed(pubkey),
             onToggleFollow = {
                 library.toggleFollow(pubkey)
                 shownAuthor = null
@@ -258,7 +266,7 @@ fun FeedScreen(
 
 private fun FeedFilter.label() = when (this) {
     FeedFilter.ALL -> Res.string.feed_tab_all
-    FeedFilter.SUIVIS -> Res.string.feed_tab_followed
+    FeedFilter.FOLLOWED -> Res.string.feed_tab_followed
     FeedFilter.PPF -> Res.string.feed_tab_ppf
     FeedFilter.REVENDICATIONS -> Res.string.feed_tab_revendications
     FeedFilter.MINE -> Res.string.feed_tab_mine
@@ -283,7 +291,7 @@ private fun FeedPage(
     val palette = PpfTheme.palette
     val posts = when (filter) {
         FeedFilter.ALL -> library.posts
-        FeedFilter.SUIVIS -> library.followedPosts
+        FeedFilter.FOLLOWED -> library.followedPosts
         FeedFilter.PPF -> library.posts.filter { it.editorial }
         FeedFilter.MINE -> library.posts.filter { it.event.pubkey == myKey }
         FeedFilter.REVENDICATIONS -> emptyList()
@@ -331,7 +339,7 @@ private fun FeedPage(
                 }
             }
         }
-        if (filter == FeedFilter.SUIVIS) {
+        if (filter == FeedFilter.FOLLOWED) {
             item {
                 Row(verticalAlignment = Alignment.Top) {
                     Icon(Lucide.Lock, contentDescription = null, tint = palette.inkSubtle, modifier = Modifier.padding(top = 2.dp).size(14.dp))
@@ -342,7 +350,7 @@ private fun FeedPage(
         }
         if (posts.isEmpty() && library.status != LibraryStatus.Loading) {
             item {
-                if (filter == FeedFilter.SUIVIS) {
+                if (filter == FeedFilter.FOLLOWED) {
                     InfoBox(Lucide.UsersRound) {
                         Text(
                             text = stringResource(if (library.followed.isEmpty()) Res.string.feed_followed_empty else Res.string.feed_followed_no_posts),
@@ -449,18 +457,22 @@ private fun PostCard(
     val suffix = post.id.take(8)
     PpfCard(Modifier.fillMaxWidth().testTag(FeedTags.POST + suffix)) {
         Row(verticalAlignment = Alignment.Top) {
+            // The avatar and the name form one button that opens the author box; the letters of the
+            // generated avatar are decorative and hidden from screen readers.
             Row(
                 modifier = Modifier
                     .weight(1f)
+                    .heightIn(min = 44.dp)
                     .clip(MaterialTheme.shapes.small)
-                    .clickable(onClickLabel = stringResource(Res.string.feed_author_open), onClick = onOpenAuthor)
+                    .clickable(role = Role.Button, onClickLabel = stringResource(Res.string.feed_author_open), onClick = onOpenAuthor)
                     .testTag(FeedTags.AUTHOR + suffix),
                 verticalAlignment = Alignment.Top,
             ) {
+                val decorative = Modifier.clearAndSetSemantics { }
                 if (post.editorial) {
-                    Avatar(seed = post.event.pubkey, letters = "PPF", rounded = true, color = palette.brand)
+                    Avatar(seed = post.event.pubkey, letters = "PPF", modifier = decorative, rounded = true, color = palette.brand)
                 } else {
-                    Avatar(seed = post.event.pubkey, letters = avatarLetters(post.event.pubkey))
+                    Avatar(seed = post.event.pubkey, letters = avatarLetters(post.event.pubkey), modifier = decorative)
                 }
                 Spacer(Modifier.width(12.dp))
                 Column(Modifier.weight(1f)) {
