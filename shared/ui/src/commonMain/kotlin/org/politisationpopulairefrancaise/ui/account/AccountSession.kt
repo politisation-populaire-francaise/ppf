@@ -70,6 +70,8 @@ sealed interface Revealed {
 class AccountSession(
     private val store: IdentityStore,
     private val scope: CoroutineScope,
+    /** Called once the keys are erased: what else the device must forget (the followed accounts). */
+    private val onSignOut: () -> Unit = {},
     private val pickPositions: () -> List<Int> = { (0 until RecoveryPhrase.DEFAULT_WORD_COUNT).shuffled().take(3).sorted() },
 ) {
     var state: AccountUiState by mutableStateOf(AccountUiState.Loading)
@@ -182,6 +184,7 @@ class AccountSession(
             keys = null
             stored = null
             state = AccountUiState.NoAccount
+            onSignOut()
         }
     }
 
@@ -202,7 +205,7 @@ class AccountSession(
 }
 
 @Composable
-fun rememberAccountSession(store: IdentityStore): AccountSession {
+fun rememberAccountSession(store: IdentityStore, onSignOut: () -> Unit = {}): AccountSession {
     val scope = rememberCoroutineScope()
-    return remember(store) { AccountSession(store, scope).also { it.start() } }
+    return remember(store) { AccountSession(store, scope, onSignOut).also { it.start() } }
 }

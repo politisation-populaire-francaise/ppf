@@ -9,6 +9,8 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -16,14 +18,20 @@ import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
+import org.politisationpopulairefrancaise.core.local.LocalStoreOutcome
+import org.politisationpopulairefrancaise.core.publication.FetchResult
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
+import org.politisationpopulairefrancaise.core.publication.RemoteFilter
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.core.social.FollowStore
+import org.politisationpopulairefrancaise.core.sync.SyncReport
 import org.politisationpopulairefrancaise.core.sync.SyncService
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.resources.Res
+import kotlin.random.Random
 
 /** Where the contents come from and whether the server could be reached. */
 sealed interface LibraryStatus {
@@ -68,13 +76,25 @@ data class FeedPost(
  * local database), the user's own publications, and, when a server is configured, those pulled from
  * it. Every event is signature-checked before storage; practical guides are shown only when their
  * author is trusted.
+ *
+ * It also holds the accounts the user follows. That list is private (S-120): it is read from and
+ * written to the device's [FollowStore] only, and the "Suivis" view is assembled here, on the
+ * device. When a server is configured, the followed authors' publications are requested in
+ * batches of at most [FOLLOW_BATCH] keys, in random order, so that no single request carries the
+ * whole list. Without a [FollowStore] (tests, previews) the list lives in memory only.
  */
 class ContentLibrary(
     private val store: LocalEventStore?,
     private val trust: EditorialTrust,
     private val remote: RemoteEvents?,
     private val scope: CoroutineScope,
+    private val follows: FollowStore? = null,
+    /** Shuffles the followed keys before batching them; injectable so that tests can check the order. */
+    private val random: Random = Random.Default,
 ) {
+    /** Writes to the device's list of followed accounts happen one at a time, in the order the user acted. */
+    private val followWrites = Mutex()
+
     var status: LibraryStatus by mutableStateOf(LibraryStatus.Loading)
         private set
 
@@ -98,16 +118,67 @@ class ContentLibrary(
     var liked: Set<String> by mutableStateOf(emptySet())
         private set
 
+    /** Public keys (lowercase hex) of the accounts the user follows. Private: never sent as a list. */
+    var followed: Set<String> by mutableStateOf(emptySet())
+        private set
+
+    /**
+     * The publications of the followed accounts, newest first, assembled on the device from the
+     * local copy. They are a subset of [posts] (the most recent notes), which is enough for now;
+     * a dedicated query by author will replace this when the feed grows.
+     */
+    val followedPosts: List<FeedPost> get() = posts.filter { it.event.pubkey in followed }
+
     fun start() {
         if (store == null) {
             status = LibraryStatus.Unavailable
             return
         }
         scope.launch {
+            loadFollowed()
             importBundledContents(store)
             reload(store)
             if (remote == null) status = LibraryStatus.Offline else pull(store, remote)
         }
+    }
+
+    fun isFollowed(pubkeyHex: String): Boolean = pubkeyHex in followed
+
+    /**
+     * Follows an account: the list is updated on the device at once and, when a server is
+     * configured, that author's recent publications are fetched (one batch of one key: the rest of
+     * the list stays home) so that the "Suivis" view fills. Anything but a valid key is ignored.
+     */
+    fun follow(pubkeyHex: String) {
+        if (!FollowStore.isValidKey(pubkeyHex) || pubkeyHex in followed) return
+        followed = followed + pubkeyHex
+        scope.launch {
+            persistFollowed { it.follow(pubkeyHex) }
+            val store = store ?: return@launch
+            val remote = remote ?: return@launch
+            if (pullAuthors(store, remote, listOf(pubkeyHex)).pulled > 0) reload(store)
+        }
+    }
+
+    fun unfollow(pubkeyHex: String) {
+        if (pubkeyHex !in followed) return
+        followed = followed - pubkeyHex
+        scope.launch { persistFollowed { it.unfollow(pubkeyHex) } }
+    }
+
+    fun toggleFollow(pubkeyHex: String) {
+        if (pubkeyHex in followed) unfollow(pubkeyHex) else follow(pubkeyHex)
+    }
+
+    /** Forgets every followed account, on the device too: called when the user erases the keys. */
+    fun clearFollowed() {
+        followed = emptySet()
+        scope.launch { persistFollowed { it.clear() } }
+    }
+
+    private suspend fun persistFollowed(write: (FollowStore) -> Unit) {
+        val follows = follows ?: return
+        followWrites.withLock { withContext(Dispatchers.Default) { write(follows) } }
     }
 
     /** Asks the server again (no effect without a server). */
@@ -165,9 +236,52 @@ class ContentLibrary(
     private suspend fun pull(store: LocalEventStore, remote: RemoteEvents) {
         status = LibraryStatus.Loading
         val sync = SyncService(store, remote)
-        val report = sync.publishPending() + sync.pull(kinds = listOf(Article.KIND, EventKinds.TEXT_NOTE))
+        val up = sync.publishPending()
+        var report = up + sync.pull(kinds = listOf(Article.KIND, EventKinds.TEXT_NOTE))
+        // The batches of followed authors never travel in the same pass as a publication of the user:
+        // a server could otherwise tie them to its author. After a publication they wait for the next refresh.
+        if (up.reachable && up.published == 0) report += pullFollowed(store, remote)
         reload(store)
         status = if (report.reachable) LibraryStatus.Synced(report.pulled) else LibraryStatus.Unreachable
+    }
+
+    private suspend fun loadFollowed() {
+        val follows = follows ?: return
+        followed = withContext(Dispatchers.Default) { follows.all().toSet() }
+    }
+
+    /**
+     * Asks for the recent publications of every followed account, by batches of at most
+     * [FOLLOW_BATCH] keys taken in random order: the server never receives the whole list in one
+     * request, and the order says nothing about when each account was followed.
+     */
+    private suspend fun pullFollowed(store: LocalEventStore, remote: RemoteEvents): SyncReport {
+        val keys = followed.toList()
+        if (keys.isEmpty()) return SyncReport()
+        return pullAuthors(store, remote, keys.shuffled(random))
+    }
+
+    /**
+     * Fetches the recent notes of [authors] through the existing `author` parameter of the events
+     * API, [FOLLOW_BATCH] keys per request. Only authentic events from the requested authors are
+     * kept. The first unreachable batch stops the round; the rest waits for the next refresh.
+     */
+    private suspend fun pullAuthors(store: LocalEventStore, remote: RemoteEvents, authors: List<String>): SyncReport {
+        var report = SyncReport()
+        for (batch in authors.chunked(FOLLOW_BATCH)) {
+            val wanted = batch.toSet()
+            val filter = RemoteFilter(kinds = listOf(EventKinds.TEXT_NOTE), authors = batch, limit = FOLLOW_FETCH_LIMIT)
+            when (val result = remote.fetch(filter)) {
+                is FetchResult.Unavailable -> return report.copy(reachable = false)
+                is FetchResult.Events -> {
+                    val stored = withContext(Dispatchers.Default) {
+                        result.events.count { it.pubkey in wanted && it.verify() && store.store(it) == LocalStoreOutcome.STORED }
+                    }
+                    report = report.copy(pulled = report.pulled + stored)
+                }
+            }
+        }
+        return report
     }
 
     private suspend fun reload(store: LocalEventStore) {
@@ -192,9 +306,15 @@ class ContentLibrary(
         selectedRevendication = selectedRevendication?.let { current -> freshDemands.firstOrNull { it.address == current.address } }
     }
 
-    private companion object {
-        val BUNDLED_FILES = listOf("files/contents/fiches.json", "files/contents/revendications.json", "files/contents/fil.json")
-        val json = Json { ignoreUnknownKeys = true }
+    companion object {
+        /** At most this many followed keys per request to the server. */
+        const val FOLLOW_BATCH: Int = 20
+
+        /** Recent notes asked for per batch of followed authors. */
+        const val FOLLOW_FETCH_LIMIT: Int = 100
+
+        private val BUNDLED_FILES = listOf("files/contents/fiches.json", "files/contents/revendications.json", "files/contents/fil.json")
+        private val json = Json { ignoreUnknownKeys = true }
     }
 }
 
@@ -202,6 +322,6 @@ class ContentLibrary(
 fun rememberContentLibrary(dependencies: AppDependencies): ContentLibrary {
     val scope = rememberCoroutineScope()
     return remember(dependencies) {
-        ContentLibrary(dependencies.contentStore, dependencies.editorialTrust, dependencies.remote, scope).also { it.start() }
+        ContentLibrary(dependencies.contentStore, dependencies.editorialTrust, dependencies.remote, scope, follows = dependencies.followStore).also { it.start() }
     }
 }

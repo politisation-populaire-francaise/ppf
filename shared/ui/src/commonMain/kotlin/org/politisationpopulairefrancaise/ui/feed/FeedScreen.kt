@@ -2,6 +2,8 @@ package org.politisationpopulairefrancaise.ui.feed
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -29,14 +31,19 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextOverflow
@@ -50,8 +57,10 @@ import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
 import org.politisationpopulairefrancaise.ui.components.ActionButton
+import org.politisationpopulairefrancaise.ui.components.AuthorDialog
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
+import org.politisationpopulairefrancaise.ui.components.FollowButton
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.LiveBanner
 import org.politisationpopulairefrancaise.ui.components.LiveCard
@@ -71,12 +80,16 @@ import org.politisationpopulairefrancaise.ui.resources.content_status_offline
 import org.politisationpopulairefrancaise.ui.resources.content_status_synced
 import org.politisationpopulairefrancaise.ui.resources.content_status_unreachable
 import org.politisationpopulairefrancaise.ui.resources.desc_fil
+import org.politisationpopulairefrancaise.ui.resources.feed_author_open
 import org.politisationpopulairefrancaise.ui.resources.feed_badge_you
 import org.politisationpopulairefrancaise.ui.resources.feed_comment
 import org.politisationpopulairefrancaise.ui.resources.feed_compose_hint
 import org.politisationpopulairefrancaise.ui.resources.feed_create_account
 import org.politisationpopulairefrancaise.ui.resources.feed_empty
 import org.politisationpopulairefrancaise.ui.resources.feed_empty_filter
+import org.politisationpopulairefrancaise.ui.resources.feed_followed_empty
+import org.politisationpopulairefrancaise.ui.resources.feed_followed_no_posts
+import org.politisationpopulairefrancaise.ui.resources.feed_followed_private
 import org.politisationpopulairefrancaise.ui.resources.feed_like
 import org.politisationpopulairefrancaise.ui.resources.feed_need_account
 import org.politisationpopulairefrancaise.ui.resources.feed_pending
@@ -85,6 +98,7 @@ import org.politisationpopulairefrancaise.ui.resources.feed_public
 import org.politisationpopulairefrancaise.ui.resources.feed_publish
 import org.politisationpopulairefrancaise.ui.resources.feed_relay
 import org.politisationpopulairefrancaise.ui.resources.feed_tab_all
+import org.politisationpopulairefrancaise.ui.resources.feed_tab_followed
 import org.politisationpopulairefrancaise.ui.resources.feed_tab_mine
 import org.politisationpopulairefrancaise.ui.resources.feed_tab_ppf
 import org.politisationpopulairefrancaise.ui.resources.feed_tab_revendications
@@ -105,10 +119,12 @@ object FeedTags {
     const val TAB = "feed-tab-" // followed by the view id
     const val POST = "post-" // followed by the first 8 characters of the event id
     const val LIKE = "like-" // same suffix
+    const val FOLLOW = "follow-" // same suffix: the "Suivre" / "Suivi" button of the card
+    const val AUTHOR = "author-" // same suffix: the avatar and name, which open the author box
 }
 
 /** The views of the feed, swiped from one to the next. More will come with circles, collectives and the map. */
-enum class FeedFilter(val id: String) { ALL("tout"), PPF("ppf"), REVENDICATIONS("revendications"), MINE("moi") }
+enum class FeedFilter(val id: String) { ALL("tout"), FOLLOWED("suivis"), PPF("ppf"), REVENDICATIONS("revendications"), MINE("moi") }
 
 /** Topic of the publications that feed the live banner. */
 const val LIVE_TOPIC = "en-direct"
@@ -119,6 +135,10 @@ const val LIVE_TOPIC = "en-direct"
  * publication is tagged "en-direct", and a view of the demands wall. The views sit under a row of
  * tabs and are swiped with a finger (decision of the owner, 2026-11-06). Reactions stay on the
  * device and comments are not open yet: their privacy design is being settled.
+ *
+ * Following (S-120) works without an account: a small button on each card and a box opened by the
+ * author's name. The list of followed accounts stays on the device; the "Suivis" view is assembled
+ * from it locally.
  */
 @Composable
 fun FeedScreen(
@@ -139,6 +159,8 @@ fun FeedScreen(
     val filters = if (account != null) FeedFilter.entries else FeedFilter.entries.filter { it != FeedFilter.MINE }
     val pagerState = rememberPagerState(pageCount = { filters.size })
     val live = library.posts.firstOrNull { LIVE_TOPIC in it.topics }
+    // The author whose box is open (public key), shared by every view.
+    var shownAuthor by remember { mutableStateOf<FeedPost?>(null) }
     val onPublish: () -> Unit = {
         val signer = session.signer
         val text = draft
@@ -160,10 +182,15 @@ fun FeedScreen(
         Row(Modifier.fillMaxSize(), horizontalArrangement = Arrangement.Center) {
             Column(Modifier.widthIn(max = 600.dp).fillMaxWidth().fillMaxHeight()) {
                 if (compact) {
-                    // On phones the tabs sit right under the top bar, full width, as in the mock-up.
+                    // On phones the tabs sit right under the top bar, full width, as in the mock-up. The row
+                    // is wider than a phone, so it scrolls and follows the swiped view (first or second half).
+                    val tabsScroll = rememberScrollState()
+                    LaunchedEffect(pagerState.currentPage, filters.size) {
+                        tabsScroll.animateScrollTo(if (pagerState.currentPage > filters.size / 2) tabsScroll.maxValue else 0)
+                    }
                     Surface(color = palette.surface0, contentColor = palette.ink) {
                         Column {
-                            tabs(Modifier.padding(horizontal = 16.dp))
+                            tabs(Modifier.horizontalScroll(tabsScroll).padding(horizontal = 16.dp))
                             HorizontalDivider(color = palette.border)
                         }
                     }
@@ -193,6 +220,7 @@ fun FeedScreen(
                         onPublish = onPublish,
                         showInvitation = account == null && !withAside,
                         onNavigate = onNavigate,
+                        onOpenAuthor = { shownAuthor = it },
                         compact = compact,
                         now = now,
                     )
@@ -214,10 +242,31 @@ fun FeedScreen(
             }
         }
     }
+
+    shownAuthor?.let { post ->
+        val pubkey = post.event.pubkey
+        val mine = pubkey == myKey
+        AuthorDialog(
+            pubkeyHex = pubkey,
+            title = when {
+                post.editorial -> stringResource(Res.string.app_name)
+                mine -> stringResource(Res.string.feed_badge_you)
+                else -> shortNpub(pubkey)
+            },
+            followed = if (mine) null else library.isFollowed(pubkey),
+            onToggleFollow = {
+                library.toggleFollow(pubkey)
+                shownAuthor = null
+            },
+            onDismiss = { shownAuthor = null },
+            editorial = post.editorial,
+        )
+    }
 }
 
 private fun FeedFilter.label() = when (this) {
     FeedFilter.ALL -> Res.string.feed_tab_all
+    FeedFilter.FOLLOWED -> Res.string.feed_tab_followed
     FeedFilter.PPF -> Res.string.feed_tab_ppf
     FeedFilter.REVENDICATIONS -> Res.string.feed_tab_revendications
     FeedFilter.MINE -> Res.string.feed_tab_mine
@@ -235,12 +284,14 @@ private fun FeedPage(
     onPublish: () -> Unit,
     showInvitation: Boolean,
     onNavigate: (Space) -> Unit,
+    onOpenAuthor: (FeedPost) -> Unit,
     compact: Boolean,
     now: Long,
 ) {
     val palette = PpfTheme.palette
     val posts = when (filter) {
         FeedFilter.ALL -> library.posts
+        FeedFilter.FOLLOWED -> library.followedPosts
         FeedFilter.PPF -> library.posts.filter { it.editorial }
         FeedFilter.MINE -> library.posts.filter { it.event.pubkey == myKey }
         FeedFilter.REVENDICATIONS -> emptyList()
@@ -288,21 +339,44 @@ private fun FeedPage(
                 }
             }
         }
+        if (filter == FeedFilter.FOLLOWED) {
+            item {
+                Row(verticalAlignment = Alignment.Top) {
+                    Icon(Lucide.Lock, contentDescription = null, tint = palette.inkSubtle, modifier = Modifier.padding(top = 2.dp).size(14.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(Res.string.feed_followed_private), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
+                }
+            }
+        }
         if (posts.isEmpty() && library.status != LibraryStatus.Loading) {
             item {
-                Text(
-                    text = stringResource(if (filter == FeedFilter.ALL) Res.string.feed_empty else Res.string.feed_empty_filter),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = palette.inkMuted,
-                )
+                if (filter == FeedFilter.FOLLOWED) {
+                    InfoBox(Lucide.UsersRound) {
+                        Text(
+                            text = stringResource(if (library.followed.isEmpty()) Res.string.feed_followed_empty else Res.string.feed_followed_no_posts),
+                            style = MaterialTheme.typography.bodyMedium,
+                        )
+                    }
+                } else {
+                    Text(
+                        text = stringResource(if (filter == FeedFilter.ALL) Res.string.feed_empty else Res.string.feed_empty_filter),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = palette.inkMuted,
+                    )
+                }
             }
         }
         items(posts, key = { it.id }) { post ->
+            val mine = myKey == post.event.pubkey
             PostCard(
                 post = post,
-                mine = myKey == post.event.pubkey,
+                mine = mine,
                 liked = post.id in library.liked,
                 onLike = { library.toggleLike(post.id) },
+                followed = if (mine) null else library.isFollowed(post.event.pubkey),
+                onToggleFollow = { library.toggleFollow(post.event.pubkey) },
+                onOpenAuthor = { onOpenAuthor(post) },
+                compact = compact,
                 now = now,
             )
         }
@@ -362,47 +436,89 @@ private fun Composer(myKey: String, draft: String, onDraftChange: (String) -> Un
     }
 }
 
+/**
+ * One publication. [followed] is null when the follow button is not offered (the user's own
+ * publications); touching the avatar or the name calls [onOpenAuthor]. On phones the badge and the
+ * follow button are stacked at the top right so that the name keeps enough room.
+ */
 @Composable
-private fun PostCard(post: FeedPost, mine: Boolean, liked: Boolean, onLike: () -> Unit, now: Long) {
+private fun PostCard(
+    post: FeedPost,
+    mine: Boolean,
+    liked: Boolean,
+    onLike: () -> Unit,
+    followed: Boolean?,
+    onToggleFollow: () -> Unit,
+    onOpenAuthor: () -> Unit,
+    compact: Boolean,
+    now: Long,
+) {
     val palette = PpfTheme.palette
     val suffix = post.id.take(8)
     PpfCard(Modifier.fillMaxWidth().testTag(FeedTags.POST + suffix)) {
         Row(verticalAlignment = Alignment.Top) {
-            if (post.editorial) {
-                Avatar(seed = post.event.pubkey, letters = "PPF", rounded = true, color = palette.brand)
-            } else {
-                Avatar(seed = post.event.pubkey, letters = avatarLetters(post.event.pubkey))
-            }
-            Spacer(Modifier.width(12.dp))
-            Column(Modifier.weight(1f)) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = when {
-                            post.editorial -> stringResource(Res.string.app_name)
-                            mine -> stringResource(Res.string.feed_badge_you)
-                            else -> shortNpub(post.event.pubkey)
-                        },
-                        style = MaterialTheme.typography.titleSmall,
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f, fill = false),
-                    )
-                    if (post.editorial) {
+            // The avatar and the name form one button that opens the author box; the letters of the
+            // generated avatar are decorative and hidden from screen readers.
+            Row(
+                modifier = Modifier
+                    .weight(1f)
+                    .heightIn(min = 44.dp)
+                    .clip(MaterialTheme.shapes.small)
+                    .clickable(role = Role.Button, onClickLabel = stringResource(Res.string.feed_author_open), onClick = onOpenAuthor)
+                    .testTag(FeedTags.AUTHOR + suffix),
+                verticalAlignment = Alignment.Top,
+            ) {
+                val decorative = Modifier.clearAndSetSemantics { }
+                if (post.editorial) {
+                    Avatar(seed = post.event.pubkey, letters = "PPF", modifier = decorative, rounded = true, color = palette.brand)
+                } else {
+                    Avatar(seed = post.event.pubkey, letters = avatarLetters(post.event.pubkey), modifier = decorative)
+                }
+                Spacer(Modifier.width(12.dp))
+                Column(Modifier.weight(1f)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = when {
+                                post.editorial -> stringResource(Res.string.app_name)
+                                mine -> stringResource(Res.string.feed_badge_you)
+                                else -> shortNpub(post.event.pubkey)
+                            },
+                            style = MaterialTheme.typography.titleSmall,
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis,
+                            modifier = Modifier.weight(1f, fill = false),
+                        )
+                        if (post.editorial) {
+                            Spacer(Modifier.width(4.dp))
+                            Icon(Lucide.BadgeCheck, contentDescription = stringResource(Res.string.feed_verified), tint = palette.brand, modifier = Modifier.size(18.dp))
+                        }
+                    }
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(RelativeTime.between(post.event.createdAt, now).label(), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
+                        Text(" · ", style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
+                        Icon(Lucide.Globe, contentDescription = null, tint = palette.inkSubtle, modifier = Modifier.size(14.dp))
                         Spacer(Modifier.width(4.dp))
-                        Icon(Lucide.BadgeCheck, contentDescription = stringResource(Res.string.feed_verified), tint = palette.brand, modifier = Modifier.size(18.dp))
+                        Text(stringResource(Res.string.feed_public), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
                     }
                 }
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(RelativeTime.between(post.event.createdAt, now).label(), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
-                    Text(" · ", style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
-                    Icon(Lucide.Globe, contentDescription = null, tint = palette.inkSubtle, modifier = Modifier.size(14.dp))
-                    Spacer(Modifier.width(4.dp))
-                    Text(stringResource(Res.string.feed_public), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
-                }
             }
-            if (post.example) {
+            if (post.example || followed != null) {
                 Spacer(Modifier.width(8.dp))
-                ExampleBadge()
+                val badge: @Composable () -> Unit = { if (post.example) ExampleBadge() }
+                val follow: @Composable () -> Unit = {
+                    if (followed != null) FollowButton(followed, onToggleFollow, Modifier.testTag(FeedTags.FOLLOW + suffix))
+                }
+                if (compact) {
+                    Column(horizontalAlignment = Alignment.End, verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                        badge()
+                        follow()
+                    }
+                } else {
+                    Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        badge()
+                        follow()
+                    }
+                }
             }
         }
         Spacer(Modifier.height(12.dp))

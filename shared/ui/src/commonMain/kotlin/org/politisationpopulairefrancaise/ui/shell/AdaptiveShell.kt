@@ -123,8 +123,9 @@ object ShellTags {
 @Composable
 fun AdaptiveShell(dependencies: AppDependencies) {
     var selected by rememberSaveable { mutableStateOf(Space.default) }
-    val accountSession = rememberAccountSession(dependencies.identityStore)
     val contentLibrary = rememberContentLibrary(dependencies)
+    // Erasing the keys also forgets the followed accounts (protection by default).
+    val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = contentLibrary::clearFollowed)
     val palette = PpfTheme.palette
 
     BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {

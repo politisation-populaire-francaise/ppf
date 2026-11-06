@@ -3,7 +3,6 @@ package org.politisationpopulairefrancaise.ui
 import androidx.compose.ui.window.ComposeUIViewController
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.IosDatabase
-import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import platform.UIKit.UIViewController
 
 /**
@@ -16,10 +15,11 @@ import platform.UIKit.UIViewController
  */
 @Suppress("unused", "FunctionName")
 fun MainViewController(): UIViewController = ComposeUIViewController {
+    // One local database, opened once, shared by every store (contents, followed accounts).
     PpfApp(
-        AppDependencies(
+        AppDependencies.withDatabase(
             identityStore = InMemoryIdentityStore(),
-            contentStore = LocalEventStore(IosDatabase.open()),
+            database = IosDatabase.open(),
         ),
     )
 }

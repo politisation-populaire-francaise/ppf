@@ -8,7 +8,6 @@ import io.ktor.client.HttpClient
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.identity.FileIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
-import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
@@ -20,9 +19,10 @@ fun main() {
     val remote = System.getenv("PPF_SERVER_URL")?.trim()?.takeIf { it.isNotEmpty() }?.let { url ->
         ServerPublicationPort(HttpClient(), url.trimEnd('/'))
     }
-    val dependencies = AppDependencies(
+    // One local database, opened once, shared by every store (contents, followed accounts).
+    val dependencies = AppDependencies.withDatabase(
         identityStore = FileIdentityStore.default(),
-        contentStore = LocalEventStore(JvmDatabase.open(dataDirectory.resolve("ppf.db"))),
+        database = JvmDatabase.open(dataDirectory.resolve("ppf.db")),
         remote = remote,
     )
     application {

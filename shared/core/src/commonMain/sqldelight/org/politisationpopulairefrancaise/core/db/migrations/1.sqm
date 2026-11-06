@@ -1,0 +1,8 @@
+-- Version 1 -> 2 (2026-11-06): the accounts the user follows (S-120), kept on the device only.
+-- Fresh databases are created from Follow.sq; this file brings the databases of the first builds
+-- (events only) to the same shape. Keep it identical to the CREATE TABLE of Follow.sq.
+
+CREATE TABLE follow (
+    pubkey TEXT NOT NULL PRIMARY KEY,
+    followed_at INTEGER NOT NULL
+);
