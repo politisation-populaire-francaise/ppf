@@ -17,6 +17,7 @@ import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.Space
@@ -27,7 +28,10 @@ import org.politisationpopulairefrancaise.ui.components.AuthorDialogTags
 import org.politisationpopulairefrancaise.ui.content.ContentTags
 import org.politisationpopulairefrancaise.ui.feed.FeedFilter
 import org.politisationpopulairefrancaise.ui.feed.FeedTags
+import org.politisationpopulairefrancaise.ui.revendications.FilterPanelTags
+import org.politisationpopulairefrancaise.ui.revendications.ManageViewsTags
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationTags
+import org.politisationpopulairefrancaise.ui.revendications.propose.ProposalTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import java.io.File
@@ -101,10 +105,50 @@ class ScreenshotTest {
         waitForIdle()
         waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(RevendicationTags.CARD + "lyon-transports-nuit").fetchSemanticsNodes().isNotEmpty() }
         save("$prefix-revendications")
+
+        // Views and filters of the wall: the filter panel, a filtered list, "Personnaliser".
+        onNodeWithTag(RevendicationTags.FILTERS).performClick()
+        waitForIdle()
+        mainClock.advanceTimeBy(1_000)
+        waitForIdle()
+        save("$prefix-revendications-filtres")
+        onNodeWithTag(FilterPanelTags.THEME + "education").performScrollTo().performClick()
+        onNodeWithTag(FilterPanelTags.APPLY).performClick()
+        waitForIdle()
+        mainClock.advanceTimeBy(1_000)
+        waitForIdle()
+        save("$prefix-revendications-filtrees")
+        onNodeWithTag(RevendicationTags.CUSTOMIZE).performClick()
+        waitForIdle()
+        mainClock.advanceTimeBy(1_000)
+        waitForIdle()
+        save("$prefix-revendications-vues")
+        onNodeWithTag(ManageViewsTags.DONE).performClick()
+        waitForIdle()
+        mainClock.advanceTimeBy(1_000)
+        waitForIdle()
+        onNodeWithTag(RevendicationTags.CLEAR_ALL).performScrollTo().performClick()
+        waitForIdle()
         onAllNodesWithTag(RevendicationTags.CARD + "lyon-transports-nuit").fetchSemanticsNodes()
         onNodeWithTag(RevendicationTags.CARD + "lyon-transports-nuit").performScrollTo().performClick()
         waitForIdle()
         save("$prefix-revendication-detail")
+
+        // The proposal form, with a duplicate found while typing and the checks.
+        if (onAllNodesWithTag(RevendicationTags.BACK).fetchSemanticsNodes().isNotEmpty()) {
+            onNodeWithTag(RevendicationTags.BACK).performClick()
+            waitForIdle()
+        }
+        onAllNodes(hasTestTag(RevendicationTags.PROPOSE)).onFirst().performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ProposalTags.TITLE).performTextInput("Cantine à un euro pour les familles modestes")
+        waitForIdle()
+        save("$prefix-proposer")
+        onNodeWithTag(ProposalTags.CHECKS).performScrollTo()
+        waitForIdle()
+        save("$prefix-proposer-verifications")
+        onNodeWithTag(ProposalTags.CLOSE).performScrollTo().performClick()
+        waitForIdle()
 
         onNodeWithTag(ShellTags.navItem(Space.MESSAGES)).performClick()
         waitForIdle()

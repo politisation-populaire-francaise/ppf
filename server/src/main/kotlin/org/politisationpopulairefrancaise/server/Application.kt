@@ -29,6 +29,11 @@ import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.WrapRetention
+import org.politisationpopulairefrancaise.server.revendications.AiReviewConfig
+import org.politisationpopulairefrancaise.server.revendications.RevendicationProposals
+import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
+import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
+import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
 import org.politisationpopulairefrancaise.web.webRoutes
 import javax.sql.DataSource
 
@@ -41,6 +46,11 @@ import javax.sql.DataSource
  * - PPF_EDITOR_KEYS: keys of the editorial team, see [PublicationPolicy].
  * - PPF_WRAP_RETENTION_DAYS, PPF_WRAP_CLEANUP_INTERVAL_MINUTES, PPF_WRAP_MAX_PER_RECIPIENT,
  *   PPF_POST_RATE_PER_MINUTE, PPF_POST_GLOBAL_RATE_PER_MINUTE: relay settings, see [RelayConfig].
+ * - PPF_PROPOSALS_MAX_PENDING_PER_KEY, PPF_PROPOSALS_PER_KEY_PER_DAY, PPF_PROPOSALS_MAX_PENDING,
+ *   PPF_PROPOSALS_RETENTION_DAYS, PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES, PPF_AI_MAX_REVIEWS_PER_DAY:
+ *   the review queue of citizen demands, see [RevendicationsConfig].
+ * - PPF_AI_BASE_URL, PPF_AI_MODEL, PPF_AI_API_KEY_FILE, PPF_AI_JSON_MODE, PPF_AI_TIMEOUT_SECONDS: the
+ *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -88,8 +98,16 @@ fun Application.module(
     dataSource: DataSource? = null,
     policy: PublicationPolicy = PublicationPolicy.fromEnvironment(),
     relay: RelayConfig = RelayConfig.fromEnvironment(),
+    revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
+    // Citizen demands wait in a review queue; its checks and cleanup live and die with the application.
+    val proposals = if (dataSource != null && repository != null) {
+        RevendicationProposals.start(this, dataSource, repository, revendications)
+    } else {
+        revendications.close()
+        null
+    }
     if (repository == null) {
         log.info("No database configured: the events API answers 503 (health check and web pages work).")
     } else if (relay.cleanupInterval.isPositive()) {
@@ -130,8 +148,9 @@ fun Application.module(
                 ),
             )
         }
-        eventsApi(repository, policy, limits, groups)
+        eventsApi(repository, policy, limits, groups, proposals)
         groupsApi(groups)
+        revendicationsApi(proposals)
         webRoutes()
     }
 }

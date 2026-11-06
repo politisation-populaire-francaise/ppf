@@ -29,6 +29,13 @@ tasks.withType<ShadowJar>().configureEach {
     mergeServiceFiles()
 }
 
+// The tests never see the PPF_* settings of the machine running them (an AI model configured for
+// the development server, editor keys...): each test states its own configuration. The periodic
+// cleanup of demand proposals stays off, as the envelope cleanup does with TEST_RELAY.
+tasks.withType<Test>().configureEach {
+    environment = environment.filterKeys { !it.startsWith("PPF_") } + mapOf("PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0")
+}
+
 // Development only: the server with an in-process PostgreSQL 17 and the bundled example contents.
 tasks.register<JavaExec>("runDev") {
     group = "application"
@@ -51,8 +58,12 @@ dependencies {
     implementation(libs.postgresql.jdbc)
     implementation(libs.flyway.core)
     implementation(libs.flyway.postgresql)
+    // HTTP client towards the AI model that reads proposed demands (off unless configured). Already
+    // in the runtime classpath through shared/core; declared here because the server builds its own client.
+    implementation(libs.ktor.client.cio)
 
     testImplementation(libs.ktor.server.test.host)
+    testImplementation(libs.ktor.client.mock)
     testImplementation(kotlin("test"))
     // A real PostgreSQL 17 started by the tests themselves: no Docker, no installation needed.
     testImplementation(libs.zonky.embedded.postgres)

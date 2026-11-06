@@ -22,6 +22,11 @@ import org.politisationpopulairefrancaise.core.local.LocalStoreOutcome
 import org.politisationpopulairefrancaise.core.publication.FetchResult
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.publication.RemoteFilter
+import org.politisationpopulairefrancaise.core.revendications.ProposalState
+import org.politisationpopulairefrancaise.core.revendications.ProposalStatus
+import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSource
+import org.politisationpopulairefrancaise.core.revendications.ProposalStatuses
+import org.politisationpopulairefrancaise.core.revendications.checks.ProposalReport
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -48,6 +53,31 @@ sealed interface LibraryStatus {
     /** The server did not answer; what the device already holds is shown. */
     data object Unreachable : LibraryStatus
 }
+
+/** Where one of the user's own demands stands, as the device knows it. */
+enum class OwnDemandState {
+    /** Signed and kept on the device; it leaves with the next synchronization that reaches the server. */
+    WAITING,
+
+    /** Received by the server, waiting for the team's review (also shown while the server has not answered yet). */
+    IN_REVIEW,
+
+    /** On the wall. */
+    PUBLISHED,
+
+    /** The team did not publish it; the reason says why. */
+    NOT_PUBLISHED,
+}
+
+/** One of the user's own demands, with what the server said about it. */
+data class OwnDemand(
+    val article: Article,
+    val state: OwnDemandState,
+    /** The team's reason, for a demand not published. */
+    val reason: String? = null,
+    /** The automatic checks the server ran (the AI model's opinions appear here once it is in service). */
+    val report: ProposalReport? = null,
+)
 
 /** A short publication of the feed, as the screen needs it. */
 data class FeedPost(
@@ -107,9 +137,23 @@ class ContentLibrary(
     var posts: List<FeedPost> by mutableStateOf(emptyList())
         private set
 
-    /** The demands of the wall (M11), newest first; only from trusted authors until citizens can propose. */
+    /**
+     * The published demands of the wall (M11), newest first: those of the trusted editorial
+     * accounts, those the server serves (it publishes a citizen's demand only after the team's
+     * review, D-030), and the user's own once published.
+     */
     var revendications: List<Article> by mutableStateOf(emptyList())
         private set
+
+    /** The user's own demands, published or not, with their state (the "Mes revendications" view). */
+    var myRevendications: List<OwnDemand> by mutableStateOf(emptyList())
+        private set
+
+    /** The key of the account on this device (lowercase hex), to tell the user's own demands apart. */
+    private var accountKey: String? = null
+
+    /** What the server said about the user's proposals, by event id; kept in memory, asked again at each refresh. */
+    private var proposalStates: Map<String, ProposalState> = emptyMap()
 
     var selectedRevendication: Article? by mutableStateOf(null)
         private set
@@ -143,6 +187,35 @@ class ContentLibrary(
     }
 
     fun isFollowed(pubkeyHex: String): Boolean = pubkeyHex in followed
+
+    /** The state of one of the user's own demands; null for anyone else's. */
+    fun ownDemand(article: Article): OwnDemand? = myRevendications.firstOrNull { it.article.event.id == article.event.id }
+
+    /**
+     * Tells the library which account is on the device (null after the keys are erased), so that the
+     * user's own demands are told apart and their review followed.
+     */
+    fun setAccount(pubkeyHex: String?) {
+        if (pubkeyHex == accountKey) return
+        accountKey = pubkeyHex
+        proposalStates = emptyMap()
+        val store = store ?: return
+        scope.launch {
+            reload(store)
+            val source = remote as? ProposalStatusSource ?: return@launch
+            if (refreshProposalStates(source)) reload(store)
+        }
+    }
+
+    /** Called after the proposal form sent a demand: shows it at once among the user's own and asks where it stands. */
+    fun onDemandSent() {
+        val store = store ?: return
+        scope.launch {
+            reload(store)
+            val source = remote as? ProposalStatusSource ?: return@launch
+            if (refreshProposalStates(source)) reload(store)
+        }
+    }
 
     /**
      * Follows an account: the list is updated on the device at once and, when a server is
@@ -200,6 +273,12 @@ class ContentLibrary(
         selectedRevendication = revendication
     }
 
+    /** Opens the demand of a content address (`kind:pubkey:identifier`), published or one of the user's own. */
+    fun openAddress(address: String) {
+        val all = revendications + myRevendications.map { it.article }
+        all.firstOrNull { it.address.toString() == address }?.let { selectedRevendication = it }
+    }
+
     fun closeRevendication() {
         selectedRevendication = null
     }
@@ -241,8 +320,33 @@ class ContentLibrary(
         // The batches of followed authors never travel in the same pass as a publication of the user:
         // a server could otherwise tie them to its author. After a publication they wait for the next refresh.
         if (up.reachable && up.published == 0) report += pullFollowed(store, remote)
+        (remote as? ProposalStatusSource)?.let { refreshProposalStates(it) }
         reload(store)
         status = if (report.reachable) LibraryStatus.Synced(report.pulled) else LibraryStatus.Unreachable
+    }
+
+    /**
+     * Asks the server where the user's sent demands stand, at most [ProposalStatusSource.MAX_IDS]
+     * ids per request. Only ids travel; the server knows them already. True when something changed.
+     */
+    private suspend fun refreshProposalStates(source: ProposalStatusSource): Boolean {
+        val ids = myRevendications.filter { it.state != OwnDemandState.WAITING && !trust.isTrusted(it.article.author) }.map { it.article.event.id }
+        if (ids.isEmpty()) return false
+        var fresh = proposalStates
+        for (batch in ids.chunked(ProposalStatusSource.MAX_IDS)) {
+            when (val answer = source.proposalStatuses(batch)) {
+                is ProposalStatuses.Unavailable -> break
+                // Once published, a demand's id is public and the server no longer serves its report:
+                // the one received while it waited is kept for its author.
+                is ProposalStatuses.Known -> fresh = fresh + answer.states.filter { it.id in batch }.associate { state ->
+                    val previous = fresh[state.id]?.report
+                    state.id to if (state.report == null && previous != null) state.copy(report = previous) else state
+                }
+            }
+        }
+        val changed = fresh != proposalStates
+        proposalStates = fresh
+        return changed
     }
 
     private suspend fun loadFollowed() {
@@ -290,20 +394,40 @@ class ContentLibrary(
                 .filter { trust.isTrusted(it.pubkey) }
                 .mapNotNull(Article::from)
                 .sortedBy { it.title.lowercase() }
-            val demands = store.byTag(listOf(Article.KIND), Article.TAG_TYPE, ArticleType.REVENDICATION.tagValue, limit = 200)
-                .filter { trust.isTrusted(it.pubkey) }
+            val pendingIds = store.pending().map { it.id }.toSet()
+            val key = accountKey
+            val all = store.byTag(listOf(Article.KIND), Article.TAG_TYPE, ArticleType.REVENDICATION.tagValue, limit = 200)
                 .mapNotNull(Article::from)
                 .sortedWith(compareByDescending<Article> { it.updatedAt }.thenBy { it.title.lowercase() })
-            val pendingIds = store.pending().map { it.id }.toSet()
+            val own = all.filter { it.author == key }.map { article -> ownDemandOf(article, pendingIds) }
+            val publishedOwn = own.filter { it.state == OwnDemandState.PUBLISHED }.map { it.article.event.id }.toSet()
+            // Someone else's demand reaches the device only from the server, which serves published demands
+            // only; the user's own are shown on the wall once published.
+            val demands = all.filter { it.author != key || it.event.id in publishedOwn }
             val posts = store.recent(kinds = listOf(EventKinds.TEXT_NOTE), limit = 100)
                 .map { FeedPost(it, editorial = trust.isTrusted(it.pubkey), pending = it.id in pendingIds) }
-            Triple(guides, demands, posts)
+            Triple(guides, demands to own, posts)
         }
         guides = freshGuides
-        revendications = freshDemands
+        revendications = freshDemands.first
+        myRevendications = freshDemands.second
         posts = freshPosts
         selected = selected?.let { current -> freshGuides.firstOrNull { it.address == current.address } }
-        selectedRevendication = selectedRevendication?.let { current -> freshDemands.firstOrNull { it.address == current.address } }
+        selectedRevendication = selectedRevendication?.let { current ->
+            freshDemands.first.firstOrNull { it.address == current.address } ?: freshDemands.second.firstOrNull { it.article.address == current.address }?.article
+        }
+    }
+
+    private fun ownDemandOf(article: Article, pendingIds: Set<String>): OwnDemand {
+        val known = proposalStates[article.event.id]
+        return when {
+            article.event.id in pendingIds -> OwnDemand(article, OwnDemandState.WAITING)
+            // A member of the editorial team publishes directly.
+            trust.isTrusted(article.author) -> OwnDemand(article, OwnDemandState.PUBLISHED)
+            known?.status == ProposalStatus.APPROVED -> OwnDemand(article, OwnDemandState.PUBLISHED, report = known.report)
+            known?.status == ProposalStatus.REJECTED -> OwnDemand(article, OwnDemandState.NOT_PUBLISHED, reason = known.reason, report = known.report)
+            else -> OwnDemand(article, OwnDemandState.IN_REVIEW, report = known?.report)
+        }
     }
 
     companion object {

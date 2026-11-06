@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Views and filters of the demands wall (owner's request of 2026-11-06). French, typographic
+     apostrophe (’), no em dash. -->
+<resources>
+    <!-- Themes: one label per theme id of RevendicationThemes. -->
+    <string name="theme_societe">Société</string>
+    <string name="theme_sante">Santé</string>
+    <string name="theme_education">Éducation</string>
+    <string name="theme_travail">Travail</string>
+    <string name="theme_pouvoir_d_achat">Pouvoir d’achat</string>
+    <string name="theme_logement">Logement</string>
+    <string name="theme_transports">Transports</string>
+    <string name="theme_environnement">Environnement</string>
+    <string name="theme_services_publics">Services publics</string>
+    <string name="theme_democratie">Démocratie</string>
+    <string name="theme_justice">Justice</string>
+    <string name="theme_fiscalite">Fiscalité</string>
+    <string name="theme_agriculture">Agriculture</string>
+    <string name="theme_numerique">Numérique</string>
+    <string name="theme_culture">Culture</string>
+
+    <!-- Built-in views. -->
+    <string name="rv_view_all">Toutes</string>
+    <string name="rv_view_all_desc">Toutes les revendications du mur</string>
+    <string name="rv_view_followed">Comptes suivis</string>
+    <string name="rv_view_followed_desc">Portées par les comptes que vous suivez</string>
+    <string name="rv_view_mine">Mes revendications</string>
+    <string name="rv_view_mine_desc">Celles que vous avez proposées</string>
+    <string name="rv_view_national">Nationales</string>
+    <string name="rv_view_national_desc">Celles qui concernent toute la France</string>
+    <string name="rv_view_theme_desc">Le thème « %1$s »</string>
+    <string name="rv_view_custom_desc">Vue personnalisée</string>
+
+    <!-- The bar above the list. -->
+    <string name="rv_filters">Filtres</string>
+    <plurals name="rv_filters_active">
+        <item quantity="one">Filtres, %1$d filtre actif</item>
+        <item quantity="other">Filtres, %1$d filtres actifs</item>
+    </plurals>
+    <string name="rv_sort_button">Tri : %1$s</string>
+    <string name="rv_sort_newest">Nouveauté</string>
+    <string name="rv_sort_popular">Popularité</string>
+    <string name="rv_sort_updated">Mises à jour récentes</string>
+    <string name="rv_sort_popular_note">Provisoire : selon l’avancement de la revendication, en attendant l’ouverture des votes.</string>
+    <string name="rv_customize">Personnaliser</string>
+    <string name="rv_propose">Proposer une revendication</string>
+    <plurals name="rv_count">
+        <item quantity="one">%1$d revendication</item>
+        <item quantity="other">%1$d revendications</item>
+    </plurals>
+    <string name="rv_clear_all">Tout effacer</string>
+    <string name="rv_chip_remove">Retirer le filtre %1$s</string>
+    <string name="rv_chip_text">« %1$s »</string>
+    <string name="rv_private_note">Vos vues et vos filtres restent sur cet appareil : ils ne sont jamais envoyés au serveur.</string>
+
+    <!-- Empty states. -->
+    <string name="rv_empty_followed_none">Vous ne suivez encore aucun compte. Suivez des comptes depuis le fil, avec le bouton « Suivre » d’une publication, pour retrouver ici les revendications qu’ils portent.</string>
+    <string name="rv_empty_followed">Les comptes que vous suivez ne portent encore aucune revendication.</string>
+    <string name="rv_empty_mine">Vous n’avez pas encore proposé de revendication.</string>
+    <string name="rv_empty_filters">Aucune revendication ne correspond à ces filtres.</string>
+    <string name="rv_empty_view">Aucune revendication dans cette vue pour l’instant.</string>
+    <string name="rv_clear_filters">Effacer les filtres</string>
+
+    <!-- The filter panel. -->
+    <string name="rv_panel_title">Filtres et tri</string>
+    <string name="rv_panel_view">Vue « %1$s »</string>
+    <string name="rv_panel_close">Fermer</string>
+    <string name="rv_section_sort">Trier par</string>
+    <string name="rv_section_themes">Thèmes</string>
+    <string name="rv_section_territory">Territoire</string>
+    <string name="rv_section_status">Statut</string>
+    <string name="rv_section_authors">Auteurs</string>
+    <string name="rv_section_text">Mots-clés</string>
+    <string name="rv_territory_national">France (national)</string>
+    <string name="rv_territory_none">Aucun territoire indiqué pour l’instant.</string>
+    <string name="rv_authors_anyone">Tout le monde</string>
+    <string name="rv_authors_followed">Comptes que vous suivez</string>
+    <string name="rv_authors_mine">Mes revendications</string>
+    <string name="rv_text_placeholder">Rechercher des mots</string>
+    <string name="rv_locked">Défini par la vue « %1$s »</string>
+    <plurals name="rv_apply">
+        <item quantity="one">Afficher %1$d revendication</item>
+        <item quantity="other">Afficher %1$d revendications</item>
+    </plurals>
+    <string name="rv_save_as_view">Enregistrer comme vue</string>
+    <string name="rv_custom_limit">Vous avez atteint le maximum de %1$d vues personnalisées. Retirez-en une pour en créer une autre.</string>
+
+    <!-- Naming a view. -->
+    <string name="rv_name_title">Nom de la vue</string>
+    <string name="rv_name_placeholder">Par exemple : Santé à Lyon</string>
+    <string name="rv_name_hint">De 1 à %1$d caractères. La vue reste sur cet appareil.</string>
+    <string name="rv_name_create">Créer la vue</string>
+    <string name="rv_name_save">Enregistrer</string>
+    <string name="rv_cancel">Annuler</string>
+    <string name="rv_create_title">Nouvelle vue personnalisée</string>
+    <string name="rv_edit_title">Critères de « %1$s »</string>
+    <string name="rv_edit_save">Enregistrer la vue</string>
+    <string name="rv_edit_note">Les revendications qui répondent à tous ces critères apparaîtront dans la vue.</string>
+
+    <!-- Personalizing the views. -->
+    <string name="rv_manage_title">Personnaliser les vues</string>
+    <string name="rv_manage_intro">Choisissez les vues affichées en onglets et leur ordre. Elles restent sur cet appareil : elles ne sont jamais envoyées.</string>
+    <string name="rv_manage_permanent">Toujours affichée en premier</string>
+    <string name="rv_move_up">Monter « %1$s »</string>
+    <string name="rv_move_down">Descendre « %1$s »</string>
+    <string name="rv_rename">Renommer « %1$s »</string>
+    <string name="rv_edit">Modifier les critères de « %1$s »</string>
+    <string name="rv_remove">Retirer « %1$s »</string>
+    <string name="rv_add_view">Ajouter une vue</string>
+    <string name="rv_catalog_title">Vues disponibles</string>
+    <string name="rv_catalog_empty">Toutes les vues proposées sont déjà affichées.</string>
+    <string name="rv_catalog_add">Ajouter « %1$s »</string>
+    <string name="rv_create_custom">Créer une vue personnalisée</string>
+    <string name="rv_reset">Rétablir les vues par défaut</string>
+    <string name="rv_reset_title">Rétablir les vues par défaut ?</string>
+    <string name="rv_reset_text">Vos vues personnalisées seront supprimées et les vues d’origine reviendront : Toutes, Comptes suivis, Société et Santé.</string>
+    <string name="rv_reset_keep">Garder mes vues</string>
+    <string name="rv_reset_confirm">Rétablir quand même</string>
+    <string name="rv_remove_title">Retirer la vue « %1$s » ?</string>
+    <string name="rv_remove_text">Ses critères seront perdus. Vous pourrez créer une autre vue à tout moment.</string>
+    <string name="rv_remove_keep">Garder la vue</string>
+    <string name="rv_remove_confirm">Retirer quand même</string>
+    <string name="rv_done">Terminé</string>
+</resources>

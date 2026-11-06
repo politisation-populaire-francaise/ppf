@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.server.events
 
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -14,7 +15,8 @@ import org.politisationpopulairefrancaise.server.relay.RelayKinds
  * - ephemeral events are never stored; events with more than [MAX_TAGS] tags are refused;
  * - editorial contents (kind 30023) and group descriptions (kinds 39000 to 39005, NIP-29) are
  *   accepted only from the keys listed in the environment variable PPF_EDITOR_KEYS (hex or
- *   "npub1…" keys separated by commas);
+ *   "npub1…" keys separated by commas); a demand from another key ([isCitizenDemand]) is refused
+ *   here too, and the API holds it for review by a person instead (server/revendications);
  * - member lists (39002) are refused: the server never holds nor publishes one (D-027);
  * - group membership and moderation events (9000 to 9022) are not accepted yet; they are the
  *   next step of the groups (see GroupKinds);
@@ -37,6 +39,10 @@ class PublicationPolicy(private val editors: Set<String>) {
     }
 
     fun isEditor(pubkeyHex: String): Boolean = pubkeyHex in editors
+
+    /** A demand of the wall (kind 30023, `ppf-type` = revendication) signed by a key outside the editorial team. */
+    fun isCitizenDemand(event: SignedEvent): Boolean =
+        event.kind == Article.KIND && !isEditor(event.pubkey) && event.firstTagValue(Article.TAG_TYPE) == ArticleType.REVENDICATION.tagValue
 
     fun check(event: SignedEvent): Decision = when {
         EventKinds.isEphemeral(event.kind) ->
