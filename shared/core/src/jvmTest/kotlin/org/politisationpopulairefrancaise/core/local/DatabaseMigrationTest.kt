@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.core.local
 
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
+import org.politisationpopulairefrancaise.core.comprendre.LearningProgressStore
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.groups.GroupStore
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
@@ -96,10 +97,10 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion6() {
+    fun theSchemaIsAtVersion7() {
         // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
-        // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm).
-        assertEquals(6L, PpfDatabase.Schema.version)
+        // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm).
+        assertEquals(7L, PpfDatabase.Schema.version)
     }
 
     @Test
@@ -132,6 +133,12 @@ class DatabaseMigrationTest {
         assertEquals(0L, rooms.count())
         rooms.join("collectif-demonstration")
         assertTrue(rooms.isMember("collectif-demonstration"))
+
+        // And the progress in the courses of "Comprendre" (version 7).
+        val learning = LearningProgressStore(database)
+        assertEquals(0L, learning.count())
+        learning.reachStep("30023:abc:la-dissolution", 1, now = 10)
+        assertEquals(1, assertNotNull(learning.progress("30023:abc:la-dissolution")).furthestStep)
     }
 
     @Test
@@ -141,7 +148,7 @@ class DatabaseMigrationTest {
         assertEquals(5L, userVersion(file))
 
         val database = JvmDatabase.open(file)
-        assertEquals(6L, userVersion(file))
+        assertEquals(PpfDatabase.Schema.version, userVersion(file))
 
         // The rows written at version 5 survive.
         assertEquals("[EXEMPLE] ancienne note", assertNotNull(LocalEventStore(database).find(eventId)).content)
