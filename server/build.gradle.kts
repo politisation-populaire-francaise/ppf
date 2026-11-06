@@ -29,6 +29,13 @@ tasks.withType<ShadowJar>().configureEach {
     mergeServiceFiles()
 }
 
+// The tests never see the PPF_* settings of the machine running them (an AI model configured for
+// the development server, editor keys...): each test states its own configuration. The periodic
+// cleanup of demand proposals stays off, as the envelope cleanup does with TEST_RELAY.
+tasks.withType<Test>().configureEach {
+    environment = environment.filterKeys { !it.startsWith("PPF_") } + mapOf("PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0")
+}
+
 // Development only: the server with an in-process PostgreSQL 17 and the bundled example contents.
 tasks.register<JavaExec>("runDev") {
     group = "application"
