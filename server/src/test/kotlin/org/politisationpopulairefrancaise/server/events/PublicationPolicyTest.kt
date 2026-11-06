@@ -49,29 +49,69 @@ class PublicationPolicyTest {
         assertEquals(400, assertIs<PublicationPolicy.Decision.Refused>(policy.check(ephemeral)).status)
     }
 
-    @Test
-    fun groupDescriptionsNeedAnEditorKeyAndMembershipEventsAreRefused() = runBlocking {
-        val policy = PublicationPolicy(setOf(editor.publicKey.hex))
-        val description = listOf(listOf("d", "demo"), listOf("name", "[EXEMPLE] Collectif"))
-        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = description)))
-        assertEquals(403, assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(citizen).sign(kind = GroupKinds.METADATA, tags = description))).status)
-        assertEquals(403, assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(citizen).sign(kind = GroupKinds.ADMINS, tags = description))).status)
+    /** A complete group description (D-028): id, name, territory, accepted charter. */
+    private fun description(id: String = "demo", name: String? = "[EXEMPLE] Collectif", territory: String? = "Lyon", charter: String? = GroupKinds.CHARTER_VERSION): List<List<String>> =
+        listOfNotNull(
+            listOf("d", id),
+            name?.let { listOf(GroupKinds.NAME_TAG, it) },
+            territory?.let { listOf(GroupKinds.TERRITORY_TAG, it) },
+            charter?.let { listOf(GroupKinds.CHARTER_TAG, it) },
+        )
 
-        for (badId in listOf(null, "", "with space", "é", "Demo", "x".repeat(65))) {
-            val tags = if (badId == null) emptyList() else listOf(listOf("d", badId))
-            val refused = assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = tags)))
+    @Test
+    fun anyKeyDescribesAGroupProvidedItNamesATerritoryAndAcceptsTheCharter() = runBlocking {
+        val policy = PublicationPolicy(setOf(editor.publicKey.hex))
+        val signer = LocalEventSigner(citizen)
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(signer.sign(kind = GroupKinds.METADATA, tags = description())))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = description())))
+        val withOptionalTags = description() + listOf(listOf("about", "[EXEMPLE] à propos"), listOf("picture", "https://example.invalid/p.png"), listOf("closed"))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(signer.sign(kind = GroupKinds.METADATA, tags = withOptionalTags)))
+
+        for (name in listOf(null, "", "   ", "!!! ...")) {
+            val refused = assertIs<PublicationPolicy.Decision.Refused>(policy.check(signer.sign(kind = GroupKinds.METADATA, tags = description(name = name))))
+            assertEquals(400, refused.status, "name $name")
+            assertEquals("missing_name", refused.error, "name $name")
+        }
+        for (territory in listOf(null, "", " ", "-")) {
+            val refused = assertIs<PublicationPolicy.Decision.Refused>(policy.check(signer.sign(kind = GroupKinds.METADATA, tags = description(territory = territory))))
+            assertEquals(400, refused.status, "territory $territory")
+            assertEquals("missing_territory", refused.error, "territory $territory")
+        }
+        for (charter in listOf(null, "", "0.9", "1.0 ", "2.0", "oui")) {
+            val refused = assertIs<PublicationPolicy.Decision.Refused>(policy.check(signer.sign(kind = GroupKinds.METADATA, tags = description(charter = charter))))
+            assertEquals(400, refused.status, "charter $charter")
+            assertEquals("missing_charter", refused.error, "charter $charter")
+        }
+        // The first value of a tag is the one that counts, as everywhere else.
+        val secondCharter = description(charter = "0.9") + listOf(listOf(GroupKinds.CHARTER_TAG, "1.0"))
+        assertEquals("missing_charter", assertIs<PublicationPolicy.Decision.Refused>(policy.check(signer.sign(kind = GroupKinds.METADATA, tags = secondCharter))).error)
+
+        // The companions of a description (admins, roles) stay reserved to the editorial keys for now.
+        val companion = listOf(listOf("d", "demo"), listOf("p", citizen.publicKey.hex, "admin"))
+        assertEquals(403, assertIs<PublicationPolicy.Decision.Refused>(policy.check(signer.sign(kind = GroupKinds.ADMINS, tags = companion))).status)
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.ADMINS, tags = companion)))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.ROLES, tags = listOf(listOf("d", "demo")))))
+    }
+
+    @Test
+    fun groupDescriptionsNeedOneValidIdAndMembershipEventsAreRefused() = runBlocking {
+        val policy = PublicationPolicy(setOf(editor.publicKey.hex))
+        for (badId in listOf("", "with space", "é", "Demo", "x".repeat(65))) {
+            val refused = assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = description(id = badId))))
             assertEquals("bad_group_id", refused.error, "id $badId")
         }
-        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "a-b_c.d~e9")))))
+        val noId = LocalEventSigner(citizen).sign(kind = GroupKinds.METADATA, tags = description().drop(1))
+        assertEquals("bad_group_id", assertIs<PublicationPolicy.Decision.Refused>(policy.check(noId)).error)
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = description(id = "a-b_c.d~e9"))))
         // Exactly one id: a second d tag could point the description at someone else's group.
-        val twoIds = LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "libre"), listOf("d", "demo")))
+        val twoIds = LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = description() + listOf(listOf("d", "libre")))
         assertEquals("bad_group_id", assertIs<PublicationPolicy.Decision.Refused>(policy.check(twoIds)).error)
         // Flags the relay cannot honour yet.
         for (flag in listOf("private", "hidden")) {
-            val flagged = LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "demo"), listOf(flag)))
+            val flagged = LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = description() + listOf(listOf(flag)))
             assertEquals("unsupported_group_flag", assertIs<PublicationPolicy.Decision.Refused>(policy.check(flagged)).error, flag)
         }
-        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = listOf(listOf("d", "demo"), listOf("closed"), listOf("restricted")))))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.METADATA, tags = description() + listOf(listOf("closed"), listOf("restricted")))))
 
         val members = assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.MEMBERS, tags = listOf(listOf("d", "demo")))))
         assertEquals("members_list_refused", members.error)

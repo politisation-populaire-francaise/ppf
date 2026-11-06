@@ -5,6 +5,7 @@ import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.groups.GroupKinds
+import org.politisationpopulairefrancaise.server.groups.GroupNames
 import org.politisationpopulairefrancaise.server.relay.RelayKinds
 
 /**
@@ -12,18 +13,23 @@ import org.politisationpopulairefrancaise.server.relay.RelayKinds
  * GroupDirectory). Phase 1 rules:
  *
  * - ephemeral events are never stored; events with more than [MAX_TAGS] tags are refused;
- * - editorial contents (kind 30023) and group descriptions (kinds 39000 to 39005, NIP-29) are
- *   accepted only from the keys listed in the environment variable PPF_EDITOR_KEYS (hex or
- *   "npub1…" keys separated by commas);
+ * - editorial contents (kind 30023) are accepted only from the keys listed in the environment
+ *   variable PPF_EDITOR_KEYS (hex or "npub1…" keys separated by commas);
+ * - a group description (kind 39000, NIP-29) is accepted from any key (D-028: creating a group is
+ *   open to every account) provided it carries exactly one valid `d` id, a non-empty `name`, a
+ *   non-empty territory (`ppf-territory`), the accepted charter version (`ppf-charter` = 1.0) and
+ *   none of the flags the relay cannot honour yet (`private`, `hidden`: reading would have to be
+ *   restricted to members); `about` and `picture` are optional;
+ * - the companions of a description (39001 admins, 39003 roles, 39004, 39005) stay reserved to the
+ *   editorial keys until roles exist: an admins list published by anyone would tie keys to a group;
  * - member lists (39002) are refused: the server never holds nor publishes one (D-027);
  * - group membership and moderation events (9000 to 9022) are not accepted yet; they are the
  *   next step of the groups (see GroupKinds);
- * - a group description carries exactly one valid `d` id and none of the flags the relay cannot
- *   honour yet (`private`, `hidden`: reading would have to be restricted to members);
  * - an event sent to a group names exactly one group (`h`); a chat message (kind 9) must name one;
  * - an encrypted envelope (kind 1059) names exactly one recipient (`p`), otherwise it could never
  *   be fetched and would only take space;
- * - everything else (notes, envelopes...) is accepted from any key.
+ * - everything else (notes, application data such as the mailbox settings of kind 30078...) is
+ *   accepted from any key.
  *
  * Anti-spam: the rate limits are applied by the API before this policy; the proof of work is
  * still to come.
@@ -33,7 +39,11 @@ class PublicationPolicy(private val editors: Set<String>) {
     sealed interface Decision {
         data object Allowed : Decision
 
-        data class Refused(val status: Int, val error: String, val message: String) : Decision
+        /**
+         * [existing] is set with the error `group_exists` only: the id of the group the client should
+         * join instead of creating a duplicate.
+         */
+        data class Refused(val status: Int, val error: String, val message: String, val existing: String? = null) : Decision
     }
 
     fun isEditor(pubkeyHex: String): Boolean = pubkeyHex in editors
@@ -49,12 +59,18 @@ class PublicationPolicy(private val editors: Set<String>) {
             Decision.Refused(403, "members_list_refused", "Member lists are never published nor stored on this relay.")
         GroupKinds.isMembershipOrModeration(event.kind) ->
             Decision.Refused(400, "unsupported_kind", "Group membership and moderation events are not accepted yet.")
-        GroupKinds.isGroupMetadata(event.kind) && !isEditor(event.pubkey) ->
-            Decision.Refused(403, "not_allowed", "Only authorized keys describe groups.")
+        GroupKinds.isGroupMetadata(event.kind) && event.kind != GroupKinds.METADATA && !isEditor(event.pubkey) ->
+            Decision.Refused(403, "not_allowed", "Only authorized keys publish the companions of a group description (admins, roles) for now.")
         GroupKinds.isGroupMetadata(event.kind) && !hasExactlyOneValidGroupId(event, "d") ->
             Decision.Refused(400, "bad_group_id", "A group description carries exactly one d tag: 1 to 64 lowercase letters, digits, dots, dashes, underscores or tildes.")
         event.kind == GroupKinds.METADATA && event.tags.any { it.firstOrNull() in GroupKinds.UNSUPPORTED_FLAGS } ->
             Decision.Refused(400, "unsupported_group_flag", "Private and hidden groups are not supported yet: this relay cannot restrict who reads them.")
+        event.kind == GroupKinds.METADATA && !hasUsableText(event, GroupKinds.NAME_TAG) ->
+            Decision.Refused(400, "missing_name", "A group description carries a name tag with at least one letter or digit.")
+        event.kind == GroupKinds.METADATA && !hasUsableText(event, GroupKinds.TERRITORY_TAG) ->
+            Decision.Refused(400, "missing_territory", "A group description names its territory in a ${GroupKinds.TERRITORY_TAG} tag (a town, a department, \"France\").")
+        event.kind == GroupKinds.METADATA && event.firstTagValue(GroupKinds.CHARTER_TAG) != GroupKinds.CHARTER_VERSION ->
+            Decision.Refused(400, "missing_charter", "Creating a group means accepting the charter of values: a ${GroupKinds.CHARTER_TAG} tag with the value ${GroupKinds.CHARTER_VERSION}.")
         event.kind == GroupKinds.CHAT_MESSAGE && event.tagValues(GroupKinds.GROUP_TAG).isEmpty() ->
             Decision.Refused(400, "missing_group", "A chat message names its group in an h tag.")
         event.tagValues(GroupKinds.GROUP_TAG).size > 1 ->
@@ -68,6 +84,10 @@ class PublicationPolicy(private val editors: Set<String>) {
         val ids = event.tagValues(tag)
         return ids.size == 1 && GroupKinds.isValidId(ids[0])
     }
+
+    /** The first value of [tag] exists and keeps at least one letter or digit once normalized (so that it can be compared). */
+    private fun hasUsableText(event: SignedEvent, tag: String): Boolean =
+        event.firstTagValue(tag)?.let { GroupNames.normalize(it).isNotEmpty() } == true
 
     private fun hasExactlyOneRecipient(event: SignedEvent): Boolean {
         val recipients = event.tagValues("p")

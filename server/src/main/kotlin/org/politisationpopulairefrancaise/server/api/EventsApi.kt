@@ -30,6 +30,10 @@ data class PublishResponse(val id: String, val status: String)
 @Serializable
 data class ApiError(val error: String, val message: String)
 
+/** The `409 group_exists` answer: [existing] is the id of the group to join instead of creating a duplicate (D-028). */
+@Serializable
+data class GroupExistsError(val error: String, val message: String, val existing: String)
+
 /** Events above this size are refused before being read in full. */
 const val MAX_EVENT_BYTES: Long = 64 * 1024
 
@@ -114,14 +118,13 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
                 RateLimiter.Outcome.Allowed -> Unit
             }
             when (val decision = policy.check(event)) {
-                is PublicationPolicy.Decision.Refused ->
-                    return@post call.respond(HttpStatusCode.fromValue(decision.status), ApiError(decision.error, decision.message))
+                is PublicationPolicy.Decision.Refused -> return@post call.refuse(decision)
                 PublicationPolicy.Decision.Allowed -> Unit
             }
-            // Group rules that need the database: the group must exist, be open, or be managed by this key.
+            // Group rules that need the database: the group must exist, be open, be managed by this key,
+            // and not duplicate another group of the same name on the same territory.
             when (val admission = withContext(Dispatchers.IO) { directory.admit(event) }) {
-                is PublicationPolicy.Decision.Refused ->
-                    return@post call.respond(HttpStatusCode.fromValue(admission.status), ApiError(admission.error, admission.message))
+                is PublicationPolicy.Decision.Refused -> return@post call.refuse(admission)
                 PublicationPolicy.Decision.Allowed -> Unit
             }
             val outcome = withContext(Dispatchers.IO) { repository.store(event) }
@@ -195,6 +198,17 @@ fun parseTagFilters(raw: List<String>): Map<String, List<String>>? {
         tags.getOrPut(name) { mutableListOf() } += value
     }
     return tags
+}
+
+/** Answers a refusal of the policy or of the group directory; `group_exists` carries the group to join. */
+private suspend fun RoutingCall.refuse(decision: PublicationPolicy.Decision.Refused) {
+    val status = HttpStatusCode.fromValue(decision.status)
+    val existing = decision.existing
+    if (existing != null) {
+        respond(status, GroupExistsError(decision.error, decision.message, existing))
+    } else {
+        respond(status, ApiError(decision.error, decision.message))
+    }
 }
 
 private suspend fun RoutingCall.rateLimited(outcome: RateLimiter.Outcome.Limited, message: String) {
