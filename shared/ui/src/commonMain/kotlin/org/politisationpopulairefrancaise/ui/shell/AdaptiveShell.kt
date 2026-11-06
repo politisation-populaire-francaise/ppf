@@ -39,6 +39,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
@@ -80,6 +82,7 @@ import org.politisationpopulairefrancaise.ui.messages.MessagesScreen
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationViewsState
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationsScreen
 import org.politisationpopulairefrancaise.ui.revendications.rememberRevendicationViewsState
+import org.politisationpopulairefrancaise.ui.revendications.propose.ProposalComposer
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.action_my_space
 import org.politisationpopulairefrancaise.ui.resources.action_notifications_soon
@@ -130,6 +133,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = contentLibrary::clearFollowed)
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
+    // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
+    val proposalComposer = remember(dependencies) { ProposalComposer(dependencies.contentStore, dependencies.remote) }
+    val accountKey = (accountSession.state as? AccountUiState.Ready)?.publicKey?.hex
+    LaunchedEffect(accountKey) { contentLibrary.setAccount(accountKey) }
     val palette = PpfTheme.palette
 
     BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
@@ -144,6 +151,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 accountSession = accountSession,
                 contentLibrary = contentLibrary,
                 revendicationViews = revendicationViews,
+                proposalComposer = proposalComposer,
                 windowClass = windowClass,
                 widthDp = maxWidth.value.toInt(),
                 heightDp = maxHeight.value.toInt(),
@@ -166,6 +174,7 @@ private fun SpaceContent(
     accountSession: AccountSession,
     contentLibrary: ContentLibrary,
     revendicationViews: RevendicationViewsState,
+    proposalComposer: ProposalComposer,
     windowClass: WindowClass,
     widthDp: Int,
     heightDp: Int,
@@ -176,7 +185,15 @@ private fun SpaceContent(
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, windowClass, modifier)
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, windowClass, modifier)
-        Space.REVENDICATIONS -> RevendicationsScreen(contentLibrary, accountSession, windowClass, modifier, views = revendicationViews)
+        Space.REVENDICATIONS -> RevendicationsScreen(
+            contentLibrary,
+            accountSession,
+            windowClass,
+            modifier,
+            views = revendicationViews,
+            proposal = proposalComposer,
+            onNavigate = onNavigate,
+        )
         else -> PlaceholderScreen(sectionFor(selected), windowClass, widthDp, heightDp, modifier)
     }
 }

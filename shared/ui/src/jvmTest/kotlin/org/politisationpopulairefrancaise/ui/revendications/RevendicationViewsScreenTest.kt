@@ -461,8 +461,8 @@ class RevendicationViewsScreenTest {
         openView("mes-revendications")
         assertCount("mes-revendications", "0 revendication")
         assertTrue(onAllNodesWithText("Vous n’avez pas encore proposé de revendication.").fetchSemanticsNodes().isNotEmpty())
-        // No proposal form is wired by the shell yet: no button.
-        onNodeWithTag(RevendicationTags.PROPOSE).assertDoesNotExist()
+        // The shell wires the proposal form: the button is offered in the view.
+        inPage("mes-revendications", RevendicationTags.PROPOSE).assertExists()
         // The authors filter offers "Mes revendications" too.
         openView("tout")
         openFilters("tout")

@@ -51,6 +51,9 @@ class ProposalComposer(
 ) {
     private val checker = ProposalChecker(clock = clock)
 
+    /** True while the form is shown on the demands screen (kept when the user visits another space). */
+    var open: Boolean by mutableStateOf(false)
+
     var draft: RevendicationDraft by mutableStateOf(RevendicationDraft(title = ""))
     var charterAccepted: Boolean by mutableStateOf(false)
     var sending: Boolean by mutableStateOf(false)

@@ -115,8 +115,24 @@ import org.politisationpopulairefrancaise.ui.resources.rv_view_followed
 import org.politisationpopulairefrancaise.ui.resources.rv_view_mine
 import org.politisationpopulairefrancaise.ui.resources.space_revendications
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.core.revendications.checks.DemandText
+import org.politisationpopulairefrancaise.ui.content.OwnDemand
+import org.politisationpopulairefrancaise.ui.content.OwnDemandState
+import org.politisationpopulairefrancaise.ui.resources.proposal_reason
+import org.politisationpopulairefrancaise.ui.resources.proposal_report_title
+import org.politisationpopulairefrancaise.ui.resources.proposal_status_approved
+import org.politisationpopulairefrancaise.ui.resources.proposal_status_pending
+import org.politisationpopulairefrancaise.ui.resources.proposal_status_rejected
+import org.politisationpopulairefrancaise.ui.resources.proposal_status_waiting
+import org.politisationpopulairefrancaise.ui.revendications.propose.IssueList
+import org.politisationpopulairefrancaise.ui.revendications.propose.ProposalComposer
+import org.politisationpopulairefrancaise.ui.revendications.propose.ProposalScreen
 
 object RevendicationTags {
+    /** Followed by the state in lowercase ("in_review", "waiting"...): the badge of one of the user's own demands. */
+    const val OWN_STATE = "revendication-own-state-"
+    const val OWN_REVIEW = "revendication-own-review"
     const val CARD = "revendication-" // followed by the slug
     const val LIST = "revendication-list"
     const val DETAIL = "revendication-detail"
@@ -155,6 +171,8 @@ private sealed interface Overlay {
  *
  * @param views the views and filters; the shell keeps one for the whole run
  * @param onPropose shows "Proposer une revendication" when not null
+ * @param proposal the proposal form (DE-18); when given, "Proposer une revendication" opens it
+ * @param onNavigate leaves for another space (the form sends to Mon espace to create an account)
  */
 @Composable
 fun RevendicationsScreen(
@@ -165,7 +183,32 @@ fun RevendicationsScreen(
     database: PpfDatabase? = null,
     views: RevendicationViewsState = rememberRevendicationViewsState(database, session),
     onPropose: (() -> Unit)? = null,
+    proposal: ProposalComposer? = null,
+    onNavigate: (Space) -> Unit = {},
 ) {
+    if (proposal != null && proposal.open) {
+        val existing = remember(library.revendications, library.myRevendications) {
+            (library.revendications + library.myRevendications.map { it.article }).distinctBy { it.address }.map(DemandText::of)
+        }
+        ProposalScreen(
+            composer = proposal,
+            existing = existing,
+            signer = session.signer,
+            windowClass = windowClass,
+            onClose = { proposal.open = false },
+            onOpenDemand = { address ->
+                val all = library.revendications + library.myRevendications.map { it.article }
+                all.firstOrNull { it.address.toString() == address }?.let(library::openRevendication)
+                proposal.open = false
+            },
+            onCreateAccount = { onNavigate(Space.MON_ESPACE) },
+            onSent = library::onDemandSent,
+            modifier = modifier,
+        )
+        return
+    }
+    @Suppress("NAME_SHADOWING")
+    val onPropose: (() -> Unit)? = onPropose ?: proposal?.let { form -> { form.open = true } }
     val twoPanes = windowClass.width == WindowWidthClass.EXPANDED
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val selected = library.selectedRevendication
@@ -194,14 +237,21 @@ fun RevendicationsScreen(
                 wall(Modifier.width(380.dp).fillMaxHeight())
                 VerticalDivider(color = PpfTheme.palette.border)
                 if (selected != null) {
-                    RevendicationDetail(selected, onBack = null, compact = false, Modifier.fillMaxSize())
+                    RevendicationDetail(selected, onBack = null, compact = false, Modifier.fillMaxSize(), own = library.ownDemand(selected), onOpenDemand = { library.openAddress(it) })
                 } else {
                     Column(Modifier.fillMaxSize().padding(24.dp)) {
                         PageHeader(stringResource(Res.string.space_revendications), stringResource(Res.string.desc_revendications))
                     }
                 }
             }
-            selected != null -> RevendicationDetail(selected, onBack = library::closeRevendication, compact = compact, Modifier.fillMaxSize())
+            selected != null -> RevendicationDetail(
+                selected,
+                onBack = library::closeRevendication,
+                compact = compact,
+                Modifier.fillMaxSize(),
+                own = library.ownDemand(selected),
+                onOpenDemand = { library.openAddress(it) },
+            )
             else -> wall(Modifier.fillMaxSize())
         }
     }
@@ -344,7 +394,12 @@ private fun WallPage(
     // The criteria of the view win; the filters that still apply are the others.
     val active = filters.without(view.fixedCriteria)
     val effective = view.query.overlay(filters)
-    val demands = library.revendications
+    // The user's own demands that are not published yet only appear in the views of their own.
+    val demands = if (effective.authors == AuthorScope.MINE) {
+        (library.revendications + library.myRevendications.map { it.article }).distinctBy { it.event.id }
+    } else {
+        library.revendications
+    }
     val results = remember(demands, effective, context) { effective.apply(demands, context) }
     val territories = remember(demands) { territoriesOf(demands) }
 
@@ -395,6 +450,7 @@ private fun WallPage(
                     revendication = revendication,
                     onOpen = { library.openRevendication(revendication) },
                     selected = library.selectedRevendication?.address == revendication.address,
+                    own = library.ownDemand(revendication),
                 )
             }
         }
@@ -528,12 +584,13 @@ private fun EmptyState(
 
 /** The card of a demand, used on the wall and in the feed: status, the demand, its territory and themes, the vote row. */
 @Composable
-fun RevendicationCard(revendication: Article, onOpen: () -> Unit, modifier: Modifier = Modifier, selected: Boolean = false) {
+fun RevendicationCard(revendication: Article, onOpen: () -> Unit, modifier: Modifier = Modifier, selected: Boolean = false, own: OwnDemand? = null) {
     val palette = PpfTheme.palette
     val example = revendication.title.startsWith(FeedPost.EXAMPLE_MARKER)
     PpfCard(onClick = onOpen, selected = selected, modifier = modifier.fillMaxWidth().testTag(RevendicationTags.CARD + revendication.slug)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            revendication.status?.let { StatusBadge(it) }
+        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            // Not yet on the wall: its review state replaces the status the team will give it.
+            if (own != null && own.state != OwnDemandState.PUBLISHED) OwnStateBadge(own.state) else revendication.status?.let { StatusBadge(it) }
             Spacer(Modifier.weight(1f))
             if (example) ExampleBadge()
         }
@@ -603,7 +660,14 @@ fun StatusBadge(status: RevendicationStatus, modifier: Modifier = Modifier) {
 }
 
 @Composable
-private fun RevendicationDetail(revendication: Article, onBack: (() -> Unit)?, compact: Boolean, modifier: Modifier) {
+private fun RevendicationDetail(
+    revendication: Article,
+    onBack: (() -> Unit)?,
+    compact: Boolean,
+    modifier: Modifier,
+    own: OwnDemand? = null,
+    onOpenDemand: (String) -> Unit = {},
+) {
     val palette = PpfTheme.palette
     val example = revendication.title.startsWith(FeedPost.EXAMPLE_MARKER)
     Column(modifier.verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(RevendicationTags.DETAIL)) {
@@ -613,7 +677,7 @@ private fun RevendicationDetail(revendication: Article, onBack: (() -> Unit)?, c
                 Spacer(Modifier.height(8.dp))
             }
             Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                revendication.status?.let { StatusBadge(it) }
+                if (own != null && own.state != OwnDemandState.PUBLISHED) OwnStateBadge(own.state) else revendication.status?.let { StatusBadge(it) }
                 if (example) ExampleBadge()
             }
             Spacer(Modifier.height(8.dp))
@@ -633,6 +697,7 @@ private fun RevendicationDetail(revendication: Article, onBack: (() -> Unit)?, c
                 style = MaterialTheme.typography.bodyMedium,
                 color = palette.inkSubtle,
             )
+            if (own != null) OwnDemandReview(own, onOpenDemand)
             Spacer(Modifier.height(12.dp))
             PpfCard(contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)) { VoteRow() }
             Spacer(Modifier.height(20.dp))
@@ -641,6 +706,39 @@ private fun RevendicationDetail(revendication: Article, onBack: (() -> Unit)?, c
             SelectionContainer {
                 MarkdownText(revendication.body)
             }
+        }
+    }
+}
+
+/** Where one of the user's own demands stands, instead of the team's status while it is not published. */
+@Composable
+fun OwnStateBadge(state: OwnDemandState, modifier: Modifier = Modifier) {
+    val (label, style) = when (state) {
+        OwnDemandState.WAITING -> Res.string.proposal_status_waiting to BadgeStyle.NEUTRAL
+        OwnDemandState.IN_REVIEW -> Res.string.proposal_status_pending to BadgeStyle.EXAMPLE
+        OwnDemandState.PUBLISHED -> Res.string.proposal_status_approved to BadgeStyle.SUCCESS
+        OwnDemandState.NOT_PUBLISHED -> Res.string.proposal_status_rejected to BadgeStyle.NEUTRAL
+    }
+    PpfBadge(stringResource(label), style, modifier.testTag(RevendicationTags.OWN_STATE + state.name.lowercase()))
+}
+
+/** The review of one of the user's own demands: the team's reason, then what the automatic checks found on the server. */
+@Composable
+private fun OwnDemandReview(own: OwnDemand, onOpenDemand: (String) -> Unit) {
+    val palette = PpfTheme.palette
+    val reason = own.reason
+    val issues = own.report?.issues.orEmpty()
+    if (reason == null && issues.isEmpty()) return
+    Spacer(Modifier.height(12.dp))
+    PpfCard(Modifier.fillMaxWidth().testTag(RevendicationTags.OWN_REVIEW)) {
+        if (reason != null) {
+            Text(stringResource(Res.string.proposal_reason, reason), style = MaterialTheme.typography.bodyMedium)
+            if (issues.isNotEmpty()) Spacer(Modifier.height(12.dp))
+        }
+        if (issues.isNotEmpty()) {
+            Text(stringResource(Res.string.proposal_report_title), style = MaterialTheme.typography.titleSmall, color = palette.brand, modifier = Modifier.semantics { heading() })
+            Spacer(Modifier.height(8.dp))
+            IssueList(issues, onOpenDemand)
         }
     }
 }

@@ -168,7 +168,9 @@ fun ProposalScreen(
         if (signer != null) scope.launch { composer.send(signer, existing); onSent() }
     }
 
-    BoxWithConstraints(modifier.fillMaxSize().background(palette.surface1).testTag(ProposalTags.SCREEN)) {
+    // The caller's modifier may carry its own test tag (the first one wins): the screen's goes on an inner box.
+    Box(modifier.fillMaxSize()) {
+    BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1).testTag(ProposalTags.SCREEN)) {
         val sideBySide = maxWidth >= 1000.dp
         val outcome = composer.outcome
         val padding = if (compact) 16.dp else 24.dp
@@ -203,6 +205,7 @@ fun ProposalScreen(
                 }
             }
         }
+    }
     }
 }
 
