@@ -89,6 +89,7 @@ fun main(args: Array<String>) {
         )
     }.map { signer.signChecked(it) }
     write(output.resolve("fil.json"), notes)
+    signAgenda(content, output, keys) // content/agenda -> agenda.json (AgendaContent.kt)
 
     println("author public key (hex): ${keys.publicKey.hex}")
     println("author public key (npub): ${keys.publicKey.npub}")
