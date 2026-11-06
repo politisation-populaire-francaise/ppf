@@ -104,7 +104,7 @@ object AgirFormats {
         "soutenir" to listOf("ppf-cause", "ppf-action", TAG_DEADLINE),
         "petition" to listOf(TAG_LINK, "ppf-platform", TAG_GOAL, TAG_DEADLINE),
         "interpeller" to listOf("ppf-targets", "ppf-request", TAG_DEADLINE),
-        "boycotter" to listOf("ppf-company", "ppf-source", "ppf-alternatives", "ppf-duration"),
+        "boycotter" to listOf("ppf-company", "ppf-source", "ppf-alternatives", "ppf-boycott-duration"),
         "collecte" to listOf("ppf-beneficiary", TAG_GOAL, "ppf-use", TAG_LINK, TAG_DEADLINE),
         "benevoles" to listOf("ppf-mission", "ppf-skills", "ppf-people", "location|ppf-remote", "ppf-period"),
         "information" to listOf("ppf-source"),
