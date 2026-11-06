@@ -14,6 +14,9 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.revendications.ProposalState
+import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSource
+import org.politisationpopulairefrancaise.core.revendications.ProposalStatuses
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 
 /**
@@ -25,7 +28,7 @@ class ServerPublicationPort(
     private val client: HttpClient,
     /** Origin of the server, without trailing slash, e.g. "https://politisation-populaire-francaise.org". */
     private val baseUrl: String,
-) : RemoteEvents {
+) : RemoteEvents, ProposalStatusSource {
 
     override suspend fun publish(event: SignedEvent): PublicationResult {
         val response = try {
@@ -39,6 +42,8 @@ class ServerPublicationPort(
             return PublicationResult.Unavailable(e)
         }
         return when (response.status.value) {
+            // 202: kept by the server for a review by the team before publication.
+            202 -> PublicationResult.Accepted(event.id, heldForReview = true)
             in 200..299 -> PublicationResult.Accepted(event.id)
             // Rate limited: not a refusal of this event, keep it and retry after the delay the server gives.
             429 -> PublicationResult.Unavailable(ServerException(429, response.headers["Retry-After"]?.trim()?.toLongOrNull()))
@@ -76,6 +81,28 @@ class ServerPublicationPort(
             return FetchResult.Unavailable(e)
         }
         return FetchResult.Events(events)
+    }
+
+    override suspend fun proposalStatuses(ids: List<String>): ProposalStatuses {
+        require(ids.size <= ProposalStatusSource.MAX_IDS) { "At most ${ProposalStatusSource.MAX_IDS} ids per request" }
+        if (ids.isEmpty()) return ProposalStatuses.Known(emptyList())
+        val response: HttpResponse = try {
+            client.get("$baseUrl/api/v1/revendications/proposals") {
+                ids.forEach { parameter("id", it) }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return ProposalStatuses.Unavailable(e)
+        }
+        if (response.status.value !in 200..299) return ProposalStatuses.Unavailable(ServerException(response.status.value))
+        return try {
+            ProposalStatuses.Known(json.decodeFromString(ListSerializer(ProposalState.serializer()), response.bodyAsText()))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            ProposalStatuses.Unavailable(e)
+        }
     }
 
     private fun HttpRequestBuilder.applyFilter(filter: RemoteFilter) {

@@ -12,8 +12,12 @@ interface PublicationPort {
 }
 
 sealed interface PublicationResult {
-    /** The event is accepted and stored (also returned when it was already there). */
-    data class Accepted(val id: String) : PublicationResult
+    /**
+     * The event is accepted and stored (also returned when it was already there). [heldForReview]
+     * is true when the destination keeps it for a review by the team before publishing it (citizen
+     * demands, decision of the owner of 2026-11-05): it is safe on the server, not yet public.
+     */
+    data class Accepted(val id: String, val heldForReview: Boolean = false) : PublicationResult
 
     /** The event is refused for a definitive reason; retrying the same event is useless. */
     data class Rejected(val id: String, val reason: RejectionReason) : PublicationResult
