@@ -134,6 +134,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         val navigate: (Space) -> Unit = { selected = it }
         val content: @Composable (Modifier) -> Unit = { modifier ->
             SpaceContent(
+                dependencies = dependencies,
                 selected = selected,
                 onNavigate = navigate,
                 accountSession = accountSession,
@@ -154,6 +155,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
 
 @Composable
 private fun SpaceContent(
+    dependencies: AppDependencies,
     selected: Space,
     onNavigate: (Space) -> Unit,
     accountSession: AccountSession,
@@ -167,7 +169,7 @@ private fun SpaceContent(
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, windowClass, modifier)
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier)
-        Space.MESSAGES -> MessagesScreen(windowClass, modifier)
+        Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, windowClass, modifier)
         Space.REVENDICATIONS -> RevendicationsScreen(contentLibrary, windowClass, modifier)
         else -> PlaceholderScreen(sectionFor(selected), windowClass, widthDp, heightDp, modifier)
     }

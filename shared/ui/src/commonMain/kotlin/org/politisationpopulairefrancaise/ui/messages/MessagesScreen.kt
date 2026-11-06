@@ -31,6 +31,9 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.WindowClass
+import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.account.AccountSession
+import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -74,7 +77,13 @@ enum class MessagesView(val id: String, val tab: StringResource, val title: Stri
  * encryption protocol is chosen (brainstorming of the cahier des charges).
  */
 @Composable
-fun MessagesScreen(windowClass: WindowClass, modifier: Modifier = Modifier) {
+fun MessagesScreen(
+    dependencies: AppDependencies,
+    session: AccountSession,
+    library: ContentLibrary,
+    windowClass: WindowClass,
+    modifier: Modifier = Modifier,
+) {
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val views = MessagesView.entries
@@ -105,9 +114,9 @@ fun MessagesScreen(windowClass: WindowClass, modifier: Modifier = Modifier) {
         }
         HorizontalPager(state = pagerState, modifier = Modifier.fillMaxSize(), key = { views[it].id }) { page ->
             when (views[page]) {
-                MessagesView.PRIVATE -> PrivatePage(compact)
-                MessagesView.COLLECTIVES -> CollectivesPage(compact)
-                MessagesView.FLOWS -> FlowsPage(compact)
+                MessagesView.PRIVATE -> PrivatePage(dependencies, session, compact)
+                MessagesView.COLLECTIVES -> CollectivesPage(dependencies, session, compact)
+                MessagesView.FLOWS -> FlowsPage(dependencies, session, library, compact)
             }
         }
     }
