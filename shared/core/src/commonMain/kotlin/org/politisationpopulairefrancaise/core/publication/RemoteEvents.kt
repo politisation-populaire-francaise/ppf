@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.core.publication
 
+import org.politisationpopulairefrancaise.core.groups.Group
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 
 /** What to fetch from a remote source of events. */
@@ -40,9 +41,26 @@ sealed interface FetchResult {
     data class Unavailable(val cause: Throwable? = null) : FetchResult
 }
 
+/** The directory of rooms (NIP-29 groups) of a remote source. */
+sealed interface GroupsResult {
+    /** The rooms matching the request, sorted by name. */
+    data class Groups(val groups: List<Group>) : GroupsResult
+
+    data class Unavailable(val cause: Throwable? = null) : GroupsResult
+}
+
 /** A publication destination that can also be read: the server now, Nostr relays later. */
 interface RemoteEvents : PublicationPort {
     suspend fun fetch(filter: RemoteFilter): FetchResult
+
+    /**
+     * The rooms this source knows (`GET /api/v1/groups` on the server), sorted by name, at most
+     * [limit] of them (the server serves 500 at most). [query] narrows to rooms whose name or
+     * description contains the text, [territory] to one territory. Sources without a directory of
+     * rooms answer [GroupsResult.Unavailable].
+     */
+    suspend fun fetchGroups(query: String? = null, territory: String? = null, limit: Int = 100): GroupsResult =
+        GroupsResult.Unavailable(UnsupportedOperationException("This source has no directory of rooms"))
 
     /**
      * Like [fetch], restricted to events carrying tags: several values for one tag name match any

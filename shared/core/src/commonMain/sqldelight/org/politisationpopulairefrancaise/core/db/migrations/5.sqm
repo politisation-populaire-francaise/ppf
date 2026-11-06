@@ -1,0 +1,8 @@
+-- Schema version 5 to 6 (2026-11-06): the rooms of collectives the user joined, kept on the device
+-- only (see Groups.sq, which is the reference for fresh installations; this file must stay identical
+-- to its CREATE statement).
+
+CREATE TABLE group_membership (
+    group_id TEXT NOT NULL PRIMARY KEY,
+    joined_at INTEGER NOT NULL
+);

@@ -14,6 +14,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.groups.Group
 import org.politisationpopulairefrancaise.core.revendications.ProposalState
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSource
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatuses
@@ -21,8 +22,9 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 
 /**
  * The phase 1 adapter of the publication port: the platform's own server, through its signed-events
- * API (POST and GET /api/v1/events). Network failures become [PublicationResult.Unavailable] or
- * [FetchResult.Unavailable] so that callers keep the event and retry later.
+ * API (POST and GET /api/v1/events, GET /api/v1/groups). Network failures become
+ * [PublicationResult.Unavailable], [FetchResult.Unavailable] or [GroupsResult.Unavailable] so that
+ * callers keep the event and retry later.
  */
 class ServerPublicationPort(
     private val client: HttpClient,
@@ -48,11 +50,7 @@ class ServerPublicationPort(
             // Rate limited: not a refusal of this event, keep it and retry after the delay the server gives.
             429 -> PublicationResult.Unavailable(ServerException(429, response.headers["Retry-After"]?.trim()?.toLongOrNull()))
             in 500..599 -> PublicationResult.Unavailable(ServerException(response.status.value))
-            else -> {
-                val error = runCatching { json.decodeFromString(ApiErrorBody.serializer(), response.bodyAsText()) }.getOrNull()
-                val reason = if (error?.error == "invalid_signature") RejectionReason.INVALID_SIGNATURE else RejectionReason.REFUSED
-                PublicationResult.Rejected(event.id, reason)
-            }
+            else -> rejection(event.id, runCatching { response.bodyAsText() }.getOrNull())
         }
     }
 
@@ -105,6 +103,30 @@ class ServerPublicationPort(
         }
     }
 
+    /** `GET /api/v1/groups?q=…&territory=…&limit=…`: the rooms of collectives known to the server. */
+    override suspend fun fetchGroups(query: String?, territory: String?, limit: Int): GroupsResult {
+        val response: HttpResponse = try {
+            client.get("$baseUrl/api/v1/groups") {
+                query?.trim()?.takeIf { it.isNotEmpty() }?.let { parameter("q", it) }
+                territory?.trim()?.takeIf { it.isNotEmpty() }?.let { parameter("territory", it) }
+                parameter("limit", limit)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return GroupsResult.Unavailable(e)
+        }
+        if (response.status.value !in 200..299) return GroupsResult.Unavailable(ServerException(response.status.value))
+        val groups = try {
+            parseGroups(response.bodyAsText())
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return GroupsResult.Unavailable(e)
+        }
+        return GroupsResult.Groups(groups)
+    }
+
     private fun HttpRequestBuilder.applyFilter(filter: RemoteFilter) {
         filter.kinds.forEach { parameter("kind", it) }
         filter.authors.forEach { parameter("author", it) }
@@ -118,9 +140,64 @@ class ServerPublicationPort(
     class ServerException(val status: Int, val retryAfterSeconds: Long? = null) : RuntimeException("Server answered $status")
 
     @Serializable
-    private data class ApiErrorBody(val error: String, val message: String = "")
+    private data class ApiErrorBody(val error: String, val message: String = "", val existing: String? = null)
 
-    private companion object {
-        val json = Json { ignoreUnknownKeys = true }
+    /** One entry of `GET /api/v1/groups`. */
+    @Serializable
+    private data class GroupBody(
+        val id: String,
+        val name: String,
+        val about: String? = null,
+        val picture: String? = null,
+        val territory: String? = null,
+        val charter: String? = null,
+        val public: Boolean = true,
+        val open: Boolean = true,
+        val event: SignedEvent,
+    )
+
+    companion object {
+        private val json = Json { ignoreUnknownKeys = true }
+
+        /** The error codes of the server (docs/FORMATS.md, section 5) as reasons the caller can act on. */
+        internal fun rejectionReason(code: String?): RejectionReason = when (code) {
+            "invalid_signature" -> RejectionReason.INVALID_SIGNATURE
+            "group_exists" -> RejectionReason.GROUP_EXISTS
+            "group_taken" -> RejectionReason.GROUP_TAKEN
+            "group_closed" -> RejectionReason.GROUP_CLOSED
+            "group_not_found" -> RejectionReason.GROUP_NOT_FOUND
+            "missing_territory" -> RejectionReason.MISSING_TERRITORY
+            "missing_charter" -> RejectionReason.MISSING_CHARTER
+            "missing_name" -> RejectionReason.MISSING_NAME
+            else -> RejectionReason.REFUSED
+        }
+
+        /**
+         * A definitive refusal (a 4xx answer) from its body, `{"error":…,"message":…,"existing":…}`:
+         * the reason and, for `group_exists` and `group_taken`, the room it points at. A body that is
+         * missing or unreadable is a plain refusal. Separate from the HTTP call so that tests can
+         * cover it without a mock engine.
+         */
+        internal fun rejection(eventId: String, body: String?): PublicationResult.Rejected {
+            val error = body?.let { runCatching { json.decodeFromString(ApiErrorBody.serializer(), it) }.getOrNull() }
+            val existing = error?.existing?.takeIf { Group.isValidId(it) }
+            return PublicationResult.Rejected(eventId, rejectionReason(error?.error), existing)
+        }
+
+        /** The body of `GET /api/v1/groups` as rooms. Separate from the HTTP call so that tests can cover it without a mock engine. */
+        internal fun parseGroups(body: String): List<Group> =
+            json.decodeFromString(ListSerializer(GroupBody.serializer()), body).map {
+                Group(
+                    id = it.id,
+                    name = it.name,
+                    about = it.about,
+                    picture = it.picture,
+                    territory = it.territory,
+                    charter = it.charter,
+                    public = it.public,
+                    open = it.open,
+                    event = it.event,
+                )
+            }
     }
 }
