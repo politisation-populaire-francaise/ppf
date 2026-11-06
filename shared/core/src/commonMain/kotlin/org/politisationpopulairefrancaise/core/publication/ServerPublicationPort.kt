@@ -142,11 +142,11 @@ class ServerPublicationPort(
     @Serializable
     private data class ApiErrorBody(val error: String, val message: String = "", val existing: String? = null)
 
-    /** One entry of `GET /api/v1/groups`. */
+    /** One entry of `GET /api/v1/groups`; a description without a name falls back to its id. */
     @Serializable
     private data class GroupBody(
         val id: String,
-        val name: String,
+        val name: String? = null,
         val about: String? = null,
         val picture: String? = null,
         val territory: String? = null,
@@ -169,6 +169,7 @@ class ServerPublicationPort(
             "missing_territory" -> RejectionReason.MISSING_TERRITORY
             "missing_charter" -> RejectionReason.MISSING_CHARTER
             "missing_name" -> RejectionReason.MISSING_NAME
+            "description_too_long" -> RejectionReason.DESCRIPTION_TOO_LONG
             else -> RejectionReason.REFUSED
         }
 
@@ -189,7 +190,7 @@ class ServerPublicationPort(
             json.decodeFromString(ListSerializer(GroupBody.serializer()), body).map {
                 Group(
                     id = it.id,
-                    name = it.name,
+                    name = it.name?.takeIf { name -> name.isNotBlank() } ?: it.id,
                     about = it.about,
                     picture = it.picture,
                     territory = it.territory,

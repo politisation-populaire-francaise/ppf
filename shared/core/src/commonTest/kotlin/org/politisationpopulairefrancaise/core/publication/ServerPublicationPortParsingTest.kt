@@ -22,6 +22,7 @@ class ServerPublicationPortParsingTest {
         assertEquals(RejectionReason.MISSING_TERRITORY, ServerPublicationPort.rejectionReason("missing_territory"))
         assertEquals(RejectionReason.MISSING_CHARTER, ServerPublicationPort.rejectionReason("missing_charter"))
         assertEquals(RejectionReason.MISSING_NAME, ServerPublicationPort.rejectionReason("missing_name"))
+        assertEquals(RejectionReason.DESCRIPTION_TOO_LONG, ServerPublicationPort.rejectionReason("description_too_long"))
         assertEquals(RejectionReason.REFUSED, ServerPublicationPort.rejectionReason("not_allowed"))
         assertEquals(RejectionReason.REFUSED, ServerPublicationPort.rejectionReason(null))
     }
@@ -55,10 +56,15 @@ class ServerPublicationPortParsingTest {
         val body = """
             [{"id":"collectif-demonstration","name":"[EXEMPLE] Collectif de démonstration","about":"Essai","picture":null,
               "territory":"Lyon","charter":"1.0","public":true,"open":true,"unknown_field":1,"event":${event.toJson()}},
-             {"id":"ferme","name":"Fermé","about":null,"picture":null,"territory":null,"charter":null,"public":true,"open":false,"event":${event.toJson()}}]
+             {"id":"ferme","name":"Fermé","about":null,"picture":null,"territory":null,"charter":null,"public":true,"open":false,"event":${event.toJson()}},
+             {"id":"sans-nom","name":null,"territory":"Paris","event":${event.toJson()}},
+             {"id":"sans-nom-du-tout","event":${event.toJson()}}]
         """.trimIndent()
         val groups = ServerPublicationPort.parseGroups(body)
-        assertEquals(2, groups.size)
+        assertEquals(4, groups.size)
+        // A description without a name never breaks the list: its id stands for the name.
+        assertEquals("sans-nom", groups[2].name)
+        assertEquals("sans-nom-du-tout", groups[3].name)
         val first = groups[0]
         assertEquals("collectif-demonstration", first.id)
         assertEquals("[EXEMPLE] Collectif de démonstration", first.name)

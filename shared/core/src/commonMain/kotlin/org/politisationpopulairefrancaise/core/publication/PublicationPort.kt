@@ -62,6 +62,9 @@ enum class RejectionReason {
 
     /** A room description without a `name`. */
     MISSING_NAME,
+
+    /** A room description too large (over 8 KiB), or a name or territory over 100 characters. */
+    DESCRIPTION_TOO_LONG,
 }
 
 /**
