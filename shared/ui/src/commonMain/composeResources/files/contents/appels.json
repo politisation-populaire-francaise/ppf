@@ -1,0 +1,542 @@
+[
+    {
+        "id": "943df19bcc77d31a79d0b4ea3c4628fbcc246577424a1221c6ac7cf3cf4c31e5",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793779200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "assemblee-loyers-tilleuls"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Assemblée de quartier sur la hausse des loyers"
+            ],
+            [
+                "ppf-type",
+                "appel"
+            ],
+            [
+                "ppf-call-type",
+                "se-reunir"
+            ],
+            [
+                "ppf-territory",
+                "Villeurbanne"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "published_at",
+                "1793779200"
+            ],
+            [
+                "ppf-call-status",
+                "ouvert"
+            ],
+            [
+                "summary",
+                "Une soirée pour faire le point sur les hausses de loyer et décider ensemble de la suite."
+            ],
+            [
+                "start",
+                "1794677400"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Salle polyvalente du quartier des Tilleuls (lieu fictif), Villeurbanne"
+            ],
+            [
+                "ppf-object",
+                "Recenser les hausses de loyer et préparer une lettre commune aux bailleurs"
+            ],
+            [
+                "ppf-organizer",
+                "[EXEMPLE] Collectif fictif des locataires des Tilleuls"
+            ],
+            [
+                "ppf-accessibility",
+                "Salle de plain-pied, accessible en fauteuil roulant, toilettes adaptées"
+            ]
+        ],
+        "content": "Plusieurs familles du quartier ont reçu cet automne une hausse de loyer importante.\n\nNous proposons une assemblée ouverte à toutes et à tous, locataires ou non : chacun peut venir avec sa quittance (en cachant son nom), raconter ce qui lui arrive et proposer des idées.\n\nÀ la fin de la soirée, nous déciderons ensemble d'une lettre commune et des prochaines étapes.\n\nCet appel d'exemple sert uniquement à montrer un appel « se réunir ».",
+        "sig": "53c9db2978f7291cb3ccd395f1de7e0fdb5dc10f70e8fdaaa2258fd34461c90524c788f9c798733164de071cbc227dea31843b5ed9901d36e5c98fe821fb8bfa"
+    },
+    {
+        "id": "69e5e0e952c8882ab82d22462374f993fe180e4e2604ce6c745d936a54d74ccd",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793541600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "benevoles-aide-aux-devoirs"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Bénévoles pour l'aide aux devoirs du mercredi"
+            ],
+            [
+                "ppf-type",
+                "appel"
+            ],
+            [
+                "ppf-call-type",
+                "benevoles"
+            ],
+            [
+                "ppf-territory",
+                "Roubaix"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "published_at",
+                "1793541600"
+            ],
+            [
+                "ppf-call-status",
+                "ouvert"
+            ],
+            [
+                "summary",
+                "Une heure et demie par semaine pour aider des collégiens à faire leurs devoirs."
+            ],
+            [
+                "ppf-deadline",
+                "1797807540"
+            ],
+            [
+                "location",
+                "Maison de quartier des Glycines (lieu fictif), Roubaix"
+            ],
+            [
+                "ppf-mission",
+                "Accompagner des collégiens pendant leurs devoirs le mercredi de 14 h à 15 h 30"
+            ],
+            [
+                "ppf-skills",
+                "Patience et bienveillance ; aucun diplôme demandé"
+            ],
+            [
+                "ppf-people",
+                "6"
+            ],
+            [
+                "ppf-period",
+                "De janvier à juin 2027"
+            ]
+        ],
+        "content": "La maison de quartier accueille chaque mercredi une vingtaine de collégiens pour leurs devoirs. Il manque des adultes pour les accompagner.\n\nPas besoin d'être enseignant : il suffit d'aimer transmettre et de pouvoir venir régulièrement. Une courte rencontre de présentation aura lieu début janvier.\n\nCet appel d'exemple sert uniquement à montrer un appel « chercher des bénévoles ».",
+        "sig": "d0fe35120d16094229292abfe785b37a64f15e48591f5874e355352ecf81bc066a0ee2457fccbbc3d9ee20c7f7f7549bf3e588ef291a6bed9dedc0fb7bde5da7"
+    },
+    {
+        "id": "876137066954fff913a82a0676567fbf7b16d94c37ad9e47c90d532d848bb85c",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793872800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "information-rapport-qualite-eau"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Faire connaître le rapport public sur la qualité de l'eau"
+            ],
+            [
+                "ppf-type",
+                "appel"
+            ],
+            [
+                "ppf-call-type",
+                "information"
+            ],
+            [
+                "ppf-territory",
+                "Bretagne"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "published_at",
+                "1793872800"
+            ],
+            [
+                "ppf-call-status",
+                "ouvert"
+            ],
+            [
+                "summary",
+                "Le rapport annuel sur l'eau potable est public mais peu lu : partageons-le avec ses chiffres clés."
+            ],
+            [
+                "ppf-source",
+                "https://example.org/rapport-qualite-eau-2026"
+            ]
+        ],
+        "content": "Chaque année, un rapport public présente la qualité de l'eau du robinet commune par commune. Il est consultable par tous, mais peu de gens savent qu'il existe.\n\nPartagez-le autour de vous, en citant toujours la source et sans déformer les chiffres. Si un chiffre vous étonne, posez la question à votre mairie plutôt que de tirer des conclusions hâtives.\n\nLe lien mène à une page d'exemple (example.org), réservée à la documentation.\n\nCet appel d'exemple sert uniquement à montrer un appel « faire circuler une information ».",
+        "sig": "c1f13962bf7657af5485c92dfd4f6581137eb769eb012b2fd9f012a346f122fd68b3875724af614ccedc3cab5a3e10b51acd504fff24e75a55a9b9730063d022"
+    },
+    {
+        "id": "2b46390b490cb3b20305afb50ced83e0323ddfd6006ee2600af2fa1c637ed568",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793894400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "interpeller-budget-transports-scolaires"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Écrire aux conseillers départementaux avant le vote du budget"
+            ],
+            [
+                "ppf-type",
+                "appel"
+            ],
+            [
+                "ppf-call-type",
+                "interpeller"
+            ],
+            [
+                "ppf-territory",
+                "Gironde"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "published_at",
+                "1793894400"
+            ],
+            [
+                "ppf-call-status",
+                "ouvert"
+            ],
+            [
+                "summary",
+                "Demander le maintien des cars scolaires des petites communes dans le budget 2027."
+            ],
+            [
+                "ppf-deadline",
+                "1796889600"
+            ],
+            [
+                "ppf-targets",
+                "Les conseillers départementaux de notre canton"
+            ],
+            [
+                "ppf-request",
+                "Maintenir dans le budget 2027 les lignes de cars scolaires des communes de moins de 500 habitants"
+            ]
+        ],
+        "content": "Dans cet exemple fictif, le projet de budget prévoit de regrouper plusieurs lignes de cars scolaires. Pour des dizaines d'enfants, le trajet du matin passerait à plus d'une heure.\n\nAvant le vote, écrivons poliment à nos conseillers départementaux, par le formulaire de contact du département ou par courrier : une lettre courte, avec le nom de votre commune et la durée du trajet de vos enfants.\n\nRestez courtois : une lettre respectueuse est toujours plus efficace.\n\nCet appel d'exemple sert uniquement à montrer un appel « interpeller des élus ».",
+        "sig": "e77051c8974f35b933e5e230716c5fcd46454fd1fdd19783b6178e3d0ed723e2df0ed48423e0a8b5760426132f8c74c61d5e2d40c16c1aa9521d9894ca7749ba"
+    },
+    {
+        "id": "32e4ba640adc28619c136b49ea9234ac849d590a310d91e50267f6a0c7820f54",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793862000,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "marche-hopital-proximite"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Marche pour garder les urgences de l'hôpital de proximité"
+            ],
+            [
+                "ppf-type",
+                "appel"
+            ],
+            [
+                "ppf-call-type",
+                "manifester"
+            ],
+            [
+                "ppf-territory",
+                "Nord"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "published_at",
+                "1793703600"
+            ],
+            [
+                "ppf-call-status",
+                "ouvert"
+            ],
+            [
+                "summary",
+                "Une marche familiale et pacifique pour le maintien des urgences ouvertes la nuit."
+            ],
+            [
+                "start",
+                "1795266000"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Parvis de la gare de Villeneuve-sur-Fictive (lieu fictif)"
+            ],
+            [
+                "ppf-organizer",
+                "[EXEMPLE] Intersyndicale fictive de l'hôpital"
+            ],
+            [
+                "ppf-declaration",
+                "faite"
+            ]
+        ],
+        "content": "Dans cet exemple fictif, les urgences de nuit de l'hôpital de Villeneuve-sur-Fictive doivent fermer au printemps. Pour beaucoup d'habitants, l'hôpital suivant est à plus de quarante minutes.\n\nParcours prévu : départ du parvis de la gare, passage par le centre-ville, arrivée devant l'hôpital vers 16 h. Le parcours a été déclaré en préfecture.\n\nMarche familiale et pacifique : venez avec vos proches, vos pancartes et de bonnes chaussures.\n\nCet appel d'exemple sert uniquement à montrer un appel « manifester ».",
+        "sig": "ba8510e5fd84a119ec239f85a8b233f38035bbe7b8c696740776b33b9a1da2b6beff66e41f584814f6ac72f97484054a305cc13f05ef65ee1ff29a1be271ec0d"
+    },
+    {
+        "id": "5b48da4b3f97ecd7a3487651421d0707cc8a928030f9f795c0665a30ccd43e77",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793610000,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-bureau-de-poste"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Signer la pétition pour garder le bureau de poste du village"
+            ],
+            [
+                "ppf-type",
+                "appel"
+            ],
+            [
+                "ppf-call-type",
+                "petition"
+            ],
+            [
+                "ppf-territory",
+                "Creuse"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "published_at",
+                "1793610000"
+            ],
+            [
+                "ppf-call-status",
+                "ouvert"
+            ],
+            [
+                "summary",
+                "Le bureau de poste doit fermer en janvier : la pétition demande son maintien au moins trois matinées par semaine."
+            ],
+            [
+                "ppf-goal",
+                "1000"
+            ],
+            [
+                "ppf-deadline",
+                "1797375540"
+            ],
+            [
+                "r",
+                "https://example.org/petition-bureau-de-poste"
+            ],
+            [
+                "ppf-platform",
+                "autre"
+            ]
+        ],
+        "content": "Dans cet exemple fictif, le bureau de poste du village est le dernier service public ouvert en semaine. Les personnes âgées et celles qui n'ont pas de voiture y retirent leurs colis, leur argent et leurs recommandés.\n\nLa pétition demande son maintien au moins trois matinées par semaine. Elle sera remise à la direction régionale à la mi-décembre.\n\nLe lien mène à une page d'exemple (example.org), réservée à la documentation.\n\nCet appel d'exemple sert uniquement à montrer un appel « signer une pétition ».",
+        "sig": "f90a3a58aa11676c84718e8797e3b44a5220ebab000ee46d6a7120b36e812e38f0ed6398da3abca66883b717a81a40dedf2393b7a3c2326bc9d0550230ac7225"
+    },
+    {
+        "id": "6099bb520f7c5310501b4f599e93ff2a9fc6031c7f1caabdceb0b725adbc2f37",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793638800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "soutien-salaries-cantine-centrale"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Soutenir les salariés de la cantine centrale"
+            ],
+            [
+                "ppf-type",
+                "appel"
+            ],
+            [
+                "ppf-call-type",
+                "soutenir"
+            ],
+            [
+                "ppf-territory",
+                "Loire"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "published_at",
+                "1791187200"
+            ],
+            [
+                "summary",
+                "Écrire à la direction pour que les postes de la cantine centrale soient maintenus."
+            ],
+            [
+                "ppf-deadline",
+                "1793401140"
+            ],
+            [
+                "ppf-cause",
+                "Le maintien des douze postes de la cantine centrale qui prépare les repas des écoles"
+            ],
+            [
+                "ppf-action",
+                "Envoyer un message court et poli à la direction avant la réunion du 30 octobre"
+            ],
+            [
+                "ppf-call-status",
+                "clos"
+            ],
+            [
+                "ppf-report",
+                "[EXEMPLE] 320 personnes ont écrit à la direction. Les douze postes sont maintenus au moins jusqu'en juin 2027 ; une réunion de suivi est prévue au printemps."
+            ]
+        ],
+        "content": "Dans cet exemple fictif, la cantine centrale de Villeneuve-sur-Fictive prépare chaque jour les repas des écoles de la ville. Un projet prévoyait de supprimer douze postes et de faire venir les repas de loin.\n\nPour soutenir les salariés, écrivez un message court et poli à la direction avant la réunion du 30 octobre : dites ce que la cantine représente pour vos enfants.\n\nCet appel d'exemple sert uniquement à montrer un appel clos et son bilan.",
+        "sig": "3f543bc8f56c5a20feba4077957933dc420590893669272762127cf18bc1fd5a7b46296021a69f41187138cba13d7f4370cb889e20e357b6a541e48457517a3e"
+    },
+    {
+        "id": "c3166c7dd84caef8facfd7f651ed86c5fa72ba86e451f1598572ccf4d2b434fb",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793689200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "temoins-rassemblement-mairie"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Appel à témoins : dispersion du rassemblement devant la mairie"
+            ],
+            [
+                "ppf-type",
+                "appel"
+            ],
+            [
+                "ppf-call-type",
+                "temoins"
+            ],
+            [
+                "ppf-territory",
+                "Loire-Atlantique"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "published_at",
+                "1793689200"
+            ],
+            [
+                "ppf-call-status",
+                "ouvert"
+            ],
+            [
+                "summary",
+                "Nous cherchons des images et des récits pour reconstituer le déroulé de la dispersion."
+            ],
+            [
+                "start",
+                "1793462400"
+            ],
+            [
+                "end",
+                "1793469600"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Parvis de la mairie de Villeneuve-sur-Fictive (lieu fictif)"
+            ],
+            [
+                "ppf-evidence",
+                "Photos, vidéos, récits écrits"
+            ],
+            [
+                "ppf-recipient",
+                "[EXEMPLE] Legal team fictive du collectif"
+            ]
+        ],
+        "content": "Dans cet exemple fictif, le samedi 31 octobre, entre 17 h et 19 h, un rassemblement déclaré s'est tenu devant la mairie. Au moment de la dispersion, plusieurs personnes ont été bousculées et deux ont dû être soignées sur place.\n\nNous cherchons des images et des récits pour reconstituer précisément le déroulé : l'heure, l'endroit, ce que vous avez vu. Nous ne cherchons pas de coupables : seulement des faits.\n\nLes témoignages seront reçus par le canal sécurisé de la plateforme, vérifiés et anonymisés avant toute publication.\n\nCet appel d'exemple sert uniquement à montrer un appel à témoins.",
+        "sig": "35507c49f465188d0ff6767e5073643a4d67206a91a61681d5de76d53c8138b89e9a0b89f154a7cbb291882465a4eca9e69fc068340844312b4081c5ffbe6d7c"
+    }
+]
