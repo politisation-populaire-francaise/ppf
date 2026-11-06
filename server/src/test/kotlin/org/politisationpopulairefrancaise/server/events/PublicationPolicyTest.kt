@@ -7,6 +7,7 @@ import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.sign
 import org.politisationpopulairefrancaise.server.groups.GroupKinds
+import org.politisationpopulairefrancaise.server.relay.MailboxSettings
 import org.politisationpopulairefrancaise.server.relay.RelayKinds
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -108,5 +109,19 @@ class PublicationPolicyTest {
         val oneTimeKey = LocalEventSigner(IdentityKeys.generate())
         val wrap = oneTimeKey.sign(kind = RelayKinds.GIFT_WRAP, content = "opaque", tags = listOf(listOf("p", citizen.publicKey.hex)))
         assertEquals(PublicationPolicy.Decision.Allowed, policy.check(wrap))
+    }
+
+    @Test
+    fun applicationDataIsAcceptedFromAnyKeyIncludingTheMailboxSettings() = runBlocking {
+        val policy = PublicationPolicy(emptySet())
+        val signer = LocalEventSigner(citizen)
+        val mailbox = signer.sign(
+            kind = MailboxSettings.KIND,
+            tags = listOf(listOf("d", MailboxSettings.IDENTIFIER), listOf(MailboxSettings.RETENTION_DAYS_TAG, "180")),
+        )
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(mailbox))
+        // Kind 30078 is a standard kind (NIP-78): other identifiers pass too, the server simply ignores them.
+        val other = signer.sign(kind = RelayKinds.APPLICATION_DATA, content = "{}", tags = listOf(listOf("d", "some-other-app")))
+        assertEquals(PublicationPolicy.Decision.Allowed, policy.check(other))
     }
 }
