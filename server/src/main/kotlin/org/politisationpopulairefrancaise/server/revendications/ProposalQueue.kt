@@ -3,6 +3,8 @@ package org.politisationpopulairefrancaise.server.revendications
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
+import org.politisationpopulairefrancaise.core.revendications.ProposalStatus
+import org.politisationpopulairefrancaise.core.revendications.checks.DemandText
 import org.politisationpopulairefrancaise.core.revendications.checks.ProposalReport
 import org.politisationpopulairefrancaise.core.signing.EventReplacement
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -11,6 +13,7 @@ import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.StoreOutcome
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
 import java.sql.Connection
+import java.sql.PreparedStatement
 import java.sql.ResultSet
 import java.time.Clock
 import java.time.Instant
@@ -18,16 +21,8 @@ import java.time.OffsetDateTime
 import java.time.ZoneOffset
 import javax.sql.DataSource
 
-enum class ProposalStatus(val value: String) {
-    PENDING("pending"),
-    APPROVED("approved"),
-    REJECTED("rejected"),
-    ;
-
-    companion object {
-        fun of(value: String): ProposalStatus = entries.first { it.value == value }
-    }
-}
+/** The value of the status column (V3__revendication_proposals.sql), the serial name of [ProposalStatus]. */
+val ProposalStatus.column: String get() = name.lowercase()
 
 /** A proposal as the queue keeps it (table revendication_proposal). */
 data class Proposal(
@@ -91,7 +86,8 @@ class ProposalQueue(
     /**
      * Queues [event], already verified and checked by the rules, unless the limits refuse it.
      * [budget] is asked for a token only when the proposal is about to be stored, and refunded if
-     * storing fails. A lock per author key makes the counts exact under concurrent requests.
+     * storing fails. Locks (one per author key, one for the whole queue when a new address comes
+     * in) make the counts exact under concurrent requests.
      */
     fun submit(event: SignedEvent, identifier: String, maxPendingPerKey: Int, maxPending: Int, budget: PeriodBudget): SubmitOutcome {
         var spent = false
@@ -113,15 +109,12 @@ class ProposalQueue(
         budget: PeriodBudget,
         onSpent: () -> Unit,
     ): SubmitOutcome {
-        connection.prepareStatement("SELECT pg_advisory_xact_lock(hashtextextended(?, 0))").use { lock ->
-            lock.setString(1, "revendication_proposal:${event.pubkey}")
-            lock.executeQuery().close()
-        }
+        lock(connection, "revendication_proposal:${event.pubkey}")
         connection.prepareStatement("SELECT status FROM revendication_proposal WHERE id = ?").use { statement ->
             statement.setString(1, event.id)
             val rows = statement.executeQuery()
             if (rows.next()) {
-                return when (ProposalStatus.of(rows.getString(1))) {
+                return when (statusOf(rows.getString(1))) {
                     ProposalStatus.PENDING -> SubmitOutcome.AlreadyPending
                     ProposalStatus.APPROVED -> SubmitOutcome.AlreadyApproved
                     ProposalStatus.REJECTED -> SubmitOutcome.AlreadyRejected
@@ -149,6 +142,8 @@ class ProposalQueue(
         }
         if (previous == null) {
             if (countPending(connection, event.pubkey) >= maxPendingPerKey) return SubmitOutcome.TooManyPendingForKey
+            // Taken after the lock of the key, always in this order: no deadlock.
+            lock(connection, GLOBAL_LOCK)
             if (countPending(connection, null) >= maxPending) return SubmitOutcome.QueueFull
         }
         when (val token = budget.tryAcquire(event.pubkey)) {
@@ -162,17 +157,29 @@ class ProposalQueue(
             }
         }
         connection.prepareStatement(
-            "INSERT INTO revendication_proposal (id, pubkey, identifier, created_at, event, status, received_at) VALUES (?, ?, ?, ?, ?, 'pending', ?)",
+            """
+            INSERT INTO revendication_proposal (id, pubkey, identifier, created_at, event, tags, status, received_at)
+            VALUES (?, ?, ?, ?, ?, ?::jsonb, 'pending', ?)
+            """.trimIndent(),
         ).use { insert ->
             insert.setString(1, event.id)
             insert.setString(2, event.pubkey)
             insert.setString(3, identifier)
             insert.setLong(4, event.createdAt)
             insert.setString(5, event.toJson())
-            insert.setObject(6, now())
+            insert.setString(6, TagsJson.encode(event.tags))
+            insert.setObject(7, now())
             insert.executeUpdate()
         }
         return SubmitOutcome.Queued(previous?.first)
+    }
+
+    /** A lock held until the end of the transaction. */
+    private fun lock(connection: Connection, name: String) {
+        connection.prepareStatement("SELECT pg_advisory_xact_lock(hashtextextended(?, 0))").use { lock ->
+            lock.setString(1, name)
+            lock.executeQuery().close()
+        }
     }
 
     private fun countPending(connection: Connection, pubkey: String?): Int {
@@ -198,7 +205,7 @@ class ProposalQueue(
         if (ids.isEmpty()) return emptyList()
         return dataSource.connection.use { connection ->
             connection.prepareStatement("$SELECT WHERE id = ANY(?)").use { statement ->
-                statement.setArray(1, connection.createArrayOf("text", ids.toTypedArray()))
+                statement.setArray(1, connection.createArrayOf("text", ids.distinct().toTypedArray()))
                 val rows = statement.executeQuery()
                 buildList { while (rows.next()) add(rows.toProposal()) }
             }
@@ -284,7 +291,7 @@ class ProposalQueue(
         connection.prepareStatement(
             "UPDATE revendication_proposal SET status = ?, decided_at = ?, decision_reason = ? WHERE id = ? AND status = 'pending'",
         ).use { statement ->
-            statement.setString(1, status.value)
+            statement.setString(1, status.column)
             statement.setObject(2, now())
             statement.setString(3, reason)
             statement.setString(4, id)
@@ -304,36 +311,57 @@ class ProposalQueue(
      * The published demands (kind 30023, `ppf-type` = revendication), newest first, at most
      * [limit], without their body: the duplicate check reads titles, summaries and territories only.
      */
-    fun publishedDemands(limit: Int = MAX_PUBLISHED_COMPARED): List<SignedEvent> = dataSource.connection.use { connection ->
-        connection.prepareStatement(
-            """
-            SELECT id, pubkey, created_at, kind, tags::text AS tags, sig FROM events e
-            WHERE kind = ? AND EXISTS (SELECT 1 FROM event_tags t WHERE t.event_id = e.id AND t.name = ? AND t.value = ?)
-            ORDER BY created_at DESC, id ASC LIMIT ?
-            """.trimIndent(),
-        ).use { statement ->
-            statement.setInt(1, Article.KIND)
-            statement.setString(2, Article.TAG_TYPE)
-            statement.setString(3, ArticleType.REVENDICATION.tagValue)
-            statement.setInt(4, limit.coerceAtLeast(1))
-            val rows = statement.executeQuery()
-            buildList {
-                while (rows.next()) {
-                    add(
-                        SignedEvent(
-                            id = rows.getString("id"),
-                            pubkey = rows.getString("pubkey"),
-                            createdAt = rows.getLong("created_at"),
-                            kind = rows.getInt("kind"),
-                            tags = TagsJson.decode(rows.getString("tags")),
-                            content = "",
-                            sig = rows.getString("sig"),
-                        ),
-                    )
-                }
+    fun publishedDemands(limit: Int = MAX_PUBLISHED_COMPARED): List<SignedEvent> =
+        publishedDemandEvents("ORDER BY created_at DESC, id ASC LIMIT ?") { _, statement, index -> statement.setInt(index, limit.coerceAtLeast(1)) }
+
+    /** The published demands at [addresses] (`kind:pubkey:d`), as they read now, by address. */
+    fun publishedDemandsAt(addresses: Collection<String>): Map<String, DemandText> {
+        if (addresses.isEmpty()) return emptyMap()
+        val wanted = addresses.distinct().toTypedArray()
+        return publishedDemandEvents("AND address = ANY(?)") { connection, statement, index -> statement.setArray(index, connection.createArrayOf("text", wanted)) }
+            .mapNotNull(Article::from).map(DemandText::of).associateBy { it.address }
+    }
+
+    /**
+     * Seconds since 1970 at which the published demands among [ids] reached the events table, by
+     * id: once its proposal is deleted, a published demand still answers "approved" to its author.
+     */
+    fun publishedDemandReceptions(ids: Collection<String>): Map<String, Long> {
+        if (ids.isEmpty()) return emptyMap()
+        return dataSource.connection.use { connection ->
+            connection.prepareStatement(
+                """
+                SELECT id, received_at FROM events e
+                WHERE id = ANY(?) AND kind = ? AND EXISTS (SELECT 1 FROM event_tags t WHERE t.event_id = e.id AND t.name = ? AND t.value = ?)
+                """.trimIndent(),
+            ).use { statement ->
+                statement.setArray(1, connection.createArrayOf("text", ids.distinct().toTypedArray()))
+                statement.setInt(2, Article.KIND)
+                statement.setString(3, Article.TAG_TYPE)
+                statement.setString(4, ArticleType.REVENDICATION.tagValue)
+                val rows = statement.executeQuery()
+                buildMap { while (rows.next()) put(rows.getString(1), rows.getObject(2, OffsetDateTime::class.java).toEpochSecond()) }
             }
         }
     }
+
+    private fun publishedDemandEvents(clause: String, bind: (Connection, PreparedStatement, Int) -> Unit): List<SignedEvent> =
+        dataSource.connection.use { connection ->
+            connection.prepareStatement(
+                """
+                SELECT id, pubkey, created_at, kind, tags::text AS tags, sig FROM events e
+                WHERE kind = ? AND EXISTS (SELECT 1 FROM event_tags t WHERE t.event_id = e.id AND t.name = ? AND t.value = ?)
+                $clause
+                """.trimIndent(),
+            ).use { statement ->
+                statement.setInt(1, Article.KIND)
+                statement.setString(2, Article.TAG_TYPE)
+                statement.setString(3, ArticleType.REVENDICATION.tagValue)
+                bind(connection, statement, 4)
+                val rows = statement.executeQuery()
+                buildList { while (rows.next()) add(rows.toBodilessEvent(rows.getInt("kind"), rows.getString("sig"))) }
+            }
+        }
 
     /**
      * The other pending proposals ([excluding] left out), oldest first, at most [limit], without
@@ -342,42 +370,27 @@ class ProposalQueue(
     fun pendingDemands(excluding: String, limit: Int = MAX_LISTED): List<SignedEvent> = dataSource.connection.use { connection ->
         connection.prepareStatement(
             """
-            SELECT id, pubkey, created_at, (event::jsonb -> 'tags')::text AS tags, event::jsonb ->> 'sig' AS sig FROM revendication_proposal
+            SELECT id, pubkey, created_at, tags::text AS tags FROM revendication_proposal
             WHERE status = 'pending' AND id <> ? ORDER BY received_at ASC, id ASC LIMIT ?
             """.trimIndent(),
         ).use { statement ->
             statement.setString(1, excluding)
             statement.setInt(2, limit.coerceIn(1, MAX_LISTED))
             val rows = statement.executeQuery()
-            buildList {
-                while (rows.next()) {
-                    add(
-                        SignedEvent(
-                            id = rows.getString("id"),
-                            pubkey = rows.getString("pubkey"),
-                            createdAt = rows.getLong("created_at"),
-                            kind = Article.KIND,
-                            tags = TagsJson.decode(rows.getString("tags")),
-                            content = "",
-                            sig = rows.getString("sig"),
-                        ),
-                    )
-                }
-            }
+            // Only read for their tags: no signature needed.
+            buildList { while (rows.next()) add(rows.toBodilessEvent(Article.KIND, sig = "")) }
         }
     }
 
-    /** Which of [addresses] (`kind:pubkey:d`) are published in the events table. */
-    fun publishedAddresses(addresses: Collection<String>): Set<String> {
-        if (addresses.isEmpty()) return emptySet()
-        return dataSource.connection.use { connection ->
-            connection.prepareStatement("SELECT address FROM events WHERE address = ANY(?)").use { statement ->
-                statement.setArray(1, connection.createArrayOf("text", addresses.distinct().toTypedArray()))
-                val rows = statement.executeQuery()
-                buildSet { while (rows.next()) add(rows.getString(1)) }
-            }
-        }
-    }
+    private fun ResultSet.toBodilessEvent(kind: Int, sig: String): SignedEvent = SignedEvent(
+        id = getString("id"),
+        pubkey = getString("pubkey"),
+        createdAt = getLong("created_at"),
+        kind = kind,
+        tags = TagsJson.decode(getString("tags")),
+        content = "",
+        sig = sig,
+    )
 
     private fun now(): OffsetDateTime = clock.instant().atOffset(ZoneOffset.UTC)
 
@@ -398,7 +411,7 @@ class ProposalQueue(
     private fun ResultSet.toProposal(): Proposal = Proposal(
         id = getString("id"),
         event = SignedEvent.fromJson(getString("event")),
-        status = ProposalStatus.of(getString("status")),
+        status = statusOf(getString("status")),
         report = getString("report")?.let { reportJson.decodeFromString(ProposalReport.serializer(), it) },
         receivedAt = getObject("received_at", OffsetDateTime::class.java).toEpochSecond(),
         decidedAt = getObject("decided_at", OffsetDateTime::class.java)?.toEpochSecond(),
@@ -414,8 +427,13 @@ class ProposalQueue(
         /** At most this many published demands are compared with a proposal, the newest. */
         const val MAX_PUBLISHED_COMPARED: Int = 5_000
 
-        /** Reports as stored and served: compact, defaults left out. */
+        /** Reports as stored: compact, defaults left out. */
         val reportJson: Json = Json { encodeDefaults = false; ignoreUnknownKeys = true }
+
+        /** The lock taken to count the whole queue; it cannot collide with "revendication_proposal:<hex key>". */
+        private const val GLOBAL_LOCK = "revendication_proposal:*"
+
+        private fun statusOf(column: String): ProposalStatus = ProposalStatus.entries.first { it.column == column }
 
         private const val SELECT =
             "SELECT id, event, status, report::text AS report, received_at, decided_at, decision_reason FROM revendication_proposal"

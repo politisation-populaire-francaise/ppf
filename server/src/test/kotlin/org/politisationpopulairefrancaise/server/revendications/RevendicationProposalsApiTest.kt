@@ -17,6 +17,8 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.revendications.ProposalState
+import org.politisationpopulairefrancaise.core.revendications.ProposalStatus
 import org.politisationpopulairefrancaise.core.revendications.checks.CheckKind
 import org.politisationpopulairefrancaise.core.revendications.checks.CheckState
 import org.politisationpopulairefrancaise.core.revendications.checks.IssueKind
@@ -29,6 +31,7 @@ import org.politisationpopulairefrancaise.core.revendications.checks.ReviewOutco
 import org.politisationpopulairefrancaise.core.revendications.checks.ReviewRequest
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.signing.sign
 import org.politisationpopulairefrancaise.server.BundledContents
 import org.politisationpopulairefrancaise.server.TEST_RELAY
 import org.politisationpopulairefrancaise.server.TEST_REVENDICATIONS_CONFIG
@@ -43,6 +46,7 @@ import org.politisationpopulairefrancaise.server.revendications.DemandFixtures.a
 import org.politisationpopulairefrancaise.server.revendications.DemandFixtures.demand
 import org.politisationpopulairefrancaise.server.revendications.DemandFixtures.draft
 import org.politisationpopulairefrancaise.server.testRevendications
+import java.time.Instant
 import java.util.concurrent.atomic.AtomicReference
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -78,19 +82,16 @@ class RevendicationProposalsApiTest {
 
     private suspend fun HttpResponse.publishStatus(): String = Json.decodeFromString<PublishResponse>(bodyAsText()).status
 
-    private suspend fun HttpClient.statuses(vararg ids: String): List<ProposalStatusView> {
+    private suspend fun HttpClient.statuses(vararg ids: String): List<ProposalState> {
         val response = get("/api/v1/revendications/proposals?" + ids.joinToString("&") { "id=$it" })
         assertEquals(HttpStatusCode.OK, response.status)
-        return Json.decodeFromString(ListSerializer(ProposalStatusView.serializer()), response.bodyAsText())
+        return Json.decodeFromString(ListSerializer(ProposalState.serializer()), response.bodyAsText())
     }
-
-    private fun ProposalStatusView.decodedReport(): ProposalReport? =
-        report?.let { ProposalQueue.reportJson.decodeFromJsonElement(ProposalReport.serializer(), it) }
 
     /** Waits for the background checks of [id] (they never take long without a real model). */
     private suspend fun HttpClient.reportOf(id: String): ProposalReport {
         repeat(200) {
-            statuses(id).singleOrNull()?.decodedReport()?.let { return it }
+            statuses(id).singleOrNull()?.report?.let { return it }
             delay(50)
         }
         fail("No report for the proposal after 10 seconds")
@@ -269,9 +270,10 @@ class RevendicationProposalsApiTest {
         assertEquals(HttpStatusCode.OK, response.status)
         assertEquals("no-store", response.headers[HttpHeaders.CacheControl])
         val text = response.bodyAsText()
-        val listed = Json.decodeFromString(ListSerializer(ProposalStatusView.serializer()), text).single()
+        val listed = Json.decodeFromString(ListSerializer(ProposalState.serializer()), text).single()
         assertEquals(event.id, listed.id)
-        assertEquals("pending", listed.status)
+        assertEquals(ProposalStatus.PENDING, listed.status)
+        assertTrue("\"status\":\"pending\"" in text)
         assertNull(listed.decidedAt)
         assertNull(listed.reason)
         assertTrue(listed.receivedAt > 0)
@@ -311,7 +313,7 @@ class RevendicationProposalsApiTest {
 
         // Once published, it is a demand like any other, which every author may be pointed to.
         assertEquals(DecisionOutcome.Approved(StoreOutcome.STORED), queue.approve(first.id))
-        val afterApproval = assertNotNull(client.statuses(second.id).single().decodedReport())
+        val afterApproval = assertNotNull(client.statuses(second.id).single().report)
         assertTrue(afterApproval.issues.any { issue -> issue.related.any { it.address == firstAddress } })
     }
 
@@ -328,18 +330,100 @@ class RevendicationProposalsApiTest {
         assertEquals(listOf(approved), listed, "published as its author signed it")
         assertEquals(HttpStatusCode.OK, client.get("/api/v1/events/${approved.id}").status)
         val approvedStatus = client.statuses(approved.id).single()
-        assertEquals("approved", approvedStatus.status)
+        assertEquals(ProposalStatus.APPROVED, approvedStatus.status)
         assertNotNull(approvedStatus.decidedAt)
+        assertNull(approvedStatus.report, "its id is public now: the opinions of the checks are not")
         assertEquals("duplicate", client.publish(approved).publishStatus(), "already published")
 
         assertEquals(DecisionOutcome.Rejected, queue.reject(rejected.id, "[EXEMPLE] Une revendication identique est déjà en débat."))
         val rejectedStatus = client.statuses(rejected.id).single()
-        assertEquals("rejected", rejectedStatus.status)
+        assertEquals(ProposalStatus.REJECTED, rejectedStatus.status)
         assertEquals("[EXEMPLE] Une revendication identique est déjà en débat.", rejectedStatus.reason)
         assertNotNull(rejectedStatus.decidedAt)
         assertNull(events.find(rejected.id), "nothing published")
         val again = client.publish(rejected)
         assertEquals(HttpStatusCode.Conflict, again.status)
         assertEquals("rejected", again.error())
+    }
+
+    @Test
+    fun aPublishedDemandStaysApprovedOnceItsProposalIsDeleted() = testApplication {
+        start()
+        val approved = citizen.demand(slug = "publiee-0001")
+        val rejected = citizen.demand(draft(title = "Des crèches ouvertes le soir pour les parents en horaires décalés", themes = listOf("societe")), slug = "refusee-0001")
+        client.publish(approved)
+        client.publish(rejected)
+        queue.approve(approved.id)
+        queue.reject(rejected.id, "[EXEMPLE] motif")
+        val fromTeam = editor.demand(slug = "equipe-0001")
+        assertEquals(HttpStatusCode.Created, client.publish(fromTeam).status)
+        val note = editor.sign(kind = 1, content = "[EXEMPLE] une note", tags = emptyList(), createdAt = DemandFixtures.nowSeconds())
+        assertEquals(HttpStatusCode.Created, client.publish(note).status)
+
+        // 30 days after the decisions.
+        assertEquals(2, queue.deleteDecidedBefore(Instant.now().plusSeconds(60)))
+        val text = client.get("/api/v1/revendications/proposals?id=${approved.id}&id=${rejected.id}&id=${fromTeam.id}&id=${note.id}").bodyAsText()
+        val states = Json.decodeFromString(ListSerializer(ProposalState.serializer()), text)
+        assertEquals(listOf(approved.id, fromTeam.id), states.map { it.id }, "a refused proposal and an event that is not a demand are found nowhere")
+        for (state in states) {
+            assertEquals(ProposalStatus.APPROVED, state.status)
+            assertTrue(state.receivedAt > 0)
+            assertNull(state.decidedAt)
+            assertNull(state.reason)
+            assertNull(state.report)
+        }
+        assertTrue("\"decided_at\":null" in text && "\"report\":null" in text, "every field is written: $text")
+    }
+
+    @Test
+    fun anythingTheFormDoesNotWriteIsRefusedCheaply() = testApplication {
+        start()
+        suspend fun refusedWith(event: SignedEvent): String {
+            val response = client.publish(event)
+            assertEquals(HttpStatusCode.BadRequest, response.status)
+            return response.error()
+        }
+        assertEquals("malformed_demand", refusedWith(citizen.alteredDemand { it.copy(tags = it.tags.map { tag -> if (tag[0] == Article.TAG_TITLE) tag + "texte caché" else tag }) }))
+        assertEquals("malformed_demand", refusedWith(citizen.alteredDemand { it.copy(tags = it.tags.map { tag -> if (tag[0] == Article.TAG_PUBLISHED_AT) listOf(tag[0], "demain") else tag }) }))
+        assertEquals("malformed_demand", refusedWith(citizen.alteredDemand { it.copy(content = it.content + "\u0000") }))
+        assertEquals("malformed_demand", refusedWith(citizen.alteredDemand { it.copy(tags = it.tags.map { tag -> if (tag[0] == Article.TAG_TERRITORY) listOf(tag[0], "Nord\u0007") else tag }) }))
+        assertEquals("malformed_demand", refusedWith(citizen.demand(slug = "medecin.garde")))
+        val phoneInAddress = client.publish(citizen.demand(slug = "appelez-0612345678"))
+        assertEquals("draft_rules", phoneInAddress.error())
+        assertTrue("personal_data (identifier)" in Json.decodeFromString<ApiError>(phoneInAddress.bodyAsText()).message)
+
+        // One long word with no "@": the patterns of the rules never see it.
+        val started = System.nanoTime()
+        val huge = citizen.alteredDemand { it.copy(content = "a".repeat(60_000)) }
+        val tooLong = client.publish(huge)
+        assertEquals("draft_rules", tooLong.error())
+        assertTrue("too_long (why)" in Json.decodeFromString<ApiError>(tooLong.bodyAsText()).message)
+        assertTrue(System.nanoTime() - started < 2_000_000_000L, "refused at once")
+        assertTrue(queue.pending().isEmpty())
+    }
+
+    @Test
+    fun theAuthorSeesThePublishedVersionOfAnotherDemandNotTheRefusedOne() = testApplication {
+        start()
+        val now = DemandFixtures.nowSeconds()
+        val refusedVersion = citizen.demand(draft(title = "Un médecin de garde joignable le soir dans chaque canton, ou alors rien"), slug = "medecin-0001", createdAt = now - 300)
+        client.publish(refusedVersion)
+        client.reportOf(refusedVersion.id)
+        val other = LocalEventSigner(IdentityKeys.generate())
+        val second = other.demand(slug = "medecin-0002")
+        client.publish(second)
+        client.reportOf(second.id)
+        assertTrue(queue.find(second.id)!!.report!!.issues.any { issue -> issue.related.any { it.title == refusedVersion.firstTagValue("title") } })
+
+        queue.reject(refusedVersion.id, "[EXEMPLE] Formulation à revoir.")
+        val corrected = citizen.demand(draft(title = "Un médecin de garde joignable le soir dans chaque canton rural"), slug = "medecin-0001", createdAt = now - 100)
+        assertEquals(HttpStatusCode.Accepted, client.publish(corrected).status)
+        queue.approve(corrected.id)
+
+        val served = assertNotNull(client.statuses(second.id).single().report)
+        val related = served.issues.flatMap { it.related }.filter { it.address == "30023:${citizen.publicKey.hex}:medecin-0001" }
+        assertTrue(related.isNotEmpty(), "the published demand is still pointed at")
+        assertTrue(related.all { it.title == "Un médecin de garde joignable le soir dans chaque canton rural" }, related.toString())
+        assertFalse("ou alors rien" in client.get("/api/v1/revendications/proposals?id=${second.id}").bodyAsText())
     }
 }

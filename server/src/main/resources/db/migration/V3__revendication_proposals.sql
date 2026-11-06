@@ -17,6 +17,9 @@ CREATE TABLE revendication_proposal (
     created_at      BIGINT      NOT NULL CHECK (created_at >= 0),
     -- The signed event, as received (JSON).
     event           TEXT        NOT NULL,
+    -- Its tags (title, summary, territory, themes...), also in the event: the duplicate check of
+    -- the other proposals reads them without parsing every event.
+    tags            JSONB       NOT NULL,
     status          TEXT        NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
     -- The report of the automatic checks (ProposalReport, JSON); NULL until the checks ran.
     report          JSONB,

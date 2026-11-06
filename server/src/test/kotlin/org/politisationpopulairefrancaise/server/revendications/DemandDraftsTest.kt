@@ -5,6 +5,7 @@ import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.revendications.checks.DraftField
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
@@ -72,6 +73,21 @@ class DemandDraftsTest {
         assertEquals("malformed_demand", error(citizen.demand(createdAt = now + 7_200)), "dated in the future")
         assertIs<DemandDrafts.Shape.Valid>(shape(citizen.demand(createdAt = now + 600)), "a clock a little ahead is fine")
         assertEquals("malformed_demand", error(citizen.alteredDemand { it.copy(tags = it.tags.filter { tag -> tag[0] != Article.TAG_ORIGIN }) }), "origin required")
+    }
+
+    @Test
+    fun onlyPlainTextAndTheValuesTheFormWritesAreAccepted() = runBlocking {
+        val smiley = String(Character.toChars(0x1F600))
+        assertTrue(DemandDrafts.isPlainText("Ligne 1\nLigne 2\tet $smiley", multiline = true))
+        assertFalse(DemandDrafts.isPlainText("Ligne 1\nLigne 2", multiline = false))
+        assertFalse(DemandDrafts.isPlainText("nul" + Char(0), multiline = true))
+        assertFalse(DemandDrafts.isPlainText("seul " + smiley[0], multiline = true), "a surrogate without its pair")
+        assertFalse(DemandDrafts.isPlainText(smiley[1] + " seul", multiline = true))
+        assertEquals("malformed_demand", error(citizen.alteredDemand { it.copy(tags = it.tags.map { tag -> if (tag[0] == "d") tag + "en trop" else tag }) }))
+        assertEquals("malformed_demand", error(citizen.alteredDemand { it.copy(tags = it.tags.map { tag -> if (tag[0] == Article.TAG_PUBLISHED_AT) listOf(tag[0], "-1") else tag }) }))
+        assertEquals("malformed_demand", error(citizen.demand(slug = "avec_souligne")))
+        assertIs<DemandDrafts.Shape.Valid>(shape(citizen.demand(slug = "école-numérique-3f9a")), "letters of any alphabet are letters")
+        assertEquals(listOf(DraftField.TITLE, DraftField.EXISTING), DemandDrafts.tooLong(draft(title = "x".repeat(281), existing = "y".repeat(4_001))))
     }
 
     @Test

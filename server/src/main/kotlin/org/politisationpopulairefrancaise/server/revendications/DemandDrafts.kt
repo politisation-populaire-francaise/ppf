@@ -4,6 +4,8 @@ import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.RevendicationStatus
 import org.politisationpopulairefrancaise.core.revendications.RevendicationThemes
+import org.politisationpopulairefrancaise.core.revendications.checks.DraftField
+import org.politisationpopulairefrancaise.core.revendications.checks.DraftRules
 import org.politisationpopulairefrancaise.core.revendications.checks.RevendicationDraft
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.text.FrenchText
@@ -37,17 +39,28 @@ object DemandDrafts {
         data class Invalid(val error: String, val message: String) : Shape
     }
 
-    /** Whether [event] (a verified kind 30023 event with `ppf-type` = revendication) is a demand as the form writes it. */
+    /**
+     * Whether [event] (a verified kind 30023 event with `ppf-type` = revendication) is a demand as
+     * the form writes it. Every check here is linear in the size of the event: it runs before the
+     * rules, on anything a modified application may send.
+     */
     fun shapeOf(event: SignedEvent, nowSeconds: Long): Shape {
         val names = event.tags.map { it.firstOrNull().orEmpty() }
-        if (event.tags.any { it.size < 2 }) return malformed("Every tag of a demand has a name and a value.")
+        // Exactly a name and a value: a third element would be published without anyone reading it.
+        if (event.tags.any { it.size != 2 }) return malformed("Every tag of a demand has exactly a name and a value.")
         if (names.any { it !in ALLOWED_TAGS }) return malformed("A demand carries only the tags of the form: ${ALLOWED_TAGS.joinToString()}.")
         SINGLE_TAGS.firstOrNull { name -> names.count { it == name } > 1 }?.let { return malformed("A demand carries at most one \"$it\" tag.") }
         if (names.count { it == "d" } != 1) return malformed("A demand carries exactly one d tag.")
-        val identifier = event.firstTagValue("d").orEmpty()
-        if (identifier.isEmpty() || identifier.length > MAX_IDENTIFIER_LENGTH || identifier.any { it.isWhitespace() || it.isISOControl() }) {
-            return malformed("The d tag of a demand is 1 to $MAX_IDENTIFIER_LENGTH characters, without spaces.")
+        // No control character (the database refuses some of them) nor broken character anywhere.
+        if (event.tags.any { tag -> !isPlainText(tag[1], multiline = false) } || !isPlainText(event.content, multiline = true)) {
+            return malformed("A demand holds plain text only: no control character.")
         }
+        val identifier = event.firstTagValue("d").orEmpty()
+        if (identifier.isEmpty() || identifier.length > MAX_IDENTIFIER_LENGTH || identifier.any { !(it.isLetterOrDigit() || it == '-') }) {
+            return malformed("The d tag of a demand is 1 to $MAX_IDENTIFIER_LENGTH letters, digits or dashes.")
+        }
+        val publishedAt = event.firstTagValue(Article.TAG_PUBLISHED_AT)
+        if (publishedAt != null && !PUBLISHED_AT.matches(publishedAt)) return malformed("The published_at tag of a demand is a date in seconds.")
         val themes = event.tagValues(Article.TAG_TOPIC)
         if (themes.any { RevendicationThemes.byId(it) == null }) return malformed("The themes of a demand are theme ids of the wall.")
         if (themes.size > RevendicationDraft.MAX_THEMES || themes.distinct().size != themes.size) {
@@ -66,6 +79,42 @@ object DemandDrafts {
     }
 
     private fun malformed(message: String) = Shape.Invalid("malformed_demand", message)
+
+    private val PUBLISHED_AT = Regex("[0-9]{1,12}")
+
+    /**
+     * No control character (line breaks and tabs allowed in a [multiline] text) and no surrogate
+     * without its pair: such a text would not survive the database, or the check of its signature.
+     */
+    fun isPlainText(text: String, multiline: Boolean): Boolean {
+        var index = 0
+        while (index < text.length) {
+            val char = text[index]
+            when {
+                char.isHighSurrogate() -> {
+                    if (index + 1 >= text.length || !text[index + 1].isLowSurrogate()) return false
+                    index++
+                }
+                char.isLowSurrogate() -> return false
+                char.isISOControl() && !(multiline && (char == '\n' || char == '\r' || char == '\t')) -> return false
+            }
+            index++
+        }
+        return true
+    }
+
+    /**
+     * The fields of [draft] longer than the rules of the form allow. Checked before the rules
+     * themselves, whose patterns would spend time on a text nobody may send.
+     */
+    fun tooLong(draft: RevendicationDraft): List<DraftField> = buildList {
+        if (draft.title.trim().length > DraftRules.TITLE_MAX) add(DraftField.TITLE)
+        if (draft.summary.trim().length > DraftRules.SUMMARY_MAX) add(DraftField.SUMMARY)
+        if (draft.why.trim().length > DraftRules.SECTION_MAX) add(DraftField.WHY)
+        if (draft.asks.trim().length > DraftRules.SECTION_MAX) add(DraftField.ASKS)
+        if (draft.existing.trim().length > DraftRules.SECTION_MAX) add(DraftField.EXISTING)
+        if (draft.territory.trim().length > DraftRules.TERRITORY_MAX) add(DraftField.TERRITORY)
+    }
 
     /**
      * The draft behind [article]: the title, summary, themes and territory from the tags, and the

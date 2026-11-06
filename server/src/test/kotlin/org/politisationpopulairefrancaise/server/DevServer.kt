@@ -30,6 +30,7 @@ import org.politisationpopulairefrancaise.server.groups.GroupKinds
 import org.politisationpopulairefrancaise.server.revendications.DecisionOutcome
 import org.politisationpopulairefrancaise.server.revendications.ProposalQueue
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
+import org.politisationpopulairefrancaise.server.revendications.column
 
 /** Id of the example group of the development server; its messages are read with kind=9&tag=h:<id>. */
 const val DEMO_GROUP_ID: String = "collectif-demonstration"
@@ -137,7 +138,7 @@ private suspend fun io.ktor.server.application.ApplicationCall.answer(id: String
     is DecisionOutcome.Approved -> respond(DevDecision(id, "approved (${outcome.stored.name.lowercase()})"))
     DecisionOutcome.Rejected -> respond(DevDecision(id, "rejected"))
     DecisionOutcome.NotFound -> respond(HttpStatusCode.NotFound, ApiError("not_found", "No proposal with this id."))
-    is DecisionOutcome.AlreadyDecided -> respond(HttpStatusCode.Conflict, ApiError("already_decided", "This proposal is already ${outcome.status.value}."))
+    is DecisionOutcome.AlreadyDecided -> respond(HttpStatusCode.Conflict, ApiError("already_decided", "This proposal is already ${outcome.status.column}."))
 }
 
 /** The example group (public, open) and two example messages, all marked [EXEMPLE]. */

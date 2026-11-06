@@ -7,17 +7,21 @@ import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.politisationpopulairefrancaise.core.revendications.ProposalState
+import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSource
 import org.politisationpopulairefrancaise.server.api.badParameter
 
-/** At most this many proposals per status request. */
-const val MAX_STATUS_IDS: Int = 20
+/** At most this many proposals per status request, as the device asks them. */
+const val MAX_STATUS_IDS: Int = ProposalStatusSource.MAX_IDS
 
 /**
  * GET /api/v1/revendications/proposals?id=<hex>&id=<hex>: where the author's proposals stand
- * (1 to [MAX_STATUS_IDS] event ids of 64 lowercase hexadecimal characters), as a list of
- * [ProposalStatusView]; unknown ids are left out. No authentication: while a proposal is pending,
- * its event id is known to its author only. Never the content of the event nor its key. The
- * submission itself goes through POST /api/v1/events, the single publication port.
+ * (1 to [MAX_STATUS_IDS] event ids of 64 lowercase hexadecimal characters), as a JSON list of
+ * [ProposalState] (`id`, `status`, `received_at`, `decided_at`, `reason`, `report`, see
+ * [RevendicationProposals.statusesForAuthor]); ids found nowhere are left out. No authentication:
+ * while a proposal is pending, its event id is known to its author only. Never the content of the
+ * event nor its key. The submission itself goes through POST /api/v1/events, the single
+ * publication port.
  */
 fun Route.revendicationsApi(proposals: RevendicationProposals?) {
     if (proposals == null) return

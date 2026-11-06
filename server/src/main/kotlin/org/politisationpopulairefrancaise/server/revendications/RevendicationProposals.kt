@@ -9,12 +9,11 @@ import io.ktor.server.application.log
 import io.ktor.server.response.respond
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import kotlinx.serialization.SerialName
-import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.JsonElement
+import org.politisationpopulairefrancaise.core.revendications.ProposalState
+import org.politisationpopulairefrancaise.core.revendications.ProposalStatus
+import org.politisationpopulairefrancaise.core.revendications.checks.DemandText
 import org.politisationpopulairefrancaise.core.revendications.checks.DraftRules
 import org.politisationpopulairefrancaise.core.revendications.checks.IssueSeverity
-import org.politisationpopulairefrancaise.core.revendications.checks.ProposalChecker
 import org.politisationpopulairefrancaise.core.revendications.checks.ProposalReport
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.api.ApiError
@@ -23,21 +22,6 @@ import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
 import java.time.Clock
 import javax.sql.DataSource
-
-/** What the author of a proposal may read about it (GET /api/v1/revendications/proposals): never its content nor its key. */
-@Serializable
-data class ProposalStatusView(
-    val id: String,
-    /** "pending", "approved" or "rejected". */
-    val status: String,
-    /** Seconds since 1970. */
-    @SerialName("received_at") val receivedAt: Long,
-    @SerialName("decided_at") val decidedAt: Long?,
-    /** The team's reason, for a rejected proposal. */
-    val reason: String?,
-    /** The [ProposalReport] of the automatic checks; null until they ran. */
-    val report: JsonElement?,
-)
 
 /**
  * Citizen demands on the server: a demand (kind 30023, `ppf-type` = revendication) signed by a key
@@ -64,12 +48,20 @@ class RevendicationProposals(
             is DemandDrafts.Shape.Invalid -> return call.respond(HttpStatusCode.BadRequest, ApiError(shape.error, shape.message))
             is DemandDrafts.Shape.Valid -> shape.article
         }
-        // The rules of the form, again: a modified application must not skip them. Only kinds and fields are named back.
-        val blocking = DraftRules.check(DemandDrafts.draftOf(article)).filter { it.severity == IssueSeverity.BLOCKING }
-        if (blocking.isNotEmpty()) {
-            val found = blocking.joinToString { issue -> issue.kind.name.lowercase() + (issue.field?.let { " (${it.name.lowercase()})" } ?: "") }
-            return call.respond(HttpStatusCode.BadRequest, ApiError("draft_rules", "The demand does not follow the rules of the form: $found."))
+        // The rules of the form, again: a modified application must not skip them. Only kinds and
+        // fields are named back, never what was found. Lengths first: the patterns of the rules
+        // must never run on a text longer than the form allows.
+        val draft = DemandDrafts.draftOf(article)
+        val tooLong = DemandDrafts.tooLong(draft)
+        if (tooLong.isNotEmpty()) return call.refuseDraft(tooLong.joinToString { "too_long (${it.name.lowercase()})" })
+        val blocking = withContext(Dispatchers.Default) {
+            DraftRules.check(draft).filter { it.severity == IssueSeverity.BLOCKING }
+                .map { issue -> issue.kind.name.lowercase() + (issue.field?.let { " (${it.name.lowercase()})" } ?: "") } +
+                // The identifier becomes part of the public address: no personal data there either.
+                if (DraftRules.containsPersonalData(article.slug)) listOf("personal_data (identifier)") else emptyList()
         }
+        if (blocking.isNotEmpty()) return call.refuseDraft(blocking.joinToString())
+
         val outcome = withContext(Dispatchers.IO) {
             queue.submit(event, article.slug, config.maxPendingPerKey, config.maxPending, dailyBudget)
         }
@@ -102,28 +94,42 @@ class RevendicationProposals(
     }
 
     /**
-     * The status of the proposals among [ids] (unknown ids are left out), in the order asked. The
-     * report served here never names a proposal that is not published: the checks also compare
-     * with the other pending proposals, whose authors have not published anything yet.
+     * Where the proposals among [ids] stand, in the order asked, as the core reads it
+     * ([ProposalState]); ids found nowhere are left out.
+     * - Pending or rejected: the report of the automatic checks, which never names a demand that is
+     *   not published (the checks also compare with the other pending proposals, whose authors have
+     *   published nothing yet) and shows the published ones as they read now.
+     * - Approved: no report. The event id is public once the demand is published, and the opinions
+     *   of the checks on a published demand are the team's business, not anyone's.
+     * - A published demand without a proposal (deleted 30 days after its approval, or published by
+     *   the team directly): "approved", received when it reached the events table.
      */
-    fun statusesForAuthor(ids: List<String>): List<ProposalStatusView> {
-        val known = queue.findAll(ids).associateBy { it.id }
-        val found = ids.distinct().mapNotNull { known[it] }
-        val mentioned = found.flatMap { proposal -> proposal.report?.issues.orEmpty().flatMap { issue -> issue.related.map { it.address } } }
-        val published = queue.publishedAddresses(mentioned)
-        return found.map { proposal ->
-            ProposalStatusView(
-                id = proposal.id,
-                status = proposal.status.value,
-                receivedAt = proposal.receivedAt,
-                decidedAt = proposal.decidedAt,
-                reason = proposal.reason,
-                report = proposal.report?.let { report ->
-                    ProposalQueue.reportJson.encodeToJsonElement(ProposalReport.serializer(), forAuthor(report, published))
-                },
-            )
+    fun statusesForAuthor(ids: List<String>): List<ProposalState> {
+        val wanted = ids.distinct()
+        val proposals = queue.findAll(wanted).associateBy { it.id }
+        val published = queue.publishedDemandReceptions(wanted.filter { it !in proposals })
+        val mentioned = proposals.values.filter { it.status != ProposalStatus.APPROVED }
+            .flatMap { proposal -> proposal.report?.issues.orEmpty().flatMap { issue -> issue.related.map { it.address } } }
+        val current = queue.publishedDemandsAt(mentioned)
+        return wanted.mapNotNull { id ->
+            val proposal = proposals[id]
+            when {
+                proposal != null -> ProposalState(
+                    id = proposal.id,
+                    status = proposal.status,
+                    receivedAt = proposal.receivedAt,
+                    decidedAt = proposal.decidedAt,
+                    reason = proposal.reason,
+                    report = if (proposal.status == ProposalStatus.APPROVED) null else proposal.report?.let { forAuthor(it, current) },
+                )
+                id in published -> ProposalState(id = id, status = ProposalStatus.APPROVED, receivedAt = published.getValue(id))
+                else -> null
+            }
         }
     }
+
+    private suspend fun ApplicationCall.refuseDraft(found: String) =
+        respond(HttpStatusCode.BadRequest, ApiError("draft_rules", "The demand does not follow the rules of the form: $found."))
 
     private suspend fun ApplicationCall.tooMany(retryAfterSeconds: Long, error: String, message: String) {
         response.headers.append(HttpHeaders.RetryAfter, retryAfterSeconds.toString())
@@ -137,15 +143,19 @@ class RevendicationProposals(
         const val RETRY_PENDING_SECONDS: Long = 3_600
 
         /**
-         * [report] without the demands that are not in [published]; an issue that only pointed at
-         * such demands goes, and one that loses some of them loses its explanation too (the model
-         * may have quoted them).
+         * [report] as its author may read it: only the demands of [published] (by address), as they
+         * read now. An issue that only pointed at other demands goes; one whose demands changed or
+         * went loses its explanation too (it may quote what the author must not read).
          */
-        fun forAuthor(report: ProposalReport, published: Set<String>): ProposalReport = report.copy(
+        fun forAuthor(report: ProposalReport, published: Map<String, DemandText>): ProposalReport = report.copy(
             issues = report.issues.mapNotNull { issue ->
-                val kept = issue.related.filter { it.address in published }
+                val kept = issue.related.mapNotNull { related ->
+                    published[related.address]?.let { now ->
+                        related.copy(title = now.title, statusTag = now.status?.tagValue, territory = now.territory)
+                    }
+                }
                 when {
-                    kept.size == issue.related.size -> issue
+                    kept == issue.related -> issue
                     kept.isEmpty() -> null
                     else -> issue.copy(related = kept, detail = null)
                 }
@@ -160,8 +170,8 @@ class RevendicationProposals(
             val config = setup.config
             val queue = ProposalQueue(dataSource, events, setup.clock)
             val model = setup.model?.let { CappedReviewModel(it, PeriodBudget(config.aiReviewsPerDay, maxTrackedKeys = 1)) }
-            val checker = ProposalChecker(legal = null, model = model, clock = { setup.clock.instant().epochSecond })
-            val reviewer = ProposalReviewer(queue, checker, application.log).also { it.start(application) }
+            val checkTimeout = (config.ai?.timeout ?: AiReviewConfig.DEFAULT_TIMEOUT) + ProposalReviewer.DEFAULT_CHECK_TIMEOUT
+            val reviewer = ProposalReviewer(queue, model, setup.clock, application.log, checkTimeout).also { it.start(application) }
             if (config.cleanupInterval.isPositive()) {
                 ProposalMaintenance(queue, reviewer, config.decidedRetention, setup.clock).start(application, config.cleanupInterval, application.log)
             }
