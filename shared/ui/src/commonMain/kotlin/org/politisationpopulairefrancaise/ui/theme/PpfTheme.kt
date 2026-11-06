@@ -55,6 +55,11 @@ data class PpfPalette(
     val avatars: List<Color>,
     val onAvatar: Color,
     val shadow: Color,
+    /**
+     * The categorical colours of charts (one per kind of source, in a fixed order, never cycled),
+     * checked for colour blindness and contrast against the card surface in each mode (D-033).
+     */
+    val chart: List<Color>,
 )
 
 val LightPalette = PpfPalette(
@@ -84,6 +89,7 @@ val LightPalette = PpfPalette(
     avatars = listOf(Color(0xFF2B3A8F), Color(0xFFA51A30), Color(0xFF1D6B45), Color(0xFF7A4F00), Color(0xFF0F5E66), Color(0xFF6B2F7A)),
     onAvatar = Color(0xFFFFFFFF),
     shadow = Color(0xFF14182B),
+    chart = listOf(Color(0xFF2A78D6), Color(0xFFEB6834), Color(0xFF1BAF7A), Color(0xFFEDA100), Color(0xFFE87BA4), Color(0xFF008300), Color(0xFF6250D6), Color(0xFFE34948)),
 )
 
 val DarkPalette = PpfPalette(
@@ -113,6 +119,7 @@ val DarkPalette = PpfPalette(
     avatars = listOf(Color(0xFF9AA6F0), Color(0xFFFF9AA8), Color(0xFF7FDCAA), Color(0xFFF2C96B), Color(0xFF6FD0D8), Color(0xFFD7A3E8)),
     onAvatar = Color(0xFF0F1220),
     shadow = Color(0xFF000000),
+    chart = listOf(Color(0xFF3987E5), Color(0xFFD95926), Color(0xFF199E70), Color(0xFFC98500), Color(0xFFD55181), Color(0xFF008300), Color(0xFF9085E9), Color(0xFFE66767)),
 )
 
 /** Colours of one kind of highlighted box (see [Callout]). */

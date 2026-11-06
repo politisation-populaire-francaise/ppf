@@ -14,6 +14,20 @@ enum class ArticleType(val tagValue: String) {
     ARTICLE("article"),
     /** A demand of the demands wall: one idea, in one or two sentences, with its argument as body. */
     REVENDICATION("revendication"),
+
+    // The building blocks of "Voir" (D-033, core/voir): structured tags, Markdown body.
+    /** An indicator of the observatory (M2): definition, unit, method as body, measures as tags. */
+    INDICATEUR("indicateur"),
+    /** A sourced fact: an event of the chronology, a vote, a promise, a case, a contradicted statement... */
+    FAIT("fait"),
+    /** A public person (M4, VO-10): mandates and functions; the facts point to it. */
+    PERSONNE("personne"),
+    /** A bill or a law under discussion (législomètre, VO-20), with its stages and its effects. */
+    TEXTE("texte"),
+    /** A social movement elsewhere in the world (M9). */
+    MOUVEMENT("mouvement"),
+    /** A right of reply (VO-21) published under the content it answers. */
+    REPONSE("reponse"),
     ;
 
     companion object {
@@ -118,6 +132,8 @@ data class Article(
             body: String,
             status: RevendicationStatus? = null,
             territory: String? = null,
+            /** Further tags of a "Voir" building block (core/voir), added after the common ones in their order. */
+            extraTags: List<List<String>> = emptyList(),
         ): UnsignedEvent {
             require(slug.isNotBlank() && slug.none { it.isWhitespace() }) { "slug must be a single word" }
             require(title.isNotBlank()) { "title is required" }
@@ -131,6 +147,10 @@ data class Article(
                 status?.let { add(listOf(TAG_STATUS, it.tagValue)) }
                 territory?.takeIf { it.isNotBlank() }?.let { add(listOf(TAG_TERRITORY, it.trim())) }
                 topics.map { it.trim() }.filter { it.isNotEmpty() }.distinct().forEach { add(listOf(TAG_TOPIC, it)) }
+                extraTags.forEach { tag ->
+                    require(tag.isNotEmpty() && tag[0].isNotBlank()) { "a tag needs a name" }
+                    add(tag)
+                }
             }
             return UnsignedEvent.create(author, KIND, updatedAt, tags, body)
         }

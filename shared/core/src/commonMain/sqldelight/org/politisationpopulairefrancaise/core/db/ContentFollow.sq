@@ -1,0 +1,22 @@
+-- The contents of "Voir" the user follows: indicators, public persons, bills, facts (D-033). The
+-- list stays on the device and is never sent: following a public person or a bill can reveal a
+-- political opinion, a sensitive datum under article 9 of the GDPR. Reading needs no account, so
+-- the list does not depend on one either.
+-- Added in schema version 7: existing databases get it through migrations/6.sqm.
+
+CREATE TABLE content_follow (
+    address TEXT NOT NULL PRIMARY KEY,
+    followed_at INTEGER NOT NULL
+);
+
+insert:
+INSERT OR IGNORE INTO content_follow(address, followed_at) VALUES (?, ?);
+
+deleteByAddress:
+DELETE FROM content_follow WHERE address = ?;
+
+deleteAll:
+DELETE FROM content_follow;
+
+selectAll:
+SELECT address FROM content_follow ORDER BY followed_at DESC, address ASC;

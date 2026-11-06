@@ -62,6 +62,9 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.ui.voir.VoirScreen
+import org.politisationpopulairefrancaise.ui.voir.VoirState
+import org.politisationpopulairefrancaise.ui.voir.rememberVoirState
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
@@ -147,6 +150,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     })
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
+    // "Voir": the open page, the axis and the follows survive a visit to another space.
+    val voirState = rememberVoirState(dependencies)
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
     val proposalComposer = remember(dependencies) { ProposalComposer(dependencies.contentStore, dependencies.remote) }
     val accountKey = (accountSession.state as? AccountUiState.Ready)?.publicKey?.hex
@@ -172,6 +177,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 messaging = messaging,
                 revendicationViews = revendicationViews,
                 proposalComposer = proposalComposer,
+                voirState = voirState,
                 groupsLibrary = groupsLibrary,
                 mailboxSetting = mailboxSetting,
                 windowClass = windowClass,
@@ -198,6 +204,7 @@ private fun SpaceContent(
     messaging: MessagingSession,
     revendicationViews: RevendicationViewsState,
     proposalComposer: ProposalComposer,
+    voirState: VoirState,
     groupsLibrary: GroupsLibrary,
     mailboxSetting: MailboxSetting,
     windowClass: WindowClass,
@@ -207,6 +214,7 @@ private fun SpaceContent(
 ) {
     when (selected) {
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
+        Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, windowClass, modifier)
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)

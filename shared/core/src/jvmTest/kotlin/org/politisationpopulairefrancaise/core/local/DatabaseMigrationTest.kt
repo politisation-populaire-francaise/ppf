@@ -7,7 +7,9 @@ import org.politisationpopulairefrancaise.core.groups.GroupStore
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.revendications.RevendicationViewStore
 import org.politisationpopulairefrancaise.core.revendications.RevendicationViews
+import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.social.FollowStore
+import org.politisationpopulairefrancaise.core.voir.ContentFollowStore
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.test.Test
@@ -96,10 +98,10 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion6() {
+    fun theSchemaIsAtVersion7() {
         // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
-        // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm).
-        assertEquals(6L, PpfDatabase.Schema.version)
+        // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: followed contents of Voir (6.sqm).
+        assertEquals(7L, PpfDatabase.Schema.version)
     }
 
     @Test
@@ -132,6 +134,12 @@ class DatabaseMigrationTest {
         assertEquals(0L, rooms.count())
         rooms.join("collectif-demonstration")
         assertTrue(rooms.isMember("collectif-demonstration"))
+
+        // And the table of the followed contents of Voir (version 7).
+        val followedContents = ContentFollowStore(database)
+        val address = ContentAddress.parse("30023:$key:manifestants-journees")
+        followedContents.follow(address)
+        assertEquals(listOf(address), followedContents.all())
     }
 
     @Test
@@ -141,7 +149,7 @@ class DatabaseMigrationTest {
         assertEquals(5L, userVersion(file))
 
         val database = JvmDatabase.open(file)
-        assertEquals(6L, userVersion(file))
+        assertEquals(7L, userVersion(file))
 
         // The rows written at version 5 survive.
         assertEquals("[EXEMPLE] ancienne note", assertNotNull(LocalEventStore(database).find(eventId)).content)
@@ -164,5 +172,13 @@ class DatabaseMigrationTest {
         assertEquals(0L, LocalEventStore(database).count())
         assertEquals(0L, RevendicationViewStore(database).count())
         assertEquals(0L, GroupStore(database).count())
+        val followed = ContentFollowStore(database)
+        assertEquals(emptyList(), followed.all())
+        val address = ContentAddress.parse("30023:${IdentityKeys.generate().publicKey.hex}:recours-49-3")
+        followed.follow(address)
+        followed.follow(address)
+        assertEquals(listOf(address), followed.all())
+        followed.unfollow(address)
+        assertEquals(emptyList(), followed.all())
     }
 }

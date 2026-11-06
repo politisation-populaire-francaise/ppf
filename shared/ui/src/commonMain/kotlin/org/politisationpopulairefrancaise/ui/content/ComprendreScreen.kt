@@ -60,6 +60,7 @@ import org.politisationpopulairefrancaise.ui.resources.desc_comprendre
 import org.politisationpopulairefrancaise.ui.resources.guides_title
 import org.politisationpopulairefrancaise.ui.resources.space_comprendre
 import org.politisationpopulairefrancaise.ui.resources.space_revendications
+import org.politisationpopulairefrancaise.ui.resources.space_voir
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 object ContentTags {
@@ -215,6 +216,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.DECRYPTAGE -> Res.string.content_type_decryptage
         ArticleType.ARTICLE -> Res.string.content_type_article
         ArticleType.REVENDICATION -> Res.string.space_revendications
+        ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE -> Res.string.space_voir
     },
 )
 

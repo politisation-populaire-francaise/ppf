@@ -1,0 +1,8 @@
+-- Schema version 6 to 7 (2026-11-06): the contents of "Voir" the user follows, kept on the device
+-- only (see ContentFollow.sq, which is the reference for fresh installations; this file must stay
+-- identical to its CREATE statement).
+
+CREATE TABLE content_follow (
+    address TEXT NOT NULL PRIMARY KEY,
+    followed_at INTEGER NOT NULL
+);
