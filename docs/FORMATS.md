@@ -93,6 +93,20 @@ Dans le Markdown, un bloc ouvert par une ligne `::: en-bref`, `::: legal`, `::: 
 
 Une publication du fil est un événement de type `1` : `content` est le texte brut, les étiquettes `t` portent les thèmes. Pas de HTML, pas de Markdown. Un contenu qui commence par `[EXEMPLE]` est un contenu de démonstration : l'application affiche ce marqueur sous forme de badge. La publication la plus récente portant le thème `en-direct` alimente le bandeau « EN DIRECT » du fil.
 
+## 4 ter. Messagerie : enveloppes NIP-59, messages NIP-17
+
+Les conversations privées (deux personnes ou petit groupe) suivent les NIP-17, NIP-59 et NIP-44 de Nostr (décision D-027). Le serveur ne voit jamais ni l'auteur réel, ni les destinataires au-delà de l'étiquette de livraison, ni la date réelle, ni le contenu.
+
+**Message (rumeur, kind 14)** : un événement NIP-01 **non signé**, avec son `id` mais sans `sig`. `content` est le texte brut du message (ni Markdown ni HTML, 16 Kio au plus). Étiquettes : une `["p", "<clé>"]` par destinataire (l'auteur n'y figure pas), `["e", "<id>"]` facultative pour une réponse, `["subject", "<sujet>"]` facultative. La conversation est l'ensemble des participants (auteur et destinataires) ; son identifiant local est leurs clés triées et jointes par des virgules. `created_at` est la vraie date du message. Une rumeur ne circule jamais seule.
+
+**Sceau (kind 13)** : `content` = chiffrement NIP-44 (version 2) du JSON de la rumeur avec la clé de conversation de l'auteur et du destinataire ; signé par l'auteur ; aucune étiquette ; `created_at` tiré au hasard jusqu'à deux jours dans le passé. Le lecteur vérifie que la clé du sceau est celle de la rumeur, sinon n'importe qui pourrait écrire au nom de n'importe qui.
+
+**Enveloppe (kind 1059)** : `content` = chiffrement NIP-44 du JSON du sceau avec une clé jetable, générée pour cette seule enveloppe puis détruite ; signée par la clé jetable ; une seule étiquette `["p", "<destinataire>"]` ; `created_at` aléatoire aussi. Il y a une enveloppe par participant, l'expéditeur compris (pour ses autres appareils). C'est le seul objet que le serveur reçoit et conserve.
+
+**Chiffrement NIP-44 v2** : clé de conversation = HKDF-extract SHA-256 (sel `nip44-v2`) de la coordonnée x du point ECDH secp256k1 ; clés de message = HKDF-expand(clé de conversation, info = nonce de 32 octets, 76 octets) découpées en clé ChaCha20 (32), nonce ChaCha20 (12) et clé HMAC (32) ; texte rembourré à une taille qui ne révèle que l'ordre de grandeur ; charge utile = base64(0x02 ‖ nonce ‖ chiffré ‖ HMAC-SHA-256(nonce ‖ chiffré)). La plateforme accepte des textes de 1 à 65 535 octets. Le NIP-44 ne fournit ni confidentialité persistante ni déni : la compromission d'une clé expose les anciennes conversations ; c'est la limite connue acceptée par D-027 en attendant MLS.
+
+**Relevé** : l'appareil demande ses enveloppes par `GET /api/v1/events?kind=1059&tag=p:<sa clé>&since=<dernier relevé moins deux jours>` (section 5), par pages, et ne garde que celles qu'il sait ouvrir. Les marques de lecture ne quittent jamais l'appareil.
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.
