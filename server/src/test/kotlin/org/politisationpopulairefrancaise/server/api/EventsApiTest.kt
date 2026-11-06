@@ -124,6 +124,36 @@ class EventsApiTest {
     }
 
     @Test
+    fun listsByRepeatableTagParameters() = testApplication {
+        application { module(TestDatabase.dataSource) }
+        val carol = "c".repeat(64)
+        val dave = "d".repeat(64)
+        val toCarol = signer.sign(kind = EventKinds.TEXT_NOTE, content = "1", tags = listOf(listOf("p", carol)), createdAt = 100)
+        val toDave = signer.sign(kind = EventKinds.TEXT_NOTE, content = "2", tags = listOf(listOf("p", dave), listOf("t", "a:b")), createdAt = 200)
+        for (event in listOf(toCarol, toDave)) {
+            val response = client.post("/api/v1/events") {
+                contentType(ContentType.Application.Json)
+                setBody(event.toJson())
+            }
+            assertEquals(HttpStatusCode.Created, response.status)
+        }
+
+        assertEquals(listOf(toCarol), Json.decodeFromString<List<SignedEvent>>(client.get("/api/v1/events?tag=p:$carol").bodyAsText()))
+        assertEquals(listOf(toDave, toCarol), Json.decodeFromString<List<SignedEvent>>(client.get("/api/v1/events?tag=p:$carol&tag=p:$dave").bodyAsText()))
+        assertEquals(listOf(toDave), Json.decodeFromString<List<SignedEvent>>(client.get("/api/v1/events?tag=p:$dave&tag=t:a:b&kind=1").bodyAsText()))
+        assertEquals("[]", client.get("/api/v1/events?tag=p:$carol&tag=t:a:b").bodyAsText())
+        assertEquals("[]", client.get("/api/v1/events?tag=p:$carol&author=$carol").bodyAsText())
+
+        for (invalid in listOf("tag=p", "tag=:value", "tag=", "tag=${"n".repeat(65)}:v", "tag=t:${"v".repeat(1025)}")) {
+            val response = client.get("/api/v1/events?$invalid")
+            assertEquals(HttpStatusCode.BadRequest, response.status, invalid)
+            assertEquals("bad_parameter", Json.decodeFromString<ApiError>(response.bodyAsText()).error)
+        }
+        val tooMany = (1..21).joinToString("&") { "tag=t:$it" }
+        assertEquals(HttpStatusCode.BadRequest, client.get("/api/v1/events?$tooMany").status)
+    }
+
+    @Test
     fun withoutDatabaseTheApiSaysSoAndTheRestWorks() = testApplication {
         application { module(null) }
         val response = client.get("/api/v1/events")

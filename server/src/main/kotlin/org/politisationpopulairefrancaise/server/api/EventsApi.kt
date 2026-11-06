@@ -16,6 +16,7 @@ import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.events.StoreOutcome
+import org.politisationpopulairefrancaise.server.events.TagIndex
 
 @Serializable
 data class PublishResponse(val id: String, val status: String)
@@ -31,7 +32,7 @@ const val MAX_EVENT_BYTES: Long = 64 * 1024
  *
  * - POST /api/v1/events: publish one signed event (JSON body). Only events whose signature checks
  *   out and which the [PublicationPolicy] allows are stored; nothing is logged about the sender.
- * - GET /api/v1/events?kind=&author=&identifier=&since=&until=&limit=: newest first.
+ * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
 fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy) {
@@ -77,10 +78,11 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy) {
             val authors = parameters.getAll("author").orEmpty()
             if (authors.any { !isLowercaseHex64(it) }) return@get badParameter("author")
             val identifiers = parameters.getAll("identifier").orEmpty()
+            val tags = parseTagFilters(parameters.getAll("tag").orEmpty()) ?: return@get badParameter("tag")
             val since = parameters["since"]?.let { it.toLongOrNull() ?: return@get badParameter("since") }
             val until = parameters["until"]?.let { it.toLongOrNull() ?: return@get badParameter("until") }
             val limit = parameters["limit"]?.let { it.toIntOrNull() ?: return@get badParameter("limit") } ?: EventFilter.DEFAULT_LIMIT
-            val filter = EventFilter(kinds, authors, identifiers, since, until, limit)
+            val filter = EventFilter(kinds, authors, identifiers, tags, since, until, limit)
             call.respond(withContext(Dispatchers.IO) { repository.query(filter) })
         }
 
@@ -95,6 +97,28 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy) {
             }
         }
     }
+}
+
+/** At most this many `tag=` parameters per request, so that a query stays cheap. */
+const val MAX_TAG_FILTERS: Int = 20
+
+/**
+ * Parses repeatable `tag=<name>:<value>` parameters: the first colon separates the name from the
+ * value, which may itself contain colons. Values of the same name are alternatives, different
+ * names are all required. Returns null when a parameter is malformed or the limits are exceeded.
+ */
+fun parseTagFilters(raw: List<String>): Map<String, List<String>>? {
+    if (raw.size > MAX_TAG_FILTERS) return null
+    val tags = mutableMapOf<String, MutableList<String>>()
+    for (parameter in raw) {
+        val separator = parameter.indexOf(':')
+        if (separator < 1) return null
+        val name = parameter.substring(0, separator)
+        val value = parameter.substring(separator + 1)
+        if (!TagIndex.isIndexable(name, value)) return null
+        tags.getOrPut(name) { mutableListOf() } += value
+    }
+    return tags
 }
 
 private suspend fun io.ktor.server.routing.RoutingContext.badParameter(name: String) =
