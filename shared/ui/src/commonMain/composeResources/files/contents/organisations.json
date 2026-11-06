@@ -1,0 +1,470 @@
+[
+    {
+        "id": "0d443e6827b2725be0b3f1cd62e97cd6e1f3f434a4c23e5be54dde8450ac57ea",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "ateliers-lanterne"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Association fictive Les Ateliers de la Lanterne"
+            ],
+            [
+                "summary",
+                "Éducation populaire : des ateliers ouverts à tous pour comprendre ses droits et préparer une réunion publique."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "organisation"
+            ],
+            [
+                "ppf-org-type",
+                "association"
+            ],
+            [
+                "ppf-territory",
+                "Lyon (69)"
+            ],
+            [
+                "ppf-verified",
+                "2026-10-12"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "p",
+                "acfe2b6e1d2fd778464c51b14b0ab41ccc3fe5336728b65582f05245bd5efe97"
+            ],
+            [
+                "r",
+                "https://example.org/ateliers-lanterne"
+            ],
+            [
+                "ppf-contact-phone",
+                "04 65 71 20 14"
+            ],
+            [
+                "ppf-contact-email",
+                "ateliers-lanterne@example.org"
+            ],
+            [
+                "ppf-contact-address",
+                "Adresse fictive de démonstration, Lyon"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une organisation imaginaire, créée pour montrer l'annuaire. Ses contacts ne mènent nulle part.**\n\n## Ce que fait l'association\n\n- Des ateliers du soir pour lire une loi, un arrêté municipal ou un budget communal.\n- Une permanence mensuelle pour préparer une réunion publique ou une assemblée générale.\n- Des fiches pratiques imprimées, prêtées gratuitement.\n\n## Rejoindre ou aider\n\nLes ateliers sont ouverts sans inscription. L'association cherche des bénévoles pour animer les permanences.\n\nCette organisation a un compte sur PPF : vous pouvez la suivre pour retrouver ses publications dans votre fil.\n",
+        "sig": "06b0074aa1f116cc5d4ce4a79fa835951b2f0f2b05d0b929a7e040aa16dcdf66c752e5336e68323acda73b5eb98a9579adea7e689d9876d187a4319344229b08"
+    },
+    {
+        "id": "2f39b2746c530dab5599f5e2378653e2a0f1893eac66b54d811d4d2e0ec51a58",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "bibliotheque-imaginaire"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Bibliothèque militante imaginaire"
+            ],
+            [
+                "summary",
+                "Une bibliothèque associative imaginaire : livres sur l'histoire des luttes, archives de tracts et lectures publiques."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "organisation"
+            ],
+            [
+                "ppf-org-type",
+                "autre"
+            ],
+            [
+                "ppf-territory",
+                "Paris (75)"
+            ],
+            [
+                "ppf-verified",
+                "2026-11-02"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "r",
+                "https://example.org/bibliotheque-imaginaire"
+            ],
+            [
+                "ppf-contact-phone",
+                "01 99 00 25 90"
+            ],
+            [
+                "ppf-contact-address",
+                "Adresse fictive de démonstration, Paris"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une organisation imaginaire, créée pour montrer l'annuaire. Ses contacts ne mènent nulle part.**\n\n## Ce que fait la bibliothèque\n\n- Le prêt gratuit de livres sur l'histoire des mouvements sociaux.\n- La conservation des tracts et des affiches des mobilisations.\n- Une lecture publique par mois.\n\n## À savoir\n\nCette fiche montre une organisation de type « autre » : ni association de défense, ni syndicat, ni collectif.\n",
+        "sig": "0dd247701efd428ae82c33078ffb627337324ab58eb05da1556e13c643b17697b875c6ec3c5a6945720994e21a3a7cdc577985764a77228398d2bcc2f90605e9"
+    },
+    {
+        "id": "52ada5254dcddad50dd6acd0f31a8a9388a32b6fe15d2b0695bcd6964e412e2b",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "collectif-tilleuls"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Collectif fictif du quartier des Tilleuls"
+            ],
+            [
+                "summary",
+                "Des habitants qui s'organisent : jardins partagés, entraide entre voisins et réunions publiques sur la vie du quartier."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "organisation"
+            ],
+            [
+                "ppf-org-type",
+                "collectif"
+            ],
+            [
+                "ppf-territory",
+                "Rennes (35)"
+            ],
+            [
+                "ppf-verified",
+                "2026-10-27"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "r",
+                "https://example.org/collectif-tilleuls"
+            ],
+            [
+                "ppf-contact-email",
+                "collectif-tilleuls@example.org"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une organisation imaginaire, créée pour montrer l'annuaire. Ses contacts ne mènent nulle part.**\n\n## Ce que fait le collectif\n\n- Des jardins partagés et une fête de quartier chaque printemps.\n- Une réunion publique par mois sur les transports et le logement.\n- Un réseau d'entraide pour les courses et les petits travaux.\n\n## Rejoindre ou aider\n\nTout le monde peut venir aux réunions publiques. Le collectif n'a pas de numéro de téléphone : écrivez-lui.\n",
+        "sig": "96cfbf18e2c0d5af4c20ad50cfdcce87fdf34bd13c7839c6ab1446c1c95c414d71675bf63e9044e4716a3308d46f64f5a103d1b2e75e55692a5020df070bdce1"
+    },
+    {
+        "id": "8526c5c38b0813bf15238008a16dae5d6cb0e72fc7f692f7311a1355d2a3f67a",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "legal-team-nord"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Legal team de démonstration du Nord"
+            ],
+            [
+                "summary",
+                "Observer les manifestations, informer chacun de ses droits et orienter les personnes interpellées vers un avocat."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "organisation"
+            ],
+            [
+                "ppf-org-type",
+                "legal-team"
+            ],
+            [
+                "ppf-territory",
+                "Nord (59)"
+            ],
+            [
+                "ppf-verified",
+                "2026-10-05"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "p",
+                "d9695c2f8b1da1a9b111c2b9a75b9c593658348e1269ccbc55c3b591787d029c"
+            ],
+            [
+                "ppf-contact-phone",
+                "06 39 98 52 10"
+            ],
+            [
+                "ppf-contact-email",
+                "legal-team-nord@example.org"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une organisation imaginaire, créée pour montrer l'annuaire. Ses contacts ne mènent nulle part.**\n\n## Ce que fait la legal team\n\n- Des observateurs juridiques, reconnaissables, présents dans les manifestations déclarées.\n- Un numéro de permanence à noter sur soi avant de partir manifester.\n- L'orientation des personnes interpellées vers des avocats.\n\n## Bon à savoir\n\nLa legal team informe et oriente ; elle ne remplace ni un avocat ni les secours. En cas d'urgence vitale, appelez le 15 ou le 112.\n",
+        "sig": "8ffb343c62fc5b6202bc9689e648680ffffae74163adc9af533ee03919104ca0df66ecff190e55f2aa40f93253c709da19909697c218b473169fe496384a856d"
+    },
+    {
+        "id": "e6bebc1a0c18ded29abd0a9e6178d00266e9ca31fb8dc25551b610db6f0d6fd0",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "reseau-avocats-benevoles"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Réseau fictif d'avocats bénévoles"
+            ],
+            [
+                "summary",
+                "Un réseau imaginaire d'avocats qui conseillent gratuitement les personnes poursuivies après une manifestation."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "organisation"
+            ],
+            [
+                "ppf-org-type",
+                "avocats-benevoles"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-verified",
+                "2026-09-30"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "r",
+                "https://example.org/avocats-benevoles"
+            ],
+            [
+                "ppf-contact-phone",
+                "01 99 00 77 31"
+            ],
+            [
+                "ppf-contact-email",
+                "avocats-benevoles@example.org"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une organisation imaginaire, créée pour montrer l'annuaire. Ses contacts ne mènent nulle part.**\n\n## Ce que fait le réseau\n\n- Une première consultation gratuite, par téléphone, pour les personnes convoquées ou poursuivies.\n- La mise en relation avec un avocat proche de chez vous.\n\n## Bon à savoir\n\nPour une garde à vue, vous pouvez aussi demander un avocat commis d'office : c'est un droit, dès le début de la mesure.\n",
+        "sig": "44acd61d356f3a58257b5d2a3aced593c4747e7c9b338a048e1fb9a7e6e205aea23a9219f24b76720d6a5a760da23380392a997eff68287ff9d4c2148fd911a7"
+    },
+    {
+        "id": "c9165360407ea3ae1ebda240785690a61648b9b57a4ba9b2c2354cd81d771780",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "street-medics-marseille"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Street medics de démonstration de Marseille"
+            ],
+            [
+                "summary",
+                "Des secouristes bénévoles formés aux premiers secours, présents dans les manifestations pour soigner et orienter."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "organisation"
+            ],
+            [
+                "ppf-org-type",
+                "street-medics"
+            ],
+            [
+                "ppf-territory",
+                "Marseille (13)"
+            ],
+            [
+                "ppf-verified",
+                "2026-10-18"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "r",
+                "https://example.org/street-medics-marseille"
+            ],
+            [
+                "ppf-contact-phone",
+                "04 65 71 63 05"
+            ],
+            [
+                "ppf-contact-email",
+                "street-medics-marseille@example.org"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une organisation imaginaire, créée pour montrer l'annuaire. Ses contacts ne mènent nulle part.**\n\n## Ce que font les street medics\n\n- Des premiers soins pendant les manifestations, pour toutes les personnes qui en ont besoin.\n- Des formations aux gestes de premiers secours, ouvertes à tous.\n\n## Bon à savoir\n\nLes street medics ne remplacent jamais les secours publics : en cas d'urgence vitale, appelez d'abord le 15 ou le 112.\n",
+        "sig": "8ec2df60e53a0325f18f2f8be0c357643a4fe5155dd8278362d170b5178fda69aff99820eec66602f3606fb728b8f4886ba47a1f21797ddee102fda68f241e8e"
+    },
+    {
+        "id": "df2b1cb11f2cf8a425ed29b555031b69057fed4249e1a9895277cc40538745f7",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "syndicat-livreurs-velo"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Syndicat fictif des livreurs à vélo"
+            ],
+            [
+                "summary",
+                "Défendre les livreurs à vélo partout en France : conditions de travail, rémunération, sécurité sur la route."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "organisation"
+            ],
+            [
+                "ppf-org-type",
+                "syndicat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-verified",
+                "2026-09-28"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "p",
+                "e5669f8eadf6863eca04c146bca494189d1c27e425b3de91c05e21583444773c"
+            ],
+            [
+                "r",
+                "https://example.org/livreurs-velo"
+            ],
+            [
+                "ppf-contact-phone",
+                "01 99 00 41 27"
+            ],
+            [
+                "ppf-contact-email",
+                "livreurs-velo@example.org"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une organisation imaginaire, créée pour montrer l'annuaire. Ses contacts ne mènent nulle part.**\n\n## Ce que fait le syndicat\n\n- Informer les livreurs de leurs droits, qu'ils soient salariés ou indépendants.\n- Accompagner les démarches devant le conseil de prud'hommes.\n- Organiser des assemblées générales dans les grandes villes.\n\n## Rejoindre ou aider\n\nL'adhésion se fait auprès du syndicat, jamais sur PPF. Suivre ce syndicat sur PPF reste une information privée, gardée sur votre appareil.\n",
+        "sig": "d8465a6a1b909b5b3c0cd2ad066cc3a66a6c6276d5cc8167d717de34c8ac883ff09bce510b1f9cae700883030cdd3331dcf4f1485353a38f68d7ba8bdba0ce21"
+    },
+    {
+        "id": "6d2f6f301e854e4cd89381d4ea91dce10fe5a017550f3c045a561c52eef1efaa",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "union-locale-lille"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Union locale fictive de Lille"
+            ],
+            [
+                "summary",
+                "Une union locale de syndicats imaginaire : permanences juridiques pour les salariés et coordination des grèves locales."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "organisation"
+            ],
+            [
+                "ppf-org-type",
+                "syndicat"
+            ],
+            [
+                "ppf-territory",
+                "Lille (59)"
+            ],
+            [
+                "ppf-verified",
+                "2026-10-20"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-contact-phone",
+                "03 53 01 18 62"
+            ],
+            [
+                "ppf-contact-email",
+                "union-lille@example.org"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une organisation imaginaire, créée pour montrer l'annuaire. Ses contacts ne mènent nulle part.**\n\n## Ce que fait l'union locale\n\n- Une permanence juridique gratuite pour les salariés, chaque semaine.\n- La coordination des préavis et des caisses de grève des syndicats de la ville.\n\n## À savoir\n\nCette organisation n'a pas encore de compte sur PPF : sa fiche est tenue à jour par l'équipe éditoriale.\n",
+        "sig": "18216e6dde07668fd1f6b6090eed0f140709ba938a8bab656e766bf64a876a99f36af64555ad4f9d6a6ee6982f8261a26b82783383d2da79241b8047a02c27c5"
+    }
+]
