@@ -67,6 +67,19 @@ Si une étape ne se passe pas comme décrit, notez l'étape et le message affich
 6. Tournez le téléphone : la barre du bas devient une colonne d'icônes à gauche ; l'avatar reste en haut à droite.
 7. Comparez avec vos maquettes, en clair puis en sombre : couleurs, police (Atkinson Hyperlegible), arrondis, ombres, badges. Deux écarts volontaires, à trancher : la barre du bas (vos maquettes ont à la place un bouton rond « Carte » et un bouton « AIDE »), et l'absence du bouton AIDE tant qu'il n'est pas spécifié.
 
+### Tester le suivi de comptes (ajouté le 7 novembre 2026)
+
+1. Ouvrez l'application sans créer de compte. Dans le fil, l'onglet **Suivis** se trouve juste après « Tout » : touchez-le. Un encadré explique que vous ne suivez encore aucun compte, et une ligne discrète rappelle que la liste reste sur votre appareil.
+2. Revenez sur « Tout ». Chaque publication porte, en haut à droite, un petit bouton **Suivre**. Utilisez-le sur une publication de Politisation Populaire Française : il devient « Suivi » avec une coche.
+3. Touchez de nouveau l'onglet **Suivis** : les cinq publications d'exemple de ce compte s'y trouvent maintenant.
+4. Sur l'une d'elles, utilisez le bouton « Suivi » : il redevient « Suivre » et la vue Suivis se vide.
+5. Touchez l'avatar ou le nom de l'auteur d'une publication : une petite boîte s'ouvre avec son nom, sa clé publique complète (« npub1… », sélectionnable pour la copier) et un bouton « Suivre » ou « Ne plus suivre ». « Fermer » referme la boîte sans rien changer.
+6. Suivez un compte, fermez complètement l'application, puis rouvrez-la : le compte est toujours suivi. La liste est enregistrée sur l'appareil, et nulle part ailleurs.
+7. Si vous avez un compte : dans Mon espace, « Se déconnecter de cet appareil » prévient que la liste des comptes suivis sera aussi effacée ; après confirmation, l'onglet Suivis est de nouveau vide.
+8. Sur téléphone, la rangée d'onglets défile de gauche à droite : balayez-la, ou balayez les vues, pour atteindre « Revendications ».
+
+Pas encore là : la synchronisation de cette liste entre vos appareils (sauvegarde chiffrée, à étudier) et sa gestion depuis Mon espace.
+
 ### Tester les revendications et les messages (ajouté le 6 novembre 2026)
 
 1. Touchez **Revendications** dans la barre du bas. Trois revendications d'exemple s'affichent en cards : le statut (Nouvelle, En débat, Très soutenue), la revendication en une phrase, son résumé, son territoire et ses thèmes. Les boutons **Pour**, **Contre** et **Débat** sont grisés : ils s'activeront quand la méthode « une personne, une voix » sera validée. Touchez une card : l'argumentaire s'ouvre ; la flèche revient à la liste. Sur l'ordinateur, la liste et le détail sont côte à côte.

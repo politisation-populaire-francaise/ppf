@@ -17,13 +17,15 @@ Ce que le serveur ne stocke pas : adresse IP, appareil, langue, heure de connexi
 
 ## 1 bis. Données sur l'appareil de l'utilisateur (depuis le 5 novembre 2026)
 
-Les applications stockent le compte sur l'appareil, et rien d'autre. Aucune de ces données ne quitte l'appareil ; le serveur ne les reçoit jamais.
+Les applications stockent sur l'appareil le compte et, depuis le 7 novembre 2026, la liste des comptes suivis. Aucune de ces données ne quitte l'appareil comme telle ; le serveur ne les reçoit jamais. Qui l'on suit peut révéler une appartenance politique ou syndicale (donnée sensible, RGPD article 9) : c'est pourquoi cette liste reste sur l'appareil (S-120, AG-22, point d'attention n° 32).
 
 | Donnée | Finalité | Où | Durée | Accès |
 |---|---|---|---|---|
 | Clé secrète de l'identité (32 octets) | Signer les contenus et prouver que l'on est l'auteur de son compte | Android : stockage privé de l'application, chiffré par une clé AES-256 du Keystore (puce sécurisée quand elle existe), exclu des sauvegardes ; ordinateur : fichier `identity.json` dans le dossier de données privé de l'utilisateur (chiffrement par code à venir, S-43) ; iOS : en mémoire seulement tant que le trousseau n'est pas implémenté | Jusqu'à la déconnexion (effacement) | L'utilisateur, par l'application |
 | Phrase de récupération (12 mots) et sa langue | Retrouver son compte sur un autre appareil ; pouvoir la réafficher si elle a été mal notée | Avec la clé secrète, même protection ; absente si le compte a été importé par sa clé « nsec » | Jusqu'à la déconnexion | L'utilisateur, après un avertissement |
 | Clé publique (pseudonyme technique) | Identifier l'auteur d'un contenu signé | Dérivée de la clé secrète ; sera jointe à chaque contenu publié, donc visible publiquement avec lui | Tant que des contenus signés existent | Public, pour les contenus publiés |
+| Liste des comptes suivis : clé publique (pseudonyme) de chaque compte suivi et date du suivi | Assembler la vue « Suivis » du fil sur l'appareil ; demander au serveur les publications de ces comptes | Table `follow` de la base locale SQLite de l'application (Android : stockage privé ; ordinateur : fichier `ppf.db` du dossier de données privé ; iOS : bac à sable) | Jusqu'à ce que l'utilisateur cesse de suivre le compte, efface ses clés de l'appareil (la liste est alors effacée avec elles) ou désinstalle l'application | L'utilisateur, par l'application. Jamais transmise comme liste : le serveur ne voit que des demandes de publications par lots d'au plus 20 clés en ordre aléatoire, et la clé seule du compte que l'on vient de suivre ; aucune adresse IP journalisée |
+| Réactions « J'aime » | Mémoriser ce que l'on a aimé | En mémoire seulement, le temps de la session (prototype) | Jusqu'à la fermeture de l'application | L'utilisateur |
 
 La clé publique est un pseudonyme : elle ne contient aucune information sur la personne, mais elle relie entre eux les contenus d'un même compte. L'écran du compte le dit à l'utilisateur ; il pourra créer plusieurs identités.
 
