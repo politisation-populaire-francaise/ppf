@@ -9,6 +9,8 @@ import androidx.compose.runtime.setValue
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -29,6 +31,7 @@ import org.politisationpopulairefrancaise.core.sync.SyncReport
 import org.politisationpopulairefrancaise.core.sync.SyncService
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.resources.Res
+import kotlin.random.Random
 
 /** Where the contents come from and whether the server could be reached. */
 sealed interface LibraryStatus {
@@ -86,7 +89,12 @@ class ContentLibrary(
     private val remote: RemoteEvents?,
     private val scope: CoroutineScope,
     private val follows: FollowStore? = null,
+    /** Shuffles the followed keys before batching them; injectable so that tests can check the order. */
+    private val random: Random = Random.Default,
 ) {
+    /** Writes to the device's list of followed accounts happen one at a time, in the order the user acted. */
+    private val followWrites = Mutex()
+
     var status: LibraryStatus by mutableStateOf(LibraryStatus.Loading)
         private set
 
@@ -138,30 +146,39 @@ class ContentLibrary(
 
     /**
      * Follows an account: the list is updated on the device at once and, when a server is
-     * configured, the followed authors' publications are fetched so that the "Suivis" view fills.
+     * configured, that author's recent publications are fetched (one batch of one key: the rest of
+     * the list stays home) so that the "Suivis" view fills. Anything but a valid key is ignored.
      */
     fun follow(pubkeyHex: String) {
-        if (pubkeyHex in followed) return
+        if (!FollowStore.isValidKey(pubkeyHex) || pubkeyHex in followed) return
         followed = followed + pubkeyHex
         scope.launch {
-            follows?.let { follows -> withContext(Dispatchers.Default) { follows.follow(pubkeyHex) } }
+            persistFollowed { it.follow(pubkeyHex) }
             val store = store ?: return@launch
             val remote = remote ?: return@launch
-            val report = pullFollowed(store, remote)
-            if (report.pulled > 0) reload(store)
+            if (pullAuthors(store, remote, listOf(pubkeyHex)).pulled > 0) reload(store)
         }
     }
 
     fun unfollow(pubkeyHex: String) {
         if (pubkeyHex !in followed) return
         followed = followed - pubkeyHex
-        scope.launch {
-            follows?.let { follows -> withContext(Dispatchers.Default) { follows.unfollow(pubkeyHex) } }
-        }
+        scope.launch { persistFollowed { it.unfollow(pubkeyHex) } }
     }
 
     fun toggleFollow(pubkeyHex: String) {
         if (pubkeyHex in followed) unfollow(pubkeyHex) else follow(pubkeyHex)
+    }
+
+    /** Forgets every followed account, on the device too: called when the user erases the keys. */
+    fun clearFollowed() {
+        followed = emptySet()
+        scope.launch { persistFollowed { it.clear() } }
+    }
+
+    private suspend fun persistFollowed(write: (FollowStore) -> Unit) {
+        val follows = follows ?: return
+        followWrites.withLock { withContext(Dispatchers.Default) { write(follows) } }
     }
 
     /** Asks the server again (no effect without a server). */
@@ -219,7 +236,11 @@ class ContentLibrary(
     private suspend fun pull(store: LocalEventStore, remote: RemoteEvents) {
         status = LibraryStatus.Loading
         val sync = SyncService(store, remote)
-        val report = sync.publishPending() + sync.pull(kinds = listOf(Article.KIND, EventKinds.TEXT_NOTE)) + pullFollowed(store, remote)
+        val up = sync.publishPending()
+        var report = up + sync.pull(kinds = listOf(Article.KIND, EventKinds.TEXT_NOTE))
+        // The batches of followed authors never travel in the same pass as a publication of the user:
+        // a server could otherwise tie them to its author. After a publication they wait for the next refresh.
+        if (up.reachable && up.published == 0) report += pullFollowed(store, remote)
         reload(store)
         status = if (report.reachable) LibraryStatus.Synced(report.pulled) else LibraryStatus.Unreachable
     }
@@ -230,24 +251,31 @@ class ContentLibrary(
     }
 
     /**
-     * Fetches the recent publications of the followed accounts through the existing `author`
-     * parameter of the events API, by batches of at most [FOLLOW_BATCH] keys taken in random order:
-     * the server never receives the whole list in one request, and the order says nothing about when
-     * each account was followed. Only authentic events from the requested authors are kept. The
-     * first unreachable batch stops the round; the remaining accounts wait for the next refresh.
+     * Asks for the recent publications of every followed account, by batches of at most
+     * [FOLLOW_BATCH] keys taken in random order: the server never receives the whole list in one
+     * request, and the order says nothing about when each account was followed.
      */
     private suspend fun pullFollowed(store: LocalEventStore, remote: RemoteEvents): SyncReport {
         val keys = followed.toList()
         if (keys.isEmpty()) return SyncReport()
+        return pullAuthors(store, remote, keys.shuffled(random))
+    }
+
+    /**
+     * Fetches the recent notes of [authors] through the existing `author` parameter of the events
+     * API, [FOLLOW_BATCH] keys per request. Only authentic events from the requested authors are
+     * kept. The first unreachable batch stops the round; the rest waits for the next refresh.
+     */
+    private suspend fun pullAuthors(store: LocalEventStore, remote: RemoteEvents, authors: List<String>): SyncReport {
         var report = SyncReport()
-        for (batch in keys.shuffled().chunked(FOLLOW_BATCH)) {
-            val authors = batch.toSet()
+        for (batch in authors.chunked(FOLLOW_BATCH)) {
+            val wanted = batch.toSet()
             val filter = RemoteFilter(kinds = listOf(EventKinds.TEXT_NOTE), authors = batch, limit = FOLLOW_FETCH_LIMIT)
             when (val result = remote.fetch(filter)) {
                 is FetchResult.Unavailable -> return report.copy(reachable = false)
                 is FetchResult.Events -> {
                     val stored = withContext(Dispatchers.Default) {
-                        result.events.count { it.pubkey in authors && it.verify() && store.store(it) == LocalStoreOutcome.STORED }
+                        result.events.count { it.pubkey in wanted && it.verify() && store.store(it) == LocalStoreOutcome.STORED }
                     }
                     report = report.copy(pulled = report.pulled + stored)
                 }
@@ -294,6 +322,6 @@ class ContentLibrary(
 fun rememberContentLibrary(dependencies: AppDependencies): ContentLibrary {
     val scope = rememberCoroutineScope()
     return remember(dependencies) {
-        ContentLibrary(dependencies.contentStore, dependencies.editorialTrust, dependencies.remote, scope, dependencies.followStore).also { it.start() }
+        ContentLibrary(dependencies.contentStore, dependencies.editorialTrust, dependencies.remote, scope, follows = dependencies.followStore).also { it.start() }
     }
 }
