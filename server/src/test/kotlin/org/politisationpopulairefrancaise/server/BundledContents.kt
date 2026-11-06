@@ -13,8 +13,15 @@ import java.nio.file.Path
 object BundledContents {
     const val DIRECTORY: String = "shared/ui/src/commonMain/composeResources/files/contents"
 
-    /** fiches.json (practical guides), revendications.json (demands of the wall), fil.json (notes of the feed). */
-    val FILES: List<String> = listOf("fiches.json", "revendications.json", "fil.json")
+    /**
+     * fiches.json (practical guides), revendications.json (demands of the wall), fil.json (notes of the
+     * feed), and for the Agir space agenda.json (mobilizations), appels.json (calls) and
+     * organisations.json (directory), each loaded only if it exists.
+     */
+    val FILES: List<String> get() = listOf("fiches.json", "revendications.json", "fil.json") + AGIR_FILES
+
+    /** The example contents of the Agir space, written by the agents of its blocks (absent until then). */
+    val AGIR_FILES: List<String> = listOf("agenda.json", "appels.json", "organisations.json")
 
     /** The authentic events of [file]; empty when the file cannot be found. */
     fun load(file: String): List<SignedEvent> {

@@ -22,6 +22,9 @@ import org.politisationpopulairefrancaise.core.revendications.checks.ProposalRep
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.server.agir.HeldQueue
+import org.politisationpopulairefrancaise.server.agir.devHeldRoutes
+import org.politisationpopulairefrancaise.server.agir.exampleMobilizations
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.events.EventRepository
@@ -50,6 +53,11 @@ const val DEMO_GROUP_ID: String = "collectif-demonstration"
  * - POST /dev/revendications/proposals/{id}/approve: publishes one;
  * - POST /dev/revendications/proposals/{id}/reject, with the reason as the request body.
  *
+ * The Agir space likewise: agenda.json, appels.json and organisations.json are loaded when they exist,
+ * two example mobilizations are added (one published, one waiting for review), and the review of the
+ * held contents goes through GET /dev/held, POST /dev/held/{id}/approve and POST /dev/held/{id}/reject
+ * (see devHeldRoutes).
+ *
  * Never used in production: it listens on the local machine only and forgets everything on exit.
  */
 fun main() {
@@ -58,7 +66,8 @@ fun main() {
     val dataSource = postgres.postgresDatabase.also(Database::migrate)
     val repository = EventRepository(dataSource)
 
-    val seeded = BundledContents.loadAll()
+    val bundled = BundledContents.FILES.associateWith(BundledContents::load)
+    val seeded = bundled.values.flatten()
     seeded.forEach(repository::store)
 
     // The development key exists only for this run; it is never written anywhere nor printed.
@@ -70,14 +79,20 @@ fun main() {
     // The same settings as production: an AI model only if PPF_AI_BASE_URL is set (for example a local model).
     val revendications = RevendicationsSetup.fromEnvironment()
     val queue = ProposalQueue(dataSource, repository, revendications.clock)
+    val held = HeldQueue(dataSource, repository)
+    repository.store(exampleMobilizations(developmentKey, held))
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
     println(
         "Development server: ${seeded.size} bundled content(s) loaded, example rooms \"$DEMO_GROUP_ID\" and \"atelier-logement-lyon\" loaded, " +
             "${editors.size} editor key(s), AI model ${if (revendications.model == null) "off" else "on"}, http://localhost:$port",
     )
+    println("Agir space: ${BundledContents.AGIR_FILES.joinToString { "$it ${bundled[it].orEmpty().size}" }}, review of held contents at /dev/held.")
     embeddedServer(Netty, port = port, host = "127.0.0.1") {
         module(dataSource, PublicationPolicy(editors), revendications = revendications)
-        routing { devReviewRoutes(queue) }
+        routing {
+            devReviewRoutes(queue)
+            devHeldRoutes(held)
+        }
     }.start(wait = true)
 }
 
