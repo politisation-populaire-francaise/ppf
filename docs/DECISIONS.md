@@ -223,3 +223,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Options écartées : envoyer la version de publication réduite par R8 (impossible à essayer sans téléphone ni émulateur) ; numéro de version donné par l'intégration continue (une version produite sur l'ordinateur aurait alors un numéro plus petit et serait refusée comme une version plus ancienne).
 - Raison : une application débogable permet à toute personne qui branche le téléphone par câble de lire les fichiers privés de l'application et d'y attacher un débogueur (OWASP MASVS-RESILIENCE) ; un numéro croissant rend chaque mise à jour lisible et évite les refus. Ces changements ne suppriment pas, à eux seuls, les avertissements des téléphones : seule une distribution par un magasin le fait (brainstorming du cahier des charges, entrée « Distribution des versions de test sur Android », option payante en attente de la propriétaire).
 - Conséquences : `android-debug.apk` reste réservé à l'ordinateur ; guide `docs/guides/installer-version-test-android.md` ; la compilation construit une variante de plus.
+
+## D-032 (2026-11-06) Messagerie : choix techniques des conversations privées et des salons
+
+- Contexte : achèvement de la messagerie demandé par la propriétaire (« Termine la messagerie », 6 novembre 2026), dans le cadre de D-027 et D-028.
+- Décisions techniques prises en autonomie, à confirmer par la propriétaire :
+  - **une seule session de messagerie** pour toute l'exécution de l'application, qui suit le compte affiché ; la conversation ouverte survit à une visite ailleurs ; effacer ses clés efface aussi les conversations, la date du dernier relevé et la liste des salons rejoints (protection par défaut) ;
+  - **relevé des messages** à l'ouverture de l'écran Messages, toutes les 20 secondes tant qu'il est affiché et sur le bouton d'actualisation, jamais en arrière-plan en attendant les notifications ; marque « lu » posée par l'affichage de la conversation, jamais envoyée ;
+  - **mise en garde avant d'allonger la conservation** des messages (6 mois ou 1 an) : une durée plus longue expose davantage d'anciens messages si la clé est volée (principe 10) ; revenir à 3 mois ne demande rien ;
+  - **création d'un salon seulement avec le serveur joignable** (lui seul peut refuser un doublon) ; identifiant formé du nom et du territoire (`collectif-sante-lyon`, puis `-2`, `-3` s'il est pris) ; salons qui se ressemblent montrés comme simple indice, seul le refus du serveur compte ; mise en garde avant la création : le pseudonyme du créateur est publiquement relié au salon ;
+  - **refus des doublons de salons sans course** : vérification et enregistrement sous un verrou du processus puis un verrou PostgreSQL ; annuaire des salons dans une table dédiée (`group_directory`), pour que la recherche et les doublons couvrent tous les salons ; description bornée à 8 Kio, nom et territoire à 100 caractères ;
+  - deux volets (liste et conversation, liste et salon) sur les fenêtres larges, plein écran avec retour sur téléphone.
+- Raison : demande de la propriétaire ; aucune dépense ; aucune donnée nouvelle ne quitte l'appareil hormis ce que les décisions D-027 et D-028 prévoient.
+- À trancher par la propriétaire (brainstorming du cahier fonctionnel) : squat d'un nom de salon sur un territoire (modération par l'équipe, ou ne pas compter les salons fermés comme doublons) ; proposer une clé distincte pour créer un salon ; limite de taille des conversations de groupe.
+
