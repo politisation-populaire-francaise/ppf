@@ -118,6 +118,8 @@ fun Application.module(
     }
     val limits = PostLimits(relay)
     val groups = repository?.let(::GroupDirectory)
+    // Room descriptions stored before the directory table existed (V4) enter it, once.
+    groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     install(ErrorShield)
     install(ContentNegotiation) {
         json()

@@ -127,12 +127,12 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
                 PublicationPolicy.Decision.Allowed -> Unit
             }
             // Group rules that need the database: the group must exist, be open, be managed by this key,
-            // and not duplicate another group of the same name on the same territory.
-            when (val admission = withContext(Dispatchers.IO) { directory.admit(event) }) {
-                is PublicationPolicy.Decision.Refused -> return@post call.refuse(admission)
-                PublicationPolicy.Decision.Allowed -> Unit
+            // and not duplicate another group of the same name on the same territory. A description is
+            // checked and stored under a lock, so that two identical rooms cannot be created at once.
+            val outcome = when (val admission = withContext(Dispatchers.IO) { directory.admitAndStore(event) }) {
+                is GroupDirectory.Admission.Refused -> return@post call.refuse(admission.refusal)
+                is GroupDirectory.Admission.Stored -> admission.outcome
             }
-            val outcome = withContext(Dispatchers.IO) { repository.store(event) }
             when (outcome) {
                 StoreOutcome.STORED -> {
                     if (event.kind == RelayKinds.GIFT_WRAP) {

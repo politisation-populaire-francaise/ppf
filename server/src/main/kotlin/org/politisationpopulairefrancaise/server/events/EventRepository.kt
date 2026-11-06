@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.server.events
 import org.politisationpopulairefrancaise.core.signing.EventReplacement
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.TagsJson
+import org.politisationpopulairefrancaise.server.groups.GroupIndex
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -89,7 +90,7 @@ enum class StoreOutcome {
  * Stores and reads signed events in PostgreSQL. Signature verification is the API's job, before
  * anything reaches this class. Replacement follows [EventReplacement], like the local database.
  */
-class EventRepository(private val dataSource: DataSource) {
+class EventRepository(internal val dataSource: DataSource) {
 
     fun store(event: SignedEvent): StoreOutcome = dataSource.connection.use { connection ->
         connection.autoCommit = false
@@ -152,6 +153,8 @@ class EventRepository(private val dataSource: DataSource) {
             insert.executeUpdate()
         }
         insertTags(connection, event)
+        // A group description also enters the directory of rooms (and leaves it with the event).
+        GroupIndex.write(connection, event)
         return StoreOutcome.STORED
     }
 

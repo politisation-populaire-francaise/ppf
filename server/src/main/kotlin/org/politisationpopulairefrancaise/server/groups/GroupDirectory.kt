@@ -4,36 +4,43 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy.Decision
-import java.text.Collator
-import java.util.Locale
+import org.politisationpopulairefrancaise.server.events.StoreOutcome
 
 /**
  * The groups known to this relay, read from the stored metadata events (kind 39000), and the
  * admission rules that need the database (the pure rules live in PublicationPolicy).
  *
  * A group id belongs to the key that first described it: another key may not redefine it. Should
- * two keys ever claim the same id at the same instant, the earliest event (then the lowest id) wins.
- * One name per territory (D-028): a description whose normalized name and territory are those of
- * another group is refused, with the id of that group to join instead.
+ * two keys ever have described the same id (through a direct store), the earliest event (then the
+ * lowest id) wins. One name per territory (D-028): a description whose normalized name and
+ * territory are those of another group is refused, with the id of that group to join instead.
+ * Both checks and the storage of a description happen one at a time ([admitAndStore]).
  *
- * Ceiling of this version: the directory works on the first [EventFilter.MAX_LIMIT] descriptions
- * by date, loaded and compared in Kotlin; pagination and indexed search will come with the second
- * version of the groups.
+ * Listing and search go through the table of [GroupIndex], which holds every description.
  */
-class GroupDirectory(private val events: EventRepository) {
+class GroupDirectory(private val events: EventRepository, private val index: GroupIndex = GroupIndex(events.dataSource)) {
 
-    private val collator: Collator = Collator.getInstance(Locale.FRENCH)
+    /** What [admitAndStore] did with an event. */
+    sealed interface Admission {
+        data class Refused(val refusal: Decision.Refused) : Admission
+
+        data class Stored(val outcome: StoreOutcome) : Admission
+    }
+
+    /** The first groups by name (accents and case ignored) then id; see [search]. */
+    fun list(limit: Int = DEFAULT_LIMIT): List<Group> = search(null, null, limit)
 
     /**
-     * Every group, by name (French collation) then id. Ceiling: the first [EventFilter.MAX_LIMIT]
-     * descriptions by date; pagination will come with the second version of the groups.
+     * The groups whose name, territory or description contains [query] and whose territory is
+     * [territory], both compared once normalized ([GroupNames]: accents, case and punctuation
+     * ignored); a null, blank or punctuation-only value does not filter. Sorted by normalized name
+     * then id, at most [limit] (bounded to 1..[MAX_LIMIT]).
      */
-    fun list(): List<Group> = events.query(EventFilter(kinds = listOf(GroupKinds.METADATA), limit = EventFilter.MAX_LIMIT))
-        .mapNotNull(Group::from)
-        .groupBy { it.id }
-        .values
-        .map(::canonical)
-        .sortedWith(compareBy<Group, String>(collator) { it.name ?: it.id }.thenBy { it.id })
+    fun search(query: String?, territory: String?, limit: Int = DEFAULT_LIMIT): List<Group> {
+        val text = query?.let(GroupNames::normalize)?.takeIf { it.isNotEmpty() }
+        val place = territory?.let(GroupNames::normalize)?.takeIf { it.isNotEmpty() }
+        return index.search(text, place, limit.coerceIn(1, MAX_LIMIT)).mapNotNull(Group::from)
+    }
 
     fun find(id: String): Group? {
         if (!GroupKinds.isValidId(id)) return null
@@ -46,15 +53,17 @@ class GroupDirectory(private val events: EventRepository) {
 
     /**
      * Another group (another id) with the same normalized name and the same normalized territory
-     * as [group]; null when there is none, or when [group] has no usable name or territory. Among
-     * several (only possible through a race), the first by name then id.
+     * as [group]; null when there is none, or when [group] has no usable name or territory.
      */
     fun findDuplicate(group: Group): Group? {
         val name = group.normalizedName
         val territory = group.normalizedTerritory
         if (name.isEmpty() || territory.isEmpty()) return null
-        return list().firstOrNull { it.id != group.id && it.normalizedName == name && it.normalizedTerritory == territory }
+        return index.duplicateOf(group.id, name, territory)?.let(::find)
     }
+
+    /** Descriptions stored before the directory table existed enter it; returns how many. */
+    fun indexMissing(): Int = index.indexMissing()
 
     private fun canonical(candidates: Collection<Group>): Group =
         candidates.minWith(compareBy<Group>({ it.event.createdAt }, { it.event.id }))
@@ -66,7 +75,7 @@ class GroupDirectory(private val events: EventRepository) {
      * - companions of the metadata (39001, 39003...): the group must exist and be managed by the same key;
      * - any event carrying `h` tags: every named group must exist and be open.
      * Other events are not about groups and pass. The checks do not rely on the policy having run:
-     * every `d` and `h` value is examined.
+     * every `d` and `h` value is examined. To store the event as well, use [admitAndStore].
      */
     fun admit(event: SignedEvent): Decision {
         if (event.kind == GroupKinds.METADATA) {
@@ -103,5 +112,26 @@ class GroupDirectory(private val events: EventRepository) {
             }
         }
         return Decision.Allowed
+    }
+
+    /**
+     * [admit], then the storage of the event if it is allowed. A group description is checked and
+     * stored under the lock of [GroupIndex.exclusively]: two rooms of the same name on the same
+     * territory, published at the same instant, cannot both pass; the second one sees the first.
+     */
+    fun admitAndStore(event: SignedEvent): Admission =
+        if (event.kind == GroupKinds.METADATA) index.exclusively { admitThenStore(event) } else admitThenStore(event)
+
+    private fun admitThenStore(event: SignedEvent): Admission = when (val decision = admit(event)) {
+        is Decision.Refused -> Admission.Refused(decision)
+        Decision.Allowed -> Admission.Stored(events.store(event))
+    }
+
+    companion object {
+        /** Groups answered when the caller gives no limit. */
+        const val DEFAULT_LIMIT: Int = 100
+
+        /** Most groups in one answer. */
+        const val MAX_LIMIT: Int = 500
     }
 }

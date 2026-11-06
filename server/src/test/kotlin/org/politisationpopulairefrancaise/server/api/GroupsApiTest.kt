@@ -10,7 +10,14 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.server.testing.testApplication
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -86,7 +93,7 @@ class GroupsApiTest {
         assertEquals(HttpStatusCode.Created, client.publish(metadata(citizen, "ecole", "[EXEMPLE] École", territory = "Nantes")).status)
 
         val groups = client.groups()
-        assertEquals(listOf("demo", "ecole", "ferme"), groups.map { it.id }, "sorted by name with French collation")
+        assertEquals(listOf("demo", "ecole", "ferme"), groups.map { it.id }, "sorted by name, accents and case ignored")
         assertEquals(
             Group("demo", "[EXEMPLE] Collectif", "[EXEMPLE] Un salon de démonstration", null, territory = "Lyon", charter = "1.0", isPublic = true, isOpen = true, event = description),
             groups[0],
@@ -171,6 +178,72 @@ class GroupsApiTest {
         assertEquals("logement-lyon", json.decodeFromString<GroupExistsError>(renamed.bodyAsText()).existing)
         assertEquals(listOf("education-lyon", "education-paris", "logement-lyon"), client.groups().map { it.id })
         assertEquals("[EXEMPLE] Texte revu", json.decodeFromString<Group>(client.get("/api/v1/groups/education-lyon").bodyAsText()).about, "the refused rename changed nothing")
+    }
+
+    @Test
+    fun searchesRoomsByTextTerritoryAndLimitKeepingTheEntryShape() = testApplication {
+        application { module(TestDatabase.dataSource, NO_EDITORS, TEST_RELAY) }
+        assertEquals(HttpStatusCode.Created, client.publish(metadata(citizen, "education-lyon", "[EXEMPLE] Collectif Éducation", territory = "Lyon", about = "[EXEMPLE] Écoles du 7e")).status)
+        assertEquals(HttpStatusCode.Created, client.publish(metadata(citizen, "education-paris", "[EXEMPLE] Collectif Éducation", territory = "Paris", about = null)).status)
+        assertEquals(HttpStatusCode.Created, client.publish(metadata(otherCitizen, "logement-lyon", "[EXEMPLE] Logement digne", territory = "LYON", about = null)).status)
+        assertEquals(HttpStatusCode.Created, client.publish(metadata(otherCitizen, "transports", "[EXEMPLE] Transports", territory = "Saint-Étienne", about = null)).status)
+
+        assertEquals(listOf("education-lyon", "education-paris", "logement-lyon", "transports"), client.groups().map { it.id })
+        assertEquals(listOf("education-lyon", "education-paris"), client.groups("?q=%C3%A9ducation").map { it.id }, "q=éducation")
+        assertEquals(listOf("education-lyon", "logement-lyon"), client.groups("?territory=lyon").map { it.id })
+        assertEquals(listOf("education-lyon"), client.groups("?q=Education&territory=Lyon").map { it.id })
+        assertEquals(listOf("education-lyon"), client.groups("?q=ecoles").map { it.id }, "the description is searched")
+        assertEquals(listOf("transports"), client.groups("?q=etienne").map { it.id }, "the territory is searched")
+        assertEquals(listOf("transports"), client.groups("?territory=saint+etienne").map { it.id })
+        assertEquals(emptyList(), client.groups("?territory=Lyon%203e"), "a territory is compared whole")
+        assertEquals(4, client.groups("?q=&territory=").size, "empty parameters do not filter")
+        assertEquals(listOf("education-lyon", "education-paris"), client.groups("?limit=2").map { it.id })
+        assertEquals(4, client.groups("?limit=500").size)
+
+        // Each entry keeps the shape of the listing, with the territory and the charter added.
+        val entry = Json.parseToJsonElement(client.get("/api/v1/groups?territory=paris").bodyAsText()).jsonArray.single().jsonObject
+        assertEquals(listOf("id", "name", "about", "picture", "territory", "charter", "public", "open", "event"), entry.keys.toList())
+        assertEquals("Paris", entry["territory"]!!.jsonPrimitive.content)
+        assertEquals("1.0", entry["charter"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun badSearchParametersAreRefused() = testApplication {
+        application { module(TestDatabase.dataSource, NO_EDITORS, TEST_RELAY) }
+        val long = "a".repeat(MAX_GROUP_QUERY_LENGTH + 1)
+        for (query in listOf("limit=0", "limit=501", "limit=-1", "limit=abc", "limit=", "limit=1&limit=2", "q=a&q=b", "territory=a&territory=b", "q=$long", "territory=$long")) {
+            val response = client.get("/api/v1/groups?$query")
+            assertEquals(HttpStatusCode.BadRequest, response.status, query)
+            assertEquals("bad_parameter", response.error(), query)
+        }
+        assertEquals(HttpStatusCode.OK, client.get("/api/v1/groups?q=${"a".repeat(MAX_GROUP_QUERY_LENGTH)}&limit=1").status)
+    }
+
+    @Test
+    fun aDescriptionStaysSmall() = testApplication {
+        application { module(TestDatabase.dataSource, NO_EDITORS, TEST_RELAY) }
+        val longName = client.publish(metadata(citizen, "long", "[EXEMPLE] " + "n".repeat(GroupKinds.MAX_NAME_LENGTH)))
+        assertEquals(HttpStatusCode.BadRequest, longName.status)
+        assertEquals("description_too_long", longName.error())
+        assertEquals("description_too_long", client.publish(metadata(citizen, "long", "[EXEMPLE] Nom", territory = "t".repeat(GroupKinds.MAX_TERRITORY_LENGTH + 1))).error())
+        assertEquals("description_too_long", client.publish(metadata(citizen, "long", "[EXEMPLE] Nom", about = "a".repeat(GroupKinds.MAX_DESCRIPTION_BYTES))).error())
+        assertEquals("[]", client.get("/api/v1/groups").bodyAsText())
+        // At the bounds, it passes.
+        val atBounds = metadata(citizen, "large", "[EXEMPLE] " + "n".repeat(GroupKinds.MAX_NAME_LENGTH - 10), territory = "t".repeat(GroupKinds.MAX_TERRITORY_LENGTH), about = "[EXEMPLE] " + "a".repeat(6_000))
+        assertEquals(HttpStatusCode.Created, client.publish(atBounds).status)
+    }
+
+    @Test
+    fun theSameRoomCreatedAtTheSameInstantByEightAccountsExistsOnce() = testApplication {
+        application { module(TestDatabase.dataSource, NO_EDITORS, TEST_RELAY) }
+        val descriptions = List(8) { i -> metadata(LocalEventSigner(IdentityKeys.generate()), "salon-$i", "[EXEMPLE] Collectif Éducation", territory = "Lyon") }
+        val responses = coroutineScope { descriptions.map { async(Dispatchers.IO) { client.publish(it) } }.awaitAll() }
+
+        assertEquals(1, responses.count { it.status == HttpStatusCode.Created }, responses.map { it.status }.toString())
+        val winner = client.groups().single().id
+        val refused = responses.filter { it.status == HttpStatusCode.Conflict }.map { json.decodeFromString<GroupExistsError>(it.bodyAsText()) }
+        assertEquals(7, refused.size)
+        assertTrue(refused.all { it.error == "group_exists" && it.existing == winner }, refused.toString())
     }
 
     @Test
