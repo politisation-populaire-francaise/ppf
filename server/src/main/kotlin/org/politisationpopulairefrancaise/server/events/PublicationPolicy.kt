@@ -5,6 +5,7 @@ import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.server.agir.AgirRules
 import org.politisationpopulairefrancaise.server.groups.GroupKinds
 import org.politisationpopulairefrancaise.server.groups.GroupNames
 import org.politisationpopulairefrancaise.server.relay.RelayKinds
@@ -17,7 +18,9 @@ import org.politisationpopulairefrancaise.server.relay.RelayKinds
  * - editorial contents (kind 30023) are accepted only from the keys listed in the environment
  *   variable PPF_EDITOR_KEYS (hex or "npub1…" keys separated by commas); a demand from another key
  *   ([isCitizenDemand]) is refused here too, and the API holds it for review by a person instead
- *   (server/revendications);
+ *   (server/revendications); a call of the Agir space (`ppf-type` = appel) is open to every key;
+ * - mobilizations (kind 31923), calls and directory entries of the Agir space must have the shape of
+ *   the contract (server/agir/AgirRules); who publishes them directly is decided by AgirSpace;
  * - a group description (kind 39000, NIP-29) is accepted from any key (D-028: creating a group is
  *   open to every account) provided it carries exactly one valid `d` id, a non-empty `name`, a
  *   non-empty territory (`ppf-territory`), the accepted charter version (`ppf-charter` = 1.0) and
@@ -61,8 +64,11 @@ class PublicationPolicy(private val editors: Set<String>) {
             Decision.Refused(400, "ephemeral_kind", "Ephemeral events are not stored.")
         event.tags.size > MAX_TAGS ->
             Decision.Refused(400, "too_many_tags", "An event carries at most $MAX_TAGS tags.")
-        event.kind == Article.KIND && !isEditor(event.pubkey) ->
+        // Calls of the Agir space are open to every key (AgirSpace then publishes or holds them).
+        event.kind == Article.KIND && !isEditor(event.pubkey) && !AgirRules.isCall(event) ->
             Decision.Refused(403, "not_allowed", "Only the editorial team publishes editorial contents.")
+        // The shape of mobilizations, calls and directory entries (docs/integration/agir-contrat.md).
+        AgirRules.check(event) != null -> AgirRules.check(event)!!
         event.kind == GroupKinds.MEMBERS ->
             Decision.Refused(403, "members_list_refused", "Member lists are never published nor stored on this relay.")
         GroupKinds.isMembershipOrModeration(event.kind) ->
