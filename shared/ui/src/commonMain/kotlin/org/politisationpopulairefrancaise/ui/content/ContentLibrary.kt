@@ -437,7 +437,7 @@ class ContentLibrary(
         /** Recent notes asked for per batch of followed authors. */
         const val FOLLOW_FETCH_LIMIT: Int = 100
 
-        private val BUNDLED_FILES = listOf("files/contents/fiches.json", "files/contents/revendications.json", "files/contents/fil.json")
+        private val BUNDLED_FILES = listOf("files/contents/fiches.json", "files/contents/parcours.json", "files/contents/revendications.json", "files/contents/fil.json")
         private val json = Json { ignoreUnknownKeys = true }
     }
 }
