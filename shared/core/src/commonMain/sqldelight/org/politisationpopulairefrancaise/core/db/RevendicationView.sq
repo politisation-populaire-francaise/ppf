@@ -1,0 +1,26 @@
+-- The views of the demands wall chosen by the user, in the order of their tabs (owner's request of
+-- 2026-11-06). They reveal political interests (themes, territories, followed accounts), a
+-- sensitive datum under article 9 of the GDPR: this table stays on the device and is never sent.
+-- A row with a null name and a null query references a built-in view by its id ("tout", "suivis",
+-- "theme:sante"...); a custom view ("custom:" and random hexadecimal) has both, the query being the
+-- JSON of RevendicationQuery. An empty table means the default layout. The temporary filters are
+-- never stored. Added in schema version 5: existing databases get it through migrations/4.sqm.
+
+CREATE TABLE revendication_view (
+    id TEXT NOT NULL PRIMARY KEY,
+    position INTEGER NOT NULL,
+    name TEXT,
+    query TEXT
+);
+
+insert:
+INSERT OR REPLACE INTO revendication_view(id, position, name, query) VALUES (?, ?, ?, ?);
+
+selectAll:
+SELECT id, position, name, query FROM revendication_view ORDER BY position ASC, id ASC;
+
+deleteAll:
+DELETE FROM revendication_view;
+
+countAll:
+SELECT COUNT(*) FROM revendication_view;
