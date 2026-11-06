@@ -21,6 +21,7 @@ import org.politisationpopulairefrancaise.core.HealthStatus
 import org.politisationpopulairefrancaise.server.agir.AgirConfig
 import org.politisationpopulairefrancaise.server.agir.AgirSetup
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
+import org.politisationpopulairefrancaise.server.agir.agendaSource
 import org.politisationpopulairefrancaise.server.agir.agirApi
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PostLimits
@@ -38,6 +39,7 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.webRoutes
 import javax.sql.DataSource
 
@@ -165,6 +167,7 @@ fun Application.module(
         groupsApi(groups)
         revendicationsApi(proposals)
         agirApi(agirSpace)
+        agirSpace?.let { agendaPage(it.agendaSource()) }
         webRoutes()
     }
 }

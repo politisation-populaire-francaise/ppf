@@ -207,6 +207,21 @@ class AgendaApiTest {
         assertEquals("nosniff", response.headers["X-Content-Type-Options"])
     }
 
+    @Test
+    fun theSiteShowsTheAgendaWithoutScript() = testApplication {
+        start()
+        events.store(event("lyon", start = now + DAY, territory = "Lyon"))
+        events.store(event("paris", start = now + 2 * DAY, territory = "Paris", type = "reunion"))
+        val page = client.get("/agenda?territory=LYON")
+        assertEquals(HttpStatusCode.OK, page.status)
+        val html = page.bodyAsText()
+        assertTrue(html.contains("<h3>lyon</h3>"), html)
+        assertTrue(!html.contains("<h3>paris</h3>") && !html.contains("<script"))
+        assertTrue(client.get("/agenda?type=reunion").bodyAsText().contains("<h3>paris</h3>"))
+        // An unknown type is ignored rather than refused: the page always answers.
+        assertEquals(HttpStatusCode.OK, client.get("/agenda?type=emeute").status)
+    }
+
     private fun rows(): Int = TestDatabase.dataSource.connection.use { connection ->
         connection.createStatement().use { statement ->
             val result = statement.executeQuery("SELECT count(*) FROM agenda_entry")

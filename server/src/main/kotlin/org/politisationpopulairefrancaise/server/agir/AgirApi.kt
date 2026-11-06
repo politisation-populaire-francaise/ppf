@@ -15,6 +15,7 @@ import org.politisationpopulairefrancaise.core.agir.AgirFormats
 import org.politisationpopulairefrancaise.core.publication.HeldStatusSource
 import org.politisationpopulairefrancaise.server.api.badParameter
 import org.politisationpopulairefrancaise.server.groups.GroupNames
+import org.politisationpopulairefrancaise.web.AgendaSource
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
 
@@ -64,6 +65,25 @@ fun Route.agirApi(agir: AgirSpace?) {
         call.response.header(HttpHeaders.ContentDisposition, "inline; filename=\"agenda-ppf.ics\"")
         call.respondText(AgendaCalendar.render(events), ContentType.parse(AgendaCalendar.CONTENT_TYPE))
     }
+}
+
+/** Most mobilizations on the agenda page of the site. */
+const val AGENDA_PAGE_LIMIT: Int = 200
+
+/**
+ * The source of the agenda page of the site (module web, GET /agenda): the default period of the
+ * API, the territory normalized as for the rooms.
+ */
+fun AgirSpace.agendaSource(): AgendaSource = AgendaSource { query ->
+    val now = clock.instant().epochSecond
+    val filter = AgendaFilter(
+        from = now - AGENDA_DEFAULT_PAST.inWholeSeconds,
+        to = now + AGENDA_DEFAULT_AHEAD.inWholeSeconds,
+        territory = query.territory?.let(GroupNames::normalize)?.takeIf { it.isNotEmpty() },
+        types = listOfNotNull(query.type?.takeIf { it in AgirFormats.EVENT_TYPES }),
+        limit = AGENDA_PAGE_LIMIT,
+    )
+    withContext(Dispatchers.IO) { agenda.query(filter) }
 }
 
 /** The filter of the agenda from the query, or null once a `400 bad_parameter` was answered. */
