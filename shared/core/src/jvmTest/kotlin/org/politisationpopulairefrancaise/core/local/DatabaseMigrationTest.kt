@@ -4,6 +4,8 @@ import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.revendications.RevendicationViewStore
+import org.politisationpopulairefrancaise.core.revendications.RevendicationViews
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import java.nio.file.Files
 import java.nio.file.Path
@@ -65,9 +67,9 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion4() {
-        // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm).
-        assertEquals(4L, PpfDatabase.Schema.version)
+    fun theSchemaIsAtVersion5() {
+        // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm); 5: views of the demands wall (4.sqm).
+        assertEquals(5L, PpfDatabase.Schema.version)
     }
 
     @Test
@@ -90,6 +92,12 @@ class DatabaseMigrationTest {
         val events = LocalEventStore(database)
         assertEquals(1L, events.count())
         assertEquals("[EXEMPLE] ancienne note", assertNotNull(events.find(eventId)).content)
+
+        // So does the table of the views of the demands wall (version 5).
+        val views = RevendicationViewStore(database)
+        assertEquals(null, views.layout())
+        views.save(listOf(RevendicationViews.ALL, RevendicationViews.NATIONAL))
+        assertEquals(listOf(RevendicationViews.ALL, RevendicationViews.NATIONAL), views.layout())
     }
 
     @Test
@@ -97,5 +105,6 @@ class DatabaseMigrationTest {
         val database = JvmDatabase.inMemory()
         assertEquals(0L, FollowStore(database).count())
         assertEquals(0L, LocalEventStore(database).count())
+        assertEquals(0L, RevendicationViewStore(database).count())
     }
 }

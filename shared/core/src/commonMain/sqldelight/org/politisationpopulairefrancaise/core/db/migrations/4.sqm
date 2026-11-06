@@ -1,0 +1,10 @@
+-- Schema version 4 to 5 (2026-11-06): the views of the demands wall chosen by the user, kept on the
+-- device only (see RevendicationView.sq, which is the reference for fresh installations; this file
+-- must stay identical to its CREATE statement).
+
+CREATE TABLE revendication_view (
+    id TEXT NOT NULL PRIMARY KEY,
+    position INTEGER NOT NULL,
+    name TEXT,
+    query TEXT
+);

@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.core.local
 
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.messaging.MessageStore
+import org.politisationpopulairefrancaise.core.revendications.RevendicationViewStore
 import java.nio.file.Files
 import java.sql.DriverManager
 import kotlin.test.Test
@@ -44,6 +45,7 @@ class SchemaMigrationTest {
             // The store works on the migrated database and the existing content is kept.
             assertEquals(0, MessageStore(database).count())
             assertEquals(1, LocalEventStore(database).count())
+            assertEquals(0, RevendicationViewStore(database).count())
 
             DriverManager.getConnection("jdbc:sqlite:${file.toAbsolutePath()}").use { connection ->
                 connection.createStatement().use { statement ->
@@ -51,9 +53,10 @@ class SchemaMigrationTest {
                         generateSequence { if (rows.next()) rows.getString(1) else null }.toSet()
                     }
                     assertTrue(tables.containsAll(setOf("conversation", "message", "outgoing_message", "messaging_state")), tables.toString())
+                    assertTrue(tables.containsAll(setOf("sync_cursor", "revendication_view")), tables.toString())
                     val version = statement.executeQuery("PRAGMA user_version").use { rows -> rows.next(); rows.getLong(1) }
                     assertEquals(PpfDatabase.Schema.version, version)
-                    assertTrue(version >= 3, "schema version $version")
+                    assertTrue(version >= 5, "schema version $version")
                 }
             }
         } finally {
