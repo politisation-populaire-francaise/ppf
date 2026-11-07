@@ -83,7 +83,8 @@ class DeciderScreenTest {
         onNodeWithTag(DeciderTags.card("pacte-election-exemple")).assert(has("3 candidats sur 4 ont répondu"))
         onNodeWithText("Pétitions officielles ouvertes (4)").assertExists()
         onNodeWithTag(DeciderTags.card("petition-an-ordre-public")).assert(has("${n(412_950)} signatures"))
-        onNodeWithTag(DeciderTags.card("petition-an-ordre-public")).assert(has("Plus que ${n(87_050)} signatures pour atteindre ${n(500_000)}"))
+        // « plus de 500 000 pétitionnaires » (Règlement de l'Assemblée, article 148, alinéa 6).
+        onNodeWithTag(DeciderTags.card("petition-an-ordre-public")).assert(has("Plus que ${n(87_051)} signatures pour dépasser ${n(500_000)}"))
         // The closed one is one touch away, not mixed with the open ones.
         onNodeWithTag(DeciderTags.card("petition-senat-retraites")).assertDoesNotExist()
         onNodeWithTag(DeciderTags.CLOSED_OPEN).performScrollTo().performClick()

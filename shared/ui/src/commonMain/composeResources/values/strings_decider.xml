@@ -45,7 +45,9 @@
     <string name="decider_petition_threshold_unknown">Le nombre de soutiens nécessaire sera fixé par le Conseil constitutionnel pour cette procédure.</string>
     <string name="decider_petition_all_reached">Tous les seuils sont atteints.</string>
     <string name="decider_petition_next_threshold">Prochain seuil : %1$s signatures</string>
+    <string name="decider_petition_next_threshold_more_than">Prochain seuil : plus de %1$s signatures</string>
     <string name="decider_petition_remaining">Plus que %1$s signatures pour atteindre %2$s</string>
+    <string name="decider_petition_remaining_more_than">Plus que %1$s signatures pour dépasser %2$s</string>
     <string name="decider_petition_progress_description">%1$d pour cent du prochain seuil</string>
     <string name="decider_petition_sign">Signer sur le site officiel (%1$s)</string>
     <string name="decider_petition_see_official">Voir sur le site officiel (%1$s)</string>
@@ -62,6 +64,7 @@
     <string name="decider_thresholds_of_petition">Les seuils et ce qu’ils obtiennent</string>
     <string name="decider_thresholds_explain">Comment fonctionnent les pétitions : %1$s</string>
     <string name="decider_threshold_signatures">%1$s signatures</string>
+    <string name="decider_threshold_more_than">Plus de %1$s signatures</string>
     <string name="decider_threshold_reached">Atteint</string>
     <string name="decider_threshold_not_reached">Pas encore atteint</string>
     <string name="decider_threshold_departments">venant d’au moins %1$d départements ou collectivités d’outre-mer</string>
@@ -108,6 +111,7 @@
     <string name="decider_share_platform">Pétition officielle : %1$s</string>
     <string name="decider_share_count">Déjà %1$s signatures (le %2$s).</string>
     <string name="decider_share_next">Objectif : %1$s signatures.</string>
+    <string name="decider_share_next_more_than">Objectif : plus de %1$s signatures.</string>
     <string name="decider_share_link">Signer sur le site officiel : %1$s</string>
     <string name="decider_share_copy">Copier le message</string>
 

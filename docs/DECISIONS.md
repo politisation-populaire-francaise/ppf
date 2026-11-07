@@ -473,6 +473,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **CESE ajouté** aux plateformes de M10 (pétition officielle prévue par la Constitution) : à confirmer par la propriétaire ;
   - **objectifs par territoire reportés** : aucune plateforme ne publie la répartition des signataires par département ; il faudra un référentiel des territoires et de leur population (brainstorming).
 - Raison : relayer sans jamais tromper sur ce qu'une pétition peut obtenir ; aucun tiers depuis l'appareil ; aucune donnée d'opinion enregistrée.
+- Correction du 7 novembre 2026, vérifiée sur le texte officiel du Règlement : les seuils de l'Assemblée sont « plus de » 100 000 (article 148, alinéa 1) et « plus de » 500 000 dans trente départements ou collectivités d'outre-mer au moins (article 148, alinéa 6, et non l'article 151, qui décrit le débat) ; le code compte maintenant strictement plus (`Threshold.moreThan`).
 
 ## D-060 (2026-11-07) Pacte démocratique : texte unique, tableau public identique pour tous, archives
 
