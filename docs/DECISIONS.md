@@ -755,7 +755,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - le serveur refuse l'inscription et la délivrance de jetons, à tous les niveaux (`403 not_a_person`), à un compte connu comme n'étant pas une personne physique :
     - une clé de l'équipe éditoriale (elle parle au nom de PPF ; ses membres votent avec leur compte personnel) ;
     - une organisation de l'annuaire d'« Agir », vérifiée (clé nommée dans une fiche signée par l'équipe) ;
-    - un compte qui se déclare organisation, collectif ou association dans son profil (étiquette `ppf-account-type` d'un événement de type 0) ;
+    - un compte qui se déclare collectif dans son profil (étiquette `ppf-account-type` = `collective` d'un événement de type 0 ; types de compte tenus par le pôle « Communauté », `docs/integration/types-de-compte.md`) ;
   - un compte inscrit avant de devenir l'un d'eux ne reçoit plus de jeton ;
   - le second pseudonyme d'une même personne vote comme tout compte personnel ; les élus votent en public (D-115).
 
