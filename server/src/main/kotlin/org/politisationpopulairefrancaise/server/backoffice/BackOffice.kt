@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.server.backoffice
 
 import org.politisationpopulairefrancaise.core.identity.PublicKey
+import org.politisationpopulairefrancaise.server.legal.LegalRegister
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.time.Clock
@@ -647,6 +648,12 @@ class BackOffice(
                     audit.record(connection, approvalEntry(me, "approval.approved", approval))
                     Outcome.Ok(ApprovalStatus.APPROVED to approval)
                 }
+                // A requisition approved by a second person: its answer may now be downloaded once (answerRequisition).
+                ACTION_REQUISITION -> {
+                    approvals.decide(connection, approval.id, ApprovalStatus.APPROVED, actor.accountId, now)
+                    audit.record(connection, approvalEntry(me, "approval.approved", approval))
+                    Outcome.Ok(ApprovalStatus.APPROVED to null)
+                }
                 else -> Outcome.Denied("unknown_action")
             }
         }
@@ -1065,6 +1072,84 @@ class BackOffice(
         }
     }
 
+    // Judicial requisitions (legal register, D-077) -----------------------------------------------------
+
+    /**
+     * Asks to search the legal register for a judicial requisition (`legal.requisition`, new verification of the
+     * key): [reference] (authority, number, date) is mandatory and kept without limit in the journal, as a reason;
+     * the [search] waits for a second holder of the permission (two-person rule) and never enters the journal.
+     */
+    fun requestRequisition(auth: Authenticated, reference: String?, search: RequisitionSearch): Outcome<PendingApproval> {
+        val actor = auth.actor
+        if (!actor.has(Permissions.LEGAL_REQUISITION)) return Outcome.Denied("forbidden")
+        val text = cleanReason(reference) ?: return Outcome.Denied("reference_required")
+        if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
+        val now = now()
+        val requisition = UUID.randomUUID().toString()
+        return dataSource.transaction { connection ->
+            val approval = approvals.create(
+                connection, ACTION_REQUISITION, Permissions.LEGAL_REQUISITION, TARGET_REQUISITION, requisition,
+                search.payload() + (PendingApprovals.KEY to requisition), text, actor.accountId, now,
+            )
+            audit.record(connection, approvalEntry(AuditActor.of(actor), "approval.requested", approval))
+            Outcome.Ok(approval)
+        }
+    }
+
+    /** The requisitions still pending or decided in the last 30 days, newest first (`legal.requisition` only). */
+    fun requisitions(actor: TeamActor): Outcome<List<PendingApproval>> =
+        if (!actor.has(Permissions.LEGAL_REQUISITION)) {
+            Outcome.Denied("forbidden")
+        } else {
+            Outcome.Ok(approvals.recentOf(ACTION_REQUISITION, clock.instant().minusSeconds(BackOfficeConfig.DECIDED_RETENTION.inWholeSeconds)))
+        }
+
+    /**
+     * The answer to an approved requisition, **once**: by the person who asked or the one who approved, with a
+     * new verification of the key, within 7 days of the approval. The rows come from the database function
+     * answer_requisition, which reads the search from the approval, refuses a second answer and erases the
+     * search; the journal line (same transaction) holds the reference and the counts, never the rows nor the
+     * search. Each answer increments the public counter (GET /api/v1/transparence/requisitions).
+     */
+    fun answerRequisition(auth: Authenticated, approvalId: UUID): Outcome<RequisitionAnswer> {
+        val actor = auth.actor
+        if (!actor.has(Permissions.LEGAL_REQUISITION)) return Outcome.Denied("forbidden")
+        if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
+        val now = now()
+        return try {
+            dataSource.transaction { connection ->
+                val approval = approvals.lock(connection, approvalId)?.takeIf { it.action == ACTION_REQUISITION } ?: return@transaction Outcome.Denied("not_found")
+                if (actor.accountId != approval.requestedBy && actor.accountId != approval.decidedBy) return@transaction Outcome.Denied("forbidden")
+                when (LegalRequisitions.state(approval, now)) {
+                    RequisitionState.READY -> Unit
+                    RequisitionState.ANSWERED -> return@transaction Outcome.Denied("requisition_answered")
+                    RequisitionState.LAPSED -> return@transaction Outcome.Denied("requisition_lapsed")
+                    else -> return@transaction Outcome.Denied("requisition_not_approved")
+                }
+                val search = RequisitionSearch.of(approval.payload) ?: return@transaction Outcome.Denied("requisition_lapsed")
+                val rows = LegalRegister.answerRequisition(connection, approval.id)
+                audit.record(
+                    connection,
+                    AuditEntry(
+                        AuditActor.of(actor),
+                        LegalRequisitions.ACTION_ANSWERED,
+                        TARGET_REQUISITION,
+                        approval.targetId,
+                        approval.reason,
+                        mapOf(
+                            "approval" to approval.id.toString(),
+                            "operations" to rows.contentOperations.size.toString(),
+                            "pseudonyms" to rows.pseudonyms.size.toString(),
+                        ),
+                    ),
+                )
+                Outcome.Ok(RequisitionAnswer(approval.targetId, approval.reason.orEmpty(), search, rows, now))
+            }
+        } catch (e: LegalRegister.RequisitionRefused) {
+            Outcome.Denied(e.code)
+        }
+    }
+
     // Periodic work ---------------------------------------------------------------------------------
 
     /** What one pass of the periodic task did (counts only). */
@@ -1102,6 +1187,8 @@ class BackOffice(
                 }
             }
         }
+        // The search of a requisition leaves its request once refused, expired, cancelled or not downloaded in time.
+        approvals.forget(ACTION_REQUISITION, RequisitionSearch.FIELDS, now.minusSeconds(LegalRequisitions.DOWNLOAD_WINDOW.inWholeSeconds))
         flushFailures(all = false)
         val suspended = checkValidatorOrganisations()
         val deletedSessions = sessions.deleteExpired(now)
@@ -1202,6 +1289,10 @@ class BackOffice(
         const val ACTION_REMOVE: String = "team.remove_member"
         const val ACTION_REINSTATE: String = "team.reinstate_member"
         const val ACTION_QUEUE: String = "queue.action"
+
+        /** A search of the legal register on a judicial requisition (D-077), waiting for a second person. */
+        const val ACTION_REQUISITION: String = "legal.requisition"
+        const val TARGET_REQUISITION: String = "legal_requisition"
         const val TARGET_ACCOUNT: String = "team_account"
         const val TARGET_GRANT: String = "team_role_grant"
         const val TARGET_QUEUE_ITEM: String = "queue_item"
@@ -1267,8 +1358,12 @@ class BackOffice(
             "pending_approval",
             approval.id.toString(),
             approval.reason,
-            approval.payload + mapOf("requested_action" to approval.action, "target" to "${approval.targetType}:${approval.targetId}"),
+            journaled(approval) + mapOf("requested_action" to approval.action, "target" to "${approval.targetType}:${approval.targetId}"),
         )
+
+        /** What the journal keeps of a request: everything, but never the search of a judicial requisition (D-077). */
+        private fun journaled(approval: PendingApproval): Map<String, String> =
+            if (approval.action == ACTION_REQUISITION) approval.payload - RequisitionSearch.FIELDS else approval.payload
 
         private operator fun AuditEntry.plus(pair: Pair<String, String>): AuditEntry = copy(details = details + pair)
     }

@@ -7,6 +7,12 @@
 -- The server may read and write the data, but on the team journal only read and append: no UPDATE,
 -- DELETE or TRUNCATE, and, not owning the table, it can neither disable its trigger nor change the
 -- schema; it reads the history of the migrations without changing it.
+--
+-- The legal register (schema legal_register, D-077) is write-only for the server: INSERT of the columns it
+-- fills (never the reception date nor the identifier, set by the database), USAGE of the schema and of its
+-- sequences, never SELECT, UPDATE, DELETE or TRUNCATE; reading and purging only through the SECURITY
+-- DEFINER functions answer_requisition (a requisition approved by two people), purge (nothing younger
+-- than one year) and requisitions_by_month (the public counter).
 
 DO $$
 DECLARE
@@ -24,6 +30,21 @@ BEGIN
     IF to_regclass('flyway_schema_history') IS NOT NULL THEN
         EXECUTE format('REVOKE ALL ON flyway_schema_history FROM %I', app_role);
         EXECUTE format('GRANT SELECT ON flyway_schema_history TO %I', app_role);
+    END IF;
+    IF to_regnamespace('legal_register') IS NOT NULL THEN
+        -- Revoking a right on a table also revokes it on each of its columns: the grants below start from nothing.
+        EXECUTE format('REVOKE ALL ON ALL TABLES IN SCHEMA legal_register FROM %I', app_role);
+        EXECUTE format('REVOKE ALL ON ALL SEQUENCES IN SCHEMA legal_register FROM %I', app_role);
+        EXECUTE format('REVOKE ALL ON ALL FUNCTIONS IN SCHEMA legal_register FROM %I', app_role);
+        EXECUTE format('GRANT USAGE ON SCHEMA legal_register TO %I', app_role);
+        EXECUTE format('GRANT USAGE ON ALL SEQUENCES IN SCHEMA legal_register TO %I', app_role);
+        EXECUTE format(
+            'GRANT INSERT (event_id, operation, created_at, kind, pubkey, protocol, removed_event_id, removed_created_at, removed_pubkey) '
+            'ON legal_register.content_operation TO %I', app_role);
+        EXECUTE format('GRANT INSERT (pubkey, name, display_name, event_id, event_created_at) ON legal_register.account_pseudonym TO %I', app_role);
+        EXECUTE format(
+            'GRANT EXECUTE ON FUNCTION legal_register.purge(), legal_register.answer_requisition(UUID), '
+            'legal_register.requisitions_by_month() TO %I', app_role);
     END IF;
 END
 $$;

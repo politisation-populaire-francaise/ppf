@@ -50,7 +50,7 @@ Rôles fixes de la version 1 (la colonne « Permissions » liste les identifiant
 | Rôle | Pour qui | Permissions |
 |---|---|---|
 | `super_admin` | La propriétaire et une deuxième personne de confiance | toutes, dont `team.manage_admins` |
-| `admin` | Gestion de l'équipe | `team.invite`, `team.revoke`, `team.grant`, `audit.read`, `settings.manage` |
+| `admin` | Gestion de l'équipe | `team.invite`, `team.revoke`, `team.grant`, `audit.read`, `settings.manage`, `legal.requisition` (réquisitions judiciaires, D-077, validation à deux) |
 | `moderator` | Modération | `reports.decide`, `appeals.decide` (jamais sur sa propre décision), `queue.<file>.decide` pour les files de modération, `pharos.record` |
 | `editor` | Rédaction (Comprendre, Voir) | `queue.editorial.<espace>.review`, `queue.editorial.<espace>.publish`, `rightofreply.decide` |
 | `organisation_verifier` | Vérification des organisations (Agir) | `queue.agir.organisations.decide` |
