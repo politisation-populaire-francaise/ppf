@@ -458,6 +458,28 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : répondre d'abord aux questions que pose l'actualité (grève, vote en 2027), puis donner les repères institutionnels qui servent partout.
 - Conséquences : fichiers intégrés `glossaire.json`, `parcours.json`, `comprendre.json` et `fiches.json` régénérés et signés ; l'outil de signature lit désormais les identifiants des fiches dans `content/fiches` au lieu d'une liste fixe. Tous ces contenus doivent être relus par l'équipe éditoriale avant une publication réelle (et par un avocat pour les fiches pratiques).
 
+## D-045 (2026-11-07) Agenda : transparence de la participation (décisions de la propriétaire, D-044)
+
+- Contexte : application à l'agenda des mobilisations de la doctrine « la transparence passe avant tout » (D-044). Détail : `docs/integration/agir-transparence.md` (contrat d'Agir, version 2).
+- Mis en œuvre :
+  - une manifestation **non déclarée en préfecture** est proposée dans le formulaire et affichée comme telle sur la carte et le détail ; une phrase prévient que la mention est publique, sans empêcher l'envoi ;
+  - libellé « **Ça m'intéresse** » ;
+  - **participation publique des organisations** : réponse NIP-52 (type 31925 : `a` = adresse de la mobilisation, `status` `accepted`, `declined` ou `tentative`, extension `ppf-role` `organisateur` ou `participant`) ; seules comptent les organisations vérifiées et les clés de l'équipe éditoriale (PPF) ; pour elles, l'affichage public est le choix proposé en premier, « participer sans l'afficher » reste possible ; une organisation nommée organisatrice n'apparaît comme telle que si elle l'a confirmé de sa propre clé, sinon « annoncée, non confirmée » ; section « Organisations participantes » avec leur nombre ;
+  - le serveur vérifie la forme des réponses (adresse, statut, rôle, 280 caractères, aucune coordonnée personnelle) et les publie sans relecture ;
+  - les **réponses aux appels** s'effacent de l'appareil 7 jours après la clôture ou l'échéance de l'appel.
+- Décisions techniques prises en autonomie : le `d` d'une réponse est l'adresse de la mobilisation (une réponse par clé, la plus récente compte) ; les réponses se synchronisent par type, sans requête par événement ; rien n'est codé pour la visibilité des citoyens (contradiction avec le principe 10 en attente de la propriétaire, D-044).
+
+## D-046 (2026-11-07) Vue carte de l'agenda : MapLibre, fonds PMTiles, aucun tiers
+
+- Contexte : M1 « Carte et agenda des mobilisations », cahier des charges section 4 (« OpenStreetMap via MapLibre, jamais Google Maps »), principe 6 (aucun tiers). Détail : `docs/integration/agir-carte.md` et `tools/map-data/README.md`.
+- Décisions techniques prises en autonomie :
+  - **bibliothèque** : MapLibre Compose 0.20.0 (licence BSD-3-Clause), moteur OpenGL ES, derrière l'interface `AgendaMapRenderer` (repli possible : MapLibre Native Android) ; la carte s'affiche sur Android ; sur ordinateur (le moteur exige Java 25) et sur iOS (non compilé), la liste reste avec une phrase honnête ;
+  - **aucune requête directe du moteur** : style construit sur l'appareil sans adresse web, toute adresse autre que `ppf-carte://` refusée, glyphes fabriqués à partir de la police Atkinson Hyperlegible intégrée ; serveurs de tuiles tiers ajoutés aux motifs interdits ;
+  - **fonds PMTiles** : un fond de 2,59 Mo intégré à l'application (monde jusqu'au zoom 3, France et outre-mer jusqu'au zoom 7, couches filtrées, données OpenStreetMap sous licence ODbL), disponible hors ligne ; le fond détaillé viendra du serveur, lu par plages d'octets, après un petit manifeste `/tiles/current.json` (nom daté du fichier, taille, somme SHA-256) ; préparation des données par `tools/map-data`, jamais par l'application ni par l'intégration continue ;
+  - **écran** : choix « Liste » / « Carte » (liste par défaut), filtres communs, boutons de zoom et de recentrage sans geste, attribution « © contributeurs OpenStreetMap » toujours visible, aucune position de l'utilisateur ni permission de localisation ;
+  - **poids** : l'APK passe de 16,5 à 38 Mo (bibliothèques natives compressées) ; un APK par architecture (environ 26 Mo) est possible à la publication.
+- Reste : voir la carte réelle sur le téléphone de la propriétaire (aucun émulateur sur l'ordinateur) ; zones hors ligne (S-35), carte de la manifestation en direct (AG-24), tracé d'un parcours, placer un point dans le formulaire.
+
 ## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
 
 - Contexte : cahier fonctionnel, M10 et DE-07 (« relais des pétitions officielles », « explication claire des seuils et de leurs effets réels », « kits de partage ») ; demande de la propriétaire du 7 novembre 2026 de commencer « Décider » par ce qui est déjà spécifié. Le cahier fonctionnel demandait de revérifier le droit avant de coder.
@@ -533,6 +555,12 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 
 - Décision technique prise en autonomie : l'image du serveur embarque les contenus [EXEMPLE] signés de `shared/ui/.../files/contents/` ; la variable `PPF_EXAMPLES_DIR` les charge au démarrage (idempotent, signatures vérifiées), seulement en préproduction ; le serveur **refuse de démarrer** en production avec cette variable. La préproduction autorise la clé d'éditeur d'exemple (`PPF_EDITOR_KEYS`), jamais la production.
 - Raison : une seule image promue de la préproduction à la production, et la règle « jamais de données réelles en préproduction, jamais d'exemples en production » vérifiée par le code plutôt que par la vigilance.
+
+## D-080 (2026-11-07) Tuiles du serveur : France entière à la même précision
+
+- Décision technique prise en autonomie (chef d'équipe), gratuite : en production, un seul fichier PMTiles de la France métropolitaine et de l'outre-mer, zooms 8 à 14, filtré (sans bâtiments, points d'intérêt ni occupation du sol), estimé à 3 à 5 Go, sous la limite de 10 Go fixée pour un serveur de 50 Go ; la même précision partout, pour qu'aucun citoyen ne soit « de seconde zone » hors des métropoles. En préproduction, un petit extrait des seules villes des exemples, dans son propre volume (aucune ressource partagée avec la production).
+- Mise en ligne (Directeur technique, D-075 à D-079) : fichier préparé sur un ordinateur de développement, envoyé par SSH, vérifié par sa somme SHA-256, servi par Caddy en requêtes partielles avec un cache long sous un nom daté, aucun journal d'accès ; mise à jour tous les deux ou trois mois.
+- Mention « © contributeurs d'OpenStreetMap » (ODbL) visible dans l'application et sur le site.
 
 ## D-054 (2026-11-07) Fiches des partis politiques dans « Voir »
 

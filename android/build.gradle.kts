@@ -118,6 +118,10 @@ android {
 
     packaging {
         resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
+        // Native libraries compressed in the APK: the map engine (MapLibre, three architectures)
+        // weighs about 40 MB uncompressed and 17 MB compressed. Downloading the APK matters more on
+        // a weak connection than the one-time extraction at install (docs/integration/agir-carte.md).
+        jniLibs.useLegacyPackaging = true
     }
 }
 

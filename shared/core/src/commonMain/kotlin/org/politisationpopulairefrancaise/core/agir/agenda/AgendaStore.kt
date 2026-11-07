@@ -8,7 +8,7 @@ enum class AgendaResponse(val value: String) {
     /** "J'y serai". */
     GOING("going"),
 
-    /** "Intéressé". */
+    /** "Ça m’intéresse". */
     INTERESTED("interested"),
     ;
 
@@ -38,7 +38,7 @@ enum class ProposalReview(val value: String) {
 data class ProposalRecord(val review: ProposalReview, val reason: String? = null)
 
 /**
- * What the device alone knows about the agenda: the user's answers ("J'y serai", "Intéressé") and
+ * What the device alone knows about the agenda: the user's answers ("J'y serai", "Ça m’intéresse") and
  * the review of the user's own proposals. Answers reveal political opinions (GDPR, article 9):
  * they never leave the device, and [purgeResponses] erases them shortly after the event is over.
  */

@@ -6,6 +6,7 @@ start: 2026-11-03T18:30
 end: 2026-11-03T21:00
 location: Salle municipale du centre-ville (adresse fictive), Rennes
 territory: Rennes
+geohash: gbwc9y2st
 summary: Un film documentaire suivi d'une discussion ouverte à toutes et à tous.
 created_at: 2026-10-28T12:00
 ---
