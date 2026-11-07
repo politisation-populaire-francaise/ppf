@@ -185,6 +185,11 @@ class AgirRulesTest {
         assertEquals("missing_field" to AgirFormats.TAG_PUBLISHED_AT, refused(editor.organisation(tags.withoutTag(AgirFormats.TAG_PUBLISHED_AT))))
         assertEquals("missing_field" to AgirFormats.TAG_PUBKEY, refused(editor.organisation(tags.withTag(AgirFormats.TAG_PUBKEY, "npub1x"))))
         assertEquals("too_long" to "content", refused(editor.organisation(tags, content = "x".repeat(AgirFormats.MAX_TEXT + 1))))
+        // Contract, version 2: the optional status takes a known value only.
+        allowed(editor.organisation(tags.withTag(AgirFormats.TAG_ORG_STATUS, AgirFormats.ORG_STATUS_VERIFIED)))
+        allowed(editor.organisation(tags.withTag(AgirFormats.TAG_ORG_STATUS, AgirFormats.ORG_STATUS_REVOKED)))
+        assertEquals("missing_field" to AgirFormats.TAG_ORG_STATUS, refused(editor.organisation(tags.withTag(AgirFormats.TAG_ORG_STATUS, "suspendue"))))
+        assertEquals("missing_field" to AgirFormats.TAG_ORG_STATUS, refused(editor.organisation(tags + listOf(listOf(AgirFormats.TAG_ORG_STATUS)))))
     }
 
     @Test

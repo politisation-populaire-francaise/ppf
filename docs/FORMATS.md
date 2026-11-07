@@ -328,11 +328,12 @@ Publiée seulement par une clé de l'équipe éditoriale. `content` : la présen
 | `ppf-verified` | Oui | Date de la vérification, `AAAA-MM-JJ` |
 | `ppf-origin` | Non | `human` ou `ai-assisted`, affichée sur la fiche |
 | `p` | Non | Clé de l'organisation si elle a un compte : c'est elle qui devient « organisation vérifiée » |
+| `ppf-org-status` | Non | `verifiee` (valeur par défaut, l'étiquette est alors omise) ou `revoquee` : la vérification est retirée (contrat d'Agir, version 2). Le serveur refuse toute autre valeur (`missing_field`, message `ppf-org-status`) ; l'appareil lit une valeur inconnue comme `revoquee`, pour qu'une version future n'étende jamais la confiance |
 | `r` | Non | Site web `http(s)` à nom d'hôte ASCII, sans « utilisateur@ » ; plusieurs possibles, cinq lus au plus |
 | `ppf-contact-phone`, `ppf-contact-email`, `ppf-contact-address` | Non | Coordonnées publiques de l'organisation, jamais celles d'une personne |
 | `g` | Non | Géohash |
 
-**Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé ; une nouvelle version sans `p` retire la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
+**Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé (à date égale, le plus petit identifiant) ; une nouvelle version sans `p` retire la vérification, de même qu'une version `ppf-org-status` = `revoquee` qui garde sa clé `p` : celle-ci n'est plus vérifiée, ni sur l'appareil (`VerifiedOrganisations.revocationFor` rend la fiche révoquée) ni sur le serveur (le cache est oublié dès le stockage de la fiche). Transparence : la fiche révoquée n'est jamais effacée en silence ; elle perd son badge « Vérifiée », sort de la liste par défaut de l'annuaire (filtre « Inclure les vérifications retirées ») et sa page, ouverte par un lien, affiche « Vérification retirée par PPF le … » (date de la version révoquée, heure de Paris). Republier la fiche avec `verifiee` ou sans l'étiquette rétablit la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
 
 ## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-059, D-060)
 

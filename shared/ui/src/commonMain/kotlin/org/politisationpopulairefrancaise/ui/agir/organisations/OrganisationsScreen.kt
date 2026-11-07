@@ -61,7 +61,9 @@ import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.agir_back
 import org.politisationpopulairefrancaise.ui.resources.organisation_national
+import org.politisationpopulairefrancaise.ui.resources.organisation_revoked
 import org.politisationpopulairefrancaise.ui.resources.organisation_verified
+import org.politisationpopulairefrancaise.ui.resources.organisations_include_revoked
 import org.politisationpopulairefrancaise.ui.resources.organisations_about_directory
 import org.politisationpopulairefrancaise.ui.resources.organisations_clear_filters
 import org.politisationpopulairefrancaise.ui.resources.organisations_count
@@ -108,6 +110,8 @@ object OrganisationsTags {
     const val CLEAR = "organisations-clear"
     const val SELECT_HINT = "organisations-select-hint"
     const val ABOUT = "organisations-about"
+    const val INCLUDE_REVOKED = "organisations-include-revoked"
+    const val REVOKED_BADGE = "organisations-revoked-" // followed by the slug
 
     /** The tag of a territory chip. */
     fun territory(territory: String): String = TERRITORY + FrenchText.fold(territory).replace(' ', '-')
@@ -241,6 +245,16 @@ private fun DirectoryList(library: OrganisationsLibrary, onBack: (() -> Unit)?, 
             }
         }
         item(key = "types") { TypeChips(library) }
+        if (library.hasRevoked) {
+            item(key = "include-revoked") {
+                PpfSelectableChip(
+                    label = stringResource(Res.string.organisations_include_revoked),
+                    selected = query.includeRevoked,
+                    onClick = library::toggleIncludeRevoked,
+                    modifier = Modifier.testTag(OrganisationsTags.INCLUDE_REVOKED),
+                )
+            }
+        }
         val territories = library.territories
         if (territories.isNotEmpty()) {
             item(key = "territories") { TerritoryChips(territories, query.territory, library::selectTerritory) }
@@ -402,7 +416,11 @@ private fun OrganisationCard(organisation: Organisation, selected: Boolean, onOp
                 Spacer(Modifier.height(6.dp))
                 FlowRow(horizontalArrangement = Arrangement.spacedBy(6.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     PpfBadge(stringResource(OrganisationLabels.type(organisation.type)), BadgeStyle.NEUTRAL)
-                    PpfBadge(stringResource(Res.string.organisation_verified), BadgeStyle.SUCCESS)
+                    if (organisation.revoked) {
+                        PpfBadge(stringResource(Res.string.organisation_revoked), BadgeStyle.WARNING, Modifier.testTag(OrganisationsTags.REVOKED_BADGE + organisation.slug))
+                    } else {
+                        PpfBadge(stringResource(Res.string.organisation_verified), BadgeStyle.SUCCESS)
+                    }
                     if (organisation.example) ExampleBadge()
                 }
                 Spacer(Modifier.height(6.dp))
