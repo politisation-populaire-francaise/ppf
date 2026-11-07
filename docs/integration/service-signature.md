@@ -11,7 +11,7 @@ Rédigé le 7 novembre 2026 par la session « Directeur Technique PPF », pour r
 ## 2. Principe : une racine hors ligne, des clés de travail certifiées et révocables
 
 1. **Clé racine de la plateforme** : jamais sur un serveur. Elle ne signe que des **certificats** (« cette clé de travail parle au nom de PPF, pour ces types de contenus, jusqu'à telle date ») et des **révocations**. Sa clé publique est inscrite dans les applications et sur le site (c'est la seule constante de confiance). Elle est utilisée quelques fois par an.
-2. **Clés de travail** : une par usage (éditorial, statuts, organisations, Pacte et archives), chacune dans le service de signature, valable 90 jours au plus, renouvelée avant l'échéance. Une clé compromise ne vaut que pour son usage et jusqu'à sa révocation ou son échéance.
+2. **Clés de travail** : une par usage (`editorial.comprendre`, `editorial.voir`, statuts des revendications, organisations, Pacte et archives : une clé éditoriale par espace, précisé le 7 novembre 2026 avec « Comprendre »), chacune dans le service de signature, valable 90 jours au plus, renouvelée avant l'échéance. Une clé compromise ne vaut que pour son usage et jusqu'à sa révocation ou son échéance.
 3. **Les applications et le site** acceptent un contenu de la plateforme si sa clé est certifiée par la racine, pour ce type de contenu, à la date du contenu, et non révoquée. Cela remplace, pour les contenus de la plateforme, la liste fixe `EditorialTrust` ; les clés personnelles des éditeurs ne signent plus que leurs brouillons.
 
 Formats (à décrire dans `docs/FORMATS.md`, section nouvelle) : certificat = événement adressable signé par la racine, d'un `kind` dédié à choisir dans la plage 30000 à 39999 (vérifier qu'aucune NIP ne l'utilise), `d` = clé publique de la clé de travail, étiquettes `ppf-key-use` (usages), `ppf-not-before`, `ppf-not-after` ; révocation = la même adresse republiée avec `ppf-key-status` = `revoquee` et la date d'effet (la version la plus récente l'emporte). Les applications gardent sur l'appareil la liste des certificats et des révocations reçus.
@@ -43,6 +43,9 @@ interface PlatformSigner {
 ```
 
 - Le pôle construit l'événement non signé, le back-office recueille les deux accords (validation à deux, D-123), le pôle appelle `request`, puis publie l'événement signé par le port de publication unique.
+- **Preuve d'accord** (`ApprovalProof`, précisé le 7 novembre 2026) : deux assertions WebAuthn de deux comptes différents de l'équipe qui ont la permission de publier pour cet usage ; chacune porte sur le défi SHA-256(`"ppf-approval-v1
+" + usage + "
+" + identifiant hexadécimal de l'événement non signé`), séparation des domaines qui empêche de réutiliser une assertion pour un autre usage ou un autre événement ; chaque assertion contient l'identifiant du compte, l'identifiant de la clé, `authenticatorData`, `clientDataJSON` et la signature ; le service les vérifie lui-même avec la liste d'équipe signée par la racine. L'auteur d'un brouillon ne peut pas être l'un des deux (vérifié par la file éditoriale, clé Nostr de l'auteur contre celle des comptes).
 - En tests et en développement : un signataire factice en mémoire avec une clé générée à chaque lancement.
 
 ## 6. Étapes
