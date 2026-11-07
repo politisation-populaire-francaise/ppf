@@ -111,7 +111,7 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
 - Mention publique « non déclarée » d'une manifestation.
 - Appels au boycott (dénigrement d'une entreprise).
 - Annuaire et cas limites des partis, candidats et comités de soutien (Code électoral, article L52-8).
-- Secours, sorties et équipe citoyenne de sécurité en manifestation (points d'attention n° 17 et n° 24).
+- M25 Secours, sécurité et défense en manifestation, en entier (mode manifestation AG-13, bouton AIDE AG-27, carte de la manifestation AG-24, zones dangereuses et sorties AG-41 à AG-43, street medics, équipe citoyenne de sécurité, alerte « Besoin d'un avocat » ; points d'attention n° 14, 17, 18 et 24) : construit avec les organisations existantes (legal teams, street medics, observatoires) et relu par un avocat avant le lancement.
 - Modèles juridiques (mentions légales, confidentialité, conditions d'utilisation, charte, procédure de signalement).
 - Annuaire des élus (D-047) : réutilisation des résultats des départementales de 2021 par commune, licence « non spécifiée » sur data.gouv.fr, utilisés pour les cantons des 276 communes partagées (décision du chef d'équipe du 7 novembre 2026, CRPA L321-1, L322-1, L323-2).
 - Annuaire des élus (D-047) : base légale RGPD de la réutilisation des données des élus (nom, mandat, fonction, territoire, dates), écrite « intérêt légitime (article 6.1.f) » dans REGISTRE_DONNEES.

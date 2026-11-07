@@ -48,6 +48,9 @@ kotlin {
         // The map view of the agenda is drawn by MapLibre on Android only (see MapRenderer): the
         // library and its OpenGL ES runtime. Desktop and iOS show the list (docs/integration/agir-carte.md).
         androidMain.dependencies {
+            // The system photo picker of "Témoigner" (ui/media): the same artifact and version the
+            // Android host already uses and that the runtime classpath already resolves.
+            implementation(libs.androidx.activity.compose)
             implementation(libs.maplibre.compose)
             runtimeOnly(libs.maplibre.compose.runtime.opengl.android)
         }

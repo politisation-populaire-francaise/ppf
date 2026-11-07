@@ -1,6 +1,7 @@
 # Guide : louer et préparer le serveur Hostinger KVM 1
 
 - Version : 7 novembre 2026 (deuxième version, mise en ligne de la préproduction).
+- **Décision de la propriétaire (7 novembre 2026)** : « Je vais acheter le kvm2 ». Suivez ce guide avec le **KVM 2**.
 - **Aucun achat sans votre accord écrit dans la conversation** sur le montant ci-dessous. Vous seule entrez les données de paiement.
 - Durée : 20 minutes de votre côté, puis environ une heure du mien (sans action de votre part, sauf l'étape 5).
 

@@ -47,6 +47,7 @@ object AgirFixtures {
         accountKey: String? = null,
         signer: LocalEventSigner = editor,
         updatedAt: Long = 1_793_500_000,
+        status: String = "verifiee",
     ): SignedEvent = signer.sign(
         Organisation.build(
             editor = signer.publicKey,
@@ -61,6 +62,7 @@ object AgirFixtures {
             presentation = "Présentation fictive.",
             accountKey = accountKey,
             origin = ContentOrigin.HUMAN,
+            status = status,
         ),
     )
 }
