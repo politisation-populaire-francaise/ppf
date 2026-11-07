@@ -476,6 +476,10 @@ Variables d'environnement du serveur pour l'annuaire :
 | `PPF_RNE_SOURCE` | `example` (jeu fictif embarqué, ne contacte personne) ou `official` (vrai RNE, suivi **seulement** avec `PPF_ENVIRONMENT=production` ; ailleurs le jeu fictif est servi) | `example` |
 | `PPF_RNE_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 7 |
 
+## 4 octies. Données ouvertes du Parlement (D-064, D-065)
+
+Index : événement NIP-01, kind 30078, `d` = `ppf:parlement-index`, signé par une clé d'import (`OpenDataKeys`) ; `content` = l'index JSON (`example`, `importedOn`, `sources` avec nom, adresse, licence et date, `packages` avec nom, sha256 et taille). Paquets : `membres` (membres et groupes), `scrutins-an-AAAA-MM`, `votes-pe-AAAA-MM` (scrutins avec décomptes, décompte par groupe, positions `pour`, `contre`, `abstention`, `nonVotant`, `delegated`, `corrections` de type `mise-au-point` ou `dysfonctionnement`, `notVotingCauses`). Identifiants préfixés : `an:PA…`, `senat:…`, `pe:…`, scrutins `an:17:<numéro>`, dossiers `an-dossier:DLR5L17N…`. Code de circonscription : département puis numéro sur deux chiffres (`0101`, `2A01`, `97101`), commun avec l'annuaire des élus. Une brique de « Voir » peut porter `ppf-official-id` (personne ou texte). Modèles Kotlin : `core/voir/parlement/ParliamentFormat.kt` ; détail dans `docs/integration/voir-donnees-ouvertes.md`, section 3.
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.

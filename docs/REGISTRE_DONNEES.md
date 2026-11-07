@@ -137,3 +137,12 @@ Les fiches des responsables publics (mandats, votes, promesses, affaires, intér
 | Signalement d'erreur avec le compte : clé publique et texte | Corriger un contenu (journal des corrections) | Messages privés chiffrés, comme ci-dessus | Idem | L'utilisateur et l'équipe |
 | Signalement d'erreur anonyme : texte et clé à usage unique | Corriger un contenu sans révéler qui signale | En mémoire seulement en attente d'envoi ; rien sur l'appareil après l'envoi | Jusqu'à l'envoi ou la fermeture de l'application | Personne ne peut relier le signalement à quelqu'un |
 | Brouillons des formulaires | Ne pas perdre le texte | En mémoire seulement | Fermeture de l'application | L'utilisateur |
+
+## Ajout du 7 novembre 2026 : données ouvertes du Parlement (D-064, D-065)
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Mandats des parlementaires (nom, chambre, groupe, territoire, début du mandat, page officielle, parti national d'un eurodéputé) et votes nominatifs des scrutins publics, tels que publiés par l'Assemblée nationale, le Sénat et le Parlement européen | Montrer qui siège et comment chacun vote (M20, M17), avec la source et la date | Serveur (dossier des paquets, écrit par l'outil d'import) ; appareil (table des paquets, migration `11.sqm`) | Remplacés à chaque import ; sur l'appareil jusqu'à un paquet plus récent | Données publiques de personnes publiques ; rien n'est gardé sur l'utilisateur, le serveur ne garde pas l'adresse IP de l'appareil qui télécharge |
+| Jamais gardé | | | | Date et lieu de naissance, profession, sexe, civilité, adresses, courriels, téléphones, place dans l'hémicycle, photo, collaborateurs, déclaration de patrimoine |
+
+Hôtes contactés par l'outil d'import, en mode `official` seulement (production) : data.assemblee-nationale.fr, www.senat.fr, data.europarl.europa.eu. Jamais depuis l'appareil.

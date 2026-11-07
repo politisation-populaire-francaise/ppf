@@ -5,6 +5,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 ## Non publié
 
 ### Ajouté
+- Données ouvertes du Parlement dans « Voir » (7 novembre 2026, D-064, D-065) : tous les députés, sénateurs et eurodéputés élus en France, leurs votes en toutes lettres et en couleurs neutres (raison d'un non-vote, vote par délégation, mise au point), leur participation avec sa définition, la page de chaque scrutin avec le décompte par groupe, la source et la date partout ; outil d'import séparé qui signe les paquets avec une clé dédiée, refuse un fichier tronqué et ne garde que le mandat ; jeu fictif [EXEMPLE] intégré à l'application.
 
 - Espace « Agir », vague 2 (7 novembre 2026) : vue carte de l'agenda sur Android (MapLibre, fond de la France intégré, données OpenStreetMap, aucun tiers ; D-046) ; manifestations non déclarées affichées, « Ça m'intéresse », participation publique des organisations vérifiées et co-organisateurs confirmés, réponses aux appels effacées 7 jours après leur fin (D-045) ; tuiles du serveur décidées (D-080).
 - « Comprendre », vague 3 (7 novembre 2026, D-047 à D-049, demandes de la propriétaire du même jour) ; produit par plusieurs agents en parallèle à partir d'un contrat commun (`docs/integration/comprendre-vague-3.md`), puis intégré :

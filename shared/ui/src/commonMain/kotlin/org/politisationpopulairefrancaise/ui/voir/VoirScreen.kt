@@ -1,5 +1,8 @@
 package org.politisationpopulairefrancaise.ui.voir
 
+import org.politisationpopulairefrancaise.ui.voir.parlement.BillOfficialVotes
+import org.politisationpopulairefrancaise.ui.voir.parlement.PersonOfficialVotesLink
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -146,7 +149,7 @@ fun VoirScreen(
             } else if (current == null) {
                 VoirHome(catalog, library.status, state, actions, compact, columns, parliament)
             } else {
-                key(current) { VoirDetail(current, catalog, state, actions, compact, wide, columns, session, callbacks) }
+                key(current) { VoirDetail(current, catalog, state, actions, compact, wide, columns, session, callbacks, parliament) }
             }
         }
     }
@@ -406,6 +409,7 @@ private fun VoirDetail(
     columns: Int,
     session: VoirRequestSession,
     callbacks: RequestCallbacks,
+    parliament: ParliamentState? = null,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -426,9 +430,17 @@ private fun VoirDetail(
                     when (item) {
                         is VoirItem.OfIndicator -> IndicatorPage(item.indicator, state, wide, actions.next, actions.explain)
                         is VoirItem.OfFact -> FactPage(item.fact, catalog, state, actions)
-                        is VoirItem.OfPerson -> PersonPage(item.person, catalog, state, actions, wide)
+                        is VoirItem.OfPerson -> {
+                            // Their votes in the parliamentary open data, when the sheet carries an official identifier (D-065).
+                            parliament?.let { PersonOfficialVotesLink(item.person, it, Modifier.padding(bottom = 12.dp)) }
+                            PersonPage(item.person, catalog, state, actions, wide)
+                        }
                         is VoirItem.OfParty -> PartyPage(item.party, catalog, state, actions, wide, columns)
-                        is VoirItem.OfText -> BillPage(item.text, catalog, state, actions, wide)
+                        is VoirItem.OfText -> {
+                            BillPage(item.text, catalog, state, actions, wide)
+                            // Its public ballots, when the bill carries the identifier of its legislative file (D-065).
+                            parliament?.let { BillOfficialVotes(item.text, it, Modifier.padding(top = 16.dp)) }
+                        }
                         is VoirItem.OfMovement -> MovementPage(item.movement)
                         is VoirItem.OfDossier -> DossierPage(item.dossier)
                         null -> Text(stringResource(Res.string.voir_empty), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted)
