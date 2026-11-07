@@ -141,6 +141,8 @@ object RevendicationTags {
     const val DETAIL = "revendication-detail"
     const val BACK = "revendication-back"
     const val VOTE_FOR = DemandVoteTags.FOR
+    /** The official code of a demand's territory (D-090), beside its free label. */
+    const val TERRITORY_CODE = "ppf-territory-code"
     /** The link of the official petition that carries a demand (D-115). */
     const val PETITION = "revendication-petition"
     const val TAB = "revendication-tab-" // followed by the view id
@@ -682,7 +684,12 @@ private fun MetaRow(revendication: Article) {
 @Composable
 private fun VoteRow(revendication: Article, detailed: Boolean = false) {
     val inDebate = revendication.status == RevendicationStatus.EN_DEBAT || revendication.status == RevendicationStatus.TRES_SOUTENUE
-    DemandVoteRow(revendication.address.toString(), inDebate = inDebate, detailed = detailed)
+    DemandVoteRow(
+        revendication.address.toString(),
+        inDebate = inDebate,
+        detailed = detailed,
+        territoryCode = revendication.event.firstTagValue(RevendicationTags.TERRITORY_CODE),
+    )
 }
 
 @Composable

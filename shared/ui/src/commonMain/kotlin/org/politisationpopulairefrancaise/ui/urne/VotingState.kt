@@ -18,6 +18,8 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.core.decider.SupportThresholds
+import org.politisationpopulairefrancaise.core.territoires.Territoires
 import org.politisationpopulairefrancaise.core.urne.LibsodiumRistretto255
 import org.politisationpopulairefrancaise.core.urne.Ristretto255
 import org.politisationpopulairefrancaise.core.urne.UrneAnswer
@@ -30,6 +32,7 @@ import org.politisationpopulairefrancaise.core.urne.VoteLevel
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
+import org.politisationpopulairefrancaise.ui.territoires.territoiresFor
 
 /**
  * Anonymous voting in the application (D-110, D-112, step 4 of the design), one for the whole run.
@@ -108,6 +111,24 @@ class VotingState internal constructor(
 
     private var session: UrneSession? = null
     private val sessionLock = Mutex()
+
+    /** The referential of territories (D-090), for the thresholds of supports (D-115); null in tests. */
+    internal var territoires: Territoires? = null
+    private val thresholds = HashMap<String, SupportThresholds.Thresholds>()
+
+    /**
+     * The thresholds of supports of a demand whose `ppf-territory-code` is [code] (France without
+     * one), from the population of the referential; null when the territory or its population is
+     * not known on this device (its package not downloaded, for a commune).
+     */
+    suspend fun thresholdsFor(code: String?): SupportThresholds.Thresholds? {
+        val key = code?.trim()?.takeIf { it.isNotEmpty() } ?: FRANCE
+        thresholds[key]?.let { return it }
+        val referential = territoires ?: return null
+        val national = referential.national()?.france?.population?.municipale ?: return null
+        val population = if (key == FRANCE) national else referential.resolve(key)?.population?.municipale ?: return null
+        return SupportThresholds.of(population, national).also { thresholds[key] = it }
+    }
 
     private suspend fun session(): UrneSession? = sessionLock.withLock {
         session ?: run {
@@ -286,6 +307,7 @@ class VotingState internal constructor(
     internal suspend fun loadDevice() = reloadDevice()
 
     companion object {
+        private const val FRANCE = "fr"
         private const val LIST_LIMIT = 500
         private const val MAX_LIST_PAGES = 20
         private const val MAX_BATCHES = 10
@@ -305,7 +327,9 @@ class VotingState internal constructor(
         const val QUIET_SECONDS: Long = 120
 
         fun of(dependencies: AppDependencies, scope: CoroutineScope): VotingState =
-            VotingState(dependencies.urneRemote, dependencies.database?.let(::UrneTokenStore), scope)
+            VotingState(dependencies.urneRemote, dependencies.database?.let(::UrneTokenStore), scope).also {
+                it.territoires = territoiresFor(dependencies)
+            }
     }
 }
 

@@ -4,6 +4,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.v2.runComposeUiTest
 import kotlinx.coroutines.CoroutineScope
@@ -27,6 +28,9 @@ import org.politisationpopulairefrancaise.core.urne.UrneResults
 import org.politisationpopulairefrancaise.core.urne.UrneTokenStore
 import org.politisationpopulairefrancaise.core.urne.VoterStatus
 import org.politisationpopulairefrancaise.core.voir.FrenchNumbers
+import org.politisationpopulairefrancaise.core.territoires.InMemoryTerritoiresStorage
+import org.politisationpopulairefrancaise.core.territoires.Territoires
+import org.politisationpopulairefrancaise.ui.territoires.bundledNationalTerritoires
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -78,6 +82,20 @@ class DemandVoteTest {
         onNodeWithTag(DemandVoteTags.STATUS).assertTextContains("Créez un compte", substring = true)
         // The whole list in one request, whatever the demand shown.
         assertEquals(1, remote.listed)
+    }
+
+    @Test
+    fun theSupportsAreShownBesideTheThresholdsOfTheTerritory() = runComposeUiTest {
+        val voting = voting(ListOnly(listOf(box)))
+        voting.territoires = Territoires(storage = InMemoryTerritoiresStorage(), server = null, bundled = ::bundledNationalTerritoires)
+        runBlocking { voting.refreshBoxes() }
+        setContent { PpfTheme { CompositionLocalProvider(LocalVoting provides voting) { DemandVoteRow(subject, inDebate = true) } } }
+        // A national demand (no territory code): more than 100 000 to carry, 500 000 for the petition (D-115).
+        waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(DemandVoteTags.SUPPORTS).fetchSemanticsNodes().isNotEmpty() }
+        val group = FrenchNumbers.GROUP_SEPARATOR
+        onNodeWithTag(DemandVoteTags.SUPPORTS).assertTextContains("1${group}234", substring = true)
+        onNodeWithTag(DemandVoteTags.SUPPORTS).assertTextContains("100${group}000", substring = true)
+        onNodeWithTag(DemandVoteTags.STAGE).assertDoesNotExist()
     }
 
     @Test

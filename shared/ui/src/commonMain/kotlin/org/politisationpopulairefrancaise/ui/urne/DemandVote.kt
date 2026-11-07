@@ -8,11 +8,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.core.decider.SupportThresholds
 import org.politisationpopulairefrancaise.core.urne.ChoiceCounts
 import org.politisationpopulairefrancaise.core.urne.UrneInfo
 import org.politisationpopulairefrancaise.core.voir.FrenchNumbers
@@ -39,6 +42,9 @@ import org.politisationpopulairefrancaise.ui.resources.urne_privacy
 import org.politisationpopulairefrancaise.ui.resources.urne_recorded
 import org.politisationpopulairefrancaise.ui.resources.urne_results_line
 import org.politisationpopulairefrancaise.ui.resources.urne_sending
+import org.politisationpopulairefrancaise.ui.resources.urne_stage_carry
+import org.politisationpopulairefrancaise.ui.resources.urne_stage_petition
+import org.politisationpopulairefrancaise.ui.resources.urne_supports_line
 import org.politisationpopulairefrancaise.ui.resources.urne_unavailable
 import org.politisationpopulairefrancaise.ui.resources.urne_vote_blank
 import org.politisationpopulairefrancaise.ui.resources.urne_withdraw
@@ -56,6 +62,8 @@ object DemandVoteTags {
     const val STATUS = "revendication-vote-status"
     const val RESULTS = "revendication-vote-results"
     const val WITHDRAW = "revendication-vote-withdraw"
+    const val SUPPORTS = "revendication-vote-supports"
+    const val STAGE = "revendication-vote-stage"
 }
 
 /**
@@ -67,12 +75,20 @@ object DemandVoteTags {
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-fun DemandVoteRow(subject: String, inDebate: Boolean, modifier: Modifier = Modifier, detailed: Boolean = false) {
+fun DemandVoteRow(
+    subject: String,
+    inDebate: Boolean,
+    modifier: Modifier = Modifier,
+    detailed: Boolean = false,
+    /** The demand's `ppf-territory-code` (D-090): its thresholds of supports (D-115); France without one. */
+    territoryCode: String? = null,
+) {
     val voting = LocalVoting.current
     val box = voting?.box(subject)
     val state = voting?.stateFor(subject)
     // In data saver mode, the tokens wait for a vote to be shown (D-110, 6.3).
     val hasAccount = voting?.hasAccount == true
+    val thresholds by produceState<SupportThresholds.Thresholds?>(null, voting, territoryCode) { value = voting?.thresholdsFor(territoryCode) }
     LaunchedEffect(voting, box?.number, state?.hasToken, hasAccount) {
         if (box != null || inDebate) voting?.shown()
         // Put in debate but its box not seen yet, or a box without its token: the next pass comes sooner.
@@ -119,6 +135,21 @@ fun DemandVoteRow(subject: String, inDebate: Boolean, modifier: Modifier = Modif
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.testTag(DemandVoteTags.RESULTS),
             )
+            val supports = SupportThresholds.supports(results)
+            val levels = thresholds
+            if (supports != null && levels != null) {
+                Text(
+                    stringResource(Res.string.urne_supports_line, count(supports), count(levels.carry), count(levels.petition)),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = palette.inkMuted,
+                    modifier = Modifier.testTag(DemandVoteTags.SUPPORTS),
+                )
+                when (SupportThresholds.stage(results, levels)) {
+                    SupportThresholds.Stage.CARRY -> Text(stringResource(Res.string.urne_stage_carry), style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag(DemandVoteTags.STAGE))
+                    SupportThresholds.Stage.PETITION -> Text(stringResource(Res.string.urne_stage_petition), style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag(DemandVoteTags.STAGE))
+                    SupportThresholds.Stage.BELOW -> Unit
+                }
+            }
             if (results.electedOfficials.hidden) {
                 Text(stringResource(Res.string.urne_elected_too_few, results.minimum ?: 5), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
             } else if (results.electedOfficials.ballots > 0) {
@@ -162,3 +193,5 @@ private const val AGAINST = "contre"
 private const val BLANK = "blanc"
 
 private fun count(counts: ChoiceCounts, choice: String): String = FrenchNumbers.format((counts.counts[choice] ?: 0L).toDouble())
+
+private fun count(value: Long): String = FrenchNumbers.format(value.toDouble())
