@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Voir", the parliamentary open data (D-065; contract docs/integration/voir-donnees-ouvertes.md,
+     sections 4 and 5): every member of the Assemblée nationale, the Sénat and the European
+     Parliament elected in France, their groups and their votes. French, the user is addressed with
+     "vous", typographic apostrophe (’), no em dash. Neutral words everywhere: the positions are
+     written in full, never coloured, members never ranked. Never « données officielles » alone in a
+     title (the licence of the Sénat forbids suggesting an official character). -->
+<resources>
+    <!-- Card on the axis « Le pouvoir » -->
+    <string name="parl_card_title">Tous les parlementaires et leurs votes</string>
+    <string name="parl_card_text">Députés, sénateurs et eurodéputés élus en France : groupe, territoire, votes en scrutin public et participation, d’après les données ouvertes des assemblées.</string>
+    <string name="parl_card_open">Voir les parlementaires</string>
+
+    <!-- Screen -->
+    <string name="parl_title">Parlementaires</string>
+    <string name="parl_back">Retour</string>
+    <string name="parl_loading">Chargement des données des assemblées…</string>
+    <string name="parl_nothing">Les données des parlementaires ne sont pas disponibles pour le moment. Réessayez plus tard, avec une connexion.</string>
+    <string name="parl_retry">Réessayer</string>
+
+    <!-- Provenance, everywhere -->
+    <string name="parl_example_banner">Données fictives [EXEMPLE] : ces parlementaires, ces groupes et ces votes sont inventés pour tester l’application.</string>
+    <string name="parl_data_of">Données du %1$s</string>
+    <string name="parl_stale">Ces données n’ont pas été mises à jour depuis le %1$s.</string>
+    <string name="parl_refused">Une mise à jour reçue du serveur a été refusée (signature ou date non valable) : les données précédentes restent affichées.</string>
+    <string name="parl_offline">Le serveur ne répond pas : copie enregistrée sur cet appareil.</string>
+    <string name="parl_bundled">Jeu d’exemple intégré à l’application.</string>
+    <string name="parl_attribution">D’après les données ouvertes %1$s, mises à jour le %2$s ; réutilisation par PPF, sans lien avec cette institution. Licence : %3$s.</string>
+    <string name="parl_attribution_other">D’après « %1$s », mis à jour le %2$s ; réutilisation par PPF, sans lien avec cette source. Licence : %3$s.</string>
+    <string name="parl_of_an">de l’Assemblée nationale</string>
+    <string name="parl_of_senat">du Sénat</string>
+    <string name="parl_of_pe">du Parlement européen</string>
+    <string name="parl_sources_title">D’où viennent ces données</string>
+    <string name="parl_sources_site">Site des données ouvertes : %1$s</string>
+
+    <!-- Downloads (gesture of the user, size first) -->
+    <string name="parl_members_needed_title">La liste des parlementaires n’est pas encore sur cet appareil</string>
+    <string name="parl_members_needed_text">Elle se télécharge une fois, puis reste consultable sans connexion.</string>
+    <string name="parl_download_members">Télécharger la liste (%1$s)</string>
+    <string name="parl_update_members">Mettre à jour la liste (%1$s)</string>
+    <string name="parl_download_note">Rien n’est téléchargé sans votre accord. Le serveur sait seulement qu’un appareil a téléchargé ce fichier, sans garder son adresse IP.</string>
+    <string name="parl_downloading">Téléchargement…</string>
+    <string name="parl_download_refused">Le fichier reçu ne correspond pas à l’empreinte annoncée : il n’a pas été gardé.</string>
+    <string name="parl_download_unavailable">Le serveur ne répond pas. Réessayez plus tard.</string>
+    <string name="parl_download_unknown">Ce fichier n’est plus proposé par le serveur.</string>
+    <string name="parl_month_download">Télécharger %1$s (%2$s)</string>
+    <string name="parl_month_update">Mettre à jour %1$s (%2$s)</string>
+    <string name="parl_month_held">%1$s : sur cet appareil</string>
+    <string name="parl_size_ko">%1$s Ko</string>
+    <string name="parl_size_mo">%1$s Mo</string>
+
+    <!-- List -->
+    <string name="parl_search_label">Rechercher un parlementaire</string>
+    <string name="parl_search_hint">Nom, groupe, territoire</string>
+    <string name="parl_search_clear">Effacer la recherche</string>
+    <string name="parl_filter_chamber">Assemblée</string>
+    <string name="parl_filter_group">Groupe</string>
+    <string name="parl_filter_all">Toutes</string>
+    <string name="parl_filter_all_groups">Tous les groupes</string>
+    <string name="parl_members_count">%1$s membres, par ordre alphabétique</string>
+    <string name="parl_members_none">Aucun parlementaire ne correspond.</string>
+    <string name="parl_ballots_title">Scrutins publics</string>
+    <string name="parl_ballots_intro">Les scrutins se téléchargent mois par mois, quand vous le demandez.</string>
+    <string name="parl_ballots_none">Aucun scrutin sur cet appareil pour l’instant.</string>
+    <string name="parl_ballots_more">Et %1$s autres scrutins, à retrouver sur les fiches des parlementaires.</string>
+
+    <!-- Chambers and roles (neutral labels) -->
+    <string name="parl_chamber_an">Assemblée nationale</string>
+    <string name="parl_chamber_senat">Sénat</string>
+    <string name="parl_chamber_pe">Parlement européen</string>
+    <string name="parl_role_an">Membre de l’Assemblée nationale</string>
+    <string name="parl_role_senat">Membre du Sénat</string>
+    <string name="parl_role_pe">Membre du Parlement européen, élu en France</string>
+
+    <!-- Member page -->
+    <string name="parl_member_chamber">Assemblée : %1$s</string>
+    <string name="parl_member_group">Groupe : %1$s</string>
+    <string name="parl_member_no_group">Groupe : aucun</string>
+    <string name="parl_member_territory">Territoire : %1$s</string>
+    <string name="parl_member_since">Début du mandat : %1$s</string>
+    <string name="parl_member_party">Parti national : %1$s</string>
+    <string name="parl_participation_title">Participation aux scrutins publics</string>
+    <string name="parl_participation_value">%1$s %</string>
+    <string name="parl_participation_detail">A voté dans %1$s scrutins publics sur %2$s, du %3$s au %4$s (scrutins de son mandat présents sur cet appareil).</string>
+    <string name="parl_participation_definition">Part des scrutins publics où ce membre a voté. Ne mesure pas le travail en commission ni les autres activités.</string>
+    <string name="parl_participation_none">Aucun scrutin de son mandat n’est encore sur cet appareil : téléchargez un mois de scrutins depuis la liste des parlementaires.</string>
+    <string name="parl_participation_no_ranking">PPF ne classe jamais les parlementaires selon ce chiffre.</string>
+    <string name="parl_votes_title">Derniers votes</string>
+    <string name="parl_votes_none">Aucun vote de ce membre dans les scrutins présents sur cet appareil.</string>
+    <string name="parl_senat_soon">Votes du Sénat : bientôt</string>
+    <string name="parl_senat_soon_text">Le Sénat ne publie pas encore ses votes nominatifs dans un format réutilisable. En attendant, ils sont consultables sur son site.</string>
+    <string name="parl_links_title">Pour aller plus loin</string>
+    <string name="parl_official_page">Sa page sur le site de l’institution</string>
+    <string name="parl_interests">Sa déclaration d’intérêts sur le site de la HATVP</string>
+    <string name="parl_interests_none">Pas de lien vers une déclaration d’intérêts dans les données.</string>
+    <string name="parl_voir_sheet">Sa fiche dans « Voir »</string>
+
+    <!-- A vote -->
+    <string name="parl_position_for">Pour</string>
+    <string name="parl_position_against">Contre</string>
+    <string name="parl_position_abstention">Abstention</string>
+    <string name="parl_position_not_voting">Non-votant</string>
+    <string name="parl_vote_position">Position enregistrée : %1$s</string>
+    <string name="parl_vote_delegated">par délégation</string>
+    <string name="parl_vote_cause">Raison indiquée : %1$s</string>
+    <string name="parl_cause_mg">membre du Gouvernement</string>
+    <string name="parl_cause_pan">présidence de l’Assemblée nationale</string>
+    <string name="parl_cause_pse">présidence de la séance</string>
+    <string name="parl_correction_statement">Mise au point : ce membre a déclaré après le scrutin avoir voulu voter « %1$s ». Le vote enregistré reste celui ci-dessus.</string>
+    <string name="parl_correction_malfunction">Dysfonctionnement signalé : ce membre voulait voter « %1$s ». Le vote enregistré reste celui ci-dessus.</string>
+    <string name="parl_correction_date">Déclaration du %1$s.</string>
+    <string name="parl_ballot_line">Scrutin n° %1$s du %2$s</string>
+
+    <!-- Ballot page -->
+    <string name="parl_ballot_kind_sps">Scrutin public solennel</string>
+    <string name="parl_ballot_kind_spo">Scrutin public ordinaire</string>
+    <string name="parl_ballot_kind_moc">Motion de censure</string>
+    <string name="parl_result_adopted">Résultat : adopté</string>
+    <string name="parl_result_rejected">Résultat : rejeté</string>
+    <string name="parl_result_unknown">Résultat : non indiqué par la source</string>
+    <string name="parl_counts_title">Décompte</string>
+    <string name="parl_count_voters">Votants : %1$s</string>
+    <string name="parl_count_expressed">Suffrages exprimés : %1$s</string>
+    <string name="parl_count_for">Pour : %1$s</string>
+    <string name="parl_count_against">Contre : %1$s</string>
+    <string name="parl_count_abstention">Abstention : %1$s</string>
+    <string name="parl_count_not_voting">Non-votants : %1$s</string>
+    <string name="parl_pe_scope">Résultat de l’ensemble du Parlement européen ; les positions détaillées sont celles des seuls eurodéputés élus en France.</string>
+    <string name="parl_groups_title">Par groupe</string>
+    <string name="parl_groups_column">Groupe</string>
+    <string name="parl_group_row">%1$s : %2$s pour, %3$s contre, %4$s abstention, %5$s non-votant</string>
+    <string name="parl_by_position_title">Membres par position</string>
+    <string name="parl_position_count">%1$s (%2$s)</string>
+    <string name="parl_position_empty">Personne</string>
+    <string name="parl_unknown_member">Membre %1$s (absent de la liste actuelle)</string>
+    <string name="parl_with_correction">mise au point</string>
+    <string name="parl_ballot_official">Le scrutin sur le site de l’institution</string>
+    <string name="parl_ballot_dossier">Le dossier législatif sur le site de l’institution</string>
+
+    <!-- Hooks on the sheets of "Voir" -->
+    <string name="parl_person_link">Ses votes et sa participation, d’après les données ouvertes</string>
+    <string name="parl_bill_title">Scrutins publics sur ce texte</string>
+    <string name="parl_bill_none">Aucun scrutin de ce texte dans les mois téléchargés sur cet appareil.</string>
+    <string name="parl_bill_open">Ouvrir la liste des parlementaires et des scrutins</string>
+
+    <!-- Leaving PPF -->
+    <string name="parl_leave_title">Vous quittez PPF</string>
+    <string name="parl_leave_text">Ce lien ouvre une page qui n’est pas sur PPF : %1$s. PPF ne la contrôle pas et ne voit pas ce que vous y faites ; ce site verra votre adresse IP.</string>
+    <string name="parl_leave_stay">Rester sur PPF</string>
+    <string name="parl_leave_open">Ouvrir la page</string>
+</resources>

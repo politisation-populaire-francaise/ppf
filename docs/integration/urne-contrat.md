@@ -1,7 +1,7 @@
 # Contrat `core/urne` : compter sans jamais relier (pour « Agir » et « Voir »)
 
 - Pôle « Décider », 7 novembre 2026. Exigence R6 de D-110. Conception : `docs/integration/une-personne-une-voix.md` ; formats : `docs/FORMATS.md`, section 4 nonies ; décisions : D-110, D-112, D-113.
-- Disponible pour les autres pôles quand la branche de « Décider » sera entrée dans `main` (migration serveur `V7`, migration locale `11.sqm`, numéro provisoire). D'ici là, aucun pôle n'écrit de compteur à lui.
+- Disponible pour les autres pôles quand la branche de « Décider » sera entrée dans `main` (migration serveur `V7`, migration locale `12.sqm`). D'ici là, aucun pôle n'écrit de compteur à lui.
 
 ## 1. À quoi il sert
 

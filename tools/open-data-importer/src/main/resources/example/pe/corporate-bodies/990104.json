@@ -1,0 +1,21 @@
+{
+ "data": [
+  {
+   "id": "org/990104",
+   "type": "Organization",
+   "identifier": "990104",
+   "label": "AP-EX",
+   "prefLabel": {
+    "fr": "[EXEMPLE] Ancien parti fictif",
+    "en": "[EXEMPLE] (en) Ancien parti fictif"
+   },
+   "altLabel": {
+    "fr": "AP-EX"
+   },
+   "classification": "def/ep-entities/NATIONAL_CHAMBER"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

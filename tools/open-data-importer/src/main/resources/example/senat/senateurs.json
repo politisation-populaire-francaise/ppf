@@ -1,0 +1,134 @@
+[
+ {
+  "matricule": "99001X",
+  "civilite": "Mme",
+  "feminise": true,
+  "nom": "Garrigou",
+  "prenom": "[EXEMPLE] Mathilde",
+  "groupe": {
+   "code": "EXA",
+   "libelle": "[EXEMPLE] Groupe des Vallées",
+   "libelleCourt": "GDV",
+   "codeTypeAppartenance": "N"
+  },
+  "circonscription": {
+   "code": "33",
+   "libelle": "Gironde"
+  },
+  "categorieProfessionnelle": {
+   "code": "99",
+   "libelle": "[EXEMPLE] Catégorie fictive"
+  },
+  "serie": 1,
+  "url": "https://www.senat.fr/senateur/exemple_99001x.html",
+  "urlAvatar": "https://www.senat.fr/exemple/99001x.jpg",
+  "facebook": null,
+  "twitter": "https://example.invalid/exemple",
+  "siege": "200",
+  "organismes": [
+   {
+    "code": "EX",
+    "libelle": "[EXEMPLE] Commission fictive"
+   }
+  ]
+ },
+ {
+  "matricule": "99002X",
+  "civilite": "M.",
+  "feminise": false,
+  "nom": "Esquerré",
+  "prenom": "[EXEMPLE] Nathan",
+  "groupe": {
+   "code": "EXA",
+   "libelle": "[EXEMPLE] Groupe des Vallées",
+   "libelleCourt": "GDV",
+   "codeTypeAppartenance": "A"
+  },
+  "circonscription": {
+   "code": "2A",
+   "libelle": "Corse-du-Sud"
+  },
+  "categorieProfessionnelle": {
+   "code": "99",
+   "libelle": "[EXEMPLE] Catégorie fictive"
+  },
+  "serie": 2,
+  "url": "https://www.senat.fr/senateur/exemple_99002x.html",
+  "urlAvatar": "https://www.senat.fr/exemple/99002x.jpg",
+  "facebook": null,
+  "twitter": "https://example.invalid/exemple",
+  "siege": "201",
+  "organismes": [
+   {
+    "code": "EX",
+    "libelle": "[EXEMPLE] Commission fictive"
+   }
+  ]
+ },
+ {
+  "matricule": "99003X",
+  "civilite": "Mme",
+  "feminise": true,
+  "nom": "Kerbiriou",
+  "prenom": "[EXEMPLE] Océane",
+  "groupe": {
+   "code": "EXB",
+   "libelle": "[EXEMPLE] Groupe des Plateaux",
+   "libelleCourt": "GDP",
+   "codeTypeAppartenance": "N"
+  },
+  "circonscription": {
+   "code": "975",
+   "libelle": "Saint-Pierre-et-Miquelon"
+  },
+  "categorieProfessionnelle": {
+   "code": "99",
+   "libelle": "[EXEMPLE] Catégorie fictive"
+  },
+  "serie": 1,
+  "url": "https://www.senat.fr/senateur/exemple_99003x.html",
+  "urlAvatar": "https://www.senat.fr/exemple/99003x.jpg",
+  "facebook": null,
+  "twitter": "https://example.invalid/exemple",
+  "siege": "202",
+  "organismes": [
+   {
+    "code": "EX",
+    "libelle": "[EXEMPLE] Commission fictive"
+   }
+  ]
+ },
+ {
+  "matricule": "99004X",
+  "civilite": "M.",
+  "feminise": false,
+  "nom": "Vidalenc",
+  "prenom": "[EXEMPLE] Pascal",
+  "groupe": {
+   "code": "EXB",
+   "libelle": "[EXEMPLE] Groupe des Plateaux",
+   "libelleCourt": "GDP",
+   "codeTypeAppartenance": "N"
+  },
+  "circonscription": {
+   "code": "01",
+   "libelle": "Ain"
+  },
+  "categorieProfessionnelle": {
+   "code": "99",
+   "libelle": "[EXEMPLE] Catégorie fictive"
+  },
+  "serie": 2,
+  "url": "https://www.senat.fr/senateur/exemple_99004x.html",
+  "urlAvatar": "https://www.senat.fr/exemple/99004x.jpg",
+  "facebook": null,
+  "twitter": "https://example.invalid/exemple",
+  "siege": "203",
+  "organismes": [
+   {
+    "code": "EX",
+    "libelle": "[EXEMPLE] Commission fictive"
+   }
+  ]
+ }
+]

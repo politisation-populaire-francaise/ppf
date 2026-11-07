@@ -97,6 +97,7 @@ fun main() {
         routing {
             devReviewRoutes(queue)
             devHeldRoutes(held)
+            parlementRoutes(devOpenData()) // Example packages of parliamentary open data (DevOpenData.kt).
         }
     }.start(wait = true)
 }

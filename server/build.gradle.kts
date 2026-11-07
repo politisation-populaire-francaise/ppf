@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.bouncycastle.bcpkix)
     implementation(libs.bouncycastle.bcprov)
 
+    // The development server and the tests of /api/v1/parlement run the example import (fictional data).
+    testImplementation(project(":tools:open-data-importer"))
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.ktor.client.mock)
     testImplementation(kotlin("test"))

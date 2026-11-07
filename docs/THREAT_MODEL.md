@@ -206,3 +206,16 @@ Hôtes contactés par le serveur, et lui seul, quand l'archivage est allumé (pr
 | Lecture des demandes de droit de réponse ou des signalements | Chiffrés de bout en bout pour la boîte de l'équipe (NIP-17, NIP-44) ; le serveur ne voit qu'une enveloppe d'auteur à usage unique |
 | Clé de la boîte de l'équipe confondue avec la clé qui signe les contenus | Constante isolée (`VoirRequests.TEAM_INBOX`) ; clé dédiée à créer avant le lancement public |
 | Signaleur identifié contre son gré | Signalement anonyme par défaut, clé à usage unique détruite après l'envoi ; envoi avec le compte seulement après mise en garde |
+
+## Ajout du 7 novembre 2026 : données ouvertes du Parlement (D-064)
+
+| Menace | Parade |
+|---|---|
+| Paquets falsifiés ou remplacés sur le serveur (vote inventé attribué à un élu) | Index signé par une clé d'import dédiée, tenue hors du serveur principal (conteneur à part, utilisateur propre, secret lisible par lui seul) ; empreinte SHA-256 et taille de chaque paquet vérifiées sur l'appareil |
+| Clé d'import volée | Confiance limitée aux paquets de données (jamais un contenu) ; rotation par la liste `OpenDataKeys` ; clé distincte des clés éditoriales et de la plateforme |
+| Retour à d'anciennes données (index rejoué) | Refus d'un index plus ancien que celui de l'appareil ; date des données affichée ; avertissement après 14 jours |
+| Fichier officiel tronqué ou corrompu | Import refusé au-delà de 20 % de baisse ; ensemble précédent gardé ; écritures atomiques |
+| Exposition de fichiers du serveur | Seuls les noms listés dans l'index sont servis ; noms de paquets limités à lettres, chiffres et tirets |
+| Présentation partiale des votes | Positions écrites en toutes lettres, couleurs neutres, mises au point affichées, participation définie et jamais classée, mêmes rubriques pour tous |
+
+Hôtes sortants de l'outil d'import (production seulement) : data.assemblee-nationale.fr, www.senat.fr, data.europarl.europa.eu ; HTTPS, sans redirection, au plus une requête toutes les 0,7 seconde.

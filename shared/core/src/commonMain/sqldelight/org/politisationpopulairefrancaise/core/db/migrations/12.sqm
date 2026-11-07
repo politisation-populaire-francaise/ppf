@@ -1,0 +1,30 @@
+-- Schema version 12 to 13 (2026-11-07): anonymous voting on the device, D-110 (see Vote.sq, which
+-- is the reference for fresh installations; this file must stay identical to its CREATE statements).
+-- Number taken after the parliamentary open data of Voir (11.sqm), first in main.
+-- IF NOT EXISTS: a database that already has these tables (a test that rebuilds an older schema
+-- from the current one, for example) passes through unchanged; SQLite keeps the same definition.
+
+CREATE TABLE IF NOT EXISTS vote_state (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 0),
+    account TEXT NOT NULL,
+    registered INTEGER NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS vote_blind (
+    urne_number INTEGER NOT NULL PRIMARY KEY,
+    y BLOB NOT NULL,
+    blind BLOB NOT NULL,
+    blinded BLOB NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS vote_token (
+    urne_number INTEGER NOT NULL PRIMARY KEY,
+    urne_id TEXT NOT NULL,
+    level TEXT NOT NULL,
+    public_key TEXT NOT NULL,
+    y BLOB NOT NULL,
+    token BLOB NOT NULL,
+    choice TEXT,
+    send_after INTEGER,
+    sent_choice TEXT
+);

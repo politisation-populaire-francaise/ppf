@@ -1,0 +1,13 @@
+{
+ "organe": {
+  "uid": "PO900005",
+  "codeType": "GP",
+  "libelle": "[EXEMPLE] Députés non inscrits",
+  "libelleAbrev": "NI",
+  "viMoDe": {
+   "dateDebut": "2024-07-10",
+   "dateFin": null
+  },
+  "legislature": "17"
+ }
+}

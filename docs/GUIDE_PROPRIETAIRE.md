@@ -249,6 +249,16 @@ Pour arrêter, fermez l'application, puis tapez Ctrl+C dans la première fenêtr
 4. Sur la fiche d'une personne ou d'un fait qui la concerne, touchez **Droit de réponse** : le formulaire explique la loi, compte les mots en direct et demande un compte (créé en une minute dans « Mon espace » ; votre texte est gardé pendant ce temps).
 5. Sur l'ordinateur, avec le serveur de développement (`gradlew :server:runDev`), ouvrez http://localhost:8080/voir : les mêmes contenus sur le site, lisibles sans JavaScript.
 
+### Tester les parlementaires et leurs votes (ajouté le 7 novembre 2026)
+
+Tout est fictif et marqué [EXEMPLE] : 12 députés, 4 sénateurs, 3 eurodéputés, 6 scrutins.
+
+1. Ouvrez **Voir**, onglet **Le pouvoir**, puis la carte **Tous les parlementaires et leurs votes** : un bandeau « Données fictives [EXEMPLE] » et la mention de la source avec sa date.
+2. Cherchez un nom sans accent, filtrez par chambre ou par groupe.
+3. Ouvrez un député : sa participation avec sa définition, puis ses votes écrits en toutes lettres (« Pour », « Contre », « Abstention », « Non-votant »), sans couleur de jugement. Un vote corrigé après coup montre la mise au point à côté du vote enregistré.
+4. Ouvrez un scrutin : le résultat, le décompte et le tableau par groupe.
+5. Ouvrez un sénateur : « Votes du Sénat : bientôt », avec le lien vers sa page officielle (après la mise en garde « Vous quittez PPF »).
+
 ### Tester l'espace « Voir » (ajouté le 6 novembre 2026, tard le soir)
 
 Tout ce que vous verrez est inventé et marqué [EXEMPLE] : personnes, pays, organisations et chiffres. Aucun compte n'est nécessaire, et tout marche sans réseau.

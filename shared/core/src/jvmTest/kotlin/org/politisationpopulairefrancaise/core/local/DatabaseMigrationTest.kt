@@ -108,12 +108,13 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion12() {
+    fun theSchemaIsAtVersion13() {
         // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
         // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm);
         // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm);
-        // 10: answered calls (9.sqm); 11: directory of elected officials (10.sqm); 12: anonymous voting (11.sqm).
-        assertEquals(12L, PpfDatabase.Schema.version)
+        // 10: answered calls (9.sqm); 11: directory of elected officials (10.sqm);
+        // 12: parliamentary open data (11.sqm); 13: anonymous voting (12.sqm).
+        assertEquals(13L, PpfDatabase.Schema.version)
     }
 
     /** Writes a version 10 database (the builds with the answered calls, before the directory of elected officials), with one answered call. */
@@ -169,19 +170,19 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun aVersion11DatabaseGainsTheVotingTablesAndKeepsItsCommune() {
+    fun aVersion12DatabaseGainsTheVotingTablesAndKeepsItsCommune() {
         val file = tempDatabaseFile()
         writeVersion1Database(file)
         val driver = JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}")
         try {
-            PpfDatabase.Schema.migrate(driver, 1, 11)
+            PpfDatabase.Schema.migrate(driver, 1, 12)
             driver.execute(null, "INSERT INTO elus_commune(id, commune_code, department_code) VALUES (0, '69123', '69')", 0)
-            driver.execute(null, "PRAGMA user_version = 11", 0)
+            driver.execute(null, "PRAGMA user_version = 12", 0)
         } finally {
             driver.close()
         }
         val database = JvmDatabase.open(file)
-        assertEquals(12L, userVersion(file))
+        assertEquals(13L, userVersion(file))
         assertEquals(ChosenCommune("69123", "69"), ElusStore(database).commune())
         val votes = UrneTokenStore(database)
         assertEquals(emptyList(), votes.tokens())
