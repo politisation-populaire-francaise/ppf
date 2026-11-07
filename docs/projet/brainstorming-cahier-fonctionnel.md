@@ -7,7 +7,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 ---
 
 ### [2026-11-07] Espace « Décider » : première version et questions ouvertes
-- Statut : À valider
+- Statut : Décidé le 2026-11-07 (D-062) ; à intégrer dans le cahier fonctionnel 2.0 (M10, M13.5)
 - Concerne : cahier-fonctionnel.md, M10 (pétitions), M13.5 (Pacte démocratique) ; inventaire, DE-07 et DE-08
 - Description : première version codée le 7 novembre 2026 avec des contenus [EXEMPLE] (D-059 à D-061) : pétitions officielles avec leurs seuils réels et ce qu'ils ne garantissent pas, Pacte démocratique avec son tableau public identique pour tous. Le droit a été revérifié le 7 novembre 2026 (`docs/integration/decider-petitions-droit.md`) : rien n'a changé depuis le 4 novembre ; une réforme du Règlement de l'Assemblée, qui aurait supprimé le seuil de 100 000, a été retirée de l'ordre du jour le 15 juillet 2026.
 - Questions à la propriétaire :
@@ -18,7 +18,14 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   5. **Pétitions locales** (article 72-1 de la Constitution : un dixième des électeurs d'une commune pour demander une consultation) : à ajouter plus tard ?
   6. **Envoi réel du Pacte** : par quel canal (courrier recommandé à l'adresse officielle de chaque candidat, courriel), et qui signe l'envoi pour l'association ? L'horodatage des réponses (OpenTimestamps, gratuit, ou RFC 3161) reste à choisir.
   7. Rappel : la **liste des mesures** (entrée « Liste de départ des mesures du Pacte démocratique ») et les **modalités des campagnes** sont toujours « À valider » ; les mesures affichées sont des exemples.
-- Décision :
+- Décision de la propriétaire (2026-11-07, D-062) :
+  1. CESE : gardé.
+  2. Réponse arrivée après la date limite : **non comptée** (option B) : « si le candidat est en retard c'est qu'il n'a pas pris les choses au sérieux, donc on ne compte pas ». Elle reste visible sous le tableau, avec sa date de réception.
+  3. Relevé automatique des compteurs par le serveur : oui.
+  4. Objectifs de signatures par territoire : oui (référentiel des territoires confié au pôle « Comprendre »).
+  5. Pétitions locales : oui.
+  6. Envoi du Pacte : manuel pour l'instant (envoi et prise de contact par l'équipe), à revoir plus tard. Le choix de l'horodatage reste technique (tâche « archivage horodaté » du pôle « Décider »).
+  7. La liste des mesures et les modalités des campagnes « seront populaires » : celles de PPF ne sont qu'un modèle, rien d'officiel ni de validé tant que les utilisateurs n'y ont pas participé (voir les deux entrées concernées).
 
 ### [2026-11-07] Agir : publication des mobilisations et des appels
 - Statut : Intégré le 2026-11-07 (décisions de la propriétaire ; code de l'espace Agir, contrat commun `docs/integration/agir-contrat.md`) ; à reporter dans le cahier fonctionnel version 2.0
@@ -174,14 +181,14 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Modalités du choix des campagnes par les citoyens
-- Statut : À valider
+- Statut : Décidé le 2026-11-07 (D-062) : les modalités seront choisies par les citoyens dans l'application ; à intégrer dans le cahier fonctionnel 2.0 (M13.5)
 - Concerne : cahier-fonctionnel.md, M11 et M13.5
 - Description : le principe est acquis (les citoyens choisissent par vote). Restent les modalités : fréquence des votes, nombre de campagnes actives en même temps, seuil de participation minimal, rôle de l'équipe.
 - Recommandation : l'équipe vérifie seulement la faisabilité juridique et la conformité à la charte, sans filtrer selon ses préférences ; 3 campagnes actives au maximum pour concentrer les forces ; vote de priorisation tous les 6 mois.
-- Décision :
+- Décision de la propriétaire (2026-11-07) : « la liste des mesures et des modalités sera populaire » ; la recommandation ci-dessus n'est qu'un modèle de départ, rien d'officiel ni de validé tant que les utilisateurs n'y ont pas participé ; les citoyens la modifient et la valident dans l'application (proposer, amender, voter), avec la méthode « une personne, une voix ». Le modèle est affiché avec la mention « proposition de départ, pas encore votée ».
 
 ### [2026-11-04] Liste de départ des mesures du Pacte démocratique
-- Statut : À valider
+- Statut : Décidé le 2026-11-07 (D-062) : liste de départ, simple modèle soumis aux citoyens ; à intégrer dans le cahier fonctionnel 2.0 (M13.5)
 - Concerne : cahier-fonctionnel.md, M13.5
 - Description : en attendant que le mur des revendications fonctionne, proposer au vote une liste de départ, marquée [EXEMPLE] :
   - référendum d'initiative citoyenne (législatif, abrogatoire, constituant) à partir d'un nombre de signatures fixé ;
@@ -192,7 +199,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - transparence des archives des responsables publics.
 - Point d'attention : chaque mesure doit être rédigée de façon précise et vérifiable (texte à modifier, délai), sinon l'engagement ne peut pas être contrôlé.
 - Calendrier : liste à arrêter rapidement pour une diffusion au début de l'année 2027, avant la présidentielle d'avril.
-- Décision :
+- Décision de la propriétaire (2026-11-07, D-062) : cette liste « n'est qu'un exemple, c'est le peuple qui doit la modifier et la valider via notre appli » ; rien d'officiel ni de validé tant que les utilisateurs n'y ont pas participé. Elle est affichée comme « proposition de départ, pas encore votée » ; la délibération citoyenne (proposer une mesure, l'amender, voter) dépend de la méthode « une personne, une voix », dont la conception est en cours. Pour tenir le calendrier du début de 2027, cette délibération doit être ouverte au plus tard en janvier 2027.
 
 ### [2026-11-04] Vote blanc : questions à trancher pour une proposition solide
 - Statut : À étudier

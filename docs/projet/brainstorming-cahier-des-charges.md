@@ -184,7 +184,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision (2026-11-05) : les 300 € couvrent la mise en route (noms de domaine, serveur KVM 1 payé 24 mois d'avance, sauvegardes hors site, modération par IA au démarrage). La suite du budget dépendra des adhérents et des dons. Sont reportés, faute de budget : compte Apple Developer et compilation iOS, deuxième serveur pour la production, serveur d'IA dédié, audit de sécurité externe, avocat, expert-comptable. Aucune dépense n'est engagée sans l'accord de la propriétaire.
 
 ### [2026-11-04] Conséquences du retrait de la notion de non-partisanerie
-- Statut : À valider
+- Statut : Décidé le 2026-11-07 (option A, D-062) ; texte des documents définitifs À valider
 - Concerne : cahier-des-charges.md, section 2 (principe 8) et 9.2 ; cahier-fonctionnel.md, section 3 (règle « Traitement identique ») et M13.5, M13.7 ; instructions du projet, section 5 (garde-fou « Militante mais jamais partisane »)
 - Description : la vision 3.0 ne dit plus que PPF est non partisan. Plusieurs passages des autres documents reposent encore sur cette notion :
   - cahier des charges, principe 8 « Non partisane » ;
@@ -196,7 +196,12 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - A. Supprimer le principe général « Non partisane » et le garde-fou des instructions, mais garder le traitement identique à l'intérieur de trois outils précis (Pacte démocratique, comparateur, baromètre des élus) : leur crédibilité vient justement de ce qu'ils appliquent les mêmes règles à tous.
   - B. Supprimer toute notion de traitement identique, y compris dans ces outils.
 - Recommandation : A. Un Pacte ou un comparateur jugé partial perd sa force de pression et devient facile à contester.
-- Décision :
+- Décision de la propriétaire (2026-11-07, D-062) : **option A**. Les documents définitifs ne sont pas modifiés avant qu'elle ait validé le texte exact ci-dessous (statut : À valider, texte seulement).
+  - Cahier des charges, section 2, principe 8, texte actuel : « **Non partisane.** Tous les candidats et tous les partis sont traités de façon strictement identique ; aucun appel à voter pour quiconque. » Texte proposé : « **Traitement identique dans les outils électoraux.** PPF est militante : elle prend position et critique librement les institutions et les élus. Le Pacte démocratique, le comparateur et le baromètre des élus traitent en revanche tous les candidats et tous les partis de façon strictement identique (même texte, même délai, même présentation, mêmes règles de calcul) et ne contiennent aucun appel à voter pour quiconque. Les limites légales de la section 9.2 s'appliquent dans tous les cas. »
+  - Cahier des charges, section 9.2 : inchangée (elle ne parle déjà que des outils qui concernent des candidats).
+  - Cahier fonctionnel, section 3, texte actuel : « **Traitement identique** : tout ce qui concerne des candidats ou des partis les présente tous de la même façon. » Texte proposé : « **Traitement identique** : le Pacte démocratique, le comparateur et le baromètre des élus présentent tous les candidats et tous les partis de la même façon ; les fiches des responsables publics (M17) ont les mêmes rubriques, dans le même ordre, pour tous. »
+  - Instructions du projet (CLAUDE.md) : rien à retirer, le garde-fou « Militante mais jamais partisane » n'y figure plus ; la règle sur les outils électoraux (section 7) reste.
+  - Point à faire relire par un avocat : en dehors de ces trois outils, un appel de PPF à voter pour un candidat pourrait être vu comme un avantage en nature accordé par une personne morale (Code électoral, article L52-8) ; ajouté à la liste « À faire relire par un avocat » de la feuille de route.
 
 ### [2026-11-04] Navigation et UX : quatre espaces, un accueil, « Mon territoire »
 - Statut : À valider
