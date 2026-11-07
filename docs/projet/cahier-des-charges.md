@@ -1,9 +1,9 @@
 # Politisation Populaire Française : cahier des charges
 
-- Version : 2.1
-- Date : 7 novembre 2026
+- Version : 2.2
+- Date : 8 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-cahier-des-charges.md`.
-- Documents liés : `vision.md` (pourquoi, version 4.3), `cahier-fonctionnel.md` (ce que fait le produit, version 2.0), `docs/DECISIONS.md` (décisions numérotées), `docs/FORMATS.md` (formats ouverts), `docs/THREAT_MODEL.md` (modèle de menaces), `docs/REGISTRE_DONNEES.md` (registre RGPD), `infra/EGRESS.md` (connexions sortantes du serveur).
+- Documents liés : `vision.md` (pourquoi, version 4.3), `cahier-fonctionnel.md` (ce que fait le produit, version 2.1), `docs/DECISIONS.md` (décisions numérotées), `docs/FORMATS.md` (formats ouverts), `docs/THREAT_MODEL.md` (modèle de menaces), `docs/REGISTRE_DONNEES.md` (registre RGPD), `infra/EGRESS.md` (connexions sortantes du serveur).
 
 Ce document fixe **ce que la plateforme doit respecter** : périmètre, principes, architecture, technologies, sécurité, accessibilité, cadre légal, planning et moyens. Le détail des fonctionnalités se trouve dans le cahier fonctionnel.
 
@@ -11,9 +11,10 @@ Ce document fixe **ce que la plateforme doit respecter** : périmètre, principe
 - « (D-xxx) » renvoie à une décision consignée dans `docs/DECISIONS.md` ;
 - « (à confirmer) » marque une décision technique prise par l'IA sous l'autorisation générale de la propriétaire, appliquée mais réversible, qu'elle n'a pas encore confirmée ;
 - « (décision en attente : … ) » marque une question encore ouverte dans un brainstorming, désignée par le titre de son entrée : rien de ce qui en dépend n'est codé avant la réponse de la propriétaire ;
-- « (ajout du chef d'équipe, 7 novembre 2026) » marque une exigence qui ne figurait ni dans les documents ni dans l'inventaire des fonctionnalités validé le 4 novembre 2026.
+- « (ajout du chef d'équipe, 7 novembre 2026) » marque une exigence qui ne figurait ni dans les documents ni dans l'inventaire des fonctionnalités validé le 4 novembre 2026 ;
+- « (brainstorming du 8 novembre 2026) » marque une exigence ajoutée en version 2.2 : décision du chef d'équipe par délégation de la propriétaire, qui a écrit le 7 novembre 2026 : « Pour les decisions a prendre, je suis tes recommandations » (entrée « [2026-11-08] Brainstorming de la nuit » de `brainstorming-cahier-fonctionnel.md`).
 
-Les numéros des sections de la version 1.4 sont conservés, parce que le code et les autres documents y renvoient (par exemple 3.4, 3.5, 5.6, 9.2, 9.3, 10.2). Les sections nouvelles prennent des numéros nouveaux : 1.5, 3.6 à 3.8, 4.1, 5.7 à 5.12, 9.4 à 9.8, 13 et les annexes.
+Les numéros des sections de la version 1.4 sont conservés, parce que le code et les autres documents y renvoient (par exemple 3.4, 3.5, 5.6, 9.2, 9.3, 10.2). Les sections nouvelles prennent des numéros nouveaux : 1.5, 3.6 à 3.8, 4.1, 5.7 à 5.12, 9.4 à 9.8, 13 et les annexes ; la version 2.2 ajoute la section 5.13.
 
 ## 1. Objet et périmètre
 
@@ -30,7 +31,7 @@ Construire la plateforme numérique de Politisation Populaire Française (PPF), 
 - **Identifiants techniques définitifs** : paquet `org.politisationpopulairefrancaise`, application Android `org.politisationpopulairefrancaise.app` (suffixe `.test` pour les versions de test), application macOS `org.politisationpopulairefrancaise.desktop` (D-010). Un identifiant publié ne change plus.
 
 ### 1.3 Espaces et modules
-La plateforme est organisée comme la vision 4.2 : un accueil « En direct », les quatre espaces **Voir, Comprendre, Agir, Décider**, « Mon espace » (le tableau de bord personnel), le **fil social** (écran par défaut) et la **messagerie**, plus des modules transverses qui servent partout. Le détail de chaque module est dans le cahier fonctionnel 2.0.
+La plateforme est organisée comme la vision 4.2 : un accueil « En direct », les quatre espaces **Voir, Comprendre, Agir, Décider**, « Mon espace » (le tableau de bord personnel), le **fil social** (écran par défaut) et la **messagerie**, plus des modules transverses qui servent partout. Le détail de chaque module est dans le cahier fonctionnel 2.1.
 
 Les identifiants M1 à M18 sont conservés, parce que le code et les documents y renvoient ; leurs intitulés suivent le cahier fonctionnel 2.0. Un module qui sert plusieurs espaces est rangé sous son espace principal. Les modules nouveaux du cahier fonctionnel 2.0 sont numérotés de M19 à M35 ; en cas de doute, le cahier fonctionnel fait foi.
 
@@ -89,6 +90,7 @@ L'architecture cible est hybride. Elle est construite progressivement, mais **le
 - **Signature des contenus** : chaque contenu publié est un événement au format Nostr NIP-01, identifié par l'empreinte SHA-256 de sa forme canonique et signé par une signature Schnorr BIP-340 sur la courbe secp256k1 (D-018), pour pouvoir publier plus tard sur Nostr sans tout re-signer. Toute mise en œuvre refuse un événement dont l'identifiant ou la signature ne correspond pas.
 - **Clés de PPF séparées par usage** : clé de la plateforme, clés de l'équipe éditoriale (D-022), clé d'import des données ouvertes (D-064), clé de la boîte de l'équipe pour les demandes de droit de réponse (D-056), graines des urnes de vote (D-110), clé « audit » gardée hors ligne par la propriétaire (conception de « une personne, une voix », approuvée en D-110). Une clé n'est jamais réutilisée d'un usage à l'autre. La clé de la plateforme n'est jamais stockée en clair sur le serveur principal (service de signature séparé ou clé hors ligne) ; rotation et révocation sont prévues pour chacune ; la clé des contenus d'exemple est retirée de la liste de confiance avant le lancement public (D-022).
 - **Identités utilisateurs = paires de clés** générées sur l'appareil, compatibles Nostr, avec les bibliothèques `secp256k1-kmp` et `bitcoin-kmp` d'ACINQ (D-016, à confirmer). Pas de numéro de téléphone, pas d'e-mail obligatoire. Récupération par une phrase de 12 mots BIP-39, liste française par défaut, dérivation NIP-06, et export de la clé « nsec » pour les autres applications Nostr (D-017, à confirmer ; décision en attente : « Identités, phrase de récupération et signature des contenus : choix techniques »). Clés stockées dans le coffre de l'appareil (Android Keystore, trousseau iOS, fichier protégé sur ordinateur), jamais envoyées.
+- **Clé de secours de chaque compte** (S-146 ; brainstorming du 8 novembre 2026) : créée en même temps que le compte, dérivée de la phrase de récupération et absente du téléphone ; depuis un autre appareil, elle signe l'avis « compte compromis depuis… », le retrait de l'ancienne clé des salons et le passage à une nouvelle clé. Elle doit exister dès la création des comptes : sa conception commence tout de suite ; proposition Nostr NIP-41 à étudier.
 - **Port de publication unique** : toute publication passe par une interface unique (`PublicationPort`, D-018). Phase 1 : publication sur le serveur (`POST /api/v1/events`, D-021), avec des règles de publication par rôle (équipe éditoriale, organisations vérifiées, autres comptes en relecture, D-039). Phase 3 : branchement de Nostr et des miroirs sans modifier le reste.
 - **Identifiants de contenu stables** (`type:clé:identifiant`, D-018) et **export JSON ouvert**, documenté par un schéma versionné dans `docs/FORMATS.md` ; toute évolution incompatible donne une nouvelle version, les anciens fichiers restent lisibles (S-48).
 - **Base locale** SQLDelight sur l'appareil (D-020), avec les mêmes règles de remplacement des versions que le serveur.
@@ -105,6 +107,8 @@ L'architecture cible est hybride. Elle est construite progressivement, mais **le
 - **Miroirs statiques** : export régulier du site en pages statiques, déployable n'importe où (le rendu en Kotlin du site le permet, D-007).
 - **Accès Tor** : adresse .onion pour le site et l'API.
 - **Adresses de secours** : si l'adresse principale est bloquée, bascule automatique vers les miroirs, puis vers Tor et Nostr (S-47).
+- **Liste d'adresses de secours signée**, avancée avant la phase 3 (Tôt ; brainstorming du 8 novembre 2026) : domaines, adresses .onion, relais Nostr et adresses IP, dans une liste signée par la clé racine de la plateforme (section 3.2) et tenue à jour dans l'application ; résolution DNS chiffrée (DoH) et ECH (section 5.2) ; une **sonde**, désactivée par défaut (principe 10), teste les adresses, détecte un blocage, bascule et le signale anonymement ; les mesures ouvertes d'OONI servent aussi à l'observatoire des blocages (VO-45), avec leur hôte inscrit dans la liste des sorties (section 5.8).
+- **Fédération ActivityPub** (phase 3 ; brainstorming du 8 novembre 2026) : agenda fédéré compatible avec Mobilizon et diffusion à sens unique des publications éditoriales vers le fédivers (AG-64), branchés comme les autres adaptateurs de la phase 3 ; hôtes inscrits dans la liste des sorties ; les événements reçus sont modérés comme les autres contenus.
 - **Partage sans Internet** : l'application elle-même et les fiches essentielles se transmettent d'un téléphone à l'autre (S-97) ; les contenus signés se partagent hors ligne par code QR ou par fichier et sont vérifiés à la réception (ajout du chef d'équipe, 7 novembre 2026, plus tard).
 
 ### 3.4 Messagerie
@@ -121,6 +125,7 @@ L'architecture cible est hybride. Elle est construite progressivement, mais **le
 - Module indépendant, sans aucun lien avec le serveur.
 - Basé sur le protocole bitchat (Bluetooth Low Energy en réseau maillé, chiffrement Noise, Nostr en relais Internet), compatible avec les applications bitchat existantes.
 - Réutilisation du code bitchat Android (licence MIT) et iOS (domaine public) en conservant les mentions de licence.
+- **Relais radio longue portée** (AG-65, phase 4 ; brainstorming du 8 novembre 2026) : alertes AIDE et coordination relayées par des radios LoRa (type Meshtastic) quand le réseau est coupé ; la position que ces radios diffusent par défaut est neutralisée ; achat des radios soumis à la propriétaire (section 12).
 
 ### 3.5 Hébergement et environnements
 - **Prestataire unique : Hostinger** (société établie en Lituanie) pour les serveurs et les noms de domaine (D-002). Seule exception : les sauvegardes chiffrées, stockées chez un autre prestataire européen (section 5.10).
@@ -132,6 +137,7 @@ L'architecture cible est hybride. Elle est construite progressivement, mais **le
 - **Chaîne de déploiement** (D-070) : le serveur ne compile jamais rien ; l'intégration continue construit l'image du serveur sur la branche principale et la signe sans clé stockée (Sigstore) ; le serveur vérifie la signature avant de lancer et déploie toujours une empreinte précise, jamais un nom de version ; la préproduction se met à jour seule et revient à la version précédente si la nouvelle n'est pas saine ; la production ne reçoit qu'une empreinte déjà validée en préproduction, par une commande manuelle, après une sauvegarde de la base.
 - **Conteneurs à part** pour ce qui manipule une clé ou une source extérieure : l'importeur des données ouvertes tourne dans son propre conteneur, avec son propre utilisateur, seul à voir sa clé (D-064).
 - **Tuiles de carte** : un fichier de la France entière servi par le reverse proxy, 10 Go au plus sur le disque (D-080).
+- **Mode sobre automatique en cas d'afflux** (avant le lancement ; brainstorming du 8 novembre 2026) : Caddy sert des instantanés statiques des pages publiques, les écritures sont mises en file d'attente, et un test de charge est joué dans l'intégration continue avant chaque mise en production (section 6).
 - **Deuxième serveur dédié à la production** dès que le budget le permet, pour un isolement complet ; l'infrastructure est conçue pour que ce passage soit simple.
 - **Circuit de mise en ligne** : tests automatiques, déploiement en préproduction, validation par la propriétaire, puis production. Jamais de déploiement direct en production.
 
@@ -177,6 +183,7 @@ Méthode approuvée par la propriétaire (D-044), demandée pour la délibérati
 - **Référentiel des territoires** (codes, noms, population, électeurs inscrits), module partagé qui sert aussi aux objectifs de signatures par territoire (D-062).
 - **Fonds de carte** OpenStreetMap auto-hébergés, avec la mention « © contributeurs d'OpenStreetMap » toujours visible (licence ODbL) (D-046, D-080).
 - **Nouvelles sources** (ajouts du chef d'équipe, 7 novembre 2026) : ordre du jour, textes en discussion et scrutins à venir de l'Assemblée et du Sénat, pour « Cette semaine au Parlement » ; budgets et comptes des collectivités (données ouvertes de la DGFiP), données essentielles de la commande publique et subventions publiées, pour l'argent public local ; consultations publiques officielles (ministères, Commission nationale du débat public, enquêtes publiques, collectivités), sources à vérifier ; dates des scrutins et des inscriptions sur les listes électorales pour le calendrier électoral personnel. Chaque source est vérifiée (licence, maintenance) et son hôte inscrit dans la liste des sorties (section 5.8) avant tout code.
+- **Sources des fonctionnalités de la version 2.2** (brainstorming du 8 novembre 2026), soumises à la même règle : parrainages de la présidentielle publiés par le Conseil constitutionnel (VO-37) ; décrets d'application et baromètre de l'application des lois sur data.gouv.fr, licence à vérifier (VO-36) ; questions écrites et réponses des ministères (VO-41) ; versions des textes et amendements, avec le code de La Fabrique de la loi dont la licence est à étudier (VO-43) ; contributions extérieures au Conseil constitutionnel, après vérification de ce qui est publié (VO-44) ; textes officiels par l'API de Légifrance (PISTE), dont l'accès gratuit est à créer par la propriétaire avec un guide (VO-42) ; mesures ouvertes d'OONI (VO-45) ; études d'impact officielles des textes (CO-15).
 - **Données ouvertes publiées par PPF** : export JSON de tous les contenus publiés (S-48) ; API publique en lecture seule, sans compte, documentée ; flux RSS (S-51) et iCal (D-043) ; jeux de données et bouton « Citer ce contenu » avec une référence stable, pour les journalistes, chercheurs et observateurs (ajout du chef d'équipe, 7 novembre 2026). La licence des contenus et des données publiés par PPF est à proposer à la propriétaire dans le brainstorming avant la première publication réelle (ajout du chef d'équipe, 7 novembre 2026).
 
 ## 4. Technologies retenues
@@ -202,7 +209,7 @@ Si une meilleure option existe au moment du développement, elle est proposée a
 - **Versions de test Android** : version d'essai non débogable, seule envoyée sur les téléphones, avec une signature de test partagée vérifiée par l'intégration continue (D-012, D-031). La publication utilisera une clé distincte, gardée hors ligne (D-012).
 - **Versions publiques Android** : un APK par architecture de processeur (arm64-v8a, armeabi-v7a, x86_64 ; environ 26 Mo au lieu de 38 Mo pour un APK universel, D-016, D-046) pour le site, les publications du dépôt et F-Droid ; un paquet AAB pour Google Play, qui l'exige (ajout du chef d'équipe, 7 novembre 2026).
 - **F-Droid** : retenu par la propriétaire (point d'attention n° 5 de l'inventaire, 4 novembre 2026), comme garantie d'accès si Google ou Apple retirent l'application.
-- **Constructions reproductibles** : les mêmes sources donnent, octet pour octet, les mêmes APK et le même fichier du serveur (jar) ; l'intégration continue le vérifie par une seconde construction ; c'est la condition pour que F-Droid publie l'application avec notre signature et pour qu'un tiers puisse vérifier que le code publié est bien celui qui tourne (ajout du chef d'équipe, 7 novembre 2026).
+- **Constructions reproductibles** : les mêmes sources donnent, octet pour octet, les mêmes APK et le même fichier du serveur (jar) ; l'intégration continue le vérifie par une seconde construction ; c'est la condition pour que F-Droid publie l'application avec notre signature et pour qu'un tiers puisse vérifier que le code publié est bien celui qui tourne (ajout du chef d'équipe, 7 novembre 2026). Recompilation par un tiers indépendant et journal public des empreintes : section 8 (brainstorming du 8 novembre 2026).
 - **Google Play** : test interne puis publication (décision en attente : « Distribution des versions de test sur Android (avertissements Play Protect et Samsung) », 25 dollars une seule fois) ; le même compte servira à l'enregistrement des développeurs que Google exige en 2027 pour toute application installée sur un téléphone Android certifié, y compris hors magasin.
 - **Empreinte du certificat de signature** publiée sur le site et dans le dépôt, pour vérifier un APK reçu d'une autre source ; partage de l'APK hors ligne entre téléphones (S-97).
 - **Bande passante** : l'APK n'est jamais servi par le serveur principal (publications du dépôt, F-Droid, Google Play, miroirs), pour que les téléchargements ne saturent pas le serveur (ajout du chef d'équipe, 7 novembre 2026).
@@ -214,7 +221,8 @@ Si une meilleure option existe au moment du développement, elle est proposée a
 ### 5.1 Données
 - Lecture sans compte. Compte (pseudonyme, par paire de clés) seulement pour contribuer, voter, soutenir, signaler.
 - Votes et soutiens enregistrés de manière à ne pas pouvoir être reliés à une personne réelle (section 3.7) ; aucun historique individuel de votes exposé ; publication de résultats agrégés uniquement.
-- **Restent sur l'appareil**, jamais envoyés : la progression dans les parcours (D-033), les vues du mur des revendications (D-029), les comptes et organisations suivis (S-120, D-042), les contenus suivis (D-034), la commune choisie pour « Mes élus » (D-047), les réponses « J'y serai », « Je soutiens », « J'ai signé » (D-039 à D-041, effacées peu après l'événement), les filtres et recherches, les marque-pages et l'historique (S-07, S-08), les rappels (S-98) et le tableau de bord de « Mon espace ». Une sauvegarde chiffrée de bout en bout reste facultative (S-112). Tant que le comptage anonyme n'est pas en service, aucun compteur public ni liste de participants n'existe.
+- **Restent sur l'appareil**, jamais envoyés : la progression dans les parcours (D-033), les vues du mur des revendications (D-029), les comptes et organisations suivis (S-120, D-042), les contenus suivis (D-034), la commune choisie pour « Mes élus » (D-047), les réponses « J'y serai », « Je soutiens », « J'ai signé » (D-039 à D-041, effacées peu après l'événement), les filtres et recherches, les marque-pages et l'historique (S-07, S-08), les rappels (S-98) et le tableau de bord de « Mon espace » ; depuis la version 2.2 (brainstorming du 8 novembre 2026), aussi les mots suivis des alertes, triées sur l'appareil (VO-34), la situation saisie dans « Ce que cette loi change pour moi » (CO-15), le carnet de route (CO-27), la liste des proches à mobiliser (AG-63), le résumé « Ma semaine » (TE-10) et les réglages du mode simple (S-148). Une sauvegarde chiffrée de bout en bout reste facultative (S-112). Tant que le comptage anonyme n'est pas en service, aucun compteur public ni liste de participants n'existe.
+- Les avis « Cette fiche vous a aidé ? » (CO-26) sont comptés ensemble, sans compte ni texte libre, envoyés par lots et en différé, sans aucun outil d'analyse (brainstorming du 8 novembre 2026).
 - **Confidentialité maximale par défaut et libre choix** (principe 10) : tous les réglages de confidentialité et d'anonymat sont au plus haut à la création du compte. Tout assouplissement est fait par l'utilisateur lui-même, pour ses propres données, après une mise en garde simple sur les risques ; il peut revenir en arrière à tout moment, la mise en garde rappelant qu'une information déjà vue ou copiée par d'autres ne peut pas être effacée partout. Un écran montre ce qui est stocké sur l'appareil et ce qui est envoyé au serveur, avec un bouton « tout effacer » (S-21).
 - **Suppression systématique des métadonnées** (GPS, modèle d'appareil, date EXIF, etc.) de toutes les photos et vidéos, **sur l'appareil, avant l'envoi**. Outil de floutage des visages optionnel avant publication (pas de floutage par défaut).
 - Valeur de preuve : empreinte SHA-256 du fichier original, horodatée (section 3.2, D-111).
@@ -225,6 +233,8 @@ Si une meilleure option existe au moment du développement, elle est proposée a
 ### 5.2 Protection des adresses IP
 - Adresse .onion (phase 3).
 - Option Tor intégrée dans l'application (Arti ou bibliothèque équivalente maintenue) ou compatibilité avec Orbot.
+- **Ponts Tor** (obfs4, Snowflake, WebTunnel), pour atteindre Tor là où il est bloqué, et **relais Snowflake volontaire** dans l'application, désactivé par défaut (principe 10) : phase 3, conçus dès maintenant (brainstorming du 8 novembre 2026).
+- **Résolution DNS chiffrée (DoH) et ECH** dans l'application (Tôt), pour qu'un réseau ne voie pas quel nom de site est demandé ; liste d'adresses de secours signée et sonde de blocage : section 3.3 (brainstorming du 8 novembre 2026).
 - Guide dans l'application expliquant Tor et recommandant un VPN fiable (Proton VPN a une offre gratuite), en signalant que beaucoup de VPN gratuits revendent les données.
 - Avant d'ouvrir un site extérieur, l'application prévient que ce site verra l'adresse IP du lecteur (« Vous quittez PPF », avec « Rester sur PPF » proposé en premier, D-022, D-034).
 
@@ -267,6 +277,7 @@ Un modèle de menaces est rédigé et tenu à jour (`docs/THREAT_MODEL.md`). Men
 - Le moyen de contact est chiffré ou chiffrable (par exemple un message chiffré vers une clé publiée) ; une adresse électronique dédiée, si elle a un coût, est soumise à la propriétaire (ajout du chef d'équipe, 7 novembre 2026).
 - Engagement de ne pas poursuivre les chercheurs de bonne foi : à faire relire par un avocat (section 9.8).
 - Publication des audits de sécurité et des incidents, avec ce qui a été corrigé (S-93).
+- **Page publique de transparence technique**, générée à chaque déploiement (Tôt ; brainstorming du 8 novembre 2026) : version en ligne et sa signature, connexions sortantes (section 5.8), durées de conservation réelles, nombre de réquisitions reçues (section 9.4) ; **canari** mensuel signé par la clé racine de la plateforme, à faire relire par un avocat (section 9.8).
 
 ### 5.8 Connexions sortantes autorisées
 (Ajout du chef d'équipe, 7 novembre 2026, à partir de la liste tenue par le Directeur technique.)
@@ -274,6 +285,7 @@ Un modèle de menaces est rédigé et tenu à jour (`docs/THREAT_MODEL.md`). Men
 - **Serveur** : il ne contacte que les hôtes inscrits dans `infra/EGRESS.md`, chacun avec sa raison, son port, ses environnements et le pôle qui en répond. Aucune donnée personnelle ne sort vers ces hôtes. Chaque nouvel hôte est inscrit avant le code, ainsi que dans `docs/THREAT_MODEL.md` et `docs/REGISTRE_DONNEES.md`. Aujourd'hui vérifiée en relecture, la liste sera appliquée par le réseau avant la production (proxy de sortie filtrant, décision technique à venir du Directeur technique, bloc D-075 à D-079).
 - **Sources réelles en production seulement** : en développement, en test et en préproduction, le serveur sert des jeux fictifs et ne contacte aucune source officielle (D-047, D-064).
 - Liste actuelle, par familles : mises à jour du système et de Docker, registre des images et dépôt GitHub, vérification des signatures (Sigstore), certificats (Let's Encrypt), modèle d'IA (éteint), data.gouv.fr (pétitions, annuaire des élus), Insee et La Poste (annuaire des élus, D-047), calendriers OpenTimestamps, autorité RFC 3161 et explorateurs publics de la chaîne Bitcoin (D-111), sources du Parlement et de la HATVP (D-064), prestataire des sauvegardes hors site (à choisir).
+- Hôtes à inscrire avant le code des fonctionnalités de la version 2.2 (brainstorming du 8 novembre 2026) : les sources de la section 3.8, dont OONI et l'API de Légifrance ; plus tard, les serveurs du fédivers (ActivityPub, phase 3, section 3.3).
 
 ### 5.9 Rapports de plantage sans télémétrie
 - Aucun outil de suivi des plantages ni de mesure d'usage fourni par un tiers ; aucun envoi automatique (principe 6).
@@ -290,13 +302,26 @@ Un modèle de menaces est rédigé et tenu à jour (`docs/THREAT_MODEL.md`). Men
 ### 5.11 Liste de contrôle de sécurité avant chaque version
 - Une liste de contrôle écrite, dans le dépôt, est passée avant chaque version publiée des applications et avant chaque passage en production du serveur ; son résultat (date, version, personne) est noté dans le journal des modifications.
 - Elle s'appuie sur la dernière version publiée de l'OWASP ASVS pour le serveur et le site, et de l'OWASP MASVS (avec son guide de tests) pour les applications.
-- Elle vérifie au moins (ajout du chef d'équipe, 7 novembre 2026, pour le contenu de la liste) : aucun secret ; aucun tiers ; dépendances à jour et sans alerte de sécurité connue ; APK non débogable, signé par le bon certificat, réduction du code vérifiée sur un vrai téléphone avant d'être activée ; en-têtes de sécurité et CSP ; aucune adresse IP dans aucun journal ; aucun exemple en production et aucune donnée réelle en préproduction (D-074) ; liste des sorties à jour (section 5.8) ; migrations de base relues ; dernière restauration de sauvegarde réussie ; tests d'accessibilité au vert ; modèle de menaces, registre des données et journal des modifications à jour.
+- Elle vérifie au moins (ajout du chef d'équipe, 7 novembre 2026, pour le contenu de la liste) : aucun secret ; aucun tiers ; dépendances à jour et sans alerte de sécurité connue ; APK non débogable, signé par le bon certificat, réduction du code vérifiée sur un vrai téléphone avant d'être activée ; en-têtes de sécurité et CSP ; aucune adresse IP dans aucun journal ; aucun exemple en production et aucune donnée réelle en préproduction (D-074) ; liste des sorties à jour (section 5.8) ; migrations de base relues ; dernière restauration de sauvegarde réussie ; tests d'accessibilité au vert ; modèle de menaces, registre des données et journal des modifications à jour ; depuis la version 2.2 (brainstorming du 8 novembre 2026), empreintes de l'APK et des applications de bureau inscrites au journal public de transparence et confirmées par la recompilation d'un tiers indépendant (section 8), page de transparence technique régénérée (section 5.7), test de charge au vert (section 3.5).
 - Un audit de sécurité externe a lieu avant le lancement public (coût reporté, section 12).
 
 ### 5.12 Authenticité des contenus et provenance des témoignages
 - **« Vérifier un contenu PPF »** (S-46 ; ajout du chef d'équipe, 7 novembre 2026, pour les captures, les liens et le site) : dans l'application et sur le site, même hors ligne, n'importe qui peut vérifier qu'un contenu, une capture d'écran ou un lien vient bien de PPF et n'a pas été modifié : signature vérifiée avec les clés publiées de PPF, identifiant stable, empreinte. L'application affiche « contenu authentique PPF » ou une mise en garde claire. Les images de partage (S-37) portent une référence courte (identifiant, empreinte abrégée, code QR) qui permet cette vérification. La liste des clés de confiance est publiée dans l'application, sur le site et dans le dépôt, puis signée par la clé de la plateforme (D-022).
 - **« Citer ce contenu »** : une référence stable (titre, date, adresse, identifiant, version) à copier (ajout du chef d'équipe, 7 novembre 2026).
 - **Provenance des témoignages** (M5 ; ajout du chef d'équipe, 7 novembre 2026) : signature et horodatage dès la capture, sur l'appareil ; la clé qui signe est choisie pour ne pas relier le témoin à son pseudonyme (décision technique à prendre avec le module M5) ; empreinte horodatée (D-111) ; la copie publiée est sans métadonnées ; l'original est conservé chiffré pour les seuls avocats partenaires, et n'est envoyé qu'avec l'accord explicite du témoin (principe 10) ; compatibilité avec la norme C2PA à étudier, en vérifiant qu'elle n'ajoute aucune donnée qui identifie le témoin.
+- **Messages relayés avec leur provenance** (S-149 ; brainstorming du 8 novembre 2026) : au transfert, l'événement signé d'origine accompagne le message ; l'application affiche « original vérifié, publié par… le… » ou « modifié depuis l'original ».
+- **Vérifier une image qui circule** (CO-29 ; brainstorming du 8 novembre 2026) : l'empreinte visuelle est calculée sur l'appareil et comparée à une liste signée des images déjà vérifiées par PPF, livrée à tous ; l'image elle-même n'est envoyée que si l'utilisateur demande une vérification (CO-18) ; licence de l'algorithme (PDQ) vérifiée avant tout code ; le verdict reste humain.
+
+### 5.13 Protection des personnes et de leurs appareils
+(Brainstorming du 8 novembre 2026, exigences induites par les fonctionnalités retenues.)
+- **Galerie chiffrée** (AG-58) : les photos et vidéos prises dans PPF sont enregistrées chiffrées dans l'espace de l'application, jamais dans la galerie du téléphone ni dans un service de sauvegarde automatique ; métadonnées supprimées avant tout envoi (section 5.1). L'envoi continu par morceaux chiffrés vers les avocats partenaires viendra plus tard, après la présentation du coût du stockage (section 12).
+- **Minuteur « sans nouvelles de moi »** (AG-55) : l'alerte est préparée, puis déposée chiffrée à l'avance sur les appareils des proches choisis (et de la legal team si on le veut), qui l'affichent d'eux-mêmes à l'heure fixée, même si le téléphone de la personne est saisi ; un « je vais bien » confirmé par un code l'annule, un code de détresse simule l'annulation ; le serveur ne transporte que des messages chiffrés (section 3.4.1) et n'apprend rien.
+- **Alertes sur ce que l'on suit** (VO-34, CO-28, TE-10) : le serveur fournit les mêmes données à tous ; le tri se fait sur l'appareil, qui ne transmet jamais les mots suivis, ni la commune ou les élus de l'utilisateur.
+- **Soutien aux personnes interpellées** (AG-57) : les « je suis sans nouvelles de… » et toute information sur une interpellation relèvent des données d'infractions (RGPD, article 10, section 9.2) : chiffrement de bout en bout vers la seule legal team, effacement rapide (durée inscrite au registre des données) ; l'agenda des comparutions ne porte aucun nom.
+- **Preuves contre le harcèlement** (AG-59) : preuves horodatées (D-111), gardées chiffrées sur l'appareil.
+- **Préparer son téléphone** (AG-56) : PPF passe en un geste au déverrouillage par code seul, sans biométrie ; les explications juridiques (refus de remettre son code) sont vérifiées et relues par un avocat (section 9.8).
+- **Code PIN de contrainte** (S-44, S-45 ; plus tard) : un code qui ouvre un compte vide ou efface discrètement ; à étudier, rien n'est codé avant l'avis indispensable d'un avocat (Code pénal, articles 434-4 et 434-15-2 ; section 9.8).
+- **Proches à mobiliser** (AG-63) : la liste reste sur l'appareil, sans import du carnet d'adresses ; les opinions supposées des proches ne sont jamais envoyées (section 9.2).
 
 ## 6. Accessibilité, compatibilité et performance
 
@@ -309,7 +334,8 @@ Un modèle de menaces est rédigé et tenu à jour (`docs/THREAT_MODEL.md`). Men
 - Contenus essentiels consultables hors ligne, intégrés à l'application dès l'installation (D-022).
 - Interface en français, tous les textes externalisés pour la traduction (anglais et autres langues plus tard).
 - Modes clair et sombre.
-- **Performance** (ajout du chef d'équipe, 7 novembre 2026) : poids de l'APK surveillé par l'intégration continue ; infrastructure qui tient dans 4 Go de mémoire, préproduction comprise ; test de charge avant le lancement public ; pages publiques du site servies en fichiers statiques par le reverse proxy pour tenir un pic d'audience venu des réseaux sociaux.
+- **Performance** (ajout du chef d'équipe, 7 novembre 2026) : poids de l'APK surveillé par l'intégration continue ; infrastructure qui tient dans 4 Go de mémoire, préproduction comprise ; test de charge avant le lancement public, puis dans l'intégration continue avant chaque mise en production (brainstorming du 8 novembre 2026) ; pages publiques du site servies en fichiers statiques par le reverse proxy pour tenir un pic d'audience venu des réseaux sociaux, avec le mode sobre automatique en cas d'afflux (section 3.5).
+- **Mode simple et accompagnant** (S-148 ; brainstorming du 8 novembre 2026) : quatre gros boutons, pas de balayage, « Écouter » partout, réglages de lecture gardés sur l'appareil ; **fil fini** (S-145) : pas de défilement infini, heures de silence la nuit et aucune pastille rouge de compteur par défaut (règlement sur les services numériques, articles 25 et 27, section 7).
 
 ## 7. Design et expérience utilisateur
 
@@ -322,7 +348,7 @@ Un modèle de menaces est rédigé et tenu à jour (`docs/THREAT_MODEL.md`). Men
 - Fiches ultra lisibles, avec des encarts « En bref », « Légal », « Illégal », « Attention », « Conseil », chacun avec une icône et un titre (D-024, D-025) ; verdicts des décryptages toujours écrits en toutes lettres avec une icône (D-038).
 - Accueil des nouveaux utilisateurs en trois écrans au plus, qu'on peut passer (S-01), avec une explication simple de la sécurité (Tor, VPN, ce que l'application collecte ou non, y compris sur les votes et soutiens).
 - Confidentialité visible : « Qui voit quoi » et « Mes votes et soutiens : jamais visibles » sur le profil (D-025).
-- Aucune interface trompeuse ni manipulatrice (règlement sur les services numériques, article 25) ; un fil chronologique sans profilage reste toujours disponible (article 27, M18) (ajout du chef d'équipe, 7 novembre 2026, pour l'article 25).
+- Aucune interface trompeuse ni manipulatrice (règlement sur les services numériques, article 25) ; un fil chronologique sans profilage reste toujours disponible (article 27, M18) (ajout du chef d'équipe, 7 novembre 2026, pour l'article 25). Une page publique liste les motifs trompeurs que PPF s'interdit, chaque écran passe une grille de relecture et chacun peut « Signaler un motif trompeur » (PP-09) ; « Pourquoi je vois ça ? » sous chaque contenu suggéré du fil (S-145) (brainstorming du 8 novembre 2026).
 - Maquettes ou captures présentées à la propriétaire pour validation avant de finaliser chaque écran important ; les captures se produisent sans appareil, pour le téléphone (clair et sombre) et l'ordinateur.
 - Interdiction d'imiter l'identité visuelle officielle de l'État (logo Marianne officiel, bloc-marque) et de réutiliser l'ancien nom du projet, abandonné pour des raisons juridiques.
 
@@ -332,6 +358,7 @@ Un modèle de menaces est rédigé et tenu à jour (`docs/THREAT_MODEL.md`). Men
 - **Dépôt public dès le premier commit** (D-005) : aucun secret ni configuration sensible ; il n'est jamais rendu privé ni supprimé sans décision de la propriétaire. Hébergement sous une organisation GitHub (décision en attente : « Organisation GitHub du projet »). Miroir automatique sur Codeberg dès que la propriétaire aura un compte.
 - Branche principale protégée : aucune modification sans demande de fusion, relecture et tests au vert ; jamais de poussée directe ni de réécriture forcée. Seuls les mainteneurs valident les contributions externes, toutes relues ligne par ligne.
 - Double authentification obligatoire pour les mainteneurs, commits signés (D-014).
+- **Versions vérifiables par tous** (Tôt ; brainstorming du 8 novembre 2026) : les constructions reproductibles de l'APK et des applications de bureau (section 4.1) sont recompilées par un tiers indépendant, et l'empreinte de chaque version est publiée dans un journal public de transparence ; chacun peut ainsi vérifier qu'un fichier installé vient bien du code public. Vérification inscrite à la liste de contrôle avant chaque version (section 5.11).
 - Configuration privée hors dépôt : secrets, clés, seuils et règles anti-fraude, réglages de modération.
 
 ## 9. Cadre légal
@@ -346,13 +373,14 @@ Modèles marqués « À FAIRE RELIRE PAR UN AVOCAT » : mentions légales (LCEN)
 - **Loi de 1881** : diffamation, injure, provocation.
 - **Présomption d'innocence** et droit à l'image.
 - **Méthode éditoriale** (M17, D-036, D-038) : sources primaires ; distinction toujours visible entre établi, allégué et en cours d'enquête ; statut de chaque procédure ; contradictoire et droit de réponse ; journal public des corrections ; échelle publique des cinq verdicts des décryptages (« Exact », « Plutôt exact », « Trompeur », « Contredit par les faits », « Invérifiable ») ; objections présentées et réfutées de façon sourcée ; fiches identiques pour tous ; un indice (par exemple la gravité des violences policières) est publié comme une répartition, jamais comme une note unique (D-057).
-- **RGPD, article 9** : opinions politiques = données sensibles (section 9.6).
+- **RGPD, article 9** : opinions politiques = données sensibles (section 9.6) ; cela vaut aussi pour les opinions supposées des proches qu'un utilisateur note sur son appareil (AG-63) : jamais envoyées, avec une mise en garde (brainstorming du 8 novembre 2026).
+- **RGPD, article 10, données relatives aux infractions** (brainstorming du 8 novembre 2026) : le soutien aux personnes interpellées (AG-57) touche à des infractions supposées ; ces données ne sont traitées que chiffrées de bout en bout vers la seule legal team, effacées rapidement, sans aucun nom dans l'agenda des comparutions (section 5.13) ; relecture par un avocat (section 9.8).
 - **Règlement sur les services numériques (DSA)** : section 9.4.
 - **Signalement obligatoire** des contenus pédocriminels et terroristes aux autorités compétentes (PHAROS) : section 9.5.
 - **Conservation des données d'identification** (ajout du chef d'équipe, 7 novembre 2026) : la LCEN (article 6) et ses décrets n° 2021-1362 et n° 2021-1363 du 20 octobre 2021 imposent aux hébergeurs de conserver certaines données permettant d'identifier les personnes qui ont contribué à la création d'un contenu. Cela peut entrer en contradiction avec la règle « aucune adresse IP journalisée » (section 5.1). Point à faire trancher par un avocat avant l'ouverture publique, puis à présenter à la propriétaire avec des options ; rien n'est changé à la règle actuelle en attendant.
 - **Droit électoral et financement politique** :
   - une personne morale (dont l'association PPF) ne peut ni financer une campagne électorale ni consentir à un candidat des avantages, y compris en nature (site, fichiers, communication) ;
-  - tout outil qui concerne des candidats (engagements, comparateur, baromètre) les traite tous de façon strictement identique, sans appel à voter ; pour le Pacte démocratique : même texte pour tous, vérifiable par son empreinte, même jour d'envoi et même délai, une ligne par candidat même sans réponse, ordre alphabétique, réponse arrivée après la date limite non comptée mais visible avec sa date (D-060, D-062) ;
+  - tout outil qui concerne des candidats (engagements, comparateur, baromètre) les traite tous de façon strictement identique, sans appel à voter ; pour le Pacte démocratique : même texte pour tous, vérifiable par son empreinte, même jour d'envoi et même délai, une ligne par candidat même sans réponse, ordre alphabétique, réponse arrivée après la date limite non comptée mais visible avec sa date (D-060, D-062) ; mêmes règles pour les questions citoyennes aux candidats (DE-30 : mêmes questions, même jour, même délai, absence de réponse affichée) et affichage factuel identique des parrainages, sans bouton pour interpeller les maires (VO-37) (brainstorming du 8 novembre 2026) ;
   - les dons aux partis sont réservés aux personnes physiques (de nationalité française ou résidant en France) et plafonnés à 7 500 euros par personne et par an ; les dons à un candidat sont plafonnés à 4 600 euros par élection (montants à re-vérifier avant tout guide) ;
   - PPF peut lancer des appels à dons pour elle-même, comme les organisations vérifiées, jamais pour un candidat ou un parti (D-039) ;
   - veille sur les règles applicables en période électorale (propagande, sondages).
@@ -393,7 +421,7 @@ PPF héberge des contenus publiés par ses utilisateurs : elle est un service d'
 - **Rapport de transparence** (articles 15 et 24) : publié au moins une fois par an, en nombres agrégés (signalements reçus, décisions, délais, recours, transmissions aux autorités, outils automatisés utilisés, leur précision et leur taux d'erreur), jamais un contenu ni un compte. Le nombre moyen mensuel d'utilisateurs actifs n'est publié que s'il peut être estimé sans traceur (S-76) ; sinon, le rapport l'explique.
 - **Interfaces et recommandations** (articles 25 et 27) : section 7 et M18.
 - **Protection des mineurs** (article 28) : réglages protecteurs par défaut, sans collecte de données supplémentaire (section 9.2).
-- **Injonctions des autorités** (articles 9 et 10) : traitées, tracées, et la personne concernée en est informée sauf interdiction légale ; PPF ne peut fournir que le peu qu'elle détient (minimisation).
+- **Injonctions des autorités** (articles 9 et 10) : traitées, tracées, et la personne concernée en est informée sauf interdiction légale ; PPF ne peut fournir que le peu qu'elle détient (minimisation). Le nombre de réquisitions reçues figure sur la page de transparence technique (section 5.7) (brainstorming du 8 novembre 2026).
 - **Contenus à caractère terroriste** (règlement (UE) 2021/784) : retrait ou blocage dans l'heure qui suit une injonction de retrait (article 3) ; point de contact pour les injonctions (article 15) ; menace imminente pour la vie : information immédiate des autorités (article 14). Le délai d'une heure suppose une personne de l'équipe joignable à tout moment : organisation à définir avant le lancement public.
 
 ### 9.5 Procédure PHAROS
@@ -412,7 +440,7 @@ PPF héberge des contenus publiés par ses utilisateurs : elle est un service d'
 - **Droit de réponse** : publié sous le contenu, dans les trois jours de sa réception (LCEN, article 1-1, III, numérotation issue de la loi du 21 mai 2024, à revérifier sur Légifrance ; D-056) ; signalement d'une erreur anonyme par défaut, sous chaque contenu (D-056).
 
 ### 9.7 Outils électoraux et désignation d'un candidat
-- Les outils électoraux (Pacte démocratique, comparateur, baromètre des élus) suivent les règles de la section 9.2.
+- Les outils électoraux (Pacte démocratique, comparateur, baromètre des élus) suivent les règles de la section 9.2, comme les questions citoyennes aux candidats (DE-30), les parrainages de la présidentielle (VO-37) et, plus tard, la boussole 2027, dont la neutralité des thèses est relue par un avocat (DE-33) (brainstorming du 8 novembre 2026).
 - La désignation citoyenne d'un candidat (M13.7, phase 6) impose une vérification d'identité limitée à ce module, avec des données supprimées après le vote ; son cadre légal doit être validé par un avocat avant tout développement.
 
 ### 9.8 À faire relire par un avocat avant l'ouverture publique
@@ -431,13 +459,22 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
 - l'engagement de ne pas poursuivre les chercheurs en sécurité de bonne foi (ajout du chef d'équipe, 7 novembre 2026) ;
 - les jurys citoyens de recours en modération, tirés au sort parmi les comptes vérifiés volontaires (ajout du chef d'équipe, 7 novembre 2026, à étudier) ;
 - les statuts de l'association, au regard des conditions des prestataires de paiement ;
-- la désignation citoyenne d'un candidat (section 9.7).
+- la désignation citoyenne d'un candidat (section 9.7) ;
+- points signalés lors du brainstorming du 8 novembre 2026 :
+  - « Préparer mon téléphone avant la manifestation » : exactitude des explications sur le refus de remettre son code (Cour de cassation, 7 novembre 2022, n° 21-83.146) (AG-56) ;
+  - le soutien aux personnes interpellées et ses données d'infractions (RGPD, article 10) (AG-57) ;
+  - les questions citoyennes aux candidats de 2027, au regard du traitement identique (section 9.2) (DE-30) ;
+  - la neutralité des thèses de la boussole 2027 (DE-33) ;
+  - le jury citoyen du suivi des engagements du Pacte (méthode M17, droit de réponse) (DE-35) ;
+  - les collectivités partenaires, au regard de la communication en période électorale (DE-37) ;
+  - le canari mensuel de la page de transparence technique (section 5.7) ;
+  - le code PIN de contrainte, avis indispensable avant tout code (Code pénal, articles 434-4 et 434-15-2) (S-44, section 5.13).
 
 ## 10. Planning
 
 ### 10.1 Contraintes de calendrier
 - Le mouvement social est en cours : une première version utilisable doit sortir le plus vite possible.
-- Élection présidentielle en avril 2027 : Pacte démocratique diffusé au début de l'année 2027, calendrier électoral personnel et comparateur avant le scrutin.
+- Élection présidentielle en avril 2027 : Pacte démocratique diffusé au début de l'année 2027, calendrier électoral personnel et comparateur avant le scrutin ; questions citoyennes aux candidats ouvertes en janvier 2027 (DE-30) et parrainages affichés en février et mars 2027 (VO-37) (brainstorming du 8 novembre 2026).
 - Législatives possibles à tout moment en cas de dissolution (notamment après la présidentielle), avec un scrutin 20 à 40 jours après la dissolution.
 
 ### 10.2 Phases
@@ -456,7 +493,7 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
 - **Phase 6** : désignation citoyenne d'un candidat (M13.7), après validation juridique par un avocat.
 - **iOS, hors phase** : compilation, tests (simulateur, puis bénévoles équipés via TestFlight) et publication sur l'App Store dès que le compte Apple Developer est ouvert, quelle que soit la phase en cours ; jusque-là, le site installable (PWA) sert de solution sur iPhone.
 - **Phase de test et de débogage** : à la demande de la propriétaire (7 novembre 2026), les essais sur son téléphone (autotest de l'urne, carte réelle, réduction du code) sont regroupés dans une phase de test et de débogage, avant l'ouverture publique (D-112).
-- Les fonctionnalités nouvelles du cahier fonctionnel 2.0, marquées « Tôt » ou « Plus tard », sont rangées dans ces phases lors du découpage en MVP (décision en attente : « Phase 1 trop chargée face à l'urgence ? »). L'avancement de chaque élément est suivi dans `docs/ROADMAP.md`.
+- Les fonctionnalités nouvelles des cahiers fonctionnels 2.0 et 2.1, marquées « Tôt » ou « Plus tard », sont rangées dans ces phases lors du découpage en MVP (décision en attente : « Phase 1 trop chargée face à l'urgence ? »). Pour celles de la version 2.1, « Tôt » veut dire : dans les prochaines vagues, avant la présidentielle d'avril 2027 (brainstorming du 8 novembre 2026). L'avancement de chaque élément est suivi dans `docs/ROADMAP.md`.
 
 ## 11. Critères d'acceptation
 
@@ -474,7 +511,7 @@ Une fonctionnalité n'est livrée que si :
 - Hébergement : VPS Hostinger, détaillé à la section 3.5.
 - Budget : 300 € couvrent la mise en route (noms de domaine, serveur payé 24 mois d'avance, sauvegardes hors site, modération par IA au démarrage) (D-003) ; 500 € au grand maximum, à éviter (brainstorming, entrée « Budget »). La suite dépend des adhésions et des dons. Aucune dépense, aucun abonnement, aucun essai payant n'est engagé sans l'accord explicite de la propriétaire, et chaque coût est annoncé, y compris au renouvellement.
 - Déjà payé : les six noms de domaine (environ 145 € TTC ; D-001, brainstorming, entrée « Serveur de la préproduction : achat »).
-- Dépenses à soumettre à la propriétaire : le serveur (KVM 1 ou KVM 2 pour 24 mois, décision en attente : « Serveur de la préproduction : achat ») ; les sauvegardes hors site (avant la production) ; le modèle d'IA (décision en attente : « Modération et assistant IA : hébergement du modèle ») ; le compte Google Play (décision en attente : « Distribution des versions de test sur Android (avertissements Play Protect et Samsung) ») ; les clés de sécurité physiques des super-administrateurs ; le prestataire de paiement des dons et adhésions (décision en attente : « Prestataire de paiement : éligibilité de HelloAsso »).
+- Dépenses à soumettre à la propriétaire : le serveur (KVM 1 ou KVM 2 pour 24 mois, décision en attente : « Serveur de la préproduction : achat ») ; les sauvegardes hors site (avant la production) ; le modèle d'IA (décision en attente : « Modération et assistant IA : hébergement du modèle ») ; le compte Google Play (décision en attente : « Distribution des versions de test sur Android (avertissements Play Protect et Samsung) ») ; les clés de sécurité physiques des super-administrateurs ; le prestataire de paiement des dons et adhésions (décision en attente : « Prestataire de paiement : éligibilité de HelloAsso ») ; le stockage des vidéos de la caméra protégée sur le serveur, avant l'envoi continu vers les avocats partenaires (AG-58) ; les radios LoRa du relais longue portée (AG-65, phase 4) (brainstorming du 8 novembre 2026, à présenter le moment venu).
 - Coûts reportés, à financer plus tard : compte Apple Developer (99 € par an, dispense possible pour une organisation à but non lucratif) et compilation iOS, deuxième serveur pour la production, serveur d'IA dédié, audit de sécurité externe avant le lancement public, avocat, expert-comptable.
 - Intégration continue dans les quotas gratuits de GitHub Actions, sans machine macOS ; la consommation est surveillée.
 - Matériel de test : un téléphone Android et un ordinateur ; pas d'iPhone. Les tests de la messagerie Bluetooth nécessiteront au moins deux appareils Android. Les essais sur téléphone sont regroupés dans la phase de test et de débogage (section 10.2).
@@ -529,26 +566,35 @@ Rien de ce qui dépend de ces questions n'est codé avant la réponse de la prop
 | D-070 à D-074 | Déploiement, préproduction, durcissement, exemples | 3.5 |
 | D-110 à D-112 | Vote anonyme, archivage horodaté, niveaux de votants | 3.2, 3.7 |
 | D-120 (en cours) | Connexion de l'équipe par clé d'accès | 5.3 |
+| Brainstorming du 8 novembre 2026 (décisions du chef d'équipe par délégation de la propriétaire) | Exigences du Directeur technique et exigences induites par les fonctionnalités retenues | 3.2, 3.3, 3.4.2, 3.5, 3.8, 4.1, 5.1, 5.2, 5.7, 5.8, 5.11 à 5.13, 6, 7, 8, 9.2, 9.4, 9.7, 9.8, 10, 12 |
 
 ## Annexe B. Petit lexique
 
 - **AAB** : format de paquet qu'exige Google Play ; Google en tire lui-même l'APK adapté à chaque téléphone.
+- **ActivityPub, fédivers** : protocole ouvert de Mastodon et de Mobilizon, et ensemble des sites reliés par ce protocole.
 - **APK** : fichier d'installation d'une application Android.
 - **API** : porte d'entrée par laquelle les applications et d'autres programmes demandent des données au serveur.
 - **Arcom** : autorité française qui contrôle l'application du règlement sur les services numériques.
+- **Canari** : déclaration datée et signée, publiée chaque mois, qui affirme que PPF n'a reçu aucune demande secrète des autorités ; si elle cesse d'être publiée, c'est un signal.
+- **Clé de secours** : seconde clé dérivée de la phrase de récupération, jamais gardée sur le téléphone, qui permet de déclarer son compte compromis et de passer à une nouvelle clé.
 - **Construction reproductible** : compiler deux fois le même code donne exactement le même fichier, ce qui permet à quiconque de vérifier qu'un fichier publié vient bien du code public.
 - **C2PA** : norme ouverte qui décrit l'origine d'une photo ou d'une vidéo et ses modifications.
 - **CSP, HSTS** : réglages envoyés par le serveur au navigateur pour bloquer les scripts piégés et imposer une connexion chiffrée.
+- **DoH** : résolution DNS chiffrée ; le réseau ne voit plus quel nom de site l'application demande.
 - **DSA** : règlement européen sur les services numériques, qui fixe les obligations des plateformes envers leurs utilisateurs.
+- **ECH** : chiffrement du nom du site au début de la connexion sécurisée, pour qu'un réseau ne puisse pas bloquer PPF en lisant ce nom.
 - **Empreinte (SHA-256)** : suite de caractères calculée à partir d'un fichier ; le moindre changement du fichier change l'empreinte.
 - **F-Droid** : magasin d'applications libres pour Android, indépendant de Google.
 - **Jeton anonyme (VOPRF)** : jeton délivré par le serveur sans qu'il voie ce qu'il signe, si bien qu'il ne peut pas le reconnaître quand il revient avec un bulletin de vote.
+- **LoRa** : radio longue portée et peu gourmande, qui transmet de courts messages sur plusieurs kilomètres sans réseau téléphonique.
 - **MLS** : protocole moderne de chiffrement des conversations de groupe.
 - **Nostr, NIP** : protocole ouvert de publication de messages signés ; un « NIP » est l'un de ses documents de normalisation.
+- **OONI** : observatoire ouvert des blocages d'Internet, qui publie ses mesures en données ouvertes.
 - **OpenTimestamps, RFC 3161** : deux méthodes pour prouver qu'un document existait à une date donnée, l'une par la chaîne Bitcoin, l'autre par une autorité d'horodatage.
 - **OWASP ASVS, MASVS** : listes de référence des exigences de sécurité, pour les serveurs et sites web d'une part, pour les applications mobiles d'autre part.
 - **PHAROS** : plateforme officielle du ministère de l'Intérieur pour signaler les contenus illicites en ligne.
 - **PMTiles** : format de fichier unique qui contient toute une carte, servi par simple lecture de morceaux.
+- **Pont Tor (obfs4, Snowflake, WebTunnel)** : point d'entrée caché du réseau Tor, qui permet de l'utiliser là où il est bloqué ; un relais Snowflake volontaire prête un peu de sa connexion pour aider d'autres personnes à passer.
 - **Préproduction** : copie de test du service, fermée au public, où l'on vérifie une version avant la mise en ligne.
 - **Preuve de travail** : petit calcul demandé à l'appareil, qui coûte peu à une personne mais beaucoup à un robot qui veut créer des milliers de comptes.
 - **PWA** : site web qui s'installe et fonctionne comme une application, même hors ligne.
@@ -570,3 +616,4 @@ Rien de ce qui dépend de ces questions n'est codé avant la réponse de la prop
 | 1.4 | 7 novembre 2026 | Section 2 : retrait du principe 8 « Non partisane », sans texte de remplacement (les principes 9 et 10 gardent leur numéro). Section 5.5 : la menace devient « faire passer la plateforme pour le soutien d'un candidat ou d'un parti ». Restent, comme règles de méthode et de droit : le traitement identique des candidats dans les outils électoraux (9.2) et les fiches identiques pour tous (cahier fonctionnel, M17). Décision de la propriétaire du 7 novembre 2026, transmise par le chef d'équipe (D-062). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
 | 2.0 | 7 novembre 2026 | Réécriture sur mandat de la propriétaire du 7 novembre 2026 (ajouter aux cahiers tout ce qui est nécessaire à l'accomplissement de la vision), conduite par le chef d'équipe. Section 1.3 réorganisée selon les espaces de la vision 4.2 (En direct, Voir, Comprendre, Agir, Décider, Mon espace, fil social, messagerie, transverses) ; nouvelle section 1.5 (statut : association, D-062) ; principe 11 « La transparence d'abord » (D-044). Intégration des décisions déjà prises : licence, dépôt public, site en Ktor et kotlinx.html, chaîne d'outils, identités et signature (à confirmer), formats Nostr, messagerie et conservation, navigation, identité visuelle, données ouvertes et annuaire des élus, tuiles auto-hébergées, archivage OpenTimestamps et RFC 3161, vote anonyme à trois niveaux (D-110 à D-112), avec leurs renvois D-xxx (annexe A). Exigences ajoutées : sections 3.6 à 3.8, 4.1 (distribution, F-Droid, constructions reproductibles, APK par architecture et AAB), 5.7 à 5.12 (divulgation responsable et security.txt, sorties autorisées, rapports de plantage sans télémétrie, sauvegardes et plan de reprise, liste de contrôle avant chaque version, authenticité et provenance), tests et déclaration d'accessibilité (6), DSA et procédure PHAROS (9.4, 9.5), droits des personnes (9.6), liste de relecture par un avocat (9.8), décisions en attente (13), lexique. Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
 | 2.1 | 7 novembre 2026 | Principe 11 « La transparence d'abord » validé par la propriétaire ; préproduction avec la vraie information publique, jamais de données personnelles réelles de citoyens (section 3.5) ; principe 10 : exceptions voulues par la propriétaire (publications et participations visibles des cercles par défaut, vote public des élus, « j'aime » publics ; aucun vote pour les comptes qui ne sont pas des personnes physiques), D-132. Copie locale modifiée par l'IA (chef d'équipe) ; à reporter dans le projet claude.ai. |
+| 2.2 | 8 novembre 2026 | Intégration du brainstorming de la nuit du 7 au 8 novembre 2026, sur mandat de la propriétaire du 7 novembre 2026 (« Pour les decisions a prendre, je suis tes recommandations ») : décisions du chef d'équipe par délégation de la propriétaire. Exigences du Directeur technique : versions vérifiables par tous, recompilées par un tiers et inscrites dans un journal public (4.1, 5.11, 8) ; liste d'adresses de secours signée, DoH, ECH et sonde de blocage désactivée par défaut (3.3, 5.2) ; mode sobre automatique en cas d'afflux et test de charge avant chaque mise en production (3.5, 6) ; page publique de transparence technique et canari mensuel (5.7, 9.4) ; ponts Tor et relais Snowflake volontaire (5.2, phase 3) ; code PIN de contrainte (5.13, plus tard, avocat). Exigences induites : clé de secours créée avec chaque compte (3.2) ; nouvelle section 5.13 (galerie chiffrée, minuteur dont les alertes sont déposées chiffrées à l'avance chez les proches, tri des alertes sur l'appareil, données d'infractions) ; données gardées sur l'appareil (5.1) ; provenance des messages relayés et vérification des images (5.12) ; nouvelles sources (3.8, 5.8) ; ActivityPub (3.3) et LoRa (3.4.2) ; RGPD, articles 9 et 10, et outils électoraux (9.2, 9.7) ; huit points ajoutés à la relecture par un avocat (9.8) ; calendrier (10) ; stockage vidéo et radios LoRa aux dépenses à présenter (12) ; lexique. Copie locale modifiée par l'IA (chef d'équipe) ; à reporter dans le projet claude.ai. |

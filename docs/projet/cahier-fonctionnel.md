@@ -1,21 +1,22 @@
 # Politisation Populaire Française : cahier fonctionnel
 
-- Version : 2.0
-- Date : 7 novembre 2026
+- Version : 2.1
+- Date : 8 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-cahier-fonctionnel.md`.
-- Documents liés : `vision.md` (pourquoi, version 4.3), `cahier-des-charges.md` (exigences, architecture, cadre légal, planning), `docs/DECISIONS.md` (décisions numérotées D-xxx), `docs/ROADMAP.md` (avancement).
+- Documents liés : `vision.md` (pourquoi, version 4.3), `cahier-des-charges.md` (exigences, architecture, cadre légal, planning, version 2.2), `docs/DECISIONS.md` (décisions numérotées D-xxx), `docs/ROADMAP.md` (avancement).
 - Origine de la version 2.0 : mandat de la propriétaire du 7 novembre 2026 (« ajouter autant de taches dans le cahier fonctionnel et cahier des charges que nécessaire à l'accomplissement de la vision du projet »), qui intègre l'inventaire des fonctionnalités validé le 4 novembre 2026 et les décisions prises jusqu'au 7 novembre 2026.
+- Origine de la version 2.1 : mandat de la propriétaire du 7 novembre 2026, 23 h (« brainstormer sur les fonctionnalités indispensables, innovantes et pertinentes », puis « Pour les decisions a prendre, je suis tes recommandations ») ; les fonctionnalités retenues lors du brainstorming de la nuit du 7 au 8 novembre 2026 sont ajoutées par le chef d'équipe, par délégation de la propriétaire (entrée « [2026-11-08] Brainstorming de la nuit » de `brainstorming-cahier-fonctionnel.md`).
 
 Ce document décrit **ce que fait la plateforme** : qui l'utilise, comment, et le détail de chaque espace et de chaque module. Les exigences de sécurité, de vie privée, d'accessibilité et le cadre légal du cahier des charges s'appliquent à toutes les fonctionnalités décrites ici. En cas de contradiction, la vision l'emporte sur le cahier des charges, qui l'emporte sur ce cahier.
 
 ## 0. Comment lire ce document
 
-- **Plan** : les rôles (1), les parcours clés (2), les règles transverses (3), un chapitre par espace (4 En direct, 5 Voir, 6 Comprendre, 7 Agir, 8 Décider, 9 Mon espace, 10 Fil social, 11 Messagerie), les modules transverses (12), puis les annexes : correspondance des modules (A), dépendances communes (B), décisions en attente (C), identifiants retirés (D).
+- **Plan** : les rôles (1), les parcours clés (2), les règles transverses (3), un chapitre par espace (4 En direct, 5 Voir, 6 Comprendre, 7 Agir, 8 Décider, 9 Mon espace, 10 Fil social, 11 Messagerie), les modules transverses (12), puis les annexes : correspondance des modules (A), dépendances communes (B), décisions en attente (C), identifiants retirés et pistes écartées (D).
 - **Modules** : M1 à M18 gardent leur numéro, auquel renvoient le code et les documents ; les modules nouveaux portent les numéros M19 à M35. La table de l'annexe A donne l'ancien et le nouvel emplacement de chacun.
-- **Fonctionnalités** : chacune garde l'identifiant stable de l'inventaire du 4 novembre 2026 : S (socle commun), MA (En direct), VO (Voir), CO (Comprendre), AG (Agir), AP (appels), DE (Décider), PR (questionnaire citoyen), TE (Mon espace), PP (À propos de PPF), EQ (outils de l'équipe). Les fonctionnalités nouvelles de la version 2.0 continuent la numérotation (S-140, VO-30, CO-21, AG-54, DE-25, TE-08 et suivants). Un identifiant retiré n'est jamais réutilisé (annexe D).
+- **Fonctionnalités** : chacune garde l'identifiant stable de l'inventaire du 4 novembre 2026 : S (socle commun), MA (En direct), VO (Voir), CO (Comprendre), AG (Agir), AP (appels), DE (Décider), PR (questionnaire citoyen), TE (Mon espace), PP (À propos de PPF), EQ (outils de l'équipe). Les fonctionnalités nouvelles de la version 2.0 continuent la numérotation (S-140, VO-30, CO-21, AG-54, DE-25, TE-08 et suivants), celles de la version 2.1 la prolongent (S-145, VO-34, CO-23, AG-55, AP-11, DE-29, TE-10, PP-09 et suivants). Un identifiant retiré n'est jamais réutilisé (annexe D).
 - **Priorité** (indicative, arrêtée lors du découpage en MVP, c'est-à-dire en versions successives utilisables) : « Tôt » : dans les premières versions, parce que c'est simple et utile tout de suite ou nécessaire avant la présidentielle d'avril 2027 ; « Plus tard » : lourd, ou dépendant d'autre chose ; « Phase n » : phase fixée par le cahier des charges (section 10.2). Quand ni le cahier des charges ni l'inventaire ne fixent la priorité, elle est proposée selon ces mêmes critères.
 - **Dépendances et état** : ce dont la fonctionnalité dépend (méthode « une personne, une voix », avis d'un avocat, back-office de l'équipe, référentiel des territoires, hébergement du modèle d'IA, prestataire de paiement, notifications) ; « fait (D-xxx) » ou « première version faite (D-xxx) » quand la feuille de route le dit ; « en cours (D-xxx) » quand le travail a commencé ; « à faire » sinon.
-- **Mentions** : « décision en attente : titre » renvoie à une entrée encore ouverte d'un brainstorming, et rien de ce qui en dépend n'est codé avant la décision ; « (ajout du chef d'équipe, 7 novembre 2026) » marque ce qui a été ajouté au titre du mandat de la propriétaire ; « mis de côté » signifie qu'on ne code rien pour l'instant.
+- **Mentions** : « décision en attente : titre » renvoie à une entrée encore ouverte d'un brainstorming, et rien de ce qui en dépend n'est codé avant la décision ; « (ajout du chef d'équipe, 7 novembre 2026) » marque ce qui a été ajouté au titre du mandat de la propriétaire ; « (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire) » marque ce qui a été ajouté ou modifié en version 2.1 ; « mis de côté » signifie qu'on ne code rien pour l'instant.
 - **Exemples** : tout contenu d'exemple est fictif et marqué [EXEMPLE].
 
 ### Mots techniques employés
@@ -45,6 +46,11 @@ Ce document décrit **ce que fait la plateforme** : qui l'utilise, comment, et l
 | RGPD, DSA, LCEN | Règlement européen sur les données personnelles ; règlement européen sur les services numériques (signalement, recours, transparence) ; loi française sur l'économie numérique (mentions légales, droit de réponse). |
 | ITT | Incapacité totale de travail fixée par un médecin ; elle sert en droit pénal à mesurer la gravité d'une blessure. |
 | Référentiel des territoires | Liste commune des communes, départements et régions, avec leur population et leurs électeurs inscrits, utilisée par tous les espaces. |
+| Clé de secours | Seconde clé dérivée de la phrase de récupération, jamais gardée sur le téléphone, qui permet depuis un autre appareil de déclarer son compte compromis et de passer à une nouvelle clé (S-146). |
+| Empreinte visuelle | Code calculé à partir de l'aspect d'une image : deux copies de la même image, même redimensionnées ou recompressées, ont des empreintes proches (CO-29). |
+| ActivityPub, fédivers | ActivityPub est le protocole ouvert de Mastodon et de Mobilizon ; le fédivers est l'ensemble des sites reliés par ce protocole. |
+| LoRa | Radio longue portée et peu gourmande, qui transmet de courts messages sur plusieurs kilomètres sans réseau téléphonique (type Meshtastic). |
+| OONI | Observatoire ouvert des blocages d'Internet, qui publie ses mesures en données ouvertes. |
 
 ## 1. Rôles
 
@@ -176,6 +182,7 @@ L'espace « En direct » est l'accueil de l'information du moment, à un geste d
 | VO-03 | Signalements chiffrés des citoyens | Un citoyen signale un blocage, une nasse, une blessure ; une personne, un signalement, grâce aux jetons anonymes ; détection des comportements anormaux ; validation avant intégration. | Tôt | Dépend de « une personne, une voix » (en cours, D-110, D-112). |
 | VO-04 | Indice de gravité des violences policières | Grille en cinq niveaux ci-dessus, avec mineur, moyen en cause et niveau de preuve. | Tôt | Grille décidée (D-057) ; à coder. |
 | VO-05 | Visualisations et méthodologie | Compteurs, courbes, cartes ; chaque graphique a sa version en tableau ; méthode publique pour chaque indicateur. | Phase 1 | Graphiques et tableaux faits (D-034) ; cartes avec la vue carte (D-046). |
+| VO-40 | Comptage de foule participatif | Estimation de la foule d'une manifestation par la méthode de Jacobs (surface multipliée par densité), un bulletin par compte, vérifié ou non, grâce à l'urne anonyme ; résultat affiché à côté des chiffres de la préfecture et des organisateurs, méthode publique. | Tôt (après la carte de la manifestation, M25) | Outil sur la carte : pôle Agir (AG-24) ; observatoire : pôle Voir ; urne : pôle Décider (« une personne, une voix ») ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 #### M4. Chronologie et archives
 
@@ -186,6 +193,8 @@ Les fiches des responsables publics ont rejoint M17, les votes des parlementaire
 | VO-06 | Chronologie du mouvement | Manifestations, déclarations officielles, décisions publiées (Journal officiel, décrets, arrêtés préfectoraux, circulaires), réponses du gouvernement. | Phase 2 | Première version faite (D-034). |
 | VO-07 | Archives des documents officiels | Pour chaque élément : copie archivée, empreinte horodatée (OpenTimestamps, avec RFC 3161 en complément), lien vers Internet Archive, historique des versions. | Phase 2 | Horodatage décidé (D-111), à coder. |
 | VO-08 | Témoignages publiés | Galerie et carte des témoignages et vidéos vérifiés et anonymisés (M5), dans « Le mouvement ». | Phase 2 | Dépend du canal sécurisé (AG-07) et du back-office de modération (M15). |
+| VO-38 | Que sont devenues nos paroles ? | Suivi mesure par mesure des propositions citoyennes passées (Convention citoyenne pour le climat, grand débat de 2019 et cahiers de doléances), avec une méthode publique. | Tôt | Travail éditorial du pôle Voir ; comptages divergents montrés côte à côte (VO-02) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| VO-42 | Journal des textes officiels modifiés | Chaque modification d'un texte officiel (Légifrance ou données LEGI) relevée et datée, avec l'empreinte de chaque version. | Plus tard | Accès gratuit à l'API de Légifrance (PISTE) à créer par la propriétaire, guide à prévoir ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 #### M9. International
 
@@ -224,6 +233,7 @@ Validé par la propriétaire le 7 novembre 2026 (D-036). Au niveau national et e
 | VO-17 | Conflits d'intérêts et pantouflage | Allers-retours entre fonctions publiques et secteur privé, avis de la HATVP, déclarations d'intérêts des élus, liens documentés entre décisions publiques et intérêts privés (M13.2). | Phase 2 | Première version faite (D-034) ; décision en attente : Réutilisation des données de la HATVP (brainstorming du cahier des charges). |
 | VO-18 | Influence des lobbies | Rencontres entre représentants d'intérêts et décideurs sur chaque loi importante, d'après le répertoire de la HATVP, saisies et relues à la main (M13.2). | Phase 2 | Première version faite (D-034). |
 | VO-19 | Qui gagne, qui perd | Pour chaque loi importante, effets chiffrés et sourcés sur les différentes catégories de la population (M13.2). | Phase 2 | Première version faite (D-034). |
+| VO-39 | Écart entre vote et parole | Rapprochement automatique, côte à côte, des scrutins et des promesses ou déclarations saisies sur le même texte, sans aucun verdict. | Tôt (après l'alerte VO-34) | Méthode M17 ; votes (M20) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | VO-21 | Droit de réponse | Bouton sous tout contenu qui nomme ou désigne une personne ; un compte vérifié sert de voie rapide, sinon un formulaire avec justificatif d'identité ; longueur : celle du contenu en cause, avec un minimum de 1 000 mots ; contrôle par le directeur de la publication, publication sous trois jours sous le contenu (« Droit de réponse de [nom] ») et mention en haut du contenu ; ouvert aux partis et aux candidats ; alerte de niveau 5 dans l'équipe (S-115). | Tôt (obligation légale) | Affichage fait (D-034) ; formulaire chiffré vers l'équipe en cours (D-056) ; avis d'avocat sur les motifs de refus. |
 | VO-22 | Journal des corrections et « Signaler une erreur » | Liste publique de toutes les corrections, avec leur date et leur motif ; sous chaque contenu, signaler une erreur, anonymement par défaut. | Tôt | Journal fait (D-034) ; signalement en cours (D-056). |
 
@@ -235,6 +245,7 @@ Validé par la propriétaire le 7 novembre 2026 (D-036). Au niveau national et e
 | VO-24 | À qui appartiennent les médias | Carte des propriétaires, de leurs autres activités économiques et de leurs liens avec le pouvoir ; analyse des lignes éditoriales selon une méthode publique et chiffrée, jamais par simple appréciation. | Phase 2 | Première version faite (D-034). |
 | VO-25 | Tableau de bord des contre-pouvoirs | Recours au 49.3, suites données aux rapports d'autorités indépendantes, classements de liberté de la presse, interdictions de manifester. | Phase 2 | Première version faite (D-034). |
 | VO-26 | Observatoire des libertés publiques | Arrêtés d'interdiction de manifester, dissolutions d'associations, lois et décrets restrictifs, dispositifs de surveillance (drones, vidéosurveillance algorithmique), recours engagés. | Tôt | Première version faite (D-034). |
+| VO-45 | Observatoire des blocages | Prolonge VO-26 : carte des blocages de PPF et d'autres sites, avec les données ouvertes d'OONI. | Plus tard | Sonde de blocage du Directeur technique (cahier des charges, 3.3) ; OONI à inscrire dans la liste des sorties ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | VO-33 | Actes et discours de haine | Documentation sourcée des violences et des discours racistes, antisémites, fascistes ou néonazis et des groupes qui les portent, avec la méthode de M17 ; liens vers le signalement (S-38), le soutien aux victimes (AG-14) et « Comprendre le fascisme » (CO-22). | Plus tard | Avocat (diffamation) ; (ajout du chef d'équipe, 7 novembre 2026). |
 
 #### M20. Le Parlement : votes et textes en cours
@@ -244,6 +255,15 @@ Validé par la propriétaire le 7 novembre 2026 (D-036). Au niveau national et e
 | VO-11 | Votes des parlementaires | Scrutins publics et votes nominatifs des députés et des eurodéputés élus en France, importés automatiquement des données ouvertes officielles (avancé de la phase 5) ; qui a voté quoi ; historique jusqu'à 50 ans (numérisation du Journal officiel) en phase 5. | Tôt (import), Phase 5 (historique) | En cours (D-064, D-065) ; votes nominatifs du Sénat plus tard, faute de données ouvertes exploitables. |
 | VO-20 | Législomètre | Textes en discussion, étape, calendrier des votes, amendements importants, compteur des 49.3, bouton « Interpeller mes élus avant le vote » (DE-09). | Tôt | Première version faite (D-034). |
 | VO-31 | Cette semaine au Parlement | Ordre du jour, textes en discussion et scrutins à venir de l'Assemblée nationale et du Sénat, tirés de leurs données ouvertes, avec des liens vers « Qui décide de ça ? » (CO-01) et « Interpeller mes élus » (DE-09) ; repris dans « En direct ». | Tôt | Données ouvertes (D-064) ; (ajout du chef d'équipe, 7 novembre 2026). |
+| VO-34 | Alerte « mes élus ont voté » | L'appareil, qui connaît mes élus (TE-01), signale chaque nouveau scrutin où ils ont voté, avec leur position et leur mise au point éventuelle ; alertes aussi sur un mot suivi (amendement, scrutin, question), triées sur l'appareil : le serveur ne reçoit jamais les mots suivis. | Tôt | Données du Parlement (D-064) ; notifications (M31), avec le pôle Communauté ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| VO-35 | Présence et délégations | Sur les grands scrutins, présence et délégations de vote par groupe et par chambre, avec la définition affichée ; aucun classement d'élus. | Tôt | Données déjà importées (D-064) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| VO-36 | Applicomètre | Pour chaque loi, les décrets d'application attendus et publiés, les retards et le taux d'application, reliés aux promesses (VO-12). | Tôt | Données de l'Assemblée et baromètre de l'application des lois (data.gouv.fr), licence à vérifier ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| VO-37 | Parrainages de la présidentielle 2027 | Listes publiées par le Conseil constitutionnel, par candidat et par département ; « mon maire, mon député a parrainé » dans Mes élus (TE-01) ; affichage factuel identique pour tous, sans bouton pour interpeller les maires ; repris dans le comparateur (DE-16). | Tôt (février et mars 2027) | Données rendues publiques par la loi ; traitement identique (règle transverse n° 9) ; affiché aussi par le pôle Décider ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| VO-41 | Délai de réponse aux questions écrites | Pour chaque ministère, délai de réponse aux questions écrites des parlementaires (règlement de l'Assemblée nationale, article 135), sans classement des députés ; plus tard, questions proposées par des citoyens. | Tôt ; Plus tard pour les questions citoyennes | Données du Parlement (D-064) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| VO-43 | Ce que le Parlement a changé dans le texte | Versions d'un texte comparées article par article, avec l'amendement et l'auteur de chaque changement. | Plus tard | Code de La Fabrique de la loi : licence à étudier ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| VO-44 | Contributions extérieures au Conseil constitutionnel | Les contributions extérieures (« portes étroites ») adressées au Conseil constitutionnel sur les lois qui lui sont soumises. | Plus tard | Vérifier ce qui est publié ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+
+« Ce que cette loi change pour moi » (CO-15) et « Suis une loi qui me concerne » (CO-28), décrits dans « Comprendre », se rattachent aussi à ce module (brainstorming du 8 novembre 2026).
 
 ### 5.3 L'état du pays
 
@@ -254,7 +274,7 @@ Validé par la propriétaire le 7 novembre 2026 (D-036). Au niveau national et e
 | VO-29 | État du pays | Tableau de bord des chiffres du constat de la vision (pauvreté, fortunes, lits d'hôpital, effectifs par classe, etc.), mis à jour avec leurs sources. | Tôt | Choix des chiffres : décision en attente : Nouvelle version du constat (section 3) (brainstorming de la vision). |
 | VO-27 | Carte des fermetures de services publics | Maternités, urgences, bureaux de poste, classes, gares fermés ou menacés, d'après les données ouvertes et des signalements citoyens vérifiés (VO-03). | Plus tard | Vue carte (D-046) ; « une personne, une voix » pour les signalements. |
 | VO-28 | Observatoire de la vie chère | Évolution des prix des carburants, de l'énergie, des loyers et d'un panier alimentaire, d'après des données ouvertes. | Plus tard | Sources officielles à vérifier. |
-| VO-32 | Argent public local | Budgets et comptes de chaque collectivité (données ouvertes de la DGFiP), marchés publics (données essentielles de la commande publique), subventions publiées, présentés par commune grâce au référentiel des territoires ; lien avec « Où vont nos impôts » (CO-16). | Plus tard | Référentiel des territoires ; sources officielles à vérifier ; (ajout du chef d'équipe, 7 novembre 2026). |
+| VO-32 | Argent public local | Budgets et comptes de chaque collectivité (données ouvertes de la DGFiP), marchés publics (données essentielles de la commande publique), subventions publiées, présentés par commune grâce au référentiel des territoires ; lien avec « Où vont nos impôts » (CO-16) ; « Budget de ma commune » : présentation pédagogique par le pôle Comprendre et comparaison avec des communes de même taille. | Plus tard | Référentiel des territoires ; sources officielles à vérifier ; (ajout du chef d'équipe, 7 novembre 2026) ; budget de ma commune avec le pôle Comprendre (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ## 6. Comprendre
 
@@ -269,6 +289,7 @@ Les autres parties de l'ancien M13.1 vivent ailleurs : « Mes élus » dans Mon 
 | CO-01 | Qui décide de ça ? | On choisit un sujet du quotidien et sa commune ; un encart « Qui décide ? Les élus concernés » ouvre le contenu avec les noms des élus, puis la chaîne de décision (commune, intercommunalité, département ou collectivité à statut particulier, région, État, Union européenne), leurs votes récents sur le sujet, comment les contacter, l'explication et « Et maintenant ? ». Sujets de départ (décision du 7 novembre 2026) : prix des carburants, logement et loyers, école, hôpital et santé, transports, impôts locaux, eau et énergie, salaires et retraites, services publics de proximité, environnement local. | Tôt | Fait, 12 sujets [EXEMPLE] (D-038, D-047, D-049) ; noms réels des élus avec le serveur de production. |
 | CO-02 | Comprendre en 5 minutes | Parcours courts avec quiz : comment une loi est votée, le budget de l'État, le rôle de chaque élu, le 49.3, la motion de censure, la dissolution, le référendum, la révision de la Constitution, les élections ; progression gardée sur l'appareil seulement et effaçable. | Tôt | Fait, 16 parcours [EXEMPLE] (D-033, D-049). |
 | CO-09 | Comprendre les élections | Fonctionnement des scrutins et rôle de chaque élu (ancien M13.7). | Tôt | Parcours sur la présidentielle, l'inscription et le vote, se présenter, faits (D-033, D-049). |
+| CO-28 | Suis une loi qui me concerne | On choisit un sujet de sa vie ; à chaque étape d'un texte en cours, une explication et le moment pour agir (pétition, interpellation), avec une notification facultative. | Tôt (après l'alerte de Voir, VO-34) | Pôle Comprendre avec Voir ; législomètre (VO-20, M20) ; notifications (M31) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ### M6. Informer : fiches pratiques, décryptages, dossiers et glossaire
 
@@ -283,6 +304,10 @@ Le fil d'actualité de l'ancien M6 est dans « En direct » (MA-03), l'outil de 
 | CO-12 | Sécurité numérique des militants | Téléphone en manifestation, chiffrement, réseaux sociaux, protection de ses données (voir aussi M33). | Tôt | À faire. |
 | CO-14 | Glossaire | Les mots difficiles de chaque contenu sont soulignés ; un geste ouvre une définition courte et « En savoir plus » ; glossaire complet avec recherche. | Tôt | Fait, 64 mots [EXEMPLE] (D-048, D-049). |
 | CO-18 | Demander une vérification | Soumettre une rumeur ou une information douteuse à l'équipe de décryptage (CO-04). | Tôt | À faire, avec le back-office (M15). |
+| CO-23 | Vacciner contre l'intox | Mini-parcours de pré-démystification sur les techniques de manipulation (fausse urgence, faux expert, chiffre sorti de son contexte, image recadrée, image fabriquée), avec des exercices « Repère le procédé ». | Tôt | Études sur l'inoculation à citer ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| CO-25 | Fiches en cartes verticales | Chaque fiche existe aussi en 5 à 8 cartes à faire glisser, avec les sources et « Et maintenant ? » à la fin, utilisables aussi dans « En direct » (M19) ; export en carrousel d'images portant le code de vérification (S-141), sans métadonnées. | Tôt | S-141 ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| CO-26 | « Cette fiche vous a aidé ? » | Trois réponses, « Clair », « Pas clair », « Un mot m'a bloqué », comptées ensemble, sans compte et sans texte libre, envoyées par lots et en différé. | Tôt | Aucun outil d'analyse ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| CO-29 | Vérifier une image qui circule | L'empreinte visuelle de l'image est calculée sur l'appareil et comparée à une liste signée des images déjà vérifiées par PPF ; une image inconnue renvoie vers « Demander une vérification » (CO-18) ; le verdict reste toujours humain. | Tôt (deuxième vague) | Licence de l'algorithme d'empreinte (PDQ) à vérifier ; CO-18 ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ### M7. Histoire des luttes et valeurs (ancien « Éduquer »)
 
@@ -308,7 +333,7 @@ Le fil d'actualité de l'ancien M6 est dans « En direct » (MA-03), l'outil de 
 
 | ID | Fonctionnalité | Ce qu'elle fait | Priorité | Dépendances et état |
 |---|---|---|---|---|
-| CO-15 | Ce que cette loi change pour moi | Simulateur personnel (retraite, chômage, impôts) calculé uniquement sur l'appareil, sans rien envoyer. | Plus tard (une erreur de calcul décrédibiliserait PPF) | À faire. |
+| CO-15 | Ce que cette loi change pour moi | Pour une loi, on choisit sa situation sur l'appareil (par exemple retraite, chômage, impôts) et l'on voit ses effets chiffrés, tirés de l'étude d'impact officielle ; calcul uniquement sur l'appareil, sans rien envoyer ; accessible aussi depuis le Parlement (M20) et « Qui décide de ça ? » (M13.1). | Tôt (promu de Plus tard) | Pôle Voir avec Comprendre ; étude d'impact officielle du texte ; aucun envoi de la situation ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | CO-16 | Où vont nos impôts | Budget de l'État et de sa commune en visualisation simple et interactive ; lien avec l'argent public local (VO-32). | Plus tard | Référentiel des territoires. |
 | CO-17 | Et si on votait autrement ? | Résultats d'élections réelles recalculés avec le vote blanc reconnu, la proportionnelle ou le jugement majoritaire. | Plus tard, mais avant les élections | À faire. |
 
@@ -318,6 +343,8 @@ Le fil d'actualité de l'ancien M6 est dans « En direct » (MA-03), l'outil de 
 |---|---|---|---|---|
 | CO-19 | Parcours « Je découvre » | Une micro-leçon par jour pendant sept jours pour les nouveaux venus, avec des notifications facultatives. | Plus tard (les leçons sont à écrire) | Notifications (M31). |
 | CO-13 | Ressources pour les enseignants et leurs élèves | Contenus réutilisables en classe, strictement pluralistes ; précisé par le mandat : parcours adaptés aux élèves, fiches pédagogiques pour l'enseignant, usage en classe sans compte et sans aucune donnée d'élève. | Plus tard | Décision en attente : Ressources pour les enseignants (format, niveaux, licence) ; précisions (ajout du chef d'équipe, 7 novembre 2026). |
+| CO-24 | Kit d'atelier d'éducation populaire | Pour chaque parcours, une fiche d'animation imprimable et un mode animation hors ligne sans compte (projection, quiz à main levée, cartes à imprimer, version sans écran, déroulé de 45 minutes à 2 heures), pour les associations, syndicats, centres sociaux et médiathèques. | Tôt | Argument pour l'agrément « Jeunesse et éducation populaire » ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| CO-27 | Carnet de route privé | Ce que j'ai appris, l'étape suivante et « Reprendre », gardés sur l'appareil ; ni série, ni points, ni classement. | Tôt | Pôle Comprendre, avec Communauté pour Mon espace (M27) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | CO-20 | Assistant citoyen IA | Mis de côté (décision de la propriétaire du 5 novembre 2026) : rien n'est codé ; les analyses restent au point d'attention n° 34 de l'inventaire. | Mis de côté | Hébergement de l'IA, paiement, avis d'un expert-comptable. |
 
 ## 7. Agir
@@ -337,6 +364,8 @@ Le fil d'actualité de l'ancien M6 est dans « En direct » (MA-03), l'outil de 
 | AG-02 | Proposer un événement | Formulaire guidé, événements proches signalés, publication directe ou relecture selon le compte, annulation par l'auteur. | Phase 1 | Fait (D-039, D-040, D-043) ; modifier un événement proposé, à faire. |
 | AG-20 | Import des agendas existants | Une organisation relie une fois pour toutes son agenda en ligne (flux iCal ou RSS) : aucune double saisie. | Tôt | À faire. |
 | AG-21 | Événements co-organisés | Un événement porté par plusieurs organisations n'apparaît qu'une fois, avec tous ses organisateurs ; une organisation n'est montrée comme organisatrice que si elle l'a confirmé de sa clé, sinon « annoncée, non confirmée » ; doublons détectés. | Tôt | Doublons signalés (D-040) ; confirmation en cours (D-044, D-045). |
+| AG-62 | « Et après ? » | Les suites sourcées d'une mobilisation passée (réponses des élus, annonces, reculs, textes déposés), reliées aux revendications, aux appels et à la chronologie (VO-06, M4). | Tôt | Surtout éditorial ; pôle Voir pour la chronologie ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| AG-64 | Agenda fédéré et diffusion vers le fédivers | Agenda fédéré par ActivityPub, compatible avec Mobilizon, et diffusion à sens unique des publications éditoriales vers le fédivers (M34). | Plus tard (phase 3) | Directeur technique et pôle Agir ; sorties à inscrire dans la liste des sorties (EGRESS) ; modération des événements reçus ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ### M3. Annuaire et espace des organisations
 
@@ -371,6 +400,9 @@ N'importe quel compte peut lancer un appel, c'est-à-dire tout ce qu'un militant
 | AP-08 | Appels à collecter des fonds | Réservés aux organisations vérifiées et à PPF elle-même ; renvoi vers leur propre page de collecte ; PPF ne détient ni ne fait transiter l'argent ; jamais pour un candidat ou un parti ; « Vous quittez PPF » avec une mise en garde contre les fausses cagnottes. | Tôt | Fait (D-039, D-041). |
 | AP-09 | Clôture et bilan | L'auteur clôt son appel et publie un bilan sans relecture, sauf le bilan d'un appel à témoins, relu ; les appels clos restent consultables ; les réponses s'effacent de l'appareil 7 jours après la clôture ou l'échéance. | Tôt | Fait (D-041, D-043, D-045). |
 | AP-10 | Champs obligatoires selon le type | L'appel ne peut pas être publié tant que les informations nécessaires manquent (tableau ci-dessous). | Tôt | Fait (D-041). |
+| AP-11 | Créneaux de bénévolat | Un appel découpé en créneaux à places limitées (piquet, permanence, accueil), avec inscription et rappel sur l'appareil et un compteur par créneau ; les pseudonymes inscrits ne sont visibles que de l'organisateur, chiffrés, puis effacés. | Tôt (deuxième vague) | Appels (AP-01) ; collectifs (M24) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| AG-61 | Affiche et tract à code QR | Un événement ou n'importe quel contenu devient une affiche A4 ou A3 générée sur l'appareil ; le code QR contient l'événement signé lui-même (ajout à l'agenda sans Internet, signature vérifiée) ou l'adresse stable sans suivi ; guide de l'affichage libre. | Tôt | Code de l'environnement, article L581-13, à vérifier ; prolonge le matériel militant (AG-15) et le partage (S-37, M29) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| AG-63 | Mes proches à mobiliser | Liste privée, sur l'appareil, de quelques proches (surnom, sans import du carnet d'adresses), avec un contenu adapté, un rappel et une étape suivante. | Tôt | Opinions supposées d'autrui (RGPD, article 9) : jamais envoyées, mise en garde ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | AG-11 | Boycotts et alternatives | Fiches sourcées : motifs, faits établis, alternatives. | Plus tard | L'appel au boycott reste (D-044) ; avocat (dénigrement d'une entreprise). |
 | AG-15 | Matériel militant | Tracts, affiches et visuels à télécharger et imprimer, personnalisables avec son territoire et la date d'une mobilisation. | Plus tard | À faire. |
 | AG-25 | Trouver une salle | Lieux disponibles pour se réunir (bourses du travail, locaux associatifs, salles municipales), proposés par les organisations. | Plus tard | À faire. |
@@ -414,6 +446,7 @@ Un collectif est un groupe ou un club créé par des citoyens, sans forme juridi
 | AG-51 | Décider ensemble | Votes, sondages et assemblées générales internes avec les outils de démocratie interne (DE-13) : vote anonyme, tirage au sort, mandats courts et révocables. | Plus tard | « Une personne, une voix » (D-110). |
 | AG-52 | Alliances entre collectifs | Salon commun chiffré, événements et appels co-organisés, page de coordination (par exemple une coordination départementale). | Plus tard | À faire. |
 | AG-53 | Du collectif à l'association | Accompagnement pour devenir une association déclarée (AG-06), puis demande de vérification (S-81). | Plus tard | À faire. |
+| S-150 | Réunion de collectif clé en main | Dans un salon (M14) : ordre du jour, notes partagées, décisions votées, compte rendu signé et archivé. | Tôt (deuxième vague) | Pôle Communauté avec Agir (AG-51) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ### M5. Témoigner et conserver les preuves
 
@@ -425,6 +458,7 @@ Un collectif est un groupe ou un club créé par des citoyens, sans forme juridi
 | ID | Fonctionnalité | Ce qu'elle fait | Priorité | Dépendances et état |
 |---|---|---|---|---|
 | AG-07 | Témoigner | Envoi d'un témoignage par le canal sécurisé, relu avant publication ; réponse aux appels à témoins (AP-10). | Phase 2 | À faire ; « Je témoigne » désactivé en attendant (D-041). |
+| AG-58 | Caméra protégée | Photos et vidéos prises dans PPF chiffrées hors de la galerie du téléphone, jamais copiées vers un service de sauvegarde ; plus tard, envoi continu par morceaux chiffrés vers les avocats partenaires. | Tôt (galerie chiffrée), Plus tard (envoi continu) | Stockage des vidéos sur le serveur : coût à présenter à la propriétaire avant l'envoi continu ; avocats partenaires (AG-08) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | AG-54 | Provenance des témoignages | Signature de l'appareil et horodatage dès la capture, pour prouver qu'une image n'a pas été modifiée ; original chiffré pour les avocats partenaires ; compatibilité avec la norme C2PA à étudier. | Plus tard | Horodatage (D-111) ; (ajout du chef d'équipe, 7 novembre 2026). |
 | AG-08 | Conservation des preuves | Original chiffré, accessible aux seuls avocats partenaires, pour des procédures. | Plus tard | Avocat. |
 | AG-09 | Canal pour lanceurs d'alerte | Transmission anonyme de documents par un outil auto-hébergé accessible par Tor ; guide de la protection des lanceurs d'alerte (loi du 21 mars 2022). | Plus tard | Avocat ; décision en attente : Canal sécurisé pour les lanceurs d'alerte. |
@@ -459,9 +493,14 @@ Retenu par la propriétaire le 4 novembre 2026 : protéger les manifestants par 
 | AG-36 | Point de ralliement | Lieu convenu à l'avance pour retrouver ses proches ou un enfant perdu. | Tôt | AG-24. |
 | AG-37 | Périmètres d'interdiction officiels | Zones interdites par un arrêté préfectoral publié, avec le lien vers l'arrêté. | Tôt | Arrêtés suivis par l'observatoire (VO-26). |
 | AG-23 | Alerte à mes proches | En un geste, un message préparé (et sa position si on le veut) aux cercles choisis, par la messagerie chiffrée ou par SMS ; message « je suis bien rentré » à la fin. | Tôt | Cercles (M28), messagerie (M14). |
+| AG-55 | Minuteur « sans nouvelles de moi » | À une heure fixée, sans « je vais bien » confirmé par un code, l'alerte préparée part vers les cercles choisis et, si on le veut, la legal team ; déposée chiffrée à l'avance sur leurs appareils, elle s'affiche d'elle-même, même si mon téléphone est saisi ; un code de détresse simule l'annulation. | Tôt | Le serveur n'apprend rien ; cercles (M28) avec le pôle Communauté ; messagerie (M14) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| AG-56 | Préparer mon téléphone avant la manifestation | Bilan actif de PPF (verrouillage, phrase de récupération notée, notifications discrètes, carte téléchargée), guide des réglages du téléphone (biométrie désactivée, sauvegardes automatiques) et passage de PPF au code seul en un geste (M33). | Tôt | Exactitude juridique (refus de remettre son code : Cour de cassation, 7 novembre 2022, n° 21-83.146) ; avocat ; S-43, S-25 ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| AG-57 | Soutien aux personnes interpellées | « Je suis sans nouvelles de… » transmis chiffré à la seule legal team, accueil bénévole à la sortie, agenda sans nom des comparutions de manifestants. | Tôt | Données d'infractions (RGPD, article 10) : chiffrement de bout en bout, effacement rapide ; avocat ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| AG-59 | Kit contre le harcèlement et la divulgation d'informations personnelles | Preuves horodatées (D-111), modèles de signalement (DSA, article 16 ; PHAROS ; procureur), contacts d'associations et soutien du cercle. | Tôt (deuxième vague) | Preuves chiffrées sur l'appareil ; cercles (M28) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | AG-35 | Retrouver son cortège | Position des cortèges annoncée par leurs organisateurs. | Plus tard | AG-24. |
 | AG-38 | Transports et retour | Stations fermées, lignes perturbées, covoiturages de retour (AG-10). | Plus tard | Sources à vérifier. |
 | AG-39 | Relais des alertes sans réseau | Bouton AIDE, sorties et messages de coordination relayés par Bluetooth quand le réseau est saturé. | Phase 4 (avec la messagerie hors ligne) | AG-16. |
+| AG-65 | Relais radio longue portée | Alertes AIDE et coordination relayées par radio longue portée (LoRa, type Meshtastic) quand le réseau est coupé. | Plus tard (phase 4) | Achat de radios : accord de la propriétaire ; position diffusée par défaut à neutraliser ; AG-39 ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | AG-40 | Observateurs et legal teams | Leur position, visible de la seule coordination. | Plus tard | AG-45. |
 | AG-26 | Permanences juridiques | Rendez-vous avec les avocats et juristes bénévoles des organisations partenaires, hors urgence. | Plus tard | Organisations partenaires. |
 | AG-14 | Soutien aux victimes | Orientation vers les associations d'aide aux victimes, l'accompagnement juridique et le soutien psychologique ; fiche « après une blessure en manifestation » (certificat médical, plainte, saisine de l'IGPN ou du Défenseur des droits) ; aussi pour les victimes d'actes de haine (VO-33). | Tôt | À faire ; relecture d'un avocat. |
@@ -536,6 +575,9 @@ But : montrer qu'une revendication est partagée par des citoyens de tous les â
 | DE-06 | Baromètre des élus | Par campagne : qui s'est engagé, qui a voté pour, contre, s'est abstenu ou n'a pas répondu ; même présentation pour tous. | Phase 2 | Votes (M20). |
 | DE-08 | Pacte démocratique | 5 à 10 mesures précises et vérifiables, choisies par les citoyens ; même texte (avec son empreinte), même jour et même délai pour tous les candidats d'une élection, sans exception ; envoi par l'équipe pour l'instant (D-062) ; tableau public par candidat et par mesure (signé, refusé, en attente, sans réponse), en ordre alphabétique ; une réponse reçue après la date limite n'est pas comptée mais reste visible sous le tableau avec sa date (D-062) ; réponses archivées et horodatées ; suivi de ce que chaque élu fait ensuite ; première échéance : présidentielle d'avril 2027 (diffusion au début de 2027), puis les législatives. | Phase 1 (priorité du calendrier) | Première version faite (D-060, D-062) ; horodatage (D-111) ; mesures à délibérer (DE-25). |
 | DE-23 | Réponses des élus | Un élu certifié répond publiquement aux interpellations et au Pacte et signe sa réponse ; tous les élus ont exactement les mêmes droits et le même affichage. | Plus tard | Certification des élus (M16) ; avis juridique. |
+| DE-34 | Carte des opinions | Prolonge la délibération (DE-25), sur le modèle de Pol.is : affirmations courtes, « D'accord », « Pas d'accord », « Je passe », groupes d'opinion et mise en avant de ce qui rassemble. | Plus tard, conception à étudier | Incompatible en l'état avec l'urne anonyme, qui ne relie pas les votes d'une même personne dans une conversation : à étudier avec une analyse d'impact (annexe C) ; (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| DE-35 | Jury citoyen du suivi du Pacte | Un jury tiré au sort suit les engagements du Pacte (tenu, en cours, rompu), par un vote anonyme aux motifs publics. | Plus tard (après l'élection) | Avocat (méthode M17, droit de réponse) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| DE-37 | Collectivités partenaires | Une collectivité signe une charte et répond chaque trimestre, de façon motivée, aux revendications locales les plus soutenues. | Plus tard | Avocat (communication en période électorale) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ### M13.1 (suite). Interpeller ses élus et participer à la démocratie existante
 
@@ -544,6 +586,8 @@ But : montrer qu'une revendication est partagée par des citoyens de tous les â
 | DE-09 | Interpeller ses élus | Modèles de courrier à personnaliser ; suivi public des réponses reçues ou non, sans données personnelles au-delà du mandat public ; accessible depuis le législomètre et « Qui décide de ça ? ». | Phase 2 | Annuaire des élus (D-047) ; réponses signées (DE-23). |
 | DE-10 | Participer à la démocratie existante | S'inscrire sur les listes électorales, voter par procuration, devenir assesseur, budgets participatifs, consultations et enquêtes publiques, conseils de quartier, pétitions (M10). | Tôt | Parcours « S'inscrire et voter » et fiche « Voter par procuration » faits (D-049). |
 | DE-27 | Consultations publiques officielles | Consultations en cours des ministères, de la Commission nationale du débat public, enquêtes publiques locales et consultations des collectivités : liste, dates limites, guide pour y répondre, rappel gardé sur l'appareil. | Tôt | Sources officielles à vérifier ; référentiel des territoires ; (ajout du chef d'équipe, 7 novembre 2026). |
+| DE-31 | Demander un document administratif | Demande rédigée selon le code des relations entre le public et l'administration (CRPA) et envoyée par le citoyen lui-même ; délais comptés sur l'appareil (silence d'un mois vaut refus, article R311-13 ; saisine de la CADA dans les deux mois, article R343-1), saisine préparée ; réponse publiable au choix du citoyen (M4) ; lien vers Ma Dada (madada.fr) après « Vous quittez PPF ». | Tôt | Données de tiers masquées avant publication ; articles à vérifier sur Légifrance ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| DE-32 | Observer son conseil municipal | Dates des séances, guide pour y assister et filmer (CGCT, article L2121-18), délibérations mises en ligne (article L2121-25), comptes rendus citoyens relus (M21). | Tôt (guide), Plus tard (relevé des délibérations) | Pôle Décider avec Comprendre ; droit à l'image du public ; méthode M17 pour les comptes rendus ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ### M13.4. S'organiser politiquement
 
@@ -560,6 +604,7 @@ But : montrer qu'une revendication est partagée par des citoyens de tous les â
 | DE-14 | Votations citoyennes | Grandes questions soumises au vote, sans valeur légale, pour devenir un fait politique par leur ampleur ; résultats par niveau de votant ; liste anonyme des bulletins publiée à la clôture pour un recomptage par tous. | Phase 3 | « Une personne, une voix » (conception approuvée, D-110, D-112). |
 | DE-15 | Assemblées citoyennes tirées au sort | Tirage au sort parmi les comptes vérifiés volontaires, avec un tirage vérifiable par tous ; information contradictoire ; rapport public. | Phase 3 | Tirage vérifiable parmi les comptes vérifiés (ajout du chef d'équipe, 7 novembre 2026). |
 | DE-24 | Budget participatif de PPF | Les comptes vérifiés votent l'usage d'une partie des dons reçus par l'association. | Plus tard (il faut d'abord des dons) | Trésorerie (PP-06). |
+| DE-36 | Budget du peuple | Répartir 100 € entre les grandes missions de l'État par tranches fermées ; répartition médiane publiée et portée aux commissions des finances ; aussi à l'échelle d'une commune. | Plus tard (automne 2027) | À faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ### M13.7. Élections
 
@@ -567,9 +612,11 @@ But : montrer qu'une revendication est partagée par des citoyens de tous les â
 |---|---|---|---|---|
 | DE-28 | Calendrier électoral personnel | Dates des scrutins, date limite d'inscription sur les listes électorales, procuration, lien vers la vérification officielle de son inscription, rappels gardés sur l'appareil (TE-09). | Tôt (présidentielle d'avril 2027) | Dates prises au Journal officiel (décret de convocation) ; (ajout du chef d'équipe, 7 novembre 2026). |
 | DE-16 | Comparateur présidentielle 2027 | Programmes et votes passés des candidats et des partis, présentés de façon strictement identique pour tous, sans appel à voter. | Phase 2 (avant avril 2027) | Votes (M20). |
+| DE-30 | Questions citoyennes aux candidats 2027 | Questions proposées et votées (une urne par question) ; les dix plus soutenues sont envoyées le même jour, avec le même délai, à tous les candidats ; réponses côte à côte dans le comparateur (DE-16) ; absence de réponse affichée. | Tôt (ouverture en janvier 2027) | Traitement identique (cahier des charges, 9.2) ; « une personne, une voix » ; avocat ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| DE-33 | Boussole 2027 | Sur le modèle du Wahl-O-Mat : thèses choisies par délibération (DE-25), réponses des candidats eux-mêmes avec leur justification, proximité calculée sur l'appareil, profil jamais envoyé ; même calcul avec les votes de ses députés. | Plus tard (après le comparateur et les questions citoyennes, si le calendrier le permet) | Neutralité des thèses : avocat ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | DE-17 | Désignation citoyenne d'un candidat | Module isolé ; une personne, une voix, ce qui impose une vérification d'identité limitée à ce module, avec des données supprimées après le vote ; cadre légal (droit électoral, financement des campagnes) validé par un avocat avant tout développement. | Phase 6 | Avocat ; décision en attente : Désignation citoyenne d'un candidat (phase 6) et neutralité. |
 
-« Comprendre les élections » est dans « Comprendre » (CO-09) et « Ma circonscription » dans Mon espace (TE-04).
+« Comprendre les élections » est dans « Comprendre » (CO-09) et « Ma circonscription » dans Mon espace (TE-04). Le comparateur (DE-16) affiche aussi les parrainages de la présidentielle (VO-37, décrits dans « Voir ») et les réponses aux questions citoyennes (DE-30) (brainstorming du 8 novembre 2026).
 
 ## 9. Mon espace
 
@@ -580,7 +627,7 @@ Tableau de bord personnel, ouvert par l'avatar de la barre du haut et composé p
 | ID | Fonctionnalité | Ce qu'elle fait | Priorité | Dépendances et état |
 |---|---|---|---|---|
 | S-20 | Mon territoire | Code postal ou commune gardés sur l'appareil seulement, désactivé par défaut, commun à l'annuaire, à l'agenda, aux appels et aux revendications (D-044) ; modifiable et effaçable (« Oublier ma commune »). | Tôt | Commune de « Mes élus » faite (D-047). |
-| TE-01 | Mes élus | Tous ses élus, de la commune au Parlement européen, d'après l'annuaire officiel des élus, avec leurs votes et leurs engagements ; sans serveur, liens vers les annuaires officiels. | Tôt | Fait (D-047) ; votes avec M20. |
+| TE-01 | Mes élus | Tous ses élus, de la commune au Parlement européen, d'après l'annuaire officiel des élus, avec leurs votes et leurs engagements ; sans serveur, liens vers les annuaires officiels. | Tôt | Fait (D-047) ; votes avec M20 ; parrainages de ses élus (VO-37) et alerte « mes élus ont voté » (VO-34) à ajouter (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | TE-02 | Près de chez moi | Mobilisations, collectifs, organisations proches, calculés sur l'appareil. | Tôt | En partie (D-040, D-042). |
 | TE-03 | Ce que veut mon territoire | Revendications et cahier de doléances locaux. | Plus tard | DE-02. |
 | TE-04 | Ma circonscription | Résultats des élections passées, députés successifs, candidats déclarés. | Tôt (avant une dissolution) | Circonscriptions de l'annuaire (D-047). |
@@ -589,6 +636,7 @@ Tableau de bord personnel, ouvert par l'avatar de la barre du haut et composé p
 | TE-07 | Partager avec mes cercles | Partager un vote, un appel, une revendication ou un contenu avec des cercles choisis, toujours volontairement et au cas par cas ; rendre publics ses votes et suivis après une mise en garde. | Plus tard | Cercles (M28), messagerie (M14). |
 | TE-08 | Mon niveau de votant | Son niveau (non vérifié, vérifié, élu), la semaine à partir de laquelle il compte, comment se faire vérifier, et le résultat de l'autotest du vote anonyme sur l'appareil. | Tôt | D-110, D-112 ; (ajout du chef d'équipe, 7 novembre 2026). |
 | TE-09 | Mes rappels | Tous les rappels programmés sur l'appareil au même endroit (événements, échéances de pétitions et de consultations, scrutins), modifiables et effaçables. | Tôt | S-98 ; (ajout du chef d'équipe, 7 novembre 2026). |
+| TE-10 | Ma semaine | Résumé hebdomadaire calculé sur l'appareil (suivis, votes de mes élus, mobilisations proches, échéances, salons), en une seule notification à l'heure choisie, terminé par « C'est tout pour cette semaine » ; résumé quotidien en option ; désactivé par défaut et proposé une fois. | Tôt | Notifications (M31) ; alerte VO-34 ; pôle Communauté ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | S-112 | Sauvegarde et synchronisation chiffrées | Facultatif : Mon espace (tableau de bord, suivis, votes, jetons non utilisés, marque-pages, réglages) chiffré de bout en bout avec la clé de l'utilisateur et retrouvé sur ses appareils ; le serveur ne garde qu'un bloc illisible ; désactivé par défaut. | Plus tard | Point d'attention n° 25. |
 
 ## 10. Fil social
@@ -602,6 +650,11 @@ Tableau de bord personnel, ouvert par l'avatar de la barre du haut et composé p
 - Vues du fil : des onglets sous la barre du haut (Tout, Comptes PPF, Revendications, Mes publications, puis Mon cercle, Collectifs, Suivis, Près de moi avec les relations et les collectifs) ; on passe de l'une à l'autre en glissant le doigt de droite à gauche. La vue « Revendications » ne montre que les cards du mur des revendications (M11).
 - Règles : la liste des comptes suivis est privée par défaut et reste sur l'appareil, qui assemble lui-même le fil ; les réactions ne constituent jamais par défaut une liste publique « qui a aimé quoi » ; les suggestions se calculent sans profil individuel côté serveur, à partir des choix explicites de l'utilisateur et de tendances agrégées, et un fil chronologique sans profilage reste toujours disponible (DSA, article 27) ; toute publication est soumise à la charte, à la modération assistée par IA après publication et au signalement par tous.
 - État : première version faite (D-023, D-026) : fil chronologique, publication de notes courtes, vues au doigt, suivre des comptes avec une liste gardée sur l'appareil. Comptage anonyme des réactions et calcul des suggestions : décision en attente : Fil social : l'application comme premier réseau social de la vie politique (modalités). Visibilité d'une publication limitée à un cercle : décision en attente : Maquettes de l'interface communautaire.
+
+| ID | Fonctionnalité | Ce qu'elle fait | Priorité | Dépendances et état |
+|---|---|---|---|---|
+| S-145 | Fil fini et explicable | « Vous êtes à jour » au lieu d'un défilement infini, « Pourquoi je vois ça ? » sous chaque contenu suggéré, accès direct aux réglages du fil ; par défaut, heures de silence la nuit et aucune pastille rouge de compteur ; bilan du temps passé, calculé sur l'appareil. | Tôt | DSA, articles 25 et 27 ; notifications (M31) ; pôle Communauté ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| S-152 | Notes de contexte communautaires | Notes de contexte ajoutées par la communauté sous un contenu, affichées quand elles sont jugées utiles au-delà des clivages, sur le modèle des Community Notes (M15). | Plus tard, à étudier | Analyse d'impact ; jetons anonymes (M16) ; pôle Communauté ; (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ### M28. Relations et cercles
 
@@ -635,6 +688,8 @@ Le cercle d'un utilisateur regroupe ses amis et amis proches, sa famille et sa f
 | S-125 | Fonctions de messagerie | Texte, messages vocaux, photos et vidéos sans métadonnées, fichiers, réponses, réactions, mentions, messages épinglés, sondages ; accusés de lecture et « en train d'écrire » désactivés par défaut ; plusieurs appareils. | Tôt | Texte fait (D-032) ; le reste à faire. |
 | S-127 | Signaler un message chiffré | Un participant transmet lui-même à la modération une copie du message et de son contexte immédiat ; les conditions d'utilisation le prévoient. | Tôt | Back-office (M15). |
 | S-128 | Vérification des contacts | Code QR scanné en face à face ou code de sécurité comparé ; alerte si les clés d'un contact changent. | Tôt | À faire. |
+| S-147 | Salon d'accueil des nouveaux | Salon tenu par des hôtes bénévoles (AG-12), proposé une fois après l'inscription ; kit d'accueil par collectif (bienvenue, règles épinglées, référent, M24). | Tôt | Salons (S-82) ; pôle Communauté ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| S-149 | Messages relayés avec leur provenance | Au transfert, l'événement signé d'origine est gardé : « original vérifié, publié par X le … » ou « modifié depuis l'original » (M33). | Tôt (deuxième vague) | Prolonge S-141 ; pôle Communauté ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | S-124 | Discussions de cercle | Chaque cercle peut avoir sa discussion de groupe chiffrée, créée en un geste. | Plus tard | Cercles (M28). |
 | S-84 | Messages éphémères | Effacement automatique après un délai choisi par le salon ou la conversation. | Plus tard | À faire. |
 | S-85 | Réunions en visioconférence | Pour les AG en ligne et les réunions de groupe, avec un outil auto-hébergé. | Plus tard (à étudier) | Coût d'hébergement à présenter. |
@@ -678,6 +733,7 @@ Ce que toute application sérieuse doit savoir faire, quelle que soit sa mission
 | S-17 | Langue | Français par défaut ; autres langues au fil des traductions. | Tôt | Textes externalisés. |
 | S-19 | Économie de données | Images et vidéos chargées à la demande, téléchargements réservés au wifi, confirmation avant un gros téléchargement. | Tôt | En partie (D-047). |
 | S-21 | Confidentialité | Écran qui montre ce qui est stocké sur l'appareil et ce qui est envoyé au serveur, avec un bouton « Tout effacer ». | Tôt | À faire. |
+| S-151 | Mode appareil partagé | Pour un appareil commun (médiathèque, local syndical) : sans compte ni historique, tout est effacé à la fin de l'usage (M33). | Plus tard | Pôle Communauté ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 **Hors ligne, recherche, interactions communes**
 
@@ -726,6 +782,8 @@ Ce que toute application sérieuse doit savoir faire, quelle que soit sa mission
 | S-89 | Barrières contre les robots | Preuve de travail auto-hébergée (dans l'application ; ALTCHA sur le site) et limites de débit ; jamais de reCAPTCHA. | Phase 1 | Limites de débit faites (D-039) ; preuve de travail avant l'ouverture publique. |
 | S-90 | Détection des manipulations | Rafales de votes, comptes créés en série, comportements coordonnés, taux anormaux de validation, repérés sur des compteurs agrégés, sans adresse IP ni identité ; réponses : suspendre les montées de niveau, retarder une urne, annoter publiquement un résultat ; jamais d'effacement silencieux de bulletins. | Tôt | D-110. |
 | S-91 | Résultats transparents | Le vote des citoyens : comptes vérifiés en premier, puis non vérifiés, puis le total des citoyens ; le vote des élus à part, jamais additionné ; à côté de chaque colonne, le nombre de jetons délivrés. | Tôt | D-112. |
+| S-146 | Déclarer mon compte compromis | Une clé de secours, dérivée de la phrase de récupération, est créée avec le compte et absente du téléphone ; depuis un autre appareil, elle publie un avis signé « compte compromis depuis… », prévient contacts et salons (M14), retire l'ancienne clé des salons et passe à une nouvelle clé. | Tôt (conception immédiate : la clé de secours doit exister dès la création des comptes) | Pôle Communauté avec Décider (M16) ; proposition Nostr NIP-41 à étudier ; S-10, S-11 ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| DE-29 | « Mon bulletin a été compté » | Après la clôture, l'appareil vérifie seul que son bulletin figure dans la liste publiée avec le bon choix et rejoue le recomptage (M13.6) ; le reçu n'est jamais montrable à un tiers. | Tôt | « Une personne, une voix » (D-110, D-112) ; faible coût ; pôle Décider ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 **« Une personne, une voix » : ce que garantit le vote anonyme** (méthode approuvée par la propriétaire, D-044 ; choix de la propriétaire du 7 novembre 2026, D-112 ; conception technique approuvée, D-110, détaillée dans `docs/integration/une-personne-une-voix.md`)
 
@@ -843,6 +901,8 @@ La plateforme est utilisable par tous, y compris avec un vieux téléphone (Andr
 | S-18 | Mode « Facile à lire » | Bascule générale vers les versions simplifiées des contenus essentiels, quand elles existent. | Tôt | Versions simplifiées à écrire. |
 | S-95 | Lecture à voix haute | Écouter n'importe quel article ou fiche avec la synthèse vocale du téléphone. | Tôt | À faire. |
 | S-143 | Vidéos en langue des signes française | Pour les fiches essentielles (droits en manifestation, garde à vue, vote). | Plus tard | Lecteur vidéo (S-32) ; (ajout du chef d'équipe, 7 novembre 2026). |
+| S-148 | Mode simple et accompagnant | Quatre gros boutons (Qui décide ?, Mes élus, Près de chez moi, Aide), sans balayage, « Écouter » partout, réglages de lecture (espacement, contraste, interligne) ; guide pour le proche aidant, sans jamais noter la phrase de récupération à la place de la personne. | Tôt | Réglages gardés sur l'appareil ; pôle Communauté, avec Comprendre pour l'audio (S-95) ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
+| CO-30 | Fiches essentielles dans les langues de France | Traduction bénévole, relue deux fois, des fiches essentielles en arabe maghrébin, berbère, créoles, anglais, portugais et turc, puis en langues régionales. | Plus tard | Après la relecture des versions françaises ; traductions (S-75) ; pôle Comprendre ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 Autres mesures d'inclusion décrites ailleurs : économie de données (S-19), langue (S-17), accessibilité des lieux dans les appels (AP-10) et du parcours d'une manifestation (AG-34), aide pour sortir d'une manifestation (AG-44), réglages protecteurs par défaut pour les mineurs (règle transverse n° 18).
 
@@ -853,13 +913,13 @@ L'information doit survivre à la coupure d'un serveur, d'un nom de domaine ou a
 | ID | Fonctionnalité | Ce qu'elle fait | Priorité | Dépendances et état |
 |---|---|---|---|---|
 | S-43 | Verrouillage de l'application | Code ou empreinte digitale, facultatif. | Tôt | À faire. |
-| S-44 | Effacement rapide | Un geste efface toutes les données de l'appareil, après un rappel de la phrase de récupération ; effacer ses clés efface aussi conversations, réponses et suivis (D-032, D-039). | Tôt | En partie (D-032, D-039). |
+| S-44 | Effacement rapide | Un geste efface toutes les données de l'appareil, après un rappel de la phrase de récupération ; effacer ses clés efface aussi conversations, réponses et suivis (D-032, D-039) ; plus tard, un code PIN de contrainte ouvre un compte vide ou efface discrètement (prolonge aussi S-45). | Tôt ; Plus tard pour le code de contrainte | En partie (D-032, D-039) ; code de contrainte à étudier, avis d'un avocat indispensable (Code pénal, articles 434-4 et 434-15-2) (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | S-45 | Application discrète | Option : nom et icône neutres, contenu masqué dans la liste des applications ouvertes. | Plus tard (à étudier) | À faire. |
 | S-46 | Authenticité des contenus | Chaque contenu est signé ; l'application vérifie la signature et l'indique (« contenu authentique PPF »). | Phase 1 | Signature faite (D-018) ; service de signature séparé, rotation et révocation à faire. |
 | S-141 | Vérifier un contenu PPF | À partir d'un lien, d'un fichier ou du code imprimé sur une image de partage, vérifier qu'un contenu, une capture ou un lien vient bien de PPF et n'a pas été modifié (signature, identifiant stable, empreinte), dans l'application et sur le site, même hors ligne. | Tôt | S-46 ; (ajout du chef d'équipe, 7 novembre 2026). |
 | S-97 | Partager l'application sans Internet | Transmettre l'application et les fiches essentielles d'un téléphone à l'autre, par Bluetooth ou code QR. | Tôt | À faire. |
 | S-142 | Partage hors ligne de contenus signés | Transmettre un contenu signé par code QR ou fichier, vérifié à la réception (prolonge S-97). | Plus tard | S-141 ; (ajout du chef d'équipe, 7 novembre 2026). |
-| S-47 | Adresses de secours | Si l'adresse principale est bloquée, bascule vers des miroirs, puis vers Tor (adresse .onion) et Nostr ; publication sur Nostr par le port de publication unique. | Phase 3 | À faire. |
+| S-47 | Adresses de secours | Si l'adresse principale est bloquée, bascule vers des miroirs, puis vers Tor (adresse .onion) et Nostr ; publication sur Nostr par le port de publication unique ; avant cela, liste d'adresses de secours signée et tenue à jour dans l'application, résolution DNS chiffrée et sonde de blocage désactivée par défaut (cahier des charges, 3.3 et 5.2). | Phase 3 ; Tôt pour la liste signée et la sonde | À faire ; liste signée et sonde avancées (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | S-92 | Signaler une faille de sécurité | Page publique et procédure de divulgation responsable : engagement de réponse, correction, remerciements publics. | Tôt | À faire. |
 | S-93 | Transparence sur la sécurité | Publication des audits de sécurité et des incidents, avec ce qui a été corrigé. | Tôt (incidents), Plus tard (audit externe, coût reporté) | À faire. |
 
@@ -877,6 +937,7 @@ Une plateforme qui exige des comptes du pouvoir doit être exemplaire. Le code e
 | PP-07 | Tableau de bord fédérateur | Chiffres de la force du mouvement (adhérents, comptes actifs, revendications, votes, appels, organisations, collectifs, signatures, engagements de candidats, argent collecté et redistribué), sur toute période. | Tôt | Statistiques agrégées (S-76). |
 | S-48 | Données ouvertes | Export JSON documenté de tous les contenus publiés, avec un schéma versionné ; précisé par le mandat : API publique en lecture documentée et jeux de données téléchargeables (JSON et tableur), chaque donnée avec sa source. | Tôt | Formats et API faits (D-018, D-021) ; jeux de données à faire. |
 | S-144 | Citer ce contenu | Référence prête à copier pour un article ou une étude : titre, date, version, adresse stable et empreinte. | Tôt | (ajout du chef d'équipe, 7 novembre 2026). |
+| PP-09 | Engagements de conception loyale | Page publique des motifs trompeurs que PPF s'interdit, grille de relecture de chaque écran et bouton « Signaler un motif trompeur ». | Tôt | DSA, article 25 ; pôle Communauté ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 
 ### M35. Solidarité, soutien et bénévolat
 
@@ -886,6 +947,7 @@ PPF ne détient ni ne fait jamais transiter l'argent des collectes lancées par 
 |---|---|---|---|---|
 | AG-10 | Solidarité | Annuaire des caisses de grève et des caisses de solidarité juridique, avec des liens vers leurs propres pages de dons ; entraide (covoiturage vers les manifestations, hébergement). | Tôt | Appels à dons (AP-08). |
 | AG-12 | Je veux aider | Bénévolat par compétences (juristes, traducteurs, développeurs, graphistes, vérificateurs, modérateurs) ; missions publiées par l'équipe ; seulement le pseudonyme et les compétences. | Tôt | À faire. |
+| AG-60 | Simulateur du gréviste | Retenue de salaire selon le statut (privé au prorata ; fonction publique d'État, trentième indivisible ; territoriale et hospitalière au prorata), préavis et déclaration selon le secteur, caisses de grève proches (AG-10). | Tôt | Règles vérifiées sur Légifrance et relues ; à faire (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire). |
 | S-55 | Faire un don à l'association | Don à PPF par un prestataire de paiement sans traceur ; reçu fiscal selon les règles applicables. | Plus tard | Décision en attente : Prestataire de paiement : éligibilité de HelloAsso (brainstorming du cahier des charges). |
 | PP-08 | Adhérer à PPF | Adhésion et cotisation, avec un registre des adhérents tenu à part, chiffré, sans lien avec les comptes ni les votes ; paiement en espèces possible sur les stands ; la plateforme n'affiche que le nombre d'adhérents. | Plus tard | Statuts de l'association (juriste) ; prestataire de paiement (point d'attention n° 16). |
 
@@ -942,20 +1004,21 @@ Voir aussi les appels à collecter des fonds (AP-08), le budget participatif de 
 
 | Dépendance | Fonctionnalités concernées | État |
 |---|---|---|
-| Méthode « une personne, une voix » | DE-01, DE-05, DE-14, DE-19, DE-21, DE-25, DE-03, AG-51, AP-03, AP-04, VO-03, VO-27, M26, S-136, TE-06 | Conception approuvée (D-110, D-112) ; en cours. |
+| Méthode « une personne, une voix » | DE-01, DE-05, DE-14, DE-19, DE-21, DE-25, DE-03, AG-51, AP-03, AP-04, VO-03, VO-27, M26, S-136, TE-06, VO-40, DE-29, DE-30 | Conception approuvée (D-110, D-112) ; en cours. |
 | Validation en personne et certification des élus | S-86, S-88, S-129, AG-28, AG-32, AG-45, DE-15, DE-23, S-140 | Après le socle du back-office (D-110). |
 | Back-office de l'équipe | M15, M30, S-38, S-81, S-127, CO-18, VO-08, AG-07 | En cours (Directeur technique). |
-| Avis d'un avocat (avant l'ouverture publique) | M17 avant toute personne réelle, VO-14, VO-21, VO-33, CO-03, CO-07, AG-06, AG-08, AG-09, AG-11, AG-14, AG-18, M25, DE-11, DE-17, DE-23, S-140, S-53, statut d'hébergeur (D-044), mention « non déclarée » (D-045) | Coût reporté (cahier des charges, section 12) ; liste tenue dans la feuille de route. |
+| Avis d'un avocat (avant l'ouverture publique) | M17 avant toute personne réelle, VO-14, VO-21, VO-33, CO-03, CO-07, AG-06, AG-08, AG-09, AG-11, AG-14, AG-18, M25, DE-11, DE-17, DE-23, S-140, S-53, statut d'hébergeur (D-044), mention « non déclarée » (D-045), AG-56, AG-57, DE-30, DE-33, DE-35, DE-37, code de contrainte (S-44) | Coût reporté (cahier des charges, section 12) ; liste tenue dans la feuille de route. |
 | Hébergement du modèle d'IA | S-137, DE-18 (analyse), DE-19, DE-20, EQ-05, S-114 | Décision en attente : Modération et assistant IA : hébergement du modèle. |
 | Référentiel des territoires | DE-02, DE-07 (objectifs), DE-26, DE-27, VO-32, CO-16, salons | Confié au pôle « Comprendre » (D-062). |
-| Données ouvertes du Parlement | VO-10, VO-11, VO-13, VO-31, DE-06, DE-16, TE-01 (votes) | En cours (D-064, D-065). |
-| Vue carte et tuiles | AG-01, AG-24, AG-30, AG-33 à AG-44, VO-05, VO-27, AP-05 | En cours (D-046, D-080). |
-| Notifications | M31, MA-04, AP-04, AG-49, CO-19, S-106 | À faire. |
-| Archivage horodaté | VO-07, DE-08, EQ-06, AG-54 | Décidé (D-111), à coder. |
+| Données ouvertes du Parlement | VO-10, VO-11, VO-13, VO-31, DE-06, DE-16, TE-01 (votes), VO-34, VO-35, VO-36, VO-39, VO-41, VO-43 | En cours (D-064, D-065). |
+| Vue carte et tuiles | AG-01, AG-24, AG-30, AG-33 à AG-44, VO-05, VO-27, AP-05, VO-40 | En cours (D-046, D-080). |
+| Notifications | M31, MA-04, AP-04, AG-49, CO-19, S-106, VO-34, CO-28, TE-10, S-145 | À faire. |
+| Archivage horodaté | VO-07, DE-08, EQ-06, AG-54, AG-59 | Décidé (D-111), à coder. |
+| Cercles (M28) | AG-23, AG-55, AG-59, TE-07, S-124 | À faire (point d'attention n° 26). |
 | Prestataire de paiement | S-55, PP-08 | Décision en attente : Prestataire de paiement : éligibilité de HelloAsso. |
 | Service de signature séparé de la clé de la plateforme | S-46, S-141, urnes du vote | À faire (cahier des charges, 3.2). |
-| Phase 3 (Nostr, miroirs, Tor) | S-47, DE-14 (passage par Tor) | Phase 3. |
-| Phase 4 (bitchat) | AG-16, AG-39 | Phase 4. |
+| Phase 3 (Nostr, miroirs, Tor) | S-47, DE-14 (passage par Tor), AG-64 (ActivityPub) | Phase 3. |
+| Phase 4 (bitchat) | AG-16, AG-39, AG-65 (radios LoRa) | Phase 4. |
 
 ## Annexe C. Décisions en attente
 
@@ -974,6 +1037,7 @@ Rien de ce qui dépend de ces points n'est codé avant la décision de la propri
 - « Canal sécurisé pour les lanceurs d'alerte » (AG-09).
 - « Désignation citoyenne d'un candidat (phase 6) et neutralité » (DE-17).
 - Pistes de campagnes à l'état d'idée, à proposer au vote des citoyens : « Campagne sur la transparence des archives », « Campagne : inscrire la Déclaration de 1793 dans la Constitution ».
+- « [2026-11-08] Brainstorming de la nuit : fonctionnalités indispensables, innovantes et pertinentes », points restés à étudier : carte des opinions compatible avec l'urne anonyme, avec une analyse d'impact (DE-34) ; notes de contexte communautaires, avec une analyse d'impact et des jetons anonymes (S-152) ; code PIN de contrainte, seulement après l'avis d'un avocat (S-44). À présenter à la propriétaire le moment venu : coût du stockage des vidéos avant l'envoi continu (AG-58) ; achat des radios LoRa (AG-65) ; création gratuite d'un accès à l'API de Légifrance (PISTE), avec un guide (VO-42).
 
 **Inventaire, points d'attention**
 - N° 34 : hébergement du modèle d'IA et prestataire de paiement (assistant mis de côté).
@@ -984,7 +1048,7 @@ Rien de ce qui dépend de ces points n'est codé avant la décision de la propri
 - Cahier des charges : « Modération et assistant IA : hébergement du modèle » ; « Prestataire de paiement : éligibilité de HelloAsso » ; « Navigation et UX : quatre espaces, un accueil, « Mon territoire » » ; « Briques de contenu communes » ; « Vérification « loi déjà en vigueur » : source des textes » ; « Identités, phrase de récupération et signature des contenus : choix techniques » (confirmation de D-016 à D-018) ; « Réutilisation des données de la HATVP » ; « Licence des résultats des départementales de 2021 ».
 - Vision : « Nouvelle version du constat (section 3) », dont dépend le choix des chiffres de VO-29.
 
-## Annexe D. Identifiants retirés ou fusionnés
+## Annexe D. Identifiants retirés ou fusionnés, pistes écartées
 
 Un identifiant retiré n'est jamais réutilisé.
 
@@ -1000,6 +1064,13 @@ Un identifiant retiré n'est jamais réutilisé.
 
 CO-20, S-138 et S-139 (assistant citoyen et crédits) ne sont pas retirés : ils sont mis de côté.
 
+Pistes écartées, sans identifiant (brainstorming du 8 novembre 2026, décision du chef d'équipe par délégation de la propriétaire) :
+
+| Piste | Raison |
+|---|---|
+| Délégation de vote par thème (démocratie liquide) | Contraire à l'urne anonyme (D-110), qui ne relie jamais un vote à un compte. |
+| Audition publique au second seuil (proposition d'un agent de recherche) | La propriétaire a décidé le 7 novembre 2026 que l'équipe dépose une pétition officielle quand une revendication prend de l'ampleur. |
+
 ## Journal des versions
 
 | Version | Date | Modifications |
@@ -1011,3 +1082,4 @@ CO-20, S-138 et S-139 (assistant citoyen et crédits) ne sont pas retirés : ils
 | 1.4 | 7 novembre 2026 | Ajout du module M17 « Mettre en lumière » (espace « Voir » : le pouvoir, libertés et contre-pouvoirs) avec sa méthode, les fiches identiques pour tous et l'ordre d'entrée des responsables publics, validés par la propriétaire le 7 novembre 2026 (D-036). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
 | 1.5 | 7 novembre 2026 | M2 : grille de l'indice de gravité des violences policières en cinq niveaux, validée par la propriétaire le 7 novembre 2026 (D-057). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
 | 2.0 | 7 novembre 2026 | Réécriture complète au titre du mandat de la propriétaire du 7 novembre 2026 (ajouter tout ce qui est nécessaire à l'accomplissement de la vision) : organisation selon la vision 4.x (rôles, parcours de « Voir » à « Décider », règles transverses, un chapitre par espace, modules transverses) ; intégration de l'inventaire des fonctionnalités validé le 4 novembre 2026, avec identifiants, priorités, dépendances et état ; M1 à M18 conservés et replacés, modules M19 à M35 ajoutés, table de correspondance ; décisions de la propriétaire du 7 novembre 2026 : grille de gravité (D-057), traitement identique des candidats gardé comme règle de méthode et de droit (D-062), trois niveaux de votants sans parrainage, validation en personne, liste anonyme des bulletins, vote modifiable, niveau figé et envoi différé pour tous (D-112), Pacte et campagnes délibérés par les citoyens, CESE, réponses tardives non comptées, relevé automatique, objectifs par territoire, pétitions locales, envoi manuel du Pacte (D-062), doctrine de transparence (D-044), histoire de toutes les luttes sans aucun appel à la violence (D-038) ; décisions déjà prises intégrées (D-005 à D-007, D-016 à D-018, D-022 à D-049, D-054 à D-057, D-059 à D-062, D-064, D-080, D-110 à D-112) ; ajouts du chef d'équipe marqués comme tels. Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
+| 2.1 | 8 novembre 2026 | Intégration du brainstorming de la nuit du 7 au 8 novembre 2026 (30 idées des pôles, 41 idées de trois agents de recherche), sur mandat de la propriétaire du 7 novembre 2026 (« Pour les decisions a prendre, je suis tes recommandations ») : décisions du chef d'équipe par délégation de la propriétaire. Fonctionnalités ajoutées : VO-34 à VO-45, CO-23 à CO-30, AG-55 à AG-65, AP-11, DE-29 à DE-37, S-145 à S-152, TE-10, PP-09 ; tableau ajouté à M18 ; lignes modifiées : CO-15 (promue de Plus tard à Tôt), VO-32 (budget de ma commune), S-44 (code de contrainte à étudier), S-47 (liste d'adresses de secours signée et sonde avancées), TE-01 (parrainages et alerte de vote) ; deux pistes écartées (annexe D) ; annexes B et C, section 0 et mots techniques mis à jour. Copie locale modifiée par l'IA (chef d'équipe) ; à reporter dans le projet claude.ai. |
