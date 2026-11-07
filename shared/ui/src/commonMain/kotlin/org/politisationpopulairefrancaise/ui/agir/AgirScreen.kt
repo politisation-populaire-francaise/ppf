@@ -37,6 +37,10 @@ import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsScreen
 import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisationsLibrary
+import org.politisationpopulairefrancaise.ui.agir.testimonies.ProvideTestify
+import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyLibrary
+import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyScreen
+import org.politisationpopulairefrancaise.ui.agir.testimonies.rememberTestimonyLibrary
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
@@ -64,6 +68,7 @@ enum class AgirRoute(val id: String) {
     CALLS("appels"),
     ORGANISATIONS("organisations"),
     COLLECTIVES("collectifs"),
+    TESTIFY("temoigner"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -95,6 +100,8 @@ fun AgirScreen(
     agenda: AgirSlot? = null,
     calls: AgirSlot? = null,
     organisationAgenda: (@Composable (pubkeyHex: String, modifier: Modifier) -> Unit)? = null,
+    /** "Témoigner" (AG-07); null builds one for as long as "Agir" is shown. */
+    testimonies: TestimonyLibrary? = null,
 ) {
     var route by rememberSaveable { mutableStateOf(AgirRoute.HOME) }
     // Where the back button of the directory leads when a plugged screen opened an organisation's page.
@@ -108,11 +115,21 @@ fun AgirScreen(
         }
     }
     val home: () -> Unit = { route = AgirRoute.HOME }
+    val testimonyLibrary = testimonies ?: rememberTestimonyLibrary(dependencies, start = false)
+    // "Je témoigne" of a call for witnesses opens the form linked to the call; back returns to the calls.
+    val testify: (String, String) -> Unit = { address, title ->
+        testimonyLibrary.answer(address, title)
+        returnTo = route.takeIf { it != AgirRoute.TESTIFY }
+        route = AgirRoute.TESTIFY
+    }
     // The system's back first closes the open page of an organisation, then returns to the home of Agir.
     SystemBack(enabled = route != AgirRoute.HOME) {
         if (route == AgirRoute.ORGANISATIONS && directory.selected != null) {
             directory.close()
             returnTo?.let { route = it }
+            returnTo = null
+        } else if (route == AgirRoute.TESTIFY && returnTo != null) {
+            route = returnTo ?: AgirRoute.HOME
             returnTo = null
         } else {
             route = AgirRoute.HOME
@@ -120,36 +137,50 @@ fun AgirScreen(
         }
     }
     // The shell's modifier carries its own test tag: the screens below carry theirs on inner boxes.
-    Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
-        when (route) {
-            AgirRoute.HOME -> AgirHome(
-                windowClass = windowClass,
-                onOpen = { rubric ->
-                    when (rubric.id) {
-                        AgirRubrics.AGENDA.id -> route = AgirRoute.AGENDA
-                        AgirRubrics.CALLS.id -> route = AgirRoute.CALLS
-                        AgirRubrics.ORGANISATIONS.id -> route = AgirRoute.ORGANISATIONS
-                        AgirRubrics.COLLECTIVES.id -> route = AgirRoute.COLLECTIVES
-                        AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
-                    }
-                },
-            )
-            AgirRoute.AGENDA -> if (agenda != null) agenda(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_agenda_title, windowClass, home)
-            AgirRoute.CALLS -> if (calls != null) calls(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_calls_title, windowClass, home)
-            AgirRoute.ORGANISATIONS -> OrganisationsScreen(
-                library = directory,
-                windowClass = windowClass,
-                isFollowed = library::isFollowed,
-                onToggleFollow = library::toggleFollow,
-                onBack = {
-                    directory.close()
-                    route = returnTo ?: AgirRoute.HOME
-                    returnTo = null
-                },
-                notesKey = library.posts,
-                organisationAgenda = organisationAgenda,
-            )
-            AgirRoute.COLLECTIVES -> Collectives(dependencies, groups, session, windowClass, onNavigate, onBack = home)
+    // "Je témoigne" of the calls reads LocalTestify, provided here for every screen of Agir.
+    ProvideTestify(testify) {
+        Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
+            when (route) {
+                AgirRoute.HOME -> AgirHome(
+                    windowClass = windowClass,
+                    onOpen = { rubric ->
+                        when (rubric.id) {
+                            AgirRubrics.AGENDA.id -> route = AgirRoute.AGENDA
+                            AgirRubrics.CALLS.id -> route = AgirRoute.CALLS
+                            AgirRubrics.ORGANISATIONS.id -> route = AgirRoute.ORGANISATIONS
+                            AgirRubrics.COLLECTIVES.id -> route = AgirRoute.COLLECTIVES
+                            AgirRubrics.TESTIFY.id -> route = AgirRoute.TESTIFY
+                            AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
+                        }
+                    },
+                )
+                AgirRoute.AGENDA -> if (agenda != null) agenda(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_agenda_title, windowClass, home)
+                AgirRoute.CALLS -> if (calls != null) calls(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_calls_title, windowClass, home)
+                AgirRoute.ORGANISATIONS -> OrganisationsScreen(
+                    library = directory,
+                    windowClass = windowClass,
+                    isFollowed = library::isFollowed,
+                    onToggleFollow = library::toggleFollow,
+                    onBack = {
+                        directory.close()
+                        route = returnTo ?: AgirRoute.HOME
+                        returnTo = null
+                    },
+                    notesKey = library.posts,
+                    organisationAgenda = organisationAgenda,
+                )
+                AgirRoute.COLLECTIVES -> Collectives(dependencies, groups, session, windowClass, onNavigate, onBack = home)
+                AgirRoute.TESTIFY -> TestimonyScreen(
+                    library = testimonyLibrary,
+                    session = session,
+                    windowClass = windowClass,
+                    onBack = {
+                        route = returnTo ?: AgirRoute.HOME
+                        returnTo = null
+                    },
+                    onCreateAccount = { onNavigate(Space.MON_ESPACE) },
+                )
+            }
         }
     }
 }

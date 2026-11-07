@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The chain of media shared by every space (core/media, ui/media): choosing a photo, what is removed, blurring. -->
+<resources>
+    <string name="media_pick_title">Choisir une photo</string>
+    <string name="media_removed_title">Retiré de la photo sur votre appareil, avant tout envoi</string>
+    <string name="media_removed_exif">position GPS, date, modèle de l’appareil et réglages (EXIF)</string>
+    <string name="media_removed_xmp">historique et informations de retouche (XMP)</string>
+    <string name="media_removed_iptc">auteur, lieu et légendes (IPTC)</string>
+    <string name="media_removed_icc">profil de couleur, qui peut nommer l’appareil</string>
+    <string name="media_removed_comment">commentaires cachés</string>
+    <string name="media_removed_pictures">vignettes et images cachées (photo animée, profondeur)</string>
+    <string name="media_removed_other">autres informations techniques</string>
+    <string name="media_removed_none">Aucune information cachée n’a été trouvée dans cette photo.</string>
+    <string name="media_reencoded_note">Avant l’envoi, la photo est redessinée, remise droite et réduite : les traces laissées par l’appareil sont atténuées. Votre photo d’origine n’est pas modifiée.</string>
+    <string name="media_blur_title">Flouter des visages ou des détails (facultatif)</string>
+    <string name="media_blur_help">Touchez la photo à l’endroit d’un visage pour y poser une zone floutée, ou utilisez les boutons. Le flou est définitif sur la copie envoyée.</string>
+    <string name="media_blur_add">Ajouter une zone au centre</string>
+    <string name="media_blur_bigger">Agrandir</string>
+    <string name="media_blur_smaller">Réduire</string>
+    <string name="media_blur_left">Gauche</string>
+    <string name="media_blur_right">Droite</string>
+    <string name="media_blur_up">Haut</string>
+    <string name="media_blur_down">Bas</string>
+    <string name="media_blur_remove">Retirer la dernière zone</string>
+    <string name="media_blur_count">Zones floutées : %1$d</string>
+    <string name="media_blur_last">Les boutons agissent sur la dernière zone posée.</string>
+    <string name="media_blur_unavailable">Cet appareil ne sait pas lire cette photo : elle sera nettoyée sans être redessinée, et ne peut pas être floutée ici.</string>
+    <string name="media_preview_description">Aperçu de la photo choisie, %1$d zone(s) floutée(s). Touchez pour ajouter une zone.</string>
+    <string name="media_unsupported_video">Les vidéos ne peuvent pas encore être envoyées : nous ne savons pas encore retirer de façon sûre, sur votre appareil, les informations cachées qu’elles contiennent (position, appareil, date). Décrivez dans votre texte ce que vous avez filmé et gardez la vidéo.</string>
+    <string name="media_unsupported_audio">Les enregistrements sonores ne peuvent pas encore être envoyés, pour la même raison que les vidéos. Décrivez-les dans votre texte et gardez-les.</string>
+    <string name="media_unsupported_heif">Ce format de photo (HEIF ou HEIC) ne peut pas être lu ici. Enregistrez la photo en JPEG, puis choisissez-la à nouveau.</string>
+    <string name="media_unsupported_other">Ce fichier n’est pas une photo que l’application sait nettoyer (JPEG, PNG ou WebP).</string>
+    <string name="media_too_large">Cette photo dépasse 25 Mo : elle n’est pas lue.</string>
+    <string name="media_malformed">Cette photo semble abîmée : elle n’est pas envoyée.</string>
+    <string name="media_failed">La photo n’a pas pu être lue.</string>
+    <string name="media_preparing">Préparation de la photo en cours</string>
+</resources>
