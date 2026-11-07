@@ -35,7 +35,22 @@ Un seul fichier par fond, lu par plages d'octets (spécification PMTiles version
 | **Intégré** `files/carte/fond-france.pmtiles` | Le monde jusqu'au zoom 4 (côtes, pays), puis la France métropolitaine, la Corse, la Guadeloupe, la Martinique, la Guyane, La Réunion et Mayotte jusqu'au **zoom 7** ; seulement la terre, l'eau, les autoroutes et routes principales, les frontières et limites de régions, les noms de pays, de régions et de villes | Ressources de l'application (APK, applications de bureau) | Toujours, sans réseau ni serveur ; la carte zoome jusqu'à 11 en agrandissant ce fond |
 | **Détaillé** `france.pmtiles` | France métropolitaine, zooms 8 à 14 (rues) | Dossier des tuiles de notre serveur (pas dans le dépôt) | Seulement avec un serveur configuré, un réseau, et hors du mode « Économiseur de données » d'Android ; le fond intégré reste dessous si une tuile manque |
 
-<!-- TAILLES -->
+### Taille du fond intégré : le compromis
+
+Mesuré le 7 novembre 2026 avec `tools/map-data` sur la construction Protomaps du 6 novembre 2026 (version 4.15.2), tuiles filtrées puis compressées (gzip) :
+
+| Zoom | Tuiles | Taille | Ce qu'on y voit |
+|---|---|---|---|
+| 0 à 3 (monde) | 85 | 0,92 Mo | Continents, pays, grandes villes du monde |
+| 4 à 6 (France et outre-mer) | 28 | 0,54 Mo | La France entière, régions, grandes villes et autoroutes |
+| 7 | 46 | 1,13 Mo | Villes moyennes, routes principales |
+| **Total retenu (0 à 7)** | **159** | **2,59 Mo** | |
+| 8 (non retenu) | 138 | + 1,75 Mo | Petites villes |
+| Monde entier au zoom 4 (non retenu) | 256 | + 1,1 Mo | Le reste du monde plus net |
+
+Choix : **zoom 7**, monde jusqu'au zoom 3. Un téléphone ancien sur une connexion faible télécharge l'APK une fois : 2,6 Mo pour voir toute la France sans réseau, c'est peu à côté du moteur de carte lui-même (section 6) ; le zoom 8 aurait ajouté deux tiers de poids pour des villes que la liste nomme déjà, et le détail viendra du serveur. Les tuiles d'origine pesaient 15,3 Mo : le filtre des couches (sans bâtiments, points d'intérêt, occupation du sol) les divise par six. La préparation a téléchargé 11,4 Mo en 168 requêtes partielles, sur l'ordinateur de développement.
+
+Glyphes : 8 plages par police (latin, latin étendu, ponctuation, symboles), 123 Ko (régulière) et 134 Ko (grasse).
 
 ### Glyphes et pictogrammes
 
@@ -178,7 +193,15 @@ Consigne de la session principale : je n'ai modifié ni `infra/`, ni `.github/wo
    ```
 
    Le même bloc dans le bloc `:8443` de la préproduction (même dossier). `Access-Control-Allow-Origin` n'est utile que pour une future carte du site web (MapLibre GL JS) ; à retirer si la session préfère attendre.
-4. **Espace disque** : fond détaillé de la France métropolitaine, zooms 0 à 14, couches complètes : de l'ordre de **1 à 2 Go** (estimation, à mesurer lors de l'extraction ; la construction mondiale de Protomaps du 6 novembre 2026 pèse 139 Go au zoom 15, et chaque zoom en moins divise la taille par deux environ). Filtré comme le fond intégré (sans bâtiments, points d'intérêt ni occupation du sol), il tiendrait sous 1 Go. Sur 50 Go de disque, c'est acceptable ; prévoir de garder une seule version à la fois.
+4. **Espace disque** (contrainte du chef d'équipe : moins de 10 Go pour les tuiles du serveur). Estimation tirée de la mesure du 7 novembre 2026 : les tuiles d'origine de l'emprise (France métropolitaine, Corse, outre-mer) pèsent 32 Mo au seul zoom 8 ; en multipliant par 2,5 environ à chaque zoom (4 fois plus de tuiles, chacune plus légère, la mer stockée une seule fois), on obtient :
+
+   | Emprise et zooms | Taille estimée sur disque |
+   |---|---|
+   | France métropolitaine et outre-mer, zooms 8 à 14, **toutes couches** (`pmtiles extract` brut) | 6 à 9 Go : **trop près de la limite** |
+   | **Retenu** : mêmes zones et zooms, **filtré** comme le fond intégré mais avec toutes les routes et rues (sans bâtiments, points d'intérêt ni occupation du sol, qui pèsent la moitié aux zooms 13 et 14) | **3 à 5 Go** |
+   | Option légère : zooms 8 à 12 partout, puis 13 et 14 seulement sur les 22 métropoles et l'outre-mer | **1 à 2 Go** |
+
+   Ces chiffres sont des estimations : `pmtiles extract … --dry-run` donne la taille exacte avant tout téléchargement, à faire au premier déploiement. Si le filtré dépasse 5 Go, prendre l'option légère. Le fond intégré à l'application, lui, pèse **2,59 Mo** (zooms 0 à 7). Garder une seule version à la fois sur le serveur.
 5. **Bande passante** (estimation) : une carte de ville vue en détail demande 20 à 60 tuiles de 20 à 80 Ko, soit **1 à 3 Mo par consultation détaillée** ; le cache du moteur sur le téléphone (30 Mo) évite de redemander. Pour 1 000 utilisateurs qui regardent chacun deux villes par mois : environ 2 à 6 Go par mois. Hostinger KVM 1 annonce un trafic largement supérieur (à vérifier dans l'offre au moment de la location). Sans le serveur, le fond intégré ne coûte aucune bande passante.
 6. **Mise à jour** : refaire l'extraction tous les deux ou trois mois (guide `tools/map-data/README.md`, section 3), sous un nouveau nom de fichier (`france-2027-01.pmtiles`) pour ne jamais servir un fichier à moitié copié ; puis changer l'adresse côté application.
 7. **Aucun journal** : l'option globale `log { output discard }` du Caddyfile couvre déjà ces requêtes, qui révèlent la zone regardée (THREAT_MODEL.md).
