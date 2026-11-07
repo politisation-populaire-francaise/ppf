@@ -67,6 +67,7 @@ require '^assets/composeResources/[^/]+/files/carte/glyphes/regular/0-255\.pbf$'
 for abi in arm64-v8a armeabi-v7a x86_64; do
     require "^lib/$abi/libsecp256k1-jni\.so$" "libsecp256k1 for $abi"
     require "^lib/$abi/libjniMaplibreNativeC\.so$" "MapLibre Native bindings for $abi"
+    require "^lib/$abi/libmaplibre-native-c\.so$" "MapLibre Native engine for $abi"
 done
 forbid '^lib/x86/' "32-bit x86 libraries"
 

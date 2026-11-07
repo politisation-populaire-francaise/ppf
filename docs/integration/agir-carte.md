@@ -1,10 +1,10 @@
-# Note d'intégration : vue carte de l'agenda (M1, AG-01, S-05, S-35)
+﻿# Note d'intégration : vue carte de l'agenda (M1, AG-01, S-05, S-35)
 
 Rédigée le 7 novembre 2026 par l'agent « carte » (branche `worktree-agent-aa2e9d93c925b2c1e`, partie de `feature/agir` à `d99c093`). Elle s'adresse à la session principale, qui fusionne, numérote les décisions et met à jour `CHANGELOG.md`, `ROADMAP.md`, `DECISIONS.md`, `FORMATS.md`, `GUIDE_PROPRIETAIRE.md` et `content/README.md`. `REGISTRE_DONNEES.md` et `THREAT_MODEL.md` ont été complétés ici, à la demande de la session principale.
 
 Spécifications appliquées : cahier des charges, sections 3.1 (offline-first : « carte » parmi les données essentielles), 4 (« OpenStreetMap via MapLibre, jamais Google Maps ; tuiles hors ligne pour les zones choisies, phase ultérieure »), 5.1 et 6 ; cahier fonctionnel M1 et section 3 (« la carte reste disponible sans réseau ») ; inventaire : AG-01 (filtres, hors ligne, accès par « Carte »), S-05 (entrée « Carte »), S-35 (MapLibre et OpenStreetMap, position facultative jamais envoyée, zones téléchargeables plus tard) ; contrat de l'espace Agir, section 2 (`g` : géohash placé par l'auteur, aucun service tiers) ; D-025 (identité visuelle), D-039 à D-044.
 
-<!-- ETAT -->
+- **État (7 novembre 2026, fin d'après-midi)** : fait et commité sur `worktree-agent-aa2e9d93c925b2c1e` ; tests de la carte verts (cœur 25, serveur 6, outil 4, écran 11) ; `gradlew build` complet : tout vert sauf deux tests d'interface d'autres blocs, non touchés ici (`AgendaScreenTest.organisersAreNamedByTheDirectoryOfOrganisations`, `OrganisationsScreenTest.onATabletThePageShowsTheVerificationTheContactsAndFollowingStaysOnTheDevice`, voir section 8) ; APK d'essai produit (38,0 Mo) et `tools/check-apk.sh` vert. **La carte réelle n'a pas pu être vue** : pas d'émulateur Android sur l'ordinateur, et le moteur natif ne se dessine pas dans les tests JVM ; le premier essai sur le téléphone de la propriétaire est le vrai test du rendu.
 
 ## 1. Choix de la bibliothèque de rendu
 
@@ -104,7 +104,19 @@ Texte à ajouter au tableau « Format d'une mobilisation de l'agenda » de `cont
 
 ## 6. Poids ajouté
 
-<!-- POIDS -->
+Mesuré le 7 novembre 2026 sur l'APK d'essai (`assemblePreview`, non débogable, trois architectures) :
+
+| | Taille |
+|---|---|
+| APK d'essai avant la carte (même branche, autres worktrees du jour) | 16,5 Mo |
+| APK d'essai avec la carte, bibliothèques natives non compressées (réglage par défaut d'AGP) | 60,4 Mo |
+| **APK d'essai avec la carte, bibliothèques natives compressées (retenu)** | **38,0 Mo** (+21,5 Mo) |
+
+Détail de l'ajout : moteur MapLibre Native `libmaplibre-native-c.so` (13,4 Mo en arm64-v8a, 9,0 Mo en armeabi-v7a, 14,1 Mo en x86_64, non compressé) et liaisons `libjniMaplibreNativeC.so` (0,8 à 1,0 Mo par architecture), environ 17 Mo une fois compressés ; classes de MapLibre Compose, spatial-k et JavaCPP (environ 2 Mo) ; fond intégré 2,6 Mo ; glyphes 0,26 Mo.
+
+Choix : **`jniLibs.useLegacyPackaging = true`** dans `android/build.gradle.kts` (une ligne) : l'APK téléchargé passe de 60 à 38 Mo ; en contrepartie, Android extrait à l'installation les bibliothèques de la seule architecture du téléphone (environ 15 Mo de stockage en plus). Pour un téléphone ancien sur une connexion faible, le téléchargement compte davantage. Pistes pour réduire encore, sans coût : un APK par architecture au moment de la publication (environ 26 Mo pour arm64-v8a seul), ou retirer x86_64 (émulateurs et Chromebooks seulement). Les applications de bureau ne changent pas (aucune bibliothèque de carte sur ordinateur).
+
+`tools/check-apk.sh` exige maintenant le fond intégré, les glyphes, `libjniMaplibreNativeC.so` et `libmaplibre-native-c.so` pour chaque architecture ; l'APK d'essai passe la vérification (non débogable, certificat de test attendu).
 
 ## 7. Ce que le serveur devra servir au déploiement
 
