@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.server
 
 import io.zonky.test.db.postgres.embedded.EmbeddedPostgres
 import org.politisationpopulairefrancaise.server.db.Database
+import java.time.Duration
 import javax.sql.DataSource
 
 /**
@@ -10,7 +11,9 @@ import javax.sql.DataSource
  */
 object TestDatabase {
     val dataSource: DataSource by lazy {
-        val postgres = EmbeddedPostgres.builder().start()
+        // A loaded machine (several builds at once, continuous integration) can take longer than the
+        // 10 seconds the library waits by default for PostgreSQL to start.
+        val postgres = EmbeddedPostgres.builder().setPGStartupWait(Duration.ofMinutes(3)).start()
         Runtime.getRuntime().addShutdownHook(Thread { postgres.close() })
         postgres.postgresDatabase.also(Database::migrate)
     }

@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.server.relay
 
+import org.politisationpopulairefrancaise.server.groups.GroupIndex
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.days
 import kotlin.time.Duration.Companion.hours
@@ -32,6 +33,10 @@ object RelayKinds {
  *   together (default 600): a hard ceiling on ingestion, since keys are free to mint.
  *
  * Invalid values fall back to the defaults.
+ *
+ * [groupLockWait], how long the creation of a room waits for its turn (see [GroupIndex.exclusively]),
+ * is not read from the environment: 10 seconds in production, longer in tests, whose machines can be
+ * slow enough under load for eight simultaneous creations to wait more than that.
  */
 data class RelayConfig(
     val wrapRetention: Duration = DEFAULT_WRAP_RETENTION,
@@ -40,6 +45,7 @@ data class RelayConfig(
     val wrapMaxPerRecipient: Int = DEFAULT_WRAP_MAX_PER_RECIPIENT,
     val postRatePerMinute: Int = DEFAULT_POST_RATE_PER_MINUTE,
     val globalPostRatePerMinute: Int = DEFAULT_GLOBAL_POST_RATE_PER_MINUTE,
+    val groupLockWait: Duration = GroupIndex.DEFAULT_LOCK_WAIT,
 ) {
     init {
         require(wrapRetention.isPositive()) { "The envelope retention must be positive" }

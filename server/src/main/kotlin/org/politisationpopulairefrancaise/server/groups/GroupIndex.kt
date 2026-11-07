@@ -7,6 +7,8 @@ import java.sql.ResultSet
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.locks.ReentrantLock
 import javax.sql.DataSource
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * The table group_directory (V4__group_directory.sql): one row per stored group description, with
@@ -21,7 +23,15 @@ import javax.sql.DataSource
  * prevents, or through a direct store), the description that counts is the earliest one, then the
  * one with the lowest event id, as in [GroupDirectory.find].
  */
-class GroupIndex(private val dataSource: DataSource) {
+class GroupIndex(
+    private val dataSource: DataSource,
+    /** How long a description waits for its turn in [exclusively] before the request fails. */
+    private val lockWait: Duration = DEFAULT_LOCK_WAIT,
+) {
+    init {
+        require(lockWait >= 1.seconds) { "The lock wait of group descriptions must be at least one second" }
+    }
+
 
     /**
      * The descriptions that count, by normalized name then id, at most [limit]: those whose name,
@@ -80,14 +90,14 @@ class GroupIndex(private val dataSource: DataSource) {
      * next holder, which only starts once this transaction is over.
      */
     fun <T> exclusively(block: () -> T): T {
-        if (!processLock.tryLock(LOCK_WAIT_SECONDS, TimeUnit.SECONDS)) {
+        if (!processLock.tryLock(lockWait.inWholeMilliseconds, TimeUnit.MILLISECONDS)) {
             throw IllegalStateException("Timed out waiting for the lock of group descriptions")
         }
         try {
             return dataSource.connection.use { connection ->
                 connection.autoCommit = false
                 try {
-                    connection.createStatement().use { it.execute("SET LOCAL lock_timeout = '${LOCK_WAIT_SECONDS}s'") }
+                    connection.createStatement().use { it.execute("SET LOCAL lock_timeout = '${lockWait.inWholeMilliseconds}ms'") }
                     connection.prepareStatement("SELECT pg_advisory_xact_lock(?)").use { statement ->
                         statement.setLong(1, ADVISORY_LOCK_KEY)
                         statement.execute()
@@ -132,7 +142,8 @@ class GroupIndex(private val dataSource: DataSource) {
         /** Any fixed number shared by every server process; "PPFGROUP" in ASCII. */
         private const val ADVISORY_LOCK_KEY: Long = 0x5050_4647_524F_5550L
 
-        private const val LOCK_WAIT_SECONDS: Long = 10
+        /** In production: a busy server answers an error after 10 seconds rather than piling up requests. */
+        val DEFAULT_LOCK_WAIT: Duration = 10.seconds
 
         /** One lock for the whole process, whatever the number of directories built on the same database. */
         private val processLock = ReentrantLock(true)
