@@ -52,3 +52,34 @@ Refusés comme aujourd'hui : 9007, 9008 (suppression du salon : par l'équipe se
 ## 4. Hors de cette étape
 
 Salons réservés et chiffrés (MLS) et bascule transparente d'une conversation de groupe vers un salon chiffré au-delà d'un seuil (décision 26 : aucune limite de taille visible), invitations, demandes d'adhésion, suppression d'un salon, reprise d'un salon squatté, rapprochement par le sens, signalements (socle, étape 2).
+
+## 5. État (7 novembre 2026, branche `communaute-salons-roles`)
+
+Fait :
+
+- **Serveur, rôles et modération** (section 2) : 9000, 9001, 9002 et 9005 acceptés, appliqués un par un et par salon dans l'ordre de réception (verrou par salon, même transaction que l'enregistrement) ; le créateur est le premier administrateur (y compris pour les salons créés avant, par la migration) ; `403 not_allowed`, `409 last_admin`, `403 banned` ; messages retirés plus servis (ni dans le fil, ni par leur identifiant), le 9005 reste public avec son motif ; `GET /api/v1/groups/{id}/roles` ; nom et présentation modifiés servis par `GET /api/v1/groups` (champ `edit` en plus) ; 9007, 9008, 9009, 9021, 9022 et 39002 toujours refusés. Tables de `V10__group_roles.sql` (numéro provisoire, à reprendre à l'entrée dans `main`) : `group_role`, `group_ban`, `group_removed_event`, plus `group_edit` (nom et présentation en vigueur) et `group_held_creation` (créations en attente). Aucune instruction de structure au fonctionnement : le rôle restreint de production suffit.
+- **Serveur, garde-fous** (section 3 bis) : `409 group_similar` avec la liste (même territoire et « France ») ; création confirmée par `["ppf-similar","confirmed"]` et `["ppf-difference","…"]` ; `202 held` et file `groups.creations` du back-office (approuver, refuser avec motif ; permission donnée au rôle modérateur) pour un nom proche d'une organisation vérifiée ou d'un salon de plus de 200 messages ailleurs ; `GET /api/v1/group-creations?id=…` pour le créateur ; `429 too_many_groups` au-delà de 3 créations en 24 heures ; `403 account_too_recent` (clé connue depuis moins de 7 jours, réglable par `PPF_GROUP_YOUNG_ACCOUNT_DAYS`) ; renommage vers le nom d'un autre salon ou d'une organisation refusé.
+- **Code commun** : `RoomModeration` (rôles, exclusions, retraits, modifications et journal calculés sur l'appareil, mêmes règles que le serveur, constructeurs des quatre événements) ; `Group.build(..., difference)` ; nouveaux motifs de refus lus des réponses du serveur.
+- **Application** : menu « … » d'un message (« Retirer ce message » pour les administrateurs, les modérateurs et l'auteur ; « Nommer administrateur », « Nommer modérateur », « Retirer son rôle », « Exclure du salon », « Réadmettre dans le salon ») ; confirmation qui rappelle que l'action est publique et signée du pseudonyme, « Annuler » d'abord, motif obligatoire pour un retrait et une exclusion ; « Message retiré par un modérateur : motif » ; page « À propos du salon » (présentation, territoire, charte, rôles, nombre d'exclus, journal de modération) ; message « Vous avez été exclu de ce salon » à la place du champ d'écriture ; formulaire de création : salons proches à rejoindre ou « Créer quand même » avec « En quoi votre salon est différent », « En attente de vérification » pour une création retenue.
+
+Écarts et choix d'interprétation :
+
+- Un **modérateur peut réadmettre** (le tableau de la section 2 réserve 9000 aux administrateurs, la section 1 dit que les modérateurs réadmettent) : il envoie un 9000 sans rôle, accepté seulement pour une clé sans rôle.
+- Retirer un rôle, c'est un 9000 **sans rôle** (NIP-29) ; un 9001 sur un administrateur par un autre administrateur est accepté (sauf le dernier).
+- Le **créateur** peut toujours republier sa description tant qu'il est administrateur, jamais avec un autre territoire (`400 territory_fixed`) ; la nouvelle version remplace les modifications 9002.
+- **Territoires parents** : les salons nomment leur territoire en texte libre ; le seul parent reconnu est « France », en attendant le code du référentiel (D-090).
+- « Salon très actif » : au moins 200 messages, seuil choisi par le pôle (réglable dans le code).
+
+Comment le tester sur l'ordinateur :
+
+1. Ouvrez une fenêtre PowerShell dans `C:\Users\clair\Documents\PPF` et tapez `$env:PPF_GROUP_YOUNG_ACCOUNT_DAYS = "0"` puis Entrée (sur le serveur de développement seulement : un compte neuf peut alors voir une création mise en attente), puis `.\gradlew.bat :server:runDev` et Entrée. Attendez la ligne qui se termine par `http://localhost:8080` et laissez la fenêtre ouverte.
+2. Lancez deux comptes d'essai comme dans le guide de la propriétaire (« Échanger un message entre deux comptes sur l'ordinateur », étapes 3 à 6, avec `PPF_SERVER_URL=http://localhost:8080`).
+3. Compte 1 : Messages, onglet « Collectifs », « Créer un salon ». Nom « [EXEMPLE] Atelier logements », territoire « Lyon », cochez la charte, « Créer le salon ». Le serveur répond qu'un salon proche existe (« Atelier logement ») : vous pouvez le rejoindre, ou écrire en quoi le vôtre est différent puis « Créer quand même ». Le salon s'ouvre : vous en êtes l'administrateur.
+4. Compte 2 : ouvrez ce salon, « Rejoindre pour écrire », écrivez un message commençant par [EXEMPLE].
+5. Compte 1 : actualisez (flèche en cercle), cliquez sur « … » à côté du message du compte 2. Essayez « Nommer modérateur » : la fenêtre dit que l'action est publique et signée de votre pseudonyme ; « Annuler » est en premier. Puis « Exclure du salon » : sans motif, rien ne part ; avec un motif, le compte 2 est exclu.
+6. Compte 2 : actualisez ; à la place du champ d'écriture, « Vous avez été exclu de ce salon : » suivi du motif.
+7. Compte 1 : « … », « Réadmettre dans le salon », puis « … », « Retirer ce message » avec un motif : le message est remplacé par « Message retiré par un modérateur : » et le motif.
+8. Dans le salon, le bouton « i » (« À propos du salon ») montre la présentation, le territoire, la charte, les administrateurs et modérateurs, le nombre d'exclus et le journal de toutes ces actions.
+9. Création retenue : créez un salon nommé « [EXEMPLE] Association fictive Les Ateliers de la Lanterne », territoire « Lille » : le formulaire affiche « En attente de vérification ». La décision se prend dans l'espace de l'équipe (`PPF_BACKOFFICE_ORIGIN=http://localhost:8081`), file « Salons en attente de vérification ».
+
+Reste : signalements d'un salon ou d'un message (socle, étape 2), reprise d'un salon squatté (décision en attente), affichage pour le créateur de la décision sur une création retenue (l'API existe, l'application ne l'interroge pas encore), modification du nom et de la présentation depuis l'application (le serveur et le code commun sont prêts).

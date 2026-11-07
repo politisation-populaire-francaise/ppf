@@ -340,5 +340,4 @@ class GroupDirectory(
         /** No key: the organisation's own keys and the trusted keys are not exempted. */
         private const val NO_KEY: String = ""
     }
-    }
 }
