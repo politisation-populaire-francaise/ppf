@@ -38,8 +38,12 @@ object MapArea {
     /** The detailed background of our server starts here. */
     const val SERVER_MIN_ZOOM: Int = BUNDLED_MAX_ZOOM + 1
 
-    /** The detailed background of our server stops here (streets); the map zooms two levels further. */
-    const val SERVER_MAX_ZOOM: Int = 14
+    /**
+     * The detailed background of our server stops here (streets), the map zooming three levels
+     * further: zoom 13 keeps the file of France under the disk budget of the server (note
+     * `docs/integration/agir-carte.md`, « Production des tuiles »).
+     */
+    const val SERVER_MAX_ZOOM: Int = 13
 
     /** The camera never goes below this zoom (the whole world). */
     const val MIN_ZOOM: Double = 1.5

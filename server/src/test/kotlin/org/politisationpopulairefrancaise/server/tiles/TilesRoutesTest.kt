@@ -7,6 +7,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.testApplication
 import org.politisationpopulairefrancaise.core.agir.map.HttpRangeSource
+import org.politisationpopulairefrancaise.core.agir.map.ManifestRangeSource
 import org.politisationpopulairefrancaise.core.agir.map.MapArea
 import org.politisationpopulairefrancaise.core.agir.map.Pmtiles
 import org.politisationpopulairefrancaise.core.agir.map.PmtilesReader
@@ -29,6 +30,12 @@ class TilesRoutesTest {
         writer.add(9, 259, 176, "tile of Paris".encodeToByteArray())
         writer.add(9, 268, 187, "tile of Lyon".encodeToByteArray())
         Files.write(dir.resolve("france.pmtiles"), writer.build(MapArea.FRANCE, MapArea.FRANCE_CENTER, 9, "{}"))
+        Files.copy(dir.resolve("france.pmtiles"), dir.resolve("france-20261107.pmtiles"))
+        Files.writeString(
+            dir.resolve("current.json"),
+            """{"version":1,"file":"france-20261107.pmtiles","attribution":"© contributeurs d'OpenStreetMap","generated":"2026-11-07",""" +
+                """"sha256":"${"a".repeat(64)}","bytes":${Files.size(dir.resolve("france.pmtiles"))}}""",
+        )
         Files.writeString(dir.resolve("secret.txt"), "not a tile file")
     }
 
@@ -45,6 +52,29 @@ class TilesRoutesTest {
         assertContentEquals("tile of Paris".encodeToByteArray(), reader.tile(9, 259, 176))
         assertContentEquals("tile of Lyon".encodeToByteArray(), reader.tile(9, 268, 187))
         assertNull(reader.tile(9, 0, 0))
+    }
+
+    @Test
+    fun theApplicationFindsTheCurrentFileThroughTheManifest() = app {
+        val manifest = client.get("/tiles/current.json")
+        assertEquals(HttpStatusCode.OK, manifest.status)
+        assertEquals("public, max-age=300", manifest.headers[HttpHeaders.CacheControl])
+        val source = ManifestRangeSource(client, "http://localhost/tiles/", clock = { 0L })
+        assertEquals("france-20261107.pmtiles", assertNotNull(source.manifest()).file)
+        assertContentEquals("tile of Paris".encodeToByteArray(), PmtilesReader(source).tile(9, 259, 176))
+        // The dated file is cached for good.
+        val ranged = client.get("/tiles/france-20261107.pmtiles") { header(HttpHeaders.Range, "bytes=0-6") }
+        assertEquals("public, max-age=31536000, immutable", ranged.headers[HttpHeaders.CacheControl])
+    }
+
+    @Test
+    fun withoutManifestNothingIsRead() = testApplication {
+        val empty = Files.createTempDirectory("ppf-tiles-empty")
+        application { module(policy = NO_EDITORS, relay = TEST_RELAY, revendications = testRevendications(), tiles = TilesConfig(empty)) }
+        assertEquals(HttpStatusCode.NotFound, client.get("/tiles/current.json").status)
+        val source = ManifestRangeSource(client, "http://localhost/tiles", clock = { 0L })
+        assertNull(source.manifest())
+        assertNull(source.read(0, 10))
     }
 
     @Test

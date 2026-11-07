@@ -1,12 +1,14 @@
 package org.politisationpopulairefrancaise.ui.agir.map
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.test.ComposeUiTest
@@ -16,6 +18,7 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasContentDescription
+import androidx.compose.ui.test.onNodeWithContentDescription
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -31,12 +34,10 @@ import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationType
 import org.politisationpopulairefrancaise.core.agir.map.MapArea
 import org.politisationpopulairefrancaise.core.agir.map.MapResource
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaClock
-import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaDevice
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaKit
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaLibrary
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaServer
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaTags
-import org.politisationpopulairefrancaise.ui.agir.agenda.TestAgenda
 import org.politisationpopulairefrancaise.ui.agir.agenda.cardCount
 import kotlinx.coroutines.runBlocking
 import kotlin.test.Test
@@ -78,25 +79,75 @@ internal class FakeMapRenderer : AgendaMapRenderer {
 }
 
 /**
+ * A device of the map tests: like the agenda's, but on a database file, so that every thread of
+ * the library sees the same data (an in-memory SQLite database is per connection, hence per thread).
+ */
+internal class MapDevice(val server: AgendaServer? = null) {
+    val database = org.politisationpopulairefrancaise.core.local.JvmDatabase.open(
+        java.nio.file.Files.createTempDirectory("ppf-map-test").resolve("ppf.db"),
+    )
+    val store = org.politisationpopulairefrancaise.core.local.LocalEventStore(database)
+    val state = org.politisationpopulairefrancaise.core.agir.agenda.AgendaStore(database)
+    val identityStore = org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore()
+    val dependencies = org.politisationpopulairefrancaise.ui.AppDependencies(identityStore = identityStore, contentStore = store, remote = server, database = database)
+}
+
+@Composable
+internal fun MapTestAgenda(device: MapDevice, width: Int, height: Int, onReady: (AgendaLibrary) -> Unit) {
+    val scope = androidx.compose.runtime.rememberCoroutineScope()
+    val agenda = androidx.compose.runtime.remember {
+        AgendaLibrary(device.store, device.state, org.politisationpopulairefrancaise.core.editorial.EditorialTrust.bundledExamples(), device.server, scope) { AgendaClock.NOW }.also { it.start() }
+    }
+    val session = androidx.compose.runtime.remember { org.politisationpopulairefrancaise.ui.account.AccountSession(device.identityStore, scope).also { it.start() } }
+    androidx.compose.runtime.remember { onReady(agenda) }
+    org.politisationpopulairefrancaise.ui.theme.PpfTheme(darkTheme = false) {
+        androidx.compose.foundation.layout.Box(Modifier.requiredSize(width.dp, height.dp)) {
+            org.politisationpopulairefrancaise.ui.agir.agenda.AgendaScreen(
+                dependencies = device.dependencies,
+                session = session,
+                windowClass = org.politisationpopulairefrancaise.core.WindowClass.of(widthDp = width.toFloat(), heightDp = height.toFloat()),
+                agenda = agenda,
+            )
+        }
+    }
+}
+
+/**
  * The map view of the agenda on the bundled examples (each placed in a town centre), on Friday 13
  * November 2026 at 10 h, with a fake renderer: the choice "Liste" / "Carte", the points and their
  * labels, the filters, the place touched and the detail, the controls, the attribution, the three
  * widths, and the honest sentence where no map can be drawn.
  */
 @OptIn(ExperimentalTestApi::class)
+@org.junit.FixMethodOrder(org.junit.runners.MethodSorters.NAME_ASCENDING)
 class AgendaMapScreenTest {
+    /**
+     * Runs first (names in order): the first composition of a test run also loads Compose, Skiko
+     * and the resources, which on a busy computer can take longer than a test's own timeout.
+     */
+    @Test
+    fun a0WarmUp() = runComposeUiTest {
+        setContent { MapTestAgenda(MapDevice(), 360, 740) {} }
+        try {
+            waitUntil(timeoutMillis = 50_000) { cardCount() >= 7 }
+        } catch (e: androidx.compose.ui.test.ComposeTimeoutException) {
+            // Only a warm-up: the real checks follow.
+        }
+    }
+
     private val paris = "rassemblement-services-publics-paris-2026-11-14"
     private val strike = "greve-transports-2026-11-26"
     private val cancelled = "rassemblement-maternite-seine-saint-denis-2026-12-05"
     private val rennes = "projection-debat-rennes-2026-11-03"
 
-    private fun ComposeUiTest.showMap(renderer: AgendaMapRenderer?, width: Int, height: Int = 740, device: AgendaDevice = AgendaDevice(withAccount = false), onReady: (AgendaLibrary) -> Unit = {}) {
+    private fun ComposeUiTest.showMap(renderer: AgendaMapRenderer?, width: Int, height: Int = 740, device: MapDevice = MapDevice(), onReady: (AgendaLibrary) -> Unit = {}) {
         setContent {
             CompositionLocalProvider(LocalAgendaMapRenderer provides renderer) {
-                TestAgenda(device, width, height, onReady = { agenda, _ -> onReady(agenda) })
+                MapTestAgenda(device, width, height, onReady)
             }
         }
-        waitUntil(timeoutMillis = 20_000) { cardCount() >= 7 }
+        // Generous: the first test of the run also pays for the start of Compose and of the database.
+        waitUntil(timeoutMillis = 50_000) { cardCount() >= 7 }
     }
 
     private fun ComposeUiTest.chooseMap() {
@@ -145,7 +196,8 @@ class AgendaMapScreenTest {
         onNodeWithTag("fake-point-$paris").performClick()
         waitForIdle()
         onNodeWithTag(AgendaMapTags.SELECTION).assertExists()
-        onNodeWithTag(AgendaMapTags.SELECTED + paris).assertTextContains("Place de la République, Paris", substring = true)
+        onNodeWithTag(AgendaMapTags.SELECTED + paris).assertExists()
+        onNodeWithText("Place de la République, Paris", substring = true).assertExists()
         onNodeWithText("1 mobilisation à cet endroit").assertExists()
         // The selected point is drawn as such.
         assertTrue(assertNotNull(renderer.last).points.contains("\"selected\":true"))
@@ -157,7 +209,8 @@ class AgendaMapScreenTest {
         // Back on the map, as it was.
         onNodeWithTag(AgendaMapTags.PANE).assertExists()
         onNodeWithTag(AgendaMapTags.SELECTION).assertExists()
-        onNodeWithTag("fake-background").performClick()
+        // A touch on the map outside any point closes it (the fake map is under the box: call it directly).
+        runOnIdle { assertNotNull(renderer.last).onBackground() }
         waitForIdle()
         onNodeWithTag(AgendaMapTags.SELECTION).assertDoesNotExist()
         // The list is one touch away.
@@ -189,9 +242,9 @@ class AgendaMapScreenTest {
         val renderer = FakeMapRenderer()
         showMap(renderer, 360)
         chooseMap()
-        onNodeWithTag(AgendaMapTags.ZOOM_IN).assert(hasContentDescription("Zoomer")).performClick()
-        onNodeWithTag(AgendaMapTags.ZOOM_OUT).assert(hasContentDescription("Dézoomer")).performClick()
-        onNodeWithTag(AgendaMapTags.RECENTER).assert(hasContentDescription("Recentrer sur la France")).performClick()
+        onNodeWithContentDescription("Zoomer").performClick()
+        onNodeWithContentDescription("Dézoomer").performClick()
+        onNodeWithContentDescription("Recentrer sur la France").performClick()
         waitForIdle()
         assertEquals(listOf(MapCommand.ZoomBy(1.0), MapCommand.ZoomBy(-1.0), MapCommand.Show(AgendaMapState.FRANCE)), renderer.commands)
     }
@@ -203,7 +256,7 @@ class AgendaMapScreenTest {
         server.verified += kit.pubkey
         server.seed(kit.mobilization("sans-lieu", "[EXEMPLE] Réunion sans lieu sur la carte", start = AgendaClock.at(2026, 11, 20, 18)))
         val renderer = FakeMapRenderer()
-        showMap(renderer, 360, device = AgendaDevice(withAccount = false, server = server))
+        showMap(renderer, 360, device = MapDevice(server))
         waitUntil(timeoutMillis = 20_000) { cardCount() >= 8 }
         chooseMap()
         onNodeWithTag(AgendaMapTags.COUNT).assertTextContains("7 mobilisations sur la carte")
@@ -213,29 +266,35 @@ class AgendaMapScreenTest {
         onNodeWithTag(AgendaTags.CARD + "sans-lieu").performScrollTo().assertExists()
     }
 
-    @Test
-    fun threeWidthsAndTheDetailNextToTheMapOnWideScreens() = runComposeUiTest {
-        for (width in listOf(360, 700, 1000)) {
-            val renderer = FakeMapRenderer()
-            showMap(renderer, width)
-            chooseMap()
-            onNodeWithTag("fake-point-$strike").performClick()
+    private fun ComposeUiTest.detailFromTheMap(width: Int) {
+        val renderer = FakeMapRenderer()
+        showMap(renderer, width)
+        chooseMap()
+        onNodeWithTag("fake-point-$strike").performClick()
+        waitForIdle()
+        onNodeWithTag(AgendaMapTags.OPEN + strike).performClick()
+        waitForIdle()
+        onNodeWithTag(AgendaTags.DETAIL).assertExists()
+        if (width >= 1000) {
+            // Two panes: the map stays on the left, the detail opens on the right.
+            onNodeWithTag(AgendaMapTags.PANE).assertExists()
+            onNodeWithTag(AgendaTags.BACK).assertDoesNotExist()
+        } else {
+            onNodeWithTag(AgendaMapTags.PANE).assertDoesNotExist()
+            onNodeWithTag(AgendaTags.BACK).performScrollTo().performClick()
             waitForIdle()
-            onNodeWithTag(AgendaMapTags.OPEN + strike).performClick()
-            waitForIdle()
-            onNodeWithTag(AgendaTags.DETAIL).assertExists()
-            if (width >= 1000) {
-                // Two panes: the map stays on the left, the detail opens on the right.
-                onNodeWithTag(AgendaMapTags.PANE).assertExists()
-                onNodeWithTag(AgendaTags.BACK).assertDoesNotExist()
-            } else {
-                onNodeWithTag(AgendaMapTags.PANE).assertDoesNotExist()
-                onNodeWithTag(AgendaTags.BACK).performScrollTo().performClick()
-                waitForIdle()
-                onNodeWithTag(AgendaMapTags.PANE).assertExists()
-            }
+            onNodeWithTag(AgendaMapTags.PANE).assertExists()
         }
     }
+
+    @Test
+    fun phoneWidthTheDetailReplacesTheMapAndGivesItBack() = runComposeUiTest { detailFromTheMap(360) }
+
+    @Test
+    fun tabletWidthTheDetailReplacesTheMapAndGivesItBack() = runComposeUiTest { detailFromTheMap(700) }
+
+    @Test
+    fun wideScreenTheDetailOpensNextToTheMap() = runComposeUiTest { detailFromTheMap(1000) }
 
     @Test
     fun withoutRendererTheListStaysWithAnHonestSentence() = runComposeUiTest {

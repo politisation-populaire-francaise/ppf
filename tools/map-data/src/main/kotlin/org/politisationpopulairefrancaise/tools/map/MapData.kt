@@ -21,6 +21,9 @@ internal object MapDataPaths {
  * Prepares the data of the map, from the root of the repository (guide: tools/map-data/README.md):
  *
  * - `glyphes`: the glyphs of the labels, from the bundled fonts (nothing is downloaded);
+ * - `region [exemples]`: the GeoJSON of the area of the detailed background (mainland France,
+ *   Corsica and each overseas department; with `exemples`, only the towns of the examples, for the
+ *   preproduction), for `pmtiles extract --region`;
  * - `fond <source> [--max-zoom N] [--essai]`: the low zoom background bundled with the
  *   application, from a Protomaps build (local file or https URL); `--essai` only prints the
  *   sizes, zoom by zoom, without writing anything.
@@ -28,6 +31,7 @@ internal object MapDataPaths {
 fun main(args: Array<String>) {
     when (args.firstOrNull()) {
         "glyphes" -> glyphs()
+        "region" -> println(regionGeoJson(args.getOrNull(1)))
         "fond" -> {
             val source = args.getOrNull(1) ?: usage()
             val maxZoom = args.indexOf("--max-zoom").takeIf { it >= 0 }?.let { args.getOrNull(it + 1)?.toIntOrNull() } ?: MapArea.BUNDLED_MAX_ZOOM
@@ -71,4 +75,26 @@ private fun basemap(sourceName: String, maxZoom: Int, write: Boolean) = runBlock
         out.writeBytes(report.bytes)
         println("written: $out")
     }
+}
+
+/** The towns of the [EXEMPLE] mobilizations, for the small extract of the preproduction (about 20 km around each). */
+internal val EXAMPLE_TOWNS: List<Pair<String, org.politisationpopulairefrancaise.core.agir.map.GeoBox>> = listOf(
+    "paris" to org.politisationpopulairefrancaise.core.agir.map.GeoBox(48.70, 2.15, 49.05, 2.60),
+    "lyon" to org.politisationpopulairefrancaise.core.agir.map.GeoBox(45.65, 4.70, 45.85, 5.00),
+    "marseille" to org.politisationpopulairefrancaise.core.agir.map.GeoBox(43.20, 5.25, 43.42, 5.55),
+    "lille" to org.politisationpopulairefrancaise.core.agir.map.GeoBox(50.55, 2.95, 50.72, 3.20),
+    "toulouse" to org.politisationpopulairefrancaise.core.agir.map.GeoBox(43.52, 1.32, 43.70, 1.56),
+    "rennes" to org.politisationpopulairefrancaise.core.agir.map.GeoBox(48.05, -1.78, 48.16, -1.58),
+    "strasbourg" to org.politisationpopulairefrancaise.core.agir.map.GeoBox(48.50, 7.65, 48.65, 7.85),
+)
+
+/** A GeoJSON FeatureCollection of rectangles: the whole area, or the example towns. */
+internal fun regionGeoJson(which: String?): String {
+    val boxes = if (which == "exemples") EXAMPLE_TOWNS else listOf("metropole" to MapArea.FRANCE) + MapArea.OVERSEAS
+    val features = boxes.joinToString(",") { (name, b) ->
+        val ring = listOf(b.west to b.south, b.east to b.south, b.east to b.north, b.west to b.north, b.west to b.south)
+            .joinToString(",") { (x, y) -> "[$x,$y]" }
+        """{"type":"Feature","properties":{"name":"$name"},"geometry":{"type":"Polygon","coordinates":[[$ring]]}}"""
+    }
+    return """{"type":"FeatureCollection","features":[$features]}"""
 }

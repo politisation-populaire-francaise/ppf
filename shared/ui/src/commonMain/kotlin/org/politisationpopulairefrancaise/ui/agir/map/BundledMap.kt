@@ -3,7 +3,8 @@ package org.politisationpopulairefrancaise.ui.agir.map
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.CancellationException
 import org.politisationpopulairefrancaise.core.agir.map.ByteArrayRangeSource
-import org.politisationpopulairefrancaise.core.agir.map.HttpRangeSource
+import org.politisationpopulairefrancaise.core.agir.map.ManifestRangeSource
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.agir.map.MapResourceRouter
 import org.politisationpopulairefrancaise.core.agir.map.PmtilesReader
 import org.politisationpopulairefrancaise.ui.resources.Res
@@ -36,13 +37,13 @@ object BundledMap {
 
     /**
      * The router of the map engine, one for the whole run (the engine is configured once). With
-     * [tilesUrl] (the PMTiles file of our server, `https://<domaine>/tiles/france.pmtiles`), the
-     * detailed background is read from it when [serverAllowed] says so; without, only the bundled
-     * background is used.
+     * [tilesUrl] (the tiles folder of our server, `https://<domaine>/tiles/`), the manifest
+     * `current.json` names the current dated file, whose tiles are read when [serverAllowed] says
+     * so; without (or without manifest), only the bundled background is used.
      */
     fun router(tilesUrl: String? = null, serverAllowed: () -> Boolean = { false }): MapResourceRouter {
         shared?.takeIf { sharedServer == tilesUrl }?.let { return it }
-        val server = tilesUrl?.let { PmtilesReader(HttpRangeSource(HttpClient(), it)) }
+        val server = tilesUrl?.let { PmtilesReader(ManifestRangeSource(HttpClient(), it, ::currentEpochSeconds)) }
         return MapResourceRouter(
             bundled = { basemap()?.let(::ByteArrayRangeSource) },
             glyphs = ::glyphs,

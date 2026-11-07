@@ -25,7 +25,8 @@ enum class AgendaView { LIST, MAP }
  * open, so that the map comes back as it was: the chosen view, the camera, the place touched.
  * In memory only: nothing of it is saved or sent (the camera says where the user looks).
  *
- * @param tilesUrl the PMTiles file of the detailed background on our server; null (today) keeps
+ * @param tilesUrl the tiles folder of our server (`https://<domaine>/tiles/`, read through its
+ *   manifest `current.json`); null (today) keeps
  *   the bundled background only
  */
 @Stable

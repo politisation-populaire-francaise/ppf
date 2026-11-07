@@ -43,20 +43,28 @@ gradlew :tools:map-data:run --args="glyphes"
 
 L’outil accepte aussi un fichier PMTiles local à la place de l’adresse (par exemple un extrait déjà téléchargé).
 
-### 3. Le fond détaillé du serveur (au premier déploiement, pas avant)
+### 3. Le fond détaillé du serveur (au premier déploiement, puis chaque mois)
 
-Le fond détaillé (zooms 8 à 14) n’est pas dans le dépôt : il sera rangé sur le serveur et servi tel quel, par plages d’octets, par Caddy (`file_server`) ou par la route de développement `/tiles/` du serveur (`PPF_TILES_DIR`). Pour le produire, on utilise l’outil officiel `pmtiles` (go-pmtiles, licence BSD-3-Clause), téléchargé depuis ses publications GitHub en vérifiant sa somme de contrôle :
-
-```
-pmtiles extract https://build.protomaps.com/20261106.pmtiles france.pmtiles --bbox=-5.25,41.25,9.7,51.2 --maxzoom=14
-```
-
-puis on copie `france.pmtiles` dans le dossier des tuiles du serveur. Taille et bande passante estimées : voir la note.
-
-Pour essayer en local avec le serveur de développement :
+Le fond détaillé (zooms 8 à 13) n'est pas dans le dépôt : il est produit sur le serveur avec l'outil officiel `pmtiles` et servi tel quel par plages d'octets. La procédure exacte (version et somme de contrôle de l'outil, zone, commande, hôtes à autoriser) est dans `docs/integration/agir-carte.md`, section « Production des tuiles ». En résumé :
 
 ```
-set PPF_TILES_DIR=C:\chemin\vers\le\dossier
+gradlew :tools:map-data:run --args="region" > region.geojson
+pmtiles extract https://build.protomaps.com/20261106.pmtiles france-20261107.pmtiles --region=region.geojson --minzoom=8 --maxzoom=13
+sha256sum france-20261107.pmtiles
+```
+
+À chaque extraction, **notez la somme SHA-256 et la taille** dans le manifeste `current.json` posé à côté du fichier :
+
+```
+{"version":1,"file":"france-20261107.pmtiles","attribution":"© contributeurs d'OpenStreetMap","generated":"2026-11-07","sha256":"…","bytes":…}
+```
+
+Le fichier arrive sur le serveur par SSH avec `ppf-tiles install <fichier> <environnement>` (infrastructure), qui vérifie la somme. L'application ne la vérifie pas : elle ne lit que des plages du fichier, jamais le fichier entier.
+
+Pour essayer en local avec le serveur de développement (fichier et `current.json` dans le même dossier) :
+
+```
+set PPF_TILES_DIR=C:\cheminers\le\dossier
 gradlew :server:runDev
 ```
 

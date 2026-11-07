@@ -27,10 +27,13 @@ class TilesConfig(val directory: Path?) {
 /** At most this many bytes in one answer: a tile or a directory is a few hundred kilobytes. */
 private const val MAX_RANGE: Long = 8L * 1024 * 1024
 
+/** The manifest of the folder (`TileManifest` in the shared code). */
+private const val MANIFEST = "current.json"
+
 private val FILE_NAME = Regex("^[a-z0-9][a-z0-9-]{0,62}\\.pmtiles$")
 
 /**
- * `GET /tiles/<name>.pmtiles` with an HTTP range (RFC 9110, section 14): what the application reads
+ * `GET /tiles/current.json`, the manifest (short cache), and `GET /tiles/<name>.pmtiles` with an HTTP range (RFC 9110, section 14): what the application reads
  * of the detailed background, a byte range at a time (`HttpRangeSource`). One range per request,
  * of [MAX_RANGE] at most; nothing is logged (the ranges asked tell which part of the map is looked
  * at, see THREAT_MODEL.md). A request without a range is refused: no client of ours asks for a
@@ -40,6 +43,17 @@ fun Route.tilesRoutes(config: TilesConfig) {
     val directory = config.directory ?: return
     get("/tiles/{name}") {
         val name = call.parameters["name"].orEmpty()
+        if (name == MANIFEST) {
+            // The manifest names the current dated file; a short cache, so that a new file is seen within minutes.
+            val manifest = directory.resolve(MANIFEST)
+            if (!Files.isRegularFile(manifest) || Files.size(manifest) > 4_096) {
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+            call.response.header(HttpHeaders.CacheControl, "public, max-age=300")
+            call.respondBytes(Files.readAllBytes(manifest), ContentType.Application.Json, HttpStatusCode.OK)
+            return@get
+        }
         val file = directory.resolve(name).normalize()
         if (!FILE_NAME.matches(name) || !file.startsWith(directory) || !Files.isRegularFile(file)) {
             call.respond(HttpStatusCode.NotFound)
@@ -47,8 +61,8 @@ fun Route.tilesRoutes(config: TilesConfig) {
         }
         val size = Files.size(file)
         call.response.header(HttpHeaders.AcceptRanges, "bytes")
-        // The files change only when the data is prepared again (a new name then); a day of cache is safe.
-        call.response.header(HttpHeaders.CacheControl, "public, max-age=86400")
+        // A dated file never changes (a new extraction gets a new name): a very long cache is safe.
+        call.response.header(HttpHeaders.CacheControl, "public, max-age=31536000, immutable")
         val range = parseRange(call.request.headers[HttpHeaders.Range], size)
         when {
             range == null -> call.respond(HttpStatusCode.BadRequest)

@@ -33,7 +33,7 @@ Un seul fichier par fond, lu par plages d'octets (spécification PMTiles version
 | Fond | Contenu | Où | Quand il sert |
 |---|---|---|---|
 | **Intégré** `files/carte/fond-france.pmtiles` | Le monde jusqu'au zoom 4 (côtes, pays), puis la France métropolitaine, la Corse, la Guadeloupe, la Martinique, la Guyane, La Réunion et Mayotte jusqu'au **zoom 7** ; seulement la terre, l'eau, les autoroutes et routes principales, les frontières et limites de régions, les noms de pays, de régions et de villes | Ressources de l'application (APK, applications de bureau) | Toujours, sans réseau ni serveur ; la carte zoome jusqu'à 11 en agrandissant ce fond |
-| **Détaillé** `france.pmtiles` | France métropolitaine, zooms 8 à 14 (rues) | Dossier des tuiles de notre serveur (pas dans le dépôt) | Seulement avec un serveur configuré, un réseau, et hors du mode « Économiseur de données » d'Android ; le fond intégré reste dessous si une tuile manque |
+| **Détaillé** `france-AAAAMMJJ.pmtiles`, annoncé par `current.json` | France métropolitaine et outre-mer, zooms 8 à 13 (rues) | Dossier des tuiles de notre serveur (pas dans le dépôt) | Seulement avec un serveur configuré, un réseau, et hors du mode « Économiseur de données » d'Android ; le fond intégré reste dessous si une tuile manque |
 
 ### Taille du fond intégré : le compromis
 
@@ -109,6 +109,41 @@ Texte à ajouter au tableau « Format d'une mobilisation de l'agenda » de `cont
 ## 7. Ce que le serveur devra servir au déploiement
 
 <!-- SERVEUR -->
+
+## 7 bis. Production des tuiles (tâche mensuelle sur le serveur)
+
+Vérifié le 7 novembre 2026. Rien de ceci n'est fait par l'application ni par l'intégration continue.
+
+- **Source** : construction quotidienne du fond OpenStreetMap de Protomaps, **schéma 4, version de construction 4.15.2**, par exemple `https://build.protomaps.com/20261106.pmtiles` (139 353 480 483 octets, mise en ligne le 2026-11-06 à 09:03 UTC ; liste des constructions et de leurs versions : `https://build-metadata.protomaps.dev/builds.json`). Les constructions ne sont gardées qu'une semaine : prendre la plus récente au moment de la tâche et noter son nom.
+- **Hôtes sources** à autoriser en sortie du serveur pendant la tâche : `build.protomaps.com` (données, lues par plages HTTPS) et `build-metadata.protomaps.dev` (liste) ; pour installer l'outil, une fois : `github.com` et `objects.githubusercontent.com`.
+- **Outil** : `pmtiles` (go-pmtiles, BSD-3-Clause) **v1.31.2** du 2026-07-22, fichier `go-pmtiles_1.31.2_Linux_x86_64.tar.gz` (17 444 324 octets), **SHA-256 `3ed7dbf4ec2e6dfe5e25b6f70d1ffc932729f93c86db353bf514dd71010a312f`** (somme publiée par GitHub pour cette publication, vérifiée le 7 novembre 2026 ; à revérifier sur `https://github.com/protomaps/go-pmtiles/releases/tag/v1.31.2` avant installation) :
+
+  ```sh
+  curl -fLO https://github.com/protomaps/go-pmtiles/releases/download/v1.31.2/go-pmtiles_1.31.2_Linux_x86_64.tar.gz
+  echo "3ed7dbf4ec2e6dfe5e25b6f70d1ffc932729f93c86db353bf514dd71010a312f  go-pmtiles_1.31.2_Linux_x86_64.tar.gz" | sha256sum -c -
+  tar -xzf go-pmtiles_1.31.2_Linux_x86_64.tar.gz pmtiles
+  ```
+
+- **Zone** : métropole et Corse (ouest -5,25, sud 41,25, est 9,7, nord 51,2), Guadeloupe (-61,85 15,75 -60,95 16,55), Martinique (-61,25 14,35 -60,8 14,9), Guyane (-54,65 2,1 -51,6 5,85), La Réunion (55,2 -21,42 55,85 -20,85), Mayotte (44,95 -13,05 45,35 -12,6), en longitude puis latitude. Le fichier GeoJSON de ces rectangles est produit par l'outil du dépôt (mêmes valeurs que `MapArea`) : `gradlew :tools:map-data:run --args="region" > region.geojson`.
+- **Commande** (zooms 8 à 13 ; options `--region`, `--minzoom`, `--maxzoom` documentées sur docs.protomaps.com/pmtiles/cli ; si le fichier dépasse 9 Go, recommencer avec `--maxzoom=12` ; le zoom 14 seulement s'il reste largement sous la limite) :
+
+  ```sh
+  SOURCE=https://build.protomaps.com/20261106.pmtiles
+  ./pmtiles extract "$SOURCE" france-20261107.pmtiles --region=region.geojson --minzoom=8 --maxzoom=13
+  sha256sum france-20261107.pmtiles; stat -c %s france-20261107.pmtiles
+  ```
+
+- **Filtre des couches** : `pmtiles extract` copie les tuiles telles quelles (toutes les couches). Le filtre de `tools/map-data` (sans bâtiments, points d'intérêt, occupation du sol) n'est appliqué qu'au fond intégré : pour le fond détaillé il demanderait de réécrire des centaines de milliers de tuiles en mémoire, et le style de l'application ignore de toute façon ces couches. Conséquence : le fichier est plus lourd que nécessaire ; la limite de 10 Go est tenue en s'arrêtant au zoom 13. Un filtre en flux (tuile par tuile, sur disque) est une amélioration possible.
+- **Manifeste** `current.json`, écrit à côté du fichier (l'application le lit d'abord, avec un cache court, puis demande les tuiles du fichier daté, servi avec un cache très long) :
+
+  ```json
+  {"version":1,"file":"france-20261107.pmtiles","attribution":"© contributeurs d'OpenStreetMap","generated":"2026-11-07","sha256":"<64 caractères hexadécimaux>","bytes":<taille en octets>}
+  ```
+
+  La somme SHA-256 et la taille sont celles de la commande ci-dessus. Elles servent à `ppf-tiles install <fichier> <environnement>` (infrastructure) pour vérifier le fichier arrivé par SSH ; **l'application ne vérifie pas la somme** : elle ne lit jamais le fichier entier, seulement des plages, et contrôle chaque tuile (longueur annoncée, décompression bornée). Un manifeste dont le nom de fichier ne respecte pas `^[a-z0-9][a-z0-9-]{0,62}\.pmtiles$` est ignoré (fond intégré seul).
+- **Attribution affichée par l'application** (texte exact, en permanence sur la carte) : « © contributeurs OpenStreetMap » ; dans « Sources de la carte » : « Fond de carte : données © les contributeurs d’OpenStreetMap, sous licence ODbL (openstreetmap.org/copyright), mises en forme avec le schéma libre de Protomaps. »
+- **Préproduction** : la même chose, réduite aux villes des exemples : `gradlew :tools:map-data:run --args="region exemples" > exemples.geojson` (Paris, Lyon, Marseille, Lille, Toulouse, Rennes, Strasbourg, environ 20 km autour de chacune), puis `./pmtiles extract "$SOURCE" exemples-20261107.pmtiles --region=exemples.geojson --minzoom=8 --maxzoom=13`, manifeste identique avec ce nom ; quelques dizaines de mégaoctets. En développement : déposer le fichier et `current.json` dans `PPF_TILES_DIR` et lancer `gradlew :server:runDev`.
+- **Application** : l'adresse du dossier (`https://<domaine>/tiles/`) sera passée à `rememberAgendaMapState(tilesUrl = …)` quand l'application Android aura un serveur ; le style demande alors le fond détaillé jusqu'au zoom 13 (`MapArea.SERVER_MAX_ZOOM`), agrandi jusqu'à 16.
 
 ## 8. Tests
 
@@ -201,7 +236,7 @@ Consigne de la session principale : je n'ai modifié ni `infra/`, ni `.github/wo
    | **Retenu** : mêmes zones et zooms, **filtré** comme le fond intégré mais avec toutes les routes et rues (sans bâtiments, points d'intérêt ni occupation du sol, qui pèsent la moitié aux zooms 13 et 14) | **3 à 5 Go** |
    | Option légère : zooms 8 à 12 partout, puis 13 et 14 seulement sur les 22 métropoles et l'outre-mer | **1 à 2 Go** |
 
-   Ces chiffres sont des estimations : `pmtiles extract … --dry-run` donne la taille exacte avant tout téléchargement, à faire au premier déploiement. Si le filtré dépasse 5 Go, prendre l'option légère. Le fond intégré à l'application, lui, pèse **2,59 Mo** (zooms 0 à 7). Garder une seule version à la fois sur le serveur.
+   Ces chiffres sont des estimations, à confirmer à la première extraction (section 7 bis) ; retenu : zooms 8 à 13 (environ 2 à 5 Go estimés, toutes couches). Si le filtré dépasse 5 Go, prendre l'option légère. Le fond intégré à l'application, lui, pèse **2,59 Mo** (zooms 0 à 7). Garder une seule version à la fois sur le serveur.
 5. **Bande passante** (estimation) : une carte de ville vue en détail demande 20 à 60 tuiles de 20 à 80 Ko, soit **1 à 3 Mo par consultation détaillée** ; le cache du moteur sur le téléphone (30 Mo) évite de redemander. Pour 1 000 utilisateurs qui regardent chacun deux villes par mois : environ 2 à 6 Go par mois. Hostinger KVM 1 annonce un trafic largement supérieur (à vérifier dans l'offre au moment de la location). Sans le serveur, le fond intégré ne coûte aucune bande passante.
 6. **Mise à jour** : refaire l'extraction tous les deux ou trois mois (guide `tools/map-data/README.md`, section 3), sous un nouveau nom de fichier (`france-2027-01.pmtiles`) pour ne jamais servir un fichier à moitié copié ; puis changer l'adresse côté application.
 7. **Aucun journal** : l'option globale `log { output discard }` du Caddyfile couvre déjà ces requêtes, qui révèlent la zone regardée (THREAT_MODEL.md).
