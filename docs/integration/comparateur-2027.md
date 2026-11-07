@@ -91,7 +91,12 @@ Rédaction :
   - Les votes viennent des données ouvertes de « Voir » (Assemblée nationale, Sénat, Parlement européen), par législature, aussi loin que les données officielles existent.
   - Ce sont les votes des élus du parti qui porte le candidat, et les votes de la personne si elle a eu un mandat.
   - Tous les scrutins publics, sans sélection éditoriale, rangés par thème.
-  - Import historique à voir avec « Voir ».
+  - Import historique par « Voir » : paquets par législature et par chambre, téléchargés en entier pour tous les partis, jamais une requête par parti ; répartition par parti et par scrutin (pour, contre, abstention, non-votant), sans position majoritaire calculée ; classement par thème côté « Décider », par une règle publiée.
+  - Ce qui existe en données ouvertes (vérifié par « Voir » le 7 novembre 2026, `docs/integration/voir-historique-sources.md`) :
+    - Assemblée nationale : votes nominatifs depuis la 14e législature (2012), parti de rattachement daté ;
+    - Sénat : votes nominatifs depuis le 1er octobre 2006, aucun rattachement au parti publié, donc le groupe avec la mention « groupe, rattachement au parti non publié », pour tous les sénateurs ;
+    - Parlement européen : vote de chaque député depuis le 15 juillet 2019, totaux seuls de 2014 à 2019, parti national daté ;
+    - Conseil de l'UE : laissé de côté (plus de jeu ouvert par État).
 - **Q3** : « Si, on inclue la photo. »
   - La photo officielle de chacun, au même format, sur le même fond.
   - Elle est servie par le serveur de PPF, jamais par un site tiers (règle « aucun tiers »).
