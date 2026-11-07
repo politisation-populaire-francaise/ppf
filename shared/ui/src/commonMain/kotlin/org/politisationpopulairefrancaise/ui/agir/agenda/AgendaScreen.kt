@@ -144,6 +144,11 @@ object AgendaTags {
     const val LEAVE_OPEN = "agenda-leave-open"
     const val RESPONSE = "agenda-response-" // followed by "going" or "interested"
     const val RESPONSE_NOTE = "agenda-response-note"
+    const val CANCEL_EVENT = "agenda-cancel-event"
+    const val CANCEL_DIALOG = "agenda-cancel-dialog"
+    const val CANCEL_KEEP = "agenda-cancel-keep"
+    const val CANCEL_CONFIRM = "agenda-cancel-confirm"
+    const val CANCEL_MESSAGE = "agenda-cancel-message"
 
     const val MINE = "agenda-mine"
     const val MINE_ITEM = "agenda-mine-" // followed by the identifier
@@ -227,6 +232,7 @@ fun AgendaScreen(
                     onOpenLink = onOpenLink,
                     onBack = onBack,
                     modifier = detailModifier,
+                    signer = session.signer,
                 )
             }
             when {

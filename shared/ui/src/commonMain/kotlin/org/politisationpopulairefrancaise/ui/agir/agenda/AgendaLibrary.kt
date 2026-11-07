@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -30,6 +31,7 @@ import org.politisationpopulairefrancaise.core.publication.HeldStatusSource
 import org.politisationpopulairefrancaise.core.publication.HeldStatuses
 import org.politisationpopulairefrancaise.core.publication.PublicationResult
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
+import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.sync.SyncReport
 import org.politisationpopulairefrancaise.core.sync.SyncService
@@ -55,6 +57,23 @@ enum class OwnProposalState {
 
 /** One of the user's own proposals, with what the server said about it. */
 data class OwnProposal(val mobilization: Mobilization, val state: OwnProposalState, val reason: String? = null)
+
+/** How the cancellation of one of the user's events ended. */
+enum class CancelOutcome {
+    /** Published at once: the event shows "Annulé" for everyone. */
+    CANCELLED,
+
+    /** The server holds the new version for review (not expected: the author may cancel without review). */
+    HELD,
+
+    /** Signed and kept on the device; it leaves with the next synchronization that reaches the server. */
+    WAITING_FOR_SERVER,
+
+    /** The server refused it; the event stays as it was. */
+    REFUSED,
+
+    FAILED,
+}
 
 /** The three tabs of the agenda. */
 enum class AgendaTab { UPCOMING, PAST, MINE }
@@ -230,6 +249,52 @@ class AgendaLibrary(
                 reload(store)
             }
         }
+    }
+
+    /** True when the account on the device may cancel [mobilization]: its own, published, neither cancelled nor over. */
+    fun canCancel(mobilization: Mobilization): Boolean =
+        accountKey == mobilization.author && !mobilization.cancelled && !mobilization.isPast(now) &&
+            ownProposal(mobilization)?.state == OwnProposalState.PUBLISHED
+
+    /**
+     * Cancels one of the user's published events (decision of the owner of 2026-11-07: the author
+     * cancels without review): a new version under the same address where only the status becomes
+     * "annule" ([Mobilization.cancellation]), signed, kept on the device, then sent through the
+     * single publication port. If the server refuses it, the previous version is put back.
+     */
+    suspend fun cancel(mobilization: Mobilization, signer: EventSigner): CancelOutcome {
+        val store = store ?: return CancelOutcome.FAILED
+        if (signer.publicKey.hex != mobilization.author || !canCancel(mobilization)) return CancelOutcome.FAILED
+        val outcome = try {
+            val event = signer.sign(Mobilization.cancellation(mobilization, clock()))
+            passes.withLock {
+                withContext(Dispatchers.Default) { store.store(event, pending = true) }
+                val outcome = when (val result = remote?.publish(event) ?: PublicationResult.Unavailable()) {
+                    is PublicationResult.Accepted -> {
+                        withContext(Dispatchers.Default) {
+                            store.markPublished(event.id)
+                            state.recordProposal(event.id, ProposalRecord(if (result.heldForReview) ProposalReview.REVIEW else ProposalReview.PUBLISHED))
+                        }
+                        if (result.heldForReview) CancelOutcome.HELD else CancelOutcome.CANCELLED
+                    }
+                    is PublicationResult.Rejected -> {
+                        withContext(Dispatchers.Default) {
+                            store.delete(event.id)
+                            store.store(mobilization.event)
+                        }
+                        CancelOutcome.REFUSED
+                    }
+                    is PublicationResult.Unavailable -> CancelOutcome.WAITING_FOR_SERVER
+                }
+                reload(store)
+                outcome
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            CancelOutcome.FAILED
+        }
+        return outcome
     }
 
     /** True for a key of the editorial team (the author of the bundled examples). */

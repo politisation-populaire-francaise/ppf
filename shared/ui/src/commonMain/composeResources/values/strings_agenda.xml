@@ -70,6 +70,18 @@
     <string name="agenda_add_calendar">Ajouter à mon agenda</string>
     <string name="agenda_select_hint">Choisissez une mobilisation dans la liste pour en voir le détail.</string>
 
+    <!-- Cancellation by the author (decision of the owner of 2026-11-07: without review) -->
+    <string name="agenda_cancel_event">Annuler mon événement</string>
+    <string name="agenda_cancel_title">Annuler votre événement ?</string>
+    <string name="agenda_cancel_text">Il restera dans l’agenda avec la mention « Annulé », pour que personne ne se déplace pour rien. L’annulation est publiée tout de suite et ne peut pas être défaite depuis l’application.</string>
+    <string name="agenda_cancel_keep">Garder l’événement</string>
+    <string name="agenda_cancel_confirm">Annuler l’événement</string>
+    <string name="agenda_cancel_done">Votre événement est maintenant annoncé comme annulé.</string>
+    <string name="agenda_cancel_held">L’annulation est en attente de relecture par l’équipe.</string>
+    <string name="agenda_cancel_waiting">L’annulation est gardée sur votre appareil : elle partira dès que le serveur répondra.</string>
+    <string name="agenda_cancel_refused">Le serveur a refusé l’annulation : l’événement reste tel quel.</string>
+    <string name="agenda_cancel_failed">L’annulation n’a pas pu se faire.</string>
+
     <!-- Answers (AG-49): on the device only -->
     <string name="agenda_response_title">Votre réponse</string>
     <string name="agenda_response_going">J’y serai</string>

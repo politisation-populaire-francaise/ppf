@@ -45,6 +45,7 @@ import org.politisationpopulairefrancaise.core.agir.agenda.Mobilization
 import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationStatus
 import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationType
 import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
+import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.Inset
 import org.politisationpopulairefrancaise.ui.components.PpfCard
@@ -57,6 +58,16 @@ import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.agenda_add_calendar
 import org.politisationpopulairefrancaise.ui.resources.agenda_back
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_confirm
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_done
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_event
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_failed
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_held
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_keep
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_refused
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_text
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_title
+import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_waiting
 import org.politisationpopulairefrancaise.ui.resources.agenda_cancelled_note
 import org.politisationpopulairefrancaise.ui.resources.agenda_description
 import org.politisationpopulairefrancaise.ui.resources.agenda_export_cancel
@@ -104,6 +115,7 @@ internal fun MobilizationDetail(
     onOpenLink: ((String) -> Unit)?,
     onBack: (() -> Unit)?,
     modifier: Modifier,
+    signer: EventSigner? = null,
 ) {
     val palette = PpfTheme.palette
     val uriHandler = LocalUriHandler.current
@@ -113,6 +125,8 @@ internal fun MobilizationDetail(
     var leaving by remember(address) { mutableStateOf<String?>(null) }
     var exporting by remember(address) { mutableStateOf(false) }
     var exportResult by remember(address) { mutableStateOf<CalendarExportResult?>(null) }
+    var cancelling by remember(address) { mutableStateOf(false) }
+    var cancelResult by remember(address) { mutableStateOf<CancelOutcome?>(null) }
     val own = agenda.ownProposal(mobilization)
     val now = agenda.now
 
@@ -203,6 +217,30 @@ internal fun MobilizationDetail(
                 }
             }
 
+            // The author cancels without review (decision of the owner of 2026-11-07), after a confirmation.
+            if (signer != null && agenda.canCancel(mobilization)) {
+                Spacer(Modifier.height(8.dp))
+                PpfTextButton(
+                    onClick = { cancelling = true },
+                    text = stringResource(Res.string.agenda_cancel_event),
+                    color = palette.accentInk,
+                    modifier = Modifier.testTag(AgendaTags.CANCEL_EVENT),
+                )
+            }
+            cancelResult?.let { result ->
+                val text = stringResource(
+                    when (result) {
+                        CancelOutcome.CANCELLED -> Res.string.agenda_cancel_done
+                        CancelOutcome.HELD -> Res.string.agenda_cancel_held
+                        CancelOutcome.WAITING_FOR_SERVER -> Res.string.agenda_cancel_waiting
+                        CancelOutcome.REFUSED -> Res.string.agenda_cancel_refused
+                        CancelOutcome.FAILED -> Res.string.agenda_cancel_failed
+                    },
+                )
+                Spacer(Modifier.height(8.dp))
+                Text(text, style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.testTag(AgendaTags.CANCEL_MESSAGE))
+            }
+
             if (!mobilization.isPast(now) && !mobilization.cancelled) {
                 Spacer(Modifier.height(16.dp))
                 Responses(agenda.responseTo(mobilization), onRespond = { agenda.respond(mobilization, it) })
@@ -240,6 +278,21 @@ internal fun MobilizationDetail(
                 openLink(link)
             },
             tags = Triple(AgendaTags.LEAVE_DIALOG, AgendaTags.LEAVE_STAY, AgendaTags.LEAVE_OPEN),
+            safeIsPrimary = true,
+        )
+    }
+    if (cancelling && signer != null) {
+        SafeChoiceDialog(
+            title = stringResource(Res.string.agenda_cancel_title),
+            text = stringResource(Res.string.agenda_cancel_text),
+            safeLabel = stringResource(Res.string.agenda_cancel_keep),
+            riskyLabel = stringResource(Res.string.agenda_cancel_confirm),
+            onSafe = { cancelling = false },
+            onRisky = {
+                cancelling = false
+                scope.launch { cancelResult = agenda.cancel(mobilization, signer) }
+            },
+            tags = Triple(AgendaTags.CANCEL_DIALOG, AgendaTags.CANCEL_KEEP, AgendaTags.CANCEL_CONFIRM),
             safeIsPrimary = true,
         )
     }

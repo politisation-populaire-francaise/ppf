@@ -88,12 +88,25 @@ internal class AgendaServer : RemoteEvents, HeldStatusSource {
     override suspend fun publish(event: SignedEvent): PublicationResult {
         if (!online) return PublicationResult.Unavailable()
         received += event
-        if (event.kind == Mobilization.KIND && event.pubkey !in verified) {
+        if (event.kind == Mobilization.KIND && event.pubkey !in verified && !isCancellationOfPublished(event)) {
             if (!event.verify()) return PublicationResult.Rejected(event.id, org.politisationpopulairefrancaise.core.publication.RejectionReason.INVALID_SIGNATURE)
             held.getOrPut(event.id) { event to HeldState(event.id, HeldStatus.PENDING, receivedAt = event.createdAt) }
             return PublicationResult.Accepted(event.id, heldForReview = true)
         }
         return port.publish(event)
+    }
+
+    /**
+     * The author's cancellation (decision of the owner of 2026-11-07): a newer version, by the same
+     * key, of a published event, where only `ppf-event-status` became `annule`. Published at once.
+     */
+    private fun isCancellationOfPublished(event: SignedEvent): Boolean {
+        if (event.firstTagValue("ppf-event-status") != "annule") return false
+        val withoutStatus = { e: SignedEvent -> e.tags.filterNot { it[0] == "ppf-event-status" } }
+        return port.events.any { old ->
+            old.kind == event.kind && old.pubkey == event.pubkey && old.firstTagValue("d") == event.firstTagValue("d") &&
+                old.createdAt < event.createdAt && withoutStatus(old) == withoutStatus(event) && old.content == event.content
+        }
     }
 
     override suspend fun fetch(filter: RemoteFilter): FetchResult {

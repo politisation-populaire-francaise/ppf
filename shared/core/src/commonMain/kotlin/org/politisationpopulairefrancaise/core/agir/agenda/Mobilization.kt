@@ -266,5 +266,36 @@ data class Mobilization(
             }
             return UnsignedEvent.create(author, KIND, createdAt, tags, description.trim())
         }
+
+        /**
+         * The cancellation of [mobilization] by its author (decision of the owner of 2026-11-07: the
+         * author may cancel without review, the server publishes it at once). It is a new version
+         * under the same address where only `ppf-event-status` becomes `annule`: every other tag and
+         * the content are kept exactly; a status tag already there is replaced in place, a missing
+         * one is inserted right after `ppf-event-type` (the order of the contract). The version is
+         * dated [now], or one second after the cancelled one if the clock is behind, so that it
+         * always supersedes it.
+         */
+        fun cancellation(mobilization: Mobilization, now: Long): UnsignedEvent {
+            val event = mobilization.event
+            val status = listOf(AgirFormats.TAG_EVENT_STATUS, MobilizationStatus.ANNULE.tagValue)
+            val tags = if (event.tags.any { it.isNotEmpty() && it[0] == AgirFormats.TAG_EVENT_STATUS }) {
+                var replaced = false
+                event.tags.mapNotNull { tag ->
+                    when {
+                        tag.isEmpty() || tag[0] != AgirFormats.TAG_EVENT_STATUS -> tag
+                        replaced -> null
+                        else -> {
+                            replaced = true
+                            status
+                        }
+                    }
+                }
+            } else {
+                val after = event.tags.indexOfFirst { it.isNotEmpty() && it[0] == AgirFormats.TAG_EVENT_TYPE }
+                event.tags.toMutableList().apply { add(if (after >= 0) after + 1 else size, status) }
+            }
+            return UnsignedEvent(event.pubkey, maxOf(now, event.createdAt + 1), KIND, tags, event.content)
+        }
     }
 }

@@ -114,6 +114,32 @@ class MobilizationTest {
     }
 
     @Test
+    fun theAuthorsCancellationChangesOnlyTheStatus() = runTest {
+        val planned = fixtures.mobilization(summary = "[EXEMPLE] Résumé", links = listOf("https://exemple.invalid"))
+        val cancellation = Mobilization.cancellation(planned, now = AgendaTimes.NOW)
+        val signed = fixtures.sign(cancellation)
+        val cancelled = assertNotNull(Mobilization.from(signed))
+        assertEquals(MobilizationStatus.ANNULE, cancelled.status)
+        assertEquals(planned.address, cancelled.address)
+        assertEquals(AgendaTimes.NOW, signed.createdAt)
+        assertTrue(EventReplacement.supersedes(signed, planned.event))
+        assertEquals(emptyList(), MobilizationRules.check(signed))
+        // Every other tag and the content are kept; the status comes right after the type.
+        assertEquals(planned.event.tags.filterNot { it[0] == "ppf-event-status" }, signed.tags.filterNot { it[0] == "ppf-event-status" })
+        assertEquals(planned.event.content, signed.content)
+        val names = signed.tags.map { it[0] }
+        assertEquals(names.indexOf("ppf-event-type") + 1, names.indexOf("ppf-event-status"))
+
+        // A postponed event: its status is replaced in place, never doubled.
+        val postponed = fixtures.mobilization(status = MobilizationStatus.REPORTE)
+        val again = Mobilization.cancellation(postponed, now = AgendaTimes.NOW)
+        assertEquals(listOf(listOf("ppf-event-status", "annule")), again.tags.filter { it[0] == "ppf-event-status" })
+        assertEquals(postponed.event.tags.map { it[0] }, again.tags.map { it[0] })
+        // A clock behind the event still gives a newer version.
+        assertEquals(planned.updatedAt + 1, Mobilization.cancellation(planned, now = 0).createdAt)
+    }
+
+    @Test
     fun identifiersAreStableSlugsWithARandomSuffix() {
         val id = Mobilization.newIdentifier("[EXEMPLE] Grève du 5 décembre !", Random(1))
         assertTrue(id.startsWith("exemple-greve-du-5-decembre-"), id)
