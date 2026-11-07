@@ -449,6 +449,20 @@ Valeurs de `mandate` et de `territory` : `municipal` (code Insee de la commune),
 
 **Lecture par l'appareil** (`core/elus/ElusFormats.kt`, `ElusReader`) : stricte pour le document (format 1, code valide, nom présent ; sinon le paquet est ignoré), tolérante pour ses entrées (une commune ou un élu illisible est écarté, les champs inconnus ignorés) ; 32 Mo au plus par paquet.
 
+### Identifiant d'un mandat (`rne1:`)
+
+Le RNE ne donne aucun identifiant de mandat. Le serveur en calcule un, stable d'un import à l'autre, pour le back-office (file `elus.certifications`, `ElusLookup`, `docs/integration/elus-serveur.md`, section 4 bis) :
+
+```
+rne1:<32 caractères hexadécimaux minuscules>
+```
+
+- Les 32 caractères sont les 16 premiers octets (128 bits) du SHA-256 des octets UTF-8 de `mandat LF territoire LF nom LF début` (LF = U+000A), où `mandat` est la valeur de `mandate` (`municipal`, `depute`…), `territoire` la valeur de `territory`, `début` la date de début du mandat `AAAA-MM-JJ` (`since`), et `nom` le nom affiché du paquet (`name`, « Prénom Nom ») mis sous forme canonique : décomposition Unicode NFD, marques combinantes retirées, minuscules (sans paramètre régional), suites d'espaces réduites à une, espaces de début et de fin retirées.
+- La fonction et sa date n'entrent pas dans l'empreinte : un adjoint qui devient maire garde l'identifiant de son mandat. Une correction d'accent ou de casse dans le RNE ne le change pas ; une correction du nom, du territoire ou de la date de début, si.
+- Exemple (jeu fictif) : `municipal`, `69123`, « [EXEMPLE] Claude Démonstration », `2026-03-15` donnent l'empreinte de `municipal⏎69123⏎[exemple] claude demonstration⏎2026-03-15` (⏎ = LF).
+- Le préfixe `rne1` changera si la règle change ; un identifiant d'une autre forme n'est jamais trouvé.
+- L'identifiant n'est écrit ni dans les paquets ni dans la base : il est recalculé sur les données servies. Il désigne un mandat en cours « selon la source mise à jour le … », jamais une personne.
+
 ### Sur l'appareil : schéma local en version 11
 
 Migration `shared/core/src/commonMain/sqldelight/.../core/db/migrations/10.sqm` (schéma 10 vers 11), identique aux définitions de `Elus.sq` (un test compare une base neuve et une base migrée) :
