@@ -16,6 +16,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.urne.UrneSelfTest
 import org.politisationpopulairefrancaise.core.urne.UrneSelfTestResult
 import org.politisationpopulairefrancaise.ui.resources.Res
+import org.politisationpopulairefrancaise.ui.resources.urne_alert
 import org.politisationpopulairefrancaise.ui.resources.urne_check_failed
 import org.politisationpopulairefrancaise.ui.resources.urne_check_passed
 import org.politisationpopulairefrancaise.ui.resources.urne_check_running
@@ -36,7 +37,10 @@ fun VoteCheckLine(modifier: Modifier = Modifier) {
         result = withContext(Dispatchers.Default) { UrneSelfTest.onThisDevice() }
     }
     val current = result
+    // A proof that did not match the key shown to everyone (D-110, 6.2) comes before anything else.
+    val alert = LocalVoting.current?.alert == true
     val text = when {
+        alert -> stringResource(Res.string.urne_alert)
         current == null -> stringResource(Res.string.urne_check_running)
         current.passed -> stringResource(Res.string.urne_check_passed)
         else -> stringResource(Res.string.urne_check_failed, current.failedCheck.orEmpty())
@@ -44,7 +48,7 @@ fun VoteCheckLine(modifier: Modifier = Modifier) {
     Text(
         text,
         style = MaterialTheme.typography.bodySmall,
-        color = if (current != null && !current.passed) PpfTheme.palette.warning else PpfTheme.palette.inkSubtle,
+        color = if (alert || (current != null && !current.passed)) PpfTheme.palette.warning else PpfTheme.palette.inkSubtle,
         modifier = modifier.testTag(VOTE_CHECK_TAG),
     )
 }

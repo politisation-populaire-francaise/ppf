@@ -7,6 +7,8 @@ import androidx.compose.ui.window.rememberWindowState
 import io.ktor.client.HttpClient
 import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.AppInfo
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.core.urne.HttpUrneRemote
 import org.politisationpopulairefrancaise.core.urne.UrneSelfTest
 import kotlin.system.exitProcess
 import org.politisationpopulairefrancaise.core.identity.FileIdentityStore
@@ -26,14 +28,18 @@ fun main(args: Array<String>) {
     // Everything personal lives in the user's private application-data directory.
     val dataDirectory = FileIdentityStore.defaultDirectory()
     // A server is used only when PPF_SERVER_URL is set (for example http://localhost:8080 during development).
-    val remote = System.getenv("PPF_SERVER_URL")?.trim()?.takeIf { it.isNotEmpty() }?.let { url ->
-        ServerPublicationPort(HttpClient(), url.trimEnd('/'))
-    }
+    val serverUrl = System.getenv("PPF_SERVER_URL")?.trim()?.takeIf { it.isNotEmpty() }?.trimEnd('/')
+    val client = serverUrl?.let { HttpClient() }
+    val remote = serverUrl?.let { ServerPublicationPort(client!!, it) }
+    // Voting (D-110): the account's requests on the usual client, the ballots on a second one of
+    // their own, without cookies, which never carries the account.
+    val urneRemote = serverUrl?.let { HttpUrneRemote(client!!, HttpClient(), it) { currentEpochSeconds() } }
     // One local database, opened once, shared by every store (contents, followed accounts).
     val dependencies = AppDependencies.withDatabase(
         identityStore = FileIdentityStore.default(),
         database = JvmDatabase.open(dataDirectory.resolve("ppf.db")),
         remote = remote,
+        urneRemote = urneRemote,
     )
     application {
         Window(

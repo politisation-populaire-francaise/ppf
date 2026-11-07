@@ -84,7 +84,7 @@ Pas encore là : la synchronisation de cette liste entre vos appareils (sauvegar
 
 ### Tester les revendications et les messages (ajouté le 6 novembre 2026)
 
-1. Touchez **Revendications** dans la barre du bas. Huit revendications d'exemple s'affichent en cards : le statut (Nouvelle, En débat, Très soutenue), la revendication en une phrase, son résumé, son territoire et ses thèmes. Les boutons **Pour**, **Contre** et **Débat** sont grisés : ils s'activeront quand la méthode « une personne, une voix » sera validée. Touchez une card : l'argumentaire s'ouvre ; la flèche revient à la liste. Sur l'ordinateur, la liste et le détail sont côte à côte.
+1. Touchez **Revendications** dans la barre du bas. Huit revendications d'exemple s'affichent en cards : le statut (Nouvelle, En débat, Très soutenue), la revendication en une phrase, son résumé, son territoire et ses thèmes. Les boutons **Pour** et **Contre** restent grisés sans connexion au serveur de PPF (c'est le cas de l'APK de test pour l'instant), et **Débat** viendra plus tard ; la ligne sous les boutons dit pourquoi. Pour essayer le vote, voir plus bas « Essayer le vote anonyme sur l'ordinateur ». Touchez une card : l'argumentaire s'ouvre ; la flèche revient à la liste. Sur l'ordinateur, la liste et le détail sont côte à côte.
 2. Dans le Fil, l'onglet **Revendications** montre les mêmes cards.
 3. Touchez **Messages** dans la barre du bas : trois onglets, **Privé**, **Collectifs**, **Flux**, se parcourent au doigt (détail dans « Tester la messagerie » ci-dessous).
 
@@ -215,6 +215,31 @@ Le vote anonyme (« une personne, une voix ») n'est pas encore ouvert, mais son
 2. Sous la version installée, une ligne indique d'abord « Vérification du vote anonyme sur cet appareil… », puis, au bout d'une seconde environ :
    - **« Vote anonyme : vérification réussie sur cet appareil »** : tout va bien ;
    - ou une ligne orange **« vérification échouée (étape …) »** : envoyez-moi une capture de cette ligne avec la version juste au-dessus. Rien n'est envoyé nulle part, et le vote restera simplement fermé sur ce téléphone.
+
+### Essayer le vote anonyme sur l'ordinateur (ajouté le 7 novembre 2026, au soir)
+
+Le vote marche maintenant de bout en bout, mais seulement avec un serveur. Sur votre ordinateur, un serveur de développement suffit ; il ne contient que des exemples. Il faut deux fenêtres de commande, ouvertes dans le dossier du projet.
+
+1. Dans la première fenêtre, lancez le serveur de développement et laissez-le tourner :
+
+   `gradlew.bat :server:runDev`
+
+   Attendez la ligne « Development server: … http://localhost:8080 ».
+2. Dans la seconde fenêtre, lancez l'application de bureau reliée à ce serveur :
+
+   `set PPF_SERVER_URL=http://localhost:8080`
+
+   puis
+
+   `gradlew.bat :desktop:run`
+3. Dans l'application, créez un compte dans **Mon espace** (une minute, avec les douze mots), puis ouvrez **Revendications**.
+4. Les trois revendications d'exemple « En débat » ou « Très soutenue » ont chacune leur urne. La ligne sous les boutons passe de « s'ouvre dans quelques minutes » à « Votre vote est anonyme » ; comptez deux à quatre minutes après le démarrage du serveur.
+5. Touchez **Pour**. Le bouton devient actif, et la ligne dit que votre vote partira tout seul dans quelques minutes, sans votre compte. Ce délai tiré au hasard est voulu : c'est ce qui empêche de relier votre vote à votre compte. Laissez l'application ouverte une dizaine de minutes.
+6. La ligne devient « Votre vote est enregistré, anonymement », et les résultats « Citoyens : 1 pour, 0 contre » s'affichent. Les votes des autres arrivent ensuite toutes les trente minutes environ.
+7. Vous pouvez changer d'avis (touchez **Contre**) ou **Retirer mon vote** jusqu'à la clôture.
+8. Les revendications « Nouvelle », « Retenue » et « Campagne » n'ont pas d'urne : la ligne l'explique.
+
+Pour arrêter, fermez l'application, puis tapez Ctrl+C dans la première fenêtre. Rien n'est gardé : le serveur de développement oublie tout à l'arrêt.
 
 ### Tester les partis, le droit de réponse et le signalement d'erreur dans « Voir » (ajouté le 7 novembre 2026)
 
