@@ -49,7 +49,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - **Contradiction à trancher par la propriétaire** (vision 4.2 et cahier des charges, principe 10 : « tous les réglages de confidentialité et d'anonymat sont au niveau le plus élevé par défaut ») : si la participation d'un citoyen est visible de son cercle **par défaut**, et celle d'un élu publique **par défaut**, c'est un réglage moins protecteur à la création du compte, ce que ces documents définitifs interdisent aujourd'hui. Options : A. garder le principe 10 : la participation compte toujours dans les chiffres ; la montrer à son cercle, ou publiquement pour un élu, se fait d'un geste, avec la mise en garde habituelle, et reste réversible ; B. modifier la vision et le cahier des charges pour une exception : participation visible du cercle par défaut, publique par défaut pour les comptes certifiés d'élus et pour les organisations, masquable à tout moment ; C. B pour les élus et les organisations seulement, A pour les citoyens. Les organisations ne sont pas concernées par le principe 10 (ce ne sont pas des personnes physiques) : leur participation est publique dès qu'elles la confirment. Recommandation : C. Rien de ce qui en dépend n'est codé avant sa réponse (les cercles et les comptes d'élus n'existent pas encore).
 
 ### [2026-11-07] « Voir » : feuille de route jusqu'à l'ambition de la vision
-- Statut : À valider
+- Statut : Validé le 2026-11-07 (ordre des étapes)
 - Concerne : vision.md (pilier « Voir »), cahier-fonctionnel.md (M2, M4, M5, M9, M13.2, M17), cahier-des-charges.md (phases 2 et 5)
 - Contexte : la propriétaire confie au pôle « Voir » d'aller jusqu'au bout de l'ambition, y compris pour les objectifs oubliés en route (7 novembre 2026). Bilan de ce qui manque encore pour que « Voir » soit, comme le dit la vision, ce qui « rend visible, de façon chiffrée et sourcée, ce qui se passe et ce que fait le pouvoir ».
 - En cours (vague 2, sous-agents) : fiches des partis (ordre d'entrée décidé le 7 novembre) ; « Voir » sur le site web, lisible sans JavaScript, avec une adresse stable par contenu (partage, iPhone, résistance à la censure) ; droit de réponse et « Signaler une erreur » envoyés chiffrés à l'équipe depuis chaque contenu.
@@ -65,7 +65,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   9. **Indice de gravité** des violences policières (entrée ci-dessus, grille proposée).
   10. **Alertes sur ce que l'on suit** : une notification quand un chiffre, une fiche ou un texte suivi change (avec les notifications UnifiedPush prévues).
 - Question pour la propriétaire : validez-vous cet ordre ? Recommandation : 1 et 2 d'abord, parce qu'ils transforment « Voir » d'une démonstration en un outil complet et réutilisable par tous.
-- Décision :
+- Décision : validé le 7 novembre 2026 (« Oui, commencez », réponse de la propriétaire transmise par la session « Team lead [Voir] »), commencer par le point 1 (données ouvertes), confié à la session Section [Voir] Team dev ; les autres points suivent dans l'ordre proposé, sous la responsabilité du pôle Voir. L'avis sur le point 2 (export ouvert) reste à donner.
 
 ### [2026-11-06] Espace « Voir » : première version et questions ouvertes
 - Statut : Intégré le 2026-11-07 (cahier fonctionnel 1.4, D-036)
