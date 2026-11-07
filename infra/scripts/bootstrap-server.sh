@@ -3,6 +3,8 @@
 # Run once as root, then again whenever this script changes (every step is idempotent):
 #
 #   bootstrap-server.sh --github <owner>/<repository> --admin-key "<ssh public key>" [--domain <domain>]
+#   bootstrap-server.sh --admin-key "<ssh public key>"   (before GitHub is linked: preproduction from
+#                                                       bundles only, see ppf-deploy preproduction-bundle)
 #   bootstrap-server.sh --lockdown      (only after logging in as ppf-admin with the key worked)
 #
 # What it does (cahier des charges, sections 3.5 and 5; CLAUDE.md, section 8):
@@ -88,11 +90,16 @@ EOF
     exit 0
 fi
 
-[ -n "$github" ] || usage
-[[ "$github" =~ ^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$ ]] || { echo "--github must look like owner/repository." >&2; exit 2; }
-owner_lower="$(printf '%s' "${github%%/*}" | tr '[:upper:]' '[:lower:]')"
-image_repo="ghcr.io/$owner_lower/ppf-server"
-signer_identity="https://github.com/$github/.github/workflows/ci.yml@refs/heads/main"
+image_repo=""
+signer_identity=""
+if [ -n "$github" ]; then
+    [[ "$github" =~ ^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$ ]] || { echo "--github must look like owner/repository." >&2; exit 2; }
+    owner_lower="$(printf '%s' "${github%%/*}" | tr '[:upper:]' '[:lower:]')"
+    image_repo="ghcr.io/$owner_lower/ppf-server"
+    signer_identity="https://github.com/$github/.github/workflows/ci.yml@refs/heads/main"
+else
+    echo "No --github: the preproduction will be deployed from bundles (ppf-deploy preproduction-bundle) until GitHub is linked; run this script again with --github then."
+fi
 export DEBIAN_FRONTEND=noninteractive
 
 # --- 1. System and automatic security updates --------------------------------------------------
@@ -331,10 +338,12 @@ fi
 # --- 8. Repository, cosign, deployment command, automatic update of the preproduction ------------
 log "Repository checkout (public, read only)"
 install -d -m 0755 /opt/ppf
-if [ ! -d "$REPO_DIR/.git" ]; then
-    git clone --quiet "https://github.com/$github.git" "$REPO_DIR"
-else
-    git -C "$REPO_DIR" fetch --quiet origin
+if [ -n "$github" ]; then
+    if [ ! -d "$REPO_DIR/.git" ]; then
+        git clone --quiet "https://github.com/$github.git" "$REPO_DIR"
+    else
+        git -C "$REPO_DIR" fetch --quiet origin
+    fi
 fi
 
 log "cosign $COSIGN_VERSION"
@@ -371,7 +380,12 @@ install -m 0755 "$script_dir/vote-seed.sh" /usr/local/sbin/ppf-vote-seed
 # The import timers are enabled per environment once its import key exists:
 #   systemctl enable --now ppf-open-data-daily@preproduction.timer ppf-open-data-weekly@preproduction.timer
 systemctl daemon-reload
-systemctl enable ppf-preprod-update.timer >/dev/null 2>&1
+# The automatic update follows the signed images of main: only once GitHub is linked.
+if [ -n "$github" ]; then
+    systemctl enable ppf-preprod-update.timer >/dev/null 2>&1
+else
+    systemctl disable ppf-preprod-update.timer >/dev/null 2>&1 || true
+fi
 
 log "Done"
 cat <<EOF
