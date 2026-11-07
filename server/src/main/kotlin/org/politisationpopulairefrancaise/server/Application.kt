@@ -23,6 +23,9 @@ import org.politisationpopulairefrancaise.server.agir.AgirSetup
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
 import org.politisationpopulairefrancaise.server.agir.agendaSource
 import org.politisationpopulairefrancaise.server.agir.agirApi
+import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySetup
+import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySpace
+import org.politisationpopulairefrancaise.server.agir.testimonies.testimonyApi
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PostLimits
 import org.politisationpopulairefrancaise.server.api.eventsApi
@@ -75,6 +78,8 @@ import javax.sql.DataSource
  *   range (development and preproduction; in production Caddy serves them), see [TilesConfig].
  * - PPF_RNE_SOURCE, PPF_RNE_REFRESH_DAYS: the directory of elected officials (fictitious example set
  *   by default), see [ElusConfig].
+ * - PPF_TESTIMONY_DIR, PPF_MODERATION_KEY, PPF_EVIDENCE_KEY and the other PPF_TESTIMONY_* and
+ *   PPF_EVIDENCE_RETENTION_DAYS settings: the testimonies of the Agir space, see [TestimonySetup].
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
  *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
  *   to start when it is set in production, see [ExampleSeed].
@@ -141,6 +146,7 @@ fun Application.module(
     voir: VoirSource? = null,
     tiles: TilesConfig = TilesConfig.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
+    testimonies: TestimonySetup = TestimonySetup.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
@@ -154,6 +160,8 @@ fun Application.module(
     }
     // Mobilizations, calls and directory of the Agir space: rules, review queue, agenda (contract, section 5).
     val agirSpace = if (dataSource != null && repository != null) AgirSpace.start(this, dataSource, repository, policy, agir) else null
+    // Testimonies: encrypted envelopes and files only, open when a folder is configured (docs/integration/agir-temoignages.md).
+    val testimonySpace = if (dataSource != null && repository != null) TestimonySpace.start(this, dataSource, repository, policy, testimonies) else null
     if (repository == null) {
         log.info("No database configured: the events API answers 503 (health check and web pages work).")
     } else if (relay.cleanupInterval.isPositive()) {
@@ -201,6 +209,7 @@ fun Application.module(
         groupsApi(groups)
         revendicationsApi(proposals)
         agirApi(agirSpace)
+        testimonyApi(testimonySpace, testimonies.config.maxFileBytes)
         elusApi(elusService)
         agirSpace?.let { agendaPage(it.agendaSource()) }
         tilesRoutes(tiles)
