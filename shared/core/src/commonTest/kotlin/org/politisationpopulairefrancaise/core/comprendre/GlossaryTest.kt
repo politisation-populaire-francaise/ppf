@@ -242,6 +242,44 @@ class GlossaryIndexTest {
     }
 
     @Test
+    fun anAcronymKeepsItsCapitalsAndTheOtherFormsDoNot() {
+        val ue = glossaryEntry("union-europeenne", "Union européenne", listOf("Union européenne", "UE"))
+        val qpc = glossaryEntry("qpc", "Question prioritaire de constitutionnalité", listOf("question prioritaire de constitutionnalité", "QPC"))
+        val g7 = glossaryEntry("g7", "G7", listOf("G7"))
+        val all = GlossaryIndex(listOf(ue, qpc, g7))
+        assertTrue(GlossaryIndex.isAcronym("UE"))
+        assertTrue(GlossaryIndex.isAcronym("EPCI"))
+        assertTrue(GlossaryIndex.isAcronym("COP21"))
+        assertFalse(GlossaryIndex.isAcronym("G7"), "one letter only")
+        assertFalse(GlossaryIndex.isAcronym("Union européenne"))
+        assertFalse(GlossaryIndex.isAcronym("49.3"))
+        assertEquals(listOf("UE", "union européenne"), forms("L'UE, c'est l'union européenne.", all))
+        assertEquals(emptyList(), forms("Une ue, une Ue, une uE.", all), "an acronym keeps its capitals")
+        assertEquals(listOf("QPC", "Question prioritaire de constitutionnalité"), forms("Une QPC. Question prioritaire de constitutionnalité.", all))
+        assertEquals(emptyList(), forms("une qpc", all))
+        assertEquals(listOf("g7", "G7"), forms("Le g7 et le G7.", all), "a form with one letter is compared without case")
+        assertEquals(listOf("UE"), forms("Les pays de l’UE.", all))
+    }
+
+    @Test
+    fun aFormMayHoldAComma() {
+        val cese = glossaryEntry("cese", "CESE", GlossaryFormat.list("Conseil économique\\, social et environnemental, CESE"))
+        val alinea = glossaryEntry("49-3", "49.3", GlossaryFormat.list("49.3, article 49\\, alinéa 3"))
+        val all = GlossaryIndex(listOf(cese, alinea))
+        assertEquals(listOf("Conseil économique, social et environnemental", "CESE"), cese.variants)
+        assertEquals(listOf("Conseil économique, social et environnemental", "CESE"), forms("Le Conseil économique, social et environnemental (CESE).", all))
+        assertEquals(listOf("article 49, alinéa 3"), forms("Selon l'article 49, alinéa 3, de la Constitution.", all))
+    }
+
+    @Test
+    fun anAddressWrittenOutInTheTextIsLeftAlone() {
+        val text = "Voir https://exemple.invalid/loi, http://loi.exemple.invalid, www.loi.fr, WWW.LOI.FR et ppf:loi : la loi."
+        assertEquals(listOf(text.lastIndexOf("loi")), index.find(text).map { it.start })
+        assertEquals(listOf("loi"), forms("(https://exemple.invalid/a) et la loi."))
+        assertEquals(listOf("loi"), forms("La loi."), "no address, nothing left out")
+    }
+
+    @Test
     fun anEmptyGlossaryFindsNothing() {
         assertTrue(GlossaryIndex.EMPTY.isEmpty)
         assertEquals(emptyList(), GlossaryIndex.EMPTY.find("La loi."))
@@ -301,6 +339,21 @@ class GlossaryFormatTest {
         val clash = problemsOf(source("conseil", variants = listOf("Conseil d'État")), source("conseil-etat", variants = listOf("conseil d’état")))
         assertTrue(clash.single().contains("already a variant of conseil.md"), clash.toString())
         assertTrue(problemsOf(source("a", variants = listOf("« loi »"))).single().contains("start and end with a letter or a digit"))
+    }
+
+    @Test
+    fun aCommaInsideAFormIsEscaped() {
+        assertEquals(listOf("Conseil économique, social et environnemental", "CESE"), GlossaryFormat.list("Conseil économique\\, social et environnemental, CESE"))
+        assertEquals(listOf("49.3", "article 49, alinéa 3"), GlossaryFormat.list(" 49.3 ,article 49\\, alinéa 3 "))
+        assertEquals(listOf("a\\b"), GlossaryFormat.list("a\\b"), "a backslash before anything else stays")
+        assertEquals(emptyList(), problemsOf(source("cese", variants = GlossaryFormat.list("Conseil économique\\, social et environnemental, CESE"))))
+        val tags = GlossaryFormat.tags(source("cese", variants = GlossaryFormat.list("Conseil économique\\, social et environnemental")), "ab".repeat(32))
+        assertEquals(listOf("ppf-variant", "Conseil économique, social et environnemental"), tags.first())
+    }
+
+    @Test
+    fun anAcronymAndTheSameWordInSmallLettersBelongToOneEntry() {
+        assertTrue(problemsOf(source("ue", variants = listOf("UE")), source("ue-bis", variants = listOf("ue"))).single().contains("already a variant of ue.md"))
     }
 
     @Test

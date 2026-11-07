@@ -102,14 +102,20 @@ class GlossaryIndex(entries: List<GlossaryEntry>) {
 
     private val bySlug: Map<String, GlossaryEntry> = this.entries.associateBy { it.slug }
 
+    /** The forms compared without case. */
     private val root = Node()
+
+    /** The acronyms (UE, QPC, EPCI...), compared with their capitals. */
+    private val acronyms = Node()
 
     init {
         // In alphabetical order, so that a form claimed by two entries (refused by the content
         // signer) always goes to the same one.
         for (entry in this.entries) {
             if (!entry.auto) continue
-            for (variant in entry.variants) insert(normalizeForm(variant), entry.slug)
+            for (variant in entry.variants) {
+                if (isAcronym(variant)) insert(acronyms, normalizeForm(variant, keepCase = true), entry.slug) else insert(root, normalizeForm(variant), entry.slug)
+            }
         }
     }
 
@@ -121,24 +127,33 @@ class GlossaryIndex(entries: List<GlossaryEntry>) {
 
     /**
      * Every form of [text], from left to right: at each position where a word starts, the longest
-     * form that ends at a word limit. Characters of [excluded] (links, for example) are never part of
-     * a form. A form of an entry of [excludedSlugs] is passed over (its words are not searched for
-     * shorter forms), but not reported.
+     * form that ends at a word limit. Characters of [excluded] (links, for example) and addresses
+     * written out in the text (`http://…`, `https://…`, `www.…`, `ppf:…`) are never part of a form.
+     * A form of an entry of [excludedSlugs] is passed over (its words are not searched for shorter
+     * forms), but not reported.
      */
     fun find(text: String, excluded: List<IntRange> = emptyList(), excludedSlugs: Set<String> = emptySet()): List<GlossaryMatch> {
-        if (root.next.isEmpty() || text.isEmpty()) return emptyList()
-        val blocked: BooleanArray? = if (excluded.isEmpty()) {
+        if ((root.next.isEmpty() && acronyms.next.isEmpty()) || text.isEmpty()) return emptyList()
+        val addresses = ADDRESS.findAll(text).map { it.range }.toList()
+        val blocked: BooleanArray? = if (excluded.isEmpty() && addresses.isEmpty()) {
             null
         } else {
             BooleanArray(text.length).also { array ->
-                excluded.forEach { range -> for (i in range.first.coerceAtLeast(0)..range.last.coerceAtMost(text.length - 1)) array[i] = true }
+                (excluded + addresses).forEach { range -> for (i in range.first.coerceAtLeast(0)..range.last.coerceAtMost(text.length - 1)) array[i] = true }
             }
         }
         val found = mutableListOf<GlossaryMatch>()
         var i = 0
         while (i < text.length) {
             val startsWord = (i == 0 || !text[i - 1].isLetterOrDigit()) && blocked?.get(i) != true
-            val end = if (startsWord) longestAt(text, i, blocked) else null
+            val end = if (startsWord) {
+                val acronym = longestAt(acronyms, keepCase = true, text, i, blocked)
+                val other = longestAt(root, keepCase = false, text, i, blocked)
+                // The longest wins; an acronym wins a tie (it is the more precise of the two).
+                if (other != null && (acronym == null || other.first > acronym.first)) other else acronym
+            } else {
+                null
+            }
             if (end == null) {
                 i++
                 continue
@@ -174,22 +189,23 @@ class GlossaryIndex(entries: List<GlossaryEntry>) {
         }
     }
 
-    private fun insert(form: String, slug: String) {
+    private fun insert(tree: Node, form: String, slug: String) {
         if (form.isEmpty()) return
-        var node = root
+        var node = tree
         for (char in form) node = node.next.getOrPut(char) { Node() }
         if (node.slug == null) node.slug = slug
     }
 
-    /** The end and the entry of the longest form starting at [start], or null. */
-    private fun longestAt(text: String, start: Int, blocked: BooleanArray?): Pair<Int, String>? {
-        var node = root
+    /** The end and the entry of the longest form of [tree] starting at [start], or null. */
+    private fun longestAt(tree: Node, keepCase: Boolean, text: String, start: Int, blocked: BooleanArray?): Pair<Int, String>? {
+        if (tree.next.isEmpty()) return null
+        var node = tree
         var j = start
         var previousSpace = false
         var best: Pair<Int, String>? = null
         while (j < text.length) {
             if (blocked?.get(j) == true) break
-            val char = normalizeChar(text[j])
+            val char = normalizeChar(text[j], keepCase)
             // Several spaces in a row in the text match the single space of a form.
             if (char == ' ' && previousSpace) {
                 j++
@@ -212,22 +228,36 @@ class GlossaryIndex(entries: List<GlossaryEntry>) {
     companion object {
         val EMPTY: GlossaryIndex = GlossaryIndex(emptyList())
 
+        /** An address written out in a text: never searched for forms. */
+        private val ADDRESS = Regex("(?:https?://|www\\.|ppf:)\\S+", RegexOption.IGNORE_CASE)
+
+        /**
+         * An acronym: only capital letters and digits, at least two letters (UE, RIP, QPC, EPCI,
+         * CMP). It is compared with its capitals, so that « UE » is not found in « ue »; every other
+         * form is compared without case.
+         */
+        fun isAcronym(form: String): Boolean {
+            val trimmed = form.trim()
+            return trimmed.isNotEmpty() && trimmed.all { it.isDigit() || (it.isLetter() && it.isUpperCase()) } && trimmed.count { it.isLetter() } >= 2
+        }
+
         /**
          * One character as the spotting compares it, without changing the length of the text:
-         * lowercase, every apostrophe as `'`, every space as ` `, the non-breaking hyphen as `-`.
+         * lowercase (unless [keepCase], for the acronyms), every apostrophe as `'`, every space as
+         * ` `, the non-breaking hyphen as `-`.
          */
-        fun normalizeChar(char: Char): Char = when (char) {
+        fun normalizeChar(char: Char, keepCase: Boolean = false): Char = when (char) {
             '’', '‘', 'ʼ', '′', '´', '`' -> '\''
             ' ', ' ', ' ', ' ', '\t', '\n', '\r' -> ' '
             '‐', '‑' -> '-'
-            else -> char.lowercaseChar()
+            else -> if (keepCase) char else char.lowercaseChar()
         }
 
         /** A form as written by the editors, normalized for the comparison, inner spaces collapsed. */
-        fun normalizeForm(form: String): String {
+        fun normalizeForm(form: String, keepCase: Boolean = false): String {
             val out = StringBuilder(form.length)
             for (char in form.trim()) {
-                val normalized = normalizeChar(char)
+                val normalized = normalizeChar(char, keepCase)
                 if (normalized == ' ' && (out.isEmpty() || out.last() == ' ')) continue
                 out.append(normalized)
             }
@@ -273,8 +303,33 @@ object GlossaryFormat {
         "histoire" to "histoire",
     )
 
-    /** A comma-separated list of the front matter, trimmed, without empty items. */
-    fun list(value: String?): List<String> = value.orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() }
+    /**
+     * A comma-separated list of the front matter, trimmed, without empty items. A comma inside an
+     * item is written `\,` (`Conseil économique\, social et environnemental`, `article 49\, alinéa 3`).
+     */
+    fun list(value: String?): List<String> {
+        val items = mutableListOf<String>()
+        val current = StringBuilder()
+        val text = value.orEmpty()
+        var i = 0
+        while (i < text.length) {
+            val char = text[i]
+            when {
+                char == '\\' && i + 1 < text.length && text[i + 1] == ',' -> {
+                    current.append(',')
+                    i++
+                }
+                char == ',' -> {
+                    items += current.toString()
+                    current.clear()
+                }
+                else -> current.append(char)
+            }
+            i++
+        }
+        items += current.toString()
+        return items.map { it.trim() }.filter { it.isNotEmpty() }
+    }
 
     /**
      * Every problem of the glossary, each prefixed with its file. [known] gives, for each prefix of
