@@ -1,0 +1,17 @@
+{
+ "organe": {
+  "uid": "PO990001",
+  "codeType": "CIRCONSCRIPTION",
+  "libelle": "[EXEMPLE] 1re circonscription",
+  "viMoDe": {
+   "dateDebut": null,
+   "dateFin": null
+  },
+  "lieu": {
+   "departement": {
+    "code": "01",
+    "libelle": "Ain"
+   }
+  }
+ }
+}

@@ -1,0 +1,149 @@
+{
+ "acteur": {
+  "@xmlns": "http://schemas.assemblee-nationale.fr/referentiel",
+  "uid": {
+   "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+   "@xsi:type": "IdActeur_type",
+   "#text": "PA900005"
+  },
+  "etatCivil": {
+   "ident": {
+    "civ": "Mme",
+    "prenom": "[EXEMPLE] Éloïse",
+    "nom": "Ferrandi",
+    "alpha": "Ferrandi",
+    "trigramme": "FER"
+   },
+   "infoNaissance": {
+    "dateNais": "1970-01-01",
+    "villeNais": "[EXEMPLE] Ville fictive",
+    "depNais": "[EXEMPLE]",
+    "paysNais": "[EXEMPLE]"
+   },
+   "dateDeces": null
+  },
+  "profession": {
+   "libelleCourant": "[EXEMPLE] Profession fictive",
+   "socProcINSEE": {
+    "catSocPro": "[EXEMPLE]",
+    "famSocPro": "[EXEMPLE]"
+   }
+  },
+  "uri_hatvp": null,
+  "adresses": {
+   "adresse": [
+    {
+     "@xsi:type": "AdresseMail_type",
+     "uid": "AD900005",
+     "type": "15",
+     "typeLibelle": "Mèl",
+     "valElec": "exemple@example.invalid"
+    },
+    {
+     "@xsi:type": "AdressePostale_type",
+     "uid": "AD800005",
+     "type": "0",
+     "typeLibelle": "Adresse officielle",
+     "numeroRue": "1",
+     "nomRue": "[EXEMPLE] Rue fictive",
+     "codePostal": "00000",
+     "ville": "[EXEMPLE]"
+    }
+   ]
+  },
+  "mandats": {
+   "mandat": [
+    {
+     "@xsi:type": "MandatParlementaire_type",
+     "uid": "PM900005",
+     "acteurRef": "PA900005",
+     "legislature": "17",
+     "typeOrgane": "ASSEMBLEE",
+     "dateDebut": "2024-07-08",
+     "datePublication": "2024-07-10",
+     "dateFin": null,
+     "mandature": {
+      "datePriseFonction": "2024-07-08",
+      "causeFin": null,
+      "placeHemicycle": "105",
+      "mandatRemplaceRef": null
+     },
+     "infosQualite": {
+      "codeQualite": "membre",
+      "libQualite": "membre",
+      "libQualiteSex": "membre"
+     },
+     "organes": {
+      "organeRef": "PO900000"
+     },
+     "election": {
+      "lieu": {
+       "region": "[EXEMPLE]",
+       "regionType": "Métropolitain",
+       "departement": "Rhône",
+       "numDepartement": "69",
+       "numCirco": "1"
+      },
+      "causeMandat": "élections générales",
+      "refCirconscription": "PO990005"
+     },
+     "suppleants": {
+      "suppleant": {
+       "dateDebut": "2024-07-08",
+       "dateFin": null,
+       "suppleantRef": "PA980005"
+      }
+     },
+     "collaborateurs": {
+      "collaborateur": {
+       "qualite": "M.",
+       "prenom": "[EXEMPLE] Collaborateur",
+       "nom": "Fictif"
+      }
+     }
+    },
+    {
+     "@xsi:type": "MandatSimple_type",
+     "uid": "PM800005",
+     "acteurRef": "PA900005",
+     "legislature": "17",
+     "typeOrgane": "GP",
+     "dateDebut": "2024-07-10",
+     "dateFin": null,
+     "infosQualite": {
+      "codeQualite": "Membre",
+      "libQualite": "Membre"
+     },
+     "organes": {
+      "organeRef": "PO900002"
+     }
+    },
+    {
+     "uid": "PM700005",
+     "acteurRef": "PA900005",
+     "legislature": "17",
+     "typeOrgane": "COMPER",
+     "dateDebut": "2024-07-20",
+     "dateFin": null,
+     "organes": {
+      "organeRef": [
+       "PO900010",
+       "PO900011"
+      ]
+     }
+    },
+    {
+     "uid": "PM600005",
+     "acteurRef": "PA900005",
+     "legislature": null,
+     "typeOrgane": "PARPOL",
+     "dateDebut": "2023-01-01",
+     "dateFin": null,
+     "organes": {
+      "organeRef": "PO900020"
+     }
+    }
+   ]
+  }
+ }
+}

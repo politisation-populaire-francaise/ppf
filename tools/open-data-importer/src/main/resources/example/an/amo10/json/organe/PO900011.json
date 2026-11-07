@@ -1,0 +1,13 @@
+{
+ "organe": {
+  "uid": "PO900011",
+  "codeType": "COMPER",
+  "libelle": "[EXEMPLE] Commission des essais",
+  "libelleAbrev": "CDE",
+  "viMoDe": {
+   "dateDebut": "2024-07-20",
+   "dateFin": null
+  },
+  "legislature": "17"
+ }
+}

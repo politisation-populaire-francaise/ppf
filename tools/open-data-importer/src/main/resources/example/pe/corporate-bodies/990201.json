@@ -1,0 +1,21 @@
+{
+ "data": [
+  {
+   "id": "org/990201",
+   "type": "Organization",
+   "identifier": "990201",
+   "label": "PONTS",
+   "prefLabel": {
+    "fr": "[EXEMPLE] Groupe européen des Ponts",
+    "en": "[EXEMPLE] (en) Groupe européen des Ponts"
+   },
+   "altLabel": {
+    "fr": "PONTS"
+   },
+   "classification": "def/ep-entities/EU_POLITICAL_GROUP"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}
