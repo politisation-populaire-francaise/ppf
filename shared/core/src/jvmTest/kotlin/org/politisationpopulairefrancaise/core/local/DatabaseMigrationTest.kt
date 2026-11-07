@@ -107,12 +107,41 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion11() {
+    fun theSchemaIsAtVersion12() {
         // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
         // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm);
         // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm);
-        // 10: answered calls (9.sqm); 11: directory of elected officials (10.sqm).
-        assertEquals(11L, PpfDatabase.Schema.version)
+        // 10: answered calls (9.sqm); 11: directory of elected officials (10.sqm);
+        // 12: referential of territories (11.sqm, provisional number).
+        assertEquals(12L, PpfDatabase.Schema.version)
+    }
+
+    @Test
+    fun aVersion11DatabaseGainsTheTerritoriesAndKeepsTheDirectory() {
+        val file = tempDatabaseFile()
+        writeVersion1Database(file)
+        JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}").let { driver ->
+            try {
+                PpfDatabase.Schema.migrate(driver, 1, 11)
+                driver.execute(null, "INSERT INTO elus_commune(id, commune_code, department_code) VALUES (0, '69123', '69')", 0)
+                driver.execute(null, "PRAGMA user_version = 11", 0)
+            } finally {
+                driver.close()
+            }
+        }
+        val database = JvmDatabase.open(file)
+        assertEquals(12L, userVersion(file))
+        assertEquals(ChosenCommune("69123", "69"), ElusStore(database).commune())
+
+        val territoires = org.politisationpopulairefrancaise.core.territoires.TerritoiresStore(database)
+        assertEquals(emptyList(), territoires.codes())
+        territoires.save(org.politisationpopulairefrancaise.core.territoires.StoredTerritoires("69", "a".repeat(64), "{}", "2026-11-07", 1))
+        assertEquals(listOf("69"), territoires.codes())
+
+        val fresh = tempDatabaseFile()
+        JvmDatabase.open(fresh)
+        assertEquals(tableDefinitions(fresh, "territoire_"), tableDefinitions(file, "territoire_"))
+        assertEquals(1, tableDefinitions(file, "territoire_").size)
     }
 
     /** Writes a version 10 database (the builds with the answered calls, before the directory of elected officials), with one answered call. */
@@ -149,7 +178,7 @@ class DatabaseMigrationTest {
         assertEquals(10L, userVersion(file))
 
         val database = JvmDatabase.open(file)
-        assertEquals(11L, userVersion(file))
+        assertEquals(PpfDatabase.Schema.version, userVersion(file))
         assertEquals(setOf("30023:${"b".repeat(64)}:appel"), CallResponseStore(database).all())
         assertEquals("[EXEMPLE] ancienne note", assertNotNull(LocalEventStore(database).find(eventId)).content)
 

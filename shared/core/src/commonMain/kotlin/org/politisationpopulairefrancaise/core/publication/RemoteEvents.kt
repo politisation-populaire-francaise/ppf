@@ -97,4 +97,14 @@ interface RemoteEvents : PublicationPort {
      */
     suspend fun fetchElus(code: String? = null, etag: String? = null): ElusDownload =
         ElusDownload.Unavailable(UnsupportedOperationException("This source has no directory of elected officials"))
+
+    /**
+     * The referential of territories (D-090, docs/integration/territoires.md): the national level
+     * (`GET /api/v1/territoires`) when [code] is null, otherwise the package of a department or
+     * overseas collectivity, or `communes` for the index of the names (`GET /api/v1/territoires/{code}`).
+     * The four answers are those of [ElusDownload]. Nothing personal is sent: no commune, no
+     * postal code, no search. Sources without the referential answer [ElusDownload.Unavailable].
+     */
+    suspend fun fetchTerritoires(code: String? = null, etag: String? = null): ElusDownload =
+        ElusDownload.Unavailable(UnsupportedOperationException("This source has no referential of territories"))
 }
