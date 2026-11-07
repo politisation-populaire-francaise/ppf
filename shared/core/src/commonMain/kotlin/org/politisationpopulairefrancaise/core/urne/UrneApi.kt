@@ -6,7 +6,7 @@ import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.time.CivilDate
 
 /**
- * The JSON exchanged with the ballot-box API of the server (`docs/FORMATS.md`, section 4 nonies),
+ * The JSON exchanged with the ballot-box API of the server (`docs/FORMATS.md`, section 4 decies),
  * shared by the applications and the server. Bytes are lowercase hexadecimal; times are seconds
  * since 1970; levels are [VoteLevel.code].
  */

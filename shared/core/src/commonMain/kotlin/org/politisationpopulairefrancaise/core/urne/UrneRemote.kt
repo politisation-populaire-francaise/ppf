@@ -22,7 +22,7 @@ sealed interface UrneAnswer<out T> {
     data class Failure(val status: Int?, val code: String?) : UrneAnswer<Nothing>
 }
 
-/** The ballot-box API of the server, as the device sees it (`docs/FORMATS.md`, section 4 nonies). */
+/** The ballot-box API of the server, as the device sees it (`docs/FORMATS.md`, section 4 decies). */
 interface UrneRemote {
     suspend fun list(after: Long, limit: Int = 100): UrneAnswer<UrneList>
 

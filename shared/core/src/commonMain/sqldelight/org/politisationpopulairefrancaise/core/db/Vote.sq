@@ -3,7 +3,7 @@
 -- account: they leave the device only inside an anonymous ballot. The choices made are kept here
 -- for "Mes votes et soutiens" (TE-06): a political opinion, which never leaves the device except in
 -- the anonymous ballot itself, and is erased with the keys.
--- Added in schema version 13: existing databases get it through migrations/12.sqm.
+-- Added in schema version 14: existing databases get it through migrations/13.sqm.
 
 -- The account the tokens belong to, and whether it registered to vote on the server.
 CREATE TABLE vote_state (
@@ -25,7 +25,7 @@ CREATE TABLE vote_blind (
 -- choice: the choice made on this device, NULL before any vote. send_after: seconds since 1970 after
 -- which the ballot with `choice` may leave (random delay, D-112), NULL when nothing waits.
 -- sent_choice: the last choice the server accepted. (Comments stay outside the CREATE statement, so
--- that the table is exactly the one migrations/12.sqm creates.)
+-- that the table is exactly the one migrations/13.sqm creates.)
 CREATE TABLE vote_token (
     urne_number INTEGER NOT NULL PRIMARY KEY,
     urne_id TEXT NOT NULL,

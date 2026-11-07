@@ -27,7 +27,7 @@ import org.politisationpopulairefrancaise.server.relay.RateLimiter
 import java.time.Clock
 
 /**
- * The ballot-box API (D-110, `docs/FORMATS.md`, section 4 nonies). No request is ever logged
+ * The ballot-box API (D-110, `docs/FORMATS.md`, section 4 decies). No request is ever logged
  * (no request plugin is installed), and no answer quotes a value of the request.
  *
  * Public: GET /api/v1/urnes?after=&limit=, GET /api/v1/urnes/{number}/journal, GET /api/v1/urnes/{number}/closing.
