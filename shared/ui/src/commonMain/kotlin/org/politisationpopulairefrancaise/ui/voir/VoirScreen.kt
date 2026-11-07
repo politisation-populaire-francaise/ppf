@@ -64,6 +64,10 @@ import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentLinks
+import org.politisationpopulairefrancaise.ui.voir.parlement.OfficialParliamentCard
+import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentScreen
+import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentState
 
 /**
  * "Voir" (vision, pillar 1): what is happening and what the power does, in figures and sourced
@@ -80,6 +84,7 @@ fun VoirScreen(
     modifier: Modifier = Modifier,
     onNavigate: (Space) -> Unit = {},
     requests: VoirRequestSession? = null,
+    parliament: ParliamentState? = null,
 ) {
     val catalog = library.voir
     val compact = windowClass.width == WindowWidthClass.COMPACT
@@ -128,8 +133,18 @@ fun VoirScreen(
         val wide = maxWidth >= 900.dp
         Box(Modifier.fillMaxSize().testTag(VoirTags.SCREEN)) {
             val current = state.current
-            if (current == null) {
-                VoirHome(catalog, library.status, state, actions, compact, columns)
+            if (parliament != null && parliament.isOpen) {
+                // The parliamentary open data (D-065), with their own stack of pages.
+                ParliamentScreen(parliament, voirSheetFor = { id ->
+                    catalog.persons(null).firstOrNull { ParliamentLinks.memberId(it.article.event) == id }?.let { person ->
+                        {
+                            parliament.close()
+                            state.open(person.address)
+                        }
+                    }
+                })
+            } else if (current == null) {
+                VoirHome(catalog, library.status, state, actions, compact, columns, parliament)
             } else {
                 key(current) { VoirDetail(current, catalog, state, actions, compact, wide, columns, session, callbacks) }
             }
@@ -139,7 +154,7 @@ fun VoirScreen(
 }
 
 @Composable
-private fun VoirHome(catalog: VoirCatalog, status: LibraryStatus, state: VoirState, actions: VoirActions, compact: Boolean, columns: Int) {
+private fun VoirHome(catalog: VoirCatalog, status: LibraryStatus, state: VoirState, actions: VoirActions, compact: Boolean, columns: Int, parliament: ParliamentState?) {
     val axes = VoirAxis.entries
     val pagerState = rememberPagerState(initialPage = state.axis.ordinal) { axes.size }
     val scope = rememberCoroutineScope()
@@ -175,7 +190,7 @@ private fun VoirHome(catalog: VoirCatalog, status: LibraryStatus, state: VoirSta
                     Spacer(Modifier.height(16.dp))
                     when (axes[page]) {
                         VoirAxis.MOUVEMENT -> MovementAxis(catalog, state, actions, compact, columns)
-                        VoirAxis.POUVOIR -> PowerAxis(catalog, state, actions, columns)
+                        VoirAxis.POUVOIR -> PowerAxis(catalog, state, actions, columns, parliament)
                         VoirAxis.LIBERTES -> FreedomsAxis(catalog, state, actions, compact, columns)
                     }
                 }
@@ -209,7 +224,7 @@ private fun MovementAxis(catalog: VoirCatalog, state: VoirState, actions: VoirAc
 }
 
 @Composable
-private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActions, columns: Int) {
+private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActions, columns: Int, parliament: ParliamentState?) {
     if (catalog.parties.isNotEmpty()) {
         SectionHeader(stringResource(Res.string.voir_parties), action = stringResource(Res.string.voir_see_all_count, catalog.parties.size), actionTag = VoirTags.seeAll("parties"), onAction = { state.open(VoirDestination.Parties) })
         Grid(catalog.parties.take(maxOf(columns, 2)), columns) { party, modifier -> PartyCard(party, catalog, onOpen = { actions.open(party.address) }, modifier = modifier) }
@@ -218,6 +233,10 @@ private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActio
     val persons = catalog.persons(null)
     SectionHeader(stringResource(Res.string.voir_people), action = stringResource(Res.string.voir_see_all_count, persons.size), actionTag = VoirTags.seeAll("people"), onAction = { state.open(VoirDestination.People) })
     Grid(persons.take(maxOf(columns * 2, 4)), columns) { person, modifier -> PersonCard(person, catalog, onOpen = { actions.open(person.address) }, modifier = modifier) }
+    if (parliament != null) {
+        Spacer(Modifier.height(12.dp))
+        OfficialParliamentCard(onOpen = parliament::open)
+    }
     Spacer(Modifier.height(24.dp))
     val bills = catalog.bills()
     SectionHeader(stringResource(Res.string.voir_bills), action = stringResource(Res.string.voir_see_all_count, bills.size), actionTag = VoirTags.seeAll("bills"), onAction = { state.open(VoirDestination.Bills) })
