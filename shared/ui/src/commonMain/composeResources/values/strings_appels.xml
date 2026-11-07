@@ -45,7 +45,7 @@
     <string name="appels_empty_mine">Vous n’avez encore lancé aucun appel.</string>
     <string name="appels_empty_mine_no_account">Avec un compte, les appels que vous lancez apparaissent ici avec leur état de relecture.</string>
     <string name="appels_empty_answered">Vous n’avez répondu à aucun appel.</string>
-    <string name="appels_answered_intro">Vos réponses restent sur cet appareil : personne d’autre ne les voit, pas même PPF.</string>
+    <string name="appels_answered_intro">Vos réponses restent sur cet appareil : personne d’autre ne les voit, pas même PPF. Chacune s’efface 7 jours après la clôture ou l’échéance de son appel.</string>
     <string name="appels_clear_answers">Effacer mes réponses</string>
     <string name="appels_clear_answers_title">Effacer vos réponses ?</string>
     <string name="appels_clear_answers_text">Toutes vos réponses aux appels seront effacées de cet appareil. Cela ne change rien pour les autres.</string>
@@ -86,7 +86,7 @@
     <string name="appels_answer_testify">Je témoigne</string>
     <string name="appels_answer_done">Réponse enregistrée sur cet appareil</string>
     <string name="appels_answer_withdraw">Retirer ma réponse</string>
-    <string name="appels_answer_private">Votre réponse reste sur cet appareil. Il n’y a ni compteur public ni liste des personnes qui ont répondu : le compteur viendra avec la méthode de comptage anonyme.</string>
+    <string name="appels_answer_private">Votre réponse reste sur cet appareil. Il n’y a ni compteur public ni liste des personnes qui ont répondu : le compteur viendra avec la méthode de comptage anonyme. Elle s’efface 7 jours après la clôture ou l’échéance de l’appel.</string>
     <string name="appels_answer_testify_soon">Les témoignages arriveront par un canal sécurisé, en préparation : ils y seront vérifiés et anonymisés (métadonnées supprimées, visages floutés) avant toute publication. En attendant, gardez vos images et vos notes en lieu sûr.</string>
     <string name="appels_answer_closed">Cet appel est clos : il reste consultable, mais on ne peut plus y répondre.</string>
     <string name="appels_section_report">Bilan</string>
@@ -293,6 +293,7 @@
     <string name="appels_field_organizer">Organisé par</string>
     <string name="appels_field_accessibility">Accessibilité du lieu</string>
     <string name="appels_field_declaration">Déclaration en préfecture</string>
+    <string name="appels_field_declaration_help">Cette mention est publique : avec « Non faite », tout le monde verra que la manifestation n’est pas déclarée en préfecture.</string>
     <string name="appels_field_cause">Cause soutenue</string>
     <string name="appels_field_action">Action demandée</string>
     <string name="appels_field_platform">Plateforme de la pétition</string>

@@ -140,6 +140,8 @@ internal fun fieldHelpResource(tag: String): StringResource? = when (tag) {
     CallFields.RECIPIENT -> Res.string.appels_field_recipient_help
     CallFields.SOURCE -> Res.string.appels_field_source_help
     CallFields.EVIDENCE -> Res.string.appels_field_evidence_help
+    // Decision of the owner (D-044): the three values are offered and shown; the author is told it is public.
+    AgirFormats.TAG_DECLARATION -> Res.string.appels_field_declaration_help
     else -> null
 }
 

@@ -93,7 +93,8 @@ class ProposeMobilizationScreenTest {
         onNodeWithTag(ProposeTags.TYPE + "manifestation").performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(ProposeTags.DECLARATION + "unset").performScrollTo().assertExists()
-        onNodeWithTag(ProposeTags.DECLARATION + "non-faite").assertDoesNotExist()
+        // Decision of the owner (D-044): "Non déclarée en préfecture" is offered too.
+        onNodeWithTag(ProposeTags.DECLARATION + "non-faite").performScrollTo().assertExists()
     }
 
     @Test

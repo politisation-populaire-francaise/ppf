@@ -83,7 +83,6 @@ import org.politisationpopulairefrancaise.ui.resources.agenda_leave_text
 import org.politisationpopulairefrancaise.ui.resources.agenda_leave_title
 import org.politisationpopulairefrancaise.ui.resources.agenda_link
 import org.politisationpopulairefrancaise.ui.resources.agenda_link_host
-import org.politisationpopulairefrancaise.ui.resources.agenda_organized_by
 import org.politisationpopulairefrancaise.ui.resources.agenda_postponed_note
 import org.politisationpopulairefrancaise.ui.resources.agenda_proposed_by
 import org.politisationpopulairefrancaise.ui.resources.agenda_response_going
@@ -102,7 +101,9 @@ import org.politisationpopulairefrancaise.ui.theme.PpfTheme
  * The detail of a mobilization: what, when, where, who organises it, its description; the link
  * opened only after the "Vous quittez PPF" warning (the safe choice first); "Ajouter à mon
  * agenda", which builds the iCalendar file on the device after a short warning about synced
- * calendars; and the answers "J'y serai" / "Intéressé", recorded on the device only.
+ * calendars; and the answers "J'y serai" / "Ça m'intéresse", recorded on the device only. The
+ * organisers and the participating organisations follow D-044: an organisation shows as such only
+ * when it said so with its own key; an account that is one may answer publicly ([OrganisationResponses]).
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -129,6 +130,8 @@ internal fun MobilizationDetail(
     var cancelResult by remember(address) { mutableStateOf<CancelOutcome?>(null) }
     val own = agenda.ownProposal(mobilization)
     val now = agenda.now
+    val hosting = agenda.participations.hosting(mobilization, names::counts)
+    val account = signer?.publicKey?.hex
 
     Column(modifier.verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(AgendaTags.DETAIL)) {
         Column(Modifier.widthIn(max = 720.dp)) {
@@ -175,20 +178,17 @@ internal fun MobilizationDetail(
                     mobilization.location + "\n" + stringResource(Res.string.agenda_territory, mobilization.territory),
                     Modifier.testTag(AgendaTags.WHERE),
                 )
-                if (mobilization.organizers.isNotEmpty()) {
-                    Spacer(Modifier.height(10.dp))
-                    InfoRow(
-                        Lucide.Users,
-                        null,
-                        stringResource(Res.string.agenda_organized_by, mobilization.organizers.joinToString(", ") { names.organisation(it) }),
-                        Modifier.testTag(AgendaTags.ORGANIZERS),
-                    )
-                }
+                Spacer(Modifier.height(10.dp))
+                HostsBlock(mobilization, hosting, names, Modifier.testTag(AgendaTags.ORGANIZERS))
                 val declaration = mobilization.declaration
                 if (mobilization.type == MobilizationType.MANIFESTATION && declaration != null) {
                     Spacer(Modifier.height(10.dp))
-                    InfoRow(Lucide.Landmark, null, declarationLabel(declaration))
+                    InfoRow(Lucide.Landmark, null, declarationLabel(declaration), Modifier.testTag(AgendaTags.DECLARATION))
                 }
+            }
+            if (hosting.participants.isNotEmpty()) {
+                Spacer(Modifier.height(16.dp))
+                ParticipantsSection(hosting, names)
             }
 
             Spacer(Modifier.height(16.dp))
@@ -243,7 +243,12 @@ internal fun MobilizationDetail(
 
             if (!mobilization.isPast(now) && !mobilization.cancelled) {
                 Spacer(Modifier.height(16.dp))
-                Responses(agenda.responseTo(mobilization), onRespond = { agenda.respond(mobilization, it) })
+                if (signer != null && account != null && names.counts(account)) {
+                    // A verified organisation or PPF: "J'y serai" becomes the choice to show it publicly or not (D-044).
+                    OrganisationResponses(mobilization, agenda, names, account, signer, hosting)
+                } else {
+                    Responses(agenda.responseTo(mobilization), onRespond = { agenda.respond(mobilization, it) })
+                }
             }
 
             if (mobilization.description.isNotBlank()) {

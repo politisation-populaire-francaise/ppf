@@ -35,6 +35,7 @@ import javax.sql.DataSource
  * | Call for witnesses (`temoins`) | always held | always held |
  * | Fundraising call (`collecte`) | published (owner, 2026-11-07: PPF, an association, may call for funds) | refused (`403 not_allowed`) |
  * | Directory entry (`organisation`) | editorial keys only (policy) | refused (`403 not_allowed`) |
+ * | Response to a mobilization (31925, contract version 2) | published | published (shown by no device) |
  *
  * Decisions of the owner of 2026-11-07: a verified organisation publishes directly as soon as it is
  * verified (no probation period); an author may always cancel their mobilization or close their call
@@ -80,6 +81,9 @@ class AgirSpace(
         }
         // The policy already refused the entries signed by another key than an editorial one.
         AgirCategory.ORGANISATION -> if (policy.isEditor(event.pubkey)) Route.Publish else Route.Refuse(ORGANISATION_REFUSED)
+        // A response to a mobilization holds no text the application shows: no review (D-044). The
+        // devices show only the responses of verified organisations and editorial keys.
+        AgirCategory.PARTICIPATION -> Route.Publish
         null -> Route.Publish
     }
 

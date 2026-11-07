@@ -129,10 +129,11 @@ Formats complets dans `docs/FORMATS.md`, section 4 sexies. Tous les exemples son
 | `status` | Facultatif : `prevu` (par défaut), `annule`, `reporte` |
 | `declaration` | Facultatif, pour une manifestation : `faite`, `en-cours`, `non-faite` |
 | `summary`, `link` | Facultatifs : résumé, lien web |
-| `organizers` | Facultatif : clés (`pubkey`) d'organisations fictives de `organisations/`, séparées par des virgules ; la page de ces organisations liste alors la mobilisation |
+| `organizers` | Facultatif : clés (`pubkey`) d'organisations fictives de `organisations/`, séparées par des virgules ; la page de ces organisations liste alors la mobilisation, avec la mention « Annoncée, non confirmée » (ces organisations fictives n'ont pas de clé secrète : elles ne peuvent pas confirmer) |
+| `participation` | Facultatif : `participant` ou `organisateur` ; ajoute la réponse publique de la clé des exemples (l'équipe éditoriale) à la mobilisation, type 31925, datée comme elle (rubrique « Organisations participantes ») |
 | `created_at` | Date de la version, `AAAA-MM-JJTHH:MM`, temps universel |
 
-Le corps est la description (texte simple). L'outil vérifie chaque mobilisation avec les règles de l'application et écrit `agenda.json` (type 31923, NIP-52).
+Le corps est la description (texte simple). L'outil vérifie chaque mobilisation avec les règles de l'application et écrit `agenda.json` (type 31923, NIP-52 ; avec les réponses publiques de type 31925 demandées par `participation`).
 
 ### Format d'un appel (`appels/*.md`)
 
