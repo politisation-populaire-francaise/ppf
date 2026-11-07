@@ -63,7 +63,7 @@ Le numéro détermine le comportement :
 | 20000 à 29999 | Éphémères : non conservés. |
 | 30000 à 39999 | Adressables : remplaçables par identifiant (`d`), voir section 4. |
 
-Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies). Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
+Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies). Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
 
 ## 4. Identifiant stable d'un contenu modifiable
 
@@ -80,7 +80,7 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `summary` | Résumé | Non |
 | `published_at` | Première publication, secondes depuis 1970, en texte | Non |
 | `t` | Un thème par étiquette (`droits`, `manifestation`, …) | Non |
-| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) | Non |
+| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-duration` | Parcours seulement : durée de lecture annoncée, en minutes (1 à 240) | Non |
@@ -118,6 +118,57 @@ Blocs communs du Markdown de « Comprendre » (`core/comprendre/ContentBlocks`) 
 
 La page qui définit la méthode et les verdicts est un article d'identifiant `notre-methode`.
 
+### Glossaire (D-048)
+
+**Fichier source** `content/glossaire/<slug>.md` (format complet dans `content/README.md`) :
+
+```markdown
+---
+slug: motion-de-censure
+title: [EXEMPLE] Motion de censure
+summary: Vote par lequel les députés peuvent renverser le gouvernement.
+variants: motion de censure, motions de censure
+topics: parlement, gouvernement
+see_also: 49-3, dissolution, gouvernement
+related: parcours:le-49-3-et-la-motion-de-censure, qui-decide:ecole
+origin: ai-assisted
+published_at: 2026-11-07
+updated_at: 2026-11-07
+---
+Explication détaillée (« En savoir plus »), encarts `::: en-bref` permis.
+
+## Sources
+
+- [Constitution, article 49](https://www.legifrance.gouv.fr/...)
+```
+
+| Champ de l'en-tête | Contenu | Obligatoire |
+|---|---|---|
+| `slug` | Identifiant stable de l'entrée (devient `d`) | Oui |
+| `title` | Le terme affiché, précédé de `[EXEMPLE] ` pour l'instant | Oui |
+| `summary` | La définition rapide de l'infobulle : une ou deux phrases, 200 caractères au plus | Oui |
+| `variants` | Les formes repérées dans les textes, séparées par des virgules (singulier, pluriel, sigle, forme longue) ; `\,` écrit une virgule à l'intérieur d'une forme (`Conseil économique\, social et environnemental`). Au moins une ; une forme n'appartient qu'à une entrée (deux formes qui ne diffèrent que par les majuscules comptent comme la même) | Oui |
+| `topics` | Thèmes (étiquettes `t`) | Non |
+| `see_also` | Slugs d'autres entrées du glossaire | Non |
+| `related` | Contenus liés : `parcours:<slug>`, `fiche:<slug>`, `decryptage:<slug>`, `qui-decide:<slug>`, `histoire:<slug>` | Non |
+| `auto` | `non` : l'entrée n'est jamais repérée dans les textes (mot trop courant), seulement listée | Non |
+| `origin`, `published_at`, `updated_at` | Comme les autres contenus | `origin` oui |
+
+Le corps est l'explication détaillée ; il se termine par `## Sources` (sources primaires).
+
+**Événement** : article NIP-23 (type `30023`), `ppf-type` = `glossaire`, `title` = le terme, `summary` = la définition rapide, et en plus des étiquettes communes :
+
+| Étiquette | Contenu |
+|---|---|
+| `["ppf-variant", "<forme>"]` | Une par forme, sans l'échappement `\,` |
+| `["ppf-auto", "non"]` | Seulement pour une entrée jamais repérée automatiquement |
+| `["a", "30023:<clé>:<slug>", "", "voir-aussi"]` | Une par entrée de `see_also` (l'application la retrouve par son slug, quelle que soit la clé de l'équipe qui l'a signée) |
+| `["a", "30023:<clé>:<slug>", "", "lie"]` | Une par contenu de `related` (l'application retrouve son type et son titre dans sa copie locale ; un contenu absent n'est pas affiché) |
+
+Fichier intégré : `glossaire.json`, produit par `tools/content-signer`, qui refuse : définition absente ou de plus de 200 caractères, aucune forme, forme en double entre deux entrées, `## Sources` absent, `see_also` ou `related` vers un slug inconnu.
+
+**Repérage** (`core/comprendre/Glossary.kt`, `GlossaryIndex`) : majuscules ignorées, sauf pour un sigle (seulement des capitales et des chiffres, au moins deux lettres : `UE`, `QPC`, `COP21`), comparé avec ses capitales ; apostrophes `'`, `’`, `‘`, `ʼ` équivalentes ; espaces et traits d'union insécables lus comme les ordinaires ; accents respectés ; limites de mot (ni lettre ni chiffre avant et après) ; la forme la plus longue gagne, sans chevauchement ; première occurrence seulement par contenu ; jamais dans les titres, les liens, la section des sources, les adresses écrites en clair (`http://…`, `https://…`, `www.…`, `ppf:…`), ni dans la page d'une entrée pour son propre terme. Un lecteur qui ne connaît pas ce format voit un article ordinaire.
+
 ### Publications courtes du fil
 
 Une publication du fil est un événement de type `1` : `content` est le texte brut, les étiquettes `t` portent les thèmes. Pas de HTML, pas de Markdown. Un contenu qui commence par `[EXEMPLE]` est un contenu de démonstration : l'application affiche ce marqueur sous forme de badge. La publication la plus récente portant le thème `en-direct` alimente le bandeau « EN DIRECT » du fil.
@@ -150,6 +201,8 @@ Une revendication proposée par un citoyen est un contenu éditorial de type `30
 
 ## 4 quinquies. Espace « Voir » : briques sourcées (D-034)
 
+> Ajouts du 7 novembre 2026 (D-054, D-056) : brique `parti` et liens de rôle `parti` et `responsable` (détail prêt à reprendre dans `docs/integration/voir-partis.md`, section « Format ») ; demandes à l'équipe de rédaction `ppf-voir-request` version 1, envoyées en message privé NIP-17 (détail dans `docs/integration/voir-demandes.md`, section 2) ; adresses des pages du site dans `docs/integration/voir-web.md`.
+
 Chaque brique est un contenu éditorial NIP-23 (type `30023`) : étiquettes communes de la section 4 bis (`d`, `title`, `summary`, `published_at`, `t`, `ppf-origin`), corps en Markdown lisible partout, `ppf-type` pour dire ce qu'elle est, puis des étiquettes structurées. Les étiquettes à plusieurs champs sont positionnelles ; un champ vide veut dire « inconnu ». Les dates sont au format `AAAA-MM-JJ`. Seules les briques signées par une clé de l'équipe éditoriale sont affichées ; une brique mal formée est ignorée.
 
 Étiquettes communes à plusieurs briques :
@@ -175,9 +228,9 @@ Types de source : `autorites`, `organisateurs`, `comptage-independant`, `medias`
 | `dossier` | `ppf-axis` (un dossier sans axe n'est pas affiché dans « Voir »). |
 | `reponse` | `ppf-respondent` (nom de la personne qui répond, obligatoire) et un lien `a` de rôle `cible`. Le corps est la réponse. |
 
-## 4 sexies. Espace « Agir » : mobilisations, appels, organisations (D-039 à D-043)
+## 4 sexies. Espace « Agir » : mobilisations, appels, organisations (D-039 à D-044)
 
-Le vocabulaire commun est dans `shared/core/.../core/agir/AgirFormats.kt` ; le contrat complet et son historique dans `docs/integration/agir-contrat.md` (version 1). Qui publie quoi, et ce que fait le serveur, est décrit en section 5. Textes en texte brut : aucun caractère de contrôle, saut de ligne permis dans `content` seulement.
+Le vocabulaire commun est dans `shared/core/.../core/agir/AgirFormats.kt` ; le contrat complet et son historique dans `docs/integration/agir-contrat.md` (version 1) et `docs/integration/agir-transparence.md` (version 2 : réponses publiques des organisations, type 31925). Qui publie quoi, et ce que fait le serveur, est décrit en section 5. Textes en texte brut : aucun caractère de contrôle, saut de ligne permis dans `content` seulement.
 
 ### Mobilisation de l'agenda (type 31923, NIP-52)
 
@@ -196,8 +249,8 @@ Le vocabulaire commun est dans `shared/core/.../core/agir/AgirFormats.kt` ; le c
 | `ppf-event-status` | Non | `prevu` (par défaut, non écrit), `annule` ou `reporte` |
 | `ppf-territory` | Oui | Commune, département ou `France`, 100 caractères au plus |
 | `ppf-charter` | Oui | `1.0` |
-| `ppf-declaration` | Non | Pour une manifestation : `faite`, `en-cours` ou `non-faite` |
-| `p` | Non | `["p", "<clé hex>", "", "organizer"]` pour chaque organisation organisatrice (AG-21) |
+| `ppf-declaration` | Non | Pour une manifestation : `faite`, `en-cours` ou `non-faite` ; les trois sont proposées dans le formulaire et affichées (« Déclarée en préfecture », « Déclaration en préfecture en cours », « Non déclarée en préfecture »), avec une phrase qui prévient l'auteur que la mention est publique (D-044) |
+| `p` | Non | `["p", "<clé hex>", "", "organizer"]` pour chaque organisation organisatrice nommée (AG-21) ; elle n'est montrée co-organisatrice que si elle l'a confirmé par sa propre réponse (type 31925, `ppf-role` = `organisateur`), sinon « annoncée, non confirmée » |
 | `a` | Non | Adresse de l'appel dont l'événement est issu (AP-07) |
 | `r` | Non | Lien `http` ou `https`, sans espace |
 | `summary` | Non | Résumé court |
@@ -208,7 +261,29 @@ Le vocabulaire commun est dans `shared/core/.../core/agir/AgirFormats.kt` ; le c
 
 **Export iCalendar** (RFC 5545), construit sur l'appareil (`ICalendar`) ou servi par `GET /api/v1/agenda.ics` : un `VEVENT` par mobilisation, `UID` = adresse stable `31923:<clé>:<d>` (l'agenda remplace l'événement importé au lieu de le doubler), `DTSTAMP` = date de la version, `DTSTART` et `DTEND` en UTC (`Z`, pas de `DTEND` sans fin), `SUMMARY`, `LOCATION`, `DESCRIPTION`, `URL` (premier lien `http(s)`), `STATUS` ; textes échappés (`\`, `;`, `,`, retours à la ligne en `\n`, autres caractères de contrôle retirés), lignes repliées à 75 octets UTF-8 sans couper un caractère, fins de ligne CRLF. Deux écarts entre les deux mises en œuvre, à unifier : l'appareil écrit `METHOD:PUBLISH`, `STATUS` `CONFIRMED`, `TENTATIVE` (reporté) ou `CANCELLED` et une `DESCRIPTION` faite du résumé puis du texte ; le serveur n'écrit pas `METHOD`, ajoute `X-WR-CALNAME`, n'écrit que `STATUS:CANCELLED` et prend le texte, ou le résumé à défaut.
 
-**Sur l'appareil seulement** : tables locales `agenda_response(address, response, ends_at, responded_at)` (`response` = `going` ou `interested`, effacée 24 heures après la fin de l'événement) et `agenda_proposal(event_id, state, reason, updated_at)` (`state` = `review`, `published` ou `rejected`, avec la raison de l'équipe). Jamais envoyées.
+**Sur l'appareil seulement** : tables locales `agenda_response(address, response, ends_at, responded_at)` (`response` = `going`, « J'y serai », ou `interested`, « Ça m'intéresse » ; effacée 24 heures après la fin de l'événement) et `agenda_proposal(event_id, state, reason, updated_at)` (`state` = `review`, `published` ou `rejected`, avec la raison de l'équipe). Jamais envoyées.
+
+### Réponse publique à une mobilisation (type 31925, NIP-52, version 2 du contrat)
+
+Réponse NIP-52 à un événement de calendrier (« Calendar Event RSVP »), adressable par `31925:<clé>:<d>`, signée par la clé qui répond. Elle permet à une **organisation vérifiée** ou à une **clé de l'équipe éditoriale** (PPF) d'afficher qu'elle participe à une mobilisation, ou de confirmer qu'elle la co-organise (décision de la propriétaire du 7 novembre 2026, D-044 : « la transparence passe avant tout »). Personne ne peut répondre au nom d'une autre clé.
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `d` | Oui | Identifiant stable, 1 à 200 caractères parmi lettres, chiffres et `._~:-` ; l'application écrit l'adresse de la mobilisation (`31923:<clé>:<d>`), pour qu'une nouvelle réponse de la même clé remplace la précédente ; un autre client peut écrire un UUID (NIP-52) |
+| `a` | Oui | Adresse de la mobilisation, `31923:<clé>:<d>` (une seule ; une adresse de relais peut suivre, comme dans NIP-52) |
+| `status` | Oui | `accepted`, `declined` ou `tentative` (NIP-52) |
+| `ppf-role` | Non | Extension PPF : `participant` (par défaut) ou `organisateur` ; `organisateur` ne compte que pour une clé que la mobilisation nomme en `p` ; ailleurs, la réponse compte comme une participation |
+| `p` | Non | Clé de l'auteur de la mobilisation (celle de `a`, NIP-52) |
+| `e` | Non | Identifiant de la version de la mobilisation à laquelle on répond (NIP-52) ; l'application ne l'écrit pas |
+| `fb` | Non | `free` ou `busy` (NIP-52) ; l'application ne l'écrit pas |
+
+`content` : vide, ou une phrase courte (280 caractères au plus, sans coordonnée personnelle) ; **l'application ne l'affiche jamais**, d'où la publication directe, sans relecture. Retirer sa participation publie une version plus récente à la même adresse, `declined`.
+
+**Lecture sur l'appareil** (`Participation`, `Participations`, `Hosting`) : pour chaque clé et chaque mobilisation, seule la réponse la plus récente compte, quel que soit son `d` (la plus récente gagne, à date égale l'identifiant le plus petit) ; un statut inconnu ou une adresse `a` illisible écarte la réponse ; un rôle inconnu se lit `participant`. **Seules les réponses des organisations vérifiées et des clés éditoriales sont montrées** ; celle de toute autre clé (un citoyen sur un autre client) est ignorée : la visibilité de la participation des citoyens attend une décision de la propriétaire, et leur nombre viendra de la méthode de comptage anonyme. Affichage : « Organisé par » = l'auteur, puis les organisations nommées qui ont confirmé (`accepted` et `organisateur`, badge « Vérifiée »), puis celles qui n'ont pas confirmé, « annoncée, non confirmée » ; « Organisations participantes (N) » = les clés qui comptent et dont la réponse est `accepted`, organisateurs compris ; les réponses `declined` et `tentative` ne sont jamais montrées.
+
+**Synchronisation** : `GET /api/v1/events?kind=31925`, tout le type en bloc avec son propre curseur (`pull:31925`, parti de 0 la première fois), jamais une requête par mobilisation : le serveur ne sait pas quels événements l'appareil regarde ; copie dans la table `event`, versions remplacées par la règle habituelle.
+
+**Codes d'erreur du serveur** : `missing_field` avec le nom de l'étiquette (`d`, `a`, `status`, `ppf-role`, `p`, `e`, `fb`), `too_long` (`content` au-delà de 280 caractères, toute autre étiquette au-delà de 1000), `personal_data` (`content`), `malformed_event` (caractère de contrôle). Écarts avec NIP-52 : le `d` de l'application n'est pas un identifiant aléatoire mais l'adresse de la mobilisation (une seule réponse par clé et par mobilisation) ; `ppf-role` n'existe pas dans NIP-52 (les autres clients l'ignorent).
 
 ### Appel (type 30023, `ppf-type` = `appel`)
 
@@ -235,7 +310,7 @@ Contenu adressable `30023:<clé>:<d>`, comme les revendications. `content` : le 
 | `temoins` | `start`, `end`, `location`, `ppf-evidence`, `ppf-recipient` ; toujours relu | Je témoigne (désactivé tant que le canal sécurisé n'existe pas) |
 | `autre` | aucune | Je soutiens |
 
-**Sur l'appareil seulement** : table locale `call_response(address)`, l'adresse de chaque appel auquel l'utilisateur a répondu, sans date. Jamais envoyée.
+**Sur l'appareil seulement** : table locale `call_response(address)`, l'adresse de chaque appel auquel l'utilisateur a répondu, sans date. Jamais envoyée. Une réponse est effacée 7 jours (`CallResponseStore.KEPT_AFTER_END`) après la fin de l'appel, au chargement suivant des appels : la fin est la clôture (date de la version close) ou l'échéance (`ppf-deadline`), la première des deux, et à défaut d'échéance la fin (`end`) ou le début (`start`) de ce qu'il annonce ; pour un appel à témoins, dont les dates sont celles des faits passés, seules l'échéance et la clôture comptent. Un appel ouvert sans aucune date garde la réponse jusqu'à son retrait.
 
 ### Fiche de l'annuaire des organisations (type 30023, `ppf-type` = `organisation`)
 
@@ -259,6 +334,148 @@ Publiée seulement par une clé de l'équipe éditoriale. `content` : la présen
 
 **Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé ; une nouvelle version sans `p` retire la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
 
+## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-059, D-060)
+
+Même principe que « Voir » : des événements NIP-23 (type 30023) signés par l'équipe éditoriale, avec `ppf-type`, un corps Markdown et des étiquettes structurées (champs positionnels, champ vide = inconnu). Les étiquettes communes `ppf-source`, `ppf-archive`, `ppf-correction`, `ppf-next` et les liens `a` gardent leur sens. Contenus intégrés : `decider.json`.
+
+### Pétition (`ppf-type` = `petition`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-platform` | `assemblee`, `senat`, `cese`, `rip` ou `ice` (obligatoire) |
+| `ppf-official-url` | Page de la pétition, en `https`, sur un site de la plateforme : `petitions.assemblee-nationale.fr`, `petitions.senat.fr`, `petitions.lecese.fr`, `www.referendum.interieur.gouv.fr`, `citizens-initiative.europa.eu` (obligatoire ; sinon la brique est ignorée) |
+| `ppf-petition-status` | `ouverte` ou `close` (obligatoire) |
+| `ppf-reference` | Numéro donné par la plateforme |
+| `ppf-opened`, `ppf-closes` | Dates d'ouverture et dernier jour de signature (AAAA-MM-JJ) |
+| `ppf-count` | Relevé du compteur : `nombre`, `date`, `source` ; répétée pour l'historique, le plus récent compte |
+| `ppf-departments` | Départements d'origine des signataires, si la plateforme les publie : `nombre`, `date` |
+| `ppf-required` | Soutiens nécessaires pour cette procédure (référendum d'initiative partagée) |
+| `ppf-milestone` | Étape franchie : `date`, `libellé` |
+| `a` rôle `texte` | Le texte de loi de « Voir » concerné |
+
+### Pacte (`ppf-type` = `pacte`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-election` | `identifiant`, `libellé`, `premier tour` (facultatif) |
+| `ppf-pacte-status` | `proposee` (liste de départ, à voter), `envoye`, `clos` |
+| `ppf-measure` | `identifiant`, `titre`, `engagement précis`, `texte à modifier` ; 1 à 10, dans l'ordre, identifiants distincts |
+| `ppf-sent`, `ppf-deadline` | Jour d'envoi et date limite, les mêmes pour tous (obligatoires dès l'envoi) |
+| `a` rôle `candidat` | Chaque candidat, vers sa fiche de « Voir » |
+
+Empreinte du texte envoyé : SHA-256 (hexadécimal) du texte `ppf-pacte-v1\n`, puis `identifiant␟libellé\n` de l'élection, puis pour chaque mesure `identifiant␟titre␟engagement␟texte à modifier\n` (␟ = U+001F, espaces de début et de fin retirés).
+
+### Réponse d'un candidat (`ppf-type` = `engagement`)
+
+| Étiquette | Contenu |
+|---|---|
+| `a` rôle `pacte` | Le Pacte (un seul) |
+| `a` rôle `candidat` | Le candidat (un seul) |
+| `ppf-pacte-text` | Empreinte du texte répondu ; la réponse ne compte que si elle est égale à celle du Pacte |
+| `ppf-received` | Jour de réception (obligatoire) |
+| `ppf-answer` | `identifiant de mesure`, `signe` ou `refuse`, `commentaire` (facultatif) ; une seule par mesure |
+| `ppf-archive` | Document reçu : `empreinte SHA-256`, `preuve d'horodatage`, `adresse de l'archive`, `date` |
+
+Suivi après l'élection : un fait de « Voir » porte `a` rôle `pacte` et `ppf-pacte-measure` = identifiant de la mesure.
+
+## 4 octies. Annuaire des élus (D-047)
+
+Données publiques du Répertoire national des élus (RNE), servies par le serveur en JSON (ce ne sont pas des événements signés). Détail des sources et des règles de construction : `docs/integration/elus-serveur.md` ; lecture sur l'appareil : `docs/integration/elus-app.md`.
+
+### Index (`GET /api/v1/elus`)
+
+```json
+{
+  "format": 1,
+  "example": true,
+  "source": {
+    "name": "Répertoire national des élus (ministère de l'Intérieur)",
+    "url": "https://www.data.gouv.fr/fr/datasets/5c34c4d1634f4173183a64f1/",
+    "licence": "Licence Ouverte 2.0",
+    "updatedOn": "2026-08-11"
+  },
+  "importedOn": "2026-11-07",
+  "packages": [
+    { "code": "69", "name": "Rhône", "sha256": "<64 hex>", "bytes": 123456, "postalCodes": ["69001", "69002"] },
+    { "code": "FR", "name": "France", "sha256": "<64 hex>", "bytes": 4567, "postalCodes": [] }
+  ]
+}
+```
+
+- `example` : vrai pour le jeu fictif (`PPF_RNE_SOURCE=example`, valeur par défaut) ; l'application affiche alors « Données fictives [EXEMPLE] ».
+- `packages` : un par département (`01` à `95`, `2A`, `2B`, `971` à `976`), par collectivité d'outre-mer qui a des élus dans le RNE (`975`, `977`, `978`, `986`, `987`, `988`) et `FR` (membres du Parlement européen élus en France), triés par code. `sha256` : empreinte SHA-256, en hexadécimal minuscule, des **octets exacts du corps JSON non compressé** (UTF-8) ; `bytes` : leur nombre ; `postalCodes` : les codes postaux des communes du paquet, triés.
+
+### Paquet (`GET /api/v1/elus/{code}`)
+
+```json
+{
+  "format": 1,
+  "example": true,
+  "code": "69",
+  "name": "Rhône",
+  "region": { "code": "84", "name": "Auvergne-Rhône-Alpes" },
+  "sourceUpdatedOn": "2026-08-11",
+  "communes": [
+    { "code": "69123", "name": "Lyon", "postalCodes": ["69001", "69002"], "epci": null, "cantons": [], "circonscriptions": ["6901", "6902"], "collectivite": "69M" }
+  ],
+  "epcis": [ { "code": "<SIREN>", "name": "…" } ],
+  "cantons": [ { "code": "6901", "name": "…" } ],
+  "circonscriptions": [ { "code": "6901", "name": "1re circonscription du Rhône" } ],
+  "officials": [
+    { "mandate": "municipal", "territory": "69123", "name": "[EXEMPLE] Prénom Nom", "function": "Maire", "since": "2026-03-22", "functionSince": "2026-03-28" },
+    { "mandate": "communautaire", "territory": "<SIREN>", "commune": "<code Insee>", "name": "…", "function": null, "since": "…", "functionSince": null }
+  ],
+  "collectivites": [ { "code": "69M", "name": "Métropole de Lyon" } ]
+}
+```
+
+| Champ | Contenu |
+|---|---|
+| `region` | Région du département ; `null` pour une collectivité d'outre-mer et pour `FR` |
+| `communes[]` | Code Insee, nom, codes postaux (ceux des arrondissements pour Paris, Lyon et Marseille), `epci` (SIREN de l'intercommunalité ou `null`), `cantons` et `circonscriptions` (toutes celles de la commune, plusieurs pour une commune partagée ; aucun canton là où il n'y a pas de conseil départemental), `collectivite` (facultatif, voir ci-dessous) |
+| `epcis`, `cantons`, `circonscriptions`, `collectivites` | Listes `{code, name}` des territoires cités |
+| `officials[]` | `mandate`, `territory`, `name` (« Prénom Nom »), `function` (libellé du RNE ou `null`), `since` (début du mandat), `functionSince` (début de la fonction ou `null`) ; `commune` seulement pour `communautaire` (commune représentée, quand le RNE la donne) |
+
+Valeurs de `mandate` et de `territory` : `municipal` (code Insee de la commune), `communautaire` (SIREN de l'intercommunalité), `departemental` (code du canton), `regional` (code de la région ; le paquet contient les conseillers de la section départementale et le président du conseil régional), `collectivite` (code de la collectivité à statut particulier : `69M`, `94` pour la Corse, `972`, `973`, `975`, `977`, `978`, `986`, `987`, `988`), `depute` (code de la circonscription), `senateur` (code du département : `69`, `2A`, `972`, `977`), `europeen` (`FR`, paquet national seulement).
+
+**Codes des circonscriptions** : code du département ou de la collectivité suivi du numéro sur deux chiffres : `0101`, `6901`, `7518` en métropole ; `2A01`, `2B02` en Corse ; `97101` à `97104`, `97401` à `97407` outre-mer ; `97501`, `97701` (Saint-Barthélemy et Saint-Martin, circonscription commune, présente dans les paquets `977` et `978`), `98601`, `98701` à `98703`, `98801`, `98802`. Le numéro est toujours les deux derniers caractères. Les circonscriptions des Français établis hors de France (`ZZ01` à `ZZ11`) ne sont dans aucun paquet, pas plus que leurs sénateurs.
+
+**`collectivite` d'une commune** (ajouté le 7 novembre 2026, facultatif) : code de la collectivité dont l'assemblée remplace le conseil départemental pour cette commune (`69M` Métropole de Lyon, `94` Corse, `972` Martinique, `973` Guyane, collectivités d'outre-mer), tiré du champ `CTCD` du Code officiel géographique ; le nom est dans `collectivites`. L'application montre alors cette assemblée sous le niveau « Département », à la place du conseil départemental. Un paquet dont aucune commune ne porte ce champ (écrit avant cet ajout) est lu comme avant : toutes les assemblées du paquet sont montrées.
+
+**Règles communes** : dates `AAAA-MM-JJ` ; JSON compact, champs dans l'ordre ci-dessus ; listes triées (communes par nom sans accents ni majuscules, puis code ; élus par mandat, territoire, rang dans le conseil, nom) pour que deux imports des mêmes fichiers donnent les mêmes octets. **Jamais** de date de naissance, de sexe, de profession ni de nationalité.
+
+**HTTP** : `ETag: "<sha256>"`, **entre guillemets** (RFC 9110), la valeur entre les guillemets étant le `sha256` de l'index ; `If-None-Match` (avec ou sans guillemets, `W/`, liste ou `*`) répond `304` sans corps ; `Cache-Control: public, no-cache` ; `Vary: Accept-Encoding` ; avec `Accept-Encoding: gzip`, le corps est envoyé compressé (`Content-Encoding: gzip`), l'empreinte restant celle des octets décompressés. L'appareil refuse un paquet dont l'empreinte ne correspond pas à l'index, ou qui ne se lit pas comme le paquet du code demandé.
+
+**Lecture par l'appareil** (`core/elus/ElusFormats.kt`, `ElusReader`) : stricte pour le document (format 1, code valide, nom présent ; sinon le paquet est ignoré), tolérante pour ses entrées (une commune ou un élu illisible est écarté, les champs inconnus ignorés) ; 32 Mo au plus par paquet.
+
+### Sur l'appareil : schéma local en version 11
+
+Migration `shared/core/src/commonMain/sqldelight/.../core/db/migrations/10.sqm` (schéma 10 vers 11), identique aux définitions de `Elus.sq` (un test compare une base neuve et une base migrée) :
+
+| Table | Colonnes | Rôle |
+|---|---|---|
+| `elus_commune` | `id` (toujours 0 : une seule ligne), `commune_code` (code Insee), `department_code` (code du paquet) | La commune choisie ; jamais envoyée |
+| `elus_package` | `code` (clé : un département, `FR`, ou `index` pour l'index du serveur), `sha256`, `json` (le JSON exact vérifié), `source_updated_on` (`AAAA-MM-JJ`), `downloaded_at` (secondes depuis 1970) | Les listes téléchargées, lues hors ligne ; seuls restent le paquet de la commune, `FR` et l'index |
+
+« Oublier ma commune » vide les deux tables.
+
+### Sur le serveur : migration Flyway `V6__elus.sql`
+
+| Table | Rôle |
+|---|---|
+| `elus_import` | Un essai d'import par ligne : source (`example` ou `official`), statut (`building`, `ready`, `failed`), dates, date de la source, nombres d'élus par mandat (`counts`, pour la garde des 20 %), index exact et son empreinte, motif d'échec (code court, jamais une valeur lue dans un fichier). Un seul import servi et un seul en construction à la fois |
+| `elus_package` | Les paquets d'un import : code, nom, `sha256` et `bytes` du JSON non compressé, codes postaux, corps compressé en gzip |
+| `elus_staging` | Table de travail (`UNLOGGED`) des élus lus pendant un import, vidée dès que les paquets sont écrits |
+
+Rien sur les lecteurs : ni adresse, ni requête, ni qui a téléchargé quel paquet.
+
+Variables d'environnement du serveur pour l'annuaire :
+
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `PPF_RNE_SOURCE` | `example` (jeu fictif embarqué, ne contacte personne) ou `official` (vrai RNE, suivi **seulement** avec `PPF_ENVIRONMENT=production` ; ailleurs le jeu fictif est servi) | `example` |
+| `PPF_RNE_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 7 |
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.
@@ -268,7 +485,7 @@ Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est jo
 | `POST /api/v1/events`, corps : un événement signé (section 2), 64 Ko au plus, 1000 étiquettes au plus | Publier un contenu. La signature est vérifiée avant toute chose ; sauf les cas décrits dans les lignes suivantes (revendications, salons, espace Agir), les contenus éditoriaux (type 30023) et les descriptions de salon (types 39000 à 39005, avec exactement un identifiant `d`) ne sont acceptés que des clés de l'équipe éditoriale ; les enveloppes chiffrées (type 1059) sont acceptées de toute clé, nomment exactement un destinataire (`p`) et sont stockées sans être ouvertes ; un message de salon (type 9) porte exactement une étiquette `h` et n'est accepté que si le salon existe et est ouvert ; les listes de membres (39002), les événements d'adhésion ou de modération (9000 à 9022) et les drapeaux `private` et `hidden` sont refusés. Limitation de débit par clé publique (60 par minute) et globale (600 par minute), jamais par adresse IP. | `201` `{"id":"…","status":"stored"}` ; `200` avec `"duplicate"` (déjà connu) ou `"superseded"` (une version plus récente existe) ; `400` `{"error":"invalid_signature"\|"malformed_event"\|"ephemeral_kind"\|"bad_recipient"\|"missing_group"\|"multiple_groups"\|"too_many_tags"\|"unsupported_kind"\|"unsupported_group_flag", "message":"…"}` ; `403` `not_allowed`, `group_closed` ou `members_list_refused` ; `404` `group_not_found` ; `409` `group_taken` ; `413` trop volumineux ; `429` `rate_limited` avec un en-tête `Retry-After` |
 | `POST /api/v1/events`, revendication d'un compte citoyen | Une revendication (type 30023, `ppf-type` = `revendication`) signée par une clé hors de l'équipe éditoriale n'est pas publiée : elle attend la relecture d'une personne. Sa forme doit être exactement celle du formulaire (étiquettes `d`, `title`, `summary`, `published_at`, `ppf-type`, `ppf-origin`, `ppf-status`, `ppf-territory`, `t` ; chacune avec un nom et une valeur ; une seule de chaque sauf `t`, de un à trois thèmes connus et distincts ; `d` en lettres, chiffres et tirets ; aucun caractère de contrôle ; statut `nouvelle`), et elle doit respecter les règles du formulaire. Une nouvelle version (même clé, même `d`) remplace celle qui attend. | `202 {"id":"…","status":"pending_review"}` (aussi pour un renvoi du même événement en attente) ; `200 {"status":"duplicate"}` (déjà publié) ; `200 {"status":"superseded"}` (une version plus récente attend ou est publiée) ; `400 malformed_demand` (forme) ; `400 status_not_allowed` (statut autre que `nouvelle`) ; `400 draft_rules` (règles du formulaire ; le message nomme seulement les règles et les champs, par exemple `too_short (title)`, `personal_data (why)`, `personal_data (identifier)`, jamais ce qui a été trouvé) ; `409 rejected` (cette version a été refusée par l'équipe : en envoyer une corrigée) ; `429 too_many_pending` (10 en attente pour cette clé), `429 queue_full` (1000 en attente sur le serveur), tous deux avec `Retry-After: 3600` ; `429 daily_limit` (5 envois par 24 heures pour cette clé) avec `Retry-After` en secondes |
 | `POST /api/v1/events` (partie salons) | Une description de salon (type 39000) est acceptée de toute clé (D-028) si elle porte exactement un `d` (1 à 64 caractères parmi `a-z`, `0-9`, `.`, `_`, `~`, `-`), un `name` contenant au moins une lettre ou un chiffre, un `ppf-territory` de même, `ppf-charter` = `1.0` (première valeur de chaque étiquette), aucun drapeau `private` ni `hidden`, au plus 8 Kio sérialisée, nom et territoire de 100 caractères au plus ; `about` et `picture` sont facultatifs. Un identifiant appartient à la première clé qui l'a décrit ; une nouvelle version par la même clé remplace la description. Un salon ne peut pas porter le même nom qu'un autre sur le même territoire (comparaison sans accents, majuscules ni ponctuation). Les compagnons (39001, 39003, 39004, 39005) ne sont acceptés que des clés éditoriales, pour un salon qu'elles gèrent. Les listes de membres (39002) et les événements d'adhésion ou de modération (9000 à 9022) sont refusés. Un événement envoyé à un salon porte exactement une étiquette `h` désignant un salon existant et ouvert ; un message de salon (type 9) doit en porter une. | `400` `bad_group_id` \| `unsupported_group_flag` \| `missing_name` \| `missing_territory` \| `missing_charter` \| `description_too_long` \| `missing_group` \| `multiple_groups` \| `unsupported_kind` ; `403` `not_allowed` (compagnon publié par une autre clé) \| `members_list_refused` \| `group_closed` ; `404` `group_not_found` ; `409` `{"error":"group_exists","message":"…","existing":"<identifiant du salon à rejoindre>"}` ; `409` `{"error":"group_taken","message":"…"}` (identifiant déjà décrit par une autre clé) |
-| `POST /api/v1/events` (partie Agir) | Mobilisation (type 31923, NIP-52), appel (type 30023, `ppf-type` = `appel`) et fiche d'organisation (type 30023, `ppf-type` = `organisation`) doivent avoir la forme de la section 4 sexies, quelle que soit la clé (équipe comprise). Une clé éditoriale ou une **organisation vérifiée** (clé nommée en `p` d'une fiche d'organisation signée par une clé éditoriale) publie mobilisations et appels directement, dès sa vérification ; une autre clé les voit mis en attente de relecture. Un appel à témoins (`temoins`) est toujours mis en attente ; un appel à collecter des fonds (`collecte`) n'est accepté que d'une organisation vérifiée ou d'une clé éditoriale ; une fiche d'organisation, que d'une clé éditoriale (refusée avant toute lecture de sa forme). Une nouvelle version (même clé, même `d`) remplace celle qui attend. Un contenu approuvé est publié tel qu'il a été signé. Quel que soit le compte, l'auteur peut annuler sa mobilisation (seule différence avec la version publiée : `ppf-event-status` = `annule`) ou clore son appel (seules différences : `ppf-call-status` = `clos` et `ppf-report`, sauf pour un appel à témoins où seul le statut peut changer) sans relecture ; une version de l'auteur encore en attente est alors retirée de la file (motif « Annulé par son auteur avant la relecture »). Une mobilisation en attente dont la date est passée est refusée automatiquement (motif « La date de l'événement est passée avant la relecture. »). Aucune limite sur le nombre de contenus en attente : seule la limitation de débit par minute s'applique. Un contenu mis en attente qui vise un salon (`h`) doit viser un salon existant et ouvert. | `201 stored` (publié, y compris une annulation ou une clôture) ; `202 {"id":"…","status":"pending_review"}` (mis en attente, aussi pour un renvoi du même événement en attente) ; `200 {"id":"…","status":"withdrawn"}` (l'annulation ou la clôture ne portait que sur une version en attente, jamais publiée : celle-ci est retirée de la file et rien n'est publié) ; `200 duplicate` (déjà publié) ; `200 superseded` (une version plus récente attend ou est publiée) ; `400` `missing_title` \| `missing_start` \| `bad_end` \| `missing_location` \| `bad_event_type` \| `bad_call_type` \| `missing_territory` \| `missing_charter` \| `missing_field` \| `too_long` \| `personal_data` (appel portant une coordonnée personnelle ; le message nomme le champ, jamais ce qui a été trouvé) \| `malformed_event` (caractère de contrôle) ; pour `missing_field` et `too_long`, le message est exactement le nom de l'étiquette en cause (`ppf-object`, `location\|r`, `content`…), qu'elle soit absente ou illisible ; `403 not_allowed` (collecte hors organisation vérifiée et équipe éditoriale, fiche d'organisation hors équipe éditoriale) ; `404 group_not_found` ; `409 rejected` (cette version a été refusée : en envoyer une corrigée) ; `429 rate_limited` (limitation de débit générale, avec `Retry-After`) |
+| `POST /api/v1/events` (partie Agir) | Mobilisation (type 31923, NIP-52), appel (type 30023, `ppf-type` = `appel`) et fiche d'organisation (type 30023, `ppf-type` = `organisation`) doivent avoir la forme de la section 4 sexies, quelle que soit la clé (équipe comprise). Une clé éditoriale ou une **organisation vérifiée** (clé nommée en `p` d'une fiche d'organisation signée par une clé éditoriale) publie mobilisations et appels directement, dès sa vérification ; une autre clé les voit mis en attente de relecture. Un appel à témoins (`temoins`) est toujours mis en attente ; un appel à collecter des fonds (`collecte`) n'est accepté que d'une organisation vérifiée ou d'une clé éditoriale ; une fiche d'organisation, que d'une clé éditoriale (refusée avant toute lecture de sa forme). Une nouvelle version (même clé, même `d`) remplace celle qui attend. Un contenu approuvé est publié tel qu'il a été signé. Quel que soit le compte, l'auteur peut annuler sa mobilisation (seule différence avec la version publiée : `ppf-event-status` = `annule`) ou clore son appel (seules différences : `ppf-call-status` = `clos` et `ppf-report`, sauf pour un appel à témoins où seul le statut peut changer) sans relecture ; une version de l'auteur encore en attente est alors retirée de la file (motif « Annulé par son auteur avant la relecture »). Une mobilisation en attente dont la date est passée est refusée automatiquement (motif « La date de l'événement est passée avant la relecture. »). Aucune limite sur le nombre de contenus en attente : seule la limitation de débit par minute s'applique. Un contenu mis en attente qui vise un salon (`h`) doit viser un salon existant et ouvert. Une réponse publique à une mobilisation (type 31925, section 4 sexies) est publiée directement, quelle que soit la clé, si sa forme est bonne : elle ne porte aucun texte que l'application affiche. | `201 stored` (publié, y compris une annulation ou une clôture) ; `202 {"id":"…","status":"pending_review"}` (mis en attente, aussi pour un renvoi du même événement en attente) ; `200 {"id":"…","status":"withdrawn"}` (l'annulation ou la clôture ne portait que sur une version en attente, jamais publiée : celle-ci est retirée de la file et rien n'est publié) ; `200 duplicate` (déjà publié) ; `200 superseded` (une version plus récente attend ou est publiée) ; `400` `missing_title` \| `missing_start` \| `bad_end` \| `missing_location` \| `bad_event_type` \| `bad_call_type` \| `missing_territory` \| `missing_charter` \| `missing_field` \| `too_long` \| `personal_data` (appel portant une coordonnée personnelle ; le message nomme le champ, jamais ce qui a été trouvé) \| `malformed_event` (caractère de contrôle) ; pour `missing_field` et `too_long`, le message est exactement le nom de l'étiquette en cause (`ppf-object`, `location\|r`, `content`…), qu'elle soit absente ou illisible ; `403 not_allowed` (collecte hors organisation vérifiée et équipe éditoriale, fiche d'organisation hors équipe éditoriale) ; `404 group_not_found` ; `409 rejected` (cette version a été refusée : en envoyer une corrigée) ; `429 rate_limited` (limitation de débit générale, avec `Retry-After`) |
 | `GET /api/v1/held?id=<hex>&id=<hex>` | Où en sont les contenus de l'espace Agir mis en attente par leur auteur : de 1 à 20 identifiants d'événements (64 caractères hexadécimaux minuscules). Réponse dans l'ordre demandé, doublons retirés : `[{"id":"…","status":"pending","received_at":1793966400,"decided_at":null,"reason":null}]` (format `HeldState` du cœur). `status` : `pending`, `approved` ou `rejected` ; dates en secondes ; `reason` : motif d'un refus (par l'équipe, ou l'un des deux motifs fixes : date passée, retrait par l'auteur). Une mobilisation en attente dont la date est passée est refusée au moment de cette lecture. Un identifiant inconnu (jamais mis en attente, ou effacé 30 jours après la décision) est absent. Jamais la clé ni le contenu ; `Cache-Control: no-store` ; pas d'authentification (tant qu'un contenu attend, seul son auteur connaît son identifiant). | `200` liste ; `400 bad_parameter` |
 | `GET /api/v1/agenda?from=<s>&to=<s>&territory=<texte>&type=<type>&organizer=<hex>&limit=100` | Les mobilisations publiées qui **chevauchent** la période (début au plus tard `to` ; fin, ou début s'il n'y a pas de fin, au plus tôt `from`), triées par début puis identifiant : tableau d'événements signés. Par défaut, de maintenant moins 12 heures à maintenant plus 90 jours. `from` ≤ `to`, entiers positifs ; `territory` comparé en entier une fois normalisé comme pour les salons (accents, majuscules et ponctuation ignorés ; une valeur sans lettre ni chiffre ne filtre pas ; 200 caractères au plus) ; `type` (parmi les types de mobilisation) et `organizer` (clé hexadécimale : l'auteur, ou une clé nommée organisatrice par `["p","<clé>","","organizer"]`) répétables comme alternatives, 20 valeurs au plus ; `limit` de 1 à 500. Les autres paramètres au plus une fois. Les mobilisations annulées restent listées, avec leur statut. Sert au site et aux abonnements de calendrier : l'application, elle, synchronise par `GET /api/v1/events?kind=31923` et filtre sur l'appareil. | `200` tableau ; `400 bad_parameter` |
 | `GET /api/v1/agenda.ics` (mêmes paramètres) | La même sélection en iCalendar (section 4 sexies), `text/calendar; charset=utf-8`, `Content-Disposition: inline; filename="agenda-ppf.ics"`, `X-WR-CALNAME:PPF : agenda des mobilisations` ; `STATUS:CANCELLED` pour une mobilisation annulée. Un logiciel d'agenda peut s'abonner à cette adresse. | `200` ; `400 bad_parameter` |
@@ -277,6 +494,8 @@ Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est jo
 | `GET /api/v1/events/<id>` | Un événement par son identifiant | `200` l'événement ; `404` `not_found` |
 | `GET /api/v1/groups?q=<texte>&territory=<texte>&limit=100` | Les salons connus du serveur (NIP-29), triés par nom (sans accents ni majuscules) puis identifiant : `[{"id":"…","name":"…","about":"…","picture":null,"territory":"Lyon","charter":"1.0","public":true,"open":true,"event":{…événement 39000 signé…}}]`. Tous les paramètres sont facultatifs, chacun au plus une fois. `q` : garde les salons dont le nom, le territoire ou la description contient le texte ; `territory` : garde les salons de ce territoire, comparé en entier ; les deux sont comparés une fois normalisés (accents, majuscules et ponctuation ignorés ; une valeur vide ou sans lettre ni chiffre ne filtre pas), 200 caractères au plus. `limit` : de 1 à 500, 100 par défaut. `territory` vaut l'étiquette `ppf-territory` telle qu'écrite par le créateur ; `charter` la version de la charte acceptée (`null` pour une description antérieure à D-028). `public` : lisible par tous (toujours vrai dans cette version) ; `open` : tout compte peut y écrire. Aucune liste de membres n'existe ni n'est servie. | `200` tableau ; `400` `bad_parameter` (`limit` hors de 1 à 500 ou non entier, paramètre répété, texte trop long) |
 | `GET /api/v1/groups/<id>` | Un salon par son identifiant (1 à 64 caractères parmi `a-z`, `0-9`, `.`, `_`, `~`, `-`) | `200` le salon ; `400` `bad_parameter` ; `404` `group_not_found` |
+| `GET /api/v1/elus` | L'index de l'annuaire des élus (section 4 octies) : source, date d'import, un paquet par département avec son empreinte, sa taille et ses codes postaux. Sans compte ; `ETag` entre guillemets, `If-None-Match`, gzip | `200` ; `304` ; `503 elus_unavailable` avec `Retry-After: 60` tant qu'aucun import n'a réussi |
+| `GET /api/v1/elus/{code}` | Le paquet d'un département, d'une collectivité d'outre-mer ou `FR` (section 4 octies). Aucune commune ni aucun code postal n'est jamais envoyé par l'appareil | `200` ; `304` ; `404 unknown_package` ; `503 elus_unavailable` |
 | `GET /health` | État du serveur | `200` `{"status":"ok","service":"ppf-server","version":"0.1.0","environment":"…"}` |
 
 Quand la base de données n'est pas configurée, toute adresse sous `/api/v1/` répond `503` `{"error":"database_unavailable"}`.

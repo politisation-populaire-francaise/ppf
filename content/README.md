@@ -71,6 +71,49 @@ Même en-tête qu'une fiche (sans `type`, donné par le dossier), avec en plus :
 
 Blocs propres à ces contenus : `::: objections` (paires `? objection` puis `> réponse sourcée`, obligatoire dans les décryptages et l'histoire), `::: chronologie` (lignes `- AAAA-MM-JJ : texte`), et pour « Qui décide de ça ? » un bloc `::: decideurs` en tête du corps (lignes `- niveau | rôles | ce que ce niveau décide (référence)`). L'outil de signature refuse un contenu dont un bloc est mal formé ou dont les sources manquent. Tous les contenus actuels sont des brouillons **[EXEMPLE]** rédigés avec l'aide d'une IA et vérifiés sur les textes officiels, à faire relire.
 
+## Format d'une entrée du glossaire (`glossaire/*.md`)
+
+Une entrée par fichier (décision D-048). Le terme est repéré tout seul dans **tous** les contenus de l'application (Comprendre, Voir, Agir, revendications, fiches) : sa première occurrence dans un contenu est soulignée en pointillés, suivie d'un petit « ? » ; un geste ouvre une infobulle avec la définition rapide, puis « En savoir plus » ouvre la page de l'entrée. Les rédacteurs n'ont rien à baliser dans les autres contenus.
+
+```markdown
+---
+slug: motion-de-censure
+title: [EXEMPLE] Motion de censure
+summary: Vote par lequel les députés peuvent renverser le gouvernement.
+variants: motion de censure, motions de censure
+topics: parlement, gouvernement
+see_also: 49-3, dissolution, gouvernement
+related: parcours:le-49-3-et-la-motion-de-censure, qui-decide:ecole
+origin: ai-assisted
+published_at: 2026-11-07
+updated_at: 2026-11-07
+---
+Explication détaillée (« En savoir plus ») : 80 à 250 mots, phrases courtes, un exemple concret,
+ce qu'il ne faut pas confondre. Encarts `::: en-bref` permis.
+
+## Sources
+
+- [Constitution, article 49](https://www.legifrance.gouv.fr/...)
+```
+
+| Champ | Rôle |
+|---|---|
+| `slug` | Identifiant stable de l'entrée, jamais modifié |
+| `title` | Le terme tel qu'il s'affiche, précédé de `[EXEMPLE] ` comme tout contenu pour l'instant |
+| `summary` | **La définition rapide de l'infobulle** : une ou deux phrases, 200 caractères au plus, compréhensible sans rien d'autre |
+| `variants` | Les formes repérées dans les textes, séparées par des virgules : singulier, pluriel, sigle et forme longue (`49.3, 49-3, article 49.3, article 49 alinéa 3`). Une virgule à l'intérieur d'une forme s'écrit `\,` (`Conseil économique\, social et environnemental, CESE` ; `article 49\, alinéa 3`). Au moins une. Une forme n'appartient qu'à une entrée |
+| `topics` | Thèmes, séparés par des virgules (facultatif) |
+| `see_also` | Slugs d'autres entrées du glossaire, séparés par des virgules (facultatif, « Voir aussi ») |
+| `related` | Contenus liés, séparés par des virgules : `parcours:<slug>`, `fiche:<slug>`, `decryptage:<slug>`, `qui-decide:<slug>`, `histoire:<slug>` (facultatif, « Pour aller plus loin ») |
+| `auto` | `non` pour un mot trop courant : l'entrée n'est jamais repérée dans les textes, seulement listée dans le glossaire (facultatif, `oui` par défaut) |
+| `origin`, `published_at`, `updated_at` | Comme pour une fiche |
+
+Le corps est l'explication détaillée, terminée par `## Sources` (sources primaires : Constitution et codes sur Légifrance, conseil-constitutionnel.fr, assemblee-nationale.fr, senat.fr, vie-publique.fr, service-public.fr, europa.eu, insee.fr). Les autres termes du glossaire y sont repérés aussi, jamais le terme de l'entrée elle-même.
+
+Comment les formes sont repérées : sans tenir compte des majuscules, sauf pour un sigle (une forme entièrement en capitales, d'au moins deux lettres, chiffres permis : `UE`, `RIP`, `QPC`, `EPCI`, `CMP`), qui n'est repéré qu'écrit en capitales (« UE » n'est pas repéré dans « ue ») ; apostrophes droite et courbe équivalentes ; accents respectés (« Etat » n'est pas « État ») ; seulement entre deux limites de mot (« loi » n'est pas repéré dans « emploi ») ; à une même position, la forme la plus longue gagne (« motion de censure » avant « motion ») ; jamais dans les titres, les liens, les adresses écrites en clair (`http://…`, `https://…`, `www.…`, `ppf:…`), ni la section des sources. Le pluriel n'est repéré que s'il figure dans `variants`.
+
+L'outil de signature refuse une entrée sans définition ou avec une définition de plus de 200 caractères, sans forme, avec une forme déjà utilisée par une autre entrée (sans tenir compte des majuscules ni des apostrophes : `UE` et `ue` sont la même forme), sans `## Sources`, ou dont `see_also` ou `related` nomme un slug inconnu. Résultat : `glossaire.json` (type 30023, `ppf-type` = `glossaire`, une étiquette `ppf-variant` par forme, `ppf-auto` = `non` si besoin, étiquettes `a` de rôle `voir-aussi` et `lie`).
+
 ## Format d'une revendication (`revendications/*.md`)
 
 Même en-tête qu'une fiche (sans `type`), avec en plus :
@@ -101,6 +144,18 @@ Les sous-dossiers (`indicateurs`, `faits`, `personnes`, `textes`, `monde`, `doss
 
 La liste complète des champs et des valeurs est dans `docs/FORMATS.md`, section 4 quinquies. L'outil de signature relit chaque brique comme l'application et **refuse** celle qu'elle ignorerait (statut manquant, affaire sans étape de procédure, valeur inconnue, lien vers un `slug` qui n'existe pas).
 
+## Format des contenus de « Décider » (`decider/**/*.md`)
+
+Même principe que « Voir » : chaque champ de l'en-tête devient une étiquette `ppf-<champ>`, les champs multiples étant séparés par `|`. Les sous-dossiers `petitions`, `pacte` et `engagements` ne servent qu'à ranger ; c'est le champ `type` qui compte (`petition`, `pacte`, `engagement`).
+
+- `text`, `person`, `candidate` et `pacte` nomment une autre brique par son `slug` (lien) ; un candidat doit avoir sa fiche dans `voir/personnes`.
+- `next` est « libellé | cible », la cible étant `fiche:<slug>`, `voir:<slug>`, `decider:<slug>` ou `espace:<id>`.
+- Une pétition : `platform`, `official-url` (obligatoirement sur le site officiel de la plateforme), `petition-status`, et des relevés `count: 412950 | 2026-11-06 | site des pétitions de l'Assemblée nationale`.
+- Un Pacte : `election`, `pacte-status`, `sent`, `deadline`, une ligne `measure: identifiant | titre | engagement précis | texte à modifier` par mesure, une ligne `candidate:` par candidat.
+- Une réponse : `pacte`, `candidate`, `received`, une ligne `answer: identifiant | signe ou refuse | commentaire` par mesure répondue, `archive`. **N'écrivez jamais l'empreinte du texte** : l'outil la calcule à partir du Pacte.
+
+La liste complète est dans `docs/FORMATS.md`, section 4 septies. L'outil refuse une pétition hors d'un site officiel, un Pacte sans date limite, une réponse d'une personne qui n'est pas candidate ou à une mesure inconnue.
+
 ## Espace « Agir » : mobilisations, appels, organisations
 
 Formats complets dans `docs/FORMATS.md`, section 4 sexies. Tous les exemples sont fictifs et marqués **[EXEMPLE]** : aucune organisation, personne ni élu réels ; lieux fictifs ou génériques ; sites et courriels en `example.org` ou `exemple.invalid` (noms réservés aux exemples) ; téléphones pris seulement dans les blocs que l'Arcep réserve aux œuvres audiovisuelles (racines 01 99 00, 02 61 91, 03 53 01, 04 65 71, 05 36 49 et 06 39 98 ; décision n° 2018-0881 modifiée, version du 1er janvier 2026, section 2.5).
@@ -117,10 +172,11 @@ Formats complets dans `docs/FORMATS.md`, section 4 sexies. Tous les exemples son
 | `status` | Facultatif : `prevu` (par défaut), `annule`, `reporte` |
 | `declaration` | Facultatif, pour une manifestation : `faite`, `en-cours`, `non-faite` |
 | `summary`, `link` | Facultatifs : résumé, lien web |
-| `organizers` | Facultatif : clés (`pubkey`) d'organisations fictives de `organisations/`, séparées par des virgules ; la page de ces organisations liste alors la mobilisation |
+| `organizers` | Facultatif : clés (`pubkey`) d'organisations fictives de `organisations/`, séparées par des virgules ; la page de ces organisations liste alors la mobilisation, avec la mention « Annoncée, non confirmée » (ces organisations fictives n'ont pas de clé secrète : elles ne peuvent pas confirmer) |
+| `participation` | Facultatif : `participant` ou `organisateur` ; ajoute la réponse publique de la clé des exemples (l'équipe éditoriale) à la mobilisation, type 31925, datée comme elle (rubrique « Organisations participantes ») |
 | `created_at` | Date de la version, `AAAA-MM-JJTHH:MM`, temps universel |
 
-Le corps est la description (texte simple). L'outil vérifie chaque mobilisation avec les règles de l'application et écrit `agenda.json` (type 31923, NIP-52).
+Le corps est la description (texte simple). L'outil vérifie chaque mobilisation avec les règles de l'application et écrit `agenda.json` (type 31923, NIP-52 ; avec les réponses publiques de type 31925 demandées par `participation`).
 
 ### Format d'un appel (`appels/*.md`)
 
@@ -165,4 +221,4 @@ Résultat : `organisations.json` (type 30023, `ppf-type` = `organisation`). L'ap
 ./gradlew :tools:content-signer:run
 ```
 
-L'outil lit `content/fiches`, `content/parcours`, `content/decryptages`, `content/histoire`, `content/qui-decide`, `content/methode`, `content/revendications`, `content/fil`, `content/voir`, `content/agenda`, `content/appels` et `content/organisations`, signe chaque fichier en événement (fiches, parcours, contenus de « Comprendre », revendications, appels et organisations : NIP-23, type 30023 ; fil : type 1 ; agenda : type 31923 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `comprendre.json`, `revendications.json`, `fil.json`, `voir.json`, `agenda.json`, `appels.json` et `organisations.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La signature BIP-340 utilise un aléa : relancer l'outil change les signatures de tous les fichiers (les identifiants restent les mêmes), ce qui crée des différences inutiles entre branches ; ne garder que les fichiers réellement modifiés. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.
+L'outil lit `content/fiches`, `content/parcours`, `content/decryptages`, `content/histoire`, `content/qui-decide`, `content/methode`, `content/glossaire`, `content/revendications`, `content/fil`, `content/voir`, `content/agenda`, `content/appels` et `content/organisations`, signe chaque fichier en événement (fiches, parcours, contenus de « Comprendre », glossaire, revendications, appels et organisations : NIP-23, type 30023 ; fil : type 1 ; agenda : type 31923 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `comprendre.json`, `glossaire.json`, `revendications.json`, `fil.json`, `voir.json`, `agenda.json`, `appels.json` et `organisations.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La signature BIP-340 utilise un aléa : relancer l'outil change les signatures de tous les fichiers (les identifiants restent les mêmes), ce qui crée des différences inutiles entre branches ; ne garder que les fichiers réellement modifiés. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.

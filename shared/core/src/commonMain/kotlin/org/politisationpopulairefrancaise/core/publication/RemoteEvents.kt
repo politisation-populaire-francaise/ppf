@@ -49,6 +49,23 @@ sealed interface GroupsResult {
     data class Unavailable(val cause: Throwable? = null) : GroupsResult
 }
 
+/**
+ * One document of the directory of elected officials (D-047): the index or the package of a
+ * department, as the exact bytes the source sent, so that the caller checks them against the sha256
+ * the index announces before using them.
+ */
+sealed interface ElusDownload {
+    class Body(val bytes: ByteArray, val etag: String? = null) : ElusDownload
+
+    /** The document has not changed since the version whose sha256 was given. */
+    data object NotModified : ElusDownload
+
+    /** The source has no package with this code (`404 unknown_package`). */
+    data object UnknownPackage : ElusDownload
+
+    data class Unavailable(val cause: Throwable? = null) : ElusDownload
+}
+
 /** A publication destination that can also be read: the server now, Nostr relays later. */
 interface RemoteEvents : PublicationPort {
     suspend fun fetch(filter: RemoteFilter): FetchResult
@@ -70,4 +87,14 @@ interface RemoteEvents : PublicationPort {
      */
     suspend fun fetchByTags(tags: List<TagFilter>, filter: RemoteFilter = RemoteFilter()): FetchResult =
         FetchResult.Unavailable(UnsupportedOperationException("This source cannot filter events by tag"))
+
+    /**
+     * The directory of elected officials (contract of the third wave of "Comprendre", 1.4): the index
+     * (`GET /api/v1/elus`) when [code] is null, otherwise the package of a department or `FR`
+     * (`GET /api/v1/elus/{code}`). [etag], the sha256 of the version already on the device, lets the
+     * source answer [ElusDownload.NotModified]. Nothing personal is sent: no commune, no postal code.
+     * Sources without the directory answer [ElusDownload.Unavailable].
+     */
+    suspend fun fetchElus(code: String? = null, etag: String? = null): ElusDownload =
+        ElusDownload.Unavailable(UnsupportedOperationException("This source has no directory of elected officials"))
 }

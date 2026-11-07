@@ -7,12 +7,16 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationsCo
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import java.time.Clock
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 
 /**
  * Explicit settings for the tests, so that they never depend on the environment variables of the
  * machine running them and never start the periodic envelope cleanup against the shared database.
  */
-val TEST_RELAY: RelayConfig = RelayConfig(cleanupInterval = Duration.ZERO)
+// The creation of a room waits up to 2 minutes for its turn: on a loaded machine (several builds at once,
+// continuous integration), eight simultaneous creations can wait more than the 10 seconds of production,
+// and the tests check the order of admission, not that timeout.
+val TEST_RELAY: RelayConfig = RelayConfig(cleanupInterval = Duration.ZERO, groupLockWait = 2.minutes)
 
 /** A policy without any editor key. */
 val NO_EDITORS: PublicationPolicy = PublicationPolicy(emptySet())

@@ -1,0 +1,6 @@
+# The server image (infra/docker/server.Dockerfile) needs only the built jar and the example
+# contents. Everything else stays out of the build context: smaller, faster, and no local file
+# (keys, .env, build caches) can ever slip into an image.
+*
+!server/build/libs/ppf-server.jar
+!shared/ui/src/commonMain/composeResources/files/contents/*.json

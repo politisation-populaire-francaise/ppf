@@ -20,6 +20,9 @@ import org.politisationpopulairefrancaise.core.agir.agenda.Mobilization
 import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationStatus
 import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationType
 import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
+import org.politisationpopulairefrancaise.core.agir.agenda.Participation
+import org.politisationpopulairefrancaise.core.agir.agenda.ParticipationRole
+import org.politisationpopulairefrancaise.core.agir.agenda.ParticipationStatus
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
@@ -71,9 +74,15 @@ internal class AgendaServer : RemoteEvents, HeldStatusSource {
     val held = LinkedHashMap<String, Pair<SignedEvent, HeldState>>()
     val verified = mutableSetOf<String>()
     var online = true
+
+    /** True makes it refuse every event for good (a rule of the server the device does not know). */
+    var refuseAll = false
     val received = mutableListOf<SignedEvent>()
     val heldQueries = mutableListOf<List<String>>()
     var fetches = 0
+
+    /** Every filter asked for, to check that no request names a mobilization or a response. */
+    val filters = mutableListOf<RemoteFilter>()
 
     val published: List<SignedEvent> get() = port.events
 
@@ -87,6 +96,7 @@ internal class AgendaServer : RemoteEvents, HeldStatusSource {
 
     override suspend fun publish(event: SignedEvent): PublicationResult {
         if (!online) return PublicationResult.Unavailable()
+        if (refuseAll) return PublicationResult.Rejected(event.id, org.politisationpopulairefrancaise.core.publication.RejectionReason.REFUSED)
         received += event
         if (event.kind == Mobilization.KIND && event.pubkey !in verified && !isCancellationOfPublished(event)) {
             if (!event.verify()) return PublicationResult.Rejected(event.id, org.politisationpopulairefrancaise.core.publication.RejectionReason.INVALID_SIGNATURE)
@@ -111,6 +121,7 @@ internal class AgendaServer : RemoteEvents, HeldStatusSource {
 
     override suspend fun fetch(filter: RemoteFilter): FetchResult {
         fetches++
+        filters += filter
         return if (online) port.fetch(filter) else FetchResult.Unavailable()
     }
 
@@ -161,6 +172,19 @@ internal class AgendaKit(val keys: IdentityKeys = IdentityKeys.generate()) {
             ),
         )
     }
+}
+
+/**
+ * The public response (kind 31925, D-044) of the key of [kit] to [mobilization], as the application
+ * builds it.
+ */
+internal fun AgendaKit.participation(
+    mobilization: SignedEvent,
+    status: ParticipationStatus = ParticipationStatus.ACCEPTED,
+    role: ParticipationRole = ParticipationRole.PARTICIPANT,
+    createdAt: Long = AgendaClock.NOW - 3_600,
+): SignedEvent = runBlocking {
+    signer.sign(Participation.build(keys.publicKey, checkNotNull(Mobilization.from(mobilization)), status, createdAt, role))
 }
 
 /** The device of a test: a database, its stores, an account or not. */

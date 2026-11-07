@@ -189,6 +189,32 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 
 Sur l'ordinateur, l'écran se présente en deux colonnes.
 
+### Tester l'espace « Décider » (ajouté le 7 novembre 2026)
+
+Tout est inventé et marqué [EXEMPLE] : pétitions, chiffres, élection, candidats et réponses. Seules les règles des pétitions sont réelles (vérifiées le 7 novembre 2026). Aucun compte n'est nécessaire, et tout marche sans réseau.
+
+1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Décider**. En haut, le **Pacte démocratique**, puis les **pétitions officielles ouvertes**, puis « Et aussi ».
+2. Touchez la carte du **Pacte**. Lisez l'encart « Les mêmes règles pour tous les candidats », puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
+3. Touchez le nom d'un candidat : sa fiche s'ouvre dans « Voir ». Revenez avec le bouton retour.
+4. En bas de la page du Pacte, **Empreinte du texte envoyé** : cette suite de caractères changerait si un seul mot des mesures changeait. Touchez **Copier l'empreinte**.
+5. Revenez à l'accueil de « Décider » et touchez la pétition **Retirer le projet de loi relatif à l'ordre public**. Vous voyez le compteur, la barre vers 500 000 signatures, puis chaque seuil avec **ce qu'il obtient** et, en orange, **ce qu'il ne garantit pas** (le débat se termine sans vote).
+6. Touchez **Signer sur le site officiel** : une mise en garde s'affiche avant d'ouvrir le vrai site de l'Assemblée nationale (sa page d'accueil, car la pétition est fictive). Touchez **Rester ici**.
+7. Plus bas, **Faire signer autour de vous** : touchez **Copier le message** et collez-le dans une note.
+8. Touchez **Suivre**, puis revenez à l'accueil : la pétition apparaît dans « Ce que vous suivez ». Cette liste reste sur votre téléphone.
+9. Sur l'accueil, touchez **Comprendre les seuils** : une carte par plateforme (Assemblée, Sénat, CESE, référendum d'initiative partagée, initiative européenne), avec le texte officiel et la date de vérification.
+10. Touchez **Pétitions closes** : la pétition au Sénat sur les retraites montre ce qu'elle a obtenu.
+11. Allez dans **Mon espace** (l'avatar en haut à droite) : tout en bas, la version installée et votre système. Donnez-les-moi si vous me signalez un problème.
+
+Sur l'ordinateur, les réponses au Pacte forment un vrai tableau, une colonne par mesure.
+
+### Tester les partis, le droit de réponse et le signalement d'erreur dans « Voir » (ajouté le 7 novembre 2026)
+
+1. Ouvrez **Voir**, onglet **Le pouvoir** : la rubrique **Partis politiques** arrive avant les responsables publics, les partis par ordre alphabétique. Touchez un parti : toutes les fiches ont les mêmes rubriques dans le même ordre (financement, sièges, aide publique, direction, membres, faits qui visent le parti), même vides.
+2. Sur la fiche d'une personne, la puce de son parti ouvre la fiche du parti.
+3. En bas de n'importe quel contenu, touchez **Signaler une erreur** : par défaut, l'envoi est anonyme (l'équipe ne pourra pas vous répondre) ; si vous avez un compte, « Avec mon compte » affiche d'abord une mise en garde.
+4. Sur la fiche d'une personne ou d'un fait qui la concerne, touchez **Droit de réponse** : le formulaire explique la loi, compte les mots en direct et demande un compte (créé en une minute dans « Mon espace » ; votre texte est gardé pendant ce temps).
+5. Sur l'ordinateur, avec le serveur de développement (`gradlew :server:runDev`), ouvrez http://localhost:8080/voir : les mêmes contenus sur le site, lisibles sans JavaScript.
+
 ### Tester l'espace « Voir » (ajouté le 6 novembre 2026, tard le soir)
 
 Tout ce que vous verrez est inventé et marqué [EXEMPLE] : personnes, pays, organisations et chiffres. Aucun compte n'est nécessaire, et tout marche sans réseau.
@@ -303,6 +329,58 @@ Ces quatre parcours sont des brouillons rédigés avec l'aide d'une IA, vérifi�
 5. En bas de chaque contenu, **« Et maintenant ? »** propose une action (le bouton ouvre le mur des revendications), puis les sources.
 6. Les parcours ont maintenant huit sujets ; certains se terminent aussi par des objections et réponses.
 
+### Tester la vague 3 de « Comprendre » : vos élus, le glossaire, les nouveaux contenus (ajouté le 7 novembre 2026)
+
+Trois nouveautés, que vous avez demandées le 7 novembre : l'annuaire des élus, le glossaire (les mots compliqués expliqués partout) et davantage de contenus. Tout est marqué [EXEMPLE] et rédigé avec l'aide d'une IA, à relire par l'équipe éditoriale.
+
+#### Sur le téléphone (version d'essai `android-preview.apk`, sans serveur)
+
+Installez la dernière version d'essai comme d'habitude (section 2, « Installer ou mettre à jour l'APK »).
+
+**Vos élus (en attendant le serveur)**
+
+1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Comprendre**. Juste après « Qui décide de ça ? », touchez **Mes élus**.
+2. Cette version n'a pas encore de serveur : la page l'explique et propose les **annuaires officiels** (mairies, Assemblée nationale, Sénat, Parlement européen, Répertoire national des élus). Touchez-en un : la fenêtre **« Vous quittez PPF »** s'ouvre d'abord. Touchez **Rester sur PPF** (ou continuez si vous voulez voir le site officiel).
+3. Ouvrez une fiche « Qui décide de ça ? » (par exemple « Le logement et les loyers ») : dans l'encart « Qui décide ? Les élus concernés », une phrase dit que les noms de vos élus locaux viendront plus tard, avec un bouton **Annuaires officiels des élus**.
+
+**Le glossaire**
+
+4. Ouvrez un parcours, par exemple **« Le Conseil constitutionnel »**. Dans le texte, certains mots sont **soulignés en pointillés**, suivis d'un petit **« ? »** dans un rond (par exemple « Constitution » ou « QPC »). Seule la première apparition de chaque mot est soulignée, jamais dans les titres, les liens ou les sources.
+5. Touchez le mot ou le « ? » : une **infobulle** s'ouvre sous le mot, avec le terme, le badge [EXEMPLE], la définition rapide et « Produit avec l'aide d'une IA ».
+6. Touchez **En savoir plus** : la page du mot s'ouvre par-dessus votre lecture (« En bref », l'explication détaillée, « Voir aussi », « Pour aller plus loin », les sources). Touchez un mot de « Voir aussi » : il s'ouvre à son tour ; le bouton retour revient au mot précédent. Fermez avec la croix ou le retour du téléphone : vous retrouvez votre texte là où vous l'aviez laissé.
+7. Touchez à côté d'une infobulle ouverte : elle se ferme.
+8. Revenez à l'accueil de « Comprendre » : sous les parcours, la rubrique **Glossaire** propose « Ouvrir le glossaire (64 mots) ». Touchez-la : les mots sont rangés par ordre alphabétique sous leur lettre. Dans la recherche, tapez `senat` (sans accent) puis `49` : le Sénat, puis le 49.3, apparaissent.
+9. Les mots soulignés apparaissent aussi dans les autres espaces (« Voir », « Agir », revendications, fiches pratiques). Rien de ce que vous consultez n'est enregistré ni envoyé.
+
+**Les nouveaux contenus**
+
+10. **Parcours** (16 en tout) : huit nouveaux, dans cet ordre de priorité : « S'inscrire sur les listes électorales et voter », « Le droit de grève », « Le Conseil constitutionnel », « Qui fait quoi : la séparation des pouvoirs », « L'Union européenne : qui décide quoi ? », « Commune, département, région : qui s'occupe de quoi ? », « Se présenter à une élection », « Les pétitions officielles ». Chacun se lit étape par étape avec une question à la fin de chaque étape.
+11. **« Qui décide de ça ? »** (12 en tout) : huit nouvelles fiches : logement et loyers, hôpital et médecins, eau du robinet, salaires et Smic, impôts locaux, retraites, ramassage des déchets, police municipale et nationale.
+12. **Fiches pratiques** (« Connaître ses droits », 5 en tout) : « Faire grève : vos droits » et « Voter par procuration ».
+13. Mode avion : tout fonctionne (sauf l'ouverture des annuaires officiels, qui sont des sites extérieurs).
+
+#### Sur l'ordinateur, avec le serveur de développement (annuaire des élus fictifs)
+
+Le serveur de développement sert un annuaire **fictif** : les noms sont inventés (« [EXEMPLE] Prénom Nom »), mais les communes, les codes postaux et les circonscriptions sont réels, pour Lyon, Lille, Marseille, Rennes, Paris et quelques communes voisines. Les vrais noms ne seront chargés qu'en production.
+
+1. Ouvrez une fenêtre PowerShell dans le dossier `C:\Users\clair\Documents\PPF` (dans l'Explorateur, ouvrez ce dossier, puis Fichier, « Ouvrir Windows PowerShell »).
+2. Tapez `.\gradlew.bat :server:runDev` puis Entrée. Attendez la ligne qui se termine par `http://localhost:8080`. Laissez cette fenêtre ouverte : c'est le serveur. Pour vérifier, ouvrez http://localhost:8080/api/v1/elus dans le navigateur : un texte technique commence par `{"format":1,"example":true`.
+3. Ouvrez une deuxième fenêtre PowerShell dans le même dossier et collez ces deux lignes, puis Entrée :
+   ```
+   $env:PPF_SERVER_URL = "http://localhost:8080"
+   .\gradlew.bat :desktop:run
+   ```
+   L'application s'ouvre au bout de quelques instants (quelques minutes la première fois).
+4. Dans l'application : **Comprendre**, puis **Mes élus**, puis **Indiquer ma commune**. Une phrase rappelle que votre commune reste sur votre ordinateur et que le serveur sait seulement qu'un appareil a téléchargé la liste d'un département.
+5. Tapez le code postal `69001` (Lyon) et touchez **Continuer**. L'application annonce la **taille** de la liste du Rhône sur le bouton (« Télécharger (… ko) ») : rien n'est téléchargé avant que vous touchiez ce bouton. Touchez-le.
+6. S'il y a plusieurs communes pour ce code postal, choisissez la vôtre ; s'il n'y en a qu'une, elle est choisie tout de suite.
+7. La page **Mes élus** s'ouvre avec le bandeau **« Données fictives [EXEMPLE] »**, puis vos élus par niveau : commune (le maire, les adjoints dans l'ordre, puis le conseil municipal), intercommunalité, département, région, État (vos députés et sénateurs), Union européenne. Pour Lyon, le niveau « Département » montre l'**assemblée de la Métropole de Lyon**, qui remplace le conseil départemental. En bas : la source, sa licence et ses dates, et les annuaires officiels.
+8. Ouvrez une fiche « Qui décide de ça ? » (par exemple « L'école » ou « Le ramassage des déchets ») : sous chaque niveau de l'encart « Qui décide ? Les élus concernés », les noms fictifs de vos élus apparaissent, avec « Voir tous mes élus » et « Changer de commune ».
+9. Revenez à « Mes élus », touchez **Changer de commune** et tapez `69400` (Villefranche-sur-Saône) : cette fois, le niveau « Département » montre les conseillers départementaux de son canton et la présidence du conseil départemental du Rhône, et non la Métropole.
+10. Touchez **Oublier ma commune** : une confirmation s'ouvre, avec **Garder ma commune** en premier. Confirmez : la commune et les listes téléchargées sont effacées de l'ordinateur, et la page propose de nouveau « Indiquer ma commune ».
+11. Hors ligne : choisissez de nouveau une commune, fermez l'application, arrêtez le serveur (Ctrl+C dans sa fenêtre) et relancez l'application (étape 3) : vos élus s'affichent toujours. **Rechercher une mise à jour** dit alors que le serveur ne répond pas et propose les annuaires officiels.
+12. À la fin, fermez l'application et arrêtez le serveur.
+
 ### Tester les fiches pratiques (ajouté le 5 novembre 2026, encarts le 6)
 
 1. Ouvrez le menu (bouton en haut à gauche) et touchez **« Comprendre »**. Chaque fiche commence par un encart bleu « En bref », puis des encarts verts « Légal » et rouges « Illégal » avec des listes à puces, et des encarts « Attention » (jaune) et « Conseils » (gris). Les titres des fiches sont en bleu de marque, le texte en Atkinson Hyperlegible, 16 points.
@@ -359,7 +437,19 @@ La branche principale refuse toute modification directe, toute suppression et to
 - **Clé de signature de publication** (magasins d'applications) : pas encore créée ; elle sera créée avant la première publication et gardée hors ligne, avec une procédure écrite.
 - **Clé de signature des contenus d'exemple** : `C:\Users\clair\.ppf\content-example.nsec`, hors dépôt. Elle signe uniquement les fiches de démonstration intégrées à l'application ; elle sera retirée de la liste des auteurs de confiance avant le lancement public, quand l'équipe éditoriale aura ses propres clés.
 - **Clés des comptes d'utilisateurs** (le vôtre compris) : uniquement sur l'appareil où le compte a été créé ou restauré ; sur Android dans le stockage privé de l'application, chiffré par le Keystore du téléphone ; sur l'ordinateur dans `%APPDATA%\PolitisationPopulaireFrancaise`. Aucun serveur ne les reçoit jamais : la phrase de douze mots est le seul moyen de récupération.
+- **Clé d'administration du serveur** (7 novembre 2026) : `C:\Users\clair\.ssh\ppf_server_ed25519`. Sa partie publique (`.pub`) est la seule à aller sur le serveur, collée par vous lors de la commande (guide du serveur). L'autre fichier ne quitte jamais votre ordinateur. En cas de vol de l'ordinateur, dites-le-moi : je la retire du serveur.
+- **Mot de passe des pages web de la préproduction** : généré sur le serveur, je le dépose dans `C:\Users\clair\.ppf\preprod-mot-de-passe.txt` ; enregistrez-le dans votre gestionnaire de mots de passe, puis supprimez le fichier.
 - Ne m'envoyez jamais un mot de passe ou une clé par la conversation : je n'en ai pas besoin, tout est sur votre ordinateur.
+
+## 6 bis. La préproduction en ligne (ajouté le 7 novembre 2026)
+
+La **préproduction** est la version d'essai de PPF sur Internet, sur le vrai serveur, mais fermée au public : seuls vos appareils, reliés par un tunnel WireGuard, peuvent l'ouvrir, et elle ne contient que des données fictives [EXEMPLE]. C'est là que vous validez chaque nouveauté avant qu'elle parte en production.
+
+- **Adresse** : https://preprod.politisation-populaire-francaise.org (tunnel actif, puis identifiant `equipe` et le mot de passe ci-dessus).
+- **Mise en place**, dans l'ordre : `docs/guides/liaison-github.md` (GitHub), `docs/guides/serveur-hostinger-kvm1.md` (achat et configuration du serveur, après votre accord sur le prix), `docs/guides/wireguard-preproduction.md` (vos deux appareils).
+- **Mises à jour** : dès qu'un changement est accepté dans la branche principale, GitHub fabrique une nouvelle version du serveur, la signe, et la préproduction l'installe d'elle-même dans les 10 minutes. Si la nouvelle version ne démarre pas correctement, le serveur revient seul à la précédente.
+- **L'APK d'essai** se connecte tout seul à la préproduction quand le tunnel est actif sur le téléphone : fil, messages, salons et propositions passent alors par le vrai serveur, et deux téléphones peuvent échanger.
+- **La production** (le site public) ne reçoit une version qu'avec votre accord écrit, et seulement une version que vous avez vue tourner en préproduction.
 
 ## 7. Comment je travaille avec vous
 
@@ -378,3 +468,8 @@ La branche principale refuse toute modification directe, toute suppression et to
 - **APK** : le fichier d'installation d'une application Android.
 - **Gradle** : l'outil qui compile le projet.
 - **SDK Android** : les outils fournis par Android pour compiler une application Android.
+- **Préproduction** : la copie d'essai de la plateforme, en ligne mais fermée au public, avec des données fictives.
+- **WireGuard** : un logiciel de tunnel chiffré ; il relie un appareil au serveur comme un câble privé.
+- **Image** (Docker) : le serveur emballé avec tout ce qu'il faut pour tourner, identique en préproduction et en production.
+- **Empreinte** (digest) : le code unique d'une image ; deux images différentes n'ont jamais la même empreinte.
+- **DNS** : l'annuaire d'Internet, qui associe un nom (`preprod.politisation-populaire-francaise.org`) à l'adresse d'un serveur.

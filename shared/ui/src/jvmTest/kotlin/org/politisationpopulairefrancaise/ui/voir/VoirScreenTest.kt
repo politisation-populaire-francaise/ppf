@@ -134,10 +134,11 @@ class VoirScreenTest {
         onNodeWithText("Droit de réponse de Dominique Fictif").performScrollTo().assertExists()
         onNodeWithTag(VoirTags.REPLY_OPEN).performScrollTo().performClick()
         waitForIdle()
-        onNodeWithTag(VoirTags.REPLY_DIALOG).assertExists()
-        onNodeWithText("Fermer").performClick()
+        onNodeWithTag(VoirRequestTags.REPLY_FORM).assertExists()
+        // Back three times: the form, the fact, then the sheet.
+        onNodeWithTag(VoirTags.BACK).performClick()
         waitForIdle()
-        // Back twice: the fact, then the sheet.
+        onNodeWithTag(VoirTags.detail("affaire-dominique-marche-public")).assertExists()
         onNodeWithTag(VoirTags.BACK).performClick()
         waitForIdle()
         onNodeWithTag(VoirTags.detail("dominique-fictif")).assertExists()
@@ -198,7 +199,10 @@ class VoirScreenTest {
 
     @Test
     fun onAPhoneTheNextStepOpensThePracticalGuide() = runComposeUiTest {
-        openVoir(dependencies(), width = 400, height = 740)
+        val dependencies = dependencies()
+        openVoir(dependencies, width = 400, height = 740)
+        // The practical guides are imported with the other bundled contents: wait for them before following the link.
+        waitUntil(timeoutMillis = 60_000) { dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "fiche-pratique").isNotEmpty() }
         onNodeWithTag(VoirTags.card("interpellations")).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(VoirTags.NEXT + 0).performScrollTo().performClick()

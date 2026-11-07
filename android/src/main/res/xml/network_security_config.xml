@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Network rules of the application, on every Android version it supports (8 and later):
+     no cleartext traffic at all, and only the certificate authorities of the system (never one
+     added by the user or by an application). One base configuration and no per-domain section:
+     the HTTP engine of the application (Ktor CIO) checks certificates without giving the host
+     name to Android, which a per-domain section would refuse. That engine does its own host name
+     check, and HTTPS is also enforced by the build (PPF_SERVER_URL in build.gradle.kts) and at
+     startup (MainActivity), since it does not consult the cleartext rule below. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

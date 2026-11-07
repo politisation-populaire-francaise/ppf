@@ -82,10 +82,45 @@
     <string name="agenda_cancel_refused">Le serveur a refusé l’annulation : l’événement reste tel quel.</string>
     <string name="agenda_cancel_failed">L’annulation n’a pas pu se faire.</string>
 
+    <!-- Organisers and participating organisations (D-044: shown only when confirmed with their own key) -->
+    <string name="agenda_hosts_label">Organisé par</string>
+    <string name="agenda_badge_verified">Vérifiée</string>
+    <string name="agenda_badge_editorial">PPF</string>
+    <string name="agenda_announced">annoncée, non confirmée</string>
+    <string name="agenda_announced_inline">%1$s (annoncée, non confirmée)</string>
+    <string name="agenda_announced_note">« Annoncée, non confirmée » : l’événement nomme cette organisation, mais elle ne l’a pas confirmé elle-même.</string>
+    <plurals name="agenda_participants_title">
+        <item quantity="one">Organisation participante (%1$d)</item>
+        <item quantity="other">Organisations participantes (%1$d)</item>
+    </plurals>
+    <plurals name="agenda_participants_count">
+        <item quantity="one">%1$d organisation participante</item>
+        <item quantity="other">%1$d organisations participantes</item>
+    </plurals>
+    <string name="agenda_participants_note">Chaque participation est publiée par l’organisation elle-même, signée de sa clé. Seules les organisations vérifiées et PPF apparaissent ici.</string>
+
+    <!-- The public answer of an organisation (a verified organisation or PPF, D-044) -->
+    <string name="agenda_org_title">Participation de %1$s</string>
+    <string name="agenda_org_show">Afficher la participation de %1$s publiquement</string>
+    <string name="agenda_org_private">Participer sans l’afficher</string>
+    <string name="agenda_org_co_organise">Confirmer que %1$s co-organise</string>
+    <string name="agenda_org_withdraw">Retirer la participation publique</string>
+    <string name="agenda_org_withdraw_private">Retirer ma réponse</string>
+    <string name="agenda_org_state_public">La participation de %1$s est affichée publiquement.</string>
+    <string name="agenda_org_state_co">La co-organisation de %1$s est affichée publiquement.</string>
+    <string name="agenda_org_state_private">La participation de %1$s n’est pas affichée : la réponse reste sur cet appareil.</string>
+    <string name="agenda_org_waiting">Gardée sur cet appareil : elle partira dès que le serveur répondra.</string>
+    <string name="agenda_org_note">Une participation affichée est publique : elle est signée par %1$s et visible de tous dans l’agenda. « Participer sans l’afficher » garde la réponse sur cet appareil, comme celle des citoyens.</string>
+    <string name="agenda_org_done_shown">C’est fait : la participation est affichée publiquement.</string>
+    <string name="agenda_org_done_withdrawn">C’est fait : la participation n’est plus affichée.</string>
+    <string name="agenda_org_done_waiting">La réponse est gardée sur cet appareil : elle partira dès que le serveur répondra.</string>
+    <string name="agenda_org_done_refused">Le serveur a refusé cette réponse : rien n’a changé.</string>
+    <string name="agenda_org_done_failed">La réponse n’a pas pu être envoyée.</string>
+
     <!-- Answers (AG-49): on the device only -->
     <string name="agenda_response_title">Votre réponse</string>
     <string name="agenda_response_going">J’y serai</string>
-    <string name="agenda_response_interested">Intéressé</string>
+    <string name="agenda_response_interested">Ça m’intéresse</string>
     <string name="agenda_response_private">Votre réponse reste sur votre appareil : elle n’est jamais envoyée, et il n’existe ni compteur public ni liste de participants. Elle est effacée un jour après la fin de l’événement.</string>
 
     <!-- Leaving PPF -->
@@ -172,7 +207,8 @@
     <string name="agenda_field_link">Lien (facultatif)</string>
     <string name="agenda_field_link_placeholder">https://…</string>
     <string name="agenda_field_declaration">Déclaration en préfecture (facultatif)</string>
-    <string name="agenda_field_declaration_help">Une manifestation sur la voie publique se déclare à l’avance en mairie ou en préfecture. Ne l’indiquez que si vous le savez.</string>
+    <string name="agenda_field_declaration_help">Une manifestation sur la voie publique se déclare à l’avance en mairie ou en préfecture. Ne l’indiquez que si vous le savez : cette mention est publique.</string>
+    <string name="agenda_declaration_public_note">Cette mention est publique : tout le monde verra dans l’agenda que la manifestation n’est pas déclarée en préfecture.</string>
     <string name="agenda_declaration_unset">Ne pas préciser</string>
     <string name="agenda_counter">%1$d / %2$d</string>
     <string name="agenda_problem_type_missing">Choisissez le type d’événement.</string>
@@ -230,6 +266,10 @@
     <!-- Agenda of an organisation, on its page in the directory -->
     <string name="agenda_organisation_none">Aucune mobilisation à venir annoncée par cette organisation.</string>
     <string name="agenda_organisation_open">Ouvrir « %1$s » dans l’agenda</string>
+    <string name="agenda_role_organises">Organise</string>
+    <string name="agenda_role_co_organises">Co-organise</string>
+    <string name="agenda_role_participates">Participe</string>
+    <string name="agenda_role_announced">Annoncée, non confirmée</string>
     <string name="agenda_in_agir_title">Agenda des mobilisations</string>
     <string name="agenda_upcoming_none">Aucune mobilisation annoncée pour l’instant.</string>
 </resources>

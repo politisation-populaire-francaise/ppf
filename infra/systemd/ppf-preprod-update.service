@@ -1,0 +1,12 @@
+# Deploys the newest signed image of main on the preproduction, if it changed.
+# Installed by infra/scripts/bootstrap-server.sh; started by ppf-preprod-update.timer.
+[Unit]
+Description=PPF: update the preproduction to the newest signed image of main
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/ppf-deploy preproduction --if-changed
+# Never the production: this unit has no other command.

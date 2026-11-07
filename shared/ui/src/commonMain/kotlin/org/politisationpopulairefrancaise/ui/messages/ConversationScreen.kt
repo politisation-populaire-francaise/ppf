@@ -194,7 +194,7 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
                                 val mine = message.author == me
                                 val suffix = message.id.take(8)
                                 MessageBubble(
-                                    text = message.text,
+                                    text = org.politisationpopulairefrancaise.ui.voir.voirRequestText(message.text),
                                     mine = mine,
                                     time = item.moment.hourLabel,
                                     // In a group, each bubble of the others says who wrote it.

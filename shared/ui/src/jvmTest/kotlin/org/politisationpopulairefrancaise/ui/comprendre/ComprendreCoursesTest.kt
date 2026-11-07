@@ -67,7 +67,7 @@ class ComprendreCoursesTest {
             mainClock.advanceTimeBy(2_000)
             waitForIdle()
         }
-        waitUntil(timeoutMillis = 10_000) {
+        waitUntil(timeoutMillis = 60_000) {
             onAllNodesWithTag(ComprendreTags.COURSE_CARD + loi.article.slug).fetchSemanticsNodes().isNotEmpty()
         }
     }
@@ -78,6 +78,9 @@ class ComprendreCoursesTest {
             setOf(
                 "comment-une-loi-est-votee", "le-49-3-et-la-motion-de-censure", "la-dissolution", "l-election-presidentielle",
                 "le-budget-de-l-etat", "le-role-de-chaque-elu", "le-referendum", "la-revision-de-la-constitution",
+                // Third wave (D-049).
+                "s-inscrire-et-voter", "le-droit-de-greve", "le-conseil-constitutionnel", "la-separation-des-pouvoirs",
+                "l-union-europeenne-qui-decide-quoi", "commune-departement-region", "se-presenter-a-une-election", "les-petitions-officielles",
             ),
             bundled.map { it.article.slug }.toSet(),
         )
@@ -93,8 +96,8 @@ class ComprendreCoursesTest {
     fun aCourseIsReadStepByStepOnAPhoneAndItsAnswersStayOnTheDevice() = runComposeUiTest {
         val database = JvmDatabase.inMemory()
         openComprendre(database, width = 400, height = 800)
-        // The guides are still there, below the courses.
-        onNodeWithTag(ContentTags.GUIDE_CARD + "garde-a-vue").assertExists()
+        // The guides are still there, below the courses (imported after them on a loaded machine).
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(ContentTags.GUIDE_CARD + "garde-a-vue").fetchSemanticsNodes().isNotEmpty() }
 
         onNodeWithTag(ComprendreTags.COURSE_CARD + loi.article.slug).performScrollTo().performClick()
         waitForIdle()

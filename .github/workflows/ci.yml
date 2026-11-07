@@ -141,3 +141,136 @@ jobs:
           name: ppf-desktop-windows
           path: desktop/build/compose/binaries/main/msi/*.msi
           if-no-files-found: error
+
+  # Deployment files: shell scripts, Compose projects and Caddy configuration, checked before
+  # they can reach the server.
+  infra:
+    name: Infrastructure
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Shell scripts (shellcheck)
+        run: shellcheck --severity=warning infra/scripts/*.sh
+      - name: Compose projects
+        env:
+          PPF_SERVER_IMAGE: ghcr.io/example/ppf-server@sha256:0000000000000000000000000000000000000000000000000000000000000000
+        run: |
+          for env in preproduction production; do
+            mkdir -p "$RUNNER_TEMP/$env"
+            touch "$RUNNER_TEMP/$env/db_password" "$RUNNER_TEMP/$env/server_db_password"
+            sed "s#^PPF_SECRETS_DIR=.*#PPF_SECRETS_DIR=$RUNNER_TEMP/$env#" "infra/env/$env.env.example" > "$RUNNER_TEMP/$env.env"
+            docker compose -f "infra/$env/compose.yml" --env-file "$RUNNER_TEMP/$env.env" config --quiet
+          done
+          docker compose -f infra/proxy/compose.yml --env-file infra/env/proxy.env.example config --quiet
+      - name: Caddy configuration (both sites deployed)
+        run: |
+          image=$(sed -n 's/^ *image: *\(caddy:.*\)$/\1/p' infra/proxy/compose.yml)
+          hash=$(docker run --rm "$image" caddy hash-password --plaintext ci-only)
+          mkdir -p "$RUNNER_TEMP/caddy/sites"
+          cp infra/proxy/Caddyfile "$RUNNER_TEMP/caddy/"
+          cp infra/proxy/sites/*.caddy "$RUNNER_TEMP/caddy/sites/"
+          docker run --rm -v "$RUNNER_TEMP/caddy:/etc/caddy:ro" \
+            -e PPF_DOMAIN=politisation-populaire-francaise.org \
+            -e PREPROD_BASIC_AUTH_USER=equipe -e PREPROD_BASIC_AUTH_HASH="$hash" \
+            "$image" caddy validate --config /etc/caddy/Caddyfile --adapter caddyfile
+
+  # The server image as the server will run it, on every change: built from the jar of the Linux
+  # build, started with the real preproduction Compose project (PostgreSQL/PostGIS, secrets owned
+  # by each container user, read-only filesystem, limits), healthy, example contents loaded, API
+  # answering; and refused in production with the example contents.
+  image-test:
+    name: Server image (smoke test)
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Server jar of the Linux build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ppf-server
+          path: server/build/libs
+      - name: Build the image
+        run: docker build -f infra/docker/server.Dockerfile --build-arg PPF_REVISION="$GITHUB_SHA" -t ppf-server:ci .
+      - name: Start the preproduction project as on the server
+        run: |
+          secrets="$RUNNER_TEMP/preprod-secrets"
+          mkdir -p "$secrets"
+          password=$(openssl rand -hex 32)
+          printf '%s' "$password" > "$secrets/db_password"
+          printf '%s' "$password" > "$secrets/server_db_password"
+          sudo chown 999:999 "$secrets/db_password"
+          sudo chown 10002:10002 "$secrets/server_db_password"
+          sudo chmod 400 "$secrets/db_password" "$secrets/server_db_password"
+          sed "s#^PPF_SECRETS_DIR=.*#PPF_SECRETS_DIR=$secrets#" infra/env/preproduction.env.example > "$RUNNER_TEMP/preprod.env"
+          docker network create ppf-preprod-edge
+          PPF_SERVER_IMAGE=ppf-server:ci docker compose -f infra/preproduction/compose.yml --env-file "$RUNNER_TEMP/preprod.env" up -d
+          status=""
+          for _ in $(seq 1 60); do
+            status=$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{end}}' ppf-preprod-server-1 || true)
+            [ "$status" = "healthy" ] && break
+            sleep 3
+          done
+          docker logs ppf-preprod-server-1 2>&1 | tail -n 30
+          test "$status" = "healthy"
+      - name: Example contents loaded, API answering
+        run: |
+          docker logs ppf-preprod-server-1 2>&1 | grep -E 'Example contents: [1-9][0-9]* file\(s\) read'
+          ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' ppf-preprod-server-1 | awk '{print $1}')
+          curl -fsS "http://$ip:8080/health" | tee /dev/stderr | grep -q '"environment":"preproduction"'
+          curl -fsS "http://$ip:8080/api/v1/events?limit=3" | grep -q '"sig"'
+      - name: Refused in production with the example contents
+        run: |
+          set +e
+          timeout 90 docker run --rm -e PPF_ENVIRONMENT=production -e PPF_EXAMPLES_DIR=/app/examples ppf-server:ci
+          code=$?
+          set -e
+          echo "exit code: $code"
+          # 124: still running after 90 seconds, so it started: that is the failure.
+          [ "$code" -ne 0 ] && [ "$code" -ne 124 ]
+      - name: Stop
+        if: always()
+        run: docker compose -f infra/preproduction/compose.yml --env-file "$RUNNER_TEMP/preprod.env" down --volumes || true
+
+  # Server image, on main only: built from the jar of the Linux build, pushed to the GitHub
+  # container registry and signed without any stored key (Sigstore, identity of this workflow).
+  # The server deploys only images whose signature names this workflow on main
+  # (infra/scripts/deploy.sh). Public repository: the image is public, like the code.
+  image:
+    name: Server image
+    needs: [secrets, trackers, build, infra, image-test]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Server jar of the Linux build
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: ppf-server
+          path: server/build/libs
+      - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
+        with:
+          cosign-release: v3.1.4
+      - name: Build, push and sign
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          image="ghcr.io/${GITHUB_REPOSITORY_OWNER,,}/ppf-server"
+          docker build -f infra/docker/server.Dockerfile \
+            --build-arg PPF_REVISION="$GITHUB_SHA" \
+            --label org.opencontainers.image.source="https://github.com/$GITHUB_REPOSITORY" \
+            -t "$image:$GITHUB_SHA" -t "$image:main" .
+          echo "$GITHUB_TOKEN" | docker login ghcr.io -u "$GITHUB_ACTOR" --password-stdin
+          docker push --quiet "$image:$GITHUB_SHA"
+          docker push --quiet "$image:main"
+          ref=$(docker image inspect --format '{{range .RepoDigests}}{{println .}}{{end}}' "$image:$GITHUB_SHA" | grep -m1 "^$image@sha256:")
+          cosign sign --yes "$ref"
+          docker logout ghcr.io
+          {
+            echo "### Image du serveur"
+            echo
+            echo "\`$ref\` (commit \`$GITHUB_SHA\`), signée par ce workflow."
+          } >> "$GITHUB_STEP_SUMMARY"

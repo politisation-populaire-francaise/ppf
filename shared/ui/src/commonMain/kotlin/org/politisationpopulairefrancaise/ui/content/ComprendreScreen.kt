@@ -53,6 +53,9 @@ import org.politisationpopulairefrancaise.ui.comprendre.QuiDecideCard
 import org.politisationpopulairefrancaise.ui.comprendre.QuiDecideDetail
 import org.politisationpopulairefrancaise.ui.comprendre.CourseScreen
 import org.politisationpopulairefrancaise.ui.comprendre.courseMetaLine
+import org.politisationpopulairefrancaise.ui.comprendre.elus.CommuneChooserDialog
+import org.politisationpopulairefrancaise.ui.comprendre.elus.MesElusCard
+import org.politisationpopulairefrancaise.ui.comprendre.elus.MesElusPage
 import org.politisationpopulairefrancaise.ui.comprendre.displayTitle
 import org.politisationpopulairefrancaise.ui.comprendre.progressLine
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
@@ -103,10 +106,19 @@ import org.politisationpopulairefrancaise.ui.resources.content_type_dossier
 import org.politisationpopulairefrancaise.ui.resources.content_type_fiche
 import org.politisationpopulairefrancaise.ui.resources.content_updated
 import org.politisationpopulairefrancaise.ui.resources.desc_comprendre
+import org.politisationpopulairefrancaise.ui.resources.glossaire_home_intro
+import org.politisationpopulairefrancaise.ui.resources.glossaire_home_open
+import org.politisationpopulairefrancaise.ui.resources.glossaire_kind
+import org.politisationpopulairefrancaise.ui.glossaire.GlossaryScreen
+import org.politisationpopulairefrancaise.ui.glossaire.LocalGlossary
+import org.jetbrains.compose.resources.pluralStringResource
+import androidx.compose.foundation.layout.size
+import androidx.compose.runtime.DisposableEffect
 import org.politisationpopulairefrancaise.ui.resources.organisations_content_type
 import org.politisationpopulairefrancaise.ui.resources.space_comprendre
 import org.politisationpopulairefrancaise.ui.resources.space_revendications
 import org.politisationpopulairefrancaise.ui.resources.space_voir
+import org.politisationpopulairefrancaise.ui.resources.space_decider
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 object ContentTags {
@@ -128,6 +140,8 @@ object ComprendreTags {
     const val WHO_LIST = "who-decides-list"
     const val CHECK_LIST = "decryptage-list"
     const val HISTORY_LIST = "history-list"
+    const val GLOSSARY = "comprendre-glossary"
+    const val GLOSSARY_OPEN = "comprendre-glossary-open"
 
     /** A card of the home: followed by the slug of the content. */
     const val CARD = "comprendre-card-"
@@ -155,17 +169,41 @@ fun ComprendreScreen(
     val course = comprendre.openCourse
     val article = comprendre.openArticle
     val guide = library.selected
+    val elus = comprendre.elus
+    val elusOpen = elus?.pageOpen == true
+    val glossary = LocalGlossary.current
     val actions = HomeActions(
-        openGuide = { comprendre.close(); comprendre.closeArticle(); library.open(it) },
-        openCourse = { library.close(); comprendre.open(it) },
-        openArticle = { library.close(); comprendre.openArticle(it) },
+        openGuide = { comprendre.close(); comprendre.closeArticle(); elus?.closePage(); library.open(it) },
+        openCourse = { library.close(); elus?.closePage(); comprendre.open(it) },
+        openArticle = { library.close(); elus?.closePage(); comprendre.openArticle(it) },
+        openElus = { library.close(); comprendre.close(); comprendre.closeArticle(); elus?.openPage() },
+        openGlossary = { comprendre.close(); comprendre.closeArticle(); library.close(); elus?.closePage(); glossary?.browse() },
     )
-    val hasDetail = course != null || article != null || guide != null
-    // The system's back closes the open course, article or guide first.
+    // A content linked to an entry of the glossary (« Pour aller plus loin »): opened once it is read.
+    val pending = glossary?.pendingContent
+    LaunchedEffect(pending, comprendre.courses, comprendre.decryptages, comprendre.stories, comprendre.sheets, comprendre.dossiers, library.guides) {
+        if (pending == null) return@LaunchedEffect
+        val course = comprendre.courses.firstOrNull { it.address == pending }
+        val linked = (comprendre.decryptages.map { it.article } + comprendre.stories.map { it.article } + comprendre.sheets.map { it.article } + comprendre.dossiers)
+            .firstOrNull { it.address.toString() == pending }
+        val fiche = library.guides.firstOrNull { it.address.toString() == pending }
+        when {
+            course != null -> actions.openCourse(course)
+            linked != null -> actions.openArticle(linked)
+            fiche != null -> actions.openGuide(fiche)
+            else -> return@LaunchedEffect
+        }
+        glossary.pendingDone()
+    }
+    // A content that could not be found is forgotten when the reader leaves the space.
+    DisposableEffect(glossary) { onDispose { glossary?.pendingDone() } }
+    val hasDetail = course != null || article != null || guide != null || elusOpen
+    // The system's back closes the open course, article, page « Mes élus » or guide first.
     SystemBack(enabled = hasDetail) {
         when {
             course != null -> comprendre.close()
             article != null -> comprendre.closeArticle()
+            elus != null && elusOpen -> elus.closePage()
             else -> library.close()
         }
     }
@@ -174,7 +212,8 @@ fun ComprendreScreen(
     fun Detail(onBack: Boolean, detailModifier: Modifier) {
         when {
             course != null -> CourseScreen(comprendre, course, onBack = if (onBack) comprendre::close else null, onNavigate = onNavigate, compact = compact, modifier = detailModifier)
-            article != null -> ArticleDetail(comprendre, article, onBack = if (onBack) comprendre::closeArticle else null, onNavigate = onNavigate, compact = compact, modifier = detailModifier)
+            article != null -> ArticleDetail(comprendre, article, onBack = if (onBack) comprendre::closeArticle else null, onNavigate = onNavigate, compact = compact, modifier = detailModifier, onOpenElus = actions.openElus)
+            elus != null && elusOpen -> MesElusPage(elus, onBack = if (onBack) elus::closePage else null, compact = compact, modifier = detailModifier)
             guide != null -> GuideDetail(guide, onBack = if (onBack) library::close else null, compact = compact, modifier = detailModifier)
         }
     }
@@ -182,6 +221,8 @@ fun ComprendreScreen(
     // The panes carry their own test tags, so the host's modifier stays on this container.
     Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
         when {
+            // The full glossary takes the whole space, with its own list and detail (D-048).
+            glossary != null && glossary.browsing -> GlossaryScreen(glossary, windowClass, onBack = glossary::stopBrowsing, modifier = Modifier.fillMaxSize())
             twoPanes -> Row(Modifier.fillMaxSize()) {
                 ComprendreHome(library, comprendre, actions, Modifier.width(400.dp).fillMaxSize(), compact = false, withHeader = false)
                 VerticalDivider(color = PpfTheme.palette.border)
@@ -197,12 +238,16 @@ fun ComprendreScreen(
             else -> ComprendreHome(library, comprendre, actions, Modifier.fillMaxSize(), compact = compact, withHeader = true)
         }
     }
+    // The choice of the commune opens over the sheet or the page it was asked from.
+    elus?.let { CommuneChooserDialog(it) }
 }
 
 private class HomeActions(
     val openGuide: (Article) -> Unit,
     val openCourse: (Parcours) -> Unit,
     val openArticle: (Article) -> Unit,
+    val openElus: () -> Unit,
+    val openGlossary: () -> Unit,
 )
 
 @Composable
@@ -241,8 +286,14 @@ private fun ComprendreHome(
                 }
             }
 
+            GlossarySection(actions.openGlossary)
+
             HomeSection(stringResource(Res.string.comprendre_who_title), stringResource(Res.string.comprendre_who_intro), comprendre.sheets, ComprendreTags.WHO_LIST) { sheet ->
                 QuiDecideCard(sheet, onOpen = { actions.openArticle(sheet.article) }, selected = comprendre.openArticle?.address == sheet.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + sheet.article.slug))
+            }
+            comprendre.elus?.let { elus ->
+                Spacer(Modifier.height(if (comprendre.sheets.isEmpty()) 20.dp else 0.dp))
+                MesElusCard(elus, onOpen = actions.openElus, selected = elus.pageOpen)
             }
             HomeSection(stringResource(Res.string.comprendre_decryptages_title), stringResource(Res.string.comprendre_checks_intro), comprendre.decryptages, ComprendreTags.CHECK_LIST) { check ->
                 DecryptageCard(check, onOpen = { actions.openArticle(check.article) }, selected = comprendre.openArticle?.address == check.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + check.article.slug))
@@ -301,6 +352,27 @@ private fun ComprendreHome(
     }
 }
 
+/** The entry « Glossaire » of the home (D-048), shown once the device holds entries. */
+@Composable
+private fun GlossarySection(onOpen: () -> Unit) {
+    val glossary = LocalGlossary.current ?: return
+    val count = glossary.index.size
+    if (count == 0) return
+    val palette = PpfTheme.palette
+    Spacer(Modifier.height(20.dp))
+    Column(Modifier.fillMaxWidth().testTag(ComprendreTags.GLOSSARY)) {
+        SectionHeading(stringResource(Res.string.glossaire_kind), stringResource(Res.string.glossaire_home_intro))
+        PpfCard(onClick = onOpen, modifier = Modifier.fillMaxWidth().testTag(ComprendreTags.GLOSSARY_OPEN)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Icon(Lucide.BookOpen, contentDescription = null, tint = palette.brand, modifier = Modifier.size(22.dp))
+                Spacer(Modifier.width(12.dp))
+                Text(pluralStringResource(Res.plurals.glossaire_home_open, count, count), style = MaterialTheme.typography.titleSmall, color = palette.brand, modifier = Modifier.weight(1f))
+                Icon(Lucide.ChevronRight, contentDescription = null, tint = palette.brand, modifier = Modifier.size(18.dp))
+            }
+        }
+    }
+}
+
 /** A section of the home, shown only when it has contents. */
 @Composable
 private fun <T> HomeSection(title: String, intro: String, items: List<T>, tag: String, card: @Composable (T) -> Unit) {
@@ -317,7 +389,7 @@ private fun <T> HomeSection(title: String, intro: String, items: List<T>, tag: S
 
 /** A dossier, a fact-check, a story or a « Qui décide de ça ? » sheet, each with its own layout. */
 @Composable
-private fun ArticleDetail(comprendre: ComprendreLibrary, article: Article, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier) {
+private fun ArticleDetail(comprendre: ComprendreLibrary, article: Article, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier, onOpenElus: () -> Unit) {
     val check = comprendre.decryptages.firstOrNull { it.article.address == article.address }
     val story = comprendre.stories.firstOrNull { it.article.address == article.address }
     val sheet = comprendre.sheets.firstOrNull { it.article.address == article.address }
@@ -325,7 +397,7 @@ private fun ArticleDetail(comprendre: ComprendreLibrary, article: Article, onBac
     when {
         check != null -> DecryptageDetail(check, onOpenMethod = method?.let { page -> { comprendre.openArticle(page) } }, onBack = onBack, onNavigate = onNavigate, compact = compact, modifier = modifier)
         story != null -> HistoryDetail(story, onBack, onNavigate, compact, modifier)
-        sheet != null -> QuiDecideDetail(sheet, comprendre.persons, onBack, onNavigate, compact, modifier)
+        sheet != null -> QuiDecideDetail(sheet, comprendre.persons, onBack, onNavigate, compact, modifier, elus = comprendre.elus, onOpenElus = onOpenElus)
         else -> GuideDetail(article, onBack = onBack, compact = compact, modifier = modifier)
     }
 }
@@ -474,10 +546,12 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.PARCOURS -> Res.string.comprendre_course_kind
         ArticleType.HISTOIRE -> Res.string.comprendre_kind_history
         ArticleType.QUI_DECIDE -> Res.string.comprendre_kind_who
+        ArticleType.GLOSSAIRE -> Res.string.glossaire_kind
         ArticleType.REVENDICATION -> Res.string.space_revendications
-        ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE -> Res.string.space_voir
+        ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE, ArticleType.PARTI -> Res.string.space_voir
         ArticleType.ORGANISATION -> Res.string.organisations_content_type
         ArticleType.APPEL -> Res.string.appels_title
+        ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT -> Res.string.space_decider
     },
 )
 

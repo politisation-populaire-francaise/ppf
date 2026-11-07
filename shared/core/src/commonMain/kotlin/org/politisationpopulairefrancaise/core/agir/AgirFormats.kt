@@ -8,8 +8,11 @@ package org.politisationpopulairefrancaise.core.agir
  * string resources of the interface.
  */
 object AgirFormats {
-    /** Version of this contract, for the integration notes. */
-    const val CONTRACT_VERSION: String = "1"
+    /**
+     * Version of this contract, for the integration notes. Version 2 (D-044, 7 November 2026) adds
+     * the public responses of the organisations to a mobilization (kind 31925, docs/integration/agir-transparence.md).
+     */
+    const val CONTRACT_VERSION: String = "2"
 
     // Kinds and content types
 
@@ -70,8 +73,46 @@ object AgirFormats {
     /** Absent means "prevu". */
     val EVENT_STATUSES: List<String> = listOf("prevu", "annule", "reporte")
 
-    /** Declaration of a demonstration to the prefecture (AP-10): done, in progress, not done. */
+    /**
+     * Declaration of a demonstration to the prefecture (AP-10): done, in progress, not done. All three
+     * are offered and shown publicly (decision of the owner, D-044: "transparency first").
+     */
     val DECLARATION_STATES: List<String> = listOf("faite", "en-cours", "non-faite")
+
+    // Public responses to a mobilization (kind 31925, NIP-52 calendar event RSVP), contract version 2
+
+    /**
+     * NIP-52 calendar event RSVP, addressable by `31925:<key>:<d>`. Only the responses of verified
+     * organisations and editorial keys are ever shown (D-044); a citizen's answer stays on the device.
+     */
+    const val KIND_PARTICIPATION: Int = 31925
+
+    /** `status` of NIP-52: `accepted`, `declined` or `tentative` (required). */
+    const val TAG_STATUS: String = "status"
+
+    /** NIP-52 statuses, in the order of the NIP. */
+    val PARTICIPATION_STATUSES: List<String> = listOf("accepted", "declined", "tentative")
+
+    /** PPF extension: what the responding key does at the event (`participant` when absent). */
+    const val TAG_ROLE: String = "ppf-role"
+
+    const val ROLE_PARTICIPANT: String = "participant"
+
+    /** Co-organiser: counts only for a key the mobilization names as organiser (`p` of role "organizer"). */
+    const val ROLE_CO_ORGANISER: String = "organisateur"
+
+    val PARTICIPATION_ROLES: List<String> = listOf(ROLE_PARTICIPANT, ROLE_CO_ORGANISER)
+
+    /** Optional NIP-52 tags: the id of the version answered (`e`) and `fb` (`free` or `busy`). */
+    const val TAG_EVENT_ID: String = "e"
+    const val TAG_FREE_BUSY: String = "fb"
+    val FREE_BUSY: List<String> = listOf("free", "busy")
+
+    /** Longest note of a response (its content), in characters; it is never displayed by the application. */
+    const val MAX_PARTICIPATION_NOTE: Int = 280
+
+    /** Longest `d` of a response: the device writes the address of the mobilization (135 characters at most). */
+    const val MAX_PARTICIPATION_ID: Int = 200
 
     // Calls (kind 30023, ppf-type = appel)
 

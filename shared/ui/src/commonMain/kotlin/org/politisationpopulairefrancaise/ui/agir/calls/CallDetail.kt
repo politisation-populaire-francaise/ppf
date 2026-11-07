@@ -28,7 +28,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
-import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -47,6 +46,9 @@ import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.Inset
+import org.politisationpopulairefrancaise.ui.components.LeaveDialogTags
+import org.politisationpopulairefrancaise.ui.components.LeavePpfDialog
+import org.politisationpopulairefrancaise.ui.components.leavingHost
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
@@ -338,38 +340,16 @@ private fun CloseOutcomeBox(outcome: CallSendOutcome) {
  */
 @Composable
 internal fun LeaveDialog(link: LeavingLink, onStay: () -> Unit, onDone: () -> Unit) {
-    val palette = PpfTheme.palette
-    val uriHandler = LocalUriHandler.current
-    val host = CallRules.hostOf(link.url) ?: link.url.take(80)
-    AlertDialog(
-        onDismissRequest = onStay,
-        containerColor = palette.surface2,
-        titleContentColor = palette.ink,
-        textContentColor = palette.inkMuted,
-        shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.testTag(CallTags.LEAVE_DIALOG),
-        icon = { Icon(Lucide.TriangleExclamationPoint, contentDescription = null, tint = palette.warning) },
-        title = { Text(stringResource(Res.string.appels_leave_title), style = MaterialTheme.typography.titleMedium) },
-        text = {
-            Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                Text(stringResource(Res.string.appels_leave_text, host), style = MaterialTheme.typography.bodyLarge)
-                if (link.fundraising) Text(stringResource(Res.string.appels_leave_fundraising), style = MaterialTheme.typography.bodyLarge)
-            }
-        },
-        confirmButton = {
-            Column(Modifier.fillMaxWidth(), verticalArrangement = Arrangement.spacedBy(4.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-                PpfPrimaryButton(onClick = onStay, text = stringResource(Res.string.appels_leave_stay), modifier = Modifier.fillMaxWidth().testTag(CallTags.LEAVE_STAY))
-                PpfTextButton(
-                    onClick = {
-                        // Only full https addresses are ever opened (the rules refuse anything else).
-                        if (CallRules.isValidLink(link.url)) runCatching { uriHandler.openUri(link.url.trim()) }
-                        onDone()
-                    },
-                    text = stringResource(Res.string.appels_leave_open),
-                    modifier = Modifier.testTag(CallTags.LEAVE_OPEN),
-                )
-            }
-        },
+    LeavePpfDialog(
+        url = link.url,
+        title = stringResource(Res.string.appels_leave_title),
+        text = stringResource(Res.string.appels_leave_text, leavingHost(link.url)),
+        stayLabel = stringResource(Res.string.appels_leave_stay),
+        openLabel = stringResource(Res.string.appels_leave_open),
+        onStay = onStay,
+        onDone = onDone,
+        tags = LeaveDialogTags(CallTags.LEAVE_DIALOG, CallTags.LEAVE_STAY, CallTags.LEAVE_OPEN),
+        note = if (link.fundraising) stringResource(Res.string.appels_leave_fundraising) else null,
     )
 }
 

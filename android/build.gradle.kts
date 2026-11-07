@@ -21,6 +21,28 @@ val commitVersionCode: Int = providers.environmentVariable("PPF_VERSION_CODE").o
     }.map { commitSeconds -> ((commitSeconds - versionCodeEpochSeconds) / 60).toInt().coerceAtLeast(1) }
         .getOrDefault(1)
 
+// Server the application talks to, fixed at build time for each build type (BuildConfig.PPF_SERVER_URL):
+// the preproduction for the test version sent to phones, none for the others, which then work with
+// the contents bundled in the APK only. The production address will be set at the public launch.
+// HTTPS only: the build refuses anything else, because the HTTP engine of the application (Ktor CIO)
+// does not consult the network security configuration of Android, so cleartext must be ruled out here.
+// For a local test, the Gradle property PPF_SERVER_URL (-PPPF_SERVER_URL=https://..., or the
+// environment variable ORG_GRADLE_PROJECT_PPF_SERVER_URL; empty for no server) replaces the value
+// of the debug and preview builds, never of the release build. It is deliberately not the plain
+// environment variable PPF_SERVER_URL of the desktop application, so that a desktop setting
+// (http://localhost:8080) never changes, nor breaks, the APK sent to phones.
+val preproductionServerUrl = "https://preprod.politisation-populaire-francaise.org"
+val serverUrlOverride: String? = providers.gradleProperty("PPF_SERVER_URL").orNull?.trim()
+val serverOrigin = Regex("https://[a-z0-9]([a-z0-9.-]*[a-z0-9])?(:[0-9]{1,5})?")
+
+/** The value of PPF_SERVER_URL as a Java string literal: empty, or an HTTPS origin without path. */
+fun serverUrlField(url: String): String {
+    require(url.isEmpty() || serverOrigin.matches(url)) {
+        "PPF_SERVER_URL must be empty (no server) or an HTTPS origin without path, such as https://host or https://host:8443; got \"$url\""
+    }
+    return "\"$url\""
+}
+
 android {
     namespace = "org.politisationpopulairefrancaise.app"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
@@ -57,11 +79,16 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         // Development build, for the computer only: debuggable, never sent to a phone.
         debug {
             applicationIdSuffix = ".test"
             versionNameSuffix = "-test"
+            buildConfigField("String", "PPF_SERVER_URL", serverUrlField(serverUrlOverride ?: ""))
         }
         // Test version sent to phones (owner and testers). Same identifier and same test
         // signature as the debug build, so it installs over it as an update, but NOT debuggable:
@@ -76,8 +103,13 @@ android {
             versionNameSuffix = "-test"
             signingConfig = signingConfigs.getByName("debug")
             matchingFallbacks += "release"
+            // The preproduction, reachable only through its WireGuard tunnel: without it, the
+            // application simply stays offline with its bundled contents.
+            buildConfigField("String", "PPF_SERVER_URL", serverUrlField(serverUrlOverride ?: preproductionServerUrl))
         }
         release {
+            // No server until the public launch (production address to be set then).
+            buildConfigField("String", "PPF_SERVER_URL", serverUrlField(""))
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
@@ -86,6 +118,10 @@ android {
 
     packaging {
         resources.excludes += setOf("/META-INF/{AL2.0,LGPL2.1}")
+        // Native libraries compressed in the APK: the map engine (MapLibre, three architectures)
+        // weighs about 40 MB uncompressed and 17 MB compressed. Downloading the APK matters more on
+        // a weak connection than the one-time extraction at install (docs/integration/agir-carte.md).
+        jniLibs.useLegacyPackaging = true
     }
 }
 

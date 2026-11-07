@@ -6,6 +6,7 @@ start: 2026-12-01T08:00
 end: 2026-12-01T18:00
 location: Campus fictif, entrée principale, Toulouse
 territory: Toulouse
+geohash: spc00cgqx
 status: reporte
 summary: Un blocage fictif, reporté : la nouvelle date sera annoncée.
 created_at: 2026-11-05T12:00
