@@ -3,7 +3,7 @@
 - Version : 2.0
 - Date : 7 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-cahier-fonctionnel.md`.
-- Documents liés : `vision.md` (pourquoi, version 4.2), `cahier-des-charges.md` (exigences, architecture, cadre légal, planning), `docs/DECISIONS.md` (décisions numérotées D-xxx), `docs/ROADMAP.md` (avancement).
+- Documents liés : `vision.md` (pourquoi, version 4.3), `cahier-des-charges.md` (exigences, architecture, cadre légal, planning), `docs/DECISIONS.md` (décisions numérotées D-xxx), `docs/ROADMAP.md` (avancement).
 - Origine de la version 2.0 : mandat de la propriétaire du 7 novembre 2026 (« ajouter autant de taches dans le cahier fonctionnel et cahier des charges que nécessaire à l'accomplissement de la vision du projet »), qui intègre l'inventaire des fonctionnalités validé le 4 novembre 2026 et les décisions prises jusqu'au 7 novembre 2026.
 
 Ce document décrit **ce que fait la plateforme** : qui l'utilise, comment, et le détail de chaque espace et de chaque module. Les exigences de sécurité, de vie privée, d'accessibilité et le cadre légal du cahier des charges s'appliquent à toutes les fonctionnalités décrites ici. En cas de contradiction, la vision l'emporte sur le cahier des charges, qui l'emporte sur ce cahier.

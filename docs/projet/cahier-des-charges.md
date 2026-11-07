@@ -3,7 +3,7 @@
 - Version : 2.1
 - Date : 7 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-cahier-des-charges.md`.
-- Documents liés : `vision.md` (pourquoi, version 4.2), `cahier-fonctionnel.md` (ce que fait le produit, version 2.0), `docs/DECISIONS.md` (décisions numérotées), `docs/FORMATS.md` (formats ouverts), `docs/THREAT_MODEL.md` (modèle de menaces), `docs/REGISTRE_DONNEES.md` (registre RGPD), `infra/EGRESS.md` (connexions sortantes du serveur).
+- Documents liés : `vision.md` (pourquoi, version 4.3), `cahier-fonctionnel.md` (ce que fait le produit, version 2.0), `docs/DECISIONS.md` (décisions numérotées), `docs/FORMATS.md` (formats ouverts), `docs/THREAT_MODEL.md` (modèle de menaces), `docs/REGISTRE_DONNEES.md` (registre RGPD), `infra/EGRESS.md` (connexions sortantes du serveur).
 
 Ce document fixe **ce que la plateforme doit respecter** : périmètre, principes, architecture, technologies, sécurité, accessibilité, cadre légal, planning et moyens. Le détail des fonctionnalités se trouve dans le cahier fonctionnel.
 
