@@ -48,10 +48,12 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationsCo
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
 import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
+import org.politisationpopulairefrancaise.server.comprendre.EditorialComprendreSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
 import org.politisationpopulairefrancaise.web.agendaPage
+import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
 import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.webRoutes
 import org.slf4j.LoggerFactory
@@ -142,6 +144,8 @@ fun Application.module(
     agir: AgirSetup = AgirSetup.fromEnvironment(),
     /** Where the pages of "Voir" read; by default the editorial contents of the database (none without one). */
     voir: VoirSource? = null,
+    /** Where the pages of "Comprendre" read (D-091); by default the editorial contents of the database (none without one). */
+    comprendre: ComprendreSource? = null,
     tiles: TilesConfig = TilesConfig.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
     territoires: TerritoiresSetup = TerritoiresSetup.fromEnvironment(),
@@ -212,7 +216,10 @@ fun Application.module(
         agirSpace?.let { agendaPage(it.agendaSource()) }
         tilesRoutes(tiles)
         parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
-        // The pages of "Voir": contents of the editorial keys only (D-034).
-        webRoutes(voir ?: repository?.let { EditorialVoirSource(it, policy) })
+        // The pages of "Voir" and "Comprendre": contents of the editorial keys only (D-034, D-091).
+        webRoutes(
+            voir = voir ?: repository?.let { EditorialVoirSource(it, policy) },
+            comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
+        )
     }
 }
