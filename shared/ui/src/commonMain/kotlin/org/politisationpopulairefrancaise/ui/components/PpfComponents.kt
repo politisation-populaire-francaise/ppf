@@ -23,6 +23,8 @@ import androidx.compose.foundation.selection.selectable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -467,6 +469,8 @@ fun PpfTextField(
     modifier: Modifier = Modifier,
     minLines: Int = 1,
     singleLine: Boolean = false,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    keyboardActions: KeyboardActions = KeyboardActions.Default,
 ) {
     val palette = PpfTheme.palette
     BasicTextField(
@@ -477,6 +481,8 @@ fun PpfTextField(
         cursorBrush = SolidColor(palette.brand),
         minLines = minLines,
         singleLine = singleLine,
+        keyboardOptions = keyboardOptions,
+        keyboardActions = keyboardActions,
         decorationBox = { inner ->
             Box(
                 Modifier.fillMaxWidth().heightIn(min = 44.dp)

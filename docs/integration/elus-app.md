@@ -1,0 +1,84 @@
+# Note d'intégration : l'annuaire des élus sur l'appareil (bloc elus-app, D-047)
+
+Rédigée le 7 novembre 2026 par le bloc **elus-app** de la vague 3 de « Comprendre » (branche `worktree-agent-a4974f4c6c91f3bb0`, partie de `feature/comprendre` au commit `1ac2e95`, contrat `docs/integration/comprendre-vague-3.md`, sections 1.4 et 1.6). Elle s'adresse à la session principale, qui fusionne et met à jour `CHANGELOG.md`, `ROADMAP.md`, `DECISIONS.md` (D-047), `FORMATS.md`, `REGISTRE_DONNEES.md`, `THREAT_MODEL.md` et `GUIDE_PROPRIETAIRE.md`. Aucun de ces documents n'a été modifié ici.
+
+## 1. Ce qui est fait
+
+### Code commun sans interface (`shared/core/.../core/elus/`)
+
+- **`ElusFormats.kt`** : les modèles de l'index (`ElusIndex`, `ElusPackageEntry`, `ElusSource`) et d'un paquet (`ElusPackage`, `ElusCommune`, `Territory`, `ElectedOfficial`, `Mandate`), exactement les champs du contrat (1.4). `ElusReader` lit **strictement** le document (format 1, code de paquet valide, nom présent ; sinon `null`, jamais d'exception) et **tolère** ses entrées (une commune, un élu ou une entrée d'index illisible est écarté, les autres sont gardés ; champs inconnus ignorés ; date impossible lue comme absente). Codes de paquet acceptés : `01` à `95`, `2A`, `2B`, `97x`, `98x`, `FR`. Taille maximale d'un paquet : 32 Mo. `ElusDigest` : SHA-256 des octets exacts avec `Crypto.sha256` de bitcoin-kmp, déjà utilisé pour signer chaque événement (aucune dépendance nouvelle, compatible iOS).
+- **`ElusFinder.kt`** : `ElusFinder.find(paquet, codeInsee, paquetNational?)` rend les élus d'une commune par `DecisionLevel`, dans l'ordre du contrat :
+  - commune : le maire, puis les adjoints par rang (« 1er adjoint », « 2e adjointe », « Premier adjoint »), puis les autres fonctions, puis les membres du conseil dans l'ordre du paquet ;
+  - intercommunalité : président, puis membres qui représentent la commune ; si le paquet n'indique la commune représentée pour aucun membre, tous les membres (note `ALL_MEMBERS_OF_INTERCOMMUNALITE`) ; commune sans intercommunalité : note `NO_INTERCOMMUNALITE` ;
+  - département : membres du ou des cantons de la commune, puis présidence du conseil départemental, puis l'assemblée d'une collectivité à statut particulier s'il y en a ;
+  - région : présidence du conseil régional, puis vice-présidences par rang, puis membres ;
+  - État : membre de l'Assemblée nationale de chaque circonscription de la commune (une commune partagée les a tous), puis membres du Sénat du département ;
+  - Union européenne : membres élus en France si le paquet `FR` est sur l'appareil (sinon note `NATIONAL_PACKAGE_MISSING`).
+  - **Table absente** (contrat 1.1) : si *aucune* commune du paquet n'a de canton (ou de circonscription), la table manque pour tout le département et tous les cantons (circonscriptions) sont listés avec leur nom (notes `ALL_CANTONS_OF_DEPARTMENT`, `ALL_CIRCONSCRIPTIONS_OF_DEPARTMENT`). Si d'autres communes en ont et pas celle-ci (une commune de la Métropole de Lyon n'a pas de canton), elle n'en a vraiment pas : rien n'est inventé.
+  - Président et vice-président reconnus par leur libellé replié (`FrenchText.fold`) : « Président », « Présidente », « 1er vice-président ».
+- **`ElusStore.kt`** : `ElusStorage` (interface), `ElusStore` (base locale) et `InMemoryElusStorage` (tests, appareil sans base). La commune choisie (`ChosenCommune` : code INSEE et code du paquet du département) et les paquets (`StoredPackage` : code, sha256, JSON exact, date de la source, date du téléchargement). `forget()` efface tout.
+- **`ElusDirectory.kt`** : le parcours, sans interface.
+  - `index()` : demande l'index au serveur (geste de l'utilisateur), avec `If-None-Match` = sha256 de la copie de l'appareil ; garde l'index (ligne `index` de la table des paquets, aucune donnée personnelle) ; sans réponse, utilise la copie de l'appareil (`Ready(fresh = false)`) ; `NoServer` sans serveur, `Unreachable`, `Unreadable` (format inconnu).
+  - `plan(index, codePostal)` : les départements du code postal (plusieurs si le code postal est à cheval) et les paquets manquants ou périmés, dont le paquet `FR` s'il existe ; `bytes` = taille à annoncer.
+  - `download(plan)` : chaque paquet n'est gardé que si ses octets ont le sha256 de l'index **et** qu'il se lit comme le paquet du code demandé ; sinon `Refused`. Le paquet `FR` est facultatif : son échec n'arrête pas le reste.
+  - `communesFor(plan)`, `choose(choix)` (garde la commune et supprime les paquets des autres départements : seuls restent celui de la commune, `FR` et l'index), `mine()` (lecture sur l'appareil seulement ; une copie dont le sha256 ne correspond plus est ignorée), `update(index)` (nouvelle version du paquet de la commune), `forget()`.
+- **Base locale** : `Elus.sq` et **`migrations/10.sqm`** (schéma 10 vers 11, identique aux CREATE du `.sq` ; un test compare les définitions SQLite d'une base neuve et d'une base migrée). Tables `elus_commune` (une seule ligne, `id = 0`) et `elus_package`.
+- **Lecture du serveur** : `RemoteEvents.fetchElus(code: String? = null, etag: String? = null): ElusDownload`, qui répond `Unavailable` par défaut (comme `fetchGroups`). `ElusDownload` : `Body(bytes, etag)` (octets exacts), `NotModified` (304), `UnknownPackage` (404 sur un paquet ; un 404 sur l'index veut dire « serveur sans annuaire », donc `Unavailable`), `Unavailable`. `ServerPublicationPort.fetchElus` appelle `GET /api/v1/elus` et `GET /api/v1/elus/{code}` (code vérifié avant l'appel), envoie `If-None-Match: "<sha256>"` et lit le corps avec `bodyAsBytes()`. Aucune commune ni aucun code postal n'est envoyé ; les tests le vérifient.
+
+### Interface (`shared/ui/.../ui/comprendre/elus/` et retouches)
+
+- **`ElusLibrary`** : l'état (élus de la commune, page ouverte, étape du choix, serveur injoignable, mise à jour), opérations une par une hors du fil principal. Créée par `rememberComprendreLibrary` et portée par `ComprendreLibrary.elus` (aucun changement dans `AdaptiveShell`).
+- **Choix de la commune** (`CommuneChooserDialog`, fenêtre par-dessus la fiche ou la page) : code postal (clavier numérique, vérifié sur l'appareil : cinq chiffres) ; département(s) trouvé(s) dans l'index et **taille annoncée** (« Télécharger (12 ko) ») ; en mode économie de données, **seconde confirmation** (« Télécharger quand même ») ; choix de la commune quand le code postal en couvre plusieurs (une seule : choisie aussitôt) ; boutons « Retour » et « Annuler » ; erreurs (code postal invalide ou inconnu, serveur injoignable, liste refusée par sécurité, format illisible, aucune commune). La phrase de confidentialité du contrat reste visible à chaque étape.
+- **Encart « Qui décide ? Les élus concernés »** (`ElusBox` de `ComprendreDetails.kt`) : sous chaque niveau de la fiche, les élus de la commune (trois noms par groupe au plus, puis « et N autres » ; région et Parlement européen en nombre) ; puis « Vos élus à … », « Voir tous mes élus », « Changer de commune ». Sans commune et avec serveur : phrase d'invitation et bouton « Indiquer ma commune » (la phrase `comprendre_elus_local_pending` disparaît). Sans serveur : la phrase `comprendre_elus_local_pending` reste (elle est vraie pour cet APK) avec un bouton « Annuaires officiels des élus ».
+- **Page « Mes élus »** (`MesElusPage`), entrée « Mes élus » dans l'accueil de « Comprendre » juste après « Qui décide de ça ? » (`MesElusCard`) : commune et département, « Changer de commune », « Oublier ma commune » (confirmation, « Garder ma commune » en premier) ; bandeau **« Données fictives [EXEMPLE] »** quand l'index ou un paquet a `example` ; les six niveaux avec leurs titres sémantiques, groupes titrés (« Conseil municipal de Lyon », « 1re circonscription du Rhône », « Sénat : élus du département Rhône »…), douze noms par groupe puis « Afficher les N autres » ; chaque élu : nom, fonction du RNE ou libellé neutre du mandat (« Membre de l'Assemblée nationale »), date de début ; source (nom, licence, date de la source, date du téléchargement, « Voir la source » derrière l'avertissement), « Rechercher une mise à jour » (taille annoncée avant « Mettre à jour ») ; phrase de confidentialité ; annuaires officiels en bas.
+- **Option C** (`OfficialDirectoriesSection`) : sans serveur, la page n'affiche que les annuaires officiels, avec l'explication ; quand le serveur ne répond pas, la page le dit au-dessus des annuaires. Adresses vérifiées sur les sites officiels le 7 novembre 2026 :
+  - Annuaire de l'administration (mairies) : https://lannuaire.service-public.gouv.fr/navigation/mairie (DILA, recherche par commune ou code postal) ;
+  - Assemblée nationale : https://www.assemblee-nationale.fr/dyn/vos-deputes (« 577 députés », par département, région, nom) ;
+  - Sénat : https://www.senat.fr/senateurs/sencir.html (« Liste par département ») ;
+  - Parlement européen : https://www.europarl.europa.eu/meps/fr/search/advanced?countryCode=FR (81 membres) ;
+  - Répertoire national des élus : https://www.data.gouv.fr/fr/datasets/5c34c4d1634f4173183a64f1/ (ministère de l'Intérieur, Licence Ouverte 2.0, mise à jour de la page : 11 août 2026).
+  Chaque lien passe par **« Vous quittez PPF »** : `LeavePpfDialog` est désormais un composant commun (`ui/components/LeavePpfDialog.kt`, avec `LeaveDialogTags` et `leavingHost`). Le `LeaveDialog` des appels d'« Agir » l'utilise avec ses propres textes et étiquettes de test : comportement inchangé (mêmes textes, même ordre des boutons, seules les adresses `https://` complètes s'ouvrent).
+- **Textes** : `strings_elus.xml` (préfixe `elus_`, apostrophe typographique, aucun tiret cadratin, libellés neutres). `strings_comprendre.xml` n'est pas modifié.
+- **Retouches communes** : `PpfTextField` accepte `keyboardOptions` et `keyboardActions` (valeurs par défaut inchangées) ; `AppDependencies.dataSaver: () -> Boolean = { false }`.
+- Icônes existantes seulement (Landmark, MapPin, User, ExternalLink, ArrowLeft, TriangleExclamationPoint) : `Lucide.kt` n'est pas régénéré, aucun conflit avec le glossaire.
+- Écrans adaptatifs : la page est le détail de « Comprendre » (à côté de l'accueil sur grand écran, avec retour sur téléphone et tablette) ; fenêtre de choix limitée à 520 dp ; modes clair et sombre par les jetons de `PpfTheme`.
+
+## 2. Écarts au contrat et choix faits dans le bloc
+
+- **Index gardé sur l'appareil** dans la table des paquets sous le code `index` (contrat : « l'index (déjà téléchargé, il ne contient aucune donnée personnelle) »). Il est demandé au serveur au moment où l'utilisateur valide son code postal (geste), jamais avant.
+- **Paquet national téléchargé avec le département**, dans le même geste et la même taille annoncée (une seule confirmation au lieu de deux). Il reste facultatif : son absence ou son refus n'empêche pas de trouver la commune.
+- **Mode économie de données** : il n'existait pas encore. J'ai ajouté le crochet `AppDependencies.dataSaver` (faux par défaut). Les hôtes ne le renseignent pas encore : l'APK n'a pas de serveur, et l'ordinateur n'a pas de mode système équivalent. À brancher sur Android quand le serveur y sera configuré (`ConnectivityManager.getRestrictBackgroundStatus() == RESTRICT_BACKGROUND_STATUS_ENABLED`, ou `isActiveNetworkMetered`, avec la permission `ACCESS_NETWORK_STATE`), ou sur un réglage « Économie de données » de « Mon espace » (S-19).
+- **Compression** : le client ne demande pas encore la compression (`Accept-Encoding`) ; le serveur répond alors sans compresser. La taille annoncée est celle de l'index (octets non compressés). Pour économiser les données, ajouter plus tard `ktor-client-encoding` (même version que Ktor) et `install(ContentEncoding) { gzip() }` dans le client des hôtes ; l'empreinte reste juste (le module décompresse avant `bodyAsBytes()`). Non fait ici pour ne pas ajouter de dépendance.
+- **ETag** envoyé entre guillemets (`If-None-Match: "<sha256>"`, RFC 9110). Le bloc elus-serveur doit accepter cette forme (ou répondre 200 : rien ne casse, seules quelques données sont téléchargées en trop). L'ETag reçu est lu avec ou sans guillemets et `W/`.
+- **Fonctions du RNE affichées telles quelles** (« 1er adjoint », « Président du conseil départemental ») comme le dit le contrat (1.2) ; les libellés propres à l'application sont neutres (mandats, titres de groupes : « Présidence du conseil départemental »).
+- **Collectivités à statut particulier** (`collectivite`) : rangées sous le niveau « Département », titre « Assemblée de la collectivité <code> » (le contrat ne donne pas de liste nommée de ces collectivités dans le paquet).
+- **Président de région** : affiché seulement s'il est dans le paquet du département (le contrat laisse au serveur le choix d'inclure la section ou toute la région).
+
+## 3. Tester
+
+### Tests automatiques
+
+- `gradlew :shared:core:jvmTest` : `ElusReaderTest` (lecture stricte et tolérante, empreinte, codes, réponses du serveur), `ElusFinderTest` (adjoints dans l'ordre, commune partagée entre deux circonscriptions, commune sans intercommunalité, tables absentes, intercommunalité sans commune représentée, région, Europe), `ElusDirectoryTest` (parcours complet sans envoi du code postal, empreinte refusée, paquet d'un autre département refusé, paquet national facultatif, serveur absent ou muet, index de l'appareil, mise à jour, oubli, copie abîmée), `ElusStoreTest` (une ligne, oubli, redémarrage hors ligne), `DatabaseMigrationTest` (schéma 11, base de version 10 migrée, définitions identiques), `SchemaMigrationTest`, `LearningProgressStoreTest` (adapté au schéma 11).
+- `gradlew :shared:ui:jvmTest` : `ElusUiTest` (encart sans serveur et annuaires derrière « Vous quittez PPF », encart avec serveur sans commune, choix complet avec un faux `RemoteEvents` jusqu'aux noms sous chaque niveau, seconde confirmation en économie de données, page « Mes élus » avec bandeau, niveaux, « Afficher les N autres », source, mise à jour et oubli, serveur injoignable, paquet refusé, grand écran).
+
+### À la main, sur l'ordinateur, avec le serveur local (une fois elus-serveur fusionné)
+
+1. Dans un premier terminal : `gradlew :server:runDev` (jeu fictif du serveur, `PPF_RNE_SOURCE=example` par défaut). Vérifier http://localhost:8080/api/v1/elus.
+2. Dans un second terminal (PowerShell) : `$env:PPF_SERVER_URL = 'http://localhost:8080'` puis `gradlew :desktop:run`.
+3. « Comprendre » → « Mes élus » → « Indiquer ma commune » → taper un code postal du jeu fictif (par exemple `69001`) → « Continuer » : la taille de la liste du Rhône s'affiche → « Télécharger » → la page montre le bandeau « Données fictives [EXEMPLE] » et les élus par niveau.
+4. Ouvrir une fiche « Qui décide de ça ? » (par exemple « l'école ») : les noms apparaissent sous chaque niveau.
+5. Arrêter le serveur, relancer l'application : les élus s'affichent toujours (hors ligne). « Rechercher une mise à jour » dit que la mise à jour n'a pas abouti et la page indique les annuaires officiels.
+6. « Oublier ma commune » → confirmer : la page propose à nouveau « Indiquer ma commune ».
+
+### Sur le téléphone (APK actuel, sans serveur)
+
+« Comprendre » → « Mes élus » : la page explique que l'annuaire n'est pas encore dans cette version et propose les annuaires officiels ; chaque lien ouvre d'abord « Vous quittez PPF ». Dans une fiche « Qui décide de ça ? », la phrase d'attente reste, avec le bouton « Annuaires officiels des élus ».
+
+## 4. Pour la session principale
+
+- `REGISTRE_DONNEES.md` : la commune choisie (code INSEE et département) et les listes d'élus téléchargées, sur l'appareil seulement, jamais envoyées ; finalité : nommer les élus de la commune ; durée : jusqu'à « Oublier ma commune » ou la désinstallation ; le serveur voit seulement la demande d'un paquet de département, sans adresse IP journalisée.
+- `THREAT_MODEL.md` : intégrité des paquets par l'empreinte de l'index, l'index lui-même par HTTPS seulement en phase 1 (signature par le service de signature à venir) ; un paquet refusé n'est jamais gardé ; une copie locale abîmée n'est pas affichée.
+- `FORMATS.md` : schéma de base 11 (`elus_commune`, `elus_package`).
+- `GUIDE_PROPRIETAIRE.md` : la procédure de la section 3.
+- `ComprendreContentsUiTest.open` attend maintenant que la carte existe avant de l'ouvrir : les contenus groupés sont importés en arrière-plan et une section peut s'afficher avant les autres ; le test « grand écran » a échoué deux fois de suite pour cette raison sur la machine chargée (plusieurs blocs compilaient), puis est passé.
+- Le glossaire ajoute un `CompositionLocal` dans le shell et touche `MarkdownText` : aucun fichier commun avec ce bloc, sauf `ComprendreScreen.kt` (entrée « Glossaire » de l'accueil) : conflit probable mais simple, mes ajouts sont l'entrée `MesElusCard` après la section « Qui décide de ça ? », `HomeActions.openElus`, le détail `MesElusPage` et `CommuneChooserDialog` à la fin de l'écran.

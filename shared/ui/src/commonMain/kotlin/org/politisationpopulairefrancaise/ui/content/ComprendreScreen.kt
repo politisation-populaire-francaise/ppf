@@ -53,6 +53,9 @@ import org.politisationpopulairefrancaise.ui.comprendre.QuiDecideCard
 import org.politisationpopulairefrancaise.ui.comprendre.QuiDecideDetail
 import org.politisationpopulairefrancaise.ui.comprendre.CourseScreen
 import org.politisationpopulairefrancaise.ui.comprendre.courseMetaLine
+import org.politisationpopulairefrancaise.ui.comprendre.elus.CommuneChooserDialog
+import org.politisationpopulairefrancaise.ui.comprendre.elus.MesElusCard
+import org.politisationpopulairefrancaise.ui.comprendre.elus.MesElusPage
 import org.politisationpopulairefrancaise.ui.comprendre.displayTitle
 import org.politisationpopulairefrancaise.ui.comprendre.progressLine
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
@@ -155,17 +158,21 @@ fun ComprendreScreen(
     val course = comprendre.openCourse
     val article = comprendre.openArticle
     val guide = library.selected
+    val elus = comprendre.elus
+    val elusOpen = elus?.pageOpen == true
     val actions = HomeActions(
-        openGuide = { comprendre.close(); comprendre.closeArticle(); library.open(it) },
-        openCourse = { library.close(); comprendre.open(it) },
-        openArticle = { library.close(); comprendre.openArticle(it) },
+        openGuide = { comprendre.close(); comprendre.closeArticle(); elus?.closePage(); library.open(it) },
+        openCourse = { library.close(); elus?.closePage(); comprendre.open(it) },
+        openArticle = { library.close(); elus?.closePage(); comprendre.openArticle(it) },
+        openElus = { library.close(); comprendre.close(); comprendre.closeArticle(); elus?.openPage() },
     )
-    val hasDetail = course != null || article != null || guide != null
-    // The system's back closes the open course, article or guide first.
+    val hasDetail = course != null || article != null || guide != null || elusOpen
+    // The system's back closes the open course, article, page « Mes élus » or guide first.
     SystemBack(enabled = hasDetail) {
         when {
             course != null -> comprendre.close()
             article != null -> comprendre.closeArticle()
+            elus != null && elusOpen -> elus.closePage()
             else -> library.close()
         }
     }
@@ -174,7 +181,8 @@ fun ComprendreScreen(
     fun Detail(onBack: Boolean, detailModifier: Modifier) {
         when {
             course != null -> CourseScreen(comprendre, course, onBack = if (onBack) comprendre::close else null, onNavigate = onNavigate, compact = compact, modifier = detailModifier)
-            article != null -> ArticleDetail(comprendre, article, onBack = if (onBack) comprendre::closeArticle else null, onNavigate = onNavigate, compact = compact, modifier = detailModifier)
+            article != null -> ArticleDetail(comprendre, article, onBack = if (onBack) comprendre::closeArticle else null, onNavigate = onNavigate, compact = compact, modifier = detailModifier, onOpenElus = actions.openElus)
+            elus != null && elusOpen -> MesElusPage(elus, onBack = if (onBack) elus::closePage else null, compact = compact, modifier = detailModifier)
             guide != null -> GuideDetail(guide, onBack = if (onBack) library::close else null, compact = compact, modifier = detailModifier)
         }
     }
@@ -197,12 +205,15 @@ fun ComprendreScreen(
             else -> ComprendreHome(library, comprendre, actions, Modifier.fillMaxSize(), compact = compact, withHeader = true)
         }
     }
+    // The choice of the commune opens over the sheet or the page it was asked from.
+    elus?.let { CommuneChooserDialog(it) }
 }
 
 private class HomeActions(
     val openGuide: (Article) -> Unit,
     val openCourse: (Parcours) -> Unit,
     val openArticle: (Article) -> Unit,
+    val openElus: () -> Unit,
 )
 
 @Composable
@@ -243,6 +254,10 @@ private fun ComprendreHome(
 
             HomeSection(stringResource(Res.string.comprendre_who_title), stringResource(Res.string.comprendre_who_intro), comprendre.sheets, ComprendreTags.WHO_LIST) { sheet ->
                 QuiDecideCard(sheet, onOpen = { actions.openArticle(sheet.article) }, selected = comprendre.openArticle?.address == sheet.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + sheet.article.slug))
+            }
+            comprendre.elus?.let { elus ->
+                Spacer(Modifier.height(if (comprendre.sheets.isEmpty()) 20.dp else 0.dp))
+                MesElusCard(elus, onOpen = actions.openElus, selected = elus.pageOpen)
             }
             HomeSection(stringResource(Res.string.comprendre_decryptages_title), stringResource(Res.string.comprendre_checks_intro), comprendre.decryptages, ComprendreTags.CHECK_LIST) { check ->
                 DecryptageCard(check, onOpen = { actions.openArticle(check.article) }, selected = comprendre.openArticle?.address == check.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + check.article.slug))
@@ -317,7 +332,7 @@ private fun <T> HomeSection(title: String, intro: String, items: List<T>, tag: S
 
 /** A dossier, a fact-check, a story or a « Qui décide de ça ? » sheet, each with its own layout. */
 @Composable
-private fun ArticleDetail(comprendre: ComprendreLibrary, article: Article, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier) {
+private fun ArticleDetail(comprendre: ComprendreLibrary, article: Article, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier, onOpenElus: () -> Unit) {
     val check = comprendre.decryptages.firstOrNull { it.article.address == article.address }
     val story = comprendre.stories.firstOrNull { it.article.address == article.address }
     val sheet = comprendre.sheets.firstOrNull { it.article.address == article.address }
@@ -325,7 +340,7 @@ private fun ArticleDetail(comprendre: ComprendreLibrary, article: Article, onBac
     when {
         check != null -> DecryptageDetail(check, onOpenMethod = method?.let { page -> { comprendre.openArticle(page) } }, onBack = onBack, onNavigate = onNavigate, compact = compact, modifier = modifier)
         story != null -> HistoryDetail(story, onBack, onNavigate, compact, modifier)
-        sheet != null -> QuiDecideDetail(sheet, comprendre.persons, onBack, onNavigate, compact, modifier)
+        sheet != null -> QuiDecideDetail(sheet, comprendre.persons, onBack, onNavigate, compact, modifier, elus = comprendre.elus, onOpenElus = onOpenElus)
         else -> GuideDetail(article, onBack = onBack, compact = compact, modifier = modifier)
     }
 }

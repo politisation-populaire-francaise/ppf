@@ -73,6 +73,8 @@ class ComprendreContentsUiTest {
     }
 
     private fun ComposeUiTest.open(slug: String) {
+        // The bundled contents are imported in the background: a section can appear before the others.
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ComprendreTags.CARD + slug).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithTag(ComprendreTags.CARD + slug).performScrollTo().performClick()
         waitForIdle()
     }
