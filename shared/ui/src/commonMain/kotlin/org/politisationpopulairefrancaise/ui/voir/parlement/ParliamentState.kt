@@ -140,8 +140,15 @@ class ParliamentState(
     }
 }
 
-/** The bundled example packages (`files/parlement/index.json` and `files/parlement/<name>.json`), null when absent. */
-suspend fun bundledParliamentFile(name: String): ByteArray? = runCatching { Res.readBytes("files/parlement/$name.json") }.getOrNull()
+/**
+ * The bundled example packages of the import tool: `files/parlement/index.event.json` (the signed
+ * index event) for [ParliamentRepository.INDEX_NAME], `files/parlement/<name>.json` for a package;
+ * null when absent.
+ */
+suspend fun bundledParliamentFile(name: String): ByteArray? {
+    val file = if (name == ParliamentRepository.INDEX_NAME) "index.event.json" else "$name.json"
+    return runCatching { Res.readBytes("files/parlement/$file") }.getOrNull()
+}
 
 @Composable
 fun rememberParliamentState(dependencies: AppDependencies): ParliamentState {

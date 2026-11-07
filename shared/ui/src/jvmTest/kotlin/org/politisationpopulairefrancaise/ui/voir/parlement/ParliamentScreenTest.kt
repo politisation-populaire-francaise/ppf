@@ -291,7 +291,7 @@ class ParliamentScreenTest {
     }
 
     @Test
-    fun theCardOpensTheScreenFromThePowerAxisOfVoirAndBackClosesIt() = parliamentTest {
+    fun theCardOpensTheBundledExamplesFromThePowerAxisOfVoirAndBackClosesIt() = parliamentTest {
         val database = JvmDatabase.inMemory()
         val dependencies = AppDependencies(
             identityStore = InMemoryIdentityStore(),
@@ -309,6 +309,16 @@ class ParliamentScreenTest {
             .assert(hasText("Tous les parlementaires et leurs votes"))
             .performClick()
         waitForTag(ParliamentTags.SCREEN)
+        // No server: the example packages bundled with the application, checked against the example import key.
+        waitForTag(ParliamentTags.EXAMPLE)
+        onNodeWithText("Jeu d’exemple intégré à l’application.").assertExists()
+        onNodeWithTag(ParliamentTags.DOWNLOAD_MEMBERS).assertDoesNotExist()
+        onNodeWithTag(ParliamentTags.LIST).performScrollToNode(hasTestTag(ParliamentTags.member("an:PA900001")))
+        onNodeWithTag(ParliamentTags.member("an:PA900001")).performClick()
+        waitForTag(ParliamentTags.MEMBER_PAGE)
+        onNodeWithTag(ParliamentTags.PARTICIPATION_DEFINITION).performScrollTo().assertExists()
+        onNodeWithTag(ParliamentTags.BACK).performClick()
+        waitForTag(ParliamentTags.LIST)
         onNodeWithTag(ParliamentTags.BACK).performClick()
         waitForIdle()
         onNodeWithTag(ParliamentTags.SCREEN).assertDoesNotExist()

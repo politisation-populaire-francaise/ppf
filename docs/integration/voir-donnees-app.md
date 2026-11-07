@@ -26,9 +26,9 @@ Note du bloc 2 du contrat `voir-donnees-ouvertes.md` (sections 4 et 5), écrite 
   - **Partout** : bandeau « Données fictives [EXEMPLE] » quand l’index le dit, « Données du … », avertissement après 14 jours, mise à jour refusée, mention « D’après les données ouvertes de l’Assemblée nationale (du Sénat, du Parlement européen), mises à jour le … ; réutilisation par PPF, sans lien avec cette institution. Licence : … ». Jamais « données officielles » dans un titre.
 - `BillOfficialVotes(text, parliament, modifier, onOpen)` et `PersonOfficialVotesLink(person, parliament, modifier, onOpen)` : lisent `ppf-official-id` sur la fiche elle-même et n’affichent rien sans l’étiquette. **Non appelés** depuis `VoirPages.kt` : l’intégrateur choisit leur place (`BillPage`, `PersonPage`).
 
-### Jeu d’exemple intégré : convention attendue du bloc 1
+### Jeu d’exemple intégré
 
-`bundledParliamentFile(name)` lit `shared/ui/src/commonMain/composeResources/files/parlement/<name>.json` : **`index.json`** = l’événement d’index signé (JSON NIP-01 complet), et **`<nom du paquet>.json`** = les octets exacts de chaque paquet listé (par exemple `membres.json`, `scrutins-an-2026-10.json`). Tant que ces fichiers n’existent pas, l’écran sans serveur affiche « Les données des parlementaires ne sont pas disponibles pour le moment ».
+Les paquets fictifs du bloc 1 (fusionnés le 7 novembre 2026, signés par `OpenDataKeys.EXAMPLE`) sont lus par `bundledParliamentFile(name)` dans `shared/ui/src/commonMain/composeResources/files/parlement/` : `index.event.json` pour l’index signé, `<nom du paquet>.json` pour chaque paquet (`membres`, `scrutins-an-2026-09`, `scrutins-an-2026-10`, `votes-pe-2026-09`, `votes-pe-2026-10`). Sans serveur (ou serveur qui répond 503 avant le premier import, et rien sur l’appareil), l’écran les affiche avec le bandeau [EXEMPLE] ; un test d’interface le vérifie depuis la carte de « Voir ».
 
 ## 2. Points d’accroche dans des fichiers communs
 
@@ -60,4 +60,5 @@ Ce sont des données publiques des assemblées (mandat, groupe, territoire, vote
 ## 5. Tests
 
 - `:shared:core:jvmTest` : `ParliamentCatalogTest` (9), `ParliamentRepositoryTest` (10 : mauvaise signature, clé non reconnue, retour en arrière, empreinte fausse, mois incohérent, données anciennes, copie de l’appareil, paquets périmés ou retirés, jeu intégré, repli), `ParliamentStoreTest` (3, dont la migration 11 vers 12 identique au schéma neuf), `ParliamentServerAnswerTest` (3). Les 8 tests existants de `ParliamentFormatTest` et les tests de migration passent.
-- `:shared:ui:jvmTest` : `ParliamentScreenTest` (voir le résultat en fin de note), sur téléphone (400 dp) et ordinateur (1000 dp).
+- `:shared:ui:jvmTest` : `ParliamentScreenTest` (10, tous au vert), sur téléphone (400 dp) et ordinateur (1000 dp) : téléchargement sur geste avec la taille, bandeau [EXEMPLE], date et mention de licence, recherche sans accents, filtres et trois colonnes, fiche d’un député (participation et sa définition, positions en mots, délégation, raison du non-vote, « Vous quittez PPF »), mise au point, fiche d’un scrutin (résultat, décompte, tableau lu par les lecteurs d’écran, membres par position), retour page par page, sénateur (« Votes du Sénat : bientôt », mêmes rubriques), avertissement après 14 jours, jeu intégré, liens des fiches de « Voir » seulement avec l’étiquette, carte de l’axe « Le pouvoir » ouvrant le vrai jeu d’exemple intégré. `VoirScreenTest` (9) et `PartyScreenTest` (6) restent au vert.
+- Non lancés (consigne) : `gradlew build`, `assemblePreview` ; à faire par l’intégrateur.
