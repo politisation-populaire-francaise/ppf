@@ -136,10 +136,12 @@ class ElusApiTest {
     fun theDevelopmentDefaultsServeTheExampleSet() {
         val defaults = ElusConfig.fromEnvironment { null }
         assertEquals(ElusConfig(ElusSources.EXAMPLE, 7, officialRefused = false), defaults)
-        // `official` is honoured in production only; preproduction keeps fictitious data.
+        // `official` is honoured in production and preproduction (owner's decision of 7 November 2026), not in development.
         val preproduction = ElusConfig.fromEnvironment(mapOf("PPF_RNE_SOURCE" to "official", "PPF_ENVIRONMENT" to "preproduction")::get)
-        assertEquals(ElusSources.EXAMPLE, preproduction.source)
-        assertTrue(preproduction.officialRefused)
+        assertEquals(ElusSources.OFFICIAL, preproduction.source)
+        val development = ElusConfig.fromEnvironment(mapOf("PPF_RNE_SOURCE" to "official")::get)
+        assertEquals(ElusSources.EXAMPLE, development.source)
+        assertTrue(development.officialRefused)
         val production = ElusConfig.fromEnvironment(mapOf("PPF_RNE_SOURCE" to " Official ", "PPF_ENVIRONMENT" to "production", "PPF_RNE_REFRESH_DAYS" to "14")::get)
         assertEquals(ElusConfig(ElusSources.OFFICIAL, 14), production)
         assertEquals(0, ElusConfig.fromEnvironment(mapOf("PPF_RNE_REFRESH_DAYS" to "0")::get).refreshDays)

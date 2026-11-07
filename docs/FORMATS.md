@@ -474,7 +474,7 @@ Variables d'environnement du serveur pour l'annuaire :
 
 | Variable | Rôle | Défaut |
 |---|---|---|
-| `PPF_RNE_SOURCE` | `example` (jeu fictif embarqué, ne contacte personne) ou `official` (vrai RNE, suivi **seulement** avec `PPF_ENVIRONMENT=production` ; ailleurs le jeu fictif est servi) | `example` |
+| `PPF_RNE_SOURCE` | `example` (jeu fictif embarqué, ne contacte personne) ou `official` (vrai RNE, suivi avec `PPF_ENVIRONMENT=production` ou `preproduction`, décision de la propriétaire du 7 novembre 2026 : « on reste dans la vraie info même en preprod » ; ailleurs le jeu fictif est servi) | `example` |
 | `PPF_RNE_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 7 |
 
 ## 4 nonies. Référentiel des territoires (D-090)
@@ -555,7 +555,6 @@ Migration `migrations/12.sqm` (schéma 12 vers 13), identique à `Territoires.sq
 | Variable | Rôle | Défaut |
 |---|---|---|
 | `PPF_TERRITOIRES_SOURCE` | `example` (jeu embarqué, ne contacte personne) ou `official` (Insee, data.gouv.fr, La Poste), suivi en production, ou en préproduction avec la variable suivante ; ailleurs le jeu d'exemple est servi | `example` |
-| `PPF_TERRITOIRES_REAL_IN_PREPRODUCTION` | `true` pour servir les vraies statistiques en préproduction (décision de la propriétaire) | aucune |
 | `PPF_TERRITOIRES_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 30 |
 ## 4 octies. Données ouvertes du Parlement (D-064, D-065)
 

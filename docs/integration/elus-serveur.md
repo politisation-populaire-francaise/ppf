@@ -108,7 +108,7 @@ Aucune dépendance nouvelle : JDK (`java.net.http`, `java.util.zip`), pilote Pos
 
 ### 3.2 Mise à jour et sécurité (contrat 1.5)
 
-- `PPF_RNE_SOURCE` : `example` (défaut) ou `official`. **`official` n'est suivi que si `PPF_ENVIRONMENT=production`** ; ailleurs le serveur sert le jeu fictif et l'écrit dans son journal (aucune donnée réelle en développement, en test ni en préproduction, même par erreur de configuration).
+- `PPF_RNE_SOURCE` : `example` (défaut) ou `official`. **`official` n'est suivi que si `PPF_ENVIRONMENT=production` ou `preproduction`** (décision de la propriétaire du 7 novembre 2026 : « on reste dans la vraie info même en preprod ») ; ailleurs le serveur sert le jeu fictif et l'écrit dans son journal (aucune donnée réelle en développement ni en test, même par erreur de configuration).
 - `PPF_RNE_REFRESH_DAYS` : jours entre deux imports (7 par défaut). Import au démarrage si rien n'est servi ou si la source a changé ; après un échec, nouvel essai six heures plus tard ; `0` coupe tout import automatique (tests).
 - Le dernier import réussi reste servi tant qu'un nouvel import n'a pas réussi : un fichier introuvable, une colonne manquante, un encodage cassé, une coupure du téléchargement font échouer l'import sans rien changer.
 - Garde des 20 % : un import est refusé si, pour **un seul** mandat ou au total, le nombre d'élus baisse de plus de 20 % par rapport à l'import servi de la même source (un fichier tronqué, même petit, est ainsi repéré). Le motif (`drop:municipal:55:40`) est gardé dans `elus_import.failure`.
@@ -153,7 +153,7 @@ Le numéro est toujours les deux derniers caractères ; le département ou la co
 - `CsvTest` : BOM, CRLF, lignes vides, guillemets doublés, séparateurs et sauts de ligne entre guillemets, colonne manquante refusée par son nom sans citer de valeur, colonnes trouvées malgré accents, casse et espaces, enregistrements trop courts ignorés et comptés, détection UTF-8 et Windows-1252, séquence UTF-8 cassée refusée.
 - `RneTest` : colonnes conservées (et jamais déclarées : sexe, naissance, profession, nationalité), dates, rangs, sections régionales, Corse, Français de l'étranger, intercommunalités, codes du ministère, suivi des fusions de communes, noms des circonscriptions.
 - `ElusImportTest` : import du jeu fictif (nombres par mandat, paquets, empreintes et tailles de l'index), contenu du paquet du Rhône (commune partagée entre quatre circonscriptions, Métropole de Lyon, président de région d'un autre département), champs exacts du JSON, minimisation, déterminisme (mêmes octets à deux imports), garde des 20 %, import qui échoue sans effacer le précédent, refus d'une personne non marquée `[EXEMPLE]`, planification.
-- `ElusApiTest` : 503 avant le premier import, 200 avec `ETag` et type, 304, 404 `unknown_package`, gzip, drapeau `example`, configuration (`official` en production seulement).
+- `ElusApiTest` : 503 avant le premier import, 200 avec `ETag` et type, 304, 404 `unknown_package`, gzip, drapeau `example`, configuration (`official` en production et en préproduction seulement).
 - `OfficialSourceTest` : choix du millésime complet le plus récent du Code officiel géographique, import « officiel » sans le drapeau `example` (data.gouv.fr simulé, aucun réseau), ressource disparue, hôtes et schémas refusés.
 - `ElusOfficialCheck` : vérification manuelle sur les vrais fichiers (section 5), ignorée sans `ELUS_OFFICIAL_DIR`.
 
