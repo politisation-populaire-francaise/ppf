@@ -74,6 +74,10 @@ object VoirTags {
     const val FOUNDED = "ppf-founded"
     const val SEATS = "ppf-seats"
     const val WEBSITE = "ppf-website"
+    const val FINANCING = "ppf-financing"
+    const val PUBLIC_FUNDING = "ppf-public-funding"
+    const val EUROPEAN_PARTY = "ppf-european-party"
+    const val EUROPEAN_GROUP = "ppf-european-group"
 
     // Rights of reply.
     const val RESPONDENT = "ppf-respondent"

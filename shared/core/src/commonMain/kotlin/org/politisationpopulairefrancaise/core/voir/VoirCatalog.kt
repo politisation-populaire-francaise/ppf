@@ -87,7 +87,7 @@ class VoirCatalog(
     val movements: List<WorldMovement>,
     val dossiers: List<VoirDossier>,
     val replies: List<RightOfReply>,
-    /** Political parties, most seats first then by name (the same rule for every party). */
+    /** Political parties, by name (accents, case and the [EXEMPLE] marker ignored), never by size. */
     val parties: List<PoliticalParty> = emptyList(),
 ) {
     private val items: Map<ContentAddress, VoirItem> = buildMap {
@@ -196,7 +196,7 @@ class VoirCatalog(
         fun matches(vararg parts: String?) = FrenchText.matchesAllWords(parts.filterNotNull().joinToString(" "), query)
         return buildList {
             persons(null).filter { matches(it.name, it.function, it.territory, it.group) }.forEach { add(VoirItem.OfPerson(it)) }
-            parties.filter { matches(it.name, it.acronym, it.article.summary) }.forEach { add(VoirItem.OfParty(it)) }
+            parties.filter { matches(it.name, it.acronym, it.article.summary, it.europeanParty, it.europeanGroup) }.forEach { add(VoirItem.OfParty(it)) }
             indicators.sortedBy { it.rank ?: Int.MAX_VALUE }.filter { matches(it.title, it.definition, it.unit) }.forEach { add(VoirItem.OfIndicator(it)) }
             bills().filter { matches(it.title, it.article.summary) }.forEach { add(VoirItem.OfText(it)) }
             dossiers.filter { matches(it.title, it.article.summary) }.forEach { add(VoirItem.OfDossier(it)) }
@@ -233,9 +233,7 @@ class VoirCatalog(
                 movements = latest.mapNotNull(WorldMovement::from).sortedByDescending { it.start },
                 dossiers = latest.mapNotNull(VoirDossier::from).sortedBy { FrenchText.fold(it.title) },
                 replies = latest.mapNotNull(RightOfReply::from),
-                parties = latest.mapNotNull(PoliticalParty::from).sortedWith(
-                    compareByDescending<PoliticalParty> { it.totalSeats }.thenBy { FrenchText.fold(it.name.removePrefix(EXAMPLE_MARKER)) },
-                ),
+                parties = latest.mapNotNull(PoliticalParty::from).sortedBy { FrenchText.fold(it.name.removePrefix(EXAMPLE_MARKER)) },
             )
         }
     }

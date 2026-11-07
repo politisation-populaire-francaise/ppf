@@ -31,6 +31,7 @@ import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
+import org.politisationpopulairefrancaise.core.voir.Indicator
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
 import org.politisationpopulairefrancaise.core.voir.VoirTags
 import java.nio.file.Files
@@ -368,6 +369,7 @@ private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, au
                 VoirTags.ROLE_LEADER, VoirTags.ROLE_PERSON -> check(catalog.person(linked) != null) { "${document.name}: ${tag[3]}: ${linked.identifier} is not a person" }
             }
         }
+        if (article.type == ArticleType.PARTI) checkParty(article, document.name)
         article.event.tags.filter { it.size >= 3 && it[0] == VoirTags.NEXT && !it[2].startsWith("space:") }.forEach { tag ->
             val slug = tag[2].substringAfterLast(':')
             check(tag[2] in known || slug in bundledGuides) { "${document.name}: next step to an unknown slug: $slug" }
@@ -378,6 +380,31 @@ private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, au
             "${catalog.texts.size} bill(s), ${catalog.movements.size} movement(s), ${catalog.dossiers.size} dossier(s), " +
             "${catalog.replies.size} reply(ies), ${catalog.parties.size} party(ies), author $authorHex",
     )
+}
+
+/**
+ * A party is refused when a line would be silently dropped by the application: no financing
+ * structure or more than one, a financial agent with a name (a private person: never stored), an
+ * unreadable count of seats or amount of public aid, the same year of aid twice.
+ */
+private fun checkParty(article: Article, name: String) {
+    val event = article.event
+    val financing = event.tags.filter { it.size >= 2 && it[0] == VoirTags.FINANCING }
+    check(financing.size == 1) { "$name: a party has exactly one financing (association-de-financement or mandataire-financier)" }
+    val f = financing.single()
+    check(f[1] in setOf("association-de-financement", "mandataire-financier")) { "$name: unknown financing kind ${f[1]}" }
+    check(f[1] != "mandataire-financier" || f.getOrNull(2).isNullOrBlank()) { "$name: never write the name or reference of a financial agent (a private person)" }
+    event.tags.filter { it.size >= 2 && it[0] == VoirTags.SEATS }.forEach { t ->
+        check(t.getOrNull(1) in setOf("assemblee", "senat", "parlement-europeen", "autre") && t.getOrNull(2)?.toIntOrNull()?.let { it >= 0 } == true) { "$name: unreadable seats: ${t.drop(1)}" }
+    }
+    val years = event.tags.filter { it.size >= 2 && it[0] == VoirTags.PUBLIC_FUNDING }.map { t ->
+        val year = t.getOrNull(1)?.toIntOrNull()
+        check(year != null && year in 1988..2100 && t.getOrNull(2)?.let(Indicator::parseNumber) != null && !t.getOrNull(3).isNullOrBlank()) {
+            "$name: public-funding is written \"year | amount in euros | decree | address\": ${t.drop(1)}"
+        }
+        year
+    }
+    check(years.size == years.toSet().size) { "$name: the same year of public funding is written twice" }
 }
 
 /** Date and time of a call, e.g. 2026-11-05T18:00, read in Paris time like the form ([ParisTime], independent of the machine). */

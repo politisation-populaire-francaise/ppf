@@ -5,6 +5,9 @@ title: [EXEMPLE] Parti d'exemple C
 summary: Parti fictif, surtout implanté dans les collectivités locales et au Sénat.
 acronym: PEC
 founded: 1998-11-21
+# Mandataire financier : une personne physique, son nom n’est jamais écrit.
+financing: mandataire-financier |  | 1998-12-15 | texte-officiel | Récépissé de déclaration en préfecture (exemple) | https://example.org/exemple/prefecture-pec
+public-funding: 2026 | 2 950 000,00 | Décret de répartition de l’aide publique pour 2026 (exemple) | https://example.org/exemple/decret-aide-2026
 seats: assemblee | 40 | 2026-10-01 | parlement | Assemblée nationale, composition des groupes (exemple) | https://example.org/exemple/an-groupes
 seats: senat | 85 | 2026-10-01 | parlement | Sénat, composition des groupes (exemple) | https://example.org/exemple/senat-groupes
 seats: parlement-europeen | 5 | 2024-07-16 | parlement | Parlement européen, liste des députés français (exemple) | https://example.org/exemple/pe-deputes

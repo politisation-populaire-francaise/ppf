@@ -29,7 +29,11 @@ class PartiesTest {
 
     private fun seats(vararg fields: String) = listOf(VoirTags.SEATS) + fields
 
-    private fun party(slug: String, title: String, vararg tags: List<String>) = block(slug, ArticleType.PARTI, title, *tags)
+    private val association = listOf(VoirTags.FINANCING, "association-de-financement", "Agrément n° 0000 (exemple)", "2009-07-02", "texte-officiel", "JO (exemple)", "https://example.org/jo")
+
+    /** A party with its mandatory financing structure (an approved association) unless [financing] says otherwise. */
+    private fun party(slug: String, title: String, vararg tags: List<String>, financing: List<String>? = association) =
+        block(slug, ArticleType.PARTI, title, *(listOfNotNull(financing) + tags.toList()).toTypedArray())
 
     private fun person(slug: String, title: String, party: String?) = block(
         slug, ArticleType.PERSONNE, title, listOf(VoirTags.ROLE, "depute"),
@@ -65,10 +69,46 @@ class PartiesTest {
         assertEquals(listOf(address("camille")), p.leaders.map { it.toString() })
         assertEquals("Sièges corrigés", p.corrections.single().reason)
         assertNull(PoliticalParty.from(block("x", ArticleType.ORGANISATION, "Association")), "the directory of Agir is not a party")
+        assertEquals(FinancingKind.ASSOCIATION, p.financing.kind)
+        assertEquals("Agrément n° 0000 (exemple)", p.financing.approval)
+        assertEquals(SourceKind.OFFICIAL_TEXT, p.financing.source?.kind)
     }
 
     @Test
-    fun partiesAreSortedBySeatsThenByNameAndLinkTheirMembers() {
+    fun aPartyNeedsItsFinancingAndTheNameOfAFinancialAgentIsNeverKept() {
+        assertNull(PoliticalParty.from(party("none", "Sans financement", financing = null)))
+        assertNull(PoliticalParty.from(party("odd", "Financement inconnu", financing = listOf(VoirTags.FINANCING, "tirelire"))))
+        val agent = PoliticalParty.from(party("agent", "Mandataire", financing = listOf(VoirTags.FINANCING, "mandataire-financier", "Jean Particulier", "1998-12-15")))!!
+        assertEquals(FinancingKind.AGENT, agent.financing.kind)
+        assertNull(agent.financing.approval, "a financial agent is a private person: the name is ignored")
+        assertEquals(CivilDate(1998, 12, 15), agent.financing.date)
+    }
+
+    @Test
+    fun readsThePublicAidPerYearWithItsDecreeAndTheEuropeanAffiliation() {
+        val p = PoliticalParty.from(
+            party(
+                "pea", "Parti A",
+                listOf(VoirTags.PUBLIC_FUNDING, "2025", "4 105 120", "Décret 2025 (exemple)", "https://example.org/d2025"),
+                listOf(VoirTags.PUBLIC_FUNDING, "2026", "4 210 345,60", "Décret 2026 (exemple)", "https://example.org/d2026"),
+                listOf(VoirTags.PUBLIC_FUNDING, "1950", "12", "Trop ancien"),
+                listOf(VoirTags.PUBLIC_FUNDING, "2024", "beaucoup", "Illisible"),
+                listOf(VoirTags.EUROPEAN_PARTY, "Parti européen d'exemple"),
+                listOf(VoirTags.EUROPEAN_GROUP, "Groupe européen d'exemple"),
+            ),
+        )!!
+        assertEquals(listOf(2026, 2025), p.publicFunding.map { it.year }, "latest year first, unreadable lines left out")
+        assertEquals(421_034_560L, p.publicFunding.first().amountCents)
+        assertEquals("Décret 2026 (exemple)", p.publicFunding.first().decree?.name)
+        assertEquals(SourceKind.OFFICIAL_TEXT, p.publicFunding.first().decree?.kind)
+        assertEquals("Parti européen d'exemple", p.europeanParty)
+        assertEquals("Groupe européen d'exemple", p.europeanGroup)
+        val catalog = VoirCatalog.from(listOf(party("pea", "Parti A", listOf(VoirTags.EUROPEAN_GROUP, "Groupe des Zèbres"))))
+        assertEquals(1, catalog.search("zebres").size, "the European group is searchable")
+    }
+
+    @Test
+    fun partiesAreSortedByNameNeverBySizeAndLinkTheirMembers() {
         val small = party("small", "[EXEMPLE] Parti Zèbre", seats("assemblee", "12", "2026-10-01", "parlement", "AN", ""))
         val bigB = party("big-b", "[EXEMPLE] Parti B", seats("senat", "60", "2026-10-01", "parlement", "Sénat", ""))
         val bigA = party("big-a", "[EXEMPLE] Parti A", seats("assemblee", "60", "2026-10-01", "parlement", "AN", ""))
@@ -78,7 +118,7 @@ class PartiesTest {
         val sacha = person("sacha", "[EXEMPLE] Sacha Témoin", "small")
         val loner = person("loner", "[EXEMPLE] Sans parti", null)
         val catalog = VoirCatalog.from(listOf(small, bigB, bigA, none, camille, alex, sacha, loner))
-        assertEquals(listOf("big-a", "big-b", "small", "none"), catalog.parties.map { it.article.slug })
+        assertEquals(listOf("big-a", "big-b", "none", "small"), catalog.parties.map { it.article.slug }, "by name, the [EXEMPLE] marker and accents ignored")
         assertEquals("big-a", catalog.partyOf(catalog.person(camille.address)!!)?.article?.slug)
         assertNull(catalog.partyOf(catalog.person(loner.address)!!))
         assertEquals(listOf("alex", "camille"), catalog.membersOf(bigA.address).map { it.article.slug })
