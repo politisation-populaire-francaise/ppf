@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.server
 
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.request.receiveText
@@ -26,6 +27,9 @@ import org.politisationpopulairefrancaise.server.agir.HeldQueue
 import org.politisationpopulairefrancaise.server.agir.devHeldRoutes
 import org.politisationpopulairefrancaise.server.agir.exampleMobilizations
 import org.politisationpopulairefrancaise.server.api.ApiError
+import org.politisationpopulairefrancaise.server.backoffice.BackOffice
+import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSetup
+import org.politisationpopulairefrancaise.server.backoffice.Outcome
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
@@ -58,6 +62,10 @@ const val DEMO_GROUP_ID: String = "collectif-demonstration"
  * held contents goes through GET /dev/held, POST /dev/held/{id}/approve and POST /dev/held/{id}/reject
  * (see devHeldRoutes).
  *
+ * The team back-office opens on http://localhost:8081 when PPF_BACKOFFICE_ORIGIN=http://localhost:8081 is
+ * set: the link of a first super administrator is printed at start (a passkey of the computer, Windows
+ * Hello for example, works on localhost).
+ *
  * Never used in production: it listens on the local machine only and forgets everything on exit.
  */
 fun main() {
@@ -89,8 +97,28 @@ fun main() {
     println("Agir space: ${BundledContents.AGIR_FILES.joinToString { "$it ${bundled[it].orEmpty().size}" }}, review of held contents at /dev/held.")
     // The fictitious example set (PPF_RNE_SOURCE is never `official` outside production), imported at start.
     println("Directory of elected officials: example set, imported in the background, at /api/v1/elus and /api/v1/elus/69.")
-    embeddedServer(Netty, port = port, host = "127.0.0.1") {
-        module(dataSource, PublicationPolicy(editors), revendications = revendications)
+    val backOffice = BackOfficeSetup.fromEnvironment("development", port)
+    backOffice?.let { setup ->
+        (BackOffice(setup.config, dataSource).bootstrapInvitation("Propriétaire") as? Outcome.Ok)?.let { issued ->
+            println("Back-office: ${setup.config.origin}, first super administrator: ${setup.config.origin}/invitation/${issued.value.token}")
+        }
+    }
+    embeddedServer(
+        Netty,
+        configure = {
+            connector {
+                this.port = port
+                host = "127.0.0.1"
+            }
+            backOffice?.let { setup ->
+                connector {
+                    this.port = setup.config.port
+                    host = "127.0.0.1"
+                }
+            }
+        },
+    ) {
+        module(dataSource, PublicationPolicy(editors), revendications = revendications, backOffice = backOffice)
         routing {
             devReviewRoutes(queue)
             devHeldRoutes(held)

@@ -115,6 +115,8 @@ Le socle fournit, en version 1 :
 - des compteurs par séance (jamais le lieu ni l'événement) ;
 - une **clé « audit »** : sa clé publique est dans la configuration du serveur (`PPF_AUDIT_PUBLIC_KEY`), sa clé secrète reste hors ligne chez la propriétaire ; le socle offre une fonction qui chiffre en **NIP-44** vers cette clé (par exemple le lien entre un compte de citoyen et la séance qui l'a validé).
 
+**Désignation par une organisation vérifiée** (décision de la propriétaire D-112, 7 novembre 2026) : toute attribution du rôle `validator` porte la clé publique (hexadécimale) de l'organisation qui désigne la personne, obligatoire pour ce rôle et vérifiée par la même règle que la publication du serveur (`VerifiedOrganisations` d'« Agir » : clé citée dans une fiche d'organisation signée par une clé éditoriale) ; si l'organisation perd sa vérification, le socle suspend aussitôt les rôles de validateur qu'elle a désignés et révoque leurs séances ouvertes, avec une ligne du journal par rôle (contrôle périodique toutes les 5 minutes, et refus immédiat de toute requête de séance d'une organisation qui n'est plus vérifiée). `elected_certifier` est un membre de l'équipe sans organisation. « Décider » n'utilise du socle que l'identité d'une séance (identifiant, semaine, plafond, échéance, état), le vérificateur NIP-98 (`ValidationSessionGate`, qui refuse aussitôt une séance révoquée ou échue) et la fonction NIP-44 vers `PPF_AUDIT_PUBLIC_KEY` (`AuditSealer`) ; il n'écrit jamais le journal.
+
 « Décider » garde la logique des urnes, des jetons et de la validation elle-même (sa migration V7), et implémente la file `decider.validation_sessions`.
 
 ## 9. Signalements et DSA (étape 2, socle)

@@ -8,6 +8,7 @@ import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.hooks.CallFailed
 import io.ktor.server.application.install
 import io.ktor.server.application.log
+import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -27,6 +28,14 @@ import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PostLimits
 import org.politisationpopulairefrancaise.server.api.eventsApi
 import org.politisationpopulairefrancaise.server.api.groupsApi
+import org.politisationpopulairefrancaise.server.backoffice.BackOffice
+import org.politisationpopulairefrancaise.server.backoffice.BackOfficeConfig
+import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSetup
+import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSpace
+import org.politisationpopulairefrancaise.server.backoffice.PortSelector
+import org.politisationpopulairefrancaise.server.backoffice.backOfficeHeaders
+import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
+import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.elus.ElusConfig
@@ -72,6 +81,10 @@ import javax.sql.DataSource
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
  *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
  *   to start when it is set in production, see [ExampleSeed].
+ * - PPF_BACKOFFICE_ORIGIN, PPF_BACKOFFICE_PORT, PPF_AUDIT_PUBLIC_KEY, PPF_BACKOFFICE_MAINTENANCE_INTERVAL_MINUTES:
+ *   the team back-office, off unless PPF_BACKOFFICE_ORIGIN is set (for example
+ *   `https://equipe.preprod.politisation-populaire-francaise.org`; `http://localhost:8081` in development
+ *   only). Its routes answer only on PPF_BACKOFFICE_PORT (default 8081), never on PORT; see [BackOfficeConfig].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -92,10 +105,27 @@ fun main() {
             ExampleSeed.load(examples, EventRepository(dataSource))
         }
     }
+    // Checked before the server starts: a back-office under a wrong or plain-http address is refused.
+    val backOffice = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port)
     // Bind on every interface inside the container; the reverse proxy is the only
-    // process allowed to reach it (see infra/).
-    embeddedServer(Netty, port = ServerConfig.port, host = "0.0.0.0") {
-        module(dataSource)
+    // process allowed to reach it (see infra/). The back-office has its own internal port, which the
+    // proxy forwards only for its own host name (contract docs/integration/back-office.md, section 3).
+    embeddedServer(
+        Netty,
+        configure = {
+            connector {
+                port = ServerConfig.port
+                host = "0.0.0.0"
+            }
+            backOffice?.let { setup ->
+                connector {
+                    port = setup.config.port
+                    host = "0.0.0.0"
+                }
+            }
+        },
+    ) {
+        module(dataSource, backOffice = backOffice)
     }.start(wait = true)
 }
 
@@ -132,6 +162,7 @@ fun Application.module(
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
     agir: AgirSetup = AgirSetup.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
+    backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
 ) {
     val repository = dataSource?.let(::EventRepository)
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
@@ -152,6 +183,13 @@ fun Application.module(
         // bounds; the task lives and dies with the application.
         WrapRetention(repository, relay).start(this, relay.cleanupInterval, log)
     }
+    // The team back-office (M15): its own port, accounts by invitation, passkeys, journal; the poles
+    // register their queues on teamBackOffice.queues (contract docs/integration/back-office.md, section 7).
+    val teamBackOffice: BackOffice? = when {
+        backOffice == null -> null
+        dataSource == null -> null.also { log.warn("Back-office: ${BackOfficeConfig.ORIGIN_VARIABLE} is set but no database is configured, back-office off.") }
+        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace)
+    }
     val limits = PostLimits(relay)
     val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
@@ -160,6 +198,7 @@ fun Application.module(
     install(ContentNegotiation) {
         json()
     }
+    backOffice?.let { install(backOfficeHeaders(it.config.port)) }
     install(DefaultHeaders) {
         // Strict security headers on every answer. HTTPS and HSTS are handled by the
         // reverse proxy (Caddy) which terminates TLS.
@@ -178,22 +217,29 @@ fun Application.module(
         )
     }
     routing {
-        get("/health") {
-            call.respond(
-                HealthStatus(
-                    status = HealthStatus.OK,
-                    service = "ppf-server",
-                    version = AppInfo.VERSION,
-                    environment = ServerConfig.environment,
-                ),
-            )
+        // The site and the public API never answer on the back-office port, nor the back-office on the
+        // public port: a routing mistake on one side cannot expose the other (contract, section 3).
+        publicPort(backOffice?.config?.port) {
+            get("/health") {
+                call.respond(
+                    HealthStatus(
+                        status = HealthStatus.OK,
+                        service = "ppf-server",
+                        version = AppInfo.VERSION,
+                        environment = ServerConfig.environment,
+                    ),
+                )
+            }
+            eventsApi(repository, policy, limits, groups, proposals, agirSpace)
+            groupsApi(groups)
+            revendicationsApi(proposals)
+            agirApi(agirSpace)
+            elusApi(elusService)
+            agirSpace?.let { agendaPage(it.agendaSource()) }
+            webRoutes()
         }
-        eventsApi(repository, policy, limits, groups, proposals, agirSpace)
-        groupsApi(groups)
-        revendicationsApi(proposals)
-        agirApi(agirSpace)
-        elusApi(elusService)
-        agirSpace?.let { agendaPage(it.agendaSource()) }
-        webRoutes()
+        if (backOffice != null && teamBackOffice != null) {
+            createChild(PortSelector(backOffice.config.port)).backOfficeRoutes(teamBackOffice)
+        }
     }
 }
