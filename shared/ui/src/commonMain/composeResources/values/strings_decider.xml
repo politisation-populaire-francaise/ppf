@@ -123,7 +123,7 @@
     <string name="decider_pacte_answered_until">%1$d candidats sur %2$d ont répondu. Réponses attendues jusqu’au %3$s.</string>
     <string name="decider_pacte_first_round">Premier tour le %1$s</string>
     <string name="decider_pacte_method_title">Les mêmes règles pour tous les candidats</string>
-    <string name="decider_pacte_method_text">Le même texte, envoyé le même jour, avec le même délai, à tous les candidats sans exception. Ils apparaissent par ordre alphabétique. Chaque réponse est archivée avec son empreinte et sa date. Une réponse portant sur un autre texte n’est pas comptée.</string>
+    <string name="decider_pacte_method_text">Le même texte, envoyé le même jour, avec le même délai, à tous les candidats sans exception. Ils apparaissent par ordre alphabétique. Chaque réponse est archivée avec son empreinte et sa date. Une réponse portant sur un autre texte, ou reçue après la date limite, n’est pas comptée : elle reste visible sous le tableau.</string>
     <string name="decider_pacte_sent_on">Envoyé le %1$s aux %2$d candidats</string>
     <string name="decider_pacte_deadline">Réponses attendues jusqu’au %1$s inclus</string>
     <string name="decider_pacte_deadline_passed">Délai écoulé le %1$s : l’absence de réponse est maintenant affichée « Sans réponse »</string>
@@ -136,8 +136,6 @@
     <string name="decider_cell_refused">Refusé</string>
     <string name="decider_cell_awaiting">En attente</string>
     <string name="decider_cell_no_answer">Sans réponse</string>
-    <string name="decider_pacte_late">réponse reçue après le délai</string>
-    <string name="decider_pacte_late_short">(en retard)</string>
     <string name="decider_pacte_open_candidate">Ouvrir la fiche de %1$s</string>
     <string name="decider_pacte_no_answer_received">Aucune réponse reçue</string>
     <string name="decider_pacte_received_on">Réponse reçue le %1$s</string>
@@ -149,6 +147,7 @@
     <string name="decider_pacte_set_aside_title">Réponses non comptées (%1$d)</string>
     <string name="decider_pacte_set_aside_other_text">%1$s : porte sur un autre texte que celui envoyé à tous</string>
     <string name="decider_pacte_set_aside_not_candidate">%1$s : ne vient pas d’un candidat de cette élection</string>
+    <string name="decider_pacte_set_aside_late">%1$s : reçue le %2$s, après la date limite, donc non comptée</string>
     <string name="decider_pacte_archives_title">Les réponses archivées</string>
     <string name="decider_pacte_archives_text">Chaque document reçu est conservé avec son empreinte (SHA-256) et une preuve d’horodatage : personne ne peut le modifier après coup sans que cela se voie.</string>
     <string name="decider_pacte_archive_missing">Archive du document en cours de dépôt.</string>
