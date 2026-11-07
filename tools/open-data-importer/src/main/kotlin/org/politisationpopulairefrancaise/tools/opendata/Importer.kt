@@ -13,6 +13,7 @@ import org.politisationpopulairefrancaise.core.voir.parlement.MembersPackage
 import org.politisationpopulairefrancaise.core.voir.parlement.PackageRef
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentIndex
+import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentWeekFormat
 import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -154,9 +155,10 @@ class Importer(
                 files[name] = json.encodeToString(BallotsPackage.serializer(), BallotsPackage(example = example, chamber = chamber, month = month, ballots = sorted)).encodeToByteArray()
             }
         }
+        files[ParliamentWeekFormat.PACKAGE] = WeekImport(sources, only, out, log).bytes() // « Cette semaine au Parlement » (Week.kt)
         val refreshedChambers = ballots.keys
         val keptRefs = previous.index?.packages.orEmpty().filter { ref ->
-            ref.name != ParliamentFormat.MEMBERS_PACKAGE && Chamber.entries.none { it in refreshedChambers && ref.name.startsWith(it.ballotsPrefix + "-") }
+            ref.name != ParliamentFormat.MEMBERS_PACKAGE && ref.name !in files && Chamber.entries.none { it in refreshedChambers && ref.name.startsWith(it.ballotsPrefix + "-") }
         }.onEach { ref -> readPackage(ref) ?: throw UnreadableSourceException("previous package ${ref.name} is damaged; import every source") }
 
         val refs = (files.map { (name, bytes) -> PackageRef(name, ParliamentFormat.sha256Hex(bytes), bytes.size.toLong()) } + keptRefs).sortedBy { it.name }

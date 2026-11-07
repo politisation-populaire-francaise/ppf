@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Cette semaine au Parlement » (cahier fonctionnel 2.0, M20, VO-31) and its block in « En direct »
+     (M19). French, the user is addressed with "vous", typographic apostrophe (’), no em dash.
+     Neutral wording: the agenda is described, never judged. -->
+<resources>
+    <string name="week_title">Cette semaine au Parlement</string>
+    <string name="week_intro">Ce qui est prévu à l’Assemblée nationale, au Sénat et au Parlement européen dans les deux semaines à venir, d’après leurs données ouvertes : séances publiques, textes en discussion et réunions de commission sur un texte de loi.</string>
+    <string name="week_card_text">Séances publiques et textes en discussion des deux semaines à venir.</string>
+    <string name="week_card_open">Voir l’ordre du jour</string>
+    <string name="week_example_banner">Données fictives [EXEMPLE] : ces séances et ces textes sont inventés pour tester l’application.</string>
+    <string name="week_needed">L’ordre du jour n’est pas encore sur cet appareil.</string>
+    <string name="week_download">Télécharger l’ordre du jour (%1$s)</string>
+    <string name="week_update">Mettre à jour l’ordre du jour (%1$s)</string>
+    <string name="week_downloading">Téléchargement…</string>
+    <string name="week_download_note">Rien n’est envoyé : le serveur sait seulement qu’un appareil a téléchargé ce fichier.</string>
+    <string name="week_not_offered">Le serveur ne propose pas encore l’ordre du jour du Parlement.</string>
+    <string name="week_loading">Chargement de l’ordre du jour…</string>
+    <string name="week_nothing">Aucune séance prévue dans ces données pour les jours à venir.</string>
+    <string name="week_filter_all">Toutes les assemblées</string>
+    <string name="week_period">Du %1$s au %2$s</string>
+    <string name="week_see_all">Voir toute la semaine</string>
+    <string name="week_more">Autres points à l’ordre du jour : %1$s</string>
+    <string name="week_time_range">%1$s à %2$s</string>
+    <string name="week_kind_plenary">Séance publique</string>
+    <string name="week_kind_committee">Réunion de commission</string>
+    <string name="week_kind_other">Réunion</string>
+    <string name="week_status_confirmed">Confirmé</string>
+    <string name="week_status_provisional">Prévisionnel</string>
+    <string name="week_status_cancelled">Annulé</string>
+    <string name="week_no_title">Ordre du jour pas encore publié</string>
+    <string name="week_voir_bill">Fiche du texte dans « Voir »</string>
+    <string name="week_dossier">Dossier législatif sur le site de l’Assemblée</string>
+    <string name="week_official">Ordre du jour sur le site de l’institution</string>
+    <string name="week_who_decides">Qui décide de ça ?</string>
+    <string name="week_interpellate">Interpeller mes élus</string>
+    <string name="week_item_open">Plus de détails</string>
+    <string name="week_item_close">Moins de détails</string>
+    <string name="week_senat_source">Ordre du jour du Sénat : flux public de la séance (www.senat.fr), réutilisé par PPF, sans lien avec le Sénat.</string>
+    <string name="week_pe_note">Parlement européen : activités prévues, susceptibles de changer.</string>
+    <string name="week_day_1">Lundi</string>
+    <string name="week_day_2">Mardi</string>
+    <string name="week_day_3">Mercredi</string>
+    <string name="week_day_4">Jeudi</string>
+    <string name="week_day_5">Vendredi</string>
+    <string name="week_day_6">Samedi</string>
+    <string name="week_day_7">Dimanche</string>
+    <string name="week_day_label">%1$s %2$s</string>
+    <string name="week_today">Aujourd’hui</string>
+    <string name="week_live_title">Cette semaine au Parlement</string>
+</resources>

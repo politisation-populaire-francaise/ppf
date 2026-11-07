@@ -59,7 +59,7 @@ class ImporterTest {
         assertEquals("2026-11-07", index.importedOn)
         assertEquals(listOf("an", "senat", "pe"), index.sources.map { it.id })
         assertEquals(
-            listOf("membres", "scrutins-an-2026-09", "scrutins-an-2026-10", "votes-pe-2026-09", "votes-pe-2026-10"),
+            listOf("membres", "scrutins-an-2026-09", "scrutins-an-2026-10", "semaine", "votes-pe-2026-09", "votes-pe-2026-10"),
             index.packages.map { it.name },
         )
         index.packages.forEach { ref -> assertTrue(ParliamentIndexReader.matches(ref, Files.readAllBytes(out.resolve(ref.name + ".json"))), ref.name) }
