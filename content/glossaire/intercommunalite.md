@@ -4,7 +4,7 @@ title: [EXEMPLE] Intercommunalité
 summary: Regroupement de communes qui mettent en commun certaines compétences, comme les déchets ou le développement économique. La communauté de communes en est un exemple.
 variants: intercommunalité, intercommunalités, EPCI, établissement public de coopération intercommunale, établissements publics de coopération intercommunale, communauté de communes, communautés de communes, communauté d'agglomération, communautés d'agglomération, communauté urbaine, communautés urbaines, syndicat de communes, syndicats de communes, syndicat intercommunal, syndicats intercommunaux, conseiller communautaire, conseillers communautaires
 topics: collectivites
-see_also: commune, collectivite-territoriale, decentralisation
+see_also: commune, collectivite-territoriale, decentralisation, syndicat
 related: qui-decide:transports-du-quotidien, qui-decide:ecole
 origin: ai-assisted
 published_at: 2026-11-07

@@ -4,7 +4,7 @@ title: [EXEMPLE] Président de la République
 summary: Chef de l'État, élu pour cinq ans au suffrage universel direct. Il nomme le Premier ministre, préside le Conseil des ministres et peut dissoudre l'Assemblée nationale.
 variants: Président de la République, Présidente de la République, chef de l'État, cheffe de l'État, chef de l'Etat, présidence de la République
 topics: institutions, elections
-see_also: premier-ministre, gouvernement, constitution
+see_also: premier-ministre, gouvernement, constitution, dissolution, article-16, cohabitation
 related: parcours:l-election-presidentielle, parcours:la-dissolution
 origin: ai-assisted
 published_at: 2026-11-07

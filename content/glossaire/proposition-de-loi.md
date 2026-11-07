@@ -4,7 +4,7 @@ title: [EXEMPLE] Proposition de loi
 summary: Texte de loi déposé par un ou plusieurs députés ou sénateurs. Il suit au Parlement le même parcours qu'un projet de loi, sans passer par le Conseil des ministres.
 variants: proposition de loi, propositions de loi, PPL
 topics: institutions, parlement
-see_also: projet-de-loi, amendement, navette-parlementaire, parlement
+see_also: projet-de-loi, amendement, navette-parlementaire, parlement, referendum-d-initiative-partagee
 related: parcours:comment-une-loi-est-votee, parcours:le-referendum
 origin: ai-assisted
 published_at: 2026-11-07

@@ -4,7 +4,7 @@ title: [EXEMPLE] Dissolution
 summary: Décision du Président de la République de mettre fin avant terme au mandat de tous les députés. De nouvelles élections législatives ont lieu dans les vingt à quarante jours.
 variants: dissolution de l'Assemblée nationale, dissolution de l'Assemblée, dissolutions de l'Assemblée nationale, dissoudre l'Assemblée nationale
 topics: institutions, parlement, elections
-see_also: assemblee-nationale, president-de-la-republique, motion-de-censure
+see_also: assemblee-nationale, president-de-la-republique, motion-de-censure, cohabitation, article-16
 related: parcours:la-dissolution
 origin: ai-assisted
 published_at: 2026-11-07

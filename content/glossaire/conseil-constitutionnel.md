@@ -4,7 +4,7 @@ title: [EXEMPLE] Conseil constitutionnel
 summary: Institution de neuf membres qui vérifie que les lois respectent la Constitution. Il veille aussi à la régularité de l'élection présidentielle et des référendums.
 variants: Conseil constitutionnel
 topics: institutions, justice
-see_also: constitution, parlement, president-de-la-republique
+see_also: constitution, parlement, president-de-la-republique, question-prioritaire-de-constitutionnalite, conseil-d-etat
 related: parcours:comment-une-loi-est-votee, parcours:l-election-presidentielle, parcours:le-referendum
 origin: ai-assisted
 published_at: 2026-11-07

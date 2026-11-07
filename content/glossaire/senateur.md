@@ -4,7 +4,7 @@ title: [EXEMPLE] Sénateur
 summary: Membre du Sénat, élu pour six ans au suffrage indirect par des élus de son département. Il vote les lois et représente les collectivités territoriales.
 variants: sénateur, sénateurs, sénatrice, sénatrices
 topics: institutions, parlement, elections
-see_also: senat, depute, parlement
+see_also: senat, depute, parlement, collectivite-territoriale, scrutin-proportionnel
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07

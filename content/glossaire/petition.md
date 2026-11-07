@@ -16,7 +16,7 @@ Une pétition est une demande signée par des personnes et adressée à une auto
 - Conseil économique, social et environnemental : il peut être saisi par une pétition d'au moins 150 000 personnes de 16 ans ou plus, recueillie en un an.
 - Collectivités territoriales : les électeurs peuvent demander l'inscription d'une question à l'ordre du jour de leur conseil (Constitution, article 72-1).
 
-Pour signer sur les sites de l'Assemblée nationale et du Sénat, il faut s'identifier avec FranceConnect.
+Pour signer une pétition sur le site du Sénat, il faut par exemple s'identifier avec FranceConnect.
 
 Exemple : une pétition sur la qualité de l'air dépasse 500 000 signatures sur le site de l'Assemblée nationale. Un débat en séance devient possible, mais c'est la Conférence des présidents qui décide.
 

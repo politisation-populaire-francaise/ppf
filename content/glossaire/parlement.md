@@ -4,7 +4,7 @@ title: [EXEMPLE] Parlement
 summary: Ensemble des deux assemblées qui votent la loi et contrôlent le Gouvernement : l'Assemblée nationale, élue directement par les citoyens, et le Sénat, élu par des élus.
 variants: Parlement, Parlement français, parlementaire, parlementaires, membre du Parlement, membres du Parlement
 topics: institutions, parlement
-see_also: assemblee-nationale, senat, gouvernement
+see_also: assemblee-nationale, senat, gouvernement, navette-parlementaire, parlement-europeen
 related: parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07
