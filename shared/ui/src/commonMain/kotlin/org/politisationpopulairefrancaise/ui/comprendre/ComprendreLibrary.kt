@@ -20,12 +20,16 @@ import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.comprendre.ParcoursProgress
 import org.politisationpopulairefrancaise.core.comprendre.QuizAnswer
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.elus.ElusDirectory
+import org.politisationpopulairefrancaise.core.elus.ElusStore
+import org.politisationpopulairefrancaise.core.elus.InMemoryElusStorage
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.voir.PublicPerson
 import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.comprendre.elus.ElusLibrary
 
 /** Where the reader stands inside an open course. */
 sealed interface CoursePage {
@@ -53,6 +57,8 @@ class ComprendreLibrary(
     private val progressStore: LearningProgressStore?,
     private val scope: CoroutineScope,
     private val clock: () -> Long = ::currentEpochSeconds,
+    /** The directory of elected officials (page « Mes élus », box of the « Qui décide de ça ? » sheets); null in previews. */
+    val elus: ElusLibrary? = null,
 ) {
     private val writes = Mutex()
 
@@ -299,6 +305,11 @@ fun rememberComprendreLibrary(dependencies: AppDependencies): ComprendreLibrary 
             trust = dependencies.editorialTrust,
             progressStore = dependencies.database?.let(::LearningProgressStore),
             scope = scope,
+            elus = ElusLibrary(
+                directory = ElusDirectory(dependencies.remote, dependencies.database?.let(::ElusStore) ?: InMemoryElusStorage()),
+                scope = scope,
+                dataSaver = dependencies.dataSaver,
+            ),
         )
     }
 }
