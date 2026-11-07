@@ -494,6 +494,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - « Je témoigne » d'un appel à témoins ouvre le formulaire relié à l'appel.
 - Questions transmises au chef d'équipe (avec recommandations, note section 7) : clé à usage unique pour la provenance, garde des deux clés privées, durée de conservation des originaux, vidéos et sons, publier sous son pseudonyme, détection des visages sur l'appareil, retrait par le témoin.
 
+## D-052 (2026-11-07) Témoignages : décisions de la propriétaire sur les sept questions de D-051
+
+- Décision de la propriétaire par délégation au chef d'équipe, 7 novembre 2026 (« Pour les decisions a prendre, je suis tes recommandations ») :
+  1. la provenance d'une photo est signée par une **clé à usage unique**, qui ne relie pas le témoin à son pseudonyme (cahier des charges 5.12) ;
+  2. **garde des clés** : la clé de modération sur les appareils de deux modératrices ou modérateurs (déchiffrement dans le back-office sur leur appareil) ; la clé de conservation des originaux **hors ligne**, chez la propriétaire puis chez un avocat partenaire ; jamais sur le serveur ;
+  3. les originaux confiés aux avocats sont conservés **6 ans** (à faire relire par l'avocat) ;
+  4. **vidéos et sons** : nettoyage maison des MP4 et MOV, en Kotlin, dans la vague suivante ; refus jusque-là ;
+  5. publier son témoignage **sous son pseudonyme** : plus tard, désactivé par défaut, après une mise en garde ;
+  6. **détection automatique des visages** sur l'appareil : à étudier ; l'outil de floutage manuel reste ;
+  7. **retrait par le témoin** : une demande signée par son compte, chiffrée pour l'équipe, dans la vague suivante (RGPD, article 17).
+
 ## D-054 (2026-11-07) Fiches des partis politiques dans « Voir »
 
 - Contexte : décision de la propriétaire du 7 novembre 2026 (M17, ordre d'entrée des responsables publics : « un parti aura sa propre fiche avant les personnes de ce parti »). Détail : `docs/integration/voir-partis.md`.
