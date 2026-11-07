@@ -24,6 +24,7 @@ import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSour
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatuses
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentFormat
+import org.politisationpopulairefrancaise.core.territoires.TerritoiresReader
 
 /**
  * The phase 1 adapter of the publication port: the platform's own server, through its signed-events
@@ -164,6 +165,33 @@ class ServerPublicationPort(
         require(code == null || ElusReader.isPackageCode(code)) { "Not a package code of the directory: $code" }
         val response: HttpResponse = try {
             client.get(elusUrl(baseUrl, code)) {
+                etag?.trim()?.takeIf { it.isNotEmpty() }?.let { header(HttpHeaders.IfNoneMatch, "\"$it\"") }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return ElusDownload.Unavailable(e)
+        }
+        val body = if (response.status.value in 200..299) {
+            try {
+                response.bodyAsBytes()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                return ElusDownload.Unavailable(e)
+            }
+        } else {
+            null
+        }
+        return elusAnswer(response.status.value, body, response.headers[HttpHeaders.ETag], isPackage = code != null)
+    }
+
+    /** `GET /api/v1/territoires` or `GET /api/v1/territoires/{code}`: the exact bytes, which the caller checks. */
+    override suspend fun fetchTerritoires(code: String?, etag: String?): ElusDownload {
+        require(code == null || TerritoiresReader.isPackageCode(code)) { "Not a package code of the referential: $code" }
+        val url = if (code == null) "$baseUrl/api/v1/territoires" else "$baseUrl/api/v1/territoires/$code"
+        val response: HttpResponse = try {
+            client.get(url) {
                 etag?.trim()?.takeIf { it.isNotEmpty() }?.let { header(HttpHeaders.IfNoneMatch, "\"$it\"") }
             }
         } catch (e: CancellationException) {

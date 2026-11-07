@@ -86,10 +86,11 @@ class LearningProgressStoreTest {
         try {
             // A real version 6 database: the current schema, minus what the later versions added
             // (7: courses, 8: followed contents of Voir, 9: agenda of Agir, 10: answered calls,
-            // 11: directory of elected officials, 12: parliamentary open data).
+            // 11: directory of elected officials, 12: parliamentary open data, 13: referential of territories).
             JvmDatabase.open(file)
             DriverManager.getConnection("jdbc:sqlite:${file.toAbsolutePath()}").use { connection ->
                 connection.createStatement().use { statement ->
+                    statement.executeUpdate("DROP TABLE territoire_package")
                     statement.executeUpdate("DROP TABLE parliament_package")
                     statement.executeUpdate("DROP TABLE parliament_index")
                     statement.executeUpdate("DROP TABLE elus_package")

@@ -480,6 +480,19 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **poids** : l'APK passe de 16,5 à 38 Mo (bibliothèques natives compressées) ; un APK par architecture (environ 26 Mo) est possible à la publication.
 - Reste : voir la carte réelle sur le téléphone de la propriétaire (aucun émulateur sur l'ordinateur) ; zones hors ligne (S-35), carte de la manifestation en direct (AG-24), tracé d'un parcours, placer un point dans le formulaire.
 
+## D-090 (2026-11-07) Référentiel des territoires : codes officiels, population, inscrits, règle des 30
+
+- Contexte : demande du pôle « Décider » (objectifs de signatures proportionnels à la population, seuils des pétitions locales) ; les salons, l'agenda, les appels et les revendications écrivent le territoire en texte libre (`ppf-territory`). Conception et sources vérifiées le 7 novembre 2026 : `docs/integration/territoires.md` ; conception validée par le chef d'équipe (« Décider » accepte l'API sans correction).
+- Sources : populations de référence 2023 de l'Insee (en vigueur depuis le 1er janvier 2026, décret n° 2025-1362) et électeurs inscrits du répertoire électoral unique (extraction du 11 février 2026), par l'API Melodi de l'Insee ; composition des intercommunalités par l'API Métadonnées de l'Insee ; Code officiel géographique 2026 et codes postaux de La Poste ; table de compléments pour l'outre-mer. Toutes sous Licence Ouverte ; aucune donnée personnelle.
+- Droit vérifié : Règlement de l'Assemblée nationale, article 148, alinéa 6 (« plus de 500 000 pétitionnaires domiciliés dans trente départements ou collectivités d'outre-mer au moins ») ; Constitution, article 72-1 ; CGCT, articles L1112-16 (un dixième dans une commune, un vingtième ailleurs) et L5211-49 (un dixième pour un EPCI).
+- Décisions techniques (choix validés par le chef d'équipe) :
+  - **module commun** `core/territoires`, lecture seule pour les autres pôles : codes `fr`, `reg:`, `dep:`, `ctcd:` (collectivités à compétences départementales, dont les sept à statut particulier), `comer:`, `epci:`, `com:`, `arm:` ; parents ; population municipale et inscrits (liste principale et listes complémentaires) avec leur source ; règle des 30 (101 départements et cinq collectivités de l'article 74 ; Nouvelle-Calédonie « à confirmer ») ; recherche sur l'appareil seulement ; objectifs proportionnels par la méthode des plus forts restes ;
+  - **transport** : niveau national (régions, départements, collectivités, outre-mer et index des paquets) **embarqué** dans l'application et servi par `GET /api/v1/territoires` ; paquets par département **séparés** de ceux de l'annuaire des élus (`GET /api/v1/territoires/{code}`) ; index des noms de toutes les communes téléchargé sur geste (`communes`) ; mêmes règles HTTP que l'annuaire (empreinte, `ETag`, gzip) ;
+  - **sources du serveur** : `example` par défaut (vrais chiffres publics de l'Insee pour le Rhône, Paris, la Corse-du-Sud, la Martinique et trois collectivités d'outre-mer, marqués comme jeu d'exemple, et tout le niveau national) ; `official` en production, ou en préproduction avec `PPF_TERRITOIRES_REAL_IN_PREPRODUCTION=true` (décision de la propriétaire en attente) ; un seul hôte sortant de plus, `api.insee.fr` ;
+  - **étiquette facultative `ppf-territory-code`** à côté du libellé libre `ppf-territory` (FORMATS, section 4 nonies) ; le serveur des revendications l'acceptera à l'entrée dans `main` (pôle « Décider ») ;
+  - **numéros de migration** : migration locale `12.sqm` (schéma 13) et Flyway `V7__territoires.sql`, numéros pris à l'entrée dans `main` le 7 novembre 2026 (les suivants des plus hauts de `main`, règle du registre ; prévus `15.sqm` et `V11`).
+- Reste : chiffres de Mayotte (recensement de 2017, puis décret attendu fin 2026) et des collectivités du Pacifique à vérifier puis ajouter à `server/src/main/resources/territoires/outre-mer.csv` ; première importation réelle en production ; copie embarquée à remplacer par le niveau national officiel une fois la production en route ; écrans de « Décider » ; décision du Bureau de l'Assemblée sur la domiciliation (non lue).
+
 ## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
 
 - Contexte : cahier fonctionnel, M10 et DE-07 (« relais des pétitions officielles », « explication claire des seuils et de leurs effets réels », « kits de partage ») ; demande de la propriétaire du 7 novembre 2026 de commencer « Décider » par ce qui est déjà spécifié. Le cahier fonctionnel demandait de revérifier le droit avant de coder.
@@ -613,7 +626,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - mention partout « D'après les données ouvertes de l'Assemblée nationale (ou du Sénat, du Parlement européen), mises à jour le … ; réutilisation par PPF, sans lien avec ces institutions » ; bandeau « Données fictives [EXEMPLE] » ;
   - **économie de données** : l'index (quelques centaines d'octets) est relu à l'ouverture ; chaque paquet seulement sur un geste, taille affichée ; « Votes du Sénat : bientôt » ;
   - liens avec « Voir » par l'étiquette `ppf-official-id` (`an:PA…`, `senat:…`, `pe:…` sur une personne ; `an-dossier:…` sur un texte) : lien vers les votes sur la fiche d'une personne, scrutins sous la fiche d'un texte ;
-  - base locale : migration `11.sqm` (table des paquets et index courant).
+  - base locale : migration `12.sqm` (table des paquets et index courant).
 
 ## D-075 (2026-11-07) Données parlementaires ouvertes : déploiement de l'importeur
 
