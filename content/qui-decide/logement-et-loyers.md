@@ -17,7 +17,7 @@ updated_at: 2026-11-07
 :::
 
 ::: en-bref
-- Les **règles du bail** (révision du loyer, préavis, dépôt de garantie) sont fixées par la **loi**, votée par le **Parlement**.
+- Les **règles du bail**, comme la révision du loyer, sont fixées par la **loi**, votée par le **Parlement**.
 - En cours de bail, la hausse annuelle du loyer ne peut pas dépasser l'**indice de référence des loyers** publié par l'INSEE.
 - L'**encadrement du niveau des loyers** n'existe que dans quelques villes qui l'ont demandé ; c'est le **préfet** qui fixe les loyers de référence. Cette expérimentation arrive à son terme en **novembre 2026**, sauf si une loi la prolonge.
 - Les **permis de construire** sont délivrés par le **maire** ; le **programme local de l'habitat** est décidé par l'**intercommunalité**.

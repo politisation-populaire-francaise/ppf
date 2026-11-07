@@ -19,7 +19,7 @@ updated_at: 2026-11-07
 
 ::: en-bref
 - L'**agence régionale de santé** (ARS) n'est pas la région : c'est un **établissement public de l'État**, présent dans chaque région.
-- C'est l'**ARS** qui autorise l'ouverture, la fermeture ou le regroupement d'un service de soins, comme une **maternité**.
+- C'est l'**ARS** qui autorise la création, la transformation ou le regroupement d'une activité de soins, comme une **maternité**.
 - Le prix d'une **consultation** est fixé par des **conventions** entre l'**Assurance maladie** et les **syndicats de médecins**.
 - Les **communes** et les autres collectivités peuvent **aider l'installation** de médecins ou ouvrir un **centre de santé**, mais elles ne dirigent pas l'hôpital public.
 :::
