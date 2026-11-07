@@ -38,7 +38,7 @@ Si le téléphone refuse avec un message sur un **conflit de package** (signatur
 
 ### Ce qu'il faut vérifier dans chaque version
 
-- Les écrans qui n'existent pas encore (En direct, Carte, Voir, Agir, Décider) affichent « Affichage téléphone » en portrait et « Affichage tablette » en paysage (le téléphone tourné) : la barre du bas devient alors une colonne d'icônes sur le côté.
+- Les écrans qui n'existent pas encore (au 7 novembre 2026, seulement Décider) affichent « Affichage téléphone » en portrait et « Affichage tablette » en paysage (le téléphone tourné) : la barre du bas devient alors une colonne d'icônes sur le côté.
 - Le menu s'ouvre par le bouton en haut à gauche et contient les quatre piliers.
 - Le mode sombre du téléphone est respecté (Paramètres, Affichage, Thème sombre).
 - Avec TalkBack activé (Paramètres, Accessibilité), chaque bouton est annoncé par son nom.
@@ -115,13 +115,75 @@ Il faut un compte (Mon espace) pour envoyer ; pour écrire et voir les vérifica
 
 Sur l'ordinateur (pour qui veut aller plus loin) : avec le serveur de développement (`gradlew :server:runDev`) et l'application de bureau branchée dessus (`PPF_SERVER_URL=http://localhost:8080`), la revendication part au serveur et affiche « Revendication envoyée en relecture », puis « En relecture » dans « Mes revendications ». Le serveur de développement liste les propositions en attente avec leur rapport à l'adresse http://localhost:8080/dev/revendications/proposals (sur l'ordinateur seulement) ; je peux simuler la décision de l'équipe pour vous la montrer.
 
+### Essayer l'espace « Agir » (ajouté le 7 novembre 2026)
+
+Tout ce que vous verrez est inventé et marqué [EXEMPLE] : mobilisations, appels, organisations, lieux et personnes. Les numéros de téléphone des organisations d'exemple sont pris dans les blocs que l'Arcep réserve aux films et aux séries : ils n'appellent personne. Les sites et les courriels finissent par `example.org` ou `exemple.invalid`, des noms réservés aux exemples. Aucun compte n'est nécessaire pour lire et répondre ; il en faut un pour proposer un événement ou lancer un appel.
+
+#### Sur le téléphone (version d'essai, sans serveur)
+
+Installez l'APK d'essai comme d'habitude (section 2). Le téléphone n'est relié à aucun serveur : il montre les exemples intégrés à l'application, et ce que vous proposez reste sur le téléphone.
+
+**L'accueil d'Agir**
+
+1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Agir**. Une phrase d'introduction, puis cinq rubriques : Agenda des mobilisations, Appels, Organisations, Collectifs, Guides pour s'organiser. Plus bas, « En préparation » liste sept rubriques grisées, qui ne s'ouvrent pas.
+2. Tournez le téléphone : les cartes passent d'une à deux colonnes (trois sur un grand écran).
+3. Depuis chaque rubrique, le bouton retour du téléphone ramène à l'accueil d'Agir.
+
+**L'agenda des mobilisations**
+
+4. Touchez **Carte** dans la barre du bas (ou « Agenda des mobilisations » dans Agir). L'écran s'appelle « Carte et agenda » ; un encadré explique que la vue carte arrive bientôt.
+5. Les mobilisations sont classées par jour (« Demain », puis la date). Chaque carte montre le type, le titre, l'heure, le lieu et le territoire. Le rassemblement de Seine-Saint-Denis porte la mention **Annulé**, le blocage de Toulouse **Reporté**.
+6. Touchez **Passés** : la projection-débat de Rennes du 3 novembre y est.
+7. Touchez **Filtres**, choisissez « Grève », puis « Afficher 1 mobilisation » : seule la grève de deux jours reste. Touchez la croix de la puce « Grève » pour revenir à toute la liste. Essayez aussi « Cette semaine », « Choisir des dates », un territoire ou un mot. Vos filtres restent sur le téléphone.
+8. Ouvrez la marche de Marseille : la date, le lieu, la mention « Déclarée en préfecture » et la description. Touchez **Ouvrir le lien de l'événement** : la fenêtre « Vous quittez PPF » s'ouvre, avec « Rester sur PPF » en premier ; le lien d'exemple ne mène nulle part.
+9. Touchez **Ajouter à mon agenda**, lisez l'avertissement, puis **Créer le fichier d'agenda** : choisissez votre application d'agenda (elle s'ouvre avec l'événement prérempli, vous confirmez ou vous annulez) ou une autre application.
+10. Touchez **J'y serai** : la mention apparaît sur la carte de l'événement. Elle reste sur votre téléphone, n'est envoyée nulle part et disparaît un jour après l'événement.
+11. Avec un compte, touchez **Proposer un événement**. Essayez une date déjà passée, ou une fin avant le début : le message s'affiche sous le champ. Tapez « Rassemblement pour les services publics » le 14/11/2026 : l'événement d'exemple du même jour est signalé avant l'envoi. Cochez la charte et envoyez : sans serveur, l'écran annonce « Gardé sur votre appareil » et la proposition apparaît dans l'onglet **Mes propositions**. Elle n'est pas dans l'agenda : rien n'est public avant la relecture par l'équipe.
+
+**Les appels**
+
+12. Dans Agir, touchez **Appels**. Sept appels d'exemple sont affichés ; le huitième, clos, n'apparaît qu'avec le filtre « Clos » ou « Tous ».
+13. Touchez **Filtres** : choisissez « Ce mois-ci », un type, un territoire, ou tapez des mots. Chaque filtre apparaît en puce : touchez sa croix pour le retirer. Touchez **Tri** : « Échéance la plus proche » met en tête ce qui arrive bientôt ; une phrase explique qu'il n'y a pas encore de tri par popularité.
+14. Ouvrez la pétition : l'objectif (1 000 signatures) et le compte à rebours s'affichent, sans barre de progression. Touchez **J'ai signé** : la réponse reste sur votre téléphone. Elle apparaît dans l'onglet **Mes réponses**, où « Effacer mes réponses » demande confirmation (« Garder mes réponses » en premier).
+15. Touchez **Ouvrir la pétition** : « Vous quittez PPF » s'affiche avec le nom du site, « Rester sur PPF » en premier.
+16. Ouvrez l'appel à témoins : « Je témoigne » est grisé, avec l'explication du canal sécurisé en préparation.
+17. Touchez **Lancer un appel** : choisissez un type (« Collecter des fonds » est grisé, réservé aux organisations vérifiées et à PPF), remplissez les champs ; la liste « Avant d'envoyer » dit ce qui manque. Tapez « Garder le bureau de poste » dans le titre d'une pétition : l'appel proche s'affiche. Avec un compte, cochez la charte et envoyez : sans serveur, l'appel reste « En attente d'envoi » dans « Mes appels ».
+
+**Les organisations**
+
+18. Dans Agir, touchez **Organisations** : huit organisations fictives, toutes marquées [EXEMPLE] et « Vérifiée ». Touchez la puce « Syndicats » : il en reste deux. « Tous les types » les remet toutes.
+19. Dans **Près de chez moi**, tapez 59000 : d'abord les organisations du Nord, puis celles qui agissent partout en France. Ce que vous tapez reste sur votre téléphone.
+20. Ouvrez « Association fictive Les Ateliers de la Lanterne » : la date de vérification, le territoire, la présentation et les contacts. Touchez **Suivre** : le bouton devient « Suivi », et la phrase dessous rappelle que l'abonnement reste sur votre téléphone. Plus bas, l'agenda de l'organisation indique « Aucune mobilisation à venir annoncée par cette organisation. » (les mobilisations d'exemple ne nomment aucune organisation).
+21. Touchez le site de l'association : « Vous quittez PPF » s'ouvre ; le grand bouton « Rester sur PPF » la referme sans rien ouvrir. Touchez le téléphone : l'application d'appel s'ouvre avec un numéro de fiction, qui n'appelle personne.
+22. Revenez à l'accueil d'Agir : **Collectifs** montre les mêmes salons que dans Messages ; **Guides pour s'organiser** ouvre « Comprendre », où aucune organisation n'apparaît parmi les fiches pratiques.
+
+**Ailleurs dans l'application**
+
+23. Touchez **En direct** : « Prochaines mobilisations » montre les trois prochaines (sans les annulées) ; touchez-en une, elle s'ouvre dans « Carte ».
+24. Avec un compte d'essai : dans Mon espace, « Se déconnecter de cet appareil » efface aussi, après confirmation, vos réponses « J'y serai », vos réponses aux appels et le suivi de vos propositions (protection par défaut).
+
+#### Sur l'ordinateur, avec le serveur de développement (relecture, publication, annulation)
+
+C'est là que l'on voit le circuit complet : une proposition attend la relecture de l'équipe, puis elle est publiée ou refusée. Le serveur de développement ne fonctionne que sur votre ordinateur et oublie tout quand on le ferme.
+
+1. Lancez le serveur de développement et une application d'essai reliée à lui : étapes 1 à 4 de « Échanger un message entre deux comptes sur l'ordinateur » (plus bas dans ce guide). Dans l'application, créez un compte d'essai (Mon espace).
+2. Dans le navigateur de l'ordinateur, ouvrez http://localhost:8080/agenda : l'agenda du site, lisible sans application et sans JavaScript, avec « [EXEMPLE] Assemblée générale de démonstration » et les mobilisations d'exemple. Tapez « Lyon » dans le territoire et touchez **Filtrer**. Le lien « S'abonner à cet agenda dans un logiciel de calendrier » donne le flux `.ics` (le même agenda pour un logiciel d'agenda).
+3. Ouvrez http://localhost:8080/dev/held : la liste, en texte technique, des contenus qui attendent la relecture ; un rassemblement d'exemple y attend déjà. Chaque contenu a un `id`, une suite de 64 lettres et chiffres.
+4. Dans l'application : **Carte**, **Proposer un événement**, remplissez le formulaire (titre commençant par [EXEMPLE]), cochez la charte, envoyez. Le message est « En attente de relecture par l'équipe » ; l'onglet **Mes propositions** le montre en relecture. Rechargez http://localhost:8080/dev/held : votre événement y est ; sélectionnez son `id` à la souris et copiez-le (Ctrl+C).
+5. **Approuver** (c'est le geste que fera l'équipe dans son écran de relecture, à venir) : ouvrez une nouvelle fenêtre PowerShell et tapez `curl.exe -X POST http://localhost:8080/dev/held/ID/approve`, en remplaçant `ID` par l'identifiant copié (Ctrl+V), puis Entrée. Dans l'application, touchez **Actualiser l'agenda** : l'événement est publié et apparaît dans l'agenda, et sur la page http://localhost:8080/agenda.
+6. **Annuler son événement** : ouvrez-le dans l'application, touchez **Annuler mon événement** : une confirmation s'ouvre, « Garder l'événement » en premier. Confirmez : l'événement porte la mention « Annulé » pour tout le monde, sans nouvelle relecture (rechargez la page de l'agenda du site pour le voir).
+7. **Refuser** : proposez un autre événement, copiez son `id` dans http://localhost:8080/dev/held, puis tapez `curl.exe -X POST --data "[EXEMPLE] Motif du refus" http://localhost:8080/dev/held/ID/reject`. Dans l'application, rouvrez l'agenda : dans « Mes propositions », la proposition est « Non publié », avec « Raison donnée par l'équipe : [EXEMPLE] Motif du refus ». « Retirer de la liste » l'efface de l'ordinateur.
+8. **Appels** : dans Agir, **Appels**, **Lancer un appel** avec ce compte : il part en relecture et apparaît dans http://localhost:8080/dev/held ; approuvez-le de la même façon (étape 5) puis rouvrez les appels : il est publié dans « Mes appels ». Ouvrez-le : **Clore l'appel** demande un bilan, avec « Garder l'appel ouvert » en premier ; après l'envoi, l'appel est affiché clos avec son bilan, sans relecture.
+9. Où en est un contenu : http://localhost:8080/api/v1/held?id=ID. Une mobilisation en attente dont la date est passée y apparaît refusée, avec le motif « La date de l'événement est passée avant la relecture. ».
+10. À la fin, fermez l'application et arrêtez le serveur (Ctrl+C dans sa fenêtre). Vous pouvez supprimer vous-même le dossier `ppf-essai-1` de votre dossier personnel : il ne contient que ce compte d'essai.
+
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).
 2. En haut, **le direct** : la dernière publication du thème « en direct » (fictive).
 3. **Alertes** : « Vote dans 5 jours » (motion de censure sur le budget, le 12 novembre) et « Vote dans 11 jours » (Sénat, le 18 novembre). Les jours se comptent à partir d'aujourd'hui : dans quelques jours, ces exemples disparaîtront d'eux-mêmes. Touchez une alerte : la fiche du texte s'ouvre dans « Voir » ; le bouton retour ramène au Fil.
 4. **Chiffres clés** : les quatre premiers de « Voir », avec leurs sources côte à côte ; touchez-en un pour ouvrir sa fiche.
-5. **Prochaines mobilisations** : une ligne dit que l'agenda arrive (il est en préparation dans une autre session).
+5. **Prochaines mobilisations** : les trois prochaines mobilisations de l'agenda (sans les annulées) ; touchez-en une, elle s'ouvre dans « Carte » (mis à jour le 7 novembre 2026 avec l'espace « Agir »).
 6. **À la une** : la revendication « devenue campagne » ; « Lire la revendication » l'ouvre dans le mur.
 7. Plus bas : les dernières publications de PPF et les derniers faits du mouvement.
 

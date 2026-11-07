@@ -88,10 +88,67 @@ Les sous-dossiers (`indicateurs`, `faits`, `personnes`, `textes`, `monde`, `doss
 
 La liste complète des champs et des valeurs est dans `docs/FORMATS.md`, section 4 quinquies. L'outil de signature relit chaque brique comme l'application et **refuse** celle qu'elle ignorerait (statut manquant, affaire sans étape de procédure, valeur inconnue, lien vers un `slug` qui n'existe pas).
 
+## Espace « Agir » : mobilisations, appels, organisations
+
+Formats complets dans `docs/FORMATS.md`, section 4 sexies. Tous les exemples sont fictifs et marqués **[EXEMPLE]** : aucune organisation, personne ni élu réels ; lieux fictifs ou génériques ; sites et courriels en `example.org` ou `exemple.invalid` (noms réservés aux exemples) ; téléphones pris seulement dans les blocs que l'Arcep réserve aux œuvres audiovisuelles (racines 01 99 00, 02 61 91, 03 53 01, 04 65 71, 05 36 49 et 06 39 98 ; décision n° 2018-0881 modifiée, version du 1er janvier 2026, section 2.5).
+
+### Format d'une mobilisation de l'agenda (`agenda/*.md`)
+
+| Champ | Rôle |
+|---|---|
+| `slug` | Identifiant stable (étiquette `d`), jamais modifié |
+| `title` | Titre, commençant par [EXEMPLE] pour un exemple |
+| `type` | `manifestation`, `blocage`, `rassemblement`, `greve`, `assemblee-generale`, `reunion` ou `autre` |
+| `start`, `end` | Début et fin facultative, `AAAA-MM-JJTHH:MM`, heure de Paris |
+| `location`, `territory` | Lieu en clair ; commune, département ou « France » |
+| `status` | Facultatif : `prevu` (par défaut), `annule`, `reporte` |
+| `declaration` | Facultatif, pour une manifestation : `faite`, `en-cours`, `non-faite` |
+| `summary`, `link` | Facultatifs : résumé, lien web |
+| `created_at` | Date de la version, `AAAA-MM-JJTHH:MM`, temps universel |
+
+Le corps est la description (texte simple). L'outil vérifie chaque mobilisation avec les règles de l'application et écrit `agenda.json` (type 31923, NIP-52).
+
+### Format d'un appel (`appels/*.md`)
+
+| Champ | Rôle |
+|---|---|
+| `slug` | Identifiant stable (`d`), 64 caractères `a-z0-9-` au plus |
+| `title`, `summary` | Titre (avec [EXEMPLE]) et résumé |
+| `call_type` | Un type d'appel : `se-reunir`, `debattre`, `s-organiser`, `manifester`, `soutenir`, `petition`, `interpeller`, `boycotter`, `collecte`, `benevoles`, `information`, `temoins`, `autre` |
+| `territory` | Territoire |
+| `status`, `report` | `ouvert` ou `clos` ; le bilan d'un appel clos |
+| `published_at`, `updated_at` | `AAAA-MM-JJTHH:MM`, heure de Paris |
+| `deadline`, `start`, `end` | `AAAA-MM-JJ` (échéance qui dure toute la journée) ou `AAAA-MM-JJTHH:MM`, heure de Paris |
+| `goal`, `location`, `r` | Objectif, lieu, lien |
+| `ppf-...` | Les champs propres au type, sous le nom de leur étiquette ; un champ qui n'appartient pas au type arrête l'outil |
+
+Le corps est le texte de l'appel (texte brut). L'outil construit chaque appel comme le formulaire de l'application et le vérifie avec ses règles à sa date de publication : un exemple qui enfreint une règle arrête l'outil. Un appel `status: clos` est la version de clôture de l'appel ouvert. Résultat : `appels.json` (type 30023, `ppf-type` = `appel`).
+
+### Format d'une organisation de l'annuaire (`organisations/*.md`)
+
+En-tête entre deux lignes `---`, puis la présentation en Markdown.
+
+| Champ | Étiquette | Obligatoire |
+|---|---|---|
+| `slug` | `d` | Oui |
+| `title` | `title` (nom, avec [EXEMPLE] pour un exemple) | Oui |
+| `summary` | `summary` | Oui |
+| `org_type` | `ppf-org-type` (`association`, `syndicat`, `collectif`, `legal-team`, `street-medics`, `avocats-benevoles`, `autre`) | Oui |
+| `territory` | `ppf-territory` (« Commune (dd) », « Département (dd) » ou « France ») | Oui |
+| `verified` | `ppf-verified` (AAAA-MM-JJ) | Oui |
+| `origin` | `ppf-origin` (`human` ou `ai-assisted`) | Oui |
+| `published_at`, `updated_at` | `published_at`, et date de l'événement (midi UTC) | Oui |
+| `pubkey` | `p` (clé hexadécimale de l'organisation, si elle a un compte) | Non |
+| `websites` | `r`, séparés par des virgules | Non |
+| `phone`, `email`, `address` | `ppf-contact-phone`, `ppf-contact-email`, `ppf-contact-address` : coordonnées publiques de l'organisation, jamais celles d'une personne | Non |
+| `geohash` | `g` | Non |
+
+Résultat : `organisations.json` (type 30023, `ppf-type` = `organisation`). L'application n'accepte ces fiches que signées par une clé de l'équipe éditoriale. Les clés `pubkey` des exemples ont été tirées au hasard sans garder leur clé secrète : personne ne peut publier en leur nom.
+
 ## Signer et intégrer les contenus
 
 ```bash
 ./gradlew :tools:content-signer:run
 ```
 
-L'outil lit `content/fiches`, `content/parcours`, `content/revendications`, `content/fil` et `content/voir`, signe chaque fichier en événement (fiches, parcours et revendications : NIP-23, type 30023 ; fil : type 1 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `revendications.json` et `fil.json`, `voir.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.
+L'outil lit `content/fiches`, `content/parcours`, `content/revendications`, `content/fil`, `content/voir`, `content/agenda`, `content/appels` et `content/organisations`, signe chaque fichier en événement (fiches, parcours, revendications, appels et organisations : NIP-23, type 30023 ; fil : type 1 ; agenda : type 31923 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `revendications.json`, `fil.json`, `voir.json`, `agenda.json`, `appels.json` et `organisations.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La signature BIP-340 utilise un aléa : relancer l'outil change les signatures de tous les fichiers (les identifiants restent les mêmes), ce qui crée des différences inutiles entre branches ; ne garder que les fichiers réellement modifiés. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.
