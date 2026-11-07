@@ -91,9 +91,15 @@ object ParticipationTags {
     const val CARD_PARTICIPANTS = "agenda-card-participants"
 }
 
-/** The name of a key that counts: the directory's, PPF's, or the short key, starting with a capital in a list. */
+/**
+ * The name of a key in a list: the directory's, the editorial team's (with a capital, it starts the
+ * line), or the short key, left as it is.
+ */
 @Composable
-internal fun partyName(names: AgendaNames, key: String): String = AgendaFormat.capitalized(names.author(key, editorialTeamLabel()))
+internal fun partyName(names: AgendaNames, key: String): String {
+    val name = names.author(key, editorialTeamLabel())
+    return if (names.counts(key)) AgendaFormat.capitalized(name) else name
+}
 
 /** "Vérifiée" for a verified organisation, "PPF" for an editorial key, nothing otherwise. */
 @Composable
@@ -148,7 +154,7 @@ internal fun HostsBlock(mobilization: Mobilization, hosting: Hosting, names: Age
                     verticalArrangement = Arrangement.spacedBy(2.dp),
                     modifier = Modifier.testTag(ParticipationTags.ANNOUNCED + key),
                 ) {
-                    Text(AgendaFormat.capitalized(names.organisation(key)), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.align(Alignment.CenterVertically))
+                    Text(names.organisation(key), style = MaterialTheme.typography.bodyLarge, modifier = Modifier.align(Alignment.CenterVertically))
                     PpfBadge(stringResource(Res.string.agenda_announced), BadgeStyle.NEUTRAL, Modifier.align(Alignment.CenterVertically))
                 }
             }

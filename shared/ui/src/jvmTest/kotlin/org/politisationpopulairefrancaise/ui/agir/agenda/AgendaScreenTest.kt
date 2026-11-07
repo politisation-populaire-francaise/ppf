@@ -277,8 +277,8 @@ class AgendaScreenTest {
         open("co-organise")
         onNodeWithTag(AgendaTags.ORGANIZERS).assertTextContains("[EXEMPLE] Collectif fictif", substring = true)
         onNodeWithTag(AgendaTags.ORGANIZERS).assertTextContains("annoncée, non confirmée", substring = true)
-        // The organisers are offered as filters too.
-        onNodeWithTag(AgendaTags.FILTERS).performClick()
+        // The organisers are offered as filters too (the cards are taller now: the button may have scrolled away).
+        onNodeWithTag(AgendaTags.FILTERS).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(AgendaPanelTags.ORGANIZER + organisation).performScrollTo().performClick()
         onNodeWithTag(AgendaPanelTags.APPLY).performClick()
