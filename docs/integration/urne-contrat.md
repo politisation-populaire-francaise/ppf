@@ -61,6 +61,7 @@ fun open(id: String, subject: String, choices: List<String>, opensAt: Instant, c
 6. Garder le choix d'un citoyen ailleurs que dans `UrneTokenStore` (pas de copie dans une autre table ni dans l'état d'un écran au-delà de son affichage).
 7. Déduire d'un bulletin, d'un jeton ou d'une heure quoi que ce soit sur une personne.
 8. Envoyer au serveur, ou y garder, une donnée d'identité civile (nom, e-mail, téléphone, pièce ou photo d'identité), même facultative ou temporaire : elle devrait ensuite être conservée cinq ans (décret n° 2021-1362, article 2 ; note `docs/integration/lcen-conservation-identification.md`). La validation en personne reste hors du serveur ; il ne reçoit que le résultat (compteurs de séance, lien scellé pour la clé « audit »), et pour un élu la référence publique de son mandat dans le répertoire officiel.
+9. Faire voter un compte qui n'est pas une personne physique (D-116) : une organisation, un collectif, une association ou une clé de l'équipe éditoriale ne reçoit aucun jeton, à aucun niveau ; le serveur le refuse (`not_a_person`). Un compte d'organisation déclare son type dans son profil (`ppf-account-type`, `core/urne/AccountTypes.kt`).
 
 ## 4. Participation visible (D-044) : à côté, jamais à la place
 

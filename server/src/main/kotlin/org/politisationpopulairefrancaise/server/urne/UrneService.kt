@@ -67,6 +67,8 @@ class UrneService(
     private val config: UrneConfig,
     private val voprf: Voprf,
     private val clock: Clock = Clock.systemUTC(),
+    /** Only a natural person votes (D-116): organisations, collectives, associations, editorial keys are refused. */
+    private val persons: PersonAccounts = PersonAccounts.ANYONE,
 ) {
     private val keyCache = ConcurrentHashMap<Pair<Long, VoteLevel>, VoprfKeyPair>()
     private val random = SecureRandom()
@@ -177,6 +179,7 @@ class UrneService(
 
     /** Registers [pubkey] (not verified) and returns its status; [created] tells whether it is new. */
     fun register(pubkey: String): Pair<VoterStatus, Boolean> {
+        requirePerson(pubkey)
         val created = store.register(pubkey, mondayOf(clock.instant()))
         return status(pubkey) to created
     }
@@ -198,6 +201,7 @@ class UrneService(
      * day gets the same answer: a lost answer never costs a token, and never gives a second one.
      */
     fun issue(pubkey: String, body: String): TokenResponse {
+        requirePerson(pubkey)
         val account = store.account(pubkey) ?: throw UrneRefusal(404, "not_registered")
         val requestHash = MessageDigest.getInstance("SHA-256").digest(body.encodeToByteArray())
         val today = LocalDate.ofInstant(clock.instant(), ZoneOffset.UTC)
@@ -307,6 +311,11 @@ class UrneService(
 
     private fun pending(account: VoteAccount): List<Urne> = store.openAfter(account.issuedUpTo, clock.instant(), config.maxTokensPerRequest + 1)
 
+    /** Refuses an account known not to be a natural person, at every level (D-116). */
+    private fun requirePerson(pubkey: String) {
+        if (persons.refusal(pubkey) != null) throw UrneRefusal(403, "not_a_person")
+    }
+
     /** The results as shown: everything once closed, small columns hidden while open (R5). */
     private fun shown(urne: Urne, results: UrneResults): UrneResults =
         if (urne.closed) results else UrneTally.hidingSmall(results, config.minDisplay)
@@ -344,7 +353,7 @@ class UrneService(
          * RFC 9497 are replayed first with the libsodium of this machine; if they fail, voting stays
          * unavailable (503) rather than issue tokens nobody could check (review R5).
          */
-        fun create(store: UrneStore, config: UrneConfig, clock: Clock = Clock.systemUTC()): UrneService {
+        fun create(store: UrneStore, config: UrneConfig, clock: Clock = Clock.systemUTC(), persons: PersonAccounts = PersonAccounts.ANYONE): UrneService {
             val group = runBlocking { LibsodiumRistretto255.load() }
             val selfTest = UrneSelfTest.run(group)
             val checked = if (selfTest.passed) {
@@ -353,7 +362,7 @@ class UrneService(
                 LoggerFactory.getLogger(UrneService::class.java).error("Voting: the self-test of the VOPRF failed at ${selfTest.failedCheck}; voting is unavailable.")
                 config.copy(seeds = null)
             }
-            return UrneService(store, checked, Voprf(group, VoprfMode.VOPRF), clock)
+            return UrneService(store, checked, Voprf(group, VoprfMode.VOPRF), clock, persons)
         }
     }
 }

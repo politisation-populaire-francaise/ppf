@@ -63,6 +63,8 @@ import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
+import org.politisationpopulairefrancaise.server.agir.VerifiedOrganisations
+import org.politisationpopulairefrancaise.server.urne.PersonAccounts
 import org.politisationpopulairefrancaise.server.urne.RevendicationUrnes
 import org.politisationpopulairefrancaise.server.urne.UrneConfig
 import org.politisationpopulairefrancaise.server.urne.UrneService
@@ -230,7 +232,11 @@ fun Application.module(
     val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
     // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published; the
     // demands in debate get theirs, closed when they leave the debate.
-    val urnes = dataSource?.takeIf { urne.seeds != null }?.let { UrneService.create(UrneStore(it), urne) }
+    // Only a natural person votes (D-116): the editorial keys and the organisations of the directory are refused.
+    val urnes = dataSource?.takeIf { urne.seeds != null }?.let {
+        val organisations = VerifiedOrganisations(it, policy::isEditor)
+        UrneService.create(UrneStore(it), urne, persons = PersonAccounts(it, policy::isEditor, organisations::isVerified))
+    }
     if (urnes != null && dataSource != null) {
         val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)
         urnes.startClosing(this, UrneService.CLOSING_INTERVAL, log, keepers = listOf({ demands.reconcile() }))

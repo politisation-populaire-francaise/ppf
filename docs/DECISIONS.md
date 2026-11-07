@@ -748,6 +748,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **organisations** : elles ne votent jamais ; leur participation publique reste à part (D-044, D-045).
 - À faire : seuils de soutiens dans le cœur commun, carte de la revendication (soutiens, seuils, lien de la pétition officielle), épinglage en tête du fil, action du back-office pour attacher le lien, refonte de la délibération DE-25 sur ce modèle.
 
+## D-116 (2026-11-07) « Une personne, une voix » : seule une personne physique vote
+
+- Décision de la propriétaire du 7 novembre 2026, mots exacts relayés par le chef d'équipe : « Un compte de type collectif ou association ou bref tout truc qui n'est pas personne physique ne peut pas voter ».
+- Décisions techniques prises en autonomie (`server/urne/PersonAccounts.kt`, `core/urne/AccountTypes.kt`) :
+  - le serveur refuse l'inscription et la délivrance de jetons, à tous les niveaux (`403 not_a_person`), à un compte connu comme n'étant pas une personne physique :
+    - une clé de l'équipe éditoriale (elle parle au nom de PPF ; ses membres votent avec leur compte personnel) ;
+    - une organisation de l'annuaire d'« Agir », vérifiée (clé nommée dans une fiche signée par l'équipe) ;
+    - un compte qui se déclare organisation, collectif ou association dans son profil (étiquette `ppf-account-type` d'un événement de type 0) ;
+  - un compte inscrit avant de devenir l'un d'eux ne reçoit plus de jeton ;
+  - le second pseudonyme d'une même personne vote comme tout compte personnel ; les élus votent en public (D-115).
+
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
 - Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.

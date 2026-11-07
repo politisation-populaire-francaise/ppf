@@ -200,6 +200,7 @@ private val MESSAGES = mapOf(
     "invalid_element" to "A blinded element is not valid.",
     "urne_closed" to "The ballot box is not open.",
     "not_elected" to "Only a certified elected official votes publicly in this ballot box.",
+    "not_a_person" to "Only a natural person votes: an organisation, a collective or an association does not.",
     "elected_vote_publicly" to "An elected official votes publicly, with a signed vote, never with an anonymous ballot.",
     "invalid_signature" to "The signature of the vote does not check.",
     "unknown_level" to "Unknown level.",

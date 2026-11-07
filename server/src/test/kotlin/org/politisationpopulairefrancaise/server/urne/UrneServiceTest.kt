@@ -14,6 +14,9 @@ import org.politisationpopulairefrancaise.core.urne.UrneRecount
 import org.politisationpopulairefrancaise.core.urne.VoprfMode
 import org.politisationpopulairefrancaise.core.urne.Voprf
 import org.politisationpopulairefrancaise.core.urne.VoteLevel
+import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.core.urne.AccountTypes
+import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.revendications.MutableClock
 import java.security.SecureRandom
@@ -152,6 +155,31 @@ class UrneServiceTest {
         val closed = shown.journal(number).results!!
         assertEquals(mapOf("pour" to 1L), closed.citizens.counts)
         assertEquals(null, closed.minimum)
+    }
+
+    @Test
+    fun onlyANaturalPersonVotes() = runBlocking {
+        TestDatabase.reset()
+        val editor = pubkey()
+        val organisation = pubkey()
+        val collective = LocalEventSigner(IdentityKeys.generate())
+        val persons = PersonAccounts(TestDatabase.dataSource, isEditor = { it == editor }, isOrganisation = { it == organisation })
+        val guarded = UrneService.create(store, UrneFixtures.CONFIG, clock, persons)
+        // A collective that says so in its profile (kind 0, ppf-account-type).
+        EventRepository(TestDatabase.dataSource).store(collective.sign(kind = 0, tags = listOf(listOf(AccountTypes.TAG, AccountTypes.COLLECTIVE)), createdAt = 1_794_000_000))
+        for (key in listOf(editor, organisation, collective.publicKey.hex)) {
+            assertEquals("not_a_person", assertFailsWith<UrneRefusal> { guarded.register(key) }.code, key)
+        }
+        // A person, and a person's profile that says « personne », vote.
+        val person = LocalEventSigner(IdentityKeys.generate())
+        EventRepository(TestDatabase.dataSource).store(person.sign(kind = 0, tags = listOf(listOf(AccountTypes.TAG, AccountTypes.PERSON)), createdAt = 1_794_000_000))
+        assertTrue(guarded.register(person.publicKey.hex).second)
+        assertTrue(guarded.register(pubkey()).second)
+        // An account registered before it became an organisation gets no token either.
+        val later = pubkey()
+        guarded.register(later)
+        val becomes = PersonAccounts(TestDatabase.dataSource, isEditor = { false }, isOrganisation = { it == later })
+        assertEquals("not_a_person", assertFailsWith<UrneRefusal> { UrneService.create(store, UrneFixtures.CONFIG, clock, becomes).issue(later, """{"requests":[]}""") }.code)
     }
 
     @Test
