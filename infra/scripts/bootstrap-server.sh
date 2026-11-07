@@ -233,7 +233,7 @@ new_password() { openssl rand -hex 32; }
 
 # One environment: .env, and the database password in two files (one per container user).
 prepare_environment() {
-    local env="$1" db="$2" server_uid="$3" editor_keys="$4" backoffice_origin="$5" public_url="$6" importer_uid="$7"
+    local env="$1" db="$2" server_uid="$3" editor_keys="$4" backoffice_origin="$5" public_url="$6" importer_uid="$7" ntfy_uid="$8"
     local dir="$DATA_DIR/$env"
     install -d -m 0700 "$dir" "$dir/secrets"
     # Owner role (migrations only) and restricted role ppf_app (the running server), D-127.
@@ -273,6 +273,13 @@ EOF
     fi
     chown "$server_uid:$server_uid" "$dir/vote_seeds"/*
     chmod 400 "$dir/vote_seeds"/*
+    # Push wake-ups (D-078): ntfy's data (topics, 12-hour cache) and the VAPID private key of the server.
+    install -d -m 0700 -o "$ntfy_uid" -g "$ntfy_uid" "$dir/ntfy"
+    if [ ! -f "$dir/secrets/vapid_private_key" ]; then
+        (umask 077; openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt -out "$dir/secrets/vapid_private_key")
+    fi
+    chown "$server_uid:$server_uid" "$dir/secrets/vapid_private_key"
+    chmod 400 "$dir/secrets/vapid_private_key"
     # Private anti-fraud settings (model: infra/env/private.env.example), empty until set by hand.
     [ -f "$dir/private.env" ] || (umask 077; echo "# Private anti-fraud settings, see infra/env/private.env.example." > "$dir/private.env")
     # Parliamentary open data: the importer of this environment writes, the server reads; the import
@@ -284,8 +291,8 @@ EOF
 }
 # The example content signer (EditorialTrust.EXAMPLE_EDITOR) publishes the [EXEMPLE] contents of the
 # preproduction only. The production starts with no editor key.
-prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f" "https://equipe.preprod.$domain" "https://preprod.$domain" 10004
-prepare_environment production ppf 10001 "" "https://equipe.$domain" "https://$domain" 10003
+prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f" "https://equipe.preprod.$domain" "https://preprod.$domain" 10004 10006
+prepare_environment production ppf 10001 "" "https://equipe.$domain" "https://$domain" 10003 10005
 
 if [ ! -f "$DATA_DIR/proxy/.env" ]; then
     # Password of the preproduction web pages (D-072). Chosen and typed by the owner herself at this

@@ -100,6 +100,7 @@ Version du 5 novembre 2026 (phase 0, complétée le soir même par les fondation
 | Vol de l'ordinateur de la propriétaire (clé d'administration du serveur sans phrase de passe, profil WireGuard) | Clé protégée par les droits du compte Windows ; retrait de la clé du serveur et du profil WireGuard en une commande | Chiffrement du disque (BitLocker) à vérifier avec la propriétaire ; clé matérielle |
 | Données d'exemple en production, ou données réelles en préproduction | Le serveur refuse de démarrer en production avec les contenus d'exemple ; clé d'éditeur d'exemple acceptée seulement en préproduction (D-074) | Contrôle dans la checklist de chaque mise en production |
 | Adresses IP conservées par l'infrastructure | Journaux d'accès du proxy désactivés, pare-feu sans journalisation, journal du système en mémoire et oublié après un jour, adresse du client retirée avant d'atteindre le serveur, PostgreSQL sans journal des connexions | Vérification avant la production qu'aucun journal du serveur ne contient d'adresse |
+| Notifications qui révèlent les centres d'intérêt ou passent par un tiers | Réveils vides et chiffrés, contenu calculé sur l'appareil ; ntfy auto-hébergé sans relais extérieur, sujets aléatoires seuls ouverts, cache 12 heures, aucune adresse IP ; services de poussée des navigateurs refusés (D-078) | Apple (APNs) seulement pour un signal de réveil sur iPhone, quand l'application iOS existera |
 
 ## 4. Hypothèses
 

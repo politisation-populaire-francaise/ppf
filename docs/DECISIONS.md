@@ -732,3 +732,13 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **graines des clés de vote** : dossier `/srv/ppf/<environnement>/vote_seeds`, un fichier de 32 octets aléatoires par version, lisible par le seul utilisateur du serveur, monté en lecture seule (`PPF_VOTE_SEEDS_DIR`) ; version 1 créée par `bootstrap-server.sh`, rotation et destruction par `ppf-vote-seed` ; dans la sauvegarde chiffrée hors site, copie hors ligne recommandée à la propriétaire ;
   - **adresse publique exacte** de chaque environnement (`PPF_PUBLIC_URL`), obligatoire pour les autorisations NIP-98 des votes ;
   - **réglages anti-fraude privés** (seuils de preuve de travail et limites des votes) dans un fichier `/srv/ppf/<environnement>/private.env`, lu par le serveur s'il existe, jamais dans le dépôt (modèle sans valeurs : `infra/env/private.env.example`).
+
+## D-078 (2026-11-07) Notifications : ntfy auto-hébergé pour les réveils
+
+- Contexte : contrat des notifications de « Communauté » (M31, `docs/integration/notifications.md`, section 6) : les poussées sont des réveils vides et chiffrés ; l'appareil se synchronise et fait ses notifications lui-même ; le serveur ne connaît aucun centre d'intérêt.
+- Décisions techniques prises en autonomie (Directeur technique) :
+  - **ntfy v2.37.2** (dernière version, publiée le 4 novembre 2026), image épinglée par empreinte, un conteneur par environnement (UID 10005 production, 10006 préproduction), système de fichiers en lecture seule, données dans `/srv/ppf/<environnement>/ntfy`, 64 Mo de mémoire au plus ;
+  - adresses : `push.politisation-populaire-francaise.org` (publique) et `push.preprod.politisation-populaire-francaise.org` (tunnel seulement, comme toute la préproduction) ; un enregistrement DNS de plus pour la préproduction ;
+  - réglages : aucun relais extérieur (`upstream-base-url` vide : jamais ntfy.sh), application web, inscription et connexion désactivées, cache des réveils 12 heures au plus, tout est refusé sauf les sujets aléatoires « up* » d'UnifiedPush (ouverts à chaque déploiement) ; journaux au niveau « warn » ; ntfy ne voit jamais l'adresse d'un client (le proxy la retire), ses limites par visiteur deviennent donc un plafond global, dimensionné pour toute la plateforme ;
+  - le serveur n'accepte que notre ntfy comme destination (`PPF_PUSH_ALLOWED_HOSTS`) et l'atteint par le réseau interne (`PPF_PUSH_INTERNAL_URL=http://ntfy:8080`), jamais par son nom public ; la clé privée VAPID (EC P-256, PKCS#8) est générée sur le serveur par `bootstrap-server.sh` (`PPF_VAPID_PRIVATE_KEY_FILE`) ; les services de poussée des navigateurs (tiers) restent refusés ;
+  - l'intégration continue vérifie que ntfy démarre, accepte un réveil sur un sujet « up* » et refuse tout autre sujet.
