@@ -57,6 +57,7 @@ require '^assets/composeResources/[^/]+/files/contents/fiches\.json$' "bundled c
 require '^assets/composeResources/[^/]+/files/contents/fil\.json$' "bundled feed posts (fil.json)"
 require '^assets/composeResources/[^/]+/files/contents/parcours\.json$' "bundled courses (parcours.json)"
 require '^assets/composeResources/[^/]+/files/contents/revendications\.json$' "bundled demands (revendications.json)"
+require '^assets/composeResources/[^/]+/files/contents/voir\.json$' "bundled contents of Voir (voir.json)"
 require '^assets/composeResources/[^/]+/font/atkinson_hyperlegible_regular\.ttf$' "bundled font (Atkinson Hyperlegible)"
 for abi in arm64-v8a armeabi-v7a x86_64; do
     require "^lib/$abi/libsecp256k1-jni\.so$" "libsecp256k1 for $abi"
