@@ -150,6 +150,8 @@ Une revendication proposée par un citoyen est un contenu éditorial de type `30
 
 ## 4 quinquies. Espace « Voir » : briques sourcées (D-034)
 
+> Ajouts du 7 novembre 2026 (D-054, D-056) : brique `parti` et liens de rôle `parti` et `responsable` (détail prêt à reprendre dans `docs/integration/voir-partis.md`, section « Format ») ; demandes à l'équipe de rédaction `ppf-voir-request` version 1, envoyées en message privé NIP-17 (détail dans `docs/integration/voir-demandes.md`, section 2) ; adresses des pages du site dans `docs/integration/voir-web.md`.
+
 Chaque brique est un contenu éditorial NIP-23 (type `30023`) : étiquettes communes de la section 4 bis (`d`, `title`, `summary`, `published_at`, `t`, `ppf-origin`), corps en Markdown lisible partout, `ppf-type` pour dire ce qu'elle est, puis des étiquettes structurées. Les étiquettes à plusieurs champs sont positionnelles ; un champ vide veut dire « inconnu ». Les dates sont au format `AAAA-MM-JJ`. Seules les briques signées par une clé de l'équipe éditoriale sont affichées ; une brique mal formée est ignorée.
 
 Étiquettes communes à plusieurs briques :

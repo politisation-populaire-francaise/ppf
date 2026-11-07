@@ -49,7 +49,7 @@ class EditorialVoirSourceTest {
     @Test
     fun onlyTheEditorialKeysAreRead() = runBlocking {
         val catalog = EditorialVoirSource(events, PublicationPolicy(setOf(EditorialTrust.EXAMPLE_EDITOR)), ttl = Duration.ZERO).catalog()
-        assertEquals(examples.size, catalog.indicators.size + catalog.facts.size + catalog.persons.size + catalog.texts.size + catalog.movements.size + catalog.dossiers.size + catalog.replies.size)
+        assertEquals(examples.size, catalog.indicators.size + catalog.facts.size + catalog.persons.size + catalog.parties.size + catalog.texts.size + catalog.movements.size + catalog.dossiers.size + catalog.replies.size)
         assertFalse(catalog.facts.any { it.address.identifier == "faux-fait" })
         assertNotNull(catalog.indicators.firstOrNull { it.address.identifier == "manifestants-journees" })
         // A key removed from the team stops being shown, even though its contents stay stored.

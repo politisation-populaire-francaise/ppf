@@ -189,6 +189,14 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 
 Sur l'ordinateur, l'écran se présente en deux colonnes.
 
+### Tester les partis, le droit de réponse et le signalement d'erreur dans « Voir » (ajouté le 7 novembre 2026)
+
+1. Ouvrez **Voir**, onglet **Le pouvoir** : la rubrique **Partis politiques** arrive avant les responsables publics, les partis par ordre alphabétique. Touchez un parti : toutes les fiches ont les mêmes rubriques dans le même ordre (financement, sièges, aide publique, direction, membres, faits qui visent le parti), même vides.
+2. Sur la fiche d'une personne, la puce de son parti ouvre la fiche du parti.
+3. En bas de n'importe quel contenu, touchez **Signaler une erreur** : par défaut, l'envoi est anonyme (l'équipe ne pourra pas vous répondre) ; si vous avez un compte, « Avec mon compte » affiche d'abord une mise en garde.
+4. Sur la fiche d'une personne ou d'un fait qui la concerne, touchez **Droit de réponse** : le formulaire explique la loi, compte les mots en direct et demande un compte (créé en une minute dans « Mon espace » ; votre texte est gardé pendant ce temps).
+5. Sur l'ordinateur, avec le serveur de développement (`gradlew :server:runDev`), ouvrez http://localhost:8080/voir : les mêmes contenus sur le site, lisibles sans JavaScript.
+
 ### Tester l'espace « Voir » (ajouté le 6 novembre 2026, tard le soir)
 
 Tout ce que vous verrez est inventé et marqué [EXEMPLE] : personnes, pays, organisations et chiffres. Aucun compte n'est nécessaire, et tout marche sans réseau.

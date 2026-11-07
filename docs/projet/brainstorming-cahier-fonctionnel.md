@@ -206,7 +206,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Grille de l'indice de gravité des violences policières
-- Statut : À valider
+- Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel, M2)
 - Concerne : cahier-fonctionnel.md, M2
 - Description : l'IA propose une grille inspirée des observatoires existants, à valider par la propriétaire.
 - Proposition (2026-11-07, pôle Voir) : une grille en cinq niveaux, calquée sur les catégories que le code pénal utilise déjà pour les violences (articles 222-7 à 222-13), pour qu'elle soit objective, vérifiable et difficile à contester :
@@ -218,7 +218,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   Chaque cas indique en plus : mineur ou non, arme ou moyen en cause (tir de LBD, grenade, matraque, étranglement…), et le niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule). Un cas déclaré sans certificat compte à part (« déclaratif »), jamais mélangé aux cas vérifiés. L'indice d'une journée est la répartition des cas entre les cinq niveaux, pas une note unique (un chiffre unique cacherait les cas graves).
   - Alternative : reprendre telle quelle la grille d'un observatoire existant (associations de défense des libertés, médias indépendants) ; avantage : comparabilité ; inconvénient : dépendance à leurs choix et à leurs mises à jour.
   - Recommandation : la grille en cinq niveaux ci-dessus.
-- Décision :
+- Décision : grille en cinq niveaux validée par la propriétaire le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe ; D-057). À intégrer dans le cahier fonctionnel (M2) après sa confirmation.
 
 ### [2026-11-04] Sujets de départ de « Qui décide de ça ? »
 - Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel 2.0, M13.1)

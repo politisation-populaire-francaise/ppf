@@ -90,3 +90,14 @@ Version du 5 novembre 2026 (phase 0, complétée le soir même par les fondation
 - La propriétaire est la seule personne ayant accès aux comptes et aux clés en phase 0 ; chaque accès est protégé par un mot de passe unique et, dès que possible, par une double authentification.
 - Le code est public : la sécurité ne repose jamais sur le secret du code, uniquement sur les clés, les secrets de configuration et l'architecture.
 - GitHub et Hostinger sont des tiers qui peuvent couper le service ; l'architecture de résilience (phase 3) et les sauvegardes hors site (premier déploiement) répondent à ce risque.
+
+## Ajout du 7 novembre 2026 : partis, site et demandes de « Voir » (D-054 à D-056)
+
+| Menace | Parade |
+|---|---|
+| Accusation de partialité envers un parti | Mêmes rubriques et même ordre pour tous, tri par nom, critère légal de financement le même pour tous, faits visant un membre jamais affichés sur la fiche du parti |
+| Données personnelles d'un mandataire financier | Jamais stockées : l'outil de signature refuse un nom dans le champ |
+| Injection de HTML ou de script par un contenu sur le site | Markdown rendu par un code qui échappe tout ; aucun HTML recopié ; CSP sans `unsafe-inline`, aucune couleur ni style en ligne |
+| Lecture des demandes de droit de réponse ou des signalements | Chiffrés de bout en bout pour la boîte de l'équipe (NIP-17, NIP-44) ; le serveur ne voit qu'une enveloppe d'auteur à usage unique |
+| Clé de la boîte de l'équipe confondue avec la clé qui signe les contenus | Constante isolée (`VoirRequests.TEAM_INBOX`) ; clé dédiée à créer avant le lancement public |
+| Signaleur identifié contre son gré | Signalement anonyme par défaut, clé à usage unique détruite après l'envoi ; envoi avec le compte seulement après mise en garde |
