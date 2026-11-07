@@ -22,6 +22,7 @@
     <string name="organisations_none">Aucune organisation ne correspond à votre recherche.</string>
     <string name="organisations_empty">L’annuaire est vide pour l’instant.</string>
     <string name="organisations_clear_filters">Effacer la recherche et les filtres</string>
+    <string name="organisations_include_revoked">Inclure les vérifications retirées</string>
     <string name="organisations_refresh">Actualiser l’annuaire</string>
     <string name="organisations_select_hint">Choisissez une organisation pour voir sa page.</string>
     <string name="organisations_about_directory">Une organisation figure dans l’annuaire après vérification par l’équipe de PPF. L’annuaire n’accueille ni parti politique ni candidat.</string>
@@ -53,6 +54,9 @@
     <string name="organisation_back">Retour à l’annuaire</string>
     <string name="organisation_verified">Vérifiée</string>
     <string name="organisation_verified_on">Vérifiée par PPF le %1$s</string>
+    <string name="organisation_revoked">Vérification retirée</string>
+    <string name="organisation_revoked_on">Vérification retirée par PPF le %1$s</string>
+    <string name="organisation_revoked_explain">Cette organisation n’est plus vérifiée : ses nouvelles publications passent par la relecture, comme celles de tout compte. Sa fiche reste visible par transparence.</string>
     <string name="organisation_national">Partout en France</string>
     <string name="organisation_follow_private">Votre abonnement reste sur votre appareil : personne d’autre ne sait que vous suivez cette organisation.</string>
     <string name="organisation_no_account">Cette organisation n’a pas encore de compte sur PPF : il n’y a rien à suivre pour l’instant.</string>

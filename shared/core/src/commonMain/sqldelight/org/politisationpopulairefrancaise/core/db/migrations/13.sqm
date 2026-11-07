@@ -1,0 +1,22 @@
+-- Schema version 13 to 14 (2026-11-07): the testimonies sent from this device (see Testimony.sq, which is the
+-- reference for fresh installations; this file must stay identical to its CREATE statements).
+
+CREATE TABLE testimony (
+    id TEXT NOT NULL PRIMARY KEY,
+    created_at INTEGER NOT NULL,
+    call_address TEXT,
+    has_photo INTEGER NOT NULL,
+    gave_original INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    reason TEXT,
+    published TEXT,
+    submission TEXT,
+    updated_at INTEGER NOT NULL
+);
+
+CREATE TABLE testimony_file (
+    testimony_id TEXT NOT NULL,
+    file_id TEXT NOT NULL,
+    bytes BLOB NOT NULL,
+    PRIMARY KEY (testimony_id, file_id)
+);

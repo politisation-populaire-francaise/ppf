@@ -192,6 +192,8 @@ object AgirRules {
         if (event.firstTagValue(AgirFormats.TAG_PUBLISHED_AT)?.let(SECONDS::matches) != true) return missing(AgirFormats.TAG_PUBLISHED_AT)
         for (tag in event.tags) {
             if (tag.size >= 2 && tag[0] == AgirFormats.TAG_PUBKEY && !HEX_KEY.matches(tag[1])) return missing(AgirFormats.TAG_PUBKEY)
+            // Contract, version 2: the status is optional, but a value the readers do not know is refused.
+            if (tag.isNotEmpty() && tag[0] == AgirFormats.TAG_ORG_STATUS && (tag.size < 2 || tag[1] !in AgirFormats.ORG_STATUSES)) return missing(AgirFormats.TAG_ORG_STATUS)
         }
         return null
     }

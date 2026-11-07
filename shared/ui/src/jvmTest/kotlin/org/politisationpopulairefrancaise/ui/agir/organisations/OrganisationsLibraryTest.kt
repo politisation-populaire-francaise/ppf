@@ -145,6 +145,25 @@ class OrganisationsLibraryTest {
     }
 
     @Test
+    fun aRevokedEntryIsNoLongerVerifiedButItsPageStillSaysSo() = runBlocking {
+        val store = LocalEventStore(JvmDatabase.inMemory())
+        val key = IdentityKeys.generate().publicKey.hex
+        store.store(AgirFixtures.entry("collectif-retire", accountKey = key, updatedAt = 1_793_500_000))
+        store.store(AgirFixtures.entry("collectif-retire", accountKey = key, updatedAt = 1_794_038_400, status = "revoquee"))
+        val library = library(store, null)
+        library.ensureStarted()
+        library.awaitSettled()
+        assertFalse(library.verified.isVerified(key))
+        assertTrue(library.hasRevoked)
+        assertFalse(library.results.any { it.slug == "collectif-retire" }, "left out of the list by default")
+        library.toggleIncludeRevoked()
+        assertTrue(library.results.single { it.slug == "collectif-retire" }.revoked)
+        // Reached by a link (an organiser of the agenda): the page opens and says the verification was withdrawn.
+        assertTrue(library.openKey(key))
+        assertTrue(library.selected?.revoked == true)
+    }
+
+    @Test
     fun theOpenOrganisationShowsItsNotesFoundOnTheDevice() = runBlocking {
         val store = LocalEventStore(JvmDatabase.inMemory())
         val organisation = LocalEventSigner(IdentityKeys.generate())

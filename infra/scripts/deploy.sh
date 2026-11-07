@@ -3,6 +3,8 @@
 # run as root (or ppf-admin with sudo):
 #
 #   ppf-deploy preproduction [--if-changed]   newest image of main, signature checked
+#   ppf-deploy preproduction-bundle <file>    preproduction only: a bundle built on the owner's computer
+#                                             (before GitHub is linked; never accepted for the production)
 #   ppf-deploy production --from-preproduction --confirm
 #   ppf-deploy production sha256:<digest> --confirm
 #   ppf-deploy status
@@ -144,11 +146,14 @@ proxy_update() {
     rm -rf "$backup"
 }
 
-# Starts one environment on an image digest; rolls back to the previous one if it never gets healthy.
+# Starts one environment on an image digest (or, for a bundle, a local image with its release
+# directory); rolls back to the previous one if it never gets healthy.
 deploy() {
-    local env="$1" ref="$2" revision release previous_ref previous_revision
-    revision="$(revision_of "$ref")"
-    release="$(export_release "$env" "$revision")"
+    local env="$1" ref="$2" revision="${3:-}" release="${4:-}" previous_ref previous_revision
+    if [ -z "$revision" ]; then
+        revision="$(revision_of "$ref")"
+        release="$(export_release "$env" "$revision")"
+    fi
     previous_ref="$(cat "$PPF_DATA_DIR/$env/deployed-image" 2>/dev/null || true)"
     previous_revision="$(cat "$PPF_DATA_DIR/$env/deployed-revision" 2>/dev/null || true)"
 
@@ -170,6 +175,8 @@ deploy() {
     echo "$ref" > "$PPF_DATA_DIR/$env/deployed-image"
     echo "$revision" > "$PPF_DATA_DIR/$env/deployed-revision"
     printf '%s %s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$ref" "$revision" >> "$PPF_DATA_DIR/$env/history"
+    # ntfy refuses everything but the random UnifiedPush topics "up*" (D-078); idempotent.
+    compose_env "$env" "$release" "$ref" exec -T ntfy ntfy access everyone 'up*' read-write >/dev/null
     proxy_update "$release" "$env"
     prune_releases "$env"
     docker image prune --force --filter "until=168h" >/dev/null || true
@@ -194,7 +201,39 @@ backup_production() {
 command="${1:-}"
 [ $# -gt 0 ] && shift
 case "$command" in
+    preproduction-bundle)
+        # Before GitHub is linked (decision of the owner to link it later): the image is built here from a
+        # bundle made on her computer (tools/make-preprod-bundle.sh: the jars and the infra/ files of one
+        # commit). Preproduction only: such an image is not signed by the CI, its reference has no
+        # digest, so the production command, which accepts only signed digests, can never take it.
+        bundle="${1:-}"
+        [ -f "$bundle" ] || fail "usage: ppf-deploy preproduction-bundle <bundle.tar.gz>"
+        tmp="$PPF_DATA_DIR/preproduction/releases/.bundle-$$"
+        rm -rf "$tmp"
+        mkdir -p "$tmp"
+        # No absolute path, no "..": the archive stays inside its directory.
+        if tar -tzf "$bundle" | grep -Eq '(^/|(^|/)\.\.(/|$))'; then
+            rm -rf "$tmp"
+            fail "the bundle holds an unsafe path"
+        fi
+        tar -xzf "$bundle" -C "$tmp" --no-same-owner
+        revision="$(tr -d '[:space:]' < "$tmp/REVISION" 2>/dev/null || true)"
+        [[ "$revision" =~ ^[0-9a-f]{40}$ ]] || { rm -rf "$tmp"; fail "the bundle carries no commit (REVISION)"; }
+        for needed in infra/docker/server.Dockerfile .dockerignore server/build/libs/ppf-server.jar \
+            tools/open-data-importer/build/libs/ppf-open-data-importer.jar; do
+            [ -e "$tmp/$needed" ] || { rm -rf "$tmp"; fail "the bundle lacks $needed"; }
+        done
+        release="$PPF_DATA_DIR/preproduction/releases/$revision"
+        rm -rf "$release"
+        mv "$tmp" "$release"
+        ref="ppf-server:local-${revision:0:12}"
+        say "preproduction: building $ref from the bundle (unsigned, preproduction only)"
+        docker build --quiet -f "$release/infra/docker/server.Dockerfile" --build-arg PPF_REVISION="$revision" \
+            -t "$ref" "$release" >/dev/null
+        deploy preproduction "$ref" "$revision" "$release"
+        ;;
     preproduction)
+        [ -n "${PPF_IMAGE_REPO:-}" ] || fail "GitHub is not linked yet on this server: use ppf-deploy preproduction-bundle <file>"
         if_changed=false
         [ "${1:-}" = "--if-changed" ] && if_changed=true
         ref="$(resolve_main)"

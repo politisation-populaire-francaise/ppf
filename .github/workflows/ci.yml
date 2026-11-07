@@ -159,7 +159,7 @@ jobs:
         run: |
           for env in preproduction production; do
             mkdir -p "$RUNNER_TEMP/$env"
-            touch "$RUNNER_TEMP/$env/db_password" "$RUNNER_TEMP/$env/server_db_password" "$RUNNER_TEMP/$env/migrate_db_password" "$RUNNER_TEMP/$env/app_db_password" "$RUNNER_TEMP/$env/import_key"
+            touch "$RUNNER_TEMP/$env/db_password" "$RUNNER_TEMP/$env/server_db_password" "$RUNNER_TEMP/$env/migrate_db_password" "$RUNNER_TEMP/$env/app_db_password" "$RUNNER_TEMP/$env/import_key" "$RUNNER_TEMP/$env/vapid_private_key"
             sed "s#^PPF_SECRETS_DIR=.*#PPF_SECRETS_DIR=$RUNNER_TEMP/$env#" "infra/env/$env.env.example" > "$RUNNER_TEMP/$env.env"
             docker compose -f "infra/$env/compose.yml" --env-file "$RUNNER_TEMP/$env.env" config --quiet
           done
@@ -206,8 +206,12 @@ jobs:
           printf '%s' "$owner" > "$secrets/migrate_db_password"
           printf '%s' "$app" > "$secrets/app_db_password"
           printf '%s' "$app" > "$secrets/server_db_password"
+          openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt -out "$secrets/vapid_private_key"
+          : > "$secrets/import_key"
+          sudo mkdir -p /srv/ppf/preproduction/ntfy && sudo chown 10006:10006 /srv/ppf/preproduction/ntfy
           sudo chown 999:999 "$secrets/db_password" "$secrets/app_db_password"
-          sudo chown 10002:10002 "$secrets/server_db_password" "$secrets/migrate_db_password"
+          sudo chown 10002:10002 "$secrets/server_db_password" "$secrets/migrate_db_password" "$secrets/vapid_private_key"
+          sudo chown 10004:10004 "$secrets/import_key"
           sudo chmod 400 "$secrets"/*
           sed "s#^PPF_SECRETS_DIR=.*#PPF_SECRETS_DIR=$secrets#" infra/env/preproduction.env.example > "$RUNNER_TEMP/preprod.env"
           docker network create ppf-preprod-edge
@@ -232,6 +236,12 @@ jobs:
           curl -fsS "http://$ip:8080/api/v1/events?limit=3" | grep -q '"sig"'
           # Parliamentary open data of the preproduction: the signed example packages of the image.
           curl -fsS -o /dev/null "http://$ip:8080/api/v1/parlement"
+          # Push wake-ups: ntfy healthy, nothing open but the UnifiedPush topics.
+          for _ in $(seq 1 20); do [ "$(docker inspect --format '{{.State.Health.Status}}' ppf-preprod-ntfy-1)" = healthy ] && break; sleep 3; done
+          docker exec ppf-preprod-ntfy-1 ntfy access everyone 'up*' read-write >/dev/null
+          nip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' ppf-preprod-ntfy-1 | awk '{print $1}')
+          [ "$(curl -s -o /dev/null -w '%{http_code}' -d wake "http://$nip:8080/upCiTopicAbc123")" = 200 ]
+          [ "$(curl -s -o /dev/null -w '%{http_code}' -d wake "http://$nip:8080/othertopic")" = 403 ]
           # The importer is in the image and starts (example mode, nothing written outside a tmpfs).
           set +e
           docker run --rm --read-only --tmpfs /tmp:exec --entrypoint java ppf-server:ci -jar /app/ppf-open-data-importer.jar --source example --out /tmp/out --key /nonexistent
