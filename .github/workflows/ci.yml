@@ -168,8 +168,7 @@ jobs:
         run: |
           image=$(sed -n 's/^ *image: *\(caddy:.*\)$/\1/p' infra/proxy/compose.yml)
           # The way bootstrap-server.sh hashes the password typed by the owner: through standard input.
-          hash=$(printf 'ci-only-password
-' | docker run --rm -i "$image" caddy hash-password)
+          hash=$(printf '%s\n' 'ci-only-password' | docker run --rm -i "$image" caddy hash-password)
           [[ "$hash" == \$2* ]]
           mkdir -p "$RUNNER_TEMP/caddy/sites"
           cp infra/proxy/Caddyfile "$RUNNER_TEMP/caddy/"
