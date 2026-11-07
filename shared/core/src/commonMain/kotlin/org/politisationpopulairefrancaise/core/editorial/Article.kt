@@ -33,6 +33,7 @@ enum class ArticleType(val tagValue: String) {
     MOUVEMENT("mouvement"),
     /** A right of reply (VO-21) published under the content it answers. */
     REPONSE("reponse"),
+    ORGANISATION("organisation"),
     ;
 
     companion object {

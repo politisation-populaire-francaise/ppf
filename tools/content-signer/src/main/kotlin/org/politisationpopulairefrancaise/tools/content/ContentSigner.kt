@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.comprendre.ParcoursFormat
+import org.politisationpopulairefrancaise.core.agir.organisations.Organisation
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
@@ -35,7 +36,8 @@ import kotlin.system.exitProcess
  * become demands (revendications.json), those of `parcours` become the courses of "Comprendre en
  * 5 minutes" (parcours.json, refused if a step, a quiz, the « Et maintenant ? » block or the
  * sources are missing or malformed), those of `fil` become short notes for the feed (fil.json),
- * those of `voir` (and its sub-directories) become the building blocks of "Voir" (voir.json, D-034).
+ * those of `voir` (and its sub-directories) become the building blocks of "Voir" (voir.json, D-034),
+ * and those of `organisations` become entries of the directory of organisations (organisations.json).
  * See content/README.md for the front matter of each kind.
  * The signing key is read from the file named by PPF_CONTENT_KEY_FILE (default
  * ~/.ppf/content-example.nsec); it is created if missing. Dates come from the front matter, so
@@ -120,6 +122,29 @@ fun main(args: Array<String>) {
     val voir = voirFiles.map { document -> voirEvent(document, keys.publicKey) }
     checkVoir(voirFiles, voir, keys.publicKey.hex)
     write(output.resolve("voir.json"), voir.map { signer.signChecked(it) })
+    // Directory of organisations (contract of the Agir space, section 4): organisations.json.
+    val organisations = signAll(content.resolve("organisations")) { document ->
+        Organisation.build(
+            editor = keys.publicKey,
+            slug = document.require("slug"),
+            name = document.require("title"),
+            summary = document.require("summary"),
+            type = document.require("org_type"),
+            territory = document.require("territory"),
+            verifiedOn = document.require("verified"),
+            publishedAt = document.require("published_at").dateToEpochSeconds(),
+            updatedAt = document.require("updated_at").dateToEpochSeconds(),
+            presentation = document.body,
+            accountKey = document.metadata["pubkey"],
+            websites = document.metadata["websites"].orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() },
+            phone = document.metadata["phone"],
+            email = document.metadata["email"],
+            postalAddress = document.metadata["address"],
+            geohash = document.metadata["geohash"],
+            origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
+        )
+    }.map { signer.signChecked(it) }
+    write(output.resolve("organisations.json"), organisations)
 
     println("author public key (hex): ${keys.publicKey.hex}")
     println("author public key (npub): ${keys.publicKey.npub}")
