@@ -282,3 +282,12 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   3. **ordre d'entrée des responsables publics** : d'abord les personnes citées dans les contenus publiés, puis les grands partis, puis les personnes les plus médiatisées de ces partis, puis les personnes condamnées en justice, celles qui ont une affaire en cours, celles dont une affaire a été classée sans suite ou s'est terminée par une relaxe ;
   4. **chiffres clés de « Voir » repris dans « En direct »** (MA-01).
 - Conséquences techniques : une fiche de parti demandera la brique « Organisation » (D-034 la réserve) ; les mêmes critères d'entrée s'appliqueront à tous les partis (règle « Traitement identique ») ; aucune personne réelle ne sera publiée avant la relecture juridique prévue par M17 (avocat : coût reporté dans le cahier des charges, section 12) et la double validation éditoriale.
+
+## D-037 (2026-11-07) Écran « En direct »
+
+- Contexte : parcours « Découvrir en 30 secondes » du cahier fonctionnel (chiffres clés, prochaines mobilisations, informations essentielles, revendication et campagne prioritaires) et fonctionnalités MA-01 à MA-06 de l'inventaire ; la propriétaire a validé le 7 novembre 2026 la reprise des chiffres clés de « Voir » (D-036).
+- Décisions techniques prises en autonomie :
+  - l'écran assemble sur l'appareil des contenus déjà présents, sans donnée nouvelle : le direct (publications du thème `en-direct`), les **alertes** (vote prévu au Parlement dans les quinze jours, interdiction de manifester publiée dans les quinze derniers jours, calculées depuis « Voir »), les quatre premiers **chiffres clés**, les **prochaines mobilisations** (emplacement réservé à l'agenda de la session « Agir »), la **revendication à la une** (une campagne d'abord, puis une revendication retenue, puis très soutenue), les dernières publications de PPF et les derniers faits de la chronologie ;
+  - tout s'ouvre là où il vit (« Voir », « Revendications », le Fil) ; une colonne sur téléphone (le direct et les alertes d'abord), deux sur les fenêtres larges ;
+  - les pétitions qui arrivent à échéance et les appels urgents rejoindront les alertes quand leurs modules existeront (M10, appels d'« Agir »).
+- Raison : demande de la propriétaire ; aucune dépense ; aucune donnée nouvelle.
