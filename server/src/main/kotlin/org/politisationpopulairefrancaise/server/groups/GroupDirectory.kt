@@ -18,7 +18,12 @@ import org.politisationpopulairefrancaise.server.events.StoreOutcome
  *
  * Listing and search go through the table of [GroupIndex], which holds every description.
  */
-class GroupDirectory(private val events: EventRepository, private val index: GroupIndex = GroupIndex(events.dataSource)) {
+class GroupDirectory(
+    private val events: EventRepository,
+    private val index: GroupIndex = GroupIndex(events.dataSource),
+    /** Roles, exclusions, edits and removals of the rooms (D-131). */
+    val moderation: GroupModeration = GroupModeration(events),
+) {
 
     /** What [admitAndStore] did with an event. */
     sealed interface Admission {
@@ -39,10 +44,27 @@ class GroupDirectory(private val events: EventRepository, private val index: Gro
     fun search(query: String?, territory: String?, limit: Int = DEFAULT_LIMIT): List<Group> {
         val text = query?.let(GroupNames::normalize)?.takeIf { it.isNotEmpty() }
         val place = territory?.let(GroupNames::normalize)?.takeIf { it.isNotEmpty() }
-        return index.search(text, place, limit.coerceIn(1, MAX_LIMIT)).mapNotNull(Group::from)
+        return withEdits(index.search(text, place, limit.coerceIn(1, MAX_LIMIT)).mapNotNull(Group::from))
+    }
+
+    /** [groups] with the name and presentation in force after the edits of their administrators. */
+    private fun withEdits(groups: List<Group>): List<Group> {
+        val edits = moderation.edits(groups.map { it.id })
+        return if (edits.isEmpty()) groups else groups.map { group -> edits[group.id]?.let(group::withEdit) ?: group }
     }
 
     fun find(id: String): Group? {
+        if (!GroupKinds.isValidId(id)) return null
+        return events.query(EventFilter(kinds = listOf(GroupKinds.METADATA), tags = mapOf("d" to listOf(id)), limit = 10))
+            .mapNotNull(Group::from)
+            .filter { it.id == id }
+            .takeIf { it.isNotEmpty() }
+            ?.let(::canonical)
+            ?.let { group -> moderation.edits(listOf(group.id))[group.id]?.let(group::withEdit) ?: group }
+    }
+
+    /** The description that counts for [id], without the edits of its administrators. */
+    private fun findDescription(id: String): Group? {
         if (!GroupKinds.isValidId(id)) return null
         return events.query(EventFilter(kinds = listOf(GroupKinds.METADATA), tags = mapOf("d" to listOf(id)), limit = 10))
             .mapNotNull(Group::from)
@@ -81,9 +103,19 @@ class GroupDirectory(private val events: EventRepository, private val index: Gro
         if (event.kind == GroupKinds.METADATA) {
             val described = Group.from(event)
                 ?: return Decision.Refused(400, "bad_group_id", "A group description carries exactly one valid d tag.")
-            val existing = find(described.id)
+            val existing = findDescription(described.id)
             if (existing != null && existing.event.pubkey != event.pubkey) {
                 return Decision.Refused(409, "group_taken", "Another key already manages a group with this id.")
+            }
+            if (existing != null) {
+                // A new version by the creator (D-131): only while they are an administrator, and the
+                // territory never changes (otherwise the refusal of duplicates would be bypassed).
+                if (moderation.roleOf(described.id, event.pubkey) != GroupRole.ADMIN) {
+                    return Decision.Refused(403, "not_allowed", "Only an administrator describes the room; the creator who gave up the role no longer does.")
+                }
+                if (described.normalizedTerritory != existing.normalizedTerritory) {
+                    return Decision.Refused(400, "territory_fixed", "The territory of a room never changes; create another room for another territory.")
+                }
             }
             val duplicate = findDuplicate(described)
             if (duplicate != null) {
@@ -110,6 +142,9 @@ class GroupDirectory(private val events: EventRepository, private val index: Gro
             if (!group.isOpen) {
                 return Decision.Refused(403, "group_closed", "This group only accepts messages from its members; membership is not supported yet.")
             }
+            if (event.kind == GroupKinds.CHAT_MESSAGE && moderation.isBanned(group.id, event.pubkey)) {
+                return Decision.Refused(403, "banned", "This account was excluded from this room by its moderators; the reason is in the room's journal.")
+            }
         }
         return Decision.Allowed
     }
@@ -119,8 +154,32 @@ class GroupDirectory(private val events: EventRepository, private val index: Gro
      * stored under the lock of [GroupIndex.exclusively]: two rooms of the same name on the same
      * territory, published at the same instant, cannot both pass; the second one sees the first.
      */
-    fun admitAndStore(event: SignedEvent): Admission =
-        if (event.kind == GroupKinds.METADATA) index.exclusively { admitThenStore(event) } else admitThenStore(event)
+    fun admitAndStore(event: SignedEvent): Admission = when {
+        event.kind == GroupKinds.METADATA -> index.exclusively { admitThenStore(event) }
+        GroupKinds.isAcceptedModeration(event.kind) -> when (val decision = admit(event)) {
+            is Decision.Refused -> Admission.Refused(decision)
+            Decision.Allowed -> {
+                val group = event.tagValues(GroupKinds.GROUP_TAG).single().let(::find)
+                    ?: return Admission.Refused(Decision.Refused(404, "group_not_found", "No group with this id on this relay."))
+                moderation.admitAndStore(event, group) { _, name -> renameRefusal(group, name) }
+            }
+        }
+        else -> admitThenStore(event)
+    }
+
+    /** Why [group] may not take [name] in an edit of its administrators, or null: another room of its territory bears it. */
+    private fun renameRefusal(group: Group, name: String): Decision.Refused? {
+        val nameKey = GroupNames.normalize(name)
+        val territory = group.normalizedTerritory
+        if (nameKey.isEmpty() || territory.isEmpty()) return null
+        val duplicate = index.duplicateOf(group.id, nameKey, territory) ?: return null
+        return Decision.Refused(
+            409,
+            "group_exists",
+            "A group with this name already exists on this territory; join it instead of creating another one.",
+            existing = duplicate,
+        )
+    }
 
     private fun admitThenStore(event: SignedEvent): Admission = when (val decision = admit(event)) {
         is Decision.Refused -> Admission.Refused(decision)

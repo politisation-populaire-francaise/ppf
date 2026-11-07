@@ -21,6 +21,7 @@ import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.events.StoreOutcome
 import org.politisationpopulairefrancaise.server.events.TagIndex
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
+import org.politisationpopulairefrancaise.server.groups.SimilarGroup
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.RelayKinds
@@ -35,6 +36,10 @@ data class ApiError(val error: String, val message: String)
 /** The `409 group_exists` answer: [existing] is the id of the group to join instead of creating a duplicate (D-028). */
 @Serializable
 data class GroupExistsError(val error: String, val message: String, val existing: String)
+
+/** The `409 group_similar` answer (D-132): the rooms of close name on the same territory or a parent one. */
+@Serializable
+data class GroupSimilarError(val error: String, val message: String, val similar: List<SimilarGroup>)
 
 /** Events above this size are refused before being read in full. */
 const val MAX_EVENT_BYTES: Long = 64 * 1024
@@ -240,6 +245,8 @@ private suspend fun RoutingCall.refuse(decision: PublicationPolicy.Decision.Refu
     val existing = decision.existing
     if (existing != null) {
         respond(status, GroupExistsError(decision.error, decision.message, existing))
+    } else if (decision.similar.isNotEmpty()) {
+        respond(status, GroupSimilarError(decision.error, decision.message, decision.similar))
     } else {
         respond(status, ApiError(decision.error, decision.message))
     }

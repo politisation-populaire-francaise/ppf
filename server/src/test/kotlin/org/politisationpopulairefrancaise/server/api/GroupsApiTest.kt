@@ -202,7 +202,7 @@ class GroupsApiTest {
 
         // Each entry keeps the shape of the listing, with the territory and the charter added.
         val entry = Json.parseToJsonElement(client.get("/api/v1/groups?territory=paris").bodyAsText()).jsonArray.single().jsonObject
-        assertEquals(listOf("id", "name", "about", "picture", "territory", "charter", "public", "open", "event"), entry.keys.toList())
+        assertEquals(listOf("id", "name", "about", "picture", "territory", "charter", "public", "open", "event", "edit"), entry.keys.toList())
         assertEquals("Paris", entry["territory"]!!.jsonPrimitive.content)
         assertEquals("1.0", entry["charter"]!!.jsonPrimitive.content)
     }
@@ -271,7 +271,7 @@ class GroupsApiTest {
         assertEquals(HttpStatusCode.Forbidden, members.status)
         assertEquals("members_list_refused", members.error())
 
-        for (kind in listOf(9000, 9001, 9002, 9005, 9020, GroupKinds.JOIN_REQUEST, GroupKinds.LEAVE_REQUEST)) {
+        for (kind in listOf(9003, 9007, 9008, 9009, 9020, GroupKinds.JOIN_REQUEST, GroupKinds.LEAVE_REQUEST)) {
             val response = client.publish(citizen.sign(kind = kind, tags = listOf(listOf("h", "demo")), createdAt = 1))
             assertEquals(HttpStatusCode.BadRequest, response.status, "kind $kind")
             assertEquals("unsupported_kind", response.error())
