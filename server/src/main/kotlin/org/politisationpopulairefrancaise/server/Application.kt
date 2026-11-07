@@ -18,6 +18,11 @@ import io.ktor.server.routing.routing
 import kotlinx.coroutines.CancellationException
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.HealthStatus
+import org.politisationpopulairefrancaise.server.agir.AgirConfig
+import org.politisationpopulairefrancaise.server.agir.AgirSetup
+import org.politisationpopulairefrancaise.server.agir.AgirSpace
+import org.politisationpopulairefrancaise.server.agir.agendaSource
+import org.politisationpopulairefrancaise.server.agir.agirApi
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PostLimits
 import org.politisationpopulairefrancaise.server.api.eventsApi
@@ -34,6 +39,7 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.webRoutes
 import javax.sql.DataSource
 
@@ -52,6 +58,8 @@ import javax.sql.DataSource
  *   the review queue of citizen demands, see [RevendicationsConfig].
  * - PPF_AI_BASE_URL, PPF_AI_MODEL, PPF_AI_API_KEY_FILE, PPF_AI_JSON_MODE, PPF_AI_TIMEOUT_SECONDS: the
  *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
+ * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
+ *   see [AgirConfig].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -100,6 +108,7 @@ fun Application.module(
     policy: PublicationPolicy = PublicationPolicy.fromEnvironment(),
     relay: RelayConfig = RelayConfig.fromEnvironment(),
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
+    agir: AgirSetup = AgirSetup.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
     // Citizen demands wait in a review queue; its checks and cleanup live and die with the application.
@@ -109,6 +118,8 @@ fun Application.module(
         revendications.close()
         null
     }
+    // Mobilizations, calls and directory of the Agir space: rules, review queue, agenda (contract, section 5).
+    val agirSpace = if (dataSource != null && repository != null) AgirSpace.start(this, dataSource, repository, policy, agir) else null
     if (repository == null) {
         log.info("No database configured: the events API answers 503 (health check and web pages work).")
     } else if (relay.cleanupInterval.isPositive()) {
@@ -152,9 +163,11 @@ fun Application.module(
                 ),
             )
         }
-        eventsApi(repository, policy, limits, groups, proposals)
+        eventsApi(repository, policy, limits, groups, proposals, agirSpace)
         groupsApi(groups)
         revendicationsApi(proposals)
+        agirApi(agirSpace)
+        agirSpace?.let { agendaPage(it.agendaSource()) }
         webRoutes()
     }
 }

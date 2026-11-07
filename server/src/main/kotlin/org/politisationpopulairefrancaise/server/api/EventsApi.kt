@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.server.agir.AgirSpace
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
@@ -69,11 +70,12 @@ class PostLimits(
  * - POST /api/v1/events: publish one signed event (JSON body). Only events whose signature checks
  *   out, which fit the [PostLimits] and which the [PublicationPolicy] and the [GroupDirectory]
  *   allow are stored; nothing is logged about the sender. Encrypted envelopes (kind 1059) are
- *   stored as they are, never opened. A citizen demand goes to the review queue ([RevendicationProposals]).
+ *   stored as they are, never opened. A citizen demand goes to the review queue ([RevendicationProposals]);
+ *   a content of the Agir space that its key may not publish directly goes to the queue of [AgirSpace].
  * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
-fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, limits: PostLimits, groups: GroupDirectory? = null, proposals: RevendicationProposals? = null) {
+fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, limits: PostLimits, groups: GroupDirectory? = null, proposals: RevendicationProposals? = null, agir: AgirSpace? = null) {
     if (repository == null) {
         route("/api/v1/{...}") {
             handle {
@@ -83,6 +85,8 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
         return
     }
     val directory = groups ?: GroupDirectory(repository)
+    // Without one, the rules of the Agir space still hold (only the cleanup of its queue is missing).
+    val agirSpace = agir ?: AgirSpace.create(repository.dataSource, repository, policy)
     route("/api/v1/events") {
         post {
             val declaredLength = call.request.contentLength() ?: 0
@@ -126,6 +130,20 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
                 is PublicationPolicy.Decision.Refused -> return@post call.refuse(decision)
                 PublicationPolicy.Decision.Allowed -> Unit
             }
+            // Agir space (contract, section 5): a content the key may not publish directly waits for review (202) or is refused;
+            // a cancellation by its author withdraws the version still waiting (200).
+            if (agirSpace.concerns(event)) {
+                when (val route = withContext(Dispatchers.IO) { agirSpace.route(event) }) {
+                    AgirSpace.Route.Publish -> Unit
+                    is AgirSpace.Route.Refuse -> return@post call.refuse(route.refusal)
+                    AgirSpace.Route.Hold, is AgirSpace.Route.Withdraw -> {
+                        when (val admission = withContext(Dispatchers.IO) { directory.admit(event) }) {
+                            is PublicationPolicy.Decision.Refused -> return@post call.refuse(admission)
+                            PublicationPolicy.Decision.Allowed -> return@post agirSpace.hold(call, event, route, limits.perKey)
+                        }
+                    }
+                }
+            }
             // Group rules that need the database: the group must exist, be open, be managed by this key,
             // and not duplicate another group of the same name on the same territory. A description is
             // checked and stored under a lock, so that two identical rooms cannot be created at once.
@@ -135,6 +153,7 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
             }
             when (outcome) {
                 StoreOutcome.STORED -> {
+                    withContext(Dispatchers.IO) { agirSpace.stored(event) }
                     if (event.kind == RelayKinds.GIFT_WRAP) {
                         // One recipient per envelope (policy); the mailbox keeps the newest envelopes only.
                         val recipient = event.firstTagValue("p")
