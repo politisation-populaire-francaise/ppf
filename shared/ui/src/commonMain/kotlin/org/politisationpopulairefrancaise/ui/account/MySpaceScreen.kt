@@ -99,6 +99,10 @@ import org.politisationpopulairefrancaise.ui.resources.account_votes_label
 import org.politisationpopulairefrancaise.ui.resources.account_votes_never
 import org.politisationpopulairefrancaise.ui.resources.desc_mon_espace
 import org.politisationpopulairefrancaise.ui.resources.space_mon_espace
+import org.politisationpopulairefrancaise.ui.resources.platform_label
+import org.politisationpopulairefrancaise.ui.resources.version_label
+import org.politisationpopulairefrancaise.core.AppInfo
+import org.politisationpopulairefrancaise.core.currentPlatform
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** Test tags of the account screens. */
@@ -151,9 +155,20 @@ fun MySpaceScreen(
                 is AccountUiState.Restoring -> RestoringCard(session, state)
                 is AccountUiState.Ready -> ReadyCards(session, state, windowClass, mailbox)
             }
+            // Which version is installed, on which system: what a tester reports with a problem.
+            val platform = currentPlatform()
+            Text(
+                stringResource(Res.string.version_label, AppInfo.VERSION) + " · " + stringResource(Res.string.platform_label, platform.name, platform.version),
+                style = MaterialTheme.typography.bodySmall,
+                color = PpfTheme.palette.inkSubtle,
+                modifier = Modifier.padding(top = 12.dp).testTag(MY_SPACE_VERSION_TAG),
+            )
         }
     }
 }
+
+/** The line that names the installed version, at the bottom of "Mon espace". */
+const val MY_SPACE_VERSION_TAG: String = "my-space-version"
 
 @Composable
 private fun LoadingCard() {

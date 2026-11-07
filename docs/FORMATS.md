@@ -259,6 +259,50 @@ Publiée seulement par une clé de l'équipe éditoriale. `content` : la présen
 
 **Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé ; une nouvelle version sans `p` retire la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
 
+## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-059, D-060)
+
+Même principe que « Voir » : des événements NIP-23 (type 30023) signés par l'équipe éditoriale, avec `ppf-type`, un corps Markdown et des étiquettes structurées (champs positionnels, champ vide = inconnu). Les étiquettes communes `ppf-source`, `ppf-archive`, `ppf-correction`, `ppf-next` et les liens `a` gardent leur sens. Contenus intégrés : `decider.json`.
+
+### Pétition (`ppf-type` = `petition`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-platform` | `assemblee`, `senat`, `cese`, `rip` ou `ice` (obligatoire) |
+| `ppf-official-url` | Page de la pétition, en `https`, sur un site de la plateforme : `petitions.assemblee-nationale.fr`, `petitions.senat.fr`, `petitions.lecese.fr`, `www.referendum.interieur.gouv.fr`, `citizens-initiative.europa.eu` (obligatoire ; sinon la brique est ignorée) |
+| `ppf-petition-status` | `ouverte` ou `close` (obligatoire) |
+| `ppf-reference` | Numéro donné par la plateforme |
+| `ppf-opened`, `ppf-closes` | Dates d'ouverture et dernier jour de signature (AAAA-MM-JJ) |
+| `ppf-count` | Relevé du compteur : `nombre`, `date`, `source` ; répétée pour l'historique, le plus récent compte |
+| `ppf-departments` | Départements d'origine des signataires, si la plateforme les publie : `nombre`, `date` |
+| `ppf-required` | Soutiens nécessaires pour cette procédure (référendum d'initiative partagée) |
+| `ppf-milestone` | Étape franchie : `date`, `libellé` |
+| `a` rôle `texte` | Le texte de loi de « Voir » concerné |
+
+### Pacte (`ppf-type` = `pacte`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-election` | `identifiant`, `libellé`, `premier tour` (facultatif) |
+| `ppf-pacte-status` | `proposee` (liste de départ, à voter), `envoye`, `clos` |
+| `ppf-measure` | `identifiant`, `titre`, `engagement précis`, `texte à modifier` ; 1 à 10, dans l'ordre, identifiants distincts |
+| `ppf-sent`, `ppf-deadline` | Jour d'envoi et date limite, les mêmes pour tous (obligatoires dès l'envoi) |
+| `a` rôle `candidat` | Chaque candidat, vers sa fiche de « Voir » |
+
+Empreinte du texte envoyé : SHA-256 (hexadécimal) du texte `ppf-pacte-v1\n`, puis `identifiant␟libellé\n` de l'élection, puis pour chaque mesure `identifiant␟titre␟engagement␟texte à modifier\n` (␟ = U+001F, espaces de début et de fin retirés).
+
+### Réponse d'un candidat (`ppf-type` = `engagement`)
+
+| Étiquette | Contenu |
+|---|---|
+| `a` rôle `pacte` | Le Pacte (un seul) |
+| `a` rôle `candidat` | Le candidat (un seul) |
+| `ppf-pacte-text` | Empreinte du texte répondu ; la réponse ne compte que si elle est égale à celle du Pacte |
+| `ppf-received` | Jour de réception (obligatoire) |
+| `ppf-answer` | `identifiant de mesure`, `signe` ou `refuse`, `commentaire` (facultatif) ; une seule par mesure |
+| `ppf-archive` | Document reçu : `empreinte SHA-256`, `preuve d'horodatage`, `adresse de l'archive`, `date` |
+
+Suivi après l'élection : un fait de « Voir » porte `a` rôle `pacte` et `ppf-pacte-measure` = identifiant de la mesure.
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.

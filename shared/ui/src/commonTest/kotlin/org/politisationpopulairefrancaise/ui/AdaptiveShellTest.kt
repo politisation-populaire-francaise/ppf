@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.decider.DeciderTags
 import org.politisationpopulairefrancaise.ui.endirect.EnDirectTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
@@ -76,10 +77,10 @@ class AdaptiveShellTest {
     fun tabletLayoutHasRailWithEveryEntry() = runComposeUiTest {
         setContent { Box(Modifier.requiredSize(800.dp, 740.dp)) { PpfApp() } }
         onNodeWithTag(ShellTags.SHELL_MEDIUM).assertExists()
-        // A space still under construction shows which layout is active ("En direct" and "Carte" are real screens now).
+        // Every space of the rail opens its real screen, "Décider" included.
         onNodeWithTag(ShellTags.navItem(Space.DECIDER)).performClick()
         waitForIdle()
-        onNodeWithText("Affichage tablette").assertExists()
+        onNodeWithTag(DeciderTags.SCREEN).assertExists()
         onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).assertExists()
         onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).assertExists()
         onNodeWithTag(ShellTags.navItem(Space.MON_ESPACE)).assertIsDisplayed()
@@ -90,10 +91,9 @@ class AdaptiveShellTest {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp() } }
         onNodeWithTag(ShellTags.SHELL_EXPANDED).assertExists()
         onNodeWithTag(ShellTags.NAV_DRAWER).assertExists()
-        // A space still under construction shows which layout is active.
         onNodeWithTag(ShellTags.navItem(Space.DECIDER)).performClick()
         waitForIdle()
-        onNodeWithText("Affichage ordinateur").assertExists()
+        onNodeWithTag(DeciderTags.SCREEN).assertExists()
     }
 
     @Test

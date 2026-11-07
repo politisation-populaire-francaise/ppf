@@ -147,6 +147,7 @@ fun main(args: Array<String>) {
     val voir = voirFiles.map { document -> voirEvent(document, keys.publicKey) }
     checkVoir(voirFiles, voir, keys.publicKey.hex, guides = articles.mapNotNull { it.firstTagValue("d") }.toSet())
     write(output.resolve("voir.json"), voir.map { signer.signChecked(it) })
+    signDecider(content, output, keys, voir) // content/decider -> decider.json (DeciderContent.kt)
     // Directory of organisations (contract of the Agir space, section 4): organisations.json.
     val organisations = signAll(content.resolve("organisations")) { document ->
         Organisation.build(
@@ -231,13 +232,13 @@ private fun signAll(directory: Path, build: (Document) -> UnsignedEvent): List<U
     }
 }
 
-private fun LocalEventSigner.signChecked(unsigned: UnsignedEvent): SignedEvent {
+internal fun LocalEventSigner.signChecked(unsigned: UnsignedEvent): SignedEvent {
     val event = runBlocking { sign(unsigned) }
     check(event.verify()) { "signature check failed for ${event.id}" }
     return event
 }
 
-private fun write(file: Path, events: List<SignedEvent>) {
+internal fun write(file: Path, events: List<SignedEvent>) {
     val json = Json { prettyPrint = true }
     Files.writeString(file, json.encodeToString(ListSerializer(SignedEvent.serializer()), events) + "\n")
     println("${events.size} event(s) written to $file")
@@ -254,14 +255,14 @@ private fun loadOrCreateKeys(): IdentityKeys {
     return keys
 }
 
-private class Document(val name: String, val entries: List<Pair<String, String>>, val body: String) {
+internal class Document(val name: String, val entries: List<Pair<String, String>>, val body: String) {
     /** The last value of each key; repeated keys (measures, sources...) are read through [entries]. */
     val metadata: Map<String, String> = entries.toMap()
     fun require(key: String): String = metadata[key] ?: error("$name: missing front matter field: $key")
     fun topics(): List<String> = metadata["topics"].orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() }
 }
 
-private fun parseDocument(name: String, text: String): Document {
+internal fun parseDocument(name: String, text: String): Document {
     val lines = text.lines()
     require(lines.firstOrNull()?.trim() == "---") { "$name: the file must start with a --- front matter" }
     val end = lines.drop(1).indexOfFirst { it.trim() == "---" }
@@ -277,7 +278,7 @@ private fun parseDocument(name: String, text: String): Document {
 }
 
 /** Dates are taken at noon UTC so that the event id does not depend on the machine's time zone. */
-private fun String.dateToEpochSeconds(): Long = LocalDate.parse(this).atTime(LocalTime.NOON).toEpochSecond(ZoneOffset.UTC)
+internal fun String.dateToEpochSeconds(): Long = LocalDate.parse(this).atTime(LocalTime.NOON).toEpochSecond(ZoneOffset.UTC)
 
 /** Date and time, e.g. 2026-11-05T18:00, read as UTC for the same reason. */
 private fun String.dateTimeToEpochSeconds(): Long = LocalDateTime.parse(this).toEpochSecond(ZoneOffset.UTC)

@@ -48,6 +48,14 @@ enum class ArticleType(val tagValue: String) {
     ORGANISATION("organisation"),
     /** A call of the Agir space (AP-01 to AP-10), read by core.agir.calls.Call; never shown among the guides. */
     APPEL("appel"),
+
+    // The building blocks of "Décider" (core/decider).
+    /** An official petition relayed by PPF (M10, DE-07): platform, official page, counter readings. */
+    PETITION("petition"),
+    /** A democratic pact (M13.5, DE-08): the election, the measures, the candidates, the deadline. */
+    PACTE("pacte"),
+    /** The answer of one candidate to a pact: signed or refused, measure by measure, with its archive. */
+    ENGAGEMENT("engagement"),
     ;
 
     companion object {

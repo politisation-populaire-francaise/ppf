@@ -82,7 +82,7 @@ Version du 5 novembre 2026 (phase 0, complétée le soir même par les fondation
 | Infiltration de l'équipe | Une seule personne (la propriétaire) | Permissions minimales, validation à deux, journal d'audit, coupure d'urgence (S-56 à S-63) |
 | Contribution de code malveillante | Dépôt public avec demandes de fusion obligatoires, tests, relecture, vérification des tiers et des secrets | Relecture ligne par ligne des contributions externes, signature obligatoire des commits, verrouillage des dépendances |
 | Dépendance compromise | Versions verrouillées (fichiers de verrouillage), catalogue de versions, Dependabot, vérification des groupes interdits | Vérification des empreintes des dépendances, surveillance des avis de sécurité |
-| Plateforme présentée comme partisane | Charte de contenu, règles des outils électoraux (cahier des charges, section 9.2) | Traitement identique dans les outils électoraux (décision en attente), relecture juridique |
+| Plateforme présentée comme partisane | Pacte démocratique : même texte pour tous vérifiable par son empreinte, une ligne pour chaque candidat même sans réponse, ordre alphabétique, réponses à un autre texte écartées et listées, règles de pétitions sourcées et datées (D-059, D-060) ; Charte de contenu, règles des outils électoraux (cahier des charges, section 9.2) | Traitement identique dans les outils électoraux (décision en attente), relecture juridique |
 | Fuite de données personnelles de la propriétaire | Auteur des commits sous pseudonyme avec adresse « noreply » ; coordonnées masquées dans l'annuaire des domaines | Association titulaire des domaines et des comptes |
 
 ## 4. Hypothèses
@@ -90,3 +90,13 @@ Version du 5 novembre 2026 (phase 0, complétée le soir même par les fondation
 - La propriétaire est la seule personne ayant accès aux comptes et aux clés en phase 0 ; chaque accès est protégé par un mot de passe unique et, dès que possible, par une double authentification.
 - Le code est public : la sécurité ne repose jamais sur le secret du code, uniquement sur les clés, les secrets de configuration et l'architecture.
 - GitHub et Hostinger sont des tiers qui peuvent couper le service ; l'architecture de résilience (phase 3) et les sauvegardes hors site (premier déploiement) répondent à ce risque.
+
+## Ajout du 7 novembre 2026 : espace « Décider » (D-059, D-060)
+
+| Menace | Parade |
+|---|---|
+| Fausse pétition « officielle » menant à un site d'hameçonnage (vol d'identifiants FranceConnect) | Seules les adresses `https` des sites officiels de chaque plateforme sont acceptées, par l'application comme par l'outil de signature ; ruses `utilisateur@hôte` et port refusées ; mise en garde avant d'ouvrir le lien |
+| Texte du Pacte modifié pour un candidat, ou réponse attribuée à un autre texte | Empreinte SHA-256 du texte affichée ; chaque réponse porte l'empreinte du texte répondu, calculée par l'outil ; une réponse à un autre texte n'est jamais comptée |
+| Fausse réponse d'un candidat, ou réponse retouchée après coup | Contenu signé par l'équipe, document reçu archivé avec son empreinte et sa preuve d'horodatage, source citée, journal des corrections ; à terme, réponse signée par l'élu lui-même (DE-23) |
+| Accusation de favoriser un candidat (ordre, absence de ligne) | Ordre alphabétique imposé par le code, ligne pour chaque candidat listé, mêmes règles d'« En attente » et de « Sans réponse », retards signalés de la même façon |
+| Révéler qui a signé quoi | Aucune signature dans l'application ; suivis sur l'appareil seulement ; mise en garde sur la liste publique des soutiens d'un référendum d'initiative partagée |

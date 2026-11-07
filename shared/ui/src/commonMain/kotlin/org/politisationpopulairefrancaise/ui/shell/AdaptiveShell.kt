@@ -119,7 +119,9 @@ import org.politisationpopulairefrancaise.ui.resources.guides_title
 import org.politisationpopulairefrancaise.ui.resources.nav_disclaimer
 import org.politisationpopulairefrancaise.ui.resources.nav_search_soon
 import org.politisationpopulairefrancaise.ui.resources.space_mon_espace
-import org.politisationpopulairefrancaise.ui.screens.PlaceholderScreen
+import org.politisationpopulairefrancaise.ui.decider.DeciderScreen
+import org.politisationpopulairefrancaise.ui.decider.DeciderState
+import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** Test tags, also useful for accessibility tooling. */
@@ -178,6 +180,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.
     val voirState = rememberVoirState(dependencies)
+    // "Décider": the open page and the follows survive a visit to another space.
+    val deciderState = rememberDeciderState(dependencies)
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
     val proposalComposer = remember(dependencies) { ProposalComposer(dependencies.contentStore, dependencies.remote) }
     val accountKey = (accountSession.state as? AccountUiState.Ready)?.publicKey?.hex
@@ -219,14 +223,13 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     revendicationViews = revendicationViews,
                     proposalComposer = proposalComposer,
                     voirState = voirState,
+                    deciderState = deciderState,
                     groupsLibrary = groupsLibrary,
                     organisationsLibrary = organisationsLibrary,
                     agendaLibrary = agendaLibrary,
                     callsLibrary = callsLibrary,
                     mailboxSetting = mailboxSetting,
                     windowClass = windowClass,
-                    widthDp = maxWidth.value.toInt(),
-                    heightDp = maxHeight.value.toInt(),
                     modifier = modifier.testTag(ShellTags.CONTENT),
                 )
             }
@@ -250,14 +253,13 @@ private fun SpaceContent(
     revendicationViews: RevendicationViewsState,
     proposalComposer: ProposalComposer,
     voirState: VoirState,
+    deciderState: DeciderState,
     groupsLibrary: GroupsLibrary,
     organisationsLibrary: OrganisationsLibrary,
     agendaLibrary: AgendaLibrary,
     callsLibrary: CallsLibrary,
     mailboxSetting: MailboxSetting,
     windowClass: WindowClass,
-    widthDp: Int,
-    heightDp: Int,
     modifier: Modifier,
 ) {
     // The organisers of the agenda are named after the directory when they are verified organisations.
@@ -304,6 +306,14 @@ private fun SpaceContent(
                 },
             )
         }
+        Space.DECIDER -> DeciderScreen(
+            contentLibrary, deciderState, windowClass, modifier, onNavigate,
+            // A candidate, a bill or a fact opens in "Voir", where each has one sheet.
+            onOpenVoir = { address ->
+                voirState.open(address)
+                onNavigate(Space.VOIR)
+            },
+        )
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
         Space.REVENDICATIONS -> RevendicationsScreen(
@@ -320,7 +330,6 @@ private fun SpaceContent(
             LaunchedEffect(organisationsLibrary) { organisationsLibrary.ensureStarted() }
             AgendaScreen(dependencies, accountSession, windowClass, modifier, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
         }
-        else -> PlaceholderScreen(sectionFor(selected), windowClass, widthDp, heightDp, modifier)
     }
 }
 

@@ -56,6 +56,9 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 | Accueil de l'espace « Agir » | 🔄 | Fait le 7 novembre 2026 (D-042) : cinq rubriques (agenda, appels, organisations, collectifs, guides pour s'organiser), une à trois colonnes selon la largeur, retour du téléphone vers l'accueil, puis sept rubriques « En préparation » grisées. Reste : mode manifestation et bouton AIDE (écart de navigation à trancher), témoignages (horodatage, clé de l'équipe de modération), secours, sécurité et avocats en manifestation (AG-24 à AG-46, avis d'un avocat), solidarité et caisses de grève, je veux aider, matériel militant, messagerie sans Internet (phase 4), décider ensemble dans un collectif (AG-51, méthode « une personne, une voix »). |
 | Dette technique de l'espace « Agir » | ⏳ | Deux calculs de l'heure de Paris (`core/agir/agenda/ParisTime` et `core/agir/calls/ParisTime`) et deux exports iCal (appareil `core/agir/agenda/ICalendar`, serveur `server/agir/AgendaCalendar`) à unifier ; icône `building-2` à comparer avec le fichier officiel de Lucide 1.69.0 ; presse-papiers des appels sur une fonction de Compose marquée obsolète. |
 | Observatoire (M2) et espace « Voir » | 🔄 | Méthode M17 validée le 7 novembre 2026 (D-036, cahier fonctionnel 1.4), ordre d'entrée des responsables publics fixé. Fait le 6 novembre 2026 (D-034) : espace « Voir » complet sur les trois axes avec contenus [EXEMPLE] : chiffres clés et sources côte à côte, fiche d'indicateur avec graphique et tableau, chronologie (M4), observatoire des libertés et contre-pouvoirs, fiches des responsables publics (votes, promesses, discours et votes, affaires avec statut de procédure, déclarations contredites, intérêts, influence, argent public), législomètre, mouvements dans le monde (M9), dossiers, droit de réponse, journal des corrections, suivis sur l'appareil. Reste : contenus réels rédigés et relus par l'équipe (double validation, avocat), éditeur d'indicateurs sans code pour l'équipe (CMS), signalements chiffrés des citoyens (VO-03, avec la méthode anti-fraude), indice de gravité (grille à valider), témoignages publiés (M5, avec la modération), import des données ouvertes de l'Assemblée et du Sénat (phase 5), formulaire de droit de réponse (serveur), cartes. |
+| Pétitions officielles (M10, DE-07) | 🔄 | Fait le 7 novembre 2026 (D-059) : règles des cinq plateformes vérifiées sur les sources officielles (Assemblée, Sénat, CESE, référendum d'initiative partagée, initiative citoyenne européenne), seuils avec ce qu'ils obtiennent et ce qu'ils ne garantissent pas, pétitions ouvertes et closes, compteur et prochain seuil, signature sur le site officiel seulement, kit de partage, suivi sur l'appareil ; cinq pétitions [EXEMPLE]. Reste : relevé automatique des compteurs (données ouvertes de data.gouv.fr), objectifs par territoire, alertes d'échéance dans « En direct », page du site. |
+| Pacte démocratique version 1 (M13.5, DE-08) | 🔄 | Fait le 7 novembre 2026 (D-060) : mesures précises, même texte (empreinte SHA-256), même jour et même délai pour tous, tableau public par candidat et par mesure (signé, refusé, en attente, sans réponse), ordre alphabétique, réponses archivées, suivi après l'élection par les faits de « Voir » ; un Pacte et trois réponses [EXEMPLE]. Reste : liste des mesures (À valider, puis vote des citoyens), envoi réel, horodatage réel, réponses signées par les élus (DE-23), page publique du tableau sur le site. Diffusion visée : début 2027. |
+| Accueil de l'espace « Décider » | 🔄 | Fait le 7 novembre 2026 (D-061). Rubriques à venir : campagnes et baromètre des élus, interpeller ses élus, s'engager en politique, votations (méthode « une personne, une voix » à valider). |
 | Signalement et modération (M15) | ⏳ | Files de relecture prêtes sur le serveur (revendications, D-030 ; espace Agir, D-043), consultables seulement par les routes de développement. À faire : back-office de l'équipe (liste, approbation, refus avec motif, refus par lots, double authentification, journal d'audit), signalement (S-38), retrait rapide d'un contenu publié par une organisation. |
 | Mur des revendications (M11) | 🔄 | Mur en cards, détail et argumentaire, vue dans le fil (6 novembre 2026) ; vues personnalisables, filtres et tri (D-029) ; formulaire de proposition avec vérifications automatiques pendant la saisie, relecture avant publication sur le serveur, suivi par l'auteur (D-030) ; huit revendications [EXEMPLE]. Reste : écran de relecture de l'équipe (avec M15), corpus juridique, IA (hébergement à décider), preuve de travail avant l'ouverture publique, statut posé par l'équipe, vote et débat (méthode « une personne, une voix » à valider), fusion des doublons. |
 
@@ -73,12 +76,23 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 
 - Hébergement du modèle d'IA de modération et des vérifications des revendications (et, avec un prestataire, extension de la section 5.6 aux contenus envoyés pour publication).
 - Liste des thèmes du mur des revendications.
-- Barre du bas ou boutons flottants « Carte » et « AIDE » ; spécification du bouton AIDE.
-- Méthode « une personne, une voix » (mur des revendications, phase 1).
+- Spécification du bouton AIDE (la barre du bas est gardée, D-044 ; le bouton pourra flotter au-dessus).
+- Méthode « une personne, une voix » : approuvée le 7 novembre 2026 (D-044) ; conception technique à faire (mur des revendications, compteurs de participation d'Agir).
 - Prestataire de paiement (dons, adhésions).
 - Navigation détaillée et briques de contenu communes (découpage en MVP).
 - Décryptages : échelle des verdicts (brainstorming du cahier des charges, entrée du 2026-11-06).
-- Espace « Agir » : procédure réelle de vérification des organisations, statut juridique de PPF pour leurs contenus, mention « non déclarée », co-organisateurs, bilan d'un appel à témoins, alerte de remplissage du disque et autres questions de l'entrée « Agir : questions ouvertes après la première version » (brainstorming du cahier fonctionnel).
-- Méthode de comptage anonyme (réactions du fil, réponses aux mobilisations et aux appels, barre de progression des appels).
-- Vue carte : bibliothèque de rendu et tuiles auto-hébergées (options à présenter, coût éventuel).
+- Espace « Agir » : questions tranchées le 7 novembre 2026 (D-044) ; reste la contradiction avec le principe 10 sur la visibilité par défaut de la participation (cercle, élus), entrée « Agir : questions ouvertes après la première version » du brainstorming du cahier fonctionnel.
+- Comptage anonyme (réactions du fil, participations aux mobilisations et aux appels, barre de progression) : découle de « une personne, une voix », conception à faire.
+- Vue carte : en cours (bibliothèque de rendu et tuiles auto-hébergées, sans coût en dehors de l'espace disque du futur serveur).
 - Annuaire officiel des élus pour nommer les élus locaux dans « Qui décide de ça ? » (brainstorming du cahier des charges, entrée du 2026-11-07).
+
+## À faire relire par un avocat avant l'ouverture publique
+
+Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture juridique à la fin.
+
+- Statut de PPF pour les contenus publiés par d'autres (hébergeur, D-044) et pour les contenus relus avant publication (témoignages, appels à témoins, revendications).
+- Mention publique « non déclarée » d'une manifestation.
+- Appels au boycott (dénigrement d'une entreprise).
+- Annuaire et cas limites des partis, candidats et comités de soutien (Code électoral, article L52-8).
+- Secours, sorties et équipe citoyenne de sécurité en manifestation (points d'attention n° 17 et n° 24).
+- Modèles juridiques (mentions légales, confidentialité, conditions d'utilisation, charte, procédure de signalement).
