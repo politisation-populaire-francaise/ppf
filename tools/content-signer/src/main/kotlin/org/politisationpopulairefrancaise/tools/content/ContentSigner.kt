@@ -77,9 +77,29 @@ fun main(args: Array<String>) {
     val signer = LocalEventSigner(keys)
     Files.createDirectories(output)
 
+    val bundles = prepareBundles(content, keys.publicKey)
+    bundles.forEach { bundle -> write(output.resolve(bundle.file), bundle.events.map { signer.signChecked(it) }) }
+    signAgenda(content, output, keys) // content/agenda -> agenda.json (AgendaContent.kt)
+    signDecider(content, output, keys, bundles.single { it.file == VOIR_BUNDLE }.events) // content/decider -> decider.json (DeciderContent.kt)
+
+    checkUniqueAddresses(output)
+    println("author public key (hex): ${keys.publicKey.hex}")
+    println("author public key (npub): ${keys.publicKey.npub}")
+}
+
+/** The events of one bundled JSON file, before signature, in the order of the file. */
+internal class Bundle(val file: String, val events: List<UnsignedEvent>)
+
+internal const val VOIR_BUNDLE: String = "voir.json"
+
+/**
+ * Every bundle built by this file (all but agenda.json and decider.json), checked and unsigned: building
+ * an event needs only the public key of the author, so the no-regression test runs without any secret.
+ */
+internal fun prepareBundles(content: Path, author: PublicKey): List<Bundle> {
     val articles = signAll(content.resolve("fiches")) { document ->
         Article.build(
-            author = keys.publicKey,
+            author = author,
             slug = document.require("slug"),
             title = document.require("title"),
             summary = document.require("summary"),
@@ -90,12 +110,11 @@ fun main(args: Array<String>) {
             updatedAt = document.require("updated_at").dateToEpochSeconds(),
             body = document.body,
         )
-    }.map { signer.signChecked(it) }
-    write(output.resolve("fiches.json"), articles)
+    }
 
     val demands = signAll(content.resolve("revendications")) { document ->
         Article.build(
-            author = keys.publicKey,
+            author = author,
             slug = document.require("slug"),
             title = document.require("title"),
             summary = document.metadata["summary"],
@@ -108,14 +127,13 @@ fun main(args: Array<String>) {
             status = RevendicationStatus.fromTag(document.require("status")) ?: error("${document.name}: unknown status"),
             territory = document.metadata["territory"],
         )
-    }.map { signer.signChecked(it) }
-    write(output.resolve("revendications.json"), demands)
+    }
 
     val courses = signAll(content.resolve("parcours")) { document ->
         val problems = ParcoursFormat.parse(document.body).problems
         require(problems.isEmpty()) { "${document.name}: invalid course:\n  " + problems.joinToString("\n  ") }
         Article.build(
-            author = keys.publicKey,
+            author = author,
             slug = document.require("slug"),
             title = document.require("title"),
             summary = document.require("summary"),
@@ -127,33 +145,29 @@ fun main(args: Array<String>) {
             body = document.body,
             durationMinutes = document.require("duration").toIntOrNull() ?: error("${document.name}: duration must be a number of minutes"),
         )
-    }.map { signer.signChecked(it) }
-    write(output.resolve("parcours.json"), courses)
+    }
 
-    write(output.resolve("comprendre.json"), comprendreEvents(content, keys.publicKey).map { signer.signChecked(it) })
-    write(output.resolve("glossaire.json"), glossaryEvents(content, keys.publicKey).map { signer.signChecked(it) })
+    val comprendre = comprendreEvents(content, author)
+    val glossary = glossaryEvents(content, author)
 
     val notes = signAll(content.resolve("fil")) { document ->
         UnsignedEvent.create(
-            author = keys.publicKey,
+            author = author,
             kind = EventKinds.TEXT_NOTE,
             createdAt = document.require("created_at").dateTimeToEpochSeconds(),
             tags = document.topics().map { listOf("t", it) },
             content = document.body.trim(),
         )
-    }.map { signer.signChecked(it) }
-    write(output.resolve("fil.json"), notes)
-    signAgenda(content, output, keys) // content/agenda -> agenda.json (AgendaContent.kt)
+    }
 
     val voirFiles = voirDocuments(content.resolve("voir"))
-    val voir = voirFiles.map { document -> voirEvent(document, keys.publicKey) }
-    checkVoir(voirFiles, voir, keys.publicKey.hex, guides = articles.mapNotNull { it.firstTagValue("d") }.toSet())
-    write(output.resolve("voir.json"), voir.map { signer.signChecked(it) })
-    signDecider(content, output, keys, voir) // content/decider -> decider.json (DeciderContent.kt)
+    val voir = voirFiles.map { document -> voirEvent(document, author) }
+    val guides = articles.mapNotNull { event -> event.tags.firstOrNull { it.size >= 2 && it[0] == "d" }?.get(1) }.toSet()
+    checkVoir(voirFiles, voir, author.hex, guides = guides)
     // Directory of organisations (contract of the Agir space, section 4): organisations.json.
     val organisations = signAll(content.resolve("organisations")) { document ->
         Organisation.build(
-            editor = keys.publicKey,
+            editor = author,
             slug = document.require("slug"),
             name = document.require("title"),
             summary = document.require("summary"),
@@ -171,15 +185,21 @@ fun main(args: Array<String>) {
             geohash = document.metadata["geohash"],
             origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
         )
-    }.map { signer.signChecked(it) }
-    write(output.resolve("organisations.json"), organisations)
+    }
 
-    val calls = signAll(content.resolve("appels")) { document -> callOf(keys.publicKey, document) }.map { signer.signChecked(it) }
-    write(output.resolve("appels.json"), calls)
+    val calls = signAll(content.resolve("appels")) { document -> callOf(author, document) }
 
-    checkUniqueAddresses(output)
-    println("author public key (hex): ${keys.publicKey.hex}")
-    println("author public key (npub): ${keys.publicKey.npub}")
+    return listOf(
+        Bundle("fiches.json", articles),
+        Bundle("revendications.json", demands),
+        Bundle("parcours.json", courses),
+        Bundle("comprendre.json", comprendre),
+        Bundle("glossaire.json", glossary),
+        Bundle("fil.json", notes),
+        Bundle(VOIR_BUNDLE, voir),
+        Bundle("organisations.json", organisations),
+        Bundle("appels.json", calls),
+    )
 }
 
 /**

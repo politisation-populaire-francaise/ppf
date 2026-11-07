@@ -19,6 +19,14 @@ tasks.named<JavaExec>("run") {
     args("content", "shared/ui/src/commonMain/composeResources/files/contents")
 }
 
+// The no-regression test rebuilds content/ and compares it with the bundled events (no secret needed).
+tasks.named<Test>("test") {
+    workingDir = rootDir
+    inputs.dir(rootDir.resolve("content"))
+    inputs.dir(rootDir.resolve("shared/ui/src/commonMain/composeResources/files/contents"))
+}
+
 dependencies {
     implementation(project(":shared:core"))
+    testImplementation(kotlin("test"))
 }
