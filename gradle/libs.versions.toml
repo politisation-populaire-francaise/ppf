@@ -37,6 +37,11 @@ postgresqlJdbc = "42.7.14"
 flyway = "13.12.1"
 zonkyEmbeddedPostgres = "2.2.2"
 zonkyPostgresBinaries = "17.11.0"
+# Timestamped archive (D-111), server only: RFC 3161 requests and the check of the tokens (signature,
+# certificate, nonce, imprint). Bouncy Castle Licence (MIT style), approved by the team lead for the
+# server. 1.86 is the latest stable release on Maven Central (published 11 September 2026), checked
+# on 2026-11-07 in the maven-metadata.xml of bcpkix-jdk18on and bcprov-jdk18on.
+bouncycastle = "1.86"
 
 # Compose 1.12 libraries require compiling against API 37 or later.
 android-compileSdk = "37"
@@ -89,6 +94,8 @@ zonky-embedded-postgres = { module = "io.zonky.test:embedded-postgres", version.
 zonky-postgres-binaries-bom = { module = "io.zonky.test.postgres:embedded-postgres-binaries-bom", version.ref = "zonkyPostgresBinaries" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
