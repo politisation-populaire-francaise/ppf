@@ -198,7 +198,10 @@ class VoirScreenTest {
 
     @Test
     fun onAPhoneTheNextStepOpensThePracticalGuide() = runComposeUiTest {
-        openVoir(dependencies(), width = 400, height = 740)
+        val dependencies = dependencies()
+        openVoir(dependencies, width = 400, height = 740)
+        // The practical guides are imported with the other bundled contents: wait for them before following the link.
+        waitUntil(timeoutMillis = 60_000) { dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "fiche-pratique").isNotEmpty() }
         onNodeWithTag(VoirTags.card("interpellations")).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(VoirTags.NEXT + 0).performScrollTo().performClick()

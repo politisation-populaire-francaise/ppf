@@ -1,0 +1,50 @@
+-- The official directory of elected officials on the device (D-047; contract of the third wave of
+-- "Comprendre", section 1.6). The commune chosen by the user stays here and is never sent anywhere:
+-- the server only learns that a device downloaded the list of a department. One gesture
+-- (« Oublier ma commune ») erases both tables. Added in schema version 11: existing databases get
+-- them through migrations/10.sqm, which must stay identical to the CREATE statements below.
+
+-- The chosen commune: a single row (id 0), its INSEE code and the code of its department package.
+CREATE TABLE elus_commune (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 0),
+    commune_code TEXT NOT NULL,
+    department_code TEXT NOT NULL
+);
+
+-- The downloaded packages, by code (a department, "FR" for the European Parliament, "index" for the
+-- index of the server, which holds no personal data): the exact JSON checked against its sha256,
+-- the date of the source (AAAA-MM-JJ) and when it was downloaded (seconds since 1970).
+CREATE TABLE elus_package (
+    code TEXT NOT NULL PRIMARY KEY,
+    sha256 TEXT NOT NULL,
+    json TEXT NOT NULL,
+    source_updated_on TEXT,
+    downloaded_at INTEGER NOT NULL
+);
+
+selectCommune:
+SELECT commune_code, department_code FROM elus_commune WHERE id = 0;
+
+saveCommune:
+INSERT OR REPLACE INTO elus_commune(id, commune_code, department_code) VALUES (0, ?, ?);
+
+deleteCommune:
+DELETE FROM elus_commune;
+
+selectPackage:
+SELECT code, sha256, json, source_updated_on, downloaded_at FROM elus_package WHERE code = ?;
+
+selectPackageCodes:
+SELECT code FROM elus_package ORDER BY code;
+
+savePackage:
+INSERT OR REPLACE INTO elus_package(code, sha256, json, source_updated_on, downloaded_at) VALUES (?, ?, ?, ?, ?);
+
+deletePackage:
+DELETE FROM elus_package WHERE code = ?;
+
+deleteAllPackages:
+DELETE FROM elus_package;
+
+countPackages:
+SELECT COUNT(*) FROM elus_package;

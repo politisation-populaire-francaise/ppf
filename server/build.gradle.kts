@@ -31,9 +31,11 @@ tasks.withType<ShadowJar>().configureEach {
 
 // The tests never see the PPF_* settings of the machine running them (an AI model configured for
 // the development server, editor keys...): each test states its own configuration. The periodic
-// cleanup of demand proposals stays off, as the envelope cleanup does with TEST_RELAY.
+// cleanup of demand proposals stays off, as the envelope cleanup does with TEST_RELAY, and so do
+// the automatic imports of the directory of elected officials (the tests of the directory run their own).
 tasks.withType<Test>().configureEach {
-    environment = environment.filterKeys { !it.startsWith("PPF_") } + mapOf("PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0")
+    environment = environment.filterKeys { !it.startsWith("PPF_") } +
+        mapOf("PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0", "PPF_RNE_REFRESH_DAYS" to "0")
 }
 
 // Development only: the server with an in-process PostgreSQL 17 and the bundled example contents.

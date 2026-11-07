@@ -33,6 +33,12 @@ class AppDependencies(
     val database: PpfDatabase? = null,
     /** The contents of "Voir" the user follows, on the device only; null keeps them in memory (tests, previews). */
     val contentFollowStore: ContentFollowStore? = null,
+    /**
+     * True while the device saves data (the system's data saver, a metered network): a large
+     * download then asks a second confirmation (cahier des charges, mode économie de données). The
+     * hosts do not report it yet, so it answers false by default.
+     */
+    val dataSaver: () -> Boolean = { false },
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */

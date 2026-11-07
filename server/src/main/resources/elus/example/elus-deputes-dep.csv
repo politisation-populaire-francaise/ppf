@@ -1,0 +1,18 @@
+Code du département;Libellé du département;Code de la collectivité à statut particulier;Libellé de la collectivité à statut particulier;Code de la circonscription législative;Libellé de la circonscription législative;Nom de l'élu;Prénom de l'élu;Code sexe;Date de naissance;Code de la catégorie socio-professionnelle;Libellé de la catégorie socio-professionnelle;Date de début du mandat
+69;Rhône;;;6901;1Ère Circonscription;Brouillon;[EXEMPLE] Eden;F;1988-11-07;99;[EXEMPLE] Profession fictive;2024-07-08
+69;Rhône;;;6902;2Ème Circonscription;Factice;[EXEMPLE] Noa;M;1989-12-08;99;[EXEMPLE] Profession fictive;2024-07-08
+69;Rhône;;;6906;6Ème Circonscription;Essai;[EXEMPLE] Camille;F;1950-01-09;99;[EXEMPLE] Profession fictive;2024-07-08
+69;Rhône;;;6909;9Ème Circonscription;Simulation;[EXEMPLE] Dominique;M;1951-02-10;99;[EXEMPLE] Profession fictive;2024-07-08
+59;Nord;;;5901;1Ère Circonscription;Ébauche;[EXEMPLE] Claude;F;1952-03-11;99;[EXEMPLE] Profession fictive;2024-07-08
+59;Nord;;;5902;2Ème Circonscription;Esquisse;[EXEMPLE] Alix;M;1953-04-12;99;[EXEMPLE] Profession fictive;2024-07-08
+59;Nord;;;5907;7Ème Circonscription;Gabarit;[EXEMPLE] Sacha;F;1954-05-13;99;[EXEMPLE] Profession fictive;2024-07-08
+59;Nord;;;5908;8Ème Circonscription;Imaginaire;[EXEMPLE] Morgan;M;1955-06-14;99;[EXEMPLE] Profession fictive;2024-07-08
+13;Bouches-Du-Rhône;;;1301;1Ère Circonscription;Inventé;[EXEMPLE] Lou;F;1956-07-15;99;[EXEMPLE] Profession fictive;2024-07-08
+13;Bouches-Du-Rhône;;;1302;2Ème Circonscription;Supposé;[EXEMPLE] Charlie;M;1957-08-16;99;[EXEMPLE] Profession fictive;2024-07-08
+13;Bouches-Du-Rhône;;;1311;11Ème Circonscription;Fantaisie;[EXEMPLE] Maxime;F;1958-09-17;99;[EXEMPLE] Profession fictive;2024-07-08
+13;Bouches-Du-Rhône;;;1314;14Ème Circonscription;Illustration;[EXEMPLE] Andréa;M;1959-10-18;99;[EXEMPLE] Profession fictive;2024-07-08
+35;Ille-Et-Vilaine;;;3501;1Ère Circonscription;Exemplaire;[EXEMPLE] Eden;F;1960-11-19;99;[EXEMPLE] Profession fictive;2024-07-08
+35;Ille-Et-Vilaine;;;3502;2Ème Circonscription;Fictif;[EXEMPLE] Noa;M;1961-12-20;99;[EXEMPLE] Profession fictive;2024-07-08
+75;Paris;;;7501;1Ère Circonscription;Maquette;[EXEMPLE] Camille;F;1962-01-21;99;[EXEMPLE] Profession fictive;2024-07-08
+75;Paris;;;7502;2Ème Circonscription;Prototype;[EXEMPLE] Dominique;M;1963-02-22;99;[EXEMPLE] Profession fictive;2024-07-08
+ZZ;Français Établis Hors De France;;;ZZ01;1Ère Circonscription;Spécimen;[EXEMPLE] Claude;F;1964-03-23;99;[EXEMPLE] Profession fictive;2024-07-08

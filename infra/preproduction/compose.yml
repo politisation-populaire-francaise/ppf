@@ -1,16 +1,28 @@
-# Preproduction. Started as its own Compose project: docker compose -p ppf-preprod up -d
-# Same layout as production, with lower limits. Reachable only through the proxy,
-# which exposes it on the WireGuard interface with a password. Fictional data only ([EXEMPLE]).
+# Preproduction. Its own Compose project, started by infra/scripts/deploy.sh preproduction:
+#   docker compose -f infra/preproduction/compose.yml --env-file /srv/ppf/preproduction/.env up -d
+# Same layout as production, with lower limits. Reachable only through the proxy, which answers
+# only to the devices of the WireGuard tunnel. Fictional data only ([EXEMPLE]).
+#
+# Variables (file /srv/ppf/preproduction/.env on the server, never in the repository; model in
+# infra/env/preproduction.env.example):
+# - PPF_SERVER_IMAGE: image to run, always by digest (set by deploy.sh);
+# - PPF_SECRETS_DIR: directory holding the database password files (outside the repository);
+# - POSTGRES_DB, POSTGRES_USER;
+# - PPF_EDITOR_KEYS: keys allowed to publish editorial contents (the example editor key here).
 
 name: ppf-preprod
 
 services:
   server:
-    image: ${PPF_SERVER_IMAGE:-ppf-server:local}
+    image: ${PPF_SERVER_IMAGE:?set by infra/scripts/deploy.sh}
     restart: unless-stopped
+    # A UID of its own, distinct from the production one (10001).
+    user: "10002:10002"
     read_only: true
+    # The only writable place. "exec": the signature library (secp256k1) unpacks its native code
+    # there before loading it, which Docker's default tmpfs options (noexec) would forbid.
     tmpfs:
-      - /tmp
+      - /tmp:rw,exec,nosuid,nodev,size=64m
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -18,17 +30,25 @@ services:
     environment:
       PORT: "8080"
       PPF_ENVIRONMENT: preproduction
-      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
-      DATABASE_USER: ${POSTGRES_USER}
-      DATABASE_PASSWORD_FILE: /run/secrets/db_password
+      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:?}
+      DATABASE_USER: ${POSTGRES_USER:?}
+      DATABASE_PASSWORD_FILE: /run/secrets/server_db_password
+      PPF_EDITOR_KEYS: ${PPF_EDITOR_KEYS:-}
+      # Fictional example contents, bundled in the image, loaded at each start (idempotent).
+      PPF_EXAMPLES_DIR: /app/examples
     secrets:
-      - db_password
+      - server_db_password
     networks:
       - internal
       - edge
     depends_on:
       db:
         condition: service_healthy
+    logging:
+      driver: local
+      options:
+        max-size: 5m
+        max-file: "3"
     deploy:
       resources:
         limits:
@@ -36,14 +56,27 @@ services:
           cpus: "0.5"
 
   db:
-    image: postgis/postgis:17-3.5
+    # PostgreSQL 17 with PostGIS, pinned by digest (Dependabot proposes updates).
+    image: postgis/postgis:17-3.6@sha256:1ac10b2551ba84ae05db8e7da477afcd0a3fede99bcb7705da2ee157390cb095
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    # Small settings for a small machine; nothing is logged about clients.
+    command:
+      - postgres
+      - -c
+      - shared_buffers=64MB
+      - -c
+      - max_connections=30
+      - -c
+      - log_connections=off
+      - -c
+      - log_disconnections=off
+    shm_size: 64m
     secrets:
       - db_password
     volumes:
@@ -51,25 +84,38 @@ services:
     networks:
       - internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
       interval: 10s
       timeout: 5s
       retries: 10
+    logging:
+      driver: local
+      options:
+        max-size: 5m
+        max-file: "3"
     deploy:
       resources:
         limits:
           memory: 384M
           cpus: "0.5"
 
+# The same password in two files, each readable only by the user of its container
+# (10002 for the server, 999 for PostgreSQL): file secrets are bind mounts, so Compose
+# cannot change their owner. Both files are written by infra/scripts/bootstrap-server.sh.
 secrets:
+  server_db_password:
+    file: ${PPF_SECRETS_DIR:?}/server_db_password
   db_password:
-    file: ./secrets/db_password
+    file: ${PPF_SECRETS_DIR:?}/db_password
 
 volumes:
   db-data:
 
 networks:
+  # The database network has no way out.
   internal:
     internal: true
+  # Shared with the proxy only; created once by infra/scripts/bootstrap-server.sh.
   edge:
+    external: true
     name: ppf-preprod-edge

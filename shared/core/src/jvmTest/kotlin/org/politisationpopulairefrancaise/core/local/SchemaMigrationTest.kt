@@ -56,6 +56,7 @@ class SchemaMigrationTest {
                     assertTrue(tables.containsAll(setOf("sync_cursor", "revendication_view")), tables.toString())
                     assertTrue(tables.containsAll(setOf("agenda_response", "agenda_proposal")), tables.toString())
                     assertTrue(tables.containsAll(setOf("group_membership", "call_response")), tables.toString())
+                    assertTrue(tables.containsAll(setOf("elus_commune", "elus_package")), tables.toString())
                     val version = statement.executeQuery("PRAGMA user_version").use { rows -> rows.next(); rows.getLong(1) }
                     assertEquals(PpfDatabase.Schema.version, version)
                     assertTrue(version >= 5, "schema version $version")

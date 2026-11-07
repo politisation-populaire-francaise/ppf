@@ -24,6 +24,11 @@ enum class ArticleType(val tagValue: String) {
     HISTOIRE("histoire"),
     /** A « Qui décide de ça ? » sheet (cahier fonctionnel, M13.1), read by `core.comprendre.QuiDecide`. */
     QUI_DECIDE("qui-decide"),
+    /**
+     * An entry of the glossary (D-048): a term, its short definition (`summary`), the forms spotted
+     * in the texts (`ppf-variant`), read by `core.comprendre.GlossaryEntry`.
+     */
+    GLOSSAIRE("glossaire"),
     /** A demand of the demands wall: one idea, in one or two sentences, with its argument as body. */
     REVENDICATION("revendication"),
 
