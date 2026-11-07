@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.server.accounts.AccountTypes
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
@@ -84,6 +85,8 @@ fun Route.eventsApi(
     agir: AgirSpace? = null,
     /** Told of every event this route stored (the push wake-ups); must return at once. */
     onStored: (SignedEvent) -> Unit = {},
+    /** Collective accounts (D-133): a collective cannot publish a profile that makes it a person again. */
+    accountTypes: AccountTypes? = null,
 ) {
     if (repository == null) {
         route("/api/v1/{...}") {
@@ -139,6 +142,7 @@ fun Route.eventsApi(
                 is PublicationPolicy.Decision.Refused -> return@post call.refuse(decision)
                 PublicationPolicy.Decision.Allowed -> Unit
             }
+            accountTypes?.let { types -> withContext(Dispatchers.IO) { types.check(event) } }?.let { return@post call.refuse(it) }
             // Agir space (contract, section 5): a content the key may not publish directly waits for review (202) or is refused;
             // a cancellation by its author withdraws the version still waiting (200).
             if (agirSpace.concerns(event)) {
@@ -162,7 +166,10 @@ fun Route.eventsApi(
             }
             when (outcome) {
                 StoreOutcome.STORED -> {
-                    withContext(Dispatchers.IO) { agirSpace.stored(event) }
+                    withContext(Dispatchers.IO) {
+                        agirSpace.stored(event)
+                        accountTypes?.stored(event)
+                    }
                     if (event.kind == RelayKinds.GIFT_WRAP) {
                         // One recipient per envelope (policy); the mailbox keeps the newest envelopes only.
                         val recipient = event.firstTagValue("p")

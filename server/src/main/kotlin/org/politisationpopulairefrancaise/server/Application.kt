@@ -19,6 +19,7 @@ import io.ktor.server.routing.routing
 import kotlinx.coroutines.CancellationException
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.HealthStatus
+import org.politisationpopulairefrancaise.server.accounts.AccountTypes
 import org.politisationpopulairefrancaise.server.agir.AgirConfig
 import org.politisationpopulairefrancaise.server.agir.AgirSetup
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
@@ -259,7 +260,16 @@ fun Application.module(
                     ),
                 )
             }
-            eventsApi(repository, policy, limits, groups, proposals, agirSpace, onStored = pushService::stored)
+            eventsApi(
+                repository,
+                policy,
+                limits,
+                groups,
+                proposals,
+                agirSpace,
+                onStored = pushService::stored,
+                accountTypes = repository?.let { AccountTypes(it.dataSource) },
+            )
             pushApi(pushService)
             groupsApi(groups)
             revendicationsApi(proposals)
