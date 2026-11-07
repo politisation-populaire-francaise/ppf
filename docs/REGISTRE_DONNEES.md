@@ -100,10 +100,23 @@ La clé publique est un pseudonyme : elle ne contient aucune information sur la 
 | Clé de signature de test des APK | Installer les versions de test sur le téléphone, toujours avec la même signature | Hors dépôt, dossier `.ppf` du profil utilisateur | Tant que des versions de test circulent | Propriétaire |
 | Clé SSH de signature des commits | Prouver l'origine des commits | Hors dépôt, dossier `.ssh` du profil utilisateur | Révocable à tout moment sur GitHub | Propriétaire |
 | Clé de signature de release (future) | Publier les applications | Hors dépôt et hors ligne | Permanent | Propriétaire |
+| Clé SSH d'administration du serveur (`ppf_server_ed25519`, 7 novembre 2026) | Administrer et déployer le serveur | Hors dépôt, dossier `.ssh` du profil utilisateur ; seule sa partie publique est sur le serveur | Jusqu'à son remplacement par une clé matérielle | Propriétaire (et Claude, sur son ordinateur) |
+| Profil WireGuard de chaque appareil de l'équipe | Accéder à la préproduction | Dans l'application WireGuard de l'appareil ; le fichier de transfert est effacé après import | Jusqu'au retrait de l'appareil | Propriétaire |
 
 ## 4. Préproduction
 
 La préproduction ne contient jamais de données réelles : uniquement des données fictives marquées [EXEMPLE].
+
+### Données techniques du serveur (depuis le 7 novembre 2026, D-070 à D-074)
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Journal du système (dont les adresses des tentatives de connexion SSH) | Diagnostic de l'administration | En mémoire seulement, jamais sur le disque | Un jour au plus, effacé à chaque redémarrage | Administrateur du serveur |
+| Journaux des conteneurs (serveur, bases, proxy) | Diagnostic | Disque du serveur, 3 fichiers de 5 Mo au plus par conteneur ; le proxy n'écrit aucun journal d'accès, le serveur aucun journal de requêtes, PostgreSQL aucun journal de connexion | Rotation par taille | Administrateur du serveur |
+| Historique des déploiements (date, empreinte de l'image, commit) | Savoir quelle version tourne et revenir en arrière | `/srv/ppf/<environnement>/history` | Permanent ; aucune donnée personnelle | Administrateur du serveur |
+| Clés publiques et adresses internes des appareils du tunnel WireGuard, avec un nom d'appareil (`proprietaire-telephone`) | Laisser entrer les appareils de l'équipe dans la préproduction | `/etc/wireguard/wg0.conf` | Jusqu'au retrait de l'appareil | Administrateur du serveur |
+
+Le pare-feu ne journalise rien.
 
 ### Personnes publiques citées dans « Voir » (D-034)
 

@@ -316,3 +316,37 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Coût : aucun.
 - Recommandation : A, avec la mention de la source et de la date dans la page « Mes élus », et une question au ministère de l'Intérieur (via data.gouv.fr) pour qu'il indique la licence ; relecture par l'avocat avec les autres points avant l'ouverture publique.
 - Décision : en attente de la propriétaire. Le code suit l'option A en attendant ; passer à B ne demande que de retirer cette source.
+- Décision :
+
+### [2026-11-07] Serveur de la préproduction : achat
+- Statut : À valider
+- Concerne : cahier-des-charges.md, sections 3.5 et 12 (budget)
+- Description : la préproduction en ligne est la première étape vers la V1 (demande de la propriétaire du 7 novembre 2026). Tout est prêt dans le code (`infra/`, D-070 à D-074) ; il manque le serveur, qui coûte de l'argent.
+- Prix relevés le 7 novembre 2026 sur hostinger.com/fr/vps (promotion « Black Friday ») : KVM 1 (1 vCPU, 4 Go, 50 Go NVMe) **131,76 € HT pour 24 mois, environ 158,11 € TTC**, puis 11,99 € HT par mois au renouvellement (novembre 2028) ; KVM 2 (2 vCPU, 8 Go, 100 Go) 186,96 € HT pour 24 mois (environ 224,35 € TTC), puis 14,99 € HT par mois. Repère hors Hostinger (sources tierces, fin octobre 2026) : Hetzner CX23 (Allemagne, 2 vCPU, 4 Go, 40 Go) environ 5,99 € HT par mois sans engagement.
+- Budget : domaines déjà payés environ 145,10 € TTC ; avec le KVM 1, le total atteint environ **303 €** pour un budget de 300 € ; il ne reste rien pour les sauvegardes hors site (de l'ordre de 1 à 4 € par mois, nécessaires seulement avant la production) ni pour la modération par IA.
+- Options :
+  - A. Hostinger KVM 1, 24 mois, maintenant (recommandée) : le prix le plus bas par mois, le compte et le DNS déjà chez Hostinger (décision D-002), garantie de remboursement de 30 jours ; 4 Go suffisent pour la préproduction puis la production au lancement (budget mémoire dans `infra/README.md`).
+  - B. Hostinger KVM 2, 24 mois : deux fois plus de marge (production, préproduction et import des données ouvertes à l'aise), mais 66 € de plus et un budget dépassé de 69 €.
+  - C. Hetzner CX23 au mois : rien d'avance, 2 vCPU, résiliable à tout moment ; mais un deuxième prestataire, un compte à créer avec vérification d'identité, et plus cher sur 24 mois (environ 172 € TTC).
+- Recommandation initiale : A. Le dépassement de 3 € et les sauvegardes hors site (à choisir avant la production) sont à accepter par la propriétaire.
+- Complément du 2026-11-07 (question de la propriétaire : plusieurs centaines de milliers, voire des millions d'utilisateurs attendus après une diffusion sur les réseaux sociaux) :
+  - **mise à niveau** : vérifiée dans l'aide officielle de Hostinger (« How to upgrade a VPS server », mise à jour fin octobre 2026) : possible à tout moment depuis hPanel (KVM 1 vers 2, 4 ou 8), en 10 minutes au plus, fichiers et réglages conservés ; KVM 8 est le maximum ; retour à une offre inférieure non prévu. Le prix de la mise à niveau n'est pas écrit dans l'aide officielle : des sources tierces disent que seule la différence est payée, au prorata de la durée restante ; à confirmer par le chat de Hostinger avant l'achat ;
+  - **ce qui compte** n'est pas le nombre d'inscrits mais le nombre de personnes actives **au même moment** (ordre de grandeur courant : 1 million d'installations, 100 000 à 200 000 actifs par jour, 10 000 à 20 000 au même moment lors d'un pic) ; PPF est conçue hors ligne d'abord (contenus embarqués dans l'application), ce qui épargne beaucoup le serveur ; les points sensibles sont la messagerie (relevé toutes les 20 secondes écran ouvert), les pages du site ouvertes depuis les réseaux sociaux et la bande passante ;
+  - **bande passante** : l'APK pèse environ 16,5 Mo ; 1 million de téléchargements depuis notre serveur feraient 16,5 To, plus que le trafic mensuel du KVM 4 (16 To) : l'APK ne doit jamais être distribué par notre serveur (publications GitHub, F-Droid, Google Play) ;
+  - **aucun serveur seul**, même KVM 8, ne garantit des millions de personnes simultanées ; la tenue d'un pic vient de l'architecture : pages publiques du site servies en fichiers statiques par Caddy, limitation de débit (en place), test de charge avant le lancement, surveillance, puis serveur de production séparé et répartition de la charge (cahier des charges, section 3.5) ;
+  - **nouvelle recommandation : B, KVM 2** : deux processeurs comptent beaucoup pour un serveur Java et sa base de données sur la même machine (préproduction et production au lancement), mémoire, disque et trafic doublés (8 To), pour 55,20 € HT (environ 66 € TTC) de plus au prix « Black Friday », verrouillé 24 mois ; budget total d'environ 369 € TTC, sous le plafond de 500 € fixé le 2026-11-05. Mise à niveau vers KVM 4 ou 8 dès que le test de charge ou la surveillance le demandent.
+
+### [2026-11-07] Préproduction : le mot de passe et les applications
+- Statut : À valider
+- Concerne : CLAUDE.md, section 8 ; cahier-des-charges.md, section 3.5 ; décision D-072
+- Description : la préproduction doit être fermée au public par un tunnel WireGuard « en plus d'un mot de passe ». Les versions d'essai des applications sont des fichiers publics (dépôt public) : elles ne peuvent contenir aucun mot de passe.
+- Options : A. mot de passe sur les pages web, tunnel seul pour l'API des applications (recommandée, appliquée provisoirement) ; B. mot de passe partout, à saisir une fois dans un réglage caché des versions d'essai ; C. mot de passe partout, la préproduction ne sert plus à tester les applications.
+- Recommandation : A. La vraie barrière est la clé WireGuard propre à chaque appareil ; un mot de passe gardé sur le même téléphone n'ajouterait pas de protection réelle.
+
+### [2026-11-07] Organisation GitHub du projet
+- Statut : À valider
+- Concerne : cahier-des-charges.md, section 8 ; décision D-005
+- Description : le dépôt peut être créé sous le compte personnel de la propriétaire ou sous une **organisation** GitHub gratuite. Le nom `politisation-populaire-francaise` est libre au 7 novembre 2026.
+- Options : A. organisation `politisation-populaire-francaise` (recommandée : appartient au projet, membres invités avec double authentification obligatoire, transmissible à l'association, adresse `github.com/politisation-populaire-francaise`) ; B. compte personnel (plus simple aujourd'hui, transfert à faire plus tard, avec redirections).
+- Recommandation : A, gratuite, 5 minutes (guide `docs/guides/liaison-github.md`, section 3).
+- Constat lié (technique, sans choix à faire) : l'adresse d'auteur des commits `ppf@users.noreply.github.com` appartient à un compte GitHub sans rapport avec PPF (compte « ppf », 2011) ; elle sera remplacée sur tous les commits par l'adresse « noreply » de la propriétaire avant le premier envoi (D-014).

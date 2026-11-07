@@ -429,7 +429,19 @@ La branche principale refuse toute modification directe, toute suppression et to
 - **Clé de signature de publication** (magasins d'applications) : pas encore créée ; elle sera créée avant la première publication et gardée hors ligne, avec une procédure écrite.
 - **Clé de signature des contenus d'exemple** : `C:\Users\clair\.ppf\content-example.nsec`, hors dépôt. Elle signe uniquement les fiches de démonstration intégrées à l'application ; elle sera retirée de la liste des auteurs de confiance avant le lancement public, quand l'équipe éditoriale aura ses propres clés.
 - **Clés des comptes d'utilisateurs** (le vôtre compris) : uniquement sur l'appareil où le compte a été créé ou restauré ; sur Android dans le stockage privé de l'application, chiffré par le Keystore du téléphone ; sur l'ordinateur dans `%APPDATA%\PolitisationPopulaireFrancaise`. Aucun serveur ne les reçoit jamais : la phrase de douze mots est le seul moyen de récupération.
+- **Clé d'administration du serveur** (7 novembre 2026) : `C:\Users\clair\.ssh\ppf_server_ed25519`. Sa partie publique (`.pub`) est la seule à aller sur le serveur, collée par vous lors de la commande (guide du serveur). L'autre fichier ne quitte jamais votre ordinateur. En cas de vol de l'ordinateur, dites-le-moi : je la retire du serveur.
+- **Mot de passe des pages web de la préproduction** : généré sur le serveur, je le dépose dans `C:\Users\clair\.ppf\preprod-mot-de-passe.txt` ; enregistrez-le dans votre gestionnaire de mots de passe, puis supprimez le fichier.
 - Ne m'envoyez jamais un mot de passe ou une clé par la conversation : je n'en ai pas besoin, tout est sur votre ordinateur.
+
+## 6 bis. La préproduction en ligne (ajouté le 7 novembre 2026)
+
+La **préproduction** est la version d'essai de PPF sur Internet, sur le vrai serveur, mais fermée au public : seuls vos appareils, reliés par un tunnel WireGuard, peuvent l'ouvrir, et elle ne contient que des données fictives [EXEMPLE]. C'est là que vous validez chaque nouveauté avant qu'elle parte en production.
+
+- **Adresse** : https://preprod.politisation-populaire-francaise.org (tunnel actif, puis identifiant `equipe` et le mot de passe ci-dessus).
+- **Mise en place**, dans l'ordre : `docs/guides/liaison-github.md` (GitHub), `docs/guides/serveur-hostinger-kvm1.md` (achat et configuration du serveur, après votre accord sur le prix), `docs/guides/wireguard-preproduction.md` (vos deux appareils).
+- **Mises à jour** : dès qu'un changement est accepté dans la branche principale, GitHub fabrique une nouvelle version du serveur, la signe, et la préproduction l'installe d'elle-même dans les 10 minutes. Si la nouvelle version ne démarre pas correctement, le serveur revient seul à la précédente.
+- **L'APK d'essai** se connecte tout seul à la préproduction quand le tunnel est actif sur le téléphone : fil, messages, salons et propositions passent alors par le vrai serveur, et deux téléphones peuvent échanger.
+- **La production** (le site public) ne reçoit une version qu'avec votre accord écrit, et seulement une version que vous avez vue tourner en préproduction.
 
 ## 7. Comment je travaille avec vous
 
@@ -448,3 +460,8 @@ La branche principale refuse toute modification directe, toute suppression et to
 - **APK** : le fichier d'installation d'une application Android.
 - **Gradle** : l'outil qui compile le projet.
 - **SDK Android** : les outils fournis par Android pour compiler une application Android.
+- **Préproduction** : la copie d'essai de la plateforme, en ligne mais fermée au public, avec des données fictives.
+- **WireGuard** : un logiciel de tunnel chiffré ; il relie un appareil au serveur comme un câble privé.
+- **Image** (Docker) : le serveur emballé avec tout ce qu'il faut pour tourner, identique en préproduction et en production.
+- **Empreinte** (digest) : le code unique d'une image ; deux images différentes n'ont jamais la même empreinte.
+- **DNS** : l'annuaire d'Internet, qui associe un nom (`preprod.politisation-populaire-francaise.org`) à l'adresse d'un serveur.

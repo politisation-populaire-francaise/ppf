@@ -1,0 +1,19 @@
+# Production, public. Deployed only at the public launch (infra/scripts/deploy.sh production),
+# after the DNS records of the main domain and of the five protective extensions point to the
+# server.
+
+{$PPF_DOMAIN} {
+	import security_headers
+	encode zstd gzip
+	reverse_proxy ppf-prod-server-1:8080 {
+		# The application never sees the client address.
+		header_up -X-Forwarded-For
+		header_up -X-Real-IP
+	}
+}
+
+# The other names redirect to the main domain (they protect the name, D-001).
+www.{$PPF_DOMAIN}, politisation-populaire-francaise.fr, www.politisation-populaire-francaise.fr, politisation-populaire-francaise.com, www.politisation-populaire-francaise.com, politisation-populaire-francaise.eu, www.politisation-populaire-francaise.eu, politisation-populaire-francaise.net, www.politisation-populaire-francaise.net, politisation-populaire-francaise.app, www.politisation-populaire-francaise.app {
+	import security_headers
+	redir https://{$PPF_DOMAIN}{uri} permanent
+}
