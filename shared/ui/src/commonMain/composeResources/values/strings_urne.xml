@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Anonymous voting ("une personne, une voix", D-110). -->
+<resources>
+    <string name="urne_check_running">Vérification du vote anonyme sur cet appareil…</string>
+    <string name="urne_check_passed">Vote anonyme : vérification réussie sur cet appareil</string>
+    <string name="urne_check_failed">Vote anonyme : vérification échouée sur cet appareil (étape « %1$s »). Le vote restera fermé ici ; merci de le signaler avec la version ci-dessus.</string>
+</resources>

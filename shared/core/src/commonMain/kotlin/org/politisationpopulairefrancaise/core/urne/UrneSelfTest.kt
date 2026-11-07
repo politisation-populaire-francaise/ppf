@@ -1,5 +1,8 @@
 package org.politisationpopulairefrancaise.core.urne
 
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
+
 /** The result of [UrneSelfTest]: voting stays closed on this device unless it [passed]. */
 data class UrneSelfTestResult(val passed: Boolean, val failedCheck: String?)
 
@@ -12,6 +15,14 @@ data class UrneSelfTestResult(val passed: Boolean, val failedCheck: String?)
  * a real phone. A failure closes voting with a clear message; it never sends anything.
  */
 object UrneSelfTest {
+
+    private val lock = Mutex()
+    private var firstResult: UrneSelfTestResult? = null
+
+    /** The result on this device, computed at first use and kept for the life of the process. */
+    suspend fun onThisDevice(): UrneSelfTestResult = lock.withLock {
+        firstResult ?: run().also { firstResult = it }
+    }
 
     suspend fun run(): UrneSelfTestResult = try {
         run(LibsodiumRistretto255.load())

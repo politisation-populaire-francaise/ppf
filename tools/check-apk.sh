@@ -63,6 +63,8 @@ require '^assets/composeResources/[^/]+/files/contents/decider\.json$' "bundled 
 require '^assets/composeResources/[^/]+/font/atkinson_hyperlegible_regular\.ttf$' "bundled font (Atkinson Hyperlegible)"
 for abi in arm64-v8a armeabi-v7a x86_64; do
     require "^lib/$abi/libsecp256k1-jni\.so$" "libsecp256k1 for $abi"
+    # Anonymous voting (D-110): libsodium, reached through JNA, for every architecture.
+    require "^lib/$abi/libsodium\.so$" "libsodium for $abi"
 done
 forbid '^lib/x86/' "32-bit x86 libraries"
 

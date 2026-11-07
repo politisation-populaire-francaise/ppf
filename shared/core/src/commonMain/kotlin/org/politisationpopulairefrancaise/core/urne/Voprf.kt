@@ -157,8 +157,8 @@ class Voprf(private val group: Ristretto255, val mode: VoprfMode) {
         r: ByteArray,
     ): ByteArray {
         val (m, z) = computeComposites(b, c, d, k)
-        val t2 = group.multiply(r, a)
-        val t3 = group.multiply(r, m)
+        val t2 = multiplyOrIdentity(r, a)
+        val t3 = multiplyOrIdentity(r, m)
         val challenge = hashToScalar(challengeTranscript(b, m, z, t2, t3), hashToScalarDst)
         val s = group.scalarSub(r, group.scalarMul(challenge, k))
         return challenge + s
@@ -233,8 +233,12 @@ class Voprf(private val group: Ristretto255, val mode: VoprfMode) {
 
     private fun isIdentity(element: ByteArray): Boolean = Ristretto255.isZero(element)
 
-    private fun multiplyOrIdentity(scalar: ByteArray, element: ByteArray): ByteArray =
-        if (Ristretto255.isZero(scalar) || isIdentity(element)) Ristretto255.IDENTITY else group.multiply(scalar, element)
+    private fun multiplyOrIdentity(scalar: ByteArray, element: ByteArray): ByteArray = when {
+        Ristretto255.isZero(scalar) || isIdentity(element) -> Ristretto255.IDENTITY
+        // Same result, about three times faster: libsodium's fixed-base multiplication.
+        element.contentEquals(GENERATOR) -> group.multiplyBase(scalar)
+        else -> group.multiply(scalar, element)
+    }
 
     private fun addOrIdentity(p: ByteArray, q: ByteArray): ByteArray = when {
         isIdentity(p) -> q
