@@ -129,7 +129,7 @@ class Territoires(
         val local = storedPackageCodes().mapNotNull(::storedPackage)
         val pool = LinkedHashMap<TerritoryCode, Territory>()
         nationalLevel.all.forEach { pool[it.code] = it }
-        local.forEach { pkg -> (pkg.communes + pkg.arrondissements + pkg.epcis).forEach { pool.putIfAbsent(it.code, it) } }
+        local.forEach { pkg -> (pkg.communes + pkg.arrondissements + pkg.epcis).forEach { if (it.code !in pool) pool[it.code] = it } }
         storedCommunesIndex()?.communes?.forEach { line ->
             val code = TerritoryCode.commune(line.code) ?: return@forEach
             if (code !in pool) pool[code] = indexTerritory(line, nationalLevel)
