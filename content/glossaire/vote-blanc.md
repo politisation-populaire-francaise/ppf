@@ -1,10 +1,10 @@
 ---
-slug: vote-blanc
+slug: glossaire-vote-blanc
 title: [EXEMPLE] Vote blanc
 summary: Vote d'un électeur qui met dans l'urne un bulletin sans aucun nom, ou une enveloppe vide. Les votes blancs sont comptés à part, mais ne font pas partie des suffrages exprimés.
 variants: vote blanc, votes blancs, bulletin blanc, bulletins blancs
 topics: elections
-see_also: suffrages-exprimes, vote-nul, abstention
+see_also: glossaire-suffrages-exprimes, glossaire-vote-nul, glossaire-abstention
 related: decryptage:vote-blanc-suffrages-exprimes, parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07

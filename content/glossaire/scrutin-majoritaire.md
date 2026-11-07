@@ -1,10 +1,10 @@
 ---
-slug: scrutin-majoritaire
+slug: glossaire-scrutin-majoritaire
 title: [EXEMPLE] Scrutin majoritaire
 summary: Mode d'élection où le candidat ou la liste qui arrive en tête remporte le siège. Il se fait souvent en deux tours, avec la majorité absolue exigée au premier.
 variants: scrutin majoritaire, scrutins majoritaires, scrutin majoritaire à deux tours, scrutin uninominal, scrutin uninominal majoritaire, scrutin uninominal majoritaire à deux tours, scrutin binominal, scrutin binominal majoritaire
 topics: elections
-see_also: scrutin-proportionnel, circonscription, depute, suffrages-exprimes
+see_also: glossaire-scrutin-proportionnel, glossaire-circonscription, glossaire-depute, glossaire-suffrages-exprimes
 related: parcours:le-role-de-chaque-elu, parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07

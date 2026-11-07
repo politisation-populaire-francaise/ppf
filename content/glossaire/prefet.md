@@ -1,10 +1,10 @@
 ---
-slug: prefet
+slug: glossaire-prefet
 title: [EXEMPLE] Préfet
 summary: Haut fonctionnaire nommé en Conseil des ministres qui représente l'État dans un département ou une région. Il veille au respect des lois et contrôle les décisions des collectivités.
 variants: préfet, préfets, préfète, préfètes, préfecture, préfectures, sous-préfet, sous-préfets, sous-préfète, sous-préfecture, sous-préfectures, représentant de l'État
 topics: collectivites, institutions
-see_also: departement, collectivite-territoriale, decentralisation
+see_also: glossaire-departement, glossaire-collectivite-territoriale, glossaire-decentralisation
 related: qui-decide:manifester-qui-autorise, fiche:droits-en-manifestation
 origin: ai-assisted
 published_at: 2026-11-07

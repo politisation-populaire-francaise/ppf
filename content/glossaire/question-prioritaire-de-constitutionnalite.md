@@ -1,10 +1,10 @@
 ---
-slug: question-prioritaire-de-constitutionnalite
+slug: glossaire-question-prioritaire-de-constitutionnalite
 title: [EXEMPLE] Question prioritaire de constitutionnalité
 summary: Droit de toute personne engagée dans un procès de soutenir qu'une loi déjà en vigueur porte atteinte aux droits et libertés garantis par la Constitution.
 variants: question prioritaire de constitutionnalité, questions prioritaires de constitutionnalité, QPC
 topics: institutions, justice, droits
-see_also: conseil-constitutionnel, constitution, conseil-d-etat
+see_also: glossaire-conseil-constitutionnel, glossaire-constitution, glossaire-conseil-d-etat
 related: fiche:garde-a-vue
 origin: ai-assisted
 published_at: 2026-11-07

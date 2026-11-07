@@ -175,6 +175,7 @@ fun main(args: Array<String>) {
     val calls = signAll(content.resolve("appels")) { document -> callOf(keys.publicKey, document) }.map { signer.signChecked(it) }
     write(output.resolve("appels.json"), calls)
 
+    checkUniqueAddresses(output)
     println("author public key (hex): ${keys.publicKey.hex}")
     println("author public key (npub): ${keys.publicKey.npub}")
 }
@@ -506,4 +507,23 @@ private fun glossaryEvents(content: Path, author: PublicKey): List<UnsignedEvent
         println("prepared ${document.name}")
         unsigned
     }.also { println("glossaire: ${it.size} entr(ies)") }
+}
+
+/**
+ * Two addressable events of the same kind and author with the same `d` tag are one content for
+ * every reader: the newer replaces the other on the device. Refuses such a collision between any
+ * two bundled files (a glossary entry and a practical guide once shared the slug `garde-a-vue`).
+ */
+private fun checkUniqueAddresses(output: Path) {
+    val json = Json { ignoreUnknownKeys = true }
+    val owners = HashMap<String, String>()
+    val collisions = mutableListOf<String>()
+    output.listDirectoryEntries("*.json").sortedBy { it.name }.forEach { file ->
+        json.decodeFromString(ListSerializer(SignedEvent.serializer()), file.readText()).filter { it.kind in 30000..39999 }.forEach { event ->
+            val address = "${event.kind}:${event.pubkey}:${event.firstTagValue("d").orEmpty()}"
+            val previous = owners.put(address, file.name)
+            if (previous != null) collisions += "${address.substringAfterLast(':')} (${previous} and ${file.name})"
+        }
+    }
+    check(collisions.isEmpty()) { "the same address is used by two contents, the newer would replace the other: " + collisions.joinToString() }
 }

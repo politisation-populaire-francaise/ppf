@@ -1,10 +1,10 @@
 ---
-slug: commission-europeenne
+slug: glossaire-commission-europeenne
 title: [EXEMPLE] Commission européenne
 summary: Institution de l'Union européenne qui propose les lois européennes, met en œuvre le budget et veille à l'application du droit de l'Union. Elle compte un membre par pays.
 variants: Commission européenne, commissaire européen, commissaires européens, commissaire européenne, commissaires européennes
 topics: europe, institutions
-see_also: union-europeenne, parlement-europeen, conseil-de-l-union-europeenne, directive
+see_also: glossaire-union-europeenne, glossaire-parlement-europeen, glossaire-conseil-de-l-union-europeenne, glossaire-directive
 related: qui-decide:prix-des-carburants
 origin: ai-assisted
 published_at: 2026-11-07

@@ -1,10 +1,10 @@
 ---
-slug: parlement-europeen
+slug: glossaire-parlement-europeen
 title: [EXEMPLE] Parlement européen
 summary: Assemblée de l'Union européenne élue pour cinq ans au suffrage universel direct. Ses 720 députés adoptent les lois et le budget de l'Union avec le Conseil. La France en élit 81.
 variants: Parlement européen, député européen, députés européens, députée européenne, députées européennes, eurodéputé, eurodéputés, eurodéputée, eurodéputées, élections européennes
 topics: europe, institutions, elections
-see_also: union-europeenne, commission-europeenne, conseil-de-l-union-europeenne, scrutin-proportionnel
+see_also: glossaire-union-europeenne, glossaire-commission-europeenne, glossaire-conseil-de-l-union-europeenne, glossaire-scrutin-proportionnel
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07

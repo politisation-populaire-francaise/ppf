@@ -1,10 +1,10 @@
 ---
-slug: defenseur-des-droits
+slug: glossaire-defenseur-des-droits
 title: [EXEMPLE] Défenseur des droits
 summary: Autorité indépendante que chacun peut saisir gratuitement face à un service public, une discrimination ou un manquement des forces de sécurité, ou pour défendre les droits d'un enfant.
 variants: Défenseur des droits, Défenseure des droits
 topics: droits, libertes, institutions
-see_also: garde-a-vue, conseil-d-etat
+see_also: glossaire-garde-a-vue, glossaire-conseil-d-etat
 related: fiche:filmer-les-forces-de-l-ordre, fiche:droits-en-manifestation, decryptage:filmer-policiers-interdit
 origin: ai-assisted
 published_at: 2026-11-07

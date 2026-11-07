@@ -1,10 +1,10 @@
 ---
-slug: suffrages-exprimes
+slug: glossaire-suffrages-exprimes
 title: [EXEMPLE] Suffrages exprimés
 summary: Votes valables en faveur d'un candidat ou d'une liste. Les bulletins blancs et nuls n'en font pas partie. On calcule à partir d'eux la majorité et les pourcentages.
 variants: suffrages exprimés, suffrage exprimé
 topics: elections
-see_also: vote-blanc, vote-nul, abstention, scrutin-majoritaire
+see_also: glossaire-vote-blanc, glossaire-vote-nul, glossaire-abstention, glossaire-scrutin-majoritaire
 related: decryptage:vote-blanc-suffrages-exprimes
 origin: ai-assisted
 published_at: 2026-11-07

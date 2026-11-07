@@ -1,10 +1,10 @@
 ---
-slug: circonscription
+slug: glossaire-circonscription
 title: [EXEMPLE] Circonscription
 summary: Territoire dans lequel des électeurs élisent un ou plusieurs représentants. Pour les élections législatives, chaque circonscription élit un député.
 variants: circonscription, circonscriptions, circonscription électorale, circonscriptions électorales, circonscription législative, circonscriptions législatives
 topics: elections
-see_also: depute, scrutin-majoritaire, assemblee-nationale
+see_also: glossaire-depute, glossaire-scrutin-majoritaire, glossaire-assemblee-nationale
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07

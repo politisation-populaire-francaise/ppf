@@ -1,10 +1,10 @@
 ---
-slug: region
+slug: glossaire-region
 title: [EXEMPLE] Région
 summary: Collectivité territoriale la plus étendue, administrée par le conseil régional élu pour six ans. Elle a notamment la charge des lycées et soutient le développement économique.
 variants: région, régions, conseil régional, conseils régionaux, conseiller régional, conseillers régionaux, conseillère régionale, conseillères régionales
 topics: collectivites
-see_also: departement, commune, collectivite-territoriale, decentralisation
+see_also: glossaire-departement, glossaire-commune, glossaire-collectivite-territoriale, glossaire-decentralisation
 related: parcours:le-role-de-chaque-elu, qui-decide:transports-du-quotidien, qui-decide:ecole
 origin: ai-assisted
 published_at: 2026-11-07

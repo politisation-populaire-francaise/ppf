@@ -1,10 +1,10 @@
 ---
-slug: motion-de-censure
+slug: glossaire-motion-de-censure
 title: [EXEMPLE] Motion de censure
 summary: Vote par lequel les députés peuvent renverser le Gouvernement. Elle n'est adoptée qu'avec les voix de la majorité absolue des membres de l'Assemblée nationale.
 variants: motion de censure, motions de censure, censure du Gouvernement
 topics: institutions, parlement, gouvernement
-see_also: 49-3, gouvernement, assemblee-nationale, premier-ministre
+see_also: glossaire-49-3, glossaire-gouvernement, glossaire-assemblee-nationale, glossaire-premier-ministre
 related: parcours:le-49-3-et-la-motion-de-censure, decryptage:49-3-loi-sans-vote
 origin: ai-assisted
 published_at: 2026-11-07

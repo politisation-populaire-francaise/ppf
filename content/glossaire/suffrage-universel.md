@@ -1,10 +1,10 @@
 ---
-slug: suffrage-universel
+slug: glossaire-suffrage-universel
 title: [EXEMPLE] Suffrage universel
 summary: Droit de vote reconnu à tous les citoyens majeurs, femmes et hommes, qui jouissent de leurs droits civils et politiques. En France, le suffrage est toujours universel, égal et secret.
 variants: suffrage universel, suffrage universel direct, suffrage universel indirect, suffrage direct, suffrage indirect
 topics: elections, institutions
-see_also: liste-electorale, depute, senateur, president-de-la-republique
+see_also: glossaire-liste-electorale, glossaire-depute, glossaire-senateur, glossaire-president-de-la-republique
 related: histoire:revolution-1848, histoire:droit-de-vote-des-femmes, parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07

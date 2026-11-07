@@ -1,10 +1,10 @@
 ---
-slug: decentralisation
+slug: glossaire-decentralisation
 title: [EXEMPLE] Décentralisation
 summary: Transfert de compétences et de moyens de l'État vers les collectivités territoriales, qui décident par leurs conseils élus. La Constitution dit que l'organisation de la République est décentralisée.
 variants: décentralisation, lois de décentralisation
 topics: collectivites, institutions
-see_also: collectivite-territoriale, prefet, region, commune
+see_also: glossaire-collectivite-territoriale, glossaire-prefet, glossaire-region, glossaire-commune
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07

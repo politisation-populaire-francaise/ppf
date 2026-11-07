@@ -1,10 +1,10 @@
 ---
-slug: loi-organique
+slug: glossaire-loi-organique
 title: [EXEMPLE] Loi organique
 summary: Loi qui précise l'organisation des institutions, quand la Constitution le prévoit. Elle suit une procédure plus exigeante et le Conseil constitutionnel la contrôle toujours.
 variants: loi organique, lois organiques
 topics: institutions, parlement
-see_also: constitution, conseil-constitutionnel, senat, projet-de-loi
+see_also: glossaire-constitution, glossaire-conseil-constitutionnel, glossaire-senat, glossaire-projet-de-loi
 related: parcours:le-budget-de-l-etat, parcours:le-referendum
 origin: ai-assisted
 published_at: 2026-11-07

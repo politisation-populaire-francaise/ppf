@@ -1,10 +1,10 @@
 ---
-slug: directive
+slug: glossaire-directive
 title: [EXEMPLE] Directive
 summary: Acte de l'Union européenne qui fixe aux pays des objectifs à atteindre, en leur laissant choisir les moyens. Chaque pays doit la transposer dans son droit avant une date limite.
 variants: directive européenne, directives européennes, directive de l'Union européenne, directives de l'Union européenne, transposition d'une directive, transposer une directive
 topics: europe, institutions
-see_also: reglement-europeen, union-europeenne, commission-europeenne
+see_also: glossaire-reglement-europeen, glossaire-union-europeenne, glossaire-commission-europeenne
 related: qui-decide:prix-des-carburants
 origin: ai-assisted
 published_at: 2026-11-07

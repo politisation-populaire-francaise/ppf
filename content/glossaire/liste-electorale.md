@@ -1,10 +1,10 @@
 ---
-slug: liste-electorale
+slug: glossaire-liste-electorale
 title: [EXEMPLE] Liste électorale
 summary: Liste des personnes qui peuvent voter dans une commune ou un consulat. Il faut y être inscrit pour voter, en principe au plus tard le sixième vendredi avant le scrutin.
 variants: liste électorale, listes électorales, inscription électorale, liste électorale consulaire, listes électorales consulaires, listes électorales complémentaires
 topics: elections
-see_also: procuration, suffrage-universel, abstention
+see_also: glossaire-procuration, glossaire-suffrage-universel, glossaire-abstention
 related: parcours:l-election-presidentielle, parcours:le-referendum
 origin: ai-assisted
 published_at: 2026-11-07

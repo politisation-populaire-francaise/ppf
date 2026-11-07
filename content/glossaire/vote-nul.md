@@ -1,10 +1,10 @@
 ---
-slug: vote-nul
+slug: glossaire-vote-nul
 title: [EXEMPLE] Vote nul
 summary: Bulletin qui ne peut pas être compté, par exemple parce qu'il était sans enveloppe ou portait un signe de reconnaissance. Il n'entre pas dans les suffrages exprimés.
 variants: vote nul, votes nuls, bulletin nul, bulletins nuls
 topics: elections
-see_also: vote-blanc, suffrages-exprimes, abstention
+see_also: glossaire-vote-blanc, glossaire-suffrages-exprimes, glossaire-abstention
 related: decryptage:vote-blanc-suffrages-exprimes
 origin: ai-assisted
 published_at: 2026-11-07

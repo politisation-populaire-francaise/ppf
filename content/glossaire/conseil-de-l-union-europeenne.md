@@ -1,10 +1,10 @@
 ---
-slug: conseil-de-l-union-europeenne
+slug: glossaire-conseil-de-l-union-europeenne
 title: [EXEMPLE] Conseil de l'Union européenne
 summary: Institution où siègent les ministres des 27 États de l'Union européenne, selon le sujet traité. Il adopte les lois européennes et le budget avec le Parlement européen.
 variants: Conseil de l'Union européenne, Conseil de l'UE, Conseil des ministres de l'Union européenne, Conseil des ministres de l'UE
 topics: europe, institutions
-see_also: union-europeenne, parlement-europeen, commission-europeenne
+see_also: glossaire-union-europeenne, glossaire-parlement-europeen, glossaire-commission-europeenne
 related: qui-decide:prix-des-carburants
 origin: ai-assisted
 published_at: 2026-11-07

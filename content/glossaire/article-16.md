@@ -1,10 +1,10 @@
 ---
-slug: article-16
+slug: glossaire-article-16
 title: [EXEMPLE] Article 16
 summary: Article de la Constitution qui donne des pouvoirs exceptionnels au Président de la République en cas de menace grave et immédiate, quand les institutions ne fonctionnent plus normalement.
 variants: article 16 de la Constitution, pouvoirs exceptionnels
 topics: institutions
-see_also: president-de-la-republique, conseil-constitutionnel, dissolution
+see_also: glossaire-president-de-la-republique, glossaire-conseil-constitutionnel, glossaire-dissolution
 related: parcours:la-dissolution
 origin: ai-assisted
 published_at: 2026-11-07

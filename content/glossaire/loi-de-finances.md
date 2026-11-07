@@ -1,10 +1,10 @@
 ---
-slug: loi-de-finances
+slug: glossaire-loi-de-finances
 title: [EXEMPLE] Loi de finances
 summary: Loi qui fixe chaque année le budget de l'État : les impôts et autres recettes qu'il peut percevoir, et les dépenses qu'il peut engager. On l'appelle souvent « le budget ».
 variants: loi de finances, lois de finances, projet de loi de finances, projets de loi de finances, PLF, loi de finances rectificative, lois de finances rectificatives, budget de l'État, budget de l'Etat
 topics: institutions, parlement, budget
-see_also: loi-de-financement-de-la-securite-sociale, loi-organique, 49-3, assemblee-nationale
+see_also: glossaire-loi-de-financement-de-la-securite-sociale, glossaire-loi-organique, glossaire-49-3, glossaire-assemblee-nationale
 related: parcours:le-budget-de-l-etat
 origin: ai-assisted
 published_at: 2026-11-07

@@ -1,10 +1,10 @@
 ---
-slug: petition
+slug: glossaire-petition
 title: [EXEMPLE] Pétition
 summary: Demande écrite signée par des personnes et adressée à une autorité. Certaines pétitions officielles peuvent ouvrir un examen ou un débat, mais aucune n'oblige à adopter une loi.
 variants: pétition, pétitions, droit de pétition, e-pétition, e-pétitions
 topics: participation, droits, parlement
-see_also: cese, referendum-d-initiative-partagee, assemblee-nationale, senat
+see_also: glossaire-cese, glossaire-referendum-d-initiative-partagee, glossaire-assemblee-nationale, glossaire-senat
 related: decryptage:petition-500000-debat-obligatoire
 origin: ai-assisted
 published_at: 2026-11-07

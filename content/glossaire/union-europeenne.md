@@ -1,10 +1,10 @@
 ---
-slug: union-europeenne
+slug: glossaire-union-europeenne
 title: [EXEMPLE] Union européenne
 summary: Union de 27 États européens qui ont choisi d'exercer ensemble certaines de leurs compétences. Elle adopte des règles qui s'appliquent dans tous ces pays.
 variants: Union européenne, UE, État membre, États membres
 topics: europe, institutions
-see_also: commission-europeenne, parlement-europeen, conseil-de-l-union-europeenne, directive, reglement-europeen
+see_also: glossaire-commission-europeenne, glossaire-parlement-europeen, glossaire-conseil-de-l-union-europeenne, glossaire-directive, glossaire-reglement-europeen
 related: qui-decide:prix-des-carburants
 origin: ai-assisted
 published_at: 2026-11-07

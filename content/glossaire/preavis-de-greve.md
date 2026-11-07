@@ -1,10 +1,10 @@
 ---
-slug: preavis-de-greve
+slug: glossaire-preavis-de-greve
 title: [EXEMPLE] Préavis de grève
 summary: Avertissement obligatoire dans les services publics, déposé par un syndicat représentatif au moins cinq jours francs avant une grève. Il en indique les motifs, le lieu, le début et la durée.
 variants: préavis de grève
 topics: travail, droits
-see_also: greve, syndicat
+see_also: glossaire-greve, glossaire-syndicat
 origin: ai-assisted
 published_at: 2026-11-07
 updated_at: 2026-11-07

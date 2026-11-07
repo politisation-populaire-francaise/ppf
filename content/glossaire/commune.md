@@ -1,11 +1,11 @@
 ---
-slug: commune
+slug: glossaire-commune
 title: [EXEMPLE] Commune
 summary: Collectivité territoriale la plus proche des habitants, administrée par un conseil municipal élu pour six ans et par le maire qu'il élit. Elle a notamment la charge des écoles publiques.
 variants: commune, communes
 auto: non
 topics: collectivites
-see_also: intercommunalite, collectivite-territoriale, departement
+see_also: glossaire-intercommunalite, glossaire-collectivite-territoriale, glossaire-departement
 related: parcours:le-role-de-chaque-elu, qui-decide:ecole
 origin: ai-assisted
 published_at: 2026-11-07

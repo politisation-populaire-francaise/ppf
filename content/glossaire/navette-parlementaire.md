@@ -1,10 +1,10 @@
 ---
-slug: navette-parlementaire
+slug: glossaire-navette-parlementaire
 title: [EXEMPLE] Navette parlementaire
 summary: Va-et-vient d'un texte de loi entre l'Assemblée nationale et le Sénat, jusqu'à ce que les deux assemblées adoptent exactement le même texte.
 variants: navette parlementaire, navettes parlementaires
 topics: institutions, parlement
-see_also: commission-mixte-paritaire, projet-de-loi, assemblee-nationale, senat
+see_also: glossaire-commission-mixte-paritaire, glossaire-projet-de-loi, glossaire-assemblee-nationale, glossaire-senat
 related: parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07

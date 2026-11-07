@@ -1,10 +1,10 @@
 ---
-slug: senat
+slug: glossaire-senat
 title: [EXEMPLE] Sénat
 summary: Assemblée de 348 sénateurs, élus pour six ans par des élus. Il vote la loi avec l'Assemblée nationale et représente les collectivités territoriales, mais ne peut pas renverser le Gouvernement.
 variants: Sénat
 topics: institutions, parlement
-see_also: parlement, assemblee-nationale, senateur, navette-parlementaire, collectivite-territoriale
+see_also: glossaire-parlement, glossaire-assemblee-nationale, glossaire-senateur, glossaire-navette-parlementaire, glossaire-collectivite-territoriale
 related: parcours:comment-une-loi-est-votee, parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07

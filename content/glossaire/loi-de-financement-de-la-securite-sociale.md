@@ -1,10 +1,10 @@
 ---
-slug: loi-de-financement-de-la-securite-sociale
+slug: glossaire-loi-de-financement-de-la-securite-sociale
 title: [EXEMPLE] Loi de financement de la sécurité sociale
 summary: Loi votée chaque année qui fixe les conditions de l'équilibre financier de la sécurité sociale et ses objectifs de dépenses : maladie, retraites, famille, autonomie, accidents du travail.
 variants: loi de financement de la sécurité sociale, lois de financement de la sécurité sociale, projet de loi de financement de la sécurité sociale, projets de loi de financement de la sécurité sociale, LFSS, PLFSS
 topics: institutions, parlement, budget, social
-see_also: loi-de-finances, 49-3, assemblee-nationale, loi-organique
+see_also: glossaire-loi-de-finances, glossaire-49-3, glossaire-assemblee-nationale, glossaire-loi-organique
 related: parcours:le-budget-de-l-etat
 origin: ai-assisted
 published_at: 2026-11-07

@@ -1,10 +1,10 @@
 ---
-slug: reglement-europeen
+slug: glossaire-reglement-europeen
 title: [EXEMPLE] Règlement européen
 summary: Acte de l'Union européenne obligatoire en entier et applicable directement dans tous les pays de l'Union, sans qu'une loi nationale soit nécessaire.
 variants: règlement européen, règlements européens, règlement de l'Union européenne, règlements de l'Union européenne
 topics: europe, institutions
-see_also: directive, union-europeenne, parlement-europeen
+see_also: glossaire-directive, glossaire-union-europeenne, glossaire-parlement-europeen
 related: qui-decide:transports-du-quotidien
 origin: ai-assisted
 published_at: 2026-11-07

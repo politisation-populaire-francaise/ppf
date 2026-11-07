@@ -1,10 +1,10 @@
 ---
-slug: compte-de-campagne
+slug: glossaire-compte-de-campagne
 title: [EXEMPLE] Compte de campagne
 summary: Document où un candidat retrace toutes les recettes et toutes les dépenses de sa campagne électorale. Il est déposé auprès d'une commission nationale, qui le contrôle.
 variants: compte de campagne, comptes de campagne, Commission nationale des comptes de campagne et des financements politiques, CNCCFP, plafond des dépenses électorales
 topics: elections
-see_also: parrainage, suffrages-exprimes, president-de-la-republique
+see_also: glossaire-parrainage, glossaire-suffrages-exprimes, glossaire-president-de-la-republique
 related: parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07

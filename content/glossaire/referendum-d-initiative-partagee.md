@@ -1,10 +1,10 @@
 ---
-slug: referendum-d-initiative-partagee
+slug: glossaire-referendum-d-initiative-partagee
 title: [EXEMPLE] Référendum d'initiative partagée
 summary: Procédure qui permet de soumettre une proposition de loi au référendum, si elle est déposée par un cinquième des parlementaires puis soutenue par un dixième des électeurs inscrits.
 variants: référendum d'initiative partagée, référendums d'initiative partagée, RIP
 topics: institutions, elections
-see_also: referendum, proposition-de-loi, conseil-constitutionnel
+see_also: glossaire-referendum, glossaire-proposition-de-loi, glossaire-conseil-constitutionnel
 related: parcours:le-referendum
 origin: ai-assisted
 published_at: 2026-11-07

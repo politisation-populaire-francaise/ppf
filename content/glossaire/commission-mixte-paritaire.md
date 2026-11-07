@@ -1,10 +1,10 @@
 ---
-slug: commission-mixte-paritaire
+slug: glossaire-commission-mixte-paritaire
 title: [EXEMPLE] Commission mixte paritaire
 summary: Groupe de sept députés et sept sénateurs réuni pour proposer un texte commun quand l'Assemblée nationale et le Sénat ne sont pas d'accord sur une loi.
 variants: commission mixte paritaire, commissions mixtes paritaires, CMP
 topics: institutions, parlement
-see_also: navette-parlementaire, assemblee-nationale, senat
+see_also: glossaire-navette-parlementaire, glossaire-assemblee-nationale, glossaire-senat
 related: parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07

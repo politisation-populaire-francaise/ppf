@@ -1,10 +1,10 @@
 ---
-slug: constitution
+slug: glossaire-constitution
 title: [EXEMPLE] Constitution
 summary: Texte qui fixe les règles les plus importantes du pays : qui exerce le pouvoir, comment on fait les lois, quels droits sont garantis. La Constitution actuelle date du 4 octobre 1958.
 variants: Constitution, Constitution de 1958, Constitution du 4 octobre 1958, Constitution de la Ve République
 topics: institutions
-see_also: conseil-constitutionnel, president-de-la-republique, parlement, referendum, loi-organique
+see_also: glossaire-conseil-constitutionnel, glossaire-president-de-la-republique, glossaire-parlement, glossaire-referendum, glossaire-loi-organique
 related: parcours:la-revision-de-la-constitution, parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07

@@ -1,10 +1,10 @@
 ---
-slug: garde-a-vue
+slug: glossaire-garde-a-vue
 title: [EXEMPLE] Garde à vue
 summary: Mesure par laquelle un officier de police judiciaire retient une personne soupçonnée d'un crime ou d'un délit puni de prison, pendant une enquête et sous le contrôle d'un magistrat.
 variants: garde à vue, gardes à vue, gardé à vue, gardée à vue, gardés à vue, gardées à vue
 topics: justice, droits, libertes
-see_also: defenseur-des-droits, question-prioritaire-de-constitutionnalite
+see_also: glossaire-defenseur-des-droits, glossaire-question-prioritaire-de-constitutionnalite
 related: fiche:garde-a-vue, fiche:droits-en-manifestation
 origin: ai-assisted
 published_at: 2026-11-07

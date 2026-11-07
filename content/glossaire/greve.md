@@ -1,10 +1,10 @@
 ---
-slug: greve
+slug: glossaire-greve
 title: [EXEMPLE] Grève
 summary: Arrêt de travail collectif et concerté pour appuyer des revendications professionnelles. C'est un droit garanti par la Constitution, qui s'exerce dans le cadre des lois.
 variants: grève, grèves, droit de grève, gréviste, grévistes
 topics: travail, droits
-see_also: preavis-de-greve, syndicat, convention-collective
+see_also: glossaire-preavis-de-greve, glossaire-syndicat, glossaire-convention-collective
 related: histoire:front-populaire-1936
 origin: ai-assisted
 published_at: 2026-11-07

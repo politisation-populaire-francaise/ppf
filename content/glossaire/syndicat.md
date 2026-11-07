@@ -1,10 +1,10 @@
 ---
-slug: syndicat
+slug: glossaire-syndicat
 title: [EXEMPLE] Syndicat
 summary: Organisation qui défend les droits et les intérêts matériels et moraux de ses membres, par exemple les salariés d'une profession. Chacun peut adhérer au syndicat de son choix.
 variants: syndicat, syndicats, syndicat professionnel, syndicats professionnels, syndicat de salariés, syndicats de salariés, organisation syndicale, organisations syndicales, liberté syndicale, droit syndical
 topics: travail, droits
-see_also: greve, convention-collective, preavis-de-greve, intercommunalite
+see_also: glossaire-greve, glossaire-convention-collective, glossaire-preavis-de-greve, glossaire-intercommunalite
 related: histoire:front-populaire-1936
 origin: ai-assisted
 published_at: 2026-11-07

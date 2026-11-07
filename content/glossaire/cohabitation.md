@@ -1,10 +1,10 @@
 ---
-slug: cohabitation
+slug: glossaire-cohabitation
 title: [EXEMPLE] Cohabitation
 summary: Situation où le Président de la République et la majorité des députés ont des orientations politiques opposées. Le Premier ministre est alors issu de cette majorité.
 variants: cohabitation, cohabitations
 topics: institutions, gouvernement
-see_also: president-de-la-republique, premier-ministre, assemblee-nationale
+see_also: glossaire-president-de-la-republique, glossaire-premier-ministre, glossaire-assemblee-nationale
 related: parcours:la-dissolution
 origin: ai-assisted
 published_at: 2026-11-07

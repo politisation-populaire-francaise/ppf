@@ -1,10 +1,10 @@
 ---
-slug: amendement
+slug: glossaire-amendement
 title: [EXEMPLE] Amendement
 summary: Proposition de modification d'un texte de loi pendant son examen, déposée par des députés, des sénateurs ou le Gouvernement. L'assemblée vote sur chaque amendement.
 variants: amendement, amendements, sous-amendement, sous-amendements
 topics: institutions, parlement
-see_also: projet-de-loi, proposition-de-loi, navette-parlementaire
+see_also: glossaire-projet-de-loi, glossaire-proposition-de-loi, glossaire-navette-parlementaire
 related: parcours:comment-une-loi-est-votee, parcours:le-budget-de-l-etat
 origin: ai-assisted
 published_at: 2026-11-07

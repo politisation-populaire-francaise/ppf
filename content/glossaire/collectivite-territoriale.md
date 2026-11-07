@@ -1,10 +1,10 @@
 ---
-slug: collectivite-territoriale
+slug: glossaire-collectivite-territoriale
 title: [EXEMPLE] Collectivité territoriale
 summary: Partie du territoire, comme la commune, le département ou la région, qui s'administre librement par un conseil élu, dans les domaines que la loi lui confie.
 variants: collectivité territoriale, collectivités territoriales, collectivité locale, collectivités locales, collectivité à statut particulier, collectivités à statut particulier, collectivité d'outre-mer, collectivités d'outre-mer
 topics: collectivites, institutions
-see_also: commune, departement, region, decentralisation, prefet
+see_also: glossaire-commune, glossaire-departement, glossaire-region, glossaire-decentralisation, glossaire-prefet
 related: parcours:le-role-de-chaque-elu, qui-decide:ecole, qui-decide:transports-du-quotidien
 origin: ai-assisted
 published_at: 2026-11-07

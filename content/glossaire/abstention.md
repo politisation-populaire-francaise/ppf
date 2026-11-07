@@ -1,10 +1,10 @@
 ---
-slug: abstention
+slug: glossaire-abstention
 title: [EXEMPLE] Abstention
 summary: Fait, pour un électeur inscrit, de ne pas voter. Le taux d'abstention est la part des inscrits qui n'ont pas voté à une élection.
 variants: abstention, abstentions, taux d'abstention, abstentionniste, abstentionnistes
 topics: elections
-see_also: liste-electorale, vote-blanc, suffrages-exprimes, procuration
+see_also: glossaire-liste-electorale, glossaire-vote-blanc, glossaire-suffrages-exprimes, glossaire-procuration
 related: decryptage:vote-blanc-suffrages-exprimes
 origin: ai-assisted
 published_at: 2026-11-07

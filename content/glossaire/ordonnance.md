@@ -1,10 +1,10 @@
 ---
-slug: ordonnance
+slug: glossaire-ordonnance
 title: [EXEMPLE] Ordonnance
 summary: Texte adopté par le Gouvernement dans un domaine qui relève normalement de la loi, après autorisation du Parlement. Le Parlement doit ensuite la ratifier par une loi.
 variants: ordonnance de l'article 38, ordonnances de l'article 38, par ordonnance, par ordonnances, légiférer par ordonnances, gouverner par ordonnances, loi d'habilitation, lois d'habilitation, projet de loi de ratification
 topics: institutions, gouvernement, parlement
-see_also: decret, gouvernement, parlement, projet-de-loi
+see_also: glossaire-decret, glossaire-gouvernement, glossaire-parlement, glossaire-projet-de-loi
 related: parcours:comment-une-loi-est-votee, parcours:le-budget-de-l-etat
 origin: ai-assisted
 published_at: 2026-11-07

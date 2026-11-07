@@ -1,10 +1,10 @@
 ---
-slug: parrainage
+slug: glossaire-parrainage
 title: [EXEMPLE] Parrainage
 summary: Signature d'un élu qui présente un candidat à l'élection présidentielle. Il en faut au moins 500, venant d'élus d'au moins 30 départements ou collectivités d'outre-mer.
 variants: parrainage, parrainages, 500 signatures, présentations de candidats
 topics: elections
-see_also: president-de-la-republique, conseil-constitutionnel, compte-de-campagne
+see_also: glossaire-president-de-la-republique, glossaire-conseil-constitutionnel, glossaire-compte-de-campagne
 related: parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07

@@ -1,10 +1,10 @@
 ---
-slug: assemblee-nationale
+slug: glossaire-assemblee-nationale
 title: [EXEMPLE] Assemblée nationale
 summary: Assemblée de 577 députés au plus, élus pour cinq ans au suffrage universel direct. Elle vote la loi avec le Sénat et peut renverser le Gouvernement.
 variants: Assemblée nationale
 topics: institutions, parlement
-see_also: parlement, senat, depute, dissolution, motion-de-censure
+see_also: glossaire-parlement, glossaire-senat, glossaire-depute, glossaire-dissolution, glossaire-motion-de-censure
 related: parcours:la-dissolution, parcours:le-49-3-et-la-motion-de-censure
 origin: ai-assisted
 published_at: 2026-11-07

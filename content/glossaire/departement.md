@@ -1,10 +1,10 @@
 ---
-slug: departement
+slug: glossaire-departement
 title: [EXEMPLE] Département
 summary: Collectivité territoriale administrée par le conseil départemental, élu pour six ans. Le département agit surtout pour les solidarités et il a la charge des collèges.
 variants: département, départements, conseil départemental, conseils départementaux, conseiller départemental, conseillers départementaux, conseillère départementale, conseillères départementales
 topics: collectivites
-see_also: commune, region, collectivite-territoriale, prefet
+see_also: glossaire-commune, glossaire-region, glossaire-collectivite-territoriale, glossaire-prefet
 related: parcours:le-role-de-chaque-elu, qui-decide:ecole
 origin: ai-assisted
 published_at: 2026-11-07

@@ -1,10 +1,10 @@
 ---
-slug: projet-de-loi
+slug: glossaire-projet-de-loi
 title: [EXEMPLE] Projet de loi
 summary: Texte de loi proposé par le Gouvernement. Il reçoit l'avis du Conseil d'État, passe en Conseil des ministres, puis il est examiné et voté par le Parlement.
 variants: projet de loi, projets de loi
 topics: institutions, parlement, gouvernement
-see_also: proposition-de-loi, amendement, navette-parlementaire, gouvernement
+see_also: glossaire-proposition-de-loi, glossaire-amendement, glossaire-navette-parlementaire, glossaire-gouvernement
 related: parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07

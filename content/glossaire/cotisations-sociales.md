@@ -1,10 +1,10 @@
 ---
-slug: cotisations-sociales
+slug: glossaire-cotisations-sociales
 title: [EXEMPLE] Cotisations sociales
 summary: Sommes versées par les salariés, les employeurs et les indépendants pour financer la protection sociale : santé, retraite, famille, accidents du travail.
 variants: cotisations sociales, cotisation sociale, cotisations salariales, cotisation salariale, cotisations patronales, cotisation patronale, charges sociales, part salariale, part patronale
 topics: travail, social, budget
-see_also: loi-de-financement-de-la-securite-sociale, convention-collective, syndicat
+see_also: glossaire-loi-de-financement-de-la-securite-sociale, glossaire-convention-collective, glossaire-syndicat
 origin: ai-assisted
 published_at: 2026-11-07
 updated_at: 2026-11-07

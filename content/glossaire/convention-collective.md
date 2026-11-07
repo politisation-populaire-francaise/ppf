@@ -1,10 +1,10 @@
 ---
-slug: convention-collective
+slug: glossaire-convention-collective
 title: [EXEMPLE] Convention collective
 summary: Texte négocié entre des représentants des employeurs et des syndicats de salariés, qui fixe les conditions de travail d'un secteur : salaires, congés, primes, droits et obligations.
 variants: convention collective, conventions collectives, convention collective de branche, conventions collectives de branche
 topics: travail, droits
-see_also: syndicat, greve, cotisations-sociales
+see_also: glossaire-syndicat, glossaire-greve, glossaire-cotisations-sociales
 origin: ai-assisted
 published_at: 2026-11-07
 updated_at: 2026-11-07

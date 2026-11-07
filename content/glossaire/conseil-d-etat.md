@@ -1,10 +1,10 @@
 ---
-slug: conseil-d-etat
+slug: glossaire-conseil-d-etat
 title: [EXEMPLE] Conseil d'État
 summary: Institution qui conseille le Gouvernement sur ses projets de loi, d'ordonnance et de décret, et qui est la plus haute juridiction pour les litiges avec l'administration.
 variants: Conseil d'État, Conseil d'Etat
 topics: institutions, justice
-see_also: decret, conseil-constitutionnel, projet-de-loi, ordonnance
+see_also: glossaire-decret, glossaire-conseil-constitutionnel, glossaire-projet-de-loi, glossaire-ordonnance
 related: qui-decide:manifester-qui-autorise
 origin: ai-assisted
 published_at: 2026-11-07

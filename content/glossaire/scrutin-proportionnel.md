@@ -1,10 +1,10 @@
 ---
-slug: scrutin-proportionnel
+slug: glossaire-scrutin-proportionnel
 title: [EXEMPLE] Scrutin proportionnel
 summary: Mode d'élection où les sièges sont répartis entre les listes selon leur part des voix. Une liste qui obtient 20 % des voix reçoit environ 20 % des sièges.
 variants: scrutin proportionnel, scrutins proportionnels, représentation proportionnelle, la proportionnelle, à la proportionnelle, plus forte moyenne
 topics: elections
-see_also: scrutin-majoritaire, suffrages-exprimes, senateur
+see_also: glossaire-scrutin-majoritaire, glossaire-suffrages-exprimes, glossaire-senateur
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07

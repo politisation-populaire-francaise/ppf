@@ -1,10 +1,10 @@
 ---
-slug: referendum
+slug: glossaire-referendum
 title: [EXEMPLE] Référendum
 summary: Vote par lequel les électeurs adoptent ou rejettent eux-mêmes un texte, en répondant oui ou non. Il peut être national ou local.
 variants: référendum, référendums, référendum local, référendums locaux, référendum d'initiative citoyenne, RIC
 topics: institutions, elections
-see_also: referendum-d-initiative-partagee, president-de-la-republique, constitution
+see_also: glossaire-referendum-d-initiative-partagee, glossaire-president-de-la-republique, glossaire-constitution
 related: parcours:le-referendum, parcours:la-revision-de-la-constitution
 origin: ai-assisted
 published_at: 2026-11-07

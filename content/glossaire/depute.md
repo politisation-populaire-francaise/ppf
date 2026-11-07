@@ -1,10 +1,10 @@
 ---
-slug: depute
+slug: glossaire-depute
 title: [EXEMPLE] Député
 summary: Membre de l'Assemblée nationale, élu pour cinq ans dans une circonscription au suffrage universel direct. Il vote les lois et contrôle le Gouvernement.
 variants: député, députés, députée, députées
 topics: institutions, parlement, elections
-see_also: assemblee-nationale, senateur, parlement, circonscription, scrutin-majoritaire
+see_also: glossaire-assemblee-nationale, glossaire-senateur, glossaire-parlement, glossaire-circonscription, glossaire-scrutin-majoritaire
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07

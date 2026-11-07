@@ -1,10 +1,10 @@
 ---
-slug: gouvernement
+slug: glossaire-gouvernement
 title: [EXEMPLE] Gouvernement
 summary: Équipe formée du Premier ministre et des ministres. Elle décide et conduit la politique du pays, dirige l'administration et doit garder le soutien de l'Assemblée nationale.
 variants: Gouvernement, gouvernements, membre du Gouvernement, membres du Gouvernement, Conseil des ministres, conseils des ministres
 topics: institutions, gouvernement
-see_also: premier-ministre, president-de-la-republique, assemblee-nationale, motion-de-censure, conseil-d-etat
+see_also: glossaire-premier-ministre, glossaire-president-de-la-republique, glossaire-assemblee-nationale, glossaire-motion-de-censure, glossaire-conseil-d-etat
 related: parcours:le-49-3-et-la-motion-de-censure, parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07

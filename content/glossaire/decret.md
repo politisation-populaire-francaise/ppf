@@ -1,10 +1,10 @@
 ---
-slug: decret
+slug: glossaire-decret
 title: [EXEMPLE] Décret
 summary: Décision écrite du Premier ministre ou du Président de la République. Un décret fixe des règles dans les domaines qui ne relèvent pas de la loi, ou précise comment une loi s'applique.
 variants: décret, décrets, décret d'application, décrets d'application
 topics: institutions, gouvernement
-see_also: ordonnance, premier-ministre, president-de-la-republique, conseil-d-etat
+see_also: glossaire-ordonnance, glossaire-premier-ministre, glossaire-president-de-la-republique, glossaire-conseil-d-etat
 related: parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07

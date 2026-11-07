@@ -1,10 +1,10 @@
 ---
-slug: procuration
+slug: glossaire-procuration
 title: [EXEMPLE] Procuration
 summary: Démarche par laquelle un électeur absent le jour du vote confie à un autre électeur le soin de voter à sa place, dans son propre bureau de vote.
 variants: procuration, procurations, vote par procuration
 topics: elections
-see_also: liste-electorale, abstention, suffrage-universel
+see_also: glossaire-liste-electorale, glossaire-abstention, glossaire-suffrage-universel
 related: parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07

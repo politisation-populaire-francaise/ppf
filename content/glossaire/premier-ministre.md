@@ -1,10 +1,10 @@
 ---
-slug: premier-ministre
+slug: glossaire-premier-ministre
 title: [EXEMPLE] Premier ministre
 summary: Chef du Gouvernement, nommé par le Président de la République. Il dirige l'action du Gouvernement, fait appliquer les lois et signe la plupart des décrets. Les députés peuvent le renverser.
 variants: Premier ministre, Première ministre, Premiers ministres
 topics: institutions, gouvernement
-see_also: gouvernement, president-de-la-republique, assemblee-nationale, motion-de-censure, 49-3, decret
+see_also: glossaire-gouvernement, glossaire-president-de-la-republique, glossaire-assemblee-nationale, glossaire-motion-de-censure, glossaire-49-3, glossaire-decret
 related: parcours:le-49-3-et-la-motion-de-censure
 origin: ai-assisted
 published_at: 2026-11-07

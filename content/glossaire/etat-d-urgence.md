@@ -1,10 +1,10 @@
 ---
-slug: etat-d-urgence
+slug: glossaire-etat-d-urgence
 title: [EXEMPLE] État d'urgence
 summary: Régime d'exception déclaré par décret en Conseil des ministres en cas de péril imminent pour l'ordre public ou de calamité publique. Il donne des pouvoirs renforcés aux autorités.
 variants: état d'urgence, états d'urgence
 topics: institutions, libertes
-see_also: article-16, gouvernement, decret
+see_also: glossaire-article-16, glossaire-gouvernement, glossaire-decret
 related: qui-decide:manifester-qui-autorise, fiche:droits-en-manifestation
 origin: ai-assisted
 published_at: 2026-11-07

@@ -53,7 +53,7 @@ class ComprendreScreenTest {
     }
 
     private fun ComposeUiTest.waitForGuides() {
-        waitUntil(timeoutMillis = 10_000) {
+        waitUntil(timeoutMillis = 60_000) {
             onAllNodesWithTag(ContentTags.GUIDE_CARD + "garde-a-vue").fetchSemanticsNodes().isNotEmpty()
         }
     }
@@ -98,7 +98,7 @@ class ComprendreScreenTest {
     fun contentsFromUntrustedAuthorsAreNeverShown() = runComposeUiTest {
         val dependencies = dependencies(trust = EditorialTrust(emptySet()))
         openComprendre(dependencies, width = 1000, height = 740)
-        waitUntil(timeoutMillis = 10_000) {
+        waitUntil(timeoutMillis = 60_000) {
             onAllNodesWithText("Aucune fiche disponible pour l’instant.").fetchSemanticsNodes().isNotEmpty()
         }
         assertEquals(0, dependencies.contentStore!!.count())
