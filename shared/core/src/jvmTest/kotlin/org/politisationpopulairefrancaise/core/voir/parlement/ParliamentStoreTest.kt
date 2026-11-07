@@ -65,6 +65,9 @@ class ParliamentStoreTest {
                 driver.execute(null, "DROP TABLE parliament_package", 0)
                 // Added by version 13 (referential of territories, 12.sqm), absent at version 11.
                 driver.execute(null, "DROP TABLE territoire_package", 0)
+                // Added by version 15 (testimonies of Agir, 14.sqm), absent at version 11.
+                driver.execute(null, "DROP TABLE testimony_file", 0)
+                driver.execute(null, "DROP TABLE testimony", 0)
                 driver.execute(null, "PRAGMA user_version = 11", 0)
             } finally {
                 driver.close()
