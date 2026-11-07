@@ -6,6 +6,18 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-07] Agir : publication des mobilisations et des appels
+- Statut : Intégré le 2026-11-07 (décisions de la propriétaire ; code de l'espace Agir, contrat commun `docs/integration/agir-contrat.md`) ; à reporter dans le cahier fonctionnel version 2.0
+- Concerne : cahier-fonctionnel.md, M1, M3 ; AG-02, AG-18, AP-02, AP-08, AP-09 ; points d'attention n° 6 et n° 12
+- Contexte : la première version de l'espace « Agir » (agenda des mobilisations, appels, annuaire des organisations, accueil) met en attente de relecture les contenus des comptes qui ne sont ni l'équipe ni une organisation vérifiée. Cinq questions posées par le développement.
+- **Décisions de la propriétaire (2026-11-07)** :
+  1. PPF, association loi 1901, peut lancer des appels à dons, comme les organisations vérifiées ; jamais pour un candidat ou un parti ;
+  2. pas de période probatoire pour une organisation nouvellement vérifiée : elle publie directement ;
+  3. l'auteur a le droit d'annuler son événement sans nouvelle relecture (et de clore son appel avec son bilan) ;
+  4. un événement encore en attente dont la date est passée est refusé automatiquement, avec un motif fixe ;
+  5. aucune limite de nombre sur les contenus envoyés en relecture.
+- Mise en œuvre : la limitation de débit générale de la publication (60 envois par minute et par compte, 600 au total), exigée par le cahier des charges (anti-spam, section 4), est conservée : elle ne limite pas le nombre de propositions, seulement leur cadence. La preuve de travail (type ALTCHA) reste à ajouter avant l'ouverture au public.
+
 ### [2026-11-06] Espace « Voir » : première version et questions ouvertes
 - Statut : À valider
 - Concerne : cahier-fonctionnel.md (M2, M4, M9, M13.2 ; futur module M17 « Mettre en lumière ») ; vision.md (pilier « Voir »)

@@ -25,6 +25,7 @@ Suite de l'entrée « Inventaire complet des fonctionnalités » de `docs/brains
    - B. Validation par l'équipe de PPF avant chaque publication.
    - C. Mixte : publication directe pour les organisations vérifiées depuis un certain temps et sans incident, validation préalable pour les nouvelles ; charte signée par chaque organisation lors de la vérification ; retrait possible à tout moment.
    - **Décision de la propriétaire (2026-11-04)** : option C. Le statut juridique de PPF pour ces contenus (simple hébergeur ou éditeur) reste à faire confirmer par un avocat, car il détermine sa responsabilité.
+   - **Mise à jour, décision de la propriétaire (2026-11-07)** : pas de période probatoire. Une organisation vérifiée publie directement dès sa vérification ; la modération après publication, le signalement par tous et le retrait possible à tout moment restent en place.
 7. **Partis politiques et candidats : peuvent-ils avoir un espace d'organisation ?** Une personne morale autre qu'un parti ne peut pas fournir à un candidat d'avantage, même en nature (article L52-8 du Code électoral) : un espace de publication gratuit offert à un candidat en campagne pourrait être regardé comme tel.
    - A. Exclure partis et candidats des espaces d'organisation ; ils restent présents dans « Voir » (fiches, votes, promesses) et dans les outils électoraux.
    - B. Les accepter, tous à égalité.
@@ -83,6 +84,7 @@ Suite de l'entrée « Inventaire complet des fonctionnalités » de `docs/brains
     - Décision : remplacée par le point d'attention n° 26, qui traite ensemble la messagerie et la protection du graphe social.
 12. **Appels à collecter des fonds (AP-08)**. PPF ne doit jamais détenir ni faire transiter l'argent des collectes lancées par d'autres : cela supposerait un statut d'établissement de paiement, et les fausses cagnottes sont une escroquerie courante.
     - **Décision de la propriétaire (2026-11-04)** : seules les organisations vérifiées peuvent lancer un appel à dons, qui renvoie vers leur propre page de collecte ou vers leur page HelloAsso. Un avertissement « vous quittez PPF » s'affiche avant d'ouvrir la page extérieure. Aucun appel à dons pour un candidat ou un parti : en période électorale, les dons à un candidat passent obligatoirement par son mandataire financier.
+    - **Mise à jour, décision de la propriétaire (2026-11-07)** : PPF elle-même, en tant qu'association loi 1901, peut aussi lancer des appels à dons (clés de l'équipe éditoriale). La règle « aucun appel à dons pour un candidat ou un parti » reste inchangée.
 13. **Mineurs : lycéens et élèves**. Ils sont au cœur du mouvement (mobilisation lycéenne) et font partie des publics de la vision.
     - Rappel du droit : en France, un mineur peut consentir seul au traitement de ses données à partir de 15 ans (article 45 de la loi Informatique et Libertés) ; en dessous, le consentement d'un parent est nécessaire (CNIL).
     - **Décision de la propriétaire (2026-11-04)** :
