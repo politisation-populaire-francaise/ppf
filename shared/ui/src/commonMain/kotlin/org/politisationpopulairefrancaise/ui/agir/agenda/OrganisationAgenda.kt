@@ -30,9 +30,10 @@ import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.agenda_organisation_none
 import org.politisationpopulairefrancaise.ui.resources.agenda_organisation_open
+import org.politisationpopulairefrancaise.ui.resources.agenda_upcoming_none
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
-/** Test tags of the agenda shown on the page of an organisation. */
+/** Test tags of the short lists of mobilizations (page of an organisation, "En direct"). */
 object OrganisationAgendaTags {
     const val LIST: String = "organisation-agenda"
     const val NONE: String = "organisation-agenda-none"
@@ -52,13 +53,40 @@ fun OrganisationAgenda(
     limit: Int = 5,
     onOpen: (Mobilization) -> Unit,
 ) {
+    UpcomingList(agenda, AgendaQuery(organizers = setOf(organiser)), stringResource(Res.string.agenda_organisation_none), limit, modifier, onOpen)
+}
+
+/**
+ * The next mobilizations of the agenda, the soonest first, for "En direct" (MA-02): at most [limit]
+ * of them; a tap opens one through [onOpen] (the shell shows it in "Carte").
+ */
+@Composable
+fun UpcomingMobilizations(
+    agenda: AgendaLibrary,
+    modifier: Modifier = Modifier,
+    limit: Int = 3,
+    onOpen: (Mobilization) -> Unit,
+) {
+    UpcomingList(agenda, AgendaQuery(), stringResource(Res.string.agenda_upcoming_none), limit, modifier, onOpen)
+}
+
+@Composable
+private fun UpcomingList(
+    agenda: AgendaLibrary,
+    query: AgendaQuery,
+    emptyText: String,
+    limit: Int,
+    modifier: Modifier,
+    onOpen: (Mobilization) -> Unit,
+) {
     LaunchedEffect(agenda) { agenda.start() }
-    val upcoming = AgendaQuery(organizers = setOf(organiser)).apply(agenda.known, agenda.now).take(limit)
+    // Cancelled events stay in the agenda, but they are not "coming".
+    val upcoming = query.apply(agenda.known, agenda.now).filterNot { it.cancelled }.take(limit)
     val palette = PpfTheme.palette
     Column(modifier.testTag(OrganisationAgendaTags.LIST), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         if (upcoming.isEmpty()) {
             Text(
-                stringResource(Res.string.agenda_organisation_none),
+                emptyText,
                 style = MaterialTheme.typography.bodyMedium,
                 color = palette.inkMuted,
                 modifier = Modifier.testTag(OrganisationAgendaTags.NONE),

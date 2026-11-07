@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "En direct" (cahier fonctionnel, parcours « Découvrir en 30 secondes » ; MA-01 to MA-06 ; D-037).
+     French, typographic apostrophe (’), no em dash. -->
+<resources>
+    <string name="live_now">Le direct</string>
+    <string name="live_alerts">Alertes</string>
+    <string name="live_alert_vote">Vote dans %1$d jours</string>
+    <string name="live_alert_vote_tomorrow">Vote demain</string>
+    <string name="live_alert_vote_today">Vote aujourd’hui</string>
+    <string name="live_alert_vote_text">%1$s, le %2$s</string>
+    <string name="live_alert_ban">Interdiction de manifester</string>
+    <string name="live_alert_ban_text">%1$s · %2$s</string>
+    <string name="live_alerts_none">Aucune alerte pour les quinze prochains jours.</string>
+    <string name="live_key_figures">Chiffres clés</string>
+    <string name="live_see_voir">Tout voir dans « Voir »</string>
+    <string name="live_upcoming">Prochaines mobilisations</string>
+    <string name="live_upcoming_soon">Les prochaines mobilisations s’afficheront ici avec l’agenda, en cours de préparation.</string>
+    <string name="live_headline">À la une</string>
+    <string name="live_headline_demand">Revendication à la une</string>
+    <string name="live_headline_open">Lire la revendication</string>
+    <string name="live_news">Dernières informations de PPF</string>
+    <string name="live_news_open">Voir dans le fil</string>
+    <string name="live_chronology">Derniers faits du mouvement</string>
+    <string name="live_chronology_open">Toute la chronologie</string>
+    <string name="live_empty">Les contenus ne sont pas encore disponibles sur cet appareil.</string>
+</resources>

@@ -231,4 +231,5 @@
     <string name="agenda_organisation_none">Aucune mobilisation à venir annoncée par cette organisation.</string>
     <string name="agenda_organisation_open">Ouvrir « %1$s » dans l’agenda</string>
     <string name="agenda_in_agir_title">Agenda des mobilisations</string>
+    <string name="agenda_upcoming_none">Aucune mobilisation annoncée pour l’instant.</string>
 </resources>

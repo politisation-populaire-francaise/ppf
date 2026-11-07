@@ -115,6 +115,18 @@ Il faut un compte (Mon espace) pour envoyer ; pour écrire et voir les vérifica
 
 Sur l'ordinateur (pour qui veut aller plus loin) : avec le serveur de développement (`gradlew :server:runDev`) et l'application de bureau branchée dessus (`PPF_SERVER_URL=http://localhost:8080`), la revendication part au serveur et affiche « Revendication envoyée en relecture », puis « En relecture » dans « Mes revendications ». Le serveur de développement liste les propositions en attente avec leur rapport à l'adresse http://localhost:8080/dev/revendications/proposals (sur l'ordinateur seulement) ; je peux simuler la décision de l'équipe pour vous la montrer.
 
+### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
+
+1. Touchez **En direct** dans la barre du bas (deuxième bouton).
+2. En haut, **le direct** : la dernière publication du thème « en direct » (fictive).
+3. **Alertes** : « Vote dans 5 jours » (motion de censure sur le budget, le 12 novembre) et « Vote dans 11 jours » (Sénat, le 18 novembre). Les jours se comptent à partir d'aujourd'hui : dans quelques jours, ces exemples disparaîtront d'eux-mêmes. Touchez une alerte : la fiche du texte s'ouvre dans « Voir » ; le bouton retour ramène au Fil.
+4. **Chiffres clés** : les quatre premiers de « Voir », avec leurs sources côte à côte ; touchez-en un pour ouvrir sa fiche.
+5. **Prochaines mobilisations** : une ligne dit que l'agenda arrive (il est en préparation dans une autre session).
+6. **À la une** : la revendication « devenue campagne » ; « Lire la revendication » l'ouvre dans le mur.
+7. Plus bas : les dernières publications de PPF et les derniers faits du mouvement.
+
+Sur l'ordinateur, l'écran se présente en deux colonnes.
+
 ### Tester l'espace « Voir » (ajouté le 6 novembre 2026, tard le soir)
 
 Tout ce que vous verrez est inventé et marqué [EXEMPLE] : personnes, pays, organisations et chiffres. Aucun compte n'est nécessaire, et tout marche sans réseau.

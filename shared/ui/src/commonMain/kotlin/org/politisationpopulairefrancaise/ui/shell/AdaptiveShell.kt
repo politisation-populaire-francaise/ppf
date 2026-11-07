@@ -63,6 +63,7 @@ import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.ui.endirect.EnDirectScreen
 import org.politisationpopulairefrancaise.ui.voir.VoirScreen
 import org.politisationpopulairefrancaise.ui.voir.VoirState
 import org.politisationpopulairefrancaise.ui.voir.rememberVoirState
@@ -78,6 +79,7 @@ import org.politisationpopulairefrancaise.ui.agir.AgirPlugged
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaLibrary
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaScreen
 import org.politisationpopulairefrancaise.ui.agir.agenda.OrganisationAgenda
+import org.politisationpopulairefrancaise.ui.agir.agenda.UpcomingMobilizations
 import org.politisationpopulairefrancaise.ui.agir.agenda.rememberAgendaLibrary
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsLibrary
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
@@ -247,6 +249,16 @@ private fun SpaceContent(
     val organisationName: (String) -> String? = { key -> organisationsLibrary.verified.organisationFor(key)?.name }
     when (selected) {
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
+        // The coming mobilisations will plug the agenda of "Agir" into EnDirectScreen(upcoming = ...).
+        Space.EN_DIRECT -> EnDirectScreen(
+            contentLibrary, voirState, modifier, onNavigate,
+            upcoming = { slotModifier ->
+                UpcomingMobilizations(agendaLibrary, slotModifier) { mobilization ->
+                    agendaLibrary.open(mobilization)
+                    onNavigate(Space.CARTE)
+                }
+            },
+        )
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)
         Space.AGIR -> {

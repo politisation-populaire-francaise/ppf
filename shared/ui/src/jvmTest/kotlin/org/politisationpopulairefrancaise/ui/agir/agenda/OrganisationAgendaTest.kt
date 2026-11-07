@@ -14,6 +14,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.agir.agenda.Mobilization
+import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationStatus
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import kotlin.test.Test
@@ -67,5 +68,36 @@ class OrganisationAgendaTest {
         }
         waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(OrganisationAgendaTags.NONE).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithTag(OrganisationAgendaTags.NONE).assertExists()
+    }
+
+    @Test
+    fun enDirectShowsTheNextMobilizationsButNotTheCancelledOnes() = runComposeUiTest {
+        // Today, before the bundled examples of the agenda (which the library imports too).
+        val kit = AgendaKit()
+        val device = AgendaDevice(withAccount = false)
+        listOf(
+            kit.mobilization("premiere", "[EXEMPLE] Première", start = AgendaClock.at(2026, 11, 13, 11)),
+            kit.mobilization("annulee", "[EXEMPLE] Annulée", start = AgendaClock.at(2026, 11, 13, 11, 15), status = MobilizationStatus.ANNULE),
+            kit.mobilization("deuxieme", "[EXEMPLE] Deuxième", start = AgendaClock.at(2026, 11, 13, 11, 30)),
+            kit.mobilization("troisieme", "[EXEMPLE] Troisième", start = AgendaClock.at(2026, 11, 13, 11, 45)),
+            kit.mobilization("quatrieme", "[EXEMPLE] Quatrième", start = AgendaClock.at(2026, 11, 13, 11, 50)),
+            kit.mobilization("passee", "[EXEMPLE] Passée", start = AgendaClock.at(2026, 11, 1, 10)),
+        ).forEach { device.store.store(it) }
+        setContent {
+            val scope = rememberCoroutineScope()
+            val agenda = remember {
+                AgendaLibrary(device.store, device.state, EditorialTrust.bundledExamples(), null, scope) { AgendaClock.NOW }
+            }
+            PpfTheme {
+                Box(Modifier.requiredSize(400.dp, 600.dp)) {
+                    UpcomingMobilizations(agenda) {}
+                }
+            }
+        }
+        waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(OrganisationAgendaTags.ROW).fetchSemanticsNodes().size == 3 }
+        onNodeWithText("[EXEMPLE] Première").assertExists()
+        onNodeWithText("[EXEMPLE] Troisième").assertExists()
+        onNodeWithText("[EXEMPLE] Annulée").assertDoesNotExist()
+        onNodeWithText("[EXEMPLE] Quatrième").assertDoesNotExist()
     }
 }
