@@ -99,6 +99,7 @@ fun main() {
     )
     println("Agir space: ${BundledContents.AGIR_FILES.joinToString { "$it ${bundled[it].orEmpty().size}" }}, review of held contents at /dev/held.")
     println("Voir: ${bundled[BundledContents.VOIR_FILE].orEmpty().size} block(s) of ${BundledContents.VOIR_FILE}, pages at http://localhost:$port/voir")
+    println("Comprendre: ${(listOf("fiches.json") + BundledContents.COMPRENDRE_FILES).joinToString { "$it ${bundled[it].orEmpty().size}" }}, pages at http://localhost:$port/comprendre")
     // The fictitious example set (PPF_RNE_SOURCE is never `official` outside production), imported at start.
     println("Directory of elected officials: example set, imported in the background, at /api/v1/elus and /api/v1/elus/69.")
     println("Territories: example set (real public figures, a few departments), at /api/v1/territoires and /api/v1/territoires/69.")

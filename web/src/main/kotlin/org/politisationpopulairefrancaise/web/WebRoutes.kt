@@ -11,6 +11,8 @@ import kotlinx.html.p
 import kotlinx.html.section
 import kotlinx.html.ul
 import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
+import org.politisationpopulairefrancaise.web.comprendre.comprendrePages
 import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.voir.voirPages
 
@@ -30,11 +32,13 @@ private val spaceDescriptions: Map<Space, String> = mapOf(
 
 /**
  * Routes of the web site. Mounted by the server. With a [voir] source (a database is configured),
- * the pages of "Voir" replace the placeholder of the space.
+ * the pages of "Voir" replace the placeholder of the space; likewise the pages of "Comprendre"
+ * with a [comprendre] source (D-091), which also serves the service worker of offline reading.
  */
-fun Route.webRoutes(voir: VoirSource? = null) {
+fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = null) {
     staticResources("/static", "static")
     voir?.let { voirPages(it) }
+    comprendre?.let { comprendrePages(it) }
 
     get("/") {
         call.respondHtml {
@@ -55,7 +59,7 @@ fun Route.webRoutes(voir: VoirSource? = null) {
         }
     }
 
-    Space.entries.filter { voir == null || it != Space.VOIR }.forEach { space ->
+    Space.entries.filter { (voir == null || it != Space.VOIR) && (comprendre == null || it != Space.COMPRENDRE) }.forEach { space ->
         get("/${space.id}") {
             call.respondHtml {
                 siteLayout(pageTitle = spaceLabels.getValue(space), currentSpace = space) {
