@@ -80,7 +80,7 @@ jobs:
         if: ${{ env.PPF_TEST_KEYSTORE_PASSWORD != '' }}
         run: echo "${{ secrets.PPF_TEST_KEYSTORE_B64 }}" | base64 -d > "$PPF_TEST_KEYSTORE"
       - name: Build, test and package
-        run: ./gradlew build :android:assemblePreview :desktop:packageDeb :server:buildFatJar --console=plain
+        run: ./gradlew build :android:assemblePreview :desktop:packageDeb :server:buildFatJar :tools:open-data-importer:buildFatJar --console=plain
       - name: Forbidden dependency groups
         run: bash tools/check-dependencies.sh
       - name: APK contents, not debuggable, test signature
@@ -107,7 +107,9 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: ppf-server
-          path: server/build/libs/ppf-server.jar
+          path: |
+            server/build/libs/ppf-server.jar
+            tools/open-data-importer/build/libs/ppf-open-data-importer.jar
           if-no-files-found: error
       - name: Upload test reports
         if: failure()
@@ -157,7 +159,7 @@ jobs:
         run: |
           for env in preproduction production; do
             mkdir -p "$RUNNER_TEMP/$env"
-            touch "$RUNNER_TEMP/$env/db_password" "$RUNNER_TEMP/$env/server_db_password"
+            touch "$RUNNER_TEMP/$env/db_password" "$RUNNER_TEMP/$env/server_db_password" "$RUNNER_TEMP/$env/import_key"
             sed "s#^PPF_SECRETS_DIR=.*#PPF_SECRETS_DIR=$RUNNER_TEMP/$env#" "infra/env/$env.env.example" > "$RUNNER_TEMP/$env.env"
             docker compose -f "infra/$env/compose.yml" --env-file "$RUNNER_TEMP/$env.env" config --quiet
           done
@@ -188,7 +190,7 @@ jobs:
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: ppf-server
-          path: server/build/libs
+          path: .
       - name: Build the image
         run: docker build -f infra/docker/server.Dockerfile --build-arg PPF_REVISION="$GITHUB_SHA" -t ppf-server:ci .
       - name: Start the preproduction project as on the server
@@ -218,6 +220,15 @@ jobs:
           ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' ppf-preprod-server-1 | awk '{print $1}')
           curl -fsS "http://$ip:8080/health" | tee /dev/stderr | grep -q '"environment":"preproduction"'
           curl -fsS "http://$ip:8080/api/v1/events?limit=3" | grep -q '"sig"'
+          # Parliamentary open data of the preproduction: the signed example packages of the image.
+          curl -fsS -o /dev/null "http://$ip:8080/api/v1/parlement"
+          # The importer is in the image and starts (example mode, nothing written outside a tmpfs).
+          set +e
+          docker run --rm --read-only --tmpfs /tmp:exec --entrypoint java ppf-server:ci -jar /app/ppf-open-data-importer.jar --source example --out /tmp/out --key /nonexistent
+          code=$?
+          set -e
+          echo "importer without key: exit $code (5 expected: key error, nothing written)"
+          [ "$code" -eq 5 ]
       - name: Refused in production with the example contents
         run: |
           set +e
@@ -250,7 +261,7 @@ jobs:
         uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
           name: ppf-server
-          path: server/build/libs
+          path: .
       - uses: sigstore/cosign-installer@756fe2d284c7292c4e9b62c8a28f1e5629c59532 # v4.1.3
         with:
           cosign-release: v3.1.4

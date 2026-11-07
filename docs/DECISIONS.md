@@ -614,3 +614,12 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **économie de données** : l'index (quelques centaines d'octets) est relu à l'ouverture ; chaque paquet seulement sur un geste, taille affichée ; « Votes du Sénat : bientôt » ;
   - liens avec « Voir » par l'étiquette `ppf-official-id` (`an:PA…`, `senat:…`, `pe:…` sur une personne ; `an-dossier:…` sur un texte) : lien vers les votes sur la fiche d'une personne, scrutins sous la fiche d'un texte ;
   - base locale : migration `11.sqm` (table des paquets et index courant).
+
+## D-075 (2026-11-07) Données parlementaires ouvertes : déploiement de l'importeur
+
+- Décisions techniques prises en autonomie (Directeur technique), pour l'outil de « Voir » (D-064, `docs/integration/voir-donnees-import.md`) :
+  - **une seule image signée** : le jar de l'importeur (`ppf-open-data-importer.jar`, environ 31 Mo) et les paquets d'exemple signés entrent dans l'image du serveur, construite et signée par l'intégration continue (D-070) ; pas de deuxième chaîne d'approvisionnement ;
+  - **préproduction** : elle sert directement les paquets d'exemple de l'image (`PPF_OPEN_DATA_DIR=/app/parlement-examples`, lecture seule) ; elle n'importe jamais de données réelles et ne détient aucune clé d'import ;
+  - **production** : service `open-data-importer` lancé une fois par exécution (`ppf-open-data-import`), son propre utilisateur (UID 10003), le seul à lire la clé d'import (fichier secret), son propre réseau avec une sortie vers les seules sources officielles (`infra/EGRESS.md`), jamais la base ; il écrit `/srv/ppf/production/open-data`, monté en lecture seule dans le serveur ; mémoire limitée à 512 Mo jusqu'à la mesure sur les vrais fichiers ; minuteurs `ppf-open-data-daily` (Assemblée et Sénat, 5 h 20) et `ppf-open-data-weekly` (Parlement européen, lundi 5 h 50) installés mais activés seulement au lancement public, quand la clé d'import de production existera et figurera dans `OpenDataKeys` ;
+  - l'intégration continue vérifie que la préproduction sert les paquets d'exemple et que l'importeur, présent dans l'image, refuse de tourner sans clé (code 5).
+- Reste à décider avant le lancement : où vit la clé d'import de production (sur le serveur dans son conteneur, ou dans le service de signature séparé).

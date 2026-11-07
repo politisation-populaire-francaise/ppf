@@ -27,6 +27,10 @@ RUN useradd --system --uid 10001 --user-group --no-create-home --shell /usr/sbin
 WORKDIR /app
 COPY server/build/libs/ppf-server.jar /app/ppf-server.jar
 COPY shared/ui/src/commonMain/composeResources/files/contents/ /app/examples/
+# Parliamentary open data (Voir, D-064): the signed example packages, served as they are by the
+# preproduction (no import key on the server there), and the one-shot importer of the production.
+COPY shared/ui/src/commonMain/composeResources/files/parlement/ /app/parlement-examples/
+COPY tools/open-data-importer/build/libs/ppf-open-data-importer.jar /app/ppf-open-data-importer.jar
 
 USER 10001
 ENV PORT=8080

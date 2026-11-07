@@ -3,4 +3,6 @@
 # (keys, .env, build caches) can ever slip into an image.
 *
 !server/build/libs/ppf-server.jar
+!tools/open-data-importer/build/libs/ppf-open-data-importer.jar
+!shared/ui/src/commonMain/composeResources/files/parlement/*.json
 !shared/ui/src/commonMain/composeResources/files/contents/*.json
