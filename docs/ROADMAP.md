@@ -86,6 +86,18 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 - Vue carte : en cours (bibliothèque de rendu et tuiles auto-hébergées, sans coût en dehors de l'espace disque du futur serveur).
 - Annuaire officiel des élus : décidé et fait le 7 novembre 2026 (D-047) ; reste à valider la réutilisation des résultats des départementales de 2021 pour les 276 communes partagées entre plusieurs cantons (brainstorming du cahier des charges, entrée « Licence des résultats des départementales de 2021 », À valider).
 
+## À essayer sur un vrai téléphone (phase de test et débogage)
+
+Reporté par la propriétaire (7 novembre 2026) : rien n'est bloqué en attendant ces essais.
+
+- Vue carte de l'agenda (D-046) : jamais vue dessinée (aucun émulateur sur l'ordinateur, moteur natif absent des tests JVM) : fond de la France, points des mobilisations, appui sur un point, zoom, recentrage, mode sombre, « Économiseur de données » d'Android ; repli prévu si le moteur échoue : MapLibre Native Android derrière la même interface.
+- « Ajouter à mon agenda » (partage du fichier .ics vers l'agenda du téléphone).
+- Participation publique d'une organisation et co-organisation confirmée (D-045), avec un serveur de préproduction.
+
+## Publication des applications
+
+- Taille de l'APK d'essai : 38 Mo, dont environ 21,5 Mo pour les bibliothèques natives du moteur de carte (MapLibre, trois architectures). Pour la publication : un APK par architecture (environ 26 Mo pour arm64) ou un paquet AAB pour les magasins ; l'APK universel reste celui de la propriétaire pendant le développement.
+
 ## À faire relire par un avocat avant l'ouverture publique
 
 Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture juridique à la fin.
