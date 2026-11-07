@@ -59,6 +59,7 @@ require '^assets/composeResources/[^/]+/files/contents/parcours\.json$' "bundled
 require '^assets/composeResources/[^/]+/files/contents/comprendre\.json$' "bundled contents of Comprendre (comprendre.json)"
 require '^assets/composeResources/[^/]+/files/contents/revendications\.json$' "bundled demands (revendications.json)"
 require '^assets/composeResources/[^/]+/files/contents/voir\.json$' "bundled contents of Voir (voir.json)"
+require '^assets/composeResources/[^/]+/files/contents/decider\.json$' "bundled contents of Decider (decider.json)"
 require '^assets/composeResources/[^/]+/font/atkinson_hyperlegible_regular\.ttf$' "bundled font (Atkinson Hyperlegible)"
 for abi in arm64-v8a armeabi-v7a x86_64; do
     require "^lib/$abi/libsecp256k1-jni\.so$" "libsecp256k1 for $abi"
