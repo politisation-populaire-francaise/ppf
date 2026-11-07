@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.app
 
+import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,6 +34,8 @@ class MainActivity : ComponentActivity() {
             identityStore = AndroidIdentityStore(applicationContext),
             database = AndroidDatabase.open(applicationContext),
             remote = remote,
+            // The published build trusts the production import key only; test builds the preproduction and the examples.
+            openDataTrust = if (BuildConfig.BUILD_TYPE == "release") OpenDataKeys.release() else OpenDataKeys.testBuilds(),
         )
         setContent {
             PpfApp(dependencies)
