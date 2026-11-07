@@ -9,6 +9,9 @@ import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasAnyDescendant
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
@@ -106,7 +109,7 @@ private class Harness(val transport: FakeTransport) {
 }
 
 @OptIn(ExperimentalTestApi::class)
-private fun ComposeUiTest.showTestimony(keys: IdentityKeys? = IdentityKeys.generate(), width: Int = 420, height: Int = 900, dark: Boolean = false, transport: FakeTransport = FakeTransport()): Harness {
+private fun ComposeUiTest.showTestimony(keys: IdentityKeys? = IdentityKeys.generate(), width: Int = 420, height: Int = 760, dark: Boolean = false, transport: FakeTransport = FakeTransport()): Harness {
     val harness = Harness(transport)
     val picker = object : ImagePicker {
         override val available: Boolean = true
@@ -134,6 +137,12 @@ private fun ComposeUiTest.showTestimony(keys: IdentityKeys? = IdentityKeys.gener
     return harness
 }
 
+/** A card or a column holds its texts in its children: look for one under the tagged node. */
+@OptIn(ExperimentalTestApi::class)
+private fun ComposeUiTest.assertHasText(tag: String, text: String) {
+    onNode(hasTestTag(tag) and hasAnyDescendant(hasText(text, substring = true))).assertExists()
+}
+
 @OptIn(ExperimentalTestApi::class)
 class TestimonyScreenTest {
     @Test
@@ -155,7 +164,8 @@ class TestimonyScreenTest {
         onNodeWithTag(TestimonyTags.ADD_PHOTO).performScrollTo().performClick()
         awaitTag(MediaTags.PREVIEW)
         // What the cleaning removes is said plainly.
-        onNodeWithTag(MediaTags.REMOVED).performScrollTo().assertTextContains("position GPS", substring = true)
+        onNodeWithTag(MediaTags.REMOVED).performScrollTo()
+        assertHasText(MediaTags.REMOVED, "position GPS")
         // Two zones: one at the centre with the button, one placed then moved and enlarged.
         onNodeWithTag(MediaTags.ADD_ZONE).performScrollTo().performClick()
         onNodeWithTag(MediaTags.ADD_ZONE).performClick()
@@ -177,7 +187,7 @@ class TestimonyScreenTest {
         onNodeWithTag(TestimonyTags.SEND).performScrollTo().performClick()
         waitUntil(timeoutMillis = 30_000) { harness.transport.sent.isNotEmpty() }
         awaitTag(TestimonyTags.NEW)
-        onNodeWithTag(TestimonyTags.STATE).assertTextContains("attend la relecture", substring = true)
+        assertHasText(TestimonyTags.STATE, "attend la relecture")
 
         val outgoing = harness.transport.sent.single()
         val moderation = LocalMessagingSigner(TestimonyRecipients.exampleModerationKeys())
@@ -202,7 +212,8 @@ class TestimonyScreenTest {
         harness.transport.states[outgoing.id] = TestimonyState(outgoing.id, HeldStatus.REJECTED, NOW, NOW + 60, "[EXEMPLE] Faits déjà publiés.")
         harness.testimonies.refresh()
         waitUntil(timeoutMillis = 10_000) { harness.testimonies.mine.singleOrNull()?.reason != null }
-        onNodeWithTag(TestimonyTags.MINE_ITEM + outgoing.id).performScrollTo().assertTextContains("Refusé", substring = true)
+        onNodeWithTag(TestimonyTags.MINE_ITEM + outgoing.id).performScrollTo()
+        assertHasText(TestimonyTags.MINE_ITEM + outgoing.id, "Refusé")
         // The draft is gone from memory.
         assertEquals("", harness.testimonies.text)
         assertNull(harness.testimonies.photo)
@@ -216,7 +227,7 @@ class TestimonyScreenTest {
         onNodeWithTag(TestimonyTags.CHARTER).performScrollTo().performClick()
         onNodeWithTag(TestimonyTags.SEND).performScrollTo().performClick()
         awaitTag(TestimonyTags.NEW)
-        onNodeWithTag(TestimonyTags.STATE).assertTextContains("dès que le réseau reviendra", substring = true)
+        assertHasText(TestimonyTags.STATE, "dès que le réseau reviendra")
         assertEquals(1, harness.store.unsent().size)
         transport.reachable = true
         harness.testimonies.refresh()
@@ -238,11 +249,11 @@ class TestimonyScreenTest {
 
     @Test
     fun answeringACallLinksTheTestimonyToIt() = runComposeUiTest {
-        val harness = showTestimony(width = 1280, height = 800)
+        val harness = showTestimony(width = 1000, height = 740)
         val address = "30023:${"a".repeat(64)}:temoins-exemple"
         harness.testimonies.answer(address, "[EXEMPLE] Appel à témoins fictif")
         awaitTag(TestimonyTags.CALL)
-        onNodeWithTag(TestimonyTags.CALL).assertTextContains("Appel à témoins fictif", substring = true)
+        assertHasText(TestimonyTags.CALL, "Appel à témoins fictif")
         onNodeWithTag(TestimonyTags.TEXT).performScrollTo().performTextInput("[EXEMPLE] J'étais devant la mairie et j'ai vu la scène décrite par l'appel.")
         onNodeWithTag(TestimonyTags.CHARTER).performScrollTo().performClick()
         onNodeWithTag(TestimonyTags.SEND).performScrollTo().assertIsEnabled().performClick()
@@ -250,7 +261,7 @@ class TestimonyScreenTest {
         val opened = TestimonyReader.open(harness.transport.sent.single().submission.envelope, LocalMessagingSigner(TestimonyRecipients.exampleModerationKeys()))
         assertEquals(address, opened.callAddress)
         awaitTag(TestimonyTags.MINE_ITEM + harness.transport.sent.single().id)
-        onNodeWithTag(TestimonyTags.MINE_ITEM + harness.transport.sent.single().id).assertTextContains("en réponse à un appel", substring = true)
+        assertHasText(TestimonyTags.MINE_ITEM + harness.transport.sent.single().id, "en réponse à un appel")
     }
 
     private fun fits(width: Int, height: Int, dark: Boolean) = runComposeUiTest {
@@ -260,13 +271,13 @@ class TestimonyScreenTest {
     }
 
     @Test
-    fun theFormFitsAPhoneInLight() = fits(360, 780, dark = false)
+    fun theFormFitsAPhoneInLight() = fits(360, 740, dark = false)
 
     @Test
-    fun theFormFitsATabletInDark() = fits(800, 1100, dark = true)
+    fun theFormFitsATabletInDark() = fits(760, 740, dark = true)
 
     @Test
-    fun theFormFitsAComputer() = fits(1440, 900, dark = false)
+    fun theFormFitsAComputer() = fits(1000, 740, dark = false)
 
     @Test
     fun theLetteredDatesBecomeIsoDates() {
