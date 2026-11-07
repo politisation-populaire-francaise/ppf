@@ -490,7 +490,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **transport** : niveau national (régions, départements, collectivités, outre-mer et index des paquets) **embarqué** dans l'application et servi par `GET /api/v1/territoires` ; paquets par département **séparés** de ceux de l'annuaire des élus (`GET /api/v1/territoires/{code}`) ; index des noms de toutes les communes téléchargé sur geste (`communes`) ; mêmes règles HTTP que l'annuaire (empreinte, `ETag`, gzip) ;
   - **sources du serveur** : `example` par défaut (vrais chiffres publics de l'Insee pour le Rhône, Paris, la Corse-du-Sud, la Martinique et trois collectivités d'outre-mer, marqués comme jeu d'exemple, et tout le niveau national) ; `official` en production, ou en préproduction avec `PPF_TERRITOIRES_REAL_IN_PREPRODUCTION=true` (décision de la propriétaire en attente) ; un seul hôte sortant de plus, `api.insee.fr` ;
   - **étiquette facultative `ppf-territory-code`** à côté du libellé libre `ppf-territory` (FORMATS, section 4 nonies) ; le serveur des revendications l'acceptera à l'entrée dans `main` (pôle « Décider ») ;
-  - **numéros provisoires** : migration locale `11.sqm` (schéma 12 ; le registre prévoyait `15.sqm`, mais les numéros 11 à 14 n'existent pas encore dans la branche) et Flyway `V11__territoires.sql`, à renommer par la session principale à l'entrée dans `main` si nécessaire.
+  - **numéros de migration** : migration locale `12.sqm` (schéma 13) et Flyway `V7__territoires.sql`, numéros pris à l'entrée dans `main` le 7 novembre 2026 (les suivants des plus hauts de `main`, règle du registre ; prévus `15.sqm` et `V11`).
 - Reste : chiffres de Mayotte (recensement de 2017, puis décret attendu fin 2026) et des collectivités du Pacifique à vérifier puis ajouter à `server/src/main/resources/territoires/outre-mer.csv` ; première importation réelle en production ; copie embarquée à remplacer par le niveau national officiel une fois la production en route ; écrans de « Décider » ; décision du Bureau de l'Assemblée sur la domiciliation (non lue).
 
 ## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
@@ -603,3 +603,27 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 ## D-057 (2026-11-07) Grille de l'indice de gravité des violences policières (décision de la propriétaire)
 
 - La propriétaire valide le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe) la grille en cinq niveaux proposée par le pôle « Voir » : 1 sans incapacité (pas d'ITT), 2 blessure légère (ITT de 8 jours ou moins), 3 blessure grave (ITT de plus de 8 jours), 4 mutilation ou infirmité permanente, 5 décès ; pour chaque cas : mineur ou non, arme ou moyen en cause, niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule) ; cas déclaratifs comptés à part, jamais mélangés aux cas vérifiés ; l'indice d'une journée est la répartition entre les cinq niveaux, jamais une note unique. Code : à venir (feuille de route de « Voir », point 9).
+
+## D-064 (2026-11-07) Données ouvertes du Parlement : import séparé, paquets signés, minimisation
+
+- Contexte : feuille de route de « Voir », point 1 (« Oui, commencez », 7 novembre 2026) ; cahier fonctionnel 2.0, M20 et M17 ; contrat `docs/integration/voir-donnees-ouvertes.md` ; sources vérifiées et structure relevée sur les vrais fichiers (téléchargés une fois avec l'accord de la propriétaire, puis supprimés) : `docs/integration/voir-donnees-sources.md` ; outil : `docs/integration/voir-donnees-import.md`.
+- Décisions techniques prises en autonomie (chef d'équipe et pôle « Voir ») :
+  - **outil d'import séparé** `tools/open-data-importer` (`ppf-open-data-importer.jar`), lancé une fois par minuteur (Assemblée et Sénat chaque jour, Parlement européen chaque semaine), dans un conteneur à part avec son propre utilisateur, **seul à lire la clé d'import** ; le serveur sert les paquets d'un dossier en lecture seule (`GET /api/v1/parlement`, `/api/v1/parlement/{paquet}`, ETag, 304) ;
+  - **clé d'import dédiée** (secp256k1, Schnorr) distincte des clés de la plateforme et éditoriales ; l'index est un **événement NIP-01** (kind 30078, `d` = `ppf:parlement-index`) ; l'application ne lui fait confiance que pour ces paquets (`OpenDataKeys`, rotation par liste) ;
+  - **anti-retour en arrière** : un index plus ancien que celui de l'appareil est refusé ; « Données du … » affiché, avertissement après 14 jours ;
+  - **import refusé** si les membres ou les scrutins baissent de plus de 20 % (code de sortie 3), ensemble précédent gardé ; lecture des fichiers officiels en flux (mémoire limitée) ;
+  - **minimisation** : seulement le mandat (nom, chambre, groupe, territoire, début du mandat, page officielle, parti national d'un eurodéputé) ; jamais date de naissance, profession, sexe, civilité, adresses, place dans l'hémicycle, photo ; jamais de déclaration de patrimoine ;
+  - **jeux fictifs [EXEMPLE] au format officiel** par défaut (développement, tests, préproduction) et paquets d'exemple intégrés à l'application ; aucune donnée réelle dans le dépôt ;
+  - hors première version, prévus en version 2 : votes nominatifs du Sénat (copie PostgreSQL de Dosleg), répertoire des représentants d'intérêts consultable sans rapprochement, votes de la France au Conseil de l'Union européenne, pages du site.
+
+## D-065 (2026-11-07) Parlementaires et scrutins dans « Voir »
+
+- Contexte : contrat `voir-donnees-ouvertes.md`, sections 4 et 5 ; détail : `docs/integration/voir-donnees-app.md`.
+- Décisions techniques prises en autonomie (chef d'équipe et pôle « Voir ») :
+  - carte « Tous les parlementaires et leurs votes » sur l'axe « Le pouvoir », après les responsables publics ; liste avec recherche et filtres (chambre, groupe), tri par nom ; fiche d'un parlementaire aux rubriques identiques pour tous ; page d'un scrutin avec le tableau par groupe ;
+  - **votes écrits en toutes lettres** (« Pour », « Contre », « Abstention », « Non-votant ») **en couleurs neutres**, avec la raison d'un non-vote, « par délégation » et la mise au point à côté du vote enregistré ;
+  - **participation** : part des scrutins publics du mandat présents sur l'appareil où le membre a voté, avec sa définition sur chaque fiche (« Ne mesure pas le travail en commission ni les autres activités ») ; aucun chiffre plutôt qu'un faux 0 % ; **jamais de classement** ;
+  - mention partout « D'après les données ouvertes de l'Assemblée nationale (ou du Sénat, du Parlement européen), mises à jour le … ; réutilisation par PPF, sans lien avec ces institutions » ; bandeau « Données fictives [EXEMPLE] » ;
+  - **économie de données** : l'index (quelques centaines d'octets) est relu à l'ouverture ; chaque paquet seulement sur un geste, taille affichée ; « Votes du Sénat : bientôt » ;
+  - liens avec « Voir » par l'étiquette `ppf-official-id` (`an:PA…`, `senat:…`, `pe:…` sur une personne ; `an-dossier:…` sur un texte) : lien vers les votes sur la fiche d'une personne, scrutins sous la fiche d'un texte ;
+  - base locale : migration `12.sqm` (table des paquets et index courant).

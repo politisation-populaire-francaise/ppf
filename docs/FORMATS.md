@@ -543,9 +543,9 @@ Forme exacte : `^(fr|reg:[0-9]{2}|dep:(0[1-9]|1[0-9]|2[1-9AB]|[3-8][0-9]|9[0-5]|
 
 ### Sur l'appareil : schéma local en version 12
 
-Migration `migrations/11.sqm` (schéma 11 vers 12, numéro provisoire), identique à `Territoires.sq` : table `territoire_package(code, sha256, json, built_on, downloaded_at)` : le niveau national quand une copie plus récente que celle de l'application a été vérifiée (`national`), les paquets téléchargés et l'index des noms (`communes`). Jamais envoyée. La copie embarquée est `shared/ui/src/commonMain/composeResources/files/territoires/national.json`, identique à celle que le serveur construit à partir du jeu d'exemple (vérifié par `TerritoiresBundleTest`).
+Migration `migrations/12.sqm` (schéma 12 vers 13), identique à `Territoires.sq` : table `territoire_package(code, sha256, json, built_on, downloaded_at)` : le niveau national quand une copie plus récente que celle de l'application a été vérifiée (`national`), les paquets téléchargés et l'index des noms (`communes`). Jamais envoyée. La copie embarquée est `shared/ui/src/commonMain/composeResources/files/territoires/national.json`, identique à celle que le serveur construit à partir du jeu d'exemple (vérifié par `TerritoiresBundleTest`).
 
-### Sur le serveur : migration Flyway `V11__territoires.sql`
+### Sur le serveur : migration Flyway `V7__territoires.sql`
 
 | Table | Rôle |
 |---|---|
@@ -557,6 +557,9 @@ Migration `migrations/11.sqm` (schéma 11 vers 12, numéro provisoire), identiqu
 | `PPF_TERRITOIRES_SOURCE` | `example` (jeu embarqué, ne contacte personne) ou `official` (Insee, data.gouv.fr, La Poste), suivi en production, ou en préproduction avec la variable suivante ; ailleurs le jeu d'exemple est servi | `example` |
 | `PPF_TERRITOIRES_REAL_IN_PREPRODUCTION` | `true` pour servir les vraies statistiques en préproduction (décision de la propriétaire) | aucune |
 | `PPF_TERRITOIRES_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 30 |
+## 4 octies. Données ouvertes du Parlement (D-064, D-065)
+
+Index : événement NIP-01, kind 30078, `d` = `ppf:parlement-index`, signé par une clé d'import (`OpenDataKeys`) ; `content` = l'index JSON (`example`, `importedOn`, `sources` avec nom, adresse, licence et date, `packages` avec nom, sha256 et taille). Paquets : `membres` (membres et groupes), `scrutins-an-AAAA-MM`, `votes-pe-AAAA-MM` (scrutins avec décomptes, décompte par groupe, positions `pour`, `contre`, `abstention`, `nonVotant`, `delegated`, `corrections` de type `mise-au-point` ou `dysfonctionnement`, `notVotingCauses`). Identifiants préfixés : `an:PA…`, `senat:…`, `pe:…`, scrutins `an:17:<numéro>`, dossiers `an-dossier:DLR5L17N…`. Code de circonscription : département puis numéro sur deux chiffres (`0101`, `2A01`, `97101`), commun avec l'annuaire des élus. Une brique de « Voir » peut porter `ppf-official-id` (personne ou texte). Modèles Kotlin : `core/voir/parlement/ParliamentFormat.kt` ; détail dans `docs/integration/voir-donnees-ouvertes.md`, section 3.
 
 ## 5. API du serveur (version 1)
 

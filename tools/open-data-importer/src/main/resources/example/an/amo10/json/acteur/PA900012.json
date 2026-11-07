@@ -1,0 +1,106 @@
+{
+ "acteur": {
+  "@xmlns": "http://schemas.assemblee-nationale.fr/referentiel",
+  "uid": {
+   "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+   "@xsi:type": "IdActeur_type",
+   "#text": "PA900012"
+  },
+  "etatCivil": {
+   "ident": {
+    "civ": "M.",
+    "prenom": "[EXEMPLE] Lucien",
+    "nom": "Abgrall",
+    "alpha": "Abgrall",
+    "trigramme": "ABG"
+   },
+   "infoNaissance": {
+    "dateNais": "1970-01-01",
+    "villeNais": "[EXEMPLE] Ville fictive",
+    "depNais": "[EXEMPLE]",
+    "paysNais": "[EXEMPLE]"
+   },
+   "dateDeces": null
+  },
+  "profession": {
+   "libelleCourant": "[EXEMPLE] Profession fictive",
+   "socProcINSEE": {
+    "catSocPro": "[EXEMPLE]",
+    "famSocPro": "[EXEMPLE]"
+   }
+  },
+  "uri_hatvp": null,
+  "adresses": {
+   "adresse": [
+    {
+     "@xsi:type": "AdresseMail_type",
+     "uid": "AD900012",
+     "type": "15",
+     "typeLibelle": "Mèl",
+     "valElec": "exemple@example.invalid"
+    },
+    {
+     "@xsi:type": "AdressePostale_type",
+     "uid": "AD800012",
+     "type": "0",
+     "typeLibelle": "Adresse officielle",
+     "numeroRue": "1",
+     "nomRue": "[EXEMPLE] Rue fictive",
+     "codePostal": "00000",
+     "ville": "[EXEMPLE]"
+    }
+   ]
+  },
+  "mandats": {
+   "mandat": {
+    "@xsi:type": "MandatParlementaire_type",
+    "uid": "PM900012",
+    "acteurRef": "PA900012",
+    "legislature": "17",
+    "typeOrgane": "ASSEMBLEE",
+    "dateDebut": "2024-07-08",
+    "datePublication": "2024-07-10",
+    "dateFin": null,
+    "mandature": {
+     "datePriseFonction": "2024-07-08",
+     "causeFin": null,
+     "placeHemicycle": "112",
+     "mandatRemplaceRef": null
+    },
+    "infosQualite": {
+     "codeQualite": "membre",
+     "libQualite": "membre",
+     "libQualiteSex": "membre"
+    },
+    "organes": {
+     "organeRef": "PO900000"
+    },
+    "election": {
+     "lieu": {
+      "region": "[EXEMPLE]",
+      "regionType": "Métropolitain",
+      "departement": "Loire-Atlantique",
+      "numDepartement": "44",
+      "numCirco": "7"
+     },
+     "causeMandat": "élections générales",
+     "refCirconscription": "PO990012"
+    },
+    "suppleants": {
+     "suppleant": {
+      "dateDebut": "2024-07-08",
+      "dateFin": null,
+      "suppleantRef": "PA980012"
+     }
+    },
+    "collaborateurs": {
+     "collaborateur": {
+      "qualite": "M.",
+      "prenom": "[EXEMPLE] Collaborateur",
+      "nom": "Fictif"
+     }
+    }
+   }
+  }
+ }
+}

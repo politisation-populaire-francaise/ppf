@@ -112,25 +112,25 @@ class DatabaseMigrationTest {
         // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm);
         // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm);
         // 10: answered calls (9.sqm); 11: directory of elected officials (10.sqm);
-        // 12: referential of territories (11.sqm, provisional number).
-        assertEquals(12L, PpfDatabase.Schema.version)
+        // 12: parliamentary open data (11.sqm), 13: referential of territories (12.sqm).
+        assertEquals(13L, PpfDatabase.Schema.version)
     }
 
     @Test
-    fun aVersion11DatabaseGainsTheTerritoriesAndKeepsTheDirectory() {
+    fun aVersion12DatabaseGainsTheTerritoriesAndKeepsTheDirectory() {
         val file = tempDatabaseFile()
         writeVersion1Database(file)
         JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}").let { driver ->
             try {
-                PpfDatabase.Schema.migrate(driver, 1, 11)
+                PpfDatabase.Schema.migrate(driver, 1, 12)
                 driver.execute(null, "INSERT INTO elus_commune(id, commune_code, department_code) VALUES (0, '69123', '69')", 0)
-                driver.execute(null, "PRAGMA user_version = 11", 0)
+                driver.execute(null, "PRAGMA user_version = 12", 0)
             } finally {
                 driver.close()
             }
         }
         val database = JvmDatabase.open(file)
-        assertEquals(12L, userVersion(file))
+        assertEquals(13L, userVersion(file))
         assertEquals(ChosenCommune("69123", "69"), ElusStore(database).commune())
 
         val territoires = org.politisationpopulairefrancaise.core.territoires.TerritoiresStore(database)

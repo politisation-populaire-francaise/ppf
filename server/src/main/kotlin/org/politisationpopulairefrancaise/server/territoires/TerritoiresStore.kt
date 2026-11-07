@@ -24,7 +24,7 @@ data class ServedTerritoires(
 /** Where the last import attempt stands, for the schedule of the next one. */
 data class TerritoiresAttempt(val source: String, val status: String, val at: Instant)
 
-/** The tables of V11__territoires.sql. One import at a time across processes (an advisory lock). */
+/** The tables of V7__territoires.sql. One import at a time across processes (an advisory lock). */
 class TerritoiresStore(private val dataSource: DataSource) {
 
     /** Stores a successful import and serves it, in one transaction; false when another import holds the lock. */

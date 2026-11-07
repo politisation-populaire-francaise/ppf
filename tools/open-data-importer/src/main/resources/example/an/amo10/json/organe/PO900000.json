@@ -1,0 +1,15 @@
+{
+ "organe": {
+  "uid": "PO900000",
+  "codeType": "ASSEMBLEE",
+  "libelle": "[EXEMPLE] Assemblée nationale de la 17e législature",
+  "libelleAbrege": "AN",
+  "libelleAbrev": "AN",
+  "viMoDe": {
+   "dateDebut": "2024-07-08",
+   "dateAgrement": null,
+   "dateFin": null
+  },
+  "legislature": "17"
+ }
+}

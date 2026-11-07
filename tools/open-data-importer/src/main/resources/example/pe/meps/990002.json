@@ -1,0 +1,66 @@
+{
+ "data": [
+  {
+   "id": "person/990002",
+   "type": "Person",
+   "identifier": "990002",
+   "label": "[EXEMPLE] Romain TAILLEFER",
+   "familyName": "Taillefer",
+   "givenName": "[EXEMPLE] Romain",
+   "bday": "1970-01-01",
+   "placeOfBirth": "[EXEMPLE] Ville fictive",
+   "citizenship": "http://publications.europa.eu/resource/authority/country/FRA",
+   "img": "https://example.invalid/exemple.jpg",
+   "hasEmail": "mailto:exemple@example.invalid",
+   "hasGender": "http://publications.europa.eu/resource/authority/human-sex/NAP",
+   "contactPoint": [
+    {
+     "type": "ContactPoint",
+     "hasTelephone": "tel:+0000000000"
+    }
+   ],
+   "hasMembership": [
+    {
+     "id": "membership/990002-1",
+     "type": "Membership",
+     "identifier": "990002-1",
+     "membershipClassification": "def/ep-entities/EU_POLITICAL_GROUP",
+     "organization": "org/990201",
+     "memberDuring": {
+      "type": "PeriodOfTime",
+      "startDate": "2024-07-16"
+     },
+     "role": "def/ep-roles/MEMBER",
+     "membershipPrincipalCountry": "FR"
+    },
+    {
+     "id": "membership/990002-2",
+     "type": "Membership",
+     "identifier": "990002-2",
+     "membershipClassification": "def/ep-entities/NATIONAL_POLITICAL_GROUP",
+     "organization": "org/990102",
+     "memberDuring": {
+      "type": "PeriodOfTime",
+      "startDate": "2024-07-16"
+     },
+     "role": "def/ep-roles/MEMBER"
+    },
+    {
+     "id": "membership/990002-3",
+     "type": "Membership",
+     "identifier": "990002-3",
+     "membershipClassification": "def/ep-entities/COMMITTEE_PARLIAMENTARY_STANDING",
+     "organization": "org/990301",
+     "memberDuring": {
+      "type": "PeriodOfTime",
+      "startDate": "2024-07-23"
+     },
+     "role": "def/ep-roles/MEMBER"
+    }
+   ]
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

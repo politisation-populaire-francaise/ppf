@@ -1,0 +1,11 @@
+-- Schema version 12 to 13 (2026-11-07): the referential of territories on the device (see
+-- Territoires.sq, the reference for fresh installations; this file must stay identical to its
+-- CREATE statement).
+
+CREATE TABLE territoire_package (
+    code TEXT NOT NULL PRIMARY KEY,
+    sha256 TEXT NOT NULL,
+    json TEXT NOT NULL,
+    built_on TEXT,
+    downloaded_at INTEGER NOT NULL
+);
