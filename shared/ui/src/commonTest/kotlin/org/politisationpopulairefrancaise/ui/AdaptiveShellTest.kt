@@ -12,6 +12,7 @@ import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.endirect.EnDirectTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
 
@@ -37,10 +38,10 @@ class AdaptiveShellTest {
         // "Mon espace" is the avatar of the top bar, not an entry of the bottom bar.
         onNodeWithTag(ShellTags.navItem(Space.MON_ESPACE)).assertIsDisplayed()
 
-        // The bottom bar reaches the live home, a placeholder for now.
+        // The bottom bar reaches the live home.
         onNodeWithTag(ShellTags.navItem(Space.EN_DIRECT)).performClick()
         waitForIdle()
-        onNodeWithText("Affichage téléphone").assertExists()
+        onNodeWithTag(EnDirectTags.SCREEN).assertExists()
 
         // The pillars are in the menu, with the disclaimer.
         onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
@@ -88,7 +89,8 @@ class AdaptiveShellTest {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp() } }
         onNodeWithTag(ShellTags.SHELL_EXPANDED).assertExists()
         onNodeWithTag(ShellTags.NAV_DRAWER).assertExists()
-        onNodeWithTag(ShellTags.navItem(Space.EN_DIRECT)).performClick()
+        // A space still under construction shows which layout is active.
+        onNodeWithTag(ShellTags.navItem(Space.DECIDER)).performClick()
         waitForIdle()
         onNodeWithText("Affichage ordinateur").assertExists()
     }
