@@ -27,7 +27,7 @@ import kotlin.io.path.readText
  * (NIP-52 calendar event, kind 31923, contract of the Agir space), written to `agenda.json` next
  * to `fiches.json`. Front matter: `slug`, `title`, `type`, `start` and optional `end`
  * (`AAAA-MM-JJTHH:MM`, local time of mainland France), `location`, `territory`, optional `status`,
- * `declaration`, `summary`, `link`, and `created_at` (`AAAA-MM-JJTHH:MM`, UTC, so that the event
+ * `declaration`, `summary`, `link`, `geohash` (the point of the map view), and `created_at` (`AAAA-MM-JJTHH:MM`, UTC, so that the event
  * id never depends on the machine). The body is the description. Each event is checked with the
  * rules of the server before being written; a broken file stops the tool.
  */
@@ -57,6 +57,8 @@ internal fun signAgenda(content: Path, output: Path, keys: IdentityKeys) {
                 organizers = metadata["organizers"].orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() },
                 summary = metadata["summary"],
                 description = body,
+                // The point on the map (contract, section 2): a town centre or a public place, never a person's address.
+                geohash = metadata["geohash"]?.also { require(Mobilization.isValidGeohash(it)) { "${file.name}: invalid geohash" } },
             )
             val issues = MobilizationRules.check(unsigned)
             check(issues.isEmpty()) { "${file.name}: ${issues.joinToString { "${it.error.code} (${it.field})" }}" }

@@ -6,6 +6,7 @@ start: 2026-12-10T19:00
 end: 2026-12-10T21:00
 location: Salle de quartier (adresse fictive), Strasbourg
 territory: Strasbourg
+geohash: u0ts2k2je
 summary: Une réunion fictive ouverte à toutes et à tous, sans inscription.
 created_at: 2026-11-05T12:00
 ---

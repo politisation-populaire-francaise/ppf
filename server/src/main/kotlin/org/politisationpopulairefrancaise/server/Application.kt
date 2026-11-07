@@ -39,6 +39,8 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.server.tiles.TilesConfig
+import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.webRoutes
 import javax.sql.DataSource
@@ -60,6 +62,8 @@ import javax.sql.DataSource
  *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
  * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
  *   see [AgirConfig].
+ * - PPF_TILES_DIR: the folder of the PMTiles files of the map backgrounds, served at `/tiles/` by
+ *   range (development and preproduction; in production Caddy serves them), see [TilesConfig].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -109,6 +113,7 @@ fun Application.module(
     relay: RelayConfig = RelayConfig.fromEnvironment(),
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
     agir: AgirSetup = AgirSetup.fromEnvironment(),
+    tiles: TilesConfig = TilesConfig.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
     // Citizen demands wait in a review queue; its checks and cleanup live and die with the application.
@@ -168,6 +173,7 @@ fun Application.module(
         revendicationsApi(proposals)
         agirApi(agirSpace)
         agirSpace?.let { agendaPage(it.agendaSource()) }
+        tilesRoutes(tiles)
         webRoutes()
     }
 }
