@@ -292,6 +292,22 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - les pétitions qui arrivent à échéance et les appels urgents rejoindront les alertes quand leurs modules existeront (M10, appels d'« Agir »).
 - Raison : demande de la propriétaire ; aucune dépense ; aucune donnée nouvelle.
 
+## D-038 (2026-11-07) « Comprendre » : décryptages, histoire des luttes, « Qui décide de ça ? », pluralisme
+
+- Décisions de la propriétaire (7 novembre 2026), réponses aux questions de D-033 :
+  1. **Échelle des verdicts** des décryptages : option A (« ok pour échelle des décryptage ») : « Exact », « Plutôt exact », « Trompeur », « Contredit par les faits », « Invérifiable », définis dans une page « Notre méthode » ;
+  2. **Histoire des luttes** : « C'est de l'histoire donc on le fait » : histoire des mouvements sociaux et des révolutions (CO-06) et débat historique sur le droit de résistance à l'oppression (CO-08), épisodes violents racontés de façon factuelle, jamais aucun appel ni incitation à la violence ; les guides de résistance civile pour aujourd'hui (CO-07) restent soumis à la vérification juridique ;
+  3. **« Qui décide de ça ? »** : coder au maximum sans attendre, avec un encart en début de contenu qui contient le nom des élus concernés ;
+  4. **Pluralisme** : oui, présenter les objections et y répondre de façon sourcée.
+- Décisions techniques prises en autonomie :
+  - trois nouvelles familles de contenus signés (NIP-23), dans le même circuit que les fiches et les parcours : `decryptage` (étiquettes `ppf-verdict`, `ppf-claim`, `ppf-claim-context`), `histoire` (mêmes étiquettes que les mouvements de « Voir » : `ppf-country`, `ppf-period`, `ppf-claim`, `ppf-result`), `qui-decide` (chaîne de décision dans un bloc `::: decideurs`, personnes publiques de « Voir » liées par des étiquettes `a` de rôle `personne`) ; la page « Notre méthode » est un article d'identifiant `notre-methode` ; fichier intégré `comprendre.json` ;
+  - deux blocs communs dans le Markdown : `::: objections` (paires « objection », « réponse sourcée ») et `::: chronologie` (lignes datées) ; l'outil de signature refuse un bloc mal formé, un décryptage ou un récit sans objections, une fiche « Qui décide » sans chaîne de décision ou sans « Et maintenant ? », tout contenu sans sources ; les parcours acceptent aussi des objections, montrées sur leur page de fin ;
+  - un verdict s'écrit toujours en toutes lettres avec une icône, la couleur n'est jamais le seul signe (accessibilité) ; il porte sur une affirmation, jamais sur une personne ; les exemples ne citent aucune personne réelle ;
+  - l'encart « Qui décide ? Les élus concernés » montre chaque niveau (commune, intercommunalité, département, région, État, Union européenne), ce qu'il décide, les fonctions concernées et les personnes publiques liées par l'équipe éditoriale ; les élus locaux de chacun seront nommés quand l'annuaire officiel des élus sera intégré (proposition dans le brainstorming du cahier des charges, entrée du 2026-11-07) ;
+  - les dossiers qui portent un axe de « Voir » restent dans « Voir » ; les autres apparaissent dans « Comprendre ».
+- Contenus [EXEMPLE] rédigés avec l'aide d'une IA, vérifiés sur les textes officiels, à relire par l'équipe éditoriale : quatre décryptages, la page « Notre méthode », trois récits (Front populaire, révolution de 1848, droit de vote des femmes), quatre fiches « Qui décide de ça ? » (prix des carburants, école, transports du quotidien, manifester), quatre parcours de plus (budget de l'État, rôle de chaque élu, référendum, révision de la Constitution).
+- Conséquences : nouveaux types d'article `HISTOIRE` et `QUI_DECIDE` ; aucune nouvelle donnée sur l'appareil ; documents définitifs non modifiés (les décisions sont dans les brainstormings, à intégrer à la version 2.0 du cahier fonctionnel et à reporter dans le projet claude.ai).
+
 ## D-039 (2026-11-07) Espace « Agir » : contrat commun, règles de publication et branchements
 
 - Contexte : première version de l'espace « Agir » (cahier fonctionnel M1, M3 et M12 ; inventaire B6 : AG-01 à AG-03, AG-17, AG-19, AG-21, AG-22, AP-01 à AP-10), développée en quatre blocs parallèles (agenda des mobilisations, appels, annuaire et accueil, serveur) à partir d'un contrat commun, `docs/integration/agir-contrat.md` (version 1). Les cinq questions posées par le développement ont été tranchées par la propriétaire le 7 novembre 2026 (brainstorming du cahier fonctionnel, entrée « Agir : publication des mobilisations et des appels »).

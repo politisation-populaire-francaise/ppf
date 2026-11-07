@@ -188,10 +188,10 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Sujets de départ de « Qui décide de ça ? »
-- Statut : Idée
+- Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel 2.0, M13.1)
 - Concerne : cahier-fonctionnel.md, M13.1
 - Description : commencer par une dizaine de sujets proches du quotidien : prix des carburants, loyers et logement, école, hôpital et santé, transports, impôts locaux, eau et énergie, salaires et retraites, services publics de proximité, environnement local.
-- Décision :
+- Décision : la propriétaire demande le 2026-11-07 de coder au maximum cette section sans attendre, avec « un encart en début de contenu qui contiendra le nom des élus concernés ». Mis en œuvre (D-038) : fiches par sujet avec la chaîne de décision (commune, intercommunalité, département, région, État, Union européenne), encart « Qui décide ? Les élus concernés » en tête (rôles par niveau, noms des personnes publiques liées par l'équipe), puis l'explication et « Et maintenant ? ». Quatre premiers sujets [EXEMPLE] : prix des carburants, école, transports du quotidien, manifester. Les noms des élus locaux de chacun demandent l'annuaire officiel des élus (Répertoire national des élus) : à proposer.
 
 ### [2026-11-04] Déroulé du Programme du peuple
 - Statut : À étudier
@@ -242,7 +242,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - présomption d'innocence : statut de la procédure affiché sur chaque fiche ;
   - vocabulaire normé : « déclaration contredite par les faits » plutôt que « mensonge » (qui suppose de prouver l'intention), sauf décision de justice ;
   - principe du contradictoire : demander sa réaction à la personne concernée avant publication et la publier ;
-  - **droit de réponse obligatoire** : toute personne nommée ou désignée sur un site dispose d'un droit de réponse (article 6, IV de la LCEN), que le directeur de la publication doit insérer dans les trois jours sous peine d'amende ; prévoir un formulaire et une procédure ;
+  - **droit de réponse obligatoire** : toute personne nommée ou désignée sur un site dispose d'un droit de réponse (LCEN, article 1-1, III, depuis la loi n° 2024-449 du 21 mai 2024 ; auparavant article 6, IV ; correction du 2026-11-07), que le directeur de la publication doit insérer dans les trois jours sous peine d'amende ; prévoir un formulaire et une procédure ;
   - journal public des corrections ;
   - double validation éditoriale avant publication ;
   - points juridiques à faire valider par un avocat : diffamation (base factuelle suffisante, prudence, bonne foi), amnistie et réhabilitation, réutilisation des décisions de justice en données ouvertes (pseudonymisation), droit à l'oubli.

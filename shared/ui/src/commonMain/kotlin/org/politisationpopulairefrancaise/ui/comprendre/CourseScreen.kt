@@ -59,6 +59,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.content.FeedPost
 import org.politisationpopulairefrancaise.ui.content.MarkdownText
+import org.politisationpopulairefrancaise.ui.content.ObjectionsBox
 import org.politisationpopulairefrancaise.ui.content.SimpleMarkdown
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
@@ -359,9 +360,13 @@ private fun EndPage(comprendre: ComprendreLibrary, parcours: Parcours, progress:
                 Text(stringResource(Res.string.comprendre_end_unanswered), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
             }
         }
+        if (parcours.objections.isNotEmpty()) {
+            Spacer(Modifier.height(20.dp))
+            ObjectionsBox(parcours.objections)
+        }
         parcours.nextActions?.let { actions ->
             Spacer(Modifier.height(20.dp))
-            NextActions(actions, onNavigate)
+            NextActionsCard(actions, onNavigate)
         }
         parcours.sources?.let { sources ->
             Spacer(Modifier.height(20.dp))
@@ -383,7 +388,7 @@ private fun EndPage(comprendre: ComprendreLibrary, parcours: Parcours, progress:
  * becomes a button; any other bullet is shown as text (links to other sites are shown, never opened).
  */
 @Composable
-private fun NextActions(markdown: String, onNavigate: (Space) -> Unit) {
+internal fun NextActionsCard(markdown: String, onNavigate: (Space) -> Unit) {
     val palette = PpfTheme.palette
     PpfCard(Modifier.fillMaxWidth().testTag(CourseTags.NEXT_ACTIONS)) {
         Row(verticalAlignment = Alignment.CenterVertically) {

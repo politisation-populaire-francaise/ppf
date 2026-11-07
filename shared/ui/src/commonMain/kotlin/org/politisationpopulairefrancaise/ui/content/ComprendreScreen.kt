@@ -45,6 +45,12 @@ import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.ui.comprendre.ComprendreLibrary
+import org.politisationpopulairefrancaise.ui.comprendre.DecryptageCard
+import org.politisationpopulairefrancaise.ui.comprendre.DecryptageDetail
+import org.politisationpopulairefrancaise.ui.comprendre.HistoryCard
+import org.politisationpopulairefrancaise.ui.comprendre.HistoryDetail
+import org.politisationpopulairefrancaise.ui.comprendre.QuiDecideCard
+import org.politisationpopulairefrancaise.ui.comprendre.QuiDecideDetail
 import org.politisationpopulairefrancaise.ui.comprendre.CourseScreen
 import org.politisationpopulairefrancaise.ui.comprendre.courseMetaLine
 import org.politisationpopulairefrancaise.ui.comprendre.displayTitle
@@ -67,7 +73,14 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_course_kind
 import org.politisationpopulairefrancaise.ui.resources.comprendre_courses_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_courses_none
 import org.politisationpopulairefrancaise.ui.resources.comprendre_courses_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_checks_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_decryptages_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_history_intro
+import org.politisationpopulairefrancaise.ui.resources.comprendre_history_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_history
+import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_who
+import org.politisationpopulairefrancaise.ui.resources.comprendre_who_intro
+import org.politisationpopulairefrancaise.ui.resources.comprendre_who_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_dossiers_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_private_note
 import org.politisationpopulairefrancaise.ui.resources.comprendre_rights_intro
@@ -112,6 +125,12 @@ object ComprendreTags {
     const val CLEAR_PROGRESS = "comprendre-clear-progress"
     const val CLEAR_CONFIRM = "comprendre-clear-confirm"
     const val CLEAR_CANCEL = "comprendre-clear-cancel"
+    const val WHO_LIST = "who-decides-list"
+    const val CHECK_LIST = "decryptage-list"
+    const val HISTORY_LIST = "history-list"
+
+    /** A card of the home: followed by the slug of the content. */
+    const val CARD = "comprendre-card-"
 }
 
 /**
@@ -155,7 +174,7 @@ fun ComprendreScreen(
     fun Detail(onBack: Boolean, detailModifier: Modifier) {
         when {
             course != null -> CourseScreen(comprendre, course, onBack = if (onBack) comprendre::close else null, onNavigate = onNavigate, compact = compact, modifier = detailModifier)
-            article != null -> GuideDetail(article, onBack = if (onBack) comprendre::closeArticle else null, compact = compact, modifier = detailModifier)
+            article != null -> ArticleDetail(comprendre, article, onBack = if (onBack) comprendre::closeArticle else null, onNavigate = onNavigate, compact = compact, modifier = detailModifier)
             guide != null -> GuideDetail(guide, onBack = if (onBack) library::close else null, compact = compact, modifier = detailModifier)
         }
     }
@@ -222,6 +241,13 @@ private fun ComprendreHome(
                 }
             }
 
+            HomeSection(stringResource(Res.string.comprendre_who_title), stringResource(Res.string.comprendre_who_intro), comprendre.sheets, ComprendreTags.WHO_LIST) { sheet ->
+                QuiDecideCard(sheet, onOpen = { actions.openArticle(sheet.article) }, selected = comprendre.openArticle?.address == sheet.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + sheet.article.slug))
+            }
+            HomeSection(stringResource(Res.string.comprendre_decryptages_title), stringResource(Res.string.comprendre_checks_intro), comprendre.decryptages, ComprendreTags.CHECK_LIST) { check ->
+                DecryptageCard(check, onOpen = { actions.openArticle(check.article) }, selected = comprendre.openArticle?.address == check.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + check.article.slug))
+            }
+
             Spacer(Modifier.height(20.dp))
             Column(Modifier.fillMaxWidth().testTag(ContentTags.GUIDE_LIST)) {
                 SectionHeading(stringResource(Res.string.comprendre_rights_title), stringResource(Res.string.comprendre_rights_intro))
@@ -234,8 +260,10 @@ private fun ComprendreHome(
                 }
             }
 
+            HomeSection(stringResource(Res.string.comprendre_history_title), stringResource(Res.string.comprendre_history_intro), comprendre.stories, ComprendreTags.HISTORY_LIST) { story ->
+                HistoryCard(story, onOpen = { actions.openArticle(story.article) }, selected = comprendre.openArticle?.address == story.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + story.article.slug))
+            }
             ArticleSection(stringResource(Res.string.comprendre_dossiers_title), comprendre.dossiers, comprendre.openArticle, actions.openArticle)
-            ArticleSection(stringResource(Res.string.comprendre_decryptages_title), comprendre.decryptages, comprendre.openArticle, actions.openArticle)
 
             Spacer(Modifier.height(20.dp))
             Text(stringResource(Res.string.comprendre_private_note), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
@@ -270,6 +298,35 @@ private fun ComprendreHome(
                 }
             },
         )
+    }
+}
+
+/** A section of the home, shown only when it has contents. */
+@Composable
+private fun <T> HomeSection(title: String, intro: String, items: List<T>, tag: String, card: @Composable (T) -> Unit) {
+    if (items.isEmpty()) return
+    Spacer(Modifier.height(20.dp))
+    Column(Modifier.fillMaxWidth().testTag(tag)) {
+        SectionHeading(title, intro)
+        items.forEach { item ->
+            card(item)
+            Spacer(Modifier.height(12.dp))
+        }
+    }
+}
+
+/** A dossier, a fact-check, a story or a « Qui décide de ça ? » sheet, each with its own layout. */
+@Composable
+private fun ArticleDetail(comprendre: ComprendreLibrary, article: Article, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier) {
+    val check = comprendre.decryptages.firstOrNull { it.article.address == article.address }
+    val story = comprendre.stories.firstOrNull { it.article.address == article.address }
+    val sheet = comprendre.sheets.firstOrNull { it.article.address == article.address }
+    val method = comprendre.methodPage
+    when {
+        check != null -> DecryptageDetail(check, onOpenMethod = method?.let { page -> { comprendre.openArticle(page) } }, onBack = onBack, onNavigate = onNavigate, compact = compact, modifier = modifier)
+        story != null -> HistoryDetail(story, onBack, onNavigate, compact, modifier)
+        sheet != null -> QuiDecideDetail(sheet, comprendre.persons, onBack, onNavigate, compact, modifier)
+        else -> GuideDetail(article, onBack = onBack, compact = compact, modifier = modifier)
     }
 }
 
@@ -415,6 +472,8 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.DECRYPTAGE -> Res.string.content_type_decryptage
         ArticleType.ARTICLE -> Res.string.content_type_article
         ArticleType.PARCOURS -> Res.string.comprendre_course_kind
+        ArticleType.HISTOIRE -> Res.string.comprendre_kind_history
+        ArticleType.QUI_DECIDE -> Res.string.comprendre_kind_who
         ArticleType.REVENDICATION -> Res.string.space_revendications
         ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE -> Res.string.space_voir
         ArticleType.ORGANISATION -> Res.string.organisations_content_type

@@ -111,4 +111,46 @@ class ComprendreScreenshotTest {
 
     @Test
     fun computer() = capture(1000, 740, dark = false, prefix = "ordinateur")
+
+    /** A fact-check, a story and a « Qui décide de ça ? » sheet, each opened from the home. */
+    private fun captureContents(width: Int, height: Int, dark: Boolean, prefix: String) = runComposeUiTest {
+        if (directory == null) return@runComposeUiTest
+        val dependencies = AppDependencies.withDatabase(InMemoryIdentityStore(), JvmDatabase.inMemory())
+        setContent {
+            Box(Modifier.requiredSize(width.dp, height.dp)) {
+                PpfTheme(darkTheme = dark) { AdaptiveShell(dependencies) }
+            }
+        }
+        if (width < 600) {
+            onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
+            waitForIdle()
+            mainClock.advanceTimeBy(1_000)
+        }
+        onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).performClick()
+        waitForIdle()
+        mainClock.advanceTimeBy(2_000)
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ComprendreTags.CHECK_LIST).fetchSemanticsNodes().isNotEmpty() }
+        listOf(
+            "vote-blanc-suffrages-exprimes" to "decryptage",
+            "front-populaire-1936" to "histoire",
+            "manifester-qui-autorise" to "qui-decide",
+        ).forEach { (slug, name) ->
+            onNodeWithTag(ComprendreTags.CARD + slug).performScrollTo().performClick()
+            waitForIdle()
+            save("$prefix-$name")
+            if (width < 840) {
+                onNodeWithTag(ComprendreDetailTags.BACK).performClick()
+                waitForIdle()
+            }
+        }
+    }
+
+    @Test
+    fun contentsOnAPhone() = captureContents(400, 800, dark = false, prefix = "telephone-clair")
+
+    @Test
+    fun contentsOnAPhoneInTheDark() = captureContents(400, 800, dark = true, prefix = "telephone-sombre")
+
+    @Test
+    fun contentsOnAComputer() = captureContents(1000, 740, dark = false, prefix = "ordinateur")
 }

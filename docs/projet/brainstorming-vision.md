@@ -29,11 +29,11 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Jusqu'où va le pluralisme des contenus éducatifs ?
-- Statut : Question
+- Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel 2.0)
 - Concerne : vision.md, section 7
 - Description : les contenus « Comprendre » et les fiches de campagne doivent-ils présenter systématiquement les arguments des différents camps (par exemple les objections au RIC ou au vote blanc), ou seulement les positions du collectif ?
 - Recommandation : présenter les objections et y répondre de façon sourcée. Une revendication qui répond d'avance à ses critiques est plus forte, et c'est une condition pour un éventuel agrément « Jeunesse et éducation populaire ».
-- Décision :
+- Décision : oui, validé par la propriétaire le 2026-11-07 : les contenus de « Comprendre » présentent les objections et y répondent de façon sourcée (bloc « Objections et réponses »), obligatoire dans les décryptages et l'histoire des luttes, recommandé ailleurs. Mis en œuvre le 2026-11-07 (D-038).
 
 ### [2026-11-04] Identité : slogan, nom court, signature
 - Statut : Intégré le 2026-11-04
@@ -49,7 +49,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Cohérence après le retrait de la valeur « Non-violence »
-- Statut : Question
+- Statut : Décidé en partie le 2026-11-07
 - Concerne : vision.md, sections 6 (pilier 4) et 7 ; cahier-fonctionnel.md, M7 ; cahier-des-charges.md, 9.3 (charte) ; instructions du projet (garde-fous)
 - Description : la valeur « Non-violence » a été retirée de la vision (version 2.0). D'autres passages en parlent encore et doivent être mis en cohérence :
   - pilier 4 de la vision : « stratégies d'action non violentes » ;
@@ -67,7 +67,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - Études à citer dans les contenus : Erica Chenoweth et Maria Stephan, *Why Civil Resistance Works* (2011), 323 campagnes de 1900 à 2006 ; Erica Chenoweth, « The Future of Nonviolent Resistance », *Journal of Democracy* (2020), sur la baisse d'efficacité dans les années 2010.
 - Recommandation : C, qui couvre B tout en donnant aux citoyens des outils d'action efficaces. Dans tous les cas, l'interdiction légale de l'appel à la violence reste.
 - Mise à jour du 2026-11-04 : avec la vision 4.0, l'ancien pilier « Éduquer » fait partie du pilier « Comprendre », décrit sans mention de la non-violence (« apprendre de l'histoire des mouvements sociaux et des révolutions ») en attendant cette décision. La question reste entière pour le module M7 du cahier fonctionnel.
-- Décision :
+- Décision : la propriétaire valide l'histoire des luttes le 2026-11-07 (« C'est de l'histoire donc on le fait ») : l'histoire des mouvements sociaux et des révolutions est enseignée (CO-06), y compris leurs épisodes violents, racontés de façon factuelle et sourcée, avec le débat historique sur le droit de résistance à l'oppression (volet historique de CO-08), sans jamais aucun appel ni incitation à la violence (obligation légale, inchangée). Les guides de résistance civile pour aujourd'hui (CO-07) restent soumis à la vérification juridique prévue (limite de l'appel à la désobéissance civile). Mis en œuvre le 2026-11-07 (D-038).
 
 ### [2026-11-04] Articuler la lutte contre le fascisme et le traitement identique des candidats
 - Statut : Intégré le 2026-11-04

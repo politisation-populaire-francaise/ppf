@@ -294,6 +294,15 @@ Avec le serveur de développement lancé (étape 2 ci-dessus) et un compte d'ess
 
 Ces quatre parcours sont des brouillons rédigés avec l'aide d'une IA, vérifiés sur Légifrance (version en vigueur au 6 novembre 2026), le Conseil constitutionnel, l'Assemblée nationale et service-public ; ils doivent être relus par l'équipe éditoriale avant toute publication réelle. Pour en modifier un ou en demander un nouveau, dites-le-moi.
 
+### Tester les décryptages, l'histoire des luttes et « Qui décide de ça ? » (ajouté le 7 novembre 2026)
+
+1. Dans **« Comprendre »**, faites défiler l'accueil : après les parcours viennent **« Qui décide de ça ? »**, **« Le vrai du faux »** (les décryptages), **« Connaître ses droits »** (les fiches) puis **« Histoire des luttes »**. Tous les contenus sont des exemples marqués [EXEMPLE].
+2. Touchez un décryptage : l'affirmation est citée entre guillemets, avec l'endroit où elle circule, puis le **verdict** écrit en toutes lettres (par exemple « Contredit par les faits »). Le lien **« Comment nous choisissons un verdict »** ouvre la page « Notre méthode » qui définit les cinq verdicts. Plus bas, l'encart **« Objections et réponses »** présente les arguments contraires et y répond avec des sources.
+3. Touchez un récit de l'histoire des luttes (par exemple le Front populaire) : sous le titre, la période et le pays ; un encart dit **ce qui était demandé** et les **résultats obtenus** ; une **frise** donne les dates ; les objections et réponses présentent les débats des historiens.
+4. Touchez **« Manifester : qui autorise, qui peut interdire ? »** (ou une autre fiche « Qui décide de ça ? ») : la fiche commence par l'encart **« Qui décide ? Les élus concernés »** : chaque niveau (commune, État...) avec ce qu'il décide et les élus concernés. Sous « État », le nom d'une personne d'exemple (« Dominique Fictif ») apparaît, liée par l'équipe. Une phrase indique que les noms de vos élus locaux apparaîtront quand l'annuaire officiel des élus sera intégré.
+5. En bas de chaque contenu, **« Et maintenant ? »** propose une action (le bouton ouvre le mur des revendications), puis les sources.
+6. Les parcours ont maintenant huit sujets ; certains se terminent aussi par des objections et réponses.
+
 ### Tester les fiches pratiques (ajouté le 5 novembre 2026, encarts le 6)
 
 1. Ouvrez le menu (bouton en haut à gauche) et touchez **« Comprendre »**. Chaque fiche commence par un encart bleu « En bref », puis des encarts verts « Légal » et rouges « Illégal » avec des listes à puces, et des encarts « Attention » (jaune) et « Conseils » (gris). Les titres des fiches sont en bleu de marque, le texte en Atkinson Hyperlegible, 16 points.

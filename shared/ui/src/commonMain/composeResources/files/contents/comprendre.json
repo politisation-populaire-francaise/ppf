@@ -1,0 +1,731 @@
+[
+    {
+        "id": "066865b11b3b30f85b5ffacb6a6b23a42186f47b7cf478cb553736ba0c76fc59",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "49-3-loi-sans-vote"
+            ],
+            [
+                "title",
+                "[EXEMPLE] « Avec le 49.3, une loi est adoptée sans aucun vote »"
+            ],
+            [
+                "summary",
+                "En partie seulement : avec le 49.3, les députés ne votent pas sur le texte lors de cette lecture, mais ils peuvent voter une motion de censure et le texte passe aussi par le Sénat."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "decryptage"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "institutions"
+            ],
+            [
+                "t",
+                "parlement"
+            ],
+            [
+                "t",
+                "49-3"
+            ],
+            [
+                "ppf-verdict",
+                "trompeur"
+            ],
+            [
+                "ppf-claim",
+                "Avec le 49.3, une loi est adoptée sans aucun vote."
+            ],
+            [
+                "ppf-claim-context",
+                "Affirmation qui circule sur les réseaux sociaux, novembre 2026"
+            ]
+        ],
+        "content": "::: en-bref\n- Avec le 49.3, le texte est **considéré comme adopté** par l'Assemblée nationale **sans vote sur le texte lui-même**.\n- Les députés peuvent toutefois **voter une motion de censure** : si elle est adoptée, le Gouvernement démissionne et le texte est **rejeté**.\n- Le 49.3 ne vaut que **pour une lecture** à l'Assemblée : le texte est aussi **examiné par le Sénat**, où cette procédure n'existe pas.\n:::\n\n**[EXEMPLE] Ce décryptage est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**\n\n## Ce que dit l'affirmation\n\nL'affirmation soutient que, lorsque le Gouvernement utilise l'article 49, alinéa 3, de la Constitution, une loi est adoptée sans qu'aucun vote n'ait lieu, ni à l'Assemblée nationale ni ailleurs.\n\n## Ce que disent les textes\n\nLe Premier ministre peut, après délibération du Conseil des ministres, engager la responsabilité du Gouvernement devant l'Assemblée nationale sur un projet de loi de finances ou de financement de la sécurité sociale, et sur un seul autre texte par session. Le texte est alors « considéré comme adopté, sauf si une motion de censure, déposée dans les vingt-quatre heures qui suivent, est votée » (Constitution, article 49, alinéa 3). La discussion s'arrête aussitôt : les députés ne votent pas sur le texte.\n\nUne motion de censure doit être signée par au moins un dixième des députés. Seuls les votes favorables sont comptés, et elle n'est adoptée qu'à « la majorité des membres composant l'Assemblée » (article 49, alinéa 2). Si elle l'est, le Gouvernement doit démissionner (article 50) et le texte est considéré comme rejeté. Si aucune motion n'est déposée, aucun vote n'a lieu à l'Assemblée pour cette lecture : sur ce point précis, l'affirmation est exacte.\n\nMais tout texte est « examiné successivement dans les deux Assemblées du Parlement » (article 45). Selon l'Assemblée nationale, le 49.3 « ne peut pas être mis en œuvre devant le Sénat » et ne vaut que pour la lecture où il est utilisé, sans incidence sur la navette entre les deux assemblées. Le Sénat examine donc le texte et se prononce par ses propres votes. En cas de désaccord persistant, le Gouvernement peut ensuite demander à l'Assemblée de « statuer définitivement » (article 45, alinéa 4).\n\n## Pourquoi cette idée circule\n\nL'expression « adopté sans vote » décrit correctement ce qui se passe à l'Assemblée nationale pour la lecture concernée. C'est son extension à toute la procédure, sans mentionner la motion de censure ni le Sénat, qui induit en erreur, d'où le verdict « trompeur ».\n\n::: objections\n? « Une motion de censure porte sur le Gouvernement, pas sur la loi : les députés ne votent toujours pas le texte. »\n> C'est exact pour l'objet du vote, mais son adoption entraîne le rejet du texte : les députés disposent donc d'un vote qui peut l'arrêter (Constitution, article 49, alinéa 3 ; Assemblée nationale, fiche de synthèse n° 46).\n? « Le Sénat ne compte pas : l'Assemblée nationale a toujours le dernier mot. »\n> Elle ne peut recevoir le dernier mot qu'à la demande du Gouvernement, après l'échec de la conciliation entre les deux assemblées et une nouvelle lecture dans chacune d'elles (Constitution, article 45, alinéa 4).\n:::\n\n::: et-maintenant\n- [Voir les revendications des citoyens](ppf:revendications)\n- Suivre le parcours [EXEMPLE] « Le 49.3 et la motion de censure » dans l'espace Comprendre.\n- Lire l'article 49 de la Constitution sur Légifrance (https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062).\n:::\n\n## Sources\n\n- Constitution du 4 octobre 1958, article 49, version en vigueur depuis le 1er mars 2009 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062\n- Constitution du 4 octobre 1958, article 45 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241040\n- Constitution du 4 octobre 1958, article 50 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527530\n- Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025), partie sur l'engagement de responsabilité : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf\n",
+        "sig": "f15cfcada0116eec44b4755f146983ae25703b172b5b8bfd28948d9d7991f7b1b024902717712a6bb3d92c5b0223e8326e17f825b1ecd2f2c845aa88f939e4d0"
+    },
+    {
+        "id": "759915c7f813f2d78281ae1f0f87366ab0c5675f8fe05eaa5473a25df0b5a6a7",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "filmer-policiers-interdit"
+            ],
+            [
+                "title",
+                "[EXEMPLE] « Il est interdit de filmer un policier en intervention »"
+            ],
+            [
+                "summary",
+                "Non : hors des lieux privés, un policier ou un gendarme en intervention ne peut pas s'opposer à être filmé, mais certaines diffusions restent punies."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "decryptage"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "droits"
+            ],
+            [
+                "t",
+                "manifestation"
+            ],
+            [
+                "t",
+                "police"
+            ],
+            [
+                "ppf-verdict",
+                "contredit-par-les-faits"
+            ],
+            [
+                "ppf-claim",
+                "Il est interdit de filmer un policier en intervention."
+            ],
+            [
+                "ppf-claim-context",
+                "Affirmation qui circule sur les réseaux sociaux, novembre 2026"
+            ]
+        ],
+        "content": "::: en-bref\n- Hors des lieux privés, un policier ou un gendarme en fonction **ne peut pas s'opposer** à être filmé (Défenseur des droits, 2020).\n- La disposition de la loi « sécurité globale » qui visait l'identification des policiers a été **censurée** en 2021.\n- Restent punies certaines **diffusions** : exposer une personne à un **danger**, révéler l'identité d'agents **protégés par l'anonymat**.\n:::\n\n**[EXEMPLE] Ce décryptage est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**\n\n## Ce que dit l'affirmation\n\nL'affirmation soutient que le simple fait de filmer un policier ou un gendarme pendant une intervention est interdit par la loi.\n\n## Ce que disent les textes\n\nLe Défenseur des droits, autorité indépendante qui contrôle la déontologie des forces de sécurité, rappelle qu'un policier ou un gendarme, « dans le cadre de ses fonctions et en dehors des lieux privés », ne peut s'opposer « à l'enregistrement d'images ou de sons » (avis n° 20-05 du 3 novembre 2020). Il cite une circulaire du ministre de l'Intérieur du 23 décembre 2008 : la liberté d'information, d'un journaliste comme d'un particulier, prime sur le droit à l'image, tant qu'elle ne porte pas atteinte à la dignité de la personne. En 2018, il a estimé qu'une demande d'effacement de photos prises lors d'un contrôle, appuyée par un policier, n'avait « aucun fondement légal » (décision n° 2018-183).\n\nEn 2020, l'article 24 de la proposition de loi « sécurité globale » visait la diffusion de l'image d'un policier dans le but de porter atteinte à son intégrité. Dans la loi adoptée, l'article 52 créait un délit de « provocation » à l'identification d'un policier ou d'un gendarme dans ce même but. Le Conseil constitutionnel l'a censuré : le législateur n'avait « pas suffisamment défini les éléments constitutifs de l'infraction » (décision n° 2021-817 DC du 20 mai 2021, paragraphe 164).\n\nLes limites visent surtout la diffusion. Le code pénal punit le fait de révéler ou de diffuser des informations permettant d'identifier ou de localiser une personne dans le but de l'exposer, elle ou sa famille, à un risque direct d'atteinte à sa personne ; jusqu'à cinq ans de prison et 75 000 euros d'amende si elle est dépositaire de l'autorité publique (article 223-1-1). Révéler l'identité d'agents d'unités dont les missions exigent l'anonymat, désignées par arrêté, est puni de 15 000 euros d'amende (loi du 29 juillet 1881, article 39 sexies). Enregistrer sans son consentement l'image d'une personne se trouvant dans un lieu privé est puni (code pénal, article 226-1).\n\n## Pourquoi cette idée circule\n\nLes débats de 2020 et 2021 sur la loi « sécurité globale » ont pu faire croire qu'une interdiction avait été adoptée.\n\n::: objections\n? « Depuis la loi sécurité globale, montrer le visage d'un policier est puni. »\n> Cette disposition a été censurée (Conseil constitutionnel, décision n° 2021-817 DC). Est puni le fait de diffuser des informations dans le but d'exposer une personne à un danger (code pénal, article 223-1-1).\n? « Un policier a droit à son image comme tout le monde. »\n> Dans ses fonctions et hors des lieux privés, il ne peut s'opposer à l'enregistrement, la liberté d'information primant sur le droit à l'image (Défenseur des droits, avis n° 20-05).\n:::\n\n::: et-maintenant\n- [Voir les revendications des citoyens](ppf:revendications)\n- Avant de filmer, lire la fiche pratique [EXEMPLE] « Filmer les forces de l'ordre ».\n:::\n\n## Sources\n\n- Défenseur des droits, avis n° 20-05 du 3 novembre 2020 : https://juridique.defenseurdesdroits.fr/doc_num.php?explnum_id=20175\n- Défenseur des droits, décision n° 2018-183 du 27 juillet 2018 : https://juridique.defenseurdesdroits.fr/doc_num.php?explnum_id=17999\n- Conseil constitutionnel, décision n° 2021-817 DC du 20 mai 2021 : https://www.conseil-constitutionnel.fr/decision/2021/2021817DC.htm\n- Code pénal, article 223-1-1, version en vigueur au 7 novembre 2026 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049312762\n- Loi du 29 juillet 1881 sur la liberté de la presse, article 39 sexies, version en vigueur au 7 novembre 2026 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000054337038\n- Code pénal, article 226-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049312755\n",
+        "sig": "7158fafb148e61c85a0bf3d47dad1a9c68272f128120d0158be57d0831c9c1b7a71f5489625e759ff29c451e0b8b788a3c67109019af3852b4fe84829883f527"
+    },
+    {
+        "id": "8aa0c995ab53fdc7af046960a629dd54fe2483c4c2a6caf6f77e929d7354369a",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-500000-debat-obligatoire"
+            ],
+            [
+                "title",
+                "[EXEMPLE] « Avec 500 000 signatures, l'Assemblée nationale est obligée de débattre d'une pétition »"
+            ],
+            [
+                "summary",
+                "Non : à partir de 500 000 signatures, un débat en séance devient possible, mais la Conférence des présidents décide librement, et ce débat se termine sans vote."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "decryptage"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "institutions"
+            ],
+            [
+                "t",
+                "parlement"
+            ],
+            [
+                "t",
+                "petitions"
+            ],
+            [
+                "ppf-verdict",
+                "trompeur"
+            ],
+            [
+                "ppf-claim",
+                "Avec 500 000 signatures, l'Assemblée nationale est obligée de débattre d'une pétition."
+            ],
+            [
+                "ppf-claim-context",
+                "Affirmation qui circule sur les réseaux sociaux, novembre 2026"
+            ]
+        ],
+        "content": "::: en-bref\n- Le seuil de **500 000 signatures** existe bien (Règlement de l'Assemblée nationale, article 148).\n- Il rend un débat en séance **possible**, pas **obligatoire** : c'est la **Conférence des présidents** qui décide.\n- Si ce débat a lieu, il se termine **sans vote** sur la pétition (article 151).\n:::\n\n**[EXEMPLE] Ce décryptage est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**\n\n## Ce que dit l'affirmation\n\nL'affirmation soutient qu'une pétition adressée à l'Assemblée nationale qui réunit 500 000 signatures doit obligatoirement être débattue par les députés en séance publique.\n\n## Ce que disent les textes\n\nLes pétitions sont régies par les articles 147 à 151 du Règlement de l'Assemblée nationale. Elles sont déposées en ligne, enregistrées, puis renvoyées à une commission, qui désigne un rapporteur (le député chargé de l'étudier). Sur sa proposition, la commission décide « soit de classer la pétition, soit de l'examiner » (article 148). Le texte ne fixe aucun nombre de signatures qui empêcherait ce classement.\n\nAu-delà de 500 000 signataires domiciliés dans au moins trente départements ou collectivités d'outre-mer, un débat sur le rapport de la commission « peut être inscrit par la Conférence des présidents à l'ordre du jour », sur proposition du président de la commission ou d'un président de groupe (article 148, dernier alinéa). La Conférence des présidents réunit notamment le président de l'Assemblée, les vice-présidents, les présidents des commissions permanentes et les présidents des groupes (article 47). Il faut donc une demande, puis une décision.\n\nSi le débat a lieu, il s'ouvre par l'audition du rapporteur, puis les orateurs inscrits prennent la parole. Ensuite, « le Président passe à la suite de l'ordre du jour » (article 151) : aucun vote n'est prévu.\n\nUne réforme du Règlement est en cours d'examen (proposition de résolution n° 2990, déposée le 29 juin 2026). Le texte adopté par la commission des lois le 8 juillet 2026 ne modifie ni ce seuil ni ce débat. Un amendement proposant un débat et un vote systématiques a été déposé le 10 juillet 2026, mais au 7 novembre 2026 le dossier ne mentionne aucune adoption en séance.\n\n## Pourquoi cette idée circule\n\nLe seuil de 500 000 signatures est souvent cité seul, sans la décision de la Conférence des présidents qui l'accompagne. La part de vrai (un seuil existe et ouvre la voie à un débat) est ainsi présentée comme une obligation, d'où le verdict « trompeur ».\n\n::: objections\n? « La plateforme officielle de l'Assemblée annonce elle-même un débat à partir de 500 000 signatures. »\n> Elle indique que la Conférence des présidents « peut » organiser ce débat, à la demande du président de la commission ou d'un président de groupe, et précise que ses décisions ne sont susceptibles d'aucun recours (plateforme des pétitions de l'Assemblée nationale).\n? « Même classée par la commission, une pétition très signée finit forcément en séance. »\n> Dans les huit jours, tout député peut demander qu'elle soit soumise à l'Assemblée, mais la Conférence des présidents statue ; sinon, le classement devient définitif (Règlement de l'Assemblée nationale, article 149).\n:::\n\n::: et-maintenant\n- [Voir les revendications des citoyens](ppf:revendications)\n- Lire le parcours d'une pétition sur la plateforme officielle de l'Assemblée nationale (https://petitions.assemblee-nationale.fr/pages/parcours_petition).\n:::\n\n## Sources\n\n- Règlement de l'Assemblée nationale, articles 47 et 147 à 151, texte publié par l'Assemblée (dernière modification indiquée : résolution du 4 juin 2025) : https://www.assemblee-nationale.fr/dyn/17/divers/texte_reference/02_reglement_assemblee_nationale.html\n- Plateforme des pétitions de l'Assemblée nationale, « Quel est le parcours d'une pétition après son dépôt ? » : https://petitions.assemblee-nationale.fr/pages/parcours_petition\n- Assemblée nationale, dossier de la proposition de résolution n° 2990 tendant à modifier le Règlement : https://www.assemblee-nationale.fr/dyn/17/dossiers/modifier_reglement_Assemblee_nationale_17e\n- Assemblée nationale, texte adopté par la commission des lois le 8 juillet 2026 (n° 3051-A0) : https://www.assemblee-nationale.fr/dyn/opendata/PNREANR5L17BTC3051.html\n- Assemblée nationale, amendement n° 8 au texte n° 3051, 10 juillet 2026 : https://www.assemblee-nationale.fr/dyn/17/amendements/3051/AN/8.rtf\n",
+        "sig": "0b8945c87edb99e52d49d8ab119ae8ec35b9165f6d8149c3ea2a652d29eea9af30619031caf95b91886e6394ebbd26539226e51f55ab250e958dbd3b54db4482"
+    },
+    {
+        "id": "8489e0191f1be1ad0828147842f6e8539165eb2afe1085032bcf5d74c9d2608c",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "vote-blanc-suffrages-exprimes"
+            ],
+            [
+                "title",
+                "[EXEMPLE] « Le vote blanc compte dans les suffrages exprimés »"
+            ],
+            [
+                "summary",
+                "Non : depuis 2014, les bulletins blancs sont comptés à part et mentionnés dans les résultats, mais la loi les exclut des suffrages exprimés."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "decryptage"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "elections"
+            ],
+            [
+                "t",
+                "vote-blanc"
+            ],
+            [
+                "ppf-verdict",
+                "contredit-par-les-faits"
+            ],
+            [
+                "ppf-claim",
+                "Le vote blanc compte dans les suffrages exprimés."
+            ],
+            [
+                "ppf-claim-context",
+                "Affirmation qui circule sur les réseaux sociaux, novembre 2026"
+            ]
+        ],
+        "content": "::: en-bref\n- Depuis 2014, les bulletins blancs sont **comptés à part** et **mentionnés dans les résultats**.\n- Mais la loi précise qu'ils **n'entrent pas** dans les **suffrages exprimés** (Code électoral, article L65).\n- Les majorités et les seuils se calculent donc **sans les votes blancs**.\n:::\n\n**[EXEMPLE] Ce décryptage est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**\n\n## Ce que dit l'affirmation\n\nL'affirmation soutient qu'un bulletin blanc pèse dans le calcul du résultat d'une élection, au même titre qu'un bulletin portant le nom d'un candidat ou d'une liste.\n\n## Ce que disent les textes\n\nLe dépouillement est réglé par l'article L65 du Code électoral. Depuis la loi n° 2014-172 du 21 février 2014 visant à reconnaître le vote blanc aux élections, il prévoit que « les bulletins blancs sont décomptés séparément et annexés au procès-verbal ». Le même article ajoute qu'ils « n'entrent pas en compte pour la détermination des suffrages exprimés » et qu'« il en est fait spécialement mention dans les résultats des scrutins ». Une enveloppe vide compte comme un bulletin blanc.\n\nLe vote blanc se distingue du vote nul (bulletin qui ne désigne pas clairement un candidat, qui porte un signe de reconnaissance ou une mention injurieuse, etc.). Les bulletins nuls, eux aussi, « n'entrent pas en compte dans le résultat du dépouillement » (Code électoral, article L66).\n\nLes suffrages exprimés ne comprennent donc ni les blancs ni les nuls. C'est sur eux que se calculent les majorités et de nombreux seuils, comme le maintien au second tour ou le remboursement des dépenses de campagne, selon une réponse du ministère de l'Intérieur publiée en 2017. Pour l'élection présidentielle, la Constitution exige « la majorité absolue des suffrages exprimés » (article 7).\n\n## Pourquoi cette idée circule\n\nDepuis 2014, les votes blancs apparaissent à part dans les résultats officiels, ce qui peut donner l'impression qu'ils comptent comme les autres. Selon la même réponse ministérielle, le Parlement a écarté en 2014 l'idée de les inclure dans les suffrages exprimés, en raison de leurs effets sur les seuils et sur la majorité absolue exigée à l'élection présidentielle. Au 7 novembre 2026, l'article L65 en vigueur maintient cette règle.\n\n::: objections\n? « Depuis la loi de 2014, le vote blanc est reconnu : il compte donc dans le résultat. »\n> Il est reconnu au sens où il est compté à part et mentionné dans les résultats, mais le même article précise qu'il n'entre pas dans les suffrages exprimés (Code électoral, article L65).\n? « Si les votes blancs sont plus nombreux que les voix du gagnant, l'élection n'est pas valable. »\n> Aucun des textes cités ici ne le prévoit : le résultat se calcule sur les seuls suffrages exprimés, et le Président est élu à la majorité absolue de ces suffrages (Constitution, article 7 ; Code électoral, article L65).\n:::\n\n::: et-maintenant\n- [Voir les revendications des citoyens](ppf:revendications)\n- Lire l'article L65 du Code électoral sur Légifrance (https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027477739).\n:::\n\n## Sources\n\n- Code électoral, article L65 (dépouillement et bulletins blancs), version en vigueur au 7 novembre 2026 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027477739\n- Code électoral, article L66 (bulletins nuls) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000028639157\n- Constitution du 4 octobre 1958, article 7 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527466\n- Assemblée nationale, question écrite n° 1516 (15e législature) et réponse du ministère de l'Intérieur publiée le 5 décembre 2017 : https://questions.assemblee-nationale.fr/q15/15-1516QE.htm\n",
+        "sig": "9e46122d740b92d0ebbc0b03936b00eee3efdf9155c772073e98d3550893672f52e5233c66a38aa6707050a754087ebaf587a7d3d7829e0eaf82bb75037f4c2c"
+    },
+    {
+        "id": "b6bb8aa58aab8c0ec7ca2f3b5a01ffbe43a5716277f9be0c0be52d10d567f919",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "droit-de-vote-des-femmes"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Le droit de vote des femmes, un siècle de lutte"
+            ],
+            [
+                "summary",
+                "En 1848, le suffrage dit universel exclut les femmes. Il faut près d'un siècle de mobilisations, et de nombreux votes des députés bloqués par le Sénat, avant l'ordonnance du 21 avril 1944 et le premier vote des Françaises en 1945."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "histoire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "histoire"
+            ],
+            [
+                "t",
+                "democratie"
+            ],
+            [
+                "t",
+                "suffrage"
+            ],
+            [
+                "t",
+                "egalite"
+            ],
+            [
+                "ppf-period",
+                "1848",
+                "1945"
+            ],
+            [
+                "ppf-country",
+                "France"
+            ],
+            [
+                "ppf-claim",
+                "droit de vote des femmes"
+            ],
+            [
+                "ppf-claim",
+                "droit d'être élues"
+            ],
+            [
+                "ppf-claim",
+                "égalité des droits politiques entre femmes et hommes"
+            ],
+            [
+                "ppf-result",
+                "femmes électrices et éligibles (ordonnance du 21 avril 1944, article 17)"
+            ],
+            [
+                "ppf-result",
+                "premier vote aux élections municipales du 29 avril 1945"
+            ],
+            [
+                "ppf-result",
+                "33 femmes élues députées le 21 octobre 1945"
+            ],
+            [
+                "ppf-result",
+                "égalité des droits dans le préambule de la Constitution de 1946"
+            ]
+        ],
+        "content": "::: en-bref\n- En 1848, le suffrage « universel » est réservé aux **hommes**.\n- De 1919 à 1936, la Chambre des députés vote **six fois** pour le vote des femmes ; le **Sénat** bloque chaque fois.\n- L'**ordonnance du 21 avril 1944** rend les femmes **électrices et éligibles** dans les mêmes conditions que les hommes.\n- Les Françaises votent pour la première fois le **29 avril 1945** ; **33 femmes** sont élues députées en octobre 1945.\n:::\n\n**[EXEMPLE] Ce récit est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**\n\n## Le contexte\n\nDès la Révolution, des voix réclament l'égalité politique : Condorcet en 1790, puis Olympe de Gouges et sa Déclaration des droits de la femme et de la citoyenne en 1791.\n\nEn 1848, le décret du 5 mars instaure le suffrage « universel ». Mais à l'époque, « Français » veut dire « hommes » : les femmes ne votent pas (Assemblée nationale). La même année, Eugénie Niboyet crée le journal La Voix des femmes. En 1849, Jeanne Deroin se présente aux élections législatives ; la presse se moque d'elle.\n\nSous la Troisième République, le mouvement suffragiste grandit. Le mot « suffragiste » désigne les militantes et militants du droit de vote des femmes.\n\n## Ce qui s'est passé\n\nLes suffragistes créent des journaux et des associations, publient des manifestes et organisent des manifestations. L'Union française pour le suffrage des femmes compte 12 000 membres en 1914 et 100 000 en 1935. En avril 1914, un vote symbolique organisé par les suffragistes réunit 505 972 « oui » (Assemblée nationale).\n\n::: chronologie\n- 1848-03-05 : Le suffrage « universel » instauré par le gouvernement provisoire exclut les femmes.\n- 1849 : Jeanne Deroin se présente aux élections législatives.\n- 1881-02-13 : Hubertine Auclert lance le journal La Citoyenne.\n- 1909 : Création de l'Union française pour le suffrage des femmes.\n- 1919-05-20 : La Chambre des députés adopte pour la première fois une proposition de loi sur le vote des femmes, par 329 voix contre 95.\n- 1922-11-21 : Le Sénat refuse de passer à l'examen des articles, par 156 voix contre 134.\n- 1936-07-30 : La Chambre vote une sixième fois, par 495 voix contre 0 ; le Sénat n'inscrit jamais le texte à son ordre du jour.\n- 1944-03-24 : À Alger, l'Assemblée consultative provisoire adopte l'amendement de Fernand Grenier, par 51 voix contre 16.\n- 1944-04-21 : L'ordonnance signée par le général de Gaulle rend les femmes électrices et éligibles.\n- 1945-04-29 : Premier vote des Françaises, aux élections municipales.\n:::\n\nEntre ces votes, les députés adoptent des résolutions pour pousser le Sénat à débattre. Les sénateurs laissent les textes s'enliser : André Tardieu les accuse de « jouer à cache-cache avec le vote des femmes ». En 1934, Louise Weiss fonde La Femme nouvelle, qui multiplie les actions spectaculaires. Le 4 juin 1936, Léon Blum nomme trois femmes sous-secrétaires d'État : Cécile Brunschvicg, Suzanne Lacore et Irène Joliot-Curie. Elles ne peuvent pourtant ni voter, ni être élues (Assemblée nationale).\n\n## Ce qui a été obtenu\n\nPendant la guerre, le général de Gaulle annonce en 1942 que tous les hommes et toutes les femmes éliront la future Assemblée. À Alger, le projet d'ordonnance prévoit seulement que les femmes seront éligibles. L'amendement de Fernand Grenier, délégué communiste, les rend aussi électrices. L'article 17 de l'ordonnance du 21 avril 1944 dispose que « les femmes sont électrices et éligibles dans les mêmes conditions que les hommes » (Assemblée nationale).\n\nLes Françaises votent pour la première fois aux municipales du 29 avril 1945. Le 21 octobre 1945, elles votent pour la première fois à un scrutin national : 33 femmes sont élues à l'Assemblée constituante (17 communistes, 9 du MRP, 6 socialistes, 1 du PRL). Le préambule de la Constitution de 1946 ajoute que « la loi garantit à la femme, dans tous les domaines, des droits égaux à ceux de l'homme » (Conseil constitutionnel).\n\n## Ce qui a fonctionné, ce qui a échoué\n\n**Pourquoi si tard ?** La France est l'un des derniers grands pays d'Europe à donner le vote aux femmes : en 1935, elles votent partout en Europe, sauf en France, en Suisse, en Italie et dans les Balkans (Assemblée nationale). Le blocage vient surtout du Sénat. Même en 1944, des délégués, dont les radicaux, invoquent la difficulté d'inscrire les femmes à temps, ou le risque d'un électorat surtout féminin avant le retour des prisonniers et des déportés.\n\n**Ce qui reste à faire.** Le droit est égal, mais l'égalité des élus tarde. Le 8 juillet 1999, la Constitution est révisée : aujourd'hui, son article 1er prévoit que la loi « favorise l'égal accès des femmes et des hommes aux mandats électoraux et fonctions électives ». La loi du 6 juin 2000 applique ce principe. Pourtant, après les législatives de 2002, les femmes ne sont que 12,3 % des députés, relève en 2006 une proposition de loi de sénateurs.\n\n::: objections\n? « Les femmes n'ont pas conquis le droit de vote : le général de Gaulle le leur a accordé. »\n> Pour l'Assemblée nationale, l'impulsion de 1944 est venue du général de Gaulle plus que de l'Assemblée consultative, et ce vote n'efface pas quarante ans d'enlisement du Parlement. Mais la même source retrace près d'un siècle de mobilisations : journaux, manifestes, manifestations, vote symbolique de 1914, actions de La Femme nouvelle.\n? « Le vote des femmes a été bloqué par un seul camp politique. »\n> Non. L'Assemblée nationale réunit des déclarations hostiles d'élus de droite comme de gauche, de 1881 à 1944. Leurs arguments : les femmes seraient faites pour le foyer, ou incapables de juger seules. L'historien Pierre Rosanvallon y voit aussi une réaction au suffrage masculin de 1848, accordé très tôt en France.\n:::\n\n::: et-maintenant\n- [Voir les revendications des citoyens](ppf:revendications)\n- Découvrir la chronologie du droit de vote des femmes et les biographies des 33 premières députées sur le site de l'Assemblée nationale (https://www2.assemblee-nationale.fr/decouvrir-l-assemblee/histoire/le-suffrage-universel/la-conquete-de-la-citoyennete-politique-des-femmes)\n:::\n\n## Sources\n\n- Assemblée nationale, la conquête de la citoyenneté politique des femmes : https://www2.assemblee-nationale.fr/decouvrir-l-assemblee/histoire/le-suffrage-universel/la-conquete-de-la-citoyennete-politique-des-femmes\n- Assemblée nationale, la Troisième République et le suffrage des femmes : https://www2.assemblee-nationale.fr/decouvrir-l-assemblee/histoire/le-suffrage-universel/la-conquete-de-la-citoyennete-politique-des-femmes/la-troisieme-republique-et-le-suffrage-des-femmes-l-inefficacite-du-legislateur\n- Assemblée nationale, vers la reconnaissance de la citoyenneté des femmes : https://www2.assemblee-nationale.fr/14/evenements/2015/33-premieres-deputees/vers-la-reconnaissance-de-la-citoyennete-des-femmes\n- Assemblée nationale, le suffrage universel en 1848 : https://www2.assemblee-nationale.fr/decouvrir-l-assemblee/histoire/le-suffrage-universel/la-republique-et-le-suffrage-universel/1848-la-deuxieme-republique-met-en-place-le-suffrage-universel-masculin\n- Ministère de la Culture, l'ordonnance de 1944 aux Archives nationales : https://www.culture.gouv.fr/presse/communiques-de-presse/l-ordonnance-de-1944-instituant-le-droit-de-vote-des-femmes-exposee-aux-archives-nationales-dans-le-cadre-du-cycle-les-essentiels\n- Conseil constitutionnel, préambule de 1946 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946\n- Conseil constitutionnel, Constitution en vigueur : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur\n- Sénat, proposition de loi n° 153 (2005-2006) sur la parité : https://www.senat.fr/leg/ppl05-153.html\n",
+        "sig": "5cbead6a93b95a00a20517581b9ca3d01b4a9cb03cd854c5aa0458f26d117822e1711fa6530370283a39ddad53154d6fc03f96a79b53542bcb10deb86d7d2f49"
+    },
+    {
+        "id": "154bcf85e92cc33f4c7012bf769e142111de22b4afec2c4af7011c7792a3436e",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "front-populaire-1936"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Le Front populaire et les grèves de 1936"
+            ],
+            [
+                "summary",
+                "Au printemps 1936, une victoire électorale et une vague de grèves avec occupation des usines aboutissent aux accords de Matignon, aux congés payés et à la semaine de 40 heures. Une partie de ces conquêtes dure encore, une autre est remise en cause dès 1938."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "histoire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "histoire"
+            ],
+            [
+                "t",
+                "travail"
+            ],
+            [
+                "t",
+                "greves"
+            ],
+            [
+                "ppf-period",
+                "1936",
+                "1938"
+            ],
+            [
+                "ppf-country",
+                "France"
+            ],
+            [
+                "ppf-claim",
+                "hausse des salaires"
+            ],
+            [
+                "ppf-claim",
+                "respect du droit syndical"
+            ],
+            [
+                "ppf-claim",
+                "contrats collectifs de travail"
+            ],
+            [
+                "ppf-claim",
+                "semaine de 40 heures"
+            ],
+            [
+                "ppf-claim",
+                "congés payés"
+            ],
+            [
+                "ppf-result",
+                "hausse des salaires de 7 % à 15 % (accords de Matignon)"
+            ],
+            [
+                "ppf-result",
+                "délégués du personnel (accords de Matignon)"
+            ],
+            [
+                "ppf-result",
+                "congés payés de deux semaines (loi du 20 juin 1936)"
+            ],
+            [
+                "ppf-result",
+                "semaine de 40 heures (loi du 21 juin 1936)"
+            ],
+            [
+                "ppf-result",
+                "conventions collectives de branche (loi du 24 juin 1936)"
+            ]
+        ],
+        "content": "::: en-bref\n- Au printemps 1936, la **victoire électorale** du Front populaire est suivie d'une vague de **grèves avec occupation** des lieux de travail.\n- Les **accords de Matignon** (nuit du 7 au 8 juin) prévoient des **hausses de salaire** et des **délégués du personnel**.\n- En quelques jours, le Parlement vote les **congés payés**, la **semaine de 40 heures** et les **conventions collectives**.\n- Les congés payés et les conventions collectives existent toujours ; les 40 heures sont **remises en cause dès novembre 1938**.\n:::\n\n**[EXEMPLE] Ce récit est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**\n\n## Le contexte\n\nAu début des années 1930, la France subit la crise économique. Depuis 1931, les gouvernements cherchent à faire baisser les prix et les dépenses publiques. En 1934, des décrets-lois (des textes du gouvernement qui ont la force d'une loi) réduisent le traitement des fonctionnaires.\n\nÀ partir de février 1934, des comités locaux réunissent intellectuels, syndicalistes, communistes et socialistes contre ce qu'ils voient comme un danger fasciste. De cette union naît le Front populaire, une alliance électorale de la gauche. Il gagne les élections des 26 avril et 3 mai 1936, et le socialiste Léon Blum prend la tête du gouvernement.\n\n## Ce qui s'est passé\n\nLe 11 mai, une grève éclate aux usines Bréguet du Havre, après le renvoi de deux ouvriers qui n'avaient pas travaillé le 1er mai. La nouveauté : les grévistes occupent l'usine. Le 28 mai, le mouvement atteint Renault et Citroën. On compte plus de 12 000 grèves, des usines aux magasins, aux banques et aux cafés (Assemblée nationale).\n\n::: chronologie\n- 1936-05-03 : Second tour des élections législatives, victoire du Front populaire.\n- 1936-05-11 : Grève avec occupation aux usines Bréguet du Havre.\n- 1936-06-06 : Léon Blum présente son gouvernement et obtient la confiance des députés.\n- 1936-06-07 : Conférence de Matignon entre le patronat et la CGT ; l'accord est signé dans la nuit.\n- 1936-06-20 : Loi sur le congé annuel payé.\n- 1936-06-21 : Loi sur la semaine de 40 heures.\n- 1936-06-24 : Loi sur les conventions collectives.\n- 1937-02-13 : Léon Blum annonce une « pause » financière et économique.\n- 1938-11-12 : Décrets-lois de Paul Reynaud : la semaine de travail peut de nouveau monter jusqu'à 48 heures.\n- 1938-11-30 : Grève générale contre ces décrets-lois ; elle échoue.\n:::\n\n## Ce qui a été obtenu\n\nLes accords de Matignon augmentent les salaires de 15 % pour les plus bas à 7 % pour les plus hauts. Dans chaque établissement de plus de dix ouvriers, des délégués portent les réclamations des salariés auprès de la direction (accord, articles 4 et 5).\n\nLe Parlement vote ensuite trois grandes lois :\n\n- **les congés payés** : après un an dans l'entreprise, au moins quinze jours par an, dont douze jours ouvrables (loi du 20 juin 1936). Avant, seuls quelques métiers en avaient, comme les fonctionnaires ;\n- **la semaine de 40 heures** dans l'industrie et le commerce, sans baisse de salaire (loi du 21 juin 1936) ;\n- **les conventions collectives de branche**, des accords négociés pour tout un secteur d'activité (loi du 24 juin 1936). Près de 5 000 sont signées de 1936 à 1938 (Laure Machu, historienne).\n\nCes lois dépassent la majorité de gauche : les congés payés sont votés à l'unanimité des députés. Les 40 heures sont le texte le plus contesté (408 voix contre 100 à la Chambre, 176 contre 80 au Sénat).\n\n## Ce qui a fonctionné, ce qui a échoué\n\n**Ce qui dure.** Les congés payés s'allongent : trois semaines en 1956, quatre en 1969, cinq en 1982 (Cnam). La convention de branche devient le pivot des relations sociales (Laure Machu). En 1946, la loi garde les 40 heures comme durée légale, mais autorise des heures supplémentaires ; en 1966, le Sénat note que les horaires élevés restent très répandus.\n\n**Ce qui échoue.** Beaucoup de patrons refusent d'appliquer Matignon et les grèves continuent. Face aux difficultés financières, Léon Blum annonce une « pause » en février 1937. Battu au Sénat, qui lui refuse les pleins pouvoirs financiers, il démissionne le 21 juin 1937. En novembre 1938, le gouvernement Daladier revient par décrets-lois sur une partie des acquis, et la grève générale du 30 novembre échoue. Laure Machu relève aussi une limite : les conventions de 1936 fixent des salaires plus bas pour les ouvrières et les jeunes.\n\n::: objections\n? « Les 40 heures ont affaibli l'économie et la défense du pays avant la guerre. »\n> Pour l'historien de l'économie Jean-Charles Asselain, la loi, appliquée de façon rigide, a freiné la reprise de 1937 ; mais la fuite des capitaux a aussi pesé, et il y voit une erreur sans doute inévitable dans ce contexte (Revue économique, 1974).\n> Au procès de Riom, en 1942, le régime de Vichy accuse Léon Blum d'avoir entravé l'effort militaire, pour rejeter la défaite sur la politique sociale du Front populaire (Assemblée nationale).\n? « Ce sont les grèves, pas les élections, qui ont tout obtenu. »\n> Les faits montrent un enchaînement des deux. Les grèves commencent après la victoire électorale. Le 6 juin, avant Matignon, Léon Blum annonce les 40 heures et les congés payés. Mais l'accord ne suffit pas à arrêter les grèves (Assemblée nationale).\n? « En 1936, tous les ouvriers sont partis en vacances à la mer. »\n> Pour le chercheur Bertrand Réau (Cnam), les premiers départs restent modestes, souvent vers les environs des villes ; l'image des départs en masse s'est construite plus tard, et ils augmentent surtout dans les années 1950 et 1960.\n:::\n\n::: et-maintenant\n- [Voir les revendications des citoyens](ppf:revendications)\n- Parcourir le dossier de l'Assemblée nationale sur le Front populaire et les lois sociales de 1936 (https://www.assemblee-nationale.fr/dyn/histoire/il-y-a-90-ans-le-front-populaire-et-les-lois-sociales-de-la-republique)\n:::\n\n## Sources\n\n- Assemblée nationale, dossier « Il y a 90 ans, le Front populaire » : https://www.assemblee-nationale.fr/dyn/histoire/il-y-a-90-ans-le-front-populaire-et-les-lois-sociales-de-la-republique\n- Assemblée nationale, les grèves : https://www.assemblee-nationale.fr/dyn/histoire/il-y-a-90-ans-le-front-populaire-et-les-lois-sociales-de-la-republique/une-ouverture-de-la-legislature-sur-fond-de-greves\n- Assemblée nationale, Matignon et les premières lois : https://www.assemblee-nationale.fr/dyn/histoire/il-y-a-90-ans-le-front-populaire-et-les-lois-sociales-de-la-republique/des-accords-de-matignon-aux-cinq-premieres-lois-adoptees\n- Académie de Versailles, texte des accords de Matignon : https://histoire.ac-versailles.fr/IMG/pdf/tg_analyse_doc_front_populaire_5509.pdf\n- Conseil constitutionnel, décision 2023-1079 QPC, commentaire : https://www.conseil-constitutionnel.fr/sites/default/files/as/root/bank_mm/decisions/20231079qpc/20231079qpc_ccc.pdf\n- Sénat, rapport n° 198 (1965-1966) sur la durée du travail : https://www.senat.fr/rap/1965-1966/i1965_1966_0198.pdf\n- Cnam, « Les congés payés ont 90 ans » : https://www.cnam.fr/actualites/les-conges-payes-ont-90-ans\n- Laure Machu, CNRS Le journal, 2016 : https://lejournal.cnrs.fr/print/1270\n- Jean-Charles Asselain, Revue économique, 1974 : https://www.persee.fr/doc/reco_0035-2764_1974_num_25_4_408167\n- Assemblée nationale, Léon Blum, repères chronologiques : https://www2.assemblee-nationale.fr/14/evenements/2016/80eme-anniversaire-de-la-victoire-du-front-populaire-3-mai-2016/le-nouveau-gouvernement/leon-blum/reperes-chronologiques\n- Assemblée nationale, biographie d'Édouard Daladier : https://www2.assemblee-nationale.fr/sycomore/fiche?num_dept=2105\n- Assemblée nationale, les décrets-lois de 1938 : https://www.assemblee-nationale.fr/dyn/histoire-et-patrimoine/deuxieme-guerre-mondiale/des-decrets-lois-du-gouvernement-daladier-au-vote-par-la-chambre-des-deputes-et-le-senat-des-pleins-pouvoirs-au-marechal-petain\n",
+        "sig": "b85efa685d73166c066cee5b4e61160e78b23d319361a465cb1547c1d81e12c0bc4b29d96911fbafdaad9fffabfd50ce90e6cc3421fd09186520b4c4c7d26795"
+    },
+    {
+        "id": "996cdae85556a80e29970d4709d48639ca3f0238143cd71df8963322b238f890",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "revolution-1848"
+            ],
+            [
+                "title",
+                "[EXEMPLE] La révolution de 1848 et la Deuxième République"
+            ],
+            [
+                "summary",
+                "En février 1848, une révolution renverse la monarchie de Juillet. La République instaure le suffrage universel masculin et abolit l'esclavage, mais la fermeture des ateliers nationaux provoque l'insurrection de juin, durement réprimée, et la République prend fin en 1851."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "histoire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "histoire"
+            ],
+            [
+                "t",
+                "democratie"
+            ],
+            [
+                "t",
+                "suffrage"
+            ],
+            [
+                "t",
+                "esclavage"
+            ],
+            [
+                "t",
+                "travail"
+            ],
+            [
+                "ppf-period",
+                "1848",
+                "1851"
+            ],
+            [
+                "ppf-country",
+                "France"
+            ],
+            [
+                "ppf-claim",
+                "réforme électorale et suffrage universel"
+            ],
+            [
+                "ppf-claim",
+                "travail pour les chômeurs"
+            ],
+            [
+                "ppf-claim",
+                "abolition de l'esclavage"
+            ],
+            [
+                "ppf-result",
+                "suffrage universel masculin (décret du 5 mars 1848)"
+            ],
+            [
+                "ppf-result",
+                "abolition de l'esclavage dans les colonies (décret du 27 avril 1848)"
+            ],
+            [
+                "ppf-result",
+                "abolition de la peine de mort en matière politique"
+            ],
+            [
+                "ppf-result",
+                "journée de travail limitée à 10 heures à Paris (décret du 2 mars 1848, remplacé par une limite de 12 heures en septembre 1848)"
+            ]
+        ],
+        "content": "::: en-bref\n- En **février 1848**, une révolution à Paris renverse le roi Louis-Philippe : la **République** est proclamée.\n- Le décret du **5 mars 1848** instaure le **suffrage universel**, mais pour les **hommes** seulement.\n- Le décret du **27 avril 1848**, rédigé par **Victor Schœlcher**, **abolit l'esclavage** dans les colonies françaises.\n- La fermeture des **ateliers nationaux** provoque l'**insurrection de juin**, durement réprimée ; la République prend fin avec le **coup d'État du 2 décembre 1851**.\n:::\n\n**[EXEMPLE] Ce récit est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**\n\n## Le contexte\n\nEn 1848, la France subit disette, épidémies, crise économique et chômage. Seuls les hommes assez riches votent : c'est le suffrage censitaire, où le droit de vote dépend de l'impôt payé. Il y a environ 240 000 électeurs (Fondation Napoléon).\n\nLes opposants organisent une « campagne des banquets » : des repas politiques pour réclamer une réforme électorale. Le pouvoir finit par les interdire (Assemblée nationale).\n\nDans les colonies, plus de 250 000 femmes et hommes vivent en esclavage. L'esclavage, aboli en 1794, a été rétabli par Bonaparte en 1802 (ministère de la Culture).\n\n## Ce qui s'est passé\n\nLe 22 février, des Parisiens protestent contre l'interdiction d'un banquet. Le lendemain, le roi renvoie son ministre Guizot, mais une fusillade boulevard des Capucines relance le mouvement. Le 24 février, Louis-Philippe abdique et les républicains proclament la République. Un gouvernement provisoire est formé, avec Lamartine, Ledru-Rollin et Arago (Assemblée nationale).\n\n::: chronologie\n- 1848-02-24 : Abdication de Louis-Philippe et proclamation de la République.\n- 1848-03-02 : Décret limitant la journée de travail à 10 heures à Paris et 11 heures en province.\n- 1848-03-05 : Décret instaurant le suffrage universel masculin.\n- 1848-04-23 : Élection de l'Assemblée constituante.\n- 1848-04-27 : Décret d'abolition de l'esclavage dans les colonies.\n- 1848-05-22 : Soulèvement des esclaves à Saint-Pierre, en Martinique ; le gouverneur y proclame l'abolition le lendemain.\n- 1848-06-21 : Fermeture des ateliers nationaux.\n- 1848-06-23 : Début de l'insurrection de juin à Paris, réprimée par l'armée jusqu'au 26 juin.\n- 1848-12-10 : Louis-Napoléon Bonaparte est élu président de la République.\n- 1851-12-02 : Coup d'État de Louis-Napoléon Bonaparte.\n:::\n\n## Ce qui a été obtenu\n\n**Le suffrage universel.** Le décret du 5 mars prévoit que « le suffrage sera universel et direct ». Sont électeurs les Français de 21 ans, installés dans leur commune depuis six mois. Mais « Français » veut dire alors « hommes » : les femmes restent exclues (Assemblée nationale). Les électeurs passent à près de 9,4 millions (Fondation Napoléon), et plus de huit inscrits sur dix votent le 23 avril.\n\n**L'abolition de l'esclavage.** Le décret du 27 avril qualifie l'esclavage d'« attentat contre la dignité humaine ». Il l'abolit dans toutes les colonies, deux mois après sa publication dans chacune, et prévoit que les colonies libérées seront représentées à l'Assemblée nationale (Légifrance). Victor Schœlcher, sous-secrétaire d'État aux colonies, a présidé la commission qui l'a préparé (Fondation pour la mémoire de l'esclavage).\n\n**Des mesures sociales.** Le gouvernement limite la journée de travail (décret du 2 mars) et crée des ateliers nationaux pour donner du travail aux chômeurs. Il abolit aussi la peine de mort en matière politique (Élysée).\n\n## Ce qui a fonctionné, ce qui a échoué\n\n**Ce qui reste.** L'abolition de l'esclavage est définitive. Le suffrage universel masculin devient un droit acquis : ses adversaires peuvent le réduire, mais n'osent plus l'attaquer de front (Assemblée nationale). En 1851, Louis-Napoléon Bonaparte prétend même le rétablir pour justifier son coup d'État.\n\n**Ce qui échoue.** Les résultats des élections d'avril sont favorables aux conservateurs et aux notables de province. Le 21 juin, les ateliers nationaux sont fermés. Les quartiers populaires de Paris se couvrent de barricades. Le général Cavaignac reçoit les pleins pouvoirs pour écraser l'insurrection. Selon la BnF, il y a 3 000 à 5 000 morts sur les barricades et 1 500 fusillés sans jugement, puis des déportations. Pour Marx, c'est l'acte de naissance du mouvement ouvrier français ; la BnF y voit aussi une révolte républicaine contre la confiscation des espoirs nés du suffrage universel.\n\nDès le 9 septembre 1848, une loi remplace la limite de 10 heures par une limite de 12 heures (Archives d'Indre-et-Loire). En 1850, la majorité conservatrice durcit les conditions d'inscription : le nombre d'électeurs baisse d'un tiers. Le 2 décembre 1851, Louis-Napoléon dissout l'Assemblée. La résistance est réprimée (380 victimes civiles) et des députés comme Victor Hugo et Victor Schœlcher sont exilés (Assemblée nationale).\n\n::: objections\n? « Ce n'est pas Schœlcher qui a libéré les esclaves : ils se sont libérés eux-mêmes. »\n> Les deux comptent. Schœlcher a rédigé le décret (Fondation pour la mémoire de l'esclavage). Mais en Martinique, le soulèvement du 22 mai, qui fait des morts et des blessés des deux côtés, pousse le gouverneur à proclamer l'abolition dès le 23 mai, sans attendre le délai prévu (Parc naturel régional de la Martinique). La Fondation note que la figure de Schœlcher est aujourd'hui contestée dans les départements d'outre-mer.\n? « L'abolition a indemnisé les maîtres, pas les anciens esclaves. »\n> C'est exact. La loi du 30 avril 1849 verse 126 millions de francs sur 20 ans aux anciens propriétaires. Schœlcher acceptait ce principe, mais sa proposition d'indemniser aussi les affranchis a été rejetée (Fondation pour la mémoire de l'esclavage).\n? « Le peuple a élu celui qui a renversé la République : il n'était pas prêt pour le suffrage universel. »\n> Ce débat existait déjà. En octobre 1848, Jules Grévy craignait l'élection d'un « ambitieux » ; Lamartine défendait la confiance dans le peuple (Assemblée nationale). L'historien Pierre Rosanvallon parle d'un « vieux thème de la prématurité du suffrage », qui ressurgit plus tard contre le vote des femmes (Assemblée nationale).\n:::\n\n::: et-maintenant\n- [Voir les revendications des citoyens](ppf:revendications)\n- Lire le décret du 27 avril 1848 sur l'abolition de l'esclavage sur Légifrance (https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000295898)\n:::\n\n## Sources\n\n- Assemblée nationale, le suffrage universel en 1848 : https://www2.assemblee-nationale.fr/decouvrir-l-assemblee/histoire/le-suffrage-universel/la-republique-et-le-suffrage-universel/1848-la-deuxieme-republique-met-en-place-le-suffrage-universel-masculin\n- Assemblée nationale, la citoyenneté politique des femmes : https://www2.assemblee-nationale.fr/decouvrir-l-assemblee/histoire/le-suffrage-universel/la-conquete-de-la-citoyennete-politique-des-femmes\n- Élysée, la Constitution de 1848 : https://www.elysee.fr/la-presidence/la-constitution-du-4-novembre-1848\n- Fondation Napoléon, l'année 1848 : https://www.napoleon.org/enseignants/documents/lannee-1848-sur-gallica-de-la-iie-republique-au-prince-president-bonaparte\n- BnF, barricade du 25 juin 1848 : https://www.bnf.fr/fr/mediatheque/barricade-de-la-rue-folie-mericourt-25-juin-1848\n- Archives d'Indre-et-Loire, travail et main-d'œuvre : https://archives.touraine.fr/media/e91dd136-236a-440c-86fd-712a9ab27b6c.pdf\n- Légifrance, décret du 27 avril 1848 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000295898\n- Ministère de la Culture, le décret de 1848 : https://www.culture.gouv.fr/actualites/Archives-pleins-feux-sur-le-decret-de-1848-portant-abolition-de-l-esclavage\n- Fondation pour la mémoire de l'esclavage, Victor Schœlcher : https://memoire-esclavage.org/tcpdf/410\n- Parc naturel régional de la Martinique, 22 mai 1848 : https://pnr-martinique.com/actualites/22-mai-1848-quand-les-esclaves-arrachent-leur-liberte-eux-memes\n",
+        "sig": "e58a25f322117667bf7681171123781b9dc422b8d666e405abc3c556e889157cbc028a8b462d4b8097c0a76006aa90aa23602f14c8272fecbbf856fa4fc9d628"
+    },
+    {
+        "id": "a5bbf1b0a814ce995cd6eb89620555106741a783eb99c3d052815231f9d1d634",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "ecole"
+            ],
+            [
+                "title",
+                "[EXEMPLE] L'école : qui décide de quoi ?"
+            ],
+            [
+                "summary",
+                "De la maternelle au lycée, qui construit et entretient les bâtiments, qui gère la cantine, qui organise les cars scolaires et qui décide des programmes et des enseignants."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "qui-decide"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "education"
+            ],
+            [
+                "t",
+                "collectivites"
+            ]
+        ],
+        "content": "::: decideurs\n- commune | maire, elu-local | La commune crée et implante les écoles maternelles et élémentaires publiques, en est propriétaire, les construit, les équipe et paie leur fonctionnement (Code de l'éducation, articles L212-1 et L212-4).\n- intercommunalite | elu-local | Quand elle est autorité organisatrice de la mobilité, l'intercommunalité organise les transports scolaires sur son territoire (Code des transports, article L3111-7).\n- departement | elu-local | Le département a la charge des collèges : bâtiments, équipement, fonctionnement, restauration et hébergement (Code de l'éducation, article L213-2).\n- region | elu-local | La région a la charge des lycées et organise les transports scolaires en dehors du territoire des autorités organisatrices de la mobilité (Code de l'éducation, article L214-6 ; Code des transports, article L3111-7).\n- etat | ministre, depute, senateur | L'État fixe les programmes, délivre les diplômes, recrute et rémunère les enseignants et répartit ses moyens entre les établissements (Code de l'éducation, articles L211-1 et L211-8).\n:::\n\n::: en-bref\n- Les **bâtiments** dépendent de trois collectivités : la **commune** pour l'école, le **département** pour le collège, la **région** pour le lycée.\n- La **cantine** de l'école primaire n'est pas obligatoire pour la commune, mais quand elle existe, **tous les enfants** scolarisés ont le droit de s'y inscrire.\n- Les **cars scolaires** sont organisés par la **région**, ou par l'**autorité organisatrice de la mobilité** sur son territoire.\n- Les **programmes**, les **diplômes** et les **enseignants** relèvent de l'**État**.\n:::\n\n**[EXEMPLE] Cette fiche est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**\n\n## Le rôle de la commune\n\nLe conseil municipal décide de créer une école maternelle ou élémentaire publique et choisit où l'installer, après avis du préfet (Code de l'éducation, article L212-1). La commune est propriétaire des locaux : elle les construit, les agrandit, les répare, les équipe et paie leur fonctionnement (article L212-4). Elle ne paie pas les enseignants, qui sont rémunérés par l'État (article L211-8).\n\nLa cantine de l'école primaire est un service que la commune n'est pas obligée de créer. Si elle existe, l'inscription est un droit pour tous les enfants scolarisés, sans distinction selon leur situation ou celle de leur famille (article L131-13). La commune fixe les tarifs et peut tenir compte du quotient familial (service-public.gouv.fr, « Cantine scolaire à l'école primaire »).\n\n## Le rôle de l'intercommunalité\n\nLes communes peuvent confier à leur intercommunalité le fonctionnement de leurs écoles (Code de l'éducation, article L212-8) ou leur cantine (collectivites-locales.gouv.fr). Sur le territoire d'une autorité organisatrice de la mobilité, comme une métropole ou une communauté d'agglomération, c'est elle qui organise les transports scolaires (Code des transports, articles L1231-1 et L3111-7).\n\n## Le rôle du département\n\nLe département a la charge des collèges : construction, équipement, fonctionnement, accueil, restauration, hébergement et entretien, sauf la surveillance des élèves (Code de l'éducation, article L213-2). Il fixe leur implantation et leur secteur de recrutement, mais c'est l'État qui affecte les élèves dans les collèges publics (article L213-1).\n\n## Le rôle de la région\n\nLa région a la charge des lycées, des établissements d'éducation spéciale et des lycées professionnels maritimes : construction, équipement, fonctionnement, restauration, hébergement et entretien, sauf la surveillance des élèves (Code de l'éducation, article L214-6). Elle recrute et gère les agents techniques des lycées (article L214-6-1).\n\nElle organise aussi les transports scolaires en dehors du territoire des autorités organisatrices de la mobilité (Code des transports, article L3111-7). Elle peut les confier par convention à un département, une commune, une intercommunalité ou une association de parents d'élèves (article L3111-9). En Île-de-France, c'est Île-de-France Mobilités qui les organise (article L1241-1).\n\n## Le rôle de l'État\n\nL'éducation est un service public national. L'État fixe les voies de formation et les programmes nationaux, organise les enseignements, délivre les diplômes, recrute et gère ses personnels et répartit ses moyens pour garantir l'égalité d'accès (Code de l'éducation, article L211-1). Il rémunère les enseignants des écoles, des collèges et des lycées publics (article L211-8). Ces règles sont fixées par la loi, votée par les députés et les sénateurs.\n\n::: objections\n? « Si la classe de mon enfant ferme, c'est le maire qui l'a décidé. »\n> Les enseignants sont des personnels de l'État, qui les recrute et répartit ses moyens entre les écoles (Code de l'éducation, articles L211-1 et L211-8). La commune, elle, décide de la création et de l'implantation des écoles, après avis du préfet (article L212-1).\n? « La mairie est obligée d'avoir une cantine. »\n> Non, ce service est facultatif. Mais s'il existe, tous les enfants scolarisés ont le droit de s'y inscrire, sans discrimination (Code de l'éducation, article L131-13), sauf si sa capacité maximale est atteinte, selon le Conseil d'État (collectivites-locales.gouv.fr).\n:::\n\n::: et-maintenant\n- [Proposer ou soutenir une revendication](ppf:revendications)\n- Pour l'école et la cantine, écrire au maire ; pour le collège, au conseil départemental ; pour le lycée et les cars scolaires, au conseil régional. Leurs coordonnées sont dans l'Annuaire de l'administration (https://lannuaire.service-public.gouv.fr/).\n- Pour les programmes et les postes d'enseignants, écrire à votre député (https://www.assemblee-nationale.fr/dyn/vos-deputes).\n:::\n\n## Sources\n\n- Code de l'éducation, article L131-13 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000033956550\n- Code de l'éducation, article L211-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524494\n- Code de l'éducation, article L211-8 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049603716\n- Code de l'éducation, article L212-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524507\n- Code de l'éducation, article L212-4 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045293752\n- Code de l'éducation, article L212-8 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524519\n- Code de l'éducation, articles L213-1, L213-2, L214-6 et L214-6-1 (répartition des compétences entre l'État et les collectivités territoriales) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006071191/LEGISCTA000006151333/\n- Code des transports, articles L3111-7 à L3111-10 (transports scolaires) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023070990/\n- Code des transports, articles L1231-1 et suivants (autorités organisatrices de la mobilité) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023069255/\n- Code des transports, article L1241-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787268\n- Collectivites-locales.gouv.fr, « La restauration scolaire » : https://www.collectivites-locales.gouv.fr/animer-les-territoires/services-la-population/les-services-publics-locaux/lenfance-et-lenseignement/la-restauration-scolaire\n- Service-public.gouv.fr, « Cantine scolaire à l'école primaire (maternelle et élémentaire) » : https://www.service-public.gouv.fr/particuliers/vosdroits/F24570\n",
+        "sig": "4b1a7abf216062a693b1a2e750818fb20ccfd3953e268c5d401f6a240669efddca10e0c946f1c558747c82b0cf3983580d44261aaf968f4b54fd9bf0047e8e11"
+    },
+    {
+        "id": "3260f8dac50ff42ad6d9979226c9fbd803438fda2a4c3b85db999bbc41d31121",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "manifester-qui-autorise"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Manifester : qui autorise, qui peut interdire ?"
+            ],
+            [
+                "summary",
+                "Une manifestation sur la voie publique se déclare, elle ne s'autorise pas. Qui reçoit la déclaration, qui peut l'interdire et comment le juge contrôle ces décisions."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "qui-decide"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "manifestation"
+            ],
+            [
+                "t",
+                "libertes"
+            ],
+            [
+                "t",
+                "ordre-public"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dominique-fictif",
+                "",
+                "personne"
+            ]
+        ],
+        "content": "::: decideurs\n- commune | maire | Le maire reçoit la déclaration de manifestation et peut l'interdire par arrêté s'il estime qu'elle est de nature à troubler l'ordre public (code de la sécurité intérieure, articles L211-2 et L211-4).\n- etat | ministre, depute, senateur | Le préfet, représentant du Gouvernement, reçoit la déclaration là où la police est étatisée et peut interdire une manifestation ou agir à la place du maire, sous le contrôle du juge administratif (code de la sécurité intérieure, articles L211-2 et L211-4).\n:::\n\n::: en-bref\n- Une manifestation sur la voie publique se **déclare** : ce n'est **pas une autorisation** à demander.\n- La déclaration se fait à la **mairie** de chaque commune concernée, ou à la **préfecture** là où la police est étatisée (préfecture de police à Paris), entre **3 et 15 jours francs** avant.\n- Le **maire** ou le **préfet** peut **interdire** une manifestation qui risque de troubler l'ordre public, mais seulement en **dernier recours**.\n- Une interdiction peut être contestée en urgence devant le **juge administratif**, qui statue en **48 heures**.\n:::\n\n**[EXEMPLE] Cette fiche est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**\n\n## Le rôle de la commune\n\nTout cortège, défilé ou rassemblement, et plus généralement toute manifestation sur la voie publique, doit être déclaré à l'avance. Les sorties conformes aux usages locaux en sont dispensées (code de la sécurité intérieure, ou CSI, article L211-1).\n\nLa déclaration est déposée à la mairie de chaque commune concernée, au moins trois et au plus quinze jours francs avant (un jour franc est un jour entier, sans compter celui du dépôt ni celui de la manifestation). Signée par au moins un organisateur, elle indique leurs noms et adresses, le but, le lieu, la date, l'heure et l'itinéraire prévu. La mairie remet immédiatement un récépissé (article L211-2).\n\nSi le maire estime que la manifestation est de nature à troubler l'ordre public, il l'interdit par un arrêté notifié immédiatement aux signataires, et transmet la déclaration au préfet dans les vingt-quatre heures (article L211-4). Ce pouvoir relève de sa mission de police municipale (code général des collectivités territoriales, article L2212-2).\n\n## Le rôle de l'État\n\nDans les communes où la police est étatisée, l'État maintient l'ordre lors des grands rassemblements (code général des collectivités territoriales, ou CGCT, article L2214-4) et la déclaration est déposée auprès du préfet ; à Paris, auprès du préfet de police (CSI, article L211-2). Le préfet peut interdire une manifestation dans les mêmes conditions que le maire, ou à sa place si celui-ci n'agit pas (CSI, article L211-4 ; CGCT, article L2215-1). En cas de risque de troubles graves, il peut aussi interdire le port d'objets pouvant servir d'arme, dans les vingt-quatre heures qui précèdent la manifestation et jusqu'à sa dispersion (CSI, article L211-3). Il dirige la police et la gendarmerie pour le maintien de l'ordre (CSI, article L122-1).\n\nLes préfets sont nommés en conseil des ministres et représentent chacun des membres du Gouvernement (Constitution, articles 13 et 72). Le ministre de l'Intérieur est responsable du maintien de l'ordre public sur le territoire (code de la défense, article L1142-2). Le Parlement, lui, fixe ces règles dans la loi.\n\nCes décisions restent soumises au juge administratif. La liberté de manifester est une liberté fondamentale : une interdiction doit être adaptée, nécessaire et proportionnée aux circonstances, et ne peut être prise qu'en dernier recours (Conseil d'État, ordonnance du 6 septembre 2025, n° 507973). Saisi en urgence, le juge des référés peut ordonner en quarante-huit heures toute mesure nécessaire contre une atteinte grave et manifestement illégale à une liberté fondamentale (code de justice administrative, article L521-2).\n\n::: objections\n? « Pour manifester, il faut demander une autorisation. »\n> Non : la loi impose une déclaration préalable, pas une autorisation (CSI, articles L211-1 et L211-2). En 2020, le juge des référés du Conseil d'État a suspendu un décret qui exigeait une autorisation préalable (ordonnance du 6 juillet 2020, n° 441257).\n? « Participer à une manifestation non déclarée, c'est un délit. »\n> Ce sont les organisateurs d'une manifestation non déclarée ou interdite qui risquent six mois d'emprisonnement et 7 500 euros d'amende (code pénal, article 431-9). Selon la Cour de cassation, aucun texte ne punit le seul fait de participer à une manifestation non déclarée (chambre criminelle, 14 juin 2022, n° 21-81.054) ; participer à une manifestation interdite par arrêté est en revanche une contravention de 4e classe (code pénal, article R644-4).\n? « C'est le ministre de l'Intérieur qui interdit les manifestations. »\n> La loi confie l'interdiction à l'autorité de police du lieu, le maire ou le préfet (CSI, article L211-4), le préfet agissant comme représentant du Gouvernement (Constitution, article 72).\n:::\n\n::: et-maintenant\n- [Proposer ou soutenir une revendication](ppf:revendications)\n- Pour déclarer une manifestation : démarche sur service-public.gouv.fr (https://www.service-public.gouv.fr/particuliers/vosdroits/F21899), coordonnées des mairies et préfectures dans l'Annuaire de l'administration (https://lannuaire.service-public.gouv.fr/).\n- Pour contester une interdiction, saisir en urgence le juge des référés du tribunal administratif (code de justice administrative, article L521-2).\n:::\n\n## Sources\n\n- Code de la sécurité intérieure, articles L211-1 à L211-4 (manifestations sur la voie publique) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000025503132/LEGISCTA000025505131/\n- Code de la sécurité intérieure, article L122-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000025504951\n- Code général des collectivités territoriales, article L2212-2 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000029946370\n- Code général des collectivités territoriales, article L2214-4 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006390224\n- Code général des collectivités territoriales, article L2215-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006390227\n- Code de la défense, article L1142-2 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000020932635\n- Constitution du 4 octobre 1958, articles 13 et 72 (texte publié par le Conseil constitutionnel) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur\n- Code de justice administrative, article L521-2 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006449327\n- Code pénal, article 431-9 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006418472\n- Code pénal, article R644-4 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038253024\n- Conseil d'État, ordonnance du 6 septembre 2025, n° 507973 : https://www.conseil-etat.fr/fr/arianeweb/CE/decision/2025-09-06/507973\n- Conseil d'État, « Le juge des référés du Conseil d'État suspend l'obligation d'obtenir une autorisation avant d'organiser une manifestation » (6 juillet 2020) : https://www.conseil-etat.fr/actualites/le-juge-des-referes-du-conseil-d-etat-suspend-l-obligation-d-obtenir-une-autorisation-avant-d-organiser-une-manifestation\n- Cour de cassation, chambre criminelle, 14 juin 2022, n° 21-81.054 : https://www.legifrance.gouv.fr/juri/id/JURITEXT000045939979\n- Service-public.gouv.fr, « Organisation de manifestations, défilés ou rassemblements sur la voie publique » : https://www.service-public.gouv.fr/particuliers/vosdroits/F21899\n",
+        "sig": "d459420f8f589e481c1eeb1a1398a20d6c2ba2dc1439e960f3202da76c3640426455c59880e8add0b9c2cdb2b59818cbacd7e57711f75c2de98244f69a5c8812"
+    },
+    {
+        "id": "68eb888a906dbe1241840fef3834ea316d324e49c929589f15d458d2149c952c",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "prix-des-carburants"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Le prix des carburants : qui décide de quoi ?"
+            ],
+            [
+                "summary",
+                "Le prix à la pompe dépend du marché et de taxes votées par le Parlement, dans le respect de minimums européens. Qui fixe quoi, et ce que les collectivités ne peuvent pas faire."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "qui-decide"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "fiscalite"
+            ],
+            [
+                "t",
+                "energie"
+            ],
+            [
+                "t",
+                "union-europeenne"
+            ]
+        ],
+        "content": "::: decideurs\n- region | elu-local | Seules les régions d'outre-mer fixent les tarifs de l'accise sur le gazole et l'essence, sous un plafond national (code des impositions sur les biens et services, article L312-38).\n- etat | ministre, depute, senateur | Le Parlement vote les tarifs de l'accise sur les énergies et le taux de la TVA, et le Gouvernement ne peut encadrer les prix qu'en cas de crise (code des impositions sur les biens et services, article L312-35 ; code de commerce, article L410-2).\n- union-europeenne | ministre, eurodepute | Les ministres des États membres, après consultation du Parlement européen, fixent à l'unanimité les niveaux minimaux de taxation des carburants (directive 2003/96/CE, article 4).\n:::\n\n::: en-bref\n- Le **prix à la pompe** n'est pas fixé par l'État : il est **libre** et dépend du marché, sauf mesures exceptionnelles.\n- Les **taxes** sur les carburants (l'**accise sur les énergies** et la **TVA**) sont fixées par la **loi**, votée par le **Parlement**.\n- L'**Union européenne** impose des **niveaux minimaux** de taxation que la France doit respecter.\n- En métropole, les **régions** ne peuvent plus majorer cette taxe depuis le **1er août 2025** ; les communes et les départements n'ont aucun pouvoir sur elle.\n:::\n\n**[EXEMPLE] Cette fiche est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**\n\n## Le rôle de la région\n\nEn métropole, les régions pouvaient majorer l'accise sur le gazole et l'essence, dans une limite fixée par la loi. La loi de finances pour 2025 a supprimé cette possibilité au 1er août 2025 (code des impositions sur les biens et services, ou CIBS, ancien article L312-39) ; la majoration propre à l'Île-de-France a pris fin le 1er janvier 2026 (ancien article L312-40). Les régions reçoivent toujours une part de cette taxe, fixée par la loi (code général des collectivités territoriales, article L4331-2).\n\nDans les régions d'outre-mer, comme la Guadeloupe ou La Réunion, la collectivité fixe elle-même ces tarifs, sans dépasser les tarifs nationaux (CIBS, article L312-38 ; code général des collectivités territoriales, article L4434-2).\n\nLes communes et les départements ne peuvent ni créer ni moduler une taxe sur les carburants : le code ne prévoit aucune modulation à leur profit (CIBS, articles L312-38 à L312-41). Seule la loi peut autoriser une collectivité à fixer le taux d'un impôt (Constitution, article 72-2).\n\n## Le rôle de l'État\n\nLe Parlement fixe le taux des impôts et vote les lois de finances (Constitution, articles 34 et 47). Les tarifs de l'accise sur les énergies sont écrits dans la loi ; leur dernière modification vient de la loi de finances pour 2026 (CIBS, article L312-35). La loi prévoit aussi des tarifs particuliers, par exemple en Corse (article L312-41).\n\nLa TVA est calculée sur un prix qui comprend déjà l'accise (code général des impôts, article 267). Son taux normal, qui s'applique sauf texte contraire, est de 20 % (article 278). Ces règles passeront dans le CIBS le 1er janvier 2027 (ordonnance n° 2025-1247 du 17 décembre 2025).\n\nL'État ne fixe pas le prix à la pompe : sauf exception prévue par la loi, il résulte de la concurrence. Le Gouvernement peut seulement, par décret, prendre des mesures temporaires contre des hausses excessives en cas de crise, pour six mois au plus (code de commerce, article L410-2). En Guadeloupe, en Guyane et en Martinique, le préfet fixe des prix maximaux (code de l'énergie, article R671-1).\n\n## Le rôle de l'Union européenne\n\nLes règles sur les accises et la TVA sont adoptées à l'unanimité par le Conseil, où siègent les ministres des États membres, après consultation du Parlement européen (traité sur le fonctionnement de l'Union européenne, article 113).\n\nLa directive 2003/96/CE fixe des niveaux minimaux de taxation hors TVA : depuis 2010, 359 euros pour 1 000 litres d'essence sans plomb et 330 euros pour 1 000 litres de gazole (article 4 et annexe I). La directive 2006/112/CE impose un taux normal de TVA d'au moins 15 % (article 97). Chaque État peut taxer davantage.\n\n::: objections\n? « Si l'essence est chère, c'est que l'État fixe son prix. »\n> En métropole, l'État fixe les taxes mais pas le prix final, qui résulte de la concurrence ; il ne peut l'encadrer que temporairement, en cas de crise (code de commerce, article L410-2).\n? « Ma région pourrait baisser la taxe sur le carburant. »\n> En métropole, non : les régions pouvaient seulement majorer l'accise, et cette possibilité a été supprimée en 2025 (CIBS, ancien article L312-39).\n? « La France pourrait supprimer toute taxe sur les carburants. »\n> Pas avec les règles européennes actuelles : elle doit appliquer au moins les niveaux minimaux de la directive 2003/96/CE (article 4).\n:::\n\n::: et-maintenant\n- [Proposer ou soutenir une revendication](ppf:revendications)\n- Écrire à votre député ou à vos sénateurs, qui votent la loi de finances : liste des députés (https://www.assemblee-nationale.fr/dyn/vos-deputes) et des sénateurs par département (https://www.senat.fr/senateurs/sencir.html).\n- Contacter les députés européens élus en France, consultés sur la fiscalité de l'énergie (https://www.europarl.europa.eu/meps/fr/search/advanced?countryCode=FR).\n:::\n\n## Sources\n\n- Constitution du 4 octobre 1958, articles 34, 47 et 72-2 (texte publié par le Conseil constitutionnel) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur\n- Code des impositions sur les biens et services, article L312-35 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053562477\n- Code des impositions sur les biens et services, articles L312-38 à L312-41 (modulations géographiques, dont les articles L312-39 et L312-40 abrogés par la loi n° 2025-127 du 14 février 2025, article 20) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000044595989/LEGISCTA000044598429/\n- Loi n° 2026-103 du 19 février 2026 de finances pour 2026 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053508155\n- Code général des collectivités territoriales, article L4331-2 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053562972\n- Code général des collectivités territoriales, article L4434-2 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044872294\n- Code général des impôts, article 267 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042910064\n- Code général des impôts, article 278 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000026950057\n- Code de commerce, article L410-2 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000019798129\n- Code de l'énergie, article R671-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031749963\n- Traité sur le fonctionnement de l'Union européenne, article 113 : https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:12016E113\n- Directive 2003/96/CE du Conseil du 27 octobre 2003 (taxation des produits énergétiques et de l'électricité) : https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:32003L0096\n- Directive 2006/112/CE du Conseil du 28 novembre 2006 (système commun de TVA), version consolidée au 1er janvier 2025 : https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:02006L0112-20250101\n",
+        "sig": "06a0ec9fab0e23b4422fbdc9d486c275abbac59ddaf851e4a971fd10b9783002d1bb8c890d8cb3643d1a9f552ce0ebbdaa5658739a19e11523e066785e9df5f5"
+    },
+    {
+        "id": "15427738d0fa6f1a8ead76622c103bcfdcb29cd630cee9165be752fc20877398",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "transports-du-quotidien"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Les transports du quotidien : qui décide de quoi ?"
+            ],
+            [
+                "summary",
+                "Bus, tramways, cars, TER et grandes lignes : qui organise chaque service, qui fixe les tarifs et qui décide pour le réseau ferré national."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "qui-decide"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "transports"
+            ],
+            [
+                "t",
+                "mobilite"
+            ],
+            [
+                "t",
+                "collectivites"
+            ]
+        ],
+        "content": "::: decideurs\n- commune | maire | Le maire exerce la police de la circulation dans l'agglomération, sous réserve des pouvoirs du préfet sur les routes à grande circulation (code général des collectivités territoriales, article L2213-1).\n- intercommunalite | elu-local | Les intercommunalités autorités organisatrices de la mobilité organisent les bus, les tramways et le transport à la demande, et en fixent les tarifs (code des transports, articles L1231-1, L1231-1-1 et L1221-5).\n- region | elu-local | La région organise les TER, les cars entre les villes et la mobilité locale là où la communauté de communes n'a pas pris la compétence (code des transports, articles L2121-3, L3111-1 et L1231-1).\n- etat | ministre, depute, senateur | L'État organise les trains d'intérêt national, veille à la cohérence du système ferroviaire et programme les investissements sur le réseau ferré national, géré par SNCF Réseau (code des transports, articles L2121-1, L2100-2 et L2111-9).\n- union-europeenne | ministre, eurodepute | L'Union européenne fixe les règles d'attribution des contrats de service public de transport de voyageurs, qui imposent en principe une mise en concurrence (règlement (CE) n° 1370/2007, article 5).\n:::\n\n::: en-bref\n- Bus, tramways et transport à la demande relèvent de l'**autorité organisatrice de la mobilité** (une **intercommunalité**, parfois une commune ou la région), qui fixe aussi les **tarifs**.\n- La **région** organise les **TER** et les **cars** entre les villes ; en Île-de-France, c'est **Île-de-France Mobilités**.\n- L'**État** organise les trains d'intérêt national et fixe les priorités du **réseau ferré national**, géré par **SNCF Réseau**.\n:::\n\n**[EXEMPLE] Cette fiche est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**\n\n## Le rôle de la commune\n\nLe maire règle la circulation dans l'agglomération, y compris sur les routes nationales et départementales, sauf pouvoirs du préfet sur les routes à grande circulation (code général des collectivités territoriales, article L2213-1). Certaines communes sont aussi autorités organisatrices de la mobilité (code des transports, article L1231-1).\n\n## Le rôle de l'intercommunalité\n\nLes métropoles, les communautés urbaines et d'agglomération, et les communautés de communes qui en ont reçu la compétence sont autorités organisatrices de la mobilité (code des transports, article L1231-1). Elles peuvent organiser des lignes régulières, du transport à la demande, des transports scolaires et des services de mobilités actives, partagées ou solidaires (article L1231-1-1). Elles définissent la politique tarifaire et fixent ou homologuent les tarifs (article L1221-5).\n\nHors Île-de-France, elles peuvent financer ces services par le versement mobilité, payé par les employeurs d'au moins onze salariés, à un taux qu'elles votent dans les limites fixées par la loi (code général des collectivités territoriales, articles L2333-64 à L2333-67). Leur comité des partenaires, où siègent des employeurs, des associations et des habitants tirés au sort, est consulté avant toute modification de ce versement (code des transports, article L1231-5).\n\n## Le rôle de la région\n\nLa région est l'autorité organisatrice de la mobilité régionale (code des transports, article L1231-3). Elle organise les trains régionaux (TER) et décide de leurs dessertes, de leurs tarifs et de la qualité du service (article L2121-3). Elle organise aussi les cars entre les villes (article L3111-1) et, depuis le 1er juillet 2021, la mobilité locale sur le territoire des communautés de communes qui n'ont pas pris cette compétence (article L1231-1). En Île-de-France, c'est Île-de-France Mobilités qui organise ces services (article L1241-1).\n\n## Le rôle de l'État\n\nL'État organise les trains de voyageurs d'intérêt national (code des transports, article L2121-1). Il veille à la cohérence du système ferroviaire, fixe ses priorités stratégiques et programme les investissements sur le réseau (article L2100-2). SNCF Réseau gère le réseau ferré national : trafic, entretien et développement des voies (article L2111-9). Le Parlement fixe ces règles dans le code des transports, modifié notamment par la loi n° 2019-1428 du 24 décembre 2019 d'orientation des mobilités.\n\n## Le rôle de l'Union européenne\n\nLe règlement (CE) n° 1370/2007 encadre les contrats de service public de transport de voyageurs par train et par route. En règle générale, une autorité qui confie un service à une entreprise extérieure doit la choisir après mise en concurrence, sauf exceptions (article 5). La dérogation qui permettait d'attribuer directement un contrat ferroviaire a cessé de s'appliquer le 25 décembre 2023 (article 8).\n\n::: objections\n? « Les cars entre les villes, c'est le département. »\n> Depuis le 1er janvier 2017, c'est la région qui organise les services non urbains (code des transports, article L3111-1, modifié par la loi n° 2015-991 du 7 août 2015).\n? « Le prix du ticket de bus est fixé par l'État. »\n> Non : c'est l'autorité organisatrice qui fixe ou homologue les tarifs (code des transports, article L1221-5), et la région pour les TER (article L2121-3).\n:::\n\n::: et-maintenant\n- [Proposer ou soutenir une revendication](ppf:revendications)\n- Demander à l'autorité organisatrice de votre territoire comment participer à son comité des partenaires ; coordonnées dans l'Annuaire de l'administration (https://lannuaire.service-public.gouv.fr/).\n- Pour les TER et les cars, écrire à vos conseillers régionaux ; pour le réseau ferré national, à votre député (https://www.assemblee-nationale.fr/dyn/vos-deputes) ou à vos sénateurs (https://www.senat.fr/senateurs/sencir.html).\n:::\n\n## Sources\n\n- Code général des collectivités territoriales, article L2213-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041411328\n- Code général des collectivités territoriales, article L2333-64 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042913444\n- Code général des collectivités territoriales, articles L2333-64 à L2333-67 (versement mobilité) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006181011/\n- Code des transports, articles L1231-1 à L1231-5 (autorités organisatrices de la mobilité) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023069255/\n- Code des transports, article L1221-5 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000023085931\n- Code des transports, article L1241-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787268\n- Code des transports, articles L2100-1 à L2100-4 (principes généraux du système ferroviaire) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000029332219/\n- Code des transports, article L2100-1 (modifié par la loi n° 2019-1428 du 24 décembre 2019) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787236\n- Code des transports, article L2111-9 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039786628\n- Code des transports, article L2121-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000037116091\n- Code des transports, article L2121-3 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043976861\n- Code des transports, article L3111-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031104506\n- Règlement (CE) n° 1370/2007 relatif aux services publics de transport de voyageurs par chemin de fer et par route, version consolidée au 24 décembre 2017 : https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:02007R1370-20171224\n",
+        "sig": "444c939303b391fcf0cd2f1befd6beecc7fb552a974f54f84898bc4c9b28dae5ed4ad0b7b419ef452c80c492df56aeb2f3becb7a6a7f1b4eb75fa2060cf8b178"
+    },
+    {
+        "id": "2c797adf54f6f47bf5cc65778a20f55047afa461d98eca390fd4c213ad35fac8",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "notre-methode"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Notre méthode"
+            ],
+            [
+                "summary",
+                "Comment PPF vérifie une affirmation, ce que veut dire chacun des cinq verdicts, et comment demander une correction ou exercer son droit de réponse."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "article"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "methode"
+            ],
+            [
+                "t",
+                "decryptages"
+            ]
+        ],
+        "content": "::: en-bref\n- Chaque affirmation est citée **mot pour mot**, avec **où et quand** elle circule.\n- Nous ne nous appuyons que sur des **sources primaires**, citées avec leur adresse exacte.\n- Le verdict porte sur **une affirmation, jamais sur une personne**, et se choisit parmi **cinq verdicts**, toujours les mêmes.\n- Toute erreur est **corrigée et signalée** ; toute personne nommée dispose d'un **droit de réponse**.\n:::\n\n**[EXEMPLE] Cette page est un brouillon de la méthode de PPF, rédigé avec l'aide d'une IA, à valider par la propriétaire et l'équipe éditoriale.**\n\n## Comment nous vérifions\n\n- **L'affirmation, mot pour mot.** Nous citons la phrase telle qu'elle circule, entre guillemets, en indiquant où (réseau social, tract, déclaration publique) et depuis quand. Nous ne nommons pas les particuliers qui l'ont seulement relayée.\n- **Des sources primaires.** Textes en vigueur (Constitution, codes et lois sur Légifrance), décisions de justice et du Conseil constitutionnel, documents officiels du Parlement et des autorités indépendantes, données publiques. Chaque source est citée avec son adresse exacte et vérifiée à la date de publication.\n- **Établi, allégué, en cours d'enquête.** Nous distinguons toujours ce qui est établi (par un texte, une décision définitive, des données officielles), ce qui est seulement allégué, et ce qui fait l'objet d'une enquête ou d'une procédure, dont nous indiquons l'étape. Chacun a droit au respect de la présomption d'innocence (Code civil, article 9-1).\n- **Des mots mesurés.** Nous écrivons « contredit par les faits » plutôt que « mensonge » : parler de mensonge suppose de prouver l'intention de tromper. Nous ne le faisons que si cette intention est établie, par exemple par une décision de justice.\n- **Les objections.** Chaque décryptage présente les objections les plus sérieuses à son verdict, formulées comme le feraient ceux qui les défendent, et y répond avec des sources.\n- **Le contradictoire.** Quand une personne est mise en cause, nous lui demandons sa réaction avant publication et nous la publions.\n- **La neutralité.** Nous ne prenons parti pour aucun parti, aucun gouvernement, aucun candidat, et un décryptage n'est jamais une consigne de vote. Les mêmes règles s'appliquent quel que soit l'auteur de l'affirmation.\n- **L'origine et la relecture.** Un contenu rédigé avec l'aide d'une IA l'affiche toujours. Avant publication, chaque décryptage est relu et validé par deux membres de l'équipe éditoriale.\n\n## Les cinq verdicts\n\n- **Exact** : les sources confirment l'affirmation, sans réserve importante.\n- **Plutôt exact** : les sources confirment l'essentiel ; il manque une précision ou une nuance, qui ne change pas le sens de l'affirmation.\n- **Trompeur** : l'affirmation contient une part de vrai, mais elle est présentée de façon à induire en erreur (élément essentiel omis, exagération, généralisation, contexte absent).\n- **Contredit par les faits** : les sources établissent le contraire de ce qu'affirme la phrase.\n- **Invérifiable** : aucune source fiable ne permet aujourd'hui de confirmer ou de contredire l'affirmation. Ce verdict peut changer si une source fiable apparaît.\n\nPour choisir entre « Plutôt exact » et « Trompeur », nous nous posons une question : une personne qui croit l'affirmation se trompe-t-elle sur l'essentiel ? Si non, le verdict est « Plutôt exact » ; si oui, il est « Trompeur ».\n\n## Corrections et droit de réponse\n\n- **Les corrections.** Une erreur signalée et confirmée est corrigée sans délai. La date de mise à jour change, et un journal des corrections, en bas du contenu, indique la date, ce qui a changé et pourquoi. Un changement de verdict est toujours signalé.\n- **Le droit de réponse.** La loi donne un droit de réponse à toute personne nommée ou désignée dans un service de communication au public en ligne. La demande doit être faite dans les trois mois suivant la mise en ligne du message, et le directeur de la publication doit insérer la réponse dans les trois jours suivant sa réception (loi n° 2004-575 du 21 juin 2004, article 1-1, III). La réponse est gratuite. Pour la presse écrite, l'article 13 de la loi du 29 juillet 1881 prévoit un droit de réponse comparable.\n- **La prudence.** Imputer à une personne un fait qui porte atteinte à son honneur ou à sa considération peut constituer une diffamation (loi du 29 juillet 1881, article 29). C'est une raison de plus pour ne publier que des faits établis et sourcés.\n\n## Sources\n\n- Loi du 29 juillet 1881 sur la liberté de la presse, article 13 (droit de réponse) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006419687\n- Loi du 29 juillet 1881 sur la liberté de la presse, article 29 (diffamation) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006419790\n- Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, article 1-1, III (droit de réponse en ligne), version en vigueur au 7 novembre 2026 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000049568614\n- Code civil, article 9-1 (présomption d'innocence) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006419316\n",
+        "sig": "b8bc750c63381027c1eb69b1204ca1f16d19a3df6917572dccb7f5fd75e9adb862bfcce11c53479369ddc84a770cdef0401e1b319170d9058088829e9dd96891"
+    }
+]
