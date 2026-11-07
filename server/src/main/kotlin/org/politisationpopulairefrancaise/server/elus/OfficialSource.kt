@@ -34,6 +34,8 @@ interface ElusHttp {
 class JdkElusHttp(
     private val allowedHosts: Set<String> = OfficialSource.HOSTS,
     private val timeout: Duration = Duration.ofMinutes(10),
+    /** Value of the Accept header, for the APIs that require one (the Insee answers 406 without it). */
+    private val accept: String? = null,
 ) : ElusHttp {
     private val client: HttpClient = HttpClient.newBuilder()
         .followRedirects(HttpClient.Redirect.NEVER)
@@ -68,6 +70,7 @@ class JdkElusHttp(
             val request = HttpRequest.newBuilder(uri)
                 .timeout(timeout)
                 .header("User-Agent", USER_AGENT)
+                .apply { accept?.let { header("Accept", it) } }
                 .GET()
                 .build()
             val response = client.send(request, HttpResponse.BodyHandlers.ofInputStream())

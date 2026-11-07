@@ -23,6 +23,8 @@ import org.politisationpopulairefrancaise.core.revendications.ProposalState
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSource
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatuses
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentFormat
+import org.politisationpopulairefrancaise.core.territoires.TerritoiresReader
 
 /**
  * The phase 1 adapter of the publication port: the platform's own server, through its signed-events
@@ -184,6 +186,63 @@ class ServerPublicationPort(
         return elusAnswer(response.status.value, body, response.headers[HttpHeaders.ETag], isPackage = code != null)
     }
 
+    /** `GET /api/v1/territoires` or `GET /api/v1/territoires/{code}`: the exact bytes, which the caller checks. */
+    override suspend fun fetchTerritoires(code: String?, etag: String?): ElusDownload {
+        require(code == null || TerritoiresReader.isPackageCode(code)) { "Not a package code of the referential: $code" }
+        val url = if (code == null) "$baseUrl/api/v1/territoires" else "$baseUrl/api/v1/territoires/$code"
+        val response: HttpResponse = try {
+            client.get(url) {
+                etag?.trim()?.takeIf { it.isNotEmpty() }?.let { header(HttpHeaders.IfNoneMatch, "\"$it\"") }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return ElusDownload.Unavailable(e)
+        }
+        val body = if (response.status.value in 200..299) {
+            try {
+                response.bodyAsBytes()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                return ElusDownload.Unavailable(e)
+            }
+        } else {
+            null
+        }
+        return elusAnswer(response.status.value, body, response.headers[HttpHeaders.ETag], isPackage = code != null)
+    }
+
+    /**
+     * `GET /api/v1/parlement` or `GET /api/v1/parlement/{name}`: the exact bytes of the body, which
+     * the caller checks (signature of the index, sha256 of a package). The sha256 already held goes
+     * in `If-None-Match` (the server's ETag).
+     */
+    override suspend fun fetchParliament(name: String?, etag: String?): OpenDataDownload {
+        require(name == null || ParliamentFormat.isPackageName(name)) { "Not a package name of the open data: $name" }
+        val response: HttpResponse = try {
+            client.get(parliamentUrl(baseUrl, name)) {
+                etag?.trim()?.takeIf { it.isNotEmpty() }?.let { header(HttpHeaders.IfNoneMatch, "\"$it\"") }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return OpenDataDownload.Unavailable(e)
+        }
+        val body = if (response.status.value in 200..299) {
+            try {
+                response.bodyAsBytes()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                return OpenDataDownload.Unavailable(e)
+            }
+        } else {
+            null
+        }
+        return parliamentAnswer(response.status.value, body, response.headers[HttpHeaders.ETag], isPackage = name != null)
+    }
+
     private fun HttpRequestBuilder.applyFilter(filter: RemoteFilter) {
         filter.kinds.forEach { parameter("kind", it) }
         filter.authors.forEach { parameter("author", it) }
@@ -257,6 +316,18 @@ class ServerPublicationPort(
             status in 200..299 && body != null -> ElusDownload.Body(body, etag?.trim()?.removePrefix("W/")?.trim('"'))
             status == 404 && isPackage -> ElusDownload.UnknownPackage
             else -> ElusDownload.Unavailable(ServerException(status))
+        }
+
+        /** The address of the index ([name] null) or of one package of the parliamentary open data. */
+        internal fun parliamentUrl(baseUrl: String, name: String?): String =
+            if (name == null) "$baseUrl/api/v1/parlement" else "$baseUrl/api/v1/parlement/$name"
+
+        /** Like [elusAnswer], for the parliamentary open data. */
+        internal fun parliamentAnswer(status: Int, body: ByteArray?, etag: String?, isPackage: Boolean): OpenDataDownload = when {
+            status == 304 -> OpenDataDownload.NotModified
+            status in 200..299 && body != null -> OpenDataDownload.Body(body, etag?.trim()?.removePrefix("W/")?.trim('"'))
+            status == 404 && isPackage -> OpenDataDownload.UnknownPackage
+            else -> OpenDataDownload.Unavailable(ServerException(status))
         }
 
         /** The body of `GET /api/v1/groups` as rooms. Separate from the HTTP call so that tests can cover it without a mock engine. */

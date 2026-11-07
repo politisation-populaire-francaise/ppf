@@ -1,0 +1,40 @@
+{
+ "data": [
+  {
+   "id": "person/990001",
+   "type": "Person",
+   "identifier": "990001",
+   "label": "[EXEMPLE] Quitterie BELLOCQ",
+   "familyName": "Bellocq",
+   "givenName": "[EXEMPLE] Quitterie",
+   "sortLabel": "BELLOCQ",
+   "api:country-of-representation": "FR",
+   "api:political-group": "PONTS"
+  },
+  {
+   "id": "person/990002",
+   "type": "Person",
+   "identifier": "990002",
+   "label": "[EXEMPLE] Romain TAILLEFER",
+   "familyName": "Taillefer",
+   "givenName": "[EXEMPLE] Romain",
+   "sortLabel": "TAILLEFER",
+   "api:country-of-representation": "FR",
+   "api:political-group": "PONTS"
+  },
+  {
+   "id": "person/990003",
+   "type": "Person",
+   "identifier": "990003",
+   "label": "[EXEMPLE] Solène MARIVAUX",
+   "familyName": "Marivaux",
+   "givenName": "[EXEMPLE] Solène",
+   "sortLabel": "MARIVAUX",
+   "api:country-of-representation": "FR",
+   "api:political-group": "PHARES"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

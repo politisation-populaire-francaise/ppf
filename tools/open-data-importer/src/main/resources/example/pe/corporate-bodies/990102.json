@@ -1,0 +1,21 @@
+{
+ "data": [
+  {
+   "id": "org/990102",
+   "type": "Organization",
+   "identifier": "990102",
+   "label": "MDV",
+   "prefLabel": {
+    "fr": "[EXEMPLE] Mouvement des Villages",
+    "en": "[EXEMPLE] (en) Mouvement des Villages"
+   },
+   "altLabel": {
+    "fr": "MDV"
+   },
+   "classification": "def/ep-entities/NATIONAL_CHAMBER"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

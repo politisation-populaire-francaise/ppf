@@ -1,0 +1,33 @@
+{
+ "dossierParlementaire": {
+  "@xsi:type": "DossierLegislatif_Type",
+  "uid": "DLR5L17N90002",
+  "legislature": "17",
+  "titreDossier": {
+   "titre": "[EXEMPLE] Proposition de loi sur la transparence des rendez-vous",
+   "titreChemin": "exemple_transparence_rendez_vous",
+   "senatChemin": null
+  },
+  "procedureParlementaire": {
+   "code": "1",
+   "libelle": "Proposition de loi ordinaire"
+  },
+  "initiateur": {
+   "acteurs": {
+    "acteur": {
+     "acteurRef": "PA900005",
+     "mandatRef": "PM900005"
+    }
+   }
+  },
+  "actesLegislatifs": {
+   "acteLegislatif": {
+    "uid": "L17-EX-1",
+    "codeActe": "AN1",
+    "libelleActe": {
+     "nomCanonique": "1ère lecture"
+    }
+   }
+  }
+ }
+}

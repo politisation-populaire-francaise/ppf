@@ -35,7 +35,7 @@ tasks.withType<ShadowJar>().configureEach {
 // the automatic imports of the directory of elected officials (the tests of the directory run their own).
 tasks.withType<Test>().configureEach {
     environment = environment.filterKeys { !it.startsWith("PPF_") } +
-        mapOf("PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0", "PPF_RNE_REFRESH_DAYS" to "0")
+        mapOf("PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0", "PPF_RNE_REFRESH_DAYS" to "0", "PPF_TERRITOIRES_REFRESH_DAYS" to "0")
 }
 
 // Development only: the server with an in-process PostgreSQL 17 and the bundled example contents.
@@ -64,6 +64,8 @@ dependencies {
     // in the runtime classpath through shared/core; declared here because the server builds its own client.
     implementation(libs.ktor.client.cio)
 
+    // The development server and the tests of /api/v1/parlement run the example import (fictional data).
+    testImplementation(project(":tools:open-data-importer"))
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.ktor.client.mock)
     testImplementation(kotlin("test"))

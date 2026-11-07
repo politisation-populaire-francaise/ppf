@@ -1,5 +1,8 @@
 package org.politisationpopulairefrancaise.ui.voir
 
+import org.politisationpopulairefrancaise.ui.voir.parlement.BillOfficialVotes
+import org.politisationpopulairefrancaise.ui.voir.parlement.PersonOfficialVotesLink
+
 import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
@@ -64,6 +67,10 @@ import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentLinks
+import org.politisationpopulairefrancaise.ui.voir.parlement.OfficialParliamentCard
+import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentScreen
+import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentState
 
 /**
  * "Voir" (vision, pillar 1): what is happening and what the power does, in figures and sourced
@@ -80,6 +87,7 @@ fun VoirScreen(
     modifier: Modifier = Modifier,
     onNavigate: (Space) -> Unit = {},
     requests: VoirRequestSession? = null,
+    parliament: ParliamentState? = null,
 ) {
     val catalog = library.voir
     val compact = windowClass.width == WindowWidthClass.COMPACT
@@ -128,10 +136,20 @@ fun VoirScreen(
         val wide = maxWidth >= 900.dp
         Box(Modifier.fillMaxSize().testTag(VoirTags.SCREEN)) {
             val current = state.current
-            if (current == null) {
-                VoirHome(catalog, library.status, state, actions, compact, columns)
+            if (parliament != null && parliament.isOpen) {
+                // The parliamentary open data (D-065), with their own stack of pages.
+                ParliamentScreen(parliament, voirSheetFor = { id ->
+                    catalog.persons(null).firstOrNull { ParliamentLinks.memberId(it.article.event) == id }?.let { person ->
+                        {
+                            parliament.close()
+                            state.open(person.address)
+                        }
+                    }
+                })
+            } else if (current == null) {
+                VoirHome(catalog, library.status, state, actions, compact, columns, parliament)
             } else {
-                key(current) { VoirDetail(current, catalog, state, actions, compact, wide, columns, session, callbacks) }
+                key(current) { VoirDetail(current, catalog, state, actions, compact, wide, columns, session, callbacks, parliament) }
             }
         }
     }
@@ -139,7 +157,7 @@ fun VoirScreen(
 }
 
 @Composable
-private fun VoirHome(catalog: VoirCatalog, status: LibraryStatus, state: VoirState, actions: VoirActions, compact: Boolean, columns: Int) {
+private fun VoirHome(catalog: VoirCatalog, status: LibraryStatus, state: VoirState, actions: VoirActions, compact: Boolean, columns: Int, parliament: ParliamentState?) {
     val axes = VoirAxis.entries
     val pagerState = rememberPagerState(initialPage = state.axis.ordinal) { axes.size }
     val scope = rememberCoroutineScope()
@@ -175,7 +193,7 @@ private fun VoirHome(catalog: VoirCatalog, status: LibraryStatus, state: VoirSta
                     Spacer(Modifier.height(16.dp))
                     when (axes[page]) {
                         VoirAxis.MOUVEMENT -> MovementAxis(catalog, state, actions, compact, columns)
-                        VoirAxis.POUVOIR -> PowerAxis(catalog, state, actions, columns)
+                        VoirAxis.POUVOIR -> PowerAxis(catalog, state, actions, columns, parliament)
                         VoirAxis.LIBERTES -> FreedomsAxis(catalog, state, actions, compact, columns)
                     }
                 }
@@ -209,7 +227,7 @@ private fun MovementAxis(catalog: VoirCatalog, state: VoirState, actions: VoirAc
 }
 
 @Composable
-private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActions, columns: Int) {
+private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActions, columns: Int, parliament: ParliamentState?) {
     if (catalog.parties.isNotEmpty()) {
         SectionHeader(stringResource(Res.string.voir_parties), action = stringResource(Res.string.voir_see_all_count, catalog.parties.size), actionTag = VoirTags.seeAll("parties"), onAction = { state.open(VoirDestination.Parties) })
         Grid(catalog.parties.take(maxOf(columns, 2)), columns) { party, modifier -> PartyCard(party, catalog, onOpen = { actions.open(party.address) }, modifier = modifier) }
@@ -218,6 +236,10 @@ private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActio
     val persons = catalog.persons(null)
     SectionHeader(stringResource(Res.string.voir_people), action = stringResource(Res.string.voir_see_all_count, persons.size), actionTag = VoirTags.seeAll("people"), onAction = { state.open(VoirDestination.People) })
     Grid(persons.take(maxOf(columns * 2, 4)), columns) { person, modifier -> PersonCard(person, catalog, onOpen = { actions.open(person.address) }, modifier = modifier) }
+    if (parliament != null) {
+        Spacer(Modifier.height(12.dp))
+        OfficialParliamentCard(onOpen = parliament::open)
+    }
     Spacer(Modifier.height(24.dp))
     val bills = catalog.bills()
     SectionHeader(stringResource(Res.string.voir_bills), action = stringResource(Res.string.voir_see_all_count, bills.size), actionTag = VoirTags.seeAll("bills"), onAction = { state.open(VoirDestination.Bills) })
@@ -387,6 +409,7 @@ private fun VoirDetail(
     columns: Int,
     session: VoirRequestSession,
     callbacks: RequestCallbacks,
+    parliament: ParliamentState? = null,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -407,9 +430,17 @@ private fun VoirDetail(
                     when (item) {
                         is VoirItem.OfIndicator -> IndicatorPage(item.indicator, state, wide, actions.next, actions.explain)
                         is VoirItem.OfFact -> FactPage(item.fact, catalog, state, actions)
-                        is VoirItem.OfPerson -> PersonPage(item.person, catalog, state, actions, wide)
+                        is VoirItem.OfPerson -> {
+                            // Their votes in the parliamentary open data, when the sheet carries an official identifier (D-065).
+                            parliament?.let { PersonOfficialVotesLink(item.person, it, Modifier.padding(bottom = 12.dp)) }
+                            PersonPage(item.person, catalog, state, actions, wide)
+                        }
                         is VoirItem.OfParty -> PartyPage(item.party, catalog, state, actions, wide, columns)
-                        is VoirItem.OfText -> BillPage(item.text, catalog, state, actions, wide)
+                        is VoirItem.OfText -> {
+                            BillPage(item.text, catalog, state, actions, wide)
+                            // Its public ballots, when the bill carries the identifier of its legislative file (D-065).
+                            parliament?.let { BillOfficialVotes(item.text, it, Modifier.padding(top = 16.dp)) }
+                        }
                         is VoirItem.OfMovement -> MovementPage(item.movement)
                         is VoirItem.OfDossier -> DossierPage(item.dossier)
                         null -> Text(stringResource(Res.string.voir_empty), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted)
