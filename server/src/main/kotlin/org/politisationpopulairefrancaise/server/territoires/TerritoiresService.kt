@@ -22,8 +22,8 @@ import kotlin.math.abs
  *
  * - PPF_TERRITOIRES_SOURCE: `example` (default: real public figures for a few departments,
  *   embedded in the server, which contacts nobody) or `official` (the Insee, docs/integration/territoires.md).
- *   `official` is honoured in production, and in preproduction only with
- *   PPF_TERRITOIRES_REAL_IN_PREPRODUCTION=true (the owner's decision); elsewhere the example set is served.
+ *   `official` is honoured in production and preproduction (owner's decision of 7 November
+ *   2026: real information in preproduction too); elsewhere the example set is served.
  * - PPF_TERRITOIRES_REFRESH_DAYS: days between two imports (default 30). 0 disables every automatic import (tests).
  */
 data class TerritoiresConfig(
@@ -40,14 +40,12 @@ data class TerritoiresConfig(
     companion object {
         const val SOURCE_VARIABLE: String = "PPF_TERRITOIRES_SOURCE"
         const val REFRESH_VARIABLE: String = "PPF_TERRITOIRES_REFRESH_DAYS"
-        const val PREPRODUCTION_VARIABLE: String = "PPF_TERRITOIRES_REAL_IN_PREPRODUCTION"
         const val DEFAULT_REFRESH_DAYS: Int = 30
 
         fun fromEnvironment(env: (String) -> String? = System::getenv): TerritoiresConfig {
             val asked = env(SOURCE_VARIABLE)?.trim()?.lowercase() == TerritoiresSources.OFFICIAL
             val environment = env("PPF_ENVIRONMENT")?.trim()
-            val allowed = environment == "production" ||
-                (environment == "preproduction" && env(PREPRODUCTION_VARIABLE)?.trim()?.lowercase() == "true")
+            val allowed = environment == "production" || environment == "preproduction"
             return TerritoiresConfig(
                 source = if (asked && allowed) TerritoiresSources.OFFICIAL else TerritoiresSources.EXAMPLE,
                 refreshDays = env(REFRESH_VARIABLE)?.trim()?.toIntOrNull()?.takeIf { it >= 0 } ?: DEFAULT_REFRESH_DAYS,
@@ -206,7 +204,7 @@ class TerritoiresService(
         fun start(scope: CoroutineScope, dataSource: DataSource, setup: TerritoiresSetup, log: Logger?): TerritoiresService {
             val service = TerritoiresService(TerritoiresStore(dataSource), setup, log)
             if (setup.config.officialRefused) {
-                log?.warn("Territories: ${TerritoiresConfig.SOURCE_VARIABLE}=official is honoured only in production (or preproduction with ${TerritoiresConfig.PREPRODUCTION_VARIABLE}=true); the example set is served.")
+                log?.warn("Territories: ${TerritoiresConfig.SOURCE_VARIABLE}=official is honoured only in production and preproduction; the example set is served.")
             }
             service.reload()
             if (setup.config.refreshDays > 0) service.start(scope)

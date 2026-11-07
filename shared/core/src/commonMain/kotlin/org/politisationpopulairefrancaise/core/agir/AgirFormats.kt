@@ -172,4 +172,14 @@ object AgirFormats {
 
     /** M3. */
     val ORG_TYPES: List<String> = listOf("association", "syndicat", "collectif", "legal-team", "street-medics", "avocats-benevoles", "autre")
+
+    /**
+     * Optional status of an entry (contract, version 2): absent or [ORG_STATUS_VERIFIED] keeps the
+     * verification; [ORG_STATUS_REVOKED] withdraws it (the `p` key is no longer verified), while
+     * the entry stays readable, never erased in silence.
+     */
+    const val TAG_ORG_STATUS: String = "ppf-org-status"
+    const val ORG_STATUS_VERIFIED: String = "verifiee"
+    const val ORG_STATUS_REVOKED: String = "revoquee"
+    val ORG_STATUSES: List<String> = listOf(ORG_STATUS_VERIFIED, ORG_STATUS_REVOKED)
 }

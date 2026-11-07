@@ -52,7 +52,7 @@ Même forme que les revendications (contenu adressable `30023:<clé>:<d>`), avec
 
 Publiée par une clé de l'équipe éditoriale (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil) : `d`, `title` (nom), `summary`, `ppf-org-type` (`AgirFormats.ORG_TYPES`), `ppf-territory`, `ppf-verified` (date de vérification `AAAA-MM-JJ`), `published_at` ; facultatives : `p` (clé de l'organisation si elle a un compte), `r` (site, plusieurs possibles), `ppf-contact-phone`, `ppf-contact-email`, `ppf-contact-address` (coordonnées publiques de l'organisation, jamais celles d'une personne), `g`. `content` : présentation (Markdown simple, comme les fiches).
 
-**Organisation vérifiée** : une clé qui figure en `p` d'une fiche d'organisation signée par une clé éditoriale de confiance. C'est la même règle sur l'appareil et sur le serveur. Les écrans de fiches pratiques ne doivent pas afficher ces fiches (filtrer sur `ppf-type`).
+**Organisation vérifiée** : une clé qui figure en `p` d'une fiche d'organisation signée par une clé éditoriale de confiance. C'est la même règle sur l'appareil et sur le serveur. Version 2 (7 novembre 2026) : étiquette facultative `ppf-org-status` = `verifiee` (défaut, absente) ou `revoquee` ; quand la fiche la plus récente qui nomme une clé est `revoquee`, cette clé n'est plus vérifiée (`docs/FORMATS.md`, section 4 sexies). Les écrans de fiches pratiques ne doivent pas afficher ces fiches (filtrer sur `ppf-type`).
 
 ## 5. Publication et relecture (serveur)
 

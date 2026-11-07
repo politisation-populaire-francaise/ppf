@@ -77,7 +77,7 @@ class OrganisationsLibrary(
     var status: OrganisationsStatus by mutableStateOf(OrganisationsStatus.Idle)
         private set
 
-    /** Every entry known to the device, by name. */
+    /** Every entry known to the device, by name, including those whose verification was withdrawn. */
     var organisations: List<Organisation> by mutableStateOf(emptyList())
         private set
 
@@ -165,6 +165,14 @@ class OrganisationsLibrary(
         query = query.copy(near = text)
     }
 
+    /** Shows or hides the entries whose verification the team withdrew (hidden by default). */
+    fun toggleIncludeRevoked() {
+        query = query.copy(includeRevoked = !query.includeRevoked)
+    }
+
+    /** At least one known entry had its verification withdrawn: the filter is worth offering. */
+    val hasRevoked: Boolean get() = organisations.any { it.revoked }
+
     fun clearFilters() {
         query = OrganisationQuery()
     }
@@ -176,11 +184,13 @@ class OrganisationsLibrary(
     }
 
     /**
-     * Opens the page of the verified organisation whose key is [pubkeyHex] (from an organiser of
-     * the agenda or the author of a call, for example). False when the key is not verified.
+     * Opens the page of the organisation whose key is [pubkeyHex] (from an organiser of the agenda
+     * or the author of a call, for example). A key whose verification was withdrawn opens the
+     * revoked entry, whose page says so ("Vérification retirée par PPF le …"): never erased in
+     * silence. False when no entry describes the key.
      */
     fun openKey(pubkeyHex: String): Boolean {
-        val organisation = verified.organisationFor(pubkeyHex) ?: return false
+        val organisation = verified.organisationFor(pubkeyHex) ?: verified.revocationFor(pubkeyHex) ?: return false
         open(organisation)
         return true
     }
@@ -259,7 +269,7 @@ class OrganisationsLibrary(
             // Everything in the local database was checked on arrival; the author is checked again here.
             val all = store.byTag(listOf(Organisation.KIND), AgirFormats.TAG_TYPE, AgirFormats.TYPE_ORGANISATION, limit = DIRECTORY_LIMIT)
                 .mapNotNull { Organisation.from(it, trust, checkSignature = false) }
-            OrganisationQuery().apply(all) to VerifiedOrganisations.of(all)
+            OrganisationQuery(includeRevoked = true).apply(all) to VerifiedOrganisations.of(all)
         }
         organisations = entries
         verified = keys

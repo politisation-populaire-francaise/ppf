@@ -18,15 +18,16 @@ import javax.sql.DataSource
  * Settings of the directory of elected officials, read from the environment only:
  *
  * - PPF_RNE_SOURCE: `example` (default: the fictitious set embedded in the server, which contacts
- *   nobody) or `official` (the real RNE from data.gouv.fr). `official` is honoured only when
- *   PPF_ENVIRONMENT is `production`: development, tests and preproduction never hold real data.
+ *   nobody) or `official` (the real RNE from data.gouv.fr). `official` is honoured when
+ *   PPF_ENVIRONMENT is `production` or `preproduction` (owner's decision of 7 November 2026: real
+ *   information in preproduction too); development and tests keep the fictitious set.
  * - PPF_RNE_REFRESH_DAYS: days between two imports (default 7). An import also runs at start when
  *   nothing is served yet or when the source changed. 0 disables every automatic import (tests).
  */
 data class ElusConfig(
     val source: String = ElusSources.EXAMPLE,
     val refreshDays: Int = DEFAULT_REFRESH_DAYS,
-    /** True when `official` was asked outside production and replaced by `example`. */
+    /** True when `official` was asked outside production and preproduction and replaced by `example`. */
     val officialRefused: Boolean = false,
 ) {
     init {
@@ -39,9 +40,12 @@ data class ElusConfig(
         const val REFRESH_VARIABLE: String = "PPF_RNE_REFRESH_DAYS"
         const val DEFAULT_REFRESH_DAYS: Int = 7
 
+        /** Where the real directory may be served (owner's decision of 7 November 2026). */
+        val REAL_DATA_ENVIRONMENTS: Set<String> = setOf("production", "preproduction")
+
         fun fromEnvironment(env: (String) -> String? = System::getenv): ElusConfig {
             val asked = env(SOURCE_VARIABLE)?.trim()?.lowercase()
-            val production = env("PPF_ENVIRONMENT")?.trim() == "production"
+            val production = env("PPF_ENVIRONMENT")?.trim() in REAL_DATA_ENVIRONMENTS
             val official = asked == ElusSources.OFFICIAL && production
             return ElusConfig(
                 source = if (official) ElusSources.OFFICIAL else ElusSources.EXAMPLE,
@@ -170,7 +174,7 @@ class ElusService(
         fun start(scope: CoroutineScope, dataSource: DataSource, setup: ElusSetup, log: Logger?): ElusService {
             val service = ElusService(ElusStore(dataSource), setup, log)
             if (setup.config.officialRefused) {
-                log?.warn("Directory of elected officials: ${ElusConfig.SOURCE_VARIABLE}=official is only honoured in production; the example set is served.")
+                log?.warn("Directory of elected officials: ${ElusConfig.SOURCE_VARIABLE}=official is only honoured in production and preproduction; the example set is served.")
             }
             service.reload()
             if (setup.config.refreshDays > 0) service.start(scope)
