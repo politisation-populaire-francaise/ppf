@@ -446,6 +446,19 @@ Le serveur de développement sert un annuaire **fictif** : les noms sont invent�
 
 Les textes de ces fiches sont des brouillons écrits par moi pour la démonstration, avec les sources de droit citées en bas de chaque fiche ; ils doivent être relus par un avocat avant toute publication réelle. Pour modifier une fiche ou en ajouter une, dites-le-moi : je modifie les fichiers de `content/fiches`, je les signe et je vous livre une nouvelle version.
 
+### Voir « Comprendre » sur le site, sur votre ordinateur (ajouté le 7 novembre 2026)
+
+Le site est la version de PPF pour les iPhone tant que l'application iOS n'existe pas. Il se lit sans JavaScript (le petit programme qui rend les pages interactives, souvent désactivé par prudence).
+
+1. Lancez le serveur de développement : dans le dossier `C:\Users\clair\Documents\PPF`, faites un clic droit, « Ouvrir dans le terminal », tapez `gradlew :server:runDev` et appuyez sur Entrée. Attendez la ligne qui commence par « Comprendre: » (une à trois minutes).
+2. Ouvrez votre navigateur à l'adresse http://localhost:8080/comprendre : les rubriques « Connaître ses droits », « Comprendre en 5 minutes », « Qui décide de ça ? », « Le vrai du faux », « Histoire des luttes », le glossaire et « Notre méthode ».
+3. Ouvrez une fiche pratique, par exemple http://localhost:8080/comprendre/fiches/garde-a-vue : encarts en couleurs, puis « Les mots du glossaire de cette page », « Et maintenant ? » et les sources tout en bas. Les mots soulignés en pointillés mènent à leur page du glossaire.
+4. Ouvrez un parcours, par exemple http://localhost:8080/comprendre/parcours/le-49-3-et-la-motion-de-censure : toutes les étapes sur une page ; sous chaque question, touchez « Voir la bonne réponse » pour la découvrir avec son explication. Rien n'est enregistré ni envoyé.
+5. Essayez aussi http://localhost:8080/comprendre/glossaire (lettres et recherche), une fiche « Qui décide de ça ? » (les annuaires officiels en bas de l'encart) et http://localhost:8080/comprendre/hors-ligne (toutes les fiches sur une page, à enregistrer ou imprimer en PDF depuis le menu du navigateur).
+6. Hors ligne : après avoir ouvert http://localhost:8080/comprendre une fois, arrêtez le serveur (Ctrl+C dans sa fenêtre) puis rouvrez une fiche : elle s'affiche toujours. Une page jamais ouverte affiche alors « Lire hors ligne ».
+7. Mode sombre : réglez Windows en mode sombre (Paramètres, Personnalisation, Couleurs) ; les pages suivent. Réduisez la fenêtre à la largeur d'un téléphone : tout reste lisible.
+8. À la fin, arrêtez le serveur (Ctrl+C).
+
 ## 3. Lancer l'application de bureau sur votre ordinateur
 
 ### Depuis GitHub (installateur Windows)
