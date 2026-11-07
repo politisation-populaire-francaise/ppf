@@ -31,8 +31,12 @@ services:
       PORT: "8080"
       PPF_ENVIRONMENT: production
       DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:?}
-      DATABASE_USER: ${POSTGRES_USER:?}
+      # The restricted role ppf_app (D-127): ordinary reads and writes, never a change of schema,
+      # never UPDATE, DELETE or TRUNCATE on the audit log. Migrations run before, in the one-shot
+      # service "migrate" below, with the owner role; the server only checks that none is pending.
+      DATABASE_USER: ppf_app
       DATABASE_PASSWORD_FILE: /run/secrets/server_db_password
+      PPF_DATABASE_MIGRATE: "false"
       PPF_EDITOR_KEYS: ${PPF_EDITOR_KEYS:-}
       # Team back-office (docs/integration/back-office.md): off without its origin; its routes answer
       # only on the second port, which only the proxy reaches (equipe.<domain>, tunnel only).
@@ -59,6 +63,40 @@ services:
           memory: 1024M
           cpus: "1.0"
 
+  # Database migrations, run once per deployment by infra/scripts/deploy.sh before the server
+  # starts (docker compose run --rm migrate); never started by "up" (profile "tools").
+  migrate:
+    image: ${PPF_SERVER_IMAGE:?set by infra/scripts/deploy.sh}
+    profiles: ["tools"]
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    entrypoint: ["java", "-Xmx128m", "-cp", "/app/ppf-server.jar", "org.politisationpopulairefrancaise.server.db.DatabaseCli", "migrate"]
+    healthcheck:
+      disable: true
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:?}
+      DATABASE_USER: ${POSTGRES_USER:?}
+      DATABASE_PASSWORD_FILE: /run/secrets/migrate_db_password
+      PPF_DATABASE_APP_ROLE: ppf_app
+    secrets:
+      - migrate_db_password
+    networks:
+      - internal
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+
   db:
     # PostgreSQL 17 with PostGIS, pinned by digest (Dependabot proposes updates).
     image: postgis/postgis:17-3.6@sha256:1ac10b2551ba84ae05db8e7da477afcd0a3fede99bcb7705da2ee157390cb095
@@ -83,8 +121,11 @@ services:
     shm_size: 128m
     secrets:
       - db_password
+      - app_db_password
     volumes:
       - db-data:/var/lib/postgresql/data
+      # Creates the restricted role ppf_app at the first initialisation of the volume.
+      - ../postgres/10-app-role.sh:/docker-entrypoint-initdb.d/10-app-role.sh:ro
     networks:
       - internal
     healthcheck:
@@ -103,14 +144,18 @@ services:
           memory: 768M
           cpus: "1.0"
 
-# The same password in two files, each readable only by the user of its container
-# (10001 for the server, 999 for PostgreSQL): file secrets are bind mounts, so Compose
-# cannot change their owner. Both files are written by infra/scripts/bootstrap-server.sh.
+# Two passwords (owner role and restricted role ppf_app), each in one file per container user
+# (10001 for the server and the migrations, 999 for PostgreSQL): file secrets are bind mounts, so
+# Compose cannot change their owner. All four files are written by infra/scripts/bootstrap-server.sh.
 secrets:
   server_db_password:
     file: ${PPF_SECRETS_DIR:?}/server_db_password
+  migrate_db_password:
+    file: ${PPF_SECRETS_DIR:?}/migrate_db_password
   db_password:
     file: ${PPF_SECRETS_DIR:?}/db_password
+  app_db_password:
+    file: ${PPF_SECRETS_DIR:?}/app_db_password
 
 volumes:
   db-data:

@@ -236,15 +236,21 @@ prepare_environment() {
     local env="$1" db="$2" server_uid="$3" editor_keys="$4" backoffice_origin="$5"
     local dir="$DATA_DIR/$env"
     install -d -m 0700 "$dir" "$dir/secrets"
-    if [ ! -f "$dir/secrets/db_password" ]; then
-        local password
-        password="$(new_password)"
-        (umask 077; printf '%s' "$password" > "$dir/secrets/db_password"; printf '%s' "$password" > "$dir/secrets/server_db_password")
+    # Owner role (migrations only) and restricted role ppf_app (the running server), D-127.
+    if [ ! -f "$dir/secrets/migrate_db_password" ]; then
+        local owner app
+        owner="$(new_password)"
+        app="$(new_password)"
+        (umask 077
+         printf '%s' "$owner" > "$dir/secrets/db_password"
+         printf '%s' "$owner" > "$dir/secrets/migrate_db_password"
+         printf '%s' "$app" > "$dir/secrets/app_db_password"
+         printf '%s' "$app" > "$dir/secrets/server_db_password")
     fi
-    # PostgreSQL runs as 999 in its image; the server as its own UID.
-    chown 999:999 "$dir/secrets/db_password"
-    chown "$server_uid:$server_uid" "$dir/secrets/server_db_password"
-    chmod 400 "$dir/secrets/db_password" "$dir/secrets/server_db_password"
+    # PostgreSQL runs as 999 in its image; the server and the migrations as the environment's UID.
+    chown 999:999 "$dir/secrets/db_password" "$dir/secrets/app_db_password"
+    chown "$server_uid:$server_uid" "$dir/secrets/server_db_password" "$dir/secrets/migrate_db_password"
+    chmod 400 "$dir/secrets/db_password" "$dir/secrets/app_db_password" "$dir/secrets/server_db_password" "$dir/secrets/migrate_db_password"
     if [ ! -f "$dir/.env" ]; then
         (umask 077; cat > "$dir/.env" <<EOF
 # Written by infra/scripts/bootstrap-server.sh (model: infra/env/$env.env.example).
@@ -313,6 +319,7 @@ script_dir="$(cd "$(dirname "$0")" && pwd)"
 install -m 0755 "$script_dir/deploy.sh" /usr/local/sbin/ppf-deploy
 install -m 0755 "$script_dir/wg-add-peer.sh" /usr/local/sbin/ppf-wg-add-peer
 install -m 0755 "$script_dir/backoffice.sh" /usr/local/sbin/ppf-backoffice
+install -m 0755 "$script_dir/wg-remove-peer.sh" /usr/local/sbin/ppf-wg-remove-peer
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.service" /etc/systemd/system/
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.timer" /etc/systemd/system/
 systemctl daemon-reload

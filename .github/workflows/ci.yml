@@ -195,15 +195,23 @@ jobs:
         run: |
           secrets="$RUNNER_TEMP/preprod-secrets"
           mkdir -p "$secrets"
-          password=$(openssl rand -hex 32)
-          printf '%s' "$password" > "$secrets/db_password"
-          printf '%s' "$password" > "$secrets/server_db_password"
-          sudo chown 999:999 "$secrets/db_password"
-          sudo chown 10002:10002 "$secrets/server_db_password"
-          sudo chmod 400 "$secrets/db_password" "$secrets/server_db_password"
+          # Owner role (migrations) and restricted role ppf_app (the server), as bootstrap-server.sh writes them.
+          owner=$(openssl rand -hex 32)
+          app=$(openssl rand -hex 32)
+          printf '%s' "$owner" > "$secrets/db_password"
+          printf '%s' "$owner" > "$secrets/migrate_db_password"
+          printf '%s' "$app" > "$secrets/app_db_password"
+          printf '%s' "$app" > "$secrets/server_db_password"
+          sudo chown 999:999 "$secrets/db_password" "$secrets/app_db_password"
+          sudo chown 10002:10002 "$secrets/server_db_password" "$secrets/migrate_db_password"
+          sudo chmod 400 "$secrets"/*
           sed "s#^PPF_SECRETS_DIR=.*#PPF_SECRETS_DIR=$secrets#" infra/env/preproduction.env.example > "$RUNNER_TEMP/preprod.env"
           docker network create ppf-preprod-edge
-          PPF_SERVER_IMAGE=ppf-server:ci docker compose -f infra/preproduction/compose.yml --env-file "$RUNNER_TEMP/preprod.env" up -d
+          compose="docker compose -f infra/preproduction/compose.yml --env-file $RUNNER_TEMP/preprod.env"
+          export PPF_SERVER_IMAGE=ppf-server:ci
+          $compose up -d db
+          $compose run --rm -T migrate
+          $compose up -d
           status=""
           for _ in $(seq 1 60); do
             status=$(docker inspect --format '{{if .State.Health}}{{.State.Health.Status}}{{end}}' ppf-preprod-server-1 || true)
@@ -218,6 +226,17 @@ jobs:
           ip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' ppf-preprod-server-1 | awk '{print $1}')
           curl -fsS "http://$ip:8080/health" | tee /dev/stderr | grep -q '"environment":"preproduction"'
           curl -fsS "http://$ip:8080/api/v1/events?limit=3" | grep -q '"sig"'
+      - name: Restricted database role protects the audit log
+        run: |
+          # The server's role may add to the audit log, never change, delete or empty it, nor disable
+          # its trigger (D-127). Run as ppf_app inside the database container.
+          app=$(sudo cat "$RUNNER_TEMP/preprod-secrets/app_db_password")
+          run() { docker exec -e PGPASSWORD="$app" ppf-preprod-db-1 psql -h 127.0.0.1 -U ppf_app -d ppf_preprod -v ON_ERROR_STOP=1 -qAt -c "$1"; }
+          run "SELECT count(*) FROM team_audit_log"
+          for statement in "DELETE FROM team_audit_log" "TRUNCATE team_audit_log" "UPDATE team_audit_log SET seq = seq" "ALTER TABLE team_audit_log DISABLE TRIGGER USER" "SET session_replication_role = replica"; do
+            if run "$statement" 2>/dev/null; then echo "ALLOWED, must be refused: $statement"; exit 1; fi
+            echo "refused as expected: $statement"
+          done
       - name: Refused in production with the example contents
         run: |
           set +e
@@ -229,7 +248,7 @@ jobs:
           [ "$code" -ne 0 ] && [ "$code" -ne 124 ]
       - name: Stop
         if: always()
-        run: docker compose -f infra/preproduction/compose.yml --env-file "$RUNNER_TEMP/preprod.env" down --volumes || true
+        run: PPF_SERVER_IMAGE=ppf-server:ci docker compose -f infra/preproduction/compose.yml --env-file "$RUNNER_TEMP/preprod.env" down --volumes || true
 
   # Server image, on main only: built from the jar of the Linux build, pushed to the GitHub
   # container registry and signed without any stored key (Sigstore, identity of this workflow).

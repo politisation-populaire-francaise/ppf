@@ -40,6 +40,11 @@ equipe.preprod.{$PPF_DOMAIN} {
 
 	@outside not remote_ip 10.8.0.0/24
 
+	# No form or ceremony of the back-office needs more (the server refuses above it too).
+	request_body {
+		max_size 64KB
+	}
+
 	route {
 		abort @outside
 		reverse_proxy ppf-preprod-server-1:8081 {
