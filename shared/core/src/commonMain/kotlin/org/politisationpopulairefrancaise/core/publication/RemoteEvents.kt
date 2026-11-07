@@ -66,6 +66,23 @@ sealed interface ElusDownload {
     data class Unavailable(val cause: Throwable? = null) : ElusDownload
 }
 
+/**
+ * One document of the parliamentary open data (D-064, D-065): the signed index or one package, as
+ * the exact bytes the source sent, so that the caller checks the signature of the index and the
+ * sha256 of every package before using them.
+ */
+sealed interface OpenDataDownload {
+    class Body(val bytes: ByteArray, val etag: String? = null) : OpenDataDownload
+
+    /** The document has not changed since the version whose sha256 was given. */
+    data object NotModified : OpenDataDownload
+
+    /** The source has no package with this name (`404 unknown_package`). */
+    data object UnknownPackage : OpenDataDownload
+
+    data class Unavailable(val cause: Throwable? = null) : OpenDataDownload
+}
+
 /** A publication destination that can also be read: the server now, Nostr relays later. */
 interface RemoteEvents : PublicationPort {
     suspend fun fetch(filter: RemoteFilter): FetchResult
@@ -97,4 +114,14 @@ interface RemoteEvents : PublicationPort {
      */
     suspend fun fetchElus(code: String? = null, etag: String? = null): ElusDownload =
         ElusDownload.Unavailable(UnsupportedOperationException("This source has no directory of elected officials"))
+
+    /**
+     * The parliamentary open data (contract docs/integration/voir-donnees-ouvertes.md, section 3):
+     * the signed index event (`GET /api/v1/parlement`) when [name] is null, otherwise one package
+     * (`GET /api/v1/parlement/{name}`). [etag], the sha256 of the version already on the device,
+     * lets the source answer [OpenDataDownload.NotModified]. Nothing is sent but the package name.
+     * Sources without these data answer [OpenDataDownload.Unavailable].
+     */
+    suspend fun fetchParliament(name: String? = null, etag: String? = null): OpenDataDownload =
+        OpenDataDownload.Unavailable(UnsupportedOperationException("This source has no parliamentary open data"))
 }
