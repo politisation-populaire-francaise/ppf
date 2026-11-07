@@ -80,7 +80,7 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `summary` | Résumé | Non |
 | `published_at` | Première publication, secondes depuis 1970, en texte | Non |
 | `t` | Un thème par étiquette (`droits`, `manifestation`, …) | Non |
-| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) | Non |
+| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-duration` | Parcours seulement : durée de lecture annoncée, en minutes (1 à 240) | Non |
@@ -117,6 +117,57 @@ Blocs communs du Markdown de « Comprendre » (`core/comprendre/ContentBlocks`) 
 | `qui-decide` | Corps commençant par un bloc `::: decideurs` : une ligne `- niveau | rôles | ce que ce niveau décide (référence)` par niveau, du plus proche au plus lointain ; niveaux `commune`, `intercommunalite`, `departement`, `region`, `etat`, `union-europeenne` ; rôles `maire`, `elu-local`, `depute`, `senateur`, `eurodepute`, `ministre`, `president`. Étiquettes `a` de rôle `personne` vers les personnes publiques de « Voir » à nommer dans l'encart des élus concernés. « Et maintenant ? » et `## Sources` obligatoires. |
 
 La page qui définit la méthode et les verdicts est un article d'identifiant `notre-methode`.
+
+### Glossaire (D-048)
+
+**Fichier source** `content/glossaire/<slug>.md` (format complet dans `content/README.md`) :
+
+```markdown
+---
+slug: motion-de-censure
+title: [EXEMPLE] Motion de censure
+summary: Vote par lequel les députés peuvent renverser le gouvernement.
+variants: motion de censure, motions de censure
+topics: parlement, gouvernement
+see_also: 49-3, dissolution, gouvernement
+related: parcours:le-49-3-et-la-motion-de-censure, qui-decide:ecole
+origin: ai-assisted
+published_at: 2026-11-07
+updated_at: 2026-11-07
+---
+Explication détaillée (« En savoir plus »), encarts `::: en-bref` permis.
+
+## Sources
+
+- [Constitution, article 49](https://www.legifrance.gouv.fr/...)
+```
+
+| Champ de l'en-tête | Contenu | Obligatoire |
+|---|---|---|
+| `slug` | Identifiant stable de l'entrée (devient `d`) | Oui |
+| `title` | Le terme affiché, précédé de `[EXEMPLE] ` pour l'instant | Oui |
+| `summary` | La définition rapide de l'infobulle : une ou deux phrases, 200 caractères au plus | Oui |
+| `variants` | Les formes repérées dans les textes, séparées par des virgules (singulier, pluriel, sigle, forme longue) ; `\,` écrit une virgule à l'intérieur d'une forme (`Conseil économique\, social et environnemental`). Au moins une ; une forme n'appartient qu'à une entrée (deux formes qui ne diffèrent que par les majuscules comptent comme la même) | Oui |
+| `topics` | Thèmes (étiquettes `t`) | Non |
+| `see_also` | Slugs d'autres entrées du glossaire | Non |
+| `related` | Contenus liés : `parcours:<slug>`, `fiche:<slug>`, `decryptage:<slug>`, `qui-decide:<slug>`, `histoire:<slug>` | Non |
+| `auto` | `non` : l'entrée n'est jamais repérée dans les textes (mot trop courant), seulement listée | Non |
+| `origin`, `published_at`, `updated_at` | Comme les autres contenus | `origin` oui |
+
+Le corps est l'explication détaillée ; il se termine par `## Sources` (sources primaires).
+
+**Événement** : article NIP-23 (type `30023`), `ppf-type` = `glossaire`, `title` = le terme, `summary` = la définition rapide, et en plus des étiquettes communes :
+
+| Étiquette | Contenu |
+|---|---|
+| `["ppf-variant", "<forme>"]` | Une par forme, sans l'échappement `\,` |
+| `["ppf-auto", "non"]` | Seulement pour une entrée jamais repérée automatiquement |
+| `["a", "30023:<clé>:<slug>", "", "voir-aussi"]` | Une par entrée de `see_also` (l'application la retrouve par son slug, quelle que soit la clé de l'équipe qui l'a signée) |
+| `["a", "30023:<clé>:<slug>", "", "lie"]` | Une par contenu de `related` (l'application retrouve son type et son titre dans sa copie locale ; un contenu absent n'est pas affiché) |
+
+Fichier intégré : `glossaire.json`, produit par `tools/content-signer`, qui refuse : définition absente ou de plus de 200 caractères, aucune forme, forme en double entre deux entrées, `## Sources` absent, `see_also` ou `related` vers un slug inconnu.
+
+**Repérage** (`core/comprendre/Glossary.kt`, `GlossaryIndex`) : majuscules ignorées, sauf pour un sigle (seulement des capitales et des chiffres, au moins deux lettres : `UE`, `QPC`, `COP21`), comparé avec ses capitales ; apostrophes `'`, `’`, `‘`, `ʼ` équivalentes ; espaces et traits d'union insécables lus comme les ordinaires ; accents respectés ; limites de mot (ni lettre ni chiffre avant et après) ; la forme la plus longue gagne, sans chevauchement ; première occurrence seulement par contenu ; jamais dans les titres, les liens, la section des sources, les adresses écrites en clair (`http://…`, `https://…`, `www.…`, `ppf:…`), ni dans la page d'une entrée pour son propre terme. Un lecteur qui ne connaît pas ce format voit un article ordinaire.
 
 ### Publications courtes du fil
 
@@ -261,6 +312,148 @@ Publiée seulement par une clé de l'équipe éditoriale. `content` : la présen
 
 **Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé ; une nouvelle version sans `p` retire la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
 
+## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-059, D-060)
+
+Même principe que « Voir » : des événements NIP-23 (type 30023) signés par l'équipe éditoriale, avec `ppf-type`, un corps Markdown et des étiquettes structurées (champs positionnels, champ vide = inconnu). Les étiquettes communes `ppf-source`, `ppf-archive`, `ppf-correction`, `ppf-next` et les liens `a` gardent leur sens. Contenus intégrés : `decider.json`.
+
+### Pétition (`ppf-type` = `petition`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-platform` | `assemblee`, `senat`, `cese`, `rip` ou `ice` (obligatoire) |
+| `ppf-official-url` | Page de la pétition, en `https`, sur un site de la plateforme : `petitions.assemblee-nationale.fr`, `petitions.senat.fr`, `petitions.lecese.fr`, `www.referendum.interieur.gouv.fr`, `citizens-initiative.europa.eu` (obligatoire ; sinon la brique est ignorée) |
+| `ppf-petition-status` | `ouverte` ou `close` (obligatoire) |
+| `ppf-reference` | Numéro donné par la plateforme |
+| `ppf-opened`, `ppf-closes` | Dates d'ouverture et dernier jour de signature (AAAA-MM-JJ) |
+| `ppf-count` | Relevé du compteur : `nombre`, `date`, `source` ; répétée pour l'historique, le plus récent compte |
+| `ppf-departments` | Départements d'origine des signataires, si la plateforme les publie : `nombre`, `date` |
+| `ppf-required` | Soutiens nécessaires pour cette procédure (référendum d'initiative partagée) |
+| `ppf-milestone` | Étape franchie : `date`, `libellé` |
+| `a` rôle `texte` | Le texte de loi de « Voir » concerné |
+
+### Pacte (`ppf-type` = `pacte`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-election` | `identifiant`, `libellé`, `premier tour` (facultatif) |
+| `ppf-pacte-status` | `proposee` (liste de départ, à voter), `envoye`, `clos` |
+| `ppf-measure` | `identifiant`, `titre`, `engagement précis`, `texte à modifier` ; 1 à 10, dans l'ordre, identifiants distincts |
+| `ppf-sent`, `ppf-deadline` | Jour d'envoi et date limite, les mêmes pour tous (obligatoires dès l'envoi) |
+| `a` rôle `candidat` | Chaque candidat, vers sa fiche de « Voir » |
+
+Empreinte du texte envoyé : SHA-256 (hexadécimal) du texte `ppf-pacte-v1\n`, puis `identifiant␟libellé\n` de l'élection, puis pour chaque mesure `identifiant␟titre␟engagement␟texte à modifier\n` (␟ = U+001F, espaces de début et de fin retirés).
+
+### Réponse d'un candidat (`ppf-type` = `engagement`)
+
+| Étiquette | Contenu |
+|---|---|
+| `a` rôle `pacte` | Le Pacte (un seul) |
+| `a` rôle `candidat` | Le candidat (un seul) |
+| `ppf-pacte-text` | Empreinte du texte répondu ; la réponse ne compte que si elle est égale à celle du Pacte |
+| `ppf-received` | Jour de réception (obligatoire) |
+| `ppf-answer` | `identifiant de mesure`, `signe` ou `refuse`, `commentaire` (facultatif) ; une seule par mesure |
+| `ppf-archive` | Document reçu : `empreinte SHA-256`, `preuve d'horodatage`, `adresse de l'archive`, `date` |
+
+Suivi après l'élection : un fait de « Voir » porte `a` rôle `pacte` et `ppf-pacte-measure` = identifiant de la mesure.
+
+## 4 octies. Annuaire des élus (D-047)
+
+Données publiques du Répertoire national des élus (RNE), servies par le serveur en JSON (ce ne sont pas des événements signés). Détail des sources et des règles de construction : `docs/integration/elus-serveur.md` ; lecture sur l'appareil : `docs/integration/elus-app.md`.
+
+### Index (`GET /api/v1/elus`)
+
+```json
+{
+  "format": 1,
+  "example": true,
+  "source": {
+    "name": "Répertoire national des élus (ministère de l'Intérieur)",
+    "url": "https://www.data.gouv.fr/fr/datasets/5c34c4d1634f4173183a64f1/",
+    "licence": "Licence Ouverte 2.0",
+    "updatedOn": "2026-08-11"
+  },
+  "importedOn": "2026-11-07",
+  "packages": [
+    { "code": "69", "name": "Rhône", "sha256": "<64 hex>", "bytes": 123456, "postalCodes": ["69001", "69002"] },
+    { "code": "FR", "name": "France", "sha256": "<64 hex>", "bytes": 4567, "postalCodes": [] }
+  ]
+}
+```
+
+- `example` : vrai pour le jeu fictif (`PPF_RNE_SOURCE=example`, valeur par défaut) ; l'application affiche alors « Données fictives [EXEMPLE] ».
+- `packages` : un par département (`01` à `95`, `2A`, `2B`, `971` à `976`), par collectivité d'outre-mer qui a des élus dans le RNE (`975`, `977`, `978`, `986`, `987`, `988`) et `FR` (membres du Parlement européen élus en France), triés par code. `sha256` : empreinte SHA-256, en hexadécimal minuscule, des **octets exacts du corps JSON non compressé** (UTF-8) ; `bytes` : leur nombre ; `postalCodes` : les codes postaux des communes du paquet, triés.
+
+### Paquet (`GET /api/v1/elus/{code}`)
+
+```json
+{
+  "format": 1,
+  "example": true,
+  "code": "69",
+  "name": "Rhône",
+  "region": { "code": "84", "name": "Auvergne-Rhône-Alpes" },
+  "sourceUpdatedOn": "2026-08-11",
+  "communes": [
+    { "code": "69123", "name": "Lyon", "postalCodes": ["69001", "69002"], "epci": null, "cantons": [], "circonscriptions": ["6901", "6902"], "collectivite": "69M" }
+  ],
+  "epcis": [ { "code": "<SIREN>", "name": "…" } ],
+  "cantons": [ { "code": "6901", "name": "…" } ],
+  "circonscriptions": [ { "code": "6901", "name": "1re circonscription du Rhône" } ],
+  "officials": [
+    { "mandate": "municipal", "territory": "69123", "name": "[EXEMPLE] Prénom Nom", "function": "Maire", "since": "2026-03-22", "functionSince": "2026-03-28" },
+    { "mandate": "communautaire", "territory": "<SIREN>", "commune": "<code Insee>", "name": "…", "function": null, "since": "…", "functionSince": null }
+  ],
+  "collectivites": [ { "code": "69M", "name": "Métropole de Lyon" } ]
+}
+```
+
+| Champ | Contenu |
+|---|---|
+| `region` | Région du département ; `null` pour une collectivité d'outre-mer et pour `FR` |
+| `communes[]` | Code Insee, nom, codes postaux (ceux des arrondissements pour Paris, Lyon et Marseille), `epci` (SIREN de l'intercommunalité ou `null`), `cantons` et `circonscriptions` (toutes celles de la commune, plusieurs pour une commune partagée ; aucun canton là où il n'y a pas de conseil départemental), `collectivite` (facultatif, voir ci-dessous) |
+| `epcis`, `cantons`, `circonscriptions`, `collectivites` | Listes `{code, name}` des territoires cités |
+| `officials[]` | `mandate`, `territory`, `name` (« Prénom Nom »), `function` (libellé du RNE ou `null`), `since` (début du mandat), `functionSince` (début de la fonction ou `null`) ; `commune` seulement pour `communautaire` (commune représentée, quand le RNE la donne) |
+
+Valeurs de `mandate` et de `territory` : `municipal` (code Insee de la commune), `communautaire` (SIREN de l'intercommunalité), `departemental` (code du canton), `regional` (code de la région ; le paquet contient les conseillers de la section départementale et le président du conseil régional), `collectivite` (code de la collectivité à statut particulier : `69M`, `94` pour la Corse, `972`, `973`, `975`, `977`, `978`, `986`, `987`, `988`), `depute` (code de la circonscription), `senateur` (code du département : `69`, `2A`, `972`, `977`), `europeen` (`FR`, paquet national seulement).
+
+**Codes des circonscriptions** : code du département ou de la collectivité suivi du numéro sur deux chiffres : `0101`, `6901`, `7518` en métropole ; `2A01`, `2B02` en Corse ; `97101` à `97104`, `97401` à `97407` outre-mer ; `97501`, `97701` (Saint-Barthélemy et Saint-Martin, circonscription commune, présente dans les paquets `977` et `978`), `98601`, `98701` à `98703`, `98801`, `98802`. Le numéro est toujours les deux derniers caractères. Les circonscriptions des Français établis hors de France (`ZZ01` à `ZZ11`) ne sont dans aucun paquet, pas plus que leurs sénateurs.
+
+**`collectivite` d'une commune** (ajouté le 7 novembre 2026, facultatif) : code de la collectivité dont l'assemblée remplace le conseil départemental pour cette commune (`69M` Métropole de Lyon, `94` Corse, `972` Martinique, `973` Guyane, collectivités d'outre-mer), tiré du champ `CTCD` du Code officiel géographique ; le nom est dans `collectivites`. L'application montre alors cette assemblée sous le niveau « Département », à la place du conseil départemental. Un paquet dont aucune commune ne porte ce champ (écrit avant cet ajout) est lu comme avant : toutes les assemblées du paquet sont montrées.
+
+**Règles communes** : dates `AAAA-MM-JJ` ; JSON compact, champs dans l'ordre ci-dessus ; listes triées (communes par nom sans accents ni majuscules, puis code ; élus par mandat, territoire, rang dans le conseil, nom) pour que deux imports des mêmes fichiers donnent les mêmes octets. **Jamais** de date de naissance, de sexe, de profession ni de nationalité.
+
+**HTTP** : `ETag: "<sha256>"`, **entre guillemets** (RFC 9110), la valeur entre les guillemets étant le `sha256` de l'index ; `If-None-Match` (avec ou sans guillemets, `W/`, liste ou `*`) répond `304` sans corps ; `Cache-Control: public, no-cache` ; `Vary: Accept-Encoding` ; avec `Accept-Encoding: gzip`, le corps est envoyé compressé (`Content-Encoding: gzip`), l'empreinte restant celle des octets décompressés. L'appareil refuse un paquet dont l'empreinte ne correspond pas à l'index, ou qui ne se lit pas comme le paquet du code demandé.
+
+**Lecture par l'appareil** (`core/elus/ElusFormats.kt`, `ElusReader`) : stricte pour le document (format 1, code valide, nom présent ; sinon le paquet est ignoré), tolérante pour ses entrées (une commune ou un élu illisible est écarté, les champs inconnus ignorés) ; 32 Mo au plus par paquet.
+
+### Sur l'appareil : schéma local en version 11
+
+Migration `shared/core/src/commonMain/sqldelight/.../core/db/migrations/10.sqm` (schéma 10 vers 11), identique aux définitions de `Elus.sq` (un test compare une base neuve et une base migrée) :
+
+| Table | Colonnes | Rôle |
+|---|---|---|
+| `elus_commune` | `id` (toujours 0 : une seule ligne), `commune_code` (code Insee), `department_code` (code du paquet) | La commune choisie ; jamais envoyée |
+| `elus_package` | `code` (clé : un département, `FR`, ou `index` pour l'index du serveur), `sha256`, `json` (le JSON exact vérifié), `source_updated_on` (`AAAA-MM-JJ`), `downloaded_at` (secondes depuis 1970) | Les listes téléchargées, lues hors ligne ; seuls restent le paquet de la commune, `FR` et l'index |
+
+« Oublier ma commune » vide les deux tables.
+
+### Sur le serveur : migration Flyway `V6__elus.sql`
+
+| Table | Rôle |
+|---|---|
+| `elus_import` | Un essai d'import par ligne : source (`example` ou `official`), statut (`building`, `ready`, `failed`), dates, date de la source, nombres d'élus par mandat (`counts`, pour la garde des 20 %), index exact et son empreinte, motif d'échec (code court, jamais une valeur lue dans un fichier). Un seul import servi et un seul en construction à la fois |
+| `elus_package` | Les paquets d'un import : code, nom, `sha256` et `bytes` du JSON non compressé, codes postaux, corps compressé en gzip |
+| `elus_staging` | Table de travail (`UNLOGGED`) des élus lus pendant un import, vidée dès que les paquets sont écrits |
+
+Rien sur les lecteurs : ni adresse, ni requête, ni qui a téléchargé quel paquet.
+
+Variables d'environnement du serveur pour l'annuaire :
+
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `PPF_RNE_SOURCE` | `example` (jeu fictif embarqué, ne contacte personne) ou `official` (vrai RNE, suivi **seulement** avec `PPF_ENVIRONMENT=production` ; ailleurs le jeu fictif est servi) | `example` |
+| `PPF_RNE_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 7 |
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.
@@ -279,6 +472,8 @@ Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est jo
 | `GET /api/v1/events/<id>` | Un événement par son identifiant | `200` l'événement ; `404` `not_found` |
 | `GET /api/v1/groups?q=<texte>&territory=<texte>&limit=100` | Les salons connus du serveur (NIP-29), triés par nom (sans accents ni majuscules) puis identifiant : `[{"id":"…","name":"…","about":"…","picture":null,"territory":"Lyon","charter":"1.0","public":true,"open":true,"event":{…événement 39000 signé…}}]`. Tous les paramètres sont facultatifs, chacun au plus une fois. `q` : garde les salons dont le nom, le territoire ou la description contient le texte ; `territory` : garde les salons de ce territoire, comparé en entier ; les deux sont comparés une fois normalisés (accents, majuscules et ponctuation ignorés ; une valeur vide ou sans lettre ni chiffre ne filtre pas), 200 caractères au plus. `limit` : de 1 à 500, 100 par défaut. `territory` vaut l'étiquette `ppf-territory` telle qu'écrite par le créateur ; `charter` la version de la charte acceptée (`null` pour une description antérieure à D-028). `public` : lisible par tous (toujours vrai dans cette version) ; `open` : tout compte peut y écrire. Aucune liste de membres n'existe ni n'est servie. | `200` tableau ; `400` `bad_parameter` (`limit` hors de 1 à 500 ou non entier, paramètre répété, texte trop long) |
 | `GET /api/v1/groups/<id>` | Un salon par son identifiant (1 à 64 caractères parmi `a-z`, `0-9`, `.`, `_`, `~`, `-`) | `200` le salon ; `400` `bad_parameter` ; `404` `group_not_found` |
+| `GET /api/v1/elus` | L'index de l'annuaire des élus (section 4 octies) : source, date d'import, un paquet par département avec son empreinte, sa taille et ses codes postaux. Sans compte ; `ETag` entre guillemets, `If-None-Match`, gzip | `200` ; `304` ; `503 elus_unavailable` avec `Retry-After: 60` tant qu'aucun import n'a réussi |
+| `GET /api/v1/elus/{code}` | Le paquet d'un département, d'une collectivité d'outre-mer ou `FR` (section 4 octies). Aucune commune ni aucun code postal n'est jamais envoyé par l'appareil | `200` ; `304` ; `404 unknown_package` ; `503 elus_unavailable` |
 | `GET /health` | État du serveur | `200` `{"status":"ok","service":"ppf-server","version":"0.1.0","environment":"…"}` |
 
 Quand la base de données n'est pas configurée, toute adresse sous `/api/v1/` répond `503` `{"error":"database_unavailable"}`.

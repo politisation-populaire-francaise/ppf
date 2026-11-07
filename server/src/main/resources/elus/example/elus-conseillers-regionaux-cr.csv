@@ -1,0 +1,20 @@
+Code de la région;Libellé de la région;Code de la section départementale;Libellé de la section départementale;Nom de l'élu;Prénom de l'élu;Code sexe;Date de naissance;Code de la catégorie socio-professionnelle;Libellé de la catégorie socio-professionnelle;Date de début du mandat;Libellé de la fonction;Date de début de la fonction
+11;Île-De-France;78;Yvelines;Démonstration;[EXEMPLE] Noa;M;1965-12-12;99;[EXEMPLE] Profession fictive;2021-07-02;Président du conseil régional;2021-07-02
+11;Île-De-France;75;Paris;Prototype;[EXEMPLE] Camille;F;1966-01-13;99;[EXEMPLE] Profession fictive;2021-07-02;1er Vice-président du conseil régional;2021-07-02
+11;Île-De-France;75;Paris;Spécimen;[EXEMPLE] Dominique;M;1967-02-14;99;[EXEMPLE] Profession fictive;2021-07-02;;
+32;Hauts-De-France;62;Pas-De-Calais;Échantillon;[EXEMPLE] Claude;F;1968-03-15;99;[EXEMPLE] Profession fictive;2021-07-02;Président du conseil régional;2021-07-02
+32;Hauts-De-France;59;Nord;Brouillon;[EXEMPLE] Alix;M;1969-04-16;99;[EXEMPLE] Profession fictive;2021-07-02;1er Vice-président du conseil régional;2021-07-02
+32;Hauts-De-France;59;Nord;Factice;[EXEMPLE] Sacha;F;1970-05-17;99;[EXEMPLE] Profession fictive;2021-07-02;;
+32;Hauts-De-France;2;Aisne;Modèle;[EXEMPLE] Morgan;M;1971-06-18;99;[EXEMPLE] Profession fictive;2021-07-02;;
+32;Hauts-De-France;2;Aisne;Essai;[EXEMPLE] Lou;F;1972-07-19;99;[EXEMPLE] Profession fictive;2021-07-02;;
+53;Bretagne;29;Finistère;Simulation;[EXEMPLE] Charlie;M;1973-08-20;99;[EXEMPLE] Profession fictive;2021-07-02;Président du conseil régional;2021-07-02
+53;Bretagne;35;Ille-Et-Vilaine;Ébauche;[EXEMPLE] Maxime;F;1974-09-21;99;[EXEMPLE] Profession fictive;2021-07-02;1er Vice-président du conseil régional;2021-07-02
+53;Bretagne;35;Ille-Et-Vilaine;Esquisse;[EXEMPLE] Andréa;M;1975-10-22;99;[EXEMPLE] Profession fictive;2021-07-02;;
+84;Auvergne-Rhône-Alpes;38;Isère;Gabarit;[EXEMPLE] Eden;F;1976-11-23;99;[EXEMPLE] Profession fictive;2021-07-02;Président du conseil régional;2021-07-02
+84;Auvergne-Rhône-Alpes;69;Rhône hors métropole de Lyon;Imaginaire;[EXEMPLE] Noa;M;1977-12-24;99;[EXEMPLE] Profession fictive;2021-07-02;1er Vice-président du conseil régional;2021-07-02
+84;Auvergne-Rhône-Alpes;69;Rhône hors métropole de Lyon;Supposé;[EXEMPLE] Camille;F;1978-01-25;99;[EXEMPLE] Profession fictive;2021-07-02;;
+84;Auvergne-Rhône-Alpes;69M;Métropole de Lyon;Fantaisie;[EXEMPLE] Dominique;M;1979-02-26;99;[EXEMPLE] Profession fictive;2021-07-02;;
+84;Auvergne-Rhône-Alpes;69M;Métropole de Lyon;Illustration;[EXEMPLE] Claude;F;1980-03-27;99;[EXEMPLE] Profession fictive;2021-07-02;;
+93;Provence-Alpes-Cote D'Azur;83;Var;Exemplaire;[EXEMPLE] Alix;M;1981-04-28;99;[EXEMPLE] Profession fictive;2021-07-02;Président du conseil régional;2021-07-02
+93;Provence-Alpes-Cote D'Azur;13;Bouches-Du-Rhône;Fictif;[EXEMPLE] Sacha;F;1982-05-01;99;[EXEMPLE] Profession fictive;2021-07-02;1er Vice-président du conseil régional;2021-07-02
+93;Provence-Alpes-Cote D'Azur;13;Bouches-Du-Rhône;Démonstration;[EXEMPLE] Morgan;M;1983-06-02;99;[EXEMPLE] Profession fictive;2021-07-02;;

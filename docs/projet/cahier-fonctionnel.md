@@ -1,6 +1,6 @@
 # Politisation Populaire Française : cahier fonctionnel
 
-- Version : 1.4
+- Version : 1.5
 - Date : 7 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-cahier-fonctionnel.md`.
 - Documents liés : `vision.md` (pourquoi), `cahier-des-charges.md` (exigences, architecture, cadre légal, planning).
@@ -57,7 +57,7 @@ Tous les comptes de l'équipe ont la double authentification obligatoire et des 
   - nombre de lycées et d'universités bloqués, actualisé en temps réel ;
   - blessés légers, blessés graves, décès (avec la mention « dont mineurs ») ;
   - vitrines et commerces dégradés ou pillés ;
-  - victimes de violences policières, avec un **indice de gravité** (grille à valider par la propriétaire) ;
+  - victimes de violences policières, avec un **indice de gravité** en cinq niveaux (validé par la propriétaire le 7 novembre 2026) : 1 sans incapacité (pas d'incapacité totale de travail, ITT), 2 blessure légère (ITT de 8 jours ou moins), 3 blessure grave (ITT de plus de 8 jours), 4 mutilation ou infirmité permanente, 5 décès ; pour chaque cas : mineur ou non, arme ou moyen en cause, niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule) ; les cas déclaratifs sont comptés à part, jamais mélangés aux cas vérifiés ; l'indice d'une journée est la répartition entre les cinq niveaux, jamais une note unique ;
   - interpellations, gardes à vue, nasses (nombre et durée moyenne) ;
   - MICA reçues par manifestation ;
   - comptes de réseaux sociaux déclarant un shadowban (indicateur **déclaratif**, signalé comme tel).
@@ -250,4 +250,5 @@ Validé par la propriétaire le 7 novembre 2026. Au niveau national et européen
 | 1.1 | 6 novembre 2026 | Ajout du module M18 « Fil social » (écran par défaut en fil de réseau social, barre du bas fixe) et de la direction de design des fiches pratiques (encarts « En bref », « Légal », « Illégal »), décisions de la propriétaire du 6 novembre 2026 consignées dans les brainstormings. Copie locale modifiée par l'IA sur demande de la propriétaire ; à reporter dans le projet claude.ai. |
 | 1.3 | 6 novembre 2026 | M11 : vues et filtres du mur des revendications, vérifications automatiques des revendications proposées (doublons, loi déjà en vigueur, autres problèmes), demandes de la propriétaire du 6 novembre 2026 (D-029, D-030). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
 | 1.4 | 7 novembre 2026 | Ajout du module M17 « Mettre en lumière » (espace « Voir » : le pouvoir, libertés et contre-pouvoirs) avec sa méthode, les fiches identiques pour tous et l'ordre d'entrée des responsables publics, validés par la propriétaire le 7 novembre 2026 (D-036). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
+| 1.5 | 7 novembre 2026 | M2 : grille de l'indice de gravité des violences policières en cinq niveaux, validée par la propriétaire le 7 novembre 2026 (D-057). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
 | 1.2 | 6 novembre 2026 | Barre du bas à cinq entrées (Fil, En direct, Carte, Messages, Revendications), vues du fil parcourues au doigt dont une vue « Revendications » (M18) ; messagerie confirmée dans les ambitions fonctionnelles avec ses trois vues (M14). Décisions de la propriétaire du 6 novembre 2026 (D-026). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |

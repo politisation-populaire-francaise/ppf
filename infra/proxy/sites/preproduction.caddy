@@ -1,0 +1,32 @@
+# Preproduction: https://preprod.<domain>, for the devices of the team only.
+#
+# - The name is public (DNS record towards the server, so that Let's Encrypt can issue a real
+#   certificate, trusted by the Android app and the browsers without installing anything).
+# - Only connections coming through the WireGuard tunnel (10.8.0.0/24) are answered; any other
+#   connection is closed without a word. The WireGuard profiles route the server's address
+#   through the tunnel (infra/scripts/wg-add-peer.sh).
+# - Web pages also ask for a password. The API of the applications (/api/, /health) relies on
+#   the tunnel alone: the test builds of the apps are public files and can carry no password
+#   (decision D-072).
+# - Never indexed by search engines.
+
+preprod.{$PPF_DOMAIN} {
+	import security_headers
+	header X-Robots-Tag "noindex, nofollow"
+
+	@outside not remote_ip 10.8.0.0/24
+	@pages not path /api/* /health
+
+	# Written in this order on purpose: route keeps it (the tunnel first, then the password).
+	route {
+		abort @outside
+		basic_auth @pages {
+			{$PREPROD_BASIC_AUTH_USER} {$PREPROD_BASIC_AUTH_HASH}
+		}
+		reverse_proxy ppf-preprod-server-1:8080 {
+			# The application never sees the client address.
+			header_up -X-Forwarded-For
+			header_up -X-Real-IP
+		}
+	}
+}

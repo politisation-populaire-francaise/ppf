@@ -1,0 +1,17 @@
+-- Schema version 10 to 11 (2026-11-07): the official directory of elected officials on the device,
+-- the chosen commune and the downloaded packages (see Elus.sq, which is the reference for fresh
+-- installations; this file must stay identical to its CREATE statements).
+
+CREATE TABLE elus_commune (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 0),
+    commune_code TEXT NOT NULL,
+    department_code TEXT NOT NULL
+);
+
+CREATE TABLE elus_package (
+    code TEXT NOT NULL PRIMARY KEY,
+    sha256 TEXT NOT NULL,
+    json TEXT NOT NULL,
+    source_updated_on TEXT,
+    downloaded_at INTEGER NOT NULL
+);

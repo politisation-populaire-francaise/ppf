@@ -6,6 +6,20 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-07] Espace « Décider » : première version et questions ouvertes
+- Statut : À valider
+- Concerne : cahier-fonctionnel.md, M10 (pétitions), M13.5 (Pacte démocratique) ; inventaire, DE-07 et DE-08
+- Description : première version codée le 7 novembre 2026 avec des contenus [EXEMPLE] (D-059 à D-061) : pétitions officielles avec leurs seuils réels et ce qu'ils ne garantissent pas, Pacte démocratique avec son tableau public identique pour tous. Le droit a été revérifié le 7 novembre 2026 (`docs/integration/decider-petitions-droit.md`) : rien n'a changé depuis le 4 novembre ; une réforme du Règlement de l'Assemblée, qui aurait supprimé le seuil de 100 000, a été retirée de l'ordre du jour le 15 juillet 2026.
+- Questions à la propriétaire :
+  1. **CESE** : j'ai ajouté les pétitions au Conseil économique, social et environnemental (150 000 signataires dès 16 ans, avis sous six mois), absentes de M10. Les garde-t-on ? Recommandation : oui, c'est une pétition officielle prévue par la Constitution et ouverte dès 16 ans.
+  2. **Réponse au Pacte arrivée après la date limite** : A. comptée, avec la mention « réponse reçue après le délai » (codé, réversible) ; B. non comptée. Recommandation : A, le but est d'obtenir des engagements, l'équité est assurée par la même mention pour tous.
+  3. **Relevé des compteurs** : aujourd'hui l'équipe relève le compteur à la main. Les pétitions de l'Assemblée et du Sénat sont publiées chaque lundi en données ouvertes sur data.gouv.fr (Licence Ouverte) : le serveur pourrait les relever automatiquement, sans que l'application contacte un tiers. Gratuit. Recommandation : oui, après le premier déploiement.
+  4. **Objectifs par territoire** (M10) : aucune plateforme ne publie la répartition des signataires par département. On peut proposer des objectifs indicatifs proportionnels à la population, avec un référentiel des territoires (le même que pour « Qui décide de ça ? » et les salons). À faire avec ce référentiel.
+  5. **Pétitions locales** (article 72-1 de la Constitution : un dixième des électeurs d'une commune pour demander une consultation) : à ajouter plus tard ?
+  6. **Envoi réel du Pacte** : par quel canal (courrier recommandé à l'adresse officielle de chaque candidat, courriel), et qui signe l'envoi pour l'association ? L'horodatage des réponses (OpenTimestamps, gratuit, ou RFC 3161) reste à choisir.
+  7. Rappel : la **liste des mesures** (entrée « Liste de départ des mesures du Pacte démocratique ») et les **modalités des campagnes** sont toujours « À valider » ; les mesures affichées sont des exemples.
+- Décision :
+
 ### [2026-11-07] Agir : publication des mobilisations et des appels
 - Statut : Intégré le 2026-11-07 (décisions de la propriétaire ; code de l'espace Agir, contrat commun `docs/integration/agir-contrat.md`) ; à reporter dans le cahier fonctionnel version 2.0
 - Concerne : cahier-fonctionnel.md, M1, M3 ; AG-02, AG-18, AP-02, AP-08, AP-09 ; points d'attention n° 6 et n° 12
@@ -206,7 +220,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Grille de l'indice de gravité des violences policières
-- Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel, M2)
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 1.5, M2)
 - Concerne : cahier-fonctionnel.md, M2
 - Description : l'IA propose une grille inspirée des observatoires existants, à valider par la propriétaire.
 - Proposition (2026-11-07, pôle Voir) : une grille en cinq niveaux, calquée sur les catégories que le code pénal utilise déjà pour les violences (articles 222-7 à 222-13), pour qu'elle soit objective, vérifiable et difficile à contester :
@@ -218,7 +232,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   Chaque cas indique en plus : mineur ou non, arme ou moyen en cause (tir de LBD, grenade, matraque, étranglement…), et le niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule). Un cas déclaré sans certificat compte à part (« déclaratif »), jamais mélangé aux cas vérifiés. L'indice d'une journée est la répartition des cas entre les cinq niveaux, pas une note unique (un chiffre unique cacherait les cas graves).
   - Alternative : reprendre telle quelle la grille d'un observatoire existant (associations de défense des libertés, médias indépendants) ; avantage : comparabilité ; inconvénient : dépendance à leurs choix et à leurs mises à jour.
   - Recommandation : la grille en cinq niveaux ci-dessus.
-- Décision : grille en cinq niveaux validée par la propriétaire le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe ; D-057). À intégrer dans le cahier fonctionnel (M2) après sa confirmation.
+- Décision : grille en cinq niveaux validée par la propriétaire le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe ; D-057). Intégrée au cahier fonctionnel 1.5 (M2) le 7 novembre 2026, à sa demande (« Oui on inscrit l'ordre de gravité dans le cahier fonctionnel »).
 
 ### [2026-11-04] Sujets de départ de « Qui décide de ça ? »
 - Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel 2.0, M13.1)

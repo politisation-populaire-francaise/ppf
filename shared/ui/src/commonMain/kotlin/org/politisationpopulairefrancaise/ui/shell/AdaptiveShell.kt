@@ -100,6 +100,8 @@ import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.content.rememberContentLibrary
 import org.politisationpopulairefrancaise.ui.feed.FeedScreen
+import org.politisationpopulairefrancaise.ui.glossaire.ProvideGlossary
+import org.politisationpopulairefrancaise.ui.glossaire.rememberGlossaryState
 import org.politisationpopulairefrancaise.ui.groups.GroupsLibrary
 import org.politisationpopulairefrancaise.ui.groups.rememberGroupsLibrary
 import org.politisationpopulairefrancaise.ui.icons.Lucide
@@ -119,7 +121,9 @@ import org.politisationpopulairefrancaise.ui.resources.guides_title
 import org.politisationpopulairefrancaise.ui.resources.nav_disclaimer
 import org.politisationpopulairefrancaise.ui.resources.nav_search_soon
 import org.politisationpopulairefrancaise.ui.resources.space_mon_espace
-import org.politisationpopulairefrancaise.ui.screens.PlaceholderScreen
+import org.politisationpopulairefrancaise.ui.decider.DeciderScreen
+import org.politisationpopulairefrancaise.ui.decider.DeciderState
+import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** Test tags, also useful for accessibility tooling. */
@@ -180,6 +184,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val voirState = rememberVoirState(dependencies)
     // Its requests to the editorial team: drafts and anonymous reports waiting for a server.
     val voirRequests = rememberVoirRequestSession(dependencies, messaging)
+    // "Décider": the open page and the follows survive a visit to another space.
+    val deciderState = rememberDeciderState(dependencies)
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
     val proposalComposer = remember(dependencies) { ProposalComposer(dependencies.contentStore, dependencies.remote) }
     val accountKey = (accountSession.state as? AccountUiState.Ready)?.publicKey?.hex
@@ -190,41 +196,53 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     }
     // How long the server keeps the account's private messages (Mon espace, D-028).
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
+    // The glossary (D-048): read once the bundled contents are imported and after each synchronization,
+    // provided to every screen so that the terms of every content open their definition.
+    val glossary = rememberGlossaryState(dependencies)
+    LaunchedEffect(contentLibrary.status) { glossary.reload() }
+    // « Ouvrir le glossaire complet » and the related contents of an entry live in "Comprendre".
+    LaunchedEffect(glossary.wantsComprendre) {
+        if (glossary.wantsComprendre) {
+            selected = Space.COMPRENDRE
+            glossary.navigationDone()
+        }
+    }
     val palette = PpfTheme.palette
     // The system's back leads from any space to the feed; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
-        val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
-        val account = accountSession.state as? AccountUiState.Ready
-        val navigate: (Space) -> Unit = { selected = it }
-        val content: @Composable (Modifier) -> Unit = { modifier ->
-            SpaceContent(
-                dependencies = dependencies,
-                selected = selected,
-                onNavigate = navigate,
-                accountSession = accountSession,
-                contentLibrary = contentLibrary,
-                messaging = messaging,
-                revendicationViews = revendicationViews,
-                proposalComposer = proposalComposer,
-                voirState = voirState,
-                voirRequests = voirRequests,
-                groupsLibrary = groupsLibrary,
-                organisationsLibrary = organisationsLibrary,
-                agendaLibrary = agendaLibrary,
-                callsLibrary = callsLibrary,
-                mailboxSetting = mailboxSetting,
-                windowClass = windowClass,
-                widthDp = maxWidth.value.toInt(),
-                heightDp = maxHeight.value.toInt(),
-                modifier = modifier.testTag(ShellTags.CONTENT),
-            )
-        }
-        when (windowClass.width) {
-            WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, content)
-            WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, content)
-            WindowWidthClass.EXPANDED -> ExpandedShell(selected, navigate, account, content)
+    ProvideGlossary(glossary) {
+        BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
+            val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
+            val account = accountSession.state as? AccountUiState.Ready
+            val navigate: (Space) -> Unit = { selected = it }
+            val content: @Composable (Modifier) -> Unit = { modifier ->
+                SpaceContent(
+                    dependencies = dependencies,
+                    selected = selected,
+                    onNavigate = navigate,
+                    accountSession = accountSession,
+                    contentLibrary = contentLibrary,
+                    messaging = messaging,
+                    revendicationViews = revendicationViews,
+                    proposalComposer = proposalComposer,
+                    voirState = voirState,
+                    voirRequests = voirRequests,
+                    deciderState = deciderState,
+                    groupsLibrary = groupsLibrary,
+                    organisationsLibrary = organisationsLibrary,
+                    agendaLibrary = agendaLibrary,
+                    callsLibrary = callsLibrary,
+                    mailboxSetting = mailboxSetting,
+                    windowClass = windowClass,
+                    modifier = modifier.testTag(ShellTags.CONTENT),
+                )
+            }
+            when (windowClass.width) {
+                WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, content)
+                WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, content)
+                WindowWidthClass.EXPANDED -> ExpandedShell(selected, navigate, account, content)
+            }
         }
     }
 }
@@ -241,14 +259,13 @@ private fun SpaceContent(
     proposalComposer: ProposalComposer,
     voirState: VoirState,
     voirRequests: VoirRequestSession,
+    deciderState: DeciderState,
     groupsLibrary: GroupsLibrary,
     organisationsLibrary: OrganisationsLibrary,
     agendaLibrary: AgendaLibrary,
     callsLibrary: CallsLibrary,
     mailboxSetting: MailboxSetting,
     windowClass: WindowClass,
-    widthDp: Int,
-    heightDp: Int,
     modifier: Modifier,
 ) {
     // The organisers of the agenda are named after the directory when they are verified organisations.
@@ -295,6 +312,14 @@ private fun SpaceContent(
                 },
             )
         }
+        Space.DECIDER -> DeciderScreen(
+            contentLibrary, deciderState, windowClass, modifier, onNavigate,
+            // A candidate, a bill or a fact opens in "Voir", where each has one sheet.
+            onOpenVoir = { address ->
+                voirState.open(address)
+                onNavigate(Space.VOIR)
+            },
+        )
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
         Space.REVENDICATIONS -> RevendicationsScreen(
@@ -311,7 +336,6 @@ private fun SpaceContent(
             LaunchedEffect(organisationsLibrary) { organisationsLibrary.ensureStarted() }
             AgendaScreen(dependencies, accountSession, windowClass, modifier, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
         }
-        else -> PlaceholderScreen(sectionFor(selected), windowClass, widthDp, heightDp, modifier)
     }
 }
 

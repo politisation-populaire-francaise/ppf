@@ -77,5 +77,16 @@ class SimpleMarkdownTest {
         assertEquals(2, text.spanStyles.size)
         assertEquals(3, text.spanStyles[0].start)
         assertEquals(6, text.spanStyles[0].end)
+        // The link keeps its place once the bold marks are gone, so that the glossary leaves it alone.
+        val link = text.getStringAnnotations(SimpleMarkdown.LINK_TAG, 0, text.length).single()
+        assertEquals("lien (https://example.org)", text.text.substring(link.start, link.end))
+    }
+
+    @Test
+    fun aLinkInsideBoldIsStillMarked() {
+        val text = SimpleMarkdown.inline("**Voir [la loi](https://exemple.invalid)** et [**gras**](u).")
+        assertEquals("Voir la loi (https://exemple.invalid) et gras (u).", text.text)
+        val links = text.getStringAnnotations(SimpleMarkdown.LINK_TAG, 0, text.length).map { text.text.substring(it.start, it.end) }
+        assertEquals(listOf("la loi (https://exemple.invalid)", "gras (u)"), links)
     }
 }

@@ -5,6 +5,9 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.comprendre.ComprendreTags
 import org.politisationpopulairefrancaise.core.comprendre.ContentBlocks
+import org.politisationpopulairefrancaise.core.comprendre.GlossaryEntry
+import org.politisationpopulairefrancaise.core.comprendre.GlossaryFormat
+import org.politisationpopulairefrancaise.core.comprendre.GlossarySource
 import org.politisationpopulairefrancaise.core.comprendre.ParcoursFormat
 import org.politisationpopulairefrancaise.core.agir.organisations.Organisation
 import org.politisationpopulairefrancaise.core.agir.AgirFormats
@@ -55,7 +58,9 @@ import kotlin.system.exitProcess
  * sources are missing or malformed), those of `fil` become short notes for the feed (fil.json),
  * those of `voir` (and its sub-directories) become the building blocks of "Voir" (voir.json, D-034),
  * those of `organisations` become entries of the directory of organisations (organisations.json),
- * and those of `appels` become calls of the Agir space (appels.json).
+ * those of `appels` become calls of the Agir space (appels.json), and those of `glossaire` become
+ * the entries of the glossary (glossaire.json, refused if a definition, a form or the sources are
+ * missing, if a form belongs to two entries or if a link names an unknown entry or content).
  * See content/README.md for the front matter of each kind.
  * The signing key is read from the file named by PPF_CONTENT_KEY_FILE (default
  * ~/.ppf/content-example.nsec); it is created if missing. Dates come from the front matter, so
@@ -126,6 +131,7 @@ fun main(args: Array<String>) {
     write(output.resolve("parcours.json"), courses)
 
     write(output.resolve("comprendre.json"), comprendreEvents(content, keys.publicKey).map { signer.signChecked(it) })
+    write(output.resolve("glossaire.json"), glossaryEvents(content, keys.publicKey).map { signer.signChecked(it) })
 
     val notes = signAll(content.resolve("fil")) { document ->
         UnsignedEvent.create(
@@ -141,8 +147,9 @@ fun main(args: Array<String>) {
 
     val voirFiles = voirDocuments(content.resolve("voir"))
     val voir = voirFiles.map { document -> voirEvent(document, keys.publicKey) }
-    checkVoir(voirFiles, voir, keys.publicKey.hex)
+    checkVoir(voirFiles, voir, keys.publicKey.hex, guides = articles.mapNotNull { it.firstTagValue("d") }.toSet())
     write(output.resolve("voir.json"), voir.map { signer.signChecked(it) })
+    signDecider(content, output, keys, voir) // content/decider -> decider.json (DeciderContent.kt)
     // Directory of organisations (contract of the Agir space, section 4): organisations.json.
     val organisations = signAll(content.resolve("organisations")) { document ->
         Organisation.build(
@@ -170,6 +177,7 @@ fun main(args: Array<String>) {
     val calls = signAll(content.resolve("appels")) { document -> callOf(keys.publicKey, document) }.map { signer.signChecked(it) }
     write(output.resolve("appels.json"), calls)
 
+    checkUniqueAddresses(output)
     println("author public key (hex): ${keys.publicKey.hex}")
     println("author public key (npub): ${keys.publicKey.npub}")
 }
@@ -227,13 +235,13 @@ private fun signAll(directory: Path, build: (Document) -> UnsignedEvent): List<U
     }
 }
 
-private fun LocalEventSigner.signChecked(unsigned: UnsignedEvent): SignedEvent {
+internal fun LocalEventSigner.signChecked(unsigned: UnsignedEvent): SignedEvent {
     val event = runBlocking { sign(unsigned) }
     check(event.verify()) { "signature check failed for ${event.id}" }
     return event
 }
 
-private fun write(file: Path, events: List<SignedEvent>) {
+internal fun write(file: Path, events: List<SignedEvent>) {
     val json = Json { prettyPrint = true }
     Files.writeString(file, json.encodeToString(ListSerializer(SignedEvent.serializer()), events) + "\n")
     println("${events.size} event(s) written to $file")
@@ -250,14 +258,14 @@ private fun loadOrCreateKeys(): IdentityKeys {
     return keys
 }
 
-private class Document(val name: String, val entries: List<Pair<String, String>>, val body: String) {
+internal class Document(val name: String, val entries: List<Pair<String, String>>, val body: String) {
     /** The last value of each key; repeated keys (measures, sources...) are read through [entries]. */
     val metadata: Map<String, String> = entries.toMap()
     fun require(key: String): String = metadata[key] ?: error("$name: missing front matter field: $key")
     fun topics(): List<String> = metadata["topics"].orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() }
 }
 
-private fun parseDocument(name: String, text: String): Document {
+internal fun parseDocument(name: String, text: String): Document {
     val lines = text.lines()
     require(lines.firstOrNull()?.trim() == "---") { "$name: the file must start with a --- front matter" }
     val end = lines.drop(1).indexOfFirst { it.trim() == "---" }
@@ -273,7 +281,7 @@ private fun parseDocument(name: String, text: String): Document {
 }
 
 /** Dates are taken at noon UTC so that the event id does not depend on the machine's time zone. */
-private fun String.dateToEpochSeconds(): Long = LocalDate.parse(this).atTime(LocalTime.NOON).toEpochSecond(ZoneOffset.UTC)
+internal fun String.dateToEpochSeconds(): Long = LocalDate.parse(this).atTime(LocalTime.NOON).toEpochSecond(ZoneOffset.UTC)
 
 /** Date and time, e.g. 2026-11-05T18:00, read as UTC for the same reason. */
 private fun String.dateTimeToEpochSeconds(): Long = LocalDateTime.parse(this).toEpochSecond(ZoneOffset.UTC)
@@ -348,7 +356,7 @@ private fun voirEvent(document: Document, author: PublicKey): UnsignedEvent {
  * Reads every block back as the application will, and fails on the first one it would leave out
  * (a typo in a status, a missing unit) or on a link to a slug that does not exist.
  */
-private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, authorHex: String) {
+private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, authorHex: String, guides: Set<String>) {
     val articles = events.zip(documents).map { (unsigned, document) ->
         val unchecked = SignedEvent(unsigned.idHex(), unsigned.pubkey, unsigned.createdAt, unsigned.kind, unsigned.tags, unsigned.content, "0".repeat(128))
         Article.from(unchecked) ?: error("${document.name}: not a readable article")
@@ -357,7 +365,6 @@ private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, au
     check(duplicates.isEmpty()) { "voir: the same slug is used twice: ${duplicates.joinToString { it.identifier }}" }
     val catalog = VoirCatalog.from(articles)
     val known = articles.map { it.address.toString() }.toSet()
-    val bundledGuides = setOf("droits-en-manifestation", "filmer-les-forces-de-l-ordre", "garde-a-vue")
     articles.zip(documents).forEach { (article, document) ->
         val readable = catalog.item(article.address) != null || catalog.replies.any { it.article.address == article.address }
         check(readable) { "${document.name}: the application would not read this block (check its fields)" }
@@ -372,7 +379,7 @@ private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, au
         if (article.type == ArticleType.PARTI) checkParty(article, document.name)
         article.event.tags.filter { it.size >= 3 && it[0] == VoirTags.NEXT && !it[2].startsWith("space:") }.forEach { tag ->
             val slug = tag[2].substringAfterLast(':')
-            check(tag[2] in known || slug in bundledGuides) { "${document.name}: next step to an unknown slug: $slug" }
+            check(tag[2] in known || slug in guides) { "${document.name}: next step to an unknown slug: $slug" }
         }
     }
     println(
@@ -481,4 +488,77 @@ private fun comprendreEvents(content: Path, author: PublicKey): List<UnsignedEve
         common(document, ArticleType.ARTICLE, emptyList())
     }
     return checks + stories + sheets + method
+}
+
+/**
+ * The glossary (glossaire.json, D-048): one entry per file of `content/glossaire`, checked as a whole
+ * by [GlossaryFormat] (definition present and short, forms present and owned by one entry, sources,
+ * links to known entries and contents), then read back as the application will.
+ */
+private fun glossaryEvents(content: Path, author: PublicKey): List<UnsignedEvent> {
+    val directory = content.resolve("glossaire")
+    if (!directory.isDirectory()) return emptyList()
+    val documents = directory.listDirectoryEntries("*.md")
+        .filter { !it.name.equals("README.md", ignoreCase = true) }
+        .sortedBy { it.name }
+        .map { parseDocument(it.name, it.readText()) }
+    val sources = documents.map { document ->
+        GlossarySource(
+            file = document.name,
+            slug = document.require("slug"),
+            title = document.require("title"),
+            summary = document.metadata["summary"],
+            variants = GlossaryFormat.list(document.metadata["variants"]),
+            seeAlso = GlossaryFormat.list(document.metadata["see_also"]),
+            related = GlossaryFormat.list(document.metadata["related"]),
+            auto = document.metadata["auto"]?.trim(),
+            body = document.body,
+        )
+    }
+    fun slugsOf(name: String): Set<String> {
+        val folder = content.resolve(name)
+        if (!folder.isDirectory()) return emptySet()
+        return folder.listDirectoryEntries("*.md").mapNotNull { parseDocument(it.name, it.readText()).metadata["slug"] }.toSet()
+    }
+    val known = GlossaryFormat.RELATED_KINDS.mapValues { (_, folder) -> slugsOf(folder) }
+    val problems = GlossaryFormat.problems(sources, known)
+    require(problems.isEmpty()) { "glossaire: invalid entries:\n  " + problems.joinToString("\n  ") }
+    return sources.zip(documents).map { (source, document) ->
+        val unsigned = Article.build(
+            author = author,
+            slug = source.slug,
+            title = source.title,
+            summary = source.summary,
+            topics = document.topics(),
+            type = ArticleType.GLOSSAIRE,
+            origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
+            publishedAt = document.require("published_at").dateToEpochSeconds(),
+            updatedAt = document.require("updated_at").dateToEpochSeconds(),
+            body = document.body,
+            extraTags = GlossaryFormat.tags(source, author.hex),
+        )
+        val unchecked = SignedEvent(unsigned.idHex(), unsigned.pubkey, unsigned.createdAt, unsigned.kind, unsigned.tags, unsigned.content, "0".repeat(128))
+        checkNotNull(Article.from(unchecked)?.let(GlossaryEntry::from)) { "${document.name}: the application would not read this entry" }
+        println("prepared ${document.name}")
+        unsigned
+    }.also { println("glossaire: ${it.size} entr(ies)") }
+}
+
+/**
+ * Two addressable events of the same kind and author with the same `d` tag are one content for
+ * every reader: the newer replaces the other on the device. Refuses such a collision between any
+ * two bundled files (a glossary entry and a practical guide once shared the slug `garde-a-vue`).
+ */
+private fun checkUniqueAddresses(output: Path) {
+    val json = Json { ignoreUnknownKeys = true }
+    val owners = HashMap<String, String>()
+    val collisions = mutableListOf<String>()
+    output.listDirectoryEntries("*.json").sortedBy { it.name }.forEach { file ->
+        json.decodeFromString(ListSerializer(SignedEvent.serializer()), file.readText()).filter { it.kind in 30000..39999 }.forEach { event ->
+            val address = "${event.kind}:${event.pubkey}:${event.firstTagValue("d").orEmpty()}"
+            val previous = owners.put(address, file.name)
+            if (previous != null) collisions += "${address.substringAfterLast(':')} (${previous} and ${file.name})"
+        }
+    }
+    check(collisions.isEmpty()) { "the same address is used by two contents, the newer would replace the other: " + collisions.joinToString() }
 }

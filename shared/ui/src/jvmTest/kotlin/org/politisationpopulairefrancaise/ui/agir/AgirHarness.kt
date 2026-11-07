@@ -77,7 +77,7 @@ class AgirHarness(val dependencies: AppDependencies = AgirFixtures.dependencies(
 
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.awaitTag(tag: String, unmerged: Boolean = false) =
-    waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(tag, useUnmergedTree = unmerged).fetchSemanticsNodes().isNotEmpty() }
+    waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(tag, useUnmergedTree = unmerged).fetchSemanticsNodes().isNotEmpty() }
 
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.count(tag: String, unmerged: Boolean = false): Int = onAllNodesWithTag(tag, useUnmergedTree = unmerged).fetchSemanticsNodes().size

@@ -183,7 +183,11 @@ Tout passe par le wrapper Gradle (`gradlew.bat` sous Windows, `./gradlew` ailleu
 | Vérification du contenu de l'APK (ressources Compose, bibliothèques natives, non débogable, certificat de test) | `bash tools/check-apk.sh android/build/outputs/apk/preview/android-preview.apk --not-debuggable --cert-sha256 9f80e2560cc787485d982656cbebcb814f8c26431dc0ab3467359849132ee91f` |
 | Mise à jour des fichiers de verrouillage après un changement de dépendance | `gradlew build --write-locks` |
 | Détection des secrets avant commit | crochets locaux : `git config core.hooksPath .githooks` |
-| Déploiement en préproduction (sur le serveur) | `infra/scripts/deploy.sh preproduction` |
+| Préparer ou mettre à jour le serveur (en root, sur le serveur) | `infra/scripts/bootstrap-server.sh --github <organisation>/<dépôt> --admin-key "<clé publique>"`, puis `--lockdown` |
+| Déploiement en préproduction (sur le serveur ; automatique toutes les 10 minutes) | `sudo ppf-deploy preproduction` ; état : `sudo ppf-deploy status` |
+| Mise en production (sur le serveur, avec l'accord de la propriétaire) | `sudo ppf-deploy production --from-preproduction --confirm` |
+| Ajouter un appareil au tunnel de la préproduction | `sudo ppf-wg-add-peer <nom-appareil>` |
+| Se connecter au serveur depuis l'ordinateur de la propriétaire | `ssh -i ~/.ssh/ppf_server_ed25519 ppf-admin@<adresse IPv4>` |
 | Signer les contenus de `content/` et les intégrer à l'application | `gradlew :tools:content-signer:run` (clé dans `~/.ppf/content-example.nsec`, hors dépôt) |
 | Serveur de développement (PostgreSQL 17 embarqué, fiches d'exemple chargées) | `gradlew :server:runDev` puis http://localhost:8080 ; `PPF_EDITOR_KEYS` pour ajouter des clés d'éditeurs |
 | Application de bureau reliée à un serveur local | variable d'environnement `PPF_SERVER_URL=http://localhost:8080` avant `gradlew :desktop:run` ou le lancement de l'exécutable |

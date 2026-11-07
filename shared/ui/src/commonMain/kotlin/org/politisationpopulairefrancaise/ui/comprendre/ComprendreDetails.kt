@@ -19,6 +19,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -41,6 +42,9 @@ import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.voir.PublicPerson
 import org.politisationpopulairefrancaise.core.voir.PublicRole
+import org.politisationpopulairefrancaise.ui.comprendre.elus.BoxLevelOfficials
+import org.politisationpopulairefrancaise.ui.comprendre.elus.ElusBoxFooter
+import org.politisationpopulairefrancaise.ui.comprendre.elus.ElusLibrary
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
@@ -53,7 +57,6 @@ import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.comprendre_claim_context
 import org.politisationpopulairefrancaise.ui.resources.comprendre_claim_label
-import org.politisationpopulairefrancaise.ui.resources.comprendre_elus_local_pending
 import org.politisationpopulairefrancaise.ui.resources.comprendre_elus_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_claims
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_results
@@ -263,9 +266,12 @@ fun QuiDecideDetail(
     onNavigate: (Space) -> Unit,
     compact: Boolean,
     modifier: Modifier = Modifier,
+    elus: ElusLibrary? = null,
+    onOpenElus: (() -> Unit)? = null,
 ) {
+    LaunchedEffect(elus) { elus?.load() }
     DetailColumn(sheet.article, stringResource(Res.string.comprendre_kind_who), onBack, compact, modifier.testTag(ComprendreDetailTags.WHO)) {
-        ElusBox(sheet, sheet.persons.mapNotNull { persons[it] })
+        ElusBox(sheet, sheet.persons.mapNotNull { persons[it] }, elus, onOpenElus)
         Spacer(Modifier.height(16.dp))
         BodyWithActions(sheet.body, onNavigate)
     }
@@ -274,12 +280,14 @@ fun QuiDecideDetail(
 /**
  * The box at the start of a « Qui décide de ça ? » sheet (owner's decision of 7 November 2026): each
  * level of the chain of decision, what it decides, the elected officials concerned and, under the
- * levels whose roles they hold, the public persons the editorial team linked to the sheet. The
- * local officials of the reader will be named once the official directory of elected officials is
- * part of the application.
+ * levels whose roles they hold, the public persons the editorial team linked to the sheet, then
+ * the officials of the reader's commune once it is chosen (D-047: the directory of elected
+ * officials, found on the device); until then, a button to indicate the commune, or without server
+ * the way to the official directories.
  */
 @Composable
-private fun ElusBox(sheet: QuiDecide, linked: List<PublicPerson>) {
+private fun ElusBox(sheet: QuiDecide, linked: List<PublicPerson>, elus: ElusLibrary?, onOpenElus: (() -> Unit)?) {
+    val mine = elus?.mine
     val palette = PpfTheme.palette
     Surface(
         modifier = Modifier.fillMaxWidth().testTag(ComprendreDetailTags.ELUS),
@@ -305,12 +313,13 @@ private fun ElusBox(sheet: QuiDecide, linked: List<PublicPerson>) {
                         Spacer(Modifier.height(6.dp))
                         PersonLine(person)
                     }
+                    if (mine != null) {
+                        Spacer(Modifier.height(6.dp))
+                        BoxLevelOfficials(mine.officials.level(step.level), mine.officials)
+                    }
                 }
             }
-            if (sheet.steps.any { it.level.local }) {
-                Spacer(Modifier.height(12.dp))
-                Text(stringResource(Res.string.comprendre_elus_local_pending), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
-            }
+            ElusBoxFooter(elus, hasLocalLevel = sheet.steps.any { it.level.local }, onOpenPage = onOpenElus)
         }
     }
 }
@@ -403,7 +412,8 @@ private fun BodyWithActions(body: String, onNavigate: (Space) -> Unit) {
         Spacer(Modifier.height(20.dp))
         Text(stringResource(Res.string.comprendre_sources), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
         Spacer(Modifier.height(8.dp))
-        SelectionContainer { MarkdownText(sources) }
+        // Nothing is spotted in the sources (glossary, D-048).
+        SelectionContainer { MarkdownText(sources, glossary = false) }
     }
 }
 

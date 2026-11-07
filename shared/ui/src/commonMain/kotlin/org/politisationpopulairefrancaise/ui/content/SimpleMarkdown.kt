@@ -110,17 +110,59 @@ object SimpleMarkdown {
         return blocks
     }
 
-    /** Bold and links; everything else verbatim. */
-    fun inline(text: String): AnnotatedString = buildAnnotatedString {
-        var rest = text.replace(LINK) { match -> "${match.groupValues[1]} (${match.groupValues[2]})" }
-        while (true) {
-            val match = BOLD.find(rest) ?: break
-            append(rest.substring(0, match.range.first))
-            withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { append(match.groupValues[1]) }
-            rest = rest.substring(match.range.last + 1)
+    /**
+     * Bold and links; everything else verbatim. A link is shown as "text (url)" and carries a string
+     * annotation [LINK_TAG] over that whole span, so that the glossary never spots a word inside it.
+     */
+    fun inline(text: String): AnnotatedString {
+        // Links first, remembering where each one lands in the intermediate text.
+        val linked = StringBuilder(text.length)
+        val links = mutableListOf<Pair<Int, Int>>()
+        var last = 0
+        for (match in LINK.findAll(text)) {
+            linked.appendRange(text, last, match.range.first)
+            val start = linked.length
+            linked.append(match.groupValues[1]).append(" (").append(match.groupValues[2]).append(')')
+            links += start to linked.length
+            last = match.range.last + 1
         }
-        append(rest)
+        linked.appendRange(text, last, text.length)
+        val source = linked.toString()
+        // Then bold: [kept] maps each character of the intermediate text to its place in the result.
+        val kept = IntArray(source.length + 1)
+        return buildAnnotatedString {
+            var cursor = 0
+            fun copy(until: Int) {
+                while (cursor < until) {
+                    kept[cursor] = length
+                    append(source[cursor])
+                    cursor++
+                }
+            }
+            while (true) {
+                val match = BOLD.find(source, cursor) ?: break
+                copy(match.range.first)
+                // The opening marks vanish: they point to where the bold text starts.
+                kept[cursor] = length
+                kept[cursor + 1] = length
+                cursor += 2
+                withStyle(SpanStyle(fontWeight = FontWeight.Bold)) { copy(match.range.last - 1) }
+                kept[cursor] = length
+                kept[cursor + 1] = length
+                cursor += 2
+            }
+            copy(source.length)
+            kept[source.length] = length
+            links.forEach { (start, end) ->
+                val from = kept[start]
+                val to = kept[end]
+                if (to > from) addStringAnnotation(LINK_TAG, "", from, to)
+            }
+        }
     }
+
+    /** The string annotation of the links of [inline]. */
+    const val LINK_TAG: String = "ppf-link"
 
     private val HEADING = Regex("^(#{1,3})\\s+(.*)$")
     private val BULLET = Regex("^[-*]\\s+(.*)$")
