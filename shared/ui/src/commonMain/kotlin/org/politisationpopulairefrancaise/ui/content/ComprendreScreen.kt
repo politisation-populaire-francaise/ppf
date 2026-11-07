@@ -475,7 +475,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.HISTOIRE -> Res.string.comprendre_kind_history
         ArticleType.QUI_DECIDE -> Res.string.comprendre_kind_who
         ArticleType.REVENDICATION -> Res.string.space_revendications
-        ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE -> Res.string.space_voir
+        ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE, ArticleType.PARTI -> Res.string.space_voir
         ArticleType.ORGANISATION -> Res.string.organisations_content_type
         ArticleType.APPEL -> Res.string.appels_title
     },

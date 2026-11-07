@@ -28,6 +28,7 @@ sealed interface VoirDestination {
     data object Chronology : VoirDestination
     data object Liberties : VoirDestination
     data object People : VoirDestination
+    data object Parties : VoirDestination
     data object Bills : VoirDestination
     data object World : VoirDestination
     data object Corrections : VoirDestination
@@ -57,6 +58,7 @@ class VoirState(private val follows: ContentFollowStore?, private val scope: Cor
     var chronologyFilter: FactKind? by mutableStateOf(null)
     var libertyFilter: LibertyCategory? by mutableStateOf(null)
     var roleFilter: PublicRole? by mutableStateOf(null)
+    var partyFilter: ContentAddress? by mutableStateOf(null)
 
     /** The followed contents, most recently followed first. */
     var followed: List<ContentAddress> by mutableStateOf(emptyList())

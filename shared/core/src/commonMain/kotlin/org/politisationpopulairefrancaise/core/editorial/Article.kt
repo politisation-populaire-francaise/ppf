@@ -43,6 +43,8 @@ enum class ArticleType(val tagValue: String) {
     ORGANISATION("organisation"),
     /** A call of the Agir space (AP-01 to AP-10), read by core.agir.calls.Call; never shown among the guides. */
     APPEL("appel"),
+    /** A political party of "Voir" (axis of power), read by core.voir.PoliticalParty; persons and facts link to it. */
+    PARTI("parti"),
     ;
 
     companion object {
