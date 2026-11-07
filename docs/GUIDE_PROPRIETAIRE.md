@@ -189,6 +189,24 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 
 Sur l'ordinateur, l'écran se présente en deux colonnes.
 
+### Tester l'espace « Décider » (ajouté le 7 novembre 2026)
+
+Tout est inventé et marqué [EXEMPLE] : pétitions, chiffres, élection, candidats et réponses. Seules les règles des pétitions sont réelles (vérifiées le 7 novembre 2026). Aucun compte n'est nécessaire, et tout marche sans réseau.
+
+1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Décider**. En haut, le **Pacte démocratique**, puis les **pétitions officielles ouvertes**, puis « Et aussi ».
+2. Touchez la carte du **Pacte**. Lisez l'encart « Les mêmes règles pour tous les candidats », puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
+3. Touchez le nom d'un candidat : sa fiche s'ouvre dans « Voir ». Revenez avec le bouton retour.
+4. En bas de la page du Pacte, **Empreinte du texte envoyé** : cette suite de caractères changerait si un seul mot des mesures changeait. Touchez **Copier l'empreinte**.
+5. Revenez à l'accueil de « Décider » et touchez la pétition **Retirer le projet de loi relatif à l'ordre public**. Vous voyez le compteur, la barre vers 500 000 signatures, puis chaque seuil avec **ce qu'il obtient** et, en orange, **ce qu'il ne garantit pas** (le débat se termine sans vote).
+6. Touchez **Signer sur le site officiel** : une mise en garde s'affiche avant d'ouvrir le vrai site de l'Assemblée nationale (sa page d'accueil, car la pétition est fictive). Touchez **Rester ici**.
+7. Plus bas, **Faire signer autour de vous** : touchez **Copier le message** et collez-le dans une note.
+8. Touchez **Suivre**, puis revenez à l'accueil : la pétition apparaît dans « Ce que vous suivez ». Cette liste reste sur votre téléphone.
+9. Sur l'accueil, touchez **Comprendre les seuils** : une carte par plateforme (Assemblée, Sénat, CESE, référendum d'initiative partagée, initiative européenne), avec le texte officiel et la date de vérification.
+10. Touchez **Pétitions closes** : la pétition au Sénat sur les retraites montre ce qu'elle a obtenu.
+11. Allez dans **Mon espace** (l'avatar en haut à droite) : tout en bas, la version installée et votre système. Donnez-les-moi si vous me signalez un problème.
+
+Sur l'ordinateur, les réponses au Pacte forment un vrai tableau, une colonne par mesure.
+
 ### Tester l'espace « Voir » (ajouté le 6 novembre 2026, tard le soir)
 
 Tout ce que vous verrez est inventé et marqué [EXEMPLE] : personnes, pays, organisations et chiffres. Aucun compte n'est nécessaire, et tout marche sans réseau.
