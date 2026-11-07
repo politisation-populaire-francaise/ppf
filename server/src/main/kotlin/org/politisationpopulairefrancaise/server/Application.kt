@@ -69,6 +69,7 @@ import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
 import org.politisationpopulairefrancaise.server.agir.VerifiedOrganisations
+import org.politisationpopulairefrancaise.server.revendications.ProposalsBackOfficeQueue
 import org.politisationpopulairefrancaise.server.urne.PersonAccounts
 import org.politisationpopulairefrancaise.server.urne.RevendicationUrnes
 import org.politisationpopulairefrancaise.server.urne.UrneConfig
@@ -243,6 +244,8 @@ fun Application.module(
     }
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
+    // The demands proposed by citizens, reviewed by the team (Décider, contract of the back-office, section 7).
+    proposals?.let { teamBackOffice?.queues?.register(ProposalsBackOfficeQueue(it.queue)) }
     val limits = PostLimits(relay)
     val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
     // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published; the
