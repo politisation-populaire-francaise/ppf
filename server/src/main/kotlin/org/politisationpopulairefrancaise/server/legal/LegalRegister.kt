@@ -62,7 +62,7 @@ import javax.sql.DataSource
  * five years of retention of civil identity (décret n° 2021-1362, article 2). Level 2 of the note (IP sealed
  * under an offline key, section 7.2) stays off unless a lawyer requires it.
  *
- * **Where and who.** A separate PostgreSQL schema, `legal_register` (migration V11), never read by any
+ * **Where and who.** A separate PostgreSQL schema, `legal_register` (migration V10), never read by any
  * feature of the platform: the restricted role of the server may only INSERT (afterMigrate.sql). Reading
  * happens only through [answerRequisition], the answer to a judicial requisition approved by two people in
  * the back-office; deleting only through [purge].
@@ -230,7 +230,7 @@ class LegalRegister(
         /** A deletion request names at most this many contents for the register (the policy allows 1000 tags). */
         const val MAX_DELETION_TARGETS: Int = 1_000
 
-        /** The SQLSTATE codes of answer_requisition (migration V11) and the codes of the back-office. */
+        /** The SQLSTATE codes of answer_requisition (migration V10) and the codes of the back-office. */
         private val REFUSALS: Map<String, String> = mapOf(
             "LR001" to "requisition_not_approved",
             "LR002" to "requisition_answered",
