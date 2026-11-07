@@ -533,3 +533,70 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 
 - Décision technique prise en autonomie : l'image du serveur embarque les contenus [EXEMPLE] signés de `shared/ui/.../files/contents/` ; la variable `PPF_EXAMPLES_DIR` les charge au démarrage (idempotent, signatures vérifiées), seulement en préproduction ; le serveur **refuse de démarrer** en production avec cette variable. La préproduction autorise la clé d'éditeur d'exemple (`PPF_EDITOR_KEYS`), jamais la production.
 - Raison : une seule image promue de la préproduction à la production, et la règle « jamais de données réelles en préproduction, jamais d'exemples en production » vérifiée par le code plutôt que par la vigilance.
+
+## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
+
+- Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.
+- Décisions techniques prises en autonomie (Directeur technique) :
+  - connexion uniquement par **clé d'accès** (passkey : Windows Hello, téléphone, gestionnaire de mots de passe) ou **clé de sécurité FIDO2**, avec **vérification de la personne exigée** (code, empreinte ou visage sur l'appareil) : une clé d'accès vaut à elle seule deux facteurs et ne peut pas être hameçonnée (elle est liée au nom du site). Aucun mot de passe, aucun TOTP, aucune adresse e-mail ;
+  - identifiant de la partie de confiance (WebAuthn) = nom d'hôte de `PPF_BACKOFFICE_ORIGIN` ; `https` obligatoire, `http://localhost` accepté seulement en développement ; le serveur refuse de démarrer sinon ;
+  - clés « découvrables » (on se connecte sans taper son pseudonyme), algorithmes ES256, EdDSA et RS256 ; attestation non demandée (« none ») ni vérifiée : le back-office n'a pas besoin du modèle de la clé, et l'identifiant de modèle (AAGUID) est remplacé par des zéros avant stockage ; un compteur de signatures qui recule est refusé ;
+  - bibliothèque **WebAuthn4J `webauthn4j-core` 0.32.0.RELEASE** (2 novembre 2026, licence Apache 2.0, vérifiée sur Maven Central le 7 novembre 2026) : elle n'apporte que Jackson 3 (databind, CBOR, licence Apache 2.0) et SLF4J (MIT), déjà présent ; Bouncy Castle reste facultatif et n'est pas tiré ;
+  - les tests utilisent un authentificateur logiciel construit avec les classes de WebAuthn4J et la cryptographie standard de Java (clé P-256) : le vrai vérificateur est testé de bout en bout, sans navigateur ni bibliothèque de test en plus.
+- Option écartée : Yubico `java-webauthn-server` 2.10.1 (BSD-2-Clause, de très bonne qualité) : il ajoute Guava (Google), Apache HttpClient 5 et une seconde bibliothèque CBOR (`com.upokecenter:cbor`), soit plus de dépendances pour le même service.
+- Conséquences : un seul petit script auto-hébergé (`/static/equipe.js`) pour la cérémonie de la clé, l'API WebAuthn n'existant qu'en JavaScript ; tout le reste du back-office fonctionne sans JavaScript.
+
+## D-121 (2026-11-07) Back-office : second port interne, en-têtes et protection des formulaires
+
+- Décisions techniques prises en autonomie (Directeur technique) :
+  - les routes du back-office ne répondent **que** sur un second connecteur Ktor (`PPF_BACKOFFICE_PORT`, 8081 par défaut) et les routes du site et de l'API publique **jamais** sur ce port (sélecteur de port des deux côtés) : une erreur de routage d'un côté ne peut pas exposer l'autre ; un test le vérifie ;
+  - en-têtes du site (CSP `script-src 'self'` sans `unsafe-inline`, `X-Frame-Options: DENY`, etc.) plus `Cache-Control: no-store` et `X-Robots-Tag: noindex, nofollow` sur toute réponse du port 8081, même une erreur 404 ;
+  - cookie de session `__Host-ppf-equipe` (`Secure`, `HttpOnly`, `SameSite=Strict`, `Path=/`, sans domaine) ; jeton anti-falsification de chaque formulaire calculé par HMAC-SHA-256 à partir du jeton de session (jamais stocké, propre à chaque session) ; en plus, toute requête POST dont l'en-tête `Sec-Fetch-Site` ou `Origin` désigne un autre site est refusée ; corps de formulaire et de cérémonie limités à 64 Ko ;
+  - les adresses de redirection ne portent que des codes connus (jamais un texte venu de l'adresse) ; le détail d'un élément d'une file est rendu par le serveur, jamais journalisé.
+- Le proxy Caddy et les projets Compose (adresse `equipe.…`, tunnel WireGuard seul, port 8081) restent à faire par le Directeur technique dans `infra/`.
+
+## D-122 (2026-11-07) Back-office : comptes par invitation, premier compte, clé de secours, sessions
+
+- Décisions techniques prises en autonomie (Directeur technique) :
+  - invitation (S-57) : lien à usage unique, jeton aléatoire de 256 bits dont seule l'empreinte SHA-256 est gardée, 48 heures ; la personne enregistre une clé d'accès et son compte naît avec elle ; les rôles proposés deviennent des demandes de validation à deux (D-123) au nom de la personne qui a invité ;
+  - premier compte : commande `BackOfficeCli bootstrap <pseudonyme>` (exécutée sur le serveur avec le jar du serveur), qui affiche une seule fois le lien d'une invitation de super-administrateur ; elle fonctionne **tant qu'il existe moins de deux super-administrateurs** (invitations encore valables comprises) : c'est aussi ce qui permet de créer le deuxième (impossible à valider à deux quand on est seul) et de retrouver l'accès si les clés sont perdues. Qui la lance a de toute façon la main sur le serveur ; la ligne du journal dit « système » ;
+  - **clé de secours** : tant qu'un compte n'a qu'une clé, ses rôles ne donnent aucune permission, sauf l'ouverture de sa propre séance pour un validateur ; le tableau de bord le dit et propose d'ajouter la clé ;
+  - pseudonymes de 2 à 40 caractères, jamais une adresse e-mail (le caractère `@` est refusé) ; clé Nostr facultative ;
+  - sessions : seule l'empreinte du jeton est gardée ; 30 minutes sans activité, 8 heures au plus ; nouvelle vérification de la clé pour toute action sensible si la dernière date de plus de 5 minutes (la page de confirmation renvoie le même formulaire une fois la clé vérifiée) ; ajouter une clé est une action sensible (c'est un accès durable) ; on ne supprime jamais sa dernière clé ;
+  - coupure d'urgence (S-62) : sessions, rôles, clés, demandes en attente et séances de validation du compte coupés en un geste ; chacun peut couper son propre compte sans nouvelle vérification (appareil volé) ; couper un autre membre demande `team.revoke`, et `team.manage_admins` s'il est administrateur ; le retrait d'un membre est immédiat, sa trace reste dans le journal ; un compte retiré ne garde que son identifiant, son pseudonyme, ses dates et son état.
+
+## D-123 (2026-11-07) Back-office : rôles, permissions et validation à deux
+
+- Décisions techniques prises en autonomie (Directeur technique), dans le cadre du contrat (section 5) :
+  - rôles fixes et identifiants de permissions stables du contrat ; `super_admin` a toutes les permissions et toutes les files, **sauf** l'ouverture d'une séance de validation, réservée aux bénévoles désignés par une organisation (D-112) ; le périmètre existe et vaut toujours `all` ;
+  - **toute attribution d'un rôle** attend l'accord d'une deuxième personne qui a la même permission (`team.grant`, ou `team.manage_admins` pour `admin` et `super_admin`) ; ni la personne qui demande ni la personne concernée ne peuvent valider ; une demande expire après 7 jours ; les demandes décidées sont effacées 30 jours après, leur trace restant dans le journal ;
+  - retrait d'un rôle ordinaire : immédiat (`team.revoke`) ; retrait d'un rôle `admin` ou `super_admin` : validation à deux par `team.manage_admins` ; retrait d'un membre et coupure d'urgence : immédiats (D-122) ;
+  - accès temporaires (S-60) : date de fin facultative ; un rôle échu ne donne plus rien dès son échéance, et la tâche périodique (toutes les 5 minutes) le ferme avec une ligne du journal ;
+  - une file d'un pôle peut déclarer une action « à deux » : le socle en fait une demande et l'exécute à l'accord de la deuxième personne.
+- Limite signalée : avec un seul super-administrateur, personne ne peut encore recevoir de rôle (il faut deux personnes) ; le deuxième se crée par la commande `bootstrap` (D-122).
+
+## D-124 (2026-11-07) Back-office : journal d'audit inaltérable
+
+- Décisions techniques prises en autonomie (Directeur technique) :
+  - une ligne par action, numérotée, chaînée par SHA-256 (empreinte de la ligne précédente et de la ligne elle-même, calculée sur un tableau JSON canonique de tous ses champs) ; les détails sont gardés en texte, exactement tels qu'ils ont été hachés ;
+  - déclencheur PostgreSQL qui refuse toute modification, tout effacement et tout `TRUNCATE` de la table, même par l'application ; une modification faite en contournant le déclencheur se voit dans la chaîne, vérifiée à chaque ouverture de la page du journal ;
+  - écrit **seulement** par le socle (`AuditLog.record`), dans la même transaction que l'action quand le socle la fait lui-même ; pour une action d'une file d'un pôle, la ligne est écrite juste après l'action, avec son résultat (limite : si l'écriture de la ligne échouait après l'action, celle-ci resterait faite ; l'erreur est alors signalée, jamais silencieuse) ;
+  - jamais le texte d'un contenu de citoyen, jamais une adresse IP ni un navigateur ; les échecs de connexion sont inscrits sans adresse, avec l'auteur « inconnu » quand la clé n'est pas connue ;
+  - consultation par `audit.read`, filtres (période, compte, action, objet), export JSON lui-même inscrit au journal ; empreinte de la dernière ligne disponible pour l'horodatage avec l'archivage de « Décider » (D-111) dès qu'il existera ; conservation sans limite, à faire relire par un avocat.
+
+## D-125 (2026-11-07) Back-office : files, tableau de bord, alertes, première file `agir.held`
+
+- Décisions techniques prises en autonomie (Directeur technique) :
+  - interface `BackOfficeQueue` du contrat (section 7), avec `QueueItem` (échéance et niveau d'importance de 1 à 5 facultatifs) et `QueueAction` (motif obligatoire, action sensible, validation à deux, permission) ; le socle vérifie la permission de la file et de l'action, le motif, la fraîcheur de la clé et écrit le journal ; le pôle n'écrit jamais le journal ;
+  - tableau de bord (S-64) : nombre d'éléments en attente de chaque file visible, liste « À traiter en priorité » triée par échéance puis par niveau, échéance dépassée ou à moins de 24 heures signalée, alertes sans file déposées par les pôles (`BackOffice.postAlert` : titre, niveau, lien interne facultatif, permission de qui la voit), marquées traitées par un membre ; chaque dépôt et chaque traitement est inscrit au journal ; table `team_dashboard_alert` ajoutée à la migration V8 pour ces alertes (contrat 1.1) ;
+  - première file `agir.held` sur `HeldQueue` : « Approuver et publier » (publie l'événement tel qu'il a été signé ; action sensible, car publique), « Refuser » avec motif obligatoire montré à l'auteur ; une mobilisation dont la date est passée est refusée par la file elle-même juste avant l'approbation, et ce refus est montré à l'équipe ; un appel à témoins affiche qu'il est toujours relu ; aucune modification ; les liens d'un contenu sont affichés comme texte, jamais suivis ; l'échéance d'une mobilisation est son début ;
+  - le modérateur reçoit `queue.agir.held.decide` et `queue.revendications.proposals.decide` ; chaque pôle ajoute la permission de sa file au rôle qui décide, dans la même demande de fusion.
+
+## D-126 (2026-11-07) Back-office : séances des validateurs, NIP-98 provisoire, clé « audit »
+
+- Décisions techniques prises en autonomie (Directeur technique), avec la décision de la propriétaire D-112 transmise par « Décider » :
+  - un rôle `validator` porte la clé de l'organisation vérifiée qui désigne la personne (obligatoire, vérifiée par `VerifiedOrganisations` d'« Agir ») ; `elected_certifier` n'a pas d'organisation ;
+  - quand l'organisation perd sa vérification, ses validateurs sont suspendus et leurs séances révoquées, avec une ligne du journal par rôle. « Agir » n'offre pas de notification à ce moment-là et le socle ne modifie pas ses fichiers : le contrôle passe par la tâche périodique (5 minutes, comme le cache des organisations), et toute requête d'une séance dont l'organisation n'est plus vérifiée est **refusée aussitôt** entre-temps ;
+  - séance : clé publique Nostr de séance créée par l'application (jamais réutilisable), plafond de 40 validations au plus (40 par défaut), 12 heures au plus (4 par défaut), semaine ISO à l'heure de Paris, une séance ouverte à la fois, compteur seulement (jamais le lieu, l'événement ni la personne validée) ; ouvrir une séance est une action sensible ;
+  - requêtes de l'application signées NIP-98 (type 27235, étiquettes `u` et `method`, `payload` quand il y a un corps, 60 secondes d'écart au plus, rejeu refusé) derrière l'interface `SessionRequestVerifier` ; l'implémentation du socle (`MinimalNip98Verifier`) est **provisoire** et sera remplacée à la fusion par `core/urne/Nip98.kt` de « Décider » (preuve de travail, garde contre le rejeu) ;
+  - chiffrement NIP-44 vers `PPF_AUDIT_PUBLIC_KEY` (`AuditSealer`) avec le code NIP-44 de la messagerie (`shared/core`), une paire de clés jetable par texte : le serveur écrit ces textes et ne peut plus les relire.
