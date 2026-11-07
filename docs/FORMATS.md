@@ -472,6 +472,8 @@ Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est jo
 | `GET /api/v1/groups/<id>` | Un salon par son identifiant (1 à 64 caractères parmi `a-z`, `0-9`, `.`, `_`, `~`, `-`) | `200` le salon ; `400` `bad_parameter` ; `404` `group_not_found` |
 | `GET /api/v1/elus` | L'index de l'annuaire des élus (section 4 octies) : source, date d'import, un paquet par département avec son empreinte, sa taille et ses codes postaux. Sans compte ; `ETag` entre guillemets, `If-None-Match`, gzip | `200` ; `304` ; `503 elus_unavailable` avec `Retry-After: 60` tant qu'aucun import n'a réussi |
 | `GET /api/v1/elus/{code}` | Le paquet d'un département, d'une collectivité d'outre-mer ou `FR` (section 4 octies). Aucune commune ni aucun code postal n'est jamais envoyé par l'appareil | `200` ; `304` ; `404 unknown_package` ; `503 elus_unavailable` |
+| `GET /api/v1/archives/<sha256>` | Où en est la preuve d'horodatage d'une empreinte SHA-256 (archivage horodaté, D-111) : `{"digest":"<64 hex>","state":"verified","ots":"<base64>","bitcoin":{"height":923456,"blockHash":"<64 hex>","time":1793966400},"rfc3161":{"token":"<base64>","time":1793963000,"tsaCertSha256":"<64 hex>"}}`. `state` : `queued` (dans la file du prochain lot, pas encore de preuve), `pending` (lot horodaté par au moins deux calendriers, en attente de Bitcoin), `anchored` (attestation Bitcoin reçue, pas encore vérifiée), `verified` (en-tête du bloc vérifié auprès de deux explorateurs indépendants) ; `ots` : la preuve au format `.ots` standard, en base64, `null` tant que l'empreinte est dans la file ; `bitcoin` : `null` sauf pour `verified` (hauteur, hachage du bloc tel que l'écrivent les explorateurs, heure du bloc lue dans son en-tête, en secondes depuis 1970, exacte à une ou deux heures près comme toute heure de bloc) ; `rfc3161` : `null` tant qu'aucun jeton n'a été reçu et vérifié, sinon le jeton RFC 3161 (`TimeStampToken` DER, en base64) de la **racine du lot**, qui est un message du chemin de la preuve `.ots`, l'heure qu'il atteste (secondes) et l'empreinte SHA-256 du certificat de l'autorité qui l'a signé. Empreinte en hexadécimal, majuscules acceptées ; `Cache-Control: public, no-cache` ; sans compte. | `200` ; `400 bad_parameter` (pas 64 caractères hexadécimaux) ; `404 not_found` (empreinte inconnue) |
+| `GET /api/v1/archives/<sha256>.ots` | La preuve elle-même, en `application/octet-stream` avec `Content-Disposition: attachment; filename=<sha256>.ots` : fichier `.ots` standard, lisible par le client officiel (`ots verify`, `ots info`) comme par `OtsFile.read` du cœur. Le jeton RFC 3161 se vérifie à part, par exemple `openssl ts -verify -token_in -in jeton.der -digest <racine en hex> -CAfile cacert.pem -untrusted tsa.crt` avec les certificats publiés par FreeTSA. | `200` ; `400 bad_parameter` ; `404 not_found` (empreinte inconnue ou encore dans la file) |
 | `GET /health` | État du serveur | `200` `{"status":"ok","service":"ppf-server","version":"0.1.0","environment":"…"}` |
 
 Quand la base de données n'est pas configurée, toute adresse sous `/api/v1/` répond `503` `{"error":"database_unavailable"}`.
@@ -523,3 +525,25 @@ Variables d'environnement du serveur pour l'espace Agir :
 | `PPF_HELD_CLEANUP_INTERVAL_MINUTES` | Fréquence du ménage de la file : refus des mobilisations dont la date est passée, effacement des contenus décidés expirés (0 désactive la tâche, pour les tests) | 60 |
 
 Les valeurs invalides reprennent leur valeur par défaut. `PPF_EDITOR_KEYS` sert aussi à reconnaître les fiches d'organisation qui vérifient une clé. Aucune variable ne limite le nombre de contenus en attente (décision de la propriétaire du 7 novembre 2026) ; la limitation de débit de `POST /api/v1/events` reste réglée par `PPF_POST_RATE_PER_MINUTE` et `PPF_POST_GLOBAL_RATE_PER_MINUTE`.
+
+Variables d'environnement du serveur pour l'archivage horodaté (D-111, `docs/integration/archivage-horodate.md`, section 7 ; hôtes contactés : `docs/integration/archivage-egress.md`) :
+
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `PPF_ARCHIVE_ENABLED` | `true` ou `false` : le serveur contacte-t-il les services d'horodatage ? Éteint, il ne contacte personne, met quand même les empreintes dans la file et sert les preuves déjà gardées | allumé avec `PPF_ENVIRONMENT=production`, éteint ailleurs |
+| `PPF_ARCHIVE_AGGREGATORS` | Adresses de base des agrégateurs OpenTimestamps, séparées par des virgules ; deux au moins, car un lot ne compte qu'avec deux réponses | les quatre du client officiel : `https://a.pool.opentimestamps.org`, `https://b.pool.opentimestamps.org`, `https://a.pool.eternitywall.com`, `https://ots.btc.catallaxy.com` |
+| `PPF_ARCHIVE_CALENDARS` | Calendriers que le serveur peut interroger pour compléter une preuve : noms d'hôtes ou motifs `*.domaine`, séparés par des virgules | `*.calendar.opentimestamps.org`, `*.calendar.eternitywall.com`, `*.calendar.catallaxy.com` |
+| `PPF_ARCHIVE_EXPLORERS` | Exactement deux explorateurs Esplora, sur deux hôtes différents | `https://mempool.space/api`, `https://blockstream.info/api` |
+| `PPF_ARCHIVE_TSA_URL` | Autorité d'horodatage RFC 3161 ; `off` pour s'en passer (OpenTimestamps seul) | `https://freetsa.org/tsr` |
+| `PPF_ARCHIVE_BATCH_MINUTES` | Minutes entre deux lots (de 5 à 1440) | 60 |
+| `PPF_ARCHIVE_UPGRADE_MINUTES` | Minutes entre deux tours de mise à niveau et de vérification des preuves, avec les jetons RFC 3161 manquants (de 5 à 1440) | 60 |
+| `PPF_ARCHIVE_TIMEOUT_SECONDS` | Attente maximale d'une réponse, par requête (de 1 à 120) | 30 |
+| `https.proxyHost`, `https.proxyPort` (propriétés de la JVM) ou `HTTPS_PROXY` (ou `https_proxy`) | Mandataire HTTP par lequel passent les requêtes de l'archivage (tunnel `CONNECT`, le TLS reste de bout en bout), `http://hôte:port` ; pas d'authentification ; lu seulement quand l'archivage est allumé ; `NO_PROXY` n'est pas lu | aucun |
+
+Adresses : `https`, ou `http` vers `localhost` ou `127.0.0.1` seulement (faux service sur la même machine) ; ni nom d'utilisateur, ni mot de passe, ni paramètre, ni fragment. Une adresse ou un mandataire invalide arrête le serveur au démarrage avec un message qui ne cite jamais la valeur ; les nombres invalides reprennent leur valeur par défaut. Les adresses de calendrier lues dans les preuves ne sont suivies que si elles sont exactement `https://<hôte>` avec un hôte de `PPF_ARCHIVE_CALENDARS`.
+
+### Sur le serveur : migration Flyway `V9__archives.sql`
+
+| Table | Rôle |
+|---|---|
+| `archive_proof` | Une ligne par empreinte horodatée : `digest` (32 octets, clé), `state` (`queued`, `pending`, `anchored`, `verified`), `requested_on` (jour UTC de la demande, une date), `batch_root` (racine du lot), `ots` (preuve `.ots`, 256 Kio au plus), `bitcoin_height`, `block_hash`, `block_time` (seulement pour `verified`), `rfc3161_token`, `tsa_time`, `tsa_cert_sha256` (ensemble ou pas du tout, les mêmes pour tout un lot). Jamais effacée par l'application ; aucune donnée personnelle |
