@@ -60,6 +60,8 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.PHAROS_RECORD,
             Permissions.queueDecide("agir.held"),
             Permissions.queueDecide("revendications.proposals"),
+            // Room creations held because their name resembles an organisation's (D-132).
+            Permissions.queueDecide("groups.creations"),
         ),
     ),
     EDITOR(

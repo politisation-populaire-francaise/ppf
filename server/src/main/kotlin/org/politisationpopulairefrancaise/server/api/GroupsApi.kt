@@ -10,6 +10,9 @@ import kotlinx.coroutines.withContext
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.groups.GroupKinds
 
+/** At most this many ids in one GET /api/v1/group-creations. */
+const val MAX_CREATION_IDS: Int = 20
+
 /** Longest `q` or `territory` parameter of the group search, in characters. */
 const val MAX_GROUP_QUERY_LENGTH: Int = 200
 
@@ -28,11 +31,22 @@ const val MAX_GROUP_QUERY_LENGTH: Int = 200
  *   number of excluded accounts (D-131), or 404 group_not_found. The events themselves (9000 to 9005)
  *   are read with GET /api/v1/events?tag=h:<id>&kind=…: the journal of a room is public.
  *
+ * - GET /api/v1/group-creations?id=…: where the room creations held for the team stand (D-132),
+ *   for their authors: status, dates and, for a refusal, the team's reason; an unknown id is absent.
+ *   At most [MAX_CREATION_IDS] ids, each a 64-character hex event id; otherwise 400 bad_parameter.
+ *
  * No member list exists on the server, so none is served (D-027).
  */
 fun Route.groupsApi(directory: GroupDirectory?) {
     // Without a database the 503 answer of eventsApi covers every /api/v1/ address.
     if (directory == null) return
+    get("/api/v1/group-creations") {
+        val ids = call.request.queryParameters.getAll("id").orEmpty()
+        if (ids.isEmpty() || ids.size > MAX_CREATION_IDS || ids.any { id -> id.length != 64 || id.any { it !in '0'..'9' && it !in 'a'..'f' } }) {
+            return@get badParameter("id")
+        }
+        call.respond(withContext(Dispatchers.IO) { directory.guardrails.creations.states(ids) })
+    }
     route("/api/v1/groups") {
         get {
             val parameters = call.request.queryParameters

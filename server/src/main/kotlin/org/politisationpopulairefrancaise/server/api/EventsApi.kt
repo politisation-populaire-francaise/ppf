@@ -163,11 +163,14 @@ fun Route.eventsApi(
             // checked and stored under a lock, so that two identical rooms cannot be created at once.
             val outcome = when (val admission = withContext(Dispatchers.IO) { directory.admitAndStore(event) }) {
                 is GroupDirectory.Admission.Refused -> return@post call.refuse(admission.refusal)
+                // A new room whose name resembles a verified organisation's waits for the team (D-132).
+                is GroupDirectory.Admission.Held -> return@post call.respond(HttpStatusCode.Accepted, PublishResponse(event.id, "held"))
                 is GroupDirectory.Admission.Stored -> admission.outcome
             }
             when (outcome) {
                 StoreOutcome.STORED -> {
                     withContext(Dispatchers.IO) { agirSpace.stored(event) }
+                    directory.stored(event)
                     if (event.kind == RelayKinds.GIFT_WRAP) {
                         // One recipient per envelope (policy); the mailbox keeps the newest envelopes only.
                         val recipient = event.firstTagValue("p")
