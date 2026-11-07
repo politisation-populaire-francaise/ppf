@@ -113,7 +113,7 @@ object EuroparlHistory {
             }
         }.distinctBy { it.id }
         val parties = lines.map { line -> partyRef(line, bodies, api) }
-        return historyPackage(example, Chamber.PE, term, ballots, parties)
+        return buildHistoryPackage(example, Chamber.PE, term, ballots, parties)
     }
 
     private fun partyRef(line: Line, bodies: HashMap<String, EpBody?>, api: EuroparlApi): PartyRef {

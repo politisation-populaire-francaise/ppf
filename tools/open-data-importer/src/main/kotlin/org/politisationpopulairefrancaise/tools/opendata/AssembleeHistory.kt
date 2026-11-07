@@ -126,7 +126,7 @@ object AssembleeHistory {
         }
         if (ballots.isEmpty()) throw UnreadableSourceException("Scrutins of legislature $legislature: no ballot")
         if (ballots.distinctBy { it.id }.size != ballots.size) throw UnreadableSourceException("Scrutins of legislature $legislature: duplicate ballot")
-        return historyPackage(example, Chamber.AN, legislature, ballots, lines.map(reference::partyRef))
+        return buildHistoryPackage(example, Chamber.AN, legislature, ballots, lines.map(reference::partyRef))
     }
 
     private fun ballot(root: JsonElement, name: String, expected: Int, reference: AnHistoryReference): Pair<HistoryBallot, Set<Line>> {

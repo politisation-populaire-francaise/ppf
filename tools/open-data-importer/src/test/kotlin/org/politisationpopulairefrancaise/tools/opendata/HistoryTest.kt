@@ -13,6 +13,7 @@ import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentHistory
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentIndexReader
 import org.politisationpopulairefrancaise.core.voir.parlement.PartyBasis
 import org.politisationpopulairefrancaise.core.voir.parlement.PartyDistribution
+import org.politisationpopulairefrancaise.core.voir.parlement.historyPackage
 import java.nio.file.Files
 import java.nio.file.Path
 import kotlin.io.path.listDirectoryEntries

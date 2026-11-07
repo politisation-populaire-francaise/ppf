@@ -84,7 +84,7 @@ internal fun partyRef(line: Line, label: String, abbreviation: String?): PartyRe
 )
 
 /** The package of one period: ballots sorted by date then identifier, parties by identifier, coverage. */
-internal fun historyPackage(example: Boolean, chamber: Chamber, period: Int, ballots: List<HistoryBallot>, parties: Collection<PartyRef>): HistoryPackage {
+internal fun buildHistoryPackage(example: Boolean, chamber: Chamber, period: Int, ballots: List<HistoryBallot>, parties: Collection<PartyRef>): HistoryPackage {
     val sorted = ballots.sortedWith(compareBy({ it.date }, { ballotOrder(it.id) }, { it.id }))
     val used = sorted.flatMap { b -> b.parties.map { it.party } }.toSet()
     return HistoryPackage(

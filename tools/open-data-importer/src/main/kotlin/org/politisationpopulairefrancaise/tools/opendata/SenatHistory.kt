@@ -326,7 +326,7 @@ object SenatHistory {
                 )
             }
             val parties = list.flatMap { it.distribution.lines }.toSet().map { partyRef(it, groups) }
-            historyPackage(example, Chamber.SENAT, session, history, parties)
+            buildHistoryPackage(example, Chamber.SENAT, session, history, parties)
         }
     }
 
