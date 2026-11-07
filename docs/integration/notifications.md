@@ -32,9 +32,9 @@ Pôle Communauté, version 1.0 du 7 novembre 2026 (décision D-130, à consigner
 
 ## 4. Envoi des réveils par le serveur
 
-- Requête Web Push standard (RFC 8030) vers l'adresse de l'inscription : contenu chiffré `aes128gcm` (RFC 8291) avec les clés de l'inscription, en-tête `Authorization: vapid t=<JWT ES256>, k=<clé publique>` (RFC 8292), `TTL: 3600`, `Urgency: normal` (`high` pour la messagerie).
+- Requête Web Push standard (RFC 8030), envoyée à `PPF_PUSH_INTERNAL_URL` (par exemple `http://ntfy:80`, réseau interne des conteneurs) en gardant le chemin de l'adresse, quand l'hôte de l'adresse est celui de notre ntfy ; jamais par le nom public. Requête vers l'adresse de l'inscription : contenu chiffré `aes128gcm` (RFC 8291) avec les clés de l'inscription, en-tête `Authorization: vapid t=<JWT ES256>, k=<clé publique>` (RFC 8292), `TTL: 3600`, `Urgency: normal` (`high` pour la messagerie).
 - Chiffrement fait avec la bibliothèque standard de Java (ECDH P-256, HKDF, AES-GCM), sans nouvelle dépendance côté serveur.
-- Clé privée VAPID : fichier hors dépôt désigné par `PPF_VAPID_PRIVATE_KEY_FILE` (format PKCS#8). Sans ce fichier, les notifications sont éteintes et `GET /api/v1/push/vapid` répond `503 push_disabled`.
+- Clé privée VAPID : fichier hors dépôt désigné par `PPF_VAPID_PRIVATE_KEY_FILE` (clé EC P-256, PKCS#8 PEM, `/run/secrets/vapid_private_key`, une par environnement, créée sur le serveur). Revendication `sub` du jeton VAPID : l'adresse https du site, jamais une adresse e-mail. Sans ce fichier, les notifications sont éteintes et `GET /api/v1/push/vapid` répond `503 push_disabled`.
 - Réponses `404` et `410` : inscription effacée. `429` : on respecte `Retry-After`.
 
 ## 5. Côté application
@@ -45,12 +45,14 @@ Pôle Communauté, version 1.0 du 7 novembre 2026 (décision D-130, à consigner
 - **Abonnements par thème, campagne, territoire et type (S-23)** : gardés sur l'appareil seulement ; jamais envoyés au serveur.
 - **Centre de notifications (S-24)** : liste locale depuis la barre du haut, effaçable.
 
-## 6. Ce que le Directeur technique installe (infrastructure)
+## 6. Ce que le Directeur technique installe (infrastructure, réponse du 7 novembre 2026)
 
-- ntfy (version stable actuelle : 2.37.2) en conteneur, dans chaque projet Docker Compose (production et préproduction séparées), derrière Caddy, sous un nom du domaine principal.
-- Réglages : `auth-default-access: deny-all` sauf le chemin UnifiedPush (`up*`, écriture ouverte, comme le prévoit ntfy pour UnifiedPush) ; `cache-duration` court (12 h au plus : un téléphone éteint récupère son réveil en se rallumant) ; journaux sans adresse IP (niveau `warn`, vérifier ce qu'écrit ntfy) ; `upstream-base-url` vide tant qu'il n'y a pas d'iPhone (sinon ntfy.sh serait contacté).
-- Secrets : `PPF_VAPID_PRIVATE_KEY_FILE` (un fichier par environnement), `PPF_PUSH_ALLOWED_HOSTS`.
-- Hôtes sortants du serveur : notre ntfy seulement (à ajouter à `docs/EGRESS.md`, THREAT_MODEL et REGISTRE_DONNEES).
+- Noms : `push.politisation-populaire-francaise.org` en production (public) ; `push.preprod.politisation-populaire-francaise.org` en préproduction (tunnel WireGuard seulement). Un enregistrement DNS de plus pour la propriétaire, ajouté au guide du serveur.
+- ntfy v2.37.2 (image épinglée par empreinte), un conteneur par projet Compose, utilisateur propre, système de fichiers en lecture seule plus un volume de cache, 64 Mo de mémoire au plus.
+- Configuration (`server.yml` dans infra) : `base-url` par environnement, pièces jointes, application web, inscription et connexion désactivées, `upstream-base-url` vide (jamais ntfy.sh), `cache-duration: 12h`, `auth-default-access: deny-all` avec seulement les sujets `up*` ouverts (noms aléatoires, contenus = réveils constants chiffrés), `log-level: warn`.
+- Caddy retire l'adresse du client : les limites par visiteur de ntfy deviennent un plafond global ; la protection contre les abus reste dans l'API du serveur (limites par minute).
+- Secrets : `PPF_VAPID_PRIVATE_KEY_FILE`, `PPF_PUSH_ALLOWED_HOSTS`, `PPF_PUSH_INTERNAL_URL`.
+- Hôtes sortants : aucun pour ntfy (pas de relais amont) ; ntfy ajouté au THREAT_MODEL et au REGISTRE_DONNEES avec l'infrastructure. Les services de poussée des navigateurs (Chrome, Firefox) sont des tiers : pas de notifications poussées pour la PWA.
 
 ## 7. Données (registre RGPD)
 
