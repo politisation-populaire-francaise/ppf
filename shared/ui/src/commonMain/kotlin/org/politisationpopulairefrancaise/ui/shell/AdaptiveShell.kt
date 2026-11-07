@@ -127,6 +127,14 @@ import org.politisationpopulairefrancaise.ui.decider.DeciderScreen
 import org.politisationpopulairefrancaise.ui.decider.DeciderState
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
+import org.politisationpopulairefrancaise.ui.notifications.NotificationCenterScreen
+import org.politisationpopulairefrancaise.ui.notifications.NotificationsSettingsState
+import org.politisationpopulairefrancaise.ui.notifications.rememberNotificationCenter
+import org.politisationpopulairefrancaise.ui.notifications.rememberNotificationsSettings
+import org.politisationpopulairefrancaise.ui.resources.action_notifications
+import org.politisationpopulairefrancaise.ui.resources.notif_bell_unread_many
+import org.politisationpopulairefrancaise.ui.resources.notif_bell_unread_one
 
 /** Test tags, also useful for accessibility tooling. */
 object ShellTags {
@@ -138,6 +146,9 @@ object ShellTags {
     const val NAV_RAIL = "nav-rail"
     const val NAV_DRAWER = "nav-side-bar"
     const val CONTENT = "content"
+
+    /** The bell of the top bar, which opens the notification centre. */
+    const val NOTIFICATIONS = "nav-notifications"
 
     /** The navigation entry of a space, wherever it is shown. */
     fun navItem(space: Space): String = "nav-${space.id}"
@@ -172,6 +183,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // Started when their screens are first shown, as the rooms are: nothing is loaded before.
     val agendaLibrary = rememberAgendaLibrary(dependencies, start = false)
     val callsLibrary = rememberCallsLibrary(dependencies, start = false)
+    // The notification centre (M31), filled while the application is open: a round at start, then every minute.
+    val notificationCenter = rememberNotificationCenter(dependencies)
+    var centerOpen by rememberSaveable { mutableStateOf(false) }
+    val shellScope = rememberCoroutineScope()
     // Erasing the keys also forgets the followed accounts, the conversations and the joined rooms (protection by default).
     val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = {
         contentLibrary.clearFollowed()
@@ -179,6 +194,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         groupsLibrary.clearMemberships()
         agendaLibrary.forgetUser()
         callsLibrary.clearResponses()
+        // The notifications go back to the most protective settings and the server forgets the wake-ups.
+        dependencies.notifications?.forget()
+        notificationCenter?.reload()
+        dependencies.push?.let { push -> shellScope.launch { runCatching { push.clear() } } }
     })
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
@@ -200,6 +219,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     }
     // How long the server keeps the account's private messages (Mon espace, D-028).
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
+    // The notification settings (Mon espace, M31); null without notifications.
+    val notificationsSettings = rememberNotificationsSettings(dependencies, accountKey)
+    // A change of settings (details shown, a category enabled) is reflected at once in the centre.
+    LaunchedEffect(notificationsSettings?.settings) { notificationCenter?.reload() }
     // The glossary (D-048): read once the bundled contents are imported and after each synchronization,
     // provided to every screen so that the terms of every content open their definition.
     val glossary = rememberGlossaryState(dependencies)
@@ -219,7 +242,35 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
             val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
             val account = accountSession.state as? AccountUiState.Ready
-            val navigate: (Space) -> Unit = { selected = it }
+            val navigate: (Space) -> Unit = {
+                selected = it
+                centerOpen = false
+            }
+            // An entry of the centre opens what it points to when the shell knows the way; otherwise it is only marked read.
+            val openEntry: (NotificationEntry) -> Unit = { entry ->
+                notificationCenter?.markRead(entry.id)
+                val conversation = entry.target?.takeIf { it.startsWith(MESSAGES_TARGET) }?.removePrefix(MESSAGES_TARGET)
+                if (conversation != null) {
+                    messaging.conversations.firstOrNull { it.id == conversation }?.conversation?.let(messaging::open)
+                    navigate(Space.MESSAGES)
+                }
+            }
+            val bell = notificationCenter?.let { center -> Bell(center.unreadCount) { centerOpen = true } }
+            val center = notificationCenter
+            val centerScreen: (@Composable (Modifier) -> Unit)? = if (center != null && centerOpen) {
+                { modifier ->
+                    NotificationCenterScreen(
+                        center = center,
+                        windowClass = windowClass,
+                        onBack = { centerOpen = false },
+                        onOpen = openEntry,
+                        onSettings = { navigate(Space.MON_ESPACE) },
+                        modifier = modifier.testTag(ShellTags.CONTENT),
+                    )
+                }
+            } else {
+                null
+            }
             val content: @Composable (Modifier) -> Unit = { modifier ->
                 SpaceContent(
                     dependencies = dependencies,
@@ -239,14 +290,17 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     agendaLibrary = agendaLibrary,
                     callsLibrary = callsLibrary,
                     mailboxSetting = mailboxSetting,
+                    notificationsSettings = notificationsSettings,
                     windowClass = windowClass,
                     modifier = modifier.testTag(ShellTags.CONTENT),
                 )
             }
-            when (windowClass.width) {
-                WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, content)
-                WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, content)
-                WindowWidthClass.EXPANDED -> ExpandedShell(selected, navigate, account, content)
+            when {
+                // On phones the centre takes the whole screen, with its back button.
+                windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier)
+                windowClass.width == WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, bell, content)
+                windowClass.width == WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, bell, centerScreen ?: content)
+                else -> ExpandedShell(selected, navigate, account, bell, centerScreen ?: content)
             }
         }
     }
@@ -271,6 +325,7 @@ private fun SpaceContent(
     agendaLibrary: AgendaLibrary,
     callsLibrary: CallsLibrary,
     mailboxSetting: MailboxSetting,
+    notificationsSettings: NotificationsSettingsState?,
     windowClass: WindowClass,
     modifier: Modifier,
 ) {
@@ -326,7 +381,7 @@ private fun SpaceContent(
                 onNavigate(Space.VOIR)
             },
         )
-        Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
+        Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting, notifications = notificationsSettings)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
         Space.REVENDICATIONS -> RevendicationsScreen(
             contentLibrary,
@@ -350,6 +405,7 @@ private fun CompactShell(
     selected: Space,
     onSelect: (Space) -> Unit,
     account: AccountUiState.Ready?,
+    bell: Bell?,
     content: @Composable (Modifier) -> Unit,
 ) {
     val palette = PpfTheme.palette
@@ -374,6 +430,7 @@ private fun CompactShell(
                 TopBar(
                     onMenu = { scope.launch { drawerState.open() } },
                     account = account,
+                    bell = bell,
                     mySpaceSelected = selected == Space.MON_ESPACE,
                     onMySpace = { onSelect(Space.MON_ESPACE) },
                 )
@@ -433,11 +490,12 @@ private fun MediumShell(
     selected: Space,
     onSelect: (Space) -> Unit,
     account: AccountUiState.Ready?,
+    bell: Bell?,
     content: @Composable (Modifier) -> Unit,
 ) {
     val palette = PpfTheme.palette
     Column(Modifier.fillMaxSize().testTag(ShellTags.SHELL_MEDIUM)) {
-        TopBar(onMenu = null, account = account, mySpaceSelected = selected == Space.MON_ESPACE, onMySpace = { onSelect(Space.MON_ESPACE) })
+        TopBar(onMenu = null, account = account, bell = bell, mySpaceSelected = selected == Space.MON_ESPACE, onMySpace = { onSelect(Space.MON_ESPACE) })
         Row(Modifier.weight(1f).fillMaxWidth()) {
             NavigationRail(
                 containerColor = palette.surface0,
@@ -479,11 +537,12 @@ private fun ExpandedShell(
     selected: Space,
     onSelect: (Space) -> Unit,
     account: AccountUiState.Ready?,
+    bell: Bell?,
     content: @Composable (Modifier) -> Unit,
 ) {
     val palette = PpfTheme.palette
     Column(Modifier.fillMaxSize().testTag(ShellTags.SHELL_EXPANDED)) {
-        DesktopTopBar(account = account, mySpaceSelected = selected == Space.MON_ESPACE, onMySpace = { onSelect(Space.MON_ESPACE) })
+        DesktopTopBar(account = account, bell = bell, mySpaceSelected = selected == Space.MON_ESPACE, onMySpace = { onSelect(Space.MON_ESPACE) })
         Row(Modifier.weight(1f).fillMaxWidth()) {
             SideBar(selected, onSelect, Modifier.width(280.dp).fillMaxHeight().testTag(ShellTags.NAV_DRAWER))
             VerticalDivider(color = palette.border)
@@ -551,11 +610,36 @@ private fun Disclaimer() {
     )
 }
 
-/** The 56 dp bar of phones and tablets. Search and notifications wait for their modules. */
+/** The target of a notification that opens a private conversation: `ppf:messages/<conversation id>`. */
+private const val MESSAGES_TARGET = "ppf:messages/"
+
+/** The bell of the top bars: how many entries of the centre are unread, and how to open it. */
+private class Bell(val unread: Long, val onOpen: () -> Unit)
+
+/**
+ * The bell: it opens the notification centre, with a small dot when something is unread and the
+ * number in words for screen readers. Disabled without notifications (tests, previews).
+ */
+@Composable
+private fun BellButton(bell: Bell?) {
+    if (bell == null) {
+        PpfIconButton(Lucide.Bell, stringResource(Res.string.action_notifications_soon), onClick = { }, modifier = Modifier.testTag(ShellTags.NOTIFICATIONS), enabled = false)
+        return
+    }
+    val label = when {
+        bell.unread <= 0 -> stringResource(Res.string.action_notifications)
+        bell.unread == 1L -> stringResource(Res.string.notif_bell_unread_one)
+        else -> stringResource(Res.string.notif_bell_unread_many, bell.unread.toInt())
+    }
+    PpfIconButton(Lucide.Bell, label, onClick = bell.onOpen, modifier = Modifier.testTag(ShellTags.NOTIFICATIONS), badge = bell.unread > 0)
+}
+
+/** The 56 dp bar of phones and tablets. Search waits for its module. */
 @Composable
 private fun TopBar(
     onMenu: (() -> Unit)?,
     account: AccountUiState.Ready?,
+    bell: Bell?,
     mySpaceSelected: Boolean,
     onMySpace: () -> Unit,
 ) {
@@ -570,7 +654,7 @@ private fun TopBar(
             }
             Wordmark(Modifier.weight(1f).padding(start = if (onMenu != null) 4.dp else 8.dp))
             PpfIconButton(Lucide.Search, stringResource(Res.string.action_search_soon), onClick = { }, enabled = false)
-            PpfIconButton(Lucide.Bell, stringResource(Res.string.action_notifications_soon), onClick = { }, enabled = false)
+            BellButton(bell)
             AvatarButton(account, mySpaceSelected, onMySpace)
         }
         HorizontalDivider(color = palette.border)
@@ -602,7 +686,7 @@ private fun AvatarButton(account: AccountUiState.Ready?, selected: Boolean, onCl
 
 /** The 64 dp bar of wide windows: wordmark, search field, notifications, "Mon espace". */
 @Composable
-private fun DesktopTopBar(account: AccountUiState.Ready?, mySpaceSelected: Boolean, onMySpace: () -> Unit) {
+private fun DesktopTopBar(account: AccountUiState.Ready?, bell: Bell?, mySpaceSelected: Boolean, onMySpace: () -> Unit) {
     val palette = PpfTheme.palette
     Column(Modifier.background(palette.surface0)) {
         Row(
@@ -623,7 +707,7 @@ private fun DesktopTopBar(account: AccountUiState.Ready?, mySpaceSelected: Boole
                 Text(stringResource(Res.string.nav_search_soon), style = MaterialTheme.typography.bodyLarge, color = palette.inkSubtle, maxLines = 1)
             }
             Spacer(Modifier.width(16.dp))
-            PpfIconButton(Lucide.Bell, stringResource(Res.string.action_notifications_soon), onClick = { }, enabled = false)
+            BellButton(bell)
             Spacer(Modifier.width(8.dp))
             OutlinedButton(
                 onClick = onMySpace,

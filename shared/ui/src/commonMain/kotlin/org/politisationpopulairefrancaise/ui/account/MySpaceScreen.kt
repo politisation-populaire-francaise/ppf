@@ -104,6 +104,8 @@ import org.politisationpopulairefrancaise.ui.resources.version_label
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.currentPlatform
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.ui.notifications.NotificationsCard
+import org.politisationpopulairefrancaise.ui.notifications.NotificationsSettingsState
 
 /** Test tags of the account screens. */
 object AccountTags {
@@ -138,6 +140,8 @@ fun MySpaceScreen(
     modifier: Modifier = Modifier,
     /** How long the server keeps the account's private messages; hidden when null. */
     mailbox: MailboxSetting? = null,
+    /** The notifications of the device (M31); hidden when null. The categories other than messages need no account. */
+    notifications: NotificationsSettingsState? = null,
 ) {
     val compact = windowClass.width == WindowWidthClass.COMPACT
     Column(
@@ -150,10 +154,13 @@ fun MySpaceScreen(
             when (val state = session.state) {
                 AccountUiState.Loading -> LoadingCard()
                 AccountUiState.Unreadable -> MessageCard(stringResource(Res.string.account_failed))
-                AccountUiState.NoAccount -> NoAccountCard(session)
+                AccountUiState.NoAccount -> {
+                    NoAccountCard(session)
+                    if (notifications != null) NotificationsCard(notifications)
+                }
                 is AccountUiState.Creating -> CreatingCard(session, state, windowClass)
                 is AccountUiState.Restoring -> RestoringCard(session, state)
-                is AccountUiState.Ready -> ReadyCards(session, state, windowClass, mailbox)
+                is AccountUiState.Ready -> ReadyCards(session, state, windowClass, mailbox, notifications)
             }
             // Which version is installed, on which system: what a tester reports with a problem.
             val platform = currentPlatform()
@@ -333,7 +340,13 @@ private enum class PendingDialog { REVEAL_PHRASE, REVEAL_SECRET, SIGN_OUT }
 
 /** The account once it exists: profile card, identity and secrets, what others can see. */
 @Composable
-private fun ReadyCards(session: AccountSession, state: AccountUiState.Ready, windowClass: WindowClass, mailbox: MailboxSetting?) {
+private fun ReadyCards(
+    session: AccountSession,
+    state: AccountUiState.Ready,
+    windowClass: WindowClass,
+    mailbox: MailboxSetting?,
+    notifications: NotificationsSettingsState?,
+) {
     val palette = PpfTheme.palette
     var pending by remember { mutableStateOf<PendingDialog?>(null) }
     val hex = state.publicKey.hex
@@ -411,6 +424,8 @@ private fun ReadyCards(session: AccountSession, state: AccountUiState.Ready, win
     }
 
     if (mailbox != null) MailboxCard(mailbox, session)
+
+    if (notifications != null) NotificationsCard(notifications)
 
     PpfTextButton(onClick = { pending = PendingDialog.SIGN_OUT }, text = stringResource(Res.string.account_sign_out), modifier = Modifier.testTag(AccountTags.SIGN_OUT), color = palette.accentInk)
 
