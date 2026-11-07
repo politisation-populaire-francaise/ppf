@@ -110,7 +110,7 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
 - Mention publique « non déclarée » d'une manifestation.
 - Appels au boycott (dénigrement d'une entreprise).
 - Annuaire et cas limites des partis, candidats et comités de soutien (Code électoral, article L52-8).
-- Secours, sorties et équipe citoyenne de sécurité en manifestation (points d'attention n° 17 et n° 24).
+- M25 Secours, sécurité et défense en manifestation, en entier (mode manifestation AG-13, bouton AIDE AG-27, carte de la manifestation AG-24, zones dangereuses et sorties AG-41 à AG-43, street medics, équipe citoyenne de sécurité, alerte « Besoin d'un avocat » ; points d'attention n° 14, 17, 18 et 24) : construit avec les organisations existantes (legal teams, street medics, observatoires) et relu par un avocat avant le lancement.
 - Modèles juridiques (mentions légales, confidentialité, conditions d'utilisation, charte, procédure de signalement).
 
 ## Phase de test et de débogage (reportée, décision de la propriétaire du 7 novembre 2026)
