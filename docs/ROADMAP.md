@@ -9,18 +9,18 @@ Légende : ✅ fait, 🔄 en cours, ⏳ à faire, ⛔ bloqué (décision ou acti
 | Élément | État | Détail |
 |---|---|---|
 | Vérification de l'environnement de la propriétaire | ✅ | 5 novembre 2026 : Windows 11, Git, JDK 21, SDK Android, GitHub CLI installés. |
-| Dépôt GitHub public, branche principale protégée | 🔄 | Décision du 5 novembre 2026 : public dès le premier commit. Création en cours. |
+| Dépôt GitHub public, branche principale protégée | 🔄 | Décision du 5 novembre 2026 : public dès le premier commit. 7 novembre 2026 : guide `docs/guides/liaison-github.md` (double authentification, organisation `politisation-populaire-francaise` à valider, connexion de GitHub CLI) ; l'adresse d'auteur des commits appartient à un inconnu sur GitHub : réécriture de tous les commits avant le premier envoi, en accord avec les sessions en cours. Attend la propriétaire. |
 | Squelette Kotlin Multiplatform et Compose Multiplatform (Android, ordinateur, iOS déclaré) | 🔄 | Modules `shared/core`, `shared/ui`, `android`, `desktop`, `ios` (non compilé). |
 | Premier écran adaptatif (téléphone, tablette, ordinateur) | 🔄 | Coquille de navigation adaptée aux trois largeurs, tests automatiques des trois dispositions. |
 | Squelette du serveur Ktor avec `/health` | 🔄 | Module `server`, en-têtes de sécurité, aucune journalisation d'adresse IP. |
 | Squelette du site web (Ktor + kotlinx.html) | 🔄 | Module `web`, lisible sans JavaScript, manifeste PWA. |
-| `/infra` : production et préproduction séparées | 🔄 | Deux projets Compose, proxy Caddy, modèle WireGuard, limites mémoire. |
+| `/infra` : production et préproduction séparées | ✅ | 7 novembre 2026 (D-070 à D-074) : image d'exécution construite et signée par l'intégration continue, déploiement par empreinte avec retour arrière (`ppf-deploy`), préproduction mise à jour toute seule, production par promotion d'une empreinte validée, préparation et durcissement du serveur en un script (`bootstrap-server.sh`), profils WireGuard (`ppf-wg-add-peer`), préproduction sur `preprod.politisation-populaire-francaise.org` réservée au tunnel. Vérifié par l'intégration continue dès le premier envoi (shellcheck, Compose, Caddy). |
 | Intégration continue (APK, bureau, tests, secrets, traceurs) | 🔄 | GitHub Actions : Linux et Windows, gitleaks, vérification des tiers, Dependabot. Depuis le 6 novembre 2026, l'APK publié est la version d'essai non débogable, numérotée à chaque commit, dont la signature de test est vérifiée (D-031). |
 | Distribution des versions de test Android sans avertissement | ⛔ | Guide d'installation pour les Samsung en place ; la suppression des avertissements passe par Google Play (25 dollars une fois), en attente de la propriétaire (brainstorming du cahier des charges, entrée du 2026-11-06). |
 | Documents techniques | 🔄 | ROADMAP, DECISIONS, THREAT_MODEL, REGISTRE_DONNEES, GUIDE_PROPRIETAIRE, CHANGELOG. |
 | Guide d'achat des noms de domaine | ✅ | `docs/guides/achat-domaines-hostinger.md` ; six domaines achetés le 5 novembre 2026. |
-| Guide du serveur KVM 1 (premier déploiement) | 🔄 | `docs/guides/serveur-hostinger-kvm1.md`, première version. |
-| Déploiement d'un squelette en préproduction | ⛔ | Attend la location du serveur, au moment du premier déploiement. |
+| Guide du serveur KVM 1 (premier déploiement) | ✅ | `docs/guides/serveur-hostinger-kvm1.md`, deuxième version (7 novembre 2026) : prix « Black Friday » relevé (131,76 € HT pour 24 mois), clé SSH déjà créée, enregistrement DNS `preprod` ; guide `docs/guides/wireguard-preproduction.md`. |
+| Mise en ligne de la préproduction | ⛔ | Tout est prêt dans le code (7 novembre 2026). Attend : l'accord de la propriétaire sur l'achat du serveur (brainstorming du cahier des charges, entrée « Serveur de la préproduction : achat »), la liaison GitHub, puis l'enregistrement DNS `preprod`. L'APK d'essai sera alors relié à la préproduction. |
 | Modèles juridiques (mentions légales, confidentialité, CGU, charte, DSA) | ⏳ | Brouillons à produire, marqués « À FAIRE RELIRE PAR UN AVOCAT ». |
 | Découpage de la phase 1 en MVP | ⏳ | Après la version 2.0 du cahier fonctionnel (brainstorming). |
 

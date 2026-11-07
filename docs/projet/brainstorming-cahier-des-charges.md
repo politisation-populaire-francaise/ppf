@@ -305,3 +305,30 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Coût : aucun. Minimisation : seulement le nom, la fonction, le territoire et le début du mandat, jamais la date de naissance ni la profession.
 - Recommandation : A, avec C en attendant ; à faire avec la session « Voir », qui affiche déjà les fiches des personnes publiques.
 - Décision :
+
+### [2026-11-07] Serveur de la préproduction : achat
+- Statut : À valider
+- Concerne : cahier-des-charges.md, sections 3.5 et 12 (budget)
+- Description : la préproduction en ligne est la première étape vers la V1 (demande de la propriétaire du 7 novembre 2026). Tout est prêt dans le code (`infra/`, D-070 à D-074) ; il manque le serveur, qui coûte de l'argent.
+- Prix relevés le 7 novembre 2026 sur hostinger.com/fr/vps (promotion « Black Friday ») : KVM 1 (1 vCPU, 4 Go, 50 Go NVMe) **131,76 € HT pour 24 mois, environ 158,11 € TTC**, puis 11,99 € HT par mois au renouvellement (novembre 2028) ; KVM 2 (2 vCPU, 8 Go, 100 Go) 186,96 € HT pour 24 mois (environ 224,35 € TTC), puis 14,99 € HT par mois. Repère hors Hostinger (sources tierces, fin octobre 2026) : Hetzner CX23 (Allemagne, 2 vCPU, 4 Go, 40 Go) environ 5,99 € HT par mois sans engagement.
+- Budget : domaines déjà payés environ 145,10 € TTC ; avec le KVM 1, le total atteint environ **303 €** pour un budget de 300 € ; il ne reste rien pour les sauvegardes hors site (de l'ordre de 1 à 4 € par mois, nécessaires seulement avant la production) ni pour la modération par IA.
+- Options :
+  - A. Hostinger KVM 1, 24 mois, maintenant (recommandée) : le prix le plus bas par mois, le compte et le DNS déjà chez Hostinger (décision D-002), garantie de remboursement de 30 jours ; 4 Go suffisent pour la préproduction puis la production au lancement (budget mémoire dans `infra/README.md`).
+  - B. Hostinger KVM 2, 24 mois : deux fois plus de marge (production, préproduction et import des données ouvertes à l'aise), mais 66 € de plus et un budget dépassé de 69 €.
+  - C. Hetzner CX23 au mois : rien d'avance, 2 vCPU, résiliable à tout moment ; mais un deuxième prestataire, un compte à créer avec vérification d'identité, et plus cher sur 24 mois (environ 172 € TTC).
+- Recommandation : A. Le dépassement de 3 € et les sauvegardes hors site (à choisir avant la production) sont à accepter par la propriétaire.
+
+### [2026-11-07] Préproduction : le mot de passe et les applications
+- Statut : À valider
+- Concerne : CLAUDE.md, section 8 ; cahier-des-charges.md, section 3.5 ; décision D-072
+- Description : la préproduction doit être fermée au public par un tunnel WireGuard « en plus d'un mot de passe ». Les versions d'essai des applications sont des fichiers publics (dépôt public) : elles ne peuvent contenir aucun mot de passe.
+- Options : A. mot de passe sur les pages web, tunnel seul pour l'API des applications (recommandée, appliquée provisoirement) ; B. mot de passe partout, à saisir une fois dans un réglage caché des versions d'essai ; C. mot de passe partout, la préproduction ne sert plus à tester les applications.
+- Recommandation : A. La vraie barrière est la clé WireGuard propre à chaque appareil ; un mot de passe gardé sur le même téléphone n'ajouterait pas de protection réelle.
+
+### [2026-11-07] Organisation GitHub du projet
+- Statut : À valider
+- Concerne : cahier-des-charges.md, section 8 ; décision D-005
+- Description : le dépôt peut être créé sous le compte personnel de la propriétaire ou sous une **organisation** GitHub gratuite. Le nom `politisation-populaire-francaise` est libre au 7 novembre 2026.
+- Options : A. organisation `politisation-populaire-francaise` (recommandée : appartient au projet, membres invités avec double authentification obligatoire, transmissible à l'association, adresse `github.com/politisation-populaire-francaise`) ; B. compte personnel (plus simple aujourd'hui, transfert à faire plus tard, avec redirections).
+- Recommandation : A, gratuite, 5 minutes (guide `docs/guides/liaison-github.md`, section 3).
+- Constat lié (technique, sans choix à faire) : l'adresse d'auteur des commits `ppf@users.noreply.github.com` appartient à un compte GitHub sans rapport avec PPF (compte « ppf », 2011) ; elle sera remplacée sur tous les commits par l'adresse « noreply » de la propriétaire avant le premier envoi (D-014).
