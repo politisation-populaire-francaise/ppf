@@ -409,7 +409,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Contradiction signalée, à trancher par la propriétaire : la visibilité **par défaut** de la participation d'un citoyen (cercle) ou d'un élu (public) contredit le principe 10 (vision 4.2, cahier des charges 1.3) ; options et recommandation dans l'entrée du brainstorming. Rien de ce qui en dépend n'est codé avant sa réponse.
 - Limites qui restent : les obligations légales non négociables (aucun appel ni incitation à la violence, signalement PHAROS, charte de contenu) ; tout ce qui est poussé au maximum est inscrit dans la liste « à faire relire par un avocat » de la feuille de route.
 
-> Numéros réservés entre sessions parallèles (répartition du chef d'équipe de « Voir », 7 novembre 2026) : D-044 (décisions de la propriétaire), D-045, D-046 et D-051 à D-053 (« Agir »), D-059 à D-050 (« Comprendre », vague 3), D-054 à D-058 (« Voir »), D-059 à D-063 (« Décider »), D-064 à D-066 (« Voir », données ouvertes) ; prochaine libre : D-067.
+> Numéros réservés entre sessions parallèles (répartition du chef d'équipe de « Voir », 7 novembre 2026) : D-044 (décisions de la propriétaire), D-045, D-046 et D-051 à D-053 (« Agir »), D-047 à D-050 (« Comprendre », vague 3), D-054 à D-058 (« Voir »), D-059 à D-063 (« Décider »), D-064 à D-066 (« Voir », données ouvertes) ; prochaine libre : D-067.
 
 ## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
 
