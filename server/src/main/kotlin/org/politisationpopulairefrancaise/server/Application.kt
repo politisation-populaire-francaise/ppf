@@ -27,6 +27,9 @@ import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PostLimits
 import org.politisationpopulairefrancaise.server.api.eventsApi
 import org.politisationpopulairefrancaise.server.api.groupsApi
+import org.politisationpopulairefrancaise.server.archive.ArchiveService
+import org.politisationpopulairefrancaise.server.archive.ArchiveSetup
+import org.politisationpopulairefrancaise.server.archive.archivesApi
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.elus.ElusConfig
@@ -69,6 +72,7 @@ import javax.sql.DataSource
  *   see [AgirConfig].
  * - PPF_RNE_SOURCE, PPF_RNE_REFRESH_DAYS: the directory of elected officials (fictitious example set
  *   by default), see [ElusConfig].
+ * - PPF_ARCHIVE_*: the timestamped archive (on in production only by default), see [ArchiveConfig].
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
  *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
  *   to start when it is set in production, see [ExampleSeed].
@@ -132,8 +136,11 @@ fun Application.module(
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
     agir: AgirSetup = AgirSetup.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
+    archive: ArchiveSetup = ArchiveSetup.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
+    // Timestamped archive (D-111): its batches, upgrades and checks live and die with the application.
+    val archives = dataSource?.let { ArchiveService.start(this, it, archive) }
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
     val elusService = dataSource?.let { ElusService.start(this, it, elus, log) }
     // Citizen demands wait in a review queue; its checks and cleanup live and die with the application.
@@ -193,6 +200,7 @@ fun Application.module(
         revendicationsApi(proposals)
         agirApi(agirSpace)
         elusApi(elusService)
+        archivesApi(archives)
         agirSpace?.let { agendaPage(it.agendaSource()) }
         webRoutes()
     }
