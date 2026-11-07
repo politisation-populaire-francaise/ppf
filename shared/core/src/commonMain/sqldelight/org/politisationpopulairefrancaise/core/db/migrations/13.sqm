@@ -1,37 +1,22 @@
--- Schema version 13 to 14 (2026-11-07, provisional number): notifications and verified contacts on
--- the device (see Notifications.sq and Contacts.sq, the reference for fresh installations; this file must stay identical to its
--- CREATE statements).
+-- Schema version 13 to 14 (2026-11-07): the testimonies sent from this device (see Testimony.sq, which is the
+-- reference for fresh installations; this file must stay identical to its CREATE statements).
 
-CREATE TABLE notification_setting (
-    name TEXT NOT NULL PRIMARY KEY,
-    value TEXT NOT NULL
-);
-
-CREATE TABLE notification_entry (
+CREATE TABLE testimony (
     id TEXT NOT NULL PRIMARY KEY,
-    category TEXT NOT NULL,
-    title TEXT NOT NULL,
-    detail TEXT,
-    target TEXT,
     created_at INTEGER NOT NULL,
-    is_read INTEGER NOT NULL DEFAULT 0
+    call_address TEXT,
+    has_photo INTEGER NOT NULL,
+    gave_original INTEGER NOT NULL,
+    status TEXT NOT NULL,
+    reason TEXT,
+    published TEXT,
+    submission TEXT,
+    updated_at INTEGER NOT NULL
 );
 
-CREATE INDEX notification_entry_created_at ON notification_entry(created_at DESC, id);
-
-CREATE TABLE notification_mark (
-    source TEXT NOT NULL PRIMARY KEY,
-    seen_until INTEGER NOT NULL
-);
-
-CREATE TABLE push_registration (
-    scope TEXT NOT NULL PRIMARY KEY,
-    subscription_id TEXT NOT NULL,
-    endpoint TEXT NOT NULL,
-    renewed_at INTEGER NOT NULL
-);
-
-CREATE TABLE contact_verification (
-    pubkey TEXT NOT NULL PRIMARY KEY,
-    verified_at INTEGER NOT NULL
+CREATE TABLE testimony_file (
+    testimony_id TEXT NOT NULL,
+    file_id TEXT NOT NULL,
+    bytes BLOB NOT NULL,
+    PRIMARY KEY (testimony_id, file_id)
 );

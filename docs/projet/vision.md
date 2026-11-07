@@ -1,7 +1,7 @@
 # Politisation Populaire Française : vision du projet
 
-- Version : 4.2
-- Date : 5 novembre 2026
+- Version : 4.3
+- Date : 7 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-vision.md`.
 
 ## 1. Qui sommes-nous
@@ -69,7 +69,7 @@ Ces quatre piliers sont à la fois les objectifs du collectif et les quatre espa
 - **Militante** : PPF porte des revendications démocratiques, prend position et critique librement les institutions et les élus.
 - **Vérité et sources** : chaque chiffre, fait ou citation est sourcé. Quand les sources divergent, on les montre côte à côte.
 - **Légalité** : critique et militante, la plateforme respecte le droit et ne donne aucune prise pour la fermer.
-- **Sécurité et vie privée** : ce qu'on ne collecte pas ne peut être ni volé, ni saisi, ni divulgué. Par défaut, tout est réglé sur la confidentialité et l'anonymat les plus élevés ; chacun reste libre de rendre publiques ses propres informations, après une mise en garde claire sur les risques. PPF protège, mais ne décide jamais à la place de l'utilisateur.
+- **Sécurité et vie privée** : ce qu'on ne collecte pas ne peut être ni volé, ni saisi, ni divulgué. Par défaut, tout est réglé sur la confidentialité et l'anonymat les plus élevés ; chacun reste libre de rendre publiques ses propres informations, après une mise en garde claire sur les risques. PPF protège, mais ne décide jamais à la place de l'utilisateur. Exceptions voulues : les publications sont visibles des cercles de leur auteur par défaut (réglage modifiable à tout moment), et le vote des élus est public. Le vote des citoyens reste anonyme.
 - **Résistance à la censure** : l'information doit survivre à la coupure d'un serveur, d'un nom de domaine ou au retrait d'une boutique d'applications.
 - **Accessibilité** : la plateforme est utilisable par tous, y compris avec un vieux téléphone, une connexion faible ou un handicap.
 - **Ouverture** : le code est open source.
@@ -100,3 +100,4 @@ Malheureusement, la devise « Liberté, égalité, fraternité », qui faisait n
 | 4.0 | 4 novembre 2026 | Les sept piliers sont remplacés par quatre piliers, Voir, Comprendre, Agir, Décider, qui sont aussi les espaces de la plateforme ; « Mettre en lumière » devient un axe de « Voir ». Ajout de la signature du collectif (section 1) et de l'action des responsables publics dans les objectifs. Validé par la propriétaire. |
 | 4.1 | 4 novembre 2026 | Mission : « citoyens de France » devient « citoyens français ». Retrait des mentions explicites de « signature » (section 1 et introduction de la section 6) : les quatre verbes sont présentés comme des piliers. Validé par la propriétaire. |
 | 4.2 | 5 novembre 2026 | Valeur « Sécurité et vie privée » : ajout du principe de libre choix (confidentialité et anonymat maximaux par défaut, liberté de chacun de rendre publiques ses propres informations après une mise en garde, PPF ne décide jamais à la place de l'utilisateur). Validé par la propriétaire. |
+| 4.3 | 7 novembre 2026 | Valeur « Sécurité et vie privée » : exceptions voulues par la propriétaire (publications visibles des cercles de leur auteur par défaut, vote des élus public ; le vote des citoyens reste anonyme), décision du 7 novembre 2026 (« Oui pour ajouter a la vision les phrases d excetions puis on verra ce qu'on en fait plus tard »), D-132. Copie locale modifiée par l'IA (chef d'équipe) ; à reporter dans le projet claude.ai. |

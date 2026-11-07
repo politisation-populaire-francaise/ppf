@@ -10,6 +10,8 @@ import org.politisationpopulairefrancaise.core.text.FrenchText
  *
  * Results are sorted by name (accents, case and the [EXEMPLE] marker ignored). With [near], the
  * organisations of the user's territory come first, then those that act everywhere in France.
+ * Entries whose verification was withdrawn ([Organisation.revoked]) are left out unless
+ * [includeRevoked] is set.
  */
 data class OrganisationQuery(
     /** Words that must all start a word of the name, the summary, the territory, the type or the presentation. */
@@ -20,16 +22,19 @@ data class OrganisationQuery(
     val territory: String? = null,
     /** The user's own territory (commune, department, postal code), typed on the device. */
     val near: String? = null,
+    /** Also keeps the entries whose verification the team withdrew (shown as such, never as verified). */
+    val includeRevoked: Boolean = false,
 ) {
     /** True when no criterion is set. */
     val isUnconstrained: Boolean
-        get() = text.isBlank() && types.isEmpty() && territory.isNullOrBlank() && near.isNullOrBlank()
+        get() = text.isBlank() && types.isEmpty() && territory.isNullOrBlank() && near.isNullOrBlank() && !includeRevoked
 
     /** How many criteria are set (the "Filtres" count). */
     val constraintCount: Int
-        get() = (if (text.isNotBlank()) 1 else 0) + types.size + (if (!territory.isNullOrBlank()) 1 else 0) + (if (!near.isNullOrBlank()) 1 else 0)
+        get() = (if (text.isNotBlank()) 1 else 0) + types.size + (if (!territory.isNullOrBlank()) 1 else 0) + (if (!near.isNullOrBlank()) 1 else 0) + (if (includeRevoked) 1 else 0)
 
     fun matches(organisation: Organisation): Boolean {
+        if (organisation.revoked && !includeRevoked) return false
         if (types.isNotEmpty() && organisation.type !in types) return false
         val place = territory?.takeIf { it.isNotBlank() }?.let(FrenchText::fold)
         if (place != null && FrenchText.fold(organisation.territory) != place) return false

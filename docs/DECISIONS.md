@@ -411,6 +411,28 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 
 > Numéros réservés entre sessions parallèles (répartition du chef d'équipe de « Voir », 7 novembre 2026) : D-044 (décisions de la propriétaire), D-045, D-046 et D-051 à D-053 (« Agir »), D-047 à D-050 (« Comprendre », vague 3), D-054 à D-058 (« Voir »), D-059 à D-063 (« Décider »), D-064 à D-066 (« Voir », données ouvertes), D-070 à D-079 et D-120 à D-129 (Directeur technique : infrastructure, préproduction, back-office) ; prochaine libre : D-067.
 
+## D-045 (2026-11-07) Agenda : transparence de la participation (décisions de la propriétaire, D-044)
+
+- Contexte : application à l'agenda des mobilisations de la doctrine « la transparence passe avant tout » (D-044). Détail : `docs/integration/agir-transparence.md` (contrat d'Agir, version 2).
+- Mis en œuvre :
+  - une manifestation **non déclarée en préfecture** est proposée dans le formulaire et affichée comme telle sur la carte et le détail ; une phrase prévient que la mention est publique, sans empêcher l'envoi ;
+  - libellé « **Ça m'intéresse** » ;
+  - **participation publique des organisations** : réponse NIP-52 (type 31925 : `a` = adresse de la mobilisation, `status` `accepted`, `declined` ou `tentative`, extension `ppf-role` `organisateur` ou `participant`) ; seules comptent les organisations vérifiées et les clés de l'équipe éditoriale (PPF) ; pour elles, l'affichage public est le choix proposé en premier, « participer sans l'afficher » reste possible ; une organisation nommée organisatrice n'apparaît comme telle que si elle l'a confirmé de sa propre clé, sinon « annoncée, non confirmée » ; section « Organisations participantes » avec leur nombre ;
+  - le serveur vérifie la forme des réponses (adresse, statut, rôle, 280 caractères, aucune coordonnée personnelle) et les publie sans relecture ;
+  - les **réponses aux appels** s'effacent de l'appareil 7 jours après la clôture ou l'échéance de l'appel.
+- Décisions techniques prises en autonomie : le `d` d'une réponse est l'adresse de la mobilisation (une réponse par clé, la plus récente compte) ; les réponses se synchronisent par type, sans requête par événement ; rien n'est codé pour la visibilité des citoyens (contradiction avec le principe 10 en attente de la propriétaire, D-044).
+
+## D-046 (2026-11-07) Vue carte de l'agenda : MapLibre, fonds PMTiles, aucun tiers
+
+- Contexte : M1 « Carte et agenda des mobilisations », cahier des charges section 4 (« OpenStreetMap via MapLibre, jamais Google Maps »), principe 6 (aucun tiers). Détail : `docs/integration/agir-carte.md` et `tools/map-data/README.md`.
+- Décisions techniques prises en autonomie :
+  - **bibliothèque** : MapLibre Compose 0.20.0 (licence BSD-3-Clause), moteur OpenGL ES, derrière l'interface `AgendaMapRenderer` (repli possible : MapLibre Native Android) ; la carte s'affiche sur Android ; sur ordinateur (le moteur exige Java 25) et sur iOS (non compilé), la liste reste avec une phrase honnête ;
+  - **aucune requête directe du moteur** : style construit sur l'appareil sans adresse web, toute adresse autre que `ppf-carte://` refusée, glyphes fabriqués à partir de la police Atkinson Hyperlegible intégrée ; serveurs de tuiles tiers ajoutés aux motifs interdits ;
+  - **fonds PMTiles** : un fond de 2,59 Mo intégré à l'application (monde jusqu'au zoom 3, France et outre-mer jusqu'au zoom 7, couches filtrées, données OpenStreetMap sous licence ODbL), disponible hors ligne ; le fond détaillé viendra du serveur, lu par plages d'octets, après un petit manifeste `/tiles/current.json` (nom daté du fichier, taille, somme SHA-256) ; préparation des données par `tools/map-data`, jamais par l'application ni par l'intégration continue ;
+  - **écran** : choix « Liste » / « Carte » (liste par défaut), filtres communs, boutons de zoom et de recentrage sans geste, attribution « © contributeurs OpenStreetMap » toujours visible, aucune position de l'utilisateur ni permission de localisation ;
+  - **poids** : l'APK passe de 16,5 à 38 Mo (bibliothèques natives compressées) ; un APK par architecture (environ 26 Mo) est possible à la publication.
+- Reste : voir la carte réelle sur le téléphone de la propriétaire (aucun émulateur sur l'ordinateur) ; zones hors ligne (S-35), carte de la manifestation en direct (AG-24), tracé d'un parcours, placer un point dans le formulaire.
+
 ## D-047 (2026-11-07) Annuaire officiel des élus : Répertoire national des élus importé sur le serveur, servi par département, commune gardée sur l'appareil
 
 - Contexte : l'encart « Qui décide ? Les élus concernés » (D-038) ne nommait pas les élus locaux de chacun. Entrée « Annuaire officiel des élus » du brainstorming du cahier des charges ; contrat commun `docs/integration/comprendre-vague-3.md`, section 1 ; détail dans `docs/integration/elus-serveur.md` (serveur) et `docs/integration/elus-app.md` (appareil).
@@ -430,6 +452,8 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **option C** : sans serveur (l'APK actuel) ou quand le serveur ne répond pas, la page « Mes élus » et l'encart proposent les annuaires officiels (Annuaire de l'administration pour les mairies, Assemblée nationale, Sénat, Parlement européen, RNE), chacun derrière « Vous quittez PPF » (`LeavePpfDialog`, devenu un composant commun).
 - Raison : la commune d'une personne dit où elle vit ; elle ne quitte jamais l'appareil, et le serveur sait seulement qu'un appareil a téléchargé la liste d'un département, sans en garder l'adresse IP. Les données réelles n'existent qu'en production.
 - Conséquences : migration serveur `V6__elus.sql` ; variables `PPF_RNE_SOURCE` et `PPF_RNE_REFRESH_DAYS` ; schéma local 11 (`migrations/10.sqm`) ; formats dans `docs/FORMATS.md`, section 4 octies ; aucune dépendance nouvelle. Restent : signature des paquets par le service de signature, compression demandée par le client (`ktor-client-encoding`), branchement du mode économie de données sur Android, libellés des intercommunalités tels que le RNE les écrit, nouveau découpage des circonscriptions à surveiller, licence des résultats de 2021 à confirmer.
+
+- **Complément du 7 novembre 2026 (soir) : `ElusLookup` pour le back-office.** Contexte : la file `elus.certifications` du pôle « Décider » (contrat du back-office, section 7) doit vérifier qu'un compte d'élu correspond à un mandat en cours. Options : A. recherche en lecture seule sur les paquets de l'import servi, identifiant calculé à la volée ; B. nouvelle table des mandats remplie à chaque import (nouvelle migration Flyway) ; C. identifiant écrit dans les paquets (changement du format 1 lu par l'appareil). Choix : A, forme validée par « Décider ». Identifiant `rne1:` + 32 caractères hexadécimaux (128 bits) du SHA-256 de (mandat, territoire, nom canonique, date de début), format dans `docs/FORMATS.md`, section 4 octies ; `find(name, mandate?, territory?)` insensible aux accents, à la casse et à l'ordre des mots ; `mandateStatus(id)` = `Current` ou `NotFound` avec la date de la source, plus `Unavailable` tant qu'aucun import n'est servi ; fragment kotlinx.html `elusMatches`. Raison : ni migration, ni changement de format, ni donnée nouvelle ; aucun journal des noms cherchés. Limite acceptée : le paquet ne garde que « Prénom Nom » réunis, l'empreinte porte donc sur le nom réuni et non sur nom et prénom séparés. Détail : `docs/integration/elus-serveur.md`, section 4 bis.
 
 ## D-048 (2026-11-07) Glossaire : mots repérés dans chaque contenu, infobulle, « En savoir plus », glossaire complet
 
@@ -458,40 +482,57 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : répondre d'abord aux questions que pose l'actualité (grève, vote en 2027), puis donner les repères institutionnels qui servent partout.
 - Conséquences : fichiers intégrés `glossaire.json`, `parcours.json`, `comprendre.json` et `fiches.json` régénérés et signés ; l'outil de signature lit désormais les identifiants des fiches dans `content/fiches` au lieu d'une liste fixe. Tous ces contenus doivent être relus par l'équipe éditoriale avant une publication réelle (et par un avocat pour les fiches pratiques).
 
-## D-045 (2026-11-07) Agenda : transparence de la participation (décisions de la propriétaire, D-044)
+## D-051 (2026-11-07) Témoignages et chaîne des médias commune (M5, AG-07, AG-08, AG-54)
 
-- Contexte : application à l'agenda des mobilisations de la doctrine « la transparence passe avant tout » (D-044). Détail : `docs/integration/agir-transparence.md` (contrat d'Agir, version 2).
-- Mis en œuvre :
-  - une manifestation **non déclarée en préfecture** est proposée dans le formulaire et affichée comme telle sur la carte et le détail ; une phrase prévient que la mention est publique, sans empêcher l'envoi ;
-  - libellé « **Ça m'intéresse** » ;
-  - **participation publique des organisations** : réponse NIP-52 (type 31925 : `a` = adresse de la mobilisation, `status` `accepted`, `declined` ou `tentative`, extension `ppf-role` `organisateur` ou `participant`) ; seules comptent les organisations vérifiées et les clés de l'équipe éditoriale (PPF) ; pour elles, l'affichage public est le choix proposé en premier, « participer sans l'afficher » reste possible ; une organisation nommée organisatrice n'apparaît comme telle que si elle l'a confirmé de sa propre clé, sinon « annoncée, non confirmée » ; section « Organisations participantes » avec leur nombre ;
-  - le serveur vérifie la forme des réponses (adresse, statut, rôle, 280 caractères, aucune coordonnée personnelle) et les publie sans relecture ;
-  - les **réponses aux appels** s'effacent de l'appareil 7 jours après la clôture ou l'échéance de l'appel.
-- Décisions techniques prises en autonomie : le `d` d'une réponse est l'adresse de la mobilisation (une réponse par clé, la plus récente compte) ; les réponses se synchronisent par type, sans requête par événement ; rien n'est codé pour la visibilité des citoyens (contradiction avec le principe 10 en attente de la propriétaire, D-044).
-
-## D-046 (2026-11-07) Vue carte de l'agenda : MapLibre, fonds PMTiles, aucun tiers
-
-- Contexte : M1 « Carte et agenda des mobilisations », cahier des charges section 4 (« OpenStreetMap via MapLibre, jamais Google Maps »), principe 6 (aucun tiers). Détail : `docs/integration/agir-carte.md` et `tools/map-data/README.md`.
+- Contexte : CLAUDE.md §7 (métadonnées supprimées sur l'appareil, floutage facultatif, empreinte SHA-256 horodatée, contenus sensibles chiffrés pour l'équipe de modération), cahier des charges 2.0 (5.6 relecture avant publication, 5.12 provenance), cahier fonctionnel 2.0 (M5, AG-54). Détail : `docs/integration/agir-temoignages.md`.
 - Décisions techniques prises en autonomie :
-  - **bibliothèque** : MapLibre Compose 0.20.0 (licence BSD-3-Clause), moteur OpenGL ES, derrière l'interface `AgendaMapRenderer` (repli possible : MapLibre Native Android) ; la carte s'affiche sur Android ; sur ordinateur (le moteur exige Java 25) et sur iOS (non compilé), la liste reste avec une phrase honnête ;
-  - **aucune requête directe du moteur** : style construit sur l'appareil sans adresse web, toute adresse autre que `ppf-carte://` refusée, glyphes fabriqués à partir de la police Atkinson Hyperlegible intégrée ; serveurs de tuiles tiers ajoutés aux motifs interdits ;
-  - **fonds PMTiles** : un fond de 2,59 Mo intégré à l'application (monde jusqu'au zoom 3, France et outre-mer jusqu'au zoom 7, couches filtrées, données OpenStreetMap sous licence ODbL), disponible hors ligne ; le fond détaillé viendra du serveur, lu par plages d'octets, après un petit manifeste `/tiles/current.json` (nom daté du fichier, taille, somme SHA-256) ; préparation des données par `tools/map-data`, jamais par l'application ni par l'intégration continue ;
-  - **écran** : choix « Liste » / « Carte » (liste par défaut), filtres communs, boutons de zoom et de recentrage sans geste, attribution « © contributeurs OpenStreetMap » toujours visible, aucune position de l'utilisateur ni permission de localisation ;
-  - **poids** : l'APK passe de 16,5 à 38 Mo (bibliothèques natives compressées) ; un APK par architecture (environ 26 Mo) est possible à la publication.
-- Reste : voir la carte réelle sur le téléphone de la propriétaire (aucun émulateur sur l'ordinateur) ; zones hors ligne (S-35), carte de la manifestation en direct (AG-24), tracé d'un parcours, placer un point dans le formulaire.
+  - **chaîne des médias commune** (`core/media`, `ui/media`), utilisable par tous les espaces : métadonnées retirées par **liste blanche** en Kotlin commun, sans dépendance (JPEG, PNG, WebP) ; copie publiée redessinée à partir des pixels (remise droite, 2048 pixels au plus) quand la plateforme sait décoder ; **floutage manuel par mosaïque grossière**, irréversible, sans détection automatique ; empreintes SHA-256 de l'original et de la copie ;
+  - **provenance** signée dès la prise ou l'import par une **clé à usage unique** (cahier des charges 5.12 : ne pas relier le témoin à son pseudonyme), horodatage derrière une interface à brancher sur le module d'archivage de « Décider » ; C2PA étudié, pas codé ;
+  - **chiffrement** : chaque fichier chiffré par NIP-44 v2 avec sa propre clé, transportée dans une enveloppe NIP-59 ; **deux clés distinctes** : la clé de modération lit le témoignage, la clé de conservation des preuves lit l'original, confié seulement si le témoin le choisit, après une mise en garde ;
+  - **serveur** : file dédiée (le serveur ne lit rien), branchée sur le back-office de l'équipe (`agir.testimonies` : refus avec motif ; l'approbation attend le client d'équipe qui déchiffre et la signature hors serveur) ; rétentions : 24 heures pour un fichier orphelin, 30 jours après la décision, 6 ans proposés pour un original confié ; routes fermées en production sans clés réelles ; migrations `V9__agir_temoignages.sql` et `13.sqm` (schéma local 14) ;
+  - **vidéo et son refusés** dans cette version, avec une explication (aucune suppression fiable des métadonnées sans bibliothèque lourde) ;
+  - « Je témoigne » d'un appel à témoins ouvre le formulaire relié à l'appel.
+- Questions transmises au chef d'équipe (avec recommandations, note section 7) : clé à usage unique pour la provenance, garde des deux clés privées, durée de conservation des originaux, vidéos et sons, publier sous son pseudonyme, détection des visages sur l'appareil, retrait par le témoin.
 
-## D-090 (2026-11-07) Référentiel des territoires : codes officiels, population, inscrits, règle des 30
+## D-052 (2026-11-07) Témoignages : décisions de la propriétaire sur les sept questions de D-051
 
-- Contexte : demande du pôle « Décider » (objectifs de signatures proportionnels à la population, seuils des pétitions locales) ; les salons, l'agenda, les appels et les revendications écrivent le territoire en texte libre (`ppf-territory`). Conception et sources vérifiées le 7 novembre 2026 : `docs/integration/territoires.md` ; conception validée par le chef d'équipe (« Décider » accepte l'API sans correction).
-- Sources : populations de référence 2023 de l'Insee (en vigueur depuis le 1er janvier 2026, décret n° 2025-1362) et électeurs inscrits du répertoire électoral unique (extraction du 11 février 2026), par l'API Melodi de l'Insee ; composition des intercommunalités par l'API Métadonnées de l'Insee ; Code officiel géographique 2026 et codes postaux de La Poste ; table de compléments pour l'outre-mer. Toutes sous Licence Ouverte ; aucune donnée personnelle.
-- Droit vérifié : Règlement de l'Assemblée nationale, article 148, alinéa 6 (« plus de 500 000 pétitionnaires domiciliés dans trente départements ou collectivités d'outre-mer au moins ») ; Constitution, article 72-1 ; CGCT, articles L1112-16 (un dixième dans une commune, un vingtième ailleurs) et L5211-49 (un dixième pour un EPCI).
-- Décisions techniques (choix validés par le chef d'équipe) :
-  - **module commun** `core/territoires`, lecture seule pour les autres pôles : codes `fr`, `reg:`, `dep:`, `ctcd:` (collectivités à compétences départementales, dont les sept à statut particulier), `comer:`, `epci:`, `com:`, `arm:` ; parents ; population municipale et inscrits (liste principale et listes complémentaires) avec leur source ; règle des 30 (101 départements et cinq collectivités de l'article 74 ; Nouvelle-Calédonie « à confirmer ») ; recherche sur l'appareil seulement ; objectifs proportionnels par la méthode des plus forts restes ;
-  - **transport** : niveau national (régions, départements, collectivités, outre-mer et index des paquets) **embarqué** dans l'application et servi par `GET /api/v1/territoires` ; paquets par département **séparés** de ceux de l'annuaire des élus (`GET /api/v1/territoires/{code}`) ; index des noms de toutes les communes téléchargé sur geste (`communes`) ; mêmes règles HTTP que l'annuaire (empreinte, `ETag`, gzip) ;
-  - **sources du serveur** : `example` par défaut (vrais chiffres publics de l'Insee pour le Rhône, Paris, la Corse-du-Sud, la Martinique et trois collectivités d'outre-mer, marqués comme jeu d'exemple, et tout le niveau national) ; `official` en production, ou en préproduction avec `PPF_TERRITOIRES_REAL_IN_PREPRODUCTION=true` (décision de la propriétaire en attente) ; un seul hôte sortant de plus, `api.insee.fr` ;
-  - **étiquette facultative `ppf-territory-code`** à côté du libellé libre `ppf-territory` (FORMATS, section 4 nonies) ; le serveur des revendications l'acceptera à l'entrée dans `main` (pôle « Décider ») ;
-  - **numéros de migration** : migration locale `12.sqm` (schéma 13) et Flyway `V7__territoires.sql`, numéros pris à l'entrée dans `main` le 7 novembre 2026 (les suivants des plus hauts de `main`, règle du registre ; prévus `15.sqm` et `V11`).
-- Reste : chiffres de Mayotte (recensement de 2017, puis décret attendu fin 2026) et des collectivités du Pacifique à vérifier puis ajouter à `server/src/main/resources/territoires/outre-mer.csv` ; première importation réelle en production ; copie embarquée à remplacer par le niveau national officiel une fois la production en route ; écrans de « Décider » ; décision du Bureau de l'Assemblée sur la domiciliation (non lue).
+- Décision de la propriétaire par délégation au chef d'équipe, 7 novembre 2026 (« Pour les decisions a prendre, je suis tes recommandations ») :
+  1. la provenance d'une photo est signée par une **clé à usage unique**, qui ne relie pas le témoin à son pseudonyme (cahier des charges 5.12) ;
+  2. **garde des clés** : la clé de modération sur les appareils de deux modératrices ou modérateurs (déchiffrement dans le back-office sur leur appareil) ; la clé de conservation des originaux **hors ligne**, chez la propriétaire puis chez un avocat partenaire ; jamais sur le serveur ;
+  3. les originaux confiés aux avocats sont conservés **6 ans** (à faire relire par l'avocat) ;
+  4. **vidéos et sons** : nettoyage maison des MP4 et MOV, en Kotlin, dans la vague suivante ; refus jusque-là ;
+  5. publier son témoignage **sous son pseudonyme** : plus tard, désactivé par défaut, après une mise en garde ;
+  6. **détection automatique des visages** sur l'appareil : à étudier ; l'outil de floutage manuel reste ;
+  7. **retrait par le témoin** : une demande signée par son compte, chiffrée pour l'équipe, dans la vague suivante (RGPD, article 17).
+
+## D-054 (2026-11-07) Fiches des partis politiques dans « Voir »
+
+- Contexte : décision de la propriétaire du 7 novembre 2026 (M17, ordre d'entrée des responsables publics : « un parti aura sa propre fiche avant les personnes de ce parti »). Détail : `docs/integration/voir-partis.md`.
+- Décisions techniques prises en autonomie :
+  - **brique `parti`** distincte d'`organisation` (annuaire d'« Agir », dont les partis sont exclus, point d'attention n° 7) ; lien d'une personne vers son parti (rôle `parti`), d'un parti vers ses dirigeants (rôle `responsable`) : les membres se déduisent, sans liste en double ;
+  - **structure de financement obligatoire** (association de financement agréée ou mandataire financier, loi n° 88-227 du 11 mars 1988, articles 11 à 11-2) : le même critère légal pour tous, vérifiable sur une source primaire ; **jamais le nom d'un mandataire financier** (personne physique) ;
+  - aide publique de l'État par année (décret annuel de répartition pour source), parti et groupe européens, sièges par assemblée et par source, côte à côte, jamais fusionnés ;
+  - **partis rangés par nom**, jamais par taille ; rubriques identiques pour tous, même vides ;
+  - **pas de culpabilité par association** : la fiche d'un parti ne montre que les faits qui visent le parti lui-même ; les cartes des membres y apparaissent sans leurs compteurs d'affaires.
+- Fusionné le 7 novembre 2026 avec un agent d'une autre session qui faisait le même travail (ses apports repris : financement, aide publique, groupe européen, tri par nom).
+
+## D-055 (2026-11-07) « Voir » sur le site web, sans JavaScript
+
+- Contexte : cahier des charges (site lisible sans JavaScript, PWA, contenus essentiels hors ligne ; solution sur iPhone). Détail : `docs/integration/voir-web.md`.
+- Décisions techniques prises en autonomie : une page par contenu à une adresse stable (`/voir/chiffres|faits|personnes|partis|textes|monde|dossiers/<identifiant>`, identifiant encodé selon la RFC 3986, construite par `core/voir/VoirLinks` pour l'application comme pour le site) ; graphique dessiné par le serveur en SVG, sans script ni couleur dans la page (classes définies dans `site.css`, CSP stricte), suivi du même tableau de données ; rendu Markdown maison qui échappe tout ; seuls les contenus des clés éditoriales (`PPF_EDITOR_KEYS`), catalogue gardé 30 secondes ; filtres par simples liens ; liens sortants marqués « (site extérieur) » avec `rel="noopener noreferrer nofollow external"`. La page d'un parti sur le site montre pour l'instant sa présentation, ses sources et son origine ; la fiche complète suivra.
+
+## D-056 (2026-11-07) Droit de réponse et « Signaler une erreur » dans « Voir »
+
+- Contexte : M17 (droit de réponse obligatoire, LCEN, article 1-1, III ; journal des corrections) ; inventaire VO-21 et VO-22. Détail et format : `docs/integration/voir-demandes.md`.
+- Décisions techniques prises en autonomie :
+  - **transport par message privé chiffré** (NIP-17) vers la boîte de l'équipe de rédaction, par le relais existant, sans route serveur nouvelle : les demandes sensibles restent chiffrées pour l'équipe, et l'échange (vérification de l'identité, réponse) a lieu dans « Messages » ;
+  - **droit de réponse depuis un compte** (l'équipe doit répondre et vérifier l'identité) : formulaire en page, longueur maximale max(mots du contenu, 1 000) avec compteur en direct, déclaration sur l'honneur, brouillon gardé en mémoire pendant la création du compte ;
+  - **« Signaler une erreur » sous chaque contenu, anonyme par défaut** (clé à usage unique, l'équipe ne peut pas répondre) ; avec le compte après une mise en garde, réversible (principe 10) ; signalements anonymes en attente gardés en mémoire seulement ;
+  - **clé de la boîte de l'équipe** isolée derrière `VoirRequests.TEAM_INBOX` (aujourd'hui la clé éditoriale d'exemple) : **une clé dédiée, distincte de celle qui signe les contenus, à créer avant le lancement public**.
+
+## D-057 (2026-11-07) Grille de l'indice de gravité des violences policières (décision de la propriétaire)
+
+- La propriétaire valide le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe) la grille en cinq niveaux proposée par le pôle « Voir » : 1 sans incapacité (pas d'ITT), 2 blessure légère (ITT de 8 jours ou moins), 3 blessure grave (ITT de plus de 8 jours), 4 mutilation ou infirmité permanente, 5 décès ; pour chaque cas : mineur ou non, arme ou moyen en cause, niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule) ; cas déclaratifs comptés à part, jamais mélangés aux cas vérifiés ; l'indice d'une journée est la répartition entre les cinq niveaux, jamais une note unique. Code : à venir (feuille de route de « Voir », point 9).
 
 ## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
 
@@ -526,6 +567,30 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 
 - Accueil de l'espace : le Pacte en cours, les pétitions ouvertes (la date limite la plus proche d'abord), les pétitions closes à part, « Comprendre les seuils », puis « Et aussi » (mur des revendications, « Qui décide de ça ? ») et un encart qui annonce les votations et assemblées tirées au sort, en attente de la méthode « une personne, une voix » (M13.6). Une, deux ou trois colonnes selon la largeur ; retour du système qui ferme la page ouverte ; un candidat, un texte ou un fait s'ouvrent dans « Voir ».
 - « Décider » était le dernier écran provisoire : l'écran qui affichait la disposition et la version a été retiré ; la version installée et le système sont maintenant écrits en bas de « Mon espace », pour qu'une testeuse puisse les donner avec un problème.
+
+## D-064 (2026-11-07) Données ouvertes du Parlement : import séparé, paquets signés, minimisation
+
+- Contexte : feuille de route de « Voir », point 1 (« Oui, commencez », 7 novembre 2026) ; cahier fonctionnel 2.0, M20 et M17 ; contrat `docs/integration/voir-donnees-ouvertes.md` ; sources vérifiées et structure relevée sur les vrais fichiers (téléchargés une fois avec l'accord de la propriétaire, puis supprimés) : `docs/integration/voir-donnees-sources.md` ; outil : `docs/integration/voir-donnees-import.md`.
+- Décisions techniques prises en autonomie (chef d'équipe et pôle « Voir ») :
+  - **outil d'import séparé** `tools/open-data-importer` (`ppf-open-data-importer.jar`), lancé une fois par minuteur (Assemblée et Sénat chaque jour, Parlement européen chaque semaine), dans un conteneur à part avec son propre utilisateur, **seul à lire la clé d'import** ; le serveur sert les paquets d'un dossier en lecture seule (`GET /api/v1/parlement`, `/api/v1/parlement/{paquet}`, ETag, 304) ;
+  - **clé d'import dédiée** (secp256k1, Schnorr) distincte des clés de la plateforme et éditoriales ; l'index est un **événement NIP-01** (kind 30078, `d` = `ppf:parlement-index`) ; l'application ne lui fait confiance que pour ces paquets (`OpenDataKeys`, rotation par liste) ;
+  - **anti-retour en arrière** : un index plus ancien que celui de l'appareil est refusé ; « Données du … » affiché, avertissement après 14 jours ;
+  - **import refusé** si les membres ou les scrutins baissent de plus de 20 % (code de sortie 3), ensemble précédent gardé ; lecture des fichiers officiels en flux (mémoire limitée) ;
+  - **minimisation** : seulement le mandat (nom, chambre, groupe, territoire, début du mandat, page officielle, parti national d'un eurodéputé) ; jamais date de naissance, profession, sexe, civilité, adresses, place dans l'hémicycle, photo ; jamais de déclaration de patrimoine ;
+  - **jeux fictifs [EXEMPLE] au format officiel** par défaut (développement, tests, préproduction) et paquets d'exemple intégrés à l'application ; aucune donnée réelle dans le dépôt ;
+  - hors première version, prévus en version 2 : votes nominatifs du Sénat (copie PostgreSQL de Dosleg), répertoire des représentants d'intérêts consultable sans rapprochement, votes de la France au Conseil de l'Union européenne, pages du site.
+
+## D-065 (2026-11-07) Parlementaires et scrutins dans « Voir »
+
+- Contexte : contrat `voir-donnees-ouvertes.md`, sections 4 et 5 ; détail : `docs/integration/voir-donnees-app.md`.
+- Décisions techniques prises en autonomie (chef d'équipe et pôle « Voir ») :
+  - carte « Tous les parlementaires et leurs votes » sur l'axe « Le pouvoir », après les responsables publics ; liste avec recherche et filtres (chambre, groupe), tri par nom ; fiche d'un parlementaire aux rubriques identiques pour tous ; page d'un scrutin avec le tableau par groupe ;
+  - **votes écrits en toutes lettres** (« Pour », « Contre », « Abstention », « Non-votant ») **en couleurs neutres**, avec la raison d'un non-vote, « par délégation » et la mise au point à côté du vote enregistré ;
+  - **participation** : part des scrutins publics du mandat présents sur l'appareil où le membre a voté, avec sa définition sur chaque fiche (« Ne mesure pas le travail en commission ni les autres activités ») ; aucun chiffre plutôt qu'un faux 0 % ; **jamais de classement** ;
+  - mention partout « D'après les données ouvertes de l'Assemblée nationale (ou du Sénat, du Parlement européen), mises à jour le … ; réutilisation par PPF, sans lien avec ces institutions » ; bandeau « Données fictives [EXEMPLE] » ;
+  - **économie de données** : l'index (quelques centaines d'octets) est relu à l'ouverture ; chaque paquet seulement sur un geste, taille affichée ; « Votes du Sénat : bientôt » ;
+  - liens avec « Voir » par l'étiquette `ppf-official-id` (`an:PA…`, `senat:…`, `pe:…` sur une personne ; `an-dossier:…` sur un texte) : lien vers les votes sur la fiche d'une personne, scrutins sous la fiche d'un texte ;
+  - base locale : migration `12.sqm` (table des paquets et index courant).
 
 ## D-070 (2026-11-07) Chaîne de déploiement : image construite et signée par l'intégration continue, déploiement par empreinte
 
@@ -569,65 +634,6 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Décision technique prise en autonomie : l'image du serveur embarque les contenus [EXEMPLE] signés de `shared/ui/.../files/contents/` ; la variable `PPF_EXAMPLES_DIR` les charge au démarrage (idempotent, signatures vérifiées), seulement en préproduction ; le serveur **refuse de démarrer** en production avec cette variable. La préproduction autorise la clé d'éditeur d'exemple (`PPF_EDITOR_KEYS`), jamais la production.
 - Raison : une seule image promue de la préproduction à la production, et la règle « jamais de données réelles en préproduction, jamais d'exemples en production » vérifiée par le code plutôt que par la vigilance.
 
-## D-080 (2026-11-07) Tuiles du serveur : France entière à la même précision
-
-- Décision technique prise en autonomie (chef d'équipe), gratuite : en production, un seul fichier PMTiles de la France métropolitaine et de l'outre-mer, zooms 8 à 14, filtré (sans bâtiments, points d'intérêt ni occupation du sol), estimé à 3 à 5 Go, sous la limite de 10 Go fixée pour un serveur de 50 Go ; la même précision partout, pour qu'aucun citoyen ne soit « de seconde zone » hors des métropoles. En préproduction, un petit extrait des seules villes des exemples, dans son propre volume (aucune ressource partagée avec la production).
-- Mise en ligne (Directeur technique, D-075 à D-079) : fichier préparé sur un ordinateur de développement, envoyé par SSH, vérifié par sa somme SHA-256, servi par Caddy en requêtes partielles avec un cache long sous un nom daté, aucun journal d'accès ; mise à jour tous les deux ou trois mois.
-- Mention « © contributeurs d'OpenStreetMap » (ODbL) visible dans l'application et sur le site.
-
-## D-054 (2026-11-07) Fiches des partis politiques dans « Voir »
-
-- Contexte : décision de la propriétaire du 7 novembre 2026 (M17, ordre d'entrée des responsables publics : « un parti aura sa propre fiche avant les personnes de ce parti »). Détail : `docs/integration/voir-partis.md`.
-- Décisions techniques prises en autonomie :
-  - **brique `parti`** distincte d'`organisation` (annuaire d'« Agir », dont les partis sont exclus, point d'attention n° 7) ; lien d'une personne vers son parti (rôle `parti`), d'un parti vers ses dirigeants (rôle `responsable`) : les membres se déduisent, sans liste en double ;
-  - **structure de financement obligatoire** (association de financement agréée ou mandataire financier, loi n° 88-227 du 11 mars 1988, articles 11 à 11-2) : le même critère légal pour tous, vérifiable sur une source primaire ; **jamais le nom d'un mandataire financier** (personne physique) ;
-  - aide publique de l'État par année (décret annuel de répartition pour source), parti et groupe européens, sièges par assemblée et par source, côte à côte, jamais fusionnés ;
-  - **partis rangés par nom**, jamais par taille ; rubriques identiques pour tous, même vides ;
-  - **pas de culpabilité par association** : la fiche d'un parti ne montre que les faits qui visent le parti lui-même ; les cartes des membres y apparaissent sans leurs compteurs d'affaires.
-- Fusionné le 7 novembre 2026 avec un agent d'une autre session qui faisait le même travail (ses apports repris : financement, aide publique, groupe européen, tri par nom).
-
-## D-055 (2026-11-07) « Voir » sur le site web, sans JavaScript
-
-- Contexte : cahier des charges (site lisible sans JavaScript, PWA, contenus essentiels hors ligne ; solution sur iPhone). Détail : `docs/integration/voir-web.md`.
-- Décisions techniques prises en autonomie : une page par contenu à une adresse stable (`/voir/chiffres|faits|personnes|partis|textes|monde|dossiers/<identifiant>`, identifiant encodé selon la RFC 3986, construite par `core/voir/VoirLinks` pour l'application comme pour le site) ; graphique dessiné par le serveur en SVG, sans script ni couleur dans la page (classes définies dans `site.css`, CSP stricte), suivi du même tableau de données ; rendu Markdown maison qui échappe tout ; seuls les contenus des clés éditoriales (`PPF_EDITOR_KEYS`), catalogue gardé 30 secondes ; filtres par simples liens ; liens sortants marqués « (site extérieur) » avec `rel="noopener noreferrer nofollow external"`. La page d'un parti sur le site montre pour l'instant sa présentation, ses sources et son origine ; la fiche complète suivra.
-
-## D-056 (2026-11-07) Droit de réponse et « Signaler une erreur » dans « Voir »
-
-- Contexte : M17 (droit de réponse obligatoire, LCEN, article 1-1, III ; journal des corrections) ; inventaire VO-21 et VO-22. Détail et format : `docs/integration/voir-demandes.md`.
-- Décisions techniques prises en autonomie :
-  - **transport par message privé chiffré** (NIP-17) vers la boîte de l'équipe de rédaction, par le relais existant, sans route serveur nouvelle : les demandes sensibles restent chiffrées pour l'équipe, et l'échange (vérification de l'identité, réponse) a lieu dans « Messages » ;
-  - **droit de réponse depuis un compte** (l'équipe doit répondre et vérifier l'identité) : formulaire en page, longueur maximale max(mots du contenu, 1 000) avec compteur en direct, déclaration sur l'honneur, brouillon gardé en mémoire pendant la création du compte ;
-  - **« Signaler une erreur » sous chaque contenu, anonyme par défaut** (clé à usage unique, l'équipe ne peut pas répondre) ; avec le compte après une mise en garde, réversible (principe 10) ; signalements anonymes en attente gardés en mémoire seulement ;
-  - **clé de la boîte de l'équipe** isolée derrière `VoirRequests.TEAM_INBOX` (aujourd'hui la clé éditoriale d'exemple) : **une clé dédiée, distincte de celle qui signe les contenus, à créer avant le lancement public**.
-
-## D-057 (2026-11-07) Grille de l'indice de gravité des violences policières (décision de la propriétaire)
-
-- La propriétaire valide le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe) la grille en cinq niveaux proposée par le pôle « Voir » : 1 sans incapacité (pas d'ITT), 2 blessure légère (ITT de 8 jours ou moins), 3 blessure grave (ITT de plus de 8 jours), 4 mutilation ou infirmité permanente, 5 décès ; pour chaque cas : mineur ou non, arme ou moyen en cause, niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule) ; cas déclaratifs comptés à part, jamais mélangés aux cas vérifiés ; l'indice d'une journée est la répartition entre les cinq niveaux, jamais une note unique. Code : à venir (feuille de route de « Voir », point 9).
-
-## D-064 (2026-11-07) Données ouvertes du Parlement : import séparé, paquets signés, minimisation
-
-- Contexte : feuille de route de « Voir », point 1 (« Oui, commencez », 7 novembre 2026) ; cahier fonctionnel 2.0, M20 et M17 ; contrat `docs/integration/voir-donnees-ouvertes.md` ; sources vérifiées et structure relevée sur les vrais fichiers (téléchargés une fois avec l'accord de la propriétaire, puis supprimés) : `docs/integration/voir-donnees-sources.md` ; outil : `docs/integration/voir-donnees-import.md`.
-- Décisions techniques prises en autonomie (chef d'équipe et pôle « Voir ») :
-  - **outil d'import séparé** `tools/open-data-importer` (`ppf-open-data-importer.jar`), lancé une fois par minuteur (Assemblée et Sénat chaque jour, Parlement européen chaque semaine), dans un conteneur à part avec son propre utilisateur, **seul à lire la clé d'import** ; le serveur sert les paquets d'un dossier en lecture seule (`GET /api/v1/parlement`, `/api/v1/parlement/{paquet}`, ETag, 304) ;
-  - **clé d'import dédiée** (secp256k1, Schnorr) distincte des clés de la plateforme et éditoriales ; l'index est un **événement NIP-01** (kind 30078, `d` = `ppf:parlement-index`) ; l'application ne lui fait confiance que pour ces paquets (`OpenDataKeys`, rotation par liste) ;
-  - **anti-retour en arrière** : un index plus ancien que celui de l'appareil est refusé ; « Données du … » affiché, avertissement après 14 jours ;
-  - **import refusé** si les membres ou les scrutins baissent de plus de 20 % (code de sortie 3), ensemble précédent gardé ; lecture des fichiers officiels en flux (mémoire limitée) ;
-  - **minimisation** : seulement le mandat (nom, chambre, groupe, territoire, début du mandat, page officielle, parti national d'un eurodéputé) ; jamais date de naissance, profession, sexe, civilité, adresses, place dans l'hémicycle, photo ; jamais de déclaration de patrimoine ;
-  - **jeux fictifs [EXEMPLE] au format officiel** par défaut (développement, tests, préproduction) et paquets d'exemple intégrés à l'application ; aucune donnée réelle dans le dépôt ;
-  - hors première version, prévus en version 2 : votes nominatifs du Sénat (copie PostgreSQL de Dosleg), répertoire des représentants d'intérêts consultable sans rapprochement, votes de la France au Conseil de l'Union européenne, pages du site.
-
-## D-065 (2026-11-07) Parlementaires et scrutins dans « Voir »
-
-- Contexte : contrat `voir-donnees-ouvertes.md`, sections 4 et 5 ; détail : `docs/integration/voir-donnees-app.md`.
-- Décisions techniques prises en autonomie (chef d'équipe et pôle « Voir ») :
-  - carte « Tous les parlementaires et leurs votes » sur l'axe « Le pouvoir », après les responsables publics ; liste avec recherche et filtres (chambre, groupe), tri par nom ; fiche d'un parlementaire aux rubriques identiques pour tous ; page d'un scrutin avec le tableau par groupe ;
-  - **votes écrits en toutes lettres** (« Pour », « Contre », « Abstention », « Non-votant ») **en couleurs neutres**, avec la raison d'un non-vote, « par délégation » et la mise au point à côté du vote enregistré ;
-  - **participation** : part des scrutins publics du mandat présents sur l'appareil où le membre a voté, avec sa définition sur chaque fiche (« Ne mesure pas le travail en commission ni les autres activités ») ; aucun chiffre plutôt qu'un faux 0 % ; **jamais de classement** ;
-  - mention partout « D'après les données ouvertes de l'Assemblée nationale (ou du Sénat, du Parlement européen), mises à jour le … ; réutilisation par PPF, sans lien avec ces institutions » ; bandeau « Données fictives [EXEMPLE] » ;
-  - **économie de données** : l'index (quelques centaines d'octets) est relu à l'ouverture ; chaque paquet seulement sur un geste, taille affichée ; « Votes du Sénat : bientôt » ;
-  - liens avec « Voir » par l'étiquette `ppf-official-id` (`an:PA…`, `senat:…`, `pe:…` sur une personne ; `an-dossier:…` sur un texte) : lien vers les votes sur la fiche d'une personne, scrutins sous la fiche d'un texte ;
-  - base locale : migration `12.sqm` (table des paquets et index courant).
-
 ## D-075 (2026-11-07) Données parlementaires ouvertes : déploiement de l'importeur
 
 - Décisions techniques prises en autonomie (Directeur technique), pour l'outil de « Voir » (D-064, `docs/integration/voir-donnees-import.md`) :
@@ -636,6 +642,66 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **production** : service `open-data-importer` lancé une fois par exécution (`ppf-open-data-import`), son propre utilisateur (UID 10003), le seul à lire la clé d'import (fichier secret), son propre réseau avec une sortie vers les seules sources officielles (`infra/EGRESS.md`), jamais la base ; il écrit `/srv/ppf/production/open-data`, monté en lecture seule dans le serveur ; mémoire limitée à 512 Mo jusqu'à la mesure sur les vrais fichiers ; minuteurs `ppf-open-data-daily` (Assemblée et Sénat, 5 h 20) et `ppf-open-data-weekly` (Parlement européen, lundi 5 h 50) installés mais activés seulement au lancement public, quand la clé d'import de production existera et figurera dans `OpenDataKeys` ;
   - l'intégration continue vérifie que la préproduction sert les paquets d'exemple et que l'importeur, présent dans l'image, refuse de tourner sans clé (code 5).
 - Reste à décider avant le lancement : où vit la clé d'import de production (sur le serveur dans son conteneur, ou dans le service de signature séparé).
+
+## D-076 (2026-11-07) Préproduction sur les vraies informations publiques ; graines des votes ; réglages privés
+
+- Contexte : décision de la propriétaire du 7 novembre 2026 (relayée par le chef d'équipe) : « on reste dans la vraie info même en preprod pour ne pas faire travailler les équipes pour rien » ; besoins du serveur des votes de « Décider » (D-110).
+- Décisions techniques prises en autonomie (Directeur technique) :
+  - **préproduction en sources officielles** : annuaire des élus (`PPF_RNE_SOURCE=official`), référentiel des territoires (`PPF_TERRITOIRES_SOURCE=official`) et données parlementaires (importeur en mode `official`, son propre conteneur, UID 10004, sa propre clé d'import `OpenDataKeys.PREPRODUCTION`, créée sur le serveur par `ppf-open-data-import preproduction keygen` au premier déploiement) ; jamais de données personnelles de citoyens ; les contenus éditoriaux d'exemple restent tant qu'il n'existe pas de vrais contenus ; tant que la clé de préproduction n'est pas dans les versions d'essai, la préproduction sert les paquets d'exemple ;
+  - minuteurs d'import en modèles par environnement (`ppf-open-data-daily@<environnement>`, `ppf-open-data-weekly@<environnement>`), importeur limité à 512 Mo avec un tas de 256 Mo (mesure sur les vrais fichiers : 316 Mo au plus) ;
+  - **graines des clés de vote** : dossier `/srv/ppf/<environnement>/vote_seeds`, un fichier de 32 octets aléatoires par version, lisible par le seul utilisateur du serveur, monté en lecture seule (`PPF_VOTE_SEEDS_DIR`) ; version 1 créée par `bootstrap-server.sh`, rotation et destruction par `ppf-vote-seed` ; dans la sauvegarde chiffrée hors site, copie hors ligne recommandée à la propriétaire ;
+  - **adresse publique exacte** de chaque environnement (`PPF_PUBLIC_URL`), obligatoire pour les autorisations NIP-98 des votes ;
+  - **réglages anti-fraude privés** (seuils de preuve de travail et limites des votes) dans un fichier `/srv/ppf/<environnement>/private.env`, lu par le serveur s'il existe, jamais dans le dépôt (modèle sans valeurs : `infra/env/private.env.example`).
+
+## D-078 (2026-11-07) Notifications : ntfy auto-hébergé pour les réveils
+
+- Contexte : contrat des notifications de « Communauté » (M31, `docs/integration/notifications.md`, section 6) : les poussées sont des réveils vides et chiffrés ; l'appareil se synchronise et fait ses notifications lui-même ; le serveur ne connaît aucun centre d'intérêt.
+- Décisions techniques prises en autonomie (Directeur technique) :
+  - **ntfy v2.37.2** (dernière version, publiée le 4 novembre 2026), image épinglée par empreinte, un conteneur par environnement (UID 10005 production, 10006 préproduction), système de fichiers en lecture seule, données dans `/srv/ppf/<environnement>/ntfy`, 64 Mo de mémoire au plus ;
+  - adresses : `push.politisation-populaire-francaise.org` (publique) et `push.preprod.politisation-populaire-francaise.org` (tunnel seulement, comme toute la préproduction) ; un enregistrement DNS de plus pour la préproduction ;
+  - réglages : aucun relais extérieur (`upstream-base-url` vide : jamais ntfy.sh), application web, inscription et connexion désactivées, cache des réveils 12 heures au plus, tout est refusé sauf les sujets aléatoires « up* » d'UnifiedPush (ouverts à chaque déploiement) ; journaux au niveau « warn » ; ntfy ne voit jamais l'adresse d'un client (le proxy la retire), ses limites par visiteur deviennent donc un plafond global, dimensionné pour toute la plateforme ;
+  - le serveur n'accepte que notre ntfy comme destination (`PPF_PUSH_ALLOWED_HOSTS`) et l'atteint par le réseau interne (`PPF_PUSH_INTERNAL_URL=http://ntfy:8080`), jamais par son nom public ; la clé privée VAPID (EC P-256, PKCS#8) est générée sur le serveur par `bootstrap-server.sh` (`PPF_VAPID_PRIVATE_KEY_FILE`) ; les services de poussée des navigateurs (tiers) restent refusés ;
+  - l'intégration continue vérifie que ntfy démarre, accepte un réveil sur un sujet « up* » et refuse tout autre sujet.
+
+## D-079 (2026-11-07) Service de signature de la plateforme : racine sur le téléphone de la propriétaire, règles d'accord
+
+- Contexte : contrat `docs/integration/service-signature.md` (version 1), CLAUDE.md section 7 (clé de la plateforme jamais en clair sur le serveur principal, rotation et révocation dès le départ).
+- Décisions de la propriétaire (7 novembre 2026, relayées par le chef d'équipe) : la clé racine vit sur son téléphone, dans l'application PPF, avec les 12 mots sur papier (« Option A ») ; « toute l'équipe de PPF faisant partie d'un groupe de rédacteur pourra publier sans clé, c'est le principe » ; les clés physiques servent à la sécurité maximale des super-administrateurs.
+- Décisions techniques (chef d'équipe et Directeur technique) : une racine hors ligne qui ne signe que des certificats et des révocations ; une clé de travail par usage dans un conteneur de signature séparé, sans accès à Internet, valable 90 jours, renouvelée automatiquement ; une seule approbation d'un membre du groupe concerné, avec sa clé d'accès habituelle, pour une publication ordinaire ; double validation pour les contenus de M17 qui mettent en cause une personne ; signature automatique seulement pour les preuves d'horodatage, l'index des données ouvertes et la clôture des urnes, chacun avec sa clé ; preuve d'accord vérifiée par le service lui-même (assertions WebAuthn sur l'empreinte de l'événement, liste d'équipe signée par la racine).
+
+## D-080 (2026-11-07) Tuiles du serveur : France entière à la même précision
+
+- Décision technique prise en autonomie (chef d'équipe), gratuite : en production, un seul fichier PMTiles de la France métropolitaine et de l'outre-mer, zooms 8 à 14, filtré (sans bâtiments, points d'intérêt ni occupation du sol), estimé à 3 à 5 Go, sous la limite de 10 Go fixée pour un serveur de 50 Go ; la même précision partout, pour qu'aucun citoyen ne soit « de seconde zone » hors des métropoles. En préproduction, un petit extrait des seules villes des exemples, dans son propre volume (aucune ressource partagée avec la production).
+- Mise en ligne (Directeur technique, D-075 à D-079) : fichier préparé sur un ordinateur de développement, envoyé par SSH, vérifié par sa somme SHA-256, servi par Caddy en requêtes partielles avec un cache long sous un nom daté, aucun journal d'accès ; mise à jour tous les deux ou trois mois.
+- Mention « © contributeurs d'OpenStreetMap » (ODbL) visible dans l'application et sur le site.
+
+## D-090 (2026-11-07) Référentiel des territoires : codes officiels, population, inscrits, règle des 30
+
+- Contexte : demande du pôle « Décider » (objectifs de signatures proportionnels à la population, seuils des pétitions locales) ; les salons, l'agenda, les appels et les revendications écrivent le territoire en texte libre (`ppf-territory`). Conception et sources vérifiées le 7 novembre 2026 : `docs/integration/territoires.md` ; conception validée par le chef d'équipe (« Décider » accepte l'API sans correction).
+- Sources : populations de référence 2023 de l'Insee (en vigueur depuis le 1er janvier 2026, décret n° 2025-1362) et électeurs inscrits du répertoire électoral unique (extraction du 11 février 2026), par l'API Melodi de l'Insee ; composition des intercommunalités par l'API Métadonnées de l'Insee ; Code officiel géographique 2026 et codes postaux de La Poste ; table de compléments pour l'outre-mer. Toutes sous Licence Ouverte ; aucune donnée personnelle.
+- Droit vérifié : Règlement de l'Assemblée nationale, article 148, alinéa 6 (« plus de 500 000 pétitionnaires domiciliés dans trente départements ou collectivités d'outre-mer au moins ») ; Constitution, article 72-1 ; CGCT, articles L1112-16 (un dixième dans une commune, un vingtième ailleurs) et L5211-49 (un dixième pour un EPCI).
+- Décisions techniques (choix validés par le chef d'équipe) :
+  - **module commun** `core/territoires`, lecture seule pour les autres pôles : codes `fr`, `reg:`, `dep:`, `ctcd:` (collectivités à compétences départementales, dont les sept à statut particulier), `comer:`, `epci:`, `com:`, `arm:` ; parents ; population municipale et inscrits (liste principale et listes complémentaires) avec leur source ; règle des 30 (101 départements et cinq collectivités de l'article 74 ; Nouvelle-Calédonie « à confirmer ») ; recherche sur l'appareil seulement ; objectifs proportionnels par la méthode des plus forts restes ;
+  - **transport** : niveau national (régions, départements, collectivités, outre-mer et index des paquets) **embarqué** dans l'application et servi par `GET /api/v1/territoires` ; paquets par département **séparés** de ceux de l'annuaire des élus (`GET /api/v1/territoires/{code}`) ; index des noms de toutes les communes téléchargé sur geste (`communes`) ; mêmes règles HTTP que l'annuaire (empreinte, `ETag`, gzip) ;
+  - **sources du serveur** : `example` par défaut (vrais chiffres publics de l'Insee pour le Rhône, Paris, la Corse-du-Sud, la Martinique et trois collectivités d'outre-mer, marqués comme jeu d'exemple, et tout le niveau national) ; `official` en production et en préproduction (décision de la propriétaire du 7 novembre 2026 : « on reste dans la vraie info même en preprod » ; vaut aussi pour l'annuaire des élus) ; un seul hôte sortant de plus, `api.insee.fr` ;
+  - **étiquette facultative `ppf-territory-code`** à côté du libellé libre `ppf-territory` (FORMATS, section 4 nonies) ; le serveur des revendications l'acceptera à l'entrée dans `main` (pôle « Décider ») ;
+  - **numéros de migration** : migration locale `12.sqm` (schéma 13) et Flyway `V7__territoires.sql`, numéros pris à l'entrée dans `main` le 7 novembre 2026 (les suivants des plus hauts de `main`, règle du registre ; prévus `15.sqm` et `V11`).
+- Reste : chiffres de Mayotte (recensement de 2017, puis décret attendu fin 2026) et des collectivités du Pacifique à vérifier puis ajouter à `server/src/main/resources/territoires/outre-mer.csv` ; première importation réelle en production ; copie embarquée à remplacer par le niveau national officiel une fois la production en route ; écrans de « Décider » ; décision du Bureau de l'Assemblée sur la domiciliation (non lue).
+
+## D-091 (2026-11-07) « Comprendre » sur le site, sans JavaScript
+
+- Contexte : CLAUDE.md, section 7 (site lisible sans JavaScript, installable en PWA, contenus essentiels hors ligne ; seule solution pour les iPhone tant que l'application iOS n'existe pas) ; consigne du chef d'équipe : fiches pratiques d'abord, avec leur lecture hors ligne, puis parcours, décryptages, histoire des luttes, « Qui décide de ça ? », méthode et glossaire. Détail : `docs/integration/comprendre-web.md`.
+- Décisions techniques prises en autonomie (gratuites, sans dépendance nouvelle) :
+  - **adresses stables** dans `core/comprendre/ComprendreLinks` (dans le style de `VoirLinks`, pour que le futur bouton « Partager » donne la même) : `/comprendre/fiches/<id>`, `/comprendre/parcours/<id>`, `/comprendre/decryptages/<id>`, `/comprendre/histoire/<id>`, `/comprendre/qui-decide/<id>`, `/comprendre/glossaire/<id sans le préfixe « glossaire- »>`, `/comprendre/methode`, `/comprendre/hors-ligne` ; une adresse inconnue répond une page 404 ;
+  - **contenus des seules clés éditoriales**, signature revérifiée à la lecture, catalogue gardé 30 secondes (comme « Voir ») ;
+  - **rendu Markdown du serveur** qui suit les règles de `SimpleMarkdown` : encarts, objections, chronologie, « Et maintenant ? » en liens vers les espaces du site (`ppf:revendications` devient `/revendications`), sources en dernier ; liens sortants seulement vers `https://` ou `http://`, avec `rel="noopener noreferrer nofollow external"` et la mention « (site extérieur : adresse du site) » ; adresses écrites dans le texte transformées en liens ; aucun HTML d'un contenu n'est recopié ;
+  - **glossaire dans les textes** : la première occurrence de chaque mot devient un lien vers sa page, souligné en pointillés ; sa définition rapide est donnée sans JavaScript par `aria-describedby` vers la liste « Les mots du glossaire de cette page », écrite en bas de chaque page (lue par les lecteurs d'écran au passage sur le lien, visible par tous, imprimée avec la page). Écarté : `<abbr title>` (infobulle invisible au clavier et au doigt) et les infobulles en JavaScript ;
+  - **quiz sans JavaScript** : question, réponses lettrées dans une liste, bonne réponse et explication derrière un `<details>` « Voir la bonne réponse » ; aucun formulaire, rien n'est envoyé, rien n'est enregistré (la progression reste une fonction de l'application, sur l'appareil) ; un parcours tient sur une seule page, avec un sommaire des étapes ;
+  - **« Qui décide de ça ? »** : la chaîne de décision, les personnes publiques liées par l'équipe (vers leur page de « Voir »), puis les annuaires officiels (option C) ; le site ne demande jamais la commune ;
+  - **hors ligne** : un service worker (`/sw.js`, écrit par le serveur à partir d'un modèle, version qui suit les fiches et les fichiers du site) garde les fiches pratiques et la page « Lire hors ligne » dès la première visite de « Comprendre », puis chaque page visitée de « Comprendre » et de « Voir » ; pages demandées d'abord au réseau (une correction se voit toujours en ligne), fichiers de `/static/` d'abord en cache ; seulement les requêtes GET du site, jamais l'API. Il est enregistré par un petit fichier `/static/pwa.js` chargé seulement par les pages de « Comprendre » (autorisé par `script-src 'self'`) : c'est un plus, toutes les pages sont complètes sans lui. Pour les navigateurs sans service worker, `/comprendre/hors-ligne` réunit toutes les fiches en entier sur une page à enregistrer ou imprimer ;
+  - **styles** : une section « Comprendre » ajoutée en fin de `site.css`, aucun style en ligne, mêmes jetons clair et sombre ; CSP et en-têtes de sécurité inchangés.
+- Fichiers communs touchés (signalés) : `web/.../WebRoutes.kt` (montage, l'emplacement réservé de « Comprendre » disparaît quand une base est configurée), `site.css` (section ajoutée à la fin), `server/.../Application.kt` (paramètre `comprendre`), `BundledContents.kt` et `DevServer.kt` (chargement de `parcours.json`, `comprendre.json`, `glossaire.json`). Aucun fichier de `web/.../voir/` modifié.
+- Reste : liens de « Voir » vers les fiches pratiques (fichiers de « Voir », à faire par son pôle avec `ComprendreLinks`) ; icônes PNG 192 et 512 du manifeste si un navigateur refuse l'icône SVG ; dossiers de « Comprendre » ; version « Facile à lire » ; essai du hors-ligne sur un vrai téléphone (phase de test).
 
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
@@ -732,7 +798,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - serveur : Web Push (RFC 8030, 8291, 8292) avec la seule bibliothèque standard de Java ; adresses limitées aux sujets `/up…` de notre ntfy (`PPF_PUSH_ALLOWED_HOSTS`), envoi par le réseau interne (`PPF_PUSH_INTERNAL_URL`) ; clé VAPID hors dépôt (`PPF_VAPID_PRIVATE_KEY_FILE`) ; revendication `sub` = adresse du site, jamais une adresse e-mail ;
   - Android : `org.unifiedpush.android:connector` 3.3.5 (Apache 2.0) et Tink en version Android 1.23.0 (Apache 2.0, chiffrement local, aucun appel réseau) à la place de la version JVM, qui apportait protobuf-java ; aucun distributeur FCM intégré ; l'utilisateur choisit son distributeur (ntfy recommandé) ; sans distributeur, l'application fonctionne et notifie seulement quand elle est ouverte ;
   - écran verrouillé : jamais de contenu (« PPF : nouvelle activité ») ; écran déverrouillé : ni expéditeur ni extrait sans l'accord de l'utilisateur, qui passe par une mise en garde ; option « silence total » ;
-  - numéros provisoires : migration locale `13.sqm` dans la branche (16 réservé par le chef d'équipe) et Flyway `V9__push.sql` (V12 réservé), renommés à l'entrée dans `main`.
+  - numéros provisoires : migration locale `14.sqm` dans la branche (après `13.sqm` d'Agir) et Flyway `V10__push.sql` (après `V9` d'Agir), puis `V11__group_roles.sql` et `V12__account_types.sql`, renommés au besoin à l'entrée dans `main`.
 - Raison : notifier sans que le serveur apprenne ce que suit chacun (RGPD, article 9 ; principe 10).
 
 ## D-131 (2026-11-07) Salons : rôles et modération par le collectif, publics et motivés
@@ -766,3 +832,8 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   2. la date « compromis depuis » peut remonter jusqu'à **30 jours** avant l'avis ;
   3. l'équipe peut publier l'avis **seulement pour un compte déjà vérifié en personne** : elle retrouve la séance par le lien chiffré prévu pour l'audit (D-112), vérifie en personne, et publie par une action à deux du back-office, journalisée ; pour un compte jamais vérifié qui a aussi perdu sa phrase, aucune reprise n'est possible, et l'inscription le dit clairement.
 - Décisions techniques (pôle Communauté) : clé de secours au chemin `m/44'/1237'/0'/1/0` ; engagement 1776 horodaté (OpenTimestamps, `core/archive`) ; avis 1777 signé par la clé de secours ; refus des nouveaux événements de la clé (`403 account_compromised`), événements postérieurs marqués suspects ; aucun suivi automatique du successeur ; refus des jetons de vote et délivrance au successeur sans double voix à caler avec Décider (M16).
+## D-128 (2026-11-07) Préproduction avant la liaison GitHub : déploiement par paquet
+
+- Contexte : la propriétaire achète le serveur KVM 2 maintenant et reliera GitHub plus tard ; la chaîne D-070 (image construite et signée par l'intégration continue) suppose GitHub.
+- Décision technique prise en autonomie (Directeur technique) : pour la **préproduction seulement**, un second chemin : sur l'ordinateur de la propriétaire, je compile les deux jars d'un commit (protocole `gradle-safe.ps1`), `tools/make-preprod-bundle.sh` en fait un paquet (fichiers `infra/` et contenus du commit par `git archive`, jars, fichier `REVISION`), envoyé au serveur par SSH ; `ppf-deploy preproduction-bundle <paquet>` vérifie le paquet (aucun chemin absolu ni « .. », commit et fichiers attendus), construit l'image sur le serveur et la déploie avec le même circuit (migrations, santé, retour arrière, proxy). `bootstrap-server.sh` accepte de tourner sans `--github` ; la mise à jour automatique de la préproduction reste éteinte tant que GitHub n'est pas relié.
+- Garde-fou : une image construite ainsi n'est pas signée et n'a pas d'empreinte de registre ; la commande de production n'accepte que des empreintes signées par l'intégration continue : elle ne peut jamais la prendre. Dès que GitHub est relié, on relance `bootstrap-server.sh --github …` et la préproduction suit de nouveau `main` toute seule.

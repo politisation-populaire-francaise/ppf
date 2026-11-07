@@ -6,6 +6,88 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-08] Brainstorming de la nuit : fonctionnalités indispensables, innovantes et pertinentes
+- Statut : Intégré le 2026-11-08 (cahier fonctionnel 2.1, cahier des charges 2.2)
+- Concerne : cahier-fonctionnel.md (M1, M2, M4, M5, M6, M12, M13.1, M13.5 à M13.7, M14, M16 à M18, M20 à M25, M27, M29, M32 à M35, annexes B à D) ; cahier-des-charges.md (sections 3.2, 3.3, 3.4.2, 3.5, 3.8, 4.1, 5.1, 5.2, 5.7, 5.8, 5.11 à 5.13, 6 à 10, 12)
+- Contexte : mandat de la propriétaire du 7 novembre 2026, 23 h : « brainstormer sur les fonctionnalités indispensables, innovantes et pertinentes », intégrer les décisions au cahier fonctionnel et mettre à jour le cahier des charges ; pour les décisions : « Pour les decisions a prendre, je suis tes recommandations ».
+- Sources : 30 idées des pôles (Voir, Comprendre, Agir, Décider, Communauté, Directeur technique) et 41 idées de trois agents de recherche (démocratie et redevabilité ; mobilisation, sécurité et résilience ; expérience, engagement et inclusion), avec les sources citées dans leurs rapports. Les doublons sont fusionnés.
+- Légende : **Tôt** = dans les prochaines vagues, avant la présidentielle d'avril 2027 ; **Plus tard** ; **Écarté**.
+- Décisions du chef d'équipe par délégation de la propriétaire (8 novembre 2026), par pôle, avec le nouvel identifiant :
+  - **Voir**
+    - Alerte « mes élus ont voté » et alertes sur un mot suivi, triées sur l'appareil (fusion d'une idée de Voir et d'une idée de l'agent démocratie) : Tôt, VO-34 (M20, avec Communauté pour les notifications).
+    - Présence et délégations par groupe et par chambre, sans classement d'élus : Tôt, VO-35 (M20).
+    - Applicomètre (décrets d'application attendus et publiés) : Tôt, VO-36 (M20), licence du baromètre à vérifier.
+    - Parrainages de la présidentielle 2027 : Tôt (février et mars 2027), VO-37 (M20), affiché aussi dans le comparateur (DE-16) et dans Mes élus (TE-01).
+    - « Que sont devenues nos paroles ? » (Convention citoyenne pour le climat, grand débat et cahiers de doléances) : Tôt, VO-38 (M4).
+    - Écart entre vote et parole, côte à côte et sans verdict : Tôt après l'alerte, VO-39 (M17).
+    - Comptage de foule participatif (méthode de Jacobs) : Tôt après la carte de la manifestation, VO-40 (M2 ; outil d'Agir, urne de Décider).
+    - Délai de réponse des ministères aux questions écrites : Tôt, VO-41 (M20) ; questions citoyennes : Plus tard.
+    - « Ce que cette loi change pour moi » : promu de Plus tard à Tôt, ligne CO-15 modifiée (M22, avec Comprendre).
+    - Journal des textes officiels modifiés : Plus tard, VO-42 (M4), accès gratuit à l'API de Légifrance (PISTE) à créer par la propriétaire.
+    - Ce que le Parlement a changé dans le texte : Plus tard, VO-43 (M20), licence du code de La Fabrique de la loi à étudier.
+    - Contributions extérieures (« portes étroites ») au Conseil constitutionnel : Plus tard, VO-44 (M20).
+    - Observatoire des blocages avec OONI : Plus tard, VO-45 (M17, prolonge VO-26).
+    - Budget de ma commune : déjà prévu, ligne VO-32 complétée (M21, avec Comprendre).
+  - **Comprendre**
+    - « Vacciner contre l'intox » (pré-démystification des techniques de manipulation) : Tôt, CO-23 (M6).
+    - Kit d'atelier d'éducation populaire, mode animation hors ligne sans compte : Tôt, CO-24 (M23).
+    - Fiches en cartes verticales et carrousel portant le code de vérification : Tôt, CO-25 (M6).
+    - « Cette fiche vous a aidé ? », sans compte ni texte libre : Tôt, CO-26 (M6).
+    - Carnet de route privé, sans série ni points : Tôt, CO-27 (M23, avec Communauté pour Mon espace).
+    - Suis une loi qui me concerne : Tôt après l'alerte de Voir, CO-28 (M13.1, avec Voir).
+    - Vérifier une image qui circule (empreinte visuelle sur l'appareil) : Tôt, deuxième vague, CO-29 (M6), licence de PDQ à vérifier.
+    - Fiches essentielles dans les langues de France : Plus tard, CO-30 (M32).
+  - **Agir**
+    - Minuteur « sans nouvelles de moi », alertes déposées chiffrées à l'avance chez les proches : Tôt, AG-55 (M25, avec Communauté pour les cercles).
+    - Préparer mon téléphone avant la manifestation : Tôt, AG-56 (M25), avocat.
+    - Soutien aux personnes interpellées : Tôt, AG-57 (M25), données d'infractions (RGPD, article 10), avocat.
+    - Caméra protégée : Tôt pour la galerie chiffrée, Plus tard pour l'envoi continu, AG-58 (M5), coût du stockage vidéo à présenter.
+    - Kit contre le harcèlement et la divulgation d'informations personnelles : Tôt, deuxième vague, AG-59 (M25).
+    - Simulateur du gréviste : Tôt, AG-60 (M35).
+    - Affiche et tract à code QR (fusion d'une idée d'Agir et d'une idée de l'agent expérience) : Tôt, AG-61 (M12).
+    - « Et après ? », suites sourcées d'une mobilisation : Tôt, AG-62 (M1, avec Voir pour la chronologie).
+    - Créneaux de bénévolat : Tôt, deuxième vague, AP-11 (M12).
+    - Mes proches à mobiliser, liste privée sur l'appareil : Tôt, AG-63 (M12).
+    - Agenda fédéré ActivityPub et diffusion vers le fédivers (fusion de trois idées) : Plus tard (phase 3), AG-64 (M1, avec le Directeur technique).
+    - Relais radio longue portée (LoRa) : Plus tard (phase 4), AG-65 (M25), achat des radios à présenter.
+  - **Décider**
+    - « Mon bulletin a été compté » : Tôt, DE-29 (M16).
+    - Questions citoyennes aux candidats 2027 : Tôt (ouverture en janvier 2027), DE-30 (M13.7), avocat.
+    - Demandes d'accès aux documents administratifs (CRPA, CADA, lien vers Ma Dada) : Tôt, DE-31 (M13.1 suite).
+    - Observer son conseil municipal : Tôt pour le guide, Plus tard pour le relevé des délibérations, DE-32 (M13.1 suite, avec Comprendre).
+    - Boussole 2027 (type Wahl-O-Mat) : Plus tard, DE-33 (M13.7), neutralité des thèses : avocat.
+    - Carte des opinions (type Pol.is) : Plus tard, conception à étudier, DE-34 (M13.5).
+    - Jury citoyen tiré au sort pour le suivi du Pacte : Plus tard (après l'élection), DE-35 (M13.5), avocat.
+    - Budget du peuple : Plus tard (automne 2027), DE-36 (M13.6).
+    - Collectivités partenaires : Plus tard, DE-37 (M13.5), avocat.
+    - Délégation de vote par thème (démocratie liquide) : **Écarté**, contraire à l'urne anonyme (D-110) ; inscrit à l'annexe D du cahier fonctionnel.
+    - Audition publique au second seuil (agent démocratie) : **Écarté**, car la propriétaire a décidé le 7 novembre 2026 que l'équipe dépose une pétition officielle quand une revendication prend de l'ampleur ; inscrit à l'annexe D.
+  - **Communauté**
+    - Fil fini et explicable (« Vous êtes à jour », « Pourquoi je vois ça ? », heures de silence) : Tôt, S-145 (M18, nouveau tableau du module).
+    - « Ma semaine », résumé hebdomadaire sur l'appareil (fusion d'une idée de Communauté et d'une idée de l'agent expérience) : Tôt, TE-10 (M27).
+    - Déclarer mon compte compromis, avec une clé de secours créée avec le compte (fusion d'une idée de Communauté et d'une idée de l'agent sécurité) : Tôt, conception immédiate, S-146 (M16, avec Décider), proposition NIP-41 à étudier.
+    - Salon d'accueil des nouveaux et kit d'accueil par collectif : Tôt, S-147 (M14).
+    - Mode simple et accompagnant : Tôt, S-148 (M32, avec Comprendre pour l'audio).
+    - Engagements de conception loyale : Tôt, PP-09 (M34).
+    - Messages relayés avec leur provenance : Tôt, deuxième vague, S-149 (M14).
+    - Réunion de collectif clé en main dans un salon : Tôt, deuxième vague, S-150 (M24, avec Agir).
+    - Mode appareil partagé : Plus tard, S-151 (M29).
+    - Notes de contexte communautaires au-delà des clivages : Plus tard, à étudier, S-152 (M18).
+  - **Directeur technique** (cahier des charges 2.2)
+    - Versions vérifiables par tous (recompilation par un tiers, journal public des empreintes) : Tôt, sections 4.1, 5.11 et 8.
+    - Liste d'adresses de secours signée, DoH, ECH et sonde de blocage désactivée par défaut (fusion d'une idée du Directeur technique et d'une idée de l'agent sécurité) : Tôt, sections 3.3 et 5.2 ; ligne S-47 complétée.
+    - Mode sobre automatique en cas d'afflux et test de charge avant chaque mise en production : Tôt (avant le lancement), sections 3.5 et 6.
+    - Page publique de transparence technique : Tôt ; canari mensuel : avocat ; sections 5.7, 9.4 et 9.8.
+    - Ponts Tor et relais Snowflake volontaire désactivé par défaut : Plus tard (phase 3), conçus dès maintenant, section 5.2.
+    - Code PIN de contrainte : Plus tard, avis d'avocat indispensable (Code pénal, articles 434-4 et 434-15-2) ; ligne S-44 complétée, sections 5.13 et 9.8.
+    - Stockage des vidéos de la caméra protégée et radios LoRa : dépenses à présenter à la propriétaire le moment venu, section 12.
+- Exigences induites ajoutées au cahier des charges : clé de secours créée avec chaque compte (3.2) ; galerie chiffrée hors de la galerie du téléphone, alertes du minuteur déposées chiffrées à l'avance chez les proches, tri des alertes sur l'appareil sans envoyer les mots suivis, données d'infractions chiffrées de bout en bout et effacées rapidement (nouvelle section 5.13) ; huit points ajoutés à la liste de relecture par un avocat (9.8).
+- Points restés « À étudier » (rien de ce qui en dépend n'est codé avant leur conception) :
+  - carte des opinions (DE-34) : incompatible en l'état avec l'urne anonyme, qui ne relie pas les votes d'une même personne dans une conversation ; à étudier avec une analyse d'impact ;
+  - notes de contexte communautaires (S-152) : analyse d'impact, jetons anonymes ;
+  - code PIN de contrainte (S-44) : après l'avis d'un avocat.
+- Décision : intégré le 8 novembre 2026 au cahier fonctionnel 2.1 et au cahier des charges 2.2 par le chef d'équipe, par délégation de la propriétaire. Copies locales modifiées par l'IA ; à reporter dans le projet claude.ai.
+
 ### [2026-11-07] Espace « Décider » : première version et questions ouvertes
 - Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M10 (pétitions), M13.5 (Pacte démocratique) ; inventaire, DE-07 et DE-08
@@ -62,6 +144,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **le statut juridique de PPF** (question 3) n'est pas une question de forme (PPF est une association loi 1901) mais de responsabilité : hébergeur ou éditeur des contenus publiés par d'autres. Application de la doctrine : option A (hébergeur : publication directe, retrait rapide sur signalement), relue par un avocat à la fin.
 - Les autres questions, tranchées selon cette doctrine par l'équipe technique (réversible sur simple demande) : 1. A, avec la procédure et les critères de vérification publiés ; 2. A ou B, et C seulement si le bénévole donne lui-même son accord écrit (libre choix) ; 4. B (exclure les partis, les candidats et leurs comités de soutien ou associations de financement déclarés, admettre le reste, au vu des statuts ; liste des cas limites pour l'avocat) ; 6. A (une organisation n'apparaît comme organisatrice ou participante que si elle l'a confirmé elle-même, par un événement signé de sa clé ; non confirmée, elle est affichée « annoncée, non confirmée ») ; 7. A ; 9. « Ça m'intéresse » ; 10. B dès que la méthode de comptage anonyme est en service (approuvée le 7 novembre), avec le tri « près de chez moi » ; 11. B ; 12. A puis B ; 13. C, avec la vue carte ; 14. A (les appels à témoins restent relus, décision du 5 novembre 2026) ; 15. A ; 16. A, avec la barre du bas (décision du 7 novembre) : la rubrique du mode manifestation dans Agir pour se préparer, et le bouton AIDE pour l'urgence ; 17. B.
 - **Contradiction à trancher par la propriétaire** (vision 4.2 et cahier des charges, principe 10 : « tous les réglages de confidentialité et d'anonymat sont au niveau le plus élevé par défaut ») : si la participation d'un citoyen est visible de son cercle **par défaut**, et celle d'un élu publique **par défaut**, c'est un réglage moins protecteur à la création du compte, ce que ces documents définitifs interdisent aujourd'hui. Options : A. garder le principe 10 : la participation compte toujours dans les chiffres ; la montrer à son cercle, ou publiquement pour un élu, se fait d'un geste, avec la mise en garde habituelle, et reste réversible ; B. modifier la vision et le cahier des charges pour une exception : participation visible du cercle par défaut, publique par défaut pour les comptes certifiés d'élus et pour les organisations, masquable à tout moment ; C. B pour les élus et les organisations seulement, A pour les citoyens. Les organisations ne sont pas concernées par le principe 10 (ce ne sont pas des personnes physiques) : leur participation est publique dès qu'elles la confirment. Recommandation : C. Rien de ce qui en dépend n'est codé avant sa réponse (les cercles et les comptes d'élus n'existent pas encore).
+  - **Décision de la propriétaire (7 novembre 2026, relayée par le chef d'équipe, mots exacts)** : « Si c'est un vote, les organisations ne peuvent pas voter, mais les élus oui et eux leur vote est public. Sinon par defaut les publications sont visibles par les cercles d'un user sauf parametrage contraire. » Application : option B pour les citoyens (une participation « J'y participe » est visible des cercles de l'utilisateur par défaut, réglable, et compte toujours dans l'urne anonyme) ; élus : vote public ; organisations : ne votent jamais, leur participation confirmée reste affichée publiquement (D-044, D-045). Le nombre de participants vient toujours de l'urne (contrat `core/urne`). À reporter dans la vision et le cahier des charges (principe 10, exception choisie par la propriétaire) par le chef d'équipe. Rien n'est codé tant que les cercles (M28, pôle Communauté) n'existent pas.
 
 ### [2026-11-07] « Voir » : feuille de route jusqu'à l'ambition de la vision
 - Statut : Validé le 2026-11-07 (ordre des étapes)

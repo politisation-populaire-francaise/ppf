@@ -113,6 +113,8 @@ internal fun ComposeUiTest.showCalls(
     onBack: (() -> Unit)? = null,
     dark: Boolean = false,
     waitForExamples: Boolean = true,
+    /** Where Agir plugs "Témoigner" in: "Je témoigne" then calls it (LocalTestify). */
+    testify: ((callAddress: String, callTitle: String) -> Unit)? = null,
 ): CallsHarness {
     val harness = CallsHarness(database)
     val uriHandler = object : UriHandler {
@@ -139,16 +141,19 @@ internal fun ComposeUiTest.showCalls(
         CompositionLocalProvider(LocalUriHandler provides uriHandler) {
             PpfTheme(darkTheme = dark) {
                 Box(Modifier.requiredSize(width.dp, height.dp)) {
-                    CallsScreen(
-                        library = library,
-                        session = session,
-                        windowClass = WindowClass.of(widthDp = width.toFloat(), heightDp = height.toFloat()),
-                        onBack = onBack,
-                        isVerifiedOrganisation = isVerifiedOrganisation,
-                        onCreateEvent = onCreateEvent,
-                        onCreateDemand = onCreateDemand,
-                        onCreateAccount = onCreateAccount,
-                    )
+                    val screen: @androidx.compose.runtime.Composable () -> Unit = {
+                        CallsScreen(
+                            library = library,
+                            session = session,
+                            windowClass = WindowClass.of(widthDp = width.toFloat(), heightDp = height.toFloat()),
+                            onBack = onBack,
+                            isVerifiedOrganisation = isVerifiedOrganisation,
+                            onCreateEvent = onCreateEvent,
+                            onCreateDemand = onCreateDemand,
+                            onCreateAccount = onCreateAccount,
+                        )
+                    }
+                    if (testify != null) org.politisationpopulairefrancaise.ui.agir.testimonies.ProvideTestify(testify, screen) else screen()
                 }
             }
         }

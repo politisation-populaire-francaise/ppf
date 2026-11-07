@@ -1,7 +1,7 @@
 -- Notifications (M31, decision D-130, contract docs/integration/notifications.md). Everything here
 -- stays on the device: the server only ever sends empty wake-ups, so what interests the user (the
 -- categories they enabled, what they were notified of) is never known outside the device.
--- Added in schema version 14: existing databases get it through migrations/13.sqm.
+-- Added in schema version 15: existing databases get it through migrations/14.sqm.
 
 -- The user's notification settings, as name and value; a missing row means the most protective
 -- default (everything off, no detail shown).

@@ -8,6 +8,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
 
@@ -32,6 +33,8 @@ class MainActivity : ComponentActivity() {
             push = app.push,
             pushServer = app.pushServer,
             requestNotificationPermission = ::requestNotificationPermission,
+            // The published build trusts the production import key only; test builds the preproduction and the examples.
+            openDataTrust = if (BuildConfig.BUILD_TYPE == "release") OpenDataKeys.release() else OpenDataKeys.testBuilds(),
         )
         setContent {
             PpfApp(dependencies)
