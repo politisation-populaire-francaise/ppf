@@ -3,7 +3,11 @@ package org.politisationpopulairefrancaise.tools.content
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.comprendre.ComprendreTags
+import org.politisationpopulairefrancaise.core.comprendre.ContentBlocks
 import org.politisationpopulairefrancaise.core.comprendre.ParcoursFormat
+import org.politisationpopulairefrancaise.core.comprendre.QuiDecide
+import org.politisationpopulairefrancaise.core.comprendre.Verdict
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
@@ -104,6 +108,8 @@ fun main(args: Array<String>) {
         )
     }.map { signer.signChecked(it) }
     write(output.resolve("parcours.json"), courses)
+
+    write(output.resolve("comprendre.json"), comprendreEvents(content, keys.publicKey).map { signer.signChecked(it) })
 
     val notes = signAll(content.resolve("fil")) { document ->
         UnsignedEvent.create(
@@ -278,4 +284,74 @@ private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, au
             "${catalog.texts.size} bill(s), ${catalog.movements.size} movement(s), ${catalog.dossiers.size} dossier(s), " +
             "${catalog.replies.size} reply(ies), author $authorHex",
     )
+}
+
+/**
+ * The contents of "Comprendre" beyond the courses (comprendre.json): fact-checks (`decryptages`),
+ * stories of the history of social movements (`histoire`), « Qui décide de ça ? » sheets
+ * (`qui-decide`) and the method page (`methode`). Each kind is refused when its required fields,
+ * its blocks (objections, chronology, chain of decision) or its sources are missing or malformed.
+ */
+private fun comprendreEvents(content: Path, author: PublicKey): List<UnsignedEvent> {
+    fun common(document: Document, type: ArticleType, extraTags: List<List<String>>) = Article.build(
+        author = author,
+        slug = document.require("slug"),
+        title = document.require("title"),
+        summary = document.require("summary"),
+        topics = document.topics(),
+        type = type,
+        origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
+        publishedAt = document.require("published_at").dateToEpochSeconds(),
+        updatedAt = document.require("updated_at").dateToEpochSeconds(),
+        body = document.body,
+        extraTags = extraTags,
+    )
+
+    fun check(document: Document, problems: List<String>) {
+        val all = problems + ContentBlocks.problems(document.body) +
+            if (document.body.lines().any { it.trim() == "## Sources" }) emptyList() else listOf("no \"## Sources\" section")
+        require(all.isEmpty()) { "${document.name}: invalid content:\n  " + all.joinToString("\n  ") }
+    }
+
+    fun list(document: Document, key: String): List<String> = document.metadata[key].orEmpty().split(" ; ", ";").map { it.trim() }.filter { it.isNotEmpty() }
+
+    val checks = signAll(content.resolve("decryptages")) { document ->
+        val verdict = Verdict.fromTag(document.require("verdict")) ?: error("${document.name}: unknown verdict (${Verdict.entries.joinToString { it.tagValue }})")
+        check(document, if (ContentBlocks.hasObjections(document.body)) emptyList() else listOf("a fact-check needs a ::: objections block (pluralism)"))
+        common(
+            document,
+            ArticleType.DECRYPTAGE,
+            listOfNotNull(
+                listOf(ComprendreTags.VERDICT, verdict.tagValue),
+                listOf(ComprendreTags.CLAIM, document.require("claim")),
+                document.metadata["claim_context"]?.takeIf { it.isNotBlank() }?.let { listOf(ComprendreTags.CLAIM_CONTEXT, it) },
+            ),
+        )
+    }
+    val stories = signAll(content.resolve("histoire")) { document ->
+        val period = document.require("period").split('|').map { it.trim() }
+        require(period.isNotEmpty() && period.all { it.isEmpty() || ContentBlocks.frenchDate(it) != null } && period[0].isNotEmpty()) {
+            "${document.name}: period must be \"start | end\" with AAAA or AAAA-MM-JJ"
+        }
+        check(document, if (ContentBlocks.hasObjections(document.body)) emptyList() else listOf("a story needs a ::: objections block (pluralism)"))
+        common(
+            document,
+            ArticleType.HISTOIRE,
+            listOf(listOf(ComprendreTags.PERIOD) + period.filter { it.isNotEmpty() }, listOf(ComprendreTags.COUNTRY, document.require("country"))) +
+                list(document, "claims").map { listOf(ComprendreTags.CLAIM, it) } +
+                list(document, "results").map { listOf(ComprendreTags.RESULT, it) },
+        )
+    }
+    val sheets = signAll(content.resolve("qui-decide")) { document ->
+        val (_, _, problems) = QuiDecide.parse(document.body)
+        val actions = if (document.body.contains("::: et-maintenant")) emptyList() else listOf("no \"::: et-maintenant\" block (« Et maintenant ? »)")
+        check(document, problems + actions)
+        val persons = document.metadata["persons"].orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() }
+        common(document, ArticleType.QUI_DECIDE, persons.map { slug -> listOf("a", "${Article.KIND}:${author.hex}:$slug", "", ComprendreTags.PERSON_LINK_ROLE) })
+    }
+    val method = signAll(content.resolve("methode")) { document ->
+        check(document, emptyList())
+        common(document, ArticleType.ARTICLE, emptyList())
+    }
+    return checks + stories + sheets + method
 }

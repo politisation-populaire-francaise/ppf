@@ -56,6 +56,7 @@ require '^assets/composeResources/[^/]+/values/strings[^/]*\.cvr$' "interface st
 require '^assets/composeResources/[^/]+/files/contents/fiches\.json$' "bundled contents (fiches.json)"
 require '^assets/composeResources/[^/]+/files/contents/fil\.json$' "bundled feed posts (fil.json)"
 require '^assets/composeResources/[^/]+/files/contents/parcours\.json$' "bundled courses (parcours.json)"
+require '^assets/composeResources/[^/]+/files/contents/comprendre\.json$' "bundled contents of Comprendre (comprendre.json)"
 require '^assets/composeResources/[^/]+/files/contents/revendications\.json$' "bundled demands (revendications.json)"
 require '^assets/composeResources/[^/]+/files/contents/voir\.json$' "bundled contents of Voir (voir.json)"
 require '^assets/composeResources/[^/]+/font/atkinson_hyperlegible_regular\.ttf$' "bundled font (Atkinson Hyperlegible)"

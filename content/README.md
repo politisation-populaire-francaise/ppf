@@ -58,6 +58,19 @@ Deux ou trois paragraphes courts.
 
 L'outil de signature refuse un parcours incomplet (étape sans question, question sans explication ou avec plusieurs bonnes réponses, « Et maintenant ? » ou sources absentes). Les quatre parcours actuels sont des brouillons **[EXEMPLE]** rédigés avec l'aide d'une IA (`origin: ai-assisted`), vérifiés sur Légifrance, le Conseil constitutionnel, l'Assemblée nationale et service-public, à faire relire par l'équipe éditoriale.
 
+## Décryptages, histoire des luttes, « Qui décide de ça ? » (`decryptages/`, `histoire/`, `qui-decide/`, `methode/`)
+
+Même en-tête qu'une fiche (sans `type`, donné par le dossier), avec en plus :
+
+| Dossier | Champs de l'en-tête |
+|---|---|
+| `decryptages` | `verdict` (`exact`, `plutot-exact`, `trompeur`, `contredit-par-les-faits`, `inverifiable`), `claim` (l'affirmation mot pour mot, sur une ligne), `claim_context` (où et quand elle circule, sans jamais nommer une personne privée) |
+| `histoire` | `period` (`début | fin`, en années ou dates AAAA-MM-JJ), `country`, `claims` et `results` (listes séparées par ` ; `) |
+| `qui-decide` | `persons` (identifiants des personnes publiques de `voir/personnes` à nommer dans l'encart, séparés par des virgules ; peut rester vide) |
+| `methode` | rien de plus : la page `notre-methode` explique comment un décryptage est fait et définit les cinq verdicts |
+
+Blocs propres à ces contenus : `::: objections` (paires `? objection` puis `> réponse sourcée`, obligatoire dans les décryptages et l'histoire), `::: chronologie` (lignes `- AAAA-MM-JJ : texte`), et pour « Qui décide de ça ? » un bloc `::: decideurs` en tête du corps (lignes `- niveau | rôles | ce que ce niveau décide (référence)`). L'outil de signature refuse un contenu dont un bloc est mal formé ou dont les sources manquent. Tous les contenus actuels sont des brouillons **[EXEMPLE]** rédigés avec l'aide d'une IA et vérifiés sur les textes officiels, à faire relire.
+
 ## Format d'une revendication (`revendications/*.md`)
 
 Même en-tête qu'une fiche (sans `type`), avec en plus :
@@ -94,4 +107,4 @@ La liste complète des champs et des valeurs est dans `docs/FORMATS.md`, section
 ./gradlew :tools:content-signer:run
 ```
 
-L'outil lit `content/fiches`, `content/parcours`, `content/revendications`, `content/fil` et `content/voir`, signe chaque fichier en événement (fiches, parcours et revendications : NIP-23, type 30023 ; fil : type 1 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `revendications.json` et `fil.json`, `voir.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.
+L'outil lit `content/fiches`, `content/parcours`, `content/decryptages`, `content/histoire`, `content/qui-decide`, `content/methode`, `content/revendications`, `content/fil` et `content/voir`, signe chaque fichier en événement (fiches, parcours et revendications : NIP-23, type 30023 ; fil : type 1 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `comprendre.json`, `revendications.json`, `fil.json` et `voir.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.

@@ -6,7 +6,7 @@ topics: droits, manifestation, preuves
 type: fiche-pratique
 origin: human
 published_at: 2026-11-05
-updated_at: 2026-11-06
+updated_at: 2026-11-07
 ---
 ::: en-bref
 - Filmer des policiers ou des gendarmes **en intervention sur la voie publique** est légal.
@@ -21,7 +21,7 @@ updated_at: 2026-11-06
 
 Une circulaire du ministère de l'Intérieur du 23 décembre 2008 le rappelle aux forces de l'ordre : dans l'exercice de leurs fonctions, elles ne bénéficient d'aucune protection particulière de leur image et ne peuvent ni interdire l'enregistrement ni exiger l'effacement des images.
 
-En 2021, l'article 24 de la loi dite « sécurité globale », qui voulait punir la diffusion de l'image des forces de l'ordre, a été censuré par le Conseil constitutionnel (décision n° 2021-817 DC du 20 mai 2021).
+En 2021, la disposition de la loi dite « sécurité globale » qui voulait punir la diffusion de l'image des forces de l'ordre (article 52, paragraphe I, de la loi adoptée) a été censurée par le Conseil constitutionnel (décision n° 2021-817 DC du 20 mai 2021).
 
 ::: legal
 - Filmer et photographier des policiers ou des gendarmes en intervention sur la voie publique.
