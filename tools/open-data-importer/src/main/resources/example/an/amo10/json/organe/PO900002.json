@@ -1,0 +1,26 @@
+{
+ "organe": {
+  "@xsi:type": "GroupePolitique_type",
+  "uid": "PO900002",
+  "codeType": "GP",
+  "libelle": "[EXEMPLE] Groupe de l'Horizon",
+  "libelleEdition": "[EXEMPLE] Groupe de l'Horizon",
+  "libelleAbrege": "[EXEMPLE] Groupe de l'Horizon",
+  "libelleAbrev": "GDH",
+  "viMoDe": {
+   "dateDebut": "2024-07-10",
+   "dateAgrement": null,
+   "dateFin": null
+  },
+  "organeParent": null,
+  "chambre": null,
+  "regime": "5ème République",
+  "legislature": "17",
+  "secretariat": {
+   "secretaire": null
+  },
+  "couleurAssociee": "#123456",
+  "positionPolitique": "[EXEMPLE]",
+  "preseance": "1"
+ }
+}

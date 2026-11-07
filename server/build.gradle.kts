@@ -64,6 +64,8 @@ dependencies {
     // in the runtime classpath through shared/core; declared here because the server builds its own client.
     implementation(libs.ktor.client.cio)
 
+    // The development server and the tests of /api/v1/parlement run the example import (fictional data).
+    testImplementation(project(":tools:open-data-importer"))
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.ktor.client.mock)
     testImplementation(kotlin("test"))

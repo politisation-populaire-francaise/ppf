@@ -1,0 +1,21 @@
+{
+ "data": [
+  {
+   "id": "org/990103",
+   "type": "Organization",
+   "identifier": "990103",
+   "label": "UDC-EX",
+   "prefLabel": {
+    "fr": "[EXEMPLE] Union des Coteaux",
+    "en": "[EXEMPLE] (en) Union des Coteaux"
+   },
+   "altLabel": {
+    "fr": "UDC-EX"
+   },
+   "classification": "def/ep-entities/NATIONAL_CHAMBER"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}
