@@ -36,11 +36,43 @@ Relevé fait le 7 novembre 2026 sur les pages officielles (requêtes HEAD seulem
 
 - https://www.data.gouv.fr/datasets/repertoire-national-des-elus-1 : ministère de l'Intérieur, Licence Ouverte 2.0, trimestriel (dernière mise à jour le 11 août 2026), 12 CSV. Utilisé par « Comprendre » (D-047).
 
+## Structure relevée sur les vrais fichiers (7 novembre 2026, 14 h)
+
+Avec l'accord de la propriétaire donné le 7 novembre 2026 dans la conversation, les quatre fichiers ont été téléchargés une fois (46,7 Mo), chacun dans son propre dossier hors du dépôt, analysés par un script qui n'affiche que les noms de champs, leurs types et quelques valeurs de codes (jamais un nom ni un vote), puis **supprimés**. Rien de ces fichiers n'entre dans le dépôt ni dans les tests.
+
+Règles communes aux fichiers de l'Assemblée (JSON issus du XML) : **tous les nombres sont des chaînes** ; un élément unique est un **objet**, plusieurs sont une **liste** (il faut accepter les deux partout) ; une liste vide vaut `null` ; certains identifiants sont des objets (`uid` = `{"#text": "PA…"}` dans les acteurs).
+
+### Scrutins (`Scrutins.json.zip`)
+
+- 9 759 fichiers `json/VTANR5L17V<numéro>.json`, un par scrutin ; tous en `modePublicationDesVotes` = `DecompteNominatif`.
+- `scrutin` : `uid` (`VTANR5L17V2657`), `numero` (`"2657"`), `legislature` (`"17"`), `dateScrutin` (`AAAA-MM-JJ`), `organeRef` (l'Assemblée, `PO838901`), `seanceRef`, `titre`, `objet.libelle`, `objet.dossierLegislatif` (`dossierRef` = `DLR5L17N54083`, `libelle`, souvent `null`), `demandeur.texte`.
+- `typeVote` : `codeTypeVote` (`SPO` scrutin public ordinaire : 9 661 ; `SPS` solennel : 75 ; `MOC` motion de censure : 23), `libelleTypeVote`, `typeMajorite`.
+- `sort` : `code` (`adopté`, `rejeté`), `libelle`.
+- `syntheseVote` : `nombreVotants`, `suffragesExprimes`, `nbrSuffragesRequis`, `annonce`, `decompte` (`pour`, `contre`, `abstentions`, `nonVotants`, `nonVotantsVolontaires`).
+- `ventilationVotes.organe.groupes.groupe[]` : `organeRef` (groupe `PO…`), `nombreMembresGroupe`, `vote.positionMajoritaire` (`pour`, `contre`, `abstention`), `vote.decompteVoix` (mêmes cinq nombres), `vote.decompteNominatif` avec `pours`, `contres`, `abstentions`, `nonVotants`, chacun `{"votant": objet ou liste}` ; un `votant` : `acteurRef` (`PA…`), `mandatRef`, `numPlace` (place dans l'hémicycle : **ne pas garder**), `parDelegation` (`"true"`/`"false"`), et pour les non-votants `causePositionVote` (`MG` membre du Gouvernement, `PAN` président de l'Assemblée, `PSE` président de séance ; à afficher, c'est la raison du non-vote).
+- `miseAuPoint` : `pours`, `contres`, `abstentions`, `nonVotants`, `nonVotantsVolontaires` (mêmes `votant`) et `dysfonctionnement` (mêmes rubriques : le vote a mal fonctionné) ; **aucune date** propre à la mise au point dans le fichier (on affiche la date du scrutin et la mention « mise au point »).
+
+### Députés (`AMO10`)
+
+- `json/acteur/PA….json` (574 acteurs), `json/organe/PO….json` (7 123 organes), `json/deport/` (30 déports : un député qui s'abstient de prendre part à un sujet à cause d'un conflit d'intérêts ; à étudier en version 2).
+- `acteur.uid.#text` = `PA841605` ; `etatCivil.ident` (`prenom`, `nom` à garder ; `civ`, `alpha`, `trigramme` à ne pas garder) ; `profession` à ne pas garder.
+- `mandats.mandat[]` : `uid`, `acteurRef`, `legislature`, `typeOrgane` (`ASSEMBLEE`, `GP` groupe, `PARPOL` parti de rattachement, `COMPER` commission permanente, `GE`, `GA`, `ORGEXTPARL`…), `dateDebut`, `dateFin` (`null` si en cours), `infosQualite.codeQualite`, `organes.organeRef` (chaîne ou liste), et pour `ASSEMBLEE` : `election.lieu` (`numDepartement` sur deux ou trois caractères : `01`, `2A`, `099` pour les Français établis hors de France, `971` à `988` ; `numCirco` **sans zéro** : `1`, `11`), `election.refCirconscription` (organe `CIRCONSCRIPTION`), `election.causeMandat`.
+- `organe` : `uid` (`PO845401`), `codeType` (`GP`, `CIRCONSCRIPTION`…), `libelle`, `libelleAbrev` (sigle du groupe), `libelleAbrege`, `viMoDe.dateDebut`/`dateFin`, `couleurAssociee` (**ne pas utiliser** : couleurs neutres), et pour une circonscription `lieu.departement.code`.
+- Code de circonscription de nos paquets : `numDepartement` puis `numCirco` sur deux chiffres (`0101`, `2A02`, `09911`, `97101`), **à aligner** avec l'annuaire des élus de « Comprendre » avant de le figer.
+
+### Dossiers législatifs (`Dossiers_Legislatifs.json.zip`)
+
+- `json/dossierParlementaire/DLR5L17N….json` (3 402) et `json/document/` (7 622) ; on garde seulement `uid`, `titreDossier.titre`, `titreDossier.titreChemin` (pour l'adresse de la page sur assemblee-nationale.fr) et `procedureParlementaire.libelle`.
+
+### Sénateurs (`senateurs.json`)
+
+- Une liste : `matricule`, `nom`, `prenom`, `groupe` (`code`, `libelle`, `libelleCourt`, `codeTypeAppartenance` : `A` apparenté, `N` membre), `circonscription` (`code` : `33`, `975`…, `libelle`), `serie`, `url`. **À ne pas garder** : `civilite`, `feminise`, `categorieProfessionnelle`, `urlAvatar`, `facebook`, `twitter`, `organismes`, `siege`.
+
 ## Non confirmé
 
-1. Champs JSON réels des scrutins de l'Assemblée (documentation vide) : demande à la propriétaire de télécharger `Scrutins.json.zip` (30 Mo) pour les relever.
-2. Clés JSON réelles des fichiers AMO (documentation écrite pour le XML).
-3. Fréquence de mise à jour de l'Assemblée.
+1. ~~Champs des scrutins~~ et ~~clés des fichiers AMO~~ : relevés (section précédente).
+2. Date propre d'une mise au point : absente du fichier.
+3. Fréquence de mise à jour de l'Assemblée (fichiers datés du jour de la lecture).
 4. Tables des votes dans `dosleg.zip` (Sénat).
 5. Clés du JSON AGORA (HATVP) et de `declarations.xml`.
 6. Texte de la décision du Bureau du Parlement européen C/2025/341 (lu dans une copie tierce).
