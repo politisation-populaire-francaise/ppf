@@ -160,3 +160,9 @@ Bibliothèque envisagée pour vérifier les clés d'accès côté serveur : Yubi
 - Étape 1 (socle) : codée dès la diffusion de ce contrat, dans `.claude/worktrees/backoffice`, testée (tests unitaires, d'intégration sur PostgreSQL réel, pages au clavier), puis fusionnée dans `main` selon la file du chef d'équipe.
 - Étape 2 (signalements, DSA) : à la suite.
 - Chaque pôle branche ses files après la fusion de l'étape 1.
+
+## 14. Ajouts prévus (demandes des pôles du 7 novembre 2026)
+
+- **Pages de l'équipe pour un pôle** (`BackOfficeSection`) : titre de menu, permission, routes rendues dans la mise en page du socle ; le socle garde la connexion, les permissions, le jeton anti-falsification, la nouvelle vérification de la clé pour les envois sensibles et l'entrée du journal de chaque action. Pour les formulaires de rédaction du circuit éditorial (« Comprendre », « Voir »).
+- **Contexte d'une action** : `perform` reçoit un `ActionContext` (`actor` et, pour une action à deux, `requestedBy`) ; `TeamActor` porte la clé Nostr reliée au compte (posée par une action à deux, journalisée), pour qu'une file éditoriale refuse que l'auteur d'un brouillon l'approuve.
+- **Défi des accords signés** : pour une action qui demande la signature de la plateforme, le défi WebAuthn de chacune des deux personnes est l'empreinte définie dans `docs/integration/service-signature.md` (section 5).
