@@ -108,7 +108,7 @@ class HelpState(
     /** The guide of [slug] the device holds, if it has been imported. */
     fun guide(slug: String): Article? = contents?.guides?.firstOrNull { it.slug == slug }
 
-    fun setTerritory(text: String) {
+    fun typeTerritory(text: String) {
         territoryTouched = true
         territory = text.take(MAX_TERRITORY)
     }

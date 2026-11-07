@@ -159,7 +159,7 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
                 Spacer(Modifier.height(4.dp))
                 PpfTextField(
                     value = help.territory,
-                    onValueChange = help::setTerritory,
+                    onValueChange = help::typeTerritory,
                     placeholder = stringResource(Res.string.manif_territory_label),
                     singleLine = true,
                     modifier = Modifier.fillMaxWidth().testTag(ManifestationTags.TERRITORY),
