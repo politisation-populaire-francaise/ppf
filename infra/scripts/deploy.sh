@@ -170,6 +170,8 @@ deploy() {
     echo "$ref" > "$PPF_DATA_DIR/$env/deployed-image"
     echo "$revision" > "$PPF_DATA_DIR/$env/deployed-revision"
     printf '%s %s %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)" "$ref" "$revision" >> "$PPF_DATA_DIR/$env/history"
+    # ntfy refuses everything but the random UnifiedPush topics "up*" (D-078); idempotent.
+    compose_env "$env" "$release" "$ref" exec -T ntfy ntfy access everyone 'up*' read-write >/dev/null
     proxy_update "$release" "$env"
     prune_releases "$env"
     docker image prune --force --filter "until=168h" >/dev/null || true

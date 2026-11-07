@@ -1,0 +1,11 @@
+# Every Monday (Parlement européen), at night, after the institutions publish their files.
+[Unit]
+Description=PPF: import the parliamentary open data (weekly, %i)
+
+[Timer]
+OnCalendar=Mon *-*-* 05:50:00
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target
