@@ -8,6 +8,7 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.agir.AgirRules
 import org.politisationpopulairefrancaise.server.groups.GroupKinds
 import org.politisationpopulairefrancaise.server.groups.GroupNames
+import org.politisationpopulairefrancaise.server.groups.SimilarGroup
 import org.politisationpopulairefrancaise.server.relay.RelayKinds
 
 /**
@@ -31,8 +32,10 @@ import org.politisationpopulairefrancaise.server.relay.RelayKinds
  * - the companions of a description (39001 admins, 39003 roles, 39004, 39005) stay reserved to the
  *   editorial keys until roles exist: an admins list published by anyone would tie keys to a group;
  * - member lists (39002) are refused: the server never holds nor publishes one (D-027);
- * - group membership and moderation events (9000 to 9022) are not accepted yet; they are the
- *   next step of the groups (see GroupKinds);
+ * - of the group membership and moderation events (9000 to 9022), only put-user (9000),
+ *   remove-user (9001), edit-metadata (9002) and delete-event (9005) are accepted (D-131), with the
+ *   shape of [moderationShape]; who may send them is decided by GroupModeration, from the state of
+ *   the room; the others (invitations, join and leave requests, deletion of a room) stay refused;
  * - an event sent to a group names exactly one group (`h`); a chat message (kind 9) must name one;
  * - an encrypted envelope (kind 1059) names exactly one recipient (`p`), otherwise it could never
  *   be fetched and would only take space;
@@ -49,9 +52,16 @@ class PublicationPolicy(private val editors: Set<String>) {
 
         /**
          * [existing] is set with the error `group_exists` only: the id of the group the client should
-         * join instead of creating a duplicate.
+         * join instead of creating a duplicate; [similar] with the error `group_similar` only: the
+         * rooms whose name is close, on the same territory or a parent one (D-132).
          */
-        data class Refused(val status: Int, val error: String, val message: String, val existing: String? = null) : Decision
+        data class Refused(
+            val status: Int,
+            val error: String,
+            val message: String,
+            val existing: String? = null,
+            val similar: List<SimilarGroup> = emptyList(),
+        ) : Decision
     }
 
     fun isEditor(pubkeyHex: String): Boolean = pubkeyHex in editors
@@ -72,8 +82,9 @@ class PublicationPolicy(private val editors: Set<String>) {
         AgirRules.check(event) != null -> AgirRules.check(event)!!
         event.kind == GroupKinds.MEMBERS ->
             Decision.Refused(403, "members_list_refused", "Member lists are never published nor stored on this relay.")
-        GroupKinds.isMembershipOrModeration(event.kind) ->
-            Decision.Refused(400, "unsupported_kind", "Group membership and moderation events are not accepted yet.")
+        GroupKinds.isMembershipOrModeration(event.kind) && !GroupKinds.isAcceptedModeration(event.kind) ->
+            Decision.Refused(400, "unsupported_kind", "Of the group membership and moderation events, only put-user, remove-user, edit-metadata and delete-event are accepted.")
+        GroupKinds.isAcceptedModeration(event.kind) && moderationShape(event) != null -> moderationShape(event)!!
         GroupKinds.isGroupMetadata(event.kind) && event.kind != GroupKinds.METADATA && !isEditor(event.pubkey) ->
             Decision.Refused(403, "not_allowed", "Only authorized keys publish the companions of a group description (admins, roles) for now.")
         GroupKinds.isGroupMetadata(event.kind) && !hasExactlyOneValidGroupId(event, "d") ->
@@ -92,6 +103,12 @@ class PublicationPolicy(private val editors: Set<String>) {
                 "description_too_long",
                 "A group description is at most ${GroupKinds.MAX_DESCRIPTION_BYTES} bytes, its name at most ${GroupKinds.MAX_NAME_LENGTH} characters and its territory at most ${GroupKinds.MAX_TERRITORY_LENGTH}.",
             )
+        event.kind == GroupKinds.METADATA && !hasValidDifference(event) ->
+            Decision.Refused(
+                400,
+                "bad_difference",
+                "A creation confirmed despite similar rooms (${GroupKinds.SIMILAR_TAG} = ${GroupKinds.SIMILAR_CONFIRMED}) says how it differs in one ${GroupKinds.DIFFERENCE_TAG} tag of 1 to ${GroupKinds.MAX_DIFFERENCE_LENGTH} characters.",
+            )
         event.kind == GroupKinds.CHAT_MESSAGE && event.tagValues(GroupKinds.GROUP_TAG).isEmpty() ->
             Decision.Refused(400, "missing_group", "A chat message names its group in an h tag.")
         event.tagValues(GroupKinds.GROUP_TAG).size > 1 ->
@@ -100,6 +117,78 @@ class PublicationPolicy(private val editors: Set<String>) {
             Decision.Refused(400, "bad_recipient", "An envelope names exactly one recipient: a p tag with a 64-character hex key.")
         else -> Decision.Allowed
     }
+
+    /**
+     * The shape of an accepted moderation event (contract salons-roles.md, section 2), or null when it
+     * is fine: exactly one valid `h`; put-user (9000) and remove-user (9001) name exactly one key in a
+     * `p` tag, put-user with at most one role (`admin` or `moderator`) as its third value; remove-user
+     * and delete-event (9005) give their reason as content; delete-event names exactly one event in
+     * an `e` tag; edit-metadata (9002) changes a `name` and/or an `about`, nothing else.
+     */
+    fun moderationShape(event: SignedEvent): Decision.Refused? {
+        val groups = event.tagValues(GroupKinds.GROUP_TAG)
+        if (groups.isEmpty()) return Decision.Refused(400, "missing_group", "A moderation event names its group in an h tag.")
+        if (groups.size > 1) return Decision.Refused(400, "multiple_groups", "An event is sent to one group at a time (one h tag).")
+        if (!GroupKinds.isValidId(groups[0])) return Decision.Refused(400, "bad_group_id", "The h tag is not a valid group id.")
+        val reasonRequired = Decision.Refused(400, "reason_required", "An exclusion and a removal give their reason as content (1 to ${GroupKinds.MAX_REASON_LENGTH} characters).")
+        val oneKey = Decision.Refused(400, "bad_target", "A put-user or remove-user names exactly one key: a p tag with a 64-character hex key.")
+        return when (event.kind) {
+            GroupKinds.PUT_USER -> {
+                val tag = event.tags.filter { it.firstOrNull() == "p" }.singleOrNull() ?: return oneKey
+                if (tag.size < 2 || !isHexKey(tag[1])) return oneKey
+                if (tag.size > 3 || (tag.size == 3 && tag[2] !in GroupKinds.ROLES_GIVEN)) {
+                    return Decision.Refused(400, "bad_role", "A put-user gives at most one role: ${GroupKinds.ROLE_ADMIN} or ${GroupKinds.ROLE_MODERATOR}.")
+                }
+                null
+            }
+            GroupKinds.REMOVE_USER -> {
+                val keys = event.tagValues("p")
+                if (keys.size != 1 || !isHexKey(keys[0])) return oneKey
+                if (!hasReason(event)) reasonRequired else null
+            }
+            GroupKinds.DELETE_EVENT -> {
+                val targets = event.tagValues("e")
+                if (targets.size != 1 || !isHexKey(targets[0])) {
+                    return Decision.Refused(400, "bad_target", "A delete-event names exactly one event: an e tag with a 64-character hex id.")
+                }
+                if (!hasReason(event)) reasonRequired else null
+            }
+            GroupKinds.EDIT_METADATA -> {
+                val allowed = setOf(GroupKinds.GROUP_TAG, GroupKinds.NAME_TAG, GroupKinds.ABOUT_TAG)
+                if (event.tags.any { it.firstOrNull() !in allowed }) {
+                    return Decision.Refused(400, "edit_not_allowed", "An edit changes the name and the presentation only: never the territory, the charter, the flags or the id.")
+                }
+                val names = event.tagValues(GroupKinds.NAME_TAG)
+                val abouts = event.tagValues(GroupKinds.ABOUT_TAG)
+                if (names.size > 1 || abouts.size > 1 || (names.isEmpty() && abouts.isEmpty())) {
+                    return Decision.Refused(400, "edit_not_allowed", "An edit carries one name tag, one about tag, or both.")
+                }
+                if (names.isNotEmpty() && !hasUsableText(event, GroupKinds.NAME_TAG)) {
+                    return Decision.Refused(400, "missing_name", "A group name has at least one letter or digit.")
+                }
+                if (names.singleOrNull().orEmpty().length > GroupKinds.MAX_NAME_LENGTH || event.toJson().encodeToByteArray().size > GroupKinds.MAX_DESCRIPTION_BYTES) {
+                    return Decision.Refused(400, "description_too_long", "A name is at most ${GroupKinds.MAX_NAME_LENGTH} characters and an edit at most ${GroupKinds.MAX_DESCRIPTION_BYTES} bytes.")
+                }
+                null
+            }
+            else -> null
+        }
+    }
+
+    private fun hasReason(event: SignedEvent): Boolean = event.content.trim().length in 1..GroupKinds.MAX_REASON_LENGTH
+
+    /** A confirmation despite similar rooms comes with its difference, and a difference stays short. */
+    private fun hasValidDifference(event: SignedEvent): Boolean {
+        val differences = event.tagValues(GroupKinds.DIFFERENCE_TAG)
+        if (differences.size > 1) return false
+        val difference = differences.singleOrNull()
+        if (difference != null && (difference.isBlank() || difference.trim().length > GroupKinds.MAX_DIFFERENCE_LENGTH)) return false
+        val confirmed = event.tagValues(GroupKinds.SIMILAR_TAG)
+        if (confirmed.isEmpty()) return true
+        return confirmed.size == 1 && confirmed[0] == GroupKinds.SIMILAR_CONFIRMED && difference != null
+    }
+
+    private fun isHexKey(value: String): Boolean = value.length == 64 && value.all { it in '0'..'9' || it in 'a'..'f' }
 
     private fun hasExactlyOneValidGroupId(event: SignedEvent, tag: String): Boolean {
         val ids = event.tagValues(tag)

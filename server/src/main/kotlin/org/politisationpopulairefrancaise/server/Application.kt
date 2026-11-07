@@ -33,6 +33,7 @@ import org.politisationpopulairefrancaise.server.backoffice.BackOffice
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeConfig
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSetup
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSpace
+import org.politisationpopulairefrancaise.server.backoffice.GroupCreationsQueue
 import org.politisationpopulairefrancaise.server.backoffice.PortSelector
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeHeaders
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
@@ -49,7 +50,9 @@ import org.politisationpopulairefrancaise.server.territoires.territoiresApi
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
+import org.politisationpopulairefrancaise.server.groups.GroupGuardrails
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
+import org.politisationpopulairefrancaise.server.groups.OrganisationNames
 import org.politisationpopulairefrancaise.server.push.PushConfig
 import org.politisationpopulairefrancaise.server.push.PushService
 import org.politisationpopulairefrancaise.server.push.pushApi
@@ -87,6 +90,8 @@ import javax.sql.DataSource
  *   the review queue of citizen demands, see [RevendicationsConfig].
  * - PPF_AI_BASE_URL, PPF_AI_MODEL, PPF_AI_API_KEY_FILE, PPF_AI_JSON_MODE, PPF_AI_TIMEOUT_SECONDS: the
  *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
+ * - PPF_GROUP_YOUNG_ACCOUNT_DAYS: how long a key must be known before it creates a room named like a
+ *   verified organisation (7 days by default, D-132), see [GroupGuardrails].
  * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
  *   see [AgirConfig].
  * - PPF_TILES_DIR: the folder of the PMTiles files of the map backgrounds, served at `/tiles/` by
@@ -219,7 +224,21 @@ fun Application.module(
         else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace)
     }
     val limits = PostLimits(relay)
-    val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
+    // Rooms (NIP-29): directory, roles and moderation (D-131), guardrails of the creation (D-132).
+    val groups = repository?.let {
+        GroupDirectory(
+            it,
+            GroupIndex(it.dataSource, relay.groupLockWait),
+            guardrails = GroupGuardrails(
+                it.dataSource,
+                OrganisationNames(it.dataSource, policy::isEditor),
+                isTrusted = policy::isEditor,
+                youngAccountDays = GroupGuardrails.youngAccountDaysFromEnvironment(),
+            ),
+        )
+    }
+    // The room creations held for the team (contract docs/integration/salons-roles.md, section 3 bis).
+    groups?.let { directory -> teamBackOffice?.queues?.register(GroupCreationsQueue(directory)) }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     // Push wake-ups (M31): a constant, encrypted "synchronize" only; the worker lives with the application.

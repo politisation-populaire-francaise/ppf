@@ -78,6 +78,39 @@ class GroupIndex(
         }
     }
 
+    /** One room of the directory as the guardrails compare it: its id, normalized name and territory. */
+    data class NameRow(val groupId: String, val nameKey: String, val territoryKey: String)
+
+    /**
+     * The rooms that count (their name in force, edits included) on [territoryKeys] (normalized), or
+     * on every territory but those when [except] is true. Used by the guardrails of the creation (D-132).
+     */
+    fun names(territoryKeys: Collection<String>, except: Boolean = false): List<NameRow> = dataSource.connection.use { connection ->
+        connection.prepareStatement(
+            "SELECT d.group_id, d.name_key, d.territory_key FROM group_directory d " +
+                "WHERE ${if (except) "NOT " else ""}(d.territory_key = ANY(?)) AND $CANONICAL",
+        ).use { statement ->
+            statement.setArray(1, connection.createArrayOf("text", territoryKeys.distinct().toTypedArray()))
+            val rows = statement.executeQuery()
+            buildList { while (rows.next()) add(NameRow(rows.getString(1), rows.getString(2), rows.getString(3))) }
+        }
+    }
+
+    /** The number of messages (kind 9) of [groupId], counted up to [cap] at most. */
+    fun messageCount(groupId: String, cap: Int): Int = dataSource.connection.use { connection ->
+        connection.prepareStatement(
+            "SELECT count(*) FROM (SELECT 1 FROM event_tags t JOIN events e ON e.id = t.event_id " +
+                "WHERE t.name = 'h' AND t.value = ? AND e.kind = ? LIMIT ?) AS m",
+        ).use { statement ->
+            statement.setString(1, groupId)
+            statement.setInt(2, GroupKinds.CHAT_MESSAGE)
+            statement.setInt(3, cap)
+            val rows = statement.executeQuery()
+            rows.next()
+            rows.getInt(1)
+        }
+    }
+
     /**
      * Runs [block] while no other caller runs it, in this process or in any other server sharing the
      * database: the admission and the storage of a group description happen one at a time, so that

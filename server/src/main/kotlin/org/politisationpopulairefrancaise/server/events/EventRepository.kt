@@ -5,6 +5,7 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.TagsJson
 import org.politisationpopulairefrancaise.server.agir.AgendaIndex
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
+import org.politisationpopulairefrancaise.server.groups.GroupModeration
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -116,6 +117,28 @@ class EventRepository(internal val dataSource: DataSource) {
         }
     }
 
+    /**
+     * Runs [block] in one transaction of its own connection, committed when it returns and rolled
+     * back when it throws: what the moderation of the rooms reads, decides and stores (with
+     * [storeIn]) happens all at once or not at all.
+     */
+    fun <T> transaction(block: (Connection) -> T): T = dataSource.connection.use { connection ->
+        connection.autoCommit = false
+        try {
+            val result = block(connection)
+            connection.commit()
+            result
+        } catch (e: Exception) {
+            runCatching { connection.rollback() }
+            throw e
+        } finally {
+            runCatching { connection.autoCommit = true }
+        }
+    }
+
+    /** [store] within the transaction of [connection] (see [transaction]); the caller commits. */
+    fun storeIn(connection: Connection, event: SignedEvent): StoreOutcome = storeInTransaction(connection, event)
+
     private fun storeInTransaction(connection: Connection, event: SignedEvent): StoreOutcome {
         connection.prepareStatement("SELECT 1 FROM events WHERE id = ?").use { statement ->
             statement.setString(1, event.id)
@@ -154,8 +177,10 @@ class EventRepository(internal val dataSource: DataSource) {
             insert.executeUpdate()
         }
         insertTags(connection, event)
-        // A group description also enters the directory of rooms (and leaves it with the event).
+        // A group description also enters the directory of rooms (and leaves it with the event);
+        // the creator of a new room becomes its first administrator (D-131).
         GroupIndex.write(connection, event)
+        GroupModeration.described(connection, event)
         // A mobilization also enters the agenda (and leaves it with the event).
         AgendaIndex.write(connection, event)
         return StoreOutcome.STORED
@@ -175,17 +200,21 @@ class EventRepository(internal val dataSource: DataSource) {
         }
     }
 
+    /** The event with this id, unless a moderator removed it from its room (D-131). */
     fun find(id: String): SignedEvent? = dataSource.connection.use { connection ->
-        connection.prepareStatement("$SELECT WHERE id = ?").use { statement ->
+        connection.prepareStatement("$SELECT WHERE id = ? AND $NOT_REMOVED").use { statement ->
             statement.setString(1, id)
             val rows = statement.executeQuery()
             if (rows.next()) rows.toEvent() else null
         }
     }
 
-    /** Newest first; on equal dates, by id, so pages are stable. */
+    /**
+     * Newest first; on equal dates, by id, so pages are stable. A message removed from its room by a
+     * moderator (D-131) is never served; the removal (9005) is, with its reason.
+     */
     fun query(filter: EventFilter): List<SignedEvent> = dataSource.connection.use { connection ->
-        val conditions = mutableListOf<String>()
+        val conditions = mutableListOf(NOT_REMOVED)
         val binders = mutableListOf<(PreparedStatement, Int) -> Unit>()
         if (filter.kinds.isNotEmpty()) {
             conditions += "kind = ANY(?)"
@@ -210,7 +239,7 @@ class EventRepository(internal val dataSource: DataSource) {
             conditions += "created_at <= ?"
             binders += { s, i -> s.setLong(i, until) }
         }
-        val where = if (conditions.isEmpty()) "" else " WHERE " + conditions.joinToString(" AND ")
+        val where = " WHERE " + conditions.joinToString(" AND ")
         val limit = filter.limit.coerceIn(1, EventFilter.MAX_LIMIT)
         connection.prepareStatement("$SELECT$where ORDER BY created_at DESC, id ASC LIMIT ?").use { statement ->
             binders.forEachIndexed { index, bind -> bind(statement, index + 1) }
@@ -305,6 +334,9 @@ class EventRepository(internal val dataSource: DataSource) {
 
     private companion object {
         const val SELECT = "SELECT id, pubkey, created_at, kind, tags::text AS tags, content, sig FROM events"
+
+        /** Not removed from its room by a moderator (group_removed_event, V10). */
+        const val NOT_REMOVED = "NOT EXISTS (SELECT 1 FROM group_removed_event r WHERE r.event_id = events.id)"
 
         /** PostgreSQL SQLSTATE of a unique index violation. */
         const val UNIQUE_VIOLATION = "23505"
