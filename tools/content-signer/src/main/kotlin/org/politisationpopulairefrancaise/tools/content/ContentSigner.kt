@@ -3,12 +3,7 @@ package org.politisationpopulairefrancaise.tools.content
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
-import org.politisationpopulairefrancaise.core.comprendre.ComprendreTags
-import org.politisationpopulairefrancaise.core.comprendre.ContentBlocks
-import org.politisationpopulairefrancaise.core.comprendre.GlossaryEntry
-import org.politisationpopulairefrancaise.core.comprendre.GlossaryFormat
-import org.politisationpopulairefrancaise.core.comprendre.GlossarySource
-import org.politisationpopulairefrancaise.core.comprendre.ParcoursFormat
+import org.politisationpopulairefrancaise.core.comprendre.ComprendreSchemas
 import org.politisationpopulairefrancaise.core.agir.organisations.Organisation
 import org.politisationpopulairefrancaise.core.agir.AgirFormats
 import org.politisationpopulairefrancaise.core.agir.calls.Call
@@ -21,12 +16,11 @@ import org.politisationpopulairefrancaise.core.agir.calls.CallType
 import org.politisationpopulairefrancaise.core.agir.calls.DateTimeText
 import org.politisationpopulairefrancaise.core.agir.calls.ParisDateTime
 import org.politisationpopulairefrancaise.core.agir.calls.ParisTime
-import org.politisationpopulairefrancaise.core.comprendre.QuiDecide
-import org.politisationpopulairefrancaise.core.comprendre.Verdict
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.editorial.RevendicationStatus
+import org.politisationpopulairefrancaise.core.editorial.schema.ContentDocument
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
@@ -97,20 +91,9 @@ internal const val VOIR_BUNDLE: String = "voir.json"
  * an event needs only the public key of the author, so the no-regression test runs without any secret.
  */
 internal fun prepareBundles(content: Path, author: PublicKey): List<Bundle> {
-    val articles = signAll(content.resolve("fiches")) { document ->
-        Article.build(
-            author = author,
-            slug = document.require("slug"),
-            title = document.require("title"),
-            summary = document.require("summary"),
-            topics = document.topics(),
-            type = ArticleType.fromTag(document.require("type")) ?: error("${document.name}: unknown type"),
-            origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
-            publishedAt = document.require("published_at").dateToEpochSeconds(),
-            updatedAt = document.require("updated_at").dateToEpochSeconds(),
-            body = document.body,
-        )
-    }
+    // The contents of Comprendre are checked and built by the editorial engine (ComprendreContent.kt, D-092).
+    val context = contentContext(content, author.hex)
+    val articles = guideEvents(content, author, context)
 
     val demands = signAll(content.resolve("revendications")) { document ->
         Article.build(
@@ -129,26 +112,10 @@ internal fun prepareBundles(content: Path, author: PublicKey): List<Bundle> {
         )
     }
 
-    val courses = signAll(content.resolve("parcours")) { document ->
-        val problems = ParcoursFormat.parse(document.body).problems
-        require(problems.isEmpty()) { "${document.name}: invalid course:\n  " + problems.joinToString("\n  ") }
-        Article.build(
-            author = author,
-            slug = document.require("slug"),
-            title = document.require("title"),
-            summary = document.require("summary"),
-            topics = document.topics(),
-            type = ArticleType.PARCOURS,
-            origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
-            publishedAt = document.require("published_at").dateToEpochSeconds(),
-            updatedAt = document.require("updated_at").dateToEpochSeconds(),
-            body = document.body,
-            durationMinutes = document.require("duration").toIntOrNull() ?: error("${document.name}: duration must be a number of minutes"),
-        )
-    }
+    val courses = engineEvents(content, ComprendreSchemas.PARCOURS, author, context)
 
-    val comprendre = comprendreEvents(content, author)
-    val glossary = glossaryEvents(content, author)
+    val comprendre = comprendreEvents(content, author, context)
+    val glossary = glossaryEvents(content, author, context)
 
     val notes = signAll(content.resolve("fil")) { document ->
         UnsignedEvent.create(
@@ -285,20 +252,9 @@ internal class Document(val name: String, val entries: List<Pair<String, String>
     fun topics(): List<String> = metadata["topics"].orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() }
 }
 
-internal fun parseDocument(name: String, text: String): Document {
-    val lines = text.lines()
-    require(lines.firstOrNull()?.trim() == "---") { "$name: the file must start with a --- front matter" }
-    val end = lines.drop(1).indexOfFirst { it.trim() == "---" }
-    require(end >= 0) { "$name: unterminated front matter" }
-    // Lines starting with # are comments for the editors.
-    val entries = lines.subList(1, 1 + end).filter { it.isNotBlank() && !it.trimStart().startsWith("#") }.map { line ->
-        val separator = line.indexOf(':')
-        require(separator > 0) { "$name: invalid front matter line: $line" }
-        line.substring(0, separator).trim() to line.substring(separator + 1).trim()
-    }
-    val body = lines.drop(2 + end).joinToString("\n").trim() + "\n"
-    return Document(name, entries, body)
-}
+/** The common reading of a file of content/ (shared/core, ContentDocument), kept under its old name for the other spaces. */
+internal fun parseDocument(name: String, text: String): Document =
+    ContentDocument.parse(name, text).let { Document(it.name, it.entries, it.body) }
 
 /** Dates are taken at noon UTC so that the event id does not depend on the machine's time zone. */
 internal fun String.dateToEpochSeconds(): Long = LocalDate.parse(this).atTime(LocalTime.NOON).toEpochSecond(ZoneOffset.UTC)
@@ -438,130 +394,6 @@ private fun checkParty(article: Article, name: String) {
 private fun String.parisToEpochSeconds(): Long {
     val time = LocalDateTime.parse(this)
     return ParisTime.toEpochSeconds(ParisDateTime(time.year, time.monthValue, time.dayOfMonth, time.hour, time.minute))
-}
-
-/**
- * The contents of "Comprendre" beyond the courses (comprendre.json): fact-checks (`decryptages`),
- * stories of the history of social movements (`histoire`), « Qui décide de ça ? » sheets
- * (`qui-decide`) and the method page (`methode`). Each kind is refused when its required fields,
- * its blocks (objections, chronology, chain of decision) or its sources are missing or malformed.
- */
-private fun comprendreEvents(content: Path, author: PublicKey): List<UnsignedEvent> {
-    fun common(document: Document, type: ArticleType, extraTags: List<List<String>>) = Article.build(
-        author = author,
-        slug = document.require("slug"),
-        title = document.require("title"),
-        summary = document.require("summary"),
-        topics = document.topics(),
-        type = type,
-        origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
-        publishedAt = document.require("published_at").dateToEpochSeconds(),
-        updatedAt = document.require("updated_at").dateToEpochSeconds(),
-        body = document.body,
-        extraTags = extraTags,
-    )
-
-    fun check(document: Document, problems: List<String>) {
-        val all = problems + ContentBlocks.problems(document.body) +
-            if (document.body.lines().any { it.trim() == "## Sources" }) emptyList() else listOf("no \"## Sources\" section")
-        require(all.isEmpty()) { "${document.name}: invalid content:\n  " + all.joinToString("\n  ") }
-    }
-
-    fun list(document: Document, key: String): List<String> = document.metadata[key].orEmpty().split(" ; ", ";").map { it.trim() }.filter { it.isNotEmpty() }
-
-    val checks = signAll(content.resolve("decryptages")) { document ->
-        val verdict = Verdict.fromTag(document.require("verdict")) ?: error("${document.name}: unknown verdict (${Verdict.entries.joinToString { it.tagValue }})")
-        check(document, if (ContentBlocks.hasObjections(document.body)) emptyList() else listOf("a fact-check needs a ::: objections block (pluralism)"))
-        common(
-            document,
-            ArticleType.DECRYPTAGE,
-            listOfNotNull(
-                listOf(ComprendreTags.VERDICT, verdict.tagValue),
-                listOf(ComprendreTags.CLAIM, document.require("claim")),
-                document.metadata["claim_context"]?.takeIf { it.isNotBlank() }?.let { listOf(ComprendreTags.CLAIM_CONTEXT, it) },
-            ),
-        )
-    }
-    val stories = signAll(content.resolve("histoire")) { document ->
-        val period = document.require("period").split('|').map { it.trim() }
-        require(period.isNotEmpty() && period.all { it.isEmpty() || ContentBlocks.frenchDate(it) != null } && period[0].isNotEmpty()) {
-            "${document.name}: period must be \"start | end\" with AAAA or AAAA-MM-JJ"
-        }
-        check(document, if (ContentBlocks.hasObjections(document.body)) emptyList() else listOf("a story needs a ::: objections block (pluralism)"))
-        common(
-            document,
-            ArticleType.HISTOIRE,
-            listOf(listOf(ComprendreTags.PERIOD) + period.filter { it.isNotEmpty() }, listOf(ComprendreTags.COUNTRY, document.require("country"))) +
-                list(document, "claims").map { listOf(ComprendreTags.CLAIM, it) } +
-                list(document, "results").map { listOf(ComprendreTags.RESULT, it) },
-        )
-    }
-    val sheets = signAll(content.resolve("qui-decide")) { document ->
-        val (_, _, problems) = QuiDecide.parse(document.body)
-        val actions = if (document.body.contains("::: et-maintenant")) emptyList() else listOf("no \"::: et-maintenant\" block (« Et maintenant ? »)")
-        check(document, problems + actions)
-        val persons = document.metadata["persons"].orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() }
-        common(document, ArticleType.QUI_DECIDE, persons.map { slug -> listOf("a", "${Article.KIND}:${author.hex}:$slug", "", ComprendreTags.PERSON_LINK_ROLE) })
-    }
-    val method = signAll(content.resolve("methode")) { document ->
-        check(document, emptyList())
-        common(document, ArticleType.ARTICLE, emptyList())
-    }
-    return checks + stories + sheets + method
-}
-
-/**
- * The glossary (glossaire.json, D-048): one entry per file of `content/glossaire`, checked as a whole
- * by [GlossaryFormat] (definition present and short, forms present and owned by one entry, sources,
- * links to known entries and contents), then read back as the application will.
- */
-private fun glossaryEvents(content: Path, author: PublicKey): List<UnsignedEvent> {
-    val directory = content.resolve("glossaire")
-    if (!directory.isDirectory()) return emptyList()
-    val documents = directory.listDirectoryEntries("*.md")
-        .filter { !it.name.equals("README.md", ignoreCase = true) }
-        .sortedBy { it.name }
-        .map { parseDocument(it.name, it.readText()) }
-    val sources = documents.map { document ->
-        GlossarySource(
-            file = document.name,
-            slug = document.require("slug"),
-            title = document.require("title"),
-            summary = document.metadata["summary"],
-            variants = GlossaryFormat.list(document.metadata["variants"]),
-            seeAlso = GlossaryFormat.list(document.metadata["see_also"]),
-            related = GlossaryFormat.list(document.metadata["related"]),
-            auto = document.metadata["auto"]?.trim(),
-            body = document.body,
-        )
-    }
-    fun slugsOf(name: String): Set<String> {
-        val folder = content.resolve(name)
-        if (!folder.isDirectory()) return emptySet()
-        return folder.listDirectoryEntries("*.md").mapNotNull { parseDocument(it.name, it.readText()).metadata["slug"] }.toSet()
-    }
-    val known = GlossaryFormat.RELATED_KINDS.mapValues { (_, folder) -> slugsOf(folder) }
-    val problems = GlossaryFormat.problems(sources, known)
-    require(problems.isEmpty()) { "glossaire: invalid entries:\n  " + problems.joinToString("\n  ") }
-    return sources.zip(documents).map { (source, document) ->
-        val unsigned = Article.build(
-            author = author,
-            slug = source.slug,
-            title = source.title,
-            summary = source.summary,
-            topics = document.topics(),
-            type = ArticleType.GLOSSAIRE,
-            origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
-            publishedAt = document.require("published_at").dateToEpochSeconds(),
-            updatedAt = document.require("updated_at").dateToEpochSeconds(),
-            body = document.body,
-            extraTags = GlossaryFormat.tags(source, author.hex),
-        )
-        val unchecked = SignedEvent(unsigned.idHex(), unsigned.pubkey, unsigned.createdAt, unsigned.kind, unsigned.tags, unsigned.content, "0".repeat(128))
-        checkNotNull(Article.from(unchecked)?.let(GlossaryEntry::from)) { "${document.name}: the application would not read this entry" }
-        println("prepared ${document.name}")
-        unsigned
-    }.also { println("glossaire: ${it.size} entr(ies)") }
 }
 
 /**
