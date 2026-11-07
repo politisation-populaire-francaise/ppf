@@ -216,6 +216,17 @@ Le vote anonyme (« une personne, une voix ») n'est pas encore ouvert, mais son
    - **« Vote anonyme : vérification réussie sur cet appareil »** : tout va bien ;
    - ou une ligne orange **« vérification échouée (étape …) »** : envoyez-moi une capture de cette ligne avec la version juste au-dessus. Rien n'est envoyé nulle part, et le vote restera simplement fermé sur ce téléphone.
 
+### Tester le comparateur des candidats (ajouté le 7 novembre 2026, au soir)
+
+Tout est inventé et marqué [EXEMPLE] : l'élection, les quatre candidats et leurs positions. Aucun compte n'est nécessaire, et tout marche sans réseau.
+
+1. Ouvrez **Décider**. Sous le Pacte démocratique, la rubrique **Comparer les candidats** affiche « 4 candidats, 3 thèmes ». Touchez la carte.
+2. L'encadré du haut rappelle les règles : mêmes thèmes, même ordre, ordre alphabétique, aucune consigne de vote.
+3. Sur le téléphone, touchez un thème (Démocratie, Santé, Logement) : les quatre candidats s'affichent dessous, toujours dans le même ordre. Quand un candidat n'a rien publié, la case dit « Pas de position publiée sur ce thème ».
+4. Touchez **Lire la source** : l'application demande d'abord si vous voulez quitter PPF. Touchez **Rester ici**.
+5. **Sa fiche dans « Voir »** ouvre la fiche du candidat.
+6. Sur l'ordinateur, la même page est un tableau : une colonne par candidat, une ligne par thème.
+
 ### Essayer le vote anonyme sur l'ordinateur (ajouté le 7 novembre 2026, au soir)
 
 Le vote marche maintenant de bout en bout, mais seulement avec un serveur. Sur votre ordinateur, un serveur de développement suffit ; il ne contient que des exemples. Il faut deux fenêtres de commande, ouvertes dans le dossier du projet.

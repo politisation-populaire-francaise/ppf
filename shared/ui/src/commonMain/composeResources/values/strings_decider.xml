@@ -160,4 +160,16 @@
     <string name="decider_pacte_fingerprint_copy">Copier l’empreinte</string>
     <string name="decider_pacte_proposed_title">Une liste de départ, à choisir ensemble</string>
     <string name="decider_pacte_proposed_text">Ces mesures sont proposées en attendant que le mur des revendications fasse émerger les priorités. La liste définitive sera choisie par le vote des citoyens, puis envoyée à tous les candidats.</string>
+    <!-- The comparator of an election (DE-16). -->
+    <string name="decider_comparator_section">Comparer les candidats</string>
+    <string name="decider_comparator_section_intro">Les mêmes thèmes, dans le même ordre, pour chaque candidat, avec ses propres mots et leur source. Aucune note, aucun classement, aucune consigne de vote.</string>
+    <string name="decider_comparator_card_line">%1$d candidats, %2$d thèmes</string>
+    <string name="decider_comparator_method_title">Les mêmes règles pour tous</string>
+    <string name="decider_comparator_method">Chaque candidat a les mêmes thèmes, dans le même ordre ; les candidats sont rangés par ordre alphabétique. Chaque position est résumée en une ou deux phrases et accompagnée d’une courte citation du candidat, avec le lien vers le document d’où elle vient et sa date. Quand un candidat n’a rien publié sur un thème, la case le dit. PPF ne dit pas pour qui voter.</string>
+    <string name="decider_comparator_themes">Thèmes</string>
+    <string name="decider_comparator_none">Pas de position publiée sur ce thème.</string>
+    <string name="decider_comparator_quote">Ses mots : « %1$s »</string>
+    <string name="decider_comparator_source">Lire la source (%1$s)</string>
+    <string name="decider_comparator_sheet">Sa fiche dans « Voir »</string>
+    <string name="decider_comparator_aside">%1$d positions publiées ne sont pas affichées (autre élection, autre personne ou thème absent de la grille).</string>
 </resources>

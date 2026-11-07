@@ -69,7 +69,8 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     val bundledGuides = setOf("droits-en-manifestation", "filmer-les-forces-de-l-ordre", "garde-a-vue")
     articles.zip(documents).forEach { (article, document) ->
         val readable = catalog.petition(article.address) != null || catalog.pacte(article.address) != null ||
-            catalog.engagements.any { it.address == article.address }
+            catalog.engagements.any { it.address == article.address } ||
+            catalog.comparators.any { it.address == article.address } || catalog.positions.any { it.article.address == article.address }
         check(readable) { "${document.name}: the application would not read this block (check its fields; a petition needs its official site)" }
         article.event.tags.filter { it.size >= 4 && it[0] == VoirTags.LINK }.forEach { tag ->
             check(tag[1] in known) { "${document.name}: link to an unknown slug: ${tag[1].substringAfterLast(':')}" }
@@ -85,6 +86,16 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
             checkNotNull(voir.person(candidate)) { "${pacte.article.slug}: candidate without a sheet in Voir: ${candidate.identifier}" }
         }
     }
+    // The comparators (DE-16): every candidate has one sheet in "Voir", every position fits a comparator.
+    catalog.comparators.forEach { sheet ->
+        sheet.candidates.forEach { candidate ->
+            checkNotNull(voir.person(candidate)) { "${sheet.article.slug}: candidate without a sheet in Voir: ${candidate.identifier}" }
+        }
+        val grid = catalog.grid(sheet, voir)
+        grid.aside.forEach { (position, reason) ->
+            println("decider: ${position.article.slug} is not shown in ${sheet.article.slug} ($reason)")
+        }
+    }
     catalog.engagements.forEach { engagement ->
         val pacte = catalog.pacte(engagement.pacte) ?: error("${engagement.article.slug}: unknown pact")
         check(engagement.candidate in pacte.candidates) { "${engagement.article.slug}: ${engagement.candidate.identifier} is not a candidate of ${pacte.article.slug}" }
@@ -96,7 +107,10 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
 
     val signer = LocalEventSigner(keys)
     write(output.resolve("decider.json"), events.map { signer.signChecked(it) })
-    println("decider: ${catalog.petitions.size} petition(s), ${catalog.pactes.size} pact(s), ${catalog.engagements.size} answer(s)")
+    println(
+        "decider: ${catalog.petitions.size} petition(s), ${catalog.pactes.size} pact(s), ${catalog.engagements.size} answer(s), " +
+            "${catalog.comparators.size} comparator(s), ${catalog.positions.size} position(s)",
+    )
 }
 
 /** Keys of a "Décider" front matter that are not turned into `ppf-` tags. */

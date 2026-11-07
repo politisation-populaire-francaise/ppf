@@ -144,6 +144,47 @@ class DeciderScreenTest {
     }
 
     @Test
+    fun theComparatorGivesEveryCandidateTheSameThemesOnAPhone() = runComposeUiTest {
+        val seen = show(width = 400)
+        onNodeWithTag(DeciderTags.card("comparateur-election-exemple")).performScrollTo().assert(has("4 candidats, 3 thèmes")).performClick()
+        waitForIdle()
+        onNodeWithTag(ComparatorTags.METHOD).assert(has("PPF ne dit pas pour qui voter"))
+        // One theme at a time: every candidate under it, in alphabetical order.
+        val rows = listOf("alex-modele", "camille-exemple", "dominique-fictif", "sacha-temoin")
+        rows.forEach { onNodeWithTag(ComparatorTags.row(it)).performScrollTo().assertExists() }
+        val tops = rows.map { slug -> onNodeWithTag(ComparatorTags.row(slug)).fetchSemanticsNode().positionInRoot.y }
+        assertEquals(tops.sorted(), tops)
+        onNodeWithTag(ComparatorTags.cell("alex-modele", "democratie")).assert(has("référendum d’initiative citoyenne"))
+        // Nothing published: said, never filled in.
+        onNodeWithTag(ComparatorTags.cell("dominique-fictif", "democratie")).performScrollTo().assert(has("Pas de position publiée"))
+        onNodeWithTag(ComparatorTags.theme("logement")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ComparatorTags.cell("camille-exemple", "logement")).performScrollTo().assert(has("Ses mots"))
+        onNodeWithTag(ComparatorTags.cell("alex-modele", "logement")).performScrollTo().assert(has("Pas de position publiée"))
+        // The source opens only after the warning; the sheet opens in « Voir ».
+        onNodeWithTag(ComparatorTags.cell("camille-exemple", "logement")).assert(has("Lire la source"))
+        onAllNodesWithText("Lire la source", substring = true).onFirst().performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.LINK_DIALOG).assertExists()
+        onNodeWithText("Rester ici").performClick()
+        waitForIdle()
+        onAllNodesWithText("Sa fiche dans « Voir »").onFirst().performScrollTo().performClick()
+        waitForIdle()
+        assertEquals("alex-modele", seen.opened.single().identifier)
+    }
+
+    @Test
+    fun theComparatorIsATableOnAWideWindow() = runComposeUiTest {
+        show(width = 1200)
+        onNodeWithTag(DeciderTags.card("comparateur-election-exemple")).performScrollTo().performClick()
+        waitForIdle()
+        listOf("democratie", "sante", "logement").forEach { theme ->
+            onNodeWithTag(ComparatorTags.cell("sacha-temoin", theme)).assertExists()
+        }
+        onNodeWithTag(ComparatorTags.cell("sacha-temoin", "sante")).assert(has("Pas de position publiée"))
+    }
+
+    @Test
     fun afterTheDeadlineSilenceIsShownAsNoAnswer() = runComposeUiTest {
         show(width = 1000, today = CivilDate(2026, 12, 1))
         onNodeWithTag(DeciderTags.card("pacte-election-exemple")).assert(has("Délai écoulé"))
