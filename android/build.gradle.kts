@@ -125,7 +125,19 @@ android {
     }
 }
 
+// The UnifiedPush connector depends on the JVM flavour of Tink, which drags the whole protobuf-java;
+// its Android flavour carries the same classes with a light protobuf (smaller APK, weak connections).
+configurations.configureEach {
+    resolutionStrategy.dependencySubstitution {
+        substitute(module("com.google.crypto.tink:tink"))
+            .using(module(libs.tink.android.get().toString()))
+            .because("Android flavour of Tink, without protobuf-java")
+    }
+}
+
 dependencies {
     implementation(project(":shared:ui"))
     implementation(libs.androidx.activity.compose)
+    // Empty wake-ups from our own ntfy server, through the distributor app the user installed (D-130).
+    implementation(libs.unifiedpush.connector)
 }

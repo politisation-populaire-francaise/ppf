@@ -5,6 +5,8 @@ import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.IdentityStore
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
+import org.politisationpopulairefrancaise.core.notifications.Notifications
+import org.politisationpopulairefrancaise.core.notifications.PushManager
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import org.politisationpopulairefrancaise.core.voir.ContentFollowStore
@@ -39,6 +41,18 @@ class AppDependencies(
      * hosts do not report it yet, so it answers false by default.
      */
     val dataSaver: () -> Boolean = { false },
+    /**
+     * The notifications of the device (settings, centre, wake-up round, D-130); null without a
+     * local database (tests, previews).
+     */
+    val notifications: Notifications? = null,
+    /** The push registrations; null without a server or a push system (desktop, iOS for now). */
+    val push: PushManager? = null,
+    /**
+     * Asks the system permission to show notifications (Android 13 and later) and tells whether it
+     * was granted; elsewhere there is nothing to ask.
+     */
+    val requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -53,6 +67,9 @@ class AppDependencies(
             database: PpfDatabase,
             editorialTrust: EditorialTrust = EditorialTrust.bundledExamples(),
             remote: RemoteEvents? = null,
+            notifications: Notifications? = null,
+            push: PushManager? = null,
+            requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
             contentStore = LocalEventStore(database),
@@ -61,6 +78,9 @@ class AppDependencies(
             followStore = FollowStore(database),
             database = database,
             contentFollowStore = ContentFollowStore(database),
+            notifications = notifications ?: Notifications(database, identityStore, remote, notifier = null),
+            push = push,
+            requestNotificationPermission = requestNotificationPermission,
         )
     }
 }

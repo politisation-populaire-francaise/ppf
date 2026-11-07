@@ -11,6 +11,11 @@ compose = "1.12.2"
 # paired with Compose Multiplatform 1.12.x (release notes of 1.12.0). No stable 1.12 exists yet.
 composeMaterial3 = "1.12.0-alpha03"
 ktor = "3.6.1"
+# UnifiedPush connector (Apache 2.0): notifications without Google, wake-ups only (D-130).
+unifiedpush = "3.3.5"
+# Tink for Android (Apache 2.0), used by the UnifiedPush connector to decrypt RFC 8291 messages; the
+# Android flavour embeds a light protobuf instead of the whole protobuf-java of the JVM flavour.
+tinkAndroid = "1.23.0"
 kotlinxHtml = "0.12.0"
 kotlinxSerialization = "1.12.0"
 logback = "1.6.6"
@@ -56,6 +61,8 @@ compose-components-resources = { module = "org.jetbrains.compose.components:comp
 navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version = "1.1.0" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html", version.ref = "kotlinxHtml" }
+tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tinkAndroid" }
+unifiedpush-connector = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
