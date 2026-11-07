@@ -60,6 +60,19 @@ data class Call(
      */
     val dueAt: Long? get() = deadline ?: start
 
+    /**
+     * When the call stops calling for answers: its closing (the date of the closed version), its
+     * deadline, or else the end, or the start, of what it announces, whichever comes first. A call
+     * for witnesses dates facts already past: only its deadline and its closing count. Null for an
+     * open call without any date: its answers stay until the user withdraws them.
+     */
+    val answersEndAt: Long?
+        get() {
+            val closedAt = if (isOpen) null else updatedAt
+            val due = deadline ?: if (type == CallType.TEMOINS) null else (end ?: start)
+            return listOfNotNull(closedAt, due).minOrNull()
+        }
+
     /** The tags of AP-10 this call lacks (a call published by an older or modified application). */
     fun missingRequirements(): List<CallRequirement> = type.requirements.filter { requirement ->
         requirement.alternatives.none { tag -> event.firstTagValue(tag)?.isNotBlank() == true }
