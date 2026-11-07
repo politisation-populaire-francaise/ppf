@@ -65,6 +65,8 @@ import javax.sql.DataSource
  * - PORT: TCP port to listen on (default 8080).
  * - PPF_ENVIRONMENT: "production", "preproduction" or "development" (default).
  * - DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD or DATABASE_PASSWORD_FILE: see [DatabaseConfig].
+ * - PPF_DATABASE_MIGRATE (default true only in development; false makes the server refuse to start while a
+ *   migration is pending, see DatabaseCli) and PPF_DATABASE_APP_ROLE: see [Database].
  * - PPF_EDITOR_KEYS: keys of the editorial team, see [PublicationPolicy].
  * - PPF_WRAP_RETENTION_DAYS, PPF_WRAP_RETENTION_MAX_DAYS, PPF_WRAP_CLEANUP_INTERVAL_MINUTES,
  *   PPF_WRAP_MAX_PER_RECIPIENT, PPF_POST_RATE_PER_MINUTE, PPF_POST_GLOBAL_RATE_PER_MINUTE: relay
@@ -94,8 +96,12 @@ object ServerConfig {
 fun main() {
     // Checked before anything else: in production, example contents stop the server from starting.
     val examples = ExampleSeed.fromEnvironment()
+    // In production and preproduction the migrations ran before, in their own container, with the owner
+    // role; the server, connected with a restricted role, only checks them (D-127).
+    val migrate = Database.shouldMigrate(ServerConfig.environment)
+    val appRole = Database.appRole()
     val dataSource = DatabaseConfig.fromEnvironment()?.let { config ->
-        Database.connect(config).also(Database::migrate)
+        Database.connect(config).also { Database.prepare(it, migrate, appRole) }
     }
     if (examples != null) {
         if (dataSource == null) {
