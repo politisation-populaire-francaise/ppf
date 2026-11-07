@@ -30,7 +30,7 @@ object MapArea {
     )
 
     /** The bundled background covers the whole world up to this zoom (coasts and countries). */
-    const val WORLD_MAX_ZOOM: Int = 4
+    const val WORLD_MAX_ZOOM: Int = 3
 
     /** The bundled background stops at this zoom; the map still zooms further, with less detail. */
     const val BUNDLED_MAX_ZOOM: Int = 7
