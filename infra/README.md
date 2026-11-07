@@ -35,7 +35,9 @@ Tout ce qui sert à faire tourner la plateforme est décrit ici, en code, pour p
 | `scripts/deploy.sh` | Déploiement (installé en `/usr/local/sbin/ppf-deploy`) |
 | `scripts/wg-add-peer.sh` | Ajout d'un appareil au tunnel (installé en `/usr/local/sbin/ppf-wg-add-peer`) |
 | `systemd/ppf-preprod-update.*` | Mise à jour automatique de la préproduction toutes les 10 minutes |
-| `scripts/open-data-import.sh`, `systemd/ppf-open-data-*` | Import des données parlementaires ouvertes en production (D-075), activé au lancement public |
+| `scripts/open-data-import.sh`, `systemd/ppf-open-data-*@.*` | Import des données parlementaires ouvertes par environnement (D-075, D-076), `ppf-open-data-import <environnement> keygen` crée la clé d'import |
+| `scripts/vote-seed.sh` | Graines des clés de vote (`ppf-vote-seed rotate|retire`, D-076) |
+| `env/private.env.example` | Modèle des réglages anti-fraude privés, gardés sur le serveur seulement |
 | `wireguard/` | Modèle de configuration du tunnel (les clés sont générées sur le serveur) |
 | `scripts/backup.md` | Plan des sauvegardes hors site (avant la production) |
 | `EGRESS.md` | Liste des connexions sortantes autorisées (relue aujourd'hui, appliquée par le réseau avant la production) |

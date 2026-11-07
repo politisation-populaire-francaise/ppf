@@ -1,0 +1,11 @@
+# Every day (Assemblée nationale, Sénat), at night, after the institutions publish their files.
+[Unit]
+Description=PPF: import the parliamentary open data (daily, %i)
+
+[Timer]
+OnCalendar=*-*-* 05:20:00
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target
