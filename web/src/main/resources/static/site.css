@@ -198,3 +198,465 @@ h2 {
     font-size: 2.25rem;
   }
 }
+
+/* ------------------------------------------------------------------------------------------
+   « Voir » : cartes, badges, encadrés, tableaux et graphiques. Aucun style en ligne : la CSP l’interdit. */
+
+.lead {
+  font-size: 1.125rem;
+  color: var(--ink-muted);
+}
+
+.muted,
+.kicker,
+.origin {
+  color: var(--ink-subtle);
+}
+
+.kicker {
+  margin: 0 0 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.origin {
+  font-size: 0.875rem;
+}
+
+.page-head {
+  margin: 0 0 1rem;
+}
+
+.page-head h1 {
+  margin-bottom: 0.5rem;
+}
+
+.breadcrumb ol,
+.toc ul,
+.filters ul,
+.legend,
+.next-list,
+.source-list,
+.link-list,
+.figures,
+.reading,
+.glossary,
+.corrections-log {
+  padding: 0;
+  list-style: none;
+}
+
+.breadcrumb ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 0.5rem;
+  margin: 0 0 1rem;
+  font-size: 0.875rem;
+}
+
+.breadcrumb li + li::before {
+  content: "›";
+  margin-right: 0.5rem;
+  color: var(--ink-subtle);
+}
+
+.toc ul,
+.filters ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.chip,
+.toc a {
+  display: inline-block;
+  min-height: 44px;
+  padding: 0.6rem 0.9rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface-2);
+  text-decoration: none;
+}
+
+.chip[aria-current="true"] {
+  background: var(--brand);
+  border-color: var(--brand);
+  color: var(--on-brand);
+}
+
+.notice {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-md);
+  background: var(--brand-tint);
+}
+
+.notice p {
+  margin: 0.25rem 0;
+}
+
+.presumption {
+  border-left-color: var(--warning);
+  background: var(--warning-tint);
+}
+
+.subsection {
+  margin: 1.25rem 0 0;
+}
+
+.subsection > h3 {
+  margin: 0 0 0.5rem;
+}
+
+.card {
+  margin: 0 0 0.75rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.card p {
+  margin: 0.25rem 0;
+}
+
+.card-title {
+  margin: 0.15rem 0 0.35rem;
+  font-size: 1.0625rem;
+  line-height: 1.3;
+}
+
+.card-title a {
+  color: var(--ink);
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  gap: 0.75rem;
+}
+
+.card-grid .card {
+  margin: 0;
+}
+
+.badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.35rem 0;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.1rem 0.55rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--ink);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  line-height: 1.6;
+}
+
+.badge-brand {
+  border-color: var(--brand);
+  background: var(--brand-tint);
+  color: var(--brand-strong);
+}
+
+.badge-success {
+  border-color: var(--success);
+  background: var(--success-tint);
+  color: var(--success);
+}
+
+.badge-warning {
+  border-color: var(--warning);
+  background: var(--warning-tint);
+  color: var(--warning);
+}
+
+.badge-accent {
+  border-color: var(--accent);
+  background: var(--accent-tint);
+  color: var(--accent-ink);
+}
+
+.figure-value {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.figures li {
+  margin: 0.15rem 0;
+}
+
+.figure-source {
+  color: var(--ink-muted);
+}
+
+.reading {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(12rem, 1fr));
+  gap: 0.75rem;
+  margin: 0.5rem 0;
+}
+
+.reading-item {
+  padding: 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.reading-item p,
+.figure-line {
+  margin: 0.2rem 0;
+}
+
+.external-mark {
+  font-weight: 400;
+  font-size: 0.875em;
+}
+
+.source-list li,
+.link-list li,
+.next-list li,
+.corrections-log li {
+  margin: 0.5rem 0;
+}
+
+.source-kind {
+  font-weight: 700;
+}
+
+.hash {
+  word-break: break-all;
+  font-size: 0.8125rem;
+}
+
+.quote {
+  margin: 0 0 1rem;
+  padding: 0.5rem 1rem;
+  border-left: 4px solid var(--accent);
+}
+
+.quote figcaption {
+  color: var(--ink-subtle);
+  font-size: 0.875rem;
+  font-weight: 700;
+}
+
+.quote blockquote {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font-size: 1.125rem;
+  font-style: italic;
+}
+
+blockquote {
+  margin: 0.5rem 0;
+  padding-left: 1rem;
+  border-left: 3px solid var(--border-strong);
+}
+
+.md-box {
+  margin: 0 0 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--brand-tint);
+}
+
+.md-box-title {
+  font-weight: 700;
+  color: var(--brand-strong);
+}
+
+.reply {
+  margin: 0 0 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.reply h3 {
+  margin: 0;
+}
+
+details summary {
+  min-height: 44px;
+  padding: 0.6rem 0;
+  color: var(--brand);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.stages {
+  padding-left: 1.5rem;
+}
+
+.stage {
+  color: var(--ink-subtle);
+}
+
+.stage-done {
+  color: var(--ink);
+}
+
+.stage[aria-current="step"] {
+  font-weight: 700;
+}
+
+.impact {
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.impact:last-child {
+  border-bottom: 0;
+}
+
+.impact h3 {
+  margin: 0.25rem 0;
+  font-size: 1.0625rem;
+}
+
+.glossary li {
+  margin: 0.75rem 0;
+}
+
+.glossary p {
+  margin: 0.25rem 0 0;
+}
+
+/* Tableaux : défilement horizontal dans leur boîte, jamais de toute la page. */
+.table-scroll {
+  overflow-x: auto;
+  margin: 0.75rem 0;
+}
+
+.table-scroll:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+caption {
+  padding: 0 0 0.5rem;
+  text-align: left;
+  color: var(--ink-muted);
+  font-weight: 700;
+}
+
+th,
+td {
+  padding: 0.4rem 0.5rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+thead th {
+  border-bottom: 2px solid var(--border-strong);
+}
+
+td.num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* Graphique SVG rendu par le serveur. Couleurs de PpfPalette.chart, une par type de source
+   (même attribution que l’application), redéfinies en mode sombre. */
+.chart-s0 { --serie: #2a78d6; }
+.chart-s1 { --serie: #eb6834; }
+.chart-s2 { --serie: #1baf7a; }
+.chart-s3 { --serie: #eda100; }
+.chart-s4 { --serie: #e87ba4; }
+.chart-s5 { --serie: #008300; }
+.chart-s6 { --serie: #6250d6; }
+.chart-s7 { --serie: #e34948; }
+
+@media (prefers-color-scheme: dark) {
+  .chart-s0 { --serie: #3987e5; }
+  .chart-s1 { --serie: #d95926; }
+  .chart-s2 { --serie: #199e70; }
+  .chart-s3 { --serie: #c98500; }
+  .chart-s4 { --serie: #d55181; }
+  .chart-s5 { --serie: #008300; }
+  .chart-s6 { --serie: #9085e9; }
+  .chart-s7 { --serie: #e66767; }
+}
+
+.chart-figure {
+  margin: 0;
+}
+
+.chart-box svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.chart text {
+  font-family: inherit;
+  font-size: 12px;
+  fill: var(--ink-muted);
+}
+
+.chart-grid line {
+  stroke: var(--border);
+  stroke-width: 1;
+  shape-rendering: crispEdges;
+}
+
+.chart-series polyline {
+  fill: none;
+  stroke: var(--serie);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart-series circle {
+  fill: var(--serie);
+}
+
+/* Les étiquettes restent à l’encre du texte : les couleurs claires de la palette n’auraient pas un contraste suffisant. */
+.chart text.chart-label {
+  fill: var(--ink);
+  font-weight: 700;
+}
+
+.chart text.chart-label .chart-label-kind {
+  fill: var(--ink-muted);
+  font-weight: 400;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem 1rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+}
+
+.swatch {
+  display: inline-block;
+  width: 1rem;
+  height: 0.3rem;
+  margin-right: 0.4rem;
+  border-radius: 2px;
+  background: var(--serie);
+  vertical-align: middle;
+}

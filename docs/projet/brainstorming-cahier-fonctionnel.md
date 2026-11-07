@@ -7,7 +7,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 ---
 
 ### [2026-11-07] Espace « Décider » : première version et questions ouvertes
-- Statut : À valider
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M10 (pétitions), M13.5 (Pacte démocratique) ; inventaire, DE-07 et DE-08
 - Description : première version codée le 7 novembre 2026 avec des contenus [EXEMPLE] (D-059 à D-061) : pétitions officielles avec leurs seuils réels et ce qu'ils ne garantissent pas, Pacte démocratique avec son tableau public identique pour tous. Le droit a été revérifié le 7 novembre 2026 (`docs/integration/decider-petitions-droit.md`) : rien n'a changé depuis le 4 novembre ; une réforme du Règlement de l'Assemblée, qui aurait supprimé le seuil de 100 000, a été retirée de l'ordre du jour le 15 juillet 2026.
 - Questions à la propriétaire :
@@ -21,7 +21,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-07] Agir : publication des mobilisations et des appels
-- Statut : Intégré le 2026-11-07 (décisions de la propriétaire ; code de l'espace Agir, contrat commun `docs/integration/agir-contrat.md`) ; à reporter dans le cahier fonctionnel version 2.0
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M1, M3 ; AG-02, AG-18, AP-02, AP-08, AP-09 ; points d'attention n° 6 et n° 12
 - Contexte : la première version de l'espace « Agir » (agenda des mobilisations, appels, annuaire des organisations, accueil) met en attente de relecture les contenus des comptes qui ne sont ni l'équipe ni une organisation vérifiée. Cinq questions posées par le développement.
 - **Décisions de la propriétaire (2026-11-07)** :
@@ -33,7 +33,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Mise en œuvre : la limitation de débit générale de la publication (60 envois par minute et par compte, 600 au total), exigée par le cahier des charges (anti-spam, section 4), est conservée : elle ne limite pas le nombre de propositions, seulement leur cadence. La preuve de travail (type ALTCHA) reste à ajouter avant l'ouverture au public.
 
 ### [2026-11-07] Agir : questions ouvertes après la première version
-- Statut : Décidé le 2026-11-07, sauf la contradiction avec le principe 10 (ci-dessous, À valider)
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0), sauf la contradiction avec le principe 10 (ci-dessous, À valider)
 - Concerne : cahier-fonctionnel.md, M1, M3, M12 ; AG-03, AG-17, AG-21, AG-22, AG-49, AP-03 à AP-06, AP-09, AP-10 ; points d'attention n° 6, 7, 12 et 21 ; D-039 à D-043
 - Contexte : la première version de l'espace « Agir » est intégrée (agenda des mobilisations, appels, annuaire des organisations, accueil, serveur ; D-039 à D-043). Les quatre notes d'intégration (`docs/integration/agir-agenda.md`, `agir-appels.md`, `agir-organisations.md`, `agir-serveur.md`) posent des questions que seule la propriétaire peut trancher ; elles sont regroupées ici, sans doublon. Rien de ce qui en dépend n'est codé au-delà du choix le plus protecteur, appliqué en attendant et indiqué pour chacune.
 - Questions pour la propriétaire :
@@ -61,6 +61,25 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **le statut juridique de PPF** (question 3) n'est pas une question de forme (PPF est une association loi 1901) mais de responsabilité : hébergeur ou éditeur des contenus publiés par d'autres. Application de la doctrine : option A (hébergeur : publication directe, retrait rapide sur signalement), relue par un avocat à la fin.
 - Les autres questions, tranchées selon cette doctrine par l'équipe technique (réversible sur simple demande) : 1. A, avec la procédure et les critères de vérification publiés ; 2. A ou B, et C seulement si le bénévole donne lui-même son accord écrit (libre choix) ; 4. B (exclure les partis, les candidats et leurs comités de soutien ou associations de financement déclarés, admettre le reste, au vu des statuts ; liste des cas limites pour l'avocat) ; 6. A (une organisation n'apparaît comme organisatrice ou participante que si elle l'a confirmé elle-même, par un événement signé de sa clé ; non confirmée, elle est affichée « annoncée, non confirmée ») ; 7. A ; 9. « Ça m'intéresse » ; 10. B dès que la méthode de comptage anonyme est en service (approuvée le 7 novembre), avec le tri « près de chez moi » ; 11. B ; 12. A puis B ; 13. C, avec la vue carte ; 14. A (les appels à témoins restent relus, décision du 5 novembre 2026) ; 15. A ; 16. A, avec la barre du bas (décision du 7 novembre) : la rubrique du mode manifestation dans Agir pour se préparer, et le bouton AIDE pour l'urgence ; 17. B.
 - **Contradiction à trancher par la propriétaire** (vision 4.2 et cahier des charges, principe 10 : « tous les réglages de confidentialité et d'anonymat sont au niveau le plus élevé par défaut ») : si la participation d'un citoyen est visible de son cercle **par défaut**, et celle d'un élu publique **par défaut**, c'est un réglage moins protecteur à la création du compte, ce que ces documents définitifs interdisent aujourd'hui. Options : A. garder le principe 10 : la participation compte toujours dans les chiffres ; la montrer à son cercle, ou publiquement pour un élu, se fait d'un geste, avec la mise en garde habituelle, et reste réversible ; B. modifier la vision et le cahier des charges pour une exception : participation visible du cercle par défaut, publique par défaut pour les comptes certifiés d'élus et pour les organisations, masquable à tout moment ; C. B pour les élus et les organisations seulement, A pour les citoyens. Les organisations ne sont pas concernées par le principe 10 (ce ne sont pas des personnes physiques) : leur participation est publique dès qu'elles la confirment. Recommandation : C. Rien de ce qui en dépend n'est codé avant sa réponse (les cercles et les comptes d'élus n'existent pas encore).
+
+### [2026-11-07] « Voir » : feuille de route jusqu'à l'ambition de la vision
+- Statut : Validé le 2026-11-07 (ordre des étapes)
+- Concerne : vision.md (pilier « Voir »), cahier-fonctionnel.md (M2, M4, M5, M9, M13.2, M17), cahier-des-charges.md (phases 2 et 5)
+- Contexte : la propriétaire confie au pôle « Voir » d'aller jusqu'au bout de l'ambition, y compris pour les objectifs oubliés en route (7 novembre 2026). Bilan de ce qui manque encore pour que « Voir » soit, comme le dit la vision, ce qui « rend visible, de façon chiffrée et sourcée, ce qui se passe et ce que fait le pouvoir ».
+- En cours (vague 2, sous-agents) : fiches des partis (ordre d'entrée décidé le 7 novembre) ; « Voir » sur le site web, lisible sans JavaScript, avec une adresse stable par contenu (partage, iPhone, résistance à la censure) ; droit de réponse et « Signaler une erreur » envoyés chiffrés à l'équipe depuis chaque contenu.
+- À faire ensuite, dans l'ordre proposé :
+  1. **Données réelles et ouvertes** : import automatique des données ouvertes de l'Assemblée nationale, du Sénat et du Parlement européen (votes, mandats, amendements) dans des briques signées par l'équipe ; c'est la condition pour couvrir tous les élus sans tout saisir à la main (prévu en phase 5 par le cahier des charges, à avancer selon votre doctrine du « curseur au maximum »). Les votes et mandats sont des données publiques officielles ; les affaires restent saisies et relues à la main.
+  2. **Export ouvert** : chaque chiffre, chaque fiche téléchargeable en données ouvertes (JSON et tableur), avec sa source ; c'est la promesse « Vérité et sources » de la vision et une fondation du cahier des charges.
+  3. **Historique des versions** de chaque contenu (ce qui a changé, quand, pourquoi), en plus du journal des corrections.
+  4. **Contradictoire visible** : sous chaque fait qui met en cause une personne, la date à laquelle elle a été sollicitée et sa réaction (ou « pas de réponse »), comme le prévoit la méthode M17.
+  5. **Peine prononcée, peine exécutée, traitement habituel** : la comparaison prévue par M17 (VO-14), avec ses sources.
+  6. **Signalements chiffrés des citoyens** (VO-03) : maintenant que la méthode « une personne, une voix » est approuvée (D-044), les utilisateurs pourront signaler un blocage, une nasse, une blessure ; un compte, un signalement, vérification avant intégration.
+  7. **Témoignages publiés** (VO-08) dans « Le mouvement », dès que la modération existe.
+  8. **Cartes** : les chiffres par territoire et les mesures de l'observatoire des libertés sur la carte de l'espace « Agir ».
+  9. **Indice de gravité** des violences policières (entrée ci-dessus, grille proposée).
+  10. **Alertes sur ce que l'on suit** : une notification quand un chiffre, une fiche ou un texte suivi change (avec les notifications UnifiedPush prévues).
+- Question pour la propriétaire : validez-vous cet ordre ? Recommandation : 1 et 2 d'abord, parce qu'ils transforment « Voir » d'une démonstration en un outil complet et réutilisable par tous.
+- Décision : validé le 7 novembre 2026 (« Oui, commencez », réponse de la propriétaire transmise par la session « Team lead [Voir] »), commencer par le point 1 (données ouvertes), confié à la session Section [Voir] Team dev ; les autres points suivent dans l'ordre proposé, sous la responsabilité du pôle Voir. L'avis sur le point 2 (export ouvert) reste à donner.
 
 ### [2026-11-06] Espace « Voir » : première version et questions ouvertes
 - Statut : Intégré le 2026-11-07 (cahier fonctionnel 1.4, D-036)
@@ -108,7 +127,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Points à cadrer : les « flux » des médias et des élus sont des comptes suivis (S-120, AG-22) dont les publications sont présentées comme des conversations à sens unique, sans réponse privée ; les salons de collectifs publics ne sont pas chiffrés de bout en bout (ils sont lisibles par tous et modérés), les salons réservés le sont ; la liste des conversations reste sur l'appareil ; signalement d'un message chiffré par son destinataire seulement (S-127).
 
 ### [2026-11-07] Salons de collectifs : création ouverte, charte, doublons
-- Statut : Intégré le 2026-11-07 (D-028) ; détection par le sens À étudier
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0) ; détection par le sens À étudier
 - Concerne : cahier-fonctionnel.md, M14 ; S-129 à S-136 (collectifs) ; AG-47 à AG-53
 - **Décision de la propriétaire (7 novembre 2026)** : tout compte peut créer le salon d'un collectif, d'un syndicat ou d'une association (laisser exister les initiatives citoyennes, ne pas être accusé de censure) ; le salon respecte la charte de valeurs ; les doublons (même but, même localité) sont évités pour ne pas disperser les citoyens.
 - Mise en œuvre : charte acceptée à la création (étiquette `ppf-charter`), territoire obligatoire (`ppf-territory`), refus des doublons par nom normalisé et territoire avec proposition du salon existant, recherche avant création. À étudier : rapprochement par le sens (modèle d'IA auto-hébergé, comme DE-19 pour les revendications), fusion de salons, modération a posteriori et signalement, rôles d'administrateurs du collectif (NIP-29, kinds 9000 à 9022).
@@ -125,7 +144,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **notifications** : sans elles, les messages n'arrivent que l'écran Messages ouvert (UnifiedPush avec ntfy auto-hébergé, prévu par le cahier des charges).
 
 ### [2026-11-07] Messagerie : conservation réglable par l'utilisateur
-- Statut : Intégré le 2026-11-07 (D-028)
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M14 ; S-125
 - **Décision de la propriétaire** : conservation des messages sur le serveur de trois mois au minimum, durée réglable par chaque utilisateur. Mise en œuvre : réglage dans Mon espace (3, 6 ou 12 mois), publié comme un événement NIP-78 signé que le serveur lit pour la boîte de l'utilisateur ; plafond haut du serveur à un an ; les appareils gardent leur copie déchiffrée sans limite.
 
@@ -174,14 +193,14 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Modalités du choix des campagnes par les citoyens
-- Statut : À valider
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M11 et M13.5
 - Description : le principe est acquis (les citoyens choisissent par vote). Restent les modalités : fréquence des votes, nombre de campagnes actives en même temps, seuil de participation minimal, rôle de l'équipe.
 - Recommandation : l'équipe vérifie seulement la faisabilité juridique et la conformité à la charte, sans filtrer selon ses préférences ; 3 campagnes actives au maximum pour concentrer les forces ; vote de priorisation tous les 6 mois.
 - Décision :
 
 ### [2026-11-04] Liste de départ des mesures du Pacte démocratique
-- Statut : À valider
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M13.5
 - Description : en attendant que le mur des revendications fonctionne, proposer au vote une liste de départ, marquée [EXEMPLE] :
   - référendum d'initiative citoyenne (législatif, abrogatoire, constituant) à partir d'un nombre de signatures fixé ;
@@ -201,13 +220,22 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Grille de l'indice de gravité des violences policières
-- Statut : À étudier
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 1.5, M2, puis 2.0)
 - Concerne : cahier-fonctionnel.md, M2
 - Description : l'IA propose une grille inspirée des observatoires existants, à valider par la propriétaire.
-- Décision :
+- Proposition (2026-11-07, pôle Voir) : une grille en cinq niveaux, calquée sur les catégories que le code pénal utilise déjà pour les violences (articles 222-7 à 222-13), pour qu'elle soit objective, vérifiable et difficile à contester :
+  1. **Sans incapacité** : violence sans incapacité totale de travail (ITT) constatée ;
+  2. **Blessure légère** : ITT de 8 jours ou moins ;
+  3. **Blessure grave** : ITT de plus de 8 jours ;
+  4. **Mutilation ou infirmité permanente** (perte d'un œil, d'une main, séquelle définitive) ;
+  5. **Décès**.
+  Chaque cas indique en plus : mineur ou non, arme ou moyen en cause (tir de LBD, grenade, matraque, étranglement…), et le niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule). Un cas déclaré sans certificat compte à part (« déclaratif »), jamais mélangé aux cas vérifiés. L'indice d'une journée est la répartition des cas entre les cinq niveaux, pas une note unique (un chiffre unique cacherait les cas graves).
+  - Alternative : reprendre telle quelle la grille d'un observatoire existant (associations de défense des libertés, médias indépendants) ; avantage : comparabilité ; inconvénient : dépendance à leurs choix et à leurs mises à jour.
+  - Recommandation : la grille en cinq niveaux ci-dessus.
+- Décision : grille en cinq niveaux validée par la propriétaire le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe ; D-057). Intégrée au cahier fonctionnel 1.5 (M2) le 7 novembre 2026, à sa demande (« Oui on inscrit l'ordre de gravité dans le cahier fonctionnel »).
 
 ### [2026-11-04] Sujets de départ de « Qui décide de ça ? »
-- Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel 2.0, M13.1)
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M13.1
 - Description : commencer par une dizaine de sujets proches du quotidien : prix des carburants, loyers et logement, école, hôpital et santé, transports, impôts locaux, eau et énergie, salaires et retraites, services publics de proximité, environnement local.
 - Décision : la propriétaire demande le 2026-11-07 de coder au maximum cette section sans attendre, avec « un encart en début de contenu qui contiendra le nom des élus concernés ». Mis en œuvre (D-038) : fiches par sujet avec la chaîne de décision (commune, intercommunalité, département, région, État, Union européenne), encart « Qui décide ? Les élus concernés » en tête (rôles par niveau, noms des personnes publiques liées par l'équipe), puis l'explication et « Et maintenant ? ». Quatre premiers sujets [EXEMPLE] : prix des carburants, école, transports du quotidien, manifester. Les noms des élus locaux de chacun demandent l'annuaire officiel des élus (Répertoire national des élus) : à proposer.
@@ -277,57 +305,57 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Suivi des lois en cours (« Législomètre »)
-- Statut : Idée
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M4 ou M13.1
 - Description : textes en discussion au Parlement, calendrier des votes, amendements importants, alertes par sujet, comptage des recours au 49.3 ; bouton « interpeller mes élus avant le vote ».
 - Décision :
 
 ### [2026-11-04] Observatoire des libertés publiques
-- Statut : Idée
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M2 ou M17
 - Description : recenser les arrêtés d'interdiction de manifester, les dissolutions d'associations, les lois et décrets restreignant les libertés, les dispositifs de surveillance (drones, vidéosurveillance algorithmique), avec leurs sources et les recours engagés. Lien direct avec la valeur « défense de nos droits fondamentaux ».
 - Décision :
 
 ### [2026-11-04] Solidarité concrète : caisses de grève et soutien juridique
-- Statut : À étudier
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M12
 - Description : annuaire des caisses de grève et des caisses de solidarité juridique (frais d'avocat des personnes poursuivies), avec liens vers leurs pages de dons ; entraide (covoiturage vers les manifestations, hébergement). Une grève dure moins longtemps quand on ne peut pas tenir financièrement : c'est un levier direct de la résistance civile.
 - Points d'attention : choix des prestataires de paiement (sans traceurs), règles de l'appel public à la générosité.
 - Décision :
 
 ### [2026-11-04] Boycotts et alternatives
-- Statut : Idée
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M12
 - Description : fiches sourcées sur les entreprises visées par un boycott (motifs, faits établis) et alternatives possibles. Point juridique à vérifier : l'appel au boycott est en principe une forme de liberté d'expression, mais le dénigrement d'une entreprise peut engager la responsabilité de l'association.
 - Décision :
 
 ### [2026-11-04] Sécurité numérique et « mode manifestation »
-- Statut : Idée
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M6
 - Description : guides de sécurité numérique pour les militants (téléphone en manifestation, chiffrement, réseaux sociaux, protection de ses données) ; écran « mode manifestation » disponible hors ligne et en un geste, avec l'essentiel : droits, numéro de la legal team, premiers secours, que faire en cas d'interpellation.
 - Décision :
 
 ### [2026-11-04] « Je veux aider » : bénévolat par compétences
-- Statut : Idée
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M12 ou M16
 - Description : permettre aux personnes de proposer leurs compétences (juristes, traducteurs, développeurs, graphistes, vérificateurs de faits, modérateurs) et à l'équipe de publier des missions. Indispensable pour faire vivre une plateforme de cette ampleur. Données à minimiser (compétences et pseudonyme, pas d'identité).
 - Décision :
 
 ### [2026-11-04] Transparence de PPF elle-même
-- Statut : Idée
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md (nouvelle section ou module) ; vision.md (valeurs)
 - Description : publier les comptes de l'association, les dons reçus (montants agrégés), les décisions importantes, la composition et le fonctionnement des instances, le rapport de modération. Une plateforme qui exige des comptes du pouvoir doit être exemplaire : c'est aussi sa meilleure défense contre les accusations.
 - Mise à jour du 2026-11-04 : la propriétaire demande une trésorerie publique et un tableau de bord fédérateur ; voir PP-06 à PP-08 dans l'entrée « Inventaire complet des fonctionnalités ».
 - Décision :
 
 ### [2026-11-04] Soutien aux victimes
-- Statut : Idée
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M3 et M6
 - Description : orienter les victimes de violences (policières ou autres) vers les associations d'aide aux victimes, l'accompagnement juridique et le soutien psychologique ; fiche « que faire après une blessure en manifestation » (certificat médical, dépôt de plainte, saisine de l'IGPN ou du Défenseur des droits).
 - Décision :
 
 ### [2026-11-04] Réorganiser le cahier fonctionnel par espaces
-- Statut : À valider (décision prise le 2026-11-04, en attente d'intégration dans la version 2.0)
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md (structure complète) ; dépend des entrées « Restructurer les piliers » (brainstorming-vision.md), « Navigation et UX » et « Briques de contenu communes » (brainstorming-cahier-des-charges.md)
 - Proposition : le cahier fonctionnel n'est plus organisé en 16 modules techniques, mais selon les espaces vus par l'utilisateur, chacun reposant sur les briques communes. Correspondance avec l'existant et les idées en cours (noms mis à jour selon la décision ci-dessous) :
 
@@ -347,7 +375,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : validée par la propriétaire le 2026-11-04, avec deux changements de nom : « Maintenant » devient « En direct » ; « Mon territoire » devient « Mon espace », un tableau de bord personnalisable par l'utilisateur (son territoire, mais aussi tout ce qu'il suit : pétitions, chiffres, contenus). Nouvelle navigation : voir S-05 et le point d'attention n° 22 de l'inventaire. L'entrée « Navigation et UX » du brainstorming du cahier des charges sera mise à jour en conséquence lors du découpage en MVP.
 
 ### [2026-11-04] Inventaire complet des fonctionnalités : socle applicatif et fonctionnalités PPF
-- Statut : À valider (liste validée le 2026-11-04 ; intégration à venir dans la version 2.0 du cahier fonctionnel)
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md (structure et contenu complets, future version 2.0) ; découpage du cahier des charges en MVP
 - Description : devenue trop longue pour un seul document, l'entrée est répartie en quatre documents :
   1. `docs/brainstorming-cahier-fonctionnel-inventaire-1-socle.md` : principes, historique des mises à jour, recommandation et décision, partie A (socle applicatif) ;
@@ -357,7 +385,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : voir le document 1.
 
 ### [2026-11-04] Bloc communautaire : le nerf de la guerre
-- Statut : À valider (décisions prises le 2026-11-05, en attente d'intégration dans la version 2.0 du cahier fonctionnel)
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md (socle A18, A21, A22 ; Agir ; Mon espace) ; inventaire, documents 1 à 3
 - Description : la propriétaire estime que l'aspect communautaire est sans doute l'essentiel du projet. Sa définition (2026-11-05) :
   - le **cercle** d'un utilisateur regroupe ses amis et amis proches, sa famille et sa famille proche, et les organisations et collectifs dont il fait partie (un collectif est un groupe ou un club) ;
@@ -369,13 +397,13 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision (2026-11-05), détaillée dans les points d'attention n° 26 à 31 du document 3 bis de l'inventaire : graphe social minimisé (relations et cercles sur les appareils, listes de membres chiffrées sur le serveur) ; statuts privés ; création de collectifs par tout compte certifié, sans limite de nombre ; modération par IA qui alerte l'équipe, décision humaine ; appartenances et réglages protégés au maximum par défaut, que chacun peut librement assouplir après une mise en garde.
 
 ### [2026-11-05] Principe de libre choix : protéger par défaut, ne jamais décider à la place de l'utilisateur
-- Statut : Intégré le 2026-11-05 dans la vision (version 4.2) et le cahier des charges (version 1.1, principe 10) ; à intégrer dans le cahier fonctionnel version 2.0
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0) ; déjà intégré le 2026-11-05 dans la vision (version 4.2) et le cahier des charges (version 1.1, principe 10)
 - Concerne : toute la plateforme ; vision.md (valeurs) ; cahier-des-charges.md (principes, section 5.1) ; cahier-fonctionnel.md ; code/CLAUDE.md
 - Description : par défaut, la confidentialité et l'anonymat sont réglés au maximum. Chaque utilisateur peut assouplir autant qu'il le veut les réglages qui concernent ses propres données, jusqu'à les rendre publiques, après une mise en garde simple sur les risques. PPF est un garde-fou, pas un preneur de décision. Ce libre choix ne s'étend pas aux données des autres et ne lève ni les obligations légales ni les protections techniques communes. Détail : point d'attention n° 32 du document 3 bis de l'inventaire.
 - Décision : demandée et validée par la propriétaire le 2026-11-05, avec la consigne de l'appliquer dans tous les documents qui en font mention.
 
 ### [2026-11-05] Intelligence artificielle : modération, assistant citoyen et crédits
-- Statut : Décidé le 2026-11-05, sauf l'hébergement du modèle ; à intégrer dans le cahier fonctionnel version 2.0
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0) ; hébergement du modèle À valider (brainstorming du cahier des charges)
 - Concerne : cahier-fonctionnel.md (S-137, CO-20, S-138, S-139) ; cahier-des-charges.md (section 5.6, hébergement du modèle, fiscalité)
 - Description : la propriétaire demande une modération par IA qui alerte l'équipe pour une décision humaine (décidé), et un assistant conversationnel pour les utilisateurs, avec des crédits mensuels gratuits puis un petit abonnement payant ou l'attente du mois suivant.
 - Options et recommandations : points d'attention n° 33 et n° 34 du document 3 bis de l'inventaire (hébergement du modèle : service d'IA européen sans conservation des requêtes pour démarrer, puis serveur loué par PPF ; assistant gratuit avec limite mensuelle pour commencer, puis codes de recharge anonymes si les coûts l'exigent ; masquage provisoire des seuls contenus graves et manifestement illicites).

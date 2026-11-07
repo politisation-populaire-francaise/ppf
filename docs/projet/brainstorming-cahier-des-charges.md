@@ -16,7 +16,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Complément de décision (2026-11-05) : les six noms de domaine sont achetés chez Hostinger, comme les serveurs (prestataire unique). Le point de vigilance « bureau d'enregistrement distinct de l'hébergeur » est donc abandonné ; le risque d'un compte unique est compensé par la double authentification forte, le verrouillage des domaines, le renouvellement automatique et la répartition du nom sur plusieurs extensions. Les domaines sont achetés dès la phase 0, avant le serveur.
 
 ### [2026-11-04] Licence du code
-- Statut : À étudier
+- Statut : Intégré le 2026-11-07 (cahier des charges 2.0, section 8 ; D-006)
 - Concerne : cahier-des-charges.md, section 8
 - Description : l'AGPL-3.0 est envisagée pour empêcher une récupération fermée du code. À vérifier : compatibilité avec la distribution sur l'App Store et avec les licences de bitchat (MIT pour Android, domaine public pour iOS).
 - Vérifications du 2026-11-05 : les licences de bitchat (MIT, domaine public) sont compatibles avec l'AGPL-3.0 à condition de conserver leurs mentions. Le conflit connu entre les conditions de l'App Store et les licences GPL se règle par une permission supplémentaire accordée par le titulaire des droits (article 7 de la GPL version 3), comme le fait Signal ; pour la conserver, chaque contributeur accepte que sa contribution porte la même permission.
@@ -24,7 +24,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision (2026-11-05) : option A, AGPL-3.0-or-later, avec les permissions supplémentaires pour les magasins d'applications (`LICENSE-ADDITIONAL-PERMISSIONS.md`) et l'accord des contributeurs (`CONTRIBUTING.md`). Relecture par un avocat prévue avant le lancement public. À intégrer dans le cahier des charges, section 8.
 
 ### [2026-11-04] Dépôt privé au départ, public au lancement ?
-- Statut : À valider
+- Statut : Intégré le 2026-11-07 (cahier des charges 2.0, section 8 ; D-005)
 - Concerne : cahier-des-charges.md, section 8
 - Recommandation : dépôt privé pendant la phase 0 et le début de la phase 1, rendu public au lancement de la première version, après un audit de sécurité (aucun secret, aucun réglage anti-fraude dans le dépôt).
 - Constat du 2026-11-05 : avec le plan gratuit de GitHub, la protection de la branche principale n'existe pas sur un dépôt privé, et les minutes d'intégration continue y sont limitées (2 000 par mois, les machines Windows comptant double). Options présentées : A. public dès le premier commit (protection de branche gratuite, intégration continue illimitée y compris sur macOS, miroir Codeberg possible, détection des secrets avant chaque commit, audit avant le lancement du service) ; B. privé avec GitHub Pro (environ 4 dollars par mois) ; C. privé avec le plan gratuit, sans protection de branche.
@@ -42,10 +42,11 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Méthode technique « une personne, une voix »
-- Statut : Approuvée le 2026-11-07 (principe) ; conception technique en cours
+- Statut : Approuvée le 2026-11-07 (principe) ; conception approuvée le 2026-11-07 (D-110, D-112, `docs/integration/une-personne-une-voix.md`) ; réalisation en cours
 - Concerne : cahier-des-charges.md, sections 2 et 5.1 ; cahier-fonctionnel.md, M13.6
 - Description : les votations citoyennes exigent qu'une personne ne vote qu'une fois, sans collecter d'identité (principe de vie privée). Options techniques à comparer : votes physiques dans des stands avec contrôle sur place ; vote en ligne avec limitation par appareil et preuve de travail, aux garanties plus faibles et clairement signalées ; jetons de vote anonymes distribués lors d'événements physiques ; système mixte.
 - Décision : **la propriétaire approuve la méthode (7 novembre 2026, « Oui »)**, telle que décidée au point d'attention n° 10 : combiner les barrières (niveaux de confiance, parrainage, validation en personne lors d'événements, preuve de travail, détection des manipulations) et publier des résultats transparents (votes et soutiens des comptes confirmés affichés en premier, S-91). Elle s'applique aussi aux compteurs de participation de l'espace « Agir » (nombre de « J'y participe », de soutiens d'un appel) : le serveur compte sans jamais relier une participation à un compte. La conception technique (jetons anonymes signés à l'aveugle ou équivalent) est la prochaine étape, consignée dans `docs/DECISIONS.md` quand elle sera faite.
+- Précisions de la propriétaire (2026-11-07, D-112, transmises par le chef d'équipe) : trois niveaux de votants (« élus, compte vérifié, compte non vérifié ») ; « pas de parrainage » ; « validation en personne par bénévoles agréés par ppf via leur association » ; liste anonyme des bulletins publiée après la clôture ; vote modifiable jusqu'à la clôture ; niveau figé à l'ouverture ; envoi du bulletin retardé automatiquement pour tous. Le vote des élus est montré à part, jamais additionné à celui des citoyens ; les organisations ne votent pas. Mécanisme technique : jetons anonymes VOPRF de la RFC 9497 (D-110).
 
 ### [2026-11-04] Modération et assistant IA : hébergement du modèle
 - Statut : À valider
@@ -157,7 +158,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - Circuit de mise en ligne : tests automatiques, préproduction, validation par la propriétaire, production.
 
 ### [2026-11-04] Framework du site web
-- Statut : À étudier
+- Statut : Intégré le 2026-11-07 (cahier des charges 2.0, sections 1.2 et 4 ; D-007)
 - Concerne : cahier-des-charges.md, section 4
 - Description : choisir le framework de rendu côté serveur (lisible sans JavaScript, PWA, hors ligne), en tenant compte du partage de code avec Kotlin.
 - Options présentées le 2026-11-05 : A. Ktor, déjà retenu pour le serveur, avec des gabarits HTML écrits en Kotlin (kotlinx.html) : un seul langage, modèles partagés avec les applications, pages lisibles sans JavaScript, PWA, export statique possible pour les miroirs de la phase 3, très peu de dépendances (recommandée) ; B. Astro : excellent pour un site de contenu, mais un second langage et un second serveur, et des centaines de dépendances JavaScript ; C. générateur de site statique plus l'API Ktor : rapide et résistant, mais l'interactivité exige du JavaScript ou un second circuit.
@@ -184,7 +185,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision (2026-11-05) : les 300 € couvrent la mise en route (noms de domaine, serveur KVM 1 payé 24 mois d'avance, sauvegardes hors site, modération par IA au démarrage). La suite du budget dépendra des adhérents et des dons. Sont reportés, faute de budget : compte Apple Developer et compilation iOS, deuxième serveur pour la production, serveur d'IA dédié, audit de sécurité externe, avocat, expert-comptable. Aucune dépense n'est engagée sans l'accord de la propriétaire.
 
 ### [2026-11-04] Conséquences du retrait de la notion de non-partisanerie
-- Statut : À valider
+- Statut : Intégré le 2026-11-07 (cahier des charges 1.4, D-062)
 - Concerne : cahier-des-charges.md, section 2 (principe 8) et 9.2 ; cahier-fonctionnel.md, section 3 (règle « Traitement identique ») et M13.5, M13.7 ; instructions du projet, section 5 (garde-fou « Militante mais jamais partisane »)
 - Description : la vision 3.0 ne dit plus que PPF est non partisan. Plusieurs passages des autres documents reposent encore sur cette notion :
   - cahier des charges, principe 8 « Non partisane » ;
@@ -196,10 +197,14 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - A. Supprimer le principe général « Non partisane » et le garde-fou des instructions, mais garder le traitement identique à l'intérieur de trois outils précis (Pacte démocratique, comparateur, baromètre des élus) : leur crédibilité vient justement de ce qu'ils appliquent les mêmes règles à tous.
   - B. Supprimer toute notion de traitement identique, y compris dans ces outils.
 - Recommandation : A. Un Pacte ou un comparateur jugé partial perd sa force de pression et devient facile à contester.
-- Décision :
+- Décision de la propriétaire (2026-11-07, D-062) : **option A** dans un premier temps, puis, le même jour, transmise par le chef d'équipe : « pas besoin de texte sur la non partisanerie, on n'affirme pas en tant que ppf qu'on est partisans ou non partisans, on est simplement une association engagée et militante dont l'objectif premier est la politisation et redonner une gouvernance réelle au peuple (donc être à nouveau dans une démocratie). Pas besoin de préciser quoi que ce soit, nos actes parleront pour nous. »
+  - Cahier des charges 1.4 : principe 8 retiré **sans texte de remplacement** (les principes 9 et 10 gardent leur numéro) ; la menace de la section 5.5 devient « faire passer la plateforme pour le soutien d'un candidat ou d'un parti ». Les textes de remplacement proposés plus tôt ne sont pas utilisés.
+  - Restent, comme règles de méthode et de droit, pas comme une déclaration : le traitement identique des candidats dans le Pacte, le comparateur et le baromètre (cahier des charges, 9.2, limite légale) et les fiches identiques pour tous (cahier fonctionnel, M17) ; la règle transverse « Traitement identique » du cahier fonctionnel est inchangée.
+  - Nulle part PPF n'est décrite comme partisane ou non partisane : l'invite de l'IA qui vérifie les revendications et le modèle de menaces ont été reformulés ; la vision ne le dit plus depuis la version 3.0 ; CLAUDE.md n'en parle pas.
+  - Point à faire relire par un avocat : en dehors de ces trois outils, un appel de PPF à voter pour un candidat pourrait être vu comme un avantage en nature accordé par une personne morale (Code électoral, article L52-8) ; inscrit dans la feuille de route.
 
 ### [2026-11-04] Navigation et UX : quatre espaces, un accueil, « Mon territoire »
-- Statut : À valider
+- Statut : Décidé en partie le 2026-11-06 et le 2026-11-07 (fil par défaut et barre du bas à cinq entrées : D-023, D-026, D-044 ; intégré le 2026-11-07 au cahier des charges 2.0, section 7) ; navigation détaillée à réécrire lors du découpage en MVP
 - Concerne : cahier-des-charges.md, section 7 (design et UX) ; dépend de l'entrée « Restructurer les piliers » de brainstorming-vision.md
 - Proposition :
   - **Barre de navigation à cinq entrées** (le maximum lisible sur mobile), identique sur le site et l'application : **Maintenant** (accueil), **Voir**, **Comprendre**, **Agir**, **Décider**.
@@ -221,7 +226,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : Intégré le 2026-11-06 (D-025).
 
 ### [2026-11-06] Protocole de la messagerie chiffrée (Internet)
-- Statut : Intégré le 2026-11-07 (décision de la propriétaire : option A ; D-027)
+- Statut : Intégré le 2026-11-07 (décision de la propriétaire : option A ; D-027 ; cahier des charges 2.0, section 3.4)
 - Concerne : cahier-des-charges.md, sections 3.4 (messagerie hors ligne bitchat) et 5 (sécurité) ; cahier fonctionnel M14 ; point d'attention n° 26
 - Description : la propriétaire a confirmé la messagerie (privé, groupes, collectifs, flux). Le cahier des charges ne fixe que le mode hors ligne (bitchat : Bluetooth, chiffrement Noise, Nostr en relais). Il faut choisir le protocole des conversations par Internet, compatible avec nos identités (clés secp256k1 Nostr) et avec le serveur unique du départ. Décision de sécurité structurante, donc présentée avant tout code.
   - **Option A : messages privés Nostr (NIP-17) et groupes Nostr (NIP-29)**. NIP-17 : chaque message est chiffré pour le destinataire (NIP-44) puis enveloppé deux fois (« gift wrap ») pour cacher l'expéditeur, le destinataire et l'heure ; les petits groupes se font en envoyant le message à chaque membre. NIP-29 : salons gérés par le relais, adaptés aux collectifs publics et réservés, avec rôles d'administrateurs. Avantages : mêmes clés que nos comptes, aucun serveur supplémentaire (notre serveur devient relais), interopérable avec les applications Nostr, bien documenté. Inconvénients : pas de confidentialité persistante (une clé volée déchiffre les anciens messages), groupes privés limités à quelques dizaines de membres, pas de vérification de l'appareil distant en standard. Coût : nul.
@@ -231,7 +236,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : **Option A retenue par la propriétaire le 7 novembre 2026** (D-027). À reporter dans le cahier des charges, section 3.4, lors de sa prochaine version.
 
 ### [2026-11-06] Maquettes de l'interface communautaire : écarts de navigation à trancher
-- Statut : Décidé le 2026-11-07 (option A)
+- Statut : Intégré le 2026-11-07 (option A, D-044 ; cahier des charges 2.0, section 7)
 - Concerne : cahier-des-charges.md, section 7 ; cahier-fonctionnel.md, S-05
 - Description : les maquettes de la propriétaire diffèrent sur deux points de sa décision du matin sur la navigation.
   1. **Barre du bas ou boutons flottants.** Les maquettes n'ont pas de barre du bas : la carte est un bouton rond flottant « Carte » (accent) en bas à droite, « En direct » un bandeau en haut du fil, et les sections sont dans le menu. L'application garde pour l'instant la barre du bas (Fil, En direct, Carte) demandée le matin, avec le bandeau « EN DIRECT » en plus. Option A : garder la barre du bas (plus visible, un geste pour chaque entrée quotidienne). Option B : suivre les maquettes (boutons flottants Carte et AIDE, menu pour le reste). Recommandation : A, car la carte et le direct sont les deux usages du quotidien en mobilisation et une barre fixe se repère sans apprentissage ; le bouton AIDE peut s'ajouter en flottant au-dessus de la barre.
@@ -295,7 +300,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : option A validée par la propriétaire le 2026-11-07 (« ok pour échelle des décryptage ») : cinq verdicts « Exact », « Plutôt exact », « Trompeur », « Contredit par les faits », « Invérifiable », définis dans une page « Notre méthode » (PP-02). Mis en œuvre le 2026-11-07 (D-038).
 
 ### [2026-11-07] Annuaire officiel des élus (noms des élus locaux dans « Qui décide de ça ? »)
-- Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel 2.0, M13.1)
+- Statut : Décidé le 2026-11-07 (D-047) ; intégré le 2026-11-07 au cahier des charges 2.0, section 3.8 ; à intégrer dans le cahier fonctionnel 2.0, M13.1
 - Concerne : cahier-fonctionnel.md, M13.1 (« Qui décide de ça ? », « Mes élus ») ; cahier des charges, section 4 (données publiques : Répertoire national des élus)
 - Description : l'encart « Qui décide ? Les élus concernés » nomme aujourd'hui les personnes publiques liées par l'équipe. Pour nommer les élus de chacun (maire, conseillers, député, sénateurs), il faut la liste officielle des élus et le lien entre une commune et ses élus.
 - Options :

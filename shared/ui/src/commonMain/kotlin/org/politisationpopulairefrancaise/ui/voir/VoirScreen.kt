@@ -79,11 +79,23 @@ fun VoirScreen(
     windowClass: WindowClass,
     modifier: Modifier = Modifier,
     onNavigate: (Space) -> Unit = {},
+    requests: VoirRequestSession? = null,
 ) {
     val catalog = library.voir
     val compact = windowClass.width == WindowWidthClass.COMPACT
     var glossary by remember { mutableStateOf(false) }
-    var reply by remember { mutableStateOf(false) }
+    val ownScope = rememberCoroutineScope()
+    val session = requests ?: remember { VoirRequestSession(messaging = null, remote = null, scope = ownScope) }
+    // Anonymous error reports written offline leave as soon as "Voir" is shown again with a server.
+    LaunchedEffect(session) { session.retryPending() }
+    val callbacks = RequestCallbacks(
+        createAccount = { onNavigate(Space.MON_ESPACE) },
+        openMessages = {
+            session.openTeamConversation()
+            onNavigate(Space.MESSAGES)
+        },
+        back = { state.back() },
+    )
     val actions = VoirActions(
         open = state::open,
         next = { target ->
@@ -99,7 +111,7 @@ fun VoirScreen(
             }
         },
         explain = { glossary = true },
-        reply = { reply = true },
+        reply = { address -> state.open(VoirDestination.Reply(address)) },
     )
     // The system's back (Android button or gesture, Escape on a computer) closes the open page first.
     SystemBack(enabled = state.stack.isNotEmpty()) { state.back() }
@@ -119,12 +131,11 @@ fun VoirScreen(
             if (current == null) {
                 VoirHome(catalog, library.status, state, actions, compact, columns)
             } else {
-                key(current) { VoirDetail(current, catalog, state, actions, compact, wide, columns) }
+                key(current) { VoirDetail(current, catalog, state, actions, compact, wide, columns, session, callbacks) }
             }
         }
     }
     if (glossary) GlossaryDialog(onDismiss = { glossary = false })
-    if (reply) ReplyDialog(onDismiss = { reply = false })
 }
 
 @Composable
@@ -199,6 +210,11 @@ private fun MovementAxis(catalog: VoirCatalog, state: VoirState, actions: VoirAc
 
 @Composable
 private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActions, columns: Int) {
+    if (catalog.parties.isNotEmpty()) {
+        SectionHeader(stringResource(Res.string.voir_parties), action = stringResource(Res.string.voir_see_all_count, catalog.parties.size), actionTag = VoirTags.seeAll("parties"), onAction = { state.open(VoirDestination.Parties) })
+        Grid(catalog.parties.take(maxOf(columns, 2)), columns) { party, modifier -> PartyCard(party, catalog, onOpen = { actions.open(party.address) }, modifier = modifier) }
+        Spacer(Modifier.height(24.dp))
+    }
     val persons = catalog.persons(null)
     SectionHeader(stringResource(Res.string.voir_people), action = stringResource(Res.string.voir_see_all_count, persons.size), actionTag = VoirTags.seeAll("people"), onAction = { state.open(VoirDestination.People) })
     Grid(persons.take(maxOf(columns * 2, 4)), columns) { person, modifier -> PersonCard(person, catalog, onOpen = { actions.open(person.address) }, modifier = modifier) }
@@ -324,6 +340,7 @@ private fun describe(item: VoirItem): Pair<ImageVector, String> = when (item) {
     is VoirItem.OfIndicator -> Lucide.ListChecks to stringResource(Res.string.voir_key_figures)
     is VoirItem.OfFact -> Lucide.Flag to "${stringResource(item.fact.kind.label)} · ${item.fact.date.toFrenchShort()}"
     is VoirItem.OfPerson -> Lucide.User to (item.person.function ?: stringResource(Res.string.voir_people))
+    is VoirItem.OfParty -> Lucide.Landmark to listOfNotNull(item.party.acronym, stringResource(Res.string.voir_party_kind)).joinToString(" · ")
     is VoirItem.OfText -> Lucide.ScrollText to stringResource(item.text.stage.label)
     is VoirItem.OfMovement -> Lucide.Globe to item.movement.country
     is VoirItem.OfDossier -> Lucide.BookOpen to stringResource(Res.string.voir_dossiers)
@@ -360,7 +377,17 @@ private fun FollowedStrip(catalog: VoirCatalog, state: VoirState) {
 }
 
 @Composable
-private fun VoirDetail(current: VoirDestination, catalog: VoirCatalog, state: VoirState, actions: VoirActions, compact: Boolean, wide: Boolean, columns: Int) {
+private fun VoirDetail(
+    current: VoirDestination,
+    catalog: VoirCatalog,
+    state: VoirState,
+    actions: VoirActions,
+    compact: Boolean,
+    wide: Boolean,
+    columns: Int,
+    session: VoirRequestSession,
+    callbacks: RequestCallbacks,
+) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
     Column(Modifier.fillMaxSize()) {
@@ -375,18 +402,33 @@ private fun VoirDetail(current: VoirDestination, catalog: VoirCatalog, state: Vo
         Column(Modifier.fillMaxWidth().weight(1f).verticalScroll(rememberScrollState()).padding(padding)) {
         Column(Modifier.widthIn(max = if (wide) 1100.dp else 760.dp)) {
             when (current) {
-                is VoirDestination.Item -> when (val item = catalog.item(current.address)) {
-                    is VoirItem.OfIndicator -> IndicatorPage(item.indicator, state, wide, actions.next, actions.explain)
-                    is VoirItem.OfFact -> FactPage(item.fact, catalog, state, actions)
-                    is VoirItem.OfPerson -> PersonPage(item.person, catalog, state, actions, wide)
-                    is VoirItem.OfText -> BillPage(item.text, catalog, state, actions, wide)
-                    is VoirItem.OfMovement -> MovementPage(item.movement)
-                    is VoirItem.OfDossier -> DossierPage(item.dossier)
+                is VoirDestination.Item -> {
+                    val item = catalog.item(current.address)
+                    when (item) {
+                        is VoirItem.OfIndicator -> IndicatorPage(item.indicator, state, wide, actions.next, actions.explain)
+                        is VoirItem.OfFact -> FactPage(item.fact, catalog, state, actions)
+                        is VoirItem.OfPerson -> PersonPage(item.person, catalog, state, actions, wide)
+                        is VoirItem.OfParty -> PartyPage(item.party, catalog, state, actions, wide, columns)
+                        is VoirItem.OfText -> BillPage(item.text, catalog, state, actions, wide)
+                        is VoirItem.OfMovement -> MovementPage(item.movement)
+                        is VoirItem.OfDossier -> DossierPage(item.dossier)
+                        null -> Text(stringResource(Res.string.voir_empty), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted)
+                    }
+                    // Every content ends with a discreet way to report an error (VO-22).
+                    if (item != null) ReportErrorLink(onClick = { state.open(VoirDestination.Report(item.address)) })
+                }
+                is VoirDestination.Reply -> when (val item = catalog.item(current.address)) {
                     null -> Text(stringResource(Res.string.voir_empty), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted)
+                    else -> ReplyFormPage(item, catalog, session, callbacks)
+                }
+                is VoirDestination.Report -> when (val item = catalog.item(current.address)) {
+                    null -> Text(stringResource(Res.string.voir_empty), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted)
+                    else -> ErrorReportPage(item, session, callbacks)
                 }
                 VoirDestination.Chronology -> ChronologyPage(catalog, state, actions)
                 VoirDestination.Liberties -> LibertiesPage(catalog, state, actions)
                 VoirDestination.People -> PeoplePage(catalog, state, actions, columns)
+                VoirDestination.Parties -> PartiesPage(catalog, actions, columns)
                 VoirDestination.Bills -> BillsPage(catalog, actions, columns)
                 VoirDestination.World -> WorldPage(catalog, actions, columns)
                 VoirDestination.Corrections -> CorrectionsPage(catalog, actions)
@@ -400,8 +442,10 @@ private fun VoirDetail(current: VoirDestination, catalog: VoirCatalog, state: Vo
 private fun axisOf(destination: VoirDestination, catalog: VoirCatalog, state: VoirState): VoirAxis = when (destination) {
     is VoirDestination.Item -> catalog.item(destination.address)?.axis ?: state.axis
     VoirDestination.Chronology, VoirDestination.World -> VoirAxis.MOUVEMENT
-    VoirDestination.People, VoirDestination.Bills -> VoirAxis.POUVOIR
+    VoirDestination.People, VoirDestination.Parties, VoirDestination.Bills -> VoirAxis.POUVOIR
     VoirDestination.Liberties -> VoirAxis.LIBERTES
     VoirDestination.Corrections -> state.axis
     is VoirDestination.KeyFigures -> destination.axis
+    is VoirDestination.Reply -> catalog.item(destination.address)?.axis ?: state.axis
+    is VoirDestination.Report -> catalog.item(destination.address)?.axis ?: state.axis
 }

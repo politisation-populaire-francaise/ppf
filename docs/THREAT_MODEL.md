@@ -129,3 +129,14 @@ Version du 5 novembre 2026 (phase 0, complétée le soir même par les fondation
 | Erreur dans l'annuaire présentée comme un fait par PPF (mauvais élu pour une commune partagée, ancienne fonction) | Une commune partagée liste tous ses cantons et circonscriptions plutôt que d'en deviner un ; rien n'est inventé quand une table manque ; source, licence et dates affichées, avec les annuaires officiels en lien | Signalement d'une erreur (S-38) |
 | Glossaire : définition fausse ou orientée glissée dans tous les contenus | Entrées signées par une clé de l'équipe éditoriale et vérifiées par l'outil de signature (sources obligatoires) ; seules les entrées de confiance sont lues ; origine IA affichée dans l'infobulle | Relecture par l'équipe éditoriale, journal des corrections |
 | Glossaire : ce que la personne consulte révèle ses centres d'intérêt | Rien n'est enregistré ni envoyé : infobulles, pages et recherche se font sur la copie locale | Aucun |
+
+## Ajout du 7 novembre 2026 : partis, site et demandes de « Voir » (D-054 à D-056)
+
+| Menace | Parade |
+|---|---|
+| Accusation de partialité envers un parti | Mêmes rubriques et même ordre pour tous, tri par nom, critère légal de financement le même pour tous, faits visant un membre jamais affichés sur la fiche du parti |
+| Données personnelles d'un mandataire financier | Jamais stockées : l'outil de signature refuse un nom dans le champ |
+| Injection de HTML ou de script par un contenu sur le site | Markdown rendu par un code qui échappe tout ; aucun HTML recopié ; CSP sans `unsafe-inline`, aucune couleur ni style en ligne |
+| Lecture des demandes de droit de réponse ou des signalements | Chiffrés de bout en bout pour la boîte de l'équipe (NIP-17, NIP-44) ; le serveur ne voit qu'une enveloppe d'auteur à usage unique |
+| Clé de la boîte de l'équipe confondue avec la clé qui signe les contenus | Constante isolée (`VoirRequests.TEAM_INBOX`) ; clé dédiée à créer avant le lancement public |
+| Signaleur identifié contre son gré | Signalement anonyme par défaut, clé à usage unique détruite après l'envoi ; envoi avec le compte seulement après mise en garde |

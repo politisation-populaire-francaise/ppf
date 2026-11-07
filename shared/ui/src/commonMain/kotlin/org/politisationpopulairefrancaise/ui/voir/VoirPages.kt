@@ -39,6 +39,7 @@ import org.politisationpopulairefrancaise.core.voir.FactKind
 import org.politisationpopulairefrancaise.core.voir.ImpactDirection
 import org.politisationpopulairefrancaise.core.voir.LegislativeText
 import org.politisationpopulairefrancaise.core.voir.NextTarget
+import org.politisationpopulairefrancaise.core.voir.parties
 import org.politisationpopulairefrancaise.core.voir.PublicPerson
 import org.politisationpopulairefrancaise.core.voir.TextStage
 import org.politisationpopulairefrancaise.core.voir.VoirAxis
@@ -68,7 +69,8 @@ internal class VoirActions(
     val open: (org.politisationpopulairefrancaise.core.signing.ContentAddress) -> Unit,
     val next: (NextTarget) -> Unit,
     val explain: () -> Unit,
-    val reply: () -> Unit,
+    /** Opens the form of a right of reply to the content at this address. */
+    val reply: (org.politisationpopulairefrancaise.core.signing.ContentAddress) -> Unit,
 )
 
 // ---------------------------------------------------------------------------------------------
@@ -111,10 +113,15 @@ internal fun FactPage(fact: Fact, catalog: VoirCatalog, state: VoirState, action
         MarkdownText(fact.article.body)
         val persons = catalog.personsOf(fact)
         val texts = catalog.textsOf(fact)
-        if (persons.isNotEmpty() || texts.isNotEmpty()) {
+        val parties = fact.parties.mapNotNull(catalog::party)
+        if (persons.isNotEmpty() || texts.isNotEmpty() || parties.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
             SectionHeader(stringResource(Res.string.voir_concerns))
             PersonsRow(persons, onOpen = { actions.open(it.address) })
+            parties.forEach { party ->
+                Spacer(Modifier.height(8.dp))
+                LinkRow(party.name, Lucide.Landmark, onClick = { actions.open(party.address) })
+            }
             texts.forEach { text ->
                 Spacer(Modifier.height(8.dp))
                 LinkRow(text.title, Lucide.ScrollText, onClick = { actions.open(text.address) })
@@ -129,9 +136,9 @@ internal fun FactPage(fact: Fact, catalog: VoirCatalog, state: VoirState, action
             Spacer(Modifier.height(12.dp))
             ReplyCard(reply)
         }
-        if (persons.isNotEmpty()) {
+        if (persons.isNotEmpty() || parties.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
-            PpfSecondaryButton(onClick = actions.reply, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
+            PpfSecondaryButton(onClick = { actions.reply(fact.address) }, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
         }
         if (fact.nextSteps.isNotEmpty()) {
             Spacer(Modifier.height(16.dp))
@@ -193,7 +200,7 @@ internal val PERSON_SECTIONS: List<FactKind> = listOf(
 )
 
 @Composable
-internal fun PersonCard(person: PublicPerson, catalog: VoirCatalog, onOpen: () -> Unit, modifier: Modifier = Modifier) {
+internal fun PersonCard(person: PublicPerson, catalog: VoirCatalog, onOpen: () -> Unit, modifier: Modifier = Modifier, showFacts: Boolean = true) {
     val palette = PpfTheme.palette
     PpfCard(onClick = onOpen, modifier = modifier.fillMaxWidth().testTag(VoirTags.card(person.article.slug))) {
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -205,7 +212,8 @@ internal fun PersonCard(person: PublicPerson, catalog: VoirCatalog, onOpen: () -
                 person.group?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, maxLines = 1, overflow = TextOverflow.Ellipsis) }
             }
         }
-        val facts = catalog.factsAbout(person.address)
+        // Hidden on a party's sheet: a member's facts stay on the member's own sheet.
+        val facts = if (showFacts) catalog.factsAbout(person.address) else emptyList()
         if (facts.isNotEmpty()) {
             Spacer(Modifier.height(10.dp))
             @OptIn(ExperimentalLayoutApi::class)
@@ -231,13 +239,17 @@ internal fun PersonPage(person: PublicPerson, catalog: VoirCatalog, state: VoirS
                 VoirTitle(person.name, style = MaterialTheme.typography.headlineMedium, heading = true)
                 person.function?.let { Text(it, style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted) }
                 person.group?.let { Text(stringResource(Res.string.voir_group, it), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle) }
+                catalog.partyOf(person)?.let { party ->
+                    Spacer(Modifier.height(6.dp))
+                    PartyChip(party, onOpen = { actions.open(party.address) })
+                }
             }
         }
         Spacer(Modifier.height(12.dp))
         @OptIn(ExperimentalLayoutApi::class)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), itemVerticalAlignment = Alignment.CenterVertically) {
             FollowButton(state.isFollowed(person.address), person.name, onToggle = { state.toggleFollow(person.address) })
-            PpfSecondaryButton(onClick = actions.reply, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
+            PpfSecondaryButton(onClick = { actions.reply(person.address) }, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
         }
         Spacer(Modifier.height(16.dp))
         InfoBox(Lucide.Info) { Text(stringResource(Res.string.voir_people_intro), style = MaterialTheme.typography.bodyMedium) }
@@ -649,7 +661,8 @@ internal fun LibertiesPage(catalog: VoirCatalog, state: VoirState, actions: Voir
 internal fun PeoplePage(catalog: VoirCatalog, state: VoirState, actions: VoirActions, columns: Int) {
     ListIntro(stringResource(Res.string.voir_people), stringResource(Res.string.voir_people_intro))
     FilterChips(catalog.rolesInUse(), state.roleFilter, label = { stringResource(it.label) }, id = { it.tagValue }, onSelect = { state.roleFilter = it })
-    Grid(catalog.persons(state.roleFilter), columns) { person, modifier -> PersonCard(person, catalog, onOpen = { actions.open(person.address) }, modifier = modifier) }
+    PartyFilter(catalog, state)
+    Grid(catalog.persons(state.roleFilter, state.partyFilter), columns) { person, modifier -> PersonCard(person, catalog, onOpen = { actions.open(person.address) }, modifier = modifier) }
 }
 
 @Composable

@@ -44,10 +44,12 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
 import org.politisationpopulairefrancaise.web.agendaPage
+import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.webRoutes
 import org.slf4j.LoggerFactory
 import javax.sql.DataSource
@@ -135,6 +137,8 @@ fun Application.module(
     relay: RelayConfig = RelayConfig.fromEnvironment(),
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
     agir: AgirSetup = AgirSetup.fromEnvironment(),
+    /** Where the pages of "Voir" read; by default the editorial contents of the database (none without one). */
+    voir: VoirSource? = null,
     tiles: TilesConfig = TilesConfig.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
 ) {
@@ -200,6 +204,7 @@ fun Application.module(
         elusApi(elusService)
         agirSpace?.let { agendaPage(it.agendaSource()) }
         tilesRoutes(tiles)
-        webRoutes()
+        // The pages of "Voir": contents of the editorial keys only (D-034).
+        webRoutes(voir ?: repository?.let { EditorialVoirSource(it, policy) })
     }
 }

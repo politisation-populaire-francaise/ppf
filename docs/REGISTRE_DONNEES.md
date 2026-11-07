@@ -128,3 +128,12 @@ Le pare-feu ne journalise rien.
 ### Personnes publiques citées dans « Voir » (D-034)
 
 Les fiches des responsables publics (mandats, votes, promesses, affaires, intérêts) sont des données personnelles de personnes publiques, traitées pour l'information du public sur l'exercice de leurs fonctions. Elles ne contiennent que des faits liés au mandat public, toujours sourcés, avec le statut de chaque procédure et un droit de réponse. Aujourd'hui, toutes les personnes de l'application sont **fictives** ([EXEMPLE]) ; avant d'y faire figurer une personne réelle : base légale et analyse d'impact à rédiger, relecture juridique (diffamation, présomption d'innocence, réutilisation des décisions de justice et des données de la HATVP), double validation éditoriale.
+
+## Ajout du 7 novembre 2026 : demandes de « Voir » (D-056)
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Demande de droit de réponse : nom pour la mention, qualité, texte, contenu visé | Obligation légale (LCEN, article 1-1, III) | Messages privés chiffrés : appareil de l'utilisateur et équipe de rédaction ; le serveur ne garde qu'une enveloppe illisible, pendant la conservation des messages (D-028) | Côté équipe : à fixer avec la propriétaire | L'utilisateur et l'équipe |
+| Signalement d'erreur avec le compte : clé publique et texte | Corriger un contenu (journal des corrections) | Messages privés chiffrés, comme ci-dessus | Idem | L'utilisateur et l'équipe |
+| Signalement d'erreur anonyme : texte et clé à usage unique | Corriger un contenu sans révéler qui signale | En mémoire seulement en attente d'envoi ; rien sur l'appareil après l'envoi | Jusqu'à l'envoi ou la fermeture de l'application | Personne ne peut relier le signalement à quelqu'un |
+| Brouillons des formulaires | Ne pas perdre le texte | En mémoire seulement | Fermeture de l'application | L'utilisateur |
