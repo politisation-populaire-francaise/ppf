@@ -1,6 +1,6 @@
 # S-146 « Déclarer mon compte compromis » : conception
 
-Pôle Communauté, version 0.1 du 8 novembre 2026 (projet, à valider par le chef d'équipe avant tout code ; décision D-134 à consigner). Calage avec Décider pour M16 (comptes, niveaux de votant) : section 6.
+Pôle Communauté, version 1.0 du 8 novembre 2026, approuvée par le chef d'équipe (D-134). Calage avec Décider pour M16 (comptes, niveaux de votant) : section 6.
 
 ## 1. Le problème
 
@@ -70,8 +70,9 @@ Un compte PPF est une paire de clés gardée sur le téléphone. Si le télépho
 | Le serveur cache un avis | Les avis sont des événements signés : ils pourront être relayés ailleurs (Nostr, miroirs, phase 3). |
 | Un avis révèle que la personne a été interpellée | La date et le motif sont facultatifs ; l'avis dit seulement « compromis depuis ». |
 
-## 9. Questions (au chef d'équipe, recommandations)
+## 9. Décisions (D-134, chef d'équipe par délégation de la propriétaire)
 
-1. **Effacer la phrase du téléphone après la vérification de la création** (et remplacer « Afficher ma phrase » par « Vérifier ma phrase ») : recommandé, sinon la clé de secours ne protège de rien en cas de saisie.
-2. **Date « compromis depuis » antérieure à l'avis** autorisée (heure de l'interpellation) : recommandé, au plus 30 jours avant l'avis.
-3. **Avis par l'équipe** pour qui a perdu aussi sa phrase, après vérification en personne et validation à deux : recommandé.
+1. Phrase effacée du téléphone par défaut après la vérification ; « Vérifier ma phrase » ; possibilité de la garder après une mise en garde claire, réversible (principe 10) ; rappel une semaine plus tard ; l'inscription insiste sur la feuille de papier.
+2. « Compromis depuis » jusqu'à 30 jours avant l'avis.
+3. Avis par l'équipe seulement pour un compte déjà vérifié en personne (séance retrouvée par le lien chiffré de l'audit, D-112, vérification en personne, action à deux du back-office, journalisée) ; sans vérification ni phrase, aucune reprise possible, dit clairement à l'inscription.
+4. Avec Décider : refus des jetons d'une clé compromise et délivrance au successeur sans double voix (à caler).
