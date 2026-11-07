@@ -37,6 +37,7 @@ Tout ce qui sert à faire tourner la plateforme est décrit ici, en code, pour p
 | `systemd/ppf-preprod-update.*` | Mise à jour automatique de la préproduction toutes les 10 minutes |
 | `wireguard/` | Modèle de configuration du tunnel (les clés sont générées sur le serveur) |
 | `scripts/backup.md` | Plan des sauvegardes hors site (avant la production) |
+| `EGRESS.md` | Liste des connexions sortantes autorisées (relue aujourd'hui, appliquée par le réseau avant la production) |
 
 ## Sur le serveur
 

@@ -8,12 +8,13 @@
 
 | Offre | Ce qu'elle contient | Payé aujourd'hui | Renouvellement |
 |---|---|---|---|
-| **KVM 1, 24 mois** (recommandée) | 1 processeur virtuel, 4 Go de mémoire, 50 Go de disque NVMe, 4 To de trafic | **131,76 € HT, soit environ 158,11 € TTC** (5,49 € HT par mois) | 11,99 € HT par mois (environ 14,39 € TTC), facturé 24 mois d'avance, à partir de novembre 2028 |
-| KVM 2, 24 mois | 2 processeurs, 8 Go, 100 Go | 186,96 € HT, soit environ 224,35 € TTC | 14,99 € HT par mois |
+| KVM 1, 24 mois | 1 processeur virtuel, 4 Go de mémoire, 50 Go de disque NVMe, 4 To de trafic | **131,76 € HT, soit environ 158,11 € TTC** (5,49 € HT par mois) | 11,99 € HT par mois (environ 14,39 € TTC), facturé 24 mois d'avance, à partir de novembre 2028 |
+| **KVM 2, 24 mois** (recommandée depuis le 7 novembre 2026) | 2 processeurs virtuels, 8 Go de mémoire, 100 Go de disque NVMe, 8 To de trafic | **186,96 € HT, soit environ 224,35 € TTC** (7,79 € HT par mois) | 14,99 € HT par mois (environ 17,99 € TTC), facturé 24 mois d'avance, à partir de novembre 2028 |
 
-- Le panier fait foi au moment de payer : si le total TTC dépasse **159 €** pour le KVM 1, arrêtez-vous et envoyez-moi une capture d'écran.
+- Achetez l'offre que vous avez validée dans la conversation. Le panier fait foi au moment de payer : si le total TTC dépasse **159 €** pour le KVM 1 ou **225 €** pour le KVM 2, arrêtez-vous et envoyez-moi une capture d'écran.
+- **Mise à niveau** possible à tout moment depuis hPanel (vers KVM 2, 4 ou 8), en 10 minutes au plus, sans rien perdre (aide officielle de Hostinger). Avant l'achat, vous pouvez demander au chat de Hostinger si la durée déjà payée est déduite du prix de la mise à niveau.
 - Garantie « satisfait ou remboursé » de 30 jours.
-- Budget : avec les domaines (145,10 € TTC), le total atteint environ 303 € pour un budget de 300 €. Voir l'entrée « Serveur de la préproduction : achat » du brainstorming du cahier des charges.
+- Budget : avec les domaines (145,10 € TTC), le total atteint environ 303 € avec le KVM 1, environ 369 € avec le KVM 2, pour un budget de 300 € (plafond de 500 €). Voir l'entrée « Serveur de la préproduction : achat » du brainstorming du cahier des charges.
 
 ## 2. Ce qu'il faut avant de commencer
 
@@ -28,9 +29,9 @@
 
 1. Connectez-vous sur https://hpanel.hostinger.com.
 2. Allez sur https://www.hostinger.com/fr/vps (ou, dans hPanel, menu **VPS**, bouton **« Acheter un VPS »**). Si une fenêtre sur les cookies apparaît, cliquez sur **« Tout refuser »**.
-3. Sous **KVM 1**, cliquez sur **« Sélectionner »**.
+3. Sous l'offre validée (**KVM 2** ou **KVM 1**), cliquez sur **« Sélectionner »**.
 4. Dans le panier, vérifiez la durée : **24 mois**. Refusez toute option payante (sauvegardes quotidiennes, licences, panneau de contrôle, « Agent IA », adresse IP supplémentaire, nom de domaine offert : nous en avons déjà).
-5. Vérifiez le total TTC (environ 158,11 €), puis payez par carte. Gardez la facture : elle servira au remboursement par l'association.
+5. Vérifiez le total TTC (environ 224,35 € pour le KVM 2, 158,11 € pour le KVM 1), puis payez par carte. Gardez la facture : elle servira au remboursement par l'association.
 
 ## 4. Configurer le serveur dans hPanel
 
