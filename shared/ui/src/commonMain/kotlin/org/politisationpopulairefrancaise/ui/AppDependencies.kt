@@ -49,6 +49,11 @@ class AppDependencies(
     /** The push registrations; null without a server or a push system (desktop, iOS for now). */
     val push: PushManager? = null,
     /**
+     * The address of our own ntfy server, to type in the distributor application (production or
+     * preproduction, given by the host); null shows the production address.
+     */
+    val pushServer: String? = null,
+    /**
      * Asks the system permission to show notifications (Android 13 and later) and tells whether it
      * was granted; elsewhere there is nothing to ask.
      */
@@ -69,6 +74,7 @@ class AppDependencies(
             remote: RemoteEvents? = null,
             notifications: Notifications? = null,
             push: PushManager? = null,
+            pushServer: String? = null,
             requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
@@ -80,6 +86,7 @@ class AppDependencies(
             contentFollowStore = ContentFollowStore(database),
             notifications = notifications ?: Notifications(database, identityStore, remote, notifier = null),
             push = push,
+            pushServer = pushServer,
             requestNotificationPermission = requestNotificationPermission,
         )
     }

@@ -167,7 +167,13 @@ fun rememberNotificationsSettings(dependencies: AppDependencies, accountKey: Str
     val notifications = dependencies.notifications ?: return null
     val scope = rememberCoroutineScope()
     val state = remember(dependencies) {
-        NotificationsSettingsState(notifications, dependencies.push, dependencies.requestNotificationPermission, scope)
+        NotificationsSettingsState(
+            notifications,
+            dependencies.push,
+            dependencies.requestNotificationPermission,
+            scope,
+            distributorServer = dependencies.pushServer ?: DEFAULT_DISTRIBUTOR_SERVER,
+        )
     }
     LaunchedEffect(state, accountKey) { state.setAccount(accountKey != null) }
     return state

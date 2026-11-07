@@ -30,6 +30,7 @@ class MainActivity : ComponentActivity() {
             remote = app.remote,
             notifications = app.notifications,
             push = app.push,
+            pushServer = app.pushServer,
             requestNotificationPermission = ::requestNotificationPermission,
         )
         setContent {

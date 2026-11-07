@@ -33,6 +33,14 @@ class PpfApplication : Application() {
         BuildConfig.PPF_SERVER_URL.trim().takeIf { it.startsWith("https://") }?.trimEnd('/')
     }
 
+    /**
+     * Our own ntfy server, next to the platform's server: "push." before its name
+     * (push.politisation-populaire-francaise.org, push.preprod.politisation-populaire-francaise.org).
+     */
+    val pushServer: String? by lazy {
+        serverUrl?.let { "https://push." + it.removePrefix("https://").substringBefore('/') }
+    }
+
     /** One connection for the whole process; null when the build has no server. */
     val httpClient: HttpClient? by lazy { serverUrl?.let { HttpClient() } }
 
