@@ -43,6 +43,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.groups.GroupsLibrary
 import org.politisationpopulairefrancaise.ui.groups.rememberGroupsLibrary
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.messages.CollectivesFullScreen
 import org.politisationpopulairefrancaise.ui.messages.CollectivesPage
@@ -107,6 +108,17 @@ fun AgirScreen(
         }
     }
     val home: () -> Unit = { route = AgirRoute.HOME }
+    // The system's back first closes the open page of an organisation, then returns to the home of Agir.
+    SystemBack(enabled = route != AgirRoute.HOME) {
+        if (route == AgirRoute.ORGANISATIONS && directory.selected != null) {
+            directory.close()
+            returnTo?.let { route = it }
+            returnTo = null
+        } else {
+            route = AgirRoute.HOME
+            returnTo = null
+        }
+    }
     // The shell's modifier carries its own test tag: the screens below carry theirs on inner boxes.
     Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
         when (route) {
@@ -173,6 +185,18 @@ private fun BackTitle(title: String, onBack: () -> Unit, modifier: Modifier = Mo
         PpfIconButton(Lucide.ArrowLeft, stringResource(Res.string.agir_back), onBack, Modifier.testTag(AgirTags.BACK), tint = PpfTheme.palette.ink)
         Spacer(Modifier.width(8.dp))
         Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
+    }
+}
+
+/**
+ * Frames a screen of another block plugged into "Agir" ([AgirSlot]): its [title] with the way back
+ * to the home of the space, then the screen itself, which fills the rest.
+ */
+@Composable
+fun AgirPlugged(title: String, onBack: () -> Unit, modifier: Modifier = Modifier, content: @Composable (Modifier) -> Unit) {
+    Column(modifier) {
+        BackTitle(title, onBack, Modifier.padding(start = 8.dp, top = 8.dp, end = 16.dp))
+        content(Modifier.fillMaxWidth().weight(1f))
     }
 }
 

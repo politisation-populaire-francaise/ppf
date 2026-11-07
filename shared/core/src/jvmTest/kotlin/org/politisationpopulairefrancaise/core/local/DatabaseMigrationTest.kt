@@ -3,6 +3,10 @@ package org.politisationpopulairefrancaise.core.local
 import app.cash.sqldelight.db.QueryResult
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import org.politisationpopulairefrancaise.core.comprendre.LearningProgressStore
+import org.politisationpopulairefrancaise.core.agir.agenda.AgendaResponse
+import org.politisationpopulairefrancaise.core.agir.agenda.AgendaStore
+import org.politisationpopulairefrancaise.core.agir.agenda.ProposalRecord
+import org.politisationpopulairefrancaise.core.agir.agenda.ProposalReview
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.groups.GroupStore
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
@@ -99,11 +103,11 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion8() {
+    fun theSchemaIsAtVersion9() {
         // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
         // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm);
-        // 8: followed contents of Voir (7.sqm).
-        assertEquals(8L, PpfDatabase.Schema.version)
+        // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm).
+        assertEquals(9L, PpfDatabase.Schema.version)
     }
 
     @Test
@@ -148,6 +152,40 @@ class DatabaseMigrationTest {
         val address = ContentAddress.parse("30023:$key:manifestants-journees")
         followedContents.follow(address)
         assertEquals(listOf(address), followedContents.all())
+        // And the tables of the agenda (version 9).
+        val agenda = AgendaStore(database)
+        assertEquals(0L, agenda.countResponses())
+        agenda.respond("31923:${"b".repeat(64)}:rassemblement", AgendaResponse.GOING, endsAt = 100)
+        assertEquals(1L, agenda.countResponses())
+    }
+
+    @Test
+    fun aVersion6DatabaseGainsTheAgendaTablesAndKeepsItsRooms() {
+        val file = tempDatabaseFile()
+        writeVersion1Database(file)
+        JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}").let { driver ->
+            try {
+                PpfDatabase.Schema.migrate(driver, 1, 6)
+                driver.execute(null, "INSERT INTO group_membership(group_id, joined_at) VALUES ('collectif-demonstration', 1)", 0)
+                driver.execute(null, "PRAGMA user_version = 6", 0)
+            } finally {
+                driver.close()
+            }
+        }
+        assertEquals(6L, userVersion(file))
+
+        val database = JvmDatabase.open(file)
+        assertEquals(9L, userVersion(file))
+        assertTrue(GroupStore(database).isMember("collectif-demonstration"))
+        assertEquals("[EXEMPLE] ancienne note", assertNotNull(LocalEventStore(database).find(eventId)).content)
+
+        val agenda = AgendaStore(database)
+        assertEquals(0L, agenda.countResponses())
+        assertEquals(0L, agenda.countProposals())
+        agenda.respond("31923:${"b".repeat(64)}:rassemblement", AgendaResponse.INTERESTED, endsAt = 100)
+        agenda.recordProposal("e".repeat(64), ProposalRecord(ProposalReview.REVIEW))
+        assertEquals(AgendaResponse.INTERESTED, agenda.responses().values.single())
+        assertEquals(ProposalReview.REVIEW, agenda.proposals().values.single().review)
     }
 
     @Test
@@ -188,5 +226,7 @@ class DatabaseMigrationTest {
         assertEquals(listOf(address), followed.all())
         followed.unfollow(address)
         assertEquals(emptyList(), followed.all())
+        assertEquals(0L, AgendaStore(database).countResponses())
+        assertEquals(0L, AgendaStore(database).countProposals())
     }
 }

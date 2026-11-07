@@ -117,6 +117,7 @@ fun main(args: Array<String>) {
         )
     }.map { signer.signChecked(it) }
     write(output.resolve("fil.json"), notes)
+    signAgenda(content, output, keys) // content/agenda -> agenda.json (AgendaContent.kt)
 
     val voirFiles = voirDocuments(content.resolve("voir"))
     val voir = voirFiles.map { document -> voirEvent(document, keys.publicKey) }

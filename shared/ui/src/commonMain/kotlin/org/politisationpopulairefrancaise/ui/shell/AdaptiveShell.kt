@@ -74,6 +74,14 @@ import org.politisationpopulairefrancaise.ui.account.MySpaceScreen
 import org.politisationpopulairefrancaise.ui.account.rememberAccountSession
 import org.politisationpopulairefrancaise.ui.account.rememberMailboxSetting
 import org.politisationpopulairefrancaise.ui.agir.AgirScreen
+import org.politisationpopulairefrancaise.ui.agir.AgirPlugged
+import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaLibrary
+import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaScreen
+import org.politisationpopulairefrancaise.ui.agir.agenda.OrganisationAgenda
+import org.politisationpopulairefrancaise.ui.agir.agenda.rememberAgendaLibrary
+import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
+import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisationsLibrary
+import org.politisationpopulairefrancaise.ui.resources.agenda_in_agir_title
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.NavRow
 import org.politisationpopulairefrancaise.ui.components.NavSubRow
@@ -145,11 +153,17 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val messaging = rememberMessagingSession(dependencies)
     // The rooms of collectives, kept for the whole run (nothing is fetched before the view is shown).
     val groupsLibrary = rememberGroupsLibrary(dependencies)
+    // "Agir": the directory of organisations and the agenda, kept for the whole run; the agenda is
+    // shown behind "Carte" and inside "Agir", the directory names the organisers of its events.
+    val organisationsLibrary = rememberOrganisationsLibrary(dependencies)
+    val agendaLibrary = rememberAgendaLibrary(dependencies)
+    LaunchedEffect(organisationsLibrary) { organisationsLibrary.ensureStarted() }
     // Erasing the keys also forgets the followed accounts, the conversations and the joined rooms (protection by default).
     val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = {
         contentLibrary.clearFollowed()
         messaging.forgetAll()
         groupsLibrary.clearMemberships()
+        agendaLibrary.forgetUser()
     })
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
@@ -184,6 +198,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 proposalComposer = proposalComposer,
                 voirState = voirState,
                 groupsLibrary = groupsLibrary,
+                organisationsLibrary = organisationsLibrary,
+                agendaLibrary = agendaLibrary,
                 mailboxSetting = mailboxSetting,
                 windowClass = windowClass,
                 widthDp = maxWidth.value.toInt(),
@@ -211,17 +227,36 @@ private fun SpaceContent(
     proposalComposer: ProposalComposer,
     voirState: VoirState,
     groupsLibrary: GroupsLibrary,
+    organisationsLibrary: OrganisationsLibrary,
+    agendaLibrary: AgendaLibrary,
     mailboxSetting: MailboxSetting,
     windowClass: WindowClass,
     widthDp: Int,
     heightDp: Int,
     modifier: Modifier,
 ) {
+    // The organisers of the agenda are named after the directory when they are verified organisations.
+    val organisationName: (String) -> String? = { key -> organisationsLibrary.verified.organisationFor(key)?.name }
     when (selected) {
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)
-        Space.AGIR -> AgirScreen(dependencies, contentLibrary, accountSession, windowClass, modifier, onNavigate, groups = groupsLibrary)
+        Space.AGIR -> AgirScreen(
+            dependencies, contentLibrary, accountSession, windowClass, modifier, onNavigate,
+            organisations = organisationsLibrary,
+            groups = groupsLibrary,
+            agenda = { slotModifier, onBack ->
+                AgirPlugged(stringResource(Res.string.agenda_in_agir_title), onBack, slotModifier) { inner ->
+                    AgendaScreen(dependencies, accountSession, windowClass, inner, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
+                }
+            },
+            organisationAgenda = { key, slotModifier ->
+                OrganisationAgenda(agendaLibrary, key, slotModifier) { mobilization ->
+                    agendaLibrary.open(mobilization)
+                    onNavigate(Space.CARTE)
+                }
+            },
+        )
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
         Space.REVENDICATIONS -> RevendicationsScreen(
@@ -233,6 +268,7 @@ private fun SpaceContent(
             proposal = proposalComposer,
             onNavigate = onNavigate,
         )
+        Space.CARTE -> AgendaScreen(dependencies, accountSession, windowClass, modifier, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
         else -> PlaceholderScreen(sectionFor(selected), windowClass, widthDp, heightDp, modifier)
     }
 }

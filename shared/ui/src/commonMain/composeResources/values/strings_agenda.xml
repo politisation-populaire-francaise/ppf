@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Agenda of mobilizations (M1, AG-01, AG-02, AG-19, AG-21, AG-49), shown by the "Carte" entry
+     of the bottom bar. French, typographic apostrophe (’), no em dash, formal "vous". -->
+<resources>
+    <!-- The screen -->
+    <string name="agenda_title">Carte et agenda</string>
+    <string name="agenda_intro">Manifestations, rassemblements, grèves, blocages, assemblées générales et réunions, à venir et passés. L’agenda reste lisible sans réseau.</string>
+    <string name="agenda_map_soon_title">La vue carte arrive bientôt</string>
+    <string name="agenda_map_soon_text">La carte demande une bibliothèque de carte et des fonds de carte hébergés par PPF, sans aucun service tiers : c’est la prochaine étape. En attendant, l’agenda liste toutes les mobilisations.</string>
+    <string name="agenda_tab_upcoming">À venir</string>
+    <string name="agenda_tab_past">Passés</string>
+    <string name="agenda_tab_mine">Mes propositions</string>
+    <string name="agenda_filters">Filtres</string>
+    <plurals name="agenda_filters_active">
+        <item quantity="one">Filtres, %1$d filtre actif</item>
+        <item quantity="other">Filtres, %1$d filtres actifs</item>
+    </plurals>
+    <string name="agenda_propose">Proposer un événement</string>
+    <string name="agenda_refresh">Actualiser l’agenda</string>
+    <plurals name="agenda_count">
+        <item quantity="one">%1$d mobilisation</item>
+        <item quantity="other">%1$d mobilisations</item>
+    </plurals>
+    <string name="agenda_day_today">Aujourd’hui</string>
+    <string name="agenda_day_tomorrow">Demain</string>
+    <string name="agenda_day_yesterday">Hier</string>
+    <string name="agenda_ongoing">En cours</string>
+    <string name="agenda_empty_upcoming">Aucune mobilisation à venir pour l’instant.</string>
+    <string name="agenda_empty_past">Aucune mobilisation passée sur cet appareil.</string>
+    <string name="agenda_empty_filters">Aucune mobilisation ne correspond à ces filtres.</string>
+    <string name="agenda_clear_filters">Effacer les filtres</string>
+    <string name="agenda_clear_all">Tout effacer</string>
+    <string name="agenda_chip_remove">Retirer le filtre %1$s</string>
+    <string name="agenda_chip_text">« %1$s »</string>
+
+    <!-- Types and statuses -->
+    <string name="agenda_type_manifestation">Manifestation</string>
+    <string name="agenda_type_blocage">Blocage</string>
+    <string name="agenda_type_rassemblement">Rassemblement</string>
+    <string name="agenda_type_greve">Grève</string>
+    <string name="agenda_type_assemblee_generale">Assemblée générale</string>
+    <string name="agenda_type_reunion">Réunion</string>
+    <string name="agenda_type_autre">Autre</string>
+    <string name="agenda_status_cancelled">Annulé</string>
+    <string name="agenda_status_postponed">Reporté</string>
+    <string name="agenda_cancelled_note">Cet événement est annulé : ne vous déplacez pas.</string>
+    <string name="agenda_postponed_note">Cet événement est reporté : la nouvelle date sera annoncée par ses organisateurs.</string>
+    <string name="agenda_declaration_faite">Déclarée en préfecture</string>
+    <string name="agenda_declaration_en_cours">Déclaration en préfecture en cours</string>
+    <string name="agenda_declaration_non_faite">Non déclarée en préfecture</string>
+
+    <!-- Dates and times -->
+    <string name="agenda_time_range">%1$s à %2$s</string>
+    <string name="agenda_date_range">Du %1$s au %2$s</string>
+    <string name="agenda_date_time">%1$s, %2$s</string>
+    <string name="agenda_timezone_note">Heures de Paris (heure légale de la France métropolitaine).</string>
+
+    <!-- Detail -->
+    <string name="agenda_back">Retour à l’agenda</string>
+    <string name="agenda_when">Quand</string>
+    <string name="agenda_where">Où</string>
+    <string name="agenda_territory">Territoire : %1$s</string>
+    <string name="agenda_organized_by">Organisé par %1$s</string>
+    <string name="agenda_proposed_by">Proposé par %1$s</string>
+    <string name="agenda_editorial_team">l’équipe éditoriale de PPF</string>
+    <string name="agenda_updated">Mis à jour le %1$s</string>
+    <string name="agenda_description">Description</string>
+    <string name="agenda_link">Ouvrir le lien de l’événement</string>
+    <string name="agenda_link_host">Site extérieur : %1$s</string>
+    <string name="agenda_add_calendar">Ajouter à mon agenda</string>
+    <string name="agenda_select_hint">Choisissez une mobilisation dans la liste pour en voir le détail.</string>
+
+    <!-- Cancellation by the author (decision of the owner of 2026-11-07: without review) -->
+    <string name="agenda_cancel_event">Annuler mon événement</string>
+    <string name="agenda_cancel_title">Annuler votre événement ?</string>
+    <string name="agenda_cancel_text">Il restera dans l’agenda avec la mention « Annulé », pour que personne ne se déplace pour rien. L’annulation est publiée tout de suite et ne peut pas être défaite depuis l’application.</string>
+    <string name="agenda_cancel_keep">Garder l’événement</string>
+    <string name="agenda_cancel_confirm">Annuler l’événement</string>
+    <string name="agenda_cancel_done">Votre événement est maintenant annoncé comme annulé.</string>
+    <string name="agenda_cancel_held">L’annulation est en attente de relecture par l’équipe.</string>
+    <string name="agenda_cancel_waiting">L’annulation est gardée sur votre appareil : elle partira dès que le serveur répondra.</string>
+    <string name="agenda_cancel_refused">Le serveur a refusé l’annulation : l’événement reste tel quel.</string>
+    <string name="agenda_cancel_failed">L’annulation n’a pas pu se faire.</string>
+
+    <!-- Answers (AG-49): on the device only -->
+    <string name="agenda_response_title">Votre réponse</string>
+    <string name="agenda_response_going">J’y serai</string>
+    <string name="agenda_response_interested">Intéressé</string>
+    <string name="agenda_response_private">Votre réponse reste sur votre appareil : elle n’est jamais envoyée, et il n’existe ni compteur public ni liste de participants. Elle est effacée un jour après la fin de l’événement.</string>
+
+    <!-- Leaving PPF -->
+    <string name="agenda_leave_title">Vous quittez PPF</string>
+    <string name="agenda_leave_text">Ce lien ouvre un site qui n’appartient pas à PPF : %1$s. Ce site verra votre adresse IP et pourra suivre votre visite ; PPF ne contrôle pas son contenu.</string>
+    <string name="agenda_leave_stay">Rester sur PPF</string>
+    <string name="agenda_leave_open">Ouvrir le lien quand même</string>
+
+    <!-- Export to a calendar -->
+    <string name="agenda_export_title">Ajouter à votre agenda</string>
+    <string name="agenda_export_text">PPF crée un fichier d’agenda (.ics) sur votre appareil, sans rien envoyer. Attention : si votre agenda est synchronisé avec un service en ligne (Google, Apple, Microsoft…), ce service saura que vous avez ajouté cet événement.</string>
+    <string name="agenda_export_cancel">Annuler</string>
+    <string name="agenda_export_confirm">Créer le fichier d’agenda</string>
+    <string name="agenda_export_done">Le fichier d’agenda est prêt.</string>
+    <string name="agenda_export_unsupported">L’ajout à l’agenda n’est pas encore disponible sur cet appareil.</string>
+    <string name="agenda_export_failed">Le fichier d’agenda n’a pas pu être créé.</string>
+    <string name="agenda_export_save_title">Enregistrer l’événement dans un fichier d’agenda</string>
+    <string name="agenda_export_share_title">Ajouter l’événement à un agenda</string>
+
+    <!-- Filter panel -->
+    <string name="agenda_panel_title">Filtrer l’agenda</string>
+    <string name="agenda_panel_close">Fermer les filtres</string>
+    <string name="agenda_section_period">Période</string>
+    <string name="agenda_period_any">Toutes les dates</string>
+    <string name="agenda_period_today">Aujourd’hui</string>
+    <string name="agenda_period_week">Cette semaine</string>
+    <string name="agenda_period_month">Ce mois-ci</string>
+    <string name="agenda_period_range">Choisir des dates</string>
+    <string name="agenda_range_from">Du (JJ/MM/AAAA)</string>
+    <string name="agenda_range_to">Au (JJ/MM/AAAA)</string>
+    <string name="agenda_range_invalid">Date invalide : écrivez-la comme 14/11/2026.</string>
+    <string name="agenda_range_both">Du %1$s au %2$s</string>
+    <string name="agenda_range_since">À partir du %1$s</string>
+    <string name="agenda_range_until">Jusqu’au %1$s</string>
+    <string name="agenda_section_types">Type</string>
+    <string name="agenda_section_territory">Territoire</string>
+    <string name="agenda_territory_none">Aucun territoire pour l’instant.</string>
+    <string name="agenda_section_organizers">Organisation</string>
+    <string name="agenda_organizers_none">Aucune organisation pour l’instant.</string>
+    <string name="agenda_section_text">Mots-clés</string>
+    <string name="agenda_text_placeholder">Titre, lieu ou description</string>
+    <plurals name="agenda_apply">
+        <item quantity="one">Afficher %1$d mobilisation</item>
+        <item quantity="other">Afficher %1$d mobilisations</item>
+    </plurals>
+    <string name="agenda_private_note">Vos filtres restent sur cet appareil : ils ne sont jamais envoyés au serveur.</string>
+
+    <!-- My proposals -->
+    <string name="agenda_mine_intro">Les événements que vous avez proposés, et où ils en sont.</string>
+    <string name="agenda_mine_empty">Vous n’avez proposé aucun événement.</string>
+    <string name="agenda_need_account_mine">Créez votre compte pour proposer un événement et suivre vos propositions.</string>
+    <string name="agenda_create_account">Créer mon compte</string>
+    <string name="agenda_state_waiting">En attente d’envoi</string>
+    <string name="agenda_state_review">En attente de relecture par l’équipe</string>
+    <string name="agenda_state_published">Publié</string>
+    <string name="agenda_state_rejected">Non publié</string>
+    <string name="agenda_state_reason">Raison donnée par l’équipe : %1$s</string>
+    <string name="agenda_state_waiting_text">Gardé sur votre appareil : il partira dès que le serveur répondra.</string>
+    <string name="agenda_forget">Retirer de la liste</string>
+
+    <!-- Proposal form (AG-02) -->
+    <string name="agenda_form_title">Proposer un événement</string>
+    <string name="agenda_form_close">Fermer le formulaire</string>
+    <string name="agenda_form_intro">Les organisations vérifiées publient directement. Les autres propositions sont relues par l’équipe avant de paraître dans l’agenda.</string>
+    <string name="agenda_field_type">Type d’événement</string>
+    <string name="agenda_field_title">Titre</string>
+    <string name="agenda_field_title_placeholder">Par exemple : Rassemblement pour l’hôpital public</string>
+    <string name="agenda_field_start">Début</string>
+    <string name="agenda_field_date_placeholder">Date (JJ/MM/AAAA)</string>
+    <string name="agenda_field_time_placeholder">Heure (14 h 30)</string>
+    <string name="agenda_field_end">Fin (facultatif)</string>
+    <string name="agenda_field_end_date_placeholder">Date de fin, si autre jour</string>
+    <string name="agenda_field_end_time_placeholder">Heure de fin</string>
+    <string name="agenda_field_location">Lieu</string>
+    <string name="agenda_field_location_help">Adresse, place ou point de rendez-vous, avec la ville.</string>
+    <string name="agenda_field_location_placeholder">Par exemple : place de la Mairie, Villeneuve</string>
+    <string name="agenda_field_territory">Territoire</string>
+    <string name="agenda_field_territory_help">Commune, département, ou « France » pour un événement national.</string>
+    <string name="agenda_field_territory_placeholder">Par exemple : Lyon</string>
+    <string name="agenda_field_summary">Résumé (facultatif)</string>
+    <string name="agenda_field_summary_placeholder">Une phrase pour présenter l’événement</string>
+    <string name="agenda_field_description">Description (facultatif)</string>
+    <string name="agenda_field_description_placeholder">Le programme, l’accessibilité, ce qu’il faut savoir…</string>
+    <string name="agenda_field_link">Lien (facultatif)</string>
+    <string name="agenda_field_link_placeholder">https://…</string>
+    <string name="agenda_field_declaration">Déclaration en préfecture (facultatif)</string>
+    <string name="agenda_field_declaration_help">Une manifestation sur la voie publique se déclare à l’avance en mairie ou en préfecture. Ne l’indiquez que si vous le savez.</string>
+    <string name="agenda_declaration_unset">Ne pas préciser</string>
+    <string name="agenda_counter">%1$d / %2$d</string>
+    <string name="agenda_problem_type_missing">Choisissez le type d’événement.</string>
+    <string name="agenda_problem_title_missing">Donnez un titre.</string>
+    <string name="agenda_problem_title_too_long">Le titre dépasse 140 caractères.</string>
+    <string name="agenda_problem_start_date_missing">Indiquez la date.</string>
+    <string name="agenda_problem_start_date_invalid">Date invalide : écrivez-la comme 14/11/2026.</string>
+    <string name="agenda_problem_start_time_missing">Indiquez l’heure de début.</string>
+    <string name="agenda_problem_start_time_invalid">Heure invalide : écrivez-la comme 14 h 30 ou 14:30.</string>
+    <string name="agenda_problem_start_in_past">Cette date et cette heure sont déjà passées.</string>
+    <string name="agenda_problem_end_date_invalid">Date de fin invalide : écrivez-la comme 14/11/2026.</string>
+    <string name="agenda_problem_end_time_missing">Indiquez l’heure de fin.</string>
+    <string name="agenda_problem_end_time_invalid">Heure de fin invalide : écrivez-la comme 17 h ou 17:00.</string>
+    <string name="agenda_problem_end_before_start">La fin doit venir après le début.</string>
+    <string name="agenda_problem_location_missing">Indiquez le lieu.</string>
+    <string name="agenda_problem_location_too_long">Le lieu dépasse 200 caractères.</string>
+    <string name="agenda_problem_territory_missing">Indiquez le territoire.</string>
+    <string name="agenda_problem_territory_too_long">Le territoire dépasse 100 caractères.</string>
+    <string name="agenda_problem_summary_too_long">Le résumé dépasse 280 caractères.</string>
+    <string name="agenda_problem_description_too_long">La description dépasse 8 000 caractères.</string>
+    <string name="agenda_problem_link_invalid">Le lien doit être une adresse web (https://…).</string>
+    <string name="agenda_missing_list">Pour envoyer, il manque : %1$s.</string>
+    <string name="agenda_missing_type">le type</string>
+    <string name="agenda_missing_title">le titre</string>
+    <string name="agenda_missing_date">la date</string>
+    <string name="agenda_missing_time">l’heure</string>
+    <string name="agenda_missing_location">le lieu</string>
+    <string name="agenda_missing_territory">le territoire</string>
+    <string name="agenda_blocked_fix">Corrigez d’abord les champs signalés.</string>
+    <string name="agenda_blocked_charter">Cochez l’acceptation de la charte pour envoyer.</string>
+    <string name="agenda_similar_title">Des événements proches existent le même jour</string>
+    <string name="agenda_similar_text">Si c’est le même événement, ne le proposez pas une seconde fois : un événement porté par plusieurs organisations n’apparaît qu’une fois, avec tous ses organisateurs.</string>
+    <string name="agenda_similar_close_title">Titre proche</string>
+    <string name="agenda_similar_close_place">Même lieu</string>
+    <string name="agenda_similar_open">Voir %1$s</string>
+    <string name="agenda_charter_accept">J’ai lu la charte et mon événement la respecte</string>
+    <string name="agenda_pseudonym_note">Votre pseudonyme sera relié à cet événement : tout le monde pourra voir que vous l’avez proposé.</string>
+    <string name="agenda_no_server">Le serveur ne répond pas pour l’instant : votre proposition sera gardée sur cet appareil et envoyée dès qu’il répondra.</string>
+    <string name="agenda_need_account">Pour proposer un événement, il faut un compte : votre proposition est signée par votre pseudonyme.</string>
+    <string name="agenda_send">Envoyer la proposition</string>
+    <string name="agenda_sending">Envoi…</string>
+    <string name="agenda_result_published_title">Événement publié</string>
+    <string name="agenda_result_published_text">Il apparaît dès maintenant dans l’agenda.</string>
+    <string name="agenda_result_review_title">En attente de relecture par l’équipe</string>
+    <string name="agenda_result_review_text">Votre proposition est bien arrivée. L’équipe la relit avant de la publier ; suivez-la dans « Mes propositions ».</string>
+    <string name="agenda_result_waiting_title">Gardé sur votre appareil</string>
+    <string name="agenda_result_waiting_text">Le serveur ne répond pas pour l’instant. Votre proposition partira dès qu’il répondra ; suivez-la dans « Mes propositions ».</string>
+    <string name="agenda_result_refused_title">Proposition refusée</string>
+    <string name="agenda_result_refused_text">Le serveur a refusé cette proposition. Vérifiez les champs et la charte, puis réessayez.</string>
+    <string name="agenda_result_failed_title">L’envoi n’a pas pu se faire</string>
+    <string name="agenda_result_failed_text">Rien n’a été envoyé et votre saisie est gardée : réessayez.</string>
+    <string name="agenda_result_back">Retour à l’agenda</string>
+    <string name="agenda_result_again">Proposer un autre événement</string>
+    <string name="agenda_result_correct">Corriger ma proposition</string>
+    <!-- Agenda of an organisation, on its page in the directory -->
+    <string name="agenda_organisation_none">Aucune mobilisation à venir annoncée par cette organisation.</string>
+    <string name="agenda_organisation_open">Ouvrir « %1$s » dans l’agenda</string>
+    <string name="agenda_in_agir_title">Agenda des mobilisations</string>
+</resources>

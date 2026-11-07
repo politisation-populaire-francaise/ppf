@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The only files the FileProvider of the agenda may serve: the calendar file of the last export,
+     in the cache of the application (see CalendarExport.android.kt in shared/ui). -->
+<paths>
+    <cache-path name="agenda" path="agenda/" />
+</paths>

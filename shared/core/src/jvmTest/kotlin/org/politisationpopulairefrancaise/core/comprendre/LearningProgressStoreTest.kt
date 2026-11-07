@@ -84,10 +84,13 @@ class LearningProgressStoreTest {
         val directory = Files.createTempDirectory("ppf-learning")
         val file = directory.resolve("ppf.db")
         try {
-            // A real version 6 database: the current schema, minus what versions 7 and 8 added.
+            // A real version 6 database: the current schema, minus what the later versions added
+            // (7: courses, 8: followed contents of Voir, 9: agenda of Agir).
             JvmDatabase.open(file)
             DriverManager.getConnection("jdbc:sqlite:${file.toAbsolutePath()}").use { connection ->
                 connection.createStatement().use { statement ->
+                    statement.executeUpdate("DROP TABLE agenda_proposal")
+                    statement.executeUpdate("DROP TABLE agenda_response")
                     statement.executeUpdate("DROP TABLE content_follow")
                     statement.executeUpdate("DROP TABLE learning_answer")
                     statement.executeUpdate("DROP TABLE learning_progress")

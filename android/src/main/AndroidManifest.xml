@@ -21,6 +21,18 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <!-- Agenda: shares the .ics file of a mobilization with the application the user chooses
+             (read-only, temporary permission per share; files of cache/agenda/ only). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="${applicationId}.agenda"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/agenda_files" />
+        </provider>
     </application>
 
 </manifest>

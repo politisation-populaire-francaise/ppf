@@ -1,0 +1,418 @@
+[
+    {
+        "id": "7d8fff02b27351411462682950ded2c5610eb94ad90b17fb1140fa6e20281397",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793188800,
+        "kind": 31923,
+        "tags": [
+            [
+                "d",
+                "projection-debat-rennes-2026-11-03"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Projection-débat sur l'histoire des mouvements sociaux"
+            ],
+            [
+                "start",
+                "1793727000"
+            ],
+            [
+                "end",
+                "1793736000"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Salle municipale du centre-ville (adresse fictive), Rennes"
+            ],
+            [
+                "ppf-event-type",
+                "autre"
+            ],
+            [
+                "ppf-territory",
+                "Rennes"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "summary",
+                "Un film documentaire suivi d'une discussion ouverte à toutes et à tous."
+            ]
+        ],
+        "content": "[EXEMPLE] Événement fictif de démonstration : il n'a pas eu lieu et ne correspond à aucune organisation réelle.\n\nIl montre à quoi ressemble une mobilisation passée dans l'agenda : elle reste consultable dans l'onglet « Passés ».",
+        "sig": "f29798a952b1249ec44c7f0151e51eb6380dc00a37eff8b8144d13f35d788f6cbfe57280b62b4bb2278a0d43880d87462bd7b50a4ad10743d2975502f2e53abe"
+    },
+    {
+        "id": "d12fc2d30167e3443f7cc602b19c120ba5b9debd1f78cf4edf304890be53db6d",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793880000,
+        "kind": 31923,
+        "tags": [
+            [
+                "d",
+                "rassemblement-services-publics-paris-2026-11-14"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Rassemblement pour les services publics"
+            ],
+            [
+                "start",
+                "1794661200"
+            ],
+            [
+                "end",
+                "1794672000"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Place de la République, Paris"
+            ],
+            [
+                "ppf-event-type",
+                "rassemblement"
+            ],
+            [
+                "ppf-territory",
+                "Paris"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "summary",
+                "Un rassemblement fictif de démonstration, annoncé aussi dans le fil."
+            ]
+        ],
+        "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle. Ne vous y rendez pas.\n\nIl montre à quoi ressemblera une mobilisation dans l'agenda : la date, l'heure, le lieu, le territoire et la description.\n\nAvant toute mobilisation, relisez la fiche pratique « Vos droits en manifestation », lisible sans réseau.",
+        "sig": "7d02689d48da7f95736d3eb3bffc7147da1149cf73cd16274c7625675619fe2240757d75b195f62e051c7fd72658d63d4a3d68f5f4c7b17887c5584a2b779129"
+    },
+    {
+        "id": "f9b5bc67896b54630dce63c8474d342fc63008c716fff080283973eb31ba197d",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793880000,
+        "kind": 31923,
+        "tags": [
+            [
+                "d",
+                "assemblee-generale-lyon-2026-11-19"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Assemblée générale ouverte du quartier"
+            ],
+            [
+                "start",
+                "1795107600"
+            ],
+            [
+                "end",
+                "1795116600"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Maison des associations (adresse fictive), Lyon 7e"
+            ],
+            [
+                "ppf-event-type",
+                "assemblee-generale"
+            ],
+            [
+                "ppf-territory",
+                "Lyon"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "summary",
+                "Décider ensemble des prochaines actions du quartier."
+            ]
+        ],
+        "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nOrdre du jour fictif :\n- tour de parole sur la situation du quartier ;\n- propositions d'actions ;\n- vote à main levée et désignation de deux personnes chargées du compte rendu.",
+        "sig": "58e198f833d44c85fdb6dae140edf666417f6332c62db6327d60eb15ec70909525d2840722ce7f235d1220c6be7dfdf8a7470b3bb6808793864431dcdfd8e492"
+    },
+    {
+        "id": "1d0a6f75724c2b7b48782d875a1ade2e5f6b2b815260d6fd63ee6f8aed4b1516",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793880000,
+        "kind": 31923,
+        "tags": [
+            [
+                "d",
+                "manifestation-hopital-marseille-2026-11-21"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Marche pour l'hôpital public"
+            ],
+            [
+                "start",
+                "1795253400"
+            ],
+            [
+                "end",
+                "1795262400"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Départ devant la gare (lieu fictif), Marseille"
+            ],
+            [
+                "ppf-event-type",
+                "manifestation"
+            ],
+            [
+                "ppf-territory",
+                "Marseille"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "ppf-declaration",
+                "faite"
+            ],
+            [
+                "r",
+                "https://exemple.invalid/marche-hopital"
+            ],
+            [
+                "summary",
+                "Une marche fictive, déclarée en préfecture, pour montrer la mention de la déclaration."
+            ]
+        ],
+        "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle. Ne vous y rendez pas.\n\nLe lien de cette fiche mène à une adresse réservée aux exemples, qui ne s'ouvre pas : il sert à montrer l'avertissement « Vous quittez PPF ».",
+        "sig": "c241846289afba9e7c6655216b734cf8f6d67a82a59d3ad1dac12f022846748143a889791a07919ee68ebde242bc971cc29141592fb8cf95979ecea8fd948026"
+    },
+    {
+        "id": "2dc352d6612e94de05f8f9ee910b92f99eb2cc820afeee5a218a8c4b52cc304a",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793880000,
+        "kind": 31923,
+        "tags": [
+            [
+                "d",
+                "greve-transports-2026-11-26"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Grève dans les transports, deux jours"
+            ],
+            [
+                "start",
+                "1795665600"
+            ],
+            [
+                "end",
+                "1795816800"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Partout en France ; piquet de grève fictif devant le dépôt central de Lille"
+            ],
+            [
+                "ppf-event-type",
+                "greve"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "summary",
+                "Une grève fictive sur deux jours, pour montrer un événement national et un événement de plusieurs jours."
+            ]
+        ],
+        "content": "[EXEMPLE] Événement fictif de démonstration : cette grève n'est appelée par aucune organisation réelle.\n\nUn événement de plusieurs jours apparaît à sa date de début, avec sa date de fin.",
+        "sig": "66ad8b34f01f859ffe7855483f6b5036a014333ddd3651d52059e6e80de7d783e3508d3d1418b1936a2301ae4745452183d3cb8336231b450434ff5f9030dd0e"
+    },
+    {
+        "id": "b75eb9c40f7a05cd1b9e1eb70f9001006f0d895215da06c0c5b79cda2be3906b",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793880000,
+        "kind": 31923,
+        "tags": [
+            [
+                "d",
+                "blocage-universite-toulouse-2026-12-01"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Blocage pacifique de l'université, voté en assemblée générale"
+            ],
+            [
+                "start",
+                "1796108400"
+            ],
+            [
+                "end",
+                "1796144400"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Campus fictif, entrée principale, Toulouse"
+            ],
+            [
+                "ppf-event-type",
+                "blocage"
+            ],
+            [
+                "ppf-event-status",
+                "reporte"
+            ],
+            [
+                "ppf-territory",
+                "Toulouse"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "summary",
+                "Un blocage fictif, reporté : la nouvelle date sera annoncée."
+            ]
+        ],
+        "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nIl montre la mention « Reporté ». Toute action annoncée sur PPF respecte la charte : aucune violence, ni contre les personnes, ni contre les biens.",
+        "sig": "c71d0b94a8e1e9efb728dd1def65bbd67e6252014d96d1f9286e04b9518720188bc04bb35d81f72ab49a4ace18c381a4388ed533cd24d706563c5e7924589d6d"
+    },
+    {
+        "id": "d0a884ac2295932de917a2635386c08b0eec38048aff1fd9b49d1825a8c0ff5e",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793955600,
+        "kind": 31923,
+        "tags": [
+            [
+                "d",
+                "rassemblement-maternite-seine-saint-denis-2026-12-05"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Rassemblement pour garder la maternité de proximité"
+            ],
+            [
+                "start",
+                "1796464800"
+            ],
+            [
+                "end",
+                "1796472000"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Devant la maternité (adresse fictive), Seine-Saint-Denis"
+            ],
+            [
+                "ppf-event-type",
+                "rassemblement"
+            ],
+            [
+                "ppf-event-status",
+                "annule"
+            ],
+            [
+                "ppf-territory",
+                "Seine-Saint-Denis"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "summary",
+                "Un rassemblement fictif, annulé, pour montrer la mention « Annulé »."
+            ]
+        ],
+        "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nUn événement annulé reste visible avec la mention « Annulé » bien en évidence, pour que personne ne se déplace pour rien.",
+        "sig": "66006e68f723854339971ee0080432fa343381621396f6e858cf8995f73a08769588e952d4369e9920a20b59916bf5972d29b5a40c0d546d1a136e5aa947dd80"
+    },
+    {
+        "id": "005ae718db694d0b5130a41395b9e5fc4feb1a65a1b51c7386f2f2fae5ae1e25",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793880000,
+        "kind": 31923,
+        "tags": [
+            [
+                "d",
+                "reunion-publique-strasbourg-2026-12-10"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Réunion publique : préparer les mobilisations de l'hiver"
+            ],
+            [
+                "start",
+                "1796925600"
+            ],
+            [
+                "end",
+                "1796932800"
+            ],
+            [
+                "start_tzid",
+                "Europe/Paris"
+            ],
+            [
+                "location",
+                "Salle de quartier (adresse fictive), Strasbourg"
+            ],
+            [
+                "ppf-event-type",
+                "reunion"
+            ],
+            [
+                "ppf-territory",
+                "Strasbourg"
+            ],
+            [
+                "ppf-charter",
+                "1.0"
+            ],
+            [
+                "summary",
+                "Une réunion fictive ouverte à toutes et à tous, sans inscription."
+            ]
+        ],
+        "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nSalle accessible en fauteuil roulant (exemple de précision utile à donner dans la description).",
+        "sig": "1bfcba262a7eb9dd21bde4bcf303200074a2e4faefc0377c721bae7cfc55f6b305fa427e174595565226cd1df5db9c3041531cc2393284377cbbff49140ee418"
+    }
+]

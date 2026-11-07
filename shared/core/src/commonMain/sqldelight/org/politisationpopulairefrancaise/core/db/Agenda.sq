@@ -1,0 +1,61 @@
+-- The agenda of mobilizations (M1, AG-01, AG-02, AG-49): what only this device knows about it. The
+-- mobilizations themselves (kind 31923) are signed events kept in the `event` table.
+--
+-- agenda_response: the user's answer to a mobilization ("going" = J'y serai, "interested" =
+-- Intéressé). Taking part in a demonstration or a strike is a political opinion, a sensitive
+-- datum under article 9 of the GDPR: the answer is NEVER sent, there is no public counter and no
+-- list of participants (contract of the Agir space, section 6). `ends_at` is the end of the event
+-- when the user answered, refreshed when a newer version arrives, so that answers are erased
+-- shortly after the event is over (AgendaStore.purgeResponses).
+--
+-- agenda_proposal: where the user's own proposals stand on the server ("review", "published",
+-- "rejected" with the team's reason), so that "Mes propositions" can tell a direct publication
+-- (answer 201) from a review (202) even without network.
+-- Added in schema version 7: existing databases get them through migrations/6.sqm.
+
+CREATE TABLE agenda_response (
+    address TEXT NOT NULL PRIMARY KEY,
+    response TEXT NOT NULL,
+    ends_at INTEGER NOT NULL,
+    responded_at INTEGER NOT NULL
+);
+
+CREATE TABLE agenda_proposal (
+    event_id TEXT NOT NULL PRIMARY KEY,
+    state TEXT NOT NULL,
+    reason TEXT,
+    updated_at INTEGER NOT NULL
+);
+
+upsertResponse:
+INSERT OR REPLACE INTO agenda_response(address, response, ends_at, responded_at) VALUES (?, ?, ?, ?);
+
+deleteResponse:
+DELETE FROM agenda_response WHERE address = ?;
+
+selectResponses:
+SELECT address, response, ends_at FROM agenda_response ORDER BY responded_at DESC, address ASC;
+
+updateResponseEnd:
+UPDATE agenda_response SET ends_at = ? WHERE address = ?;
+
+deleteResponsesEndedBefore:
+DELETE FROM agenda_response WHERE ends_at < ?;
+
+deleteAllResponses:
+DELETE FROM agenda_response;
+
+countResponses:
+SELECT COUNT(*) FROM agenda_response;
+
+upsertProposal:
+INSERT OR REPLACE INTO agenda_proposal(event_id, state, reason, updated_at) VALUES (?, ?, ?, ?);
+
+selectProposals:
+SELECT event_id, state, reason FROM agenda_proposal;
+
+deleteProposal:
+DELETE FROM agenda_proposal WHERE event_id = ?;
+
+countProposals:
+SELECT COUNT(*) FROM agenda_proposal;

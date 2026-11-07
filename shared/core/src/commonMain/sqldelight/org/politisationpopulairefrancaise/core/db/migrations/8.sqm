@@ -1,0 +1,17 @@
+-- Schema version 8 to 9 (2026-11-07): the user's answers to mobilizations and the state of the
+-- user's own proposals of events, kept on the device only (see Agenda.sq, which is the reference
+-- for fresh installations; this file must stay identical to its CREATE statements).
+
+CREATE TABLE agenda_response (
+    address TEXT NOT NULL PRIMARY KEY,
+    response TEXT NOT NULL,
+    ends_at INTEGER NOT NULL,
+    responded_at INTEGER NOT NULL
+);
+
+CREATE TABLE agenda_proposal (
+    event_id TEXT NOT NULL PRIMARY KEY,
+    state TEXT NOT NULL,
+    reason TEXT,
+    updated_at INTEGER NOT NULL
+);
