@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The glossary (D-048): the words spotted in every content, their tooltip, the page of an entry
+     and the full glossary inside "Comprendre". French, the user is addressed with "vous",
+     typographic apostrophe (’), no em dash. -->
+<resources>
+    <string name="glossaire_kind">Glossaire</string>
+    <!-- Read by screen readers after a spotted word (the small "?" in a circle): « motion de censure, définition ». -->
+    <string name="glossaire_hint_spoken">, définition</string>
+    <string name="glossaire_tooltip_more">En savoir plus</string>
+    <string name="glossaire_tooltip_close">Fermer la définition</string>
+    <string name="glossaire_page_close">Fermer</string>
+    <string name="glossaire_page_back">Revenir au mot précédent</string>
+    <string name="glossaire_page_definition">En bref</string>
+    <string name="glossaire_page_explanation">En détail</string>
+    <string name="glossaire_page_see_also">Voir aussi</string>
+    <string name="glossaire_page_related">Pour aller plus loin</string>
+    <string name="glossaire_page_open_full">Ouvrir le glossaire complet</string>
+    <string name="glossaire_home_intro">Les mots de la vie politique expliqués simplement. Dans chaque contenu, un mot souligné en pointillés et suivi d’un petit « ? » ouvre sa définition.</string>
+    <plurals name="glossaire_home_open">
+        <item quantity="one">Ouvrir le glossaire (%1$d mot)</item>
+        <item quantity="other">Ouvrir le glossaire (%1$d mots)</item>
+    </plurals>
+    <string name="glossaire_description">Tous les mots expliqués, de A à Z, lisibles sans connexion.</string>
+    <string name="glossaire_search">Chercher un mot</string>
+    <plurals name="glossaire_count">
+        <item quantity="one">%1$d mot</item>
+        <item quantity="other">%1$d mots</item>
+    </plurals>
+    <string name="glossaire_none">Aucun mot ne correspond à « %1$s ».</string>
+    <string name="glossaire_back_to_comprendre">Revenir à Comprendre</string>
+    <string name="glossaire_back_to_list">Revenir à la liste des mots</string>
+    <string name="glossaire_pick">Choisissez un mot dans la liste pour lire sa définition.</string>
+</resources>
