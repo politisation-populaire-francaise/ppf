@@ -452,6 +452,22 @@ Variables d'environnement du serveur pour l'annuaire :
 | `PPF_RNE_SOURCE` | `example` (jeu fictif embarqué, ne contacte personne) ou `official` (vrai RNE, suivi **seulement** avec `PPF_ENVIRONMENT=production` ; ailleurs le jeu fictif est servi) | `example` |
 | `PPF_RNE_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 7 |
 
+## 4 nonies. Urnes anonymes : « une personne, une voix » (D-110, D-112)
+
+Conception : `docs/integration/une-personne-une-voix.md`. Les octets sont en hexadécimal minuscule, les dates en secondes depuis 1970, les niveaux valent `non-verifie`, `verifie` ou `elu`. Jetons : VOPRF de la RFC 9497, mode `0x01`, suite ristretto255-SHA512 ; clé de chaque urne et de chaque niveau = `DeriveKeyPair(graine de sa version, "ppf-urne-v1" ␟ identifiant de l'urne ␟ niveau)` (␟ = U+001F). Formats Kotlin communs : `core/urne/UrneApi.kt`.
+
+| Requête | Authentification | Rôle | Réponses |
+|---|---|---|---|
+| `GET /api/v1/urnes?after=<n>&limit=<1-500>` | Aucune | Les urnes (numéro, identifiant, objet, choix, ouverture, clôture, version de graine, **clé publique de chaque niveau**, résultats en direct ou non, close ou non), par numéro croissant | 200 |
+| `GET /api/v1/urnes/{n}/journal` | Aucune | Journal public en continu : comptes par niveau, jetons délivrés par niveau, bulletins reçus par niveau, remplacements ; résultats si l'urne les montre en direct ou si elle est close | 200, 404 `unknown_urne` |
+| `GET /api/v1/urnes/{n}/closing` | Aucune | Après la clôture : clés secrètes et publiques de chaque niveau, jetons délivrés, bulletins anonymes triés par `y` (`y`, jeton, niveau, choix, heure arrondie), résultats | 200, 409 `not_closed` |
+| `POST /api/v1/urnes/register` | NIP-98 (corps vide) avec preuve de travail NIP-13 | Inscrit le compte au niveau `non-verifie` | 201 nouveau, 200 déjà inscrit ; 401 |
+| `GET /api/v1/urnes/me` | NIP-98 | Niveau, semaine d'effet, numéros des urnes ouvertes sans jeton pour ce compte | 200, 404 `not_registered` |
+| `POST /api/v1/urnes/tokens` | NIP-98 avec empreinte du corps et preuve de travail | Jetons pour un **préfixe** des urnes en attente, toutes dans l'ordre : `{"requests":[{"urne":n,"blinded":"…"}]}` → `{"tokens":[{"urne":n,"level":"…","evaluated":"…","proof":"…"}],"upTo":n}` ; la même requête dans la journée renvoie la même réponse | 200 ; 409 `pending_changed` (sous-ensemble choisi, ou urnes changées) ; 400 |
+| `POST /api/v1/ballots` | **Aucune** (ni compte, ni signature, ni en-tête) | Bulletin `{"urne":n,"level":"…","y":"…","token":"…","choice":"…","nonce":k}` ; SHA-256 de `ppf-bulletin-v1␟urne␟niveau␟y␟jeton␟choix␟nonce` doit avoir le nombre de bits à zéro demandé ; le même `y` remplace le bulletin ; le choix `retire` retire le vote | 202 `recorded` (même réponse pour un nouveau bulletin et un remplacement) ; 403 `invalid_token` ; 409 `urne_closed` ; 400 |
+
+NIP-98 : événement de type 27235, étiquettes `u` (adresse exacte, celle de `PPF_PUBLIC_URL` suivie du chemin), `method`, `payload` (SHA-256 du corps s'il y en a un), date à 60 secondes près, chaque autorisation acceptée une seule fois. Un compte ne reçoit jamais deux jetons d'une même urne ; le niveau d'un jeton est celui du compte la semaine de l'ouverture de l'urne. Tables : migration Flyway `V7__urnes.sql`.
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.

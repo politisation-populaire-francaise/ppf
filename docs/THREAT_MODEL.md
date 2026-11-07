@@ -121,3 +121,16 @@ Version du 5 novembre 2026 (phase 0, complétée le soir même par les fondation
 | Erreur dans l'annuaire présentée comme un fait par PPF (mauvais élu pour une commune partagée, ancienne fonction) | Une commune partagée liste tous ses cantons et circonscriptions plutôt que d'en deviner un ; rien n'est inventé quand une table manque ; source, licence et dates affichées, avec les annuaires officiels en lien | Signalement d'une erreur (S-38) |
 | Glossaire : définition fausse ou orientée glissée dans tous les contenus | Entrées signées par une clé de l'équipe éditoriale et vérifiées par l'outil de signature (sources obligatoires) ; seules les entrées de confiance sont lues ; origine IA affichée dans l'infobulle | Relecture par l'équipe éditoriale, journal des corrections |
 | Glossaire : ce que la personne consulte révèle ses centres d'intérêt | Rien n'est enregistré ni envoyé : infobulles, pages et recherche se font sur la copie locale | Aucun |
+
+## Ajout du 7 novembre 2026 : votes anonymes (« une personne, une voix », D-110, D-112)
+
+Modèle de menaces détaillé : `docs/integration/une-personne-une-voix.md`, section 2. Ce qui est en place après l'étape 2 (serveur) :
+
+| Menace | Protection en place | Reste à faire |
+|---|---|---|
+| Le serveur, ou quelqu'un qui le contrôle, relie un vote à un compte | Jetons VOPRF aveuglés (RFC 9497) : le serveur calcule le jeton sans le voir ; bulletins envoyés sans compte, sans signature ni en-tête ; aucune adresse IP ; bulletins indexés par leur identifiant secret, heure arrondie à l'heure, délivrance datée au jour, curseur identique pour tous | Envoi différé automatique et client HTTP séparé dans l'application (étape 3) ; Tor et adresse .onion (phase 3) |
+| Le serveur donne une clé à part à un citoyen pour le reconnaître | Preuve DLEQ vérifiée par l'appareil contre la clé publique de l'urne, la même dans la liste publique pour tous | Publication des clés en événements signés et miroirs Nostr (phase 3) |
+| Bourrage par l'équipe ou un pirate qui a la graine | Journal public en continu : jetons délivrés par niveau et comptes par niveau ; clés et bulletins publiés à la clôture, recomptage par tous (`UrneRecount`) | Service de signature séparé pour les graines |
+| Fuite ou perte d'une graine | Fichier en lecture seule, hors dépôt et hors base, sauvegarde chiffrée hors site ; versions de graine et renouvellement | Copie hors ligne chez la propriétaire (guide du Directeur technique) |
+| Comptes multiples, robots | Preuve de travail à l'inscription, à chaque demande de jetons et sur chaque bulletin ; niveaux de votants, vérifiés montrés en premier ; niveau figé à l'ouverture | Validation en personne (étape 5) et détection des vagues |
+| Rejeu d'une autorisation ou d'un bulletin | Autorisation NIP-98 acceptée une fois, à 60 secondes près ; même `y` = remplacement, jamais un second vote | Aucun |

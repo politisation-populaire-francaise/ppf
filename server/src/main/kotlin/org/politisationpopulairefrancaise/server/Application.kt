@@ -45,6 +45,10 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationsCo
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
+import org.politisationpopulairefrancaise.server.urne.UrneConfig
+import org.politisationpopulairefrancaise.server.urne.UrneService
+import org.politisationpopulairefrancaise.server.urne.UrneStore
+import org.politisationpopulairefrancaise.server.urne.urneApi
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.webRoutes
 import org.slf4j.LoggerFactory
@@ -72,6 +76,8 @@ import javax.sql.DataSource
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
  *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
  *   to start when it is set in production, see [ExampleSeed].
+ * - PPF_VOTE_SEEDS_DIR, PPF_VOTE_POW_REGISTER, PPF_VOTE_POW_TOKENS, PPF_VOTE_POW_BALLOT, PPF_PUBLIC_URL,
+ *   PPF_VOTE_MAX_TOKENS_PER_REQUEST: the anonymous ballot boxes, see [UrneConfig] (D-110).
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -132,6 +138,7 @@ fun Application.module(
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
     agir: AgirSetup = AgirSetup.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
+    urne: UrneConfig = UrneConfig.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
@@ -154,6 +161,9 @@ fun Application.module(
     }
     val limits = PostLimits(relay)
     val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
+    // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published.
+    val urnes = dataSource?.takeIf { urne.seeds != null }?.let { UrneService.create(UrneStore(it), urne) }
+    urnes?.startClosing(this, UrneService.CLOSING_INTERVAL, log)
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     install(ErrorShield)
@@ -193,6 +203,7 @@ fun Application.module(
         revendicationsApi(proposals)
         agirApi(agirSpace)
         elusApi(elusService)
+        urneApi(urnes, urne)
         agirSpace?.let { agendaPage(it.agendaSource()) }
         webRoutes()
     }
