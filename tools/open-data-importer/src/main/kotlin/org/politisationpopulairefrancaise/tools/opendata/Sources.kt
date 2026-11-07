@@ -94,6 +94,30 @@ class OfficialSources(private val http: Downloader = Downloader()) : ImportSourc
     }
 }
 
+/**
+ * Official files already on disk, read as they are (never executed): `amo10/`, `scrutins/` and
+ * `dossiers/` hold the zip of the Assemblée nationale, `senat/` the file of the senators. The
+ * European Parliament is an API, not a file: it is left out (its previous packages are kept).
+ * Used to measure the memory of an import, or to import where the server has no outbound access.
+ */
+class LocalOfficialSources(private val folder: Path) : ImportSources {
+    override val example: Boolean = false
+    override val today: String = LocalDate.now(ZoneId.of("Europe/Paris")).toString()
+    override val createdAt: Long = System.currentTimeMillis() / 1000
+
+    private fun single(sub: String, suffix: String): Path {
+        val dir = folder.resolve(sub)
+        val files = if (Files.isDirectory(dir)) Files.list(dir).use { s -> s.filter { it.toString().endsWith(suffix) }.toList() } else emptyList()
+        return files.singleOrNull() ?: throw UnreadableSourceException("expected one $suffix file in $sub/")
+    }
+
+    override fun anMembers(): EntrySource = ZipEntries(single("amo10", ".zip"))
+    override fun anBallots(): EntrySource = ZipEntries(single("scrutins", ".zip"))
+    override fun anDossiers(): EntrySource = ZipEntries(single("dossiers", ".zip"))
+    override fun senators(): InputStream = Files.newInputStream(single("senat", ".json"))
+    override fun europarl(): EuroparlApi = JsonEuroparlApi { _, _, _ -> null }
+}
+
 /** The only hosts the importer ever contacts, in `official` mode only. */
 val ALLOWED_HOSTS: Set<String> = setOf("data.assemblee-nationale.fr", "www.senat.fr", "data.europarl.europa.eu")
 

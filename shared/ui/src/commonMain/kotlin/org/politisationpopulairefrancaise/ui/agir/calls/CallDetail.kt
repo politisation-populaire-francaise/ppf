@@ -58,6 +58,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextField
 import org.politisationpopulairefrancaise.ui.components.shortNpub
 import org.politisationpopulairefrancaise.ui.content.OwnDemandState
+import org.politisationpopulairefrancaise.ui.agir.testimonies.LocalTestify
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
 import org.politisationpopulairefrancaise.ui.theme.Callout
@@ -222,8 +223,16 @@ private fun AnswerCard(call: Call, library: CallsLibrary) {
         Text(stringResource(Res.string.appels_section_answer), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
         Spacer(Modifier.height(8.dp))
         val testify = call.type.response == CallResponse.TESTIFY
+        // "Je témoigne" opens "Témoigner" linked to this call (AG-07), where Agir plugs it in.
+        val testifyHere = LocalTestify.current
         when {
-            testify -> PpfPrimaryButton({}, stringResource(responseResource(call.type.response)), enabled = false, icon = Lucide.Eye, modifier = Modifier.testTag(CallTags.ANSWER))
+            testify -> PpfPrimaryButton(
+                { testifyHere?.invoke(call.address.toString(), call.displayTitle) },
+                stringResource(responseResource(call.type.response)),
+                enabled = testifyHere != null && call.isOpen,
+                icon = Lucide.Eye,
+                modifier = Modifier.testTag(CallTags.ANSWER),
+            )
             !call.isOpen && !responded -> PpfPrimaryButton({}, stringResource(responseResource(call.type.response)), enabled = false, modifier = Modifier.testTag(CallTags.ANSWER))
             responded -> {
                 Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag(CallTags.ANSWER_DONE)) {
@@ -237,6 +246,7 @@ private fun AnswerCard(call: Call, library: CallsLibrary) {
         }
         Spacer(Modifier.height(6.dp))
         val note = when {
+            testify && testifyHere != null -> Res.string.temoignages_call_note
             testify -> Res.string.appels_answer_testify_soon
             !call.isOpen -> Res.string.appels_answer_closed
             else -> Res.string.appels_answer_private

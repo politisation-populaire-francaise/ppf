@@ -72,6 +72,7 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.APPEALS_DECIDE,
             Permissions.PHAROS_RECORD,
             Permissions.queueDecide("agir.held"),
+            Permissions.queueDecide("agir.testimonies"),
             Permissions.queueDecide("revendications.proposals"),
         ),
     ),

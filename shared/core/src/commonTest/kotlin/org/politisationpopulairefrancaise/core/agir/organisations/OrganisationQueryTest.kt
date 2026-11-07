@@ -36,6 +36,17 @@ class OrganisationQueryTest {
     }
 
     @Test
+    fun revokedEntriesAreLeftOutUnlessAsked() = runTest {
+        val revoked = fixtures.read(fixtures.entry("retiree", name = "[EXEMPLE] Association retirée", status = "revoquee"))
+        val all = directory() + revoked
+        assertFalse("retiree" in OrganisationQuery().apply(all).slugs())
+        val including = OrganisationQuery(includeRevoked = true)
+        assertTrue("retiree" in including.apply(all).slugs())
+        assertFalse(including.isUnconstrained)
+        assertEquals(1, including.constraintCount)
+    }
+
+    @Test
     fun wordsAreLookedForInTheNameTheTypeAndThePresentation() = runTest {
         val all = directory()
         assertEquals(listOf("livreurs"), OrganisationQuery(text = "livreur velo").apply(all).slugs())

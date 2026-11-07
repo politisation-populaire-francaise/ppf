@@ -329,11 +329,12 @@ Publiée seulement par une clé de l'équipe éditoriale. `content` : la présen
 | `ppf-verified` | Oui | Date de la vérification, `AAAA-MM-JJ` |
 | `ppf-origin` | Non | `human` ou `ai-assisted`, affichée sur la fiche |
 | `p` | Non | Clé de l'organisation si elle a un compte : c'est elle qui devient « organisation vérifiée » |
+| `ppf-org-status` | Non | `verifiee` (valeur par défaut, l'étiquette est alors omise) ou `revoquee` : la vérification est retirée (contrat d'Agir, version 2). Le serveur refuse toute autre valeur (`missing_field`, message `ppf-org-status`) ; l'appareil lit une valeur inconnue comme `revoquee`, pour qu'une version future n'étende jamais la confiance |
 | `r` | Non | Site web `http(s)` à nom d'hôte ASCII, sans « utilisateur@ » ; plusieurs possibles, cinq lus au plus |
 | `ppf-contact-phone`, `ppf-contact-email`, `ppf-contact-address` | Non | Coordonnées publiques de l'organisation, jamais celles d'une personne |
 | `g` | Non | Géohash |
 
-**Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé ; une nouvelle version sans `p` retire la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
+**Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé (à date égale, le plus petit identifiant) ; une nouvelle version sans `p` retire la vérification, de même qu'une version `ppf-org-status` = `revoquee` qui garde sa clé `p` : celle-ci n'est plus vérifiée, ni sur l'appareil (`VerifiedOrganisations.revocationFor` rend la fiche révoquée) ni sur le serveur (le cache est oublié dès le stockage de la fiche). Transparence : la fiche révoquée n'est jamais effacée en silence ; elle perd son badge « Vérifiée », sort de la liste par défaut de l'annuaire (filtre « Inclure les vérifications retirées ») et sa page, ouverte par un lien, affiche « Vérification retirée par PPF le … » (date de la version révoquée, heure de Paris). Republier la fiche avec `verifiee` ou sans l'étiquette rétablit la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
 
 ## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-059, D-060)
 
@@ -449,6 +450,20 @@ Valeurs de `mandate` et de `territory` : `municipal` (code Insee de la commune),
 
 **Lecture par l'appareil** (`core/elus/ElusFormats.kt`, `ElusReader`) : stricte pour le document (format 1, code valide, nom présent ; sinon le paquet est ignoré), tolérante pour ses entrées (une commune ou un élu illisible est écarté, les champs inconnus ignorés) ; 32 Mo au plus par paquet.
 
+### Identifiant d'un mandat (`rne1:`)
+
+Le RNE ne donne aucun identifiant de mandat. Le serveur en calcule un, stable d'un import à l'autre, pour le back-office (file `elus.certifications`, `ElusLookup`, `docs/integration/elus-serveur.md`, section 4 bis) :
+
+```
+rne1:<32 caractères hexadécimaux minuscules>
+```
+
+- Les 32 caractères sont les 16 premiers octets (128 bits) du SHA-256 des octets UTF-8 de `mandat LF territoire LF nom LF début` (LF = U+000A), où `mandat` est la valeur de `mandate` (`municipal`, `depute`…), `territoire` la valeur de `territory`, `début` la date de début du mandat `AAAA-MM-JJ` (`since`), et `nom` le nom affiché du paquet (`name`, « Prénom Nom ») mis sous forme canonique : décomposition Unicode NFD, marques combinantes retirées, minuscules (sans paramètre régional), suites d'espaces réduites à une, espaces de début et de fin retirées.
+- La fonction et sa date n'entrent pas dans l'empreinte : un adjoint qui devient maire garde l'identifiant de son mandat. Une correction d'accent ou de casse dans le RNE ne le change pas ; une correction du nom, du territoire ou de la date de début, si.
+- Exemple (jeu fictif) : `municipal`, `69123`, « [EXEMPLE] Claude Démonstration », `2026-03-15` donnent l'empreinte de `municipal⏎69123⏎[exemple] claude demonstration⏎2026-03-15` (⏎ = LF).
+- Le préfixe `rne1` changera si la règle change ; un identifiant d'une autre forme n'est jamais trouvé.
+- L'identifiant n'est écrit ni dans les paquets ni dans la base : il est recalculé sur les données servies. Il désigne un mandat en cours « selon la source mise à jour le … », jamais une personne.
+
 ### Sur l'appareil : schéma local en version 11
 
 Migration `shared/core/src/commonMain/sqldelight/.../core/db/migrations/10.sqm` (schéma 10 vers 11), identique aux définitions de `Elus.sq` (un test compare une base neuve et une base migrée) :
@@ -474,7 +489,7 @@ Variables d'environnement du serveur pour l'annuaire :
 
 | Variable | Rôle | Défaut |
 |---|---|---|
-| `PPF_RNE_SOURCE` | `example` (jeu fictif embarqué, ne contacte personne) ou `official` (vrai RNE, suivi **seulement** avec `PPF_ENVIRONMENT=production` ; ailleurs le jeu fictif est servi) | `example` |
+| `PPF_RNE_SOURCE` | `example` (jeu fictif embarqué, ne contacte personne) ou `official` (vrai RNE, suivi avec `PPF_ENVIRONMENT=production` ou `preproduction`, décision de la propriétaire du 7 novembre 2026 : « on reste dans la vraie info même en preprod » ; ailleurs le jeu fictif est servi) | `example` |
 | `PPF_RNE_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 7 |
 
 ## 4 nonies. Référentiel des territoires (D-090)
@@ -555,7 +570,6 @@ Migration `migrations/12.sqm` (schéma 12 vers 13), identique à `Territoires.sq
 | Variable | Rôle | Défaut |
 |---|---|---|
 | `PPF_TERRITOIRES_SOURCE` | `example` (jeu embarqué, ne contacte personne) ou `official` (Insee, data.gouv.fr, La Poste), suivi en production, ou en préproduction avec la variable suivante ; ailleurs le jeu d'exemple est servi | `example` |
-| `PPF_TERRITOIRES_REAL_IN_PREPRODUCTION` | `true` pour servir les vraies statistiques en préproduction (décision de la propriétaire) | aucune |
 | `PPF_TERRITOIRES_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 30 |
 ## 4 octies. Données ouvertes du Parlement (D-064, D-065)
 

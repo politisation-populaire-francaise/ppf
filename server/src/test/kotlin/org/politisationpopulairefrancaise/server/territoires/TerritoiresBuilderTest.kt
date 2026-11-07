@@ -220,18 +220,14 @@ class TerritoiresBuilderTest {
     }
 
     @Test
-    fun officialIsHonouredInProductionAndInPreproductionWhenAllowed() {
+    fun officialIsHonouredInProductionAndInPreproduction() {
         fun config(vararg pairs: Pair<String, String>) = TerritoiresConfig.fromEnvironment { pairs.toMap()[it] }
         assertEquals(TerritoiresSources.EXAMPLE, config().source)
         assertEquals(TerritoiresSources.OFFICIAL, config("PPF_TERRITOIRES_SOURCE" to "official", "PPF_ENVIRONMENT" to "production").source)
-        val refused = config("PPF_TERRITOIRES_SOURCE" to "official", "PPF_ENVIRONMENT" to "preproduction")
+        assertEquals(TerritoiresSources.OFFICIAL, config("PPF_TERRITOIRES_SOURCE" to "official", "PPF_ENVIRONMENT" to "preproduction").source)
+        val refused = config("PPF_TERRITOIRES_SOURCE" to "official", "PPF_ENVIRONMENT" to "development")
         assertEquals(TerritoiresSources.EXAMPLE, refused.source)
         assertTrue(refused.officialRefused)
-        assertEquals(
-            TerritoiresSources.OFFICIAL,
-            config("PPF_TERRITOIRES_SOURCE" to "official", "PPF_ENVIRONMENT" to "preproduction", "PPF_TERRITOIRES_REAL_IN_PREPRODUCTION" to "true").source,
-        )
-        assertEquals(TerritoiresSources.EXAMPLE, config("PPF_TERRITOIRES_SOURCE" to "official", "PPF_ENVIRONMENT" to "development", "PPF_TERRITOIRES_REAL_IN_PREPRODUCTION" to "true").source)
         assertEquals(0, config("PPF_TERRITOIRES_REFRESH_DAYS" to "0").refreshDays)
         assertEquals(30, config("PPF_TERRITOIRES_REFRESH_DAYS" to "-1").refreshDays)
     }

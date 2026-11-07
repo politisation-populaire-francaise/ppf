@@ -85,6 +85,8 @@ import org.politisationpopulairefrancaise.ui.resources.organisation_publications
 import org.politisationpopulairefrancaise.ui.resources.organisation_publications_follow
 import org.politisationpopulairefrancaise.ui.resources.organisation_publications_none
 import org.politisationpopulairefrancaise.ui.resources.organisation_updated
+import org.politisationpopulairefrancaise.ui.resources.organisation_revoked_explain
+import org.politisationpopulairefrancaise.ui.resources.organisation_revoked_on
 import org.politisationpopulairefrancaise.ui.resources.organisation_verified_on
 import org.politisationpopulairefrancaise.ui.resources.organisation_visit
 import org.politisationpopulairefrancaise.ui.resources.organisation_website_label
@@ -97,6 +99,7 @@ object OrganisationPageTags {
     const val BACK = "organisation-back"
     const val NAME = "organisation-name"
     const val VERIFIED = "organisation-verified"
+    const val REVOKED = "organisation-revoked"
     const val FOLLOW = "organisation-follow"
     const val FOLLOW_PRIVATE = "organisation-follow-private"
     const val NO_ACCOUNT = "organisation-no-account"
@@ -170,10 +173,24 @@ fun OrganisationPage(
                 modifier = Modifier.semantics { heading() }.testTag(OrganisationPageTags.NAME),
             )
             Spacer(Modifier.height(8.dp))
-            Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag(OrganisationPageTags.VERIFIED)) {
-                Icon(Lucide.BadgeCheck, contentDescription = null, tint = palette.success, modifier = Modifier.size(20.dp))
-                Spacer(Modifier.width(6.dp))
-                Text(stringResource(Res.string.organisation_verified_on, organisation.verifiedOn.toFrench()), style = MaterialTheme.typography.labelLarge, color = palette.success)
+            val revokedOn = organisation.revokedOn
+            if (revokedOn != null) {
+                // Transparency: the page says the verification was withdrawn, and when, instead of vanishing.
+                Column(Modifier.testTag(OrganisationPageTags.REVOKED)) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Lucide.TriangleExclamationPoint, contentDescription = null, tint = palette.warning, modifier = Modifier.size(20.dp))
+                        Spacer(Modifier.width(6.dp))
+                        Text(stringResource(Res.string.organisation_revoked_on, revokedOn.toFrench()), style = MaterialTheme.typography.labelLarge, color = palette.ink)
+                    }
+                    Spacer(Modifier.height(4.dp))
+                    Text(stringResource(Res.string.organisation_revoked_explain), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+                }
+            } else {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag(OrganisationPageTags.VERIFIED)) {
+                    Icon(Lucide.BadgeCheck, contentDescription = null, tint = palette.success, modifier = Modifier.size(20.dp))
+                    Spacer(Modifier.width(6.dp))
+                    Text(stringResource(Res.string.organisation_verified_on, organisation.verifiedOn.toFrench()), style = MaterialTheme.typography.labelLarge, color = palette.success)
+                }
             }
             Spacer(Modifier.height(6.dp))
             Row(verticalAlignment = Alignment.CenterVertically) {

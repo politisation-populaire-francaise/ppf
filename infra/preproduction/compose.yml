@@ -47,6 +47,16 @@ services:
       PPF_PUBLIC_URL: ${PPF_PUBLIC_URL:?}
       # Seeds of the vote keys, one read-only file per version (Décider, D-110), never in a variable.
       PPF_VOTE_SEEDS_DIR: /run/ppf/vote_seeds
+      # Push wake-ups (D-078): only our ntfy is an allowed endpoint; the server reaches it inside, never
+      # through its public name; the VAPID key is a file secret generated on the server.
+      PPF_PUSH_ALLOWED_HOSTS: push.preprod.politisation-populaire-francaise.org
+      PPF_PUSH_INTERNAL_URL: http://ntfy:8080
+      PPF_VAPID_PRIVATE_KEY_FILE: /run/secrets/vapid_private_key
+      # Testimonies (Agir, M5): files encrypted on the device for the moderation and evidence keys,
+      # only stored here (4 GB at most by default); the public keys are set in .env.
+      PPF_TESTIMONY_DIR: /data/testimonies
+      PPF_MODERATION_KEY: ${PPF_MODERATION_KEY:-}
+      PPF_EVIDENCE_KEY: ${PPF_EVIDENCE_KEY:-}
       # Fictional example contents, bundled in the image, loaded at each start (idempotent).
       PPF_EXAMPLES_DIR: /app/examples
       # Real public information in the preproduction too (owner's decision of 7 November 2026: "on reste
@@ -64,9 +74,11 @@ services:
         required: false
     secrets:
       - server_db_password
+      - vapid_private_key
     volumes:
       - /srv/ppf/preproduction/open-data:/data/open-data:ro
       - /srv/ppf/preproduction/vote_seeds:/run/ppf/vote_seeds:ro
+      - /srv/ppf/preproduction/testimonies:/data/testimonies
     networks:
       - internal
       - edge
@@ -154,6 +166,62 @@ services:
           memory: 512M
           cpus: "0.5"
 
+  # Push wake-ups (Communauté, M31, docs/integration/notifications.md, D-078): self-hosted ntfy, the
+  # UnifiedPush distributor of the Android app. It never contacts anyone (no upstream, never ntfy.sh),
+  # keeps the constant encrypted wake-ups 12 hours at most, and never sees a client address (the proxy
+  # strips it). Only random topics "up*" are open; everything else is refused.
+  ntfy:
+    image: binwiederhier/ntfy:v2.37.2@sha256:1875ddcf815c8a3c981d6d78c67a93452d0abba79b1ab9520b1f5f5238902bd7
+    restart: unless-stopped
+    command: ["serve"]
+    user: "10006:10006"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      NTFY_BASE_URL: https://push.preprod.politisation-populaire-francaise.org
+      NTFY_LISTEN_HTTP: ":8080"
+      NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
+      NTFY_CACHE_DURATION: 12h
+      NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
+      NTFY_AUTH_DEFAULT_ACCESS: deny-all
+      NTFY_ENABLE_SIGNUP: "false"
+      NTFY_ENABLE_LOGIN: "false"
+      NTFY_ENABLE_RESERVATIONS: "false"
+      NTFY_WEB_ROOT: disable
+      NTFY_UPSTREAM_BASE_URL: ""
+      NTFY_BEHIND_PROXY: "false"
+      NTFY_LOG_LEVEL: warn
+      # Every visitor reaches ntfy through the proxy, which strips the client address: ntfy sees one
+      # visitor only, so its per-visitor limits act as one global ceiling, sized for the whole platform.
+      NTFY_VISITOR_REQUEST_LIMIT_BURST: "2000"
+      NTFY_VISITOR_REQUEST_LIMIT_REPLENISH: "50ms"
+      NTFY_VISITOR_SUBSCRIPTION_LIMIT: "100000"
+      NTFY_VISITOR_MESSAGE_DAILY_LIMIT: "0"
+    volumes:
+      - /srv/ppf/preproduction/ntfy:/var/lib/ntfy
+    networks:
+      - edge
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -T 3 -O - http://127.0.0.1:8080/v1/health | grep -q '\"healthy\":true'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: local
+      options:
+        max-size: 1m
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: "0.25"
+
   db:
     # PostgreSQL 17 with PostGIS, pinned by digest (Dependabot proposes updates).
     image: postgis/postgis:17-3.6@sha256:1ac10b2551ba84ae05db8e7da477afcd0a3fede99bcb7705da2ee157390cb095
@@ -207,6 +275,9 @@ services:
 secrets:
   server_db_password:
     file: ${PPF_SECRETS_DIR:?}/server_db_password
+  # VAPID private key of the push wake-ups (EC P-256, PKCS#8 PEM), readable by the server only.
+  vapid_private_key:
+    file: ${PPF_SECRETS_DIR:?}/vapid_private_key
   migrate_db_password:
     file: ${PPF_SECRETS_DIR:?}/migrate_db_password
   db_password:

@@ -268,6 +268,28 @@ class OrganisationsScreenTest {
     }
 
     @Test
+    fun aRevokedOrganisationLosesItsBadgeAndItsPageSaysWhen() = runComposeUiTest {
+        val harness = AgirHarness()
+        runBlocking {
+            // 7 November 2026, 09:00 in Paris.
+            harness.dependencies.contentStore!!.store(
+                AgirFixtures.entry("collectif-retire", name = "[EXEMPLE] Collectif fictif retiré", accountKey = IdentityKeys.generate().publicKey.hex, updatedAt = 1_794_038_400, status = "revoquee"),
+            )
+        }
+        openDirectory(harness, width = 700)
+        countText("8 organisations")
+        assertEquals(0, count(OrganisationsTags.CARD + "collectif-retire"), "hidden from the list by default")
+        tap(OrganisationsTags.INCLUDE_REVOKED)
+        countText("9 organisations")
+        awaitCard("collectif-retire")
+        onNodeWithTag(OrganisationsTags.REVOKED_BADGE + "collectif-retire", useUnmergedTree = true).assertExists()
+        openCard("collectif-retire")
+        onNodeWithTag(OrganisationPageTags.REVOKED).assertExists()
+        onNodeWithText("Vérification retirée par PPF le 7 novembre 2026").assertExists()
+        assertEquals(0, count(OrganisationPageTags.VERIFIED))
+    }
+
+    @Test
     fun comprendreNeverListsTheOrganisations() = runComposeUiTest {
         val dependencies = AgirFixtures.dependencies()
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }

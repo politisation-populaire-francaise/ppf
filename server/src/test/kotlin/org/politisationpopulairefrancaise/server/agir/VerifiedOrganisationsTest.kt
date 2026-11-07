@@ -75,6 +75,37 @@ class VerifiedOrganisationsTest {
     }
 
     @Test
+    fun aRevokedEntryWithdrawsTheVerificationAndEmptiesTheCache() = runBlocking {
+        val entry = editor.organisation(organisationTags(member = member), createdAt = 1_000)
+        events.store(entry)
+        verified.stored(entry)
+        assertTrue(verified.isVerified(member))
+        // The same entry, republished with its key and the status "revoquee".
+        val revoked = editor.organisation(organisationTags(member = member).withTag(AgirFormats.TAG_ORG_STATUS, AgirFormats.ORG_STATUS_REVOKED), createdAt = 2_000)
+        events.store(revoked)
+        verified.stored(revoked)
+        assertFalse(verified.isVerified(member))
+        // An explicit "verifiee" verifies again.
+        val restored = editor.organisation(organisationTags(member = member).withTag(AgirFormats.TAG_ORG_STATUS, AgirFormats.ORG_STATUS_VERIFIED), createdAt = 3_000)
+        events.store(restored)
+        verified.stored(restored)
+        assertTrue(verified.isVerified(member))
+    }
+
+    @Test
+    fun theMostRecentEntryNamingAKeyDecides() = runBlocking {
+        // Two entries (two addresses) name the same key: the newer one, revoked, wins, as on the device.
+        events.store(editor.organisation(organisationTags(d = "ancienne-fiche", member = member), createdAt = 1_000))
+        events.store(editor.organisation(organisationTags(d = "fiche-retiree", member = member).withTag(AgirFormats.TAG_ORG_STATUS, AgirFormats.ORG_STATUS_REVOKED), createdAt = 2_000))
+        events.store(editor.organisation(organisationTags(d = "autre-ancienne", member = other).withTag(AgirFormats.TAG_ORG_STATUS, AgirFormats.ORG_STATUS_REVOKED), createdAt = 1_000))
+        events.store(editor.organisation(organisationTags(d = "autre-nouvelle", member = other), createdAt = 2_000))
+        verified.invalidate()
+        assertFalse(verified.isVerified(member))
+        assertTrue(verified.isVerified(other))
+        assertEquals(setOf(other), verified.keys())
+    }
+
+    @Test
     fun aKeyRemovedFromTheEditorialTeamVerifiesNobodyAnyMore() = runBlocking {
         events.store(editor.organisation(organisationTags(member = member)))
         val withoutEditors = VerifiedOrganisations(TestDatabase.dataSource, { false })

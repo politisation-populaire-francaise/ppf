@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.core.agir.organisations
 
 import org.politisationpopulairefrancaise.core.agir.AgirFormats
+import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.PublicKey
@@ -21,8 +22,9 @@ import org.politisationpopulairefrancaise.core.time.CivilDate
  * `ppf-verified` (`AAAA-MM-JJ`) and `published_at`. Optional: `p` (the organisation's own key,
  * when it has an account), `r` (its web sites), `ppf-contact-phone`, `ppf-contact-email`,
  * `ppf-contact-address` (public contacts of the organisation, never those of a person), `g`, and
- * `ppf-origin` (who wrote the entry, as for every editorial content). The content is the
- * presentation, in the simple Markdown of the practical guides.
+ * `ppf-origin` (who wrote the entry, as for every editorial content), and `ppf-org-status`
+ * (contract, version 2: `verifiee` by default, `revoquee` when the team withdrew the
+ * verification). The content is the presentation, in the simple Markdown of the practical guides.
  *
  * The device shows an entry only when it is signed by a key the application trusts
  * ([EditorialTrust]); [from] enforces it. Contacts are cleaned on reading: only `http` and `https`
@@ -57,7 +59,18 @@ data class Organisation(
     val geohash: String?,
     /** Who wrote the entry; null when the tag is absent. */
     val origin: ContentOrigin?,
+    /**
+     * [AgirFormats.ORG_STATUS_VERIFIED] or [AgirFormats.ORG_STATUS_REVOKED]. An unknown value (a
+     * newer version of the format) is read as revoked: it never extends the trust.
+     */
+    val status: String = AgirFormats.ORG_STATUS_VERIFIED,
 ) {
+    /** The team withdrew the verification: the entry stays readable, its key is no longer verified. */
+    val revoked: Boolean get() = status != AgirFormats.ORG_STATUS_VERIFIED
+
+    /** The day (in Paris) of the version that withdrew the verification, or null when it was not withdrawn. */
+    val revokedOn: CivilDate? get() = if (revoked) ParisTime.moment(updatedAt).date else null
+
     /** The identifier of the entry (its `d` tag), stable across its versions. */
     val slug: String get() = address.identifier
 
@@ -146,6 +159,7 @@ data class Organisation(
                 postalAddress = event.firstTagValue(AgirFormats.TAG_CONTACT_ADDRESS)?.trim()?.takeIf { it.isNotEmpty() },
                 geohash = event.firstTagValue(AgirFormats.TAG_GEOHASH)?.trim()?.takeIf { GEOHASH_PATTERN.matches(it) },
                 origin = event.firstTagValue(TAG_ORIGIN)?.let(ContentOrigin::fromTag),
+                status = readStatus(event.firstTagValue(AgirFormats.TAG_ORG_STATUS)),
             )
         }
 
@@ -171,6 +185,7 @@ data class Organisation(
             postalAddress: String? = null,
             geohash: String? = null,
             origin: ContentOrigin? = null,
+            status: String = AgirFormats.ORG_STATUS_VERIFIED,
         ): UnsignedEvent {
             require(SLUG_PATTERN.matches(slug)) { "slug: 1 to 64 characters among a-z, 0-9, '.', '_', '~', '-'" }
             require(name.isNotBlank() && name.trim().length <= AgirFormats.MAX_TITLE) { "name: 1 to ${AgirFormats.MAX_TITLE} characters" }
@@ -184,6 +199,7 @@ data class Organisation(
             require(phone == null || isPhone(phone)) { "phone: digits, spaces, dots, dashes and a leading +" }
             require(email == null || isEmail(email)) { "email: a plain address" }
             require(geohash == null || GEOHASH_PATTERN.matches(geohash)) { "geohash: 1 to 9 geohash characters" }
+            require(status in AgirFormats.ORG_STATUSES) { "status must be one of ${AgirFormats.ORG_STATUSES}" }
             val tags = buildList {
                 add(listOf("d", slug))
                 add(listOf(AgirFormats.TAG_TITLE, name.trim()))
@@ -193,6 +209,8 @@ data class Organisation(
                 add(listOf(AgirFormats.TAG_ORG_TYPE, type))
                 add(listOf(AgirFormats.TAG_TERRITORY, territory.trim()))
                 add(listOf(AgirFormats.TAG_VERIFIED, verifiedOn))
+                // The default status stays implicit, so that entries written before version 2 read the same.
+                if (status != AgirFormats.ORG_STATUS_VERIFIED) add(listOf(AgirFormats.TAG_ORG_STATUS, status))
                 origin?.let { add(listOf(TAG_ORIGIN, it.tagValue)) }
                 accountKey?.let { add(listOf(AgirFormats.TAG_PUBKEY, it)) }
                 websites.forEach { add(listOf(AgirFormats.TAG_LINK, it)) }
@@ -202,6 +220,12 @@ data class Organisation(
                 geohash?.let { add(listOf(AgirFormats.TAG_GEOHASH, it)) }
             }
             return UnsignedEvent.create(editor, KIND, updatedAt, tags, presentation)
+        }
+
+        /** The status a `ppf-org-status` value is read as: absent means verified, anything unknown revoked. */
+        fun readStatus(value: String?): String = when (val trimmed = value?.trim()) {
+            null, AgirFormats.ORG_STATUS_VERIFIED -> AgirFormats.ORG_STATUS_VERIFIED
+            else -> if (trimmed in AgirFormats.ORG_STATUSES) trimmed else AgirFormats.ORG_STATUS_REVOKED
         }
 
         /** A date `AAAA-MM-JJ` that exists in the calendar, or null. */
