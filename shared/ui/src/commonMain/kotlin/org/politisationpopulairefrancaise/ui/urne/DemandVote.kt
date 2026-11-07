@@ -27,6 +27,8 @@ import org.politisationpopulairefrancaise.ui.resources.urne_closed
 import org.politisationpopulairefrancaise.ui.resources.urne_demand_not_open
 import org.politisationpopulairefrancaise.ui.resources.urne_demand_opening
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_line
+import org.politisationpopulairefrancaise.ui.resources.urne_elected_too_few
+import org.politisationpopulairefrancaise.ui.resources.urne_results_too_few
 import org.politisationpopulairefrancaise.ui.resources.urne_need_account
 import org.politisationpopulairefrancaise.ui.resources.urne_no_token
 import org.politisationpopulairefrancaise.ui.resources.urne_not_voted
@@ -36,6 +38,7 @@ import org.politisationpopulairefrancaise.ui.resources.urne_recorded
 import org.politisationpopulairefrancaise.ui.resources.urne_results_line
 import org.politisationpopulairefrancaise.ui.resources.urne_sending
 import org.politisationpopulairefrancaise.ui.resources.urne_unavailable
+import org.politisationpopulairefrancaise.ui.resources.urne_vote_blank
 import org.politisationpopulairefrancaise.ui.resources.urne_withdraw
 import org.politisationpopulairefrancaise.ui.resources.urne_withdrawn
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
@@ -47,13 +50,15 @@ val LocalVoting = staticCompositionLocalOf<VotingState?> { null }
 object DemandVoteTags {
     const val FOR = "revendication-vote-for"
     const val AGAINST = "revendication-vote-against"
+    const val BLANK = "revendication-vote-blank"
     const val STATUS = "revendication-vote-status"
     const val RESULTS = "revendication-vote-results"
     const val WITHDRAW = "revendication-vote-withdraw"
 }
 
 /**
- * Pour and Contre on a demand (DE-01, D-110): enabled when its ballot box is open and the device
+ * Pour, Contre and Blanc on a demand (DE-01, D-110; the blank vote is counted and shown, owner's
+ * decision of 7 November 2026): enabled when its ballot box is open and the device
  * holds its token; the chosen one shown active; the citizens' results and the elected officials'
  * apart (D-112); one line that says where the vote stands. [inDebate]: the team put the demand in
  * debate (its box opens within minutes). [detailed] adds what anonymity means.
@@ -91,18 +96,32 @@ fun DemandVoteRow(subject: String, inDebate: Boolean, modifier: Modifier = Modif
                 active = state?.choice == AGAINST,
                 modifier = Modifier.testTag(DemandVoteTags.AGAINST),
             )
+            ActionButton(
+                Lucide.Minus,
+                stringResource(Res.string.urne_vote_blank),
+                onClick = { voting?.choose(subject, BLANK) },
+                enabled = canVote,
+                active = state?.choice == BLANK,
+                modifier = Modifier.testTag(DemandVoteTags.BLANK),
+            )
             // The debate itself (arguments for and against) comes later.
             ActionButton(Lucide.MessageCircle, stringResource(Res.string.revendication_debate), onClick = { }, enabled = false)
         }
         box?.results?.let { results ->
             Text(
-                stringResource(Res.string.urne_results_line, count(results.citizens, FOR), count(results.citizens, AGAINST)),
+                if (results.citizens.hidden) {
+                    stringResource(Res.string.urne_results_too_few, results.minimum ?: 5)
+                } else {
+                    stringResource(Res.string.urne_results_line, count(results.citizens, FOR), count(results.citizens, AGAINST), count(results.citizens, BLANK))
+                },
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.testTag(DemandVoteTags.RESULTS),
             )
-            if (results.electedOfficials.ballots > 0) {
+            if (results.electedOfficials.hidden) {
+                Text(stringResource(Res.string.urne_elected_too_few, results.minimum ?: 5), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+            } else if (results.electedOfficials.ballots > 0) {
                 Text(
-                    stringResource(Res.string.urne_elected_line, count(results.electedOfficials, FOR), count(results.electedOfficials, AGAINST)),
+                    stringResource(Res.string.urne_elected_line, count(results.electedOfficials, FOR), count(results.electedOfficials, AGAINST), count(results.electedOfficials, BLANK)),
                     style = MaterialTheme.typography.bodySmall,
                     color = palette.inkMuted,
                 )
@@ -136,5 +155,6 @@ fun DemandVoteRow(subject: String, inDebate: Boolean, modifier: Modifier = Modif
 
 private const val FOR = "pour"
 private const val AGAINST = "contre"
+private const val BLANK = "blanc"
 
 private fun count(counts: ChoiceCounts, choice: String): String = FrenchNumbers.format((counts.counts[choice] ?: 0L).toDouble())

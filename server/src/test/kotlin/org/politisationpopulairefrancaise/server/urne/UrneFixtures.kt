@@ -13,6 +13,8 @@ object UrneFixtures {
         tokenDifficulty = 3,
         ballotDifficulty = 3,
         publicUrl = null,
+        // The existing tests read a few ballots at once; the hiding of small columns has its own test.
+        minDisplay = 1,
     )
 
     fun service(clock: Clock = Clock.systemUTC()): UrneService = UrneService.create(UrneStore(TestDatabase.dataSource), CONFIG, clock)

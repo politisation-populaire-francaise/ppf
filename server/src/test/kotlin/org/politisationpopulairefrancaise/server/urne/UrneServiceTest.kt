@@ -124,6 +124,24 @@ class UrneServiceTest {
     }
 
     @Test
+    fun aFewBallotsOfOneLevelAreHiddenWhileOpenAndPublishedAtTheClosing() {
+        val shown = UrneService.create(store, UrneFixtures.CONFIG.copy(minDisplay = 5), clock)
+        val citizen = pubkey()
+        service.register(citizen)
+        val number = service.open("petite", "30023:${"b".repeat(64)}:petite", listOf("pour", "contre"), clock.instant(), clock.instant().plus(Duration.ofDays(1)), liveResults = true).number
+        vote(number, tokens(citizen).getValue(number), "pour")
+        val live = shown.list(0, 10).single().results!!
+        assertTrue(live.notVerified.hidden && live.citizens.hidden)
+        assertEquals(5, live.minimum)
+        assertTrue(shown.journal(number).ballots["non-verifie"] == null, "the number of ballots of the level is hidden too")
+        clock.instant = clock.instant.plus(Duration.ofDays(2))
+        shown.closeDue()
+        val closed = shown.journal(number).results!!
+        assertEquals(mapOf("pour" to 1L), closed.citizens.counts)
+        assertEquals(null, closed.minimum)
+    }
+
+    @Test
     fun anEarlyClosingBringsTheEndForwardButNeverPushesItBack() {
         val planned = box("annulee", days = 10)
         val end = planned.closesAt!!

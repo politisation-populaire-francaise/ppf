@@ -81,7 +81,29 @@ Rédaction :
 - Archivage horodaté (serveur fait, branchement à faire).
 - Relecture par un avocat (L52-8), à ajouter à la liste des relectures de la section 9.8.
 
-## 7. Questions à trancher (recommandation en premier)
+## 7. Décisions de la propriétaire (7 novembre 2026, relayées par le chef d'équipe)
+
+- **Q1, option B** : figurent au comparateur les candidats déclarés qui le demandent, selon la même règle pour tous. Règle publiée :
+  - toute personne qui a déclaré publiquement sa candidature et qui en fait la demande est ajoutée, dans le même délai pour toutes ;
+  - la demande, sa date et la date d'ajout restent visibles ;
+  - à la publication de la liste officielle, le comparateur s'y aligne.
+- **Q2** : « Depuis aussi loin que possible sur le parti portant le candidat à la présidentielle, tant que les données officielles existent, tous les votes en France et à l'Union européenne. »
+  - Les votes viennent des données ouvertes de « Voir » (Assemblée nationale, Sénat, Parlement européen), par législature, aussi loin que les données officielles existent.
+  - Ce sont les votes des élus du parti qui porte le candidat, et les votes de la personne si elle a eu un mandat.
+  - Tous les scrutins publics, sans sélection éditoriale, rangés par thème.
+  - Import historique à voir avec « Voir ».
+- **Q3** : « Si, on inclue la photo. »
+  - La photo officielle de chacun, au même format, sur le même fond.
+  - Elle est servie par le serveur de PPF, jamais par un site tiers (règle « aucun tiers »).
+  - Pour chaque photo : licence, auteur et source vérifiés, puis inscrits dans la liste des relectures par un avocat (droit à l'image et droit d'auteur).
+  - Sans droit vérifié, pas de photo, pour personne.
+- **Q4, option A** :
+  - le contenu est figé de la veille du scrutin à zéro heure jusqu'à la fermeture des bureaux, à chaque tour ;
+  - le serveur refuse toute publication ou mise à jour du comparateur et des positions pendant ce temps ;
+  - l'application reste lisible.
+- Préproduction : des sources officielles réelles (« on reste dans la vraie info meme en preprod »). Le dépôt et ses tests gardent des personnes fictives.
+
+## 8. Questions posées (historique)
 
 - **Q1. Qui figure au comparateur avant la liste officielle ?**
   - A (recommandée) : personne avant la liste officielle. On publie la grille des thèmes et les positions des **partis** (même critère d'entrée pour tous les partis, celui des fiches de « Voir », M17), puis les candidats dès la liste officielle.

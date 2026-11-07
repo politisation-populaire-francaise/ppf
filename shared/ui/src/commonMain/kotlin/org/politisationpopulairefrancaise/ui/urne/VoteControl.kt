@@ -39,6 +39,7 @@ import org.politisationpopulairefrancaise.ui.resources.urne_no_token
 import org.politisationpopulairefrancaise.ui.resources.urne_privacy
 import org.politisationpopulairefrancaise.ui.resources.urne_recorded
 import org.politisationpopulairefrancaise.ui.resources.urne_sending
+import org.politisationpopulairefrancaise.ui.resources.urne_too_few
 import org.politisationpopulairefrancaise.ui.resources.urne_unavailable
 import org.politisationpopulairefrancaise.ui.resources.urne_withdraw
 import org.politisationpopulairefrancaise.ui.resources.urne_withdrawn
@@ -131,22 +132,26 @@ fun UrneResultsView(journal: UrneJournal, labels: Map<String, String>, modifier:
             Text(stringResource(Res.string.urne_hidden_until_closing), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
         } else {
             Text(stringResource(Res.string.urne_citizens_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
-            CountsBlock(stringResource(Res.string.urne_level_verified), results.verified, labels, journal.issued["verifie"])
-            CountsBlock(stringResource(Res.string.urne_level_not_verified), results.notVerified, labels, journal.issued["non-verifie"])
-            CountsBlock(stringResource(Res.string.urne_level_total), results.citizens, labels, null)
+            CountsBlock(stringResource(Res.string.urne_level_verified), results.verified, labels, journal.issued["verifie"], results.minimum)
+            CountsBlock(stringResource(Res.string.urne_level_not_verified), results.notVerified, labels, journal.issued["non-verifie"], results.minimum)
+            CountsBlock(stringResource(Res.string.urne_level_total), results.citizens, labels, null, results.minimum)
             HorizontalDivider(color = palette.border)
             Text(stringResource(Res.string.urne_elected_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
-            CountsBlock(null, results.electedOfficials, labels, journal.issued["elu"])
+            CountsBlock(null, results.electedOfficials, labels, journal.issued["elu"], results.minimum)
             Text(stringResource(Res.string.urne_elected_apart), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
         }
     }
 }
 
 @Composable
-private fun CountsBlock(title: String?, counts: ChoiceCounts, labels: Map<String, String>, issued: Long?) {
+private fun CountsBlock(title: String?, counts: ChoiceCounts, labels: Map<String, String>, issued: Long?, minimum: Int? = null) {
     val palette = PpfTheme.palette
     Inset(Modifier.fillMaxWidth()) {
         title?.let { Text(it, style = MaterialTheme.typography.labelLarge) }
+        if (counts.hidden) {
+            Text(stringResource(Res.string.urne_too_few, minimum ?: 5), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+            return@Inset
+        }
         labels.forEach { (code, label) ->
             Text("$label : ${counts.counts[code] ?: 0}", style = MaterialTheme.typography.bodyMedium)
         }

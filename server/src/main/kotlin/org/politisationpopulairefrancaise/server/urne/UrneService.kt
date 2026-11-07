@@ -24,6 +24,7 @@ import org.politisationpopulairefrancaise.core.urne.UrneClosing
 import org.politisationpopulairefrancaise.core.urne.UrneInfo
 import org.politisationpopulairefrancaise.core.urne.UrneJournal
 import org.politisationpopulairefrancaise.core.urne.UrneKeyInfo
+import org.politisationpopulairefrancaise.core.urne.UrneResults
 import org.politisationpopulairefrancaise.core.urne.UrneTally
 import org.politisationpopulairefrancaise.core.urne.VoprfError
 import org.politisationpopulairefrancaise.core.urne.VoprfKeyPair
@@ -97,7 +98,7 @@ class UrneService(
         val urnes = store.urnes(after, limit.coerceIn(1, 500))
         val counts = store.countsByBox(urnes.filter { it.liveResults || it.closed }.map { it.number })
         return urnes.map { urne ->
-            info(urne).copy(results = if (urne.liveResults || urne.closed) UrneTally.fromCounts(counts[urne.number].orEmpty()) else null)
+            info(urne).copy(results = if (urne.liveResults || urne.closed) shown(urne, UrneTally.fromCounts(counts[urne.number].orEmpty())) else null)
         }
     }
 
@@ -105,13 +106,16 @@ class UrneService(
         val urne = store.urne(number) ?: throw UrneRefusal(404, "unknown_urne")
         val ballots = store.ballots(number)
         val counted = ballots.filter { it.choice != UrneInfo.WITHDRAWN }
+        val byLevel = VoteLevel.entries.associate { level -> level.code to counted.count { it.level == level }.toLong() }
+        // While open, the number of ballots of a level with too few is not shown either (it is one of the hidden columns).
+        val shownByLevel = if (urne.closed) byLevel else byLevel.filterValues { it == 0L || it >= config.minDisplay }
         return UrneJournal(
             number = number,
             accounts = store.accountsByLevel(),
             issued = store.issuedByLevel(number),
-            ballots = VoteLevel.entries.associate { level -> level.code to counted.count { it.level == level }.toLong() },
+            ballots = shownByLevel,
             replacements = store.replacements(number),
-            results = if (urne.liveResults || urne.closed) UrneTally.results(ballots.map { it.level to it.choice }) else null,
+            results = if (urne.liveResults || urne.closed) shown(urne, UrneTally.results(ballots.map { it.level to it.choice })) else null,
             closed = urne.closed,
         )
     }
@@ -263,6 +267,10 @@ class UrneService(
     // ------------------------------------------------------------------ helpers
 
     private fun pending(account: VoteAccount): List<Urne> = store.openAfter(account.issuedUpTo, clock.instant(), config.maxTokensPerRequest + 1)
+
+    /** The results as shown: everything once closed, small columns hidden while open (R5). */
+    private fun shown(urne: Urne, results: UrneResults): UrneResults =
+        if (urne.closed) results else UrneTally.hidingSmall(results, config.minDisplay)
 
     private fun info(urne: Urne) = UrneInfo(
         number = urne.number,

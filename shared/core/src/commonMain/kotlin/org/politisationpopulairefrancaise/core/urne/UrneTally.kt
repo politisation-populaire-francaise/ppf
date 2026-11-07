@@ -16,6 +16,29 @@ object UrneTally {
         )
     }
 
+    /**
+     * The results as shown while the box is open (team lead's decision on the review R5): a level
+     * column with 1 to [minimum] - 1 ballots is hidden (« moins de 5 »), so that a few ballots of one
+     * level never tell anyone's choice; the citizens' total is hidden with it, since the total minus
+     * the other column would give it back. Everything is published at the closing (D-112, Q4).
+     */
+    fun hidingSmall(results: UrneResults, minimum: Int): UrneResults {
+        fun small(counts: ChoiceCounts) = counts.ballots in 1 until minimum
+        val hidden = ChoiceCounts(emptyMap(), 0, hidden = true)
+        val hideVerified = small(results.verified)
+        val hideNotVerified = small(results.notVerified)
+        val hideCitizens = hideVerified || hideNotVerified || small(results.citizens)
+        val hideElected = small(results.electedOfficials)
+        if (!hideCitizens && !hideElected) return results
+        return UrneResults(
+            verified = if (hideVerified) hidden else results.verified,
+            notVerified = if (hideNotVerified) hidden else results.notVerified,
+            citizens = if (hideCitizens) hidden else results.citizens,
+            electedOfficials = if (hideElected) hidden else results.electedOfficials,
+            minimum = minimum,
+        )
+    }
+
     /** The same results from counts of ballots by (level, choice), as a database adds them up. */
     fun fromCounts(counts: Map<Pair<VoteLevel, String>, Long>): UrneResults {
         val counted = counts.filterKeys { it.second != UrneInfo.WITHDRAWN }

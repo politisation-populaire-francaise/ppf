@@ -165,9 +165,12 @@ data class Ballot(
 @Serializable
 data class BallotReceipt(val status: String)
 
-/** Counts by choice, for one level or one total. */
+/**
+ * Counts by choice, for one level or one total. [hidden]: too few ballots to be shown while the box
+ * is open (fewer than [UrneResults.minimum]); [counts] is then empty and [ballots] zero.
+ */
 @Serializable
-data class ChoiceCounts(val counts: Map<String, Long>, val ballots: Long)
+data class ChoiceCounts(val counts: Map<String, Long>, val ballots: Long, val hidden: Boolean = false)
 
 /**
  * The results (D-112): the citizens' vote, verified accounts first, then not verified, then the
@@ -179,6 +182,8 @@ data class UrneResults(
     val notVerified: ChoiceCounts,
     val citizens: ChoiceCounts,
     val electedOfficials: ChoiceCounts,
+    /** When a column is hidden: the number of ballots under which a column is not shown (5 by default). */
+    val minimum: Int? = null,
 )
 
 /** The public log of a ballot box, continuous (D-110, R2): a stuffing (more tokens than accounts) shows at once. */

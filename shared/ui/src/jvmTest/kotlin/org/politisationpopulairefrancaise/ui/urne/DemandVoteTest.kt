@@ -37,7 +37,7 @@ class DemandVoteTest {
     private val subject = "30023:${"a".repeat(64)}:hopital"
     private val counts = { pour: Long, contre: Long -> ChoiceCounts(mapOf("contre" to contre, "pour" to pour), pour + contre) }
     private val box = UrneInfo(
-        number = 1, id = "decider:revendication:$subject", subject = subject, choices = listOf("pour", "contre"),
+        number = 1, id = "decider:revendication:$subject", subject = subject, choices = listOf("pour", "contre", "blanc"),
         opensAt = 1_793_793_600, closesAt = null, seedVersion = 1, keys = emptyMap(), liveResults = true, closed = false,
         results = UrneResults(verified = counts(2, 1), notVerified = counts(10, 2), citizens = counts(1_234, 3), electedOfficials = counts(1, 0)),
     )
@@ -73,7 +73,7 @@ class DemandVoteTest {
         val voting = voting(remote)
         runBlocking { voting.refreshBoxes() }
         setContent { PpfTheme { CompositionLocalProvider(LocalVoting provides voting) { DemandVoteRow(subject, inDebate = true) } } }
-        onNodeWithTag(DemandVoteTags.RESULTS).assertTextContains("1${FrenchNumbers.GROUP_SEPARATOR}234 pour, 3 contre", substring = true)
+        onNodeWithTag(DemandVoteTags.RESULTS).assertTextContains("1${FrenchNumbers.GROUP_SEPARATOR}234 pour, 3 contre, 0 blanc", substring = true)
         onNodeWithTag(DemandVoteTags.FOR).assertIsNotEnabled()
         onNodeWithTag(DemandVoteTags.STATUS).assertTextContains("Créez un compte", substring = true)
         // The whole list in one request, whatever the demand shown.

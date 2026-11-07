@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.server.revendications
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.RevendicationStatus
+import org.politisationpopulairefrancaise.core.territoires.TerritoryCode
 import org.politisationpopulairefrancaise.core.revendications.RevendicationThemes
 import org.politisationpopulairefrancaise.core.revendications.checks.DraftField
 import org.politisationpopulairefrancaise.core.revendications.checks.DraftRules
@@ -22,7 +23,12 @@ object DemandDrafts {
     val ALLOWED_TAGS: Set<String> = setOf(
         "d", Article.TAG_TITLE, Article.TAG_SUMMARY, Article.TAG_PUBLISHED_AT, Article.TAG_TYPE,
         Article.TAG_ORIGIN, Article.TAG_STATUS, Article.TAG_TERRITORY, Article.TAG_TOPIC,
+        // The official code of the territory beside the free label (D-090, FORMATS 4 nonies): optional.
+        TAG_TERRITORY_CODE,
     )
+
+    /** The tag of the official code of the territory (`fr`, `dep:69`, `com:69123`...), read by core.territoires. */
+    const val TAG_TERRITORY_CODE: String = "ppf-territory-code"
 
     /** Tags that must appear at most once, so that every reader sees the same value. */
     private val SINGLE_TAGS: Set<String> = ALLOWED_TAGS - Article.TAG_TOPIC
@@ -67,6 +73,10 @@ object DemandDrafts {
             return malformed("A demand carries 1 to ${RevendicationDraft.MAX_THEMES} different themes.")
         }
         if (event.createdAt > nowSeconds + MAX_CLOCK_AHEAD_SECONDS) return malformed("The demand is dated in the future.")
+        // The shape of an official code only; whether the territory exists is for the referential (D-090).
+        event.firstTagValue(TAG_TERRITORY_CODE)?.let { code ->
+            if (TerritoryCode.parse(code) == null) return malformed("The ppf-territory-code tag of a demand is an official territory code (fr, reg:84, dep:69, com:69123...).")
+        }
         val article = Article.from(event)?.takeIf { it.type == ArticleType.REVENDICATION }
             ?: return malformed("The event is not a well-formed demand (title and origin are required).")
         if (event.firstTagValue(Article.TAG_STATUS) != RevendicationStatus.NOUVELLE.tagValue) {

@@ -2,7 +2,10 @@ package org.politisationpopulairefrancaise.server.urne
 
 import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.RevendicationStatus
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.revendications.StatusLabels
+import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.sign
@@ -54,7 +57,7 @@ class RevendicationUrnesTest {
         val box = service.list(0, 10).single()
         assertEquals(RevendicationUrnes.PREFIX + address(editor, "hopital"), box.id)
         assertEquals(address(editor, "hopital"), box.subject)
-        assertEquals(listOf("pour", "contre"), box.choices)
+        assertEquals(listOf("pour", "contre", "blanc"), box.choices)
         assertTrue(box.liveResults)
         assertEquals(null, box.closesAt)
         // Nothing to do at the next pass.
@@ -74,6 +77,31 @@ class RevendicationUrnesTest {
         events.store(citizen.demand("vote", "en-debat"))
         assertEquals(0 to 0, demands.reconcile())
         assertTrue(service.list(0, 10).isEmpty())
+    }
+
+    private fun LocalEventSigner.label(signer: LocalEventSigner, d: String, status: String, createdAt: Long) = runBlocking {
+        sign(
+            kind = StatusLabels.KIND,
+            tags = StatusLabels.tags(ContentAddress.parse(address(signer, d)), RevendicationStatus.fromTag(status)!!),
+            createdAt = createdAt,
+        )
+    }
+
+    @Test
+    fun theTeamPutsACitizensDemandInDebateWithALabelOfItsOwn() {
+        // A citizen's demand, published « nouvelle » after review: no box.
+        events.store(citizen.demand("piscine", "nouvelle"))
+        assertEquals(0 to 0, demands.reconcile())
+        // A label signed by anyone else than the team changes nothing.
+        events.store(citizen.label(citizen, "piscine", "en-debat", 1_794_000_050))
+        assertEquals(0 to 0, demands.reconcile())
+        // The team's label: in debate, the box opens; the demand keeps its author's signature.
+        events.store(editor.label(citizen, "piscine", "en-debat", 1_794_000_100))
+        assertEquals(1 to 0, demands.reconcile())
+        assertEquals(address(citizen, "piscine"), service.list(0, 10).single().subject)
+        // A later label of the team: retained, the box closes.
+        events.store(editor.label(citizen, "piscine", "retenue", 1_794_000_200))
+        assertEquals(0 to 1, demands.reconcile())
     }
 
     @Test

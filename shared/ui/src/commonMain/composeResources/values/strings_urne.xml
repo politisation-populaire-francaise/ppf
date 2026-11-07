@@ -26,7 +26,11 @@
     <string name="urne_demand_opening">Le vote de cette revendication s’ouvre dans quelques minutes.</string>
     <string name="urne_need_account">Créez un compte pour voter : une personne, une voix, et personne ne saura ce que vous avez choisi.</string>
     <string name="urne_not_voted">Votre vote est anonyme : il part sans votre compte.</string>
-    <string name="urne_results_line">Citoyens : %1$s pour, %2$s contre</string>
-    <string name="urne_elected_line">Élus, comptés à part : %1$s pour, %2$s contre</string>
+    <string name="urne_results_line">Citoyens : %1$s pour, %2$s contre, %3$s blanc</string>
+    <string name="urne_elected_line">Élus, comptés à part : %1$s pour, %2$s contre, %3$s blanc</string>
+    <string name="urne_vote_blank">Blanc</string>
+    <string name="urne_too_few">Moins de %1$d bulletins pour l’instant : le détail s’affichera au-delà, pour que personne ne puisse deviner un choix.</string>
+    <string name="urne_results_too_few">Citoyens : moins de %1$d bulletins pour l’instant.</string>
+    <string name="urne_elected_too_few">Élus, comptés à part : moins de %1$d bulletins pour l’instant.</string>
     <string name="urne_alert">Alerte : le serveur n’a pas montré à cet appareil la même clé de vote qu’à tout le monde. Rien n’a été gardé et le vote est suspendu ici. Merci de le signaler à l’équipe.</string>
 </resources>
