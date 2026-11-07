@@ -283,7 +283,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-06] Décryptages : échelle des verdicts
-- Statut : À valider
+- Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel 2.0, M6)
 - Concerne : cahier-fonctionnel.md, M6 (« Décryptage des fausses informations : affirmation, verdict, explication, sources ») ; inventaire, CO-04 et CO-18 ; point d'attention n° 7
 - Description : avant de coder les décryptages (phase 2), il faut fixer la liste des verdicts affichés, toujours la même pour que le lecteur s'y retrouve et pour que la plateforme ne puisse pas être accusée de juger au cas par cas. Le point d'attention n° 7 demande d'écrire « déclaration contredite par les faits » plutôt que « mensonge » ou « fake news », sauf intention de tromper établie. Les verdicts portent sur une affirmation, jamais sur une personne.
 - Options :
@@ -292,4 +292,16 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **C. Pas d'étiquette, une phrase de conclusion rédigée** : le décryptage se termine par une conclusion libre. Avantage : souple. Inconvénients : pas de repère visuel, comparaisons impossibles, plus exposé au reproche de partialité.
 - Coût : aucun. Dans tous les cas : affirmation citée mot pour mot avec sa source et sa date, sources primaires, droit de réponse (VO-21) et journal des corrections (VO-22).
 - Recommandation : A, avec une page « Notre méthode » (PP-02) qui définit chaque verdict.
+- Décision : option A validée par la propriétaire le 2026-11-07 (« ok pour échelle des décryptage ») : cinq verdicts « Exact », « Plutôt exact », « Trompeur », « Contredit par les faits », « Invérifiable », définis dans une page « Notre méthode » (PP-02). Mis en œuvre le 2026-11-07 (D-038).
+
+### [2026-11-07] Annuaire officiel des élus (noms des élus locaux dans « Qui décide de ça ? »)
+- Statut : À valider (gratuit, technique ; à coordonner avec l'espace « Voir »)
+- Concerne : cahier-fonctionnel.md, M13.1 (« Qui décide de ça ? », « Mes élus ») ; cahier des charges, section 4 (données publiques : Répertoire national des élus)
+- Description : l'encart « Qui décide ? Les élus concernés » nomme aujourd'hui les personnes publiques liées par l'équipe. Pour nommer les élus de chacun (maire, conseillers, député, sénateurs), il faut la liste officielle des élus et le lien entre une commune et ses élus.
+- Options :
+  - **A. Importer le Répertoire national des élus sur notre serveur** (data.gouv.fr, ministère de l'Intérieur, licence ouverte à vérifier au moment de l'import), mis à jour automatiquement, et le servir par département ; l'appareil télécharge le paquet de son département une fois, puis trouve ses élus hors ligne à partir de sa commune choisie sur l'appareil (jamais envoyée). Avantages : hors ligne, la commune ne quitte pas l'appareil. Inconvénient : demande le serveur (préproduction).
+  - **B. Embarquer tout le répertoire dans l'application** : avantage, aucun serveur ; inconvénients, plusieurs mégaoctets de plus et des données vite périmées.
+  - **C. Renvoyer vers les annuaires officiels** (Assemblée nationale, Sénat, mairies) : avantage, immédiat ; inconvénient, on quitte l'application et l'encart reste sans noms locaux.
+- Coût : aucun. Minimisation : seulement le nom, la fonction, le territoire et le début du mandat, jamais la date de naissance ni la profession.
+- Recommandation : A, avec C en attendant ; à faire avec la session « Voir », qui affiche déjà les fiches des personnes publiques.
 - Décision :

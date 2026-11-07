@@ -80,7 +80,7 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `summary` | Résumé | Non |
 | `published_at` | Première publication, secondes depuis 1970, en texte | Non |
 | `t` | Un thème par étiquette (`droits`, `manifestation`, …) | Non |
-| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours` ou `revendication` | Non |
+| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide` ou `revendication` (et les briques de « Voir », section 4 quinquies) | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-duration` | Parcours seulement : durée de lecture annoncée, en minutes (1 à 240) | Non |
@@ -102,6 +102,21 @@ Un parcours (cahier fonctionnel, M13.1) est un contenu éditorial de `ppf-type` 
 L'application lit un quiz mal formé comme une étape sans question ; l'outil de signature refuse un parcours dont une étape, un quiz, le bloc « Et maintenant ? » ou les sources manquent ou sont mal formés. Un lecteur qui ne connaît pas ce format voit un article ordinaire.
 
 **Progression, sur l'appareil seulement** : tables locales `learning_progress(address, furthest_step, completed_at, updated_at)` et `learning_answer(address, step, choice, correct)`, indexées par l'adresse stable du parcours (`30023:<clé>:<identifiant>`), étapes et options numérotées à partir de 0. Elles ne sont jamais envoyées, ne sont pas liées au compte et s'effacent d'un geste.
+
+### Décryptages, histoire des luttes, « Qui décide de ça ? » (D-038)
+
+Blocs communs du Markdown de « Comprendre » (`core/comprendre/ContentBlocks`) :
+
+- `::: objections` ... `:::` : des paires faites d'une ligne `? objection` puis d'une ou plusieurs lignes `> réponse` (la réponse cite sa source) ; affiché comme un encart « Objections et réponses » (pluralisme) ;
+- `::: chronologie` ... `:::` : des lignes `- DATE : texte`, DATE au format `AAAA`, `AAAA-MM` ou `AAAA-MM-JJ`, dans l'ordre des dates ; affiché comme une frise.
+
+| `ppf-type` | Étiquettes et corps |
+|---|---|
+| `decryptage` | `ppf-verdict` (obligatoire) : `exact`, `plutot-exact`, `trompeur`, `contredit-par-les-faits`, `inverifiable` ; `ppf-claim` (obligatoire) : l'affirmation mot pour mot ; `ppf-claim-context` : où et quand elle circule. Corps : l'explication, un bloc `objections` (obligatoire), « Et maintenant ? », `## Sources` en dernier. |
+| `histoire` | `ppf-country` et `ppf-period` (début, fin facultative ; obligatoires), `ppf-claim` (une par revendication), `ppf-result` (une par résultat obtenu), comme les mouvements de « Voir ». Corps : contexte, déroulé avec un bloc `chronologie`, ce qui a été obtenu, ce qui a fonctionné ou échoué, un bloc `objections` (obligatoire), « Et maintenant ? », `## Sources`. |
+| `qui-decide` | Corps commençant par un bloc `::: decideurs` : une ligne `- niveau | rôles | ce que ce niveau décide (référence)` par niveau, du plus proche au plus lointain ; niveaux `commune`, `intercommunalite`, `departement`, `region`, `etat`, `union-europeenne` ; rôles `maire`, `elu-local`, `depute`, `senateur`, `eurodepute`, `ministre`, `president`. Étiquettes `a` de rôle `personne` vers les personnes publiques de « Voir » à nommer dans l'encart des élus concernés. « Et maintenant ? » et `## Sources` obligatoires. |
+
+La page qui définit la méthode et les verdicts est un article d'identifiant `notre-methode`.
 
 ### Publications courtes du fil
 
