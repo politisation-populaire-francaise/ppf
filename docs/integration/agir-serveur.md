@@ -1,5 +1,10 @@
 # Note d'intégration : le serveur de l'espace « Agir » (règles de publication, relecture, agenda, flux iCal, organisations vérifiées)
 
+**État à la reprise (7 novembre 2026)**
+- Fait : tout le périmètre (règles, file `held_content`, `GET /api/v1/held`, organisations vérifiées, agenda et flux iCal, serveur de développement, page `/agenda`), 152 tests du serveur et `build` complet au vert, note complète.
+- En cours : rien (aucun travail non commité, aucun `runDev` lancé).
+- À faire : fusion par la session principale (renuméroter `V5__agir.sql` si besoin), puis la section 9 de cette note (back-office M15, unification de l'export iCal, style de la page `/agenda`, preuve de travail).
+
 Périmètre du travail : `server/` (nouveau paquet `server/agir/`, migration `V5__agir.sql`, branchements de quelques lignes), une page facultative dans `web/` (nouveau fichier) et cette note. Rédigée le 6 novembre 2026 pour la session principale « Agir », qui fusionne la branche et met à jour `CHANGELOG.md`, `ROADMAP.md`, `FORMATS.md`, `DECISIONS.md`, `REGISTRE_DONNEES.md`, `THREAT_MODEL.md` et `GUIDE_PROPRIETAIRE.md` (cette note n'y touche pas). Elle met en œuvre les sections 2 à 5 du contrat commun (`docs/integration/agir-contrat.md`, version 1, avec la correction `ppf-boycott-duration` du commit `bb3931b`). `shared/` n'est pas modifié.
 
 ## 1. Ce qui est fait
