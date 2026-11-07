@@ -39,6 +39,8 @@ data class Parcours(
     val nextActions: String?,
     /** The sources section, Markdown; null when missing (the content signer refuses that). */
     val sources: String?,
+    /** Objections and their sourced answers (`::: objections`), shown at the end with « Et maintenant ? ». */
+    val objections: List<Objection> = emptyList(),
 ) {
     /** The stable address of the course (`kind:pubkey:identifier`): progress is kept under it. */
     val address: String get() = article.address.toString()
@@ -51,7 +53,7 @@ data class Parcours(
             if (article.type != ArticleType.PARCOURS) return null
             val parsed = ParcoursFormat.parse(article.body)
             if (parsed.steps.isEmpty()) return null
-            return Parcours(article, parsed.introduction, parsed.steps, parsed.nextActions, parsed.sources)
+            return Parcours(article, parsed.introduction, parsed.steps, parsed.nextActions, parsed.sources, parsed.objections)
         }
     }
 }
@@ -63,6 +65,7 @@ data class ParsedParcours(
     val nextActions: String?,
     val sources: String?,
     val problems: List<String>,
+    val objections: List<Objection> = emptyList(),
 )
 
 /**
@@ -81,12 +84,13 @@ object ParcoursFormat {
         val sections = splitSections(markdown.lines())
 
         val nextActionsBlocks = mutableListOf<List<String>>()
-        val introLines = extractBlocks(sections.introduction, NEXT_ACTIONS_BLOCK, nextActionsBlocks)
+        val objectionBlocks = mutableListOf<List<String>>()
+        val introLines = extractBlocks(extractBlocks(sections.introduction, NEXT_ACTIONS_BLOCK, nextActionsBlocks), ContentBlocks.OBJECTIONS, objectionBlocks)
         var sources: String? = null
         val steps = mutableListOf<ParcoursStep>()
 
         for (section in sections.headed) {
-            val withoutActions = extractBlocks(section.lines, NEXT_ACTIONS_BLOCK, nextActionsBlocks)
+            val withoutActions = extractBlocks(extractBlocks(section.lines, NEXT_ACTIONS_BLOCK, nextActionsBlocks), ContentBlocks.OBJECTIONS, objectionBlocks)
             if (section.title.trim().equals(SOURCES_HEADING, ignoreCase = true)) {
                 if (sources != null) problems += "more than one \"## $SOURCES_HEADING\" section"
                 sources = withoutActions.joinToString("\n").trim().ifEmpty { null }
@@ -110,7 +114,13 @@ object ParcoursFormat {
         if (nextActionsBlocks.size > 1) problems += "more than one \"::: $NEXT_ACTIONS_BLOCK\" block"
         val nextActions = nextActionsBlocks.firstOrNull()?.joinToString("\n")?.trim()?.ifEmpty { null }
         if (nextActionsBlocks.isEmpty()) problems += "no \"::: $NEXT_ACTIONS_BLOCK\" block (« Et maintenant ? »)"
-        return ParsedParcours(introLines.joinToString("\n").trim(), steps, nextActions, sources, problems)
+        val objections = objectionBlocks.flatMap { lines ->
+            val (items, objectionProblems) = ContentBlocks.parseObjections(lines)
+            problems += objectionProblems
+            items
+        }
+        problems += steps.flatMap { step -> ContentBlocks.problems(step.body) }
+        return ParsedParcours(introLines.joinToString("\n").trim(), steps, nextActions, sources, problems, objections)
     }
 
     /** A quiz block: one `? question` line, two to five `- [ ]` / `- [x]` options with one `[x]`, and `> explanation` lines. */

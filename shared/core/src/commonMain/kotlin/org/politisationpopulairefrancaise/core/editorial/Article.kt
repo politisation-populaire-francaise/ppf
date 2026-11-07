@@ -17,6 +17,13 @@ enum class ArticleType(val tagValue: String) {
      * each closing with a quiz, read by `core.comprendre.Parcours`.
      */
     PARCOURS("parcours"),
+    /**
+     * A story of the history of social movements and revolutions ("Comprendre", owner's decision of
+     * 7 November 2026), read by `core.comprendre.HistoryStory`.
+     */
+    HISTOIRE("histoire"),
+    /** A « Qui décide de ça ? » sheet (cahier fonctionnel, M13.1), read by `core.comprendre.QuiDecide`. */
+    QUI_DECIDE("qui-decide"),
     /** A demand of the demands wall: one idea, in one or two sentences, with its argument as body. */
     REVENDICATION("revendication"),
 
