@@ -32,6 +32,11 @@ postgresqlJdbc = "42.7.14"
 flyway = "13.12.1"
 zonkyEmbeddedPostgres = "2.2.2"
 zonkyPostgresBinaries = "17.11.0"
+# Passkeys and FIDO2 security keys of the team back-office (M15, D-120): WebAuthn4J core, Apache 2.0,
+# release of 2026-11-02, checked on Maven Central on 2026-11-07. Brings only Jackson 3 (databind, CBOR,
+# Apache 2.0) and SLF4J; Yubico's java-webauthn-server would also bring Guava, Apache HttpClient and a
+# second CBOR library.
+webauthn4j = "0.32.0.RELEASE"
 
 # Compose 1.12 libraries require compiling against API 37 or later.
 android-compileSdk = "37"
@@ -80,6 +85,7 @@ postgresql-jdbc = { module = "org.postgresql:postgresql", version.ref = "postgre
 flyway-core = { module = "org.flywaydb:flyway-core", version.ref = "flyway" }
 flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", version.ref = "flyway" }
 zonky-embedded-postgres = { module = "io.zonky.test:embedded-postgres", version.ref = "zonkyEmbeddedPostgres" }
+webauthn4j-core = { module = "com.webauthn4j:webauthn4j-core", version.ref = "webauthn4j" }
 zonky-postgres-binaries-bom = { module = "io.zonky.test.postgres:embedded-postgres-binaries-bom", version.ref = "zonkyPostgresBinaries" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }

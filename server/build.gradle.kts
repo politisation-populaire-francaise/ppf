@@ -63,6 +63,8 @@ dependencies {
     // HTTP client towards the AI model that reads proposed demands (off unless configured). Already
     // in the runtime classpath through shared/core; declared here because the server builds its own client.
     implementation(libs.ktor.client.cio)
+    // Verification of the passkeys and security keys of the team back-office (WebAuthn, D-120).
+    implementation(libs.webauthn4j.core)
 
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.ktor.client.mock)
