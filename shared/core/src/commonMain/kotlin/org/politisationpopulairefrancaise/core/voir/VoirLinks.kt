@@ -11,6 +11,7 @@ package org.politisationpopulairefrancaise.core.voir
  * | Indicator | `/voir/chiffres/<identifier>` |
  * | Sourced fact | `/voir/faits/<identifier>` |
  * | Public person | `/voir/personnes/<identifier>` |
+ * | Political party | `/voir/partis/<identifier>` |
  * | Bill | `/voir/textes/<identifier>` |
  * | Movement of the world | `/voir/monde/<identifier>` |
  * | Dossier | `/voir/dossiers/<identifier>` |
@@ -32,6 +33,7 @@ object VoirLinks {
     const val INDICATORS: String = "chiffres"
     const val FACTS: String = "faits"
     const val PERSONS: String = "personnes"
+    const val PARTIES: String = "partis"
     const val TEXTS: String = "textes"
     const val WORLD: String = "monde"
     const val DOSSIERS: String = "dossiers"
@@ -41,6 +43,7 @@ object VoirLinks {
         is VoirItem.OfIndicator -> INDICATORS
         is VoirItem.OfFact -> FACTS
         is VoirItem.OfPerson -> PERSONS
+        is VoirItem.OfParty -> PARTIES
         is VoirItem.OfText -> TEXTS
         is VoirItem.OfMovement -> WORLD
         is VoirItem.OfDossier -> DOSSIERS

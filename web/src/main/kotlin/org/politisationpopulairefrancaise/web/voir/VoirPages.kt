@@ -106,6 +106,7 @@ fun HTML.voirItemDocument(item: VoirItem, catalog: VoirCatalog) {
             is VoirItem.OfIndicator -> indicatorPage(item.indicator, catalog)
             is VoirItem.OfFact -> factPage(item.fact, catalog)
             is VoirItem.OfPerson -> personPage(item.person, catalog)
+            is VoirItem.OfParty -> partyPage(item.party, catalog)
             is VoirItem.OfText -> textPage(item.text, catalog)
             is VoirItem.OfMovement -> movementPage(item.movement, catalog)
             is VoirItem.OfDossier -> dossierPage(item.dossier, catalog)
@@ -621,6 +622,23 @@ private fun FlowContent.movementPage(movement: WorldMovement, catalog: VoirCatal
     sourcesSection(movement.sources)
     originLine(movement.article)
     nextSection(emptyList(), catalog, VoirItem.OfMovement(movement))
+}
+
+/**
+ * A party on the site: its presentation, sources and origin. The full sheet of the application
+ * (financing, seats, public aid, members) comes to the site in a later step.
+ */
+private fun FlowContent.partyPage(party: org.politisationpopulairefrancaise.core.voir.PoliticalParty, catalog: VoirCatalog) {
+    pageHead(listOfNotNull("Parti politique", party.acronym).joinToString(" · "), party.name, party.article.summary)
+    if (party.article.body.isNotBlank()) {
+        section(classes = "voir-body") {
+            attributes["aria-label"] = "Présentation du parti"
+            markdown(party.article.body)
+        }
+    }
+    sourcesSection(party.sources)
+    originLine(party.article)
+    nextSection(party.nextSteps, catalog, VoirItem.OfParty(party))
 }
 
 private fun FlowContent.dossierPage(dossier: VoirDossier, catalog: VoirCatalog) {

@@ -256,7 +256,7 @@ private fun ConversationList(messaging: MessagingSession, trust: EditorialTrust,
                 val last = summary.lastMessage
                 ThreadRow(
                     title = conversationTitle(others, conversation.subject, trust),
-                    preview = last?.let { if (it.author == me) stringResource(Res.string.messages_preview_mine, it.text) else it.text },
+                    preview = last?.let { val text = org.politisationpopulairefrancaise.ui.voir.voirRequestText(it.text); if (it.author == me) stringResource(Res.string.messages_preview_mine, text) else text },
                     time = listTimeLabel(conversation.lastMessageAt, now),
                     onClick = { messaging.open(conversation) },
                     onClickLabel = openLabel,

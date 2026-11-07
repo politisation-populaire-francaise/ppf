@@ -183,7 +183,7 @@ internal fun PartyPage(party: PoliticalParty, catalog: VoirCatalog, state: VoirS
         @OptIn(ExperimentalLayoutApi::class)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), itemVerticalAlignment = Alignment.CenterVertically) {
             FollowButton(state.isFollowed(party.address), party.name, onToggle = { state.toggleFollow(party.address) })
-            PpfSecondaryButton(onClick = actions.reply, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
+            PpfSecondaryButton(onClick = { actions.reply(party.address) }, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
         }
         Spacer(Modifier.height(16.dp))
         InfoBox(Lucide.Info) { Text(stringResource(Res.string.voir_parties_intro), style = MaterialTheme.typography.bodyMedium) }

@@ -34,6 +34,7 @@ class VoirIndex(val catalog: VoirCatalog) {
         is VoirItem.OfIndicator -> item.indicator.article.updatedAt
         is VoirItem.OfFact -> item.fact.article.updatedAt
         is VoirItem.OfPerson -> item.person.article.updatedAt
+        is VoirItem.OfParty -> item.party.article.updatedAt
         is VoirItem.OfText -> item.text.article.updatedAt
         is VoirItem.OfMovement -> item.movement.article.updatedAt
         is VoirItem.OfDossier -> item.dossier.article.updatedAt

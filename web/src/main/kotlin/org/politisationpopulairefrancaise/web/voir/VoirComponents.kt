@@ -217,7 +217,7 @@ internal fun defaultSteps(item: VoirItem?): List<SiteStep> = buildList {
             add(SiteStep("Trouver la prochaine mobilisation", "/agenda"))
             add(SiteStep("Agir : se mobiliser, s’organiser, s’entraider", spacePath(Space.AGIR)))
         }
-        is VoirItem.OfFact, is VoirItem.OfPerson, is VoirItem.OfText -> {
+        is VoirItem.OfFact, is VoirItem.OfPerson, is VoirItem.OfParty, is VoirItem.OfText -> {
             add(SiteStep("Décider : obliger les élus à s’engager", spacePath(Space.DECIDER)))
             add(SiteStep("Proposer ou soutenir une revendication", spacePath(Space.REVENDICATIONS)))
         }

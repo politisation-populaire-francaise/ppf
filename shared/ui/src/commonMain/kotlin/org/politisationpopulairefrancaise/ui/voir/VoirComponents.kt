@@ -85,7 +85,6 @@ object VoirTags {
     const val CHART_TOGGLE = "voir-chart-toggle"
     const val TABLE = "voir-table"
     const val REPLY_OPEN = "voir-reply-open"
-    const val REPLY_DIALOG = "voir-reply-dialog"
     const val PRESUMPTION = "voir-presumption"
     const val LINK_DIALOG = "voir-link-dialog"
     const val LINK_OPEN = "voir-link-open"
@@ -487,29 +486,6 @@ internal fun ReplyCard(reply: RightOfReply, modifier: Modifier = Modifier) {
             Text(reply.text.trim(), style = MaterialTheme.typography.bodyLarge, fontStyle = FontStyle.Italic)
         }
     }
-}
-
-/** How to exercise a right of reply (VO-21): the law, the delay, the form to come. */
-@Composable
-internal fun ReplyDialog(onDismiss: () -> Unit) {
-    val palette = PpfTheme.palette
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = Modifier.testTag(VoirTags.REPLY_DIALOG),
-        containerColor = palette.surface2,
-        titleContentColor = palette.ink,
-        textContentColor = palette.inkMuted,
-        shape = MaterialTheme.shapes.medium,
-        title = { Text(stringResource(Res.string.voir_reply_dialog_title), style = MaterialTheme.typography.titleMedium) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                Text(stringResource(Res.string.voir_reply_dialog_text), style = MaterialTheme.typography.bodyMedium)
-                Spacer(Modifier.height(8.dp))
-                Text(stringResource(Res.string.voir_reply_dialog_how), style = MaterialTheme.typography.bodyMedium)
-            }
-        },
-        confirmButton = { PpfTextButton(onClick = onDismiss, text = stringResource(Res.string.voir_close)) },
-    )
 }
 
 /** What the labels of "Voir" mean: status of a fact, reliability, stages of a procedure, sources side by side. */
