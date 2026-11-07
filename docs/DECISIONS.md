@@ -751,3 +751,9 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **25** : « On met en public les j'aime, on va pas faire plus de zèle que sur insta... oui pour tout le reste du point 25 » : « j'aime » publics et signés ; suggestions calculées sur l'appareil, fil chronologique toujours disponible ; commentaires publics, signés et modérés.
   - **26** : « On laisse le signalement mais l'idéal est que l'algo de la fonctionnalité mette plein de garde fou pour éviter ce genre de situation ainsi que les doublons etc. [...] Non, pas de limite sur les groupes privés » : garde-fous automatiques contre le squat d'un nom et les doublons à la création d'un salon (proximité des noms, collectifs connus, mise en attente), le signalement restant possible ; aucune limite de taille visible pour les conversations de groupe (au-delà d'un seuil, bascule technique transparente vers un salon chiffré si nécessaire). Identités multiples : explication envoyée au chef d'équipe, décision en attente.
 - Raison : choix de la propriétaire.
+
+## D-133 (2026-11-07) Identités multiples et comptes de collectif
+
+- Décisions de la propriétaire (7 novembre 2026, mots exacts relayés par le chef d'équipe) : « D'accord pour les identités multiples » ; « Un compte de type collectif ou association ou bref tout truc qui n'est pas personne physique ne peut pas voter ».
+- Conséquences : plusieurs comptes personnels sur un même appareil, avec un sélecteur dans Mon espace, après les cercles (M28) ; un type de compte explicite (personne ou collectif), fixé à la création d'un compte de collectif, pour que l'émission des jetons de vote (Décider) le refuse aux comptes qui ne sont pas des personnes physiques (contrat à écrire avec Décider).
+- Précision : des comptes personnels non vérifiés ont chacun leurs jetons et comptent dans la colonne « non vérifiés » ; seule la validation en personne limite à un compte vérifié par personne (D-110, D-112).
