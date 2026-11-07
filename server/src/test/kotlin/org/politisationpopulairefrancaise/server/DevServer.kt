@@ -87,6 +87,8 @@ fun main() {
             "${editors.size} editor key(s), AI model ${if (revendications.model == null) "off" else "on"}, http://localhost:$port",
     )
     println("Agir space: ${BundledContents.AGIR_FILES.joinToString { "$it ${bundled[it].orEmpty().size}" }}, review of held contents at /dev/held.")
+    // The fictitious example set (PPF_RNE_SOURCE is never `official` outside production), imported at start.
+    println("Directory of elected officials: example set, imported in the background, at /api/v1/elus and /api/v1/elus/69.")
     embeddedServer(Netty, port = port, host = "127.0.0.1") {
         module(dataSource, PublicationPolicy(editors), revendications = revendications)
         routing {

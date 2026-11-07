@@ -76,3 +76,82 @@ Particularités relevées dans les vrais fichiers :
 `www.data.gouv.fr` (API et redirections), `static.data.gouv.fr` (fichiers du RNE et des élections), `www.insee.fr` (Code officiel géographique), `data.laposte.fr` (codes postaux). Le serveur suit lui-même les redirections et refuse tout autre hôte. Aucun de ces hôtes n'est bloqué par `tools/check-no-trackers.sh` (liste de motifs interdits, pas de liste blanche) : script non modifié.
 
 En mode `example` (par défaut : développement, tests, préproduction), le serveur ne contacte personne.
+
+## 3. Ce qui est fait
+
+Paquet `server/src/main/kotlin/org/politisationpopulairefrancaise/server/elus/` :
+
+| Fichier | Rôle |
+|---|---|
+| `Csv.kt` | Lecteur CSV en flux (un enregistrement à la fois, jamais tout le fichier) ; tolère BOM, CRLF ou LF, guillemets RFC 4180, lignes vides, guillemet isolé ; refuse un enregistrement de plus d'un million de caractères. `CsvInput` détecte l'encodage sur les 64 premiers Ko (UTF-8 strict, sinon Windows-1252). `CsvTable` repère les colonnes par leur nom (sans accents, casse, espaces doublés ni `#` initial), refuse un fichier auquel manque une colonne attendue et ignore les autres. Les messages d'erreur nomment le fichier, la colonne ou le numéro de ligne, jamais une valeur. |
+| `Rne.kt` | Lecture des huit fichiers du RNE en `StagedOfficial` : seules les colonnes du contrat sont déclarées (section 1.1) ; nom affiché `Prénom Nom` ; dates `AAAA-MM-JJ` (ou `JJ/MM/AAAA` des anciens fichiers) ; rang dans le conseil (maire ou président 0, n-ième adjoint ou vice-président n, autres fonctions, puis membres) pour le tri seulement. |
+| `Geography.kt` | Code officiel géographique, codes postaux, circonscriptions (2022) et cantons des communes partagées (2021), avec suivi des fusions de communes ; noms des circonscriptions (« 1re circonscription du Rhône »). |
+| `ElusBuilder.kt` | Construction déterministe des paquets et de l'index (ordre fixe, sans paramètre régional ni ordre de table de hachage). |
+| `ElusStore.kt` | Tables de `V6__elus.sql` ; verrou consultatif PostgreSQL (un seul import à la fois, même entre processus) ; élus écrits dans la table de travail par `COPY` en flux. |
+| `ElusImporter.kt` | Un import : géographie, puis les huit fichiers, puis un paquet à la fois (corps compressé en base, seule sa description reste en mémoire), garde des 20 %, activation en une transaction. |
+| `ElusService.kt` | Configuration (`ElusConfig`, `ElusSetup`), import servi en mémoire (index et empreintes), planification. |
+| `ElusApi.kt` | Routes. |
+| `ElusSources.kt`, `OfficialSource.kt` | Sources : `ExampleSource` (ressources du serveur), `DirectorySource` (dossier local), `OfficialSource` (data.gouv.fr, client HTTPS qui suit lui-même les redirections et n'accepte que les hôtes de la section 2, 400 Mo au plus par fichier). |
+
+Autres fichiers : `server/src/main/resources/db/migration/V6__elus.sql` (numéro réservé) ; le jeu fictif dans `server/src/main/resources/elus/example/` ; branchement dans `Application.kt` (paramètre `elus` de `module`, routes) ; `server/build.gradle.kts` (`PPF_RNE_REFRESH_DAYS=0` pendant les tests, comme le ménage des revendications) ; `TestDatabase.reset()` vide aussi les tables de l'annuaire ; une ligne dans `DevServer.kt`.
+
+Aucune dépendance nouvelle : JDK (`java.net.http`, `java.util.zip`), pilote PostgreSQL (`COPY`), kotlinx.serialization et Ktor déjà présents. `tools/check-no-trackers.sh` et `tools/check-dependencies.sh` ne sont pas modifiés.
+
+### 3.1 Règles de construction des paquets
+
+- **Paquets** : chaque département du Code officiel géographique (101), chaque collectivité d'outre-mer qui a au moins un élu dans le RNE (975, 977, 978, 986, 987, 988), et `FR` (membres du Parlement européen). Index trié par code (`01`... `19`, `21`... `29`, `2A`, `2B`, `30`... `976`, `977`... `988`, `FR`).
+- **Communes** : celles du Code officiel géographique (et, outre-mer, celles des collectivités d'outre-mer), triées par nom sans accents ni casse, puis par code. Codes postaux de La Poste (ceux des arrondissements pour Paris, Lyon et Marseille). Intercommunalité : celle où siègent les conseillers communautaires de la commune (fichier du RNE). Cantons : celui du Code officiel géographique, ou la liste des départementales de 2021 pour une commune partagée ; aucun canton là où il n'y a pas de conseil départemental (Corse, Martinique, Guyane, Paris, Métropole de Lyon). Circonscriptions : toutes celles de la commune.
+- **Qui va dans quel paquet** : chaque élu va dans le paquet de son département ou de sa collectivité, avec ces regroupements : l'Assemblée de Corse dans `2A` et `2B` ; la Collectivité européenne d'Alsace (conseil départemental `6AE`, section régionale `6AE`) entière dans `67` et `68` ; la Métropole de Lyon (`69M`) dans `69` ; le député de Saint-Barthélemy et Saint-Martin (`ZX`, circonscription `97701`) dans `977` et `978`. Une intercommunalité à cheval sur deux départements a tous ses conseillers dans les paquets des deux. Le président du conseil régional est dans le paquet de tous les départements de sa région (les autres conseillers régionaux restent dans le paquet de leur section). Les députés et sénateurs des Français établis hors de France (`ZZ`) ne sont dans aucun paquet.
+- **Territoires** (`territory`, contrat 1.4) : commune (code Insee), intercommunalité (SIREN, avec `commune` = commune de rattachement donnée par le RNE), canton, région, collectivité (code du RNE : `69M`, `94` pour la Corse, `972`, `973`, `975`, `977`, `978`, `986`, `987`, `988`), circonscription (`6901`, `2A01`, `97101`, `97701`), département pour les sénateurs (`69`, `2A`, `972`, `977`), `FR`.
+- **Tri des élus** : mandat (ordre du contrat), territoire, rang dans le conseil, nom sans accents ni casse, puis tous les autres champs : deux imports des mêmes fichiers donnent les mêmes octets (testé).
+- **JSON** : compact, UTF-8, champs dans l'ordre du contrat ; `function`, `functionSince`, `epci` et `region` écrits `null` quand il n'y en a pas ; `commune` absent sauf pour `communautaire`. `region` vaut `null` pour les collectivités d'outre-mer et pour `FR`.
+
+### 3.2 Mise à jour et sécurité (contrat 1.5)
+
+- `PPF_RNE_SOURCE` : `example` (défaut) ou `official`. **`official` n'est suivi que si `PPF_ENVIRONMENT=production`** ; ailleurs le serveur sert le jeu fictif et l'écrit dans son journal (aucune donnée réelle en développement, en test ni en préproduction, même par erreur de configuration).
+- `PPF_RNE_REFRESH_DAYS` : jours entre deux imports (7 par défaut). Import au démarrage si rien n'est servi ou si la source a changé ; après un échec, nouvel essai six heures plus tard ; `0` coupe tout import automatique (tests).
+- Le dernier import réussi reste servi tant qu'un nouvel import n'a pas réussi : un fichier introuvable, une colonne manquante, un encodage cassé, une coupure du téléchargement font échouer l'import sans rien changer.
+- Garde des 20 % : un import est refusé si, pour **un seul** mandat ou au total, le nombre d'élus baisse de plus de 20 % par rapport à l'import servi de la même source (un fichier tronqué, même petit, est ainsi repéré). Le motif (`drop:municipal:55:40`) est gardé dans `elus_import.failure`.
+- Jeu fictif : l'import refuse toute personne dont le prénom ne commence pas par `[EXEMPLE] `.
+- Journaux : nombres, codes de fichiers et de départements, dates. Jamais un nom, jamais une adresse IP (aucune journalisation des requêtes, comme partout).
+- Authenticité : HTTPS et empreinte de l'index pour la phase 1 ; signature des paquets par le service de signature à venir (à noter dans THREAT_MODEL).
+
+## 4. API (contrat 1.4)
+
+- `GET /api/v1/elus` : l'index ; `GET /api/v1/elus/{code}` : un paquet, `404 {"error": "unknown_package", ...}` pour tout autre code.
+- `ETag: "<sha256>"` : **entre guillemets**, comme le veut HTTP (RFC 9110). La valeur entre les guillemets est exactement le `sha256` de l'index. `If-None-Match` accepte la valeur avec ou sans guillemets, faible (`W/`) ou non, une liste, ou `*` : réponse `304` sans corps.
+- `Cache-Control: public, no-cache` (toute mémoire cache peut garder la réponse, à condition de revalider), `Vary: Accept-Encoding`.
+- Compression : un client qui envoie `Accept-Encoding: gzip` reçoit le corps compressé tel qu'il est stocké (`Content-Encoding: gzip`) ; les autres reçoivent le JSON exact. Le reverse proxy Caddy (`encode zstd gzip`) ne recompresse pas une réponse déjà compressée.
+- `503 {"error": "elus_unavailable", ...}` avec `Retry-After: 60` tant qu'aucun import n'a réussi (quelques secondes après le premier démarrage en mode `example`).
+- Sans base de données, la réponse `503 database_unavailable` commune à `/api/v1/` s'applique.
+
+**Pour le bloc elus-app** : l'empreinte à comparer est celle des octets reçus après décompression ; si le client lit l'en-tête `ETag`, il retire les guillemets.
+
+## 6. Tests
+
+`gradlew :server:test --tests "*.elus.*"` (PostgreSQL embarqué, comme les autres tests du serveur) :
+- `CsvTest` : BOM, CRLF, lignes vides, guillemets doublés, séparateurs et sauts de ligne entre guillemets, colonne manquante refusée par son nom sans citer de valeur, colonnes trouvées malgré accents, casse et espaces, enregistrements trop courts ignorés et comptés, détection UTF-8 et Windows-1252, séquence UTF-8 cassée refusée.
+- `RneTest` : colonnes conservées (et jamais déclarées : sexe, naissance, profession, nationalité), dates, rangs, sections régionales, Corse, Français de l'étranger, intercommunalités, codes du ministère, suivi des fusions de communes, noms des circonscriptions.
+- `ElusImportTest` : import du jeu fictif (nombres par mandat, paquets, empreintes et tailles de l'index), contenu du paquet du Rhône (commune partagée entre quatre circonscriptions, Métropole de Lyon, président de région d'un autre département), champs exacts du JSON, minimisation, déterminisme (mêmes octets à deux imports), garde des 20 %, import qui échoue sans effacer le précédent, refus d'une personne non marquée `[EXEMPLE]`, planification.
+- `ElusApiTest` : 503 avant le premier import, 200 avec `ETag` et type, 304, 404 `unknown_package`, gzip, drapeau `example`, configuration (`official` en production seulement).
+- `OfficialSourceTest` : choix du millésime complet le plus récent du Code officiel géographique, import « officiel » sans le drapeau `example` (data.gouv.fr simulé, aucun réseau), ressource disparue, hôtes et schémas refusés.
+- `ElusOfficialCheck` : vérification manuelle sur les vrais fichiers (section 5), ignorée sans `ELUS_OFFICIAL_DIR`.
+
+`gradlew :server:runDev` sert le jeu fictif : http://localhost:8080/api/v1/elus et http://localhost:8080/api/v1/elus/69.
+
+## 7. Le jeu fictif
+
+`server/src/main/resources/elus/example/` : les huit fichiers du RNE avec leurs en-têtes exacts (y compris les colonnes de sexe, naissance, profession et nationalité, remplies de valeurs fictives pour vérifier qu'elles ne sortent jamais), 148 personnes `[EXEMPLE] Prénom Nom` (prénoms épicènes, noms visiblement inventés : Exemplaire, Fictif, Maquette...), et les extraits réels des fichiers géographiques (lignes copiées telles quelles ; pour les résultats électoraux, seules les six colonnes territoriales, sans aucun nom de candidat).
+
+Communes réelles : Lyon, Villeurbanne, Villefranche-sur-Saône (69) ; Lille, Roubaix, Villeneuve-d'Ascq (59) ; Marseille, Aix-en-Provence (13) ; Rennes, Bruz (35) ; Paris (75). Mandats couverts : maire, adjoints et conseillers municipaux de chaque commune ; intercommunalités réelles (Métropole européenne de Lille, Aix-Marseille-Provence, Rennes Métropole, Grand Paris, Villefranche Beaujolais Saône) avec président et vice-président ; conseillers départementaux de deux cantons par commune avec un président par département ; conseillers régionaux de chaque section, présidents de région rattachés à un autre département ; assemblée de la Métropole de Lyon ; un député par circonscription (deux au plus par commune : Lyon est partagée entre quatre circonscriptions et en a deux), un député des Français de l'étranger (écarté) ; deux sénateurs par département ; trois eurodéputés.
+
+## 8. Limites connues et suites
+
+- **Format à compléter (proposition, non faite)** : rien dans le paquet ne dit à quelle collectivité appartient une commune. Pour la Métropole de Lyon, ses 59 communes n'ont ni intercommunalité ni canton, et les élus `collectivite` de territoire `69M` sont dans le paquet `69`, mais l'appareil ne peut pas savoir qu'une commune comme Villefranche-sur-Saône n'en fait pas partie (sinon qu'elle a une intercommunalité et un canton). Même question pour la Corse, la Martinique et la Guyane (là, tout le paquet est concerné). Proposition pour un format 2 : un champ facultatif `collectivite` par commune (`69M`, `20R`, `972R`...) et une liste `collectivites` (code, nom) dans le paquet. Je ne l'ai pas ajouté pour ne pas casser la lecture stricte du bloc elus-app.
+- Les élus de la Métropole de Lyon ont une circonscription métropolitaine dans le RNE, et ceux de Guyane et de Martinique une section : non transmises (pas de champ dans le format).
+- Libellés des intercommunalités : ceux du RNE, avec sa casse (« Metropole Du Grand Paris ») ; l'Insee publie des libellés propres mais seulement en tableur.
+- Les communes partagées entre plusieurs cantons ou circonscriptions listent tous leurs cantons ou circonscriptions : sans adresse (que l'application ne demande pas), on ne peut pas faire mieux.
+- 4 communes de métropole (rétablies ou modifiées depuis 2022) n'ont pas de circonscription, ce qui déclenche la règle de repli de l'appareil pour elles seules.
+- Un nouveau découpage des circonscriptions (pas avant les prochaines législatives) demandera une nouvelle table : à surveiller.
+- Les Français établis hors de France (11 députés, 12 sénateurs) n'ont pas de paquet : un paquet `ZZ` serait facile à ajouter si le contrat le prévoit.
+- La licence des résultats des départementales de 2021 (section 1.5) est à confirmer par la propriétaire.
