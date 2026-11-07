@@ -45,6 +45,12 @@ sealed interface VoirItem {
         override val axis get() = VoirAxis.POUVOIR
     }
 
+    data class OfParty(val party: PoliticalParty) : VoirItem {
+        override val address get() = party.address
+        override val title get() = party.name
+        override val axis get() = VoirAxis.POUVOIR
+    }
+
     data class OfText(val text: LegislativeText) : VoirItem {
         override val address get() = text.address
         override val title get() = text.title
@@ -81,6 +87,8 @@ class VoirCatalog(
     val movements: List<WorldMovement>,
     val dossiers: List<VoirDossier>,
     val replies: List<RightOfReply>,
+    /** Political parties, by name (accents, case and the [EXEMPLE] marker ignored), never by size. */
+    val parties: List<PoliticalParty> = emptyList(),
 ) {
     private val items: Map<ContentAddress, VoirItem> = buildMap {
         indicators.forEach { put(it.address, VoirItem.OfIndicator(it)) }
@@ -89,6 +97,7 @@ class VoirCatalog(
         texts.forEach { put(it.address, VoirItem.OfText(it)) }
         movements.forEach { put(it.address, VoirItem.OfMovement(it)) }
         dossiers.forEach { put(it.address, VoirItem.OfDossier(it)) }
+        parties.forEach { put(it.address, VoirItem.OfParty(it)) }
     }
 
     val isEmpty: Boolean get() = items.isEmpty()
@@ -101,6 +110,19 @@ class VoirCatalog(
     fun text(address: ContentAddress): LegislativeText? = (items[address] as? VoirItem.OfText)?.text
     fun movement(address: ContentAddress): WorldMovement? = (items[address] as? VoirItem.OfMovement)?.movement
     fun dossier(address: ContentAddress): VoirDossier? = (items[address] as? VoirItem.OfDossier)?.dossier
+    fun party(address: ContentAddress): PoliticalParty? = (items[address] as? VoirItem.OfParty)?.party
+
+    /** The party named on a person's sheet, when it has one in the catalog. */
+    fun partyOf(person: PublicPerson): PoliticalParty? = person.partyAddress?.let(::party)
+
+    /** The persons whose sheet names [party], by name (leaders included). */
+    fun membersOf(party: ContentAddress): List<PublicPerson> = persons(party = party)
+
+    /** The leaders of a party that have a sheet, in the order the party gives them. */
+    fun leadersOf(party: PoliticalParty): List<PublicPerson> = party.leaders.mapNotNull(::person)
+
+    /** The parties that have at least one person with a sheet (filter chips of the persons). */
+    fun partiesInUse(): List<PoliticalParty> = parties.filter { p -> persons.any { it.partyAddress == p.address } }
 
     /** The key figures of an axis: ranked ones first, in their order, then by title. */
     fun keyFigures(axis: VoirAxis): List<Indicator> = indicators.filter { it.axis == axis }
@@ -124,9 +146,12 @@ class VoirCatalog(
     fun latestAboutPower(limit: Int = 5): List<Fact> =
         facts.filter { it.axis == VoirAxis.POUVOIR && it.kind != FactKind.VOTE }.sortedByNewest().take(limit)
 
-    /** Every fact about a person, newest first. */
-    fun factsAbout(person: ContentAddress, kind: FactKind? = null): List<Fact> =
-        facts.filter { person in it.persons && (kind == null || it.kind == kind) }.sortedByNewest()
+    /**
+     * Every fact about a person or a party, newest first. For a party, only the facts that link the
+     * party itself: never those of its members (no guilt by association).
+     */
+    fun factsAbout(address: ContentAddress, kind: FactKind? = null): List<Fact> =
+        facts.filter { (address in it.persons || address in it.parties) && (kind == null || it.kind == kind) }.sortedByNewest()
 
     /** Every fact about a bill (votes, lobbies...), newest first. */
     fun factsOn(text: ContentAddress, kind: FactKind? = null): List<Fact> =
@@ -138,9 +163,9 @@ class VoirCatalog(
     /** The rights of reply published under a content, oldest first. */
     fun repliesTo(address: ContentAddress): List<RightOfReply> = replies.filter { it.target == address }.sortedBy { it.publishedOn }
 
-    /** Public persons, by name; [role] narrows the list. */
-    fun persons(role: PublicRole? = null): List<PublicPerson> =
-        persons.filter { role == null || role in it.roles }.sortedBy { FrenchText.fold(it.name.removePrefix(EXAMPLE_MARKER)) }
+    /** Public persons, by name; [role] and [party] narrow the list. */
+    fun persons(role: PublicRole? = null, party: ContentAddress? = null): List<PublicPerson> =
+        persons.filter { (role == null || role in it.roles) && (party == null || it.partyAddress == party) }.sortedBy { FrenchText.fold(it.name.removePrefix(EXAMPLE_MARKER)) }
 
     /** Bills: those still under discussion first, the nearest vote first; then the closed ones, newest first. */
     fun bills(): List<LegislativeText> = texts.sortedWith(
@@ -158,18 +183,20 @@ class VoirCatalog(
         facts.forEach { f -> f.corrections.forEach { add(CorrectionEntry(VoirItem.OfFact(f), it)) } }
         persons.forEach { p -> p.corrections.forEach { add(CorrectionEntry(VoirItem.OfPerson(p), it)) } }
         texts.forEach { t -> t.corrections.forEach { add(CorrectionEntry(VoirItem.OfText(t), it)) } }
+        parties.forEach { p -> p.corrections.forEach { add(CorrectionEntry(VoirItem.OfParty(p), it)) } }
     }.sortedByDescending { it.correction.date }
 
     /**
      * Everything whose title, summary, place, territory or group contains every word of [query]
-     * (accents and case ignored, word beginnings: "manif" finds "manifestants"). Persons and key
-     * figures first, then bills, then facts, newest first.
+     * (accents and case ignored, word beginnings: "manif" finds "manifestants"). Persons, parties and
+     * key figures first, then bills, then facts, newest first.
      */
     fun search(query: String, limit: Int = 50): List<VoirItem> {
         if (FrenchText.words(query).isEmpty()) return emptyList()
         fun matches(vararg parts: String?) = FrenchText.matchesAllWords(parts.filterNotNull().joinToString(" "), query)
         return buildList {
             persons(null).filter { matches(it.name, it.function, it.territory, it.group) }.forEach { add(VoirItem.OfPerson(it)) }
+            parties.filter { matches(it.name, it.acronym, it.article.summary, it.europeanParty, it.europeanGroup) }.forEach { add(VoirItem.OfParty(it)) }
             indicators.sortedBy { it.rank ?: Int.MAX_VALUE }.filter { matches(it.title, it.definition, it.unit) }.forEach { add(VoirItem.OfIndicator(it)) }
             bills().filter { matches(it.title, it.article.summary) }.forEach { add(VoirItem.OfText(it)) }
             dossiers.filter { matches(it.title, it.article.summary) }.forEach { add(VoirItem.OfDossier(it)) }
@@ -189,7 +216,7 @@ class VoirCatalog(
         /** The editorial types read here, to ask the local copy for them. */
         val TYPES: List<ArticleType> = listOf(
             ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE,
-            ArticleType.MOUVEMENT, ArticleType.DOSSIER, ArticleType.REPONSE,
+            ArticleType.MOUVEMENT, ArticleType.DOSSIER, ArticleType.REPONSE, ArticleType.PARTI,
         )
 
         /**
@@ -206,6 +233,7 @@ class VoirCatalog(
                 movements = latest.mapNotNull(WorldMovement::from).sortedByDescending { it.start },
                 dossiers = latest.mapNotNull(VoirDossier::from).sortedBy { FrenchText.fold(it.title) },
                 replies = latest.mapNotNull(RightOfReply::from),
+                parties = latest.mapNotNull(PoliticalParty::from).sortedBy { FrenchText.fold(it.name.removePrefix(EXAMPLE_MARKER)) },
             )
         }
     }

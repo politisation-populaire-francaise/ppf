@@ -61,8 +61,14 @@ require '^assets/composeResources/[^/]+/files/contents/revendications\.json$' "b
 require '^assets/composeResources/[^/]+/files/contents/voir\.json$' "bundled contents of Voir (voir.json)"
 require '^assets/composeResources/[^/]+/files/contents/decider\.json$' "bundled contents of Decider (decider.json)"
 require '^assets/composeResources/[^/]+/font/atkinson_hyperlegible_regular\.ttf$' "bundled font (Atkinson Hyperlegible)"
+# Map of the agenda (docs/integration/agir-carte.md): the background bundled for use without network,
+# the glyphs of its labels, and the MapLibre native libraries for every supported architecture.
+require '^assets/composeResources/[^/]+/files/carte/fond-france\.pmtiles$' "bundled map background (fond-france.pmtiles)"
+require '^assets/composeResources/[^/]+/files/carte/glyphes/regular/0-255\.pbf$' "glyphs of the map labels"
 for abi in arm64-v8a armeabi-v7a x86_64; do
     require "^lib/$abi/libsecp256k1-jni\.so$" "libsecp256k1 for $abi"
+    require "^lib/$abi/libjniMaplibreNativeC\.so$" "MapLibre Native bindings for $abi"
+    require "^lib/$abi/libmaplibre-native-c\.so$" "MapLibre Native engine for $abi"
 done
 forbid '^lib/x86/' "32-bit x86 libraries"
 

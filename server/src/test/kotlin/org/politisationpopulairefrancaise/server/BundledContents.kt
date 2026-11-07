@@ -16,9 +16,13 @@ object BundledContents {
     /**
      * fiches.json (practical guides), revendications.json (demands of the wall), fil.json (notes of the
      * feed), and for the Agir space agenda.json (mobilizations), appels.json (calls) and
-     * organisations.json (directory), each loaded only if it exists.
+     * organisations.json (directory), and voir.json (the blocks of "Voir": figures, facts, persons,
+     * bills, movements, dossiers, replies), each loaded only if it exists.
      */
-    val FILES: List<String> get() = listOf("fiches.json", "revendications.json", "fil.json") + AGIR_FILES
+    val FILES: List<String> get() = listOf("fiches.json", "revendications.json", "fil.json") + AGIR_FILES + VOIR_FILE
+
+    /** The example contents of "Voir", shown by the site at /voir. */
+    const val VOIR_FILE: String = "voir.json"
 
     /** The example contents of the Agir space, written by the agents of its blocks (absent until then). */
     val AGIR_FILES: List<String> = listOf("agenda.json", "appels.json", "organisations.json")

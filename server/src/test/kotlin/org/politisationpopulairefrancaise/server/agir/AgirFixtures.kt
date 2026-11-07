@@ -116,6 +116,24 @@ object AgirFixtures {
         createdAt: Long = nowSeconds() - 60,
     ): SignedEvent = sign(kind = Article.KIND, content = content, tags = tags, createdAt = createdAt)
 
+    /**
+     * The tags of a public response (contract, version 2) of a key to the mobilization at
+     * [mobilization] (`31923:<key>:<d>`), as the application writes them.
+     */
+    fun participationTags(mobilization: String, status: String = "accepted", role: String? = "participant"): List<List<String>> = buildList {
+        add(listOf("d", mobilization))
+        add(listOf(AgirFormats.TAG_ADDRESS, mobilization))
+        add(listOf(AgirFormats.TAG_STATUS, status))
+        role?.let { add(listOf(AgirFormats.TAG_ROLE, it)) }
+        add(listOf(AgirFormats.TAG_PUBKEY, mobilization.split(':')[1]))
+    }
+
+    suspend fun LocalEventSigner.participation(
+        tags: List<List<String>>,
+        content: String = "",
+        createdAt: Long = nowSeconds() - 30,
+    ): SignedEvent = sign(kind = AgirFormats.KIND_PARTICIPATION, content = content, tags = tags, createdAt = createdAt)
+
     /** [tags] without the tags named [name]. */
     fun List<List<String>>.withoutTag(name: String): List<List<String>> = filterNot { it.firstOrNull() == name }
 

@@ -458,6 +458,28 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : répondre d'abord aux questions que pose l'actualité (grève, vote en 2027), puis donner les repères institutionnels qui servent partout.
 - Conséquences : fichiers intégrés `glossaire.json`, `parcours.json`, `comprendre.json` et `fiches.json` régénérés et signés ; l'outil de signature lit désormais les identifiants des fiches dans `content/fiches` au lieu d'une liste fixe. Tous ces contenus doivent être relus par l'équipe éditoriale avant une publication réelle (et par un avocat pour les fiches pratiques).
 
+## D-045 (2026-11-07) Agenda : transparence de la participation (décisions de la propriétaire, D-044)
+
+- Contexte : application à l'agenda des mobilisations de la doctrine « la transparence passe avant tout » (D-044). Détail : `docs/integration/agir-transparence.md` (contrat d'Agir, version 2).
+- Mis en œuvre :
+  - une manifestation **non déclarée en préfecture** est proposée dans le formulaire et affichée comme telle sur la carte et le détail ; une phrase prévient que la mention est publique, sans empêcher l'envoi ;
+  - libellé « **Ça m'intéresse** » ;
+  - **participation publique des organisations** : réponse NIP-52 (type 31925 : `a` = adresse de la mobilisation, `status` `accepted`, `declined` ou `tentative`, extension `ppf-role` `organisateur` ou `participant`) ; seules comptent les organisations vérifiées et les clés de l'équipe éditoriale (PPF) ; pour elles, l'affichage public est le choix proposé en premier, « participer sans l'afficher » reste possible ; une organisation nommée organisatrice n'apparaît comme telle que si elle l'a confirmé de sa propre clé, sinon « annoncée, non confirmée » ; section « Organisations participantes » avec leur nombre ;
+  - le serveur vérifie la forme des réponses (adresse, statut, rôle, 280 caractères, aucune coordonnée personnelle) et les publie sans relecture ;
+  - les **réponses aux appels** s'effacent de l'appareil 7 jours après la clôture ou l'échéance de l'appel.
+- Décisions techniques prises en autonomie : le `d` d'une réponse est l'adresse de la mobilisation (une réponse par clé, la plus récente compte) ; les réponses se synchronisent par type, sans requête par événement ; rien n'est codé pour la visibilité des citoyens (contradiction avec le principe 10 en attente de la propriétaire, D-044).
+
+## D-046 (2026-11-07) Vue carte de l'agenda : MapLibre, fonds PMTiles, aucun tiers
+
+- Contexte : M1 « Carte et agenda des mobilisations », cahier des charges section 4 (« OpenStreetMap via MapLibre, jamais Google Maps »), principe 6 (aucun tiers). Détail : `docs/integration/agir-carte.md` et `tools/map-data/README.md`.
+- Décisions techniques prises en autonomie :
+  - **bibliothèque** : MapLibre Compose 0.20.0 (licence BSD-3-Clause), moteur OpenGL ES, derrière l'interface `AgendaMapRenderer` (repli possible : MapLibre Native Android) ; la carte s'affiche sur Android ; sur ordinateur (le moteur exige Java 25) et sur iOS (non compilé), la liste reste avec une phrase honnête ;
+  - **aucune requête directe du moteur** : style construit sur l'appareil sans adresse web, toute adresse autre que `ppf-carte://` refusée, glyphes fabriqués à partir de la police Atkinson Hyperlegible intégrée ; serveurs de tuiles tiers ajoutés aux motifs interdits ;
+  - **fonds PMTiles** : un fond de 2,59 Mo intégré à l'application (monde jusqu'au zoom 3, France et outre-mer jusqu'au zoom 7, couches filtrées, données OpenStreetMap sous licence ODbL), disponible hors ligne ; le fond détaillé viendra du serveur, lu par plages d'octets, après un petit manifeste `/tiles/current.json` (nom daté du fichier, taille, somme SHA-256) ; préparation des données par `tools/map-data`, jamais par l'application ni par l'intégration continue ;
+  - **écran** : choix « Liste » / « Carte » (liste par défaut), filtres communs, boutons de zoom et de recentrage sans geste, attribution « © contributeurs OpenStreetMap » toujours visible, aucune position de l'utilisateur ni permission de localisation ;
+  - **poids** : l'APK passe de 16,5 à 38 Mo (bibliothèques natives compressées) ; un APK par architecture (environ 26 Mo) est possible à la publication.
+- Reste : voir la carte réelle sur le téléphone de la propriétaire (aucun émulateur sur l'ordinateur) ; zones hors ligne (S-35), carte de la manifestation en direct (AG-24), tracé d'un parcours, placer un point dans le formulaire.
+
 ## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
 
 - Contexte : cahier fonctionnel, M10 et DE-07 (« relais des pétitions officielles », « explication claire des seuils et de leurs effets réels », « kits de partage ») ; demande de la propriétaire du 7 novembre 2026 de commencer « Décider » par ce qui est déjà spécifié. Le cahier fonctionnel demandait de revérifier le droit avant de coder.
@@ -533,3 +555,38 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 
 - Décision technique prise en autonomie : l'image du serveur embarque les contenus [EXEMPLE] signés de `shared/ui/.../files/contents/` ; la variable `PPF_EXAMPLES_DIR` les charge au démarrage (idempotent, signatures vérifiées), seulement en préproduction ; le serveur **refuse de démarrer** en production avec cette variable. La préproduction autorise la clé d'éditeur d'exemple (`PPF_EDITOR_KEYS`), jamais la production.
 - Raison : une seule image promue de la préproduction à la production, et la règle « jamais de données réelles en préproduction, jamais d'exemples en production » vérifiée par le code plutôt que par la vigilance.
+
+## D-080 (2026-11-07) Tuiles du serveur : France entière à la même précision
+
+- Décision technique prise en autonomie (chef d'équipe), gratuite : en production, un seul fichier PMTiles de la France métropolitaine et de l'outre-mer, zooms 8 à 14, filtré (sans bâtiments, points d'intérêt ni occupation du sol), estimé à 3 à 5 Go, sous la limite de 10 Go fixée pour un serveur de 50 Go ; la même précision partout, pour qu'aucun citoyen ne soit « de seconde zone » hors des métropoles. En préproduction, un petit extrait des seules villes des exemples, dans son propre volume (aucune ressource partagée avec la production).
+- Mise en ligne (Directeur technique, D-075 à D-079) : fichier préparé sur un ordinateur de développement, envoyé par SSH, vérifié par sa somme SHA-256, servi par Caddy en requêtes partielles avec un cache long sous un nom daté, aucun journal d'accès ; mise à jour tous les deux ou trois mois.
+- Mention « © contributeurs d'OpenStreetMap » (ODbL) visible dans l'application et sur le site.
+
+## D-054 (2026-11-07) Fiches des partis politiques dans « Voir »
+
+- Contexte : décision de la propriétaire du 7 novembre 2026 (M17, ordre d'entrée des responsables publics : « un parti aura sa propre fiche avant les personnes de ce parti »). Détail : `docs/integration/voir-partis.md`.
+- Décisions techniques prises en autonomie :
+  - **brique `parti`** distincte d'`organisation` (annuaire d'« Agir », dont les partis sont exclus, point d'attention n° 7) ; lien d'une personne vers son parti (rôle `parti`), d'un parti vers ses dirigeants (rôle `responsable`) : les membres se déduisent, sans liste en double ;
+  - **structure de financement obligatoire** (association de financement agréée ou mandataire financier, loi n° 88-227 du 11 mars 1988, articles 11 à 11-2) : le même critère légal pour tous, vérifiable sur une source primaire ; **jamais le nom d'un mandataire financier** (personne physique) ;
+  - aide publique de l'État par année (décret annuel de répartition pour source), parti et groupe européens, sièges par assemblée et par source, côte à côte, jamais fusionnés ;
+  - **partis rangés par nom**, jamais par taille ; rubriques identiques pour tous, même vides ;
+  - **pas de culpabilité par association** : la fiche d'un parti ne montre que les faits qui visent le parti lui-même ; les cartes des membres y apparaissent sans leurs compteurs d'affaires.
+- Fusionné le 7 novembre 2026 avec un agent d'une autre session qui faisait le même travail (ses apports repris : financement, aide publique, groupe européen, tri par nom).
+
+## D-055 (2026-11-07) « Voir » sur le site web, sans JavaScript
+
+- Contexte : cahier des charges (site lisible sans JavaScript, PWA, contenus essentiels hors ligne ; solution sur iPhone). Détail : `docs/integration/voir-web.md`.
+- Décisions techniques prises en autonomie : une page par contenu à une adresse stable (`/voir/chiffres|faits|personnes|partis|textes|monde|dossiers/<identifiant>`, identifiant encodé selon la RFC 3986, construite par `core/voir/VoirLinks` pour l'application comme pour le site) ; graphique dessiné par le serveur en SVG, sans script ni couleur dans la page (classes définies dans `site.css`, CSP stricte), suivi du même tableau de données ; rendu Markdown maison qui échappe tout ; seuls les contenus des clés éditoriales (`PPF_EDITOR_KEYS`), catalogue gardé 30 secondes ; filtres par simples liens ; liens sortants marqués « (site extérieur) » avec `rel="noopener noreferrer nofollow external"`. La page d'un parti sur le site montre pour l'instant sa présentation, ses sources et son origine ; la fiche complète suivra.
+
+## D-056 (2026-11-07) Droit de réponse et « Signaler une erreur » dans « Voir »
+
+- Contexte : M17 (droit de réponse obligatoire, LCEN, article 1-1, III ; journal des corrections) ; inventaire VO-21 et VO-22. Détail et format : `docs/integration/voir-demandes.md`.
+- Décisions techniques prises en autonomie :
+  - **transport par message privé chiffré** (NIP-17) vers la boîte de l'équipe de rédaction, par le relais existant, sans route serveur nouvelle : les demandes sensibles restent chiffrées pour l'équipe, et l'échange (vérification de l'identité, réponse) a lieu dans « Messages » ;
+  - **droit de réponse depuis un compte** (l'équipe doit répondre et vérifier l'identité) : formulaire en page, longueur maximale max(mots du contenu, 1 000) avec compteur en direct, déclaration sur l'honneur, brouillon gardé en mémoire pendant la création du compte ;
+  - **« Signaler une erreur » sous chaque contenu, anonyme par défaut** (clé à usage unique, l'équipe ne peut pas répondre) ; avec le compte après une mise en garde, réversible (principe 10) ; signalements anonymes en attente gardés en mémoire seulement ;
+  - **clé de la boîte de l'équipe** isolée derrière `VoirRequests.TEAM_INBOX` (aujourd'hui la clé éditoriale d'exemple) : **une clé dédiée, distincte de celle qui signe les contenus, à créer avant le lancement public**.
+
+## D-057 (2026-11-07) Grille de l'indice de gravité des violences policières (décision de la propriétaire)
+
+- La propriétaire valide le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe) la grille en cinq niveaux proposée par le pôle « Voir » : 1 sans incapacité (pas d'ITT), 2 blessure légère (ITT de 8 jours ou moins), 3 blessure grave (ITT de plus de 8 jours), 4 mutilation ou infirmité permanente, 5 décès ; pour chaque cas : mineur ou non, arme ou moyen en cause, niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule) ; cas déclaratifs comptés à part, jamais mélangés aux cas vérifiés ; l'indice d'une journée est la répartition entre les cinq niveaux, jamais une note unique. Code : à venir (feuille de route de « Voir », point 9).

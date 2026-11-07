@@ -69,6 +69,8 @@ import org.politisationpopulairefrancaise.ui.resources.agenda_counter
 import org.politisationpopulairefrancaise.ui.resources.agenda_create_account
 import org.politisationpopulairefrancaise.ui.resources.agenda_declaration_en_cours
 import org.politisationpopulairefrancaise.ui.resources.agenda_declaration_faite
+import org.politisationpopulairefrancaise.ui.resources.agenda_declaration_non_faite
+import org.politisationpopulairefrancaise.ui.resources.agenda_declaration_public_note
 import org.politisationpopulairefrancaise.ui.resources.agenda_declaration_unset
 import org.politisationpopulairefrancaise.ui.resources.agenda_field_declaration
 import org.politisationpopulairefrancaise.ui.resources.agenda_field_declaration_help
@@ -170,6 +172,7 @@ object ProposeTags {
     const val DESCRIPTION = "agenda-form-description"
     const val LINK = "agenda-form-link"
     const val DECLARATION = "agenda-form-declaration-" // followed by unset or the declaration tag
+    const val DECLARATION_PUBLIC = "agenda-form-declaration-public"
     const val PROBLEM = "agenda-form-problem-" // followed by the problem in lowercase
     const val SIMILAR = "agenda-form-similar"
     const val SIMILAR_ITEM = "agenda-form-similar-" // followed by the identifier
@@ -187,7 +190,8 @@ object ProposeTags {
 
 /**
  * "Proposer un événement" (AG-02): type, title, start and end, place, territory, summary,
- * description, link and, for a demonstration, its declaration; then the events that look like it
+ * description, link and, for a demonstration, its declaration (declared, in progress, or not declared,
+ * a public mention the form says so: D-044); then the events that look like it
  * the same day (AG-21), the charter (unchecked by default), the warning that the pseudonym is tied
  * to the event, and the sending through the single publication port. Wrong values are explained
  * under their field as they are typed; what is still missing is listed under the button. Writing
@@ -308,12 +312,14 @@ internal fun ProposeMobilizationScreen(
                 }
                 if (draft.type == MobilizationType.MANIFESTATION) {
                     Field(stringResource(Res.string.agenda_field_declaration), help = stringResource(Res.string.agenda_field_declaration_help)) {
-                        // "Non déclarée" is not offered: saying it publicly could expose the organisers (question for the owner).
+                        // Decision of the owner (D-044): an undeclared demonstration is shown as such; the author is
+                        // told that the mention is public, without being prevented from choosing it.
                         Column(Modifier.selectableGroup()) {
                             listOf<Pair<DeclarationState?, StringResource>>(
                                 null to Res.string.agenda_declaration_unset,
                                 DeclarationState.FAITE to Res.string.agenda_declaration_faite,
                                 DeclarationState.EN_COURS to Res.string.agenda_declaration_en_cours,
+                                DeclarationState.NON_FAITE to Res.string.agenda_declaration_non_faite,
                             ).forEach { (state, label) ->
                                 PpfRadioRow(
                                     label = stringResource(label),
@@ -321,6 +327,12 @@ internal fun ProposeMobilizationScreen(
                                     onClick = { composer.draft = draft.copy(declaration = state) },
                                     modifier = Modifier.testTag(ProposeTags.DECLARATION + (state?.tagValue ?: "unset")),
                                 )
+                            }
+                        }
+                        if (draft.declaration == DeclarationState.NON_FAITE) {
+                            Spacer(Modifier.height(8.dp))
+                            InfoBox(Lucide.Eye, Modifier.testTag(ProposeTags.DECLARATION_PUBLIC)) {
+                                Text(stringResource(Res.string.agenda_declaration_public_note), style = MaterialTheme.typography.bodyMedium)
                             }
                         }
                     }
