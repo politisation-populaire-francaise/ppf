@@ -1,6 +1,6 @@
 # « Une personne, une voix » : conception technique
 
-- Pôle « Décider », 7 novembre 2026. Statut : **proposition**, à trancher par le chef d'équipe avant tout code ; les points qui changent l'expérience des citoyens (section 9) vont à la propriétaire.
+- Pôle « Décider », 7 novembre 2026. Statut : **approuvé par le chef d'équipe le 7 novembre 2026 (D-110)**, avec les conditions et exigences de la section 15 ; les points qui changent l'expérience des citoyens (section 9) sont présentés à la propriétaire.
 - Références : D-044 (méthode approuvée par la propriétaire), D-062 (délibération citoyenne sur le Pacte et les campagnes), brainstorming du cahier des charges (entrée « Méthode technique une personne, une voix »), inventaire S-86 à S-91 et point d'attention n° 10 (barrières combinées, résultats transparents), point d'attention n° 9 (jetons anonymes), cahier des charges 2 (principes 9 et 10), 5.1 et 5.5.
 - Usages : votations (M13.6), votes sur les revendications (M11), délibération sur le Pacte et les campagnes (propositions, amendements, vote final), compteurs de participation d'« Agir », signalements chiffrés de « Voir » (VO-03).
 
@@ -100,7 +100,7 @@ La règle « le graphe social reste sur les appareils » interdit au serveur de 
 
 ### 6.1 Clés
 - Une **graine maîtresse** de 32 octets, secrète, sert à dériver toutes les clés de vote : `DeriveKeyPair(graine, info = "ppf-urne-v1" ‖ identifiant de la question ‖ niveau)` (RFC 9497, 3.2.1). Rien d'autre à stocker.
-- La graine n'a **aucun rôle de confidentialité** : la connaître ne permet pas de relier un vote à un compte (l'aveuglement en est indépendant). Elle protège l'**intégrité** (fabriquer des jetons). Elle suit donc la règle des clés de la plateforme : jamais en clair dans le dépôt, puis dans un service séparé quand il existera.
+- La graine n'a **aucun rôle de confidentialité** : la connaître ne permet pas de relier un vote à un compte (l'aveuglement en est indépendant). Elle protège l'**intégrité** (fabriquer des jetons). Elle est rangée dans un **fichier secret Docker lisible seulement par l'utilisateur du serveur**, jamais dans une variable d'environnement ni en base, une graine différente par environnement ; plus tard, elle passera dans le service de signature séparé (R3).
 - Clés distinctes de toutes les clés Nostr : aucune clé n'est réutilisée d'un protocole à l'autre.
 
 ### 6.2 L'urne, publiée et signée
@@ -120,7 +120,7 @@ Le niveau d'un jeton est celui que le compte avait **la semaine de l'ouverture d
 
 ### 6.5 Voter : un envoi séparé, sans compte
 - Le bulletin contient : urne, niveau, `y`, jeton, choix, preuve de travail. **Ni signature du compte, ni clé, ni en-tête d'authentification.**
-- Il part par une **connexion HTTP distincte** (un client à part, sans réutiliser la connexion chiffrée des requêtes authentifiées), après un **délai aléatoire** (par défaut entre 0 et 10 minutes, réglage le plus protecteur ; le citoyen peut choisir l'envoi immédiat après une mise en garde, principe 10). Le vote est enregistré tout de suite sur l'appareil ; hors ligne, il part au retour du réseau.
+- Il part par un **client HTTP distinct** (sans cookie, sans réutilisation de connexion, sans en-tête d'authentification, avec un agent utilisateur générique, R4), après un **délai aléatoire** (par défaut entre 0 et 10 minutes, réglage le plus protecteur ; le citoyen peut choisir l'envoi immédiat après une mise en garde, principe 10). Le vote est enregistré tout de suite sur l'appareil ; hors ligne, il part au retour du réseau.
 - Le serveur vérifie le jeton avec la clé de l'urne, vérifie la preuve de travail, et range le bulletin sous `y`. Il garde l'heure **arrondie à l'heure**, jamais l'adresse IP.
 - Plus tard : passage par Tor et l'adresse .onion (phase 3) ; éventuellement un relais HTTP oblivieux (RFC 9458) tenu par un tiers de confiance.
 
@@ -128,7 +128,7 @@ Le niveau d'un jeton est celui que le compte avait **la semaine de l'ouverture d
 Un nouveau bulletin avec le même `y` et le même jeton **remplace** le précédent jusqu'à la clôture ; un bulletin « retiré » annule le vote. Seul l'appareil qui connaît `y` peut le faire. Le compteur public de remplacements par urne fait partie du journal (8).
 
 ### 6.7 Clôture et recomptage par tous
-À la clôture, le serveur publie un événement signé de résultat : totaux par niveau et par choix, nombre de jetons délivrés par niveau, **la clé secrète de l'urne pour chaque niveau**, et la liste anonyme des bulletins (`y`, jeton, choix, niveau, heure arrondie). N'importe qui peut alors vérifier que chaque clé correspond à la clé publique annoncée, recalculer chaque jeton, vérifier qu'aucun `y` n'est en double, recompter, et vérifier que les bulletins ne dépassent pas les jetons délivrés. Publier la clé d'une urne close ne permet ni de créer des jetons utiles (l'urne est close) ni de relier un bulletin (l'aveuglement ne dépend pas de la clé), ni de retrouver la graine (une clé dérivée ne permet pas de remonter à la graine, ni donc aux clés des autres urnes). Choix à confirmer : section 9, Q4.
+À la clôture, le serveur publie un événement signé de résultat : totaux par niveau et par choix, nombre de jetons délivrés par niveau, **la clé secrète de l'urne pour chaque niveau**, et la liste anonyme des bulletins (`y`, jeton, choix, niveau, heure arrondie), **triée par `y`** pour ne rien dire de l'ordre d'arrivée (R1). N'importe qui peut alors vérifier que chaque clé correspond à la clé publique annoncée, recalculer chaque jeton, vérifier qu'aucun `y` n'est en double, recompter, et vérifier que les bulletins ne dépassent pas les jetons délivrés. Publier la clé d'une urne close ne permet ni de créer des jetons utiles (l'urne est close) ni de relier un bulletin (l'aveuglement ne dépend pas de la clé), ni de retrouver la graine (une clé dérivée ne permet pas de remonter à la graine, ni donc aux clés des autres urnes). Choix à confirmer : section 9, Q4.
 
 Les questions sans fin naturelle (une revendication reste ouverte au vote des mois) ne publient que leurs totaux tant qu'elles sont ouvertes ; la liste vérifiable vient quand l'équipe les arrête (passage au Programme du peuple, fusion, clôture).
 
@@ -141,7 +141,7 @@ Les questions sans fin naturelle (une revendication reste ouverte au vote des mo
 
 ## 8. Détection des manipulations et journal public
 
-Le serveur ne peut rien relier : la détection porte sur des **compteurs agrégés**, publiés dans un journal de l'urne :
+Le serveur ne peut rien relier : la détection porte sur des **compteurs agrégés**, publiés **en continu** dans un journal de l'urne, pas seulement à la clôture (R2) : nombre de comptes par niveau et nombre de jetons délivrés par urne et par niveau, pour qu'un bourrage (plus de jetons que de comptes) se voie tout de suite ; puis :
 - jetons délivrés et bulletins reçus par urne, niveau et heure ; remplacements ;
 - inscriptions par jour, montées en N1 et N2 par jour, validations par séance ;
 - alertes à l'équipe au-delà des seuils privés (vague d'inscriptions, séance trop rapide, pic de bulletins sur une urne) ;
@@ -240,6 +240,22 @@ Chaque pôle n'appelle qu'une interface commune (`core/urne`, à créer) et un c
 4. Branchement des revendications (M11), puis délibération (11) ; contrat pour « Agir » et « Voir ».
 5. Parrainage par code QR, puis validation en personne (avec le back-office du Directeur technique).
 6. Plus tard : client du site installable (iPhone), Tor.
+
+## 15. Décision du chef d'équipe (D-110) : conditions et exigences
+
+- **T1 à T5 approuvés** : mécanisme de la section 3 ; bibliothèque de 10.1 ; migrations réservées Flyway `V7` et `13.sqm` ; validation en personne après le back-office du Directeur technique (Flyway `V8` à lui) ; volume mesuré à l'étape 1.
+- **Conditions de l'étape 1, avant toute suite** (sinon repli RSA aveugle de 10.2) :
+  - (a) tous les vecteurs de l'annexe A (ristretto255-SHA512, OPRF et VOPRF) et les tests négatifs passent sur la JVM ;
+  - (b) **autotest au premier usage** : l'application rejoue quelques vecteurs sur l'appareil et refuse de voter, avec un message clair, s'ils échouent ; c'est ce qui prouvera que libsodium marche sur un vrai téléphone ;
+  - (c) l'exécutable de bureau empaqueté démarre et passe l'autotest (ticket n° 56) ;
+  - (d) hausse de taille de l'APK mesurée, `tools/check-apk.sh` mis à jour ;
+  - (e) iOS : la dépendance seulement là où elle compile ; sinon l'interface reste commune et l'implémentation iOS est à écrire plus tard (feuille de route).
+- **R1 aucune corrélation par la base** : bulletins indexés par `y`, aucun identifiant séquentiel, aucune heure plus fine que l'heure arrondie ; liste publiée triée par `y` ; délivrance des jetons datée au jour au plus ; journalisation des requêtes SQL et des corps de requête désactivée sur ces routes.
+- **R2 journal public en continu** (section 8).
+- **R3 graine maîtresse** en fichier secret Docker (6.1), décrite au Directeur technique et dans le modèle de menaces.
+- **R4 client des bulletins distinct** (6.5).
+- **R5 relecture indépendante** de `core/urne` avant la fusion dans `main` : un agent séparé ne reçoit que le code et la RFC 9497, pas ces conclusions ; ses remarques sont traitées avant la fusion.
+- **R6 contrat `core/urne`** pour « Agir » et « Voir » (interface, composant de vote, ce qui leur est interdit), envoyé au chef d'équipe pour diffusion.
 
 ## Sources
 
