@@ -59,3 +59,19 @@ Pôle Communauté, version 1.0 du 7 novembre 2026 (décision D-130, à consigner
 - Inscription publique : adresse de poussée et clés, sans lien avec un compte ; 30 jours après le dernier renouvellement.
 - Inscription messagerie : la même chose et la clé publique du compte ; 30 jours après le dernier renouvellement ; but : réveiller le téléphone quand un message arrive.
 - Aucune donnée sur les centres d'intérêt, aucune notification gardée sur le serveur.
+
+## 8. État du serveur
+
+Côté serveur (Kotlin, paquet `server/.../push`, 7 novembre 2026), fait :
+
+- Table `push_subscription` (migration Flyway `V9__push.sql`, numéro donné par le chef d'équipe après l'entrée de `V8__back_office.sql` dans main) : identifiant aléatoire de 128 bits, portée, adresse de poussée, clés RFC 8291, clé de compte pour la messagerie seulement, dates d'inscription, de renouvellement et de dernier réveil. Ni adresse IP, ni appareil.
+- Réglages `PushConfig` : `PPF_VAPID_PRIVATE_KEY_FILE` (sans lui, `503 push_disabled`), `PPF_PUSH_ALLOWED_HOSTS` (par défaut `push.` suivi de l'hôte de `PPF_PUBLIC_URL`), `PPF_PUSH_INTERNAL_URL`, et `PPF_PUBLIC_URL` (nouvelle variable, par défaut `https://politisation-populaire-francaise.org`), qui sert de revendication `sub` du jeton VAPID et de base de l'adresse que l'étiquette `u` de NIP-98 doit nommer (`<PPF_PUBLIC_URL>/api/v1/push/subscriptions`). La clé publique VAPID est déduite de la clé privée.
+- API de la section 3 : `GET /api/v1/push/vapid`, `POST /api/v1/push/subscriptions` (https seulement, http en développement ; hôte autorisé sinon `422 push_host_not_allowed` ; `p256dh` = point P-256 de 65 octets vérifié sur la courbe, `auth` = 16 octets ; NIP-98 pour la messagerie, sinon `401 unauthorized` ; même adresse = même identifiant), `DELETE /api/v1/push/subscriptions/{id}` (`204`, `404`). Limites : 5 inscriptions par minute et par clé, 10 000 nouvelles inscriptions publiques par jour (un renouvellement ne compte pas), puis `429` avec `Retry-After`.
+- Envoi Web Push avec la seule bibliothèque standard de Java : chiffrement `aes128gcm` (RFC 8291, vérifié avec l'exemple de l'annexe A), jeton VAPID ES256 (RFC 8292), `TTL: 3600`, `Urgency: high` pour la messagerie et `normal` pour le public, passage par `PPF_PUSH_INTERNAL_URL` en gardant chemin et requête. `404` et `410` : inscription effacée ; `429` : l'hôte est mis en attente jusqu'à `Retry-After`.
+- Réveils : branchés sur `POST /api/v1/events` (après l'enregistrement, sans bloquer la réponse). Une enveloppe (type 1059) réveille les inscriptions de messagerie de sa clé `p`, au plus une fois par minute, après 0 à 60 secondes au hasard ; un autre contenu public (ni éphémère, ni enveloppe, ni réglage de type 30078) réveille les inscriptions publiques, au plus une fois toutes les 30 minutes. Effacement des inscriptions non renouvelées depuis 30 jours, chaque heure.
+
+Reste à faire ou à savoir :
+
+- Les contenus publiés plus tard par un autre chemin (revendication acceptée après relecture, contenu d'« Agir » sorti de la file de relecture, contenus d'exemple chargés au démarrage) ne déclenchent pas de réveil public à eux seuls ; le prochain contenu public le fera.
+- L'heure du dernier contenu public est gardée en mémoire : après un redémarrage, le premier réveil public attend un nouveau contenu.
+- Preuve de travail auto-hébergée sur l'inscription : quand elle existera (cahier des charges, section 5.4).
