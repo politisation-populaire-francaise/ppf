@@ -107,7 +107,7 @@ class SignerService private constructor(
     private fun currentKey(use: SigningUse, time: Long = now()): WorkingKey? =
         keys.values
             .filter { it.use == use && stateOf(it, time) == WorkingKeyStates.ACTIVE }
-            .maxWithOrNull(compareBy<WorkingKey>({ trust.certificate(it.pubkey)?.notBefore ?: 0 }, { it.createdAt }))
+            .maxWithOrNull(compareBy<WorkingKey>({ trust.certificate(it.pubkey)?.notBefore ?: 0L }, { it.createdAt }))
 
     /**
      * Rotation and hygiene, at startup, after each certificate and every few minutes: destroys the secrets

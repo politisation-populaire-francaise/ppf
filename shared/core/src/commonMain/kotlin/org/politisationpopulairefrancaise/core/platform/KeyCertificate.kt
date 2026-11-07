@@ -82,7 +82,7 @@ class KeyCertificate private constructor(
             if (!validity || status == null) {
                 return KeyCertificate(event, key, uses, 0, 0, KeyStatus.REVOKED, null, wellFormed = false)
             }
-            return KeyCertificate(event, key, uses, notBefore!!, notAfter!!, status, revokedFrom, wellFormed = true)
+            return KeyCertificate(event, key, uses, notBefore, notAfter, status, revokedFrom, wellFormed = true)
         }
 
         /**

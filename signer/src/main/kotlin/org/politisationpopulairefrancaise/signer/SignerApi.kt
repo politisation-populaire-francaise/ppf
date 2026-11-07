@@ -11,7 +11,7 @@ import io.ktor.server.response.respondText
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
 import io.ktor.server.routing.routing
-import io.ktor.utils.io.readRemaining
+import io.ktor.utils.io.readBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.io.readByteArray
@@ -20,7 +20,6 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonObject
-import kotlinx.serialization.json.decodeFromJsonElement
 import org.politisationpopulairefrancaise.core.platform.KeysResponse
 import org.politisationpopulairefrancaise.core.platform.SignRequest
 import org.politisationpopulairefrancaise.core.platform.SignResponse
@@ -138,8 +137,8 @@ fun Application.signerModule(service: SignerService, token: ClientToken) {
         }
         get("/v1/journal") {
             if (!call.authorized(token)) return@get
-            val after = call.request.queryParameters["after"]?.let { it.toLongOrNull() ?: -1 } ?: 0
-            val limit = call.request.queryParameters["limit"]?.let { it.toIntOrNull() ?: -1 } ?: 500
+            val after: Long = call.request.queryParameters["after"]?.let { it.toLongOrNull() ?: -1L } ?: 0L
+            val limit: Int = call.request.queryParameters["limit"]?.let { it.toIntOrNull() ?: -1 } ?: 500
             if (after < 0 || limit !in 1..1_000) return@get call.refusal(HttpStatusCode.BadRequest, SigningRefusals.MALFORMED_REQUEST)
             val entries = withContext(Dispatchers.IO) { service.journal(after, limit) }
             call.respondJson(HttpStatusCode.OK, encode(ListSerializer(JournalEntry.serializer()), entries))
@@ -177,7 +176,7 @@ private suspend fun ApplicationCall.authorized(token: ClientToken): Boolean {
 
 /** The body as UTF-8 text, at most [max] bytes (read through a bounded channel); answers 413 otherwise. */
 private suspend fun ApplicationCall.boundedBody(max: Int): String? {
-    val bytes = receiveChannel().readRemaining(max.toLong() + 1).readByteArray()
+    val bytes = receiveChannel().readBuffer(max.toLong() + 1).readByteArray()
     if (bytes.size > max) {
         refusal(HttpStatusCode.PayloadTooLarge, SigningRefusals.TOO_LARGE)
         return null

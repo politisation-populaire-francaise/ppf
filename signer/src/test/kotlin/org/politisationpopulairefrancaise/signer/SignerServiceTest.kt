@@ -236,7 +236,7 @@ class SignerServiceTest {
         val service = f.ready(f.config(maxPerHour = mapOf(SigningUse.OPENDATA_INDEX to 1)))
         val key = f.currentKey(service, SigningUse.OPENDATA_INDEX)!!
         service.signed(f.request(SigningUse.OPENDATA_INDEX, index(key)))
-        assertEquals(SigningRefusals.RATE_LIMITED, service.refusal(f.request(SigningUse.OPENDATA_INDEX, index(key, f.now() - 1))))
+        assertEquals(SigningRefusals.RATE_LIMITED, service.refusal(f.request(SigningUse.OPENDATA_INDEX, index(key, f.now() + 1))))
         f.clock.advance(3_601)
         service.signed(f.request(SigningUse.OPENDATA_INDEX, index(key, f.now())))
     }
