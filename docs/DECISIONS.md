@@ -396,6 +396,19 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : garder la relecture humaine sans gêner les auteurs ; un seul chemin de publication ; un agenda lisible sans application ni JavaScript, y compris sur iPhone.
 - Conséquences : migration `V5__agir.sql` ; variables `PPF_HELD_RETENTION_DAYS` et `PPF_HELD_CLEANUP_INTERVAL_MINUTES` ; routes de développement `/dev/held` ; restent le back-office de relecture (M15), la preuve de travail, une alerte de remplissage du disque, l'unification des deux exports iCal et des deux calculs de l'heure de Paris, le style de la page `/agenda`.
 
+## D-044 (2026-11-07) Transparence d'abord et curseur au maximum : décisions de la propriétaire sur l'espace « Agir » et la navigation
+
+- Contexte : réponses de la propriétaire aux décisions en attente après la première version de l'espace « Agir » (D-039 à D-043) et aux 17 questions de l'entrée « Agir : questions ouvertes après la première version » du brainstorming du cahier fonctionnel.
+- Décisions de la propriétaire (7 novembre 2026) :
+  1. **navigation** : la barre du bas est gardée (option A de l'entrée « écarts de navigation » du brainstorming du cahier des charges) ; pas de bouton flottant « Carte » ; le bouton AIDE pourra flotter au-dessus de la barre ;
+  2. **« une personne, une voix »** : méthode approuvée (barrières combinées, résultats transparents) ; elle sert aussi aux compteurs de participation d'Agir ; la conception technique suit ;
+  3. **doctrine** : « la transparence passe avant tout le reste » ; « pousser le curseur au maximum de ce qu'on peut faire en tant que citoyen, même quand ça pourrait attirer des problèmes ; on fera relire tout ça à la fin par des avocats » (exemple : l'appel au boycott reste) ;
+  4. **participation** : nombre de participants public ; élus et organisations participants affichés ; les membres d'un même cercle se voient ; chacun peut masquer sa participation tout en comptant ;
+  5. **manifestation non déclarée** : affichée comme telle.
+- Décisions techniques prises en autonomie selon cette doctrine : le détail des 17 réponses est dans l'entrée du brainstorming ; une organisation n'apparaît comme participante ou co-organisatrice confirmée que par un événement signé de sa propre clé (réponse NIP-52, type 31925) ; non confirmée, elle est montrée « annoncée, non confirmée ».
+- Contradiction signalée, à trancher par la propriétaire : la visibilité **par défaut** de la participation d'un citoyen (cercle) ou d'un élu (public) contredit le principe 10 (vision 4.2, cahier des charges 1.3) ; options et recommandation dans l'entrée du brainstorming. Rien de ce qui en dépend n'est codé avant sa réponse.
+- Limites qui restent : les obligations légales non négociables (aucun appel ni incitation à la violence, signalement PHAROS, charte de contenu) ; tout ce qui est poussé au maximum est inscrit dans la liste « à faire relire par un avocat » de la feuille de route.
+
 > Numéros réservés entre sessions parallèles (répartition du chef d'équipe de « Voir », 7 novembre 2026) : D-044 (décisions de la propriétaire), D-045, D-046 et D-051 à D-053 (« Agir »), D-059 à D-050 (« Comprendre », vague 3), D-054 à D-058 (« Voir »), D-059 à D-063 (« Décider »), D-064 à D-066 (« Voir », données ouvertes) ; prochaine libre : D-067.
 
 ## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel

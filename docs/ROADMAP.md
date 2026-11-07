@@ -76,12 +76,23 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 
 - Hébergement du modèle d'IA de modération et des vérifications des revendications (et, avec un prestataire, extension de la section 5.6 aux contenus envoyés pour publication).
 - Liste des thèmes du mur des revendications.
-- Barre du bas ou boutons flottants « Carte » et « AIDE » ; spécification du bouton AIDE.
-- Méthode « une personne, une voix » (mur des revendications, phase 1).
+- Spécification du bouton AIDE (la barre du bas est gardée, D-044 ; le bouton pourra flotter au-dessus).
+- Méthode « une personne, une voix » : approuvée le 7 novembre 2026 (D-044) ; conception technique à faire (mur des revendications, compteurs de participation d'Agir).
 - Prestataire de paiement (dons, adhésions).
 - Navigation détaillée et briques de contenu communes (découpage en MVP).
 - Décryptages : échelle des verdicts (brainstorming du cahier des charges, entrée du 2026-11-06).
-- Espace « Agir » : procédure réelle de vérification des organisations, statut juridique de PPF pour leurs contenus, mention « non déclarée », co-organisateurs, bilan d'un appel à témoins, alerte de remplissage du disque et autres questions de l'entrée « Agir : questions ouvertes après la première version » (brainstorming du cahier fonctionnel).
-- Méthode de comptage anonyme (réactions du fil, réponses aux mobilisations et aux appels, barre de progression des appels).
-- Vue carte : bibliothèque de rendu et tuiles auto-hébergées (options à présenter, coût éventuel).
+- Espace « Agir » : questions tranchées le 7 novembre 2026 (D-044) ; reste la contradiction avec le principe 10 sur la visibilité par défaut de la participation (cercle, élus), entrée « Agir : questions ouvertes après la première version » du brainstorming du cahier fonctionnel.
+- Comptage anonyme (réactions du fil, participations aux mobilisations et aux appels, barre de progression) : découle de « une personne, une voix », conception à faire.
+- Vue carte : en cours (bibliothèque de rendu et tuiles auto-hébergées, sans coût en dehors de l'espace disque du futur serveur).
 - Annuaire officiel des élus pour nommer les élus locaux dans « Qui décide de ça ? » (brainstorming du cahier des charges, entrée du 2026-11-07).
+
+## À faire relire par un avocat avant l'ouverture publique
+
+Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture juridique à la fin.
+
+- Statut de PPF pour les contenus publiés par d'autres (hébergeur, D-044) et pour les contenus relus avant publication (témoignages, appels à témoins, revendications).
+- Mention publique « non déclarée » d'une manifestation.
+- Appels au boycott (dénigrement d'une entreprise).
+- Annuaire et cas limites des partis, candidats et comités de soutien (Code électoral, article L52-8).
+- Secours, sorties et équipe citoyenne de sécurité en manifestation (points d'attention n° 17 et n° 24).
+- Modèles juridiques (mentions légales, confidentialité, conditions d'utilisation, charte, procédure de signalement).
