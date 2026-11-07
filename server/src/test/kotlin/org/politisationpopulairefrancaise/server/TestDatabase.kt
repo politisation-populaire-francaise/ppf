@@ -10,14 +10,15 @@ import javax.sql.DataSource
  */
 object TestDatabase {
     val dataSource: DataSource by lazy {
-        val postgres = EmbeddedPostgres.builder().start()
+        // A loaded machine (several builds at once) can take more than the default 10 s to start it.
+        val postgres = EmbeddedPostgres.builder().setPGStartupWait(java.time.Duration.ofSeconds(120)).start()
         Runtime.getRuntime().addShutdownHook(Thread { postgres.close() })
         postgres.postgresDatabase.also(Database::migrate)
     }
 
     fun reset() {
         dataSource.connection.use { connection ->
-            connection.createStatement().use { it.executeUpdate("TRUNCATE events, revendication_proposal, held_content CASCADE") }
+            connection.createStatement().use { it.executeUpdate("TRUNCATE events, revendication_proposal, held_content, elus_import, elus_staging CASCADE") }
         }
     }
 }

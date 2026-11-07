@@ -29,6 +29,10 @@ import org.politisationpopulairefrancaise.server.api.eventsApi
 import org.politisationpopulairefrancaise.server.api.groupsApi
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
+import org.politisationpopulairefrancaise.server.elus.ElusConfig
+import org.politisationpopulairefrancaise.server.elus.ElusService
+import org.politisationpopulairefrancaise.server.elus.ElusSetup
+import org.politisationpopulairefrancaise.server.elus.elusApi
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
@@ -60,6 +64,8 @@ import javax.sql.DataSource
  *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
  * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
  *   see [AgirConfig].
+ * - PPF_RNE_SOURCE, PPF_RNE_REFRESH_DAYS: the directory of elected officials (fictitious example set
+ *   by default), see [ElusConfig].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -109,8 +115,11 @@ fun Application.module(
     relay: RelayConfig = RelayConfig.fromEnvironment(),
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
     agir: AgirSetup = AgirSetup.fromEnvironment(),
+    elus: ElusSetup = ElusSetup.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
+    // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
+    val elusService = dataSource?.let { ElusService.start(this, it, elus, log) }
     // Citizen demands wait in a review queue; its checks and cleanup live and die with the application.
     val proposals = if (dataSource != null && repository != null) {
         RevendicationProposals.start(this, dataSource, repository, revendications)
@@ -167,6 +176,7 @@ fun Application.module(
         groupsApi(groups)
         revendicationsApi(proposals)
         agirApi(agirSpace)
+        elusApi(elusService)
         agirSpace?.let { agendaPage(it.agendaSource()) }
         webRoutes()
     }

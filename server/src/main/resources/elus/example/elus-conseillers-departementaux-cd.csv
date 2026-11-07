@@ -1,0 +1,27 @@
+Code du département;Libellé du département;Code du canton;Libellé du canton;Nom de l'élu;Prénom de l'élu;Code sexe;Date de naissance;Code de la catégorie socio-professionnelle;Libellé de la catégorie socio-professionnelle;Date de début du mandat;Libellé de la fonction;Date de début de la fonction
+69;Rhône;6913;Villefranche-sur-Saône;Gabarit;[EXEMPLE] Andréa;M;1979-10-14;99;[EXEMPLE] Profession fictive;2021-07-01;Président du conseil départemental;2021-07-01
+69;Rhône;6913;Villefranche-sur-Saône;Imaginaire;[EXEMPLE] Eden;F;1980-11-15;99;[EXEMPLE] Profession fictive;2021-07-01;;
+59;Nord;5923;Lille-1;Inventé;[EXEMPLE] Noa;M;1981-12-16;99;[EXEMPLE] Profession fictive;2021-07-01;Président du conseil départemental;2021-07-01
+59;Nord;5923;Lille-1;Fantaisie;[EXEMPLE] Camille;F;1982-01-17;99;[EXEMPLE] Profession fictive;2021-07-01;1er Vice-président du conseil départemental;2021-07-01
+59;Nord;5924;Lille-2;Illustration;[EXEMPLE] Dominique;M;1983-02-18;99;[EXEMPLE] Profession fictive;2021-07-01;;
+59;Nord;5924;Lille-2;Exemplaire;[EXEMPLE] Claude;F;1984-03-19;99;[EXEMPLE] Profession fictive;2021-07-01;;
+59;Nord;5932;Roubaix-1;Fictif;[EXEMPLE] Alix;M;1985-04-20;99;[EXEMPLE] Profession fictive;2021-07-01;;
+59;Nord;5932;Roubaix-1;Démonstration;[EXEMPLE] Sacha;F;1986-05-21;99;[EXEMPLE] Profession fictive;2021-07-01;;
+59;Nord;5933;Roubaix-2;Maquette;[EXEMPLE] Morgan;M;1987-06-22;99;[EXEMPLE] Profession fictive;2021-07-01;;
+59;Nord;5933;Roubaix-2;Prototype;[EXEMPLE] Lou;F;1988-07-23;99;[EXEMPLE] Profession fictive;2021-07-01;1er Vice-président du conseil départemental;2021-07-01
+59;Nord;5940;Villeneuve-d'Ascq;Spécimen;[EXEMPLE] Charlie;M;1989-08-24;99;[EXEMPLE] Profession fictive;2021-07-01;;
+59;Nord;5940;Villeneuve-d'Ascq;Échantillon;[EXEMPLE] Maxime;F;1950-09-25;99;[EXEMPLE] Profession fictive;2021-07-01;;
+13;Bouches-Du-Rhône;1312;Marseille-1;Brouillon;[EXEMPLE] Andréa;M;1951-10-26;99;[EXEMPLE] Profession fictive;2021-07-01;Président du conseil départemental;2021-07-01
+13;Bouches-Du-Rhône;1312;Marseille-1;Factice;[EXEMPLE] Eden;F;1952-11-27;99;[EXEMPLE] Profession fictive;2021-07-01;;
+13;Bouches-Du-Rhône;1313;Marseille-2;Modèle;[EXEMPLE] Noa;M;1953-12-28;99;[EXEMPLE] Profession fictive;2021-07-01;;
+13;Bouches-Du-Rhône;1313;Marseille-2;Simulation;[EXEMPLE] Camille;F;1954-01-01;99;[EXEMPLE] Profession fictive;2021-07-01;1er Vice-président du conseil départemental;2021-07-01
+13;Bouches-Du-Rhône;1301;Aix-en-Provence-1;Ébauche;[EXEMPLE] Dominique;M;1955-02-02;99;[EXEMPLE] Profession fictive;2021-07-01;;
+13;Bouches-Du-Rhône;1301;Aix-en-Provence-1;Esquisse;[EXEMPLE] Claude;F;1956-03-03;99;[EXEMPLE] Profession fictive;2021-07-01;;
+13;Bouches-Du-Rhône;1302;Aix-en-Provence-2;Gabarit;[EXEMPLE] Alix;M;1957-04-04;99;[EXEMPLE] Profession fictive;2021-07-01;;
+13;Bouches-Du-Rhône;1302;Aix-en-Provence-2;Imaginaire;[EXEMPLE] Sacha;F;1958-05-05;99;[EXEMPLE] Profession fictive;2021-07-01;;
+35;Ille-Et-Vilaine;3518;Rennes-1;Inventé;[EXEMPLE] Morgan;M;1959-06-06;99;[EXEMPLE] Profession fictive;2021-07-01;Président du conseil départemental;2021-07-01
+35;Ille-Et-Vilaine;3518;Rennes-1;Supposé;[EXEMPLE] Lou;F;1960-07-07;99;[EXEMPLE] Profession fictive;2021-07-01;1er Vice-président du conseil départemental;2021-07-01
+35;Ille-Et-Vilaine;3519;Rennes-2;Fantaisie;[EXEMPLE] Charlie;M;1961-08-08;99;[EXEMPLE] Profession fictive;2021-07-01;;
+35;Ille-Et-Vilaine;3519;Rennes-2;Illustration;[EXEMPLE] Maxime;F;1962-09-09;99;[EXEMPLE] Profession fictive;2021-07-01;;
+35;Ille-Et-Vilaine;3504;Bruz;Exemplaire;[EXEMPLE] Andréa;M;1963-10-10;99;[EXEMPLE] Profession fictive;2021-07-01;;
+35;Ille-Et-Vilaine;3504;Bruz;Fictif;[EXEMPLE] Eden;F;1964-11-11;99;[EXEMPLE] Profession fictive;2021-07-01;;
