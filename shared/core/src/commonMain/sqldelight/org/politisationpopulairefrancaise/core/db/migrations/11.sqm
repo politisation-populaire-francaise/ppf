@@ -1,0 +1,18 @@
+-- Schema version 11 to 12 (2026-11-07): the parliamentary open data on the device, the signed
+-- index and the downloaded packages (see Parliament.sq, which is the reference for fresh
+-- installations; this file must stay identical to its CREATE statements).
+
+CREATE TABLE parliament_index (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 0),
+    event_json TEXT NOT NULL,
+    imported_on TEXT NOT NULL,
+    downloaded_at INTEGER NOT NULL
+);
+
+CREATE TABLE parliament_package (
+    name TEXT NOT NULL PRIMARY KEY,
+    sha256 TEXT NOT NULL,
+    json TEXT NOT NULL,
+    source_updated_on TEXT,
+    downloaded_at INTEGER NOT NULL
+);

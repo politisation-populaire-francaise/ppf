@@ -1,0 +1,51 @@
+-- The parliamentary open data on the device (D-064, D-065; contract
+-- docs/integration/voir-donnees-ouvertes.md, section 4): the signed index of the import tool and the
+-- downloaded packages (members, ballots of one month). Nothing here is about the user: these are
+-- public data of the assemblies, read on the device. Added in schema version 12: existing databases
+-- get them through migrations/11.sqm, which must stay identical to the CREATE statements below.
+
+-- The index currently trusted: a single row (id 0), the exact JSON of the signed event (checked
+-- again at every reading), the day of the import (AAAA-MM-JJ) and when it was downloaded (seconds).
+CREATE TABLE parliament_index (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 0),
+    event_json TEXT NOT NULL,
+    imported_on TEXT NOT NULL,
+    downloaded_at INTEGER NOT NULL
+);
+
+-- The downloaded packages, by name ("membres", "scrutins-an-2026-10"...): the exact JSON checked
+-- against the sha256 of the index, the date of the source and when it was downloaded.
+CREATE TABLE parliament_package (
+    name TEXT NOT NULL PRIMARY KEY,
+    sha256 TEXT NOT NULL,
+    json TEXT NOT NULL,
+    source_updated_on TEXT,
+    downloaded_at INTEGER NOT NULL
+);
+
+selectIndex:
+SELECT event_json, imported_on, downloaded_at FROM parliament_index WHERE id = 0;
+
+saveIndex:
+INSERT OR REPLACE INTO parliament_index(id, event_json, imported_on, downloaded_at) VALUES (0, ?, ?, ?);
+
+deleteIndex:
+DELETE FROM parliament_index;
+
+selectPackage:
+SELECT name, sha256, json, source_updated_on, downloaded_at FROM parliament_package WHERE name = ?;
+
+selectPackageNames:
+SELECT name FROM parliament_package ORDER BY name;
+
+savePackage:
+INSERT OR REPLACE INTO parliament_package(name, sha256, json, source_updated_on, downloaded_at) VALUES (?, ?, ?, ?, ?);
+
+deletePackage:
+DELETE FROM parliament_package WHERE name = ?;
+
+deleteAllPackages:
+DELETE FROM parliament_package;
+
+countPackages:
+SELECT COUNT(*) FROM parliament_package;
