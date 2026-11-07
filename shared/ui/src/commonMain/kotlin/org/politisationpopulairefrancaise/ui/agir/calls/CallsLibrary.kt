@@ -77,8 +77,10 @@ enum class CallSendOutcome {
  * every event is signature-checked before it is stored.
  *
  * The answers of the user (AP-03) are kept in [CallResponseStore], on the device only: nothing is
- * ever sent about them (contract of the Agir space, section 6). Without a store (tests, previews)
- * they live in memory for the life of the process.
+ * ever sent about them (contract of the Agir space, section 6), and each is erased
+ * [CallResponseStore.KEPT_AFTER_END] after its call is over ([Call.answersEndAt]: closing or
+ * deadline), at the next loading of the calls. Without a store (tests, previews) they live in memory
+ * for the life of the process.
  */
 class CallsLibrary(
     private val store: LocalEventStore?,
@@ -147,6 +149,7 @@ class CallsLibrary(
             loadResponses()
             importBundled(store)
             reload(store)
+            purgeExpiredResponses()
             if (remote == null) status = LibraryStatus.Offline else pull(store, remote)
         }
     }
@@ -258,6 +261,17 @@ class CallsLibrary(
         responseWrites.withLock { withContext(Dispatchers.Default) { write(responses) } }
     }
 
+    /**
+     * Erases the answers to the calls over for more than [CallResponseStore.KEPT_AFTER_END] (decision
+     * of the owner, 7 November 2026, question 8, option C): no history of the calls answered builds up.
+     */
+    private suspend fun purgeExpiredResponses() {
+        val expired = CallResponseStore.expired(responded, calls + myCalls.map { it.call }, clock())
+        if (expired.isEmpty()) return
+        responded = responded - expired
+        persistResponses { store -> expired.forEach(store::withdraw) }
+    }
+
     private suspend fun loadResponses() {
         val responses = responses ?: return
         responded = withContext(Dispatchers.Default) { responses.all() }
@@ -298,6 +312,8 @@ class CallsLibrary(
         // The calls just sent are no longer waiting: their review can be asked about.
         reload(store)
         if (refreshHeld()) reload(store)
+        // A call closed meanwhile may end the keeping of its answer.
+        purgeExpiredResponses()
         status = if (reachable) LibraryStatus.Synced(pulled) else LibraryStatus.Unreachable
     }
 

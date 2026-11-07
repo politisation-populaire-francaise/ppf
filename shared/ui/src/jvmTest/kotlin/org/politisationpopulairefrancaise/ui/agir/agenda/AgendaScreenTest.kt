@@ -272,9 +272,11 @@ class AgendaScreenTest {
         )
         setContent { TestAgenda(device, 1000, 740, organisationName = { if (it == organisation) "[EXEMPLE] Collectif fictif" else null }) }
         awaitCards(8)
-        card("co-organise").performScrollTo().assertTextContains("Organisé par [EXEMPLE] Collectif fictif, ", substring = true)
+        // Named without their confirmation (D-044): announced, and said so.
+        card("co-organise").performScrollTo().assertTextContains("Organisé par [EXEMPLE] Collectif fictif (annoncée, non confirmée), ", substring = true)
         open("co-organise")
         onNodeWithTag(AgendaTags.ORGANIZERS).assertTextContains("[EXEMPLE] Collectif fictif", substring = true)
+        onNodeWithTag(AgendaTags.ORGANIZERS).assertTextContains("annoncée, non confirmée", substring = true)
         // The organisers are offered as filters too.
         onNodeWithTag(AgendaTags.FILTERS).performClick()
         waitForIdle()
