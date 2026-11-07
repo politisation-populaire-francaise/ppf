@@ -9,6 +9,9 @@ import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationRules
 import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationStatus
 import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationType
 import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
+import org.politisationpopulairefrancaise.core.agir.agenda.Participation
+import org.politisationpopulairefrancaise.core.agir.agenda.ParticipationRole
+import org.politisationpopulairefrancaise.core.agir.agenda.ParticipationStatus
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -30,6 +33,11 @@ import kotlin.io.path.readText
  * `declaration`, `summary`, `link`, and `created_at` (`AAAA-MM-JJTHH:MM`, UTC, so that the event
  * id never depends on the machine). The body is the description. Each event is checked with the
  * rules of the server before being written; a broken file stops the tool.
+ *
+ * An optional `participation` (`participant` or `organisateur`) adds the public response of the
+ * example key to the mobilization (kind 31925, contract version 2, D-044), dated like it: the key of
+ * the examples is an editorial one, whose answers the application shows; the fictional organisations
+ * of `content/organisations` have no secret key, so they cannot answer.
  */
 internal fun signAgenda(content: Path, output: Path, keys: IdentityKeys) {
     val directory = content.resolve("agenda")
@@ -63,8 +71,24 @@ internal fun signAgenda(content: Path, output: Path, keys: IdentityKeys) {
             val event = runBlocking { signer.sign(unsigned) }
             check(event.verify()) { "signature check failed for ${event.id}" }
             println("prepared ${file.name}")
-            event
-        }
+            val response = metadata["participation"]?.let { value ->
+                val role = ParticipationRole.fromTag(value) ?: error("${file.name}: unknown participation")
+                val mobilization = Mobilization.from(event) ?: error("${file.name}: unreadable mobilization")
+                val answer = Participation.build(
+                    author = keys.publicKey,
+                    mobilization = mobilization,
+                    status = ParticipationStatus.ACCEPTED,
+                    createdAt = event.createdAt,
+                    role = role,
+                    note = "[EXEMPLE] Participation fictive de démonstration.",
+                )
+                runBlocking { signer.sign(answer) }.also {
+                    check(it.verify() && Participation.from(it) != null) { "${file.name}: invalid participation" }
+                    println("prepared the participation of ${file.name}")
+                }
+            }
+            listOfNotNull(event, response)
+        }.flatten()
     }
     val json = Json { prettyPrint = true }
     val file = output.resolve("agenda.json")
