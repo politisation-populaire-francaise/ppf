@@ -321,6 +321,58 @@ Ces quatre parcours sont des brouillons rédigés avec l'aide d'une IA, vérifi�
 5. En bas de chaque contenu, **« Et maintenant ? »** propose une action (le bouton ouvre le mur des revendications), puis les sources.
 6. Les parcours ont maintenant huit sujets ; certains se terminent aussi par des objections et réponses.
 
+### Tester la vague 3 de « Comprendre » : vos élus, le glossaire, les nouveaux contenus (ajouté le 7 novembre 2026)
+
+Trois nouveautés, que vous avez demandées le 7 novembre : l'annuaire des élus, le glossaire (les mots compliqués expliqués partout) et davantage de contenus. Tout est marqué [EXEMPLE] et rédigé avec l'aide d'une IA, à relire par l'équipe éditoriale.
+
+#### Sur le téléphone (version d'essai `android-preview.apk`, sans serveur)
+
+Installez la dernière version d'essai comme d'habitude (section 2, « Installer ou mettre à jour l'APK »).
+
+**Vos élus (en attendant le serveur)**
+
+1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Comprendre**. Juste après « Qui décide de ça ? », touchez **Mes élus**.
+2. Cette version n'a pas encore de serveur : la page l'explique et propose les **annuaires officiels** (mairies, Assemblée nationale, Sénat, Parlement européen, Répertoire national des élus). Touchez-en un : la fenêtre **« Vous quittez PPF »** s'ouvre d'abord. Touchez **Rester sur PPF** (ou continuez si vous voulez voir le site officiel).
+3. Ouvrez une fiche « Qui décide de ça ? » (par exemple « Le logement et les loyers ») : dans l'encart « Qui décide ? Les élus concernés », une phrase dit que les noms de vos élus locaux viendront plus tard, avec un bouton **Annuaires officiels des élus**.
+
+**Le glossaire**
+
+4. Ouvrez un parcours, par exemple **« Le Conseil constitutionnel »**. Dans le texte, certains mots sont **soulignés en pointillés**, suivis d'un petit **« ? »** dans un rond (par exemple « Constitution » ou « QPC »). Seule la première apparition de chaque mot est soulignée, jamais dans les titres, les liens ou les sources.
+5. Touchez le mot ou le « ? » : une **infobulle** s'ouvre sous le mot, avec le terme, le badge [EXEMPLE], la définition rapide et « Produit avec l'aide d'une IA ».
+6. Touchez **En savoir plus** : la page du mot s'ouvre par-dessus votre lecture (« En bref », l'explication détaillée, « Voir aussi », « Pour aller plus loin », les sources). Touchez un mot de « Voir aussi » : il s'ouvre à son tour ; le bouton retour revient au mot précédent. Fermez avec la croix ou le retour du téléphone : vous retrouvez votre texte là où vous l'aviez laissé.
+7. Touchez à côté d'une infobulle ouverte : elle se ferme.
+8. Revenez à l'accueil de « Comprendre » : sous les parcours, la rubrique **Glossaire** propose « Ouvrir le glossaire (64 mots) ». Touchez-la : les mots sont rangés par ordre alphabétique sous leur lettre. Dans la recherche, tapez `senat` (sans accent) puis `49` : le Sénat, puis le 49.3, apparaissent.
+9. Les mots soulignés apparaissent aussi dans les autres espaces (« Voir », « Agir », revendications, fiches pratiques). Rien de ce que vous consultez n'est enregistré ni envoyé.
+
+**Les nouveaux contenus**
+
+10. **Parcours** (16 en tout) : huit nouveaux, dans cet ordre de priorité : « S'inscrire sur les listes électorales et voter », « Le droit de grève », « Le Conseil constitutionnel », « Qui fait quoi : la séparation des pouvoirs », « L'Union européenne : qui décide quoi ? », « Commune, département, région : qui s'occupe de quoi ? », « Se présenter à une élection », « Les pétitions officielles ». Chacun se lit étape par étape avec une question à la fin de chaque étape.
+11. **« Qui décide de ça ? »** (12 en tout) : huit nouvelles fiches : logement et loyers, hôpital et médecins, eau du robinet, salaires et Smic, impôts locaux, retraites, ramassage des déchets, police municipale et nationale.
+12. **Fiches pratiques** (« Connaître ses droits », 5 en tout) : « Faire grève : vos droits » et « Voter par procuration ».
+13. Mode avion : tout fonctionne (sauf l'ouverture des annuaires officiels, qui sont des sites extérieurs).
+
+#### Sur l'ordinateur, avec le serveur de développement (annuaire des élus fictifs)
+
+Le serveur de développement sert un annuaire **fictif** : les noms sont inventés (« [EXEMPLE] Prénom Nom »), mais les communes, les codes postaux et les circonscriptions sont réels, pour Lyon, Lille, Marseille, Rennes, Paris et quelques communes voisines. Les vrais noms ne seront chargés qu'en production.
+
+1. Ouvrez une fenêtre PowerShell dans le dossier `C:\Users\clair\Documents\PPF` (dans l'Explorateur, ouvrez ce dossier, puis Fichier, « Ouvrir Windows PowerShell »).
+2. Tapez `.\gradlew.bat :server:runDev` puis Entrée. Attendez la ligne qui se termine par `http://localhost:8080`. Laissez cette fenêtre ouverte : c'est le serveur. Pour vérifier, ouvrez http://localhost:8080/api/v1/elus dans le navigateur : un texte technique commence par `{"format":1,"example":true`.
+3. Ouvrez une deuxième fenêtre PowerShell dans le même dossier et collez ces deux lignes, puis Entrée :
+   ```
+   $env:PPF_SERVER_URL = "http://localhost:8080"
+   .\gradlew.bat :desktop:run
+   ```
+   L'application s'ouvre au bout de quelques instants (quelques minutes la première fois).
+4. Dans l'application : **Comprendre**, puis **Mes élus**, puis **Indiquer ma commune**. Une phrase rappelle que votre commune reste sur votre ordinateur et que le serveur sait seulement qu'un appareil a téléchargé la liste d'un département.
+5. Tapez le code postal `69001` (Lyon) et touchez **Continuer**. L'application annonce la **taille** de la liste du Rhône sur le bouton (« Télécharger (… ko) ») : rien n'est téléchargé avant que vous touchiez ce bouton. Touchez-le.
+6. S'il y a plusieurs communes pour ce code postal, choisissez la vôtre ; s'il n'y en a qu'une, elle est choisie tout de suite.
+7. La page **Mes élus** s'ouvre avec le bandeau **« Données fictives [EXEMPLE] »**, puis vos élus par niveau : commune (le maire, les adjoints dans l'ordre, puis le conseil municipal), intercommunalité, département, région, État (vos députés et sénateurs), Union européenne. Pour Lyon, le niveau « Département » montre l'**assemblée de la Métropole de Lyon**, qui remplace le conseil départemental. En bas : la source, sa licence et ses dates, et les annuaires officiels.
+8. Ouvrez une fiche « Qui décide de ça ? » (par exemple « L'école » ou « Le ramassage des déchets ») : sous chaque niveau de l'encart « Qui décide ? Les élus concernés », les noms fictifs de vos élus apparaissent, avec « Voir tous mes élus » et « Changer de commune ».
+9. Revenez à « Mes élus », touchez **Changer de commune** et tapez `69400` (Villefranche-sur-Saône) : cette fois, le niveau « Département » montre les conseillers départementaux de son canton et la présidence du conseil départemental du Rhône, et non la Métropole.
+10. Touchez **Oublier ma commune** : une confirmation s'ouvre, avec **Garder ma commune** en premier. Confirmez : la commune et les listes téléchargées sont effacées de l'ordinateur, et la page propose de nouveau « Indiquer ma commune ».
+11. Hors ligne : choisissez de nouveau une commune, fermez l'application, arrêtez le serveur (Ctrl+C dans sa fenêtre) et relancez l'application (étape 3) : vos élus s'affichent toujours. **Rechercher une mise à jour** dit alors que le serveur ne répond pas et propose les annuaires officiels.
+12. À la fin, fermez l'application et arrêtez le serveur.
+
 ### Tester les fiches pratiques (ajouté le 5 novembre 2026, encarts le 6)
 
 1. Ouvrez le menu (bouton en haut à gauche) et touchez **« Comprendre »**. Chaque fiche commence par un encart bleu « En bref », puis des encarts verts « Légal » et rouges « Illégal » avec des listes à puces, et des encarts « Attention » (jaune) et « Conseils » (gris). Les titres des fiches sont en bleu de marque, le texte en Atkinson Hyperlegible, 16 points.
