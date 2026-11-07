@@ -35,7 +35,7 @@ tasks.withType<ShadowJar>().configureEach {
 // the automatic imports of the directory of elected officials (the tests of the directory run their own).
 tasks.withType<Test>().configureEach {
     environment = environment.filterKeys { !it.startsWith("PPF_") } +
-        mapOf("PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0", "PPF_RNE_REFRESH_DAYS" to "0")
+        mapOf("PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0", "PPF_RNE_REFRESH_DAYS" to "0", "PPF_TERRITOIRES_REFRESH_DAYS" to "0")
 }
 
 // Development only: the server with an in-process PostgreSQL 17 and the bundled example contents.

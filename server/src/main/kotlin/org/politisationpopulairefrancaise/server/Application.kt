@@ -33,6 +33,9 @@ import org.politisationpopulairefrancaise.server.elus.ElusConfig
 import org.politisationpopulairefrancaise.server.elus.ElusService
 import org.politisationpopulairefrancaise.server.elus.ElusSetup
 import org.politisationpopulairefrancaise.server.elus.elusApi
+import org.politisationpopulairefrancaise.server.territoires.TerritoiresService
+import org.politisationpopulairefrancaise.server.territoires.TerritoiresSetup
+import org.politisationpopulairefrancaise.server.territoires.territoiresApi
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
@@ -141,10 +144,13 @@ fun Application.module(
     voir: VoirSource? = null,
     tiles: TilesConfig = TilesConfig.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
+    territoires: TerritoiresSetup = TerritoiresSetup.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
     val elusService = dataSource?.let { ElusService.start(this, it, elus, log) }
+    // The referential of territories (D-090): the last import served at once, the next ones on schedule.
+    val territoiresService = dataSource?.let { TerritoiresService.start(this, it, territoires, log) }
     // Citizen demands wait in a review queue; its checks and cleanup live and die with the application.
     val proposals = if (dataSource != null && repository != null) {
         RevendicationProposals.start(this, dataSource, repository, revendications)
@@ -202,6 +208,7 @@ fun Application.module(
         revendicationsApi(proposals)
         agirApi(agirSpace)
         elusApi(elusService)
+        territoiresApi(territoiresService)
         agirSpace?.let { agendaPage(it.agendaSource()) }
         tilesRoutes(tiles)
         // The pages of "Voir": contents of the editorial keys only (D-034).
