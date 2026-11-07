@@ -42,10 +42,10 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Méthode technique « une personne, une voix »
-- Statut : À étudier
+- Statut : Approuvée le 2026-11-07 (principe) ; conception technique en cours
 - Concerne : cahier-des-charges.md, sections 2 et 5.1 ; cahier-fonctionnel.md, M13.6
 - Description : les votations citoyennes exigent qu'une personne ne vote qu'une fois, sans collecter d'identité (principe de vie privée). Options techniques à comparer : votes physiques dans des stands avec contrôle sur place ; vote en ligne avec limitation par appareil et preuve de travail, aux garanties plus faibles et clairement signalées ; jetons de vote anonymes distribués lors d'événements physiques ; système mixte.
-- Décision :
+- Décision : **la propriétaire approuve la méthode (7 novembre 2026, « Oui »)**, telle que décidée au point d'attention n° 10 : combiner les barrières (niveaux de confiance, parrainage, validation en personne lors d'événements, preuve de travail, détection des manipulations) et publier des résultats transparents (votes et soutiens des comptes confirmés affichés en premier, S-91). Elle s'applique aussi aux compteurs de participation de l'espace « Agir » (nombre de « J'y participe », de soutiens d'un appel) : le serveur compte sans jamais relier une participation à un compte. La conception technique (jetons anonymes signés à l'aveugle ou équivalent) est la prochaine étape, consignée dans `docs/DECISIONS.md` quand elle sera faite.
 
 ### [2026-11-04] Modération et assistant IA : hébergement du modèle
 - Statut : À valider
@@ -231,12 +231,12 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : **Option A retenue par la propriétaire le 7 novembre 2026** (D-027). À reporter dans le cahier des charges, section 3.4, lors de sa prochaine version.
 
 ### [2026-11-06] Maquettes de l'interface communautaire : écarts de navigation à trancher
-- Statut : À valider
+- Statut : Décidé le 2026-11-07 (option A)
 - Concerne : cahier-des-charges.md, section 7 ; cahier-fonctionnel.md, S-05
 - Description : les maquettes de la propriétaire diffèrent sur deux points de sa décision du matin sur la navigation.
   1. **Barre du bas ou boutons flottants.** Les maquettes n'ont pas de barre du bas : la carte est un bouton rond flottant « Carte » (accent) en bas à droite, « En direct » un bandeau en haut du fil, et les sections sont dans le menu. L'application garde pour l'instant la barre du bas (Fil, En direct, Carte) demandée le matin, avec le bandeau « EN DIRECT » en plus. Option A : garder la barre du bas (plus visible, un geste pour chaque entrée quotidienne). Option B : suivre les maquettes (boutons flottants Carte et AIDE, menu pour le reste). Recommandation : A, car la carte et le direct sont les deux usages du quotidien en mobilisation et une barre fixe se repère sans apprentissage ; le bouton AIDE peut s'ajouter en flottant au-dessus de la barre.
   2. **« Mon espace »** : sur les maquettes, c'est l'avatar en haut à droite ; appliqué tel quel (retiré de la barre du bas).
-- Décision :
+- Décision : **option A, la barre du bas** (décision de la propriétaire du 7 novembre 2026 : « Barre du bas »). Pas de bouton flottant « Carte ». Le bouton AIDE pourra flotter au-dessus de la barre, comme le proposait la recommandation ; son contenu reste à spécifier avec le mode manifestation (brainstorming du cahier fonctionnel, entrée « Agir : questions ouvertes », question 16).
 
 ### [2026-11-04] Briques de contenu communes
 - Statut : À valider
