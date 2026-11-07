@@ -26,6 +26,11 @@ import org.politisationpopulairefrancaise.core.signing.sign
 import org.politisationpopulairefrancaise.server.agir.HeldQueue
 import org.politisationpopulairefrancaise.server.agir.devHeldRoutes
 import org.politisationpopulairefrancaise.server.agir.exampleMobilizations
+import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonyConfig
+import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySetup
+import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySpace
+import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonyStore
+import org.politisationpopulairefrancaise.server.agir.testimonies.devTestimonyRoutes
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.backoffice.BackOffice
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSetup
@@ -63,6 +68,10 @@ const val DEMO_GROUP_ID: String = "collectif-demonstration"
  * held contents goes through GET /dev/held, POST /dev/held/{id}/approve and POST /dev/held/{id}/reject
  * (see devHeldRoutes).
  *
+ * Testimonies are encrypted for the EXAMPLE moderation key and kept in a temporary folder (or
+ * PPF_TESTIMONY_DIR); their review goes through /dev/testimonies (see devTestimonyRoutes), and their
+ * refusal also through the queue agir.testimonies of the back-office.
+ *
  * The team back-office opens on http://localhost:8081 when PPF_BACKOFFICE_ORIGIN=http://localhost:8081 is
  * set: the link of a first super administrator is printed at start (a passkey of the computer, Windows
  * Hello for example, works on localhost).
@@ -92,13 +101,23 @@ fun main() {
     val queue = ProposalQueue(dataSource, repository, revendications.clock)
     val held = HeldQueue(dataSource, repository)
     repository.store(exampleMobilizations(developmentKey, held))
+    // Testimonies: example keys (their secret halves are public), files in a temporary folder unless PPF_TESTIMONY_DIR is set.
+    val testimonyConfig = TestimonyConfig.fromEnvironment().let { config ->
+        config.copy(directory = config.directory ?: java.nio.file.Files.createTempDirectory("ppf-dev-testimonies"))
+    }
+    val testimonySetup = TestimonySetup(testimonyConfig)
+    val testimonies = TestimonySpace(
+        TestimonyStore(dataSource, testimonyConfig.directory!!), testimonyConfig, repository, PublicationPolicy(editors), testimonySetup.clock, testimonySetup.timestamping,
+    )
     val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
     println(
         "Development server: ${seeded.size} bundled content(s) loaded, example rooms \"$DEMO_GROUP_ID\" and \"atelier-logement-lyon\" loaded, " +
             "${editors.size} editor key(s), AI model ${if (revendications.model == null) "off" else "on"}, http://localhost:$port",
     )
     println("Agir space: ${BundledContents.AGIR_FILES.joinToString { "$it ${bundled[it].orEmpty().size}" }}, review of held contents at /dev/held.")
+    println("Testimonies: encrypted for the example keys, review at /dev/testimonies.")
     println("Voir: ${bundled[BundledContents.VOIR_FILE].orEmpty().size} block(s) of ${BundledContents.VOIR_FILE}, pages at http://localhost:$port/voir")
+    println("Comprendre: ${(listOf("fiches.json") + BundledContents.COMPRENDRE_FILES).joinToString { "$it ${bundled[it].orEmpty().size}" }}, pages at http://localhost:$port/comprendre")
     // The fictitious example set (PPF_RNE_SOURCE is never `official` outside production), imported at start.
     println("Directory of elected officials: example set, imported in the background, at /api/v1/elus and /api/v1/elus/69.")
     println("Territories: example set (real public figures, a few departments), at /api/v1/territoires and /api/v1/territoires/69.")
@@ -123,13 +142,14 @@ fun main() {
             }
         },
     ) {
-        module(dataSource, PublicationPolicy(editors), revendications = revendications, backOffice = backOffice)
+        module(dataSource, PublicationPolicy(editors), revendications = revendications, testimonies = testimonySetup, backOffice = backOffice)
         routing {
             // The stand-ins of the review answer on the public port only, never on the back-office port.
             publicPort(backOffice?.config?.port) {
                 devReviewRoutes(queue)
                 devHeldRoutes(held)
                 parlementRoutes(devOpenData()) // Example packages of parliamentary open data (DevOpenData.kt).
+                devTestimonyRoutes(testimonies, developmentKey)
             }
         }
     }.start(wait = true)

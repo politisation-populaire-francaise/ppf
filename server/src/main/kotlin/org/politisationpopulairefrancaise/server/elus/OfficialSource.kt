@@ -105,7 +105,7 @@ class JdkElusHttp(
 }
 
 /**
- * The real directory, downloaded from data.gouv.fr (production only, PPF_RNE_SOURCE=official): the
+ * The real directory, downloaded from data.gouv.fr (production and preproduction, PPF_RNE_SOURCE=official): the
  * files of docs/integration/elus-serveur.md, section 1, saved in a temporary directory deleted by
  * [close]. The files of the RNE, of La Poste and of the elections have stable resource ids; those
  * of the Code officiel géographique change every year and are found in the API of their dataset.

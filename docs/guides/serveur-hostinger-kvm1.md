@@ -1,6 +1,7 @@
 # Guide : louer et préparer le serveur Hostinger KVM 1
 
 - Version : 7 novembre 2026 (deuxième version, mise en ligne de la préproduction).
+- **Décision de la propriétaire (7 novembre 2026)** : « Je vais acheter le kvm2 ». Suivez ce guide avec le **KVM 2**.
 - **Aucun achat sans votre accord écrit dans la conversation** sur le montant ci-dessous. Vous seule entrez les données de paiement.
 - Durée : 20 minutes de votre côté, puis environ une heure du mien (sans action de votre part, sauf l'étape 5).
 
@@ -60,8 +61,8 @@ Ne touchez à rien d'autre dans hPanel (pare-feu de hPanel, « Docker Manager »
    - **Pointe vers** : l'adresse IPv4 du serveur
    - **TTL** : laissez la valeur proposée (par exemple 14400)
 4. Cliquez sur **« Ajouter un enregistrement »**.
-5. Recommencez les étapes 3 et 4 avec, dans **Nom**, `equipe.preprod` (le back-office de l'équipe, lui aussi joignable seulement à travers le tunnel), le même type `A` et la même adresse IPv4.
-6. N'ajoutez **pas** d'enregistrement `AAAA` pour ces deux noms : la préproduction et le back-office ne doivent être joints qu'en IPv4, à travers le tunnel.
+5. Recommencez les étapes 3 et 4 avec, dans **Nom**, `equipe.preprod` (le back-office de l'équipe, lui aussi joignable seulement à travers le tunnel), le même type `A` et la même adresse IPv4, puis une troisième fois avec `push.preprod` (les notifications de la préproduction).
+6. N'ajoutez **pas** d'enregistrement `AAAA` pour ces trois noms : la préproduction et le back-office ne doivent être joints qu'en IPv4, à travers le tunnel.
 
 ## 6. Ce que je fais ensuite, sans action de votre part
 

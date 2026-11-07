@@ -3,6 +3,8 @@
 # Run once as root, then again whenever this script changes (every step is idempotent):
 #
 #   bootstrap-server.sh --github <owner>/<repository> --admin-key "<ssh public key>" [--domain <domain>]
+#   bootstrap-server.sh --admin-key "<ssh public key>"   (before GitHub is linked: preproduction from
+#                                                       bundles only, see ppf-deploy preproduction-bundle)
 #   bootstrap-server.sh --lockdown      (only after logging in as ppf-admin with the key worked)
 #
 # What it does (cahier des charges, sections 3.5 and 5; CLAUDE.md, section 8):
@@ -88,11 +90,16 @@ EOF
     exit 0
 fi
 
-[ -n "$github" ] || usage
-[[ "$github" =~ ^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$ ]] || { echo "--github must look like owner/repository." >&2; exit 2; }
-owner_lower="$(printf '%s' "${github%%/*}" | tr '[:upper:]' '[:lower:]')"
-image_repo="ghcr.io/$owner_lower/ppf-server"
-signer_identity="https://github.com/$github/.github/workflows/ci.yml@refs/heads/main"
+image_repo=""
+signer_identity=""
+if [ -n "$github" ]; then
+    [[ "$github" =~ ^[A-Za-z0-9-]+/[A-Za-z0-9._-]+$ ]] || { echo "--github must look like owner/repository." >&2; exit 2; }
+    owner_lower="$(printf '%s' "${github%%/*}" | tr '[:upper:]' '[:lower:]')"
+    image_repo="ghcr.io/$owner_lower/ppf-server"
+    signer_identity="https://github.com/$github/.github/workflows/ci.yml@refs/heads/main"
+else
+    echo "No --github: the preproduction will be deployed from bundles (ppf-deploy preproduction-bundle) until GitHub is linked; run this script again with --github then."
+fi
 export DEBIAN_FRONTEND=noninteractive
 
 # --- 1. System and automatic security updates --------------------------------------------------
@@ -233,7 +240,7 @@ new_password() { openssl rand -hex 32; }
 
 # One environment: .env, and the database password in two files (one per container user).
 prepare_environment() {
-    local env="$1" db="$2" server_uid="$3" editor_keys="$4" backoffice_origin="$5"
+    local env="$1" db="$2" server_uid="$3" editor_keys="$4" backoffice_origin="$5" public_url="$6" importer_uid="$7" ntfy_uid="$8"
     local dir="$DATA_DIR/$env"
     install -d -m 0700 "$dir" "$dir/secrets"
     # Owner role (migrations only) and restricted role ppf_app (the running server), D-127.
@@ -264,18 +271,39 @@ EOF
     # Settings added after the first run of this script: appended once, never overwritten.
     grep -q '^PPF_BACKOFFICE_ORIGIN=' "$dir/.env" || echo "PPF_BACKOFFICE_ORIGIN=$backoffice_origin" >> "$dir/.env"
     grep -q '^PPF_AUDIT_PUBLIC_KEY=' "$dir/.env" || echo "PPF_AUDIT_PUBLIC_KEY=" >> "$dir/.env"
+    grep -q '^PPF_PUBLIC_URL=' "$dir/.env" || echo "PPF_PUBLIC_URL=$public_url" >> "$dir/.env"
+    # Seeds of the vote keys (Décider, D-110): one file of 32 random bytes per version, read-only for the
+    # server's UID; version 1 is created here, later ones by ppf-vote-seed rotate.
+    install -d -m 0500 -o "$server_uid" -g "$server_uid" "$dir/vote_seeds"
+    if [ ! -f "$dir/vote_seeds/1" ]; then
+        (umask 077; head -c 32 /dev/urandom > "$dir/vote_seeds/1")
+    fi
+    chown "$server_uid:$server_uid" "$dir/vote_seeds"/*
+    chmod 400 "$dir/vote_seeds"/*
+    # Testimonies (Agir, M5): encrypted files written by the server only.
+    install -d -m 0700 -o "$server_uid" -g "$server_uid" "$dir/testimonies"
+    grep -q '^PPF_MODERATION_KEY=' "$dir/.env" || echo "PPF_MODERATION_KEY=" >> "$dir/.env"
+    grep -q '^PPF_EVIDENCE_KEY=' "$dir/.env" || echo "PPF_EVIDENCE_KEY=" >> "$dir/.env"
+    # Push wake-ups (D-078): ntfy's data (topics, 12-hour cache) and the VAPID private key of the server.
+    install -d -m 0700 -o "$ntfy_uid" -g "$ntfy_uid" "$dir/ntfy"
+    if [ ! -f "$dir/secrets/vapid_private_key" ]; then
+        (umask 077; openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt -out "$dir/secrets/vapid_private_key")
+    fi
+    chown "$server_uid:$server_uid" "$dir/secrets/vapid_private_key"
+    chmod 400 "$dir/secrets/vapid_private_key"
+    # Private anti-fraud settings (model: infra/env/private.env.example), empty until set by hand.
+    [ -f "$dir/private.env" ] || (umask 077; echo "# Private anti-fraud settings, see infra/env/private.env.example." > "$dir/private.env")
+    # Parliamentary open data: the importer of this environment writes, the server reads; the import
+    # key file stays empty until generated (ppf-open-data-import <environment> keygen).
+    install -d -m 0755 -o "$importer_uid" -g "$importer_uid" "$dir/open-data"
+    [ -f "$dir/secrets/import_key" ] || (umask 077; : > "$dir/secrets/import_key")
+    chown "$importer_uid:$importer_uid" "$dir/secrets/import_key"
+    chmod 400 "$dir/secrets/import_key"
 }
 # The example content signer (EditorialTrust.EXAMPLE_EDITOR) publishes the [EXEMPLE] contents of the
 # preproduction only. The production starts with no editor key.
-prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f" "https://equipe.preprod.$domain"
-prepare_environment production ppf 10001 "" "https://equipe.$domain"
-# Parliamentary open data of the production (Voir, D-064): the importer (UID 10003) writes, the
-# server reads. The import key file stays empty until the public launch (the importer then exits
-# with code 5 and changes nothing).
-install -d -m 0755 -o 10003 -g 10003 "$DATA_DIR/production/open-data"
-[ -f "$DATA_DIR/production/secrets/import_key" ] || (umask 077; : > "$DATA_DIR/production/secrets/import_key")
-chown 10003:10003 "$DATA_DIR/production/secrets/import_key"
-chmod 400 "$DATA_DIR/production/secrets/import_key"
+prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f" "https://equipe.preprod.$domain" "https://preprod.$domain" 10004 10006
+prepare_environment production ppf 10001 "" "https://equipe.$domain" "https://$domain" 10003 10005
 
 if [ ! -f "$DATA_DIR/proxy/.env" ]; then
     # Password of the preproduction web pages (D-072). Chosen and typed by the owner herself at this
@@ -314,10 +342,12 @@ fi
 # --- 8. Repository, cosign, deployment command, automatic update of the preproduction ------------
 log "Repository checkout (public, read only)"
 install -d -m 0755 /opt/ppf
-if [ ! -d "$REPO_DIR/.git" ]; then
-    git clone --quiet "https://github.com/$github.git" "$REPO_DIR"
-else
-    git -C "$REPO_DIR" fetch --quiet origin
+if [ -n "$github" ]; then
+    if [ ! -d "$REPO_DIR/.git" ]; then
+        git clone --quiet "https://github.com/$github.git" "$REPO_DIR"
+    else
+        git -C "$REPO_DIR" fetch --quiet origin
+    fi
 fi
 
 log "cosign $COSIGN_VERSION"
@@ -348,11 +378,18 @@ install -m 0755 "$script_dir/wg-remove-peer.sh" /usr/local/sbin/ppf-wg-remove-pe
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.service" /etc/systemd/system/
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.timer" /etc/systemd/system/
 install -m 0755 "$script_dir/open-data-import.sh" /usr/local/sbin/ppf-open-data-import
-install -m 0644 "$script_dir/../systemd/ppf-open-data-daily.service" "$script_dir/../systemd/ppf-open-data-daily.timer" /etc/systemd/system/
-install -m 0644 "$script_dir/../systemd/ppf-open-data-weekly.service" "$script_dir/../systemd/ppf-open-data-weekly.timer" /etc/systemd/system/
-# The import timers are installed but enabled only at the public launch (infra/README.md).
+install -m 0644 "$script_dir/../systemd/ppf-open-data-daily@.service" "$script_dir/../systemd/ppf-open-data-daily@.timer" /etc/systemd/system/
+install -m 0644 "$script_dir/../systemd/ppf-open-data-weekly@.service" "$script_dir/../systemd/ppf-open-data-weekly@.timer" /etc/systemd/system/
+install -m 0755 "$script_dir/vote-seed.sh" /usr/local/sbin/ppf-vote-seed
+# The import timers are enabled per environment once its import key exists:
+#   systemctl enable --now ppf-open-data-daily@preproduction.timer ppf-open-data-weekly@preproduction.timer
 systemctl daemon-reload
-systemctl enable ppf-preprod-update.timer >/dev/null 2>&1
+# The automatic update follows the signed images of main: only once GitHub is linked.
+if [ -n "$github" ]; then
+    systemctl enable ppf-preprod-update.timer >/dev/null 2>&1
+else
+    systemctl disable ppf-preprod-update.timer >/dev/null 2>&1 || true
+fi
 
 log "Done"
 cat <<EOF

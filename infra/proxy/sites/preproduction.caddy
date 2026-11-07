@@ -53,3 +53,21 @@ equipe.preprod.{$PPF_DOMAIN} {
 		}
 	}
 }
+
+# Push wake-ups of the preproduction (ntfy, D-078): the tunnel only, like the rest of the preproduction;
+# the testers' phones keep the tunnel on. Streams are passed through at once.
+push.preprod.{$PPF_DOMAIN} {
+	import security_headers
+	header X-Robots-Tag "noindex, nofollow"
+
+	@outside not remote_ip 10.8.0.0/24
+
+	route {
+		abort @outside
+		reverse_proxy ppf-preprod-ntfy-1:8080 {
+			header_up -X-Forwarded-For
+			header_up -X-Real-IP
+			flush_interval -1
+		}
+	}
+}

@@ -24,7 +24,7 @@ Ils se trouvent dans `docs/projet/` :
 |---|---|---|
 | `vision.md` | Pourquoi : constat, mission, piliers, valeurs | Définitif |
 | `cahier-des-charges.md` | Exigences, architecture, hébergement, stack, cadre légal, planning, budget | Définitif |
-| `cahier-fonctionnel.md` | Rôles, parcours, modules et fonctionnalités | Définitif (version 2.0 du 7 novembre 2026, organisée par piliers, modules M1 à M35) |
+| `cahier-fonctionnel.md` | Rôles, parcours, modules et fonctionnalités | Définitif (version 2.1 du 8 novembre 2026, organisée par piliers, modules M1 à M35) |
 | `brainstorming-*.md` | Idées, questions et décisions en attente (l'inventaire des fonctionnalités est réparti en plusieurs documents `brainstorming-cahier-fonctionnel-inventaire-*.md`) | Brouillon |
 
 - **Priorité en cas de contradiction** : vision > cahier des charges > cahier fonctionnel. Ne tranche pas seul : signale la contradiction et ouvre une entrée de brainstorming.
@@ -107,7 +107,7 @@ La propriétaire est une ancienne développeuse web. Elle maîtrise la logique e
 
 ### Contenus et cadre légal
 - Respecte la charte de contenu (cahier des charges, section 9.3). Aucun appel ni incitation à la violence : c'est une obligation légale, pas un choix éditorial.
-- Tout contenu d'exemple est marqué **[EXEMPLE]**. Aucune donnée personnelle réelle dans les tests, les jeux de données, la préproduction ou les captures.
+- Tout contenu d'exemple est marqué **[EXEMPLE]**. Aucune donnée personnelle réelle de citoyens (comptes, messages, témoignages, votes) dans les tests, les jeux de données, la préproduction ou les captures ; les jeux de données du dépôt et des tests restent fictifs pour les personnes, puisque le dépôt est public. En préproduction, on travaille avec la vraie information publique (données ouvertes officielles, annuaire des élus, statistiques, textes de loi) plutôt qu'avec du fictif (décision de la propriétaire du 7 novembre 2026 : « on reste dans la vraie info meme en preprod pour ne pas faire travailler les équipes pour rien, on vise l'efficacité »).
 - Tout ce qui concerne des responsables publics suit la méthode prévue : sources primaires, distinction visible entre établi, allégué et en cours d'enquête, statut de la procédure, droit de réponse.
 - Les outils électoraux (Pacte démocratique, comparateur, baromètre des élus) suivent les règles du cahier des charges (section 9.2).
 - **IA** : tout contenu produit avec l'aide d'une IA affiche son origine. La modération par IA (cahier des charges, section 5.6) masque provisoirement les seuls contenus graves et manifestement illicites (alerte rouge), signale sans les masquer les contenus limites (alerte orange) et laisse tout le reste se publier sans délai ; la décision finale reste toujours humaine ; tout utilisateur peut signaler un contenu ou un autre utilisateur ; l'IA ne lit jamais les échanges chiffrés. L'hébergement du modèle reste à valider. L'**assistant citoyen** et les crédits associés sont mis de côté : ne code rien à leur sujet.
@@ -120,7 +120,7 @@ Détail dans le cahier des charges, section 3.5.
 - **Hostinger pour tout** : serveurs et noms de domaine. Centre de données dans l'Union européenne, hors de France (Lituanie, Allemagne ou Pays-Bas). Seule exception : les sauvegardes chiffrées, stockées chez un autre prestataire européen.
 - **Un seul serveur au départ** (VPS KVM 1 : 1 vCPU, 4 Go de mémoire, 50 Go de disque), loué au moment du premier déploiement, pas avant. Pendant le développement, il ne sert que de préproduction ; au lancement public, il accueille la production et la préproduction. Conçois donc l'infrastructure pour qu'elle tienne dans 4 Go de mémoire, préproduction comprise.
 - **Production et préproduction séparées autant que possible** : projets Docker Compose, conteneurs, bases de données, réseaux, volumes, utilisateurs système et secrets distincts ; limites de mémoire et de processeur sur la préproduction ; aucune ressource partagée entre les deux, sauf le reverse proxy si nécessaire.
-- **Préproduction fermée au public** : accessible uniquement par un tunnel WireGuard, en plus d'un mot de passe ; jamais de données réelles, uniquement des données fictives marquées [EXEMPLE].
+- **Préproduction fermée au public** : accessible uniquement par un tunnel WireGuard, plus un mot de passe sur les pages web (D-072) ; données publiques réelles (sources officielles) plutôt que fictives ; jamais de données personnelles réelles de citoyens.
 - **Durcissement** : pare-feu, connexion SSH par clé uniquement, pas de connexion root, mises à jour de sécurité automatiques.
 - **Circuit de mise en ligne** : tests automatiques, déploiement en préproduction, validation par la propriétaire, puis production. Jamais de déploiement direct en production.
 - L'infrastructure est décrite en code pour pouvoir tout redéployer ailleurs en quelques heures à partir des sauvegardes. Un deuxième serveur dédié à la production viendra dès que le budget le permettra : rends ce passage simple.
