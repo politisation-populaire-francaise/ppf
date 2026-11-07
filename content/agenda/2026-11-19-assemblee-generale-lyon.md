@@ -7,6 +7,7 @@ end: 2026-11-19T20:30
 location: Maison des associations (adresse fictive), Lyon 7e
 territory: Lyon
 summary: Décider ensemble des prochaines actions du quartier.
+organizers: acfe2b6e1d2fd778464c51b14b0ab41ccc3fe5336728b65582f05245bd5efe97
 created_at: 2026-11-05T12:00
 ---
 [EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.

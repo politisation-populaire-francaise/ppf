@@ -52,6 +52,12 @@ object AgirFormats {
     /** Longest description (event content), in characters. */
     const val MAX_TEXT: Int = 8000
 
+    /** Longest value of any other tag, in characters (the server refuses longer ones with `too_long`). */
+    const val MAX_TAG_VALUE: Int = 1000
+
+    /** Longest report of a closed call (`ppf-report`, AP-09), in characters. */
+    const val MAX_REPORT: Int = 2000
+
     // Mobilizations (kind 31923)
 
     const val TAG_EVENT_TYPE: String = "ppf-event-type"

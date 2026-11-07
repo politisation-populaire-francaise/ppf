@@ -199,4 +199,24 @@ class AgirRulesTest {
         assertEquals("not_allowed", assertIs<PublicationPolicy.Decision.Refused>(policy.check(citizen.sign(kind = Article.KIND, content = "x", tags = ficheTags))).error)
         allowed(editor.sign(kind = Article.KIND, content = "x", tags = ficheTags))
     }
+
+    @Test
+    fun aCallCarriesNoPersonalContactDetailWhoeverSignsIt() = runBlocking {
+        // A verified organisation publishes without review: the server checks again what the form checks.
+        val phone = "[EXEMPLE] Appelez le 06 12 34 56 78 pour vous inscrire."
+        assertEquals("personal_data" to "content", refused(editor.call("soutenir", content = phone)))
+        assertEquals("personal_data" to "ppf-action", refused(citizen.call("soutenir", tags = callTags("soutenir").withTag("ppf-action", "[EXEMPLE] Écrire à jean.exemple@example.org"))))
+        // Links, keys and dates are not free text; an ordinary call passes.
+        allowed(citizen.call("soutenir"))
+        allowed(citizen.call("petition"))
+    }
+
+    @Test
+    fun theLimitsOfTheServerAreThoseOfTheForm() {
+        assertEquals(AgirFormats.MAX_TAG_VALUE, AgirRules.MAX_TAG_VALUE)
+        assertEquals(AgirFormats.MAX_REPORT, AgirRules.MAX_REPORT)
+        assertEquals(AgirRules.MAX_TAG_VALUE, org.politisationpopulairefrancaise.core.agir.calls.CallRules.LONG_FIELD_MAX)
+        assertEquals(AgirRules.MAX_TAG_VALUE, org.politisationpopulairefrancaise.core.agir.calls.CallRules.LINK_MAX)
+        assertEquals(AgirRules.MAX_TAG_VALUE, org.politisationpopulairefrancaise.core.agir.agenda.Mobilization.MAX_LINK)
+    }
 }

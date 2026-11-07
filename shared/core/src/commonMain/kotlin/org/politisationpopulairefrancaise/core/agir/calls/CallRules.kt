@@ -63,9 +63,10 @@ object CallRules {
     const val SUMMARY_MAX: Int = 300
     const val TERRITORY_MAX: Int = 80
     const val FIELD_MAX: Int = 300
-    const val LONG_FIELD_MAX: Int = 2_000
-    const val LINK_MAX: Int = 2_000
-    const val REPORT_MAX: Int = 2_000
+    // The server refuses a tag value longer than AgirFormats.MAX_TAG_VALUE: the form stops at the same length.
+    const val LONG_FIELD_MAX: Int = AgirFormats.MAX_TAG_VALUE
+    const val LINK_MAX: Int = AgirFormats.MAX_TAG_VALUE
+    const val REPORT_MAX: Int = AgirFormats.MAX_REPORT
 
     /** Goals and numbers of people: at most nine digits. */
     const val NUMBER_MAX: Long = 999_999_999

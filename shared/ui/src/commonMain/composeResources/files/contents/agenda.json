@@ -47,10 +47,10 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'a pas eu lieu et ne correspond à aucune organisation réelle.\n\nIl montre à quoi ressemble une mobilisation passée dans l'agenda : elle reste consultable dans l'onglet « Passés ».",
-        "sig": "f29798a952b1249ec44c7f0151e51eb6380dc00a37eff8b8144d13f35d788f6cbfe57280b62b4bb2278a0d43880d87462bd7b50a4ad10743d2975502f2e53abe"
+        "sig": "a9a7948fd9817d187436ed613747d1a5fac509329060f053cf5f5ec697fb2d306d24c81ba86e60e51e5fe115f95cff2756b87df471d8797fca9c90a996142274"
     },
     {
-        "id": "d12fc2d30167e3443f7cc602b19c120ba5b9debd1f78cf4edf304890be53db6d",
+        "id": "df54cd990140c15576a96dde536fe296bd18cdaf254e132d94cac5cd7f02f10e",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
         "kind": 31923,
@@ -92,15 +92,21 @@
                 "1.0"
             ],
             [
+                "p",
+                "e5669f8eadf6863eca04c146bca494189d1c27e425b3de91c05e21583444773c",
+                "",
+                "organizer"
+            ],
+            [
                 "summary",
                 "Un rassemblement fictif de démonstration, annoncé aussi dans le fil."
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle. Ne vous y rendez pas.\n\nIl montre à quoi ressemblera une mobilisation dans l'agenda : la date, l'heure, le lieu, le territoire et la description.\n\nAvant toute mobilisation, relisez la fiche pratique « Vos droits en manifestation », lisible sans réseau.",
-        "sig": "7d02689d48da7f95736d3eb3bffc7147da1149cf73cd16274c7625675619fe2240757d75b195f62e051c7fd72658d63d4a3d68f5f4c7b17887c5584a2b779129"
+        "sig": "02916b1e63332d33db20cd21a8f131b3a848d0699009ac19f9675bd6c3b63f941b45158af28f6b15326a762c6379afd108af90beaa7809d242d0ceb7962103b8"
     },
     {
-        "id": "f9b5bc67896b54630dce63c8474d342fc63008c716fff080283973eb31ba197d",
+        "id": "3d536e5e76d384df421c2f627bc4a01be7ac93e37b5059850cefc18b3a608fbc",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
         "kind": 31923,
@@ -142,12 +148,18 @@
                 "1.0"
             ],
             [
+                "p",
+                "acfe2b6e1d2fd778464c51b14b0ab41ccc3fe5336728b65582f05245bd5efe97",
+                "",
+                "organizer"
+            ],
+            [
                 "summary",
                 "Décider ensemble des prochaines actions du quartier."
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nOrdre du jour fictif :\n- tour de parole sur la situation du quartier ;\n- propositions d'actions ;\n- vote à main levée et désignation de deux personnes chargées du compte rendu.",
-        "sig": "58e198f833d44c85fdb6dae140edf666417f6332c62db6327d60eb15ec70909525d2840722ce7f235d1220c6be7dfdf8a7470b3bb6808793864431dcdfd8e492"
+        "sig": "0d8d41919c6b5175f2fac623c18d6c3907532588cb5aad7bb4060c2dd8a6799d8ff090edca242d582e12102d205762ad83f9989402783bcf2befcb1404c1663a"
     },
     {
         "id": "1d0a6f75724c2b7b48782d875a1ade2e5f6b2b815260d6fd63ee6f8aed4b1516",
@@ -205,7 +217,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle. Ne vous y rendez pas.\n\nLe lien de cette fiche mène à une adresse réservée aux exemples, qui ne s'ouvre pas : il sert à montrer l'avertissement « Vous quittez PPF ».",
-        "sig": "c241846289afba9e7c6655216b734cf8f6d67a82a59d3ad1dac12f022846748143a889791a07919ee68ebde242bc971cc29141592fb8cf95979ecea8fd948026"
+        "sig": "02e17969d1f79e9784e2fc45e823aa7279fd515e7866a103c79847a23a0dfe9b01050558a5ed26311d4b9addc156b182a56585cc65d9e83c8667bfa8ea494795"
     },
     {
         "id": "2dc352d6612e94de05f8f9ee910b92f99eb2cc820afeee5a218a8c4b52cc304a",
@@ -255,7 +267,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : cette grève n'est appelée par aucune organisation réelle.\n\nUn événement de plusieurs jours apparaît à sa date de début, avec sa date de fin.",
-        "sig": "66ad8b34f01f859ffe7855483f6b5036a014333ddd3651d52059e6e80de7d783e3508d3d1418b1936a2301ae4745452183d3cb8336231b450434ff5f9030dd0e"
+        "sig": "ef1200ec416d954cd69e3d76ee59f572846ebb99b86407e1a1ac2b77496746458a910ebab3b983d183bf92b74a3be9ce36b007f33f4821a7e66af39523d76657"
     },
     {
         "id": "b75eb9c40f7a05cd1b9e1eb70f9001006f0d895215da06c0c5b79cda2be3906b",
@@ -309,7 +321,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nIl montre la mention « Reporté ». Toute action annoncée sur PPF respecte la charte : aucune violence, ni contre les personnes, ni contre les biens.",
-        "sig": "c71d0b94a8e1e9efb728dd1def65bbd67e6252014d96d1f9286e04b9518720188bc04bb35d81f72ab49a4ace18c381a4388ed533cd24d706563c5e7924589d6d"
+        "sig": "9f1458595680d5ba8767f86bdbcbbba5ac902897bc1ba6f234cc3d9d0e9351200f0b952aff1e8ed00d9b9ceb13e2b04e7b07a07a72eb8dd3436f5386c431477c"
     },
     {
         "id": "d0a884ac2295932de917a2635386c08b0eec38048aff1fd9b49d1825a8c0ff5e",
@@ -363,7 +375,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nUn événement annulé reste visible avec la mention « Annulé » bien en évidence, pour que personne ne se déplace pour rien.",
-        "sig": "66006e68f723854339971ee0080432fa343381621396f6e858cf8995f73a08769588e952d4369e9920a20b59916bf5972d29b5a40c0d546d1a136e5aa947dd80"
+        "sig": "fa65510400f36c68d84f0a55ba7fc6d7696e887926d354c9b3f9d78d2189f8e1b26605e129cae73d56e0baa93fd6e9272f70eccfe759372e2f5d4107b6e82717"
     },
     {
         "id": "005ae718db694d0b5130a41395b9e5fc4feb1a65a1b51c7386f2f2fae5ae1e25",
@@ -413,6 +425,6 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nSalle accessible en fauteuil roulant (exemple de précision utile à donner dans la description).",
-        "sig": "1bfcba262a7eb9dd21bde4bcf303200074a2e4faefc0377c721bae7cfc55f6b305fa427e174595565226cd1df5db9c3041531cc2393284377cbbff49140ee418"
+        "sig": "88492b71b5b72a0e5acb15cf3096b1992691216d0ace658b68644bf764fb660d07617a704402741ef5d95615b4412ccf0c575773fe4b9dae00f9173c400d4c07"
     }
 ]

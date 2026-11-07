@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.server.agir
 
 import org.politisationpopulairefrancaise.core.agir.AgirFormats
+import org.politisationpopulairefrancaise.core.revendications.checks.DraftRules
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -38,10 +39,10 @@ enum class AgirCategory {
  */
 object AgirRules {
     /** Longest value of a tag not bounded otherwise, in characters. */
-    const val MAX_TAG_VALUE: Int = 1_000
+    const val MAX_TAG_VALUE: Int = AgirFormats.MAX_TAG_VALUE
 
     /** Longest report of a closed call (AP-09). */
-    const val MAX_REPORT: Int = 2_000
+    const val MAX_REPORT: Int = AgirFormats.MAX_REPORT
 
     /** Longest territory: the bound of the rooms, whose territories are the same. */
     const val MAX_TERRITORY: Int = GroupKinds.MAX_TERRITORY_LENGTH
@@ -163,6 +164,31 @@ object AgirRules {
                 AgirFormats.TAG_GEOHASH -> if (!GEOHASH.matches(tag[1])) return missing(AgirFormats.TAG_GEOHASH)
                 AgirFormats.TAG_LINK -> if (!isWebAddress(tag[1])) return missing(AgirFormats.TAG_LINK)
             }
+        }
+        personalData(event)?.let { return it }
+        return null
+    }
+
+    /** Tags that never hold free text: links, keys, addresses, places on the map, dates and fixed values. */
+    private val NOT_FREE_TEXT = setOf(
+        "d", AgirFormats.TAG_LINK, AgirFormats.TAG_PUBKEY, AgirFormats.TAG_ADDRESS, AgirFormats.TAG_GEOHASH,
+        AgirFormats.TAG_START, AgirFormats.TAG_END, AgirFormats.TAG_START_TZID, AgirFormats.TAG_PUBLISHED_AT,
+        AgirFormats.TAG_DEADLINE, AgirFormats.TAG_GOAL, AgirFormats.TAG_TYPE, AgirFormats.TAG_CALL_TYPE,
+        AgirFormats.TAG_CALL_STATUS, AgirFormats.TAG_CHARTER,
+    )
+
+    /**
+     * No personal contact detail in a call (an e-mail address, a French phone number, an IBAN, a
+     * social security number), as the form of the application checks it (CallRules, the patterns of
+     * DraftRules): a verified organisation publishes without review, so the server checks again.
+     * The detail found is never kept nor sent back; the message names the field.
+     */
+    private fun personalData(event: SignedEvent): Decision.Refused? {
+        if (DraftRules.containsPersonalData(event.content)) return refuse("personal_data", "content")
+        for (tag in event.tags) {
+            val name = tag.firstOrNull() ?: continue
+            if (name in NOT_FREE_TEXT) continue
+            if (tag.drop(1).any { DraftRules.containsPersonalData(it) }) return refuse("personal_data", name)
         }
         return null
     }

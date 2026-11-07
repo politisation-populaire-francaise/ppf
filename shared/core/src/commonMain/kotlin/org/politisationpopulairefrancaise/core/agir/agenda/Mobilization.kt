@@ -138,7 +138,7 @@ data class Mobilization(
         const val MAX_TERRITORY: Int = 100
 
         /** Longest web link, in characters. */
-        const val MAX_LINK: Int = 2_000
+        const val MAX_LINK: Int = AgirFormats.MAX_TAG_VALUE
 
         private val IDENTIFIER = Regex("^[a-z0-9._~-]{1,64}$")
         private val GEOHASH = Regex("^[0-9bcdefghjkmnpqrstuvwxyz]{1,9}$")

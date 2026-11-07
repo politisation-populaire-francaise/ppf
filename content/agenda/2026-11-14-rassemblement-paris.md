@@ -7,6 +7,7 @@ end: 2026-11-14T17:00
 location: Place de la République, Paris
 territory: Paris
 summary: Un rassemblement fictif de démonstration, annoncé aussi dans le fil.
+organizers: e5669f8eadf6863eca04c146bca494189d1c27e425b3de91c05e21583444773c
 created_at: 2026-11-05T12:00
 ---
 [EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle. Ne vous y rendez pas.

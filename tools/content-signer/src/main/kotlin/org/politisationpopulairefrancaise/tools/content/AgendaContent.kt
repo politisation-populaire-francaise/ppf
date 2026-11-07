@@ -53,6 +53,8 @@ internal fun signAgenda(content: Path, output: Path, keys: IdentityKeys) {
                 status = metadata["status"]?.let { MobilizationStatus.fromTag(it) ?: error("${file.name}: unknown status") } ?: MobilizationStatus.PREVU,
                 declaration = metadata["declaration"]?.let { DeclarationState.fromTag(it) ?: error("${file.name}: unknown declaration") },
                 links = listOfNotNull(metadata["link"]),
+                // Keys of fictional organisations of content/organisations (their `pubkey`), separated by commas.
+                organizers = metadata["organizers"].orEmpty().split(',').map { it.trim() }.filter { it.isNotEmpty() },
                 summary = metadata["summary"],
                 description = body,
             )
