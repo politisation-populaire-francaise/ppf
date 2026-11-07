@@ -137,7 +137,13 @@ Texte à ajouter au tableau « Format d'une mobilisation de l'agenda » de `cont
 
 ## 12. Questions pour la propriétaire
 
-<!-- QUESTIONS -->
+Aucune dépense n'est engagée ni nécessaire : tout est libre et gratuit ; le seul coût futur est l'espace disque et la bande passante du serveur déjà prévu.
+
+1. **Poids de l'APK** (section 6) : la carte ajoute surtout les bibliothèques natives de MapLibre pour trois architectures. Faut-il plus tard proposer un APK par architecture (le vôtre n'aurait que celle de votre téléphone, environ un tiers du poids ajouté) ? Recommandation : oui au moment de la publication sur le site ; un seul APK pour les essais.
+2. **Carte sur ordinateur** : elle demande de passer la chaîne d'outils à Java 25 (gratuit, mais c'est un changement de toute l'application de bureau). Recommandation : attendre que la carte soit validée sur Android, puis le proposer.
+3. **Points des exemples** : ils sont placés sur des lieux publics réels (place de la République, gare Saint-Charles, centres-villes). Cela vous convient-il, ou préférez-vous des points volontairement approximatifs ?
+4. **Placer le point d'un événement** dans le formulaire (étape suivante) : précision complète pour les organisations vérifiées et limitée (environ 150 m) pour les contributeurs, avec la mise en garde « jamais une adresse privée » ? Recommandation : oui.
+5. **Fond détaillé** : le mettre à jour tous les deux ou trois mois (rues nouvelles) vous paraît-il suffisant ?
 
 ## 13. À transmettre à la session infrastructure
 
