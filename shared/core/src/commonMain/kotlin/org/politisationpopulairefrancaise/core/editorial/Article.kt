@@ -63,6 +63,9 @@ enum class ArticleType(val tagValue: String) {
 
     /** A political party of "Voir" (axis of power), read by core.voir.PoliticalParty; persons and facts link to it. */
     PARTI("parti"),
+
+    /** A testimony published by the team after review (M5, AG-07; core.agir.testimonies.PublishedTestimony), shown by VO-08 in "Le mouvement". */
+    TEMOIGNAGE("temoignage"),
     ;
 
     companion object {

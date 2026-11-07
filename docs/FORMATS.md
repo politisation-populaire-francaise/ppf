@@ -331,11 +331,12 @@ Publiée seulement par une clé de l'équipe éditoriale. `content` : la présen
 | `ppf-verified` | Oui | Date de la vérification, `AAAA-MM-JJ` |
 | `ppf-origin` | Non | `human` ou `ai-assisted`, affichée sur la fiche |
 | `p` | Non | Clé de l'organisation si elle a un compte : c'est elle qui devient « organisation vérifiée » |
+| `ppf-org-status` | Non | `verifiee` (valeur par défaut, l'étiquette est alors omise) ou `revoquee` : la vérification est retirée (contrat d'Agir, version 2). Le serveur refuse toute autre valeur (`missing_field`, message `ppf-org-status`) ; l'appareil lit une valeur inconnue comme `revoquee`, pour qu'une version future n'étende jamais la confiance |
 | `r` | Non | Site web `http(s)` à nom d'hôte ASCII, sans « utilisateur@ » ; plusieurs possibles, cinq lus au plus |
 | `ppf-contact-phone`, `ppf-contact-email`, `ppf-contact-address` | Non | Coordonnées publiques de l'organisation, jamais celles d'une personne |
 | `g` | Non | Géohash |
 
-**Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé ; une nouvelle version sans `p` retire la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
+**Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé (à date égale, le plus petit identifiant) ; une nouvelle version sans `p` retire la vérification, de même qu'une version `ppf-org-status` = `revoquee` qui garde sa clé `p` : celle-ci n'est plus vérifiée, ni sur l'appareil (`VerifiedOrganisations.revocationFor` rend la fiche révoquée) ni sur le serveur (le cache est oublié dès le stockage de la fiche). Transparence : la fiche révoquée n'est jamais effacée en silence ; elle perd son badge « Vérifiée », sort de la liste par défaut de l'annuaire (filtre « Inclure les vérifications retirées ») et sa page, ouverte par un lien, affiche « Vérification retirée par PPF le … » (date de la version révoquée, heure de Paris). Republier la fiche avec `verifiee` ou sans l'étiquette rétablit la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
 
 ## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-059, D-060)
 
@@ -606,7 +607,7 @@ Conception : `docs/integration/une-personne-une-voix.md`. Les octets sont en hex
 | `POST /api/v1/urnes/tokens` | NIP-98 avec empreinte du corps et preuve de travail | Jetons pour un **préfixe** des urnes en attente, toutes dans l'ordre : `{"requests":[{"urne":n,"blinded":"…"}]}` → `{"tokens":[{"urne":n,"level":"…","evaluated":"…","proof":"…"}],"upTo":n}` ; la même requête dans la journée renvoie la même réponse ; l'application renvoie d'abord, inchangée, une requête dont la réponse ne lui est pas parvenue | 200 ; 409 `pending_changed` (sous-ensemble choisi, ou urnes changées) ; 400 |
 | `POST /api/v1/ballots` | **Aucune** (ni compte, ni signature, ni en-tête) | Bulletin `{"urne":n,"level":"…","y":"…","token":"…","choice":"…","nonce":k,"padding":"000…"}`, complété par des zéros jusqu'à 640 octets (tous les bulletins ont la même taille) ; SHA-256 de `ppf-bulletin-v1␟urne␟niveau␟y␟jeton␟choix␟nonce` doit avoir 12 bits à zéro, le même nombre sur tous les appareils (`Ballot.DIFFICULTY` ; le serveur en demande autant ou moins, jamais un nombre qui varierait d'un appareil à l'autre) ; le même `y` remplace le bulletin ; le choix `retire` retire le vote | 202 `recorded` (même réponse pour un nouveau bulletin et un remplacement) ; 403 `invalid_token` ; 409 `urne_closed` ; 400 |
 
-NIP-98 : événement de type 27235, étiquettes `u` (adresse exacte, celle de `PPF_PUBLIC_URL` suivie du chemin), `method`, `payload` (SHA-256 du corps s'il y en a un), date à 60 secondes près, chaque autorisation acceptée une seule fois. Un compte ne reçoit jamais deux jetons d'une même urne ; le niveau d'un jeton est celui du compte la semaine de l'ouverture de l'urne. Tables : migration Flyway `V9__urnes.sql`.
+NIP-98 : événement de type 27235, étiquettes `u` (adresse exacte, celle de `PPF_PUBLIC_URL` suivie du chemin), `method`, `payload` (SHA-256 du corps s'il y en a un), date à 60 secondes près, chaque autorisation acceptée une seule fois. Un compte ne reçoit jamais deux jetons d'une même urne ; le niveau d'un jeton est celui du compte la semaine de l'ouverture de l'urne. Tables : migration Flyway `V10__urnes.sql`.
 
 Vote public d'un élu certifié (D-115) : événement NIP-78, type `30078`, signé de la clé de l'élu : `[["d","ppf-vote:<n>"],["ppf-urne","<n>"],["ppf-choice","<choix>"],["a","<objet voté>"]]`, contenu vide ; `POST /api/v1/urnes/public-votes` (l'événement est sa propre authentification ; `202 recorded`, `403 not_elected` si le compte n'est pas « élu » la semaine d'ouverture de l'urne, `409 urne_closed`, `400 invalid_signature` | `malformed_vote` | `unknown_choice` | `dated_in_the_future`) ; `GET /api/v1/urnes/{n}/public-votes` → `{"urne":n,"votes":[<événements signés>]}`, aussi publiés à la clôture (`publicVotes`). Un compte « élu » ne reçoit aucun jeton anonyme pour une urne ouverte pendant qu'il l'est ; un bulletin anonyme de niveau `elu` est refusé (`400 elected_vote_publicly`). La colonne des élus des résultats vient de ces votes et n'est jamais cachée.
 
@@ -707,7 +708,7 @@ Variables d'environnement du serveur pour l'archivage horodaté (D-111, `docs/in
 
 Adresses : `https`, ou `http` vers `localhost` ou `127.0.0.1` seulement (faux service sur la même machine) ; ni nom d'utilisateur, ni mot de passe, ni paramètre, ni fragment. Une adresse ou un mandataire invalide arrête le serveur au démarrage avec un message qui ne cite jamais la valeur ; les nombres invalides reprennent leur valeur par défaut. Les adresses de calendrier lues dans les preuves ne sont suivies que si elles sont exactement `https://<hôte>` avec un hôte de `PPF_ARCHIVE_CALENDARS`.
 
-### Sur le serveur : migration Flyway `V10__archives.sql`
+### Sur le serveur : migration Flyway `V11__archives.sql`
 
 | Table | Rôle |
 |---|---|

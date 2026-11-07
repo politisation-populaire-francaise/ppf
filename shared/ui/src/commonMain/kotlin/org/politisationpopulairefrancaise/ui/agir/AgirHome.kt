@@ -87,13 +87,13 @@ object AgirRubrics {
     val ORGANISATIONS = AgirRubric("organisations", Res.string.agir_organisations_title, Res.string.agir_organisations_text, Lucide.Building2)
     val COLLECTIVES = AgirRubric("collectifs", Res.string.agir_collectives_title, Res.string.agir_collectives_text, Lucide.Users)
     val GUIDES = AgirRubric("guides", Res.string.agir_guides_title, Res.string.agir_guides_text, Lucide.BookOpen)
+    val TESTIFY = AgirRubric("temoigner", Res.string.agir_testify_title, Res.string.agir_testify_text, Lucide.Camera)
 
     /** What can be opened today. */
-    val available: List<AgirRubric> = listOf(AGENDA, CALLS, ORGANISATIONS, COLLECTIVES, GUIDES)
+    val available: List<AgirRubric> = listOf(AGENDA, CALLS, TESTIFY, ORGANISATIONS, COLLECTIVES, GUIDES)
 
     /** Planned but not ready: shown honestly, disabled, without any date. */
     val inPreparation: List<AgirRubric> = listOf(
-        AgirRubric("temoigner", Res.string.agir_testify_title, Res.string.agir_testify_text, Lucide.Camera),
         AgirRubric("mode-manifestation", Res.string.agir_protest_mode_title, Res.string.agir_protest_mode_text, Lucide.HandFist),
         AgirRubric("secours", Res.string.agir_safety_title, Res.string.agir_safety_text, Lucide.LifeBuoy),
         AgirRubric("solidarite", Res.string.agir_solidarity_title, Res.string.agir_solidarity_text, Lucide.HandHelping),
