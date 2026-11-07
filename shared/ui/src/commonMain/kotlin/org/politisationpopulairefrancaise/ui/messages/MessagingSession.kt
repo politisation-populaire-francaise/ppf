@@ -20,6 +20,7 @@ import org.politisationpopulairefrancaise.core.messaging.Conversation
 import org.politisationpopulairefrancaise.core.messaging.MessageStore
 import org.politisationpopulairefrancaise.core.messaging.MessagingService
 import org.politisationpopulairefrancaise.core.messaging.MessagingSigner
+import org.politisationpopulairefrancaise.core.messaging.SendReport
 import org.politisationpopulairefrancaise.core.publication.FetchResult
 import org.politisationpopulairefrancaise.core.publication.PublicationResult
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
@@ -310,6 +311,29 @@ class MessagingSession(
         }
         reload(current)
         return sent != null
+    }
+
+    /**
+     * Sends [text] to [recipientHex] without opening the conversation (a request to the editorial
+     * team from "Voir", for example): stored on the device at once like any message, so that the
+     * answer arrives in the same conversation and a delivery the server cannot take now waits for
+     * the next refresh. Null when nothing was sent (no account, invalid key, text too long).
+     */
+    suspend fun sendTo(recipientHex: String, text: String, subject: String? = null): SendReport? {
+        val current = account ?: return null
+        if (store == null || text.isBlank()) return null
+        val recipient = runCatching { PublicKey.fromHex(recipientHex) }.getOrNull() ?: return null
+        val sent = try {
+            withContext(Dispatchers.Default) {
+                operations.withLock { if (account === current) current.service.send(text, listOf(recipient), subject) else null }
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            null
+        }
+        reload(current)
+        return sent
     }
 
     private suspend fun prepare(current: Account) {

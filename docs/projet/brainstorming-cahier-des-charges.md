@@ -16,7 +16,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Complément de décision (2026-11-05) : les six noms de domaine sont achetés chez Hostinger, comme les serveurs (prestataire unique). Le point de vigilance « bureau d'enregistrement distinct de l'hébergeur » est donc abandonné ; le risque d'un compte unique est compensé par la double authentification forte, le verrouillage des domaines, le renouvellement automatique et la répartition du nom sur plusieurs extensions. Les domaines sont achetés dès la phase 0, avant le serveur.
 
 ### [2026-11-04] Licence du code
-- Statut : À étudier
+- Statut : Intégré le 2026-11-07 (cahier des charges 2.0, section 8 ; D-006)
 - Concerne : cahier-des-charges.md, section 8
 - Description : l'AGPL-3.0 est envisagée pour empêcher une récupération fermée du code. À vérifier : compatibilité avec la distribution sur l'App Store et avec les licences de bitchat (MIT pour Android, domaine public pour iOS).
 - Vérifications du 2026-11-05 : les licences de bitchat (MIT, domaine public) sont compatibles avec l'AGPL-3.0 à condition de conserver leurs mentions. Le conflit connu entre les conditions de l'App Store et les licences GPL se règle par une permission supplémentaire accordée par le titulaire des droits (article 7 de la GPL version 3), comme le fait Signal ; pour la conserver, chaque contributeur accepte que sa contribution porte la même permission.
@@ -24,7 +24,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision (2026-11-05) : option A, AGPL-3.0-or-later, avec les permissions supplémentaires pour les magasins d'applications (`LICENSE-ADDITIONAL-PERMISSIONS.md`) et l'accord des contributeurs (`CONTRIBUTING.md`). Relecture par un avocat prévue avant le lancement public. À intégrer dans le cahier des charges, section 8.
 
 ### [2026-11-04] Dépôt privé au départ, public au lancement ?
-- Statut : À valider
+- Statut : Intégré le 2026-11-07 (cahier des charges 2.0, section 8 ; D-005)
 - Concerne : cahier-des-charges.md, section 8
 - Recommandation : dépôt privé pendant la phase 0 et le début de la phase 1, rendu public au lancement de la première version, après un audit de sécurité (aucun secret, aucun réglage anti-fraude dans le dépôt).
 - Constat du 2026-11-05 : avec le plan gratuit de GitHub, la protection de la branche principale n'existe pas sur un dépôt privé, et les minutes d'intégration continue y sont limitées (2 000 par mois, les machines Windows comptant double). Options présentées : A. public dès le premier commit (protection de branche gratuite, intégration continue illimitée y compris sur macOS, miroir Codeberg possible, détection des secrets avant chaque commit, audit avant le lancement du service) ; B. privé avec GitHub Pro (environ 4 dollars par mois) ; C. privé avec le plan gratuit, sans protection de branche.
@@ -158,7 +158,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - Circuit de mise en ligne : tests automatiques, préproduction, validation par la propriétaire, production.
 
 ### [2026-11-04] Framework du site web
-- Statut : À étudier
+- Statut : Intégré le 2026-11-07 (cahier des charges 2.0, sections 1.2 et 4 ; D-007)
 - Concerne : cahier-des-charges.md, section 4
 - Description : choisir le framework de rendu côté serveur (lisible sans JavaScript, PWA, hors ligne), en tenant compte du partage de code avec Kotlin.
 - Options présentées le 2026-11-05 : A. Ktor, déjà retenu pour le serveur, avec des gabarits HTML écrits en Kotlin (kotlinx.html) : un seul langage, modèles partagés avec les applications, pages lisibles sans JavaScript, PWA, export statique possible pour les miroirs de la phase 3, très peu de dépendances (recommandée) ; B. Astro : excellent pour un site de contenu, mais un second langage et un second serveur, et des centaines de dépendances JavaScript ; C. générateur de site statique plus l'API Ktor : rapide et résistant, mais l'interactivité exige du JavaScript ou un second circuit.
@@ -204,7 +204,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - Point à faire relire par un avocat : en dehors de ces trois outils, un appel de PPF à voter pour un candidat pourrait être vu comme un avantage en nature accordé par une personne morale (Code électoral, article L52-8) ; inscrit dans la feuille de route.
 
 ### [2026-11-04] Navigation et UX : quatre espaces, un accueil, « Mon territoire »
-- Statut : À valider
+- Statut : Décidé en partie le 2026-11-06 et le 2026-11-07 (fil par défaut et barre du bas à cinq entrées : D-023, D-026, D-044 ; intégré le 2026-11-07 au cahier des charges 2.0, section 7) ; navigation détaillée à réécrire lors du découpage en MVP
 - Concerne : cahier-des-charges.md, section 7 (design et UX) ; dépend de l'entrée « Restructurer les piliers » de brainstorming-vision.md
 - Proposition :
   - **Barre de navigation à cinq entrées** (le maximum lisible sur mobile), identique sur le site et l'application : **Maintenant** (accueil), **Voir**, **Comprendre**, **Agir**, **Décider**.
@@ -226,7 +226,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : Intégré le 2026-11-06 (D-025).
 
 ### [2026-11-06] Protocole de la messagerie chiffrée (Internet)
-- Statut : Intégré le 2026-11-07 (décision de la propriétaire : option A ; D-027)
+- Statut : Intégré le 2026-11-07 (décision de la propriétaire : option A ; D-027 ; cahier des charges 2.0, section 3.4)
 - Concerne : cahier-des-charges.md, sections 3.4 (messagerie hors ligne bitchat) et 5 (sécurité) ; cahier fonctionnel M14 ; point d'attention n° 26
 - Description : la propriétaire a confirmé la messagerie (privé, groupes, collectifs, flux). Le cahier des charges ne fixe que le mode hors ligne (bitchat : Bluetooth, chiffrement Noise, Nostr en relais). Il faut choisir le protocole des conversations par Internet, compatible avec nos identités (clés secp256k1 Nostr) et avec le serveur unique du départ. Décision de sécurité structurante, donc présentée avant tout code.
   - **Option A : messages privés Nostr (NIP-17) et groupes Nostr (NIP-29)**. NIP-17 : chaque message est chiffré pour le destinataire (NIP-44) puis enveloppé deux fois (« gift wrap ») pour cacher l'expéditeur, le destinataire et l'heure ; les petits groupes se font en envoyant le message à chaque membre. NIP-29 : salons gérés par le relais, adaptés aux collectifs publics et réservés, avec rôles d'administrateurs. Avantages : mêmes clés que nos comptes, aucun serveur supplémentaire (notre serveur devient relais), interopérable avec les applications Nostr, bien documenté. Inconvénients : pas de confidentialité persistante (une clé volée déchiffre les anciens messages), groupes privés limités à quelques dizaines de membres, pas de vérification de l'appareil distant en standard. Coût : nul.
@@ -236,7 +236,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : **Option A retenue par la propriétaire le 7 novembre 2026** (D-027). À reporter dans le cahier des charges, section 3.4, lors de sa prochaine version.
 
 ### [2026-11-06] Maquettes de l'interface communautaire : écarts de navigation à trancher
-- Statut : Décidé le 2026-11-07 (option A)
+- Statut : Intégré le 2026-11-07 (option A, D-044 ; cahier des charges 2.0, section 7)
 - Concerne : cahier-des-charges.md, section 7 ; cahier-fonctionnel.md, S-05
 - Description : les maquettes de la propriétaire diffèrent sur deux points de sa décision du matin sur la navigation.
   1. **Barre du bas ou boutons flottants.** Les maquettes n'ont pas de barre du bas : la carte est un bouton rond flottant « Carte » (accent) en bas à droite, « En direct » un bandeau en haut du fil, et les sections sont dans le menu. L'application garde pour l'instant la barre du bas (Fil, En direct, Carte) demandée le matin, avec le bandeau « EN DIRECT » en plus. Option A : garder la barre du bas (plus visible, un geste pour chaque entrée quotidienne). Option B : suivre les maquettes (boutons flottants Carte et AIDE, menu pour le reste). Recommandation : A, car la carte et le direct sont les deux usages du quotidien en mobilisation et une barre fixe se repère sans apprentissage ; le bouton AIDE peut s'ajouter en flottant au-dessus de la barre.
@@ -300,7 +300,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : option A validée par la propriétaire le 2026-11-07 (« ok pour échelle des décryptage ») : cinq verdicts « Exact », « Plutôt exact », « Trompeur », « Contredit par les faits », « Invérifiable », définis dans une page « Notre méthode » (PP-02). Mis en œuvre le 2026-11-07 (D-038).
 
 ### [2026-11-07] Annuaire officiel des élus (noms des élus locaux dans « Qui décide de ça ? »)
-- Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel 2.0, M13.1)
+- Statut : Décidé le 2026-11-07 (D-047) ; intégré le 2026-11-07 au cahier des charges 2.0, section 3.8 ; à intégrer dans le cahier fonctionnel 2.0, M13.1
 - Concerne : cahier-fonctionnel.md, M13.1 (« Qui décide de ça ? », « Mes élus ») ; cahier des charges, section 4 (données publiques : Répertoire national des élus)
 - Description : l'encart « Qui décide ? Les élus concernés » nomme aujourd'hui les personnes publiques liées par l'équipe. Pour nommer les élus de chacun (maire, conseillers, député, sénateurs), il faut la liste officielle des élus et le lien entre une commune et ses élus.
 - Options :
@@ -312,7 +312,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : option A validée par la propriétaire le 2026-11-07 (« Pour les élus oui ça serait parfait »), avec l'option C (liens vers les annuaires officiels) tant que l'application n'a pas de serveur. Mise en œuvre le 2026-11-07 (D-047, contrat dans `docs/integration/comprendre-vague-3.md`).
 
 ### [2026-11-07] Licence des résultats des départementales de 2021 (cantons des communes partagées, annuaire des élus)
-- Statut : À valider
+- Statut : Décision technique prise en autonomie (chef d'équipe) le 2026-11-07
 - Concerne : cahier-des-charges.md, section 4 (données publiques réutilisées) ; D-047 ; `docs/integration/elus-serveur.md`, section 1.5
 - Description : pour savoir dans quel canton vote une commune, le serveur utilise le Code officiel géographique de l'Insee (Licence Ouverte). Mais 276 communes sont partagées entre plusieurs cantons (Lille : 6, Rennes : 6, Marseille : 12...) et le Code officiel géographique ne dit pas lesquels. La seule source exacte trouvée est le fichier des résultats du 1er tour des départementales de 2021 par commune, publié par le ministère de l'Intérieur sur data.gouv.fr (jeu `60d1fa73986a6e7da8017808`). Sa page indique une licence « non spécifiée ». Le serveur n'en lit que trois colonnes (département, canton, commune), jamais les candidats. Ce sont des informations publiques produites par une administration : leur réutilisation est libre, même sans licence, lorsqu'elles sont mises à disposition gratuitement, à condition de ne pas les altérer, de ne pas en dénaturer le sens et de citer la source et la date (code des relations entre le public et l'administration, articles L321-1, L322-1 et L323-2, à relire sur Légifrance au moment de la décision).
 - Options :
@@ -320,8 +320,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **B. Ne pas l'utiliser** : pour ces 276 communes, l'application ne connaît pas les cantons de la commune ; il faudrait alors lister tous les cantons du département avec leurs conseillers (règle de repli du contrat, à coder pour ce cas : aujourd'hui, une commune sans canton dans un département qui en a n'affiche aucun conseiller de canton, seulement la présidence du conseil départemental). Avantage : seulement des sources sous licence écrite. Inconvénient : à Marseille ou à Lille, des dizaines de noms au lieu de quelques-uns.
 - Coût : aucun.
 - Recommandation : A, avec la mention de la source et de la date dans la page « Mes élus », et une question au ministère de l'Intérieur (via data.gouv.fr) pour qu'il indique la licence ; relecture par l'avocat avec les autres points avant l'ouverture publique.
-- Décision : en attente de la propriétaire. Le code suit l'option A en attendant ; passer à B ne demande que de retirer cette source.
-- Décision :
+- Décision : option A, tranchée le 2026-11-07 par le chef d'équipe « Team lead [Voir] » selon la doctrine de la propriétaire (D-044 : pousser le curseur au maximum, relecture par un avocat à la fin) : le fichier est utilisé, avec sa source et sa date citées et sans altérer les données (code des relations entre le public et l'administration, L321-1, L322-1, L323-2). Ajouté à la liste « À faire relire par un avocat avant l'ouverture publique » de la ROADMAP.
 
 ### [2026-11-07] Serveur de la préproduction : achat
 - Statut : À valider

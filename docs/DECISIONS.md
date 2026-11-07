@@ -480,6 +480,35 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **poids** : l'APK passe de 16,5 à 38 Mo (bibliothèques natives compressées) ; un APK par architecture (environ 26 Mo) est possible à la publication.
 - Reste : voir la carte réelle sur le téléphone de la propriétaire (aucun émulateur sur l'ordinateur) ; zones hors ligne (S-35), carte de la manifestation en direct (AG-24), tracé d'un parcours, placer un point dans le formulaire.
 
+## D-054 (2026-11-07) Fiches des partis politiques dans « Voir »
+
+- Contexte : décision de la propriétaire du 7 novembre 2026 (M17, ordre d'entrée des responsables publics : « un parti aura sa propre fiche avant les personnes de ce parti »). Détail : `docs/integration/voir-partis.md`.
+- Décisions techniques prises en autonomie :
+  - **brique `parti`** distincte d'`organisation` (annuaire d'« Agir », dont les partis sont exclus, point d'attention n° 7) ; lien d'une personne vers son parti (rôle `parti`), d'un parti vers ses dirigeants (rôle `responsable`) : les membres se déduisent, sans liste en double ;
+  - **structure de financement obligatoire** (association de financement agréée ou mandataire financier, loi n° 88-227 du 11 mars 1988, articles 11 à 11-2) : le même critère légal pour tous, vérifiable sur une source primaire ; **jamais le nom d'un mandataire financier** (personne physique) ;
+  - aide publique de l'État par année (décret annuel de répartition pour source), parti et groupe européens, sièges par assemblée et par source, côte à côte, jamais fusionnés ;
+  - **partis rangés par nom**, jamais par taille ; rubriques identiques pour tous, même vides ;
+  - **pas de culpabilité par association** : la fiche d'un parti ne montre que les faits qui visent le parti lui-même ; les cartes des membres y apparaissent sans leurs compteurs d'affaires.
+- Fusionné le 7 novembre 2026 avec un agent d'une autre session qui faisait le même travail (ses apports repris : financement, aide publique, groupe européen, tri par nom).
+
+## D-055 (2026-11-07) « Voir » sur le site web, sans JavaScript
+
+- Contexte : cahier des charges (site lisible sans JavaScript, PWA, contenus essentiels hors ligne ; solution sur iPhone). Détail : `docs/integration/voir-web.md`.
+- Décisions techniques prises en autonomie : une page par contenu à une adresse stable (`/voir/chiffres|faits|personnes|partis|textes|monde|dossiers/<identifiant>`, identifiant encodé selon la RFC 3986, construite par `core/voir/VoirLinks` pour l'application comme pour le site) ; graphique dessiné par le serveur en SVG, sans script ni couleur dans la page (classes définies dans `site.css`, CSP stricte), suivi du même tableau de données ; rendu Markdown maison qui échappe tout ; seuls les contenus des clés éditoriales (`PPF_EDITOR_KEYS`), catalogue gardé 30 secondes ; filtres par simples liens ; liens sortants marqués « (site extérieur) » avec `rel="noopener noreferrer nofollow external"`. La page d'un parti sur le site montre pour l'instant sa présentation, ses sources et son origine ; la fiche complète suivra.
+
+## D-056 (2026-11-07) Droit de réponse et « Signaler une erreur » dans « Voir »
+
+- Contexte : M17 (droit de réponse obligatoire, LCEN, article 1-1, III ; journal des corrections) ; inventaire VO-21 et VO-22. Détail et format : `docs/integration/voir-demandes.md`.
+- Décisions techniques prises en autonomie :
+  - **transport par message privé chiffré** (NIP-17) vers la boîte de l'équipe de rédaction, par le relais existant, sans route serveur nouvelle : les demandes sensibles restent chiffrées pour l'équipe, et l'échange (vérification de l'identité, réponse) a lieu dans « Messages » ;
+  - **droit de réponse depuis un compte** (l'équipe doit répondre et vérifier l'identité) : formulaire en page, longueur maximale max(mots du contenu, 1 000) avec compteur en direct, déclaration sur l'honneur, brouillon gardé en mémoire pendant la création du compte ;
+  - **« Signaler une erreur » sous chaque contenu, anonyme par défaut** (clé à usage unique, l'équipe ne peut pas répondre) ; avec le compte après une mise en garde, réversible (principe 10) ; signalements anonymes en attente gardés en mémoire seulement ;
+  - **clé de la boîte de l'équipe** isolée derrière `VoirRequests.TEAM_INBOX` (aujourd'hui la clé éditoriale d'exemple) : **une clé dédiée, distincte de celle qui signe les contenus, à créer avant le lancement public**.
+
+## D-057 (2026-11-07) Grille de l'indice de gravité des violences policières (décision de la propriétaire)
+
+- La propriétaire valide le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe) la grille en cinq niveaux proposée par le pôle « Voir » : 1 sans incapacité (pas d'ITT), 2 blessure légère (ITT de 8 jours ou moins), 3 blessure grave (ITT de plus de 8 jours), 4 mutilation ou infirmité permanente, 5 décès ; pour chaque cas : mineur ou non, arme ou moyen en cause, niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule) ; cas déclaratifs comptés à part, jamais mélangés aux cas vérifiés ; l'indice d'une journée est la répartition entre les cinq niveaux, jamais une note unique. Code : à venir (feuille de route de « Voir », point 9).
+
 ## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
 
 - Contexte : cahier fonctionnel, M10 et DE-07 (« relais des pétitions officielles », « explication claire des seuils et de leurs effets réels », « kits de partage ») ; demande de la propriétaire du 7 novembre 2026 de commencer « Décider » par ce qui est déjà spécifié. Le cahier fonctionnel demandait de revérifier le droit avant de coder.

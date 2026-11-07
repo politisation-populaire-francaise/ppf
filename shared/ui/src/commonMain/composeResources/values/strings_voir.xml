@@ -104,9 +104,6 @@
     <string name="voir_reply_title">Droit de réponse de %1$s</string>
     <string name="voir_reply_published">Publié le %1$s</string>
     <string name="voir_reply_button">Droit de réponse</string>
-    <string name="voir_reply_dialog_title">Exercer un droit de réponse</string>
-    <string name="voir_reply_dialog_text">Toute personne nommée ou désignée dans un contenu peut y répondre (loi pour la confiance dans l’économie numérique, article 6, IV). Sa réponse est publiée sous le contenu dans les trois jours suivant sa réception, avec la mention « Droit de réponse de [nom] ».</string>
-    <string name="voir_reply_dialog_how">Le formulaire de demande arrivera avec le serveur de PPF. Une personne qui a un compte vérifié pourra écrire sa réponse directement ; toute autre personne passera par ce formulaire en justifiant de son identité.</string>
 
     <!-- Public persons -->
     <string name="voir_person_mandates">Mandats et fonctions</string>

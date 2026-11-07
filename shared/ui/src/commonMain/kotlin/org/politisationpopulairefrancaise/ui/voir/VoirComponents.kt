@@ -55,6 +55,7 @@ import org.politisationpopulairefrancaise.core.voir.Reliability
 import org.politisationpopulairefrancaise.core.voir.RightOfReply
 import org.politisationpopulairefrancaise.core.voir.Source
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
+import org.politisationpopulairefrancaise.core.voir.parties
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.Dot
@@ -84,11 +85,11 @@ object VoirTags {
     const val CHART_TOGGLE = "voir-chart-toggle"
     const val TABLE = "voir-table"
     const val REPLY_OPEN = "voir-reply-open"
-    const val REPLY_DIALOG = "voir-reply-dialog"
     const val PRESUMPTION = "voir-presumption"
     const val LINK_DIALOG = "voir-link-dialog"
     const val LINK_OPEN = "voir-link-open"
     const val NEXT = "voir-next-" // followed by the index
+    const val PARTY_CHIP = "voir-party-chip"
     fun tab(index: Int) = "voir-tab-$index"
     fun page(index: Int) = "voir-page-$index"
     fun card(slug: String) = "voir-card-$slug"
@@ -439,11 +440,11 @@ internal fun FactCard(fact: Fact, onOpen: () -> Unit, modifier: Modifier = Modif
             Spacer(Modifier.height(8.dp))
             Text(it, style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, maxLines = 3, overflow = TextOverflow.Ellipsis)
         }
-        val persons = catalog?.personsOf(fact).orEmpty()
-        if (persons.isNotEmpty()) {
+        val names = catalog?.let { c -> c.personsOf(fact).map { it.name } + fact.parties.mapNotNull(c::party).map { it.name } }.orEmpty()
+        if (names.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
             Text(
-                persons.joinToString(", ") { it.name.withoutExample() },
+                names.joinToString(", ") { it.withoutExample() },
                 style = MaterialTheme.typography.labelMedium,
                 color = palette.brand,
                 maxLines = 1,
@@ -485,29 +486,6 @@ internal fun ReplyCard(reply: RightOfReply, modifier: Modifier = Modifier) {
             Text(reply.text.trim(), style = MaterialTheme.typography.bodyLarge, fontStyle = FontStyle.Italic)
         }
     }
-}
-
-/** How to exercise a right of reply (VO-21): the law, the delay, the form to come. */
-@Composable
-internal fun ReplyDialog(onDismiss: () -> Unit) {
-    val palette = PpfTheme.palette
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        modifier = Modifier.testTag(VoirTags.REPLY_DIALOG),
-        containerColor = palette.surface2,
-        titleContentColor = palette.ink,
-        textContentColor = palette.inkMuted,
-        shape = MaterialTheme.shapes.medium,
-        title = { Text(stringResource(Res.string.voir_reply_dialog_title), style = MaterialTheme.typography.titleMedium) },
-        text = {
-            Column(Modifier.verticalScroll(rememberScrollState())) {
-                Text(stringResource(Res.string.voir_reply_dialog_text), style = MaterialTheme.typography.bodyMedium)
-                Spacer(Modifier.height(8.dp))
-                Text(stringResource(Res.string.voir_reply_dialog_how), style = MaterialTheme.typography.bodyMedium)
-            }
-        },
-        confirmButton = { PpfTextButton(onClick = onDismiss, text = stringResource(Res.string.voir_close)) },
-    )
 }
 
 /** What the labels of "Voir" mean: status of a fact, reliability, stages of a procedure, sources side by side. */

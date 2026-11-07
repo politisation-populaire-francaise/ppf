@@ -164,3 +164,14 @@ Hôtes contactés par le serveur, et lui seul, quand l'archivage est allumé (pr
 | Tempête de requêtes vers un service en difficulté (bannissement, abus) | Trois essais au plus par requête, après 2 puis 4 secondes ; un calendrier ou un explorateur en panne n'est plus interrogé avant le tour suivant ; un tour par heure ; premier tour 2 minutes après le démarrage ; une requête par seconde au plus vers FreeTSA | Aucun |
 | Fuite par les journaux (empreinte, preuve, adresse contenant une valeur de preuve, corps reçu) | Journaux limités à des nombres, des codes courts et des noms de classes ; vérifié par un test qui capture tous les journaux d'un horodatage complet | Aucun |
 | Mandataire HTTPS mal réglé (identifiants dans la variable, TLS cassé) | Mandataire `http://hôte:port` seulement, tunnel `CONNECT` qui garde le TLS de bout en bout ; identifiants refusés au démarrage sans répéter la valeur ; lu seulement quand l'archivage est allumé | Aucun |
+
+## Ajout du 7 novembre 2026 : partis, site et demandes de « Voir » (D-054 à D-056)
+
+| Menace | Parade |
+|---|---|
+| Accusation de partialité envers un parti | Mêmes rubriques et même ordre pour tous, tri par nom, critère légal de financement le même pour tous, faits visant un membre jamais affichés sur la fiche du parti |
+| Données personnelles d'un mandataire financier | Jamais stockées : l'outil de signature refuse un nom dans le champ |
+| Injection de HTML ou de script par un contenu sur le site | Markdown rendu par un code qui échappe tout ; aucun HTML recopié ; CSP sans `unsafe-inline`, aucune couleur ni style en ligne |
+| Lecture des demandes de droit de réponse ou des signalements | Chiffrés de bout en bout pour la boîte de l'équipe (NIP-17, NIP-44) ; le serveur ne voit qu'une enveloppe d'auteur à usage unique |
+| Clé de la boîte de l'équipe confondue avec la clé qui signe les contenus | Constante isolée (`VoirRequests.TEAM_INBOX`) ; clé dédiée à créer avant le lancement public |
+| Signaleur identifié contre son gré | Signalement anonyme par défaut, clé à usage unique détruite après l'envoi ; envoi avec le compte seulement après mise en garde |
