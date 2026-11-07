@@ -31,6 +31,24 @@ fun open(id: String, subject: String, choices: List<String>, opensAt: Instant, c
 - `VoteControl(choices, state, onChoose)` et `UrneResultsView(journal, labels)` (interface commune, `ui/urne/`) : le composant de vote et l'affichage des résultats, les mêmes partout.
 - `UrneRemote.journal(n)` : le journal public d'une urne (comptes et jetons par niveau, bulletins, résultats si l'urne les montre).
 
+## 2 ter. Participation et soutiens d'« Agir », convenus avec « Agir » le 7 novembre 2026
+
+- **Mobilisation** : une seule urne `agir:participation:31923:<clé>:<d>`, choix `["participe", "interesse"]` (deux nombres affichés) ; passer de l'un à l'autre remplace le bulletin, `retire` le retire.
+- **Appel** : `agir:soutien:30023:<clé>:<d>`, un seul choix `soutien` ; le libellé dépend du type de l'appel (« Je soutiens », « J'ai signé », « J'aide », « J'y serai »), la valeur reste fermée.
+- **Ouverture** quand le contenu devient public (stocké directement, ou approuvé dans la file de relecture) ; `closesAt` = fin de la mobilisation (ou début plus deux heures sans fin), échéance ou clôture de l'appel (`null` sans échéance) ; **clôture anticipée** par `UrneService.closeEarly(id, at)` pour une mobilisation annulée ou un appel clos par son auteur.
+- **Organisations** : elles ne votent jamais ; leur participation publique (réponse NIP-52 de type 31925, D-045) est affichée à part (« Organisations participantes : N »), la personne derrière le compte votant avec son compte personnel. Élus : un nombre séparé, jamais additionné.
+- **Sans compte** : un pense-bête sur l'appareil (« Ajouté à mon agenda »), sans le mot « participe », n'est ni un vote ni un compteur ; compter demande un compte.
+- **Hors ligne** : le vote attend dans `UrneSession` et part au retour du réseau ; une seule tâche de l'application appelle `sync` et `sendDue` (branchée par « Décider »).
+
+## 2 bis. Signalements chiffrés de « Voir » (VO-03), convenus avec « Voir » le 7 novembre 2026
+
+- **Une urne par couple (indicateur, occasion)** : `id` = `voir:signalement:<adresse de l'indicateur>:<occasion>`, l'occasion étant l'identifiant stable de la journée ou de l'événement (une brique de « Voir » ou une mobilisation de l'agenda, type 31923). Une même journée a donc une urne par indicateur.
+- **Tranches fermées, déclarées par l'indicateur** (une étiquette de l'indicateur, lue à l'ouverture de l'urne) : par exemple `0`, `1-2`, `3-5`, `6-10`, `11-20`, `21-50`, `51+` pour des blessés vus ; `0`, `1-9`, `10-99`, `100-999`, `1000+` pour des interpellations vues. Jamais un nombre libre, jamais un texte.
+- **Résultat** : la répartition par tranche, telle quelle ; jamais une moyenne ni un total calculé à partir des tranches. Une vérification par l'équipe décide si la répartition entre dans l'observatoire, toujours à côté des autres sources, jamais fusionnée avec elles (méthode de M2).
+- **Fenêtre** : ouverture le jour de l'événement, clôture 7 jours après (souvenirs frais, pas de gonflement tardif) ; résultats cachés jusqu'à la clôture (`liveResults = false`) pour ne pas influencer les signalements ; le niveau du votant est figé à l'ouverture, comme partout.
+- **Rien de géolocalisé dans le bulletin** (ni lieu précis, ni heure fine) : si un territoire compte, c'est une urne par territoire, jamais une information donnée par le votant.
+- Longueur : `id` et `subject` acceptent jusqu'à 400 caractères (deux adresses de contenu y tiennent).
+
 ## 3. Ce qui est interdit aux pôles
 
 1. Écrire un compteur à soi de participations, de soutiens, de votes ou de signalements (en base, en mémoire ou dans un événement) : tout compte passe par une urne.

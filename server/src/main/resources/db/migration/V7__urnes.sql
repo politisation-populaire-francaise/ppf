@@ -33,9 +33,9 @@ CREATE TABLE urne (
     -- Order of opening, public; the cursor of token delivery follows it.
     number        BIGINT      PRIMARY KEY CHECK (number > 0),
     -- Stable identifier, part of the derivation of the keys (no U+001F).
-    id            TEXT        NOT NULL UNIQUE CHECK (length(id) BETWEEN 1 AND 200),
+    id            TEXT        NOT NULL UNIQUE CHECK (length(id) BETWEEN 1 AND 400),
     -- Address of what is voted on.
-    subject       TEXT        NOT NULL CHECK (length(subject) BETWEEN 1 AND 300),
+    subject       TEXT        NOT NULL CHECK (length(subject) BETWEEN 1 AND 400),
     -- Allowed choices, JSON array of strings.
     choices       JSONB       NOT NULL,
     -- Version of the seed of its keys (one file per version in PPF_VOTE_SEEDS_DIR).
