@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Notifications (M31, contract docs/integration/notifications.md): the settings of "Mon espace"
+     and the notification centre opened by the bell of the top bar. French, typographic
+     apostrophe (’), no em dash. -->
+<resources>
+    <!-- Settings card, in "Mon espace". -->
+    <string name="notif_title">Notifications</string>
+    <string name="notif_intro">Tout est éteint au départ. Choisissez ce qui vous intéresse : votre appareil regarde lui-même ce qui est nouveau, sans dire au serveur ce que vous suivez.</string>
+    <string name="notif_categories_title">Ce qui vous est signalé</string>
+    <string name="notif_category_messages">Messages</string>
+    <string name="notif_category_messages_hint">Vos conversations privées.</string>
+    <string name="notif_category_messages_no_account">Créez un compte pour être prévenu de vos messages.</string>
+    <string name="notif_category_mobilisations">Mobilisations et appels</string>
+    <string name="notif_category_mobilisations_hint">Les mobilisations, les événements et les appels auxquels vous avez répondu.</string>
+    <string name="notif_category_votes">Votes et pétitions</string>
+    <string name="notif_category_votes_hint">Les pétitions, les votes du Parlement, les consultations.</string>
+    <string name="notif_category_followed">Contenus suivis</string>
+    <string name="notif_category_followed_hint">Les personnes, les textes et les fiches que vous suivez.</string>
+    <string name="notif_category_team">Équipe PPF</string>
+    <string name="notif_category_team_hint">Les réponses à vos demandes et l’état du service.</string>
+    <string name="notif_on">activé</string>
+    <string name="notif_off">désactivé</string>
+    <string name="notif_permission_refused">Votre appareil n’autorise pas PPF à afficher des notifications. Elles restent visibles dans le centre de notifications de l’application : la cloche en haut de l’écran. Vous pourrez les autoriser plus tard dans les réglages de votre appareil.</string>
+
+    <string name="notif_display_title">Affichage</string>
+    <string name="notif_details">Montrer l’expéditeur et un extrait</string>
+    <string name="notif_details_hint">Seulement quand l’appareil est déverrouillé. L’écran verrouillé n’affiche jamais rien d’autre que « PPF : nouvelle activité ».</string>
+    <string name="notif_silence">Silence total</string>
+    <string name="notif_silence_hint">Ni son, ni vibration, ni bannière : tout va dans le centre de notifications.</string>
+
+    <string name="notif_wake_title">Réveils par le serveur</string>
+    <string name="notif_wake_intro">Sans réveil, votre appareil regarde ce qui est nouveau seulement quand l’application est ouverte. Un réveil ne contient jamais rien : il dit juste à votre appareil de se mettre à jour.</string>
+    <string name="notif_public_wake">Réveil pour les contenus publics</string>
+    <string name="notif_public_wake_hint">Ce que le serveur apprend : rien sur vous. Il réveille tous les appareils inscrits quand il y a du nouveau.</string>
+    <string name="notif_public_wake_needs_category">Choisissez d’abord au moins une catégorie ci-dessus.</string>
+    <string name="notif_mailbox_wake">Réveil pour vos messages</string>
+    <string name="notif_mailbox_wake_hint">Ce que le serveur apprend : il saura qu’un appareil attend les messages de ce compte, jamais ce qu’ils contiennent ni qui les envoie.</string>
+    <string name="notif_mailbox_needs_messages">Activez d’abord la catégorie Messages ci-dessus.</string>
+    <string name="notif_no_server">Pas de serveur relié pour l’instant : les notifications arrivent tant que l’application est ouverte.</string>
+
+    <string name="notif_push_active">Réveil actif.</string>
+    <string name="notif_push_waiting">Inscription en attente de réponse.</string>
+    <string name="notif_push_no_distributor">Il manque sur cet appareil une application qui reçoit les réveils.</string>
+    <string name="notif_push_step_1">1. Installez l’application ntfy depuis F-Droid, le magasin d’applications libres.</string>
+    <string name="notif_push_step_2">2. Dans ntfy, ouvrez les paramètres, puis « Serveur par défaut », et saisissez l’adresse : %1$s</string>
+    <string name="notif_push_step_3">3. Revenez ici et touchez « Réessayer ».</string>
+    <string name="notif_push_stay_without">Vous pouvez aussi rester sans réveil : les notifications arrivent quand l’application est ouverte.</string>
+    <string name="notif_push_unreachable">Serveur injoignable pour l’instant. Un nouvel essai aura lieu au prochain démarrage.</string>
+    <string name="notif_push_refused">Le serveur a refusé l’inscription. Les notifications arrivent quand l’application est ouverte.</string>
+    <string name="notif_push_retry">Réessayer</string>
+
+    <string name="notif_warning_title">Avant d’activer</string>
+    <string name="notif_warning_details">L’expéditeur et le début de vos messages s’afficheront dès que l’appareil est déverrouillé. Une personne qui regarde votre écran pourrait les lire. Vous pourrez revenir en arrière à tout moment.</string>
+    <string name="notif_warning_public_wake">Le serveur gardera une adresse de réveil pour cet appareil, sans aucun lien avec votre compte. Ce que le serveur apprend : rien sur vous. Il réveille tous les appareils inscrits quand il y a du nouveau. L’adresse est effacée dès que vous désactivez ce réglage, ou après 30 jours sans renouvellement.</string>
+    <string name="notif_warning_mailbox_wake">Le serveur saura qu’un appareil attend les messages de ce compte, jamais ce qu’ils contiennent ni qui les envoie. L’inscription est effacée dès que vous désactivez ce réglage, ou après 30 jours sans renouvellement.</string>
+    <string name="notif_warning_keep">Garder désactivé</string>
+    <string name="notif_warning_confirm">Activer quand même</string>
+
+    <!-- The bell of the top bar. -->
+    <string name="notif_bell_unread_one">Notifications, 1 non lue</string>
+    <string name="notif_bell_unread_many">Notifications, %1$d non lues</string>
+
+    <!-- The notification centre. -->
+    <string name="notif_center_title">Notifications</string>
+    <string name="notif_center_description">Gardées sur cet appareil seulement, 30 jours au plus.</string>
+    <string name="notif_center_back">Retour</string>
+    <string name="notif_center_mark_all">Tout marquer comme lu</string>
+    <string name="notif_center_clear">Tout effacer</string>
+    <string name="notif_center_clear_title">Tout effacer ?</string>
+    <string name="notif_center_clear_text">Le centre de notifications sera vidé sur cet appareil. Aucun message ni contenu n’est supprimé.</string>
+    <string name="notif_center_clear_confirm">Effacer</string>
+    <string name="notif_center_cancel">Annuler</string>
+    <string name="notif_center_empty">Aucune notification pour l’instant. Ce que vous choisissez dans Mon espace apparaîtra ici.</string>
+    <string name="notif_center_settings">Régler les notifications</string>
+    <string name="notif_center_unread">Non lu</string>
+    <string name="notif_center_read">Lu</string>
+    <string name="notif_center_message_generic">Nouveau message privé</string>
+    <string name="notif_center_message_from">Message de %1$s</string>
+</resources>
