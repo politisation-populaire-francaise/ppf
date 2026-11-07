@@ -54,8 +54,16 @@ class ServerPublicationPort(
             // 202: kept by the server for a review by the team before publication.
             202 -> PublicationResult.Accepted(event.id, heldForReview = true)
             in 200..299 -> PublicationResult.Accepted(event.id)
-            // Rate limited: not a refusal of this event, keep it and retry after the delay the server gives.
-            429 -> PublicationResult.Unavailable(ServerException(429, response.headers["Retry-After"]?.trim()?.toLongOrNull()))
+            // Rate limited: not a refusal of this event, keep it and retry after the delay the server gives;
+            // except the daily limit of room creations (D-132), a refusal for today.
+            429 -> {
+                val body = runCatching { response.bodyAsText() }.getOrNull()
+                if (body != null && body.contains("\"too_many_groups\"")) {
+                    rejection(event.id, body)
+                } else {
+                    PublicationResult.Unavailable(ServerException(429, response.headers["Retry-After"]?.trim()?.toLongOrNull()))
+                }
+            }
             in 500..599 -> PublicationResult.Unavailable(ServerException(response.status.value))
             else -> rejection(event.id, runCatching { response.bodyAsText() }.getOrNull())
         }
@@ -107,6 +115,27 @@ class ServerPublicationPort(
             throw e
         } catch (e: Exception) {
             ProposalStatuses.Unavailable(e)
+        }
+    }
+
+    /** `GET /api/v1/group-creations?id=…`: where the author's held room creations stand (D-132). */
+    override suspend fun fetchCreationStates(ids: List<String>): HeldStatuses {
+        require(ids.size <= HeldStatusSource.MAX_IDS) { "At most ${HeldStatusSource.MAX_IDS} ids per request" }
+        if (ids.isEmpty()) return HeldStatuses.Known(emptyList())
+        val response = try {
+            client.get("$baseUrl/api/v1/group-creations") { ids.forEach { parameter("id", it) } }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return HeldStatuses.Unavailable(e)
+        }
+        if (response.status.value !in 200..299) return HeldStatuses.Unavailable(ServerException(response.status.value))
+        return try {
+            HeldStatuses.Known(json.decodeFromString(ListSerializer(HeldState.serializer()), response.bodyAsText()))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            HeldStatuses.Unavailable(e)
         }
     }
 
@@ -256,7 +285,7 @@ class ServerPublicationPort(
     class ServerException(val status: Int, val retryAfterSeconds: Long? = null) : RuntimeException("Server answered $status")
 
     @Serializable
-    private data class ApiErrorBody(val error: String, val message: String = "", val existing: String? = null)
+    private data class ApiErrorBody(val error: String, val message: String = "", val existing: String? = null, val similar: List<SimilarRoom> = emptyList())
 
     /** One entry of `GET /api/v1/groups`; a description without a name falls back to its id. */
     @Serializable
@@ -270,6 +299,8 @@ class ServerPublicationPort(
         val public: Boolean = true,
         val open: Boolean = true,
         val event: SignedEvent,
+        /** The latest edit of the name and presentation (D-131), already applied to `name` and `about`. */
+        val edit: SignedEvent? = null,
     )
 
     companion object {
@@ -286,6 +317,16 @@ class ServerPublicationPort(
             "missing_charter" -> RejectionReason.MISSING_CHARTER
             "missing_name" -> RejectionReason.MISSING_NAME
             "description_too_long" -> RejectionReason.DESCRIPTION_TOO_LONG
+            "group_similar" -> RejectionReason.GROUP_SIMILAR
+            "too_many_groups" -> RejectionReason.TOO_MANY_GROUPS
+            "account_too_recent" -> RejectionReason.ACCOUNT_TOO_RECENT
+            "organisation_name" -> RejectionReason.ORGANISATION_NAME
+            "territory_fixed" -> RejectionReason.TERRITORY_FIXED
+            "not_allowed" -> RejectionReason.NOT_ALLOWED
+            "last_admin" -> RejectionReason.LAST_ADMIN
+            "banned" -> RejectionReason.BANNED
+            "reason_required" -> RejectionReason.REASON_REQUIRED
+            "edit_not_allowed" -> RejectionReason.EDIT_NOT_ALLOWED
             else -> RejectionReason.REFUSED
         }
 
@@ -298,7 +339,8 @@ class ServerPublicationPort(
         internal fun rejection(eventId: String, body: String?): PublicationResult.Rejected {
             val error = body?.let { runCatching { json.decodeFromString(ApiErrorBody.serializer(), it) }.getOrNull() }
             val existing = error?.existing?.takeIf { Group.isValidId(it) }
-            return PublicationResult.Rejected(eventId, rejectionReason(error?.error), existing)
+            val similar = error?.similar.orEmpty().filter { Group.isValidId(it.id) }
+            return PublicationResult.Rejected(eventId, rejectionReason(error?.error), existing, similar)
         }
 
         /** The address of the index ([code] null) or of one package of the directory of elected officials. */
@@ -343,6 +385,7 @@ class ServerPublicationPort(
                     public = it.public,
                     open = it.open,
                     event = it.event,
+                    edit = it.edit,
                 )
             }
     }
