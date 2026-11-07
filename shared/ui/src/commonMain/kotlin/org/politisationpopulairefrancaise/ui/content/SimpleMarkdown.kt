@@ -5,6 +5,9 @@ import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
+import org.politisationpopulairefrancaise.core.comprendre.ContentBlocks
+import org.politisationpopulairefrancaise.core.comprendre.Objection
+import org.politisationpopulairefrancaise.core.comprendre.TimelineEntry
 import org.politisationpopulairefrancaise.ui.theme.CalloutType
 
 /** The small subset of Markdown used by editorial contents (content/README.md). */
@@ -15,13 +18,20 @@ sealed interface MarkdownBlock {
 
     /** A highlighted box (`::: en-bref` … `:::`) holding its own blocks. */
     data class Callout(val type: CalloutType, val blocks: List<MarkdownBlock>) : MarkdownBlock
+
+    /** Objections and their sourced answers (`::: objections`, pluralism). */
+    data class Objections(val items: List<Objection>) : MarkdownBlock
+
+    /** A chronology (`::: chronologie`): dated lines. */
+    data class Timeline(val entries: List<TimelineEntry>) : MarkdownBlock
 }
 
 /**
  * A deliberately small Markdown reader: headings (`#` to `###`), paragraphs separated by blank lines,
  * bullet lists (`-` or `*`), bold (`**`), links (`[text](url)`, shown as "text (url)" because the
  * application never opens an external site without warning) and highlighted boxes opened by
- * `::: en-bref`, `::: legal`, `::: illegal`, `::: attention` or `::: conseil` and closed by `:::`.
+ * `::: en-bref`, `::: legal`, `::: illegal`, `::: attention` or `::: conseil` and closed by `:::`,
+ * objections with their answers (`::: objections`) and chronologies (`::: chronologie`).
  * Anything else is shown as plain text.
  */
 object SimpleMarkdown {
@@ -63,8 +73,15 @@ object SimpleMarkdown {
                         inner += lines[index]
                         index++
                     }
-                    val innerBlocks = parseLines(inner)
-                    if (type != null) blocks += MarkdownBlock.Callout(type, innerBlocks) else blocks += innerBlocks
+                    val key = calloutStart.groupValues[1]
+                    val objections = if (key == ContentBlocks.OBJECTIONS) ContentBlocks.parseObjections(inner).first else emptyList()
+                    val timeline = if (key == ContentBlocks.TIMELINE) ContentBlocks.parseTimeline(inner).first else emptyList()
+                    when {
+                        objections.isNotEmpty() -> blocks += MarkdownBlock.Objections(objections)
+                        timeline.isNotEmpty() -> blocks += MarkdownBlock.Timeline(timeline)
+                        type != null -> blocks += MarkdownBlock.Callout(type, parseLines(inner))
+                        else -> blocks += parseLines(inner)
+                    }
                 }
                 line.isBlank() -> {
                     flushParagraph()

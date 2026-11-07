@@ -458,6 +458,7 @@ class ContentLibrary(
         private val BUNDLED_FILES = listOf(
             "files/contents/fiches.json",
             "files/contents/parcours.json",
+            "files/contents/comprendre.json",
             "files/contents/revendications.json",
             "files/contents/fil.json",
             "files/contents/voir.json",

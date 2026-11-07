@@ -73,9 +73,12 @@ class ComprendreCoursesTest {
     }
 
     @Test
-    fun theFourExampleCoursesAreValidAndBundled() {
+    fun theExampleCoursesAreValidAndBundled() {
         assertEquals(
-            setOf("comment-une-loi-est-votee", "le-49-3-et-la-motion-de-censure", "la-dissolution", "l-election-presidentielle"),
+            setOf(
+                "comment-une-loi-est-votee", "le-49-3-et-la-motion-de-censure", "la-dissolution", "l-election-presidentielle",
+                "le-budget-de-l-etat", "le-role-de-chaque-elu", "le-referendum", "la-revision-de-la-constitution",
+            ),
             bundled.map { it.article.slug }.toSet(),
         )
         bundled.forEach { course ->

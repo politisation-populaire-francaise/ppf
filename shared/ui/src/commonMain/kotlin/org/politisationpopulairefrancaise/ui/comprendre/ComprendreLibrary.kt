@@ -12,7 +12,10 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.politisationpopulairefrancaise.core.comprendre.Decryptage
+import org.politisationpopulairefrancaise.core.comprendre.HistoryStory
 import org.politisationpopulairefrancaise.core.comprendre.LearningProgressStore
+import org.politisationpopulairefrancaise.core.comprendre.QuiDecide
 import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.comprendre.ParcoursProgress
 import org.politisationpopulairefrancaise.core.comprendre.QuizAnswer
@@ -21,6 +24,7 @@ import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.core.voir.PublicPerson
 import org.politisationpopulairefrancaise.ui.AppDependencies
 
 /** Where the reader stands inside an open course. */
@@ -58,7 +62,24 @@ class ComprendreLibrary(
     var dossiers: List<Article> by mutableStateOf(emptyList())
         private set
 
-    var decryptages: List<Article> by mutableStateOf(emptyList())
+    /** Fact-checks with a valid verdict, newest first. */
+    var decryptages: List<Decryptage> by mutableStateOf(emptyList())
+        private set
+
+    /** Stories of the history of social movements, in chronological order. */
+    var stories: List<HistoryStory> by mutableStateOf(emptyList())
+        private set
+
+    /** « Qui décide de ça ? » sheets, by title. */
+    var sheets: List<QuiDecide> by mutableStateOf(emptyList())
+        private set
+
+    /** The page that explains the method and the verdicts (`notre-methode`), when present. */
+    var methodPage: Article? by mutableStateOf(null)
+        private set
+
+    /** The public persons of "Voir" by address, to name the elected officials of a « Qui décide de ça ? » sheet. */
+    var persons: Map<String, PublicPerson> by mutableStateOf(emptyMap())
         private set
 
     /** The reader's progress, by course address. */
@@ -88,19 +109,33 @@ class ComprendreLibrary(
                 progress = saved + progress
             }
             if (store == null) return@launch
-            val (freshCourses, freshDossiers, freshChecks) = withContext(Dispatchers.Default) {
+            val fresh = withContext(Dispatchers.Default) {
                 fun articles(type: ArticleType) = store.byTag(listOf(Article.KIND), Article.TAG_TYPE, type.tagValue, limit = 200)
                     .filter { trust.isTrusted(it.pubkey) }
                     .mapNotNull(Article::from)
-                val courses = articles(ArticleType.PARCOURS).mapNotNull(Parcours::from)
-                    .sortedWith(compareBy<Parcours>({ it.article.publishedAt ?: Long.MAX_VALUE }, { it.article.title.lowercase() }))
-                val dossiers = articles(ArticleType.DOSSIER).sortedByDescending { it.updatedAt }
-                val checks = articles(ArticleType.DECRYPTAGE).sortedByDescending { it.updatedAt }
-                Triple(courses, dossiers, checks)
+                Contents(
+                    courses = articles(ArticleType.PARCOURS).mapNotNull(Parcours::from)
+                        .sortedWith(compareBy<Parcours>({ it.article.publishedAt ?: Long.MAX_VALUE }, { it.article.title.lowercase() })),
+                    // The dossiers of "Voir" carry an axis and live there; the others belong here.
+                    dossiers = articles(ArticleType.DOSSIER).filter { it.event.firstTagValue("ppf-axis") == null }.sortedByDescending { it.updatedAt },
+                    checks = articles(ArticleType.DECRYPTAGE).mapNotNull(Decryptage::from).sortedByDescending { it.article.updatedAt },
+                    stories = articles(ArticleType.HISTOIRE).mapNotNull(HistoryStory::from)
+                        .sortedWith(compareBy<HistoryStory>({ it.startYear ?: Int.MAX_VALUE }, { it.article.title.lowercase() })),
+                    sheets = articles(ArticleType.QUI_DECIDE).mapNotNull(QuiDecide::from).sortedBy { it.article.title.lowercase() },
+                    method = articles(ArticleType.ARTICLE).firstOrNull { it.slug == METHOD_SLUG },
+                    persons = articles(ArticleType.PERSONNE).mapNotNull(PublicPerson::from).associateBy { it.address.toString() },
+                )
             }
-            courses = freshCourses
-            dossiers = freshDossiers
-            decryptages = freshChecks
+            courses = fresh.courses
+            dossiers = fresh.dossiers
+            decryptages = fresh.checks
+            stories = fresh.stories
+            sheets = fresh.sheets
+            methodPage = fresh.method
+            persons = fresh.persons
+            val freshChecks = fresh.checks.map { it.article } + fresh.stories.map { it.article } + fresh.sheets.map { it.article } + listOfNotNull(fresh.method)
+            val freshCourses = fresh.courses
+            val freshDossiers = fresh.dossiers
             // A newer version of the open course replaces it; a course that disappeared closes.
             openCourse = openCourse?.let { current -> freshCourses.firstOrNull { it.address == current.address } }
             val open = openCourse
@@ -236,11 +271,24 @@ class ComprendreLibrary(
         scope.launch { writes.withLock { withContext(Dispatchers.Default) { write(target) } } }
     }
 
+    private class Contents(
+        val courses: List<Parcours>,
+        val dossiers: List<Article>,
+        val checks: List<Decryptage>,
+        val stories: List<HistoryStory>,
+        val sheets: List<QuiDecide>,
+        val method: Article?,
+        val persons: Map<String, PublicPerson>,
+    )
+
     private fun CoursePage.clampedTo(parcours: Parcours): CoursePage = when (this) {
         is CoursePage.Step -> if (index > parcours.steps.lastIndex) CoursePage.Step(parcours.steps.lastIndex) else this
         else -> this
     }
 }
+
+/** The identifier of the page that explains the method and the verdicts. */
+const val METHOD_SLUG: String = "notre-methode"
 
 @Composable
 fun rememberComprendreLibrary(dependencies: AppDependencies): ComprendreLibrary {
