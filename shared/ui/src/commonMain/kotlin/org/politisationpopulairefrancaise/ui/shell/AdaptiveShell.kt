@@ -98,6 +98,8 @@ import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.content.rememberContentLibrary
 import org.politisationpopulairefrancaise.ui.feed.FeedScreen
+import org.politisationpopulairefrancaise.ui.glossaire.ProvideGlossary
+import org.politisationpopulairefrancaise.ui.glossaire.rememberGlossaryState
 import org.politisationpopulairefrancaise.ui.groups.GroupsLibrary
 import org.politisationpopulairefrancaise.ui.groups.rememberGroupsLibrary
 import org.politisationpopulairefrancaise.ui.icons.Lucide
@@ -186,40 +188,53 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     }
     // How long the server keeps the account's private messages (Mon espace, D-028).
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
+    // The glossary (D-048): read once the bundled contents are imported and after each synchronization,
+    // provided to every screen so that the terms of every content open their definition.
+    val glossary = rememberGlossaryState(dependencies)
+    LaunchedEffect(contentLibrary.status) { glossary.reload() }
+    // « Ouvrir le glossaire complet » and the related contents of an entry live in "Comprendre".
+    LaunchedEffect(glossary.wantsComprendre) {
+        if (glossary.wantsComprendre) {
+            selected = Space.COMPRENDRE
+            glossary.navigationDone()
+        }
+    }
     val palette = PpfTheme.palette
     // The system's back leads from any space to the feed; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
-        val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
-        val account = accountSession.state as? AccountUiState.Ready
-        val navigate: (Space) -> Unit = { selected = it }
-        val content: @Composable (Modifier) -> Unit = { modifier ->
-            SpaceContent(
-                dependencies = dependencies,
-                selected = selected,
-                onNavigate = navigate,
-                accountSession = accountSession,
-                contentLibrary = contentLibrary,
-                messaging = messaging,
-                revendicationViews = revendicationViews,
-                proposalComposer = proposalComposer,
-                voirState = voirState,
-                groupsLibrary = groupsLibrary,
-                organisationsLibrary = organisationsLibrary,
-                agendaLibrary = agendaLibrary,
-                callsLibrary = callsLibrary,
-                mailboxSetting = mailboxSetting,
-                windowClass = windowClass,
-                widthDp = maxWidth.value.toInt(),
-                heightDp = maxHeight.value.toInt(),
-                modifier = modifier.testTag(ShellTags.CONTENT),
-            )
-        }
-        when (windowClass.width) {
-            WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, content)
-            WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, content)
-            WindowWidthClass.EXPANDED -> ExpandedShell(selected, navigate, account, content)
+    ProvideGlossary(glossary) {
+        BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
+            val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
+            val account = accountSession.state as? AccountUiState.Ready
+            val navigate: (Space) -> Unit = { selected = it }
+            val content: @Composable (Modifier) -> Unit = { modifier ->
+                SpaceContent(
+                    dependencies = dependencies,
+                    selected = selected,
+                    onNavigate = navigate,
+                    accountSession = accountSession,
+                    contentLibrary = contentLibrary,
+                    messaging = messaging,
+                    revendicationViews = revendicationViews,
+                    proposalComposer = proposalComposer,
+                    voirState = voirState,
+                    groupsLibrary = groupsLibrary,
+                    organisationsLibrary = organisationsLibrary,
+                    agendaLibrary = agendaLibrary,
+                    callsLibrary = callsLibrary,
+                    mailboxSetting = mailboxSetting,
+                    windowClass = windowClass,
+                    widthDp = maxWidth.value.toInt(),
+                    heightDp = maxHeight.value.toInt(),
+                    modifier = modifier.testTag(ShellTags.CONTENT),
+                )
+            }
+            when (windowClass.width) {
+                WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, content)
+                WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, content)
+                WindowWidthClass.EXPANDED -> ExpandedShell(selected, navigate, account, content)
+            }
         }
     }
 }

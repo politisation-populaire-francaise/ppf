@@ -5,6 +5,9 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.comprendre.ComprendreTags
 import org.politisationpopulairefrancaise.core.comprendre.ContentBlocks
+import org.politisationpopulairefrancaise.core.comprendre.GlossaryEntry
+import org.politisationpopulairefrancaise.core.comprendre.GlossaryFormat
+import org.politisationpopulairefrancaise.core.comprendre.GlossarySource
 import org.politisationpopulairefrancaise.core.comprendre.ParcoursFormat
 import org.politisationpopulairefrancaise.core.agir.organisations.Organisation
 import org.politisationpopulairefrancaise.core.agir.AgirFormats
@@ -53,7 +56,9 @@ import kotlin.system.exitProcess
  * sources are missing or malformed), those of `fil` become short notes for the feed (fil.json),
  * those of `voir` (and its sub-directories) become the building blocks of "Voir" (voir.json, D-034),
  * those of `organisations` become entries of the directory of organisations (organisations.json),
- * and those of `appels` become calls of the Agir space (appels.json).
+ * those of `appels` become calls of the Agir space (appels.json), and those of `glossaire` become
+ * the entries of the glossary (glossaire.json, refused if a definition, a form or the sources are
+ * missing, if a form belongs to two entries or if a link names an unknown entry or content).
  * See content/README.md for the front matter of each kind.
  * The signing key is read from the file named by PPF_CONTENT_KEY_FILE (default
  * ~/.ppf/content-example.nsec); it is created if missing. Dates come from the front matter, so
@@ -124,6 +129,7 @@ fun main(args: Array<String>) {
     write(output.resolve("parcours.json"), courses)
 
     write(output.resolve("comprendre.json"), comprendreEvents(content, keys.publicKey).map { signer.signChecked(it) })
+    write(output.resolve("glossaire.json"), glossaryEvents(content, keys.publicKey).map { signer.signChecked(it) })
 
     val notes = signAll(content.resolve("fil")) { document ->
         UnsignedEvent.create(
@@ -445,4 +451,58 @@ private fun comprendreEvents(content: Path, author: PublicKey): List<UnsignedEve
         common(document, ArticleType.ARTICLE, emptyList())
     }
     return checks + stories + sheets + method
+}
+
+/**
+ * The glossary (glossaire.json, D-048): one entry per file of `content/glossaire`, checked as a whole
+ * by [GlossaryFormat] (definition present and short, forms present and owned by one entry, sources,
+ * links to known entries and contents), then read back as the application will.
+ */
+private fun glossaryEvents(content: Path, author: PublicKey): List<UnsignedEvent> {
+    val directory = content.resolve("glossaire")
+    if (!directory.isDirectory()) return emptyList()
+    val documents = directory.listDirectoryEntries("*.md")
+        .filter { !it.name.equals("README.md", ignoreCase = true) }
+        .sortedBy { it.name }
+        .map { parseDocument(it.name, it.readText()) }
+    val sources = documents.map { document ->
+        GlossarySource(
+            file = document.name,
+            slug = document.require("slug"),
+            title = document.require("title"),
+            summary = document.metadata["summary"],
+            variants = GlossaryFormat.list(document.metadata["variants"]),
+            seeAlso = GlossaryFormat.list(document.metadata["see_also"]),
+            related = GlossaryFormat.list(document.metadata["related"]),
+            auto = document.metadata["auto"]?.trim(),
+            body = document.body,
+        )
+    }
+    fun slugsOf(name: String): Set<String> {
+        val folder = content.resolve(name)
+        if (!folder.isDirectory()) return emptySet()
+        return folder.listDirectoryEntries("*.md").mapNotNull { parseDocument(it.name, it.readText()).metadata["slug"] }.toSet()
+    }
+    val known = GlossaryFormat.RELATED_KINDS.mapValues { (_, folder) -> slugsOf(folder) }
+    val problems = GlossaryFormat.problems(sources, known)
+    require(problems.isEmpty()) { "glossaire: invalid entries:\n  " + problems.joinToString("\n  ") }
+    return sources.zip(documents).map { (source, document) ->
+        val unsigned = Article.build(
+            author = author,
+            slug = source.slug,
+            title = source.title,
+            summary = source.summary,
+            topics = document.topics(),
+            type = ArticleType.GLOSSAIRE,
+            origin = ContentOrigin.fromTag(document.require("origin")) ?: error("${document.name}: unknown origin"),
+            publishedAt = document.require("published_at").dateToEpochSeconds(),
+            updatedAt = document.require("updated_at").dateToEpochSeconds(),
+            body = document.body,
+            extraTags = GlossaryFormat.tags(source, author.hex),
+        )
+        val unchecked = SignedEvent(unsigned.idHex(), unsigned.pubkey, unsigned.createdAt, unsigned.kind, unsigned.tags, unsigned.content, "0".repeat(128))
+        checkNotNull(Article.from(unchecked)?.let(GlossaryEntry::from)) { "${document.name}: the application would not read this entry" }
+        println("prepared ${document.name}")
+        unsigned
+    }.also { println("glossaire: ${it.size} entr(ies)") }
 }
