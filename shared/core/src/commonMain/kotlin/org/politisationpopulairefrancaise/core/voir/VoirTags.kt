@@ -23,6 +23,10 @@ object VoirTags {
     const val ROLE_TEXT = "texte"
     const val ROLE_INDICATOR = "indicateur"
     const val ROLE_TARGET = "cible"
+    /** From a person or a fact to the party it belongs to or concerns. */
+    const val ROLE_PARTY = "parti"
+    /** From a party to the persons who lead it. */
+    const val ROLE_LEADER = "responsable"
 
     // Indicators.
     const val UNIT = "ppf-unit"
@@ -64,6 +68,12 @@ object VoirTags {
     const val PERIOD = "ppf-period"
     const val CLAIM = "ppf-claim"
     const val RESULT = "ppf-result"
+
+    // Political parties.
+    const val ACRONYM = "ppf-acronym"
+    const val FOUNDED = "ppf-founded"
+    const val SEATS = "ppf-seats"
+    const val WEBSITE = "ppf-website"
 
     // Rights of reply.
     const val RESPONDENT = "ppf-respondent"
