@@ -28,7 +28,7 @@ Les propositions et amendements passent par la même file de relecture que les r
 | Phase | Durée de départ (modalité délibérable) | Ce qui se passe | Urnes |
 |---|---|---|---|
 | 1. Propositions | 3 semaines | On propose des mesures ; la proposition de départ de PPF est déjà là | Une urne « soutien » par proposition (un seul choix, `soutien`) : sert seulement à départager si les propositions dépassent la limite |
-| 2. Amendements | 2 semaines | On propose une autre rédaction d'une proposition ; on vote sur chaque amendement | Une urne par amendement : `pour`, `contre`, `abstention` |
+| 2. Amendements | 2 semaines | On propose une autre rédaction d'une proposition ; on vote sur chaque amendement | Une urne par amendement : `pour`, `contre`, `blanc` |
 | 3. Vote final | 2 semaines | Chaque mesure, dans sa rédaction retenue, est soumise au vote | Une urne par mesure (méthode : section 8, Q1) |
 
 Calendrier pour le Pacte : ouverture en décembre 2026 dès que le module est prêt, au plus tard début janvier 2027 ; sept semaines en tout ; envoi du Pacte aux candidats ensuite (même jour, même délai pour tous, DE-08). Les dates exactes seront fixées avec le calendrier officiel de l'élection, à vérifier auprès des sources officielles.
