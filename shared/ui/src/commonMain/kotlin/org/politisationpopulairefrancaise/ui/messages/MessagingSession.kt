@@ -27,6 +27,7 @@ import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.publication.RemoteFilter
 import org.politisationpopulairefrancaise.core.publication.TagFilter
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.social.ContactVerificationStore
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import kotlin.concurrent.Volatile
@@ -98,6 +99,8 @@ class MessagingSession(
     private val store: MessageStore?,
     private val remote: RemoteEvents?,
     private val scope: CoroutineScope,
+    /** The contacts checked in person (S-128), on the device only; null without a database. */
+    private val verifications: ContactVerificationStore? = null,
 ) {
     /** The account whose conversations are shown, with its service; replaced when the account changes. */
     private class Account(val signer: MessagingSigner, val service: MessagingService) {
@@ -198,6 +201,9 @@ class MessagingSession(
         refreshing = false
         clearView()
         status = if (store == null) MessagingStatus.Unavailable else MessagingStatus.NoAccount
+        // The contacts checked in person belonged to that identity too.
+        verifications?.clear()
+        verificationsVersion++
         val store = store ?: return
         val previous = clearing
         clearing = scope.launch {
@@ -248,6 +254,37 @@ class MessagingSession(
 
     fun closeFlow() {
         openFlow = null
+    }
+
+    /** Whether [pubkeyHex] was checked in person on this device (S-128). */
+    fun isVerified(pubkeyHex: String): Boolean = verifications?.isVerified(pubkeyHex) == true
+
+    /** Increases when a verification changes, so the screens read [isVerified] again. */
+    var verificationsVersion: Int by mutableStateOf(0)
+        private set
+
+    /** Records that the user compared the safety number with [pubkeyHex] in person, or undoes it. */
+    fun setVerified(pubkeyHex: String, verified: Boolean) {
+        val store = verifications ?: return
+        if (verified) store.markVerified(pubkeyHex) else store.unmarkVerified(pubkeyHex)
+        verificationsVersion++
+    }
+
+    /**
+     * Deletes the open conversation from this device: its messages and those still waiting to be
+     * sent. The server keeps the encrypted envelopes it holds until their retention ends, unreadable
+     * by it; the device does not fetch them again (its cursor has passed them).
+     */
+    fun deleteOpen() {
+        val current = account ?: return
+        val target = open ?: return
+        val store = store ?: return
+        open = null
+        messages = emptyList()
+        scope.launch {
+            safely { withContext(Dispatchers.Default) { operations.withLock { if (account === current) store.deleteConversation(target.id) } } }
+            reload(current)
+        }
     }
 
     /**
@@ -457,6 +494,11 @@ class MessagingSession(
 fun rememberMessagingSession(dependencies: AppDependencies): MessagingSession {
     val scope = rememberCoroutineScope()
     return remember(dependencies) {
-        MessagingSession(store = dependencies.database?.let(::MessageStore), remote = dependencies.remote, scope = scope)
+        MessagingSession(
+            store = dependencies.database?.let(::MessageStore),
+            remote = dependencies.remote,
+            scope = scope,
+            verifications = dependencies.database?.let(::ContactVerificationStore),
+        )
     }
 }

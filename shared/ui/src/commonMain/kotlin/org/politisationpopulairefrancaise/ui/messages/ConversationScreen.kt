@@ -151,7 +151,12 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
             backDescription = stringResource(Res.string.messages_back),
             modifier = Modifier.testTag(ConversationTags.TITLE),
             avatar = { ConversationAvatar(others, open.id, trust) },
-            subtitle = { EncryptedNotice(stringResource(Res.string.messages_encrypted)) },
+            subtitle = {
+                Column {
+                    EncryptedNotice(stringResource(Res.string.messages_encrypted))
+                    VerifiedLine(messaging, others)
+                }
+            },
             actions = {
                 PpfIconButton(
                     icon = Lucide.Info,
@@ -159,6 +164,7 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
                     onClick = { explaining = true },
                     modifier = Modifier.testTag(ConversationTags.INFO),
                 )
+                ConversationMoreMenu(messaging, me, others)
             },
         )
         Box(Modifier.weight(1f).fillMaxWidth()) {

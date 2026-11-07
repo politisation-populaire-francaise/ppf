@@ -1,0 +1,25 @@
+-- Contacts checked in person (S-128): the user compared the safety number of a conversation with
+-- the other person, face to face or by a channel they trust. Kept on the device only, never sent:
+-- who one has met in person belongs to the social graph, which stays on the devices (point
+-- d'attention n° 26, option C).
+-- Added in schema version 14: existing databases get it through migrations/13.sqm.
+
+CREATE TABLE contact_verification (
+    pubkey TEXT NOT NULL PRIMARY KEY,
+    verified_at INTEGER NOT NULL
+);
+
+markVerified:
+INSERT OR REPLACE INTO contact_verification(pubkey, verified_at) VALUES (?, ?);
+
+unmarkVerified:
+DELETE FROM contact_verification WHERE pubkey = ?;
+
+verifiedAt:
+SELECT verified_at FROM contact_verification WHERE pubkey = ?;
+
+selectVerified:
+SELECT pubkey FROM contact_verification ORDER BY verified_at DESC, pubkey ASC;
+
+deleteAllVerifications:
+DELETE FROM contact_verification;

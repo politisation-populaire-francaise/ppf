@@ -51,7 +51,7 @@ Pôle Communauté, version 1.0 du 7 novembre 2026 (décision D-130, à consigner
 - ntfy v2.37.2 (image épinglée par empreinte), un conteneur par projet Compose, utilisateur propre, système de fichiers en lecture seule plus un volume de cache, 64 Mo de mémoire au plus.
 - Configuration (`server.yml` dans infra) : `base-url` par environnement, pièces jointes, application web, inscription et connexion désactivées, `upstream-base-url` vide (jamais ntfy.sh), `cache-duration: 12h`, `auth-default-access: deny-all` avec seulement les sujets `up*` ouverts (noms aléatoires, contenus = réveils constants chiffrés), `log-level: warn`.
 - Caddy retire l'adresse du client : les limites par visiteur de ntfy deviennent un plafond global ; la protection contre les abus reste dans l'API du serveur (limites par minute).
-- Secrets : `PPF_VAPID_PRIVATE_KEY_FILE`, `PPF_PUSH_ALLOWED_HOSTS`, `PPF_PUSH_INTERNAL_URL`.
+- Secrets et réglages : `PPF_VAPID_PRIVATE_KEY_FILE=/run/secrets/vapid_private_key`, `PPF_PUSH_ALLOWED_HOSTS=<nom de notre ntfy>`, `PPF_PUSH_INTERNAL_URL=http://ntfy:8080`. Seuls les sujets commençant par `up` existent (adresses `https://push.politisation-populaire-francaise.org/up<aléatoire>`) ; ntfy est dans main depuis 4acd7d8 (D-078).
 - Hôtes sortants : aucun pour ntfy (pas de relais amont) ; ntfy ajouté au THREAT_MODEL et au REGISTRE_DONNEES avec l'infrastructure. Les services de poussée des navigateurs (Chrome, Firefox) sont des tiers : pas de notifications poussées pour la PWA.
 
 ## 7. Données (registre RGPD)
