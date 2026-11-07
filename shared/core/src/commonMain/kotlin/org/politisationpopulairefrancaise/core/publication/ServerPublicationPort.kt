@@ -32,9 +32,9 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
  * callers keep the event and retry later.
  */
 class ServerPublicationPort(
-    private val client: HttpClient,
+    internal val client: HttpClient,
     /** Origin of the server, without trailing slash, e.g. "https://politisation-populaire-francaise.org". */
-    private val baseUrl: String,
+    internal val baseUrl: String,
 ) : RemoteEvents, ProposalStatusSource, HeldStatusSource {
 
     override suspend fun publish(event: SignedEvent): PublicationResult {

@@ -51,7 +51,7 @@ object TestimonyRules {
         if (text.length < TestimonyFormats.MIN_TEXT_LENGTH) add(TestimonyProblem.TEXT_TOO_SHORT)
         if (text.length > TestimonyFormats.MAX_TEXT_LENGTH) add(TestimonyProblem.TEXT_TOO_LONG)
         val all = listOfNotNull(draft.text, draft.place, draft.factDate, draft.factTime)
-        if (all.any { value -> value.any { it.code < 0x20 && it != '\n' && it != '\t' || it.code == 0x7F } }) add(TestimonyProblem.CONTROL_CHARACTERS)
+        if (all.any { value -> value.any { (it.code < 0x20 && it != '\n' && it != '\r' && it != '\t') || it.code == 0x7F } }) add(TestimonyProblem.CONTROL_CHARACTERS)
         draft.factDate?.trim()?.takeIf { it.isNotEmpty() }?.let { date ->
             if (!isValidDate(date)) add(TestimonyProblem.BAD_DATE) else if (today != null && date > today) add(TestimonyProblem.FUTURE_DATE)
         }
@@ -96,6 +96,18 @@ class TestimonyPackage(
     val gaveOriginal: Boolean,
 ) {
     val id: String get() = envelope.id
+
+    /** The request and the files, as the transport sends them and the device keeps them until then. */
+    fun outgoing(): OutgoingTestimony = OutgoingTestimony(
+        TestimonySubmission(
+            envelope = envelope,
+            evidenceEnvelope = evidenceEnvelope,
+            files = files.map { it.id },
+            evidenceFiles = evidenceFiles.map { it.id },
+            stamps = stamps,
+        ),
+        (files + evidenceFiles).associate { it.id to it.bytes },
+    )
 }
 
 /**
