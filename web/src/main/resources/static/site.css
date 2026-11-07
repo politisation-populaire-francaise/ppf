@@ -660,3 +660,282 @@ td.num {
   background: var(--serie);
   vertical-align: middle;
 }
+
+/* ------------------------------------------------------------------------------------------
+   « Comprendre » (D-091) : encadrés, quiz, glossaire, chaîne de décision. Couleurs par jetons,
+   mêmes contrastes en clair et en sombre. Aucun style en ligne : la CSP l’interdit. */
+
+.card-list .card:last-child {
+  margin-bottom: 0.5rem;
+}
+
+.reading-body a,
+.objection a,
+.comprendre-sources a {
+  overflow-wrap: anywhere;
+}
+
+.callout {
+  margin: 0.75rem 0 1rem;
+  padding: 0.5rem 1rem;
+  border-left: 4px solid var(--brand);
+  border-radius: var(--radius-md);
+  background: var(--brand-tint);
+}
+
+.callout-title {
+  margin: 0.25rem 0;
+  font-weight: 700;
+}
+
+.callout-en-bref .callout-title {
+  color: var(--brand-strong);
+}
+
+.callout-legal {
+  border-left-color: var(--success);
+  background: var(--success-tint);
+}
+
+.callout-legal .callout-title {
+  color: var(--success);
+}
+
+.callout-illegal {
+  border-left-color: var(--accent);
+  background: var(--accent-tint);
+}
+
+.callout-illegal .callout-title {
+  color: var(--accent-ink);
+}
+
+.callout-attention {
+  border-left-color: var(--warning);
+  background: var(--warning-tint);
+}
+
+.callout-attention .callout-title {
+  color: var(--warning);
+}
+
+.callout-conseil {
+  border-left-color: var(--border-strong);
+  background: var(--surface-1);
+}
+
+/* A term of the glossary: a link told apart by a dotted underline, not by colour alone. */
+a.gloss {
+  font-weight: inherit;
+  color: inherit;
+  text-decoration: underline dotted var(--brand);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+
+a.gloss:hover {
+  color: var(--brand);
+}
+
+.gloss-list dt {
+  margin: 0.75rem 0 0.15rem;
+  font-weight: 700;
+}
+
+.gloss-list dd {
+  margin: 0 0 0.5rem;
+  color: var(--ink-muted);
+}
+
+.objections {
+  margin: 1rem 0;
+}
+
+.objection {
+  margin: 0 0 0.75rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.objection p {
+  margin: 0.35rem 0;
+}
+
+.timeline {
+  padding-left: 1.25rem;
+}
+
+.timeline li {
+  margin: 0.4rem 0;
+}
+
+.timeline time {
+  font-weight: 700;
+}
+
+.steps-toc ol,
+.steps-toc ul {
+  padding-left: 1.5rem;
+}
+
+.steps-toc li {
+  margin: 0.35rem 0;
+}
+
+.course-step > h2 {
+  margin-top: 0.25rem;
+}
+
+.quiz {
+  margin: 1.25rem 0 0.5rem;
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--brand);
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+}
+
+.quiz-label {
+  margin: 0;
+  color: var(--brand);
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.quiz-question {
+  margin: 0.25rem 0 0.5rem;
+  font-weight: 700;
+}
+
+.quiz-options {
+  padding: 0;
+  list-style: none;
+}
+
+.quiz-options li {
+  margin: 0.35rem 0;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+.quiz-letter {
+  font-weight: 700;
+}
+
+.quiz-answer {
+  margin-top: 0.5rem;
+}
+
+.quiz-answer[open] {
+  padding: 0 0.75rem 0.25rem;
+  border-left: 4px solid var(--success);
+  background: var(--success-tint);
+}
+
+.claim-quote {
+  border-left: 4px solid var(--accent);
+  font-size: 1.125rem;
+  font-style: italic;
+}
+
+.decision-chain {
+  padding-left: 1.25rem;
+}
+
+.decision-chain > li {
+  margin: 0 0 1rem;
+  padding-left: 0.25rem;
+}
+
+.decision-chain h3 {
+  margin: 0 0 0.25rem;
+}
+
+.decision-chain p {
+  margin: 0.25rem 0;
+}
+
+.search-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+.search-form label {
+  flex-basis: 100%;
+  font-weight: 700;
+}
+
+.search-form input {
+  flex: 1 1 12rem;
+  min-height: 44px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  color: var(--ink);
+  font: inherit;
+}
+
+.search-form button {
+  min-height: 44px;
+  padding: 0.5rem 1.25rem;
+  border: 0;
+  border-radius: var(--radius-md);
+  background: var(--brand);
+  color: var(--on-brand);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.search-form input:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.letters ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0 0 1rem;
+  padding: 0;
+  list-style: none;
+}
+
+.letters a {
+  display: inline-block;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.6rem 0.5rem;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  text-align: center;
+  text-decoration: none;
+}
+
+.offline-fiche h2 {
+  margin-top: 0.25rem;
+}
+
+@media print {
+  .site-header,
+  .site-footer,
+  .skip-link,
+  .breadcrumb,
+  .search-form,
+  .letters {
+    display: none;
+  }
+  main > section,
+  main > article {
+    box-shadow: none;
+  }
+}
