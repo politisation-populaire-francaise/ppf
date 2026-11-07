@@ -7,7 +7,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 ---
 
 ### [2026-11-04] Statut de PPF : association, parti, ou les deux ?
-- Statut : À valider
+- Statut : Décidé le 2026-11-07 (association ; D-062) ; intégré le 2026-11-07 au cahier des charges 2.0, section 1.5
 - Concerne : vision.md, sections 1, 7 et 9 ; cahier-fonctionnel.md, M13.7
 - Description : PPF doit-il rester uniquement une association, ou devenir (ou créer) un parti pour présenter des candidats ? La question touche aussi la phase 6 (désignation citoyenne d'un candidat populaire).
 - Options :
@@ -16,7 +16,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - C. L'association reste une association mais soutient des candidats. Inconvénient majeur : risque juridique (avantages en nature interdits pour une personne morale).
 - Recommandation : option A.
 - Mise à jour du 2026-11-04 : la propriétaire indique que PPF pourrait devenir partisan un jour ; la notion de non-partisanerie a été retirée de la vision (version 3.0). La question du statut juridique reste ouverte.
-- Décision :
+- Décision de la propriétaire (2026-11-07, transmise par le chef d'équipe, D-062) : PPF est « simplement une association engagée et militante dont l'objectif premier est la politisation et redonner une gouvernance réelle au peuple ». Le statut retenu est donc l'association.
 
 ### [2026-11-04] Comment formuler publiquement le constat
 - Statut : Question

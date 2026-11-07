@@ -5,7 +5,7 @@ Suite de l'entrée « Inventaire complet des fonctionnalités » de `docs/brains
 ---
 
 ### [2026-11-04] Inventaire complet des fonctionnalités : socle applicatif et fonctionnalités PPF
-- Statut : À valider (liste validée le 2026-11-04 ; décisions en attente sur certains points d'attention, intégration à venir)
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0) ; restent À valider : hébergement du modèle d'IA et prestataire de paiement (point d'attention n° 34)
 - Concerne : cahier-fonctionnel.md (structure et contenu complets, future version 2.0) ; prépare le découpage du cahier des charges en MVP livrables ; s'appuie sur l'entrée « Réorganiser le cahier fonctionnel par espaces » (ci-dessus) et sur les entrées « Navigation et UX » et « Briques de contenu communes » (brainstorming-cahier-des-charges.md)
 - Description : à la demande de la propriétaire, avant de rédiger le cahier des charges par MVP, recenser toutes les fonctionnalités en séparant nettement deux familles :
   - **Partie A, le socle applicatif** : ce que toute application sérieuse doit savoir faire, quelle que soit sa mission : s'installer, se mettre à jour, naviguer, gérer un compte, se régler, notifier, fonctionner hors ligne, chercher, afficher des médias, partager, être accessible, être protégée, être administrée.
