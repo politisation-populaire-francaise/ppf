@@ -153,6 +153,12 @@ deploy() {
     previous_revision="$(cat "$PPF_DATA_DIR/$env/deployed-revision" 2>/dev/null || true)"
 
     say "$env: $ref (commit ${revision:0:12})"
+    # The database first, then its migrations with the owner role (one-shot container), then the
+    # server with the restricted role, which refuses to start if a migration is still pending.
+    compose_env "$env" "$release" "$ref" up -d db
+    if ! compose_env "$env" "$release" "$ref" run --rm -T migrate; then
+        fail "$env: the database migrations failed with $ref; nothing else was changed"
+    fi
     compose_env "$env" "$release" "$ref" up -d --remove-orphans
     if ! wait_healthy "$(container_of "$env")"; then
         if [ -n "$previous_ref" ] && [ -d "$PPF_DATA_DIR/$env/releases/$previous_revision" ]; then
