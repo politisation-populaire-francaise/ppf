@@ -194,7 +194,7 @@ Sur l'ordinateur, l'écran se présente en deux colonnes.
 Tout est inventé et marqué [EXEMPLE] : pétitions, chiffres, élection, candidats et réponses. Seules les règles des pétitions sont réelles (vérifiées le 7 novembre 2026). Aucun compte n'est nécessaire, et tout marche sans réseau.
 
 1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Décider**. En haut, le **Pacte démocratique**, puis les **pétitions officielles ouvertes**, puis « Et aussi ».
-2. Touchez la carte du **Pacte**. Lisez l'encart « Les mêmes règles pour tous les candidats », puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
+2. Touchez la carte du **Pacte**. Lisez l'encart « Les mêmes règles pour tous les candidats » (il dit maintenant qu'une réponse reçue après la date limite n'est pas comptée, votre décision du 7 novembre ; aucune réponse d'exemple n'est en retard), puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
 3. Touchez le nom d'un candidat : sa fiche s'ouvre dans « Voir ». Revenez avec le bouton retour.
 4. En bas de la page du Pacte, **Empreinte du texte envoyé** : cette suite de caractères changerait si un seul mot des mesures changeait. Touchez **Copier l'empreinte**.
 5. Revenez à l'accueil de « Décider » et touchez la pétition **Retirer le projet de loi relatif à l'ordre public**. Vous voyez le compteur, la barre vers 500 000 signatures, puis chaque seuil avec **ce qu'il obtient** et, en orange, **ce qu'il ne garantit pas** (le débat se termine sans vote).
@@ -206,6 +206,15 @@ Tout est inventé et marqué [EXEMPLE] : pétitions, chiffres, élection, candid
 11. Allez dans **Mon espace** (l'avatar en haut à droite) : tout en bas, la version installée et votre système. Donnez-les-moi si vous me signalez un problème.
 
 Sur l'ordinateur, les réponses au Pacte forment un vrai tableau, une colonne par mesure.
+
+### Vérifier que le vote anonyme peut marcher sur votre téléphone (ajouté le 7 novembre 2026)
+
+Le vote anonyme (« une personne, une voix ») n'est pas encore ouvert, mais son moteur est déjà dans l'application. Le téléphone le vérifie lui-même, au premier lancement de « Mon espace ». C'est le seul moyen de savoir s'il fonctionne sur un vrai téléphone, car l'ordinateur n'a pas d'émulateur Android.
+
+1. Ouvrez **Mon espace** (l'avatar en haut à droite) et faites défiler tout en bas.
+2. Sous la version installée, une ligne indique d'abord « Vérification du vote anonyme sur cet appareil… », puis, au bout d'une seconde environ :
+   - **« Vote anonyme : vérification réussie sur cet appareil »** : tout va bien ;
+   - ou une ligne orange **« vérification échouée (étape …) »** : envoyez-moi une capture de cette ligne avec la version juste au-dessus. Rien n'est envoyé nulle part, et le vote restera simplement fermé sur ce téléphone.
 
 ### Tester l'espace « Voir » (ajouté le 6 novembre 2026, tard le soir)
 

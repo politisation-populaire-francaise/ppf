@@ -253,6 +253,13 @@ Chaque pôle n'appelle qu'une interface commune (`core/urne`, à créer) et un c
   - (c) l'exécutable de bureau empaqueté démarre et passe l'autotest (ticket n° 56) ;
   - (d) hausse de taille de l'APK mesurée, `tools/check-apk.sh` mis à jour ;
   - (e) iOS : la dépendance seulement là où elle compile ; sinon l'interface reste commune et l'implémentation iOS est à écrire plus tard (feuille de route).
+- **Résultats de l'étape 1 (7 novembre 2026)** :
+  - (a) fait : 12 tests verts sur la JVM, dont tous les vecteurs A.1.1 et A.1.2 (lot compris) et les refus ;
+  - (b) codé : l'autotest s'affiche en bas de « Mon espace » ; reste à le lire sur le téléphone de la propriétaire (APK de test, versionCode 447333) ;
+  - (c) fait : l'exécutable Windows empaqueté (`createDistributable`) lancé avec `--autotest-vote` rend 0 ; le ticket n° 56 ne se produit pas, aucun module Java à ajouter (`suggestRuntimeModules` inchangé) ;
+  - (d) fait : APK de test de 16 534 628 à 18 120 349 octets (+1,6 Mo, +9,6 %), libsodium et la bibliothèque de JNA présentes pour les trois architectures, `tools/check-apk.sh` les exige ; règles R8 ajoutées pour la future version de publication réduite (JNA trouve les fonctions par réflexion) ;
+  - (e) fait pour la compilation : `compileKotlinIosArm64` et `compileKotlinIosSimulatorArm64` passent avec Kotlin 2.4.21 ; l'édition des liens sur un Mac reste à vérifier ;
+  - coût mesuré (machine de développement chargée) : 1,1 à 1,4 ms par jeton délivré, 0,5 ms par bulletin vérifié, 2 à 3 ms par jeton sur l'appareil.
 - **R1 aucune corrélation par la base** : bulletins indexés par `y`, aucun identifiant séquentiel, aucune heure plus fine que l'heure arrondie ; liste publiée triée par `y` ; délivrance des jetons datée au jour au plus ; journalisation des requêtes SQL et des corps de requête désactivée sur ces routes.
 - **R2 journal public en continu** (section 8).
 - **R3 graine maîtresse** en fichier secret Docker (6.1), décrite au Directeur technique et dans le modèle de menaces.
