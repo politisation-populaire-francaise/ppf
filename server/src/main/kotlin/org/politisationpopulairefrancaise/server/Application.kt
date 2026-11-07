@@ -39,7 +39,9 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
 import org.politisationpopulairefrancaise.web.agendaPage
+import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.webRoutes
 import javax.sql.DataSource
 
@@ -109,6 +111,8 @@ fun Application.module(
     relay: RelayConfig = RelayConfig.fromEnvironment(),
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
     agir: AgirSetup = AgirSetup.fromEnvironment(),
+    /** Where the pages of "Voir" read; by default the editorial contents of the database (none without one). */
+    voir: VoirSource? = null,
 ) {
     val repository = dataSource?.let(::EventRepository)
     // Citizen demands wait in a review queue; its checks and cleanup live and die with the application.
@@ -168,6 +172,7 @@ fun Application.module(
         revendicationsApi(proposals)
         agirApi(agirSpace)
         agirSpace?.let { agendaPage(it.agendaSource()) }
-        webRoutes()
+        // The pages of "Voir": contents of the editorial keys only (D-034).
+        webRoutes(voir ?: repository?.let { EditorialVoirSource(it, policy) })
     }
 }
