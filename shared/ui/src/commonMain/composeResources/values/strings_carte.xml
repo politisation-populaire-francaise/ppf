@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Map view of the agenda of mobilizations (M1, AG-01, S-35), in the "Carte" entry of the bottom
+     bar. French, typographic apostrophe (’), no em dash, formal "vous". -->
+<resources>
+    <!-- Choice between the list and the map -->
+    <string name="carte_view_choice">Affichage de l’agenda</string>
+    <string name="carte_view_list">Liste</string>
+    <string name="carte_view_map">Carte</string>
+
+    <!-- Above the map -->
+    <plurals name="carte_count">
+        <item quantity="one">%1$d mobilisation sur la carte</item>
+        <item quantity="other">%1$d mobilisations sur la carte</item>
+    </plurals>
+    <plurals name="carte_without_position">
+        <item quantity="one">%1$d sans lieu placé sur la carte : elle est dans la liste.</item>
+        <item quantity="other">%1$d sans lieu placé sur la carte : elles sont dans la liste.</item>
+    </plurals>
+    <string name="carte_show_list">Voir la liste</string>
+    <string name="carte_empty">Aucune mobilisation de cette liste n’a de lieu placé sur la carte. Toutes sont dans la liste.</string>
+
+    <!-- The map itself -->
+    <plurals name="carte_description">
+        <item quantity="one">Carte des mobilisations, %1$d point. Touchez un point pour voir la mobilisation ; la liste donne les mêmes informations.</item>
+        <item quantity="other">Carte des mobilisations, %1$d points. Touchez un point pour voir la mobilisation ; la liste donne les mêmes informations.</item>
+    </plurals>
+    <string name="carte_zoom_in">Zoomer</string>
+    <string name="carte_zoom_out">Dézoomer</string>
+    <string name="carte_recenter">Recentrer sur la France</string>
+    <string name="carte_attribution">© contributeurs OpenStreetMap</string>
+    <string name="carte_sources">Sources de la carte</string>
+    <string name="carte_sources_text">Fond de carte : données © les contributeurs d’OpenStreetMap, sous licence ODbL (openstreetmap.org/copyright), mises en forme avec le schéma libre de Protomaps. Le fond de la France est intégré à l’application : il s’affiche sans réseau. La carte ne charge rien depuis un autre serveur que celui de PPF, et votre position n’est jamais utilisée.</string>
+    <string name="carte_sources_bundled_only">Sans serveur de PPF, la carte montre le fond intégré : les côtes, les frontières, les grandes routes et les villes. Le détail des rues viendra de notre serveur.</string>
+    <string name="carte_close">Fermer</string>
+
+    <!-- Labels of the points -->
+    <string name="carte_label">%1$s\n%2$s</string>
+    <string name="carte_label_cancelled">Annulé : %1$s</string>
+    <string name="carte_label_postponed">Reporté : %1$s</string>
+
+    <!-- The mobilizations of the point the user touched -->
+    <plurals name="carte_here">
+        <item quantity="one">%1$d mobilisation à cet endroit</item>
+        <item quantity="other">%1$d mobilisations à cet endroit</item>
+    </plurals>
+    <string name="carte_open">Voir la mobilisation</string>
+    <string name="carte_show_on_map">Voir sur la carte</string>
+
+    <!-- Where the map cannot be drawn -->
+    <string name="carte_unavailable_text">Sur cet appareil, la carte n’est pas encore disponible : sur ordinateur, la bibliothèque de carte demande une version de Java plus récente que celle de l’application. Elle est déjà dans l’application Android. Toutes les mobilisations sont dans la liste ci-dessous.</string>
+</resources>

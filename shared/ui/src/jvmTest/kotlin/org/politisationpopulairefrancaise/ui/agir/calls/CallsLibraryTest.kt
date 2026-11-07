@@ -152,6 +152,32 @@ class CallsLibraryTest {
     }
 
     @Test
+    fun anAnswerIsErasedSevenDaysAfterTheCallIsOver() = withScope { scope ->
+        // Decision of the owner (7 November 2026, question 8, option C): no history of the calls answered.
+        val database = JvmDatabase.inMemory()
+        val store = LocalEventStore(database) { NOW }
+        val meeting = signedCall(someone, "reunion-marche-couvert")
+        store.store(meeting)
+        val address = "30023:${someone.publicKey.hex}:reunion-marche-couvert"
+        CallResponseStore(database).respond(address)
+        val start = org.politisationpopulairefrancaise.core.agir.calls.ParisTime.toEpochSeconds(org.politisationpopulairefrancaise.core.agir.calls.ParisDateTime(2026, 11, 20, 19, 0))
+
+        // Six days after the meeting, the answer is still there.
+        val before = CallsLibrary(store, EditorialTrust.bundledExamples(), null, scope, CallResponseStore(database), clock = { start + 6 * 86_400 })
+        before.start()
+        eventually { before.calls.any { it.slug == "reunion-marche-couvert" } && before.status == LibraryStatus.Offline }
+        delay(100)
+        assertEquals(setOf(address), before.responded)
+        assertEquals(1L, CallResponseStore(database).count())
+
+        // Seven days after, the next loading erases it, on the screen and in the database.
+        val after = CallsLibrary(store, EditorialTrust.bundledExamples(), null, scope, CallResponseStore(database), clock = { start + CallResponseStore.KEPT_AFTER_END })
+        after.start()
+        eventually { CallResponseStore(database).count() == 0L }
+        assertEquals(emptySet(), after.responded)
+    }
+
+    @Test
     fun thePracticalGuidesAndTheDemandsNeverShowTheCalls() = withScope { scope ->
         val store = LocalEventStore(JvmDatabase.inMemory())
         val calls = CallsLibrary(store, EditorialTrust.bundledExamples(), null, scope, clock = { NOW })

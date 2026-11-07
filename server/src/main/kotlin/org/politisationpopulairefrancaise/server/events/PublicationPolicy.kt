@@ -20,7 +20,8 @@ import org.politisationpopulairefrancaise.server.relay.RelayKinds
  *   ([isCitizenDemand]) is refused here too, and the API holds it for review by a person instead
  *   (server/revendications); a call of the Agir space (`ppf-type` = appel) is open to every key;
  * - mobilizations (kind 31923), calls and directory entries of the Agir space must have the shape of
- *   the contract (server/agir/AgirRules); who publishes them directly is decided by AgirSpace;
+ *   the contract (server/agir/AgirRules); who publishes them directly is decided by AgirSpace; so
+ *   must the responses to a mobilization (kind 31925, NIP-52, contract version 2), published from any key;
  * - a group description (kind 39000, NIP-29) is accepted from any key (D-028: creating a group is
  *   open to every account) provided it carries exactly one valid `d` id, a non-empty `name`, a
  *   non-empty territory (`ppf-territory`), the accepted charter version (`ppf-charter` = 1.0) and

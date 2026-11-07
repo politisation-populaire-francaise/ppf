@@ -6,6 +6,7 @@ start: 2026-11-21T10:30
 end: 2026-11-21T13:00
 location: Départ devant la gare (lieu fictif), Marseille
 territory: Marseille
+geohash: spey67n19
 declaration: faite
 summary: Une marche fictive, déclarée en préfecture, pour montrer la mention de la déclaration.
 link: https://exemple.invalid/marche-hopital

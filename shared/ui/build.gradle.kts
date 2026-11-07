@@ -45,6 +45,12 @@ kotlin {
             implementation(libs.compose.components.resources)
             implementation(libs.navigationevent.compose)
         }
+        // The map view of the agenda is drawn by MapLibre on Android only (see MapRenderer): the
+        // library and its OpenGL ES runtime. Desktop and iOS show the list (docs/integration/agir-carte.md).
+        androidMain.dependencies {
+            implementation(libs.maplibre.compose)
+            runtimeOnly(libs.maplibre.compose.runtime.opengl.android)
+        }
         commonTest.dependencies {
             implementation(kotlin("test"))
             implementation(libs.compose.ui.test)
