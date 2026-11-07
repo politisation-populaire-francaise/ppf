@@ -2,7 +2,9 @@ package org.politisationpopulairefrancaise.core.agir.organisations
 
 import kotlinx.coroutines.test.runTest
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
 import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.core.time.CivilDate
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -52,6 +54,51 @@ class VerifiedOrganisationsTest {
         val verified = VerifiedOrganisations.fromEvents(listOf(newer, older), fixtures.trust)
         assertEquals("nouvelle-fiche", verified.organisationFor(unionKey)?.slug)
         assertEquals(verified, VerifiedOrganisations.fromEvents(listOf(older, newer), fixtures.trust), "the order of the events does not matter")
+    }
+
+    @Test
+    fun aRevokedEntryWithdrawsTheVerificationButStaysReadable() = runTest {
+        val verifiedEntry = fixtures.entry("syndicat", accountKey = unionKey, updatedAt = 1_794_000_000)
+        // 2026-11-07 at 09:00 in Paris (08:00 UTC).
+        val revokedEntry = fixtures.entry("syndicat", accountKey = unionKey, updatedAt = 1_794_038_400, status = "revoquee")
+        val revoked = fixtures.read(revokedEntry)
+        assertTrue(revoked.revoked)
+        assertEquals(unionKey, revoked.accountKey, "the key stays on the entry, for the page reached by a link")
+        assertEquals(CivilDate(2026, 11, 7), revoked.revokedOn)
+        assertFalse(fixtures.read(verifiedEntry).revoked)
+        assertNull(fixtures.read(verifiedEntry).revokedOn)
+
+        val verified = VerifiedOrganisations.fromEvents(listOf(verifiedEntry, revokedEntry), fixtures.trust)
+        assertFalse(verified.isVerified(unionKey))
+        assertNull(verified.organisationFor(unionKey))
+        assertEquals(revokedEntry.id, verified.revocationFor(unionKey)?.event?.id)
+        assertEquals(setOf(unionKey), verified.revokedKeys)
+        assertTrue(verified.keys.isEmpty())
+    }
+
+    @Test
+    fun aNewerVerifiedEntryRestoresARevokedKey() = runTest {
+        val revoked = fixtures.entry("ancienne-fiche", accountKey = unionKey, updatedAt = 1_794_000_000, status = "revoquee")
+        val again = fixtures.entry("nouvelle-fiche", accountKey = unionKey, updatedAt = 1_794_100_000)
+        val verified = VerifiedOrganisations.fromEvents(listOf(revoked, again), fixtures.trust)
+        assertTrue(verified.isVerified(unionKey))
+        assertNull(verified.revocationFor(unionKey))
+        // And the other way round: the most recent entry, revoked, wins over an older verified one.
+        val older = fixtures.entry("autre-fiche", accountKey = legalTeamKey, updatedAt = 1_794_000_000)
+        val newer = fixtures.entry("fiche-retiree", accountKey = legalTeamKey, updatedAt = 1_794_100_000, status = "revoquee")
+        assertFalse(VerifiedOrganisations.fromEvents(listOf(older, newer), fixtures.trust).isVerified(legalTeamKey))
+    }
+
+    @Test
+    fun anUnknownStatusNeverExtendsTheTrust() = runTest {
+        val entry = fixtures.entry("syndicat", accountKey = unionKey)
+        val unsigned = UnsignedEvent.create(fixtures.editor.publicKey, entry.kind, entry.createdAt, entry.tags + listOf(listOf("ppf-org-status", "suspendue")), entry.content)
+        val future = fixtures.editor.sign(unsigned)
+        assertTrue(fixtures.read(future).revoked)
+        assertFalse(VerifiedOrganisations.fromEvents(listOf(future), fixtures.trust).isVerified(unionKey))
+        assertEquals("verifiee", Organisation.readStatus(null))
+        assertEquals("verifiee", Organisation.readStatus(" verifiee "))
+        assertEquals("revoquee", Organisation.readStatus("revoquee"))
     }
 
     @Test

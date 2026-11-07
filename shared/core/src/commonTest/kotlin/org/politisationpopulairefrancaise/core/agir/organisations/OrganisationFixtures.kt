@@ -27,6 +27,7 @@ class OrganisationFixtures {
         websites: List<String> = emptyList(),
         phone: String? = null,
         email: String? = null,
+        status: String = "verifiee",
     ): SignedEvent = signer.sign(
         Organisation.build(
             editor = signer.publicKey,
@@ -44,6 +45,7 @@ class OrganisationFixtures {
             phone = phone,
             email = email,
             origin = ContentOrigin.AI_ASSISTED,
+            status = status,
         ),
     )
 
