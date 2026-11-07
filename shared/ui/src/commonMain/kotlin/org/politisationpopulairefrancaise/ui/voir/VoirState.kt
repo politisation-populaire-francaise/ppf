@@ -28,10 +28,17 @@ sealed interface VoirDestination {
     data object Chronology : VoirDestination
     data object Liberties : VoirDestination
     data object People : VoirDestination
+    data object Parties : VoirDestination
     data object Bills : VoirDestination
     data object World : VoirDestination
     data object Corrections : VoirDestination
     data class KeyFigures(val axis: VoirAxis) : VoirDestination
+
+    /** The form of a right of reply to the content at [address] (VO-21). */
+    data class Reply(val address: ContentAddress) : VoirDestination
+
+    /** The form to report an error in the content at [address] (VO-22). */
+    data class Report(val address: ContentAddress) : VoirDestination
 }
 
 /**
@@ -57,6 +64,7 @@ class VoirState(private val follows: ContentFollowStore?, private val scope: Cor
     var chronologyFilter: FactKind? by mutableStateOf(null)
     var libertyFilter: LibertyCategory? by mutableStateOf(null)
     var roleFilter: PublicRole? by mutableStateOf(null)
+    var partyFilter: ContentAddress? by mutableStateOf(null)
 
     /** The followed contents, most recently followed first. */
     var followed: List<ContentAddress> by mutableStateOf(emptyList())

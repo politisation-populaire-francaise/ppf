@@ -1,0 +1,21 @@
+{
+ "data": [
+  {
+   "id": "org/990202",
+   "type": "Organization",
+   "identifier": "990202",
+   "label": "PHARES",
+   "prefLabel": {
+    "fr": "[EXEMPLE] Groupe européen des Phares",
+    "en": "[EXEMPLE] (en) Groupe européen des Phares"
+   },
+   "altLabel": {
+    "fr": "PHARES"
+   },
+   "classification": "def/ep-entities/EU_POLITICAL_GROUP"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

@@ -44,8 +44,12 @@ services:
       PPF_BACKOFFICE_PORT: "8081"
       PPF_AUDIT_PUBLIC_KEY: ${PPF_AUDIT_PUBLIC_KEY:-}
       # No PPF_EXAMPLES_DIR here: the server refuses to start in production with it.
+      # Parliamentary open data written by the importer below, read-only for the server.
+      PPF_OPEN_DATA_DIR: /data/open-data
     secrets:
       - server_db_password
+    volumes:
+      - /srv/ppf/production/open-data:/data/open-data:ro
     networks:
       - internal
       - edge
@@ -95,6 +99,42 @@ services:
       resources:
         limits:
           memory: 256M
+          cpus: "0.5"
+
+  # Importer of the parliamentary open data (Voir, D-064), one-shot, started by the systemd timers
+  # ppf-open-data-daily and ppf-open-data-weekly (never by "up", profile "tools"). Its own UID, the
+  # only one able to read the import key; it writes the packages the server reads. Enabled only at the
+  # public launch, once the production import key exists (OpenDataKeys, infra/README.md).
+  open-data-importer:
+    image: ${PPF_SERVER_IMAGE:?set by infra/scripts/deploy.sh}
+    profiles: ["tools"]
+    user: "10003:10003"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    entrypoint: ["java", "-XX:MaxRAMPercentage=75", "-XX:+ExitOnOutOfMemoryError", "-jar", "/app/ppf-open-data-importer.jar"]
+    healthcheck:
+      disable: true
+    environment:
+      PPF_OPEN_DATA_SOURCE: official
+      PPF_OPEN_DATA_DIR: /data/open-data
+      PPF_IMPORT_KEY_FILE: /run/secrets/import_key
+    secrets:
+      - import_key
+    volumes:
+      - /srv/ppf/production/open-data:/data/open-data
+    # Its own network, with a way out (official sources only, infra/EGRESS.md); never the database.
+    networks:
+      - importer
+    deploy:
+      resources:
+        limits:
+          # 512 MB until the peak on the real files is measured, then 256 MB.
+          memory: 512M
           cpus: "0.5"
 
   db:
@@ -156,6 +196,9 @@ secrets:
     file: ${PPF_SECRETS_DIR:?}/db_password
   app_db_password:
     file: ${PPF_SECRETS_DIR:?}/app_db_password
+  # Import key of the parliamentary open data (nsec file, UID 10003); empty until the public launch.
+  import_key:
+    file: ${PPF_SECRETS_DIR:?}/import_key
 
 volumes:
   db-data:
@@ -168,3 +211,5 @@ networks:
   edge:
     external: true
     name: ppf-prod-edge
+  # The importer's own network, with a way out to the official sources only.
+  importer: {}

@@ -66,6 +66,8 @@ dependencies {
     // Verification of the passkeys and security keys of the team back-office (WebAuthn, D-120).
     implementation(libs.webauthn4j.core)
 
+    // The development server and the tests of /api/v1/parlement run the example import (fictional data).
+    testImplementation(project(":tools:open-data-importer"))
     testImplementation(libs.ktor.server.test.host)
     testImplementation(libs.ktor.client.mock)
     testImplementation(kotlin("test"))

@@ -1,0 +1,28 @@
+{
+ "data": [
+  {
+   "id": "eli/dl/event/MTG-PL-2026-09-16",
+   "type": "Activity",
+   "activity_id": "MTG-PL-2026-09-16",
+   "had_activity_type": "def/ep-activities/PLENARY_SITTING",
+   "activity_date": "2026-09-16"
+  },
+  {
+   "id": "eli/dl/event/MTG-PL-2026-10-21",
+   "type": "Activity",
+   "activity_id": "MTG-PL-2026-10-21",
+   "had_activity_type": "def/ep-activities/PLENARY_SITTING",
+   "activity_date": "2026-10-21"
+  },
+  {
+   "id": "eli/dl/event/MTG-PL-2026-11-23",
+   "type": "Activity",
+   "activity_id": "MTG-PL-2026-11-23",
+   "had_activity_type": "def/ep-activities/PLENARY_SITTING",
+   "activity_date": "2026-11-23"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

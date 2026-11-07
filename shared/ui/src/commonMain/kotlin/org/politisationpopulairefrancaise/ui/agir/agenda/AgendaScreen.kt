@@ -50,6 +50,13 @@ import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaMapPane
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaMapState
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaMapUnavailable
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaView
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaViewChoice
+import org.politisationpopulairefrancaise.ui.agir.map.LocalAgendaMapRenderer
+import org.politisationpopulairefrancaise.ui.agir.map.rememberAgendaMapState
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -79,13 +86,10 @@ import org.politisationpopulairefrancaise.ui.resources.agenda_filters
 import org.politisationpopulairefrancaise.ui.resources.agenda_filters_active
 import org.politisationpopulairefrancaise.ui.resources.agenda_forget
 import org.politisationpopulairefrancaise.ui.resources.agenda_intro
-import org.politisationpopulairefrancaise.ui.resources.agenda_map_soon_text
-import org.politisationpopulairefrancaise.ui.resources.agenda_map_soon_title
 import org.politisationpopulairefrancaise.ui.resources.agenda_mine_empty
 import org.politisationpopulairefrancaise.ui.resources.agenda_mine_intro
 import org.politisationpopulairefrancaise.ui.resources.agenda_need_account_mine
 import org.politisationpopulairefrancaise.ui.resources.agenda_ongoing
-import org.politisationpopulairefrancaise.ui.resources.agenda_organized_by
 import org.politisationpopulairefrancaise.ui.resources.agenda_period_month
 import org.politisationpopulairefrancaise.ui.resources.agenda_period_today
 import org.politisationpopulairefrancaise.ui.resources.agenda_period_week
@@ -131,6 +135,7 @@ object AgendaTags {
     const val WHEN = "agenda-when"
     const val WHERE = "agenda-where"
     const val ORGANIZERS = "agenda-organizers"
+    const val DECLARATION = "agenda-declaration"
     const val DESCRIPTION = "agenda-description"
     const val NOTICE = "agenda-notice"
     const val LINK = "agenda-link"
@@ -164,7 +169,8 @@ object AgendaTags {
  * propositions"; the list is grouped by day (Aujourd’hui, Demain, then the dates), narrowed by
  * filters computed on the device, and every mobilization opens its detail: description, place,
  * organisers, link (after the "Vous quittez PPF" warning), export to a calendar, and the private
- * answers "J'y serai" / "Intéressé" that never leave the device.
+ * answers "J'y serai" / "Ça m'intéresse" that never leave the device. The organisations that take
+ * part are shown when they said so with their own key (D-044).
  *
  * Two panes on wide windows (list and detail), one pane with a back button otherwise.
  *
@@ -173,6 +179,8 @@ object AgendaTags {
  *   organisations; null keeps the short form of the key
  * @param exporter hands the calendar file to the platform (share sheet, save dialog)
  * @param onOpenLink opens a web link once the user confirmed; the platform's browser by default
+ * @param isVerifiedOrganisation whether a key is a verified organisation (its public answers are
+ *   shown, D-044); by default, a key the directory names (the shell names verified organisations only)
  */
 @Composable
 fun AgendaScreen(
@@ -185,6 +193,7 @@ fun AgendaScreen(
     organisationName: (String) -> String? = { null },
     exporter: CalendarExporter = rememberPlatformCalendarExporter(),
     onOpenLink: ((String) -> Unit)? = null,
+    isVerifiedOrganisation: (String) -> Boolean = { organisationName(it) != null },
 ) {
     val account = session.state as? AccountUiState.Ready
     val accountKey = account?.publicKey?.hex
@@ -192,9 +201,11 @@ fun AgendaScreen(
     LaunchedEffect(agenda, accountKey) { agenda.setAccount(accountKey) }
     // Where the user's proposals stand is asked again each time the agenda is shown.
     LaunchedEffect(agenda) { agenda.refreshReviews() }
-    val names = remember(agenda, organisationName) { AgendaNames(organisationName) { agenda.isEditorial(it) } }
+    val names = remember(agenda, organisationName, isVerifiedOrganisation) { AgendaNames(organisationName, { agenda.isEditorial(it) }, isVerifiedOrganisation) }
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val composer = agenda.composer
+    // The choice "Liste" / "Carte" and the camera survive a visit to the detail (docs/integration/agir-carte.md).
+    val map = rememberAgendaMapState()
 
     // The caller's modifier may carry its own test tag (the first one wins): the screen's goes on an inner box.
     Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
@@ -220,6 +231,7 @@ fun AgendaScreen(
                     onPropose = { composer.open = true },
                     onCreateAccount = { onNavigate(Space.MON_ESPACE) },
                     modifier = listModifier,
+                    map = map,
                 )
             }
             val selected = agenda.selected
@@ -276,11 +288,22 @@ fun AgendaScreen(
     }
 }
 
-/** How organisers and authors are named: the directory of organisations, the editorial team, or the short key. */
+/**
+ * How organisers and authors are named: the directory of organisations, the editorial team, or the
+ * short key; and whose public answers count (D-044): a verified organisation or an editorial key.
+ */
 internal class AgendaNames(
     private val organisationName: (String) -> String?,
     private val isEditorial: (String) -> Boolean,
+    private val isVerifiedOrganisation: (String) -> Boolean = { false },
 ) {
+    fun isVerified(key: String): Boolean = isVerifiedOrganisation(key)
+
+    fun isEditorialKey(key: String): Boolean = isEditorial(key)
+
+    /** Whether the public answer of [key] is shown: a verified organisation or PPF, never anyone else. */
+    fun counts(key: String): Boolean = isVerifiedOrganisation(key) || isEditorial(key)
+
     /** An organisation named as organiser. */
     fun organisation(key: String): String = organisationName(key)?.takeIf { it.isNotBlank() } ?: shortNpub(key)
 
@@ -299,6 +322,7 @@ private fun AgendaList(
     onPropose: () -> Unit,
     onCreateAccount: () -> Unit,
     modifier: Modifier,
+    map: AgendaMapState,
 ) {
     val palette = PpfTheme.palette
     val tabs = listOfNotNull(AgendaTab.UPCOMING, AgendaTab.PAST, AgendaTab.MINE.takeIf { agenda.hasAccount })
@@ -323,8 +347,13 @@ private fun AgendaList(
                     modifier = Modifier.padding(horizontal = horizontal),
                     tagFor = { AgendaTags.TAB + tabs[it].name.lowercase() },
                 )
+                if (agenda.tab != AgendaTab.MINE) AgendaViewChoice(map, Modifier.padding(horizontal = horizontal, vertical = 8.dp))
                 HorizontalDivider(color = palette.border)
             }
+        }
+        if (map.view == AgendaView.MAP && agenda.tab != AgendaTab.MINE && LocalAgendaMapRenderer.current != null) {
+            AgendaMapPane(agenda, map, onOpenFilters, Modifier.weight(1f).fillMaxWidth())
+            return@Column
         }
         Column(
             modifier = Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = horizontal, vertical = 16.dp),
@@ -369,13 +398,8 @@ private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: (
     }
     Text(pluralStringResource(Res.plurals.agenda_count, shown.size, shown.size), style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag(AgendaTags.COUNT))
     if (filters.constraintCount > 0) ActiveFilters(agenda, names)
-    if (agenda.tab == AgendaTab.UPCOMING) {
-        InfoBox(Lucide.Map, Modifier.testTag(AgendaTags.MAP_SOON)) {
-            Text(stringResource(Res.string.agenda_map_soon_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
-            Spacer(Modifier.height(4.dp))
-            Text(stringResource(Res.string.agenda_map_soon_text), style = MaterialTheme.typography.bodyMedium)
-        }
-    }
+    // Where the platform cannot draw the map, an honest sentence; elsewhere the choice "Liste" / "Carte" is above.
+    if (agenda.tab == AgendaTab.UPCOMING) AgendaMapUnavailable()
     statusText(agenda.status)?.let {
         Text(it, style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.testTag(AgendaTags.STATUS_TEXT))
     }
@@ -410,6 +434,7 @@ private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: (
                 selected = agenda.selected?.address == m.address,
                 response = agenda.responseTo(m),
                 onOpen = { agenda.open(m) },
+                participations = agenda.participations,
             )
         }
     }
@@ -491,8 +516,9 @@ internal fun territoryLabels(mobilizations: List<Mobilization>): Map<String, Str
 
 /**
  * The card of a mobilization: the icon and label of its type, its title, its hours, its place
- * and territory, its organisers, its status (cancelled or postponed, very visible) and the
- * user's own answer (which stays on the device).
+ * and territory, its organisers (confirmed, or announced and said so), the declaration of a
+ * demonstration, the number of participating organisations, its status (cancelled or postponed,
+ * very visible) and the user's own answer (which stays on the device).
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -503,8 +529,10 @@ internal fun MobilizationCard(
     response: org.politisationpopulairefrancaise.core.agir.agenda.AgendaResponse?,
     onOpen: () -> Unit,
     modifier: Modifier = Modifier,
+    participations: org.politisationpopulairefrancaise.core.agir.agenda.Participations = org.politisationpopulairefrancaise.core.agir.agenda.Participations.EMPTY,
 ) {
     val palette = PpfTheme.palette
+    val hosting = participations.hosting(mobilization, names::counts)
     PpfCard(onClick = onOpen, selected = selected, modifier = modifier.fillMaxWidth().testTag(AgendaTags.CARD + mobilization.identifier)) {
         Row(verticalAlignment = Alignment.Top) {
             TypeMark(mobilization)
@@ -519,9 +547,12 @@ internal fun MobilizationCard(
                 Spacer(Modifier.height(6.dp))
                 MetaLine(Lucide.Clock, whenText(mobilization, full = false))
                 MetaLine(Lucide.MapPin, "${mobilization.location} · ${mobilization.territory}")
-                if (mobilization.organizers.isNotEmpty()) {
-                    MetaLine(Lucide.Users, stringResource(Res.string.agenda_organized_by, mobilization.organizers.joinToString(", ") { names.organisation(it) }))
+                hostsLine(mobilization, hosting, names)?.let { MetaLine(Lucide.Users, it) }
+                val declaration = mobilization.declaration
+                if (mobilization.type == org.politisationpopulairefrancaise.core.agir.agenda.MobilizationType.MANIFESTATION && declaration != null) {
+                    MetaLine(Lucide.Landmark, declarationLabel(declaration), Modifier.testTag(AgendaTags.DECLARATION))
                 }
+                CardParticipants(hosting)
                 if (mobilization.status != org.politisationpopulairefrancaise.core.agir.agenda.MobilizationStatus.PREVU || response != null) {
                     Spacer(Modifier.height(8.dp))
                     FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {

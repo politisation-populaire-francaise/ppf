@@ -37,6 +37,11 @@ zonkyPostgresBinaries = "17.11.0"
 # Apache 2.0) and SLF4J; Yubico's java-webauthn-server would also bring Guava, Apache HttpClient and a
 # second CBOR library.
 webauthn4j = "0.32.0.RELEASE"
+# Map view of the agenda (M1, AG-01): MapLibre Compose, the MapLibre project's Compose Multiplatform
+# map (BSD-3-Clause), over MapLibre Native through its C interface (maplibre-native-ffi, BSD-2-Clause).
+# Release of 2026-10-10, checked on Maven Central on 2026-11-07 (built with Kotlin 2.4.20 and
+# Compose 1.12.1). Android only for now: its desktop runtime needs Java 25 (we build with 21).
+maplibreCompose = "0.20.0"
 
 # Compose 1.12 libraries require compiling against API 37 or later.
 android-compileSdk = "37"
@@ -87,6 +92,10 @@ flyway-postgresql = { module = "org.flywaydb:flyway-database-postgresql", versio
 zonky-embedded-postgres = { module = "io.zonky.test:embedded-postgres", version.ref = "zonkyEmbeddedPostgres" }
 webauthn4j-core = { module = "com.webauthn4j:webauthn4j-core", version.ref = "webauthn4j" }
 zonky-postgres-binaries-bom = { module = "io.zonky.test.postgres:embedded-postgres-binaries-bom", version.ref = "zonkyPostgresBinaries" }
+# Map rendering on Android (docs/integration/agir-carte.md): the library, then its OpenGL ES runtime
+# (native MapLibre libraries for arm64-v8a, armeabi-v7a and x86_64), chosen over Vulkan for old phones.
+maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.ref = "maplibreCompose" }
+maplibre-compose-runtime-opengl-android = { module = "org.maplibre.compose:maplibre-compose-runtime-opengl-android", version.ref = "maplibreCompose" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
 

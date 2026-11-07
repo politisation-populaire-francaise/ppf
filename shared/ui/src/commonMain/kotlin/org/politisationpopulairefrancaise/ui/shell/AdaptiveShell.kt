@@ -64,7 +64,11 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.ui.endirect.EnDirectScreen
+import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.VoirScreen
+import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentState
+import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentState
+import org.politisationpopulairefrancaise.ui.voir.rememberVoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.VoirState
 import org.politisationpopulairefrancaise.ui.voir.rememberVoirState
 import org.politisationpopulairefrancaise.ui.AppDependencies
@@ -180,6 +184,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.
     val voirState = rememberVoirState(dependencies)
+    // Its parliamentary open data (D-065): the open page and the filters survive a visit elsewhere too.
+    val parliamentState = rememberParliamentState(dependencies)
+    // Its requests to the editorial team: drafts and anonymous reports waiting for a server.
+    val voirRequests = rememberVoirRequestSession(dependencies, messaging)
     // "Décider": the open page and the follows survive a visit to another space.
     val deciderState = rememberDeciderState(dependencies)
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
@@ -223,6 +231,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     revendicationViews = revendicationViews,
                     proposalComposer = proposalComposer,
                     voirState = voirState,
+                    parliamentState = parliamentState,
+                    voirRequests = voirRequests,
                     deciderState = deciderState,
                     groupsLibrary = groupsLibrary,
                     organisationsLibrary = organisationsLibrary,
@@ -253,6 +263,8 @@ private fun SpaceContent(
     revendicationViews: RevendicationViewsState,
     proposalComposer: ProposalComposer,
     voirState: VoirState,
+    parliamentState: ParliamentState,
+    voirRequests: VoirRequestSession,
     deciderState: DeciderState,
     groupsLibrary: GroupsLibrary,
     organisationsLibrary: OrganisationsLibrary,
@@ -276,7 +288,7 @@ private fun SpaceContent(
                 }
             },
         )
-        Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate)
+        Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate, requests = voirRequests, parliament = parliamentState)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)
         Space.AGIR -> {
             // The verified organisations name the organisers of the agenda and may call for donations.

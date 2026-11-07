@@ -53,8 +53,12 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
+import org.politisationpopulairefrancaise.server.tiles.TilesConfig
+import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
 import org.politisationpopulairefrancaise.web.agendaPage
+import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.webRoutes
 import org.slf4j.LoggerFactory
 import javax.sql.DataSource
@@ -78,6 +82,8 @@ import javax.sql.DataSource
  *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
  * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
  *   see [AgirConfig].
+ * - PPF_TILES_DIR: the folder of the PMTiles files of the map backgrounds, served at `/tiles/` by
+ *   range (development and preproduction; in production Caddy serves them), see [TilesConfig].
  * - PPF_RNE_SOURCE, PPF_RNE_REFRESH_DAYS: the directory of elected officials (fictitious example set
  *   by default), see [ElusConfig].
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
@@ -167,6 +173,9 @@ fun Application.module(
     relay: RelayConfig = RelayConfig.fromEnvironment(),
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
     agir: AgirSetup = AgirSetup.fromEnvironment(),
+    /** Where the pages of "Voir" read; by default the editorial contents of the database (none without one). */
+    voir: VoirSource? = null,
+    tiles: TilesConfig = TilesConfig.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
     backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
 ) {
@@ -242,7 +251,10 @@ fun Application.module(
             agirApi(agirSpace)
             elusApi(elusService)
             agirSpace?.let { agendaPage(it.agendaSource()) }
-            webRoutes()
+            tilesRoutes(tiles)
+            parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
+            // The pages of "Voir": contents of the editorial keys only (D-034).
+            webRoutes(voir ?: repository?.let { EditorialVoirSource(it, policy) })
         }
         if (backOffice != null && teamBackOffice != null) {
             createChild(PortSelector(backOffice.config.port)).backOfficeRoutes(teamBackOffice)

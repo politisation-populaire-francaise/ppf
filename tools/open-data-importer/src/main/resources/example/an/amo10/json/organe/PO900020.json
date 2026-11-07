@@ -1,0 +1,12 @@
+{
+ "organe": {
+  "uid": "PO900020",
+  "codeType": "PARPOL",
+  "libelle": "[EXEMPLE] Parti de rattachement fictif",
+  "libelleAbrev": "PRF",
+  "viMoDe": {
+   "dateDebut": "2023-01-01",
+   "dateFin": null
+  }
+ }
+}

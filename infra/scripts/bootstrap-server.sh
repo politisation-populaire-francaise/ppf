@@ -269,6 +269,13 @@ EOF
 # preproduction only. The production starts with no editor key.
 prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f" "https://equipe.preprod.$domain"
 prepare_environment production ppf 10001 "" "https://equipe.$domain"
+# Parliamentary open data of the production (Voir, D-064): the importer (UID 10003) writes, the
+# server reads. The import key file stays empty until the public launch (the importer then exits
+# with code 5 and changes nothing).
+install -d -m 0755 -o 10003 -g 10003 "$DATA_DIR/production/open-data"
+[ -f "$DATA_DIR/production/secrets/import_key" ] || (umask 077; : > "$DATA_DIR/production/secrets/import_key")
+chown 10003:10003 "$DATA_DIR/production/secrets/import_key"
+chmod 400 "$DATA_DIR/production/secrets/import_key"
 
 if [ ! -f "$DATA_DIR/proxy/.env" ]; then
     # Password of the preproduction web pages, generated here and shown to the owner once.
@@ -322,6 +329,10 @@ install -m 0755 "$script_dir/backoffice.sh" /usr/local/sbin/ppf-backoffice
 install -m 0755 "$script_dir/wg-remove-peer.sh" /usr/local/sbin/ppf-wg-remove-peer
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.service" /etc/systemd/system/
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.timer" /etc/systemd/system/
+install -m 0755 "$script_dir/open-data-import.sh" /usr/local/sbin/ppf-open-data-import
+install -m 0644 "$script_dir/../systemd/ppf-open-data-daily.service" "$script_dir/../systemd/ppf-open-data-daily.timer" /etc/systemd/system/
+install -m 0644 "$script_dir/../systemd/ppf-open-data-weekly.service" "$script_dir/../systemd/ppf-open-data-weekly.timer" /etc/systemd/system/
+# The import timers are installed but enabled only at the public launch (infra/README.md).
 systemctl daemon-reload
 systemctl enable ppf-preprod-update.timer >/dev/null 2>&1
 

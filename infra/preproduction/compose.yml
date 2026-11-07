@@ -45,6 +45,9 @@ services:
       PPF_AUDIT_PUBLIC_KEY: ${PPF_AUDIT_PUBLIC_KEY:-}
       # Fictional example contents, bundled in the image, loaded at each start (idempotent).
       PPF_EXAMPLES_DIR: /app/examples
+      # Parliamentary open data: the example packages signed with the example key, read-only in the
+      # image; the preproduction never imports real data and holds no import key.
+      PPF_OPEN_DATA_DIR: /app/parlement-examples
     secrets:
       - server_db_password
     networks:

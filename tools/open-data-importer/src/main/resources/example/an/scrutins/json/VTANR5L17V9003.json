@@ -1,0 +1,228 @@
+{
+ "scrutin": {
+  "@xmlns": "http://schemas.assemblee-nationale.fr/referentiel",
+  "uid": "VTANR5L17V9003",
+  "numero": "9003",
+  "organeRef": "PO900000",
+  "legislature": "17",
+  "sessionRef": "SCR5A2026O1",
+  "seanceRef": "RUANR5L17S2026IDS99003",
+  "dateScrutin": "2026-09-30",
+  "quantiemeJourSeance": "1",
+  "typeVote": {
+   "codeTypeVote": "SPO",
+   "libelleTypeVote": "scrutin public ordinaire",
+   "typeMajorite": "majorité absolue des suffrages exprimés"
+  },
+  "sort": {
+   "code": "rejeté",
+   "libelle": "[EXEMPLE] L'Assemblée nationale a n'a pas adopté."
+  },
+  "titre": "[EXEMPLE] l'amendement n° 12 de M. [EXEMPLE] Fabien Morvanec à l'article 3 du projet de loi de finances.",
+  "demandeur": {
+   "texte": "[EXEMPLE] Président du groupe fictif",
+   "referenceLegislative": null
+  },
+  "objet": {
+   "libelle": "[EXEMPLE] l'amendement n° 12 de M. [EXEMPLE] Fabien Morvanec à l'article 3 du projet de loi de finances.",
+   "dossierLegislatif": null
+  },
+  "modePublicationDesVotes": "DecompteNominatif",
+  "syntheseVote": {
+   "nombreVotants": "8",
+   "suffragesExprimes": "6",
+   "nbrSuffragesRequis": "4",
+   "annonce": "[EXEMPLE]",
+   "decompte": {
+    "nonVotants": "2",
+    "pour": "2",
+    "contre": "4",
+    "abstentions": "2",
+    "nonVotantsVolontaires": "0"
+   }
+  },
+  "ventilationVotes": {
+   "organe": {
+    "organeRef": "PO900000",
+    "groupes": {
+     "groupe": [
+      {
+       "organeRef": "PO900001",
+       "nombreMembresGroupe": "4",
+       "vote": {
+        "positionMajoritaire": "contre",
+        "decompteVoix": {
+         "nonVotants": "1",
+         "pour": "0",
+         "contre": "2",
+         "abstentions": "1",
+         "nonVotantsVolontaires": "0"
+        },
+        "decompteNominatif": {
+         "nonVotants": {
+          "votant": {
+           "acteurRef": "PA900001",
+           "mandatRef": "PM900001",
+           "numPlace": "101",
+           "causePositionVote": "PAN"
+          }
+         },
+         "pours": null,
+         "contres": {
+          "votant": [
+           {
+            "acteurRef": "PA900002",
+            "mandatRef": "PM900002",
+            "numPlace": "102",
+            "parDelegation": "false"
+           },
+           {
+            "acteurRef": "PA900003",
+            "mandatRef": "PM900003",
+            "numPlace": "103",
+            "parDelegation": "false"
+           }
+          ]
+         },
+         "abstentions": {
+          "votant": {
+           "acteurRef": "PA900004",
+           "mandatRef": "PM900004",
+           "numPlace": "104",
+           "parDelegation": "false"
+          }
+         }
+        }
+       }
+      },
+      {
+       "organeRef": "PO900002",
+       "nombreMembresGroupe": "4",
+       "vote": {
+        "positionMajoritaire": "pour",
+        "decompteVoix": {
+         "nonVotants": "1",
+         "pour": "2",
+         "contre": "0",
+         "abstentions": "0",
+         "nonVotantsVolontaires": "0"
+        },
+        "decompteNominatif": {
+         "nonVotants": {
+          "votant": {
+           "acteurRef": "PA900008",
+           "mandatRef": "PM900008",
+           "numPlace": "108",
+           "causePositionVote": "MG"
+          }
+         },
+         "pours": {
+          "votant": [
+           {
+            "acteurRef": "PA900006",
+            "mandatRef": "PM900006",
+            "numPlace": "106",
+            "parDelegation": "false"
+           },
+           {
+            "acteurRef": "PA900007",
+            "mandatRef": "PM900007",
+            "numPlace": "107",
+            "parDelegation": "false"
+           }
+          ]
+         },
+         "contres": null,
+         "abstentions": null
+        }
+       }
+      },
+      {
+       "organeRef": "PO900003",
+       "nombreMembresGroupe": "3",
+       "vote": {
+        "positionMajoritaire": "contre",
+        "decompteVoix": {
+         "nonVotants": "0",
+         "pour": "0",
+         "contre": "2",
+         "abstentions": "0",
+         "nonVotantsVolontaires": "0"
+        },
+        "decompteNominatif": {
+         "nonVotants": null,
+         "pours": null,
+         "contres": {
+          "votant": [
+           {
+            "acteurRef": "PA900009",
+            "mandatRef": "PM900009",
+            "numPlace": "109",
+            "parDelegation": "false"
+           },
+           {
+            "acteurRef": "PA900010",
+            "mandatRef": "PM900010",
+            "numPlace": "110",
+            "parDelegation": "false"
+           }
+          ]
+         },
+         "abstentions": null
+        }
+       }
+      },
+      {
+       "organeRef": "PO900005",
+       "nombreMembresGroupe": "1",
+       "vote": {
+        "positionMajoritaire": "abstention",
+        "decompteVoix": {
+         "nonVotants": "0",
+         "pour": "0",
+         "contre": "0",
+         "abstentions": "1",
+         "nonVotantsVolontaires": "0"
+        },
+        "decompteNominatif": {
+         "nonVotants": null,
+         "pours": null,
+         "contres": null,
+         "abstentions": {
+          "votant": {
+           "acteurRef": "PA900012",
+           "mandatRef": "PM900012",
+           "numPlace": "112",
+           "parDelegation": "false"
+          }
+         }
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "miseAuPoint": {
+   "nonVotants": null,
+   "pours": null,
+   "contres": null,
+   "abstentions": {
+    "votant": {
+     "acteurRef": "PA900011",
+     "mandatRef": "PM900011",
+     "parDelegation": "false"
+    }
+   },
+   "nonVotantsVolontaires": {
+    "votant": {
+     "acteurRef": "PA900004",
+     "mandatRef": "PM900004",
+     "parDelegation": "false"
+    }
+   },
+   "dysfonctionnement": null
+  },
+  "lieuVote": "Hémicycle"
+ }
+}

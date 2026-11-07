@@ -67,6 +67,8 @@ const val DEMO_GROUP_ID: String = "collectif-demonstration"
  * set: the link of a first super administrator is printed at start (a passkey of the computer, Windows
  * Hello for example, works on localhost).
  *
+ * The pages of "Voir" (http://localhost:8080/voir) show voir.json, signed by the example editor key.
+ *
  * Never used in production: it listens on the local machine only and forgets everything on exit.
  */
 fun main() {
@@ -96,6 +98,7 @@ fun main() {
             "${editors.size} editor key(s), AI model ${if (revendications.model == null) "off" else "on"}, http://localhost:$port",
     )
     println("Agir space: ${BundledContents.AGIR_FILES.joinToString { "$it ${bundled[it].orEmpty().size}" }}, review of held contents at /dev/held.")
+    println("Voir: ${bundled[BundledContents.VOIR_FILE].orEmpty().size} block(s) of ${BundledContents.VOIR_FILE}, pages at http://localhost:$port/voir")
     // The fictitious example set (PPF_RNE_SOURCE is never `official` outside production), imported at start.
     println("Directory of elected officials: example set, imported in the background, at /api/v1/elus and /api/v1/elus/69.")
     val backOffice = BackOfficeSetup.fromEnvironment("development", port)
@@ -125,6 +128,7 @@ fun main() {
             publicPort(backOffice?.config?.port) {
                 devReviewRoutes(queue)
                 devHeldRoutes(held)
+                parlementRoutes(devOpenData()) // Example packages of parliamentary open data (DevOpenData.kt).
             }
         }
     }.start(wait = true)

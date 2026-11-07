@@ -11,6 +11,8 @@ import kotlinx.html.p
 import kotlinx.html.section
 import kotlinx.html.ul
 import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.web.voir.VoirSource
+import org.politisationpopulairefrancaise.web.voir.voirPages
 
 /** French description of each space, same wording as the applications. */
 private val spaceDescriptions: Map<Space, String> = mapOf(
@@ -26,9 +28,13 @@ private val spaceDescriptions: Map<Space, String> = mapOf(
     Space.MON_ESPACE to "Votre tableau de bord personnel : votre territoire, vos suivis, vos votes. Tout reste sur votre appareil.",
 )
 
-/** Routes of the web site. Mounted by the server. */
-fun Route.webRoutes() {
+/**
+ * Routes of the web site. Mounted by the server. With a [voir] source (a database is configured),
+ * the pages of "Voir" replace the placeholder of the space.
+ */
+fun Route.webRoutes(voir: VoirSource? = null) {
     staticResources("/static", "static")
+    voir?.let { voirPages(it) }
 
     get("/") {
         call.respondHtml {
@@ -49,7 +55,7 @@ fun Route.webRoutes() {
         }
     }
 
-    Space.entries.forEach { space ->
+    Space.entries.filter { voir == null || it != Space.VOIR }.forEach { space ->
         get("/${space.id}") {
             call.respondHtml {
                 siteLayout(pageTitle = spaceLabels.getValue(space), currentSpace = space) {

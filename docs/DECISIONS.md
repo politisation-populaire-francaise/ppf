@@ -458,6 +458,28 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : répondre d'abord aux questions que pose l'actualité (grève, vote en 2027), puis donner les repères institutionnels qui servent partout.
 - Conséquences : fichiers intégrés `glossaire.json`, `parcours.json`, `comprendre.json` et `fiches.json` régénérés et signés ; l'outil de signature lit désormais les identifiants des fiches dans `content/fiches` au lieu d'une liste fixe. Tous ces contenus doivent être relus par l'équipe éditoriale avant une publication réelle (et par un avocat pour les fiches pratiques).
 
+## D-045 (2026-11-07) Agenda : transparence de la participation (décisions de la propriétaire, D-044)
+
+- Contexte : application à l'agenda des mobilisations de la doctrine « la transparence passe avant tout » (D-044). Détail : `docs/integration/agir-transparence.md` (contrat d'Agir, version 2).
+- Mis en œuvre :
+  - une manifestation **non déclarée en préfecture** est proposée dans le formulaire et affichée comme telle sur la carte et le détail ; une phrase prévient que la mention est publique, sans empêcher l'envoi ;
+  - libellé « **Ça m'intéresse** » ;
+  - **participation publique des organisations** : réponse NIP-52 (type 31925 : `a` = adresse de la mobilisation, `status` `accepted`, `declined` ou `tentative`, extension `ppf-role` `organisateur` ou `participant`) ; seules comptent les organisations vérifiées et les clés de l'équipe éditoriale (PPF) ; pour elles, l'affichage public est le choix proposé en premier, « participer sans l'afficher » reste possible ; une organisation nommée organisatrice n'apparaît comme telle que si elle l'a confirmé de sa propre clé, sinon « annoncée, non confirmée » ; section « Organisations participantes » avec leur nombre ;
+  - le serveur vérifie la forme des réponses (adresse, statut, rôle, 280 caractères, aucune coordonnée personnelle) et les publie sans relecture ;
+  - les **réponses aux appels** s'effacent de l'appareil 7 jours après la clôture ou l'échéance de l'appel.
+- Décisions techniques prises en autonomie : le `d` d'une réponse est l'adresse de la mobilisation (une réponse par clé, la plus récente compte) ; les réponses se synchronisent par type, sans requête par événement ; rien n'est codé pour la visibilité des citoyens (contradiction avec le principe 10 en attente de la propriétaire, D-044).
+
+## D-046 (2026-11-07) Vue carte de l'agenda : MapLibre, fonds PMTiles, aucun tiers
+
+- Contexte : M1 « Carte et agenda des mobilisations », cahier des charges section 4 (« OpenStreetMap via MapLibre, jamais Google Maps »), principe 6 (aucun tiers). Détail : `docs/integration/agir-carte.md` et `tools/map-data/README.md`.
+- Décisions techniques prises en autonomie :
+  - **bibliothèque** : MapLibre Compose 0.20.0 (licence BSD-3-Clause), moteur OpenGL ES, derrière l'interface `AgendaMapRenderer` (repli possible : MapLibre Native Android) ; la carte s'affiche sur Android ; sur ordinateur (le moteur exige Java 25) et sur iOS (non compilé), la liste reste avec une phrase honnête ;
+  - **aucune requête directe du moteur** : style construit sur l'appareil sans adresse web, toute adresse autre que `ppf-carte://` refusée, glyphes fabriqués à partir de la police Atkinson Hyperlegible intégrée ; serveurs de tuiles tiers ajoutés aux motifs interdits ;
+  - **fonds PMTiles** : un fond de 2,59 Mo intégré à l'application (monde jusqu'au zoom 3, France et outre-mer jusqu'au zoom 7, couches filtrées, données OpenStreetMap sous licence ODbL), disponible hors ligne ; le fond détaillé viendra du serveur, lu par plages d'octets, après un petit manifeste `/tiles/current.json` (nom daté du fichier, taille, somme SHA-256) ; préparation des données par `tools/map-data`, jamais par l'application ni par l'intégration continue ;
+  - **écran** : choix « Liste » / « Carte » (liste par défaut), filtres communs, boutons de zoom et de recentrage sans geste, attribution « © contributeurs OpenStreetMap » toujours visible, aucune position de l'utilisateur ni permission de localisation ;
+  - **poids** : l'APK passe de 16,5 à 38 Mo (bibliothèques natives compressées) ; un APK par architecture (environ 26 Mo) est possible à la publication.
+- Reste : voir la carte réelle sur le téléphone de la propriétaire (aucun émulateur sur l'ordinateur) ; zones hors ligne (S-35), carte de la manifestation en direct (AG-24), tracé d'un parcours, placer un point dans le formulaire.
+
 ## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
 
 - Contexte : cahier fonctionnel, M10 et DE-07 (« relais des pétitions officielles », « explication claire des seuils et de leurs effets réels », « kits de partage ») ; demande de la propriétaire du 7 novembre 2026 de commencer « Décider » par ce qui est déjà spécifié. Le cahier fonctionnel demandait de revérifier le droit avant de coder.
@@ -533,6 +555,74 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 
 - Décision technique prise en autonomie : l'image du serveur embarque les contenus [EXEMPLE] signés de `shared/ui/.../files/contents/` ; la variable `PPF_EXAMPLES_DIR` les charge au démarrage (idempotent, signatures vérifiées), seulement en préproduction ; le serveur **refuse de démarrer** en production avec cette variable. La préproduction autorise la clé d'éditeur d'exemple (`PPF_EDITOR_KEYS`), jamais la production.
 - Raison : une seule image promue de la préproduction à la production, et la règle « jamais de données réelles en préproduction, jamais d'exemples en production » vérifiée par le code plutôt que par la vigilance.
+
+## D-080 (2026-11-07) Tuiles du serveur : France entière à la même précision
+
+- Décision technique prise en autonomie (chef d'équipe), gratuite : en production, un seul fichier PMTiles de la France métropolitaine et de l'outre-mer, zooms 8 à 14, filtré (sans bâtiments, points d'intérêt ni occupation du sol), estimé à 3 à 5 Go, sous la limite de 10 Go fixée pour un serveur de 50 Go ; la même précision partout, pour qu'aucun citoyen ne soit « de seconde zone » hors des métropoles. En préproduction, un petit extrait des seules villes des exemples, dans son propre volume (aucune ressource partagée avec la production).
+- Mise en ligne (Directeur technique, D-075 à D-079) : fichier préparé sur un ordinateur de développement, envoyé par SSH, vérifié par sa somme SHA-256, servi par Caddy en requêtes partielles avec un cache long sous un nom daté, aucun journal d'accès ; mise à jour tous les deux ou trois mois.
+- Mention « © contributeurs d'OpenStreetMap » (ODbL) visible dans l'application et sur le site.
+
+## D-054 (2026-11-07) Fiches des partis politiques dans « Voir »
+
+- Contexte : décision de la propriétaire du 7 novembre 2026 (M17, ordre d'entrée des responsables publics : « un parti aura sa propre fiche avant les personnes de ce parti »). Détail : `docs/integration/voir-partis.md`.
+- Décisions techniques prises en autonomie :
+  - **brique `parti`** distincte d'`organisation` (annuaire d'« Agir », dont les partis sont exclus, point d'attention n° 7) ; lien d'une personne vers son parti (rôle `parti`), d'un parti vers ses dirigeants (rôle `responsable`) : les membres se déduisent, sans liste en double ;
+  - **structure de financement obligatoire** (association de financement agréée ou mandataire financier, loi n° 88-227 du 11 mars 1988, articles 11 à 11-2) : le même critère légal pour tous, vérifiable sur une source primaire ; **jamais le nom d'un mandataire financier** (personne physique) ;
+  - aide publique de l'État par année (décret annuel de répartition pour source), parti et groupe européens, sièges par assemblée et par source, côte à côte, jamais fusionnés ;
+  - **partis rangés par nom**, jamais par taille ; rubriques identiques pour tous, même vides ;
+  - **pas de culpabilité par association** : la fiche d'un parti ne montre que les faits qui visent le parti lui-même ; les cartes des membres y apparaissent sans leurs compteurs d'affaires.
+- Fusionné le 7 novembre 2026 avec un agent d'une autre session qui faisait le même travail (ses apports repris : financement, aide publique, groupe européen, tri par nom).
+
+## D-055 (2026-11-07) « Voir » sur le site web, sans JavaScript
+
+- Contexte : cahier des charges (site lisible sans JavaScript, PWA, contenus essentiels hors ligne ; solution sur iPhone). Détail : `docs/integration/voir-web.md`.
+- Décisions techniques prises en autonomie : une page par contenu à une adresse stable (`/voir/chiffres|faits|personnes|partis|textes|monde|dossiers/<identifiant>`, identifiant encodé selon la RFC 3986, construite par `core/voir/VoirLinks` pour l'application comme pour le site) ; graphique dessiné par le serveur en SVG, sans script ni couleur dans la page (classes définies dans `site.css`, CSP stricte), suivi du même tableau de données ; rendu Markdown maison qui échappe tout ; seuls les contenus des clés éditoriales (`PPF_EDITOR_KEYS`), catalogue gardé 30 secondes ; filtres par simples liens ; liens sortants marqués « (site extérieur) » avec `rel="noopener noreferrer nofollow external"`. La page d'un parti sur le site montre pour l'instant sa présentation, ses sources et son origine ; la fiche complète suivra.
+
+## D-056 (2026-11-07) Droit de réponse et « Signaler une erreur » dans « Voir »
+
+- Contexte : M17 (droit de réponse obligatoire, LCEN, article 1-1, III ; journal des corrections) ; inventaire VO-21 et VO-22. Détail et format : `docs/integration/voir-demandes.md`.
+- Décisions techniques prises en autonomie :
+  - **transport par message privé chiffré** (NIP-17) vers la boîte de l'équipe de rédaction, par le relais existant, sans route serveur nouvelle : les demandes sensibles restent chiffrées pour l'équipe, et l'échange (vérification de l'identité, réponse) a lieu dans « Messages » ;
+  - **droit de réponse depuis un compte** (l'équipe doit répondre et vérifier l'identité) : formulaire en page, longueur maximale max(mots du contenu, 1 000) avec compteur en direct, déclaration sur l'honneur, brouillon gardé en mémoire pendant la création du compte ;
+  - **« Signaler une erreur » sous chaque contenu, anonyme par défaut** (clé à usage unique, l'équipe ne peut pas répondre) ; avec le compte après une mise en garde, réversible (principe 10) ; signalements anonymes en attente gardés en mémoire seulement ;
+  - **clé de la boîte de l'équipe** isolée derrière `VoirRequests.TEAM_INBOX` (aujourd'hui la clé éditoriale d'exemple) : **une clé dédiée, distincte de celle qui signe les contenus, à créer avant le lancement public**.
+
+## D-057 (2026-11-07) Grille de l'indice de gravité des violences policières (décision de la propriétaire)
+
+- La propriétaire valide le 7 novembre 2026 (« Oui, validée », relayé par le chef d'équipe) la grille en cinq niveaux proposée par le pôle « Voir » : 1 sans incapacité (pas d'ITT), 2 blessure légère (ITT de 8 jours ou moins), 3 blessure grave (ITT de plus de 8 jours), 4 mutilation ou infirmité permanente, 5 décès ; pour chaque cas : mineur ou non, arme ou moyen en cause, niveau de preuve (certificat médical, vidéo, décision de justice, déclaration seule) ; cas déclaratifs comptés à part, jamais mélangés aux cas vérifiés ; l'indice d'une journée est la répartition entre les cinq niveaux, jamais une note unique. Code : à venir (feuille de route de « Voir », point 9).
+
+## D-064 (2026-11-07) Données ouvertes du Parlement : import séparé, paquets signés, minimisation
+
+- Contexte : feuille de route de « Voir », point 1 (« Oui, commencez », 7 novembre 2026) ; cahier fonctionnel 2.0, M20 et M17 ; contrat `docs/integration/voir-donnees-ouvertes.md` ; sources vérifiées et structure relevée sur les vrais fichiers (téléchargés une fois avec l'accord de la propriétaire, puis supprimés) : `docs/integration/voir-donnees-sources.md` ; outil : `docs/integration/voir-donnees-import.md`.
+- Décisions techniques prises en autonomie (chef d'équipe et pôle « Voir ») :
+  - **outil d'import séparé** `tools/open-data-importer` (`ppf-open-data-importer.jar`), lancé une fois par minuteur (Assemblée et Sénat chaque jour, Parlement européen chaque semaine), dans un conteneur à part avec son propre utilisateur, **seul à lire la clé d'import** ; le serveur sert les paquets d'un dossier en lecture seule (`GET /api/v1/parlement`, `/api/v1/parlement/{paquet}`, ETag, 304) ;
+  - **clé d'import dédiée** (secp256k1, Schnorr) distincte des clés de la plateforme et éditoriales ; l'index est un **événement NIP-01** (kind 30078, `d` = `ppf:parlement-index`) ; l'application ne lui fait confiance que pour ces paquets (`OpenDataKeys`, rotation par liste) ;
+  - **anti-retour en arrière** : un index plus ancien que celui de l'appareil est refusé ; « Données du … » affiché, avertissement après 14 jours ;
+  - **import refusé** si les membres ou les scrutins baissent de plus de 20 % (code de sortie 3), ensemble précédent gardé ; lecture des fichiers officiels en flux (mémoire limitée) ;
+  - **minimisation** : seulement le mandat (nom, chambre, groupe, territoire, début du mandat, page officielle, parti national d'un eurodéputé) ; jamais date de naissance, profession, sexe, civilité, adresses, place dans l'hémicycle, photo ; jamais de déclaration de patrimoine ;
+  - **jeux fictifs [EXEMPLE] au format officiel** par défaut (développement, tests, préproduction) et paquets d'exemple intégrés à l'application ; aucune donnée réelle dans le dépôt ;
+  - hors première version, prévus en version 2 : votes nominatifs du Sénat (copie PostgreSQL de Dosleg), répertoire des représentants d'intérêts consultable sans rapprochement, votes de la France au Conseil de l'Union européenne, pages du site.
+
+## D-065 (2026-11-07) Parlementaires et scrutins dans « Voir »
+
+- Contexte : contrat `voir-donnees-ouvertes.md`, sections 4 et 5 ; détail : `docs/integration/voir-donnees-app.md`.
+- Décisions techniques prises en autonomie (chef d'équipe et pôle « Voir ») :
+  - carte « Tous les parlementaires et leurs votes » sur l'axe « Le pouvoir », après les responsables publics ; liste avec recherche et filtres (chambre, groupe), tri par nom ; fiche d'un parlementaire aux rubriques identiques pour tous ; page d'un scrutin avec le tableau par groupe ;
+  - **votes écrits en toutes lettres** (« Pour », « Contre », « Abstention », « Non-votant ») **en couleurs neutres**, avec la raison d'un non-vote, « par délégation » et la mise au point à côté du vote enregistré ;
+  - **participation** : part des scrutins publics du mandat présents sur l'appareil où le membre a voté, avec sa définition sur chaque fiche (« Ne mesure pas le travail en commission ni les autres activités ») ; aucun chiffre plutôt qu'un faux 0 % ; **jamais de classement** ;
+  - mention partout « D'après les données ouvertes de l'Assemblée nationale (ou du Sénat, du Parlement européen), mises à jour le … ; réutilisation par PPF, sans lien avec ces institutions » ; bandeau « Données fictives [EXEMPLE] » ;
+  - **économie de données** : l'index (quelques centaines d'octets) est relu à l'ouverture ; chaque paquet seulement sur un geste, taille affichée ; « Votes du Sénat : bientôt » ;
+  - liens avec « Voir » par l'étiquette `ppf-official-id` (`an:PA…`, `senat:…`, `pe:…` sur une personne ; `an-dossier:…` sur un texte) : lien vers les votes sur la fiche d'une personne, scrutins sous la fiche d'un texte ;
+  - base locale : migration `11.sqm` (table des paquets et index courant).
+
+## D-075 (2026-11-07) Données parlementaires ouvertes : déploiement de l'importeur
+
+- Décisions techniques prises en autonomie (Directeur technique), pour l'outil de « Voir » (D-064, `docs/integration/voir-donnees-import.md`) :
+  - **une seule image signée** : le jar de l'importeur (`ppf-open-data-importer.jar`, environ 31 Mo) et les paquets d'exemple signés entrent dans l'image du serveur, construite et signée par l'intégration continue (D-070) ; pas de deuxième chaîne d'approvisionnement ;
+  - **préproduction** : elle sert directement les paquets d'exemple de l'image (`PPF_OPEN_DATA_DIR=/app/parlement-examples`, lecture seule) ; elle n'importe jamais de données réelles et ne détient aucune clé d'import ;
+  - **production** : service `open-data-importer` lancé une fois par exécution (`ppf-open-data-import`), son propre utilisateur (UID 10003), le seul à lire la clé d'import (fichier secret), son propre réseau avec une sortie vers les seules sources officielles (`infra/EGRESS.md`), jamais la base ; il écrit `/srv/ppf/production/open-data`, monté en lecture seule dans le serveur ; mémoire limitée à 512 Mo jusqu'à la mesure sur les vrais fichiers ; minuteurs `ppf-open-data-daily` (Assemblée et Sénat, 5 h 20) et `ppf-open-data-weekly` (Parlement européen, lundi 5 h 50) installés mais activés seulement au lancement public, quand la clé d'import de production existera et figurera dans `OpenDataKeys` ;
+  - l'intégration continue vérifie que la préproduction sert les paquets d'exemple et que l'importeur, présent dans l'image, refuse de tourner sans clé (code 5).
+- Reste à décider avant le lancement : où vit la clé d'import de production (sur le serveur dans son conteneur, ou dans le service de signature séparé).
 
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
