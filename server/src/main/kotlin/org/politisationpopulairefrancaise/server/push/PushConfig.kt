@@ -8,13 +8,16 @@ import java.nio.file.Path
  * from the environment only:
  *
  * - PPF_VAPID_PRIVATE_KEY_FILE: the VAPID private key (EC P-256, PKCS#8 PEM), outside the repository,
- *   one per environment (`/run/secrets/vapid_private_key` on the server). Without it, push is off:
+ *   one per environment: `/run/secrets/vapid_private_key` on the server. Without it, push is off:
  *   `GET /api/v1/push/vapid` and `POST /api/v1/push/subscriptions` answer `503 push_disabled`.
  * - PPF_PUSH_ALLOWED_HOSTS: comma-separated host names a push endpoint may use (default: `push.`
- *   followed by the host of PPF_PUBLIC_URL, that is our ntfy only). Any other host is refused with
- *   `422 push_host_not_allowed`, so that the server cannot be made to contact arbitrary addresses.
+ *   followed by the host of PPF_PUBLIC_URL, that is our ntfy only): `push.politisation-populaire-francaise.org`
+ *   in production, `push.preprod.politisation-populaire-francaise.org` in preproduction. Any other host,
+ *   and any path of an allowed host other than a UnifiedPush topic (`/up<random>`, the only topics of our
+ *   ntfy), is refused with `422 push_host_not_allowed`, so that the server cannot be made to contact
+ *   arbitrary addresses.
  * - PPF_PUSH_INTERNAL_URL: base URL through which the server reaches our ntfy on the internal network
- *   of the containers (for example `http://ntfy:80`). When set, a push to an allowed host goes to this
+ *   of the containers: `http://ntfy:8080`. When set, a push to an allowed host goes to this
  *   base, keeping the path and query of the endpoint, never through the public name.
  * - PPF_PUBLIC_URL: the https address of the site (default https://politisation-populaire-francaise.org),
  *   the `sub` claim of the VAPID token (never an e-mail address) and the base of the URL that the

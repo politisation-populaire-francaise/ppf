@@ -76,7 +76,7 @@ class WebPushSender(
         val endpoint = runCatching { URI(subscription.endpoint) }.getOrNull() ?: return WakeResult.Failed
         val host = endpoint.host?.lowercase() ?: return WakeResult.Failed
         // Checked again at sending time: the list may have changed since the subscription.
-        if (host !in config.allowedHosts) return WakeResult.Failed
+        if (host !in config.allowedHosts || !isUnifiedPushTopic(endpoint)) return WakeResult.Failed
         val now = clock()
         blockedUntil[host]?.let { until -> if (until.isAfter(now)) return WakeResult.RetryAt(until) else blockedUntil.remove(host, until) }
         val userAgentKey = Base64Url.decodeOrNull(subscription.p256dh) ?: return WakeResult.Failed

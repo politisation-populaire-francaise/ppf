@@ -136,6 +136,12 @@ class PushApiTest {
         val otherHost = client.subscribe(subscriptionJson("public", "https://push.elsewhere.example/up123"))
         assertEquals(HttpStatusCode.UnprocessableEntity, otherHost.status)
         assertEquals("push_host_not_allowed", otherHost.error())
+        // Only UnifiedPush topics exist on our ntfy.
+        for (path in listOf("/v1/account", "/", "/up", "/upAbc/json", "/topic")) {
+            val wrongPath = client.subscribe(subscriptionJson("public", "https://push.example.org$path"))
+            assertEquals(HttpStatusCode.UnprocessableEntity, wrongPath.status, path)
+            assertEquals("push_host_not_allowed", wrongPath.error())
+        }
         // http is accepted in development only.
         assertEquals("bad_endpoint", client.subscribe(subscriptionJson("public", "http://push.example.org/up123")).error())
         assertEquals("bad_endpoint", client.subscribe(subscriptionJson("public", "https://user@push.example.org/up123")).error())

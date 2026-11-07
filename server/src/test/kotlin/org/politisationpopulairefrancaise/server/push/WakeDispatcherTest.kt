@@ -168,7 +168,7 @@ class WakeDispatcherTest {
     @Test
     fun senderEncryptsAuthorizesAndGoesThroughTheInternalAddress() = runBlocking {
         val vapid = VapidKeys(P256.generateKeyPair().private as ECPrivateKey)
-        val config = PushConfig(vapid, setOf("push.example.org"), URI("http://ntfy:80"), "https://site.example.org")
+        val config = PushConfig(vapid, setOf("push.example.org"), URI("http://ntfy:8080"), "https://site.example.org")
         val requests = CopyOnWriteArrayList<Triple<URI, Map<String, String>, ByteArray>>()
         var status = 201
         var retryAfter: String? = null
@@ -185,7 +185,7 @@ class WakeDispatcherTest {
 
         assertEquals(WakeResult.Delivered, webPush.wake(subscription))
         val (url, headers, body) = requests.single()
-        assertEquals(URI("http://ntfy:80/upAbc?up=1"), url)
+        assertEquals(URI("http://ntfy:8080/upAbc?up=1"), url)
         assertEquals("3600", headers["TTL"])
         assertEquals("aes128gcm", headers["Content-Encoding"])
         assertEquals("high", headers["Urgency"])
@@ -211,6 +211,8 @@ class WakeDispatcherTest {
         advance(Duration.ofSeconds(120))
         assertEquals(WakeResult.Delivered, webPush.wake(subscription))
 
+        // Nothing but a UnifiedPush topic is ever contacted.
+        assertEquals(WakeResult.Failed, webPush.wake(subscription.copy(endpoint = "https://push.example.org/v1/account")))
         // A host no longer allowed is never contacted.
         assertEquals(WakeResult.Failed, webPush.wake(subscription.copy(endpoint = "https://push.elsewhere.example/up1")))
     }

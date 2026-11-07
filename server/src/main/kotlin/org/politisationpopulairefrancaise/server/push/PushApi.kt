@@ -107,7 +107,8 @@ fun Route.pushApi(service: PushService) {
                 ?: return@post call.badRequest("bad_scope", "The scope is \"public\" or \"mailbox\".")
             val endpoint = parseEndpoint(request.endpoint, config.allowHttpEndpoints)
                 ?: return@post call.badRequest("bad_endpoint", "The endpoint must be an https URL.")
-            if (endpoint.host.lowercase() !in config.allowedHosts) {
+            // Only UnifiedPush topics ("up" followed by a random name) exist on our ntfy.
+            if (endpoint.host.lowercase() !in config.allowedHosts || !isUnifiedPushTopic(endpoint)) {
                 return@post call.respond(HttpStatusCode.UnprocessableEntity, ApiError("push_host_not_allowed", "This push service is not accepted by the server."))
             }
             val p256dh = Base64Url.decodeOrNull(request.p256dh)
@@ -161,6 +162,12 @@ internal fun parseEndpoint(raw: String, allowHttp: Boolean): URI? {
     val schemeAllowed = uri.scheme == "https" || (allowHttp && uri.scheme == "http")
     if (!schemeAllowed || uri.host.isNullOrEmpty() || uri.rawUserInfo != null || uri.rawFragment != null) return null
     return uri
+}
+
+/** A UnifiedPush topic of ntfy: a path `/up<random>`, nothing else (no other topic exists on our ntfy). */
+internal fun isUnifiedPushTopic(endpoint: URI): Boolean {
+    val path = endpoint.rawPath.orEmpty()
+    return path.startsWith("/up") && path.length > 3 && path.indexOf('/', 1) == -1
 }
 
 private val ID_PATTERN = Regex("^[A-Za-z0-9_-]{22}$")
