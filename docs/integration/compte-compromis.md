@@ -19,7 +19,7 @@ Un compte PPF est une paire de clés gardée sur le téléphone. Si le télépho
 ## 3. L'engagement (au moment de la création)
 
 - Événement de type **1776** (format de la proposition Nostr NIP-41, « migration de clé ») signé par la clé du compte : étiquettes `["p", <clé publique de secours>]`, `["alt", "pubkey whitelisting event"]`, `["ppf-recovery", "1"]` ; contenu vide.
-- Il est **horodaté** (OpenTimestamps, `core/archive` de Décider, NIP-03) pour prouver qu'il existait avant toute compromission.
+- Il est **horodaté par le serveur** (OpenTimestamps, `ArchiveService.stamp`, section 6 bis) pour prouver qu'il existait avant toute compromission.
 - **Seul le premier engagement compte** : le plus ancien selon sa preuve d'horodatage, ou à défaut selon l'ordre de réception du serveur. Un voleur qui publierait plus tard un engagement vers sa propre clé est ignoré. Un deuxième engagement est refusé par le serveur (`409 recovery_already_set`).
 
 ## 4. L'avis de compromission
@@ -49,6 +49,15 @@ Un compte PPF est une paire de clés gardée sur le téléphone. Si le télépho
 - Jetons de vote : une clé compromise ne reçoit plus de jetons ; les bulletins déjà déposés restent anonymes (le serveur ne peut pas les relier à la clé, par construction) : rien à annuler.
 - Niveau « vérifié » : il ne passe **pas** automatiquement au successeur ; la personne refait la validation en personne avec son nouveau compte (sinon un voleur qui aurait la phrase deviendrait « vérifié »).
 - Point d'appel proposé : `CompromisedAccounts.isCompromised(pubkey)` côté serveur, à appeler dans `PersonAccounts.refusal` ; à confirmer avec Décider.
+
+## 6 bis. Calage avec Décider (8 novembre 2026)
+
+- `PersonAccounts.refusal` appelle `CompromisedAccounts.isCompromised(pubkey)` et répond **403 account_compromised** (code distinct, pour que l'application dise la vraie raison), à l'inscription et à chaque demande de jetons.
+- **Pas de double voix** : le successeur nommé par l'avis **hérite du curseur de délivrance** (`issued_up_to`) de l'ancienne clé ; il ne reçoit de jetons que pour les urnes ouvertes après le dernier service de l'ancienne. Côté serveur, Communauté fournit `CompromisedAccounts.successorOf(old)` et `predecessorOf(new)` ; une clé ne peut succéder qu'à une seule autre (`409 successor_taken`).
+- Limite assumée : se déclarer compromis sans successeur puis créer un compte neuf redonne un curseur vierge dans la colonne « non vérifiés », comme deux comptes non vérifiés ; la colonne « vérifiés » n'est pas touchée.
+- Niveau « vérifié » et certification « élu » : jamais transmis ; nouvelle validation en personne, nouvelle certification.
+- **Horodatage côté serveur** (jamais par l'appareil) : à l'enregistrement de l'engagement 1776, le serveur appelle `ArchiveService.stamp(sha256)` (server/archive, Décider, dans main à l'entrée de sa branche) ; tout le monde lit `GET /api/v1/archives/<id>` et `/api/v1/archives/<id>.ots` ; l'appareil vérifie avec `OtsFile.read` et `OtsBitcoinVerifier.check` (core/archive).
+- La phrase effacée du téléphone ne gêne aucun parcours de Décider.
 
 ## 7. Compatibilité Nostr (NIP-41), vérifiée le 8 novembre 2026
 
