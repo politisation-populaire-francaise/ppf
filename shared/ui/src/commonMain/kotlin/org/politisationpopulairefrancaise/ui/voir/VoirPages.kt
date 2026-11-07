@@ -68,7 +68,8 @@ internal class VoirActions(
     val open: (org.politisationpopulairefrancaise.core.signing.ContentAddress) -> Unit,
     val next: (NextTarget) -> Unit,
     val explain: () -> Unit,
-    val reply: () -> Unit,
+    /** Opens the form of a right of reply to the content at this address. */
+    val reply: (org.politisationpopulairefrancaise.core.signing.ContentAddress) -> Unit,
 )
 
 // ---------------------------------------------------------------------------------------------
@@ -131,7 +132,7 @@ internal fun FactPage(fact: Fact, catalog: VoirCatalog, state: VoirState, action
         }
         if (persons.isNotEmpty()) {
             Spacer(Modifier.height(8.dp))
-            PpfSecondaryButton(onClick = actions.reply, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
+            PpfSecondaryButton(onClick = { actions.reply(fact.address) }, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
         }
         if (fact.nextSteps.isNotEmpty()) {
             Spacer(Modifier.height(16.dp))
@@ -237,7 +238,7 @@ internal fun PersonPage(person: PublicPerson, catalog: VoirCatalog, state: VoirS
         @OptIn(ExperimentalLayoutApi::class)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), itemVerticalAlignment = Alignment.CenterVertically) {
             FollowButton(state.isFollowed(person.address), person.name, onToggle = { state.toggleFollow(person.address) })
-            PpfSecondaryButton(onClick = actions.reply, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
+            PpfSecondaryButton(onClick = { actions.reply(person.address) }, text = stringResource(Res.string.voir_reply_button), small = true, icon = Lucide.MessageSquare, modifier = Modifier.testTag(VoirTags.REPLY_OPEN))
         }
         Spacer(Modifier.height(16.dp))
         InfoBox(Lucide.Info) { Text(stringResource(Res.string.voir_people_intro), style = MaterialTheme.typography.bodyMedium) }

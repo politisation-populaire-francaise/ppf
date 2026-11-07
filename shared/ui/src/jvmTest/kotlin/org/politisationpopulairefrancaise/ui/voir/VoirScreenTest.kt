@@ -134,10 +134,11 @@ class VoirScreenTest {
         onNodeWithText("Droit de réponse de Dominique Fictif").performScrollTo().assertExists()
         onNodeWithTag(VoirTags.REPLY_OPEN).performScrollTo().performClick()
         waitForIdle()
-        onNodeWithTag(VoirTags.REPLY_DIALOG).assertExists()
-        onNodeWithText("Fermer").performClick()
+        onNodeWithTag(VoirRequestTags.REPLY_FORM).assertExists()
+        // Back three times: the form, the fact, then the sheet.
+        onNodeWithTag(VoirTags.BACK).performClick()
         waitForIdle()
-        // Back twice: the fact, then the sheet.
+        onNodeWithTag(VoirTags.detail("affaire-dominique-marche-public")).assertExists()
         onNodeWithTag(VoirTags.BACK).performClick()
         waitForIdle()
         onNodeWithTag(VoirTags.detail("dominique-fictif")).assertExists()

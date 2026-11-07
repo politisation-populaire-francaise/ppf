@@ -32,6 +32,12 @@ sealed interface VoirDestination {
     data object World : VoirDestination
     data object Corrections : VoirDestination
     data class KeyFigures(val axis: VoirAxis) : VoirDestination
+
+    /** The form of a right of reply to the content at [address] (VO-21). */
+    data class Reply(val address: ContentAddress) : VoirDestination
+
+    /** The form to report an error in the content at [address] (VO-22). */
+    data class Report(val address: ContentAddress) : VoirDestination
 }
 
 /**

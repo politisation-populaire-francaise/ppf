@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Requests from "Voir" to the editorial team: right of reply (VO-21) and error reports (VO-22).
+     French, typographic apostrophe (’), no em dash. -->
+<resources>
+    <!-- Shared -->
+    <string name="voir_req_content">Contenu concerné : %1$s</string>
+    <string name="voir_req_cancel">Annuler</string>
+    <string name="voir_req_sending">Envoi en cours…</string>
+    <string name="voir_req_open_messages">Ouvrir mes messages</string>
+    <string name="voir_req_back_to_content">Revenir au contenu</string>
+    <string name="voir_req_encrypted">Votre demande est chiffrée de bout en bout : seule l’équipe de rédaction peut la lire. Elle passe par la messagerie privée de l’application ; ni e-mail ni numéro de téléphone.</string>
+    <string name="voir_req_failed_title">La demande n’a pas pu être envoyée</string>
+    <string name="voir_req_failed_text">Rien n’a été envoyé. Vérifiez le texte puis réessayez dans un moment.</string>
+    <string name="voir_req_no_database">Cet appareil ne peut pas encore garder de messages privés : la demande ne peut pas partir d’ici.</string>
+
+    <!-- Right of reply -->
+    <string name="voir_req_reply_title">Exercer un droit de réponse</string>
+    <string name="voir_req_reply_law">Toute personne nommée ou désignée dans un contenu peut y répondre (loi pour la confiance dans l’économie numérique, article 1-1, III). Le directeur de la publication vérifie la demande, puis la réponse est publiée sous le contenu dans les trois jours suivant sa réception, avec la mention « Droit de réponse de [nom] ».</string>
+    <string name="voir_req_reply_why_account">La demande s’envoie depuis un compte : l’équipe de rédaction doit pouvoir vous répondre et vérifier votre identité, et vous devez pouvoir suivre votre demande. Tout se passe dans vos messages privés.</string>
+    <string name="voir_req_reply_no_account">Vous n’avez pas encore de compte sur cet appareil. Il se crée en une minute dans « Mon espace », sans e-mail ni numéro de téléphone. Votre brouillon reste ici en attendant.</string>
+    <string name="voir_req_create_account">Créer un compte</string>
+    <string name="voir_req_respondent">Nom à faire figurer dans la mention « Droit de réponse de [nom] »</string>
+    <string name="voir_req_capacity">Vous répondez en tant que</string>
+    <string name="voir_req_capacity_person">Personne nommée ou désignée</string>
+    <string name="voir_req_capacity_person_hint">Le contenu parle de vous.</string>
+    <string name="voir_req_capacity_representative">Représentant légal</string>
+    <string name="voir_req_capacity_representative_hint">Avocat, tuteur ou représentant d’une organisation nommée.</string>
+    <string name="voir_req_reply_text">Votre réponse</string>
+    <string name="voir_req_reply_limit">Longueur maximale : celle du contenu (%1$d mots), avec un minimum garanti de 1 000 mots, soit %2$d mots ici.</string>
+    <string name="voir_req_counter">%1$d mots sur %2$d au maximum</string>
+    <string name="voir_req_counter_over">%1$d mots : %2$d de trop (maximum %3$d)</string>
+    <string name="voir_req_statement">Je certifie être la personne nommée ou désignée, ou son représentant légal, et que les informations données sont exactes.</string>
+    <string name="voir_req_identity">L’équipe vous demandera ensuite, dans vos messages, de quoi vérifier votre identité ou votre qualité.</string>
+    <string name="voir_req_reply_send">Envoyer la demande</string>
+    <string name="voir_req_reply_subject">Droit de réponse : %1$s</string>
+    <string name="voir_req_reply_sent_title">Demande envoyée à l’équipe de rédaction</string>
+    <string name="voir_req_reply_sent_text">Seule l’équipe peut la lire. Elle vous répondra dans vos messages, dans la conversation avec l’équipe de rédaction, où vous retrouvez aussi votre demande.</string>
+    <string name="voir_req_pending_title">En attente d’envoi</string>
+    <string name="voir_req_reply_pending_text">Votre demande est gardée sur cet appareil, chiffrée, comme vos autres messages, et partira dès que le serveur répondra. Vous la retrouvez dans vos messages.</string>
+
+    <!-- Problems of a request -->
+    <string name="voir_req_problem_respondent">Indiquez le nom à faire figurer dans la mention.</string>
+    <string name="voir_req_problem_respondent_long">Ce nom est trop long (200 caractères au plus).</string>
+    <string name="voir_req_problem_reply">Écrivez votre réponse.</string>
+    <string name="voir_req_problem_reply_long">Votre réponse dépasse la longueur maximale.</string>
+    <string name="voir_req_problem_statement">Cochez la déclaration sur l’honneur.</string>
+    <string name="voir_req_problem_wrong">Dites ce qui est inexact.</string>
+    <string name="voir_req_problem_field_long">Un champ est trop long (4 000 caractères au plus).</string>
+    <string name="voir_req_problem_source">L’adresse de la source doit commencer par https:// ou http://.</string>
+    <string name="voir_req_problem_too_large">La demande est trop longue pour un seul message : raccourcissez-la.</string>
+    <string name="voir_req_problem_content">Ce contenu n’a pas d’adresse stable : la demande ne peut pas le désigner.</string>
+
+    <!-- Error report -->
+    <string name="voir_req_report_link">Signaler une erreur</string>
+    <string name="voir_req_report_title">Signaler une erreur</string>
+    <string name="voir_req_report_intro">Une date, un chiffre, une citation ou une source inexacte ? Dites-le à l’équipe de rédaction. Chaque correction est datée et motivée dans le journal public des corrections.</string>
+    <string name="voir_req_report_wrong">Ce qui est inexact</string>
+    <string name="voir_req_report_correction">La correction que vous proposez (facultatif)</string>
+    <string name="voir_req_report_source">Adresse web d’une source (facultatif)</string>
+    <string name="voir_req_report_how">Comment l’envoyer</string>
+    <string name="voir_req_report_anonymous">Anonymement</string>
+    <string name="voir_req_report_anonymous_hint">Signé par une clé créée pour ce seul signalement : l’équipe ne saura pas qui l’a envoyé, mais ne pourra pas vous répondre.</string>
+    <string name="voir_req_report_account">Avec mon compte</string>
+    <string name="voir_req_report_account_hint">L’équipe verra votre compte et pourra vous répondre dans vos messages.</string>
+    <string name="voir_req_report_no_account">Sans compte, le signalement part anonymement : l’équipe ne pourra pas vous répondre.</string>
+    <string name="voir_req_report_warning_title">Envoyer avec votre compte ?</string>
+    <string name="voir_req_report_warning_text">L’équipe de rédaction saura que ce signalement vient de votre compte (sa clé publique). Le message reste chiffré : personne d’autre ne peut le lire. Vous pouvez revenir à l’envoi anonyme à tout moment avant d’envoyer.</string>
+    <string name="voir_req_report_warning_confirm">Envoyer avec mon compte</string>
+    <string name="voir_req_report_send">Envoyer le signalement</string>
+    <string name="voir_req_report_subject">Signalement d’erreur : %1$s</string>
+    <string name="voir_req_report_sent_title">Signalement envoyé</string>
+    <string name="voir_req_report_sent_anonymous">Merci. Il est parti anonymement : l’équipe ne pourra pas vous répondre. Si elle corrige le contenu, la correction apparaîtra dans le journal des corrections.</string>
+    <string name="voir_req_report_sent_account">Merci. L’équipe pourra vous répondre dans vos messages, dans la conversation avec l’équipe de rédaction. Si elle corrige le contenu, la correction apparaîtra dans le journal des corrections.</string>
+    <string name="voir_req_report_pending_anonymous">Votre signalement partira dès que le serveur répondra, tant que l’application reste ouverte. Fermer l’application l’efface : aucune trace n’en est gardée sur l’appareil.</string>
+    <string name="voir_req_report_pending_account">Votre signalement est gardé sur cet appareil, chiffré, comme vos autres messages, et partira dès que le serveur répondra.</string>
+
+    <!-- A request as it appears in the private messages -->
+    <string name="voir_req_message_reply">Demande de droit de réponse\nContenu : %1$s\nNom : %2$s (%3$s)\n\n%4$s</string>
+    <string name="voir_req_message_report">Signalement d’erreur\nContenu : %1$s\nCe qui est inexact : %2$s</string>
+    <string name="voir_req_message_correction">Correction proposée : %1$s</string>
+    <string name="voir_req_message_source">Source : %1$s</string>
+    <string name="voir_req_untitled">contenu sans titre</string>
+</resources>
