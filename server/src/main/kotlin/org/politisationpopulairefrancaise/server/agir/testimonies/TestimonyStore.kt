@@ -36,7 +36,7 @@ private fun Path.fileOf(kind: String, id: String): Path {
 }
 
 /**
- * The tables of V90__agir_temoignages.sql and the folder PPF_TESTIMONY_DIR: `files/` for the
+ * The tables of V9__agir_temoignages.sql and the folder PPF_TESTIMONY_DIR: `files/` for the
  * encrypted files, `public/` for the photos of published testimonies. Every method is blocking
  * (JDBC, disk): call from Dispatchers.IO.
  */

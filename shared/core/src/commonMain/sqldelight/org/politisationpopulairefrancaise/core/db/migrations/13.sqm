@@ -1,5 +1,4 @@
--- Schema version 14 to 15 (2026-11-07, number provisional: reserved for Agir, renumbered when the
--- branch enters main): the testimonies sent from this device (see Testimony.sq, which is the
+-- Schema version 13 to 14 (2026-11-07): the testimonies sent from this device (see Testimony.sq, which is the
 -- reference for fresh installations; this file must stay identical to its CREATE statements).
 
 CREATE TABLE testimony (

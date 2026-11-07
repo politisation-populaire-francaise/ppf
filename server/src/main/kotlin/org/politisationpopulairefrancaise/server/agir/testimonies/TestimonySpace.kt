@@ -186,7 +186,7 @@ class TestimonySpace(
         return if (store.decide(id, HeldStatus.REJECTED, nowSeconds(), reason.trim(), null)) DecisionResult.Rejected else DecisionResult.AlreadyDecided
     }
 
-    /** One pass of the retention rules (see V90__agir_temoignages.sql); returns the number of rows deleted. */
+    /** One pass of the retention rules (see V9__agir_temoignages.sql); returns the number of rows deleted. */
     fun purgeOnce(): Int {
         val now = nowSeconds()
         return store.purge(now, orphansBefore = now - config.orphanRetention.inWholeSeconds, decidedBefore = now - config.retention.inWholeSeconds)

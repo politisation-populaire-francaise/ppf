@@ -100,9 +100,9 @@ Type 30023, `ppf-type` = `temoignage` (nouvelle valeur `ArticleType.TEMOIGNAGE`,
 
 Nouveaux :
 - `shared/core/.../core/media/` : `MediaKind.kt`, `ExifOrientation.kt`, `MetadataStripper.kt`, `JpegCleaner.kt`, `PngCleaner.kt`, `WebpCleaner.kt`, `ImageTransforms.kt`, `MediaCipher.kt`, `Provenance.kt` (avec `Timestamping`), `PhotoPipeline.kt` ;
-- `shared/core/.../core/agir/testimonies/` : `TestimonyFormats.kt`, `TestimonyComposer.kt`, `TestimonyReader.kt`, `TestimonyTransport.kt`, `TestimonyStore.kt`, `PublishedTestimony.kt` ; `sqldelight/.../Testimony.sq`, `migrations/14.sqm` ;
+- `shared/core/.../core/agir/testimonies/` : `TestimonyFormats.kt`, `TestimonyComposer.kt`, `TestimonyReader.kt`, `TestimonyTransport.kt`, `TestimonyStore.kt`, `PublishedTestimony.kt` ; `sqldelight/.../Testimony.sq`, `migrations/13.sqm` ;
 - `shared/ui/.../ui/media/` : `PlatformMedia.kt` (+ `.android.kt`, `.jvm.kt`, `.ios.kt`), `BlurEditor.kt` ; `shared/ui/.../ui/agir/testimonies/` : `TestimonyLibrary.kt`, `TestimonyScreen.kt` ; `composeResources/values/strings_media.xml`, `strings_temoignages.xml` ;
-- `server/.../server/agir/testimonies/` : `TestimonyConfig.kt`, `TestimonyStore.kt`, `TestimonySpace.kt`, `TestimonyApi.kt` ; `db/migration/V90__agir_temoignages.sql` ;
+- `server/.../server/agir/testimonies/` : `TestimonyConfig.kt`, `TestimonyStore.kt`, `TestimonySpace.kt`, `TestimonyApi.kt` ; `db/migration/V9__agir_temoignages.sql` ;
 - tests : `core/media/` (`MediaSamples`, `MetadataStripperTest`, `MediaChainTest` en commun ; `RealImagesTest`, `PhotoPipelineTest` sur JVM), `core/agir/testimonies/` (`TestimonyComposerTest`, `TestimonyStoreTest`), `core/local/TestimonyMigrationTest` ; `server/.../agir/testimonies/` (`TestimonyFixtures`, `TestimonyApiTest`, `DevTestimonies`) ; `shared/ui/.../agir/testimonies/TestimonyScreenTest`, `agir/calls/CallTestifyTest`.
 
 Fichiers partagés modifiés (quelques lignes chacun) :
@@ -120,7 +120,7 @@ Fichiers partagés modifiés (quelques lignes chacun) :
 | `server/src/test/.../TestDatabase.kt`, `DevServer.kt` | Tables vidées entre les tests ; routes `/dev/testimonies` (dans `publicPort`) |
 | `server/.../agir/testimonies/TestimonyQueue.kt`, `Application.kt`, `backoffice/Permissions.kt` | File `agir.testimonies` du back-office, enregistrée par `teamBackOffice?.queues?.register(...)` ; permission ajoutée au rôle modérateur |
 
-**Migrations provisoires** : `V90__agir_temoignages.sql` (Flyway) et `14.sqm` (schéma local en version 15 ; SQLDelight accepte l’écart avec 11 à 13 réservés aux autres pôles, vérifié par `TestimonyMigrationTest`). À renuméroter à l’entrée dans `main`, avec la ligne de `DatabaseMigrationTest.theSchemaIsAtVersion15`.
+**Migrations** (renumérotées à l’entrée dans `main`, 7 novembre 2026) : `V9__agir_temoignages.sql` (Flyway) et `13.sqm` (schéma local en version 14), vérifiées par `TestimonyMigrationTest` et `DatabaseMigrationTest.theSchemaIsAtVersion14`.
 
 ## 5. Décisions proposées (numéros à attribuer dans le bloc d’Agir, D-081 et suivants)
 
@@ -155,7 +155,7 @@ C2PA (Coalition for Content Provenance and Authenticity) décrit un « manifeste
 
 ## 8. Tests
 
-- `shared/core` (JVM) : 22 tests des médias (dont 3 sur de vraies images encodées puis décodées par Java : mêmes pixels, aucune chaîne plantée), 5 de la chaîne photo avec un décodeur ImageIO (remise droite, réencodage, flou, refus), 5 du témoignage (règles, chiffrement pour la seule clé de modération, original pour la seule clé de conservation, fichier altéré refusé, clés effacées), 2 de la liste locale (aucun texte dans le fichier de la base), 1 de migration ; tests de migration existants mis à la version 15.
+- `shared/core` (JVM) : 22 tests des médias (dont 3 sur de vraies images encodées puis décodées par Java : mêmes pixels, aucune chaîne plantée), 5 de la chaîne photo avec un décodeur ImageIO (remise droite, réencodage, flou, refus), 5 du témoignage (règles, chiffrement pour la seule clé de modération, original pour la seule clé de conservation, fichier altéré refusé, clés effacées), 2 de la liste locale (aucun texte dans le fichier de la base), 1 de migration ; tests de migration existants mis à la version 14.
 - `server` (PostgreSQL 17 embarqué) : 8 tests : parcours complet avec le vrai transport de l’appareil (chiffré sur disque, date à l’heure, empreintes horodatées, ouverture avec la clé d’exemple, publication, photo servie), refus (destinataire, signature, fichier manquant, fichier non chiffré, fichier d’un autre, empreintes), taille, routes fermées, photo sale et clé non éditoriale refusées, rétention avec une horloge déplacée, clés d’exemple refusées en production, colonnes des tables (rien de la requête).
 - `shared/ui` (JVM) : formulaire complet avec photo floutée et original confié (vérifiés en ouvrant les enveloppes), envoi différé sans réseau, compte requis et vidéo refusée, réponse à un appel, téléphone, tablette sombre, ordinateur ; « Je témoigne » d’un appel à témoins.
 - `bash tools/check-no-trackers.sh` et la détection des secrets : OK à chaque commit.
