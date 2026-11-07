@@ -57,6 +57,8 @@ Un compte PPF est une paire de clés gardée sur le téléphone. Si le télépho
 - Limite assumée : se déclarer compromis sans successeur puis créer un compte neuf redonne un curseur vierge dans la colonne « non vérifiés », comme deux comptes non vérifiés ; la colonne « vérifiés » n'est pas touchée.
 - Niveau « vérifié » et certification « élu » : jamais transmis ; nouvelle validation en personne, nouvelle certification.
 - **Horodatage côté serveur** (jamais par l'appareil) : à l'enregistrement de l'engagement 1776, le serveur appelle `ArchiveService.stamp(sha256)` (server/archive, Décider, dans main à l'entrée de sa branche) ; tout le monde lit `GET /api/v1/archives/<id>` et `/api/v1/archives/<id>.ots` ; l'appareil vérifie avec `OtsFile.read` et `OtsBitcoinVerifier.check` (core/archive).
+- Il n'existe aucun registre des émissions par personne ni par urne (voulu, D-110) : seulement un curseur par compte. Les jetons déjà délivrés à l'ancienne clé restent sur le téléphone de la victime, utilisables tant qu'elle l'a ; sinon ces votes sont perdus. Jamais deux.
+- **Avis par l'équipe** (D-134, point 3) : il attend l'étape 5 de Décider (validation en personne et lien chiffré de l'audit `vote_validation(session, week, sealed)`, scellé NIP-44 vers PPF_AUDIT_PUBLIC_KEY, clé « audit » hors ligne chez la propriétaire) ; rien à coder de ce côté avant.
 - La phrase effacée du téléphone ne gêne aucun parcours de Décider.
 
 ## 7. Compatibilité Nostr (NIP-41), vérifiée le 8 novembre 2026
