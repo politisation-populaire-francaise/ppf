@@ -162,6 +162,19 @@ class OrganisationTest {
     }
 
     @Test
+    fun theStatusIsImplicitWhenVerifiedAndWrittenWhenRevoked() = runTest {
+        val verified = fixtures.entry("syndicat", accountKey = accountKey)
+        assertNull(verified.firstTagValue(AgirFormats.TAG_ORG_STATUS), "entries written before version 2 read the same")
+        assertEquals(AgirFormats.ORG_STATUS_VERIFIED, fixtures.read(verified).status)
+        val revoked = fixtures.entry("syndicat", accountKey = accountKey, status = AgirFormats.ORG_STATUS_REVOKED)
+        assertEquals(AgirFormats.ORG_STATUS_REVOKED, revoked.firstTagValue(AgirFormats.TAG_ORG_STATUS))
+        assertTrue(fixtures.read(revoked).revoked)
+        assertFailsWith<IllegalArgumentException> {
+            Organisation.build(fixtures.editor.publicKey, "slug", "Nom", "Résumé", "syndicat", "France", "2026-10-12", 1, 1, "", status = "suspendue")
+        }
+    }
+
+    @Test
     fun aNationalOrganisationActsEverywhere() = runTest {
         assertTrue(fixtures.read(fixtures.entry("nationale", territory = "France")).isNational)
         assertTrue(fixtures.read(fixtures.entry("nationale-bis", territory = " france ")).isNational)

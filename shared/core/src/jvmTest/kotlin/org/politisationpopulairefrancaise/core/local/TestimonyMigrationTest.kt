@@ -8,7 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 
 /**
- * A device at schema version 11 (directory of elected officials, before the testimonies) gets the
+ * A device at schema version 14 (the last before the testimonies) gets the
  * testimony tables of 14.sqm, exactly as Testimony.sq creates them on a fresh installation.
  */
 class TestimonyMigrationTest {
@@ -21,7 +21,7 @@ class TestimonyMigrationTest {
     }
 
     @Test
-    fun aVersion11DatabaseGainsTheTestimonyTables() {
+    fun aVersion14DatabaseGainsTheTestimonyTables() {
         val directory = Files.createTempDirectory("ppf-testimony-migration")
         try {
             val fresh = directory.resolve("fresh.db")
@@ -29,7 +29,7 @@ class TestimonyMigrationTest {
             val expected = definitions("jdbc:sqlite:${fresh.toAbsolutePath()}")
             assertEquals(2, expected.size)
 
-            // The same database as a version 11 device has it: without the testimony tables.
+            // The same database as a version 14 device has it: without the testimony tables.
             val old = directory.resolve("old.db")
             JvmDatabase.open(old)
             val url = "jdbc:sqlite:${old.toAbsolutePath()}"
@@ -37,7 +37,7 @@ class TestimonyMigrationTest {
                 connection.createStatement().use { statement ->
                     statement.executeUpdate("DROP TABLE testimony")
                     statement.executeUpdate("DROP TABLE testimony_file")
-                    statement.executeUpdate("PRAGMA user_version = 11")
+                    statement.executeUpdate("PRAGMA user_version = 14")
                 }
             }
             val database = JvmDatabase.open(old)

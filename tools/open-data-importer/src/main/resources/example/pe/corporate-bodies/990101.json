@@ -1,0 +1,21 @@
+{
+ "data": [
+  {
+   "id": "org/990101",
+   "type": "Organization",
+   "identifier": "990101",
+   "label": "PDR",
+   "prefLabel": {
+    "fr": "[EXEMPLE] Parti des Rivières",
+    "en": "[EXEMPLE] (en) Parti des Rivières"
+   },
+   "altLabel": {
+    "fr": "PDR"
+   },
+   "classification": "def/ep-entities/NATIONAL_CHAMBER"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

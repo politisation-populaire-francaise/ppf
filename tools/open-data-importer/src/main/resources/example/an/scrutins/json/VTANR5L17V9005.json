@@ -1,0 +1,225 @@
+{
+ "scrutin": {
+  "@xmlns": "http://schemas.assemblee-nationale.fr/referentiel",
+  "uid": "VTANR5L17V9005",
+  "numero": "9005",
+  "organeRef": "PO900000",
+  "legislature": "17",
+  "sessionRef": "SCR5A2026O1",
+  "seanceRef": "RUANR5L17S2026IDS99005",
+  "dateScrutin": "2026-10-14",
+  "quantiemeJourSeance": "1",
+  "typeVote": {
+   "codeTypeVote": "SPO",
+   "libelleTypeVote": "scrutin public ordinaire",
+   "typeMajorite": "majorité absolue des suffrages exprimés"
+  },
+  "sort": {
+   "code": "adopté",
+   "libelle": "[EXEMPLE] L'Assemblée nationale a adopté."
+  },
+  "titre": "[EXEMPLE] l'ensemble de la proposition de loi sur la transparence des rendez-vous (première lecture).",
+  "demandeur": {
+   "texte": "[EXEMPLE] Président du groupe fictif",
+   "referenceLegislative": null
+  },
+  "objet": {
+   "libelle": "[EXEMPLE] l'ensemble de la proposition de loi sur la transparence des rendez-vous (première lecture).",
+   "dossierLegislatif": {
+    "dossierRef": "DLR5L17N90002",
+    "libelle": "[EXEMPLE]"
+   }
+  },
+  "modePublicationDesVotes": "DecompteNominatif",
+  "syntheseVote": {
+   "nombreVotants": "9",
+   "suffragesExprimes": "8",
+   "nbrSuffragesRequis": "5",
+   "annonce": "[EXEMPLE]",
+   "decompte": {
+    "nonVotants": "3",
+    "pour": "8",
+    "contre": "0",
+    "abstentions": "1",
+    "nonVotantsVolontaires": "0"
+   }
+  },
+  "ventilationVotes": {
+   "organe": {
+    "organeRef": "PO900000",
+    "groupes": {
+     "groupe": [
+      {
+       "organeRef": "PO900001",
+       "nombreMembresGroupe": "4",
+       "vote": {
+        "positionMajoritaire": "pour",
+        "decompteVoix": {
+         "nonVotants": "1",
+         "pour": "3",
+         "contre": "0",
+         "abstentions": "0",
+         "nonVotantsVolontaires": "0"
+        },
+        "decompteNominatif": {
+         "nonVotants": {
+          "votant": {
+           "acteurRef": "PA900001",
+           "mandatRef": "PM900001",
+           "numPlace": "101",
+           "causePositionVote": "PAN"
+          }
+         },
+         "pours": {
+          "votant": [
+           {
+            "acteurRef": "PA900002",
+            "mandatRef": "PM900002",
+            "numPlace": "102",
+            "parDelegation": "false"
+           },
+           {
+            "acteurRef": "PA900003",
+            "mandatRef": "PM900003",
+            "numPlace": "103",
+            "parDelegation": "false"
+           },
+           {
+            "acteurRef": "PA900004",
+            "mandatRef": "PM900004",
+            "numPlace": "104",
+            "parDelegation": "false"
+           }
+          ]
+         },
+         "contres": null,
+         "abstentions": null
+        }
+       }
+      },
+      {
+       "organeRef": "PO900002",
+       "nombreMembresGroupe": "4",
+       "vote": {
+        "positionMajoritaire": "pour",
+        "decompteVoix": {
+         "nonVotants": "2",
+         "pour": "2",
+         "contre": "0",
+         "abstentions": "0",
+         "nonVotantsVolontaires": "0"
+        },
+        "decompteNominatif": {
+         "nonVotants": {
+          "votant": [
+           {
+            "acteurRef": "PA900007",
+            "mandatRef": "PM900007",
+            "numPlace": "107",
+            "parDelegation": "false"
+           },
+           {
+            "acteurRef": "PA900008",
+            "mandatRef": "PM900008",
+            "numPlace": "108",
+            "causePositionVote": "MG"
+           }
+          ]
+         },
+         "pours": {
+          "votant": [
+           {
+            "acteurRef": "PA900005",
+            "mandatRef": "PM900005",
+            "numPlace": "105",
+            "parDelegation": "false"
+           },
+           {
+            "acteurRef": "PA900006",
+            "mandatRef": "PM900006",
+            "numPlace": "106",
+            "parDelegation": "true"
+           }
+          ]
+         },
+         "contres": null,
+         "abstentions": null
+        }
+       }
+      },
+      {
+       "organeRef": "PO900003",
+       "nombreMembresGroupe": "3",
+       "vote": {
+        "positionMajoritaire": "pour",
+        "decompteVoix": {
+         "nonVotants": "0",
+         "pour": "3",
+         "contre": "0",
+         "abstentions": "0",
+         "nonVotantsVolontaires": "0"
+        },
+        "decompteNominatif": {
+         "nonVotants": null,
+         "pours": {
+          "votant": [
+           {
+            "acteurRef": "PA900009",
+            "mandatRef": "PM900009",
+            "numPlace": "109",
+            "parDelegation": "false"
+           },
+           {
+            "acteurRef": "PA900010",
+            "mandatRef": "PM900010",
+            "numPlace": "110",
+            "parDelegation": "false"
+           },
+           {
+            "acteurRef": "PA900011",
+            "mandatRef": "PM900011",
+            "numPlace": "111",
+            "parDelegation": "false"
+           }
+          ]
+         },
+         "contres": null,
+         "abstentions": null
+        }
+       }
+      },
+      {
+       "organeRef": "PO900005",
+       "nombreMembresGroupe": "1",
+       "vote": {
+        "positionMajoritaire": "abstention",
+        "decompteVoix": {
+         "nonVotants": "0",
+         "pour": "0",
+         "contre": "0",
+         "abstentions": "1",
+         "nonVotantsVolontaires": "0"
+        },
+        "decompteNominatif": {
+         "nonVotants": null,
+         "pours": null,
+         "contres": null,
+         "abstentions": {
+          "votant": {
+           "acteurRef": "PA900012",
+           "mandatRef": "PM900012",
+           "numPlace": "112",
+           "parDelegation": "false"
+          }
+         }
+        }
+       }
+      }
+     ]
+    }
+   }
+  },
+  "miseAuPoint": null,
+  "lieuVote": "Hémicycle"
+ }
+}

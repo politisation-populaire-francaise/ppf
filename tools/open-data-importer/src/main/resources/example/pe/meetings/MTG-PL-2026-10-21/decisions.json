@@ -1,0 +1,57 @@
+{
+ "data": [
+  {
+   "id": "eli/dl/event/MTG-PL-2026-10-21-DEC-1",
+   "type": "Decision",
+   "activity_id": "MTG-PL-2026-10-21-DEC-1",
+   "activity_date": "2026-10-21",
+   "activity_order": "1",
+   "activity_label": {
+    "fr": "[EXEMPLE] Règlement sur les ponts transfrontaliers - accord provisoire",
+    "en": "[EXEMPLE] (en) Règlement sur les ponts transfrontaliers - accord provisoire"
+   },
+   "decision_method": "def/ep-decision-methods/VOTE_ELECTRONIC_ROLLCALL",
+   "decision_outcome": "def/ep-decision-outcomes/ADOPTED",
+   "number_of_votes_favor": 530,
+   "number_of_votes_against": 98,
+   "number_of_votes_abstention": 22,
+   "had_voter_favor": [
+    "person/990001",
+    "person/990002",
+    "person/990003",
+    "person/880005"
+   ],
+   "had_voter_against": [
+    "person/880001"
+   ],
+   "had_voter_abstention": [],
+   "number_of_attendees": 650
+  },
+  {
+   "id": "eli/dl/event/MTG-PL-2026-10-21-DEC-2",
+   "type": "Decision",
+   "activity_id": "MTG-PL-2026-10-21-DEC-2",
+   "activity_date": "2026-10-21",
+   "activity_order": "2",
+   "activity_label": {
+    "fr": "[EXEMPLE] Objection à un acte délégué sur les villages",
+    "en": "[EXEMPLE] (en) Objection à un acte délégué sur les villages"
+   },
+   "decision_method": "def/ep-decision-methods/VOTE_ELECTRONIC_ROLLCALL",
+   "decision_outcome": "def/ep-decision-outcomes/REJECTED",
+   "number_of_votes_favor": 120,
+   "number_of_votes_against": 480,
+   "number_of_votes_abstention": 40,
+   "had_voter_favor": "person/990003",
+   "had_voter_against": [
+    "person/990001",
+    "person/880002"
+   ],
+   "had_voter_abstention": [],
+   "number_of_attendees": 650
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

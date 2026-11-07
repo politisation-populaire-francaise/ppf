@@ -1,0 +1,31 @@
+-- The referential of territories on the device (D-090, docs/integration/territoires.md): the
+-- national level when a newer copy than the one shipped with the application was checked, the
+-- downloaded department packages and the index of the names of the communes. Public statistics
+-- only; the list of downloaded packages stays here (it hints where the user lives) and is never
+-- sent. Added in schema version 12: existing databases get it through migrations/11.sqm, which must
+-- stay identical to the CREATE statement below.
+
+-- By code ("national", "communes", a department or overseas collectivity): the exact JSON checked
+-- against its sha256, the day it was built (AAAA-MM-JJ) and when it was downloaded (seconds).
+CREATE TABLE territoire_package (
+    code TEXT NOT NULL PRIMARY KEY,
+    sha256 TEXT NOT NULL,
+    json TEXT NOT NULL,
+    built_on TEXT,
+    downloaded_at INTEGER NOT NULL
+);
+
+selectPackage:
+SELECT code, sha256, json, built_on, downloaded_at FROM territoire_package WHERE code = ?;
+
+selectPackageCodes:
+SELECT code FROM territoire_package ORDER BY code;
+
+savePackage:
+INSERT OR REPLACE INTO territoire_package(code, sha256, json, built_on, downloaded_at) VALUES (?, ?, ?, ?, ?);
+
+deletePackage:
+DELETE FROM territoire_package WHERE code = ?;
+
+deleteAllPackages:
+DELETE FROM territoire_package;

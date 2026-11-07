@@ -1,0 +1,97 @@
+package org.politisationpopulairefrancaise.tools.opendata
+
+import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
+import java.nio.file.Files
+import java.nio.file.Path
+import kotlin.system.exitProcess
+
+/**
+ * The importer of parliamentary open data (D-064). One run, then it stops (no loop: the systemd
+ * timer starts it again).
+ *
+ *     java -jar ppf-open-data-importer.jar [--source example|official] [--only an,senat,pe] --out <dir> --key <nsec file>
+ *
+ * - `--source` (or `PPF_OPEN_DATA_SOURCE`): `example` (default) reads the fictional files bundled
+ *   with the importer; `official` downloads the files of the institutions (production only).
+ * - `--only`: the sources to refresh (default all); the others are kept from the previous set.
+ * - `--out` (or `PPF_OPEN_DATA_DIR`): the folder of the packages, served read-only by the server.
+ * - `--key` (or `PPF_IMPORT_KEY_FILE`): the file holding the import key (`nsec1…`), out of the repository.
+ *
+ * Exit codes: see [ExitCodes] (0 ok, 1 usage, 2 download failed, 3 refused by the guard, 4 unreadable
+ * source data, 5 key error). On any failure the previous packages stay as they were.
+ */
+fun main(args: Array<String>) {
+    exitProcess(runCommandLine(args.toList(), System::getenv))
+}
+
+data class Options(val mode: SourceMode, val only: Set<SourceId>, val out: Path, val keyFile: Path)
+
+const val USAGE: String = "usage: ppf-open-data-importer [--source example|official] [--only an,senat,pe] --out <dir> --key <nsec file>\n" +
+    "  environment: PPF_OPEN_DATA_SOURCE, PPF_OPEN_DATA_DIR, PPF_IMPORT_KEY_FILE"
+
+/** The options, or the reason they are wrong. */
+fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> = runCatching {
+    val values = HashMap<String, String>()
+    var i = 0
+    while (i < args.size) {
+        val name = args[i]
+        require(name in setOf("--source", "--only", "--out", "--key")) { "unknown argument $name" }
+        require(i + 1 < args.size) { "$name needs a value" }
+        require(values.put(name, args[i + 1]) == null) { "$name given twice" }
+        i += 2
+    }
+    val mode = when (val source = (values["--source"] ?: env("PPF_OPEN_DATA_SOURCE")?.takeIf { it.isNotBlank() } ?: "example").trim().lowercase()) {
+        "example" -> SourceMode.EXAMPLE
+        "official" -> SourceMode.OFFICIAL
+        else -> throw IllegalArgumentException("unknown source $source")
+    }
+    val only = values["--only"]?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.map { SourceId.of(it) ?: throw IllegalArgumentException("unknown source id $it") }?.toSet()
+        ?: SourceId.entries.toSet()
+    require(only.isNotEmpty()) { "--only names no source" }
+    val out = (values["--out"] ?: env("PPF_OPEN_DATA_DIR")?.takeIf { it.isNotBlank() }) ?: throw IllegalArgumentException("--out (or PPF_OPEN_DATA_DIR) is required")
+    val key = (values["--key"] ?: env("PPF_IMPORT_KEY_FILE")?.takeIf { it.isNotBlank() }) ?: throw IllegalArgumentException("--key (or PPF_IMPORT_KEY_FILE) is required")
+    Options(mode, only, Path.of(out.trim()), Path.of(key.trim()))
+}
+
+/** Reads the import key; refuses the example key for official data (it would make real data look fictional, and the reverse). */
+fun loadKey(file: Path, mode: SourceMode): Result<IdentityKeys> = runCatching {
+    require(Files.isRegularFile(file)) { "key file not found" }
+    val keys = try {
+        IdentityKeys.fromNsec(Files.readString(file).trim())
+    } catch (e: Exception) {
+        throw IllegalArgumentException("the key file does not hold an nsec key")
+    }
+    if (mode == SourceMode.OFFICIAL) require(keys.publicKey.hex != OpenDataKeys.EXAMPLE) { "the example key never signs official data" }
+    keys
+}
+
+fun runCommandLine(args: List<String>, env: (String) -> String?, sources: ((SourceMode) -> ImportSources)? = null): Int {
+    val options = parseOptions(args, env).getOrElse {
+        System.err.println("error: ${it.message}\n$USAGE")
+        return ExitCodes.USAGE
+    }
+    val keys = loadKey(options.keyFile, options.mode).getOrElse {
+        System.err.println("key error: ${it.message}")
+        return ExitCodes.KEY_ERROR
+    }
+    if (options.mode == SourceMode.EXAMPLE && keys.publicKey.hex != OpenDataKeys.EXAMPLE) {
+        println("note: this key is not OpenDataKeys.EXAMPLE, the application will not trust these packages")
+    }
+    return try {
+        val chosen = sources?.invoke(options.mode) ?: when (options.mode) {
+            SourceMode.EXAMPLE -> ExampleSources()
+            SourceMode.OFFICIAL -> OfficialSources()
+        }
+        Importer(chosen, keys, options.out, options.only).run()
+    } catch (e: UnreadableSourceException) {
+        System.err.println("unreadable source data: ${e.message}")
+        ExitCodes.UNREADABLE_SOURCE
+    } catch (e: Exception) {
+        // Never the message: it could quote a value of the data.
+        System.err.println("import failed: ${e::class.qualifiedName}; the previous packages are kept")
+        ExitCodes.UNREADABLE_SOURCE
+    } finally {
+        keys.destroy()
+    }
+}

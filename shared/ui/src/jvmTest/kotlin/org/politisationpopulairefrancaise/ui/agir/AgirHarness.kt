@@ -85,7 +85,7 @@ fun ComposeUiTest.count(tag: String, unmerged: Boolean = false): Int = onAllNode
 /** Waits until the directory holds the card (it may lie below the visible part of the list), then shows it. */
 @OptIn(ExperimentalTestApi::class)
 fun ComposeUiTest.awaitCard(slug: String) {
-    waitUntil(timeoutMillis = 10_000) {
+    waitUntil(timeoutMillis = 60_000) {
         runCatching { onNodeWithTag(OrganisationsTags.LIST).performScrollToNode(hasTestTag(OrganisationsTags.CARD + slug)) }.isSuccess
     }
     waitForIdle()

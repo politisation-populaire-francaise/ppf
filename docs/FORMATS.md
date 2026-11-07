@@ -83,6 +83,7 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
+| `ppf-territory-code` | Code du référentiel des territoires (section 4 nonies) à côté du libellé ; pas encore accepté par le serveur pour les revendications | Non |
 | `ppf-duration` | Parcours seulement : durée de lecture annoncée, en minutes (1 à 240) | Non |
 | `ppf-origin` | `human` (rédigé par un humain) ou `ai-assisted` (produit avec l'aide d'une IA) | Oui |
 
@@ -328,11 +329,12 @@ Publiée seulement par une clé de l'équipe éditoriale. `content` : la présen
 | `ppf-verified` | Oui | Date de la vérification, `AAAA-MM-JJ` |
 | `ppf-origin` | Non | `human` ou `ai-assisted`, affichée sur la fiche |
 | `p` | Non | Clé de l'organisation si elle a un compte : c'est elle qui devient « organisation vérifiée » |
+| `ppf-org-status` | Non | `verifiee` (valeur par défaut, l'étiquette est alors omise) ou `revoquee` : la vérification est retirée (contrat d'Agir, version 2). Le serveur refuse toute autre valeur (`missing_field`, message `ppf-org-status`) ; l'appareil lit une valeur inconnue comme `revoquee`, pour qu'une version future n'étende jamais la confiance |
 | `r` | Non | Site web `http(s)` à nom d'hôte ASCII, sans « utilisateur@ » ; plusieurs possibles, cinq lus au plus |
 | `ppf-contact-phone`, `ppf-contact-email`, `ppf-contact-address` | Non | Coordonnées publiques de l'organisation, jamais celles d'une personne |
 | `g` | Non | Géohash |
 
-**Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé ; une nouvelle version sans `p` retire la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
+**Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé (à date égale, le plus petit identifiant) ; une nouvelle version sans `p` retire la vérification, de même qu'une version `ppf-org-status` = `revoquee` qui garde sa clé `p` : celle-ci n'est plus vérifiée, ni sur l'appareil (`VerifiedOrganisations.revocationFor` rend la fiche révoquée) ni sur le serveur (le cache est oublié dès le stockage de la fiche). Transparence : la fiche révoquée n'est jamais effacée en silence ; elle perd son badge « Vérifiée », sort de la liste par défaut de l'annuaire (filtre « Inclure les vérifications retirées ») et sa page, ouverte par un lien, affiche « Vérification retirée par PPF le … » (date de la version révoquée, heure de Paris). Republier la fiche avec `verifiee` ou sans l'étiquette rétablit la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
 
 ## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-059, D-060)
 
@@ -476,6 +478,90 @@ Variables d'environnement du serveur pour l'annuaire :
 | `PPF_RNE_SOURCE` | `example` (jeu fictif embarqué, ne contacte personne) ou `official` (vrai RNE, suivi **seulement** avec `PPF_ENVIRONMENT=production` ; ailleurs le jeu fictif est servi) | `example` |
 | `PPF_RNE_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 7 |
 
+## 4 nonies. Référentiel des territoires (D-090)
+
+Statistiques publiques de l'Insee (populations, électeurs inscrits) et codes officiels des territoires, servis en JSON (ce ne sont pas des événements signés). Aucune donnée personnelle. Conception, sources et limites : `docs/integration/territoires.md` ; lecture sur l'appareil : `shared/core/.../core/territoires/`.
+
+### Codes et étiquette `ppf-territory-code`
+
+| Type | Code | Exemples |
+|---|---|---|
+| France | `fr` | `fr` |
+| Région (COG) | `reg:<REG>` | `reg:84`, `reg:94` |
+| Département (COG) | `dep:<DEP>` | `dep:01`, `dep:2A`, `dep:971` |
+| Collectivité à compétences départementales (COG `CTCD`) | `ctcd:<CTCD>` | `ctcd:01D`, `ctcd:69D` (Rhône hors Métropole), `ctcd:69M`, `ctcd:20R`, `ctcd:6AE`, `ctcd:75C`, `ctcd:972R`, `ctcd:973R`, `ctcd:976R` |
+| Collectivité d'outre-mer et Nouvelle-Calédonie (COG `COMER`) | `comer:<COMER>` | `comer:975`, `comer:987`, `comer:988` |
+| EPCI à fiscalité propre | `epci:<SIREN>` | `epci:200040590` |
+| Commune (COG) | `com:<COM>` | `com:69123`, `com:2A004`, `com:97502` |
+| Arrondissement municipal | `arm:<ARM>` | `arm:75101`, `arm:69381` |
+
+Forme exacte : `^(fr|reg:[0-9]{2}|dep:(0[1-9]|1[0-9]|2[1-9AB]|[3-8][0-9]|9[0-5]|97[1-6])|ctcd:([0-9]{2}D|97[14]D|20R|69M|6AE|75C|972R|973R|976R)|comer:9[78][0-9]|epci:[0-9]{9}|com:([0-9]{5}|2[AB][0-9]{3})|arm:[0-9]{5})$` (préfixe en minuscules, code en majuscules ; `TerritoryCode.parse` lit aussi les majuscules et les espaces autour). La Métropole de Lyon est toujours `ctcd:69M`, jamais un EPCI.
+
+**`ppf-territory`** (salons, mobilisations, appels, organisations, revendications) **ne change pas** : un libellé lisible, obligatoire là où il l'est. Forme recommandée quand il vient du référentiel : « Nom (dd) » pour une commune ou un département, le nom seul pour une région, une collectivité d'outre-mer ou « France ».
+
+**`ppf-territory-code`** (nouvelle étiquette, **facultative**, au plus une) : le code du **plus petit territoire du référentiel qui contient** ce que dit le libellé (« Quartier de la Guillotière » : `arm:69387`). L'application l'écrit seulement quand l'utilisateur a choisi un territoire proposé par le référentiel, jamais deviné à partir d'un texte. À la lecture : un code connu sert aux comparaisons (filtres, « près de chez moi », doublons) ; l'ancien code d'une commune fusionnée est suivi (`formerCodes`) ; un code absent, invalide ou inconnu laisse le comportement d'aujourd'hui sur le libellé. Le serveur ne vérifie que la forme, jamais l'existence. Une étiquette séparée est indexée comme les autres : `GET /api/v1/events?tag=ppf-territory-code:dep:69`. État le 7 novembre 2026 : acceptée par le serveur pour l'espace « Agir » et les salons (aucune liste fermée d'étiquettes) ; **refusée pour les revendications** (`DemandDrafts.ALLOWED_TAGS`) tant que le serveur ne l'accepte pas (pôle « Décider », à l'entrée dans `main`) : l'application ne l'écrit pas sur une revendication avant.
+
+### Niveau national (`GET /api/v1/territoires`)
+
+```json
+{
+  "format": 1, "example": true, "partial": true, "geography": "2026-01-01", "builtOn": "2026-02-11",
+  "sources": [ { "id": "popref-2023", "kind": "population", "name": "Populations de référence 2023 (Insee)", "url": "https://www.insee.fr/fr/statistiques/8681011", "licence": "Licence Ouverte 2.0", "vintage": 2023, "date": "2026-01-01" } ],
+  "france": { "name": "France", "population": 68094280, "populationTotale": 69294105, "populationPerimeter": "…", "inscrits": 48154748, "inscritsComplementaires": 373681, "inscritsPerimeter": "…" },
+  "regions": [ { "code": "94", "name": "Corse", "of": "de la Corse", "population": 355486, "populationTotale": 360270, "inscrits": 253064, "inscritsComplementaires": 7210, "heldBy": "20R" } ],
+  "departements": [ { "code": "69", "name": "Rhône", "of": "du Rhône", "region": "84", "collectivites": ["69D", "69M"], "population": 1914667, "populationTotale": 1940015, "inscrits": 1227213, "inscritsComplementaires": 7992, "spread": "counts" } ],
+  "collectivites": [ { "code": "69M", "name": "Métropole de Lyon", "of": "de la Métropole de Lyon", "special": true, "region": "84", "departements": ["69"], "population": 1, "inscrits": 1, "inscritsComplementaires": 1, "computed": ["population", "inscrits", "inscritsComplementaires"] } ],
+  "outreMer": [ { "code": "975", "name": "Saint-Pierre-et-Miquelon", "of": "de Saint-Pierre-et-Miquelon", "population": 5790, "inscrits": 5059, "inscritsComplementaires": 4, "spread": "counts", "sources": { "population": "insee-com-2023" } } ],
+  "packages": [ { "code": "69", "name": "Rhône", "sha256": "<64 hex>", "bytes": 123456, "postalCodes": ["69001"] }, { "code": "communes", "name": "Toutes les communes", "sha256": "<64 hex>", "bytes": 1234, "postalCodes": [] } ]
+}
+```
+
+(Chiffres du Rhône, de la Corse, de Saint-Pierre-et-Miquelon et de la France relevés le 7 novembre 2026 ; les `1` des exemples ne montrent que la place d'un chiffre.)
+
+- `sources[].kind` : `population`, `electorate` ou `geography`. La source d'un chiffre est la première de son genre, sauf `sources` sur l'entrée (`{"population": "insee-com-2023"}`).
+- `population` (population municipale), `populationTotale`, `inscrits` (liste principale), `inscritsComplementaires` (listes complémentaires municipales) : entiers ; **absent = inconnu** (`0` est une valeur). `computed` : les chiffres additionnés par le serveur (la population totale n'est jamais additionnée, elle compte deux fois certaines personnes).
+- `spread` (départements et outre-mer) : `counts`, `to-confirm` ou `excluded`, règle de l'article 148, alinéa 6, du Règlement de l'Assemblée nationale.
+- `heldBy` : collectivité qui exerce les compétences de la région (`20R`, `972R`, `973R`, `976R`).
+- `example` : jeu d'exemple (vrais chiffres publics, quelques départements) ; `partial` : tous les départements n'ont pas de paquet. `builtOn` : la date la plus récente des sources (stable d'un import des mêmes sources à l'autre).
+- `france` : les deux chiffres publiés n'ont pas le même périmètre, dit par `populationPerimeter` et `inscritsPerimeter` ; jamais un dénominateur d'objectif.
+
+### Paquet d'un département ou d'une collectivité d'outre-mer (`GET /api/v1/territoires/{code}`)
+
+```json
+{
+  "format": 1, "example": true, "code": "69", "name": "Rhône", "outreMer": false, "region": "84", "geography": "2026-01-01", "sources": [ "…" ],
+  "communes": [ { "code": "69264", "name": "Villefranche-sur-Saône", "of": "de Villefranche-sur-Saône", "postalCodes": ["69400"], "epci": "200040590", "collectivite": "69D", "population": 1, "populationTotale": 1, "inscrits": 1, "inscritsComplementaires": 1, "computed": [], "formerCodes": [] } ],
+  "arrondissements": [ { "code": "69381", "name": "Lyon 1er Arrondissement", "of": "…", "commune": "69123", "postalCodes": ["69001"], "population": 1, "inscrits": 1 } ],
+  "epcis": [ { "code": "200040590", "name": "…", "of": "…", "nature": "CA", "departements": ["01", "69"], "communes": ["01194", "…"], "population": 1, "inscrits": 1, "computed": ["population", "inscrits", "inscritsComplementaires"] } ]
+}
+```
+
+- `collectivite` d'une commune : son code CTCD (ou, outre-mer, celui de la collectivité) ; département et région se déduisent du paquet. `formerCodes` : codes remplacés par fusion depuis 2024. Une commune fusionnée depuis la géographie des chiffres de l'Insee (2025) reçoit la somme de ses anciennes communes (`computed`) ; une commune scindée n'a pas de chiffre.
+- `epcis` : ceux qui ont une commune dans le paquet, avec **toutes** leurs communes (aussi d'un autre département) et des totaux calculés sur toutes. `nature` : `CC`, `CA`, `CU`, `METRO`.
+- **Index des noms** (`GET /api/v1/territoires/communes`) : `{"format":1,"example":…,"code":"communes","geography":"2026-01-01","communes":[["69123","Lyon","69"],…]}`, un tableau `[code, nom, paquet]` par commune, trié par code.
+
+**Règles communes** : JSON compact, UTF-8, champs dans l'ordre ci-dessus, listes triées : deux imports des mêmes sources donnent les mêmes octets. HTTP comme l'annuaire des élus (section 4 octies) : `ETag: "<sha256>"`, `If-None-Match`, `304`, gzip, `Cache-Control: public, no-cache` ; `404 unknown_package` ; `503 territoires_unavailable` avec `Retry-After: 60` tant qu'aucun import n'a réussi. L'appareil refuse un paquet dont l'empreinte ne correspond pas au niveau national ou qui ne se lit pas comme le paquet demandé ; lecture stricte du document, tolérante des entrées ; 2 Mo au plus pour le niveau national, 8 Mo pour un paquet.
+
+### Sur l'appareil : schéma local en version 12
+
+Migration `migrations/12.sqm` (schéma 12 vers 13), identique à `Territoires.sq` : table `territoire_package(code, sha256, json, built_on, downloaded_at)` : le niveau national quand une copie plus récente que celle de l'application a été vérifiée (`national`), les paquets téléchargés et l'index des noms (`communes`). Jamais envoyée. La copie embarquée est `shared/ui/src/commonMain/composeResources/files/territoires/national.json`, identique à celle que le serveur construit à partir du jeu d'exemple (vérifié par `TerritoiresBundleTest`).
+
+### Sur le serveur : migration Flyway `V7__territoires.sql`
+
+| Table | Rôle |
+|---|---|
+| `territoires_import` | Un essai d'import par ligne : source (`example`, `official`), statut, dates, nombres pour la garde (`counts` : communes et population de la France ; import refusé au-delà de 2 % et 3 % d'écart), niveau national exact et son empreinte, motif d'échec (code court) |
+| `territoires_package` | Les documents d'un import : code, nom, `sha256` et `bytes` du JSON non compressé, corps compressé |
+
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `PPF_TERRITOIRES_SOURCE` | `example` (jeu embarqué, ne contacte personne) ou `official` (Insee, data.gouv.fr, La Poste), suivi en production, ou en préproduction avec la variable suivante ; ailleurs le jeu d'exemple est servi | `example` |
+| `PPF_TERRITOIRES_REAL_IN_PREPRODUCTION` | `true` pour servir les vraies statistiques en préproduction (décision de la propriétaire) | aucune |
+| `PPF_TERRITOIRES_REFRESH_DAYS` | Jours entre deux imports ; nouvel essai six heures après un échec ; `0` coupe l'import automatique (tests) | 30 |
+## 4 octies. Données ouvertes du Parlement (D-064, D-065)
+
+Index : événement NIP-01, kind 30078, `d` = `ppf:parlement-index`, signé par une clé d'import (`OpenDataKeys`) ; `content` = l'index JSON (`example`, `importedOn`, `sources` avec nom, adresse, licence et date, `packages` avec nom, sha256 et taille). Paquets : `membres` (membres et groupes), `scrutins-an-AAAA-MM`, `votes-pe-AAAA-MM` (scrutins avec décomptes, décompte par groupe, positions `pour`, `contre`, `abstention`, `nonVotant`, `delegated`, `corrections` de type `mise-au-point` ou `dysfonctionnement`, `notVotingCauses`). Identifiants préfixés : `an:PA…`, `senat:…`, `pe:…`, scrutins `an:17:<numéro>`, dossiers `an-dossier:DLR5L17N…`. Code de circonscription : département puis numéro sur deux chiffres (`0101`, `2A01`, `97101`), commun avec l'annuaire des élus. Une brique de « Voir » peut porter `ppf-official-id` (personne ou texte). Modèles Kotlin : `core/voir/parlement/ParliamentFormat.kt` ; détail dans `docs/integration/voir-donnees-ouvertes.md`, section 3.
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.
@@ -496,6 +582,8 @@ Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est jo
 | `GET /api/v1/groups/<id>` | Un salon par son identifiant (1 à 64 caractères parmi `a-z`, `0-9`, `.`, `_`, `~`, `-`) | `200` le salon ; `400` `bad_parameter` ; `404` `group_not_found` |
 | `GET /api/v1/elus` | L'index de l'annuaire des élus (section 4 octies) : source, date d'import, un paquet par département avec son empreinte, sa taille et ses codes postaux. Sans compte ; `ETag` entre guillemets, `If-None-Match`, gzip | `200` ; `304` ; `503 elus_unavailable` avec `Retry-After: 60` tant qu'aucun import n'a réussi |
 | `GET /api/v1/elus/{code}` | Le paquet d'un département, d'une collectivité d'outre-mer ou `FR` (section 4 octies). Aucune commune ni aucun code postal n'est jamais envoyé par l'appareil | `200` ; `304` ; `404 unknown_package` ; `503 elus_unavailable` |
+| `GET /api/v1/territoires` | Le niveau national du référentiel des territoires (section 4 nonies) : régions, départements, collectivités, outre-mer avec population et inscrits, et l'index des paquets. Sans compte ; `ETag`, `If-None-Match`, gzip | `200` ; `304` ; `503 territoires_unavailable` avec `Retry-After: 60` tant qu'aucun import n'a réussi |
+| `GET /api/v1/territoires/{code}` | Le paquet d'un département ou d'une collectivité d'outre-mer, ou `communes` (index des noms). Aucune commune, aucun code postal, aucune recherche n'est envoyé par l'appareil | `200` ; `304` ; `404 unknown_package` ; `503 territoires_unavailable` |
 | `GET /health` | État du serveur | `200` `{"status":"ok","service":"ppf-server","version":"0.1.0","environment":"…"}` |
 
 Quand la base de données n'est pas configurée, toute adresse sous `/api/v1/` répond `503` `{"error":"database_unavailable"}`.

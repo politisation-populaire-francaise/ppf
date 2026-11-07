@@ -1,0 +1,13 @@
+{
+ "organe": {
+  "uid": "PO900010",
+  "codeType": "COMPER",
+  "libelle": "[EXEMPLE] Commission des affaires fictives",
+  "libelleAbrev": "CAF",
+  "viMoDe": {
+   "dateDebut": "2024-07-20",
+   "dateFin": null
+  },
+  "legislature": "17"
+ }
+}

@@ -20,7 +20,7 @@ object TestDatabase {
 
     fun reset() {
         dataSource.connection.use { connection ->
-            connection.createStatement().use { it.executeUpdate("TRUNCATE events, revendication_proposal, held_content, elus_import, elus_staging, testimony_submission, testimony_evidence, testimony_file, published_media CASCADE") }
+            connection.createStatement().use { it.executeUpdate("TRUNCATE events, revendication_proposal, held_content, elus_import, elus_staging, territoires_import, testimony_submission, testimony_evidence, testimony_file, published_media CASCADE") }
         }
     }
 }
