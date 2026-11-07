@@ -31,6 +31,9 @@ kotlin {
             // building blocks. Kept as implementation details: no type of these libraries is exposed.
             implementation(libs.secp256k1.kmp)
             implementation(libs.bitcoin.kmp)
+            // Anonymous voting tokens (D-110): the ristretto255 group of libsodium, behind our own
+            // `Ristretto255` interface (core/urne); no type of the library is exposed.
+            implementation(libs.libsodium.bindings)
             // Local database (offline-first copy of the contents) and HTTP client towards the server.
             api(libs.sqldelight.runtime)
             implementation(libs.sqldelight.coroutines)
