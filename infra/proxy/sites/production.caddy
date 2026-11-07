@@ -39,3 +39,15 @@ equipe.{$PPF_DOMAIN} {
 		}
 	}
 }
+
+# Push wake-ups (ntfy, D-078), public: phones keep a connection open to receive constant encrypted
+# wake-ups; the client address never reaches ntfy. Streams are passed through at once.
+push.{$PPF_DOMAIN} {
+	import security_headers
+	header X-Robots-Tag "noindex, nofollow"
+	reverse_proxy ppf-prod-ntfy-1:8080 {
+		header_up -X-Forwarded-For
+		header_up -X-Real-IP
+		flush_interval -1
+	}
+}

@@ -43,13 +43,36 @@ services:
       PPF_BACKOFFICE_ORIGIN: ${PPF_BACKOFFICE_ORIGIN:-}
       PPF_BACKOFFICE_PORT: "8081"
       PPF_AUDIT_PUBLIC_KEY: ${PPF_AUDIT_PUBLIC_KEY:-}
+      # Exact public address of this environment (votes: NIP-98 authorisations name it, D-110).
+      PPF_PUBLIC_URL: ${PPF_PUBLIC_URL:?}
+      # Seeds of the vote keys, one read-only file per version (Décider, D-110), never in a variable.
+      PPF_VOTE_SEEDS_DIR: /run/ppf/vote_seeds
+      # Push wake-ups (D-078): only our ntfy is an allowed endpoint; the server reaches it inside, never
+      # through its public name; the VAPID key is a file secret generated on the server.
+      PPF_PUSH_ALLOWED_HOSTS: push.preprod.politisation-populaire-francaise.org
+      PPF_PUSH_INTERNAL_URL: http://ntfy:8080
+      PPF_VAPID_PRIVATE_KEY_FILE: /run/secrets/vapid_private_key
       # Fictional example contents, bundled in the image, loaded at each start (idempotent).
       PPF_EXAMPLES_DIR: /app/examples
-      # Parliamentary open data: the example packages signed with the example key, read-only in the
-      # image; the preproduction never imports real data and holds no import key.
-      PPF_OPEN_DATA_DIR: /app/parlement-examples
+      # Real public information in the preproduction too (owner's decision of 7 November 2026: "on reste
+      # dans la vraie info même en preprod"), never personal data of citizens.
+      PPF_RNE_SOURCE: official
+      PPF_TERRITOIRES_SOURCE: official
+      # Parliamentary open data: the packages written by the importer below once the preproduction
+      # import key exists and the test builds trust it (OpenDataKeys.PREPRODUCTION); until then the
+      # example packages of the image (set PPF_OPEN_DATA_DIR=/data/open-data in .env to switch).
+      PPF_OPEN_DATA_DIR: ${PPF_OPEN_DATA_DIR:-/app/parlement-examples}
+    # Private anti-fraud settings (proof-of-work thresholds and limits of the votes, D-110): a file
+    # on the server only, never in the repository (model: infra/env/private.env.example).
+    env_file:
+      - path: /srv/ppf/preproduction/private.env
+        required: false
     secrets:
       - server_db_password
+      - vapid_private_key
+    volumes:
+      - /srv/ppf/preproduction/open-data:/data/open-data:ro
+      - /srv/ppf/preproduction/vote_seeds:/run/ppf/vote_seeds:ro
     networks:
       - internal
       - edge
@@ -100,6 +123,98 @@ services:
         limits:
           memory: 256M
           cpus: "0.5"
+
+  # Importer of the parliamentary open data (Voir, D-064), one-shot, started by the systemd timers
+  # ppf-open-data-daily@preproduction and ppf-open-data-weekly@preproduction (never by "up", profile "tools"). Its own
+  # UID, the only one able to read the import key; it writes the packages the server reads.
+  # Official mode with the preproduction key (OpenDataKeys.PREPRODUCTION), never the example key.
+  open-data-importer:
+    image: ${PPF_SERVER_IMAGE:?set by infra/scripts/deploy.sh}
+    profiles: ["tools"]
+    user: "10004:10004"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    # Measured on the real files on 7 November 2026: peak 316 MB with a 256 MB heap.
+    entrypoint: ["java", "-Xmx256m", "-XX:+ExitOnOutOfMemoryError", "-jar", "/app/ppf-open-data-importer.jar"]
+    healthcheck:
+      disable: true
+    environment:
+      PPF_OPEN_DATA_SOURCE: official
+      PPF_OPEN_DATA_DIR: /data/open-data
+      PPF_IMPORT_KEY_FILE: /run/secrets/import_key
+    secrets:
+      - import_key
+    volumes:
+      - /srv/ppf/preproduction/open-data:/data/open-data
+    # Its own network, with a way out (official sources only, infra/EGRESS.md); never the database.
+    networks:
+      - importer
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+          cpus: "0.5"
+
+  # Push wake-ups (Communauté, M31, docs/integration/notifications.md, D-078): self-hosted ntfy, the
+  # UnifiedPush distributor of the Android app. It never contacts anyone (no upstream, never ntfy.sh),
+  # keeps the constant encrypted wake-ups 12 hours at most, and never sees a client address (the proxy
+  # strips it). Only random topics "up*" are open; everything else is refused.
+  ntfy:
+    image: binwiederhier/ntfy:v2.37.2@sha256:1875ddcf815c8a3c981d6d78c67a93452d0abba79b1ab9520b1f5f5238902bd7
+    restart: unless-stopped
+    command: ["serve"]
+    user: "10006:10006"
+    read_only: true
+    tmpfs:
+      - /tmp
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    environment:
+      NTFY_BASE_URL: https://push.preprod.politisation-populaire-francaise.org
+      NTFY_LISTEN_HTTP: ":8080"
+      NTFY_CACHE_FILE: /var/lib/ntfy/cache.db
+      NTFY_CACHE_DURATION: 12h
+      NTFY_AUTH_FILE: /var/lib/ntfy/auth.db
+      NTFY_AUTH_DEFAULT_ACCESS: deny-all
+      NTFY_ENABLE_SIGNUP: "false"
+      NTFY_ENABLE_LOGIN: "false"
+      NTFY_ENABLE_RESERVATIONS: "false"
+      NTFY_WEB_ROOT: disable
+      NTFY_UPSTREAM_BASE_URL: ""
+      NTFY_BEHIND_PROXY: "false"
+      NTFY_LOG_LEVEL: warn
+      # Every visitor reaches ntfy through the proxy, which strips the client address: ntfy sees one
+      # visitor only, so its per-visitor limits act as one global ceiling, sized for the whole platform.
+      NTFY_VISITOR_REQUEST_LIMIT_BURST: "2000"
+      NTFY_VISITOR_REQUEST_LIMIT_REPLENISH: "50ms"
+      NTFY_VISITOR_SUBSCRIPTION_LIMIT: "100000"
+      NTFY_VISITOR_MESSAGE_DAILY_LIMIT: "0"
+    volumes:
+      - /srv/ppf/preproduction/ntfy:/var/lib/ntfy
+    networks:
+      - edge
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -T 3 -O - http://127.0.0.1:8080/v1/health | grep -q '\"healthy\":true'"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: local
+      options:
+        max-size: 1m
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          memory: 64M
+          cpus: "0.25"
 
   db:
     # PostgreSQL 17 with PostGIS, pinned by digest (Dependabot proposes updates).
@@ -154,12 +269,18 @@ services:
 secrets:
   server_db_password:
     file: ${PPF_SECRETS_DIR:?}/server_db_password
+  # VAPID private key of the push wake-ups (EC P-256, PKCS#8 PEM), readable by the server only.
+  vapid_private_key:
+    file: ${PPF_SECRETS_DIR:?}/vapid_private_key
   migrate_db_password:
     file: ${PPF_SECRETS_DIR:?}/migrate_db_password
   db_password:
     file: ${PPF_SECRETS_DIR:?}/db_password
   app_db_password:
     file: ${PPF_SECRETS_DIR:?}/app_db_password
+  # Import key of the parliamentary open data (nsec file, UID 10004), generated on the server.
+  import_key:
+    file: ${PPF_SECRETS_DIR:?}/import_key
 
 volumes:
   db-data:
@@ -172,3 +293,5 @@ networks:
   edge:
     external: true
     name: ppf-preprod-edge
+  # The importer's own network, with a way out to the official sources only.
+  importer: {}
