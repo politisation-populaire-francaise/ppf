@@ -107,6 +107,7 @@ import org.politisationpopulairefrancaise.ui.resources.organisations_content_typ
 import org.politisationpopulairefrancaise.ui.resources.space_comprendre
 import org.politisationpopulairefrancaise.ui.resources.space_revendications
 import org.politisationpopulairefrancaise.ui.resources.space_voir
+import org.politisationpopulairefrancaise.ui.resources.space_decider
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 object ContentTags {
@@ -478,6 +479,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE -> Res.string.space_voir
         ArticleType.ORGANISATION -> Res.string.organisations_content_type
         ArticleType.APPEL -> Res.string.appels_title
+        ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT -> Res.string.space_decider
     },
 )
 

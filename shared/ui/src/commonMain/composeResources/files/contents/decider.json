@@ -1,0 +1,892 @@
+[
+    {
+        "id": "9148be193f4afeeb32aaff9a39c2890545017ce7d4c0537208e0819a905ab9b5",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793880000,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "reponse-pacte-alex"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Réponse d’Alex Modèle au Pacte démocratique"
+            ],
+            [
+                "published_at",
+                "1793880000"
+            ],
+            [
+                "ppf-type",
+                "engagement"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pacte-election-exemple",
+                "",
+                "pacte"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-received",
+                "2026-11-05"
+            ],
+            [
+                "ppf-answer",
+                "ric",
+                "signe"
+            ],
+            [
+                "ppf-answer",
+                "vote-blanc",
+                "signe"
+            ],
+            [
+                "ppf-answer",
+                "petitions",
+                "signe"
+            ],
+            [
+                "ppf-answer",
+                "referendum-constitution",
+                "signe"
+            ],
+            [
+                "ppf-answer",
+                "conventions",
+                "signe"
+            ],
+            [
+                "ppf-answer",
+                "archives",
+                "signe"
+            ],
+            [
+                "ppf-archive",
+                "3b7d6f0a9c2e41d58f6a7b0c1d2e3f405162738495a6b7c8d9e0f1a2b3c4d5e6",
+                "reponse-alex.pdf.ots",
+                "https://example.org/exemple/archives/reponse-alex.pdf",
+                "2026-11-05"
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Courrier signé du candidat (exemple)",
+                "https://example.org/exemple/reponse-alex",
+                "2026-11-05"
+            ],
+            [
+                "ppf-pacte-text",
+                "427ea1e2939bc70f9ab20031344893fc5dc40e51d22cdca718b43f2d1bc8ed85"
+            ]
+        ],
+        "content": "Contenu de démonstration : la réponse est fictive.\n",
+        "sig": "9c8507a64e34bbae1a2dad12bda5aa4b52bbb59e403c53f395e058ed6f4726b8f4bb71d942582044b1b19ff45a74e1f79234b8f57f2eacac4ae78ada5802e469"
+    },
+    {
+        "id": "bc7663313981ff653e574444ba1232e35d5df15ae7f2dca3896a2e0a29cc7fc4",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793188800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "reponse-pacte-camille"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Réponse de Camille Exemple au Pacte démocratique"
+            ],
+            [
+                "published_at",
+                "1793188800"
+            ],
+            [
+                "ppf-type",
+                "engagement"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pacte-election-exemple",
+                "",
+                "pacte"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:camille-exemple",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-received",
+                "2026-10-28"
+            ],
+            [
+                "ppf-answer",
+                "ric",
+                "signe"
+            ],
+            [
+                "ppf-answer",
+                "vote-blanc",
+                "signe"
+            ],
+            [
+                "ppf-answer",
+                "petitions",
+                "signe"
+            ],
+            [
+                "ppf-answer",
+                "referendum-constitution",
+                "refuse",
+                "Souhaite garder le Congrès pour les révisions techniques (exemple)."
+            ],
+            [
+                "ppf-answer",
+                "conventions",
+                "signe"
+            ],
+            [
+                "ppf-answer",
+                "archives",
+                "signe"
+            ],
+            [
+                "ppf-archive",
+                "9e1c2b3a4d5f60718293a4b5c6d7e8f90a1b2c3d4e5f60718293a4b5c6d7e8f9",
+                "reponse-camille.pdf.ots",
+                "https://example.org/exemple/archives/reponse-camille.pdf",
+                "2026-10-28"
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Courrier signé du candidat (exemple)",
+                "https://example.org/exemple/reponse-camille",
+                "2026-10-28"
+            ],
+            [
+                "ppf-pacte-text",
+                "427ea1e2939bc70f9ab20031344893fc5dc40e51d22cdca718b43f2d1bc8ed85"
+            ]
+        ],
+        "content": "Contenu de démonstration : la réponse est fictive.\n",
+        "sig": "0de4890844117e4f6e7638854f4bef008b832fe64788afdf41f336ede10b22f5df98b1f11521827772d8a64bcd7936d98d76ef450e731fdb5b0c82c00180d71f"
+    },
+    {
+        "id": "01307a8a52dd1139b629130e8755f76222c8ffe9f520b9d5e2a98a038417d48b",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793707200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "reponse-pacte-dominique"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Réponse de Dominique Fictif au Pacte démocratique"
+            ],
+            [
+                "published_at",
+                "1793707200"
+            ],
+            [
+                "ppf-type",
+                "engagement"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pacte-election-exemple",
+                "",
+                "pacte"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dominique-fictif",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-received",
+                "2026-11-03"
+            ],
+            [
+                "ppf-answer",
+                "ric",
+                "refuse",
+                "Préfère renforcer les pétitions existantes (exemple)."
+            ],
+            [
+                "ppf-answer",
+                "vote-blanc",
+                "refuse"
+            ],
+            [
+                "ppf-answer",
+                "petitions",
+                "signe"
+            ],
+            [
+                "ppf-archive",
+                "5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6b5c4d3e2f1a0b9c8d7e6f5a4b",
+                "reponse-dominique.pdf.ots",
+                "https://example.org/exemple/archives/reponse-dominique.pdf",
+                "2026-11-03"
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Courrier signé du candidat (exemple)",
+                "https://example.org/exemple/reponse-dominique",
+                "2026-11-03"
+            ],
+            [
+                "ppf-pacte-text",
+                "427ea1e2939bc70f9ab20031344893fc5dc40e51d22cdca718b43f2d1bc8ed85"
+            ]
+        ],
+        "content": "Contenu de démonstration : la réponse est fictive. Le candidat n’a pas répondu sur les trois dernières mesures : elles restent « en attente » jusqu’à la date limite.\n",
+        "sig": "dac77dbe11950285ae07138430f405a629327951f2d2408f23e828356bec04eca6d54586d129877adcc1c3a472688da90b96c8558c255bdd620a6ce3a38474a3"
+    },
+    {
+        "id": "4f58ce6f2f14a67f07704ba0cafd4f10b516a1a0ede1dfa918ba109ad3025b29",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "pacte-election-exemple"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Pacte démocratique pour l’élection d’exemple"
+            ],
+            [
+                "summary",
+                "Six engagements précis et vérifiables, envoyés le même jour à tous les candidats, avec le même délai."
+            ],
+            [
+                "published_at",
+                "1792065600"
+            ],
+            [
+                "ppf-type",
+                "pacte"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "démocratie"
+            ],
+            [
+                "t",
+                "élections"
+            ],
+            [
+                "ppf-election",
+                "election-exemple",
+                "Élection présidentielle d’exemple",
+                ""
+            ],
+            [
+                "ppf-pacte-status",
+                "envoye"
+            ],
+            [
+                "ppf-sent",
+                "2026-10-15"
+            ],
+            [
+                "ppf-deadline",
+                "2026-11-30"
+            ],
+            [
+                "ppf-measure",
+                "ric",
+                "Référendum d’initiative citoyenne",
+                "Déposer, dans les six mois suivant l’élection, un projet de révision de la Constitution permettant aux citoyens de provoquer un référendum législatif, abrogatoire ou constituant, à partir d’un nombre de signatures fixé par une loi organique.",
+                "Constitution, articles 3, 11 et 89"
+            ],
+            [
+                "ppf-measure",
+                "vote-blanc",
+                "Reconnaissance du vote blanc",
+                "Faire adopter, dans la première année du mandat, une loi qui compte les bulletins blancs comme suffrages exprimés et organise un nouveau scrutin tant qu’ils sont majoritaires.",
+                "Constitution, article 7 ; Code électoral, article L. 65"
+            ],
+            [
+                "ppf-measure",
+                "petitions",
+                "Vote obligatoire sur les grandes pétitions",
+                "Proposer, dans la première année du mandat, une révision qui impose un débat suivi d’un vote en séance pour toute pétition dépassant 500 000 signatures.",
+                "Constitution, article 48 ; Règlement de l’Assemblée nationale, articles 147 à 151 ; Règlement du Sénat, articles 87 et 88"
+            ],
+            [
+                "ppf-measure",
+                "referendum-constitution",
+                "Référendum pour toute révision de la Constitution",
+                "Ne jamais soumettre une révision de la Constitution au Congrès : la soumettre au référendum.",
+                "Constitution, article 89"
+            ],
+            [
+                "ppf-measure",
+                "conventions",
+                "Conventions citoyennes tirées au sort",
+                "Créer par la loi des conventions citoyennes tirées au sort dont les propositions sont soumises sans filtre au Parlement ou au référendum, avec une réponse motivée dans les six mois.",
+                "Loi à créer"
+            ],
+            [
+                "ppf-measure",
+                "archives",
+                "Transparence des archives",
+                "Faire adopter une loi qui supprime les protocoles de remise des archives des anciens présidents et ministres et fixe par la loi tous les délais d’accès.",
+                "Code du patrimoine, articles L. 213-2 et L. 213-4"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "candidat"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:camille-exemple",
+                "",
+                "candidat"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dominique-fictif",
+                "",
+                "candidat"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:sacha-temoin",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Constitution du 4 octobre 1958",
+                "https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur",
+                "2026-11-07"
+            ],
+            [
+                "ppf-next",
+                "Proposer une mesure pour le prochain Pacte",
+                "space:revendications"
+            ],
+            [
+                "ppf-next",
+                "Comprendre la révision de la Constitution",
+                "space:comprendre"
+            ]
+        ],
+        "content": "Contenu de démonstration : l’élection, les candidats et leurs réponses sont fictifs. Les mesures reprennent la liste de départ proposée au vote, qui n’a pas encore été validée.\n\n## Comment le Pacte est envoyé\n\nLe même texte est envoyé le même jour à tous les candidats, sans exception, avec le même délai de réponse. Pour chaque mesure, un candidat signe ou refuse ; sans réponse avant la date limite, la case indique « Sans réponse ».\n\n## Après l’élection\n\nPour chaque élu, chaque mesure est suivie : propositions de loi déposées, votes, déclarations. Chaque fait est sourcé dans « Voir ».\n",
+        "sig": "af49d17d599fee5eafe8eb7083bbab5b74e8a48f965503ee797cc2cbafc89c53f70245479a41385e0747da360e6531a12a4126c7a787d6bab75e0554e5bf6eca"
+    },
+    {
+        "id": "665d250bdc7d4006dbcfd87d24a55f6956987d9b9a5ad3ae2daf88d9fb073e28",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-an-ordre-public"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Retirer le projet de loi relatif à l’ordre public lors des manifestations"
+            ],
+            [
+                "summary",
+                "Pétition déposée sur le site de l’Assemblée nationale, qui demande le retrait du texte avant son vote définitif."
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "manifestations"
+            ],
+            [
+                "t",
+                "libertés"
+            ],
+            [
+                "ppf-platform",
+                "assemblee"
+            ],
+            [
+                "ppf-official-url",
+                "https://petitions.assemblee-nationale.fr/"
+            ],
+            [
+                "ppf-reference",
+                "n° 0000 (exemple)"
+            ],
+            [
+                "ppf-opened",
+                "2026-09-30"
+            ],
+            [
+                "ppf-closes",
+                "2027-10-14"
+            ],
+            [
+                "ppf-petition-status",
+                "ouverte"
+            ],
+            [
+                "ppf-count",
+                "45210",
+                "2026-10-05",
+                "site des pétitions de l’Assemblée nationale"
+            ],
+            [
+                "ppf-count",
+                "103900",
+                "2026-10-15",
+                "site des pétitions de l’Assemblée nationale"
+            ],
+            [
+                "ppf-count",
+                "412950",
+                "2026-11-06",
+                "site des pétitions de l’Assemblée nationale"
+            ],
+            [
+                "ppf-milestone",
+                "2026-10-14",
+                "Plus de 100 000 signatures : la pétition est mise en ligne sur le site de l’Assemblée et reste ouverte jusqu’au 14 octobre 2027."
+            ],
+            [
+                "ppf-milestone",
+                "2026-10-22",
+                "Renvoyée à la commission des lois, qui désigne une rapporteure (exemple)."
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Règlement de l’Assemblée nationale, articles 147 à 151",
+                "https://www.assemblee-nationale.fr/dyn/17/divers/texte_reference/02_reglement_assemblee_nationale.html",
+                "2026-11-07"
+            ],
+            [
+                "ppf-next",
+                "Vos droits en manifestation",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+            ],
+            [
+                "ppf-next",
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
+            ]
+        ],
+        "content": "Contenu de démonstration : la pétition, son numéro et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site des pétitions de l’Assemblée nationale.\n\n## Ce que demande la pétition\n\nLe retrait du projet de loi, au motif qu’il restreint le droit de manifester sans étude de ses effets sur les libertés publiques.\n\n## Ce que peut obtenir une pétition à l’Assemblée\n\nAu-delà de 500 000 signatures venant d’au moins 30 départements, la Conférence des présidents peut décider d’un débat en séance. Ce débat se termine sans vote.\n",
+        "sig": "6a17b144177258d55236a3bce56bbaa65497eca51cc4c9a35ead9531918fb2b438cd292f554daac4ef1351ce23ec0eefdf2568928d537181520fc6b29dfeee91"
+    },
+    {
+        "id": "3900b9775888a663cf8fc5ce09068f02927013ba314323388ab8e96224334f72",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793620800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-cese-vie-chere"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Un plan d’urgence contre la vie chère"
+            ],
+            [
+                "summary",
+                "Pétition au Conseil économique, social et environnemental, ouverte aux personnes de 16 ans et plus."
+            ],
+            [
+                "published_at",
+                "1780488000"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "vie chère"
+            ],
+            [
+                "ppf-platform",
+                "cese"
+            ],
+            [
+                "ppf-official-url",
+                "https://petitions.lecese.fr/"
+            ],
+            [
+                "ppf-reference",
+                "exemple"
+            ],
+            [
+                "ppf-opened",
+                "2026-06-02"
+            ],
+            [
+                "ppf-closes",
+                "2027-06-02"
+            ],
+            [
+                "ppf-petition-status",
+                "ouverte"
+            ],
+            [
+                "ppf-count",
+                "98000",
+                "2026-09-01",
+                "site des pétitions du CESE"
+            ],
+            [
+                "ppf-count",
+                "152480",
+                "2026-11-02",
+                "site des pétitions du CESE"
+            ],
+            [
+                "ppf-milestone",
+                "2026-10-28",
+                "150 000 signataires atteints : le Bureau du CESE examine la recevabilité (exemple)."
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Ordonnance n° 58-1360 du 29 décembre 1958, article 4-1",
+                "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042999544",
+                "2026-11-07"
+            ]
+        ],
+        "content": "Contenu de démonstration : la pétition et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site des pétitions du CESE.\n\nSi la pétition est recevable, le CESE rend un avis dans les six mois, publié au Journal officiel.\n",
+        "sig": "471a161eb53e00fbb6839bf46fb74854a14d05ffa51dd740aafe296a309ed935e5c925385e864d3fbc72d8aa0905c11c13cdd1567a9353ca806223fb79490d62"
+    },
+    {
+        "id": "a0d90130f45fce49aa3490e67a32ea044c45a26cb4e0e77a58eeaca3fee387f3",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793534400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-ice-energie"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Plafonner le prix de l’énergie pour les ménages en Europe"
+            ],
+            [
+                "summary",
+                "Initiative citoyenne européenne qui demande à la Commission une proposition de loi sur le prix de l’énergie."
+            ],
+            [
+                "published_at",
+                "1777982400"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "énergie"
+            ],
+            [
+                "t",
+                "vie chère"
+            ],
+            [
+                "t",
+                "Europe"
+            ],
+            [
+                "ppf-platform",
+                "ice"
+            ],
+            [
+                "ppf-official-url",
+                "https://citizens-initiative.europa.eu/"
+            ],
+            [
+                "ppf-reference",
+                "exemple"
+            ],
+            [
+                "ppf-opened",
+                "2026-05-04"
+            ],
+            [
+                "ppf-closes",
+                "2027-05-04"
+            ],
+            [
+                "ppf-petition-status",
+                "ouverte"
+            ],
+            [
+                "ppf-count",
+                "640200",
+                "2026-11-01",
+                "site de l’initiative citoyenne européenne"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Règlement (UE) 2019/788 relatif à l’initiative citoyenne européenne",
+                "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:32019R0788",
+                "2026-11-07"
+            ]
+        ],
+        "content": "Contenu de démonstration : l’initiative et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site de l’initiative citoyenne européenne.\n\nIl faut un million de signatures, avec le seuil national atteint dans au moins sept États. En France, ce seuil est de 58 320 signatures.\n",
+        "sig": "12be121831c2a66255aa310a360d298d61af8e76ca2555d63325a315494562a3f94a2b7b68612fb7ab7ab97347ba1053d719036b4ef1899998858ad45bca7198"
+    },
+    {
+        "id": "858909256b17886399b916dd3e23eeb06f6bb5a1ec458340c6424e6a1193b107",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-senat-indexation"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Indexer les salaires sur les prix"
+            ],
+            [
+                "summary",
+                "Pétition au Sénat pour l’inscription à l’ordre du jour de la proposition de loi d’indexation des salaires."
+            ],
+            [
+                "published_at",
+                "1789992000"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "salaires"
+            ],
+            [
+                "t",
+                "vie chère"
+            ],
+            [
+                "ppf-platform",
+                "senat"
+            ],
+            [
+                "ppf-official-url",
+                "https://petitions.senat.fr/"
+            ],
+            [
+                "ppf-reference",
+                "exemple"
+            ],
+            [
+                "ppf-opened",
+                "2026-09-20"
+            ],
+            [
+                "ppf-closes",
+                "2027-03-20"
+            ],
+            [
+                "ppf-petition-status",
+                "ouverte"
+            ],
+            [
+                "ppf-count",
+                "18400",
+                "2026-10-01",
+                "site des pétitions du Sénat"
+            ],
+            [
+                "ppf-count",
+                "61300",
+                "2026-11-06",
+                "site des pétitions du Sénat"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:ppl-indexation-salaires",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Règlement du Sénat, articles 87 et 88",
+                "https://www.senat.fr/reglement/reglement_mono.html",
+                "2026-11-07"
+            ],
+            [
+                "ppf-next",
+                "Voir la proposition de loi",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:ppl-indexation-salaires"
+            ]
+        ],
+        "content": "Contenu de démonstration : la pétition et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site des pétitions du Sénat.\n\nÀ 100 000 signatures en six mois, la Conférence des présidents du Sénat doit examiner la pétition.\n",
+        "sig": "5150be3d2572f4cd14fa738564746ed389293beced163b9178d3a0e73b80b1070640580576ca06994c0287428caa5248f6907768209a92ff7a44f69795535db0"
+    },
+    {
+        "id": "6a1f91ceeb42c432819f1cf7da03907149d5bc81c6ec0799923b47a5aeb1e471",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1788955200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-senat-retraites"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Revaloriser les petites retraites au niveau des prix"
+            ],
+            [
+                "summary",
+                "Pétition au Sénat close après six mois, au-delà de 100 000 signatures."
+            ],
+            [
+                "published_at",
+                "1770811200"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "retraites"
+            ],
+            [
+                "ppf-platform",
+                "senat"
+            ],
+            [
+                "ppf-official-url",
+                "https://petitions.senat.fr/"
+            ],
+            [
+                "ppf-reference",
+                "exemple"
+            ],
+            [
+                "ppf-opened",
+                "2026-02-10"
+            ],
+            [
+                "ppf-closes",
+                "2026-08-10"
+            ],
+            [
+                "ppf-petition-status",
+                "close"
+            ],
+            [
+                "ppf-count",
+                "64000",
+                "2026-04-01",
+                "site des pétitions du Sénat"
+            ],
+            [
+                "ppf-count",
+                "118400",
+                "2026-08-10",
+                "site des pétitions du Sénat"
+            ],
+            [
+                "ppf-milestone",
+                "2026-05-28",
+                "100 000 signatures en moins de quatre mois."
+            ],
+            [
+                "ppf-milestone",
+                "2026-09-09",
+                "La Conférence des présidents décide de créer une mission d’information (exemple)."
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Règlement du Sénat, articles 87 et 88",
+                "https://www.senat.fr/reglement/reglement_mono.html",
+                "2026-11-07"
+            ],
+            [
+                "ppf-next",
+                "Voir le vote du Sénat sur la revalorisation",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:vote-alex-revalorisation"
+            ]
+        ],
+        "content": "Contenu de démonstration : la pétition et ses chiffres sont fictifs.\n\nLa pétition a dépassé le seuil de 100 000 signatures dans les six mois. La Conférence des présidents l’a examinée et a choisi de créer une mission d’information plutôt que d’inscrire un débat.\n",
+        "sig": "53676b054c9ba41659aa3bd675e6a626abbcf247f1ef147a06263e87dc8644405a1f1e87127f4c77feb0a8b99e1111131ddd1942af4bcb238e96a59cc215d6b4"
+    }
+]

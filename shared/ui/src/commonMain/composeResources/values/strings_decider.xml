@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Décider" (vision, pillar 4; cahier fonctionnel M10, M13.5; D-047 to D-049). French,
+     typographic apostrophe (’), no em dash. The rules of the petitions were checked against the
+     official sources on 7 November 2026 (docs/integration/decider-petitions-droit.md). -->
+<resources>
+    <!-- Home -->
+    <string name="decider_intro">Faire pression ensemble : les pétitions officielles, avec ce que leurs seuils obtiennent vraiment, et le Pacte démocratique envoyé à tous les candidats.</string>
+    <string name="decider_empty">Rien à afficher pour l’instant. Les pétitions et le Pacte apparaîtront ici dès leur publication.</string>
+    <string name="decider_followed">Ce que vous suivez</string>
+    <string name="decider_followed_private">Cette liste reste sur votre appareil. Personne d’autre ne la voit.</string>
+    <string name="decider_pacte_section">Le Pacte démocratique</string>
+    <string name="decider_pacte_section_intro">Une courte liste d’engagements précis, envoyée à tous les candidats d’une élection, avec le même texte et le même délai. Leurs réponses sont publiques.</string>
+    <string name="decider_petitions_section_count">Pétitions officielles ouvertes (%1$d)</string>
+    <string name="decider_petitions_section_intro">PPF relaie les pétitions déposées sur les sites officiels. La signature se fait toujours sur le site officiel, jamais ici.</string>
+    <string name="decider_petitions_none_open">Aucune pétition relayée n’est ouverte en ce moment.</string>
+    <string name="decider_thresholds_link">Comprendre les seuils</string>
+    <string name="decider_closed_link">Pétitions closes (%1$d)</string>
+    <string name="decider_more_section">Et aussi</string>
+    <string name="decider_more_demands">Proposer et soutenir des revendications</string>
+    <string name="decider_more_who_decides">Qui décide de ça ? Trouver les élus responsables</string>
+    <string name="decider_votes_soon_title">Bientôt : votations citoyennes et assemblées tirées au sort</string>
+    <string name="decider_votes_soon_text">Ces votes arriveront quand la méthode « une personne, une voix » sera validée : elle doit garantir qu’on ne vote qu’une fois, sans jamais demander qui vous êtes.</string>
+    <string name="decider_copied">Copié</string>
+
+    <!-- Petitions -->
+    <string name="decider_platform_assemblee">Pétition à l’Assemblée nationale</string>
+    <string name="decider_platform_senat">Pétition au Sénat</string>
+    <string name="decider_platform_cese">Pétition au Conseil économique, social et environnemental</string>
+    <string name="decider_platform_rip">Référendum d’initiative partagée</string>
+    <string name="decider_platform_ice">Initiative citoyenne européenne</string>
+    <string name="decider_platform_assemblee_short">Assemblée nationale</string>
+    <string name="decider_platform_senat_short">Sénat</string>
+    <string name="decider_platform_cese_short">CESE</string>
+    <string name="decider_platform_rip_short">Référendum (RIP)</string>
+    <string name="decider_platform_ice_short">Union européenne</string>
+    <string name="decider_petition_open">Ouverte</string>
+    <string name="decider_petition_closed">Close</string>
+    <string name="decider_petition_count">%1$s signatures</string>
+    <string name="decider_petition_no_count">Le compteur n’a pas encore été relevé.</string>
+    <string name="decider_petition_read_on">Relevé le %1$s</string>
+    <string name="decider_petition_read_on_source">Relevé le %1$s sur %2$s</string>
+    <string name="decider_petition_last_day">Dernier jour pour signer</string>
+    <string name="decider_petition_one_day_left">Plus qu’un jour pour signer</string>
+    <string name="decider_petition_days_left">Encore %1$d jours pour signer</string>
+    <string name="decider_petition_threshold_unknown">Le nombre de soutiens nécessaire sera fixé par le Conseil constitutionnel pour cette procédure.</string>
+    <string name="decider_petition_all_reached">Tous les seuils sont atteints.</string>
+    <string name="decider_petition_next_threshold">Prochain seuil : %1$s signatures</string>
+    <string name="decider_petition_remaining">Plus que %1$s signatures pour atteindre %2$s</string>
+    <string name="decider_petition_progress_description">%1$d pour cent du prochain seuil</string>
+    <string name="decider_petition_sign">Signer sur le site officiel (%1$s)</string>
+    <string name="decider_petition_see_official">Voir sur le site officiel (%1$s)</string>
+    <string name="decider_petition_privacy">La signature se fait sur le site officiel, qui vous identifie avec FranceConnect. Votre nom n’est pas publié. PPF ne sait jamais si vous avez signé.</string>
+    <string name="decider_petition_privacy_rip">Attention : la loi rend la liste des soutiens à un référendum d’initiative partagée consultable par toute personne (loi organique du 6 décembre 2013, article 7). Le soutien se donne sur le site du ministère de l’Intérieur. PPF ne sait jamais si vous avez soutenu.</string>
+    <string name="decider_petition_privacy_ice">La signature se fait sur le site de la Commission européenne, qui demande votre nom, votre adresse et votre date de naissance pour vérifier les signatures. Ces données ne sont pas publiées. PPF ne sait jamais si vous avez signé.</string>
+    <string name="decider_petition_bills">Le texte concerné</string>
+    <string name="decider_petition_departments">Signataires venant de %1$d départements (relevé le %2$s)</string>
+    <string name="decider_petition_departments_missing">Il manque encore %1$d départements pour remplir la condition du seuil.</string>
+    <string name="decider_petition_opened_on">Ouverte le %1$s</string>
+    <string name="decider_petition_closes_on">Se termine le %1$s</string>
+    <string name="decider_petition_closed_on">Terminée le %1$s</string>
+    <string name="decider_petition_milestones">Ce qu’il s’est passé</string>
+    <string name="decider_thresholds_of_petition">Les seuils et ce qu’ils obtiennent</string>
+    <string name="decider_thresholds_explain">Comment fonctionnent les pétitions : %1$s</string>
+    <string name="decider_threshold_signatures">%1$s signatures</string>
+    <string name="decider_threshold_reached">Atteint</string>
+    <string name="decider_threshold_not_reached">Pas encore atteint</string>
+    <string name="decider_threshold_departments">venant d’au moins %1$d départements ou collectivités d’outre-mer</string>
+    <string name="decider_threshold_member_states">avec le seuil national atteint dans au moins %1$d États de l’Union</string>
+    <string name="decider_threshold_within_months">en %1$d mois au plus</string>
+
+    <!-- What each threshold does, and what it does not guarantee -->
+    <string name="decider_effect_assemblee_highlight">La pétition est mise en ligne sur le site de l’Assemblée nationale et reste ouverte un an de plus.</string>
+    <string name="decider_limit_assemblee_highlight">Aucun examen n’est obligatoire : comme toute pétition, elle est renvoyée à une commission, qui peut la classer sans l’examiner.</string>
+    <string name="decider_effect_assemblee_debate">La Conférence des présidents peut inscrire un débat en séance sur le rapport de la commission, si un président de commission ou de groupe le demande.</string>
+    <string name="decider_limit_assemblee_debate">Rien n’est automatique, et le débat se termine sans aucun vote. La pétition contre la loi Duplomb (plus de deux millions de signatures) a été débattue le 11 février 2026, sans vote.</string>
+    <string name="decider_effect_senat_conference">La Conférence des présidents du Sénat doit l’examiner. Elle peut créer une mission d’information, proposer une commission d’enquête, inscrire un débat ou une proposition de loi, ou la renvoyer à une commission.</string>
+    <string name="decider_limit_senat_conference">Elle peut aussi décider de ne rien en faire, sans recours possible. Une pétition fermée après six mois devient caduque.</string>
+    <string name="decider_effect_cese_opinion">Si la pétition est recevable, le CESE rend un avis en séance plénière dans les six mois. L’avis est adressé au Premier ministre et aux présidents des deux assemblées, et publié au Journal officiel.</string>
+    <string name="decider_limit_cese_opinion">Ni le Gouvernement ni le Parlement ne sont obligés d’y donner suite.</string>
+    <string name="decider_effect_rip_referendum">Une fois le nombre de soutiens atteint, si chaque assemblée n’a pas examiné la proposition de loi dans les six mois, le Président de la République la soumet au référendum.</string>
+    <string name="decider_limit_rip_referendum">Il suffit que l’Assemblée et le Sénat examinent le texte, même pour le rejeter, pour qu’il n’y ait pas de référendum. La procédure doit d’abord être lancée par 185 parlementaires.</string>
+    <string name="decider_effect_ice_answer">La Commission européenne reçoit les organisateurs dans le mois, une audition publique a lieu au Parlement européen, puis la Commission publie sa réponse dans les six mois.</string>
+    <string name="decider_limit_ice_answer">La Commission n’est pas obligée de proposer une loi.</string>
+
+    <!-- The rules, platform by platform -->
+    <string name="decider_thresholds_title">Comment fonctionnent les pétitions officielles</string>
+    <string name="decider_thresholds_intro">Pour chaque plateforme officielle : qui peut signer, combien de temps, chaque seuil, ce qu’il obtient et ce qu’il ne garantit pas.</string>
+    <string name="decider_thresholds_truth">Une pétition, même très signée, n’oblige jamais le Parlement à voter. C’est pour changer cette règle que le Pacte démocratique peut proposer un vote obligatoire au-delà d’un seuil.</string>
+    <string name="decider_platform_assemblee_what">Ouverte jusqu’à la fin de la législature, ou un an après avoir passé 100 000 signatures. Chaque pétition est renvoyée à une commission, qui nomme un rapporteur, puis la classe ou l’examine. Certaines commissions classent d’office les pétitions trop peu signées.</string>
+    <string name="decider_platform_senat_what">Ouverte six mois après sa publication. Le dépôt est réservé aux personnes majeures.</string>
+    <string name="decider_platform_cese_what">Le Conseil économique, social et environnemental représente la société civile organisée (syndicats, associations, entreprises). Il conseille le Gouvernement et le Parlement.</string>
+    <string name="decider_platform_rip_what">Un référendum demandé par 185 parlementaires et soutenu par un dixième des électeurs inscrits, soit environ cinq millions de personnes. Si une présidentielle ou des législatives ont lieu dans les six mois, la collecte attend l’élection. Aucune procédure n’est ouverte aujourd’hui.</string>
+    <string name="decider_platform_ice_what">Une demande adressée à la Commission européenne pour qu’elle propose une loi dans ses domaines de compétence. En France, le seuil national est de 58 320 signatures.</string>
+    <string name="decider_rules_signers_franceconnect">Qui peut signer : toute personne identifiée par FranceConnect (dès %1$d ans pour cette plateforme).</string>
+    <string name="decider_rules_signers_voters">Qui peut soutenir : les électeurs inscrits sur les listes électorales françaises (%1$d ans et plus).</string>
+    <string name="decider_rules_signers_eu">Qui peut signer : les citoyens de l’Union européenne en âge de voter aux élections européennes (%1$d ans en France).</string>
+    <string name="decider_rules_duration">Durée de la collecte : %1$d mois au plus</string>
+    <string name="decider_rules_rip_threshold">Seuil : un dixième des électeurs inscrits, chiffre fixé par le Conseil constitutionnel pour chaque procédure (4 717 396 soutiens en 2019).</string>
+    <string name="decider_rules_reference">Texte : %1$s</string>
+    <string name="decider_rules_verified">Vérifié auprès des sources officielles le %1$s</string>
+    <string name="decider_rules_source">Lire le texte officiel (%1$s)</string>
+    <string name="decider_closed_title">Pétitions closes</string>
+    <string name="decider_closed_none">Aucune pétition close pour l’instant.</string>
+
+    <!-- Share kit -->
+    <string name="decider_share_title">Faire signer autour de vous</string>
+    <string name="decider_share_help">Un message prêt à envoyer, avec le lien du site officiel. Copiez-le, puis collez-le où vous voulez.</string>
+    <string name="decider_share_platform">Pétition officielle : %1$s</string>
+    <string name="decider_share_count">Déjà %1$s signatures (le %2$s).</string>
+    <string name="decider_share_next">Objectif : %1$s signatures.</string>
+    <string name="decider_share_link">Signer sur le site officiel : %1$s</string>
+    <string name="decider_share_copy">Copier le message</string>
+
+    <!-- The democratic pact -->
+    <string name="decider_pacte_status_proposed">Liste de départ, à voter</string>
+    <string name="decider_pacte_status_sent">Envoyé aux candidats</string>
+    <string name="decider_pacte_status_closed">Élection passée, suivi des élus</string>
+    <string name="decider_pacte_measures_count">%1$d mesures</string>
+    <string name="decider_pacte_open">Voir les mesures et les réponses</string>
+    <string name="decider_pacte_proposed_line">Pas encore envoyé : la liste des mesures sera choisie par le vote des citoyens.</string>
+    <string name="decider_pacte_answered">%1$d candidats sur %2$d ont répondu.</string>
+    <string name="decider_pacte_answered_final">Délai écoulé : %1$d candidats sur %2$d ont répondu.</string>
+    <string name="decider_pacte_answered_until">%1$d candidats sur %2$d ont répondu. Réponses attendues jusqu’au %3$s.</string>
+    <string name="decider_pacte_first_round">Premier tour le %1$s</string>
+    <string name="decider_pacte_method_title">Les mêmes règles pour tous les candidats</string>
+    <string name="decider_pacte_method_text">Le même texte, envoyé le même jour, avec le même délai, à tous les candidats sans exception. Ils apparaissent par ordre alphabétique. Chaque réponse est archivée avec son empreinte et sa date. Une réponse portant sur un autre texte n’est pas comptée.</string>
+    <string name="decider_pacte_sent_on">Envoyé le %1$s aux %2$d candidats</string>
+    <string name="decider_pacte_deadline">Réponses attendues jusqu’au %1$s inclus</string>
+    <string name="decider_pacte_deadline_passed">Délai écoulé le %1$s : l’absence de réponse est maintenant affichée « Sans réponse »</string>
+    <string name="decider_pacte_measures_title">Les mesures</string>
+    <string name="decider_pacte_text_to_change">Texte à modifier : %1$s</string>
+    <string name="decider_pacte_table_title">Les réponses des candidats</string>
+    <string name="decider_pacte_table_order">Par ordre alphabétique des noms, jamais selon les réponses.</string>
+    <string name="decider_pacte_candidate_column">Candidat</string>
+    <string name="decider_cell_signed">Signé</string>
+    <string name="decider_cell_refused">Refusé</string>
+    <string name="decider_cell_awaiting">En attente</string>
+    <string name="decider_cell_no_answer">Sans réponse</string>
+    <string name="decider_pacte_late">réponse reçue après le délai</string>
+    <string name="decider_pacte_late_short">(en retard)</string>
+    <string name="decider_pacte_open_candidate">Ouvrir la fiche de %1$s</string>
+    <string name="decider_pacte_no_answer_received">Aucune réponse reçue</string>
+    <string name="decider_pacte_received_on">Réponse reçue le %1$s</string>
+    <string name="decider_pacte_row_counts">%1$d signées, %2$d refusées, %3$d sans réponse</string>
+    <string name="decider_pacte_comment">Son commentaire : « %1$s »</string>
+    <string name="decider_pacte_follow_up">Depuis l’élection : voir le fait du %1$s</string>
+    <string name="decider_pacte_summary_title">Mesure par mesure</string>
+    <string name="decider_pacte_summary_line">%1$d signent, %2$d refusent, %3$d sans réponse</string>
+    <string name="decider_pacte_set_aside_title">Réponses non comptées (%1$d)</string>
+    <string name="decider_pacte_set_aside_other_text">%1$s : porte sur un autre texte que celui envoyé à tous</string>
+    <string name="decider_pacte_set_aside_not_candidate">%1$s : ne vient pas d’un candidat de cette élection</string>
+    <string name="decider_pacte_archives_title">Les réponses archivées</string>
+    <string name="decider_pacte_archives_text">Chaque document reçu est conservé avec son empreinte (SHA-256) et une preuve d’horodatage : personne ne peut le modifier après coup sans que cela se voie.</string>
+    <string name="decider_pacte_archive_missing">Archive du document en cours de dépôt.</string>
+    <string name="decider_pacte_fingerprint_title">Empreinte du texte envoyé</string>
+    <string name="decider_pacte_fingerprint_text">Cette suite de caractères est calculée à partir des mesures, mot pour mot. Si une seule lettre changeait, elle changerait aussi : chacun peut vérifier que tous les candidats ont reçu le même texte.</string>
+    <string name="decider_pacte_fingerprint_copy">Copier l’empreinte</string>
+    <string name="decider_pacte_proposed_title">Une liste de départ, à choisir ensemble</string>
+    <string name="decider_pacte_proposed_text">Ces mesures sont proposées en attendant que le mur des revendications fasse émerger les priorités. La liste définitive sera choisie par le vote des citoyens, puis envoyée à tous les candidats.</string>
+</resources>

@@ -8,17 +8,17 @@ import org.politisationpopulairefrancaise.core.time.CivilDate
  * resources, one text for what happens and one for what is not guaranteed.
  */
 enum class ThresholdEffect {
-    /** Assemblée nationale, 100 000: the petition is shown on the site and may be examined. */
+    /** Assemblée nationale, 100 000: put online on the site of the Assemblée, open one more year; no examination required. */
     ASSEMBLEE_HIGHLIGHT,
     /** Assemblée nationale, 500 000 from 30 departments: a debate in the chamber may be decided, without a vote. */
     ASSEMBLEE_DEBATE,
-    /** Sénat, 100 000 within six months: sent to the Conférence des présidents, which may decide a debate. */
+    /** Sénat, 100 000 within six months: the Conférence des présidents must examine it, and decides freely what follows. */
     SENAT_CONFERENCE,
-    /** CESE: the Council examines the petition and gives its opinion. */
+    /** CESE: once admissible, the Council gives an opinion in plenary within six months, published in the Journal officiel. */
     CESE_OPINION,
     /** Shared-initiative referendum: the bill goes to referendum if Parliament does not examine it in time. */
     RIP_REFERENDUM,
-    /** European citizens' initiative: the Commission must answer, without any obligation to legislate. */
+    /** European citizens' initiative: meeting, hearing at the Parliament, answer of the Commission; no obligation to legislate. */
     ICE_ANSWER,
 }
 
@@ -86,7 +86,7 @@ data class PetitionProgress(
 )
 
 /**
- * The rules of the official petitions, as checked on [VERIFIED_ON] (docs/DECISIONS.md, D-044, with
+ * The rules of the official petitions, as checked on [VERIFIED_ON] (docs/DECISIONS.md, D-047, with
  * the official sources). Any change in the law means updating this object, its sources and the
  * texts of the interface together.
  */
@@ -101,22 +101,23 @@ object PetitionRules {
                 Threshold(500_000, ThresholdEffect.ASSEMBLEE_DEBATE, guaranteed = false, minDepartments = 30),
             ),
             signers = SignerRule.FRANCECONNECT,
-            minimumAge = null,
+            minimumAge = 18,
+            // Open until the end of the legislature, or one year after 100 000 signatures.
             collectionMonths = null,
             thresholdPerProcedure = false,
-            legalReference = "Règlement de l'Assemblée nationale, articles 147 à 151",
-            sourceUrl = "https://www.assemblee-nationale.fr/dyn/connaissance/reglement",
+            legalReference = "Règlement de l’Assemblée nationale, articles 147 à 151 (résolution n° 281 du 4 juin 2019)",
+            sourceUrl = "https://www.assemblee-nationale.fr/dyn/17/divers/texte_reference/02_reglement_assemblee_nationale.html",
             verifiedOn = VERIFIED_ON,
         ),
         PlatformRules(
             platform = PetitionPlatform.SENAT,
-            thresholds = listOf(Threshold(100_000, ThresholdEffect.SENAT_CONFERENCE, guaranteed = false, withinMonths = 6)),
+            thresholds = listOf(Threshold(100_000, ThresholdEffect.SENAT_CONFERENCE, guaranteed = true, withinMonths = 6)),
             signers = SignerRule.FRANCECONNECT,
             minimumAge = null,
             collectionMonths = 6,
             thresholdPerProcedure = false,
-            legalReference = "Règlement du Sénat, articles 87 à 89 bis",
-            sourceUrl = "https://petitions.senat.fr/",
+            legalReference = "Règlement du Sénat, articles 87 et 88 ; Instruction générale du Bureau, chapitre XVIII",
+            sourceUrl = "https://www.senat.fr/reglement/reglement_mono.html",
             verifiedOn = VERIFIED_ON,
         ),
         PlatformRules(
@@ -126,8 +127,8 @@ object PetitionRules {
             minimumAge = 16,
             collectionMonths = 12,
             thresholdPerProcedure = false,
-            legalReference = "Constitution, article 69 ; ordonnance n° 58-1360 du 29 décembre 1958, article 4-1",
-            sourceUrl = "https://www.lecese.fr/",
+            legalReference = "Constitution, article 69 ; ordonnance n° 58-1360 du 29 décembre 1958, article 4-1 (loi organique n° 2021-27 du 15 janvier 2021)",
+            sourceUrl = "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042999544",
             verifiedOn = VERIFIED_ON,
         ),
         PlatformRules(
@@ -138,7 +139,7 @@ object PetitionRules {
             collectionMonths = 9,
             thresholdPerProcedure = true,
             legalReference = "Constitution, article 11 ; loi organique n° 2013-1114 du 6 décembre 2013",
-            sourceUrl = "https://www.referendum.interieur.gouv.fr/",
+            sourceUrl = "https://www.conseil-constitutionnel.fr/referendum-d-initiative-partagee/referendum-d-initiative-partagee-rip-mode-d-emploi",
             verifiedOn = VERIFIED_ON,
         ),
         PlatformRules(
@@ -148,8 +149,8 @@ object PetitionRules {
             minimumAge = 18,
             collectionMonths = 12,
             thresholdPerProcedure = false,
-            legalReference = "Règlement (UE) 2019/788 du 17 avril 2019 relatif à l'initiative citoyenne européenne",
-            sourceUrl = "https://citizens-initiative.europa.eu/",
+            legalReference = "Règlement (UE) 2019/788 du 17 avril 2019 ; règlement délégué (UE) 2024/1082 (seuil de la France : 58 320)",
+            sourceUrl = "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:32019R0788",
             verifiedOn = VERIFIED_ON,
         ),
     ).associateBy { it.platform }

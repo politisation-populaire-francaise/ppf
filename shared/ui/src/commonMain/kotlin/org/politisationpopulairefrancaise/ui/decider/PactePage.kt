@@ -364,10 +364,11 @@ private fun BoardTable(board: PacteBoard, actions: DeciderActions) {
             }
             board.rows.forEach { row ->
                 HorizontalDivider(color = palette.border)
+                val describe = stringResource(Res.string.decider_pacte_open_candidate, row.name.withoutExample())
                 Row(Modifier.height(IntrinsicSize.Max).testTag(DeciderTags.row(row.candidate.identifier)), verticalAlignment = Alignment.CenterVertically) {
                     Surface(
                         onClick = { actions.openPerson(row.candidate) },
-                        modifier = Modifier.width(nameWidth).fillMaxHeight().heightIn(min = 56.dp),
+                        modifier = Modifier.width(nameWidth).fillMaxHeight().heightIn(min = 56.dp).semantics(mergeDescendants = true) { contentDescription = describe },
                         color = palette.surface2,
                         contentColor = palette.ink,
                     ) {

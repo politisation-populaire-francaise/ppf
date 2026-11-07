@@ -27,7 +27,7 @@ enum class PetitionPlatform(val tagValue: String, val officialHosts: Set<String>
     /** Petitions to the Sénat (Règlement du Sénat). */
     SENAT("senat", setOf("petitions.senat.fr")),
     /** Petitions to the Conseil économique, social et environnemental (Constitution, article 69). */
-    CESE("cese", setOf("participez.lecese.fr")),
+    CESE("cese", setOf("petitions.lecese.fr")),
     /** Supports of a shared-initiative referendum (Constitution, article 11). */
     RIP("rip", setOf("www.referendum.interieur.gouv.fr", "referendum.interieur.gouv.fr")),
     /** European citizens' initiative (Regulation (EU) 2019/788). */
