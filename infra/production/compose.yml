@@ -31,12 +31,28 @@ services:
       PORT: "8080"
       PPF_ENVIRONMENT: production
       DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:?}
-      DATABASE_USER: ${POSTGRES_USER:?}
+      # The restricted role ppf_app (D-127): ordinary reads and writes, never a change of schema,
+      # never UPDATE, DELETE or TRUNCATE on the audit log. Migrations run before, in the one-shot
+      # service "migrate" below, with the owner role; the server only checks that none is pending.
+      DATABASE_USER: ppf_app
       DATABASE_PASSWORD_FILE: /run/secrets/server_db_password
+      PPF_DATABASE_MIGRATE: "false"
       PPF_EDITOR_KEYS: ${PPF_EDITOR_KEYS:-}
+      # Team back-office (docs/integration/back-office.md): off without its origin; its routes answer
+      # only on the second port, which only the proxy reaches (equipe.<domain>, tunnel only).
+      PPF_BACKOFFICE_ORIGIN: ${PPF_BACKOFFICE_ORIGIN:-}
+      PPF_BACKOFFICE_PORT: "8081"
+      PPF_AUDIT_PUBLIC_KEY: ${PPF_AUDIT_PUBLIC_KEY:-}
       # No PPF_EXAMPLES_DIR here: the server refuses to start in production with it.
+      # Parliamentary open data written by the importer below, read-only for the server.
+      PPF_OPEN_DATA_DIR: /data/open-data
+      # Official public sources in production only (Comprendre, D-047 and D-090; hosts in infra/EGRESS.md).
+      PPF_RNE_SOURCE: official
+      PPF_TERRITOIRES_SOURCE: official
     secrets:
       - server_db_password
+    volumes:
+      - /srv/ppf/production/open-data:/data/open-data:ro
     networks:
       - internal
       - edge
@@ -53,6 +69,76 @@ services:
         limits:
           memory: 1024M
           cpus: "1.0"
+
+  # Database migrations, run once per deployment by infra/scripts/deploy.sh before the server
+  # starts (docker compose run --rm migrate); never started by "up" (profile "tools").
+  migrate:
+    image: ${PPF_SERVER_IMAGE:?set by infra/scripts/deploy.sh}
+    profiles: ["tools"]
+    user: "10001:10001"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    entrypoint: ["java", "-Xmx128m", "-cp", "/app/ppf-server.jar", "org.politisationpopulairefrancaise.server.db.DatabaseCli", "migrate"]
+    healthcheck:
+      disable: true
+    environment:
+      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:?}
+      DATABASE_USER: ${POSTGRES_USER:?}
+      DATABASE_PASSWORD_FILE: /run/secrets/migrate_db_password
+      PPF_DATABASE_APP_ROLE: ppf_app
+    secrets:
+      - migrate_db_password
+    networks:
+      - internal
+    depends_on:
+      db:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          memory: 256M
+          cpus: "0.5"
+
+  # Importer of the parliamentary open data (Voir, D-064), one-shot, started by the systemd timers
+  # ppf-open-data-daily and ppf-open-data-weekly (never by "up", profile "tools"). Its own UID, the
+  # only one able to read the import key; it writes the packages the server reads. Enabled only at the
+  # public launch, once the production import key exists (OpenDataKeys, infra/README.md).
+  open-data-importer:
+    image: ${PPF_SERVER_IMAGE:?set by infra/scripts/deploy.sh}
+    profiles: ["tools"]
+    user: "10003:10003"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,size=64m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    entrypoint: ["java", "-XX:MaxRAMPercentage=75", "-XX:+ExitOnOutOfMemoryError", "-jar", "/app/ppf-open-data-importer.jar"]
+    healthcheck:
+      disable: true
+    environment:
+      PPF_OPEN_DATA_SOURCE: official
+      PPF_OPEN_DATA_DIR: /data/open-data
+      PPF_IMPORT_KEY_FILE: /run/secrets/import_key
+    secrets:
+      - import_key
+    volumes:
+      - /srv/ppf/production/open-data:/data/open-data
+    # Its own network, with a way out (official sources only, infra/EGRESS.md); never the database.
+    networks:
+      - importer
+    deploy:
+      resources:
+        limits:
+          # 512 MB until the peak on the real files is measured, then 256 MB.
+          memory: 512M
+          cpus: "0.5"
 
   db:
     # PostgreSQL 17 with PostGIS, pinned by digest (Dependabot proposes updates).
@@ -78,8 +164,11 @@ services:
     shm_size: 128m
     secrets:
       - db_password
+      - app_db_password
     volumes:
       - db-data:/var/lib/postgresql/data
+      # Creates the restricted role ppf_app at the first initialisation of the volume.
+      - ../postgres/10-app-role.sh:/docker-entrypoint-initdb.d/10-app-role.sh:ro
     networks:
       - internal
     healthcheck:
@@ -98,14 +187,21 @@ services:
           memory: 768M
           cpus: "1.0"
 
-# The same password in two files, each readable only by the user of its container
-# (10001 for the server, 999 for PostgreSQL): file secrets are bind mounts, so Compose
-# cannot change their owner. Both files are written by infra/scripts/bootstrap-server.sh.
+# Two passwords (owner role and restricted role ppf_app), each in one file per container user
+# (10001 for the server and the migrations, 999 for PostgreSQL): file secrets are bind mounts, so
+# Compose cannot change their owner. All four files are written by infra/scripts/bootstrap-server.sh.
 secrets:
   server_db_password:
     file: ${PPF_SECRETS_DIR:?}/server_db_password
+  migrate_db_password:
+    file: ${PPF_SECRETS_DIR:?}/migrate_db_password
   db_password:
     file: ${PPF_SECRETS_DIR:?}/db_password
+  app_db_password:
+    file: ${PPF_SECRETS_DIR:?}/app_db_password
+  # Import key of the parliamentary open data (nsec file, UID 10003); empty until the public launch.
+  import_key:
+    file: ${PPF_SECRETS_DIR:?}/import_key
 
 volumes:
   db-data:
@@ -118,3 +214,5 @@ networks:
   edge:
     external: true
     name: ppf-prod-edge
+  # The importer's own network, with a way out to the official sources only.
+  importer: {}
