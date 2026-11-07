@@ -14,11 +14,20 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -26,21 +35,43 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.time.CivilDate
+import org.politisationpopulairefrancaise.ui.comprendre.ComprendreLibrary
+import org.politisationpopulairefrancaise.ui.comprendre.CourseScreen
+import org.politisationpopulairefrancaise.ui.comprendre.courseMetaLine
+import org.politisationpopulairefrancaise.ui.comprendre.displayTitle
+import org.politisationpopulairefrancaise.ui.comprendre.progressLine
+import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.PageHeader
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
-import org.politisationpopulairefrancaise.ui.components.BadgeStyle
+import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
+import org.politisationpopulairefrancaise.ui.resources.comprendre_cancel
+import org.politisationpopulairefrancaise.ui.resources.comprendre_clear_confirm
+import org.politisationpopulairefrancaise.ui.resources.comprendre_clear_progress
+import org.politisationpopulairefrancaise.ui.resources.comprendre_clear_text
+import org.politisationpopulairefrancaise.ui.resources.comprendre_clear_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_course_kind
+import org.politisationpopulairefrancaise.ui.resources.comprendre_courses_intro
+import org.politisationpopulairefrancaise.ui.resources.comprendre_courses_none
+import org.politisationpopulairefrancaise.ui.resources.comprendre_courses_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_decryptages_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_dossiers_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_private_note
+import org.politisationpopulairefrancaise.ui.resources.comprendre_rights_intro
+import org.politisationpopulairefrancaise.ui.resources.comprendre_rights_title
 import org.politisationpopulairefrancaise.ui.resources.content_back
 import org.politisationpopulairefrancaise.ui.resources.content_none
 import org.politisationpopulairefrancaise.ui.resources.content_origin_ai
@@ -58,7 +89,6 @@ import org.politisationpopulairefrancaise.ui.resources.content_type_dossier
 import org.politisationpopulairefrancaise.ui.resources.content_type_fiche
 import org.politisationpopulairefrancaise.ui.resources.content_updated
 import org.politisationpopulairefrancaise.ui.resources.desc_comprendre
-import org.politisationpopulairefrancaise.ui.resources.guides_title
 import org.politisationpopulairefrancaise.ui.resources.space_comprendre
 import org.politisationpopulairefrancaise.ui.resources.space_revendications
 import org.politisationpopulairefrancaise.ui.resources.space_voir
@@ -73,63 +103,228 @@ object ContentTags {
     const val STATUS = "content-status"
 }
 
+object ComprendreTags {
+    const val HOME = "comprendre-home"
+    const val COURSE_LIST = "course-list"
+    const val COURSE_CARD = "course-" // followed by the slug
+    const val CLEAR_PROGRESS = "comprendre-clear-progress"
+    const val CLEAR_CONFIRM = "comprendre-clear-confirm"
+    const val CLEAR_CANCEL = "comprendre-clear-cancel"
+}
+
 /**
- * "Comprendre": for now, the practical guides (M6), readable offline. One pane on phones and
- * tablets (list, then the guide with a back button), two panes side by side on wide windows.
+ * "Comprendre" (vision, pillar 2; cahier fonctionnel, M6 and M13.1): the courses "Comprendre en
+ * 5 minutes" with their quizzes, the practical guides readable offline, then the dossiers and the
+ * fact-checks when there are some. One pane on phones and tablets (the home, then the content with
+ * a back button), two panes side by side on wide windows (the home stays on the left).
  */
 @Composable
-fun ComprendreScreen(library: ContentLibrary, windowClass: WindowClass, modifier: Modifier = Modifier) {
+fun ComprendreScreen(
+    library: ContentLibrary,
+    comprendre: ComprendreLibrary,
+    windowClass: WindowClass,
+    modifier: Modifier = Modifier,
+    onNavigate: (Space) -> Unit = {},
+) {
+    // The bundled contents are imported by the library: read the courses once it is done, and after each synchronization.
+    LaunchedEffect(library.status) { comprendre.reload() }
+
     val twoPanes = windowClass.width == WindowWidthClass.EXPANDED
     val compact = windowClass.width == WindowWidthClass.COMPACT
-    val selected = library.selected
-    SystemBack(enabled = selected != null) { library.close() }
+    val course = comprendre.openCourse
+    val article = comprendre.openArticle
+    val guide = library.selected
+    val actions = HomeActions(
+        openGuide = { comprendre.close(); comprendre.closeArticle(); library.open(it) },
+        openCourse = { library.close(); comprendre.open(it) },
+        openArticle = { library.close(); comprendre.openArticle(it) },
+    )
+    val hasDetail = course != null || article != null || guide != null
+    // The system's back closes the open course, article or guide first.
+    SystemBack(enabled = hasDetail) {
+        when {
+            course != null -> comprendre.close()
+            article != null -> comprendre.closeArticle()
+            else -> library.close()
+        }
+    }
+
+    @Composable
+    fun Detail(onBack: Boolean, detailModifier: Modifier) {
+        when {
+            course != null -> CourseScreen(comprendre, course, onBack = if (onBack) comprendre::close else null, onNavigate = onNavigate, compact = compact, modifier = detailModifier)
+            article != null -> GuideDetail(article, onBack = if (onBack) comprendre::closeArticle else null, compact = compact, modifier = detailModifier)
+            guide != null -> GuideDetail(guide, onBack = if (onBack) library::close else null, compact = compact, modifier = detailModifier)
+        }
+    }
+
     // The panes carry their own test tags, so the host's modifier stays on this container.
     Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
         when {
             twoPanes -> Row(Modifier.fillMaxSize()) {
-                GuideList(library, Modifier.width(380.dp).fillMaxSize(), compact = false)
+                ComprendreHome(library, comprendre, actions, Modifier.width(400.dp).fillMaxSize(), compact = false, withHeader = false)
                 VerticalDivider(color = PpfTheme.palette.border)
-                if (selected != null) {
-                    GuideDetail(selected, onBack = null, compact = false, Modifier.fillMaxSize())
+                if (hasDetail) {
+                    Detail(onBack = false, detailModifier = Modifier.fillMaxSize())
                 } else {
                     Column(Modifier.fillMaxSize().padding(24.dp)) {
                         PageHeader(stringResource(Res.string.space_comprendre), stringResource(Res.string.desc_comprendre))
                     }
                 }
             }
-            selected != null -> GuideDetail(selected, onBack = library::close, compact = compact, Modifier.fillMaxSize())
-            else -> GuideList(library, Modifier.fillMaxSize(), compact = compact, withHeader = true)
+            hasDetail -> Detail(onBack = true, detailModifier = Modifier.fillMaxSize())
+            else -> ComprendreHome(library, comprendre, actions, Modifier.fillMaxSize(), compact = compact, withHeader = true)
         }
     }
 }
 
+private class HomeActions(
+    val openGuide: (Article) -> Unit,
+    val openCourse: (Parcours) -> Unit,
+    val openArticle: (Article) -> Unit,
+)
+
 @Composable
-private fun GuideList(library: ContentLibrary, modifier: Modifier, compact: Boolean, withHeader: Boolean = false) {
+private fun ComprendreHome(
+    library: ContentLibrary,
+    comprendre: ComprendreLibrary,
+    actions: HomeActions,
+    modifier: Modifier,
+    compact: Boolean,
+    withHeader: Boolean,
+) {
     val palette = PpfTheme.palette
-    Column(modifier.verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(ContentTags.GUIDE_LIST)) {
-        if (withHeader) {
-            PageHeader(stringResource(Res.string.space_comprendre), stringResource(Res.string.desc_comprendre))
-            Spacer(Modifier.height(24.dp))
-        }
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(
-                text = stringResource(Res.string.guides_title),
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.semantics { heading() }.weight(1f),
-            )
-            if (library.status != LibraryStatus.Offline && library.status != LibraryStatus.Unavailable) {
-                PpfIconButton(Lucide.RefreshCw, stringResource(Res.string.content_refresh), library::refresh, Modifier.testTag(ContentTags.REFRESH), tint = palette.brand)
+    var confirmClear by remember { mutableStateOf(false) }
+    Column(modifier.verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(ComprendreTags.HOME)) {
+        Column(Modifier.widthIn(max = 760.dp)) {
+            if (withHeader) {
+                PageHeader(stringResource(Res.string.space_comprendre), stringResource(Res.string.desc_comprendre))
+                Spacer(Modifier.height(16.dp))
+            }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Box(Modifier.weight(1f)) { StatusLine(library.status) }
+                if (library.status != LibraryStatus.Offline && library.status != LibraryStatus.Unavailable) {
+                    PpfIconButton(Lucide.RefreshCw, stringResource(Res.string.content_refresh), library::refresh, Modifier.testTag(ContentTags.REFRESH), tint = palette.brand)
+                }
+            }
+            Spacer(Modifier.height(16.dp))
+
+            Column(Modifier.fillMaxWidth().testTag(ComprendreTags.COURSE_LIST)) {
+                SectionHeading(stringResource(Res.string.comprendre_courses_title), stringResource(Res.string.comprendre_courses_intro))
+                if (comprendre.courses.isEmpty() && library.status != LibraryStatus.Loading) {
+                    Text(stringResource(Res.string.comprendre_courses_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+                }
+                comprendre.courses.forEach { course ->
+                    CourseCard(course, comprendre, onOpen = { actions.openCourse(course) }, selected = comprendre.openCourse?.address == course.address)
+                    Spacer(Modifier.height(12.dp))
+                }
+            }
+
+            Spacer(Modifier.height(20.dp))
+            Column(Modifier.fillMaxWidth().testTag(ContentTags.GUIDE_LIST)) {
+                SectionHeading(stringResource(Res.string.comprendre_rights_title), stringResource(Res.string.comprendre_rights_intro))
+                if (library.guides.isEmpty() && library.status != LibraryStatus.Loading) {
+                    Text(stringResource(Res.string.content_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+                }
+                library.guides.forEach { guide ->
+                    GuideCard(guide, onOpen = { actions.openGuide(guide) }, selected = library.selected?.address == guide.address)
+                    Spacer(Modifier.height(12.dp))
+                }
+            }
+
+            ArticleSection(stringResource(Res.string.comprendre_dossiers_title), comprendre.dossiers, comprendre.openArticle, actions.openArticle)
+            ArticleSection(stringResource(Res.string.comprendre_decryptages_title), comprendre.decryptages, comprendre.openArticle, actions.openArticle)
+
+            Spacer(Modifier.height(20.dp))
+            Text(stringResource(Res.string.comprendre_private_note), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
+            if (comprendre.progress.isNotEmpty()) {
+                PpfTextButton(
+                    onClick = { confirmClear = true },
+                    text = stringResource(Res.string.comprendre_clear_progress),
+                    color = palette.accentStrong,
+                    modifier = Modifier.testTag(ComprendreTags.CLEAR_PROGRESS),
+                )
             }
         }
-        StatusLine(library.status)
+    }
+    if (confirmClear) {
+        AlertDialog(
+            onDismissRequest = { confirmClear = false },
+            containerColor = palette.surface2,
+            titleContentColor = palette.ink,
+            textContentColor = palette.inkMuted,
+            shape = MaterialTheme.shapes.medium,
+            icon = { Icon(Lucide.TriangleExclamationPoint, contentDescription = null, tint = palette.warning) },
+            title = { Text(stringResource(Res.string.comprendre_clear_title), style = MaterialTheme.typography.titleMedium) },
+            text = { Text(stringResource(Res.string.comprendre_clear_text), style = MaterialTheme.typography.bodyLarge) },
+            confirmButton = {
+                TextButton(onClick = { confirmClear = false; comprendre.clearProgress() }, modifier = Modifier.testTag(ComprendreTags.CLEAR_CONFIRM)) {
+                    Text(stringResource(Res.string.comprendre_clear_confirm), color = palette.accentStrong)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmClear = false }, modifier = Modifier.testTag(ComprendreTags.CLEAR_CANCEL)) {
+                    Text(stringResource(Res.string.comprendre_cancel), color = palette.inkMuted)
+                }
+            },
+        )
+    }
+}
+
+@Composable
+private fun SectionHeading(title: String, intro: String?) {
+    Text(title, style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
+    intro?.let {
+        Spacer(Modifier.height(4.dp))
+        Text(it, style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.inkMuted)
+    }
+    Spacer(Modifier.height(12.dp))
+}
+
+@Composable
+private fun ArticleSection(title: String, articles: List<Article>, open: Article?, onOpen: (Article) -> Unit) {
+    if (articles.isEmpty()) return
+    Spacer(Modifier.height(20.dp))
+    SectionHeading(title, null)
+    articles.forEach { article ->
+        GuideCard(article, onOpen = { onOpen(article) }, selected = open?.address == article.address)
         Spacer(Modifier.height(12.dp))
-        if (library.guides.isEmpty() && library.status != LibraryStatus.Loading) {
-            Text(stringResource(Res.string.content_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+    }
+}
+
+@Composable
+private fun CourseCard(course: Parcours, comprendre: ComprendreLibrary, onOpen: () -> Unit, selected: Boolean) {
+    val palette = PpfTheme.palette
+    val progress = comprendre.progressOf(course)
+    PpfCard(onClick = onOpen, selected = selected, modifier = Modifier.fillMaxWidth().testTag(ComprendreTags.COURSE_CARD + course.article.slug)) {
+        Row(verticalAlignment = Alignment.Top) {
+            Text(displayTitle(course), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+            if (course.article.title.startsWith(FeedPost.EXAMPLE_MARKER)) {
+                Spacer(Modifier.width(8.dp))
+                ExampleBadge()
+            }
         }
-        library.guides.forEach { guide ->
-            GuideCard(guide, onOpen = { library.open(guide) }, selected = library.selected?.address == guide.address)
-            Spacer(Modifier.height(12.dp))
+        course.article.summary?.let {
+            Spacer(Modifier.height(4.dp))
+            Text(it, style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
         }
+        Spacer(Modifier.height(8.dp))
+        Text(courseMetaLine(course), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
+        Spacer(Modifier.height(8.dp))
+        val done = when {
+            progress == null -> 0f
+            progress.completed -> 1f
+            else -> (progress.furthestStep + 1).toFloat() / course.steps.size
+        }
+        LinearProgressIndicator(
+            progress = { done },
+            modifier = Modifier.fillMaxWidth().height(4.dp),
+            color = if (progress?.completed == true) palette.success else palette.brand,
+            trackColor = palette.border,
+            drawStopIndicator = {},
+        )
+        Spacer(Modifier.height(6.dp))
+        Text(progressLine(course, progress), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
     }
 }
 
@@ -217,6 +412,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.DOSSIER -> Res.string.content_type_dossier
         ArticleType.DECRYPTAGE -> Res.string.content_type_decryptage
         ArticleType.ARTICLE -> Res.string.content_type_article
+        ArticleType.PARCOURS -> Res.string.comprendre_course_kind
         ArticleType.REVENDICATION -> Res.string.space_revendications
         ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE -> Res.string.space_voir
     },

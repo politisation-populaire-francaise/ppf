@@ -207,10 +207,23 @@ Avec le serveur de développement lancé (étape 2 ci-dessus) et un compte d'ess
 6. Arrêtez le serveur, écrivez un message : il porte « En attente d'envoi ». Relancez le serveur et touchez le bouton « Actualiser les messages » (les deux flèches) : la mention disparaît.
 7. Dans Mon espace, choisissez « 6 mois » et confirmez : la ligne dit « Réglage enregistré sur le serveur. »
 
+### Tester les parcours « Comprendre en 5 minutes » (ajouté le 6 novembre 2026)
+
+1. Ouvrez le menu (bouton en haut à gauche) et touchez **« Comprendre »**. L'écran commence par **« Comprendre en 5 minutes »** : quatre parcours de démonstration marqués [EXEMPLE] (l'élection présidentielle, comment une loi est votée, la dissolution, le 49.3 et la motion de censure). Chaque carte indique la durée, le nombre d'étapes et de questions, « Produit avec l'aide d'une IA », et « Pas encore commencé ». Les fiches pratiques suivent, sous « Connaître ses droits ».
+2. Touchez **« Comment une loi est votée »** : la première page présente le parcours avec son encart « En bref ». Touchez **« Commencer »**.
+3. Chaque étape affiche « Étape 1 sur 5 », une barre de progression, un texte court, puis une **question**. Choisissez une réponse et touchez **« Valider ma réponse »** : l'application dit si c'est juste, montre la bonne réponse et l'explication avec l'article de loi. Après une mauvaise réponse, **« Réessayer »** permet de recommencer la question.
+4. Passez d'une étape à l'autre avec **« Étape suivante »** et **« Étape précédente »**. Revenez à l'accueil par la flèche en haut à gauche : la carte indique « En cours : étape 2 sur 5 ». Rouvrez le parcours : le bouton propose **« Reprendre à l'étape 2 »**.
+5. À la fin, la page **« Parcours terminé »** donne vos bonnes réponses, propose **« Et maintenant ? »** (le bouton « Voir les revendications des citoyens » ouvre le mur des revendications) et liste les sources.
+6. Fermez complètement l'application et rouvrez-la : la progression est toujours là. Elle n'est enregistrée que sur votre téléphone, jamais envoyée, et n'est pas liée à votre compte (on peut tout faire sans compte).
+7. En bas de l'accueil de « Comprendre », **« Effacer ma progression »** demande confirmation, puis remet tous les parcours à « Pas encore commencé ».
+8. Mode avion : tout fonctionne, les parcours sont dans l'application. Sur l'ordinateur, l'accueil reste à gauche et le parcours s'affiche à droite.
+
+Ces quatre parcours sont des brouillons rédigés avec l'aide d'une IA, vérifiés sur Légifrance (version en vigueur au 6 novembre 2026), le Conseil constitutionnel, l'Assemblée nationale et service-public ; ils doivent être relus par l'équipe éditoriale avant toute publication réelle. Pour en modifier un ou en demander un nouveau, dites-le-moi.
+
 ### Tester les fiches pratiques (ajouté le 5 novembre 2026, encarts le 6)
 
 1. Ouvrez le menu (bouton en haut à gauche) et touchez **« Comprendre »**. Chaque fiche commence par un encart bleu « En bref », puis des encarts verts « Légal » et rouges « Illégal » avec des listes à puces, et des encarts « Attention » (jaune) et « Conseils » (gris). Les titres des fiches sont en bleu de marque, le texte en Atkinson Hyperlegible, 16 points.
-2. La rubrique **« Fiches pratiques »** liste trois fiches de démonstration marquées [EXEMPLE] : droits en manifestation, filmer les forces de l'ordre, garde à vue. La ligne d'état indique « Hors ligne : contenus intégrés à l'application ».
+2. La rubrique **« Connaître ses droits »** liste trois fiches de démonstration marquées [EXEMPLE] : droits en manifestation, filmer les forces de l'ordre, garde à vue. La ligne d'état indique « Hors ligne : contenus intégrés à l'application ».
 3. Touchez une fiche : son texte s'affiche avec les titres, les listes et les sources ; la ligne sous le titre indique le type, la date de mise à jour et l'origine (« Rédigé par un humain »). La flèche en haut à gauche revient à la liste.
 4. Coupez le réseau (mode avion) et refaites les étapes 1 à 3 : tout doit fonctionner à l'identique, puisque les fiches sont dans l'application.
 5. Sur l'ordinateur, la liste et la fiche s'affichent côte à côte quand la fenêtre est large.

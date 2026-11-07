@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- "Voir" (vision, pillar 1; cahier fonctionnel M2, M4, M9, M13.2; D-033). French, typographic
+<!-- "Voir" (vision, pillar 1; cahier fonctionnel M2, M4, M9, M13.2; D-034). French, typographic
      apostrophe (’), no em dash. -->
 <resources>
     <!-- Home of the space -->
@@ -76,6 +76,10 @@
     <string name="voir_no_measure">Aucune mesure publiée pour l’instant.</string>
     <string name="voir_open_source">Ouvrir la source</string>
     <string name="voir_open_source_named">Ouvrir la source : %1$s</string>
+    <string name="voir_link_title">Ouvrir un site extérieur ?</string>
+    <string name="voir_link_text">Vous allez quitter l’application pour ouvrir le site %1$s. Comme pour toute visite, ce site verra votre adresse IP.</string>
+    <string name="voir_link_cancel">Rester ici</string>
+    <string name="voir_link_open">Ouvrir le site</string>
 
     <!-- Sources and method blocks -->
     <string name="voir_sources">Sources</string>

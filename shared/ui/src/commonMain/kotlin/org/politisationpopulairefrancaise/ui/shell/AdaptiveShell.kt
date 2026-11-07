@@ -79,6 +79,7 @@ import org.politisationpopulairefrancaise.ui.components.NavSubRow
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.Wordmark
 import org.politisationpopulairefrancaise.ui.components.avatarLetters
+import org.politisationpopulairefrancaise.ui.comprendre.rememberComprendreLibrary
 import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.content.rememberContentLibrary
@@ -218,7 +219,7 @@ private fun SpaceContent(
     when (selected) {
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate)
-        Space.COMPRENDRE -> ComprendreScreen(contentLibrary, windowClass, modifier)
+        Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
         Space.REVENDICATIONS -> RevendicationsScreen(

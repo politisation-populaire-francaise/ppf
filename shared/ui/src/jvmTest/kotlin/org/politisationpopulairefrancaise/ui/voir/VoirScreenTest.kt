@@ -12,6 +12,8 @@ import androidx.compose.ui.test.assert
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.onFirst
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -80,6 +82,14 @@ class VoirScreenTest {
         onNodeWithTag(VoirTags.CHART).assertDoesNotExist()
         // The correction is shown on the page.
         onNodeWithText("Corrigé le 18 octobre 2026", substring = true).performScrollTo().assertExists()
+        // A source opens only after a warning: the site would see the reader's IP address.
+        onAllNodesWithText("Ouvrir la source").onFirst().performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.LINK_DIALOG).assertExists()
+        onNodeWithText("example.org", substring = true).assertExists()
+        onNodeWithText("Rester ici").performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.LINK_DIALOG).assertDoesNotExist()
 
         // Back to the home of the space.
         onNodeWithTag(VoirTags.BACK).performClick()

@@ -160,7 +160,7 @@ class ContentLibrary(
         private set
 
     /**
-     * Everything "Voir" shows (D-033): indicators, sourced facts, public persons, bills, movements of
+     * Everything "Voir" shows (D-034): indicators, sourced facts, public persons, bills, movements of
      * the world, dossiers and rights of reply, from the trusted editorial accounts only.
      */
     var voir: VoirCatalog by mutableStateOf(VoirCatalog.EMPTY)
@@ -457,6 +457,7 @@ class ContentLibrary(
 
         private val BUNDLED_FILES = listOf(
             "files/contents/fiches.json",
+            "files/contents/parcours.json",
             "files/contents/revendications.json",
             "files/contents/fil.json",
             "files/contents/voir.json",

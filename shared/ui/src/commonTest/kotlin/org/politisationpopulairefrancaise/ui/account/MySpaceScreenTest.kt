@@ -56,7 +56,9 @@ class MySpaceScreenTest {
 
         // Twelve numbered words are shown; read them back as the user would copy them.
         val words = (0 until 12).map { index -> textOf(AccountTags.PHRASE_WORD + index).substringAfter(". ") }
-        assertEquals(12, words.toSet().size)
+        // Twelve non-empty words; a random phrase may repeat a word, so they need not all differ.
+        assertEquals(12, words.size)
+        assertTrue(words.all { it.isNotBlank() && ' ' !in it }, words.toString())
         onNodeWithTag(AccountTags.PHRASE_NOTED).performClick()
         waitForIdle()
 

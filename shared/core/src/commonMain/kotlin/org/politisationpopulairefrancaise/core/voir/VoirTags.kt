@@ -5,7 +5,7 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.time.CivilDate
 
 /**
- * The tags of the "Voir" building blocks (D-033, docs/FORMATS.md section 4 quinquies). A block
+ * The tags of the "Voir" building blocks (D-034, docs/FORMATS.md section 4 quinquies). A block
  * is a NIP-23 event (kind 30023) whose `ppf-type` says what it is; its Markdown body stays
  * readable by any Nostr client, its structured data lives in these tags. Multi-field tags are
  * positional; an empty field means "unknown".

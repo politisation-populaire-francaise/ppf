@@ -57,7 +57,7 @@ data class PpfPalette(
     val shadow: Color,
     /**
      * The categorical colours of charts (one per kind of source, in a fixed order, never cycled),
-     * checked for colour blindness and contrast against the card surface in each mode (D-033).
+     * checked for colour blindness and contrast against the card surface in each mode (D-034).
      */
     val chart: List<Color>,
 )

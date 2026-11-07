@@ -68,7 +68,7 @@ sealed interface VoirItem {
 data class CorrectionEntry(val item: VoirItem, val correction: Correction)
 
 /**
- * Everything "Voir" shows, assembled on the device from the trusted editorial contents (D-033).
+ * Everything "Voir" shows, assembled on the device from the trusted editorial contents (D-034).
  * Every block is read once; the links between them (a vote points to a person and a bill, a
  * reply to the fact it answers) are resolved here, so that a fact appears in each place it
  * belongs without being copied.

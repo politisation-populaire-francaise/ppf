@@ -22,6 +22,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalUriHandler
@@ -82,6 +86,8 @@ object VoirTags {
     const val REPLY_OPEN = "voir-reply-open"
     const val REPLY_DIALOG = "voir-reply-dialog"
     const val PRESUMPTION = "voir-presumption"
+    const val LINK_DIALOG = "voir-link-dialog"
+    const val LINK_OPEN = "voir-link-open"
     const val NEXT = "voir-next-" // followed by the index
     fun tab(index: Int) = "voir-tab-$index"
     fun page(index: Int) = "voir-page-$index"
@@ -189,12 +195,45 @@ internal fun ReliabilityLabel(reliability: Reliability, modifier: Modifier = Mod
     }
 }
 
-/** Opens a web address in the browser; nothing happens if no browser can (never a crash). */
+/**
+ * Opens a web address in the browser after the reader confirms it: leaving the application shows
+ * the reader's IP address to that site, so nothing opens without warning (as in "Comprendre",
+ * D-033). Nothing happens if no browser can open it (never a crash).
+ */
 @Composable
 internal fun rememberOpenUrl(): (String) -> Unit {
     val handler = LocalUriHandler.current
-    return { url -> runCatching { handler.openUri(url) } }
+    var pending by remember { mutableStateOf<String?>(null) }
+    pending?.let { url ->
+        val palette = PpfTheme.palette
+        AlertDialog(
+            onDismissRequest = { pending = null },
+            modifier = Modifier.testTag(VoirTags.LINK_DIALOG),
+            containerColor = palette.surface2,
+            titleContentColor = palette.ink,
+            textContentColor = palette.inkMuted,
+            shape = MaterialTheme.shapes.medium,
+            title = { Text(stringResource(Res.string.voir_link_title), style = MaterialTheme.typography.titleMedium) },
+            text = { Text(stringResource(Res.string.voir_link_text, hostOf(url)), style = MaterialTheme.typography.bodyMedium) },
+            // The safe choice first.
+            dismissButton = { PpfTextButton(onClick = { pending = null }, text = stringResource(Res.string.voir_link_cancel), color = palette.inkMuted) },
+            confirmButton = {
+                PpfTextButton(
+                    onClick = {
+                        pending = null
+                        runCatching { handler.openUri(url) }
+                    },
+                    text = stringResource(Res.string.voir_link_open),
+                    modifier = Modifier.testTag(VoirTags.LINK_OPEN),
+                )
+            },
+        )
+    }
+    return { url -> pending = url }
 }
+
+/** The name of the site of a web address: "https://www.example.org/a/b" gives "www.example.org". */
+internal fun hostOf(url: String): String = url.substringAfter("://").substringBefore('/').substringBefore('?').ifEmpty { url }
 
 /** One source: its kind, its name, its date, and a link when it has an address. */
 @Composable

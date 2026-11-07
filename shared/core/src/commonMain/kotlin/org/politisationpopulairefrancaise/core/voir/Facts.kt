@@ -14,7 +14,7 @@ import org.politisationpopulairefrancaise.core.voir.VoirTags.sources
 import org.politisationpopulairefrancaise.core.voir.VoirTags.value
 
 /**
- * A sourced fact (D-033, "fait sourcé"): one statement with its date, its place, its sources,
+ * A sourced fact (D-034, "fait sourcé"): one statement with its date, its place, its sources,
  * its status (established, alleged, under investigation) and the people and texts it concerns.
  * The same fact appears everywhere it belongs (the chronology, a person's sheet, a bill, the
  * observatory of freedoms) without being copied. Kind-specific fields are null when they do not

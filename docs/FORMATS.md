@@ -80,14 +80,28 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `summary` | Résumé | Non |
 | `published_at` | Première publication, secondes depuis 1970, en texte | Non |
 | `t` | Un thème par étiquette (`droits`, `manifestation`, …) | Non |
-| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut) ou `revendication` | Non |
+| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours` ou `revendication` | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
+| `ppf-duration` | Parcours seulement : durée de lecture annoncée, en minutes (1 à 240) | Non |
 | `ppf-origin` | `human` (rédigé par un humain) ou `ai-assisted` (produit avec l'aide d'une IA) | Oui |
 
 La date de dernière mise à jour est `created_at`. Une nouvelle version porte le même `d` et une date plus récente : elle remplace la précédente partout (section 4). L'application n'affiche que les contenus dont l'auteur figure dans sa liste d'auteurs de confiance.
 
 Dans le Markdown, un bloc ouvert par une ligne `::: en-bref`, `::: legal`, `::: illegal`, `::: attention` ou `::: conseil` et fermé par une ligne `:::` est un **encart** (résumé, ce qui est légal, ce qui est illégal, avertissement, conseils). Les lecteurs qui ne connaissent pas cette convention voient simplement le texte du bloc.
+
+### Parcours « Comprendre en 5 minutes »
+
+Un parcours (cahier fonctionnel, M13.1) est un contenu éditorial de `ppf-type` `parcours` (décision D-033). Son Markdown se lit ainsi (`core/comprendre/ParcoursFormat`) :
+
+- le texte avant le premier intertitre `## ` est l'**introduction** (son encart « En bref ») ;
+- chaque intertitre `## ` (hors d'un encart) ouvre une **étape** ; l'intertitre `## Sources` n'est pas une étape : il vient en dernier et porte les sources ;
+- un bloc `::: quiz` ... `:::` clôt chaque étape : une ligne `? question`, de deux à cinq options `- [ ] texte` dont une seule `- [x] texte`, puis une ou plusieurs lignes `> explication` (la bonne réponse et sa source) ;
+- un bloc `::: et-maintenant` ... `:::` porte les actions proposées à la fin (« Et maintenant ? ») : une puce faite d'un seul lien `[texte](ppf:<espace>)` vers un espace de l'application (`revendications`, `agir`, `decider`, `carte`, `comprendre`...) devient un bouton ; les autres puces restent du texte.
+
+L'application lit un quiz mal formé comme une étape sans question ; l'outil de signature refuse un parcours dont une étape, un quiz, le bloc « Et maintenant ? » ou les sources manquent ou sont mal formés. Un lecteur qui ne connaît pas ce format voit un article ordinaire.
+
+**Progression, sur l'appareil seulement** : tables locales `learning_progress(address, furthest_step, completed_at, updated_at)` et `learning_answer(address, step, choice, correct)`, indexées par l'adresse stable du parcours (`30023:<clé>:<identifiant>`), étapes et options numérotées à partir de 0. Elles ne sont jamais envoyées, ne sont pas liées au compte et s'effacent d'un geste.
 
 ### Publications courtes du fil
 
@@ -119,7 +133,7 @@ Une revendication proposée par un citoyen est un contenu éditorial de type `30
 
 **Vues du mur, sur l'appareil seulement** : table locale `revendication_view(id, position, name, query)` ; une vue intégrée n'a ni nom ni requête (`tout`, `suivis`, `mes-revendications`, `nationales`, `theme:<id>`), une vue personnalisée (`custom:` et 16 caractères hexadécimaux) a un nom et une requête JSON `{"themes":[…],"territories":[…],"statuses":[…],"authors":"anyone"|"followed"|"mine","text":"…","sort":"newest"|"popular"|"updated"}` (valeurs par défaut omises, champs inconnus ignorés). Rien de tout cela n'est jamais envoyé au serveur.
 
-## 4 quinquies. Espace « Voir » : briques sourcées (D-033)
+## 4 quinquies. Espace « Voir » : briques sourcées (D-034)
 
 Chaque brique est un contenu éditorial NIP-23 (type `30023`) : étiquettes communes de la section 4 bis (`d`, `title`, `summary`, `published_at`, `t`, `ppf-origin`), corps en Markdown lisible partout, `ppf-type` pour dire ce qu'elle est, puis des étiquettes structurées. Les étiquettes à plusieurs champs sont positionnelles ; un champ vide veut dire « inconnu ». Les dates sont au format `AAAA-MM-JJ`. Seules les briques signées par une clé de l'équipe éditoriale sont affichées ; une brique mal formée est ignorée.
 

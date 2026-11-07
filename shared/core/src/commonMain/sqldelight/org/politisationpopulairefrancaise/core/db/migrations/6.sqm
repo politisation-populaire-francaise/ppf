@@ -1,8 +1,18 @@
--- Schema version 6 to 7 (2026-11-06): the contents of "Voir" the user follows, kept on the device
--- only (see ContentFollow.sq, which is the reference for fresh installations; this file must stay
--- identical to its CREATE statement).
+-- Schema version 6 to 7 (2026-11-06): progress in the courses of "Comprendre", kept on the device
+-- only (see Learning.sq, the reference for fresh installations; this file must stay identical to
+-- its CREATE statements).
 
-CREATE TABLE content_follow (
+CREATE TABLE learning_progress (
     address TEXT NOT NULL PRIMARY KEY,
-    followed_at INTEGER NOT NULL
+    furthest_step INTEGER NOT NULL,
+    completed_at INTEGER,
+    updated_at INTEGER NOT NULL
+);
+
+CREATE TABLE learning_answer (
+    address TEXT NOT NULL,
+    step INTEGER NOT NULL,
+    choice INTEGER NOT NULL,
+    correct INTEGER NOT NULL,
+    PRIMARY KEY (address, step)
 );

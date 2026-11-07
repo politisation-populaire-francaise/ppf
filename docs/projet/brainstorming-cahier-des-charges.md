@@ -252,7 +252,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **Revendication**, **Campagne**, **Engagement** (Pacte démocratique) ;
   - **Contenu éditorial** : article, fiche pratique, dossier, décryptage.
 - Exemple : une fausse information diffusée par un élu est un seul « fait sourcé » ; il apparaît à la fois dans la fiche de l'élu (Voir), dans le décryptage (Comprendre) et, si besoin, dans le fil d'actualité (Maintenant).
-- Mise à jour du 2026-11-06 : mise en œuvre technique pour l'espace « Voir » seulement (D-033, décision technique prise en autonomie) : indicateur et mesures, fait sourcé, personne publique, texte et votes, mouvement dans le monde, dossier, droit de réponse, au format NIP-23 avec des étiquettes structurées (`docs/FORMATS.md`, section 4 quinquies). Un même fait apparaît bien à plusieurs endroits sans être recopié. Les autres briques (organisation, événement de la carte, campagne, engagement du Pacte) restent à faire quand leurs espaces seront développés ; l'entrée reste « À valider » pour le principe général.
+- Mise à jour du 2026-11-06 : mise en œuvre technique pour l'espace « Voir » seulement (D-034, décision technique prise en autonomie) : indicateur et mesures, fait sourcé, personne publique, texte et votes, mouvement dans le monde, dossier, droit de réponse, au format NIP-23 avec des étiquettes structurées (`docs/FORMATS.md`, section 4 quinquies). Un même fait apparaît bien à plusieurs endroits sans être recopié. Les autres briques (organisation, événement de la carte, campagne, engagement du Pacte) restent à faire quand leurs espaces seront développés ; l'entrée reste « À valider » pour le principe général.
 - Décision :
 
 ### [2026-11-05] Identités, phrase de récupération et signature des contenus : choix techniques
@@ -280,4 +280,16 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **C. Rester comme aujourd'hui** : gratuit. Les avertissements restent, avec le guide pour les passer à chaque installation ; suffisant pour deux ou trois testeuses.
 - Option écartée : Galaxy Store (test fermé possible pour les comptes Samsung, mais statut de vendeur commercial demandé même pour une application gratuite, et utile aux seuls Samsung).
 - Recommandation : C tout de suite (déjà en place), puis A dès que la propriétaire accepte la dépense, et au plus tard avant l'ouverture des tests à plus de quelques personnes ou avant l'échéance de 2027.
+- Décision :
+
+### [2026-11-06] Décryptages : échelle des verdicts
+- Statut : À valider
+- Concerne : cahier-fonctionnel.md, M6 (« Décryptage des fausses informations : affirmation, verdict, explication, sources ») ; inventaire, CO-04 et CO-18 ; point d'attention n° 7
+- Description : avant de coder les décryptages (phase 2), il faut fixer la liste des verdicts affichés, toujours la même pour que le lecteur s'y retrouve et pour que la plateforme ne puisse pas être accusée de juger au cas par cas. Le point d'attention n° 7 demande d'écrire « déclaration contredite par les faits » plutôt que « mensonge » ou « fake news », sauf intention de tromper établie. Les verdicts portent sur une affirmation, jamais sur une personne.
+- Options :
+  - **A. Cinq verdicts** : « Exact », « Plutôt exact », « Trompeur » (vrai en partie, présenté de façon à induire en erreur), « Contredit par les faits », « Invérifiable » (pas de source fiable disponible). Avantages : nuancé, proche des pratiques des rédactions de vérification ; « Contredit par les faits » suit la méthode du point n° 7. Inconvénient : demande une méthode écrite pour distinguer « Plutôt exact » et « Trompeur ».
+  - **B. Trois verdicts** : « Exact », « Contredit par les faits », « Invérifiable ». Avantages : simple, lisible en un coup d'œil, peu contestable. Inconvénient : les affirmations à moitié vraies, très fréquentes, entrent mal dans les cases.
+  - **C. Pas d'étiquette, une phrase de conclusion rédigée** : le décryptage se termine par une conclusion libre. Avantage : souple. Inconvénients : pas de repère visuel, comparaisons impossibles, plus exposé au reproche de partialité.
+- Coût : aucun. Dans tous les cas : affirmation citée mot pour mot avec sa source et sa date, sources primaires, droit de réponse (VO-21) et journal des corrections (VO-22).
+- Recommandation : A, avec une page « Notre méthode » (PP-02) qui définit chaque verdict.
 - Décision :

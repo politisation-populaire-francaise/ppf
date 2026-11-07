@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The "Comprendre" space: its home, the courses "Comprendre en 5 minutes" and their quizzes
+     (cahier fonctionnel, M13.1 and M6). French, the user is addressed with "vous", typographic
+     apostrophe (’), no em dash. -->
+<resources>
+    <string name="comprendre_courses_title">Comprendre en 5 minutes</string>
+    <string name="comprendre_courses_intro">Les institutions expliquées simplement, étape par étape, avec une question à la fin de chaque étape.</string>
+    <string name="comprendre_rights_title">Connaître ses droits</string>
+    <string name="comprendre_rights_intro">Des fiches pratiques à garder sur soi, lisibles sans connexion.</string>
+    <string name="comprendre_dossiers_title">Dossiers</string>
+    <string name="comprendre_decryptages_title">Le vrai du faux</string>
+    <string name="comprendre_course_meta">%1$d min · %2$d étapes · %3$d questions</string>
+    <string name="comprendre_course_kind">Parcours</string>
+    <string name="comprendre_progress_new">Pas encore commencé</string>
+    <string name="comprendre_progress_step">En cours : étape %1$d sur %2$d</string>
+    <string name="comprendre_progress_done">Terminé · bonnes réponses : %1$d sur %2$d</string>
+    <string name="comprendre_start">Commencer</string>
+    <string name="comprendre_resume">Reprendre à l’étape %1$d</string>
+    <string name="comprendre_restart">Recommencer depuis le début</string>
+    <string name="comprendre_step_of">Étape %1$d sur %2$d</string>
+    <string name="comprendre_progress_label">Progression dans le parcours</string>
+    <string name="comprendre_previous">Étape précédente</string>
+    <string name="comprendre_next">Étape suivante</string>
+    <string name="comprendre_finish">Terminer le parcours</string>
+    <string name="comprendre_back">Retour à Comprendre</string>
+    <string name="comprendre_quiz_title">Question</string>
+    <string name="comprendre_quiz_validate">Valider ma réponse</string>
+    <string name="comprendre_quiz_right">Bonne réponse.</string>
+    <string name="comprendre_quiz_wrong">Ce n’est pas la bonne réponse.</string>
+    <string name="comprendre_quiz_retry">Réessayer</string>
+    <string name="comprendre_quiz_correct_option">La bonne réponse</string>
+    <string name="comprendre_quiz_your_answer">Votre réponse</string>
+    <string name="comprendre_end_title">Parcours terminé</string>
+    <string name="comprendre_end_score">Bonnes réponses : %1$d sur %2$d.</string>
+    <string name="comprendre_end_unanswered">Vous pouvez revenir aux étapes pour répondre aux questions laissées de côté.</string>
+    <string name="comprendre_next_actions">Et maintenant ?</string>
+    <string name="comprendre_sources">Sources</string>
+    <string name="comprendre_review">Revoir le parcours</string>
+    <string name="comprendre_private_note">Votre progression est enregistrée sur cet appareil seulement. Elle n’est jamais envoyée, ni liée à votre compte.</string>
+    <string name="comprendre_clear_progress">Effacer ma progression</string>
+    <string name="comprendre_clear_title">Effacer votre progression ?</string>
+    <string name="comprendre_clear_text">Les étapes lues et vos réponses aux questions seront effacées de cet appareil, pour tous les parcours. Cette action ne peut pas être annulée.</string>
+    <string name="comprendre_clear_confirm">Effacer</string>
+    <string name="comprendre_cancel">Annuler</string>
+    <string name="comprendre_courses_none">Aucun parcours disponible pour l’instant.</string>
+</resources>

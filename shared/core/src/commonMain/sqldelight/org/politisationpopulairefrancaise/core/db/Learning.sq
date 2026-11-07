@@ -1,0 +1,62 @@
+-- Progress in the courses of "Comprendre" (cahier fonctionnel, M13.1; cahier des charges, 5.1):
+-- "La progression dans les parcours éducatifs est stockée uniquement sur l'appareil." These tables
+-- are never sent anywhere and are erased in one gesture. A course is identified by its stable
+-- content address (kind:pubkey:identifier); steps are numbered from 0. Added in schema version 7:
+-- existing databases get them through migrations/6.sqm, which must stay identical.
+
+CREATE TABLE learning_progress (
+    address TEXT NOT NULL PRIMARY KEY,
+    furthest_step INTEGER NOT NULL,
+    completed_at INTEGER,
+    updated_at INTEGER NOT NULL
+);
+
+CREATE TABLE learning_answer (
+    address TEXT NOT NULL,
+    step INTEGER NOT NULL,
+    choice INTEGER NOT NULL,
+    correct INTEGER AS kotlin.Boolean NOT NULL,
+    PRIMARY KEY (address, step)
+);
+
+selectProgress:
+SELECT address, furthest_step, completed_at, updated_at FROM learning_progress WHERE address = ?;
+
+selectAllProgress:
+SELECT address, furthest_step, completed_at, updated_at FROM learning_progress;
+
+selectAnswers:
+SELECT address, step, choice, correct FROM learning_answer WHERE address = ? ORDER BY step ASC;
+
+selectAllAnswers:
+SELECT address, step, choice, correct FROM learning_answer ORDER BY address ASC, step ASC;
+
+insertProgress:
+INSERT OR IGNORE INTO learning_progress(address, furthest_step, completed_at, updated_at) VALUES (?, 0, NULL, ?);
+
+reachStep:
+UPDATE learning_progress SET furthest_step = max(furthest_step, :step), updated_at = :now WHERE address = :address;
+
+complete:
+UPDATE learning_progress SET completed_at = :now, updated_at = :now WHERE address = :address;
+
+upsertAnswer:
+INSERT OR REPLACE INTO learning_answer(address, step, choice, correct) VALUES (?, ?, ?, ?);
+
+deleteAnswer:
+DELETE FROM learning_answer WHERE address = ? AND step = ?;
+
+deleteProgress:
+DELETE FROM learning_progress WHERE address = ?;
+
+deleteAnswers:
+DELETE FROM learning_answer WHERE address = ?;
+
+deleteAllProgress:
+DELETE FROM learning_progress;
+
+deleteAllAnswers:
+DELETE FROM learning_answer;
+
+countProgress:
+SELECT COUNT(*) FROM learning_progress;
