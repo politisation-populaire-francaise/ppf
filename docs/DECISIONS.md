@@ -618,7 +618,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - validateurs : bénévoles désignés par une organisation vérifiée de l'annuaire d'« Agir » et agréés par PPF (rôle du socle M15/M16 du Directeur technique, avec séances, quotas et clé de séance) ;
   - le délai aléatoire d'envoi du bulletin (0 à 10 minutes) est une **protection commune du système de vote**, comme le fait que le serveur ne relie jamais un vote à un compte : la liberté du principe 10 porte sur les données de chacun et « ne modifie pas les protections communes » ; ce n'est pas un choix imposé sur les données de l'utilisateur ;
   - l'essai de l'autotest sur le téléphone de la propriétaire (condition b de D-110) est reporté à la phase de test et de débogage, à sa demande ; l'étape 2 (serveur des votes, Flyway `V7`) commence tout de suite.
-- Archivage horodaté (D-111) : Flyway `V9` réservé à la table des preuves ; BouncyCastle `bcpkix` et `bcprov` approuvés par le chef d'équipe, côté serveur seulement.
+- Archivage horodaté (D-111) : Flyway `V9` réservé à la table des preuves (numéro devenu provisoire le même jour : `V8__archives.sql` dans la branche, après `V7__urnes.sql`) ; BouncyCastle `bcpkix` et `bcprov` approuvés par le chef d'équipe, côté serveur seulement.
 
 ## D-113 (2026-11-07) « Une personne, une voix », étape 2 : le serveur des urnes
 
