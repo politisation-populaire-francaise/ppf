@@ -61,6 +61,7 @@ import org.politisationpopulairefrancaise.ui.content.FeedPost
 import org.politisationpopulairefrancaise.ui.content.MarkdownText
 import org.politisationpopulairefrancaise.ui.content.ObjectionsBox
 import org.politisationpopulairefrancaise.ui.content.SimpleMarkdown
+import org.politisationpopulairefrancaise.ui.glossaire.GlossaryScope
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.comprendre_back
@@ -154,10 +155,13 @@ fun CourseScreen(
             Spacer(Modifier.height(4.dp))
             Text(courseMetaLine(parcours), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
             Spacer(Modifier.height(16.dp))
-            when (page) {
-                CoursePage.Introduction -> IntroductionPage(comprendre, parcours, progress)
-                is CoursePage.Step -> parcours.steps.getOrNull(page.index)?.let { step -> StepPage(comprendre, parcours, step, progress) }
-                CoursePage.End -> EndPage(comprendre, parcours, progress, onNavigate, onBack)
+            // One page of the course is one content for the glossary: each term is linked once in it.
+            GlossaryScope(key = parcours.address to page) {
+                when (page) {
+                    CoursePage.Introduction -> IntroductionPage(comprendre, parcours, progress)
+                    is CoursePage.Step -> parcours.steps.getOrNull(page.index)?.let { step -> StepPage(comprendre, parcours, step, progress) }
+                    CoursePage.End -> EndPage(comprendre, parcours, progress, onNavigate, onBack)
+                }
             }
         }
     }
@@ -372,7 +376,7 @@ private fun EndPage(comprendre: ComprendreLibrary, parcours: Parcours, progress:
             Spacer(Modifier.height(20.dp))
             Text(stringResource(Res.string.comprendre_sources), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
             Spacer(Modifier.height(8.dp))
-            SelectionContainer { MarkdownText(sources) }
+            SelectionContainer { MarkdownText(sources, glossary = false) }
         }
         Spacer(Modifier.height(20.dp))
         Buttons {

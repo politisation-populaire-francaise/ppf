@@ -403,7 +403,8 @@ private fun BodyWithActions(body: String, onNavigate: (Space) -> Unit) {
         Spacer(Modifier.height(20.dp))
         Text(stringResource(Res.string.comprendre_sources), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
         Spacer(Modifier.height(8.dp))
-        SelectionContainer { MarkdownText(sources) }
+        // Nothing is spotted in the sources (glossary, D-048).
+        SelectionContainer { MarkdownText(sources, glossary = false) }
     }
 }
 
