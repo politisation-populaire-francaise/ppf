@@ -8,7 +8,7 @@ Décision de la propriétaire (7 novembre 2026) : « Un compte de type collectif
 
 - Le type d'un compte est écrit dans son **profil signé** (événement de type 0, NIP-01), par l'étiquette `["ppf-account-type", "person"]` ou `["ppf-account-type", "collective"]`.
 - **Absente, elle vaut `person`** : tous les comptes existants sont des comptes de personne.
-- Un compte de collectif est créé par un parcours à part de Mon espace (« Créer le compte d'un collectif ») qui publie ce profil dès la création. Il peut vivre sur le même appareil qu'un compte personnel (identités multiples, D-133, après M28).
+- Une personne a **un seul compte personnel**, le seul qui vote (correction de la propriétaire, 7 novembre 2026, 22 h 50 : « Il n'y a que le compte personnel qui vote ! »). Elle peut gérer en plus des comptes associatifs, syndicaux ou de collectif, créés par un parcours à part de Mon espace (« Créer le compte d'un collectif ») qui publie ce profil dès la création ; le sélecteur de comptes de Mon espace passe de l'un aux autres (après M28). Pas de fonction pour plusieurs pseudonymes personnels.
 - **Verrouillage** : une fois qu'un profil `collective` a été reçu pour une clé, le serveur refuse tout profil plus récent de cette clé qui ne porte pas `collective` (`409 account_type_locked`). Un collectif ne peut donc pas redevenir une « personne » pour voter.
 
 ## 2. Côté serveur (pôle Communauté)
