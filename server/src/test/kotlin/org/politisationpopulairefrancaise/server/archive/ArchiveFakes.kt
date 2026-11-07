@@ -68,7 +68,7 @@ object ArchiveFixtures {
     )
     const val GENESIS_HASH: String = "000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f"
 
-    /** Empties the table of V9__archives.sql (TestDatabase.reset does not know it). */
+    /** Empties the table of V10__archives.sql (TestDatabase.reset does not know it). */
     fun reset() {
         TestDatabase.dataSource.connection.use { connection ->
             connection.createStatement().use { it.executeUpdate("TRUNCATE archive_proof") }

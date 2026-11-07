@@ -67,6 +67,8 @@ dependencies {
     // own providers do the cryptography; Bouncy Castle is never registered as a provider.
     implementation(libs.bouncycastle.bcpkix)
     implementation(libs.bouncycastle.bcprov)
+    // Verification of the passkeys and security keys of the team back-office (WebAuthn, D-120).
+    implementation(libs.webauthn4j.core)
 
     // The development server and the tests of /api/v1/parlement run the example import (fictional data).
     testImplementation(project(":tools:open-data-importer"))

@@ -1,7 +1,7 @@
 # Contrat `core/urne` : compter sans jamais relier (pour « Agir » et « Voir »)
 
 - Pôle « Décider », 7 novembre 2026. Exigence R6 de D-110. Conception : `docs/integration/une-personne-une-voix.md` ; formats : `docs/FORMATS.md`, section 4 decies ; décisions : D-110, D-112, D-113.
-- Disponible pour les autres pôles quand la branche de « Décider » sera entrée dans `main` (migration serveur `V8`, migration locale `13.sqm`). D'ici là, aucun pôle n'écrit de compteur à lui.
+- Disponible pour les autres pôles quand la branche de « Décider » sera entrée dans `main` (migration serveur `V9`, migration locale `13.sqm`). D'ici là, aucun pôle n'écrit de compteur à lui.
 
 ## 1. À quoi il sert
 
@@ -60,6 +60,7 @@ fun open(id: String, subject: String, choices: List<String>, opensAt: Instant, c
 5. Additionner le vote des élus et celui des citoyens, ou montrer un total qui les mêle (D-112).
 6. Garder le choix d'un citoyen ailleurs que dans `UrneTokenStore` (pas de copie dans une autre table ni dans l'état d'un écran au-delà de son affichage).
 7. Déduire d'un bulletin, d'un jeton ou d'une heure quoi que ce soit sur une personne.
+8. Envoyer au serveur, ou y garder, une donnée d'identité civile (nom, e-mail, téléphone, pièce ou photo d'identité), même facultative ou temporaire : elle devrait ensuite être conservée cinq ans (décret n° 2021-1362, article 2 ; note `docs/integration/lcen-conservation-identification.md`). La validation en personne reste hors du serveur ; il ne reçoit que le résultat (compteurs de séance, lien scellé pour la clé « audit »), et pour un élu la référence publique de son mandat dans le répertoire officiel.
 
 ## 4. Participation visible (D-044) : à côté, jamais à la place
 

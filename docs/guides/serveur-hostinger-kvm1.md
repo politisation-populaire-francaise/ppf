@@ -48,7 +48,7 @@ Juste après le paiement, Hostinger ouvre l'assistant de configuration du VPS.
 
 Ne touchez à rien d'autre dans hPanel (pare-feu de hPanel, « Docker Manager », terminal IA) : la configuration est faite par mes scripts, et deux pare-feu qui se contredisent sont une source de pannes.
 
-## 5. Ajouter le nom de la préproduction (DNS)
+## 5. Ajouter les noms de la préproduction (DNS)
 
 À faire seulement quand je vous le demande, avec l'adresse IPv4 de l'étape 4. C'est la seule modification du DNS avant le lancement public : le domaine principal lui-même ne change pas.
 
@@ -60,14 +60,15 @@ Ne touchez à rien d'autre dans hPanel (pare-feu de hPanel, « Docker Manager »
    - **Pointe vers** : l'adresse IPv4 du serveur
    - **TTL** : laissez la valeur proposée (par exemple 14400)
 4. Cliquez sur **« Ajouter un enregistrement »**.
-5. N'ajoutez **pas** d'enregistrement `AAAA` pour `preprod` : la préproduction ne doit être jointe qu'en IPv4, à travers le tunnel.
+5. Recommencez les étapes 3 et 4 avec, dans **Nom**, `equipe.preprod` (le back-office de l'équipe, lui aussi joignable seulement à travers le tunnel), le même type `A` et la même adresse IPv4.
+6. N'ajoutez **pas** d'enregistrement `AAAA` pour ces deux noms : la préproduction et le back-office ne doivent être joints qu'en IPv4, à travers le tunnel.
 
 ## 6. Ce que je fais ensuite, sans action de votre part
 
 1. Préparation et durcissement (`infra/scripts/bootstrap-server.sh`) : mises à jour de sécurité automatiques, compte d'administration `ppf-admin` accessible par la seule clé, connexion root et mots de passe refusés, pare-feu (SSH, web et WireGuard seulement), journaux du système gardés en mémoire un jour au plus, Docker, tunnel WireGuard.
 2. Création de vos deux profils WireGuard (ordinateur et téléphone) : guide `docs/guides/wireguard-preproduction.md`.
 3. Premier déploiement de la préproduction, puis mise à jour automatique toutes les 10 minutes à partir de la branche principale.
-4. Je vous donne le mot de passe des pages web de la préproduction dans un fichier sur votre ordinateur.
+4. Au moment du premier déploiement, je vous préviens : **vous choisissez le mot de passe des pages web de la préproduction** et vous le tapez vous-même, deux fois, dans l'onglet de terminal que j'ouvre (rien ne s'affiche pendant la frappe). Choisissez-le à ce moment-là : 12 caractères au moins, une phrase de plusieurs mots par exemple, et enregistrez-le dans votre gestionnaire de mots de passe. Il n'est écrit nulle part ailleurs : ni dans le dépôt, ni dans un message, ni dans un fichier ; le serveur n'en garde qu'une empreinte.
 
 ## 7. Après la mise en service
 
