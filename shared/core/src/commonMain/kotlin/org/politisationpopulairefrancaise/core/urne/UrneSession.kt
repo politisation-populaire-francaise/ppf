@@ -62,6 +62,13 @@ class UrneSession(
     private val voprf = Voprf(group, VoprfMode.VOPRF)
     private val lock = Mutex()
 
+    /**
+     * The level of the account as the server last told it ([sync]); « élu » means public votes
+     * ([votePublicly]) instead of anonymous ballots for the boxes opened while it is elected (D-115).
+     */
+    var level: VoteLevel? = null
+        private set
+
     /** Registers if needed and fetches the tokens of the open boxes, a batch at a time. */
     suspend fun sync(signer: EventSigner): UrneSyncOutcome = lock.withLock {
         if (!selfTest().passed) return UrneSyncOutcome.VotingClosedOnThisDevice
@@ -101,6 +108,7 @@ class UrneSession(
             is UrneAnswer.Ok -> answer.value
             is UrneAnswer.Failure -> return UrneSyncOutcome.Unavailable(answer.code)
         }
+        level = VoteLevel.of(status.level)
         val batch = status.pending.take(batchSize)
         if (batch.isEmpty()) return UrneSyncOutcome.Done(received, pending = 0)
         val blinds = batch.map { number ->
@@ -249,6 +257,17 @@ class UrneSession(
         val overdue = store.due(now())
         overdue.forEach { token -> token.choice?.let { store.choose(token.urneNumber, it, now() + randomDelay(maxDelaySeconds + 1)) } }
         overdue.size
+    }
+
+    /**
+     * The public vote of a certified elected official (D-115): signed with the account's own key and
+     * sent at once (it is public by nature: no delay, no anonymous channel). `retire` withdraws it.
+     * Returns whether the server recorded it.
+     */
+    suspend fun votePublicly(signer: EventSigner, urne: UrneInfo, choice: String): Boolean {
+        if (choice != UrneInfo.WITHDRAWN && choice !in urne.choices) return false
+        val event = PublicVote.sign(signer, urne, choice, now())
+        return remote.publicVote(event) is UrneAnswer.Ok
     }
 
     /** Erases every token, request and choice of this device (with the keys). */

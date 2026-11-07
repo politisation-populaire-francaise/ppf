@@ -26,6 +26,7 @@ import org.politisationpopulairefrancaise.core.urne.UrneRemote
 import org.politisationpopulairefrancaise.core.urne.UrneSession
 import org.politisationpopulairefrancaise.core.urne.UrneSyncOutcome
 import org.politisationpopulairefrancaise.core.urne.UrneTokenStore
+import org.politisationpopulairefrancaise.core.urne.VoteLevel
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
@@ -76,6 +77,20 @@ class VotingState internal constructor(
     var closedHere: Boolean by mutableStateOf(false)
         private set
 
+    /**
+     * The account is a certified elected official (level « élu », D-115): its votes are public,
+     * signed with its key and sent at once, instead of anonymous ballots.
+     */
+    var elected: Boolean by mutableStateOf(false)
+        private set
+
+    /** The public votes of this elected account, by box number (what the server recorded). */
+    var publicChoices: Map<Long, String> by mutableStateOf(emptyMap())
+        private set
+
+    /** The account's signer, for the public votes of an elected official (set by [RunVoting]). */
+    internal var signerProvider: () -> EventSigner? = { null }
+
     /** An account is open on this device: voting needs one (set by [RunVoting]). */
     var hasAccount: Boolean by mutableStateOf(false)
         internal set
@@ -114,6 +129,10 @@ class VotingState internal constructor(
     /** What the vote control shows for the box of [subject]; null when nothing is put to the vote there. */
     fun stateFor(subject: String): VoteUiState? {
         val box = boxes[subject] ?: return null
+        if (elected) {
+            val choice = publicChoices[box.number]
+            return VoteUiState(available = enabled && !closedHere, hasToken = true, closed = box.closed, choice = choice, sent = choice != null)
+        }
         val choice = choices[box.number]
         return VoteUiState(
             available = enabled && !closedHere,
@@ -131,6 +150,15 @@ class VotingState internal constructor(
         val box = boxes[subject] ?: return
         scope.launch {
             val current = session() ?: return@launch
+            if (elected) {
+                // Public by nature: signed with the account's key and sent at once (D-115).
+                val signer = signerProvider() ?: return@launch
+                if (withContext(Dispatchers.Default) { current.votePublicly(signer, box, choice) }) {
+                    publicChoices = publicChoices + (box.number to choice)
+                    refreshBoxes()
+                }
+                return@launch
+            }
             withContext(Dispatchers.Default) { current.vote(box.number, choice, box.choices) }
             reloadDevice()
         }
@@ -187,6 +215,7 @@ class VotingState internal constructor(
             syncBatches(current, signer)
         } finally {
             lastSync = now()
+            elected = current.level == VoteLevel.ELU
         }
     }
 
@@ -295,7 +324,10 @@ fun rememberVotingState(dependencies: AppDependencies): VotingState {
 @Composable
 fun RunVoting(voting: VotingState, account: AccountSession, dataSaver: () -> Boolean) {
     val accountKey = (account.state as? AccountUiState.Ready)?.publicKey?.hex
-    SideEffect { voting.hasAccount = accountKey != null }
+    SideEffect {
+        voting.hasAccount = accountKey != null
+        voting.signerProvider = { account.signer }
+    }
     if (!voting.enabled) return
     LaunchedEffect(voting) {
         voting.loadDevice()

@@ -27,6 +27,8 @@ import org.politisationpopulairefrancaise.ui.resources.urne_closed
 import org.politisationpopulairefrancaise.ui.resources.urne_demand_not_open
 import org.politisationpopulairefrancaise.ui.resources.urne_demand_opening
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_line
+import org.politisationpopulairefrancaise.ui.resources.urne_elected_public
+import org.politisationpopulairefrancaise.ui.resources.urne_elected_recorded
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_too_few
 import org.politisationpopulairefrancaise.ui.resources.urne_results_too_few
 import org.politisationpopulairefrancaise.ui.resources.urne_need_account
@@ -133,6 +135,8 @@ fun DemandVoteRow(subject: String, inDebate: Boolean, modifier: Modifier = Modif
             box == null -> stringResource(if (inDebate) Res.string.urne_demand_opening else Res.string.urne_demand_not_open)
             box.closed -> stringResource(Res.string.urne_closed)
             !hasAccount -> stringResource(Res.string.urne_need_account)
+            voting.elected && state?.choice == null -> stringResource(Res.string.urne_elected_public)
+            voting.elected -> stringResource(Res.string.urne_elected_recorded)
             state == null || !state.hasToken -> stringResource(Res.string.urne_no_token)
             state.choice == null -> stringResource(Res.string.urne_not_voted)
             state.choice == UrneInfo.WITHDRAWN -> stringResource(Res.string.urne_withdrawn)
@@ -147,7 +151,7 @@ fun DemandVoteRow(subject: String, inDebate: Boolean, modifier: Modifier = Modif
                 modifier = Modifier.testTag(DemandVoteTags.WITHDRAW),
             )
         }
-        if (detailed && box != null) {
+        if (detailed && box != null && voting?.elected != true) {
             Text(stringResource(Res.string.urne_privacy), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
         }
     }

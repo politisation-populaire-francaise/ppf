@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.server.urne
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.urne.UrneInfo
 import org.politisationpopulairefrancaise.core.urne.VoteLevel
 import java.sql.Connection
 import java.sql.ResultSet
@@ -289,6 +290,48 @@ class UrneStore(private val dataSource: DataSource) {
         }
 
     /** The ballots of a box, sorted by their secret identifier (never by arrival, R1). */
+    /** Records the public vote of an elected official unless a newer one is stored; true when recorded. */
+    fun recordPublicVote(number: Long, pubkey: String, choice: String, createdAt: Long, event: String): Boolean = dataSource.connection.use { c ->
+        c.prepareStatement(
+            """
+            INSERT INTO public_vote (urne_number, pubkey, choice, created_at, event) VALUES (?, ?, ?, ?, ?::jsonb)
+            ON CONFLICT (urne_number, pubkey) DO UPDATE SET choice = excluded.choice, created_at = excluded.created_at, event = excluded.event
+            WHERE public_vote.created_at < excluded.created_at
+            """.trimIndent(),
+        ).use { s ->
+            s.setLong(1, number)
+            s.setString(2, pubkey)
+            s.setString(3, choice)
+            s.setLong(4, createdAt)
+            s.setString(5, event)
+            s.executeUpdate() == 1
+        }
+    }
+
+    /** The signed public votes of one box (JSON of the events), by official. */
+    fun publicVotes(number: Long): List<String> = dataSource.connection.use { c ->
+        c.prepareStatement("SELECT event::text FROM public_vote WHERE urne_number = ? ORDER BY pubkey").use { s ->
+            s.setLong(1, number)
+            s.executeQuery().use { r -> generateSequence { if (r.next()) r.getString(1) else null }.toList() }
+        }
+    }
+
+    /** The public votes of the boxes of [numbers], summed by choice (withdrawn ones excluded). */
+    fun publicCounts(numbers: List<Long>): Map<Long, Map<String, Long>> {
+        if (numbers.isEmpty()) return emptyMap()
+        return dataSource.connection.use { c ->
+            c.prepareStatement("SELECT urne_number, choice, count(*) FROM public_vote WHERE urne_number = ANY(?) AND choice <> ? GROUP BY urne_number, choice").use { s ->
+                s.setArray(1, c.createArrayOf("bigint", numbers.toTypedArray()))
+                s.setString(2, UrneInfo.WITHDRAWN)
+                s.executeQuery().use { r ->
+                    val found = HashMap<Long, HashMap<String, Long>>()
+                    while (r.next()) found.getOrPut(r.getLong(1)) { HashMap() }[r.getString(2)] = r.getLong(3)
+                    found
+                }
+            }
+        }
+    }
+
     fun ballots(number: Long): List<StoredBallot> = dataSource.connection.use { c ->
         c.prepareStatement("SELECT y, token, level, choice, received_hour FROM ballot WHERE urne_number = ? ORDER BY y").use { s ->
             s.setLong(1, number)

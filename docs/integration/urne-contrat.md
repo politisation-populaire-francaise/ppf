@@ -57,7 +57,7 @@ fun open(id: String, subject: String, choices: List<String>, opensAt: Instant, c
 2. Envoyer un choix, une participation ou un signalement **avec le compte** (signature, NIP-98, clé publique, identifiant d'appareil), ou les journaliser.
 3. Appeler `Voprf`, `UrneTokenStore` ou les routes `/api/v1/urnes/tokens` et `/api/v1/ballots` directement : seulement `UrneSession`.
 4. Proposer un « envoi immédiat » : le délai aléatoire avant l'envoi est une protection commune (D-112), sans réglage.
-5. Additionner le vote des élus et celui des citoyens, ou montrer un total qui les mêle (D-112).
+5. Additionner le vote des élus et celui des citoyens, ou montrer un total qui les mêle (D-112). Le vote d'un élu certifié est **public** (D-115) : il passe par `UrneSession.votePublicly`, signé de sa clé et publié avec son nom et son mandat, jamais par un bulletin anonyme ; une organisation ne vote jamais.
 6. Garder le choix d'un citoyen ailleurs que dans `UrneTokenStore` (pas de copie dans une autre table ni dans l'état d'un écran au-delà de son affichage).
 7. Déduire d'un bulletin, d'un jeton ou d'une heure quoi que ce soit sur une personne.
 8. Envoyer au serveur, ou y garder, une donnée d'identité civile (nom, e-mail, téléphone, pièce ou photo d'identité), même facultative ou temporaire : elle devrait ensuite être conservée cinq ans (décret n° 2021-1362, article 2 ; note `docs/integration/lcen-conservation-identification.md`). La validation en personne reste hors du serveur ; il ne reçoit que le résultat (compteurs de séance, lien scellé pour la clé « audit »), et pour un élu la référence publique de son mandat dans le répertoire officiel.

@@ -729,6 +729,25 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 
   - base locale : migration `12.sqm` (table des paquets et index courant).
 
+## D-115 (2026-11-07) « Une personne, une voix » : vote public des élus, seuils de soutiens, revendications portées
+
+- Décisions de la propriétaire du 7 novembre 2026, mots exacts relayés par le chef d'équipe :
+  - « Si c'est un vote, les organisations ne peuvent pas voter, mais les élus oui et eux leur vote est public » ;
+  - seuils : options A (planchers 25 et 100), A (le Pacte réunit les 5 à 10 mesures les plus soutenues qui ont plus de « pour » que de « contre ») et B (porter une revendication seulement si ses « pour » dépassent aussi ses « contre ») ;
+  - au second seuil : « un membre de l'équipe PPF ira déposer une pétition officielle sur le site de l'assemblée et on mettra le lien dans la card de la revendication. Les revendications ayant une pétition officielle en cours seront épinglées dans le fil des revendications » ;
+  - pas de condition de répartition (documents : `docs/integration/seuils-soutiens.md`).
+- Décisions techniques prises en autonomie :
+  - **vote public des élus** :
+    - un compte de niveau « élu » la semaine d'ouverture de l'urne ne reçoit **aucun jeton anonyme** pour cette urne ;
+    - il vote par un événement NIP-78 (type 30078, `d` = `ppf-vote:<urne>`, `ppf-urne`, `ppf-choice`, `a` vers l'objet voté), signé de sa propre clé, envoyé tout de suite (`POST /api/v1/urnes/public-votes`) ;
+    - le plus récent remplace l'ancien, `retire` le retire ;
+    - le serveur garde l'événement signé (table `public_vote`, migration `V9__urnes.sql`) et le publie tel quel (`GET /api/v1/urnes/{n}/public-votes`, puis à la clôture) ;
+    - la colonne des élus vient de ces votes : jamais cachée, jamais ajoutée au vote des citoyens ;
+    - le recomptage vérifie chaque signature et refuse un bulletin anonyme de niveau « élu » ;
+    - le nom et le mandat viendront de la certification (étape 5 : référence publique `rne1:` de l'annuaire, jamais une pièce d'identité) ;
+  - **organisations** : elles ne votent jamais ; leur participation publique reste à part (D-044, D-045).
+- À faire : seuils de soutiens dans le cœur commun, carte de la revendication (soutiens, seuils, lien de la pétition officielle), épinglage en tête du fil, action du back-office pour attacher le lien, refonte de la délibération DE-25 sur ce modèle.
+
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
 - Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.

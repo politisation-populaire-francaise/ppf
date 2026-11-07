@@ -226,4 +226,6 @@ data class UrneClosing(
     val issued: Map<String, Long>,
     val ballots: List<PublishedBallot>,
     val results: UrneResults,
+    /** The signed public votes of the elected officials (D-115), the latest of each; they are the elected column. */
+    val publicVotes: List<org.politisationpopulairefrancaise.core.signing.SignedEvent> = emptyList(),
 )

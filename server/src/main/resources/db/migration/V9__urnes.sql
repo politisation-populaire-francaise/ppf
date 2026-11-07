@@ -76,3 +76,15 @@ CREATE TABLE ballot (
     replacements  INTEGER     NOT NULL DEFAULT 0 CHECK (replacements >= 0),
     PRIMARY KEY (urne_number, y)
 );
+
+-- 5. public_vote: the votes of the certified elected officials, public by nature (owner's decision of
+--    7 November 2026, D-115): the event signed with the official's own key, the latest one of each
+--    official per box. Never an anonymous ballot, never added to the citizens' vote.
+CREATE TABLE public_vote (
+    urne_number BIGINT  NOT NULL REFERENCES urne (number) ON DELETE CASCADE,
+    pubkey      TEXT    NOT NULL CHECK (pubkey ~ '^[0-9a-f]{64}$'),
+    choice      TEXT    NOT NULL CHECK (length(choice) BETWEEN 1 AND 100),
+    created_at  BIGINT  NOT NULL,
+    event       JSONB   NOT NULL,
+    PRIMARY KEY (urne_number, pubkey)
+);

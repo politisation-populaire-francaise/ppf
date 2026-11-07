@@ -28,7 +28,8 @@ object UrneTally {
         val hideVerified = small(results.verified)
         val hideNotVerified = small(results.notVerified)
         val hideCitizens = hideVerified || hideNotVerified || small(results.citizens)
-        val hideElected = small(results.electedOfficials)
+        // The elected officials vote publicly (D-115): their column is never hidden.
+        val hideElected = false
         if (!hideCitizens && !hideElected) return results
         return UrneResults(
             verified = if (hideVerified) hidden else results.verified,
@@ -106,6 +107,16 @@ object UrneRecount {
         for (level in VoteLevel.entries) {
             val ballots = closing.ballots.count { it.level == level.code }.toLong()
             if (ballots > (closing.issued[level.code] ?: 0L)) return RecountResult.MORE_BALLOTS_THAN_TOKENS
+        }
+        // The elected officials vote publicly (D-115): every vote signed by its official, one per official.
+        if (closing.ballots.any { it.level == VoteLevel.ELU.code }) return RecountResult.UNKNOWN_VALUE
+        val officials = HashSet<String>()
+        for (event in closing.publicVotes) {
+            val vote = PublicVote.parse(event) ?: return RecountResult.UNKNOWN_VALUE
+            if (vote.urne != closing.number || !event.verify()) return RecountResult.INVALID_TOKEN
+            if (vote.choice != UrneInfo.WITHDRAWN && vote.choice !in choices) return RecountResult.UNKNOWN_VALUE
+            if (!officials.add(vote.official)) return RecountResult.DUPLICATE_BALLOT
+            counted += VoteLevel.ELU to vote.choice
         }
         if (UrneTally.results(counted) != closing.results) return RecountResult.WRONG_TOTALS
         return RecountResult.CORRECT

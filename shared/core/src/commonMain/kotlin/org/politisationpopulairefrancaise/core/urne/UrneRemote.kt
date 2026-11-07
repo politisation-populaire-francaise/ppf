@@ -14,6 +14,7 @@ import io.ktor.http.contentType
 import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.signing.EventSigner
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
 
 /** What the ballot-box API answered; [Failure.code] is the server's fixed error code, or null without network. */
 sealed interface UrneAnswer<out T> {
@@ -38,6 +39,12 @@ interface UrneRemote {
     suspend fun journal(number: Long): UrneAnswer<UrneJournal>
 
     suspend fun closing(number: Long): UrneAnswer<UrneClosing>
+
+    /** Sends the public vote of a certified elected official (D-115): the signed event is its own proof. */
+    suspend fun publicVote(event: SignedEvent): UrneAnswer<BallotReceipt> = UrneAnswer.Failure(null, "unsupported")
+
+    /** The signed public votes of the elected officials in one box. */
+    suspend fun publicVotes(number: Long): UrneAnswer<PublicVotes> = UrneAnswer.Failure(null, "unsupported")
 }
 
 /**
@@ -102,6 +109,17 @@ class HttpUrneRemote(
             contentType(ContentType.Application.Json)
             setBody(json.encodeToString(Ballot.serializer(), ballot.padded(json)))
         }
+    }
+
+    override suspend fun publicVote(event: SignedEvent): UrneAnswer<BallotReceipt> = call(BallotReceipt.serializer()) {
+        authenticated.post("$baseUrl/api/v1/urnes/public-votes") {
+            contentType(ContentType.Application.Json)
+            setBody(json.encodeToString(SignedEvent.serializer(), event))
+        }
+    }
+
+    override suspend fun publicVotes(number: Long): UrneAnswer<PublicVotes> = call(PublicVotes.serializer()) {
+        authenticated.get("$baseUrl/api/v1/urnes/$number/public-votes")
     }
 
     override suspend fun journal(number: Long): UrneAnswer<UrneJournal> = call(UrneJournal.serializer()) {

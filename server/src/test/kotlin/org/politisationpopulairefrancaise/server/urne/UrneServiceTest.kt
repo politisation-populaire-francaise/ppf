@@ -6,6 +6,8 @@ import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.urne.Ballot
 import org.politisationpopulairefrancaise.core.urne.BlindedRequest
 import org.politisationpopulairefrancaise.core.urne.LibsodiumRistretto255
+import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
+import org.politisationpopulairefrancaise.core.urne.PublicVote
 import org.politisationpopulairefrancaise.core.urne.RecountResult
 import org.politisationpopulairefrancaise.core.urne.TokenRequest
 import org.politisationpopulairefrancaise.core.urne.UrneRecount
@@ -79,7 +81,8 @@ class UrneServiceTest {
     fun electedOfficialsAreCountedApartAndTheClosingCanBeRecountedByAnyone() {
         val verified = pubkey()
         val unverified = pubkey()
-        val elected = pubkey()
+        val electedSigner = LocalEventSigner(IdentityKeys.generate())
+        val elected = electedSigner.publicKey.hex
         listOf(verified, unverified, elected).forEach { service.register(it) }
         val lastMonday = UrneService.mondayOf(clock.instant().minus(Duration.ofDays(7)))
         store.setLevel(verified, VoteLevel.VERIFIE, lastMonday, lastMonday)
@@ -87,7 +90,16 @@ class UrneServiceTest {
         val number = box("votation", days = 3).number
         vote(number, tokens(verified).getValue(number), "pour")
         vote(number, tokens(unverified).getValue(number), "contre")
-        vote(number, tokens(elected).getValue(number), "pour")
+        // An elected official gets no anonymous token: their vote is public, signed with their key (D-115).
+        assertTrue(tokens(elected).isEmpty())
+        val info = service.list(0, 10).single { it.number == number }
+        service.publicVote(runBlocking { PublicVote.sign(electedSigner, info, "pour", clock.instant().epochSecond) })
+        // A citizen cannot vote publicly as an official, nor an official with an anonymous ballot.
+        val citizen = LocalEventSigner(IdentityKeys.generate())
+        service.register(citizen.publicKey.hex)
+        assertEquals("not_elected", assertFailsWith<UrneRefusal> { service.publicVote(runBlocking { PublicVote.sign(citizen, info, "pour", clock.instant().epochSecond) }) }.code)
+        assertEquals("elected_vote_publicly", assertFailsWith<UrneRefusal> { vote(number, Triple("elu", ByteArray(32), ByteArray(64)), "pour") }.code)
+        assertEquals(1, service.publicVotes(number).votes.size)
         // Results stay hidden until the closing for a question.
         assertEquals(null, service.journal(number).results)
         assertFailsWith<UrneRefusal> { service.closing(number) }
@@ -103,7 +115,8 @@ class UrneServiceTest {
         assertTrue(closing.ballots.all { it.day % 86_400 == 0L }, "times published by the day only")
         val announced = service.list(0, 10).single { it.number == number }.keys
         assertEquals(RecountResult.CORRECT, UrneRecount.check(closing, announced, listOf("pour", "contre"), group))
-        val tampered = closing.copy(ballots = closing.ballots.map { if (it.level == "elu") it.copy(level = "verifie") else it })
+        assertEquals(1, closing.publicVotes.size, "the officials' signed votes are published with the closing")
+        val tampered = closing.copy(publicVotes = emptyList())
         assertTrue(UrneRecount.check(tampered, announced, listOf("pour", "contre"), group) != RecountResult.CORRECT)
         // After the closing, no ballot is accepted any more.
         val late = assertFailsWith<UrneRefusal> { vote(number, Triple("verifie", ByteArray(32), ByteArray(64)), "pour") }

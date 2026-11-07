@@ -18,7 +18,7 @@
     <string name="urne_level_not_verified">Comptes non vérifiés</string>
     <string name="urne_level_total">Total des citoyens</string>
     <string name="urne_elected_title">Vote des élus</string>
-    <string name="urne_elected_apart">Le vote des élus est compté à part, jamais ajouté à celui des citoyens.</string>
+    <string name="urne_elected_apart">Le vote des élus est public : chaque élu certifié vote sous son nom, signé de sa clé. Il est compté à part, jamais ajouté à celui des citoyens.</string>
     <string name="urne_ballots">%1$d bulletins</string>
     <string name="urne_issued">%1$d bulletins anonymes distribués à ce niveau</string>
     <string name="urne_offline">Le vote demande une connexion au serveur de PPF.</string>
@@ -29,6 +29,8 @@
     <string name="urne_results_line">Citoyens : %1$s pour, %2$s contre, %3$s blanc</string>
     <string name="urne_elected_line">Élus, comptés à part : %1$s pour, %2$s contre, %3$s blanc</string>
     <string name="urne_vote_blank">Blanc</string>
+    <string name="urne_elected_public">Vous votez en tant qu’élu : votre vote est public, signé de votre clé et publié avec votre nom et votre mandat, à part du vote des citoyens.</string>
+    <string name="urne_elected_recorded">Votre vote d’élu est publié, signé de votre clé. Vous pouvez le changer ou le retirer jusqu’à la clôture.</string>
     <string name="urne_too_few">Moins de %1$d bulletins pour l’instant : le détail s’affichera au-delà, pour que personne ne puisse deviner un choix.</string>
     <string name="urne_results_too_few">Citoyens : moins de %1$d bulletins pour l’instant.</string>
     <string name="urne_elected_too_few">Élus, comptés à part : moins de %1$d bulletins pour l’instant.</string>

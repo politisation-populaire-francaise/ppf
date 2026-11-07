@@ -23,6 +23,9 @@ import org.politisationpopulairefrancaise.core.urne.TokenResponse
 import org.politisationpopulairefrancaise.core.urne.UrneClosing
 import org.politisationpopulairefrancaise.core.urne.UrneInfo
 import org.politisationpopulairefrancaise.core.urne.UrneJournal
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.urne.PublicVote
+import org.politisationpopulairefrancaise.core.urne.PublicVotes
 import org.politisationpopulairefrancaise.core.urne.UrneKeyInfo
 import org.politisationpopulairefrancaise.core.urne.UrneResults
 import org.politisationpopulairefrancaise.core.urne.UrneTally
@@ -96,9 +99,12 @@ class UrneService(
     /** The boxes after [after], with the results of those that show them, summed in one query. */
     fun list(after: Long, limit: Int): List<UrneInfo> {
         val urnes = store.urnes(after, limit.coerceIn(1, 500))
-        val counts = store.countsByBox(urnes.filter { it.liveResults || it.closed }.map { it.number })
+        val shownNumbers = urnes.filter { it.liveResults || it.closed }.map { it.number }
+        val counts = store.countsByBox(shownNumbers)
+        val elected = store.publicCounts(shownNumbers)
         return urnes.map { urne ->
-            info(urne).copy(results = if (urne.liveResults || urne.closed) shown(urne, UrneTally.fromCounts(counts[urne.number].orEmpty())) else null)
+            val all = counts[urne.number].orEmpty() + elected[urne.number].orEmpty().mapKeys { (choice, _) -> VoteLevel.ELU to choice }
+            info(urne).copy(results = if (urne.liveResults || urne.closed) shown(urne, UrneTally.fromCounts(all)) else null)
         }
     }
 
@@ -115,7 +121,7 @@ class UrneService(
             issued = store.issuedByLevel(number),
             ballots = shownByLevel,
             replacements = store.replacements(number),
-            results = if (urne.liveResults || urne.closed) shown(urne, UrneTally.results(ballots.map { it.level to it.choice })) else null,
+            results = if (urne.liveResults || urne.closed) shown(urne, UrneTally.results(ballots.map { it.level to it.choice } + publicChoices(number))) else null,
             closed = urne.closed,
         )
     }
@@ -132,8 +138,39 @@ class UrneService(
             publicKeys = VoteLevel.entries.associate { it.code to keys(urne, it).publicKey.toHexString() },
             issued = store.issuedByLevel(number),
             ballots = ballots.map { PublishedBallot(it.y.toHexString(), it.token.toHexString(), it.level.code, it.choice, it.hour.truncatedTo(ChronoUnit.DAYS).epochSecond) },
-            results = UrneTally.results(ballots.map { it.level to it.choice }),
+            results = UrneTally.results(ballots.map { it.level to it.choice } + publicChoices(number)),
+            publicVotes = store.publicVotes(number).map { Json.decodeFromString(SignedEvent.serializer(), it) },
         )
+    }
+
+    /** The choices of the elected officials' public votes of a box, as (level, choice). */
+    private fun publicChoices(number: Long): List<Pair<VoteLevel, String>> =
+        store.publicVotes(number).mapNotNull { json ->
+            PublicVote.parse(Json.decodeFromString(SignedEvent.serializer(), json))?.let { VoteLevel.ELU to it.choice }
+        }
+
+    /** The signed public votes of the elected officials in a box (D-115): public at any time. */
+    fun publicVotes(number: Long): PublicVotes {
+        store.urne(number) ?: throw UrneRefusal(404, "unknown_urne")
+        return PublicVotes(number, store.publicVotes(number).map { Json.decodeFromString(SignedEvent.serializer(), it) })
+    }
+
+    /**
+     * Records the public vote of a certified elected official (D-115): signed with their own key,
+     * by an account whose level is « élu » the week of opening of the box, in an open box, with an
+     * allowed choice; a newer vote replaces the older one, `retire` withdraws it.
+     */
+    fun publicVote(event: SignedEvent) {
+        if (!event.verify()) throw UrneRefusal(400, "invalid_signature")
+        val vote = PublicVote.parse(event) ?: throw UrneRefusal(400, "malformed_vote")
+        val now = clock.instant()
+        if (vote.createdAt > now.epochSecond + MAX_CLOCK_AHEAD_SECONDS) throw UrneRefusal(400, "dated_in_the_future")
+        val urne = store.urne(vote.urne) ?: throw UrneRefusal(404, "unknown_urne")
+        if (!urne.isOpenAt(now)) throw UrneRefusal(409, "urne_closed")
+        if (vote.choice != UrneInfo.WITHDRAWN && vote.choice !in urne.choices) throw UrneRefusal(400, "unknown_choice")
+        val account = store.account(vote.official) ?: throw UrneRefusal(403, "not_elected")
+        if (account.levelAt(urne.openedWeek) != VoteLevel.ELU) throw UrneRefusal(403, "not_elected")
+        store.recordPublicVote(urne.number, vote.official, vote.choice, vote.createdAt, Json.encodeToString(SignedEvent.serializer(), event))
     }
 
     // ------------------------------------------------------------------ authenticated (the routes check NIP-98)
@@ -177,7 +214,8 @@ class UrneService(
         if (expected.size != request.requests.size || expected.map { it.number } != request.requests.map { it.urne }) {
             throw UrneRefusal(409, "pending_changed")
         }
-        val tokens = expected.zip(request.requests).map { (urne, asked) ->
+        // An elected official votes publicly (D-115): no anonymous token for the boxes they vote in as « élu ».
+        val tokens = expected.zip(request.requests).filter { (urne, _) -> account.levelAt(urne.openedWeek) != VoteLevel.ELU }.map { (urne, asked) ->
             val level = account.levelAt(urne.openedWeek)
             val blinded = runCatching { asked.blinded.hexToByteArray() }.getOrNull() ?: throw UrneRefusal(400, "malformed_request")
             val evaluation = try {
@@ -202,6 +240,7 @@ class UrneService(
         val urne = store.urne(ballot.urne) ?: throw UrneRefusal(404, "unknown_urne")
         if (!urne.isOpenAt(now)) throw UrneRefusal(409, "urne_closed")
         val level = VoteLevel.of(ballot.level) ?: throw UrneRefusal(400, "unknown_level")
+        if (level == VoteLevel.ELU) throw UrneRefusal(400, "elected_vote_publicly")
         if (ballot.choice != UrneInfo.WITHDRAWN && ballot.choice !in urne.choices) throw UrneRefusal(400, "unknown_choice")
         val y = runCatching { ballot.y.hexToByteArray() }.getOrNull()?.takeIf { it.size == 32 } ?: throw UrneRefusal(400, "malformed_ballot")
         val token = runCatching { ballot.token.hexToByteArray() }.getOrNull()?.takeIf { it.size == Voprf.OUTPUT_SIZE } ?: throw UrneRefusal(400, "malformed_ballot")
@@ -292,6 +331,9 @@ class UrneService(
 
     companion object {
         val CLOSING_INTERVAL: Duration = 1.minutes
+
+        /** A public vote dated a little ahead (a device clock) is fine; far ahead, it is refused. */
+        const val MAX_CLOCK_AHEAD_SECONDS: Long = 600
 
         /** The Monday of the week of [instant] (UTC): levels and openings are kept by the week, never the day. */
         fun mondayOf(instant: Instant): LocalDate =

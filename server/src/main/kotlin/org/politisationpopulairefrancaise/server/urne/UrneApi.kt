@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.urne.Ballot
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.urne.BallotReceipt
 import org.politisationpopulairefrancaise.core.urne.Difficulties
 import org.politisationpopulairefrancaise.core.urne.Nip98
@@ -100,6 +101,29 @@ fun Route.urneApi(service: UrneService?, config: UrneConfig, clock: Clock = Cloc
                 call.refuse(r)
             }
         }
+        get("/{number}/public-votes") {
+            if (service == null || !service.available) return@get call.unavailable()
+            val number = call.parameters["number"]?.toLongOrNull() ?: return@get call.respond(HttpStatusCode.NotFound, ApiError("unknown_urne", "No such ballot box."))
+            try {
+                call.respond(withContext(Dispatchers.IO) { service.publicVotes(number) })
+            } catch (r: UrneRefusal) {
+                call.refuse(r)
+            }
+        }
+        // The public vote of a certified elected official (D-115): the event signed with their own key
+        // is the authentication; it is published as it is.
+        post("/public-votes") {
+            if (service == null || !service.available) return@post call.unavailable()
+            val body = call.boundedBody(MAX_PUBLIC_VOTE_BYTES) ?: return@post
+            val event = runCatching { Json.decodeFromString(SignedEvent.serializer(), body) }.getOrNull()
+                ?: return@post call.respond(HttpStatusCode.BadRequest, ApiError("malformed_vote", "The body is not a signed event."))
+            try {
+                withContext(Dispatchers.IO) { service.publicVote(event) }
+                call.respond(HttpStatusCode.Accepted, BallotReceipt("recorded"))
+            } catch (r: UrneRefusal) {
+                call.refuse(r)
+            }
+        }
         get("/{number}/closing") {
             if (service == null || !service.available) return@get call.unavailable()
             val number = call.parameters["number"]?.toLongOrNull() ?: return@get call.respond(HttpStatusCode.NotFound, ApiError("unknown_urne", "No such ballot box."))
@@ -163,6 +187,7 @@ private const val TOKEN_REQUESTS_PER_MINUTE = 30
 private const val BALLOTS_PER_MINUTE = 6000
 private const val MAX_TOKEN_REQUEST_BYTES = 512L * 1024
 private const val MAX_BALLOT_BYTES = 4L * 1024
+private const val MAX_PUBLIC_VOTE_BYTES = 8L * 1024
 
 private val MESSAGES = mapOf(
     "voting_unavailable" to "Voting is not available on this server.",
@@ -174,6 +199,9 @@ private val MESSAGES = mapOf(
     "pending_changed" to "The ballot boxes to serve have changed; ask for the status again.",
     "invalid_element" to "A blinded element is not valid.",
     "urne_closed" to "The ballot box is not open.",
+    "not_elected" to "Only a certified elected official votes publicly in this ballot box.",
+    "elected_vote_publicly" to "An elected official votes publicly, with a signed vote, never with an anonymous ballot.",
+    "invalid_signature" to "The signature of the vote does not check.",
     "unknown_level" to "Unknown level.",
     "unknown_choice" to "This choice is not allowed in this ballot box.",
     "malformed_ballot" to "The body is not a ballot.",
