@@ -23,13 +23,21 @@ enum class VoteLevel(val code: String) {
     }
 }
 
-/** The `info` of DeriveKeyPair for one ballot box and one level (D-110): `ppf-urne-v1` ␟ urne ␟ level. */
+/**
+ * The `info` of DeriveKeyPair for one ballot box and one level (D-110): `ppf-urne-v1` ␟ urne ␟ salt
+ * ␟ level. The salt (16 random bytes drawn at the opening, in hexadecimal) makes the keys of a box
+ * its own even if its identifier came back (a box deleted and opened again, a seed shared by mistake
+ * between two environments): a key published at a closing never fits another box (review R5).
+ */
 object UrneKeyInfo {
     const val VERSION: String = "ppf-urne-v1"
     private const val SEPARATOR: Char = '\u001f'
 
-    fun of(urneId: String, level: VoteLevel): ByteArray {
+    fun of(urneId: String, salt: ByteArray, level: VoteLevel): ByteArray {
         require(SEPARATOR !in urneId) { "the identifier of a ballot box never contains U+001F" }
-        return "$VERSION$SEPARATOR$urneId$SEPARATOR${level.code}".encodeToByteArray()
+        require(salt.size == SALT_SIZE) { "a salt of $SALT_SIZE bytes" }
+        return "$VERSION$SEPARATOR$urneId$SEPARATOR${salt.toHexString()}$SEPARATOR${level.code}".encodeToByteArray()
     }
+
+    const val SALT_SIZE: Int = 16
 }

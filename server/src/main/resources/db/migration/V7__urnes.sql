@@ -20,7 +20,8 @@ CREATE TABLE vote_account (
     -- Cursor: tokens were delivered for every ballot box numbered up to this one (no list per box).
     issued_up_to     BIGINT  NOT NULL DEFAULT 0 CHECK (issued_up_to >= 0),
     -- The last delivery, kept one day so that a lost answer can be asked again without a second token:
-    -- SHA-256 of the request body, the answer (blinded elements only, which reveal nothing), its day.
+    -- SHA-256 of the request body, the answer (evaluated elements and proofs, which reveal nothing:
+    -- the blinding is perfect), its day.
     last_request     BYTEA,
     last_response    TEXT,
     last_response_day DATE
@@ -46,7 +47,10 @@ CREATE TABLE urne (
     -- Monday of the week of opening: the level of each account is taken at this week (D-110, 6.4).
     opened_week   DATE        NOT NULL,
     live_results  BOOLEAN     NOT NULL,
-    closed        BOOLEAN     NOT NULL DEFAULT false
+    closed        BOOLEAN     NOT NULL DEFAULT false,
+    -- 16 random bytes drawn at the opening, part of the derivation of the keys: the keys of a box are
+    -- its own even if its identifier came back or a seed was shared by mistake. Never published.
+    salt          BYTEA       NOT NULL CHECK (octet_length(salt) = 16)
 );
 
 -- 3. urne_issued: how many tokens each ballot box gave to each level (public journal, R2).

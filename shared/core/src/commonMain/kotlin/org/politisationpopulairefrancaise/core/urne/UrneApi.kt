@@ -2,6 +2,8 @@ package org.politisationpopulairefrancaise.core.urne
 
 import fr.acinq.bitcoin.Crypto
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.time.CivilDate
 
 /**
  * The JSON exchanged with the ballot-box API of the server (`docs/FORMATS.md`, section 4 nonies),
@@ -30,6 +32,11 @@ data class UrneInfo(
     /** Totals are shown while it is open (demands) or only after closing (questions). */
     val liveResults: Boolean,
     val closed: Boolean,
+    /**
+     * The results, when they are shown ([liveResults] or [closed]); null otherwise. They come with
+     * the list of every box, so that reading them says nothing of what one looks at.
+     */
+    val results: UrneResults? = null,
 ) {
     companion object {
         /** The choice that withdraws a vote. */
@@ -52,7 +59,36 @@ data class VoterStatus(
     val levelWeek: String,
     /** Numbers of the open ballot boxes for which this account has no token yet, in order. */
     val pending: List<Long>,
-)
+    /** The level before [levelWeek], for the boxes opened before it. */
+    val previousLevel: String? = null,
+    /** Monday (AAAA-MM-JJ) of the registration: a box opened before it is voted « non vérifié ». */
+    val registeredWeek: String? = null,
+) {
+    /**
+     * The level a token of a box opened at [opensAt] must carry (D-110, 6.4: the level of the week
+     * of opening), as the server computes it; null when this status does not say. The device refuses
+     * any other level: a level made for one device would recognise its ballots.
+     */
+    fun levelFor(opensAt: Long): VoteLevel? {
+        val week = mondayOf(opensAt)
+        val registered = registeredWeek ?: return null
+        val previous = previousLevel?.let(VoteLevel::of) ?: return null
+        return when {
+            registered > week -> VoteLevel.NON_VERIFIE
+            levelWeek <= week -> VoteLevel.of(level)
+            else -> previous
+        }
+    }
+
+    companion object {
+        /** The Monday (AAAA-MM-JJ, UTC) of the week of [epochSeconds]; ISO dates compare as text. */
+        fun mondayOf(epochSeconds: Long): String {
+            val days = epochSeconds.floorDiv(86_400L)
+            // 1 January 1970 was a Thursday: three days after a Monday.
+            return CivilDate.fromEpochDays(days - (days + 3).mod(7L)).toIso()
+        }
+    }
+}
 
 @Serializable
 data class BlindedRequest(val urne: Long, val blinded: String)
@@ -81,6 +117,11 @@ data class Ballot(
     val choice: String,
     /** Proof of work: [powDigest] must have the server's number of leading zero bits. */
     val nonce: Long,
+    /**
+     * Zeros that bring every ballot to the same size ([padded]): the length of an encrypted request
+     * says nothing of the level, the choice or the box. Not part of the proof of work.
+     */
+    val padding: String = "",
 ) {
     fun powDigest(): ByteArray = digestFor(nonce)
 
@@ -89,8 +130,28 @@ data class Ballot(
         return Crypto.sha256(text.encodeToByteArray())
     }
 
+    /** This ballot with [padding] such that its JSON makes [SIZE] bytes (unchanged if already longer). */
+    fun padded(json: Json): Ballot {
+        val bare = json.encodeToString(serializer(), copy(padding = "")).encodeToByteArray().size
+        val missing = SIZE - bare - PADDING_OVERHEAD
+        return if (missing <= 0) copy(padding = "") else copy(padding = "0".repeat(missing))
+    }
+
     companion object {
         const val POW_LABEL: String = "ppf-bulletin-v1"
+
+        /**
+         * Bits of proof of work of every ballot, the same on every device: a number sent by the server
+         * could differ from one device to another and recognise its ballots (review R5). The server
+         * asks this many or fewer.
+         */
+        const val DIFFICULTY: Int = 12
+
+        /** Size in bytes of the JSON of every ballot sent ([padded]). */
+        const val SIZE: Int = 640
+
+        /** `,"padding":""` around the zeros. */
+        private const val PADDING_OVERHEAD: Int = 13
         private const val SEPARATOR: String = "\u001f"
 
         /** A ballot with its proof of work, mined on the device. */
@@ -138,7 +199,14 @@ data class UrneJournal(
 )
 
 @Serializable
-data class PublishedBallot(val y: String, val token: String, val level: String, val choice: String, val hour: Long)
+data class PublishedBallot(
+    val y: String,
+    val token: String,
+    val level: String,
+    val choice: String,
+    /** Start (UTC) of the day of its last reception: never finer, so that few ballots say nothing of a person. */
+    val day: Long,
+)
 
 /**
  * Published at the closing (D-110, 6.7): the secret key of each level, the anonymous ballots sorted

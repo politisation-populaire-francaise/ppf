@@ -82,42 +82,83 @@ class UrneSession(
                 is UrneAnswer.Failure -> return UrneSyncOutcome.Unavailable(registered.code)
             }
         }
+        var received = 0
+        // A request whose answer never came back goes again first, unchanged: the server gives the same
+        // answer to the same request for a day, so a lost answer costs no token and never gives two.
+        val waiting = store.blinds()
+        if (waiting.isNotEmpty()) {
+            val status = when (val answer = remote.status(signer)) {
+                is UrneAnswer.Ok -> answer.value
+                is UrneAnswer.Failure -> return UrneSyncOutcome.Unavailable(answer.code)
+            }
+            when (val replay = request(signer, status, waiting, difficulties)) {
+                is Served.Tokens -> received += replay.received
+                Served.Refused -> Unit // neither answered again nor still pending: those requests are gone
+                is Served.Stopped -> return replay.outcome
+            }
+        }
         val status = when (val answer = remote.status(signer)) {
             is UrneAnswer.Ok -> answer.value
             is UrneAnswer.Failure -> return UrneSyncOutcome.Unavailable(answer.code)
         }
         val batch = status.pending.take(batchSize)
-        if (batch.isEmpty()) return UrneSyncOutcome.Done(received = 0, pending = 0)
-        val byNumber = when (val boxes = boxesFrom(batch.first())) {
-            null -> return UrneSyncOutcome.Unavailable(null)
-            else -> boxes
+        if (batch.isEmpty()) return UrneSyncOutcome.Done(received, pending = 0)
+        val blinds = batch.map { number ->
+            val y = secureRandomBytes(32)
+            val blinded = voprf.blind(y)
+            PendingBlind(number, y, blinded.blind, blinded.blindedElement).also { store.saveBlind(it) }
         }
-        if (batch.any { it !in byNumber }) return UrneSyncOutcome.Unavailable("unknown_urne")
+        when (val fresh = request(signer, status, blinds, difficulties)) {
+            is Served.Tokens -> received += fresh.received
+            Served.Refused -> return UrneSyncOutcome.Unavailable("pending_changed")
+            is Served.Stopped -> return fresh.outcome
+        }
+        UrneSyncOutcome.Done(received, pending = (status.pending.size - batch.size).coerceAtLeast(0))
+    }
+
+    /** What became of one request of tokens. */
+    private sealed interface Served {
+        data class Tokens(val received: Int) : Served
+
+        /** The server neither answers it again nor has those boxes pending: its blinds are dropped. */
+        data object Refused : Served
+
+        data class Stopped(val outcome: UrneSyncOutcome) : Served
+    }
+
+    /**
+     * Sends the request of [blinds] (in the order of their numbers, so that a request sent again is
+     * the same request), checks every proof against the public key the server shows everyone and
+     * every level against the account's own, keeps the tokens. A blind left unanswered is dropped:
+     * the same request would get the same answer.
+     */
+    private suspend fun request(signer: EventSigner, status: VoterStatus, blinds: List<PendingBlind>, difficulties: Difficulties): Served {
+        val ordered = blinds.sortedBy { it.urneNumber }
+        val byNumber = boxesFrom(ordered.first().urneNumber) ?: return Served.Stopped(UrneSyncOutcome.Unavailable(null))
+        if (ordered.any { it.urneNumber !in byNumber }) return Served.Stopped(UrneSyncOutcome.Unavailable("unknown_urne"))
         // A box whose key changed since a token was received for it: the server is not showing everyone the same key.
         if (store.tokens().any { stored -> byNumber[stored.urneNumber]?.let { it.keys[stored.level.code] != stored.publicKey } == true }) {
-            return UrneSyncOutcome.KeyMismatch
+            return Served.Stopped(UrneSyncOutcome.KeyMismatch)
         }
-        // A request already sent and not answered is sent again unchanged: no second token, none lost.
-        val previous = store.blinds().associateBy { it.urneNumber }
-        val blinds = batch.map { number ->
-            previous[number] ?: run {
-                val y = secureRandomBytes(32)
-                val blinded = voprf.blind(y)
-                PendingBlind(number, y, blinded.blind, blinded.blindedElement).also { store.saveBlind(it) }
-            }
-        }
-        val request = TokenRequest(blinds.map { BlindedRequest(it.urneNumber, it.blinded.toHexString()) })
+        val request = TokenRequest(ordered.map { BlindedRequest(it.urneNumber, it.blinded.toHexString()) })
         val response = when (val answer = remote.tokens(signer, request, difficulties.tokens)) {
             is UrneAnswer.Ok -> answer.value
-            is UrneAnswer.Failure -> return UrneSyncOutcome.Unavailable(answer.code)
+            is UrneAnswer.Failure -> {
+                if (answer.code != "pending_changed") return Served.Stopped(UrneSyncOutcome.Unavailable(answer.code))
+                ordered.forEach { store.dropBlind(it.urneNumber) }
+                return Served.Refused
+            }
         }
-        val blindsByNumber = blinds.associateBy { it.urneNumber }
+        val blindsByNumber = ordered.associateBy { it.urneNumber }
         var received = 0
         for (issued in response.tokens) {
-            val blind = blindsByNumber[issued.urne] ?: return UrneSyncOutcome.KeyMismatch
-            val box = byNumber[issued.urne] ?: return UrneSyncOutcome.KeyMismatch
-            val level = VoteLevel.of(issued.level) ?: return UrneSyncOutcome.KeyMismatch
-            val publicKey = box.keys[issued.level] ?: return UrneSyncOutcome.KeyMismatch
+            val blind = blindsByNumber[issued.urne] ?: return Served.Stopped(UrneSyncOutcome.KeyMismatch)
+            val box = byNumber[issued.urne] ?: return Served.Stopped(UrneSyncOutcome.KeyMismatch)
+            val level = VoteLevel.of(issued.level) ?: return Served.Stopped(UrneSyncOutcome.KeyMismatch)
+            // The level of the week of opening, as the server states it to this account (D-110, 6.4).
+            val expected = status.levelFor(box.opensAt)
+            if (expected != null && level != expected) return Served.Stopped(UrneSyncOutcome.KeyMismatch)
+            val publicKey = box.keys[issued.level] ?: return Served.Stopped(UrneSyncOutcome.KeyMismatch)
             val output = try {
                 voprf.finalize(
                     blind.y,
@@ -127,14 +168,16 @@ class UrneSession(
                     publicKey.hexToByteArray(),
                 )
             } catch (e: VoprfError) {
-                return UrneSyncOutcome.KeyMismatch
+                return Served.Stopped(UrneSyncOutcome.KeyMismatch)
             } catch (e: IllegalArgumentException) {
-                return UrneSyncOutcome.KeyMismatch
+                return Served.Stopped(UrneSyncOutcome.KeyMismatch)
             }
             store.saveToken(StoredToken(issued.urne, box.id, level, publicKey, blind.y, output, choice = null, sendAfter = null, sentChoice = null))
             received++
         }
-        UrneSyncOutcome.Done(received, pending = (status.pending.size - received).coerceAtLeast(0))
+        val answered = response.tokens.mapTo(HashSet()) { it.urne }
+        ordered.filter { it.urneNumber !in answered }.forEach { store.dropBlind(it.urneNumber) }
+        return Served.Tokens(received)
     }
 
     /** The boxes numbered from [first] on, page by page (500 at most each), until the batch is covered. */
@@ -167,25 +210,45 @@ class UrneSession(
     /** The choice recorded on this device for a box, and whether the server has it. */
     fun choiceOf(urneNumber: Long): Pair<String?, Boolean>? = store.token(urneNumber)?.let { it.choice to (it.choice != null && it.choice == it.sentChoice && it.sendAfter == null) }
 
-    /** Sends the ballots whose moment has come; returns how many the server accepted. */
+    /**
+     * Sends the ballot whose moment came first, one per call, with the proof of work every device
+     * makes ([Ballot.DIFFICULTY], never a number the server could vary from one device to another);
+     * returns how many the server accepted (0 or 1). Called often by one task of the application,
+     * apart from [sync]: a ballot never leaves together with a request made with the account.
+     */
+    suspend fun sendDue(): Int = sendDue(Ballot.DIFFICULTY)
+
+    /** [sendDue] with another proof of work, for the tests (a light one). */
     suspend fun sendDue(ballotDifficulty: Int): Int = lock.withLock {
-        var accepted = 0
-        for (token in store.due(now())) {
-            val choice = token.choice ?: continue
-            val ballot = Ballot.withProofOfWork(token.urneNumber, token.level.code, token.y.toHexString(), token.token.toHexString(), choice, ballotDifficulty)
-            when (val answer = remote.ballot(ballot)) {
-                is UrneAnswer.Ok -> {
-                    store.markSent(token.urneNumber, choice)
-                    accepted++
-                }
-                is UrneAnswer.Failure -> when (answer.code) {
+        val token = store.due(now()).firstOrNull() ?: return 0
+        val choice = token.choice ?: return 0
+        val ballot = Ballot.withProofOfWork(token.urneNumber, token.level.code, token.y.toHexString(), token.token.toHexString(), choice, ballotDifficulty)
+        when (val answer = remote.ballot(ballot)) {
+            is UrneAnswer.Ok -> {
+                store.markSent(token.urneNumber, choice)
+                1
+            }
+            is UrneAnswer.Failure -> {
+                when (answer.code) {
                     // Closed or unknown: it will never be accepted; keep the choice, stop sending.
                     "urne_closed", "unknown_urne", "invalid_token", "unknown_choice" -> store.stopSending(token.urneNumber)
-                    else -> Unit // no network, rate limited: next pass
+                    // No network, rate limited: it leaves again at a new random moment, not with the others.
+                    else -> store.choose(token.urneNumber, choice, now() + randomDelay(maxDelaySeconds + 1))
                 }
+                0
             }
         }
-        accepted
+    }
+
+    /**
+     * After a pause (application closed, no network), the ballots whose moment passed leave again at
+     * a new random moment: never all at once, never together with the synchronisation of the start.
+     * Returns how many were drawn again.
+     */
+    suspend fun redrawOverdue(): Int = lock.withLock {
+        val overdue = store.due(now())
+        overdue.forEach { token -> token.choice?.let { store.choose(token.urneNumber, it, now() + randomDelay(maxDelaySeconds + 1)) } }
+        overdue.size
     }
 
     /** Erases every token, request and choice of this device (with the keys). */

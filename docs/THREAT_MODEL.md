@@ -142,6 +142,37 @@ Modèle de menaces détaillé : `docs/integration/une-personne-une-voix.md`, sec
 | Fuite ou perte d'une graine | Fichier en lecture seule, hors dépôt et hors base, sauvegarde chiffrée hors site ; versions de graine et renouvellement | Copie hors ligne chez la propriétaire (guide du Directeur technique) |
 | Comptes multiples, robots | Preuve de travail à l'inscription, à chaque demande de jetons et sur chaque bulletin ; niveaux de votants, vérifiés montrés en premier ; niveau figé à l'ouverture | Validation en personne (étape 5) et détection des vagues |
 | Rejeu d'une autorisation ou d'un bulletin | Autorisation NIP-98 acceptée une fois, à 60 secondes près ; même `y` = remplacement, jamais un second vote | Aucun |
+
+### Relecture indépendante R5 du vote (7 novembre 2026)
+
+Un agent distinct a relu `core/urne` et le serveur contre la RFC 9497 (code et RFC seulement) : le VOPRF suit la RFC pas à pas, vecteurs compris ; les faiblesses tiennent à l'usage. Corrigé dans la foulée :
+
+| Constat | Correction |
+|---|---|
+| Une réponse de jetons perdue en route faisait perdre le vote (la requête n'était jamais renvoyée) | L'appareil renvoie d'abord, inchangée, la requête restée sans réponse ; le serveur y répond pareil pendant un jour ; test de bout en bout |
+| Une urne ouverte « pour plus tard » était sautée par les comptes servis entre-temps | Une urne s'ouvre au moment de son ouverture, jamais à l'avance |
+| Deux changements de niveau la même semaine faisaient oublier le niveau en vigueur | Le niveau précédent reste celui en vigueur tant que le changement n'a pas pris effet |
+| La preuve de travail du bulletin, donnée par le serveur, pouvait varier d'un appareil à l'autre et reconnaître ses bulletins | Nombre fixe dans le code commun (12 bits), le même pour tous |
+| Un niveau de jeton fait pour un appareil (par exemple `elu`) le reconnaîtrait | L'appareil calcule le niveau attendu (niveau, niveau précédent, semaines) et refuse tout autre |
+| La taille d'un bulletin chiffré trahissait le niveau ou le choix | Tous les bulletins font 640 octets |
+| La liste des urnes passait par la connexion du compte ; les bulletins partaient avec la synchronisation | Liste demandée par le client anonyme ; un bulletin par passage, jamais en même temps qu'une demande faite avec le compte ; un bulletin en retard (application fermée, réseau absent) repart à un nouveau moment tiré au hasard |
+| Clés d'une urne dépendant seulement de son identifiant | Sel aléatoire par urne dans la dérivation |
+| Heure de chaque bulletin publiée à la clôture | Seulement le jour |
+| Sans `PPF_PUBLIC_URL`, une autorisation faite pour un autre serveur passait | Adresse obligatoire hors développement, sinon le vote reste fermé |
+| Autotest seulement sur l'appareil | Rejoué aussi au démarrage du serveur ; échec = vote fermé |
+| Aléa des tests accessible au code de production ; I2OSP faux au-delà de 4 octets | Fonctions internes au module ; longueur bornée |
+
+Reste ouvert, à trancher ou à faire :
+
+| Risque | État |
+|---|---|
+| **Même adresse réseau** pour la synchronisation et le bulletin : un opérateur (ou l'hébergeur) qui observerait le réseau pourrait encore rapprocher un bulletin d'un compte par l'adresse et l'heure | Limite écrite dans le code ; parade complète avec Tor ou un relais HTTP oblivieux (RFC 9458) tenu par un tiers (phase 3). Délai avant envoi plus long que 10 minutes : question posée au chef d'équipe (décision D-112) |
+| Le serveur pourrait montrer à un seul appareil une urne à lui (clé, choix) dès le premier contact | Vérification de la clé à chaque synchronisation ; parade complète : urnes publiées en événements signés et miroirs Nostr (phase 3) ; recomptage sur l'appareil après la clôture (à brancher) |
+| Petites urnes : peu de bulletins d'un niveau (un seul élu) disent le choix d'une personne ; compteurs en direct observables sur un lien réseau | Question posée au chef d'équipe (seuil d'affichage par niveau, résultats en direct par paliers) |
+| Restauration d'une sauvegarde : curseurs revenus en arrière, jetons déjà délivrés toujours valables | Procédure à écrire avec le Directeur technique : après une restauration, clore les urnes ouvertes et les rouvrir sous un nouvel identifiant |
+| Ordre d'insertion visible dans une copie de la base (colonnes cachées de PostgreSQL) | Faible (les jetons sont délivrés bien avant le vote) ; insertion des bulletins par lots mélangés à étudier |
+| Inondation de faux bulletins jusqu'à la limite globale | Disponibilité seulement (l'appareil réessaie plus tard) ; à surveiller |
+| `y` sert de reçu (achat de vote, contrainte) | Contrepartie du recomptage par tous ; documenté |
 ## Ajout du 7 novembre 2026 : archivage horodaté, côté serveur (D-111)
 
 Hôtes contactés par le serveur, et lui seul, quand l'archivage est allumé (production par défaut ; préproduction seulement si réglée ; jamais en développement ni en test), tous en HTTPS sur le port 443 (détail pour le pare-feu : `docs/integration/archivage-egress.md`) :

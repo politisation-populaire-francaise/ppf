@@ -43,6 +43,8 @@ data class Urne(
     val openedWeek: LocalDate,
     val liveResults: Boolean,
     val closed: Boolean,
+    /** Drawn at the opening, part of the derivation of its keys ([UrneKeyInfo]); never published. */
+    val salt: ByteArray,
 ) {
     fun isOpenAt(now: Instant): Boolean = !closed && !opensAt.isAfter(now) && (closesAt == null || closesAt.isAfter(now))
 }
@@ -82,14 +84,19 @@ class UrneStore(private val dataSource: DataSource) {
         }
     }
 
-    /** A new level from [week] on (validation, certification, demotion; step 5 of the design). */
-    fun setLevel(pubkey: String, level: VoteLevel, week: LocalDate): Boolean = dataSource.connection.use { c ->
+    /**
+     * A new level from [week] on (validation, certification, demotion; step 5 of the design), decided
+     * during the week [currentWeek]. A change that has not taken effect yet is replaced, and the level
+     * before it stays the previous one: the boxes opened meanwhile keep the level in force (review R5).
+     */
+    fun setLevel(pubkey: String, level: VoteLevel, week: LocalDate, currentWeek: LocalDate): Boolean = dataSource.connection.use { c ->
         c.prepareStatement(
-            "UPDATE vote_account SET previous_level = level, level = ?, level_week = ? WHERE pubkey = ?",
+            "UPDATE vote_account SET previous_level = CASE WHEN level_week <= ? THEN level ELSE previous_level END, level = ?, level_week = ? WHERE pubkey = ?",
         ).use { s ->
-            s.setString(1, level.code)
-            s.setObject(2, week)
-            s.setString(3, pubkey)
+            s.setObject(1, currentWeek)
+            s.setString(2, level.code)
+            s.setObject(3, week)
+            s.setString(4, pubkey)
             s.executeUpdate() == 1
         }
     }
@@ -141,13 +148,13 @@ class UrneStore(private val dataSource: DataSource) {
     // ------------------------------------------------------------------ ballot boxes
 
     /** Opens a ballot box with the next number; returns it. */
-    fun open(id: String, subject: String, choices: List<String>, seedVersion: Int, opensAt: Instant, closesAt: Instant?, openedWeek: LocalDate, liveResults: Boolean): Urne =
+    fun open(id: String, subject: String, choices: List<String>, seedVersion: Int, opensAt: Instant, closesAt: Instant?, openedWeek: LocalDate, liveResults: Boolean, salt: ByteArray): Urne =
         transaction { c ->
             // One opening at a time: numbers are consecutive and never reused.
             c.createStatement().use { it.execute("LOCK TABLE urne IN SHARE ROW EXCLUSIVE MODE") }
             val number = c.createStatement().use { s -> s.executeQuery("SELECT coalesce(max(number), 0) + 1 FROM urne").use { r -> r.next(); r.getLong(1) } }
             c.prepareStatement(
-                "INSERT INTO urne (number, id, subject, choices, seed_version, opens_at, closes_at, opened_week, live_results) VALUES (?, ?, ?, ?::jsonb, ?, ?, ?, ?, ?)",
+                "INSERT INTO urne (number, id, subject, choices, seed_version, opens_at, closes_at, opened_week, live_results, salt) VALUES (?, ?, ?, ?::jsonb, ?, ?, ?, ?, ?, ?)",
             ).use { s ->
                 s.setLong(1, number)
                 s.setString(2, id)
@@ -158,9 +165,10 @@ class UrneStore(private val dataSource: DataSource) {
                 s.setTimestamp(7, closesAt?.let(Timestamp::from))
                 s.setObject(8, openedWeek)
                 s.setBoolean(9, liveResults)
+                s.setBytes(10, salt)
                 s.executeUpdate()
             }
-            Urne(number, id, subject, choices, seedVersion, opensAt, closesAt, openedWeek, liveResults, closed = false)
+            Urne(number, id, subject, choices, seedVersion, opensAt, closesAt, openedWeek, liveResults, closed = false, salt = salt)
         }
 
     fun urne(number: Long): Urne? = dataSource.connection.use { c ->
@@ -198,11 +206,50 @@ class UrneStore(private val dataSource: DataSource) {
         }
     }
 
+    /**
+     * Brings the end of the open ballot box [id] forward to [at]: only when it has no end or a later
+     * one, so that an end is never pushed back. Returns whether the end changed.
+     */
+    fun bringEndForward(id: String, at: Instant): Boolean = dataSource.connection.use { c ->
+        c.prepareStatement("UPDATE urne SET closes_at = ? WHERE id = ? AND NOT closed AND (closes_at IS NULL OR closes_at > ?)").use { s ->
+            s.setTimestamp(1, Timestamp.from(at))
+            s.setString(2, id)
+            s.setTimestamp(3, Timestamp.from(at))
+            s.executeUpdate() == 1
+        }
+    }
+
+    /** The open ballot boxes whose identifier starts with [prefix] (the boxes of one use, for one pole). */
+    fun openWithPrefix(prefix: String): List<Urne> = dataSource.connection.use { c ->
+        c.prepareStatement("SELECT * FROM urne WHERE NOT closed AND starts_with(id, ?) ORDER BY number").use { s ->
+            s.setString(1, prefix)
+            s.executeQuery().use { r -> generateSequence { if (r.next()) r.urne() else null }.toList() }
+        }
+    }
+
     /** Closes every ballot box whose end has come; returns their numbers. */
     fun closeDue(now: Instant): List<Long> = dataSource.connection.use { c ->
         c.prepareStatement("UPDATE urne SET closed = true WHERE NOT closed AND closes_at IS NOT NULL AND closes_at <= ? RETURNING number").use { s ->
             s.setTimestamp(1, Timestamp.from(now))
             s.executeQuery().use { r -> generateSequence { if (r.next()) r.getLong(1) else null }.toList() }
+        }
+    }
+
+    /** Ballots of each box of [numbers], summed by (level, choice): the live results of a whole list at once. */
+    fun countsByBox(numbers: List<Long>): Map<Long, Map<Pair<VoteLevel, String>, Long>> {
+        if (numbers.isEmpty()) return emptyMap()
+        return dataSource.connection.use { c ->
+            c.prepareStatement("SELECT urne_number, level, choice, count(*) FROM ballot WHERE urne_number = ANY(?) GROUP BY urne_number, level, choice").use { s ->
+                s.setArray(1, c.createArrayOf("bigint", numbers.toTypedArray()))
+                s.executeQuery().use { r ->
+                    val found = HashMap<Long, HashMap<Pair<VoteLevel, String>, Long>>()
+                    while (r.next()) {
+                        val level = VoteLevel.of(r.getString(2)) ?: continue
+                        found.getOrPut(r.getLong(1)) { HashMap() }[level to r.getString(3)] = r.getLong(4)
+                    }
+                    found
+                }
+            }
         }
     }
 
@@ -302,6 +349,7 @@ class UrneStore(private val dataSource: DataSource) {
         openedWeek = getObject("opened_week", LocalDate::class.java),
         liveResults = getBoolean("live_results"),
         closed = getBoolean("closed"),
+        salt = getBytes("salt"),
     )
 
 }

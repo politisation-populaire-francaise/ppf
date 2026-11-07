@@ -664,3 +664,19 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **limites** : 30 demandes authentifiées par minute et par compte, 6000 bulletins par minute pour tout le serveur, 500 jetons par requête (`PPF_VOTE_MAX_TOKENS_PER_REQUEST`), seuils de preuve de travail privés (`PPF_VOTE_POW_*`, valeurs par défaut 20, 12 et 12 bits) ;
   - **développement** : sans `PPF_VOTE_SEEDS_DIR`, une graine tirée au démarrage (ses jetons meurent avec le processus) ; en production et en préproduction, l'API répond `503`.
 - Reste : publication des clés en événements signés, page de l'urne sur le site, ouverture des urnes par le back-office et par les revendications « en débat » (étape 4).
+
+## D-114 (2026-11-07) « Une personne, une voix » : relecture indépendante R5, urnes des revendications
+
+- Contexte : exigence R5 de D-110 (relecture de `core/urne` par un agent distinct, code et RFC seulement, avant `main`) ; étape 4 de la conception (revendications) ; clôture anticipée promise à « Agir ».
+- Relecture : le VOPRF suit la RFC 9497 pas à pas (vecteurs compris) ; aucun défaut cryptographique. Constats d'usage et corrections : `docs/THREAT_MODEL.md`, section « Relecture indépendante R5 ».
+- Décisions techniques prises en autonomie :
+  - une requête de jetons restée sans réponse est renvoyée d'abord, inchangée (le vote n'est plus perdu) ;
+  - une urne s'ouvre au moment de son ouverture, jamais à l'avance ; `closeEarly(id, at)` avance une clôture, jamais ne la recule ;
+  - sel aléatoire de 16 octets par urne dans la dérivation des clés ;
+  - preuve de travail des bulletins fixée dans le code commun (12 bits), bulletins complétés à 640 octets, liste des urnes demandée par le client anonyme, un bulletin par passage et jamais avec une synchronisation, bulletins en retard renvoyés à un nouveau moment tiré au hasard ;
+  - l'appareil vérifie le niveau de chaque jeton (niveau, niveau précédent, semaine d'inscription annoncés par le serveur) ;
+  - publication du jour, et non plus de l'heure, de chaque bulletin à la clôture ;
+  - `PPF_PUBLIC_URL` obligatoire hors développement ; autotest du VOPRF au démarrage du serveur ;
+  - résultats des urnes qui les montrent joints à la liste publique (une seule requête pour toutes) ;
+  - **urnes des revendications** : une revendication « en débat » ou « très soutenue », signée par l'équipe, reçoit son urne (`decider:revendication:<adresse>`, choix « pour » et « contre », résultats en direct, sans fin) ; l'urne se ferme quand la revendication est retenue, devient une campagne, revient à « nouvelle » ou disparaît, ce qui publie ses clés et ses bulletins ; une urne n'est jamais rouverte.
+- Questions posées au chef d'équipe : délai avant l'envoi (10 minutes, D-112) ; seuil d'affichage par niveau et résultats en direct par paliers pour les petites urnes ; façon dont l'équipe fait avancer le statut d'une revendication de citoyen (son événement est signé par l'auteur).

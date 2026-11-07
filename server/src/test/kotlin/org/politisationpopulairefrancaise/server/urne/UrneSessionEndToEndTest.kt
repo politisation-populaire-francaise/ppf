@@ -5,10 +5,14 @@ import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
+import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.urne.HttpUrneRemote
 import org.politisationpopulairefrancaise.core.urne.LibsodiumRistretto255
+import org.politisationpopulairefrancaise.core.urne.TokenRequest
+import org.politisationpopulairefrancaise.core.urne.TokenResponse
 import org.politisationpopulairefrancaise.core.urne.UrneAnswer
+import org.politisationpopulairefrancaise.core.urne.UrneRemote
 import org.politisationpopulairefrancaise.core.urne.UrneSelfTestResult
 import org.politisationpopulairefrancaise.core.urne.UrneSession
 import org.politisationpopulairefrancaise.core.urne.UrneSyncOutcome
@@ -86,6 +90,31 @@ class UrneSessionEndToEndTest {
         // The server knows the account registered, never which ballot is its own.
         val remoteStatus = HttpUrneRemote(client, client, "http://localhost") { Instant.now().epochSecond }.status(signer)
         assertIs<UrneAnswer.Ok<*>>(remoteStatus)
+    }
+
+    @Test
+    fun aLostAnswerIsAskedAgainAndCostsNoToken() = testApplication {
+        application { module(org.politisationpopulairefrancaise.server.TestDatabase.dataSource, NO_EDITORS, TEST_RELAY, testRevendications(), urne = UrneFixtures.CONFIG) }
+        val http = HttpUrneRemote(client, createClient {}, "http://localhost") { Instant.now().epochSecond }
+        // The server delivers, the answer is lost on the way back (once).
+        var lose = true
+        val remote = object : UrneRemote by http {
+            override suspend fun tokens(signer: EventSigner, request: TokenRequest, difficulty: Int): UrneAnswer<TokenResponse> {
+                val answer = http.tokens(signer, request, difficulty)
+                return if (lose) UrneAnswer.Failure(null, null).also { lose = false } else answer
+            }
+        }
+        val store = UrneTokenStore(JvmDatabase.inMemory())
+        val session = UrneSession(store, remote, group, now = { deviceNow }, selfTest = { UrneSelfTestResult(true, null) }, randomDelay = { 0 })
+        openBox("perdue")
+        assertIs<UrneSyncOutcome.Unavailable>(session.sync(signer))
+        assertTrue(store.tokens().isEmpty())
+        // Asked again unchanged: the same answer, the token kept, none issued twice.
+        assertEquals(UrneSyncOutcome.Done(received = 1, pending = 0), session.sync(signer))
+        assertEquals(1, store.tokens().size)
+        assertTrue(store.blinds().isEmpty())
+        val number = store.tokens().single().urneNumber
+        assertEquals(1L, UrneFixtures.service().journal(number).issued.getValue("non-verifie"))
     }
 
     @Test

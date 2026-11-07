@@ -71,8 +71,14 @@ class Voprf(private val group: Ristretto255, val mode: VoprfMode) {
 
     // ---------------------------------------------------------------- client (3.3.1, 3.3.2)
 
-    /** Blind(input): hides the input before it is sent to the server. */
-    fun blind(input: ByteArray, blind: ByteArray = group.randomScalar()): VoprfBlinded {
+    /** Blind(input): hides the input before it is sent to the server, with a fresh random blind. */
+    fun blind(input: ByteArray): VoprfBlinded = blindWith(input, group.randomScalar())
+
+    /**
+     * Blind with a given [blind], for the test vectors and the self-test only: a blind used twice
+     * would link the two requests. Never reachable from outside this module.
+     */
+    internal fun blindWith(input: ByteArray, blind: ByteArray): VoprfBlinded {
         checkInput(input)
         val scalar = deserializeScalar(blind, nonZero = true)
         val inputElement = hashToGroup(input)
@@ -120,10 +126,17 @@ class Voprf(private val group: Ristretto255, val mode: VoprfMode) {
      * BlindEvaluate: applies the secret key to blinded elements received from a client, and in
      * VOPRF mode proves that the key behind [VoprfKeyPair.publicKey] was used.
      */
-    fun blindEvaluate(
+    fun blindEvaluate(keyPair: VoprfKeyPair, blindedElements: List<ByteArray>): VoprfEvaluation =
+        blindEvaluateWith(keyPair, blindedElements, group.randomScalar())
+
+    /**
+     * BlindEvaluate with a given random scalar of the proof, for the test vectors and the self-test
+     * only: the same scalar in two proofs reveals the secret key. Never reachable from outside this module.
+     */
+    internal fun blindEvaluateWith(
         keyPair: VoprfKeyPair,
         blindedElements: List<ByteArray>,
-        proofRandomScalar: ByteArray = group.randomScalar(),
+        proofRandomScalar: ByteArray,
     ): VoprfEvaluation {
         require(blindedElements.isNotEmpty()) { "at least one element" }
         val skS = deserializeScalar(keyPair.secretKey, nonZero = true)
@@ -262,7 +275,8 @@ class Voprf(private val group: Ristretto255, val mode: VoprfMode) {
 
         /** I2OSP: big-endian encoding of [value] on [length] bytes. */
         internal fun i2osp(value: Int, length: Int): ByteArray {
-            require(value >= 0 && (length >= 4 || value < (1 shl (8 * length)))) { "value too large for $length bytes" }
+            // An Int has 4 bytes; a longer length would shift by 32 bits or more, which Kotlin masks.
+            require(length in 1..4 && value >= 0 && (length == 4 || value < (1 shl (8 * length)))) { "value too large for $length bytes" }
             return ByteArray(length) { i -> (value ushr (8 * (length - 1 - i))).toByte() }
         }
 

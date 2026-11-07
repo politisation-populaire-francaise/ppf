@@ -82,7 +82,7 @@ class VoprfVectorsTest {
         val oprf = voprf(VoprfMode.OPRF)
         val keyPair = oprf.deriveKeyPair(seed, keyInfo)
         oprfVectors.forEach { v ->
-            val blinded = oprf.blind(h(v.input), h(v.blind))
+            val blinded = oprf.blindWith(h(v.input), h(v.blind))
             assertContentEquals(h(v.blindedElement), blinded.blindedElement)
             val evaluation = oprf.blindEvaluate(keyPair, listOf(blinded.blindedElement))
             assertEquals(null, evaluation.proof)
@@ -97,9 +97,9 @@ class VoprfVectorsTest {
         val voprf = voprf(VoprfMode.VOPRF)
         val keyPair = voprf.deriveKeyPair(seed, keyInfo)
         voprfVectors.forEach { v ->
-            val blinded = voprf.blind(h(v.input), h(v.blind))
+            val blinded = voprf.blindWith(h(v.input), h(v.blind))
             assertContentEquals(h(v.blindedElement), blinded.blindedElement)
-            val evaluation = voprf.blindEvaluate(keyPair, listOf(blinded.blindedElement), h(v.proofRandomScalar!!))
+            val evaluation = voprf.blindEvaluateWith(keyPair, listOf(blinded.blindedElement), h(v.proofRandomScalar!!))
             assertContentEquals(h(v.evaluationElement), evaluation.evaluatedElements.single())
             assertContentEquals(h(v.proof!!), evaluation.proof)
             val output = voprf.finalize(h(v.input), blinded, evaluation.evaluatedElements.single(), evaluation.proof, keyPair.publicKey)
@@ -114,12 +114,12 @@ class VoprfVectorsTest {
         val keyPair = voprf.deriveKeyPair(seed, keyInfo)
         val inputs = listOf(h(input1), h(input2))
         val blinded = listOf(
-            voprf.blind(inputs[0], h(blind1)),
-            voprf.blind(inputs[1], h("222a5e897cf59db8145db8d16e597e8facb80ae7d4e26d9881aa6f61d645fc0e")),
+            voprf.blindWith(inputs[0], h(blind1)),
+            voprf.blindWith(inputs[1], h("222a5e897cf59db8145db8d16e597e8facb80ae7d4e26d9881aa6f61d645fc0e")),
         )
         assertContentEquals(h("863f330cc1a1259ed5a5998a23acfd37fb4351a793a5b3c090b642ddc439b945"), blinded[0].blindedElement)
         assertContentEquals(h("90a0145ea9da29254c3a56be4fe185465ebb3bf2a1801f7124bbbadac751e654"), blinded[1].blindedElement)
-        val evaluation = voprf.blindEvaluate(keyPair, blinded.map { it.blindedElement }, h("419c4f4f5052c53c45f3da494d2b67b220d02118e0857cdbcf037f9ea84bbe0c"))
+        val evaluation = voprf.blindEvaluateWith(keyPair, blinded.map { it.blindedElement }, h("419c4f4f5052c53c45f3da494d2b67b220d02118e0857cdbcf037f9ea84bbe0c"))
         assertContentEquals(h("aa8fa048764d5623868679402ff6108d2521884fa138cd7f9c7669a9a014267e"), evaluation.evaluatedElements[0])
         assertContentEquals(h("cc5ac221950a49ceaa73c8db41b82c20372a4c8d63e5dded2db920b7eee36a2a"), evaluation.evaluatedElements[1])
         assertContentEquals(h("cc203910175d786927eeb44ea847328047892ddf8590e723c37205cb74600b0a5ab5337c8eb4ceae0494c2cf89529dcf94572ed267473d567aeed6ab873dee08"), evaluation.proof)
@@ -138,7 +138,7 @@ class VoprfVectorsTest {
     private suspend fun fixture(): Triple<Voprf, VoprfKeyPair, Pair<VoprfBlinded, VoprfEvaluation>> {
         val voprf = voprf(VoprfMode.VOPRF)
         val keyPair = voprf.deriveKeyPair(seed, keyInfo)
-        val blinded = voprf.blind(h(input1), h(blind1))
+        val blinded = voprf.blindWith(h(input1), h(blind1))
         val evaluation = voprf.blindEvaluate(keyPair, listOf(blinded.blindedElement))
         return Triple(voprf, keyPair, blinded to evaluation)
     }
@@ -206,8 +206,8 @@ class VoprfVectorsTest {
         assertFalse(Ristretto255.isCanonicalScalar(order))
         assertFalse(Ristretto255.isCanonicalScalar(maximum))
         assertTrue(Ristretto255.isCanonicalScalar(h("ecd3f55c1a631258d69cf7a2def9de1400000000000000000000000000000010")))
-        assertEquals(VoprfError.Reason.DESERIALIZE, reason { voprf.blind(h(input1), order) })
-        assertEquals(VoprfError.Reason.DESERIALIZE, reason { voprf.blind(h(input1), ByteArray(32)) })
+        assertEquals(VoprfError.Reason.DESERIALIZE, reason { voprf.blindWith(h(input1), order) })
+        assertEquals(VoprfError.Reason.DESERIALIZE, reason { voprf.blindWith(h(input1), ByteArray(32)) })
         assertEquals(VoprfError.Reason.DESERIALIZE, reason { voprf.blindEvaluate(VoprfKeyPair(ByteArray(32), keyPair.publicKey), listOf(blinded.blindedElement)) })
         // A proof whose second half is not canonical is refused before any computation.
         val badProof = evaluation.proof!!.copyOf().also { order.copyInto(it, 32) }

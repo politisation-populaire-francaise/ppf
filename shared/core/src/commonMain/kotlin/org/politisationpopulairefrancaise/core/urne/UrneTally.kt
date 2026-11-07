@@ -15,6 +15,22 @@ object UrneTally {
             electedOfficials = counts(counted.filter { it.first == VoteLevel.ELU }),
         )
     }
+
+    /** The same results from counts of ballots by (level, choice), as a database adds them up. */
+    fun fromCounts(counts: Map<Pair<VoteLevel, String>, Long>): UrneResults {
+        val counted = counts.filterKeys { it.second != UrneInfo.WITHDRAWN }
+        fun of(levels: (VoteLevel) -> Boolean): ChoiceCounts {
+            val selected = counted.filterKeys { levels(it.first) }
+            val byChoice = selected.entries.groupBy({ it.key.second }, { it.value }).mapValues { it.value.sum() }
+            return ChoiceCounts(byChoice.entries.sortedBy { it.key }.associate { it.key to it.value }, selected.values.sum())
+        }
+        return UrneResults(
+            verified = of { it == VoteLevel.VERIFIE },
+            notVerified = of { it == VoteLevel.NON_VERIFIE },
+            citizens = of { it.isCitizen },
+            electedOfficials = of { it == VoteLevel.ELU },
+        )
+    }
 }
 
 /** What a recount of a published closing found. */

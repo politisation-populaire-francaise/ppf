@@ -40,10 +40,10 @@ object UrneSelfTest {
             expect(keyPair.secretKey, SK)
             expect(keyPair.publicKey, PK)
             check = "blind"
-            val blinded = voprf.blind(hex(INPUT), hex(BLIND))
+            val blinded = voprf.blindWith(hex(INPUT), hex(BLIND))
             expect(blinded.blindedElement, BLINDED)
             check = "blind-evaluate"
-            val evaluation = voprf.blindEvaluate(keyPair, listOf(blinded.blindedElement), hex(PROOF_RANDOM))
+            val evaluation = voprf.blindEvaluateWith(keyPair, listOf(blinded.blindedElement), hex(PROOF_RANDOM))
             expect(evaluation.evaluatedElements.single(), EVALUATED)
             expect(evaluation.proof!!, PROOF)
             check = "finalize"

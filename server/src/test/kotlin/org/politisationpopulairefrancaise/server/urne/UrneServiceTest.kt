@@ -42,8 +42,8 @@ class UrneServiceTest {
 
     private fun pubkey() = IdentityKeys.generate().publicKey.hex
 
-    private fun box(id: String, days: Long = 10) =
-        service.open(id, "30023:${"b".repeat(64)}:$id", listOf("pour", "contre"), clock.instant(), clock.instant().plus(Duration.ofDays(days)), liveResults = false)
+    private fun box(id: String, days: Long = 10, opensAt: Instant = clock.instant()) =
+        service.open(id, "30023:${"b".repeat(64)}:$id", listOf("pour", "contre"), opensAt, clock.instant().plus(Duration.ofDays(days)), liveResults = false)
 
     /** Token request and finalization, as a device does it. */
     private fun tokens(pubkey: String): Map<Long, Triple<String, ByteArray, ByteArray>> {
@@ -67,7 +67,7 @@ class UrneServiceTest {
         service.register(citizen)
         val before = box("avant")
         // Validated in person this week: the new level counts from next Monday (9 November).
-        store.setLevel(citizen, VoteLevel.VERIFIE, UrneService.mondayOf(clock.instant().plus(Duration.ofDays(5))))
+        store.setLevel(citizen, VoteLevel.VERIFIE, UrneService.mondayOf(clock.instant().plus(Duration.ofDays(5))), UrneService.mondayOf(clock.instant()))
         clock.instant = clock.instant.plus(Duration.ofDays(7))
         val after = box("apres")
         val issued = tokens(citizen)
@@ -82,8 +82,8 @@ class UrneServiceTest {
         val elected = pubkey()
         listOf(verified, unverified, elected).forEach { service.register(it) }
         val lastMonday = UrneService.mondayOf(clock.instant().minus(Duration.ofDays(7)))
-        store.setLevel(verified, VoteLevel.VERIFIE, lastMonday)
-        store.setLevel(elected, VoteLevel.ELU, lastMonday)
+        store.setLevel(verified, VoteLevel.VERIFIE, lastMonday, lastMonday)
+        store.setLevel(elected, VoteLevel.ELU, lastMonday, lastMonday)
         val number = box("votation", days = 3).number
         vote(number, tokens(verified).getValue(number), "pour")
         vote(number, tokens(unverified).getValue(number), "contre")
@@ -100,7 +100,7 @@ class UrneServiceTest {
         assertEquals(mapOf("pour" to 1L), closing.results.electedOfficials.counts, "the elected officials' vote apart")
         assertEquals(2L, closing.results.citizens.ballots, "never added to the citizens' total")
         assertEquals(closing.ballots.map { it.y }.sorted(), closing.ballots.map { it.y }, "sorted by y, never by arrival")
-        assertTrue(closing.ballots.all { it.hour % 3600 == 0L }, "times rounded to the hour")
+        assertTrue(closing.ballots.all { it.day % 86_400 == 0L }, "times published by the day only")
         val announced = service.list(0, 10).single { it.number == number }.keys
         assertEquals(RecountResult.CORRECT, UrneRecount.check(closing, announced, listOf("pour", "contre"), group))
         val tampered = closing.copy(ballots = closing.ballots.map { if (it.level == "elu") it.copy(level = "verifie") else it })
@@ -121,6 +121,57 @@ class UrneServiceTest {
         assertEquals(listOf(second.number), service.status(citizen).pending)
         assertEquals(setOf(second.number), tokens(citizen).keys)
         assertEquals(mapOf("non-verifie" to 1L, "verifie" to 0L, "elu" to 0L), store.issuedByLevel(second.number))
+    }
+
+    @Test
+    fun anEarlyClosingBringsTheEndForwardButNeverPushesItBack() {
+        val planned = box("annulee", days = 10)
+        val end = planned.closesAt!!
+        // Asked for later than planned: nothing changes.
+        assertEquals(end, service.closeEarly("annulee", end.plus(Duration.ofDays(3)))?.closesAt)
+        // Asked for tomorrow: the end moves forward, the box stays open until then.
+        val tomorrow = clock.instant().plus(Duration.ofDays(1))
+        val moved = service.closeEarly("annulee", tomorrow)!!
+        assertEquals(tomorrow, moved.closesAt)
+        assertEquals(false, moved.closed)
+        // A box without an end, closed at a moment already passed: closed now, not in the past.
+        service.open("sans-fin", "30023:${"b".repeat(64)}:sans-fin", listOf("pour", "contre"), clock.instant(), null, liveResults = true)
+        val closed = service.closeEarly("sans-fin", clock.instant().minus(Duration.ofDays(2)))!!
+        assertEquals(clock.instant(), closed.closesAt)
+        assertTrue(closed.closed)
+        assertEquals(null, service.closeEarly("inconnue", clock.instant()))
+        // The usual course then closes the first one when its new end comes.
+        clock.instant = tomorrow
+        assertEquals(1, service.closeDue())
+    }
+
+    @Test
+    fun twoChangesInOneWeekKeepTheLevelInForceForTheBoxesOpenedMeanwhile() {
+        val citizen = pubkey()
+        service.register(citizen)
+        val thisWeek = UrneService.mondayOf(clock.instant())
+        val nextWeek = thisWeek.plusDays(7)
+        // Validated, then certified elected the same week: neither counts before next Monday.
+        store.setLevel(citizen, VoteLevel.VERIFIE, nextWeek, thisWeek)
+        store.setLevel(citizen, VoteLevel.ELU, nextWeek, thisWeek)
+        val meanwhile = box("entre-deux")
+        assertEquals("non-verifie", tokens(citizen).getValue(meanwhile.number).first)
+        val status = service.status(citizen)
+        assertEquals("elu", status.level)
+        assertEquals("non-verifie", status.previousLevel)
+        assertEquals(thisWeek.toString(), status.registeredWeek)
+    }
+
+    @Test
+    fun aBoxIsNeverOpenedInAdvanceAndHasItsOwnKeys() {
+        // A box numbered now and opened later would be skipped by every account served meanwhile.
+        assertFailsWith<IllegalArgumentException> { box("plus-tard", opensAt = clock.instant().plusSeconds(3600)) }
+        // Two boxes: different salts, hence different keys, whatever their identifiers.
+        val one = box("une")
+        val two = box("deux")
+        assertTrue(!one.salt.contentEquals(two.salt))
+        val keys = service.list(0, 10).associate { it.number to it.keys }
+        assertTrue(keys.getValue(one.number).values.intersect(keys.getValue(two.number).values.toSet()).isEmpty())
     }
 
     @Test

@@ -61,7 +61,10 @@ class Nip98Test {
 
     @Test
     fun theKeyInfoSeparatesBoxesAndLevels() {
-        assertEquals("ppf-urne-v1\u001fq1\u001fverifie", UrneKeyInfo.of("q1", VoteLevel.VERIFIE).decodeToString())
-        assertFalse(UrneKeyInfo.of("q1", VoteLevel.ELU).contentEquals(UrneKeyInfo.of("q1", VoteLevel.VERIFIE)))
+        val salt = ByteArray(16) { it.toByte() }
+        assertEquals("ppf-urne-v1\u001fq1\u001f000102030405060708090a0b0c0d0e0f\u001fverifie", UrneKeyInfo.of("q1", salt, VoteLevel.VERIFIE).decodeToString())
+        assertFalse(UrneKeyInfo.of("q1", salt, VoteLevel.ELU).contentEquals(UrneKeyInfo.of("q1", salt, VoteLevel.VERIFIE)))
+        // Another salt, other keys: a box whose identifier came back does not get the keys of the first.
+        assertFalse(UrneKeyInfo.of("q1", salt, VoteLevel.ELU).contentEquals(UrneKeyInfo.of("q1", ByteArray(16), VoteLevel.ELU)))
     }
 }

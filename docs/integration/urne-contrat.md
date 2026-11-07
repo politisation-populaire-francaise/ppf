@@ -22,14 +22,16 @@ fun open(id: String, subject: String, choices: List<String>, opensAt: Instant, c
 - `id` : stable et unique, de la forme `<pôle>:<usage>:<adresse de l'objet>`, par exemple `agir:participation:31923:<clé>:<d>` ou `voir:signalement:<adresse du fait>`. Ouvrir deux fois le même `id` rend la même urne.
 - `subject` : l'adresse de l'objet compté (`kind:clé:d`).
 - `choices` : la liste fermée des choix, sans `retire` (réservé au retrait). Pour une participation : `["participe"]`. Pour un signalement chiffré : des tranches convenues avec « Décider » (un bulletin ne porte jamais un nombre libre ni un texte).
+- `opensAt` : maintenant (ou un moment passé), **jamais un moment futur** : une urne reçoit son numéro d'ordre à l'ouverture et la délivrance des jetons suit cet ordre, si bien qu'une urne numérotée maintenant et ouverte plus tard serait sautée par les comptes servis entre-temps (relecture R5). Ouvrir l'urne au moment où l'objet devient comptable ; `open` refuse un `opensAt` futur.
 - `closesAt` : la fin naturelle (fin de la mobilisation, fin de la période de signalement) ; à la clôture, tout est publié et recomptable.
+- **Clôture anticipée** : `UrneService.closeEarly(id, at)` avance la fin à `at` (ou à maintenant si `at` est passé), ne la recule jamais, et ferme tout de suite une urne dont la fin est atteinte ; rend l'urne telle qu'elle est, ou `null` si l'identifiant est inconnu. Disponible depuis le 7 novembre 2026.
 - `liveResults` : `true` pour un compteur affiché en direct (participation, soutiens), `false` pour une question dont le résultat ne doit pas influencer les votants.
 - L'ouverture se fait dans le code serveur du pôle, au moment où l'objet devient comptable (une mobilisation publiée, un appel publié, un fait ouvert aux signalements). Aucune route publique ne permet d'ouvrir une urne.
 
 ### 2.2 Côté application
 - `UrneSession` (code commun) : `sync(signer)` récupère les jetons, `vote(urne, choix, choix possibles)` enregistre le choix, `sendDue(difficulté)` envoie les bulletins dont le moment est venu, `choiceOf(urne)` dit ce que l'appareil a choisi et si le serveur l'a, `forget()` efface tout (avec les clés). Elle sera fournie par `AppDependencies`, une seule pour toute l'application.
 - `VoteControl(choices, state, onChoose)` et `UrneResultsView(journal, labels)` (interface commune, `ui/urne/`) : le composant de vote et l'affichage des résultats, les mêmes partout.
-- `UrneRemote.journal(n)` : le journal public d'une urne (comptes et jetons par niveau, bulletins, résultats si l'urne les montre).
+- `UrneRemote.journal(n)` : le journal public d'une urne (comptes et jetons par niveau, bulletins, résultats si l'urne les montre). Pour afficher des compteurs, lire plutôt `UrneInfo.results` dans la liste publique (`UrneRemote.list`), qui porte les résultats de toutes les urnes qui les montrent : demander le journal d'une seule urne dit au serveur ce qu'on regarde.
 
 ## 2 ter. Participation et soutiens d'« Agir », convenus avec « Agir » le 7 novembre 2026
 
@@ -67,4 +69,5 @@ La décision de la propriétaire du 7 novembre 2026 (participation publique, él
 
 - Le même code pour tous : les vecteurs de la RFC 9497, l'autotest de l'appareil, le recomptage public (`UrneRecount`).
 - Un jeton par compte et par urne ; le niveau du votant figé la semaine de l'ouverture ; bulletins modifiables et retirables jusqu'à la clôture.
+- Une relecture indépendante (R5, 7 novembre 2026) : constats et corrections dans `docs/THREAT_MODEL.md`.
 - Toute évolution du contrat passe par le chef d'équipe, qui la diffuse.

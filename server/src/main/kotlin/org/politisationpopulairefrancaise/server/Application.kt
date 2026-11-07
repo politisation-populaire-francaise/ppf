@@ -51,6 +51,7 @@ import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
+import org.politisationpopulairefrancaise.server.urne.RevendicationUrnes
 import org.politisationpopulairefrancaise.server.urne.UrneConfig
 import org.politisationpopulairefrancaise.server.urne.UrneService
 import org.politisationpopulairefrancaise.server.urne.UrneStore
@@ -177,9 +178,13 @@ fun Application.module(
     }
     val limits = PostLimits(relay)
     val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
-    // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published.
+    // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published; the
+    // demands in debate get theirs, closed when they leave the debate.
     val urnes = dataSource?.takeIf { urne.seeds != null }?.let { UrneService.create(UrneStore(it), urne) }
-    urnes?.startClosing(this, UrneService.CLOSING_INTERVAL, log)
+    if (urnes != null && dataSource != null) {
+        val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)
+        urnes.startClosing(this, UrneService.CLOSING_INTERVAL, log, keepers = listOf({ demands.reconcile() }))
+    }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     install(ErrorShield)

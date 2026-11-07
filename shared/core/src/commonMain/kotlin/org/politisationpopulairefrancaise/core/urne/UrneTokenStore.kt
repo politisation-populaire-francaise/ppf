@@ -37,6 +37,9 @@ class UrneTokenStore(private val database: PpfDatabase) {
 
     fun saveBlind(blind: PendingBlind) = queries.insertBlind(blind.urneNumber, blind.y, blind.blind, blind.blinded)
 
+    /** Forgets a request that will never be answered (its box is served or gone). */
+    fun dropBlind(urneNumber: Long) = queries.deleteBlind(urneNumber)
+
     fun blinds(): List<PendingBlind> = queries.selectBlinds().executeAsList().map { PendingBlind(it.urne_number, it.y, it.blind, it.blinded) }
 
     fun saveToken(token: StoredToken) = database.transaction {

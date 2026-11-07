@@ -42,9 +42,14 @@ interface UrneRemote {
 
 /**
  * [UrneRemote] over HTTP. Two clients (D-110, R4): [authenticated] for what is done with the
- * account (registration, status, tokens: NIP-98 headers), and [anonymous] for the ballots only, a
- * separate instance without cookies, closing its connection after each request and naming itself
- * with a generic agent: a ballot never travels on a connection that carried the account.
+ * account (registration, status, tokens: NIP-98 headers), and [anonymous] for the ballots and the
+ * public list of the boxes, a separate instance without cookies, closing its connection after each
+ * request and naming itself with a generic agent: a ballot never travels on a connection that
+ * carried the account. Every ballot is padded to the same size ([Ballot.padded]).
+ *
+ * Limit (review R5): both clients leave from the same network address. Until Tor or an oblivious
+ * relay (phase 3), an operator who watched the network could still bring a ballot close to its
+ * account by address and time; the random delay before sending makes it harder, not impossible.
  */
 class HttpUrneRemote(
     private val authenticated: HttpClient,
@@ -55,8 +60,12 @@ class HttpUrneRemote(
 ) : UrneRemote {
     private val json = Json { ignoreUnknownKeys = true }
 
+    // The public list goes by the anonymous client, as everyone asks for it: it is never sent on the
+    // connection of the requests made with the account (review R5).
     override suspend fun list(after: Long, limit: Int): UrneAnswer<UrneList> = call(UrneList.serializer()) {
-        authenticated.get("$baseUrl/api/v1/urnes") {
+        anonymous.get("$baseUrl/api/v1/urnes") {
+            header(HttpHeaders.Connection, "close")
+            header(HttpHeaders.UserAgent, GENERIC_AGENT)
             parameter("after", after)
             parameter("limit", limit)
         }
@@ -91,7 +100,7 @@ class HttpUrneRemote(
             header(HttpHeaders.Connection, "close")
             header(HttpHeaders.UserAgent, GENERIC_AGENT)
             contentType(ContentType.Application.Json)
-            setBody(json.encodeToString(Ballot.serializer(), ballot))
+            setBody(json.encodeToString(Ballot.serializer(), ballot.padded(json)))
         }
     }
 

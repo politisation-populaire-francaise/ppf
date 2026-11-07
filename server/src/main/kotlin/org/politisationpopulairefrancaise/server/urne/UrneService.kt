@@ -31,8 +31,11 @@ import org.politisationpopulairefrancaise.core.urne.VoprfMode
 import org.politisationpopulairefrancaise.core.urne.Voprf
 import org.politisationpopulairefrancaise.core.urne.VoteLevel
 import org.politisationpopulairefrancaise.core.urne.VoterStatus
+import org.politisationpopulairefrancaise.core.urne.UrneSelfTest
 import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import java.security.MessageDigest
+import java.security.SecureRandom
 import java.time.Clock
 import java.time.DayOfWeek
 import java.time.Instant
@@ -62,23 +65,41 @@ class UrneService(
     private val clock: Clock = Clock.systemUTC(),
 ) {
     private val keyCache = ConcurrentHashMap<Pair<Long, VoteLevel>, VoprfKeyPair>()
+    private val random = SecureRandom()
 
     val available: Boolean get() = config.seeds != null
 
     // ------------------------------------------------------------------ opening (server code only)
 
-    /** Opens a ballot box with the current seed; the same [id] twice returns the existing one. */
+    /**
+     * Opens a ballot box with the current seed; the same [id] twice returns the existing one. A box
+     * opens when it is opened: [opensAt] is now or past, never a later moment (its number of order is
+     * given here, and the delivery of tokens follows that order: a box numbered now and opened later
+     * would be skipped by every account served meanwhile; review R5).
+     */
     fun open(id: String, subject: String, choices: List<String>, opensAt: Instant, closesAt: Instant?, liveResults: Boolean): Urne {
         val seeds = config.seeds ?: throw UrneRefusal(503, "voting_unavailable")
         require(choices.isNotEmpty() && choices.none { it == UrneInfo.WITHDRAWN } && choices.distinct().size == choices.size) { "invalid choices" }
         require('\u001f' !in id) { "invalid identifier" }
         store.urneById(id)?.let { return it }
-        return store.open(id, subject, choices, seeds.current, opensAt, closesAt, mondayOf(opensAt), liveResults)
+        require(!opensAt.isAfter(clock.instant())) { "a ballot box is opened when it opens, never in advance" }
+        val salt = ByteArray(UrneKeyInfo.SALT_SIZE).also(random::nextBytes)
+        return store.open(id, subject, choices, seeds.current, opensAt, closesAt, mondayOf(opensAt), liveResults, salt)
     }
+
+    /** The open boxes of one use (their identifiers start with [prefix]), for the code that opens them. */
+    fun openWithPrefix(prefix: String): List<Urne> = store.openWithPrefix(prefix)
 
     // ------------------------------------------------------------------ public
 
-    fun list(after: Long, limit: Int): List<UrneInfo> = store.urnes(after, limit.coerceIn(1, 500)).map { info(it) }
+    /** The boxes after [after], with the results of those that show them, summed in one query. */
+    fun list(after: Long, limit: Int): List<UrneInfo> {
+        val urnes = store.urnes(after, limit.coerceIn(1, 500))
+        val counts = store.countsByBox(urnes.filter { it.liveResults || it.closed }.map { it.number })
+        return urnes.map { urne ->
+            info(urne).copy(results = if (urne.liveResults || urne.closed) UrneTally.fromCounts(counts[urne.number].orEmpty()) else null)
+        }
+    }
 
     fun journal(number: Long): UrneJournal {
         val urne = store.urne(number) ?: throw UrneRefusal(404, "unknown_urne")
@@ -106,7 +127,7 @@ class UrneService(
             secretKeys = VoteLevel.entries.associate { it.code to keys(urne, it).secretKey.toHexString() },
             publicKeys = VoteLevel.entries.associate { it.code to keys(urne, it).publicKey.toHexString() },
             issued = store.issuedByLevel(number),
-            ballots = ballots.map { PublishedBallot(it.y.toHexString(), it.token.toHexString(), it.level.code, it.choice, it.hour.epochSecond) },
+            ballots = ballots.map { PublishedBallot(it.y.toHexString(), it.token.toHexString(), it.level.code, it.choice, it.hour.truncatedTo(ChronoUnit.DAYS).epochSecond) },
             results = UrneTally.results(ballots.map { it.level to it.choice }),
         )
     }
@@ -121,7 +142,13 @@ class UrneService(
 
     fun status(pubkey: String): VoterStatus {
         val account = store.account(pubkey) ?: throw UrneRefusal(404, "not_registered")
-        return VoterStatus(account.level.code, account.levelWeek.toString(), pending(account).map { it.number })
+        return VoterStatus(
+            level = account.level.code,
+            levelWeek = account.levelWeek.toString(),
+            pending = pending(account).map { it.number },
+            previousLevel = account.previousLevel.code,
+            registeredWeek = account.registeredWeek.toString(),
+        )
     }
 
     /**
@@ -189,11 +216,38 @@ class UrneService(
     /** Closes the ballot boxes whose end has come; their keys and ballots become public (D-110, 6.7). */
     fun closeDue(): Int = store.closeDue(clock.instant()).size
 
-    fun startClosing(application: Application, every: Duration, log: Logger): Job {
+    /**
+     * Closes the ballot box [id] early (a cancelled mobilisation, a call closed by its author, a
+     * demand that leaves the debate): its end moves to [at], or to now when [at] has passed, and
+     * never later than it was. The closing and its publication then follow the usual course; an end
+     * already reached closes at once. Returns the box as it now is, or null when there is none.
+     */
+    fun closeEarly(id: String, at: Instant): Urne? {
+        val now = clock.instant()
+        val end = if (at.isBefore(now)) now else at
+        store.bringEndForward(id, end)
+        if (!end.isAfter(now)) store.closeDue(now)
+        return store.urneById(id)
+    }
+
+    /**
+     * The task of the ballot boxes, every [every]: first [keepers] open and close the boxes of each
+     * use (the demands in debate, [RevendicationUrnes]), then the boxes whose end has come close.
+     */
+    fun startClosing(application: Application, every: Duration, log: Logger, keepers: List<() -> Unit> = emptyList()): Job {
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         application.monitor.subscribe(ApplicationStopped) { scope.cancel() }
         return scope.launch {
             while (isActive) {
+                for (keeper in keepers) {
+                    try {
+                        keeper()
+                    } catch (e: CancellationException) {
+                        throw e
+                    } catch (e: Exception) {
+                        log.warn("Voting: opening of ballot boxes failed (${e::class.simpleName}).")
+                    }
+                }
                 try {
                     closeDue()
                 } catch (e: CancellationException) {
@@ -225,7 +279,7 @@ class UrneService(
 
     private fun keys(urne: Urne, level: VoteLevel): VoprfKeyPair = keyCache.getOrPut(urne.number to level) {
         val seed = config.seeds?.seed(urne.seedVersion) ?: throw UrneRefusal(503, "voting_unavailable")
-        voprf.deriveKeyPair(seed, UrneKeyInfo.of(urne.id, level))
+        voprf.deriveKeyPair(seed, UrneKeyInfo.of(urne.id, urne.salt, level))
     }
 
     companion object {
@@ -235,8 +289,21 @@ class UrneService(
         fun mondayOf(instant: Instant): LocalDate =
             LocalDate.ofInstant(instant, ZoneOffset.UTC).with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
 
-        /** The service with libsodium loaded (blocking: called once at startup). */
-        fun create(store: UrneStore, config: UrneConfig, clock: Clock = Clock.systemUTC()): UrneService =
-            UrneService(store, config, Voprf(runBlocking { LibsodiumRistretto255.load() }, VoprfMode.VOPRF), clock)
+        /**
+         * The service with libsodium loaded (blocking: called once at startup). The known answers of
+         * RFC 9497 are replayed first with the libsodium of this machine; if they fail, voting stays
+         * unavailable (503) rather than issue tokens nobody could check (review R5).
+         */
+        fun create(store: UrneStore, config: UrneConfig, clock: Clock = Clock.systemUTC()): UrneService {
+            val group = runBlocking { LibsodiumRistretto255.load() }
+            val selfTest = UrneSelfTest.run(group)
+            val checked = if (selfTest.passed) {
+                config
+            } else {
+                LoggerFactory.getLogger(UrneService::class.java).error("Voting: the self-test of the VOPRF failed at ${selfTest.failedCheck}; voting is unavailable.")
+                config.copy(seeds = null)
+            }
+            return UrneService(store, checked, Voprf(group, VoprfMode.VOPRF), clock)
+        }
     }
 }

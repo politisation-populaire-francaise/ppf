@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.server.urne
 
+import org.politisationpopulairefrancaise.core.urne.Ballot
 import org.slf4j.LoggerFactory
 import java.io.File
 import java.security.SecureRandom
@@ -13,11 +14,14 @@ import java.security.SecureRandom
  *   drawn at startup (its tokens die with the process).
  * - PPF_VOTE_POW_REGISTER, PPF_VOTE_POW_TOKENS, PPF_VOTE_POW_BALLOT: bits of proof of work asked at
  *   registration, for each token request and for each ballot (private thresholds, D-110, section 5).
+ *   The ballot's is at most [Ballot.DIFFICULTY], the same number that every device makes.
  * - PPF_PUBLIC_URL: public address of the server (for example https://politisation-populaire-francaise.org),
- *   the exact URL that NIP-98 authorizations must name; when absent (development), only the path is compared.
+ *   the exact URL that NIP-98 authorizations must name. Required outside development: without it,
+ *   voting stays unavailable (an authorization made for another server would pass; review R5). In
+ *   development, only the path is compared.
  * - PPF_VOTE_MAX_TOKENS_PER_REQUEST: tokens delivered by one request at most (the rest on the next one).
  */
-class UrneConfig(
+data class UrneConfig(
     val seeds: VoteSeeds?,
     val registerDifficulty: Int,
     val tokenDifficulty: Int,
@@ -31,7 +35,11 @@ class UrneConfig(
         fun fromEnvironment(env: (String) -> String? = System::getenv): UrneConfig {
             val environment = env("PPF_ENVIRONMENT") ?: "development"
             val development = environment == "development"
-            val seeds = env("PPF_VOTE_SEEDS_DIR")?.let { VoteSeeds.fromDirectory(File(it)) }
+            val publicUrl = env("PPF_PUBLIC_URL")?.trim()?.trimEnd('/')?.takeIf { it.isNotEmpty() }
+            val seeds = if (!development && publicUrl == null) {
+                log.warn("Voting: PPF_PUBLIC_URL is not set; the voting API answers 503.")
+                null
+            } else env("PPF_VOTE_SEEDS_DIR")?.let { VoteSeeds.fromDirectory(File(it)) }
                 ?: if (development) {
                     log.warn("Voting: PPF_VOTE_SEEDS_DIR is not set; a seed drawn at startup is used (development only).")
                     VoteSeeds.random()
@@ -44,8 +52,8 @@ class UrneConfig(
                 seeds = seeds,
                 registerDifficulty = bits("PPF_VOTE_POW_REGISTER", production = 20, dev = 8),
                 tokenDifficulty = bits("PPF_VOTE_POW_TOKENS", production = 12, dev = 4),
-                ballotDifficulty = bits("PPF_VOTE_POW_BALLOT", production = 12, dev = 4),
-                publicUrl = env("PPF_PUBLIC_URL")?.trimEnd('/'),
+                ballotDifficulty = bits("PPF_VOTE_POW_BALLOT", production = Ballot.DIFFICULTY, dev = 4).coerceAtMost(Ballot.DIFFICULTY),
+                publicUrl = publicUrl,
                 maxTokensPerRequest = env("PPF_VOTE_MAX_TOKENS_PER_REQUEST")?.toIntOrNull()?.coerceIn(1, 5000) ?: 500,
             )
         }
