@@ -112,8 +112,9 @@ class DatabaseMigrationTest {
         // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm);
         // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm);
         // 10: answered calls (9.sqm); 11: directory of elected officials (10.sqm);
-        // 12: parliamentary open data (11.sqm), 13: referential of territories (12.sqm).
-        assertEquals(13L, PpfDatabase.Schema.version)
+        // 12: parliamentary open data (11.sqm), 13: referential of territories (12.sqm),
+        // 14: notifications on the device (13.sqm, provisional number of the Communauté branch).
+        assertEquals(14L, PpfDatabase.Schema.version)
     }
 
     @Test
@@ -130,7 +131,7 @@ class DatabaseMigrationTest {
             }
         }
         val database = JvmDatabase.open(file)
-        assertEquals(13L, userVersion(file))
+        assertEquals(PpfDatabase.Schema.version, userVersion(file))
         assertEquals(ChosenCommune("69123", "69"), ElusStore(database).commune())
 
         val territoires = org.politisationpopulairefrancaise.core.territoires.TerritoiresStore(database)

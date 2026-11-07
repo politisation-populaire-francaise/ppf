@@ -1,0 +1,96 @@
+-- Notifications (M31, decision D-130, contract docs/integration/notifications.md). Everything here
+-- stays on the device: the server only ever sends empty wake-ups, so what interests the user (the
+-- categories they enabled, what they were notified of) is never known outside the device.
+-- Added in schema version 14: existing databases get it through migrations/13.sqm.
+
+-- The user's notification settings, as name and value; a missing row means the most protective
+-- default (everything off, no detail shown).
+CREATE TABLE notification_setting (
+    name TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+-- The notification centre (S-24): what the device itself notified, newest first, effaceable.
+CREATE TABLE notification_entry (
+    id TEXT NOT NULL PRIMARY KEY,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    detail TEXT,
+    target TEXT,
+    created_at INTEGER NOT NULL,
+    is_read INTEGER AS kotlin.Boolean NOT NULL DEFAULT 0
+);
+
+CREATE INDEX notification_entry_created_at ON notification_entry(created_at DESC, id);
+
+-- How far each source of notifications has been looked at, so nothing is notified twice.
+CREATE TABLE notification_mark (
+    source TEXT NOT NULL PRIMARY KEY,
+    seen_until INTEGER NOT NULL
+);
+
+-- The device's own push registrations (one per scope: "public" or "mailbox"), so they can be
+-- renewed at each start and deleted on request.
+CREATE TABLE push_registration (
+    scope TEXT NOT NULL PRIMARY KEY,
+    subscription_id TEXT NOT NULL,
+    endpoint TEXT NOT NULL,
+    renewed_at INTEGER NOT NULL
+);
+
+getSetting:
+SELECT value FROM notification_setting WHERE name = ?;
+
+setSetting:
+INSERT OR REPLACE INTO notification_setting(name, value) VALUES (?, ?);
+
+deleteAllSettings:
+DELETE FROM notification_setting;
+
+insertEntry:
+INSERT OR IGNORE INTO notification_entry(id, category, title, detail, target, created_at, is_read) VALUES (?, ?, ?, ?, ?, ?, 0);
+
+hasEntry:
+SELECT COUNT(*) FROM notification_entry WHERE id = ?;
+
+selectEntries:
+SELECT * FROM notification_entry ORDER BY created_at DESC, id ASC LIMIT ?;
+
+countUnreadEntries:
+SELECT COUNT(*) FROM notification_entry WHERE is_read = 0;
+
+markEntryRead:
+UPDATE notification_entry SET is_read = 1 WHERE id = ?;
+
+markAllEntriesRead:
+UPDATE notification_entry SET is_read = 1 WHERE is_read = 0;
+
+deleteEntry:
+DELETE FROM notification_entry WHERE id = ?;
+
+deleteEntriesBefore:
+DELETE FROM notification_entry WHERE created_at < ?;
+
+deleteEntriesBeyond:
+DELETE FROM notification_entry WHERE id NOT IN (SELECT id FROM notification_entry ORDER BY created_at DESC, id ASC LIMIT ?);
+
+deleteAllEntries:
+DELETE FROM notification_entry;
+
+getMark:
+SELECT seen_until FROM notification_mark WHERE source = ?;
+
+setMark:
+INSERT OR REPLACE INTO notification_mark(source, seen_until) VALUES (?, ?);
+
+deleteAllMarks:
+DELETE FROM notification_mark;
+
+getRegistration:
+SELECT * FROM push_registration WHERE scope = ?;
+
+setRegistration:
+INSERT OR REPLACE INTO push_registration(scope, subscription_id, endpoint, renewed_at) VALUES (?, ?, ?, ?);
+
+deleteRegistration:
+DELETE FROM push_registration WHERE scope = ?;
