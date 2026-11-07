@@ -50,6 +50,7 @@ object Lucide {
     val ChevronRight: ImageVector get() = icon("chevron-right", "m9 18 6-6-6-6")
     val ChevronUp: ImageVector get() = icon("chevron-up", "m18 15-6-6-6 6")
     val CircleCheck: ImageVector get() = icon("circle-check", "M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0", "m16 9-5.5 5.5L8 12")
+    val CircleQuestionMark: ImageVector get() = icon("circle-question-mark", "M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0", "M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3", "M12 17h.01")
     val CircleUserRound: ImageVector get() = icon("circle-user-round", "M17.925 20.056a6 6 0 0 0-11.851.001", "M8 11a4 4 0 1 0 8 0a4 4 0 1 0 -8 0", "M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0")
     val Clock: ImageVector get() = icon("clock", "M2 12a10 10 0 1 0 20 0a10 10 0 1 0 -20 0", "M12 6v6l4 2")
     val Copy: ImageVector get() = icon("copy", "M10 8h10a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-10a2 2 0 0 1 -2 -2v-10a2 2 0 0 1 2 -2z", "M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2")

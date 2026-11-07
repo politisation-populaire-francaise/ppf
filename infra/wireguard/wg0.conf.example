@@ -1,17 +1,13 @@
-# Server side (/etc/wireguard/wg0.conf). Keys are generated on the server, never committed.
+# Server side (/etc/wireguard/wg0.conf), written by infra/scripts/bootstrap-server.sh.
+# Keys are generated on the server, never committed.
 [Interface]
 Address = 10.8.0.1/24
 ListenPort = 51820
 PrivateKey = <server-private-key>
 
-# One block per device of the team. Example for the owner's computer:
+# One block per device of the team, appended by infra/scripts/wg-add-peer.sh. Example:
 [Peer]
-# owner-laptop
+# device: proprietaire-ordinateur
 PublicKey = <device-public-key>
+PresharedKey = <device-preshared-key>
 AllowedIPs = 10.8.0.2/32
-
-# Example for the owner's phone:
-[Peer]
-# owner-phone
-PublicKey = <device-public-key>
-AllowedIPs = 10.8.0.3/32

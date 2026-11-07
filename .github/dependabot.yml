@@ -22,3 +22,28 @@ updates:
     labels: [dependencies]
     commit-message:
       prefix: ci
+  # Base image of the server (pinned by digest).
+  - package-ecosystem: docker
+    directory: /infra/docker
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Paris
+    labels: [dependencies]
+    commit-message:
+      prefix: build
+  # PostgreSQL/PostGIS and Caddy images of the Compose projects (pinned by digest).
+  - package-ecosystem: docker-compose
+    directories:
+      - /infra/preproduction
+      - /infra/production
+      - /infra/proxy
+    schedule:
+      interval: weekly
+      day: monday
+      time: "07:00"
+      timezone: Europe/Paris
+    labels: [dependencies]
+    commit-message:
+      prefix: build

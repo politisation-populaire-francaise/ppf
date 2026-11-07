@@ -472,6 +472,8 @@ class ContentLibrary(
             "files/contents/fiches.json",
             "files/contents/parcours.json",
             "files/contents/comprendre.json",
+            // The glossary (D-048); absent or empty until its entries are written: nothing is then spotted.
+            "files/contents/glossaire.json",
             "files/contents/revendications.json",
             "files/contents/fil.json",
             "files/contents/voir.json",

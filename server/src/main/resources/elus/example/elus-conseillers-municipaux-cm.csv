@@ -1,0 +1,56 @@
+Code du département;Libellé du département;Code de la collectivité à statut particulier;Libellé de la collectivité à statut particulier;Code de la commune;Libellé de la commune;Nom de l'élu;Prénom de l'élu;Code sexe;Date de naissance;Code de la catégorie socio-professionnelle;Libellé de la catégorie socio-professionnelle;Date de début du mandat;Libellé de la fonction;Date de début de la fonction;Code nationalité
+69;Rhône;;;69123;Lyon;Exemplaire;[EXEMPLE] Camille;F;1950-01-01;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+69;Rhône;;;69123;Lyon;Fictif;[EXEMPLE] Dominique;M;1951-02-02;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+69;Rhône;;;69123;Lyon;Démonstration;[EXEMPLE] Claude;F;1952-03-03;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+69;Rhône;;;69123;Lyon;Maquette;[EXEMPLE] Alix;M;1953-04-04;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+69;Rhône;;;69123;Lyon;Prototype;[EXEMPLE] Sacha;F;1954-05-05;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+69;Rhône;;;69266;Villeurbanne;Spécimen;[EXEMPLE] Morgan;M;1955-06-06;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+69;Rhône;;;69266;Villeurbanne;Échantillon;[EXEMPLE] Lou;F;1956-07-07;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+69;Rhône;;;69266;Villeurbanne;Brouillon;[EXEMPLE] Charlie;M;1957-08-08;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+69;Rhône;;;69266;Villeurbanne;Factice;[EXEMPLE] Maxime;F;1958-09-09;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+69;Rhône;;;69266;Villeurbanne;Modèle;[EXEMPLE] Andréa;M;1959-10-10;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+69;Rhône;;;69264;Villefranche-sur-Saône;Essai;[EXEMPLE] Eden;F;1960-11-11;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+69;Rhône;;;69264;Villefranche-sur-Saône;Simulation;[EXEMPLE] Noa;M;1961-12-12;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+69;Rhône;;;69264;Villefranche-sur-Saône;Esquisse;[EXEMPLE] Camille;F;1962-01-13;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+69;Rhône;;;69264;Villefranche-sur-Saône;Gabarit;[EXEMPLE] Dominique;M;1963-02-14;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+69;Rhône;;;69264;Villefranche-sur-Saône;Imaginaire;[EXEMPLE] Claude;F;1964-03-15;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+59;Nord;;;59350;Lille;Inventé;[EXEMPLE] Alix;M;1965-04-16;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+59;Nord;;;59350;Lille;Supposé;[EXEMPLE] Sacha;F;1966-05-17;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+59;Nord;;;59350;Lille;Fantaisie;[EXEMPLE] Morgan;M;1967-06-18;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+59;Nord;;;59350;Lille;Illustration;[EXEMPLE] Lou;F;1968-07-19;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+59;Nord;;;59350;Lille;Exemplaire;[EXEMPLE] Charlie;M;1969-08-20;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+59;Nord;;;59512;Roubaix;Fictif;[EXEMPLE] Maxime;F;1970-09-21;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+59;Nord;;;59512;Roubaix;Démonstration;[EXEMPLE] Andréa;M;1971-10-22;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+59;Nord;;;59512;Roubaix;Maquette;[EXEMPLE] Eden;F;1972-11-23;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+59;Nord;;;59512;Roubaix;Prototype;[EXEMPLE] Noa;M;1973-12-24;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+59;Nord;;;59512;Roubaix;Échantillon;[EXEMPLE] Camille;F;1974-01-25;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+59;Nord;;;59009;Villeneuve-d'Ascq;Brouillon;[EXEMPLE] Dominique;M;1975-02-26;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+59;Nord;;;59009;Villeneuve-d'Ascq;Factice;[EXEMPLE] Claude;F;1976-03-27;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+59;Nord;;;59009;Villeneuve-d'Ascq;Modèle;[EXEMPLE] Alix;M;1977-04-28;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+59;Nord;;;59009;Villeneuve-d'Ascq;Essai;[EXEMPLE] Sacha;F;1978-05-01;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+59;Nord;;;59009;Villeneuve-d'Ascq;Simulation;[EXEMPLE] Morgan;M;1979-06-02;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+13;Bouches-Du-Rhône;;;13055;Marseille;Ébauche;[EXEMPLE] Lou;F;1980-07-03;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+13;Bouches-Du-Rhône;;;13055;Marseille;Esquisse;[EXEMPLE] Charlie;M;1981-08-04;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+13;Bouches-Du-Rhône;;;13055;Marseille;Gabarit;[EXEMPLE] Maxime;F;1982-09-05;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+13;Bouches-Du-Rhône;;;13055;Marseille;Imaginaire;[EXEMPLE] Andréa;M;1983-10-06;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+13;Bouches-Du-Rhône;;;13055;Marseille;Inventé;[EXEMPLE] Eden;F;1984-11-07;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+13;Bouches-Du-Rhône;;;13001;Aix-en-Provence;Supposé;[EXEMPLE] Noa;M;1985-12-08;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+13;Bouches-Du-Rhône;;;13001;Aix-en-Provence;Illustration;[EXEMPLE] Camille;F;1986-01-09;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+13;Bouches-Du-Rhône;;;13001;Aix-en-Provence;Exemplaire;[EXEMPLE] Dominique;M;1987-02-10;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+13;Bouches-Du-Rhône;;;13001;Aix-en-Provence;Fictif;[EXEMPLE] Claude;F;1988-03-11;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+13;Bouches-Du-Rhône;;;13001;Aix-en-Provence;Démonstration;[EXEMPLE] Alix;M;1989-04-12;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+35;Ille-Et-Vilaine;;;35238;Rennes;Maquette;[EXEMPLE] Sacha;F;1950-05-13;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+35;Ille-Et-Vilaine;;;35238;Rennes;Prototype;[EXEMPLE] Morgan;M;1951-06-14;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+35;Ille-Et-Vilaine;;;35238;Rennes;Spécimen;[EXEMPLE] Lou;F;1952-07-15;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+35;Ille-Et-Vilaine;;;35238;Rennes;Échantillon;[EXEMPLE] Charlie;M;1953-08-16;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+35;Ille-Et-Vilaine;;;35238;Rennes;Brouillon;[EXEMPLE] Maxime;F;1954-09-17;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+35;Ille-Et-Vilaine;;;35047;Bruz;Factice;[EXEMPLE] Andréa;M;1955-10-18;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+35;Ille-Et-Vilaine;;;35047;Bruz;Modèle;[EXEMPLE] Eden;F;1956-11-19;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+35;Ille-Et-Vilaine;;;35047;Bruz;Essai;[EXEMPLE] Noa;M;1957-12-20;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+35;Ille-Et-Vilaine;;;35047;Bruz;Ébauche;[EXEMPLE] Camille;F;1958-01-21;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+35;Ille-Et-Vilaine;;;35047;Bruz;Esquisse;[EXEMPLE] Dominique;M;1959-02-22;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+75;Paris;;;75056;Paris;Gabarit;[EXEMPLE] Claude;F;1960-03-23;99;[EXEMPLE] Profession fictive;2026-03-15;Maire;2026-03-21;FR
+75;Paris;;;75056;Paris;Imaginaire;[EXEMPLE] Alix;M;1961-04-24;99;[EXEMPLE] Profession fictive;2026-03-15;1er adjoint au Maire;2026-03-21;FR
+75;Paris;;;75056;Paris;Inventé;[EXEMPLE] Sacha;F;1962-05-25;99;[EXEMPLE] Profession fictive;2026-03-15;2ème adjoint au Maire;2026-03-21;FR
+75;Paris;;;75056;Paris;Supposé;[EXEMPLE] Morgan;M;1963-06-26;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR
+75;Paris;;;75056;Paris;Fantaisie;[EXEMPLE] Lou;F;1964-07-27;99;[EXEMPLE] Profession fictive;2026-03-15;;;FR

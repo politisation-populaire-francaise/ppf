@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The directory of elected officials in "Comprendre" (D-047): the page « Mes élus », the box of the
+     « Qui décide de ça ? » sheets, the choice of the commune and the official directories (option C).
+     French, the user is addressed with "vous", typographic apostrophe (’), no em dash. The labels of
+     the mandates are neutral (« Membre de l’Assemblée nationale »): no gender is ever deduced. -->
+<resources>
+    <!-- Home of "Comprendre" -->
+    <string name="elus_home_title">Mes élus</string>
+    <string name="elus_home_intro">Du conseil municipal au Parlement européen : les élus de votre commune, trouvés sur votre appareil.</string>
+    <string name="elus_home_commune">Votre commune : %1$s</string>
+    <string name="elus_home_none">Indiquez votre commune pour connaître vos élus.</string>
+    <string name="elus_home_offline">Les annuaires officiels pour trouver vos élus.</string>
+
+    <!-- Page « Mes élus » -->
+    <string name="elus_page_title">Mes élus</string>
+    <string name="elus_page_intro">Les élus qui vous représentent, de votre commune à l’Union européenne, d’après le Répertoire national des élus.</string>
+    <string name="elus_back">Retour</string>
+    <string name="elus_commune_label">Votre commune</string>
+    <string name="elus_commune_value">%1$s, %2$s (%3$s)</string>
+    <string name="elus_change">Changer de commune</string>
+    <string name="elus_forget">Oublier ma commune</string>
+    <string name="elus_choose">Indiquer ma commune</string>
+    <string name="elus_none_yet">Indiquez votre commune : l’application trouvera vos élus dans la liste officielle de votre département.</string>
+    <string name="elus_privacy">Votre commune reste sur votre appareil. Le serveur sait seulement qu’un appareil a téléchargé la liste des élus d’un département, et il ne garde pas son adresse IP.</string>
+    <string name="elus_example_title">Données fictives [EXEMPLE]</string>
+    <string name="elus_example_text">Ces noms sont inventés pour les essais de l’application. Les vrais élus apparaîtront à l’ouverture du service au public.</string>
+    <string name="elus_source_title">Source</string>
+    <string name="elus_source_updated">Mise à jour de la source : %1$s</string>
+    <string name="elus_source_licence">Licence : %1$s</string>
+    <string name="elus_downloaded">Liste téléchargée le %1$s</string>
+    <string name="elus_source_open">Voir la source</string>
+    <string name="elus_check_update">Rechercher une mise à jour</string>
+    <string name="elus_update_available">Une nouvelle version de la liste est disponible (%1$s).</string>
+    <string name="elus_update_download">Mettre à jour</string>
+    <string name="elus_up_to_date">La liste est à jour.</string>
+    <string name="elus_update_failed">La mise à jour n’a pas abouti. Réessayez plus tard.</string>
+    <string name="elus_level_empty">Aucun élu de ce niveau dans la liste.</string>
+    <string name="elus_since">Depuis le %1$s</string>
+    <string name="elus_show_more">Afficher les %1$d autres</string>
+    <string name="elus_show_less">Afficher moins</string>
+    <plurals name="elus_members">
+        <item quantity="one">%1$d membre</item>
+        <item quantity="other">%1$d membres</item>
+    </plurals>
+    <plurals name="elus_others">
+        <item quantity="one">et %1$d autre</item>
+        <item quantity="other">et %1$d autres</item>
+    </plurals>
+
+    <!-- Notes under a level -->
+    <string name="elus_note_no_epci">Votre commune n’appartient à aucune intercommunalité.</string>
+    <string name="elus_note_all_epci">La liste ne dit pas quelle commune chaque membre représente : voici tous les membres.</string>
+    <string name="elus_note_all_cantons">La liste ne dit pas de quel canton dépend votre commune : voici les membres du conseil départemental de tout le département, avec leur canton.</string>
+    <string name="elus_note_all_circonscriptions">La liste ne dit pas de quelle circonscription dépend votre commune : voici les membres de l’Assemblée nationale de tout le département, avec leur circonscription.</string>
+    <string name="elus_note_no_national">La liste des membres du Parlement européen élus en France n’est pas sur votre appareil.</string>
+
+    <!-- Groups -->
+    <string name="elus_group_municipal">Conseil municipal de %1$s</string>
+    <string name="elus_group_epci_caption">Présidence et membres qui représentent %1$s</string>
+    <string name="elus_group_canton">Canton : %1$s</string>
+    <string name="elus_group_department_presidency">Présidence du conseil départemental</string>
+    <string name="elus_group_collectivite">Assemblée de la collectivité %1$s</string>
+    <string name="elus_group_region_presidency">Présidence du conseil régional</string>
+    <string name="elus_group_regional_council">Conseil régional : %1$s</string>
+    <string name="elus_group_senate">Sénat : élus du département %1$s</string>
+    <string name="elus_group_european">Parlement européen : membres élus en France</string>
+
+    <!-- Neutral labels of the mandates -->
+    <string name="elus_mandate_municipal">Membre du conseil municipal</string>
+    <string name="elus_mandate_communautaire">Membre du conseil communautaire</string>
+    <string name="elus_mandate_departemental">Membre du conseil départemental</string>
+    <string name="elus_mandate_regional">Membre du conseil régional</string>
+    <string name="elus_mandate_collectivite">Membre de l’assemblée de la collectivité</string>
+    <string name="elus_mandate_depute">Membre de l’Assemblée nationale</string>
+    <string name="elus_mandate_senateur">Membre du Sénat</string>
+    <string name="elus_mandate_europeen">Membre du Parlement européen</string>
+
+    <!-- Box of the « Qui décide de ça ? » sheets -->
+    <string name="elus_box_pick">Indiquez votre commune pour voir ici les noms de vos élus, d’après l’annuaire officiel des élus. Votre commune reste sur votre appareil.</string>
+    <string name="elus_box_for">Vos élus à %1$s</string>
+    <string name="elus_box_all">Voir tous mes élus</string>
+    <string name="elus_box_directories">Annuaires officiels des élus</string>
+    <string name="elus_box_level_none">Aucun élu de ce niveau pour votre commune.</string>
+
+    <!-- Choice of the commune -->
+    <string name="elus_chooser_title">Indiquer ma commune</string>
+    <string name="elus_chooser_postal_code">Code postal (5 chiffres)</string>
+    <string name="elus_chooser_continue">Continuer</string>
+    <string name="elus_chooser_cancel">Annuler</string>
+    <string name="elus_chooser_loading">Recherche en cours…</string>
+    <string name="elus_chooser_download_text">Le code postal %1$s se trouve dans : %2$s. Pour trouver vos élus, l’application télécharge la liste des élus de ce département une seule fois, puis la garde sur votre appareil.</string>
+    <string name="elus_chooser_download_size">Taille du téléchargement : %1$s.</string>
+    <string name="elus_chooser_download">Télécharger (%1$s)</string>
+    <string name="elus_chooser_downloading">Téléchargement en cours…</string>
+    <string name="elus_chooser_datasaver_title">Mode économie de données</string>
+    <string name="elus_chooser_datasaver_text">Votre appareil économise les données. Ce téléchargement utilise %1$s. Le faire quand même ?</string>
+    <string name="elus_chooser_datasaver_confirm">Télécharger quand même</string>
+    <string name="elus_chooser_pick">Plusieurs communes ont le code postal %1$s. Laquelle est la vôtre ?</string>
+    <string name="elus_chooser_retry">Réessayer</string>
+    <string name="elus_error_postal_code">Un code postal a cinq chiffres, par exemple 69001.</string>
+    <string name="elus_error_unknown">Aucun département de l’annuaire ne correspond au code postal %1$s.</string>
+    <string name="elus_error_unreachable">Le serveur ne répond pas. Réessayez plus tard, ou consultez les annuaires officiels depuis la page « Mes élus ».</string>
+    <string name="elus_error_refused">La liste reçue ne correspond pas à celle que le serveur annonce : elle a été refusée par sécurité. Réessayez plus tard.</string>
+    <string name="elus_error_unreadable">Cette version de l’application ne sait pas lire l’annuaire du serveur. Mettez l’application à jour.</string>
+    <string name="elus_error_no_commune">Aucune commune n’a le code postal %1$s dans la liste de ce département.</string>
+    <string name="elus_size_ko">%1$s ko</string>
+    <string name="elus_size_mo">%1$s Mo</string>
+
+    <!-- « Oublier ma commune » -->
+    <string name="elus_forget_title">Oublier ma commune ?</string>
+    <string name="elus_forget_text">Votre commune et les listes d’élus téléchargées seront effacées de cet appareil. Vous pourrez indiquer une commune à nouveau plus tard.</string>
+    <string name="elus_forget_confirm">Oublier ma commune</string>
+    <string name="elus_forget_keep">Garder ma commune</string>
+
+    <!-- Official directories (option C) -->
+    <string name="elus_directories_title">Les annuaires officiels</string>
+    <string name="elus_directories_no_server">Cette version de l’application ne contient pas encore l’annuaire des élus. En attendant, ces annuaires officiels permettent de trouver vos élus.</string>
+    <string name="elus_directories_unreachable">Le serveur ne répond pas pour le moment. En attendant, ces annuaires officiels permettent de trouver vos élus.</string>
+    <string name="elus_directories_intro">Pour vérifier ou en savoir plus, les annuaires officiels :</string>
+    <string name="elus_directory_an_title">Assemblée nationale</string>
+    <string name="elus_directory_an_text">Les 577 membres de l’Assemblée nationale, par département, par région ou par nom.</string>
+    <string name="elus_directory_senat_title">Sénat</string>
+    <string name="elus_directory_senat_text">Les membres du Sénat, par département.</string>
+    <string name="elus_directory_mairies_title">Annuaire de l’administration</string>
+    <string name="elus_directory_mairies_text">Votre mairie et ses coordonnées, par commune ou par code postal (Service Public).</string>
+    <string name="elus_directory_europe_title">Parlement européen</string>
+    <string name="elus_directory_europe_text">Les membres du Parlement européen élus en France.</string>
+    <string name="elus_directory_rne_title">Répertoire national des élus</string>
+    <string name="elus_directory_rne_text">Tous les élus de France, en fichiers ouverts (ministère de l’Intérieur, data.gouv.fr).</string>
+    <string name="elus_leave_title">Vous quittez PPF</string>
+    <string name="elus_leave_text">Ce lien ouvre une page qui n’est pas sur PPF : %1$s. PPF ne la contrôle pas et ne voit pas ce que vous y faites.</string>
+    <string name="elus_leave_stay">Rester sur PPF</string>
+    <string name="elus_leave_open">Ouvrir la page</string>
+</resources>

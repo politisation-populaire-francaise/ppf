@@ -29,9 +29,14 @@ import org.politisationpopulairefrancaise.server.api.eventsApi
 import org.politisationpopulairefrancaise.server.api.groupsApi
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
+import org.politisationpopulairefrancaise.server.elus.ElusConfig
+import org.politisationpopulairefrancaise.server.elus.ElusService
+import org.politisationpopulairefrancaise.server.elus.ElusSetup
+import org.politisationpopulairefrancaise.server.elus.elusApi
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
+import org.politisationpopulairefrancaise.server.groups.GroupIndex
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.WrapRetention
 import org.politisationpopulairefrancaise.server.revendications.AiReviewConfig
@@ -41,8 +46,10 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationsSe
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
+import org.politisationpopulairefrancaise.server.seed.ExampleSeed
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.webRoutes
+import org.slf4j.LoggerFactory
 import javax.sql.DataSource
 
 /**
@@ -64,6 +71,11 @@ import javax.sql.DataSource
  *   see [AgirConfig].
  * - PPF_TILES_DIR: the folder of the PMTiles files of the map backgrounds, served at `/tiles/` by
  *   range (development and preproduction; in production Caddy serves them), see [TilesConfig].
+ * - PPF_RNE_SOURCE, PPF_RNE_REFRESH_DAYS: the directory of elected officials (fictitious example set
+ *   by default), see [ElusConfig].
+ * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
+ *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
+ *   to start when it is set in production, see [ExampleSeed].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -71,8 +83,18 @@ object ServerConfig {
 }
 
 fun main() {
+    // Checked before anything else: in production, example contents stop the server from starting.
+    val examples = ExampleSeed.fromEnvironment()
     val dataSource = DatabaseConfig.fromEnvironment()?.let { config ->
         Database.connect(config).also(Database::migrate)
+    }
+    if (examples != null) {
+        if (dataSource == null) {
+            LoggerFactory.getLogger(ExampleSeed::class.java)
+                .warn("Example contents: ${ExampleSeed.DIRECTORY_VARIABLE} is set but no database is configured, no example content loaded.")
+        } else {
+            ExampleSeed.load(examples, EventRepository(dataSource))
+        }
     }
     // Bind on every interface inside the container; the reverse proxy is the only
     // process allowed to reach it (see infra/).
@@ -114,8 +136,11 @@ fun Application.module(
     revendications: RevendicationsSetup = RevendicationsSetup.fromEnvironment(),
     agir: AgirSetup = AgirSetup.fromEnvironment(),
     tiles: TilesConfig = TilesConfig.fromEnvironment(),
+    elus: ElusSetup = ElusSetup.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
+    // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
+    val elusService = dataSource?.let { ElusService.start(this, it, elus, log) }
     // Citizen demands wait in a review queue; its checks and cleanup live and die with the application.
     val proposals = if (dataSource != null && repository != null) {
         RevendicationProposals.start(this, dataSource, repository, revendications)
@@ -133,7 +158,7 @@ fun Application.module(
         WrapRetention(repository, relay).start(this, relay.cleanupInterval, log)
     }
     val limits = PostLimits(relay)
-    val groups = repository?.let(::GroupDirectory)
+    val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     install(ErrorShield)
@@ -172,6 +197,7 @@ fun Application.module(
         groupsApi(groups)
         revendicationsApi(proposals)
         agirApi(agirSpace)
+        elusApi(elusService)
         agirSpace?.let { agendaPage(it.agendaSource()) }
         tilesRoutes(tiles)
         webRoutes()

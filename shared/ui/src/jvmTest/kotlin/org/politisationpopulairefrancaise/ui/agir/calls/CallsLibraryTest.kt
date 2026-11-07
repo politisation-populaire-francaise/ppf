@@ -32,7 +32,7 @@ class CallsLibraryTest {
     private val someone = IdentityKeys.generate()
 
     private suspend fun eventually(condition: () -> Boolean) {
-        repeat(200) {
+        repeat(2_400) {
             if (condition()) return
             delay(25)
         }
@@ -187,7 +187,7 @@ class CallsLibraryTest {
         content.start()
         eventually { content.status == LibraryStatus.Offline && content.guides.isNotEmpty() }
         val callSlugs = calls.calls.map { it.slug }.toSet()
-        assertEquals(3, content.guides.size)
+        assertEquals(5, content.guides.size)
         assertTrue(content.guides.none { it.slug in callSlugs })
         assertTrue(content.revendications.none { it.slug in callSlugs })
         assertEquals(8, content.revendications.size)

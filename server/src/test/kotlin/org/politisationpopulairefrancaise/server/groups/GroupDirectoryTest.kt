@@ -6,6 +6,7 @@ import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.sign
+import org.politisationpopulairefrancaise.server.TEST_RELAY
 import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy.Decision
@@ -268,7 +269,7 @@ class GroupDirectoryTest {
         val pool = Executors.newFixedThreadPool(events.size)
         try {
             val futures = events.map { event ->
-                pool.submit(Callable { start.await(); GroupDirectory(EventRepository(TestDatabase.dataSource)).admitAndStore(event) })
+                pool.submit(Callable { start.await(); GroupDirectory(EventRepository(TestDatabase.dataSource), GroupIndex(TestDatabase.dataSource, TEST_RELAY.groupLockWait)).admitAndStore(event) })
             }
             start.countDown()
             return futures.map { it.get(60, TimeUnit.SECONDS) }
