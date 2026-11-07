@@ -280,6 +280,10 @@ EOF
     fi
     chown "$server_uid:$server_uid" "$dir/vote_seeds"/*
     chmod 400 "$dir/vote_seeds"/*
+    # Testimonies (Agir, M5): encrypted files written by the server only.
+    install -d -m 0700 -o "$server_uid" -g "$server_uid" "$dir/testimonies"
+    grep -q '^PPF_MODERATION_KEY=' "$dir/.env" || echo "PPF_MODERATION_KEY=" >> "$dir/.env"
+    grep -q '^PPF_EVIDENCE_KEY=' "$dir/.env" || echo "PPF_EVIDENCE_KEY=" >> "$dir/.env"
     # Push wake-ups (D-078): ntfy's data (topics, 12-hour cache) and the VAPID private key of the server.
     install -d -m 0700 -o "$ntfy_uid" -g "$ntfy_uid" "$dir/ntfy"
     if [ ! -f "$dir/secrets/vapid_private_key" ]; then
