@@ -46,6 +46,9 @@ services:
       # No PPF_EXAMPLES_DIR here: the server refuses to start in production with it.
       # Parliamentary open data written by the importer below, read-only for the server.
       PPF_OPEN_DATA_DIR: /data/open-data
+      # Official public sources in production only (Comprendre, D-047 and D-090; hosts in infra/EGRESS.md).
+      PPF_RNE_SOURCE: official
+      PPF_TERRITOIRES_SOURCE: official
     secrets:
       - server_db_password
     volumes:
