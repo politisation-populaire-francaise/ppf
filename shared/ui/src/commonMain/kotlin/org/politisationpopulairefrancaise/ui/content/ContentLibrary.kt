@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.decider.DeciderCatalog
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
@@ -164,6 +165,13 @@ class ContentLibrary(
      * the world, dossiers and rights of reply, from the trusted editorial accounts only.
      */
     var voir: VoirCatalog by mutableStateOf(VoirCatalog.EMPTY)
+        private set
+
+    /**
+     * Everything "Décider" shows: the official petitions relayed, the democratic pacts and the
+     * answers of the candidates, from the trusted editorial accounts only.
+     */
+    var decider: DeciderCatalog by mutableStateOf(DeciderCatalog.EMPTY)
         private set
 
     /** [EXEMPLE] Reactions stay on the device until their privacy design is settled (M18). */
@@ -418,7 +426,11 @@ class ContentLibrary(
             val voirBlocks = VoirCatalog.TYPES.flatMap { type -> store.byTag(listOf(Article.KIND), Article.TAG_TYPE, type.tagValue, limit = VOIR_LIMIT) }
                 .filter { trust.isTrusted(it.pubkey) }
                 .mapNotNull(Article::from)
-            Reloaded(guides, demands, own, posts, VoirCatalog.from(voirBlocks))
+            // The same for "Décider": no one but the editorial team can relay a petition or record an answer to the pact.
+            val deciderBlocks = DeciderCatalog.TYPES.flatMap { type -> store.byTag(listOf(Article.KIND), Article.TAG_TYPE, type.tagValue, limit = VOIR_LIMIT) }
+                .filter { trust.isTrusted(it.pubkey) }
+                .mapNotNull(Article::from)
+            Reloaded(guides, demands, own, posts, VoirCatalog.from(voirBlocks), DeciderCatalog.from(deciderBlocks))
         }
         val freshGuides = fresh.guides
         val freshDemands = fresh.demands to fresh.own
@@ -427,6 +439,7 @@ class ContentLibrary(
         myRevendications = freshDemands.second
         posts = fresh.posts
         voir = fresh.voir
+        decider = fresh.decider
         selected = selected?.let { current -> freshGuides.firstOrNull { it.address == current.address } }
         selectedRevendication = selectedRevendication?.let { current ->
             freshDemands.first.firstOrNull { it.address == current.address } ?: freshDemands.second.firstOrNull { it.article.address == current.address }?.article
@@ -462,6 +475,7 @@ class ContentLibrary(
             "files/contents/revendications.json",
             "files/contents/fil.json",
             "files/contents/voir.json",
+            "files/contents/decider.json",
         )
         private val json = Json { ignoreUnknownKeys = true }
     }
@@ -474,6 +488,7 @@ private class Reloaded(
     val own: List<OwnDemand>,
     val posts: List<FeedPost>,
     val voir: VoirCatalog,
+    val decider: DeciderCatalog,
 )
 
 @Composable

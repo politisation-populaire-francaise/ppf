@@ -6,6 +6,20 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-07] Espace « Décider » : première version et questions ouvertes
+- Statut : À valider
+- Concerne : cahier-fonctionnel.md, M10 (pétitions), M13.5 (Pacte démocratique) ; inventaire, DE-07 et DE-08
+- Description : première version codée le 7 novembre 2026 avec des contenus [EXEMPLE] (D-059 à D-061) : pétitions officielles avec leurs seuils réels et ce qu'ils ne garantissent pas, Pacte démocratique avec son tableau public identique pour tous. Le droit a été revérifié le 7 novembre 2026 (`docs/integration/decider-petitions-droit.md`) : rien n'a changé depuis le 4 novembre ; une réforme du Règlement de l'Assemblée, qui aurait supprimé le seuil de 100 000, a été retirée de l'ordre du jour le 15 juillet 2026.
+- Questions à la propriétaire :
+  1. **CESE** : j'ai ajouté les pétitions au Conseil économique, social et environnemental (150 000 signataires dès 16 ans, avis sous six mois), absentes de M10. Les garde-t-on ? Recommandation : oui, c'est une pétition officielle prévue par la Constitution et ouverte dès 16 ans.
+  2. **Réponse au Pacte arrivée après la date limite** : A. comptée, avec la mention « réponse reçue après le délai » (codé, réversible) ; B. non comptée. Recommandation : A, le but est d'obtenir des engagements, l'équité est assurée par la même mention pour tous.
+  3. **Relevé des compteurs** : aujourd'hui l'équipe relève le compteur à la main. Les pétitions de l'Assemblée et du Sénat sont publiées chaque lundi en données ouvertes sur data.gouv.fr (Licence Ouverte) : le serveur pourrait les relever automatiquement, sans que l'application contacte un tiers. Gratuit. Recommandation : oui, après le premier déploiement.
+  4. **Objectifs par territoire** (M10) : aucune plateforme ne publie la répartition des signataires par département. On peut proposer des objectifs indicatifs proportionnels à la population, avec un référentiel des territoires (le même que pour « Qui décide de ça ? » et les salons). À faire avec ce référentiel.
+  5. **Pétitions locales** (article 72-1 de la Constitution : un dixième des électeurs d'une commune pour demander une consultation) : à ajouter plus tard ?
+  6. **Envoi réel du Pacte** : par quel canal (courrier recommandé à l'adresse officielle de chaque candidat, courriel), et qui signe l'envoi pour l'association ? L'horodatage des réponses (OpenTimestamps, gratuit, ou RFC 3161) reste à choisir.
+  7. Rappel : la **liste des mesures** (entrée « Liste de départ des mesures du Pacte démocratique ») et les **modalités des campagnes** sont toujours « À valider » ; les mesures affichées sont des exemples.
+- Décision :
+
 ### [2026-11-07] Agir : publication des mobilisations et des appels
 - Statut : Intégré le 2026-11-07 (décisions de la propriétaire ; code de l'espace Agir, contrat commun `docs/integration/agir-contrat.md`) ; à reporter dans le cahier fonctionnel version 2.0
 - Concerne : cahier-fonctionnel.md, M1, M3 ; AG-02, AG-18, AP-02, AP-08, AP-09 ; points d'attention n° 6 et n° 12
