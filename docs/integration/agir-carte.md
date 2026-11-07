@@ -108,7 +108,7 @@ Texte à ajouter au tableau « Format d'une mobilisation de l'agenda » de `cont
 
 ## 7. Ce que le serveur devra servir au déploiement
 
-<!-- SERVEUR -->
+Voir la section 13 (« À transmettre à la session infrastructure ») pour le dossier, le volume, Caddy, l'espace disque et la bande passante, et la section 7 bis pour la production mensuelle du fichier. En résumé : un dossier `tiles/` avec un fichier daté `france-AAAAMMJJ.pmtiles` (zooms 8 à 13, estimé à 2 à 5 Go, toujours sous 10 Go) et son manifeste `current.json` ; aucune base de données, aucun programme de tuiles ; 1 à 3 Mo de bande passante par consultation détaillée.
 
 ## 7 bis. Production des tuiles (tâche mensuelle sur le serveur)
 
@@ -147,7 +147,12 @@ Vérifié le 7 novembre 2026. Rien de ceci n'est fait par l'application ni par l
 
 ## 8. Tests
 
-<!-- TESTS -->
+- **Cœur** (`gradlew :shared:core:jvmTest --tests "*agir.map*"`, 25 tests) : `GeohashTest` (5 : exemples de référence, aller-retour à toutes les longueurs en métropole et outre-mer, validation, bornes), `PmtilesTest` (6 : identifiants de tuile de la spécification, aller-retour de tous les zooms 0 à 7, en-tête, répertoires avec séries et contenus partagés, fichier écrit puis relu, répertoires feuilles avec 65 536 tuiles gzip), `MapStyleTest` (3 : **aucune adresse web ni sprite dans le style**, couleurs et polices de l'application, fond détaillé sous le fond intégré), `MapPointsTest` (5 : seules les mobilisations placées sont des points, mêmes filtres que la liste, états, regroupement par lieu, GeoJSON sans titre, lieu ni description), `MapResourceRouterTest` (4 : fond intégré tuile par tuile et lu une fois, **toute autre adresse refusée**, glyphes et plage vide, fond détaillé seulement quand il est permis), `TileManifestTest` (2).
+- **Serveur** (`gradlew :server:test --tests "*TilesRoutesTest*"`, 6 tests) : le lecteur de l'application lit des tuiles par plages à travers le client de test, le manifeste et le fichier daté (cache court, cache « immutable »), sans manifeste rien n'est lu, réponses partielles seulement pour les fichiers PMTiles du dossier (pas de plage : 400 ; au-delà de la fin : 416 ; autre fichier ou `..` : 404), lecture des en-têtes `Range`.
+- **Outil** (`gradlew :tools:map-data:test`, 4 tests) : filtre des couches et des types, tuiles couvertes (monde puis France et outre-mer), fond construit depuis un fichier source, glyphes (champ de distance, dimensions, métriques, encodage).
+- **Écran** (`gradlew :shared:ui:jvmTest --tests "*AgendaMapScreenTest*"`, 11 tests, avec un faux moteur de carte qui montre ses points comme des boutons) : choix « Liste » / « Carte » (boutons radio, liste par défaut), 7 points sur les exemples, style sans adresse web, zoom maximal sans serveur, étiquettes (« Rassemblement / Demain », « Annulé : … »), attribution et sources ; point touché, détail, retour sur la carte telle qu'elle était, fermeture, retour à la liste ; filtres de l'agenda appliqués à la carte et carte vide ; boutons sans geste ; mobilisation sans lieu comptée et visible dans la liste ; **trois largeurs** (360, 700 : le détail remplace la carte puis la rend ; 1000 : le détail s'ouvre à côté) ; sans moteur (ordinateur), la phrase honnête ; données intégrées (fond, glyphes, refus des tiers). Ces tests utilisent une base sur fichier : une base SQLite « en mémoire » est propre à chaque connexion, donc à chaque fil d'exécution, ce qui rend les tests de l'agenda aléatoirement lents ou bloqués sur un ordinateur chargé (piège à noter pour la session principale).
+- Les tests existants de l'agenda passent sans changement, sauf `AgendaScreenTest.organisersAreNamedByTheDirectoryOfOrganisations`, qui échoue ici (la puce d'organisation du panneau de filtres n'est pas trouvée) : ce test et ce panneau ne sont pas touchés par la carte, `agenda.json` a les mêmes organisateurs et la même clé qu'avant ; l'échec semble venir de l'ajout d'organisateurs aux exemples (8e1722f) ou de la base « en mémoire » ci-dessus. À regarder par l'agent de l'agenda.
+- `bash tools/check-no-trackers.sh` : vert.
 
 ## 9. Fichiers partagés touchés hors de mon périmètre
 
