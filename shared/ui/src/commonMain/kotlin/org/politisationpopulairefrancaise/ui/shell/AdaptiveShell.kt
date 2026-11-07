@@ -85,6 +85,8 @@ import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaScreen
 import org.politisationpopulairefrancaise.ui.agir.agenda.OrganisationAgenda
 import org.politisationpopulairefrancaise.ui.agir.agenda.UpcomingMobilizations
 import org.politisationpopulairefrancaise.ui.agir.agenda.rememberAgendaLibrary
+import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyLibrary
+import org.politisationpopulairefrancaise.ui.agir.testimonies.rememberTestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsLibrary
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
 import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
@@ -172,6 +174,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // Started when their screens are first shown, as the rooms are: nothing is loaded before.
     val agendaLibrary = rememberAgendaLibrary(dependencies, start = false)
     val callsLibrary = rememberCallsLibrary(dependencies, start = false)
+    val testimonyLibrary = rememberTestimonyLibrary(dependencies, start = false)
     // Erasing the keys also forgets the followed accounts, the conversations and the joined rooms (protection by default).
     val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = {
         contentLibrary.clearFollowed()
@@ -179,6 +182,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         groupsLibrary.clearMemberships()
         agendaLibrary.forgetUser()
         callsLibrary.clearResponses()
+        testimonyLibrary.forgetAll()
     })
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
@@ -238,6 +242,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     organisationsLibrary = organisationsLibrary,
                     agendaLibrary = agendaLibrary,
                     callsLibrary = callsLibrary,
+                    testimonyLibrary = testimonyLibrary,
                     mailboxSetting = mailboxSetting,
                     windowClass = windowClass,
                     modifier = modifier.testTag(ShellTags.CONTENT),
@@ -270,6 +275,7 @@ private fun SpaceContent(
     organisationsLibrary: OrganisationsLibrary,
     agendaLibrary: AgendaLibrary,
     callsLibrary: CallsLibrary,
+    testimonyLibrary: TestimonyLibrary,
     mailboxSetting: MailboxSetting,
     windowClass: WindowClass,
     modifier: Modifier,
@@ -310,6 +316,7 @@ private fun SpaceContent(
                         onCreateAccount = { onNavigate(Space.MON_ESPACE) },
                     )
                 },
+                testimonies = testimonyLibrary,
                 organisationAgenda = { key, slotModifier ->
                     OrganisationAgenda(agendaLibrary, key, slotModifier) { mobilization ->
                         agendaLibrary.open(mobilization)
