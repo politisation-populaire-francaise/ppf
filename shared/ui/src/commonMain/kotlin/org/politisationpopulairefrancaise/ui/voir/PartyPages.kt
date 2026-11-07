@@ -30,6 +30,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.voir.Chamber
 import org.politisationpopulairefrancaise.core.voir.FactKind
+import org.politisationpopulairefrancaise.core.voir.FinancingKind
+import org.politisationpopulairefrancaise.core.voir.FrenchNumbers
 import org.politisationpopulairefrancaise.core.voir.NextStep
 import org.politisationpopulairefrancaise.core.voir.NextTarget
 import org.politisationpopulairefrancaise.core.voir.PoliticalParty
@@ -128,7 +130,7 @@ internal fun PartyChip(party: PoliticalParty, onOpen: () -> Unit, modifier: Modi
     }
 }
 
-/** The list of the parties, most seats first. */
+/** The list of the parties, by name: never by size (neutrality, as the public table of the Pacte). */
 @Composable
 internal fun PartiesPage(catalog: VoirCatalog, actions: VoirActions, columns: Int) {
     ListIntro(stringResource(Res.string.voir_parties), stringResource(Res.string.voir_parties_intro))
@@ -197,9 +199,17 @@ internal fun PartyPage(party: PoliticalParty, catalog: VoirCatalog, state: VoirS
             }
         }
 
+        // Identity: financing structure, European party and group.
+        Spacer(Modifier.height(16.dp))
+        IdentitySection(party)
+
         // Seats.
         Spacer(Modifier.height(16.dp))
         SeatsSection(party, wide)
+
+        // Public aid of the State, year by year.
+        Spacer(Modifier.height(16.dp))
+        FundingSection(party)
 
         // Leaders, then the other members who have a sheet.
         val leaders = catalog.leadersOf(party)
@@ -257,6 +267,56 @@ internal fun PartyPage(party: PoliticalParty, catalog: VoirCatalog, state: VoirS
         NextStepsSection(next, actions.next)
         Spacer(Modifier.height(12.dp))
         OriginLine(party.article)
+    }
+}
+
+@Composable
+private fun IdentitySection(party: PoliticalParty) {
+    val palette = PpfTheme.palette
+    PpfCard(Modifier.fillMaxWidth().testTag(VoirTags.section("party-identity"))) {
+        SectionHeader(stringResource(Res.string.voir_party_identity))
+        Text(stringResource(Res.string.voir_party_financing), style = MaterialTheme.typography.labelLarge, color = palette.inkMuted)
+        val financing = party.financing
+        Text(
+            stringResource(if (financing.kind == FinancingKind.ASSOCIATION) Res.string.voir_party_financing_association else Res.string.voir_party_financing_agent),
+            style = MaterialTheme.typography.titleSmall,
+        )
+        financing.approval?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
+        financing.date?.let { Text(stringResource(Res.string.voir_party_financing_since, it.toFrench()), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle) }
+        financing.source?.let { SourceLine(it) }
+        Text(stringResource(Res.string.voir_party_financing_note), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+        if (party.europeanParty != null || party.europeanGroup != null) {
+            HorizontalDivider(color = palette.border, modifier = Modifier.padding(vertical = 8.dp))
+            party.europeanParty?.let { Text(stringResource(Res.string.voir_party_european_party, it), style = MaterialTheme.typography.bodyMedium) }
+            party.europeanGroup?.let { Text(stringResource(Res.string.voir_party_european_group, it), style = MaterialTheme.typography.bodyMedium) }
+        }
+    }
+}
+
+/** "4 210 345,60 €", the French way. */
+internal fun euros(cents: Long): String {
+    val whole = FrenchNumbers.format((cents / 100).toDouble())
+    val rest = (cents % 100).toInt()
+    val euro = "${FrenchNumbers.GROUP_SEPARATOR}€"
+    return if (rest == 0) "$whole$euro" else "$whole,${rest.toString().padStart(2, '0')}$euro"
+}
+
+@Composable
+private fun FundingSection(party: PoliticalParty) {
+    val palette = PpfTheme.palette
+    PpfCard(Modifier.fillMaxWidth().testTag(VoirTags.section("party-funding"))) {
+        SectionHeader(stringResource(Res.string.voir_party_funding))
+        if (party.publicFunding.isEmpty()) Text(stringResource(Res.string.voir_party_funding_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
+        party.publicFunding.forEachIndexed { index, funding ->
+            if (index > 0) HorizontalDivider(color = palette.border, modifier = Modifier.padding(vertical = 8.dp))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(Res.string.voir_party_funding_year, funding.year), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+                Text(euros(funding.amountCents), style = MaterialTheme.typography.titleMedium, color = palette.brand)
+            }
+            funding.decree?.let { SourceLine(it) }
+        }
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(Res.string.voir_party_funding_note), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
     }
 }
 

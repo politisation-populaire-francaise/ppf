@@ -59,7 +59,7 @@ class PartyScreenTest {
     @Test
     fun aPartyOpensFromThePowerAxisWithItsSeatsItsMembersAndItsPromises() = runComposeUiTest {
         openPower()
-        // The party with the most seats comes first.
+        // Parties come by name, never by size.
         onNodeWithTag(VoirTags.card("parti-exemple-a")).performScrollTo().assert(hasText("PEA")).performClick()
         waitForIdle()
         onNodeWithTag(VoirTags.detail("parti-exemple-a")).assertExists()
@@ -68,6 +68,12 @@ class PartyScreenTest {
             .assert(hasAnyDescendant(hasText("Assemblée nationale")))
             .assert(hasAnyDescendant(hasText("Chiffre retenu")))
             .assert(hasAnyDescendant(hasText("124")))
+        onNodeWithTag(VoirTags.section("party-identity")).performScrollTo()
+            .assert(hasAnyDescendant(hasText("Association de financement agréée")))
+            .assert(hasAnyDescendant(hasText("Groupe au Parlement européen : Groupe européen d’exemple")))
+        onNodeWithTag(VoirTags.section("party-funding")).performScrollTo()
+            .assert(hasAnyDescendant(hasText("Année 2026")))
+            .assert(hasAnyDescendant(hasText("4 210 345,60 €")))
         onNodeWithTag(VoirTags.section("party-members")).performScrollTo().assert(hasAnyDescendant(hasText("Camille Exemple")))
         onNodeWithTag(VoirTags.card("promesse-parti-a-smic")).performScrollTo().assertExists()
         // The same sections on every sheet, even empty.
@@ -78,6 +84,19 @@ class PartyScreenTest {
         onNodeWithTag(VoirTags.card("camille-exemple")).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(VoirTags.detail("camille-exemple")).assertExists()
+    }
+
+    @Test
+    fun aPartyWithAFinancialAgentNeverShowsAName() = runComposeUiTest {
+        openPower()
+        onNodeWithTag(VoirTags.seeAll("parties")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.card("parti-exemple-c")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.section("party-identity")).performScrollTo()
+            .assert(hasAnyDescendant(hasText("Mandataire financier (personne physique, nom non publié)")))
+        // The public aid section is on every sheet.
+        onNodeWithTag(VoirTags.section("party-funding")).performScrollTo().assertExists()
     }
 
     @Test

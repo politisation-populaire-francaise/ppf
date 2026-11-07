@@ -3,7 +3,7 @@
      decision of 7 November 2026). French, typographic apostrophe (’), no em dash. -->
 <resources>
     <string name="voir_parties">Partis politiques</string>
-    <string name="voir_parties_intro">Chaque fiche de parti présente les mêmes rubriques, dans le même ordre, quel que soit le parti. Les partis sont rangés par nombre de sièges, puis par ordre alphabétique.</string>
+    <string name="voir_parties_intro">Chaque fiche de parti présente les mêmes rubriques, dans le même ordre, quel que soit le parti. Les partis sont rangés par ordre alphabétique, jamais par taille.</string>
     <string name="voir_party_kind">Parti politique</string>
     <string name="voir_party_of">Parti : %1$s</string>
     <string name="voir_party_founded">Fondé le %1$s</string>
@@ -31,6 +31,18 @@
     <string name="voir_party_money">Argent public</string>
     <string name="voir_party_presumption">Présomption d’innocence : tant qu’il n’a pas été condamné définitivement, le parti est présumé innocent.</string>
     <string name="voir_party_next_default">Voir les revendications des citoyens</string>
+    <string name="voir_party_identity">Identité</string>
+    <string name="voir_party_financing">Financement</string>
+    <string name="voir_party_financing_association">Association de financement agréée</string>
+    <string name="voir_party_financing_agent">Mandataire financier (personne physique, nom non publié)</string>
+    <string name="voir_party_financing_since">Depuis le %1$s</string>
+    <string name="voir_party_financing_note">La loi impose à chaque parti de recueillir ses fonds par une association de financement agréée ou par un mandataire financier déclaré (loi n° 88-227 du 11 mars 1988, articles 11 à 11-2).</string>
+    <string name="voir_party_european_party">Parti politique européen : %1$s</string>
+    <string name="voir_party_european_group">Groupe au Parlement européen : %1$s</string>
+    <string name="voir_party_funding">Aide publique de l’État</string>
+    <string name="voir_party_funding_none">Aucune aide publique recensée.</string>
+    <string name="voir_party_funding_year">Année %1$d</string>
+    <string name="voir_party_funding_note">Montant fixé chaque année par décret, selon les voix obtenues aux législatives et le nombre de parlementaires rattachés (loi n° 88-227, articles 8 et 9).</string>
     <string name="voir_party_filter">Par parti</string>
     <string name="voir_party_filter_all">Tous les partis</string>
 </resources>
