@@ -30,6 +30,16 @@ object EventKinds {
     /** Application-specific data of a user, addressable by `d` (for example `ppf:mailbox`, the retention of private messages). */
     const val APP_DATA: Int = 30078
 
+    // Platform signature (contract docs/integration/service-signature.md, decision D-129).
+    /** A label (NIP-32): the status the team gives a demand. */
+    const val LABEL: Int = 1985
+    /** An OpenTimestamps attestation (NIP-03): the timestamp proof of an archive. */
+    const val OPENTIMESTAMPS: Int = 1040
+    /** The certificate of a working key of the platform, signed by the root; `d` = the working key. Used by no NIP. */
+    const val PLATFORM_KEY_CERTIFICATE: Int = 37240
+    /** The list of the team members whose approvals the signing service accepts, signed by the root. Used by no NIP. */
+    const val PLATFORM_TEAM_LIST: Int = 37241
+
     fun isRegular(kind: Int): Boolean = kind in 1000..9999 || kind in 4..44 || kind == 1 || kind == 2
     fun isReplaceable(kind: Int): Boolean = kind in 10000..19999 || kind == 0 || kind == 3
     fun isEphemeral(kind: Int): Boolean = kind in 20000..29999
