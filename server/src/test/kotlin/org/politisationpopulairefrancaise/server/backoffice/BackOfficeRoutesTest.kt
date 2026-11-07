@@ -16,6 +16,7 @@ import io.ktor.http.parameters
 import io.ktor.server.engine.connector
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
+import io.ktor.utils.io.writeFully
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.publication.HeldStatus
@@ -249,12 +250,14 @@ class BackOfficeRoutesTest {
         val options = Json.decodeFromString<RequestOptionsResponse>(client.json("/webauthn/confirmation/options", "{}", moderator.token, csrf).bodyAsText())
         val confirmed = client.json("/webauthn/confirmation", Json.encodeToString(AssertionResponse.serializer(), moderator.keys[0].assertion(options, csrf)), moderator.token, csrf)
         assertEquals(HttpStatusCode.OK, confirmed.status, confirmed.bodyAsText())
-        val seq = lastSeq(data)
+        val seq = lastSeq()
         val approved = client.form("/files/agir.held/${event.id}", moderator.token, mapOf("csrf" to csrf, "action" to "approve"))
         assertEquals("/files/agir.held?ok=done", approved.headers[HttpHeaders.Location])
         assertEquals(HeldStatus.APPROVED, HeldQueue(TestDatabase.dataSource, EventRepository(TestDatabase.dataSource)).find(event.id)!!.status)
         assertNotNull(EventRepository(TestDatabase.dataSource).find(event.id), "published exactly as signed")
-        val line = journalAfter(data, seq).single()
+        val lines = journalAfter(seq)
+        assertEquals(listOf("queue.agir.held.approve.requested", "queue.agir.held.approve"), lines.map { it.action })
+        val line = lines.last()
         assertEquals("queue.agir.held.approve", line.action)
         assertEquals("agir.held:${event.id}", line.targetId)
         assertEquals("done", line.details["outcome"])
@@ -268,7 +271,7 @@ class BackOfficeRoutesTest {
         val client = start()
         val admin = member(data, "Admin", listOf(TeamRole.ADMIN))
         val moderator = member(data, "Modo", listOf(TeamRole.MODERATOR))
-        data.audit.record(AuditEntry(AuditActor.System, "team.route_test", "team_account", admin.id.toString()))
+        BackOfficeTestData.audit.record(AuditEntry(AuditActor.System, "team.route_test", "team_account", admin.id.toString()))
         assertEquals(HttpStatusCode.Forbidden, client.page("/journal", moderator.token).status)
         val page = client.page("/journal?action=team.route_test", admin.token)
         assertEquals(HttpStatusCode.OK, page.status)
@@ -276,14 +279,73 @@ class BackOfficeRoutesTest {
         assertTrue(html.contains(BackOfficeTexts.JOURNAL_CHAIN_OK))
         assertTrue(html.contains("team.route_test"))
         assertEquals(HttpStatusCode.OK, client.page("/journal?du=pas-une-date", admin.token).status)
-        val seq = lastSeq(data)
+        val seq = lastSeq()
         val export = client.page("/journal.json?action=team.route_test", admin.token)
         assertEquals(HttpStatusCode.OK, export.status)
         assertTrue(export.headers[HttpHeaders.ContentDisposition].orEmpty().contains("attachment"))
         val lines = Json.decodeFromString<List<AuditRecord>>(export.bodyAsText())
         assertEquals(listOf("team.route_test"), lines.map { it.action })
-        assertEquals(listOf("audit.exported"), journalAfter(data, seq).map { it.action })
+        assertEquals(listOf("audit.exported"), journalAfter(seq).map { it.action })
+        // The head of the journal is shown, to be noted or anchored outside (D-111).
+        val head = assertNotNull(data.journalHead())
+        assertTrue(client.page("/journal", admin.token).bodyAsText().contains(head.hash))
         assertEquals(HttpStatusCode.Forbidden, client.page("/journal.json", moderator.token).status)
+    }
+
+    @Test
+    fun aNewKeyIsAddedThroughAProofOfAnExistingKey() = testApplication {
+        val client = start()
+        val claire = member(data, "Claire", keys = 1)
+        val csrf = Csrf.tokenFor(claire.token)
+        val proof = Json.decodeFromString<RequestOptionsResponse>(client.json("/webauthn/cle/preuve/options", "{}", claire.token, csrf).bodyAsText())
+        assertEquals(1, proof.publicKey.allowCredentials.size)
+        val assertion = claire.keys[0].assertion(proof, csrf)
+        val creation = client.json("/webauthn/cle/options", Json.encodeToString(AssertionResponse.serializer(), assertion), claire.token, csrf)
+        assertEquals(HttpStatusCode.OK, creation.status, creation.bodyAsText())
+        val options = Json.decodeFromString<CreationOptionsResponse>(creation.bodyAsText())
+        assertEquals(1, options.publicKey.excludeCredentials.size)
+        val added = client.json("/webauthn/cle", Json.encodeToString(RegistrationResponse.serializer(), TestAuthenticator().register(options, "Clé USB", csrf)), claire.token, csrf)
+        assertEquals(HttpStatusCode.OK, added.status, added.bodyAsText())
+        assertEquals(2, data.keysOf(claire.id).size)
+        // Without a proof, no registration opens.
+        val bare = client.json("/webauthn/cle/options", "{}", claire.token, csrf)
+        assertEquals(HttpStatusCode.BadRequest, bare.status)
+    }
+
+    @Test
+    fun everyBodyIsBoundedEvenWithoutALength() = testApplication {
+        val client = start()
+        val claire = member(data, "Claire", listOf(TeamRole.SUPER_ADMIN))
+        val big = "csrf=${Csrf.tokenFor(claire.token)}&motif=" + "a".repeat(MAX_BODY_BYTES)
+        val declared = client.post("$bo/deconnexion") {
+            header(HttpHeaders.Cookie, "$SESSION_COOKIE=${claire.token}")
+            contentType(ContentType.Application.FormUrlEncoded)
+            setBody(big)
+        }
+        assertEquals(HttpStatusCode.PayloadTooLarge, declared.status)
+        val chunked = client.post("$bo/webauthn/connexion") {
+            contentType(ContentType.Application.Json)
+            setBody(object : io.ktor.http.content.OutgoingContent.WriteChannelContent() {
+                override val contentType = ContentType.Application.Json
+                override suspend fun writeTo(channel: io.ktor.utils.io.ByteWriteChannel) {
+                    repeat(70) { channel.writeFully(ByteArray(1_024) { ' '.code.toByte() }) }
+                }
+            })
+        }
+        assertEquals(HttpStatusCode.PayloadTooLarge, chunked.status)
+        assertNotNull(data.authenticate(claire.token), "nothing was done")
+    }
+
+    @Test
+    fun aCutTellsToRemoveTheWireGuardProfileToo() = testApplication {
+        val client = start()
+        val admin = member(data, "Admin", listOf(TeamRole.ADMIN))
+        val moderator = member(data, "Modo", listOf(TeamRole.MODERATOR))
+        val cut = client.form("/equipe/membres/${moderator.id}/coupure", admin.token, mapOf("csrf" to Csrf.tokenFor(admin.token)))
+        assertEquals("/equipe/membres/${moderator.id}?ok=cut", cut.headers[HttpHeaders.Location])
+        val page = client.page("/equipe/membres/${moderator.id}?ok=cut", admin.token).bodyAsText()
+        assertTrue(page.contains("WireGuard"))
+        assertTrue(page.contains(BackOfficeTexts.MEMBER_SUSPENDED))
     }
 
     @Test

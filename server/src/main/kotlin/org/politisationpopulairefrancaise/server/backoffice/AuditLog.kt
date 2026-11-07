@@ -133,11 +133,18 @@ object AuditChain {
 
         /** The first line [seq] whose number, previous hash or own hash is wrong. */
         data class Broken(val seq: Long, val problem: String) : Check
+
+        /** The last line is [found], lower than [expected], a line this process saw: the end of the journal was removed. */
+        data class Truncated(val expected: Long, val found: Long) : Check
     }
 
-    fun verify(records: Sequence<AuditRecord>): Check {
-        var expectedSeq = 1L
-        var previous = GENESIS
+    /**
+     * Checks [records], which follow the line [afterSeq] whose hash is [previousHash] (the first line by
+     * default): numbers in a row, each previous hash the hash of the line before, each hash right.
+     */
+    fun verify(records: Sequence<AuditRecord>, afterSeq: Long = 0, previousHash: String = GENESIS): Check {
+        var expectedSeq = afterSeq + 1
+        var previous = previousHash
         for (record in records) {
             if (record.seq != expectedSeq) return Check.Broken(expectedSeq, "missing_line")
             if (record.previousHash != previous) return Check.Broken(record.seq, "previous_hash")
@@ -161,15 +168,26 @@ data class AuditFilter(
     val beforeSeq: Long? = null,
 )
 
+/** The last line of the journal: its number and hash are what an external anchor keeps (D-111). */
+@Serializable
+data class AuditHead(val seq: Long, val hash: String, @SerialName("recorded_at") val recordedAt: Long)
+
 /**
  * The journal of the team (table team_audit_log of V8__back_office.sql): append only, a PostgreSQL
- * trigger refuses any change or deletion, and the [AuditChain] reveals a line changed behind its back.
+ * trigger refuses any change or deletion, the restricted role of the server may only read and append
+ * (`afterMigrate.sql`, D-127), and the [AuditChain] reveals a line changed behind its back.
  *
  * Written only by the back-office base (contract, section 7: a pole never writes it); [record] is its
  * single entry point. Lines are numbered and chained under a lock, inside the transaction of the action
  * when the base performs it itself.
  */
 class AuditLog(private val dataSource: DataSource, private val clock: Clock = Clock.systemUTC()) {
+    /** The last line verified by this process: later checks start from it instead of the first line. */
+    @Volatile
+    private var checkpoint: AuditHead? = null
+
+    /** The highest line number this process wrote or verified: the journal can never end below it. */
+    private val highestSeen = java.util.concurrent.atomic.AtomicLong(0)
 
     /** Records [entry] in its own transaction. */
     fun record(entry: AuditEntry): AuditRecord = dataSource.transaction { record(it, entry) }
@@ -209,6 +227,7 @@ class AuditLog(private val dataSource: DataSource, private val clock: Clock = Cl
             insert.setString(11, hash)
             insert.executeUpdate()
         }
+        highestSeen.accumulateAndGet(seq, ::maxOf)
         return AuditRecord(seq, recordedAt.epochSecond, actorId, entry.actor.label, entry.action, entry.targetType, entry.targetId, entry.reason, entry.details, lastHash, hash)
     }
 
@@ -232,23 +251,58 @@ class AuditLog(private val dataSource: DataSource, private val clock: Clock = Cl
         }
     }
 
-    /** Checks the whole chain, from the first line, reading the table in order. */
+    /**
+     * Checks the chain from the last verified line (the whole chain the first time): that line must still
+     * be there with the same hash, the journal must not end below a line this process saw, and every new
+     * line must follow. Removing the end of the journal before this process saw it is only revealed by an
+     * external anchor of the head ([head], D-111).
+     */
     fun verifyChain(): AuditChain.Check = dataSource.connection.use { connection ->
         connection.autoCommit = false
         try {
-            connection.prepareStatement("$SELECT ORDER BY seq ASC").use { statement ->
-                statement.fetchSize = 500
+            connection.transactionIsolation = java.sql.Connection.TRANSACTION_REPEATABLE_READ
+            val last = connection.prepareStatement("SELECT max(seq) FROM team_audit_log").use { statement ->
                 val rows = statement.executeQuery()
-                AuditChain.verify(generateSequence { if (rows.next()) rows.toRecord() else null })
+                rows.next()
+                rows.getLong(1)
             }
+            val known = maxOf(highestSeen.get(), checkpoint?.seq ?: 0)
+            if (last < known) return@use AuditChain.Check.Truncated(known, last)
+            val from = checkpoint
+            if (from != null) {
+                val stored = connection.prepareStatement("$SELECT WHERE seq = ?").use { statement ->
+                    statement.setLong(1, from.seq)
+                    val rows = statement.executeQuery()
+                    if (rows.next()) rows.toRecord() else null
+                } ?: return@use AuditChain.Check.Broken(from.seq, "missing_line")
+                if (stored.hash != from.hash || AuditChain.hashOf(stored) != stored.hash) return@use AuditChain.Check.Broken(from.seq, "hash")
+            }
+            val check = connection.prepareStatement("$SELECT WHERE seq > ? ORDER BY seq ASC").use { statement ->
+                statement.fetchSize = 500
+                statement.setLong(1, from?.seq ?: 0)
+                val rows = statement.executeQuery()
+                var lastRecord: AuditRecord? = null
+                val result = AuditChain.verify(
+                    generateSequence { if (rows.next()) rows.toRecord().also { lastRecord = it } else null },
+                    afterSeq = from?.seq ?: 0,
+                    previousHash = from?.hash ?: AuditChain.GENESIS,
+                )
+                if (result is AuditChain.Check.Intact) {
+                    lastRecord?.let { checkpoint = AuditHead(it.seq, it.hash, it.recordedAt) }
+                    highestSeen.accumulateAndGet(result.lines, ::maxOf)
+                }
+                result
+            }
+            check
         } finally {
             connection.rollback()
+            connection.transactionIsolation = java.sql.Connection.TRANSACTION_READ_COMMITTED
             connection.autoCommit = true
         }
     }
 
-    /** The last line: its hash is the one to timestamp with the archive of Décider (D-111) once it exists. */
-    fun head(): AuditRecord? = query(limit = 1).firstOrNull()
+    /** The last line: its number and hash are what to note or timestamp outside (archive of Décider, D-111). */
+    fun head(): AuditHead? = query(limit = 1).firstOrNull()?.let { AuditHead(it.seq, it.hash, it.recordedAt) }
 
     private fun ResultSet.toRecord(): AuditRecord = AuditRecord(
         seq = getLong("seq"),

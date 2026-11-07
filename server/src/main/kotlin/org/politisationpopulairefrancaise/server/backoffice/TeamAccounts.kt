@@ -140,14 +140,21 @@ class TeamAccounts(private val dataSource: DataSource) {
         }
     }
 
-    fun setNostrKey(id: UUID, pubkey: String?): Boolean = dataSource.connection.use { connection ->
-        require(pubkey == null || isHexKey(pubkey))
-        connection.prepareStatement("UPDATE team_account SET nostr_pubkey = ? WHERE id = ? AND status = 'active'").use { update ->
-            update.setText(1, pubkey)
-            update.setObject(2, id)
+    /** Reinstates a suspended account (its keys and roles work again); false when it is not suspended. */
+    fun reactivate(connection: Connection, id: UUID): Boolean =
+        connection.prepareStatement("UPDATE team_account SET status = 'active', closed_at = NULL WHERE id = ? AND status = 'suspended'").use { update ->
+            update.setObject(1, id)
             update.executeUpdate() == 1
         }
-    }
+
+    /** The accounts named [pseudonym] (case ignored) with [status], for the command line. */
+    fun byPseudonym(connection: Connection, pseudonym: String, status: AccountStatus): List<TeamAccount> =
+        connection.prepareStatement("$SELECT_ACCOUNT WHERE lower(pseudonym) = lower(?) AND status = ? ORDER BY created_at").use { statement ->
+            statement.setString(1, pseudonym)
+            statement.setString(2, status.column)
+            val rows = statement.executeQuery()
+            buildList { while (rows.next()) add(rows.toAccount()) }
+        }
 
     // Keys ------------------------------------------------------------------------------------------
 
@@ -219,13 +226,12 @@ class TeamAccounts(private val dataSource: DataSource) {
         }
     }
 
-    /** Deletes one key of [accountId]; returns its name, or null when it was not theirs. */
-    fun deleteCredential(connection: Connection, accountId: UUID, id: UUID): String? =
-        connection.prepareStatement("DELETE FROM team_credential WHERE id = ? AND account_id = ? RETURNING name").use { delete ->
+    /** Deletes one key of [accountId]; returns whether it was theirs. */
+    fun deleteCredential(connection: Connection, accountId: UUID, id: UUID): Boolean =
+        connection.prepareStatement("DELETE FROM team_credential WHERE id = ? AND account_id = ?").use { delete ->
             delete.setObject(1, id)
             delete.setObject(2, accountId)
-            val rows = delete.executeQuery()
-            if (rows.next()) rows.getString(1) else null
+            delete.executeUpdate() == 1
         }
 
     /** Deletes every key of [accountId] (emergency cut, removal); returns how many. */

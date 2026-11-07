@@ -30,6 +30,7 @@ import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.backoffice.BackOffice
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSetup
 import org.politisationpopulairefrancaise.server.backoffice.Outcome
+import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
@@ -120,8 +121,11 @@ fun main() {
     ) {
         module(dataSource, PublicationPolicy(editors), revendications = revendications, backOffice = backOffice)
         routing {
-            devReviewRoutes(queue)
-            devHeldRoutes(held)
+            // The stand-ins of the review answer on the public port only, never on the back-office port.
+            publicPort(backOffice?.config?.port) {
+                devReviewRoutes(queue)
+                devHeldRoutes(held)
+            }
         }
     }.start(wait = true)
 }

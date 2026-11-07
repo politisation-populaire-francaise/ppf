@@ -15,6 +15,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertNotEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -199,6 +200,8 @@ class BackOfficeUnitTest {
 
     private val url = "https://equipe.example.org/api/v1/decider/validation"
 
+    private fun verifier() = MinimalNip98Verifier(startedAt = NOW.minusSeconds(3_600))
+
     private fun header(event: SignedEvent): String = "Nostr " + Base64.getEncoder().encodeToString(event.toJson().toByteArray())
 
     private fun signed(
@@ -216,15 +219,15 @@ class BackOfficeUnitTest {
     fun aFreshSignedRequestGivesItsKey() {
         val keys = IdentityKeys.generate()
         val event = signed(keys)
-        val check = MinimalNip98Verifier().check(SignedSessionRequest(header(event), url, "POST"), NOW)
+        val check = verifier().check(SignedSessionRequest(header(event), url, "POST"), NOW) { it == keys.publicKey.hex }
         assertEquals(SessionRequestCheck.Signed(keys.publicKey.hex, event.id), check)
     }
 
     @Test
     fun malformedOrMismatchedRequestsAreRefused() {
-        val verifier = MinimalNip98Verifier()
+        val verifier = verifier()
         fun code(authorization: String?, body: ByteArray? = null, method: String = "POST", at: Instant = NOW) =
-            (verifier.check(SignedSessionRequest(authorization, url, method, body), at) as SessionRequestCheck.Refused).code
+            (verifier.check(SignedSessionRequest(authorization, url, method, body), at) { true } as SessionRequestCheck.Refused).code
         assertEquals("missing_authorization", code(null))
         assertEquals("bad_scheme", code("Bearer abc"))
         assertEquals("bad_encoding", code("Nostr %%%"))
@@ -237,17 +240,34 @@ class BackOfficeUnitTest {
         assertEquals("bad_payload", code(header(signed()), body = "{}".toByteArray()))
         assertEquals("bad_payload", code(header(signed(payload = "0".repeat(64))), body = "{}".toByteArray()))
         val good = signed(payload = Tokens.sha256Hex("{}".toByteArray()))
-        assertIs<SessionRequestCheck.Signed>(verifier.check(SignedSessionRequest(header(good), url, "POST", "{}".toByteArray()), NOW))
+        assertIs<SessionRequestCheck.Signed>(verifier.check(SignedSessionRequest(header(good), url, "POST", "{}".toByteArray()), NOW) { true })
         val forged = signed().copy(sig = "0".repeat(128))
         assertEquals("bad_signature", code(header(forged)))
     }
 
     @Test
+    fun anUnknownSignerIsRefusedBeforeItsSignatureIsChecked() {
+        var asked = 0
+        val forged = signed().copy(sig = "0".repeat(128))
+        val check = verifier().check(SignedSessionRequest(header(forged), url, "POST"), NOW) { asked++; false }
+        assertEquals(SessionRequestCheck.Refused("no_open_session"), check)
+        assertEquals(1, asked)
+    }
+
+    @Test
+    fun eventsOlderThanTheStartOfTheProcessAreRefused() {
+        val started = MinimalNip98Verifier(startedAt = NOW)
+        val before = signed(createdAt = NOW.epochSecond - 10)
+        assertEquals(SessionRequestCheck.Refused("before_start"), started.check(SignedSessionRequest(header(before), url, "POST"), NOW) { true })
+        assertIs<SessionRequestCheck.Signed>(started.check(SignedSessionRequest(header(signed()), url, "POST"), NOW) { true })
+    }
+
+    @Test
     fun aRequestIsAcceptedOnlyOnce() {
-        val verifier = MinimalNip98Verifier()
+        val verifier = verifier()
         val request = SignedSessionRequest(header(signed()), url, "POST")
-        assertIs<SessionRequestCheck.Signed>(verifier.check(request, NOW))
-        assertEquals(SessionRequestCheck.Refused("replayed"), verifier.check(request, NOW))
+        assertIs<SessionRequestCheck.Signed>(verifier.check(request, NOW) { true })
+        assertEquals(SessionRequestCheck.Refused("replayed"), verifier.check(request, NOW) { true })
     }
 
     // NIP-44 towards the audit key -----------------------------------------------------------------------
@@ -293,6 +313,88 @@ class BackOfficeUnitTest {
         // Sunday 23:30 in Paris is still the week that ends.
         assertEquals("2026-W45", ValidationSessions.weekOf(Instant.parse("2026-11-08T22:30:00Z")))
         assertEquals("2026-W46", ValidationSessions.weekOf(Instant.parse("2026-11-08T23:30:00Z")))
+    }
+
+    // Ceremonies, failures, links, database settings (D-127) ------------------------------------------------
+
+    @Test
+    fun signInChallengesAreCheckedWithoutState() {
+        val clock = MutableClock(NOW)
+        val challenges = SignInChallenges(clock)
+        val id = challenges.issue()
+        assertEquals(56, Tokens.fromBase64Url(id)!!.size)
+        assertNotNull(challenges.open(id))
+        // Another process (another key) does not accept it; a changed byte is refused.
+        assertNull(SignInChallenges(clock).open(id))
+        val bytes = Tokens.fromBase64Url(id)!!
+        bytes[0] = (bytes[0] + 1).toByte()
+        assertNull(challenges.open(Tokens.base64Url(bytes)))
+        assertTrue(challenges.markUsed(id))
+        assertNull(challenges.open(id), "used once")
+        assertFalse(challenges.markUsed(id))
+        val old = challenges.issue()
+        clock.advance(kotlin.time.Duration.parse("5m") + kotlin.time.Duration.parse("1s"))
+        assertNull(challenges.open(old), "too old")
+        assertNull(challenges.open("pas-un-défi"))
+    }
+
+    @Test
+    fun aSlotKeepsOneCeremonyPerKey() {
+        val clock = MutableClock(NOW)
+        val slots = CeremonySlots<String>(clock)
+        val (first, _) = slots.start("session") { challenge, at -> Ceremony.Confirm(challenge, at, id) }
+        val (second, _) = slots.start("session") { challenge, at -> Ceremony.Confirm(challenge, at, id) }
+        assertEquals(1, slots.size)
+        assertNull(slots.take("session", first), "replaced")
+        assertNull(slots.take("autre", second), "bound to its key")
+        assertNotNull(slots.take("session", second))
+        assertNull(slots.take("session", second), "used once")
+        val (late, _) = slots.start("session") { challenge, at -> Ceremony.Confirm(challenge, at, id) }
+        clock.advance(kotlin.time.Duration.parse("6m"))
+        assertNull(slots.take("session", late))
+        slots.start("x") { challenge, at -> Ceremony.Confirm(challenge, at, id) }
+        clock.advance(kotlin.time.Duration.parse("6m"))
+        slots.purge()
+        assertEquals(0, slots.size)
+    }
+
+    @Test
+    fun anonymousFailuresAreCountedByPeriodOfTenMinutes() {
+        val clock = MutableClock(Instant.parse("2026-11-07T10:03:00Z"))
+        val failures = AnonymousFailures(clock)
+        repeat(3) { failures.count("unknown_key") }
+        failures.count("enrolment_registration_refused")
+        assertFalse(failures.hasClosed())
+        assertTrue(failures.drain().isEmpty(), "the current period is not written yet")
+        clock.advance(kotlin.time.Duration.parse("8m"))
+        failures.count("unknown_key")
+        assertTrue(failures.hasClosed())
+        val start = Instant.parse("2026-11-07T10:00:00Z").epochSecond
+        assertEquals(mapOf(start to mapOf("unknown_key" to 3, "enrolment_registration_refused" to 1)), failures.drain())
+        assertEquals(mapOf(start + 600 to mapOf("unknown_key" to 1)), failures.drain(all = true))
+        assertTrue(failures.drain(all = true).isEmpty())
+    }
+
+    @Test
+    fun alertLinksStayInsideTheBackOffice() {
+        assertTrue(BackOffice.isLocalLink("/journal"))
+        assertTrue(BackOffice.isLocalLink("/files/agir.held/abc?x=1"))
+        listOf("//ailleurs.example", "/\\ailleurs", "/.x", "https://x", "/a b", "/", "").forEach { assertFalse(BackOffice.isLocalLink(it), it) }
+    }
+
+    @Test
+    fun theServerMigratesByItselfOnlyInDevelopment() {
+        assertTrue(org.politisationpopulairefrancaise.server.db.Database.shouldMigrate("development") { null })
+        assertFalse(org.politisationpopulairefrancaise.server.db.Database.shouldMigrate("production") { null })
+        assertFalse(org.politisationpopulairefrancaise.server.db.Database.shouldMigrate("preproduction") { null })
+        assertTrue(org.politisationpopulairefrancaise.server.db.Database.shouldMigrate("production") { if (it == "PPF_DATABASE_MIGRATE") "true" else null })
+        assertFalse(org.politisationpopulairefrancaise.server.db.Database.shouldMigrate("development") { if (it == "PPF_DATABASE_MIGRATE") "FALSE" else null })
+        assertFailsWith<IllegalArgumentException> { org.politisationpopulairefrancaise.server.db.Database.shouldMigrate("production") { "peut-être" } }
+        assertEquals("ppf_app", org.politisationpopulairefrancaise.server.db.Database.appRole { if (it == "PPF_DATABASE_APP_ROLE") "ppf_app" else null })
+        assertEquals("", org.politisationpopulairefrancaise.server.db.Database.appRole { null })
+        assertFailsWith<IllegalArgumentException> { org.politisationpopulairefrancaise.server.db.Database.appRole { "ppf'; DROP" } }
+        assertEquals("db", org.politisationpopulairefrancaise.server.db.DatabaseConfig("jdbc:postgresql://db:5432/ppf", "u", "secret-value").host)
+        assertFalse(org.politisationpopulairefrancaise.server.db.DatabaseConfig("jdbc:postgresql://db:5432/ppf", "u", "secret-value").toString().contains("secret"))
     }
 
     private companion object {

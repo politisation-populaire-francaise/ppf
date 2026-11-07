@@ -149,6 +149,14 @@ class PendingApprovals(private val dataSource: DataSource) {
         }
     }
 
+    /** An approved request whose action could not be done afterwards (a queue action that failed). */
+    fun markFailed(id: UUID): Boolean = dataSource.connection.use { connection ->
+        connection.prepareStatement("UPDATE team_pending_approval SET status = 'failed' WHERE id = ? AND status = 'approved'").use { update ->
+            update.setObject(1, id)
+            update.executeUpdate() == 1
+        }
+    }
+
     /** The pending requests past their 7 days, to expire with a journal line each. */
     fun due(now: Instant): List<PendingApproval> = dataSource.connection.use { connection ->
         connection.prepareStatement("$SELECT WHERE status = 'pending' AND expires_at <= ?").use { statement ->

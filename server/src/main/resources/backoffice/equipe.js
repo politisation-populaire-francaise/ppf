@@ -112,8 +112,13 @@
       }).then(function (done) { go(done.redirect); });
     },
     "add-key": function (button) {
+      // First a key of the account, verified just now (60 seconds at most), then the new key.
       var csrf = button.dataset.csrf;
-      return postJson("/webauthn/cle/options", {}, csrf).then(function (answer) {
+      return postJson("/webauthn/cle/preuve/options", {}, csrf).then(function (proof) {
+        return navigator.credentials.get({ publicKey: requestOptions(proof) }).then(function (credential) {
+          return postJson("/webauthn/cle/options", assertionBody(proof.ceremony, credential, { csrf: csrf }), csrf);
+        });
+      }).then(function (answer) {
         return navigator.credentials.create({ publicKey: creationOptions(answer) }).then(function (credential) {
           return postJson("/webauthn/cle", registrationBody(answer.ceremony, credential, Object.assign({ csrf: csrf }, nameOf(button))), csrf);
         });

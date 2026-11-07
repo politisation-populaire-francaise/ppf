@@ -8,6 +8,7 @@ import java.time.Instant
 import java.util.UUID
 import javax.sql.DataSource
 import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
 
 /** The result of an action of the base: done, or refused with a stable code ([BackOfficeTexts.error] gives the French). */
 sealed interface Outcome<out T> {
@@ -38,6 +39,14 @@ sealed interface QueueResult {
     data class Waiting(val approval: PendingApproval) : QueueResult
 }
 
+/** A change of the team: done at once, or waiting for a second person (S-61). */
+sealed interface TeamChange {
+    /** Done; [report] gives the counts of a removal. */
+    data class Done(val report: CutReport? = null) : TeamChange
+
+    data class Waiting(val approval: PendingApproval) : TeamChange
+}
+
 /** One item of the dashboard's priority list (S-64, S-115). */
 data class PriorityItem(val queue: BackOfficeQueue, val item: QueueItem, val overdue: Boolean, val nearDeadline: Boolean)
 
@@ -51,12 +60,28 @@ data class Dashboard(
     val approvalsToDecide: Int,
 )
 
+/** What the pages show of a key: never its public key nor its counter. */
+data class KeyInfo(val id: UUID, val name: String, val createdAt: Instant, val lastUsedAt: Instant?)
+
+/** Counts of an emergency cut or a removal. */
+data class CutReport(
+    val sessions: Int,
+    /** Roles disabled by a cut (kept, unusable until reinstatement) or revoked by a removal. */
+    val grants: Int,
+    /** Keys disabled by a cut (kept) or deleted by a removal. */
+    val keys: Int,
+    val validationSessions: Int,
+    val requests: Int,
+    val invitations: Int,
+)
+
 /**
  * The team back-office base (contract docs/integration/back-office.md, step 1): accounts by invitation,
  * passkeys, sessions, roles and permissions, temporary access, two-person rule, emergency cut, journal,
  * queues, alerts and validation sessions. Every action of the team goes through this class, which checks
  * the permission, the freshness of the passkey for sensitive actions, and records the journal line.
  *
+ * Its stores are private (D-127): the poles see read-only views and the audited operations only.
  * All calls block on JDBC: routes call them on Dispatchers.IO.
  */
 class BackOffice(
@@ -69,17 +94,34 @@ class BackOffice(
     private val verifiedOrganisations: (() -> Set<String>)? = null,
     private val passkeys: PasskeyVerifier = WebAuthn4jPasskeys(config.origin, config.rpId),
     val clock: Clock = Clock.systemUTC(),
-    sessionRequestVerifier: SessionRequestVerifier = MinimalNip98Verifier(),
+    sessionRequestVerifier: SessionRequestVerifier = MinimalNip98Verifier(clock.instant()),
 ) {
-    internal val audit = AuditLog(dataSource, clock)
-    val accounts = TeamAccounts(dataSource)
-    val invitations = TeamInvitations(dataSource)
-    val sessions = TeamSessions(dataSource)
-    val grants = TeamGrants(dataSource)
-    val approvals = PendingApprovals(dataSource)
-    val validationSessions = ValidationSessions(dataSource)
-    val alerts = DashboardAlerts(dataSource)
-    val ceremonies = Ceremonies(clock)
+    private val audit = AuditLog(dataSource, clock)
+    private val accounts = TeamAccounts(dataSource)
+    private val invitations = TeamInvitations(dataSource)
+    private val sessions = TeamSessions(dataSource)
+    private val grants = TeamGrants(dataSource)
+    private val approvals = PendingApprovals(dataSource)
+    private val validationSessions = ValidationSessions(dataSource)
+    private val alerts = DashboardAlerts(dataSource)
+
+    /** Sign-in: no state until a signature is verified (D-127). */
+    private val signInChallenges = SignInChallenges(clock)
+
+    /** Confirmations and new keys: one pending ceremony per session. */
+    private val sessionCeremonies = CeremonySlots<String>(clock)
+
+    /** Registrations from an invitation: one pending ceremony per invitation. */
+    private val enrolments = CeremonySlots<UUID>(clock)
+
+    private val failures = AnonymousFailures(clock)
+
+    /** The size of the verified set at the last check of the validators that was trusted (item 14 of the review). */
+    @Volatile
+    private var verifiedReference: Int? = null
+
+    @Volatile
+    private var journalAlertPosted = false
 
     /** NIP-44 towards `PPF_AUDIT_PUBLIC_KEY` (contract, section 8); null when the key is not configured. */
     val auditSealer: AuditSealer? = config.auditPublicKey?.let(::AuditSealer)
@@ -93,13 +135,51 @@ class BackOffice(
 
     private fun organisationVerified(key: String): Boolean = isVerifiedOrganisation?.invoke(key) == true
 
+    // Read-only views -------------------------------------------------------------------------------
+
+    fun members(): List<TeamAccount> = accounts.all()
+
+    fun member(id: UUID): TeamAccount? = accounts.find(id)
+
+    fun keysOf(accountId: UUID): List<KeyInfo> = accounts.credentials(accountId).map { KeyInfo(it.id, it.name, it.createdAt, it.lastUsedAt) }
+
+    fun liveGrants(accountId: UUID): List<RoleGrant> = grants.live(accountId, clock.instant())
+
+    fun grantHistory(accountId: UUID): List<RoleGrant> = grants.history(accountId)
+
+    fun pendingInvitations(): List<TeamInvitation> = invitations.pending(clock.instant())
+
+    fun findInvitation(token: String): TeamInvitation? = invitations.findValid(token, now())
+
+    fun approval(id: UUID): PendingApproval? = approvals.find(id)
+
+    fun validationSession(id: UUID): ValidationSession? = validationSessions.find(id)
+
+    /** The open session of [accountId] that may still be used. */
+    fun usableValidationSessionOf(accountId: UUID): ValidationSession? = validationSessions.openOf(accountId)?.takeIf { it.isUsable(clock.instant()) }
+
+    fun openValidationSessions(): List<ValidationSession> = validationSessions.allOpen()
+
     // Journal (read side) ---------------------------------------------------------------------------
 
     fun journal(actor: TeamActor, filter: AuditFilter, limit: Int = 100): Outcome<List<AuditRecord>> =
         if (!actor.has(Permissions.AUDIT_READ)) Outcome.Denied("forbidden") else Outcome.Ok(audit.query(filter, limit))
 
+    /** Checks the chain from the last verified line; a broken or shortened journal posts an alert once. */
     fun verifyJournal(actor: TeamActor): Outcome<AuditChain.Check> =
-        if (!actor.has(Permissions.AUDIT_READ)) Outcome.Denied("forbidden") else Outcome.Ok(audit.verifyChain())
+        if (!actor.has(Permissions.AUDIT_READ)) Outcome.Denied("forbidden") else Outcome.Ok(checkJournal())
+
+    private fun checkJournal(): AuditChain.Check {
+        val check = audit.verifyChain()
+        if (check !is AuditChain.Check.Intact && !journalAlertPosted) {
+            journalAlertPosted = true
+            runCatching { postAlert(ALERT_SOURCE, BackOfficeTexts.ALERT_JOURNAL_BROKEN, 5, Permissions.AUDIT_READ, "/journal") }
+        }
+        return check
+    }
+
+    /** The last line of the journal (number, hash, date), for an external anchor (D-111): nothing secret. */
+    fun journalHead(): AuditHead? = audit.head()
 
     /** The JSON export of the journal: a sensitive reading, itself recorded. */
     fun exportJournal(auth: Authenticated, filter: AuditFilter): Outcome<List<AuditRecord>> {
@@ -109,13 +189,13 @@ class BackOffice(
         return Outcome.Ok(lines)
     }
 
-    // Bootstrap -------------------------------------------------------------------------------------
+    // Server operator (command line) ----------------------------------------------------------------
 
     /**
-     * The invitation of a first super administrator, created by the command `ppf-backoffice bootstrap` on
-     * the server (nobody exists yet to invite). Allowed while fewer than two super administrators exist,
-     * counting the bootstrap invitations still valid: the contract wants two of them, and the second one
-     * cannot be approved by a single person. Also the way back if both keys were lost.
+     * The invitation of a first super administrator, created by the command `bootstrap` on the server
+     * (nobody exists yet to invite). Allowed while fewer than two **active** super administrators exist,
+     * counting the bootstrap invitations still valid: the contract wants two, and the second one cannot be
+     * approved by a single person. Also the way back if both keys were lost.
      */
     fun bootstrapInvitation(pseudonym: String): Outcome<IssuedInvitation> {
         val name = Pseudonyms.normalize(pseudonym) ?: return Outcome.Denied("bad_pseudonym")
@@ -134,104 +214,137 @@ class BackOffice(
         }
     }
 
-    // Enrolment -------------------------------------------------------------------------------------
+    /** Withdraws the bootstrap invitations still valid (command line only: the pages cannot). */
+    fun withdrawBootstrapInvitations(): Int = dataSource.transaction { connection ->
+        val count = invitations.deleteBootstrap(connection)
+        if (count > 0) audit.record(connection, AuditEntry(AuditActor.System, "team.invitation_withdrawn", details = mapOf("bootstrap" to count.toString())))
+        count
+    }
 
-    fun findInvitation(token: String): TeamInvitation? = invitations.findValid(token, now())
+    /** The server operator cuts the active member [pseudonym] (journaled as « système »). */
+    fun operatorCut(pseudonym: String, reason: String?): Outcome<CutReport> {
+        val now = now()
+        return dataSource.transaction { connection ->
+            val target = accounts.byPseudonym(connection, pseudonym.trim(), AccountStatus.ACTIVE).singleOrNull() ?: return@transaction Outcome.Denied("not_found")
+            Outcome.Ok(suspendIn(connection, target.id, AuditActor.System, cleanReason(reason), now))
+        }
+    }
+
+    /** The server operator reinstates the suspended member [pseudonym] (journaled as « système »). */
+    fun operatorReinstate(pseudonym: String, reason: String?): Outcome<Unit> {
+        return dataSource.transaction { connection ->
+            val candidates = accounts.byPseudonym(connection, pseudonym.trim(), AccountStatus.SUSPENDED)
+            val target = when (candidates.size) {
+                0 -> return@transaction Outcome.Denied("not_found")
+                1 -> candidates.single()
+                else -> return@transaction Outcome.Denied("ambiguous")
+            }
+            reinstateIn(connection, target, AuditActor.System, cleanReason(reason))
+        }
+    }
+
+    // Enrolment -------------------------------------------------------------------------------------
 
     fun startEnrolment(token: String): Outcome<CreationOptionsResponse> {
         val invitation = invitations.findValid(token, now()) ?: return Outcome.Denied("invitation_gone")
         val handle = Tokens.randomBytes(32)
-        val (id, ceremony) = ceremonies.start { challenge, at -> Ceremony.Enrol(challenge, at, invitation.id, handle) } ?: return Outcome.Denied("busy")
-        return Outcome.Ok(creationOptions(id, ceremony.challenge, handle, invitation.pseudonym, emptyList()))
+        val (id, ceremony) = enrolments.start(invitation.id) { challenge, at -> Ceremony.Enrol(challenge, at, invitation.id, handle) }
+        return Outcome.Ok(creationOptions("${invitation.id}.$id", ceremony.challenge, handle, invitation.pseudonym, emptyList()))
     }
 
-    /** Registers the first key from an invitation: creates the account, its key and a session. */
+    /**
+     * Registers the first key from an invitation: creates the account, its key and a session. Everything
+     * is checked before the invitation is used, so that a refusal leaves it valid.
+     */
     fun finishEnrolment(response: RegistrationResponse): Outcome<OpenedSession> {
-        val ceremony = ceremonies.take(response.ceremony) as? Ceremony.Enrol ?: return Outcome.Denied("ceremony_gone")
+        val invitationId = runCatching { UUID.fromString(response.ceremony.substringBefore('.')) }.getOrNull() ?: return Outcome.Denied("ceremony_gone")
+        val ceremony = enrolments.take(invitationId, response.ceremony.substringAfter('.', "")) as? Ceremony.Enrol ?: return Outcome.Denied("ceremony_gone")
         val name = KeyNames.normalize(response.name) ?: BackOfficeTexts.DEFAULT_KEY_NAME
         val credential = try {
             passkeys.verifyRegistration(response, ceremony.challenge, name)
         } catch (e: PasskeyException) {
-            audit.record(AuditEntry(AuditActor.Unknown, "auth.enrolment_failed", "team_invitation", ceremony.invitationId.toString(), details = mapOf("code" to e.code)))
+            // No account is known yet: counted, written as one line per period (D-127).
+            failures.count("enrolment_${e.code}")
             return Outcome.Denied(e.code)
         }
         val now = now()
         return dataSource.transaction { connection ->
-            val invitation = invitations.consume(connection, ceremony.invitationId, now) ?: return@transaction Outcome.Denied("invitation_gone")
+            val invitation = invitations.find(connection, ceremony.invitationId)?.takeIf { it.expiresAt.isAfter(now) } ?: return@transaction Outcome.Denied("invitation_gone")
             if (accounts.pseudonymTaken(connection, invitation.pseudonym)) return@transaction Outcome.Denied("pseudonym_taken")
             if (credentialTaken(connection, credential.credentialId)) return@transaction Outcome.Denied("key_known")
+            if (invitation.bootstrap) {
+                connection.advisoryLock("team_bootstrap")
+                if (grants.countLiveHolders(connection, TeamRole.SUPER_ADMIN, now) >= 2) return@transaction Outcome.Denied("bootstrap_closed")
+            }
+            invitations.consume(connection, invitation.id, now) ?: return@transaction Outcome.Denied("invitation_gone")
             val account = accounts.create(connection, invitation.pseudonym, ceremony.userHandle, invitation.createdBy, now)
             val stored = accounts.addCredential(connection, account.id, credential, now)
             val member = AuditActor.Member(account.id, account.pseudonym)
             audit.record(
                 connection,
-                AuditEntry(member, "team.invitation_accepted", "team_account", account.id.toString(), details = mapOf("invitation" to invitation.id.toString(), "key" to stored.name)),
+                AuditEntry(member, "team.invitation_accepted", TARGET_ACCOUNT, account.id.toString(), details = mapOf("invitation" to invitation.id.toString(), "credential" to stored.id.toString())),
             )
             if (invitation.bootstrap) {
                 val grant = grants.insert(connection, account.id, TeamRole.SUPER_ADMIN, null, null, null, null, now)
-                audit.record(connection, AuditEntry(AuditActor.System, "team.role_granted", "team_account", account.id.toString(), details = grantDetails(grant) + ("bootstrap" to "true")))
+                audit.record(connection, AuditEntry(AuditActor.System, "team.role_granted", TARGET_ACCOUNT, account.id.toString(), details = grantDetails(grant) + ("bootstrap" to "true")))
             } else {
                 val inviter = invitation.createdBy?.let { accounts.find(connection, it) }?.takeIf { it.status == AccountStatus.ACTIVE }
                 if (inviter != null) {
                     invitation.proposedRoles.forEach { role ->
                         val approval = approvals.create(
-                            connection,
-                            ACTION_GRANT,
-                            role.grantPermission,
-                            TARGET_ACCOUNT,
-                            account.id.toString(),
-                            grantPayload(role, invitation.organisationPubkey, invitation.rolesEndAt),
-                            null,
-                            inviter.id,
-                            now,
+                            connection, ACTION_GRANT, role.grantPermission, TARGET_ACCOUNT, account.id.toString(),
+                            grantPayload(role, invitation.organisationPubkey, invitation.rolesEndAt), null, inviter.id, now,
                         )
                         audit.record(connection, approvalEntry(AuditActor.Member(inviter.id, inviter.pseudonym), "approval.requested", approval))
                     }
                 }
             }
             val opened = sessions.open(connection, account.id, now)
-            audit.record(connection, AuditEntry(member, "auth.login", "team_account", account.id.toString(), details = mapOf("key" to stored.name)))
+            audit.record(connection, AuditEntry(member, "auth.login", TARGET_ACCOUNT, account.id.toString(), details = mapOf("credential" to stored.id.toString())))
             Outcome.Ok(opened)
         }
     }
 
     // Sign-in ---------------------------------------------------------------------------------------
 
+    /** A sign-in challenge: no state on the server (D-127). */
     fun startSignIn(): Outcome<RequestOptionsResponse> {
-        val (id, ceremony) = ceremonies.start { challenge, at -> Ceremony.SignIn(challenge, at) } ?: return Outcome.Denied("busy")
-        return Outcome.Ok(requestOptions(id, ceremony.challenge, emptyList()))
+        val id = signInChallenges.issue()
+        return Outcome.Ok(requestOptions(id, requireNotNull(Tokens.fromBase64Url(id)), emptyList(), signInChallenges.timeoutMillis))
     }
 
     fun finishSignIn(response: AssertionResponse): Outcome<OpenedSession> {
-        val ceremony = ceremonies.take(response.ceremony) as? Ceremony.SignIn ?: return Outcome.Denied("ceremony_gone")
+        val challenge = signInChallenges.open(response.ceremony) ?: return Outcome.Denied("ceremony_gone")
         val credentialId = Tokens.fromBase64Url(response.credentialId) ?: return Outcome.Denied("bad_encoding")
         val credential = accounts.credentialByCredentialId(credentialId)
         if (credential == null) {
-            audit.record(AuditEntry(AuditActor.Unknown, "auth.login_failed", details = mapOf("code" to "unknown_key")))
+            failures.count("unknown_key")
             return Outcome.Denied("unknown_key")
         }
         val account = accounts.find(credential.accountId) ?: return Outcome.Denied("unknown_key")
         val member = AuditActor.Member(account.id, account.pseudonym)
         if (account.status != AccountStatus.ACTIVE) {
-            audit.record(AuditEntry(member, "auth.login_failed", "team_account", account.id.toString(), details = mapOf("code" to "account_closed")))
+            audit.record(AuditEntry(member, "auth.login_failed", TARGET_ACCOUNT, account.id.toString(), details = mapOf("code" to "account_closed")))
             return Outcome.Denied("account_closed")
         }
         val handle = response.userHandle?.let(Tokens::fromBase64Url)
         if (response.userHandle != null && (handle == null || !handle.contentEquals(account.userHandle))) {
-            audit.record(AuditEntry(member, "auth.login_failed", "team_account", account.id.toString(), details = mapOf("code" to "user_mismatch")))
+            audit.record(AuditEntry(member, "auth.login_failed", TARGET_ACCOUNT, account.id.toString(), details = mapOf("code" to "user_mismatch")))
             return Outcome.Denied("assertion_refused")
         }
         val verified = try {
-            passkeys.verifyAssertion(response, ceremony.challenge, credential)
+            passkeys.verifyAssertion(response, challenge, credential)
         } catch (e: PasskeyException) {
-            audit.record(AuditEntry(member, "auth.login_failed", "team_account", account.id.toString(), details = mapOf("code" to e.code)))
+            audit.record(AuditEntry(member, "auth.login_failed", TARGET_ACCOUNT, account.id.toString(), details = mapOf("code" to e.code, "credential" to credential.id.toString())))
             return Outcome.Denied(e.code)
         }
+        // Entered in the set of used challenges only now, after a verified signature.
+        if (!signInChallenges.markUsed(response.ceremony)) return Outcome.Denied("ceremony_gone")
         val now = now()
         accounts.markUsed(credential.id, verified.signCount, verified.backupState, now)
         return dataSource.transaction { connection ->
             val opened = sessions.open(connection, account.id, now)
-            audit.record(connection, AuditEntry(member, "auth.login", "team_account", account.id.toString(), details = mapOf("key" to credential.name)))
+            audit.record(connection, AuditEntry(member, "auth.login", TARGET_ACCOUNT, account.id.toString(), details = mapOf("credential" to credential.id.toString())))
             Outcome.Ok(opened)
         }
     }
@@ -249,49 +362,74 @@ class BackOffice(
 
     fun signOut(auth: Authenticated) {
         sessions.close(auth.session.tokenHash)
-        audit.record(AuditEntry(AuditActor.of(auth.actor), "auth.logout", "team_account", auth.account.id.toString()))
+        audit.record(AuditEntry(AuditActor.of(auth.actor), "auth.logout", TARGET_ACCOUNT, auth.account.id.toString()))
     }
 
     // New verification before a sensitive action ----------------------------------------------------
 
     fun startConfirmation(auth: Authenticated): Outcome<RequestOptionsResponse> {
         val keys = accounts.credentials(auth.account.id)
-        val (id, ceremony) = ceremonies.start { challenge, at -> Ceremony.Confirm(challenge, at, auth.session.tokenHash, auth.account.id) } ?: return Outcome.Denied("busy")
-        return Outcome.Ok(requestOptions(id, ceremony.challenge, keys.map { it.credentialId }))
+        val (id, ceremony) = sessionCeremonies.start(auth.session.tokenHash) { challenge, at -> Ceremony.Confirm(challenge, at, auth.account.id) }
+        return Outcome.Ok(requestOptions(id, ceremony.challenge, keys.map { it.credentialId }, sessionCeremonies.timeoutMillis))
     }
 
     fun finishConfirmation(auth: Authenticated, response: AssertionResponse): Outcome<Unit> {
-        val ceremony = ceremonies.take(response.ceremony) as? Ceremony.Confirm ?: return Outcome.Denied("ceremony_gone")
-        if (ceremony.sessionHash != auth.session.tokenHash || ceremony.accountId != auth.account.id) return Outcome.Denied("ceremony_gone")
+        val ceremony = sessionCeremonies.take(auth.session.tokenHash, response.ceremony) as? Ceremony.Confirm ?: return Outcome.Denied("ceremony_gone")
+        if (ceremony.accountId != auth.account.id) return Outcome.Denied("ceremony_gone")
+        val credential = when (val checked = verifyOwnAssertion(auth, response, ceremony.challenge)) {
+            is Outcome.Denied -> return checked
+            is Outcome.Ok -> checked.value
+        }
+        sessions.markVerified(auth.session.tokenHash, now())
+        audit.record(AuditEntry(AuditActor.of(auth.actor), "auth.confirmed", TARGET_ACCOUNT, auth.account.id.toString(), details = mapOf("credential" to credential.id.toString())))
+        return Outcome.Ok(Unit)
+    }
+
+    /** An assertion of one of the member's own keys, user verified; failures are journaled (the account is known). */
+    private fun verifyOwnAssertion(auth: Authenticated, response: AssertionResponse, challenge: ByteArray): Outcome<StoredCredential> {
         val credentialId = Tokens.fromBase64Url(response.credentialId) ?: return Outcome.Denied("bad_encoding")
         val credential = accounts.credentialByCredentialId(credentialId)?.takeIf { it.accountId == auth.account.id } ?: return Outcome.Denied("unknown_key")
         val verified = try {
-            passkeys.verifyAssertion(response, ceremony.challenge, credential)
+            passkeys.verifyAssertion(response, challenge, credential)
         } catch (e: PasskeyException) {
-            audit.record(AuditEntry(AuditActor.of(auth.actor), "auth.confirmation_failed", "team_account", auth.account.id.toString(), details = mapOf("code" to e.code)))
+            audit.record(AuditEntry(AuditActor.of(auth.actor), "auth.confirmation_failed", TARGET_ACCOUNT, auth.account.id.toString(), details = mapOf("code" to e.code, "credential" to credential.id.toString())))
             return Outcome.Denied(e.code)
         }
-        val now = now()
-        accounts.markUsed(credential.id, verified.signCount, verified.backupState, now)
-        sessions.markVerified(auth.session.tokenHash, now)
-        audit.record(AuditEntry(AuditActor.of(auth.actor), "auth.confirmed", "team_account", auth.account.id.toString(), details = mapOf("key" to credential.name)))
-        return Outcome.Ok(Unit)
+        accounts.markUsed(credential.id, verified.signCount, verified.backupState, now())
+        return Outcome.Ok(credential)
     }
 
     // Keys of the member ----------------------------------------------------------------------------
 
-    /** Adding a key gives lasting access: it needs a passkey verified less than 5 minutes ago. */
-    fun startAddKey(auth: Authenticated): Outcome<CreationOptionsResponse> {
-        if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
+    /**
+     * Adding a key gives lasting access: it opens only with a key of the account verified inside this very
+     * flow, at most 60 seconds before (D-127), not with the freshness of the session alone.
+     */
+    fun startAddKeyProof(auth: Authenticated): Outcome<RequestOptionsResponse> {
         val keys = accounts.credentials(auth.account.id)
         if (keys.size >= MAX_KEYS) return Outcome.Denied("too_many_keys")
-        val (id, ceremony) = ceremonies.start { challenge, at -> Ceremony.AddKey(challenge, at, auth.session.tokenHash, auth.account.id) } ?: return Outcome.Denied("busy")
-        return Outcome.Ok(creationOptions(id, ceremony.challenge, auth.account.userHandle, auth.account.pseudonym, keys.map { it.credentialId }))
+        val (id, ceremony) = sessionCeremonies.start(auth.session.tokenHash) { challenge, at -> Ceremony.AddKeyProof(challenge, at, auth.account.id) }
+        return Outcome.Ok(requestOptions(id, ceremony.challenge, keys.map { it.credentialId }, ADD_KEY_PROOF_LIFETIME.inWholeMilliseconds))
     }
 
-    fun finishAddKey(auth: Authenticated, response: RegistrationResponse): Outcome<StoredCredential> {
-        val ceremony = ceremonies.take(response.ceremony) as? Ceremony.AddKey ?: return Outcome.Denied("ceremony_gone")
-        if (ceremony.sessionHash != auth.session.tokenHash || ceremony.accountId != auth.account.id) return Outcome.Denied("ceremony_gone")
+    /** Checks the proof of [startAddKeyProof] and opens the registration of the new key, bound to it. */
+    fun startAddKey(auth: Authenticated, proof: AssertionResponse): Outcome<CreationOptionsResponse> {
+        val ceremony = sessionCeremonies.take(auth.session.tokenHash, proof.ceremony) as? Ceremony.AddKeyProof ?: return Outcome.Denied("ceremony_gone")
+        if (ceremony.accountId != auth.account.id) return Outcome.Denied("ceremony_gone")
+        if (ceremony.startedAt.plusSeconds(ADD_KEY_PROOF_LIFETIME.inWholeSeconds).isBefore(clock.instant())) return Outcome.Denied("ceremony_gone")
+        when (val checked = verifyOwnAssertion(auth, proof, ceremony.challenge)) {
+            is Outcome.Denied -> return checked
+            is Outcome.Ok -> Unit
+        }
+        val keys = accounts.credentials(auth.account.id)
+        if (keys.size >= MAX_KEYS) return Outcome.Denied("too_many_keys")
+        val (id, creation) = sessionCeremonies.start(auth.session.tokenHash) { challenge, at -> Ceremony.AddKey(challenge, at, auth.account.id) }
+        return Outcome.Ok(creationOptions(id, creation.challenge, auth.account.userHandle, auth.account.pseudonym, keys.map { it.credentialId }))
+    }
+
+    fun finishAddKey(auth: Authenticated, response: RegistrationResponse): Outcome<KeyInfo> {
+        val ceremony = sessionCeremonies.take(auth.session.tokenHash, response.ceremony) as? Ceremony.AddKey ?: return Outcome.Denied("ceremony_gone")
+        if (ceremony.accountId != auth.account.id) return Outcome.Denied("ceremony_gone")
         val name = KeyNames.normalize(response.name) ?: BackOfficeTexts.DEFAULT_BACKUP_KEY_NAME
         val credential = try {
             passkeys.verifyRegistration(response, ceremony.challenge, name)
@@ -303,19 +441,35 @@ class BackOffice(
             if (credentialTaken(connection, credential.credentialId)) return@transaction Outcome.Denied("key_known")
             if (accounts.credentialCount(connection, auth.account.id) >= MAX_KEYS) return@transaction Outcome.Denied("too_many_keys")
             val stored = accounts.addCredential(connection, auth.account.id, credential, now)
-            audit.record(connection, AuditEntry(AuditActor.of(auth.actor), "team.key_added", "team_account", auth.account.id.toString(), details = mapOf("key" to stored.name)))
-            Outcome.Ok(stored)
+            audit.record(connection, AuditEntry(AuditActor.of(auth.actor), "team.key_added", TARGET_ACCOUNT, auth.account.id.toString(), details = mapOf("credential" to stored.id.toString())))
+            Outcome.Ok(KeyInfo(stored.id, stored.name, stored.createdAt, null))
         }
     }
 
     /** Deletes one of one's own keys (never the last one: the account would be locked out). */
-    fun deleteKey(auth: Authenticated, credentialId: UUID): Outcome<String> {
+    fun deleteKey(auth: Authenticated, credentialId: UUID): Outcome<Unit> {
         if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
         return dataSource.transaction { connection ->
             if (accounts.credentialCount(connection, auth.account.id) <= 1) return@transaction Outcome.Denied("last_key")
-            val name = accounts.deleteCredential(connection, auth.account.id, credentialId) ?: return@transaction Outcome.Denied("not_found")
-            audit.record(connection, AuditEntry(AuditActor.of(auth.actor), "team.key_deleted", "team_account", auth.account.id.toString(), details = mapOf("key" to name)))
-            Outcome.Ok(name)
+            if (!accounts.deleteCredential(connection, auth.account.id, credentialId)) return@transaction Outcome.Denied("not_found")
+            audit.record(connection, AuditEntry(AuditActor.of(auth.actor), "team.key_deleted", TARGET_ACCOUNT, auth.account.id.toString(), details = mapOf("credential" to credentialId.toString())))
+            Outcome.Ok(Unit)
+        }
+    }
+
+    /**
+     * Deletes a key of a **suspended** member (a lost or stolen key), so that a later reinstatement does
+     * not give it back: `team.revoke`, and `team.manage_admins` for a holder of an administration role.
+     */
+    fun deleteMemberKey(auth: Authenticated, accountId: UUID, credentialId: UUID): Outcome<Unit> {
+        if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
+        val now = now()
+        return dataSource.transaction { connection ->
+            val target = accounts.find(connection, accountId)?.takeIf { it.status == AccountStatus.SUSPENDED } ?: return@transaction Outcome.Denied("not_suspended")
+            if (!auth.actor.has(closePermission(connection, target.id, now))) return@transaction Outcome.Denied("forbidden")
+            if (!accounts.deleteCredential(connection, target.id, credentialId)) return@transaction Outcome.Denied("not_found")
+            audit.record(connection, AuditEntry(AuditActor.of(auth.actor), "team.key_deleted", TARGET_ACCOUNT, target.id.toString(), details = mapOf("credential" to credentialId.toString())))
+            Outcome.Ok(Unit)
         }
     }
 
@@ -359,10 +513,14 @@ class BackOffice(
         }
     }
 
+    /** Withdraws an invitation before it is used; never a bootstrap invitation (command line only). */
     fun withdrawInvitation(auth: Authenticated, id: UUID): Outcome<Unit> {
         if (!auth.actor.has(Permissions.TEAM_INVITE)) return Outcome.Denied("forbidden")
+        if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
         return dataSource.transaction { connection ->
-            if (!invitations.delete(connection, id)) return@transaction Outcome.Denied("not_found")
+            val invitation = invitations.find(connection, id) ?: return@transaction Outcome.Denied("not_found")
+            if (invitation.bootstrap) return@transaction Outcome.Denied("bootstrap_invitation")
+            invitations.delete(connection, id)
             audit.record(connection, AuditEntry(AuditActor.of(auth.actor), "team.invitation_withdrawn", "team_invitation", id.toString()))
             Outcome.Ok(Unit)
         }
@@ -394,7 +552,7 @@ class BackOffice(
      * Withdraws a role: at once for the ordinary roles (`team.revoke`); for `admin` and `super_admin`, a
      * request for a second super administrator (`team.manage_admins`), as the contract asks.
      */
-    fun revokeGrant(auth: Authenticated, grantId: UUID, reason: String?): Outcome<Revocation> {
+    fun revokeGrant(auth: Authenticated, grantId: UUID, reason: String?): Outcome<TeamChange> {
         val actor = auth.actor
         val grant = grants.find(grantId)?.takeIf { it.status == GrantStatus.ACTIVE } ?: return Outcome.Denied("not_found")
         val permission = if (grant.role.isAdministration) Permissions.TEAM_MANAGE_ADMINS else Permissions.TEAM_REVOKE
@@ -410,7 +568,7 @@ class BackOffice(
                     mapOf("account" to grant.accountId.toString(), "role" to grant.role.id), text, actor.accountId, now,
                 )
                 audit.record(connection, approvalEntry(AuditActor.of(actor), "approval.requested", approval))
-                Outcome.Ok(Revocation.Waiting(approval))
+                Outcome.Ok(TeamChange.Waiting(approval))
             } else {
                 val closed = grants.close(connection, grant.id, GrantStatus.REVOKED, now) ?: return@transaction Outcome.Denied("not_found")
                 val revokedSessions = validationSessions.revokeForGrant(connection, closed.id, now)
@@ -418,38 +576,70 @@ class BackOffice(
                     connection,
                     AuditEntry(AuditActor.of(actor), "team.role_revoked", TARGET_ACCOUNT, closed.accountId.toString(), text, grantDetails(closed) + ("validation_sessions" to revokedSessions.size.toString())),
                 )
-                Outcome.Ok(Revocation.Done)
+                Outcome.Ok(TeamChange.Done())
             }
         }
     }
 
-    /** The requests [actor] could decide (they hold the permission and did not ask themselves), and theirs. */
+    /** The account a request concerns (who may never decide on it), if it concerns one. */
+    private fun targetAccountOf(approval: PendingApproval): UUID? = when (approval.targetType) {
+        TARGET_ACCOUNT -> runCatching { UUID.fromString(approval.targetId) }.getOrNull()
+        TARGET_GRANT -> approval.payload["account"]?.let { runCatching { UUID.fromString(it) }.getOrNull() }
+        else -> null
+    }
+
+    /** The requests [actor] could decide (they hold the permission, did not ask and are not concerned), and their own. */
     fun openApprovals(actor: TeamActor): List<PendingApproval> =
-        approvals.open(clock.instant()).filter { (actor.has(it.permission) && it.requestedBy != actor.accountId) || it.requestedBy == actor.accountId }
+        approvals.open(clock.instant()).filter {
+            it.requestedBy == actor.accountId || (actor.has(it.permission) && targetAccountOf(it) != actor.accountId)
+        }
 
     /** Approves a request of somebody else (S-61): the action is done now, with the two names in the journal. */
     fun approve(auth: Authenticated, approvalId: UUID): Outcome<ApprovalStatus> {
         val actor = auth.actor
         if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
+        // A queue action is checked again against the queue: still offered, still allowed to this person.
+        approvals.find(approvalId)?.takeIf { it.action == ACTION_QUEUE && it.status == ApprovalStatus.PENDING }?.let { pending ->
+            queueActionAllowed(actor, pending.payload["queue"].orEmpty(), pending.payload["item"].orEmpty(), pending.payload["action"].orEmpty())?.let { return Outcome.Denied(it) }
+        }
         val now = now()
-        val queueWork = dataSource.transaction<Outcome<Pair<ApprovalStatus, PendingApproval?>>> { connection ->
+        val work = dataSource.transaction<Outcome<Pair<ApprovalStatus, PendingApproval?>>> { connection ->
             val approval = approvals.lockOpen(connection, approvalId, now) ?: return@transaction Outcome.Denied("approval_gone")
             if (!actor.has(approval.permission)) return@transaction Outcome.Denied("forbidden")
             if (approval.requestedBy == actor.accountId) return@transaction Outcome.Denied("own_request")
-            if (approval.targetType == TARGET_ACCOUNT && approval.targetId == actor.accountId.toString()) return@transaction Outcome.Denied("own_grant")
+            if (targetAccountOf(approval) == actor.accountId) return@transaction Outcome.Denied("own_target")
             val me = AuditActor.of(actor)
             when (approval.action) {
                 ACTION_GRANT -> Outcome.Ok(approveGrant(connection, approval, actor, me, now) to null)
                 ACTION_REVOKE -> {
-                    val grant = grants.find(UUID.fromString(approval.targetId))
-                    if (grant != null && grant.accountId == actor.accountId) return@transaction Outcome.Denied("own_grant")
-                    val closed = grant?.let { grants.close(connection, it.id, GrantStatus.REVOKED, now) }
+                    val closed = grants.find(UUID.fromString(approval.targetId))?.let { grants.close(connection, it.id, GrantStatus.REVOKED, now) }
                     val status = if (closed == null) ApprovalStatus.FAILED else ApprovalStatus.APPROVED
                     approvals.decide(connection, approval.id, status, actor.accountId, now)
                     audit.record(connection, approvalEntry(me, if (closed == null) "approval.failed" else "approval.approved", approval))
                     if (closed != null) {
+                        validationSessions.revokeForGrant(connection, closed.id, now)
                         audit.record(connection, AuditEntry(me, "team.role_revoked", TARGET_ACCOUNT, closed.accountId.toString(), approval.reason, grantDetails(closed) + ("approval" to approval.id.toString())))
                     }
+                    Outcome.Ok(status to null)
+                }
+                ACTION_REMOVE -> {
+                    val target = accounts.find(connection, UUID.fromString(approval.targetId))?.takeIf { it.status != AccountStatus.REMOVED }
+                    if (target == null) {
+                        approvals.decide(connection, approval.id, ApprovalStatus.FAILED, actor.accountId, now)
+                        audit.record(connection, approvalEntry(me, "approval.failed", approval))
+                        return@transaction Outcome.Ok(ApprovalStatus.FAILED to null)
+                    }
+                    approvals.decide(connection, approval.id, ApprovalStatus.APPROVED, actor.accountId, now)
+                    audit.record(connection, approvalEntry(me, "approval.approved", approval))
+                    removeIn(connection, target.id, me, approval.reason, now, approval.id)
+                    Outcome.Ok(ApprovalStatus.APPROVED to null)
+                }
+                ACTION_REINSTATE -> {
+                    val target = accounts.find(connection, UUID.fromString(approval.targetId))
+                    val done = target != null && reinstateIn(connection, target, me, approval.reason, approval.id) is Outcome.Ok
+                    val status = if (done) ApprovalStatus.APPROVED else ApprovalStatus.FAILED
+                    approvals.decide(connection, approval.id, status, actor.accountId, now)
+                    audit.record(connection, approvalEntry(me, if (done) "approval.approved" else "approval.failed", approval))
                     Outcome.Ok(status to null)
                 }
                 ACTION_QUEUE -> {
@@ -460,18 +650,28 @@ class BackOffice(
                 else -> Outcome.Denied("unknown_action")
             }
         }
-        val (status, queueApproval) = when (queueWork) {
-            is Outcome.Denied -> return queueWork
-            is Outcome.Ok -> queueWork.value
+        val (status, queueApproval) = when (work) {
+            is Outcome.Denied -> return work
+            is Outcome.Ok -> work.value
         }
         // A queue action approved by a second person is performed after the approval is committed: the
         // queue belongs to a pole and works with its own transactions.
         if (queueApproval != null) {
-            val queue = queues.find(queueApproval.payload["queue"].orEmpty())
+            val queueId = queueApproval.payload["queue"].orEmpty()
             val item = queueApproval.payload["item"].orEmpty()
             val action = queueApproval.payload["action"].orEmpty()
-            val outcome = queue?.let { runQueueAction(it, item, action, queueApproval.reason, actor) } ?: ActionOutcome.NotFound
-            audit.record(queueEntry(actor, queueApproval.payload["queue"].orEmpty(), item, action, queueApproval.reason, outcome) + ("approval" to queueApproval.id.toString()))
+            val queue = queues.find(queueId)
+            val outcome = if (queue == null) {
+                ActionOutcome.NotFound
+            } else {
+                audit.record(queueEntry(actor, queueId, item, action, queueApproval.reason, null, queueApproval.id))
+                runQueueAction(queue, item, action, queueApproval.reason, actor)
+            }
+            audit.record(queueEntry(actor, queueId, item, action, queueApproval.reason, outcome, queueApproval.id))
+            if (outcome != ActionOutcome.Done) {
+                approvals.markFailed(queueApproval.id)
+                return Outcome.Ok(ApprovalStatus.FAILED)
+            }
         }
         return Outcome.Ok(status)
     }
@@ -500,13 +700,16 @@ class BackOffice(
         return ApprovalStatus.APPROVED
     }
 
+    /** Refuses a request of somebody else that does not concern oneself; a refusal only stops an action. */
     fun refuseApproval(auth: Authenticated, approvalId: UUID, reason: String?): Outcome<Unit> {
         val actor = auth.actor
+        if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
         val now = now()
         return dataSource.transaction { connection ->
             val approval = approvals.lockOpen(connection, approvalId, now) ?: return@transaction Outcome.Denied("approval_gone")
             if (!actor.has(approval.permission)) return@transaction Outcome.Denied("forbidden")
             if (approval.requestedBy == actor.accountId) return@transaction Outcome.Denied("own_request")
+            if (targetAccountOf(approval) == actor.accountId) return@transaction Outcome.Denied("own_target")
             approvals.decide(connection, approval.id, ApprovalStatus.REFUSED, actor.accountId, now)
             audit.record(connection, approvalEntry(AuditActor.of(actor), "approval.refused", approval).copy(reason = cleanReason(reason)))
             Outcome.Ok(Unit)
@@ -526,61 +729,123 @@ class BackOffice(
         }
     }
 
+    /** `team.manage_admins` for a holder of an administration role, `team.revoke` for anyone else. */
+    private fun closePermission(connection: Connection, accountId: UUID, now: Instant): String =
+        if (grants.live(connection, accountId, now).any { it.role.isAdministration }) Permissions.TEAM_MANAGE_ADMINS else Permissions.TEAM_REVOKE
+
     /**
-     * Emergency cut (S-62): every session, every grant and every key of the account at once; its open
-     * requests and validation sessions end too. Anyone may cut their own account (a stolen phone); cutting
-     * someone else needs `team.revoke`, and `team.manage_admins` for an administrator.
+     * Emergency cut (S-62, D-127): immediate and **reversible**. The account is suspended: its sessions,
+     * open requests, validation sessions and the invitations it created end; its roles and keys stay but
+     * are unusable until a reinstatement. Anyone may cut their own account (a stolen phone) without a new
+     * verification; cutting someone else needs `team.revoke`, and `team.manage_admins` for an administrator.
      */
-    fun emergencyCut(auth: Authenticated, accountId: UUID, reason: String?): Outcome<CutReport> =
-        closeAccount(auth, accountId, reason, AccountStatus.SUSPENDED, "team.emergency_cut")
-
-    /** Removal of a member: immediate, without second approval (contract, section 4); the journal keeps their trace. */
-    fun removeMember(auth: Authenticated, accountId: UUID, reason: String?): Outcome<CutReport> =
-        closeAccount(auth, accountId, reason, AccountStatus.REMOVED, "team.member_removed")
-
-    private fun closeAccount(auth: Authenticated, accountId: UUID, reason: String?, status: AccountStatus, action: String): Outcome<CutReport> {
+    fun emergencyCut(auth: Authenticated, accountId: UUID, reason: String?): Outcome<CutReport> {
         val actor = auth.actor
         val self = accountId == actor.accountId
-        val now = now()
         if (!self && !auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
+        val now = now()
         return dataSource.transaction { connection ->
             val target = accounts.find(connection, accountId) ?: return@transaction Outcome.Denied("not_found")
-            if (target.status == AccountStatus.REMOVED || (status == AccountStatus.SUSPENDED && target.status != AccountStatus.ACTIVE)) {
-                return@transaction Outcome.Denied("already_closed")
-            }
-            if (!self) {
-                val holdsAdministration = grants.live(connection, accountId, now).any { it.role.isAdministration }
-                val needed = if (holdsAdministration) Permissions.TEAM_MANAGE_ADMINS else Permissions.TEAM_REVOKE
-                if (!actor.has(needed)) return@transaction Outcome.Denied("forbidden")
-            }
-            accounts.close(connection, accountId, status, now)
-            val revoked = grants.revokeAll(connection, accountId, now)
-            val keys = accounts.deleteCredentials(connection, accountId)
-            val closedSessions = sessions.closeAll(connection, accountId)
-            val validation = validationSessions.revokeForAccount(connection, accountId, now)
-            val requests = approvals.cancelForTarget(connection, TARGET_ACCOUNT, accountId.toString(), now) + cancelRequestedBy(connection, accountId, now)
-            val report = CutReport(closedSessions, revoked.size, keys, validation, requests)
-            audit.record(
-                connection,
-                AuditEntry(
-                    AuditActor.of(actor),
-                    action,
-                    TARGET_ACCOUNT,
-                    accountId.toString(),
-                    cleanReason(reason),
-                    mapOf(
-                        "sessions" to report.sessions.toString(),
-                        "grants" to report.grants.toString(),
-                        "keys" to report.keys.toString(),
-                        "validation_sessions" to report.validationSessions.toString(),
-                        "requests" to report.requests.toString(),
-                        "roles" to revoked.joinToString(",") { it.role.id },
-                    ),
-                ),
-            )
-            Outcome.Ok(report)
+            if (target.status != AccountStatus.ACTIVE) return@transaction Outcome.Denied("already_closed")
+            if (!self && !actor.has(closePermission(connection, accountId, now))) return@transaction Outcome.Denied("forbidden")
+            Outcome.Ok(suspendIn(connection, accountId, AuditActor.of(actor), cleanReason(reason), now))
         }
     }
+
+    /**
+     * Permanent removal of a member (D-127): with a new verification; immediate for oneself and for an
+     * ordinary member (`team.revoke`); a request for a second super administrator when the member holds
+     * `admin` or `super_admin`, so that nobody removes the others alone. The journal keeps the trace.
+     */
+    fun removeMember(auth: Authenticated, accountId: UUID, reason: String?): Outcome<TeamChange> {
+        val actor = auth.actor
+        if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
+        val self = accountId == actor.accountId
+        val text = cleanReason(reason)
+        val now = now()
+        return dataSource.transaction { connection ->
+            val target = accounts.find(connection, accountId)?.takeIf { it.status != AccountStatus.REMOVED } ?: return@transaction Outcome.Denied("not_found")
+            val permission = closePermission(connection, target.id, now)
+            if (!self && !actor.has(permission)) return@transaction Outcome.Denied("forbidden")
+            if (!self && permission == Permissions.TEAM_MANAGE_ADMINS) {
+                if (approvals.hasOpen(connection, ACTION_REMOVE, TARGET_ACCOUNT, target.id.toString(), null, now)) return@transaction Outcome.Denied("already_requested")
+                val approval = approvals.create(connection, ACTION_REMOVE, permission, TARGET_ACCOUNT, target.id.toString(), mapOf("pseudonym" to target.pseudonym), text, actor.accountId, now)
+                audit.record(connection, approvalEntry(AuditActor.of(actor), "approval.requested", approval))
+                return@transaction Outcome.Ok(TeamChange.Waiting(approval))
+            }
+            Outcome.Ok(TeamChange.Done(removeIn(connection, target.id, AuditActor.of(actor), text, now, null)))
+        }
+    }
+
+    /** Asks for the reinstatement of a suspended member: a second super administrator approves (or the command line). */
+    fun requestReinstatement(auth: Authenticated, accountId: UUID, reason: String?): Outcome<PendingApproval> {
+        val actor = auth.actor
+        if (!actor.has(Permissions.TEAM_MANAGE_ADMINS)) return Outcome.Denied("forbidden")
+        if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
+        val now = now()
+        return dataSource.transaction { connection ->
+            val target = accounts.find(connection, accountId)?.takeIf { it.status == AccountStatus.SUSPENDED } ?: return@transaction Outcome.Denied("not_suspended")
+            if (approvals.hasOpen(connection, ACTION_REINSTATE, TARGET_ACCOUNT, target.id.toString(), null, now)) return@transaction Outcome.Denied("already_requested")
+            val approval = approvals.create(
+                connection, ACTION_REINSTATE, Permissions.TEAM_MANAGE_ADMINS, TARGET_ACCOUNT, target.id.toString(),
+                mapOf("pseudonym" to target.pseudonym), cleanReason(reason), actor.accountId, now,
+            )
+            audit.record(connection, approvalEntry(AuditActor.of(actor), "approval.requested", approval))
+            Outcome.Ok(approval)
+        }
+    }
+
+    private fun suspendIn(connection: Connection, accountId: UUID, actor: AuditActor, reason: String?, now: Instant): CutReport {
+        val roles = grants.live(connection, accountId, now)
+        accounts.close(connection, accountId, AccountStatus.SUSPENDED, now)
+        val report = CutReport(
+            sessions = sessions.closeAll(connection, accountId),
+            grants = roles.size,
+            keys = accounts.credentialCount(connection, accountId),
+            validationSessions = validationSessions.revokeForAccount(connection, accountId, now),
+            requests = approvals.cancelForTarget(connection, TARGET_ACCOUNT, accountId.toString(), now) + cancelRequestedBy(connection, accountId, now),
+            invitations = invitations.deleteCreatedBy(connection, accountId),
+        )
+        audit.record(connection, AuditEntry(actor, "team.emergency_cut", TARGET_ACCOUNT, accountId.toString(), reason, cutDetails(report, roles)))
+        return report
+    }
+
+    private fun removeIn(connection: Connection, accountId: UUID, actor: AuditActor, reason: String?, now: Instant, approval: UUID?): CutReport {
+        val roles = grants.live(connection, accountId, now)
+        accounts.close(connection, accountId, AccountStatus.REMOVED, now)
+        val report = CutReport(
+            sessions = sessions.closeAll(connection, accountId),
+            grants = grants.revokeAll(connection, accountId, now).size,
+            keys = accounts.deleteCredentials(connection, accountId),
+            validationSessions = validationSessions.revokeForAccount(connection, accountId, now),
+            requests = approvals.cancelForTarget(connection, TARGET_ACCOUNT, accountId.toString(), now) + cancelRequestedBy(connection, accountId, now),
+            invitations = invitations.deleteCreatedBy(connection, accountId),
+        )
+        val details = cutDetails(report, roles) + (approval?.let { mapOf("approval" to it.toString()) } ?: emptyMap())
+        audit.record(connection, AuditEntry(actor, "team.member_removed", TARGET_ACCOUNT, accountId.toString(), reason, details))
+        return report
+    }
+
+    private fun reinstateIn(connection: Connection, target: TeamAccount, actor: AuditActor, reason: String?, approval: UUID? = null): Outcome<Unit> {
+        if (target.status != AccountStatus.SUSPENDED) return Outcome.Denied("not_suspended")
+        if (accounts.pseudonymTaken(connection, target.pseudonym)) return Outcome.Denied("pseudonym_taken")
+        if (!accounts.reactivate(connection, target.id)) return Outcome.Denied("not_suspended")
+        audit.record(
+            connection,
+            AuditEntry(actor, "team.member_reinstated", TARGET_ACCOUNT, target.id.toString(), reason, approval?.let { mapOf("approval" to it.toString()) } ?: emptyMap()),
+        )
+        return Outcome.Ok(Unit)
+    }
+
+    private fun cutDetails(report: CutReport, roles: List<RoleGrant>): Map<String, String> = mapOf(
+        "sessions" to report.sessions.toString(),
+        "grants" to report.grants.toString(),
+        "keys" to report.keys.toString(),
+        "validation_sessions" to report.validationSessions.toString(),
+        "requests" to report.requests.toString(),
+        "invitations" to report.invitations.toString(),
+        "roles" to roles.joinToString(",") { it.role.id },
+    )
 
     private fun cancelRequestedBy(connection: Connection, accountId: UUID, now: Instant): Int =
         connection.prepareStatement("UPDATE team_pending_approval SET status = 'failed', decided_at = ? WHERE status = 'pending' AND requested_by = ?").use { update ->
@@ -591,14 +856,27 @@ class BackOffice(
 
     // Queues ----------------------------------------------------------------------------------------
 
+    /** Why [actor] may not do [actionId] on [itemId] of [queueId] now, or null when they may. */
+    private fun queueActionAllowed(actor: TeamActor, queueId: String, itemId: String, actionId: String): String? {
+        val queue = queues.find(queueId) ?: return "not_found"
+        if (!actor.has(queue.viewPermission)) return "forbidden"
+        val available = runCatching { queue.actions(itemId) }.onFailure { logQueueFailure(queue, it) }.getOrNull() ?: return "queue_unavailable"
+        val action = available.firstOrNull { it.id == actionId } ?: return "action_unavailable"
+        if (!actor.has(action.permission)) return "forbidden"
+        return null
+    }
+
     /**
      * An action on a queue item (contract, section 7): permission of the queue and of the action, reason
-     * when required, new verification when sensitive, second person when required, journal line always.
+     * when required, new verification when sensitive, second person when required, and two journal lines,
+     * `….requested` before the action and its outcome after (D-127).
      */
     fun performQueueAction(auth: Authenticated, queueId: String, itemId: String, actionId: String, reason: String?): Outcome<QueueResult> {
         val actor = auth.actor
         val queue = queues.find(queueId) ?: return Outcome.Denied("not_found")
         if (!actor.has(queue.viewPermission)) return Outcome.Denied("forbidden")
+        // The journal identifier is checked before anything is done.
+        if (!Permissions.isValidId("queue.$queueId.$actionId.requested")) return Outcome.Denied("unknown_action")
         val available = runCatching { queue.actions(itemId) }.onFailure { logQueueFailure(queue, it) }.getOrNull() ?: return Outcome.Denied("queue_unavailable")
         val action = available.firstOrNull { it.id == actionId } ?: return Outcome.Denied("action_unavailable")
         if (!actor.has(action.permission)) return Outcome.Denied("forbidden")
@@ -618,8 +896,9 @@ class BackOffice(
                 Outcome.Ok(QueueResult.Waiting(approval))
             }
         }
+        audit.record(queueEntry(actor, queueId, itemId, actionId, text, null, null))
         val outcome = runQueueAction(queue, itemId, actionId, text, actor)
-        audit.record(queueEntry(actor, queueId, itemId, actionId, text, outcome))
+        audit.record(queueEntry(actor, queueId, itemId, actionId, text, outcome, null))
         return Outcome.Ok(QueueResult.Performed(outcome))
     }
 
@@ -631,15 +910,17 @@ class BackOffice(
         ActionOutcome.Refused(BackOfficeTexts.QUEUE_ACTION_FAILED)
     }
 
-    private fun queueEntry(actor: TeamActor, queueId: String, itemId: String, actionId: String, reason: String?, outcome: ActionOutcome): AuditEntry = AuditEntry(
+    /** The line before an action ([outcome] null: `….requested`) or after it, with its outcome. */
+    private fun queueEntry(actor: TeamActor, queueId: String, itemId: String, actionId: String, reason: String?, outcome: ActionOutcome?, approval: UUID?): AuditEntry = AuditEntry(
         AuditActor.of(actor),
-        "queue.${queueId}.$actionId",
+        "queue.$queueId.$actionId" + if (outcome == null) ".requested" else "",
         TARGET_QUEUE_ITEM,
         "$queueId:$itemId",
         reason,
         buildMap {
-            put("outcome", outcomeCode(outcome))
+            outcome?.let { put("outcome", outcomeCode(it)) }
             if (outcome is ActionOutcome.Refused) put("refusal", outcome.reason.take(500))
+            approval?.let { put("approval", it.toString()) }
         },
     )
 
@@ -667,14 +948,15 @@ class BackOffice(
 
     /**
      * Posts an alert on the dashboard without a queue (contract 1.1, section 7), for example « import des
-     * données ouvertes refusé ». [permission] says who sees it and may dismiss it; [link] is a back-office path.
+     * données ouvertes refusé ». [permission] says who sees it and may dismiss it; [link] is a back-office
+     * path (a slash, then a letter or digit, no backslash).
      */
     fun postAlert(source: String, title: String, level: Int, permission: String, link: String? = null): DashboardAlert {
         require(Regex("^[a-z0-9_]+(\\.[a-z0-9_]+)*$").matches(source)) { "The source is the stable id of a space" }
         require(title.isNotBlank() && title.length <= 200) { "An alert title has 1 to 200 characters" }
         require(level in 1..5) { "The importance level is between 1 and 5" }
         require(Permissions.isValidId(permission)) { "The permission is a dotted identifier" }
-        require(link == null || (link.startsWith("/") && !link.startsWith("//"))) { "The link is a path of the back-office" }
+        require(link == null || isLocalLink(link)) { "The link is a path of the back-office" }
         val now = now()
         return dataSource.transaction { connection ->
             val alert = alerts.insert(connection, source, title.trim(), level, link, permission, now)
@@ -685,12 +967,21 @@ class BackOffice(
 
     fun dismissAlert(auth: Authenticated, id: UUID): Outcome<Unit> {
         val now = now()
-        return dataSource.transaction { connection ->
+        val outcome = dataSource.transaction<Outcome<DashboardAlert>> { connection ->
             val alert = alerts.find(connection, id)?.takeIf { it.dismissedAt == null } ?: return@transaction Outcome.Denied("not_found")
             if (!auth.actor.has(alert.permission)) return@transaction Outcome.Denied("forbidden")
             alerts.dismiss(connection, id, auth.actor.accountId, now)
             audit.record(connection, AuditEntry(AuditActor.of(auth.actor), "alert.dismissed", "dashboard_alert", id.toString(), details = mapOf("source" to alert.source)))
-            Outcome.Ok(Unit)
+            Outcome.Ok(alert)
+        }
+        return when (outcome) {
+            is Outcome.Denied -> outcome
+            is Outcome.Ok -> {
+                // Dismissing the alert of a shrunk verified set accepts the new set as the reference.
+                if (outcome.value.source == ORGANISATIONS_ALERT_SOURCE) verifiedReference = null
+                if (outcome.value.source == ALERT_SOURCE && outcome.value.permission == Permissions.AUDIT_READ) journalAlertPosted = false
+                Outcome.Ok(Unit)
+            }
         }
     }
 
@@ -742,9 +1033,10 @@ class BackOffice(
         }
     }
 
-    /** An administrator revokes a session at once (`team.revoke`). */
+    /** An administrator revokes a session at once (`team.revoke`), with a new verification. */
     fun revokeValidationSession(auth: Authenticated, id: UUID, reason: String?): Outcome<ValidationSession> {
         if (!auth.actor.has(Permissions.TEAM_REVOKE)) return Outcome.Denied("forbidden")
+        if (!auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
         val now = now()
         return dataSource.transaction { connection ->
             val ended = validationSessions.end(connection, id, ValidationSessionState.REVOKED, now) ?: return@transaction Outcome.Denied("not_found")
@@ -786,9 +1078,9 @@ class BackOffice(
 
     /**
      * Closes what reached its end (grants with an end date, requests older than 7 days, sessions,
-     * invitations, validation sessions), deletes old decided requests and dismissed alerts, and suspends
-     * the validators whose organisation is no longer verified. Each closing of a grant or a request is a
-     * journal line of the server ("système").
+     * invitations, validation sessions), deletes old decided requests and dismissed alerts, writes the
+     * counts of anonymous failures, checks the journal and suspends the validators whose organisation is
+     * no longer verified. Each closing of a grant or a request is a journal line of the server ("système").
      */
     fun maintain(): MaintenanceReport {
         val now = now()
@@ -810,26 +1102,59 @@ class BackOffice(
                 }
             }
         }
+        flushFailures(all = false)
         val suspended = checkValidatorOrganisations()
         val deletedSessions = sessions.deleteExpired(now)
         val deletedInvitations = invitations.deleteExpired(now)
         validationSessions.expireDue(now)
+        sessionCeremonies.purge()
+        enrolments.purge()
         val cutoff = now.minusSeconds(BackOfficeConfig.DECIDED_RETENTION.inWholeSeconds)
         approvals.deleteDecidedBefore(cutoff)
         alerts.deleteDismissedBefore(cutoff)
+        checkJournal()
         return MaintenanceReport(expiredGrants, expiredApprovals, suspended, deletedSessions, deletedInvitations)
+    }
+
+    /**
+     * Writes one journal line per period of 10 minutes with the counts of failures no account explains
+     * (unknown keys, refused registrations); [all] includes the current period (tests, shutdown).
+     */
+    fun flushFailures(all: Boolean = false): Int {
+        val buckets = failures.drain(all)
+        buckets.forEach { (start, codes) ->
+            audit.record(
+                AuditEntry(
+                    AuditActor.Unknown,
+                    "auth.anonymous_failures",
+                    details = codes.mapValues { it.value.toString() } + mapOf("from" to start.toString(), "until" to (start + failures.bucketSeconds).toString()),
+                ),
+            )
+        }
+        return buckets.size
     }
 
     /**
      * Suspends the validators of every organisation that left the verified set (its sheet replaced without
      * the `p` tag, or its editor key removed). The Agir space has no notification for this: the check runs
      * with the periodic task, and [ValidationSessionGate] refuses such a session at once in the meantime.
+     * An empty set, or one that lost more than half of its keys since the last trusted check, suspends
+     * nobody: it posts an alert instead (a configuration mistake must not end every validation); dismissing
+     * that alert accepts the new set.
      */
     fun checkValidatorOrganisations(): Int {
         val list = verifiedOrganisations ?: return 0
         val validators = grants.activeValidators()
         if (validators.isEmpty()) return 0
         val verified = list()
+        val reference = verifiedReference
+        if (verified.isEmpty() || (reference != null && verified.size * 2 < reference)) {
+            if (alerts.open().none { it.source == ORGANISATIONS_ALERT_SOURCE }) {
+                postAlert(ORGANISATIONS_ALERT_SOURCE, BackOfficeTexts.ALERT_ORGANISATIONS_SHRANK, 4, Permissions.TEAM_REVOKE, "/seances")
+            }
+            return 0
+        }
+        verifiedReference = verified.size
         return validators.mapNotNull { it.organisationPubkey }.distinct().filter { it !in verified }.sumOf { suspendValidatorsOf(it) }
     }
 
@@ -856,17 +1181,17 @@ class BackOffice(
             rp = RelyingParty(config.rpId, BackOfficeTexts.RELYING_PARTY_NAME),
             user = UserEntity(Tokens.base64Url(handle), pseudonym, pseudonym),
             pubKeyCredParams = WebAuthn4jPasskeys.ALGORITHM_IDS.map { CredentialParameter(alg = it) },
-            timeout = ceremonies.timeoutMillis,
+            timeout = sessionCeremonies.timeoutMillis,
             excludeCredentials = exclude.map { CredentialDescriptor(id = Tokens.base64Url(it)) },
         ),
     )
 
-    private fun requestOptions(ceremony: String, challenge: ByteArray, allow: List<ByteArray>) = RequestOptionsResponse(
+    private fun requestOptions(ceremony: String, challenge: ByteArray, allow: List<ByteArray>, timeout: Long) = RequestOptionsResponse(
         ceremony,
         PublicKeyRequestOptions(
             challenge = Tokens.base64Url(challenge),
             rpId = config.rpId,
-            timeout = ceremonies.timeoutMillis,
+            timeout = timeout,
             allowCredentials = allow.map { CredentialDescriptor(id = Tokens.base64Url(it)) },
         ),
     )
@@ -874,10 +1199,16 @@ class BackOffice(
     companion object {
         const val ACTION_GRANT: String = "team.grant_role"
         const val ACTION_REVOKE: String = "team.revoke_role"
+        const val ACTION_REMOVE: String = "team.remove_member"
+        const val ACTION_REINSTATE: String = "team.reinstate_member"
         const val ACTION_QUEUE: String = "queue.action"
         const val TARGET_ACCOUNT: String = "team_account"
         const val TARGET_GRANT: String = "team_role_grant"
         const val TARGET_QUEUE_ITEM: String = "queue_item"
+
+        /** The source of the alerts posted by the base itself. */
+        const val ALERT_SOURCE: String = "backoffice"
+        const val ORGANISATIONS_ALERT_SOURCE: String = "backoffice.organisations"
 
         /** A member keeps at most this many keys. */
         const val MAX_KEYS: Int = 10
@@ -885,8 +1216,16 @@ class BackOffice(
         /** The dashboard flags what is due within 24 hours. */
         const val NEAR_DEADLINE_SECONDS: Long = 24 * 3600
 
+        /** The verification that opens the registration of a new key must answer within this. */
+        val ADD_KEY_PROOF_LIFETIME: Duration = 60.seconds
+
         private const val PRIORITY_SCAN = 50
         private const val MAX_PRIORITIES = 30
+
+        private val LOCAL_LINK = Regex("^/[A-Za-z0-9][^\\\\\\s]{0,198}$")
+
+        /** A link of an alert: a path of the back-office, a slash then a letter or digit, no backslash nor space. */
+        fun isLocalLink(link: String): Boolean = LOCAL_LINK.matches(link) && link.none { it.isISOControl() }
 
         /** A key typed by the team: 64 hexadecimal characters or an npub. */
         fun parseKey(value: String): String? {
@@ -933,14 +1272,4 @@ class BackOffice(
 
         private operator fun AuditEntry.plus(pair: Pair<String, String>): AuditEntry = copy(details = details + pair)
     }
-}
-
-/** Counts of an emergency cut or a removal. */
-data class CutReport(val sessions: Int, val grants: Int, val keys: Int, val validationSessions: Int, val requests: Int)
-
-/** A withdrawal of a role: done at once, or waiting for a second super administrator. */
-sealed interface Revocation {
-    data object Done : Revocation
-
-    data class Waiting(val approval: PendingApproval) : Revocation
 }

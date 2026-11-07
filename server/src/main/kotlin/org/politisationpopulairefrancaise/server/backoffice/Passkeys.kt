@@ -162,52 +162,115 @@ class WebAuthn4jPasskeys(origin: String, private val rpId: String) : PasskeyVeri
     }
 }
 
-/** A ceremony started by the server and waiting for the browser's answer. */
+/** A ceremony started by the server and waiting for the browser's answer (sign-in excepted: [SignInChallenges]). */
 sealed interface Ceremony {
     val challenge: ByteArray
     val startedAt: Instant
 
-    /** Registration of a first key from an invitation. */
+    /** Registration of a first key from an invitation (one pending per invitation). */
     class Enrol(override val challenge: ByteArray, override val startedAt: Instant, val invitationId: UUID, val userHandle: ByteArray) : Ceremony
 
-    /** Registration of one more key by a signed-in member. */
-    class AddKey(override val challenge: ByteArray, override val startedAt: Instant, val sessionHash: String, val accountId: UUID) : Ceremony
+    /** The verification of an existing key that opens the registration of one more (at most 60 seconds). */
+    class AddKeyProof(override val challenge: ByteArray, override val startedAt: Instant, val accountId: UUID) : Ceremony
 
-    /** Sign-in with any key of the team (discoverable credential). */
-    class SignIn(override val challenge: ByteArray, override val startedAt: Instant) : Ceremony
+    /** Registration of one more key, opened by a verified [AddKeyProof] just before. */
+    class AddKey(override val challenge: ByteArray, override val startedAt: Instant, val accountId: UUID) : Ceremony
 
     /** New verification of a key before a sensitive action. */
-    class Confirm(override val challenge: ByteArray, override val startedAt: Instant, val sessionHash: String, val accountId: UUID) : Ceremony
+    class Confirm(override val challenge: ByteArray, override val startedAt: Instant, val accountId: UUID) : Ceremony
 }
 
 /**
- * The ceremonies in progress, in memory only (one server): each has a random id and a 32-byte
- * challenge, is used once and forgotten after [lifetime]. At most [capacity] wait at once: beyond that
- * new ones are refused, which bounds what an attacker inside the tunnel can make the server keep.
+ * Ceremonies kept in memory, **one pending per key** (a session, an invitation): starting a new one
+ * replaces the previous one, so their number is bounded by the sessions and invitations that exist,
+ * whatever an attacker sends. Each is used once and forgotten after [lifetime].
  */
-class Ceremonies(
+class CeremonySlots<K : Any>(
     private val clock: Clock = Clock.systemUTC(),
     private val lifetime: Duration = 5.minutes,
-    private val capacity: Int = 1_000,
 ) {
-    private val waiting = ConcurrentHashMap<String, Ceremony>()
+    private class Pending(val id: String, val ceremony: Ceremony)
 
-    /** Registers [make]'s ceremony under a fresh id, or returns null when too many wait already. */
-    fun start(make: (challenge: ByteArray, now: Instant) -> Ceremony): Pair<String, Ceremony>? {
-        val now = clock.instant()
-        waiting.entries.removeIf { it.value.startedAt.plusSeconds(lifetime.inWholeSeconds).isBefore(now) }
-        if (waiting.size >= capacity) return null
+    private val slots = ConcurrentHashMap<K, Pending>()
+
+    /** Starts [make]'s ceremony for [key] under a fresh id, replacing any ceremony pending for it. */
+    fun start(key: K, make: (challenge: ByteArray, now: Instant) -> Ceremony): Pair<String, Ceremony> {
         val id = Tokens.generate(18)
-        val ceremony = make(Tokens.randomBytes(32), now)
-        waiting[id] = ceremony
+        val ceremony = make(Tokens.randomBytes(32), clock.instant())
+        slots[key] = Pending(id, ceremony)
         return id to ceremony
     }
 
-    /** Takes the ceremony [id] (once): null when unknown, already used or too old. */
-    fun take(id: String): Ceremony? {
-        val ceremony = waiting.remove(id) ?: return null
-        return ceremony.takeIf { !it.startedAt.plusSeconds(lifetime.inWholeSeconds).isBefore(clock.instant()) }
+    /** Takes the ceremony [id] of [key] (once): null when unknown, replaced, already used or too old. */
+    fun take(key: K, id: String): Ceremony? {
+        val pending = slots[key] ?: return null
+        if (!Tokens.constantTimeEquals(pending.id, id) || !slots.remove(key, pending)) return null
+        return pending.ceremony.takeIf { !it.startedAt.plusSeconds(lifetime.inWholeSeconds).isBefore(clock.instant()) }
+    }
+
+    /** Forgets the ceremonies past their lifetime (periodic task). */
+    fun purge() {
+        val now = clock.instant()
+        slots.entries.removeIf { it.value.ceremony.startedAt.plusSeconds(lifetime.inWholeSeconds).isBefore(now) }
+    }
+
+    val size: Int get() = slots.size
+
+    val timeoutMillis: Long get() = lifetime.inWholeMilliseconds
+}
+
+/**
+ * Sign-in challenges without server state (D-127): a challenge is 16 random bytes, the time it was
+ * issued and an HMAC-SHA-256 of both with a key drawn at startup. Anyone may ask for one without
+ * filling any memory; the server checks the HMAC and the age (5 minutes) when the answer comes back. A
+ * challenge enters the set of used ones only once a signature has been verified with it (so only a
+ * real member can fill that set), and leaves it when it is too old to be accepted anyway.
+ */
+class SignInChallenges(
+    private val clock: Clock = Clock.systemUTC(),
+    private val lifetime: Duration = 5.minutes,
+    private val capacity: Int = 10_000,
+) {
+    private val key = Tokens.randomBytes(32)
+    private val used = ConcurrentHashMap<String, Long>()
+
+    /** A fresh challenge, in base64url: it is also the ceremony id of the sign-in. */
+    fun issue(): String {
+        val nonce = Tokens.randomBytes(NONCE)
+        val time = java.nio.ByteBuffer.allocate(8).putLong(clock.instant().epochSecond).array()
+        return Tokens.base64Url(nonce + time + mac(nonce + time))
+    }
+
+    /** The challenge bytes of [id] when it was issued here, less than 5 minutes ago, and never used. */
+    fun open(id: String): ByteArray? {
+        val bytes = Tokens.fromBase64Url(id)?.takeIf { it.size == SIZE } ?: return null
+        val signed = bytes.copyOfRange(0, NONCE + 8)
+        if (!java.security.MessageDigest.isEqual(mac(signed), bytes.copyOfRange(NONCE + 8, SIZE))) return null
+        val issuedAt = java.nio.ByteBuffer.wrap(bytes, NONCE, 8).long
+        val now = clock.instant().epochSecond
+        if (issuedAt > now + 5 || now - issuedAt > lifetime.inWholeSeconds) return null
+        if (used.containsKey(id)) return null
+        return bytes
+    }
+
+    /** Records [id] as used after a verified signature; false when it was already used or the set is full. */
+    fun markUsed(id: String): Boolean {
+        val now = clock.instant().epochSecond
+        used.entries.removeIf { it.value < now }
+        if (used.size >= capacity) return false
+        return used.putIfAbsent(id, now + lifetime.inWholeSeconds + 5) == null
     }
 
     val timeoutMillis: Long get() = lifetime.inWholeMilliseconds
+
+    private fun mac(data: ByteArray): ByteArray {
+        val mac = javax.crypto.Mac.getInstance("HmacSHA256")
+        mac.init(javax.crypto.spec.SecretKeySpec(key, "HmacSHA256"))
+        return mac.doFinal(data)
+    }
+
+    private companion object {
+        const val NONCE = 16
+        const val SIZE = NONCE + 8 + 32
+    }
 }

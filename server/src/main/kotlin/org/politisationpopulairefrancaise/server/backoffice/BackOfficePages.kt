@@ -396,7 +396,12 @@ fun HTML.queueItemPage(auth: Authenticated, queue: BackOfficeQueue, itemId: Stri
                             id = fieldId
                             name = "motif"
                             maxLength = AuditEntry.MAX_REASON_LENGTH.toString()
+                            attributes["aria-describedby"] = "$fieldId-hint"
                             if (action.reasonRequired) required = true
+                        }
+                        p(classes = "bo-hint") {
+                            id = "$fieldId-hint"
+                            +BackOfficeTexts.REASON_PERMANENT_HINT
                         }
                     }
                     if (action.twoPerson) p(classes = "bo-hint") { +BackOfficeTexts.TWO_PERSON_HINT }
@@ -492,9 +497,11 @@ fun HTML.teamPage(auth: Authenticated, members: List<MemberLine>, invitations: L
                                 strong { +invitation.pseudonym }
                                 +" (${invitation.proposedRoles.joinToString(", ") { it.label }.ifEmpty { BackOfficeTexts.TEAM_NO_ROLE }}), ${BackOfficeTexts.INVITATION_EXPIRES} "
                                 dateTime(invitation.expiresAt)
-                                form(action = "/equipe/invitations/${invitation.id}/retrait", method = FormMethod.post) {
-                                    csrfField(auth)
-                                    button(type = ButtonType.submit, classes = "bo-button-secondary") { +BackOfficeTexts.INVITATION_WITHDRAW }
+                                if (!invitation.bootstrap) {
+                                    form(action = "/equipe/invitations/${invitation.id}/retrait", method = FormMethod.post) {
+                                        csrfField(auth)
+                                        button(type = ButtonType.submit, classes = "bo-button-secondary") { +BackOfficeTexts.INVITATION_WITHDRAW }
+                                    }
                                 }
                             }
                         }
@@ -544,7 +551,7 @@ private fun grantStatusLabel(grant: RoleGrant): String = when (grant.status) {
     GrantStatus.SUSPENDED -> BackOfficeTexts.MEMBER_GRANT_SUSPENDED
 }
 
-fun HTML.memberPage(auth: Authenticated, account: TeamAccount, grants: List<RoleGrant>, keys: Int, notice: Notice?) {
+fun HTML.memberPage(auth: Authenticated, account: TeamAccount, grants: List<RoleGrant>, keys: List<KeyInfo>, notice: Notice?) {
     val actor = auth.actor
     backOfficeLayout(account.pseudonym, auth, current = "/equipe", notice = notice) {
         h1 { +account.pseudonym }
@@ -555,7 +562,41 @@ fun HTML.memberPage(auth: Authenticated, account: TeamAccount, grants: List<Role
                 dt { +BackOfficeTexts.TEAM_SINCE }
                 dd { dateTime(account.createdAt) }
                 dt { +BackOfficeTexts.MEMBER_KEYS }
-                dd { +keys.toString() }
+                dd { +keys.size.toString() }
+            }
+        }
+        if (account.status == AccountStatus.SUSPENDED) {
+            div(classes = "bo-notice bo-notice-warning") { +BackOfficeTexts.MEMBER_SUSPENDED }
+            if (actor.has(Permissions.TEAM_REVOKE) || actor.has(Permissions.TEAM_MANAGE_ADMINS)) {
+                section {
+                    attributes["aria-labelledby"] = "bo-member-keys"
+                    h2 { id = "bo-member-keys"; +BackOfficeTexts.MEMBER_KEYS }
+                    ul(classes = "bo-list") {
+                        keys.forEach { key ->
+                            li {
+                                strong { +key.name }
+                                +" : ${BackOfficeTexts.KEYS_CREATED} "
+                                dateTime(key.createdAt)
+                                form(action = "/equipe/membres/${account.id}/cles/${key.id}/suppression", method = FormMethod.post) {
+                                    csrfField(auth)
+                                    button(type = ButtonType.submit, classes = "bo-button-secondary") { +BackOfficeTexts.MEMBER_KEY_DELETE }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (actor.has(Permissions.TEAM_MANAGE_ADMINS)) {
+                section {
+                    attributes["aria-labelledby"] = "bo-reinstate"
+                    h2 { id = "bo-reinstate"; +BackOfficeTexts.MEMBER_REINSTATE_TITLE }
+                    p { +BackOfficeTexts.MEMBER_REINSTATE_TEXT }
+                    form(action = "/equipe/membres/${account.id}/reintegration", method = FormMethod.post) {
+                        csrfField(auth)
+                        reasonField("bo-reinstate-reason", required = false)
+                        button(type = ButtonType.submit, classes = "bo-button") { +BackOfficeTexts.MEMBER_REINSTATE_BUTTON }
+                    }
+                }
             }
         }
         section {
@@ -644,7 +685,12 @@ private fun FlowContent.reasonField(fieldId: String, required: Boolean) {
     input(type = InputType.text, name = "motif") {
         id = fieldId
         maxLength = AuditEntry.MAX_REASON_LENGTH.toString()
+        attributes["aria-describedby"] = "$fieldId-hint"
         if (required) this.required = true
+    }
+    p(classes = "bo-hint") {
+        id = "$fieldId-hint"
+        +BackOfficeTexts.REASON_PERMANENT_HINT
     }
 }
 
@@ -697,6 +743,8 @@ private fun describe(approval: PendingApproval, pseudonyms: Map<UUID, String>): 
     return when (approval.action) {
         BackOffice.ACTION_GRANT -> "${BackOfficeTexts.APPROVAL_GRANT} « $role » ${BackOfficeTexts.APPROVAL_TO} ${account(approval.targetId)}"
         BackOffice.ACTION_REVOKE -> "${BackOfficeTexts.APPROVAL_REVOKE} « $role » ${BackOfficeTexts.APPROVAL_TO} ${account(approval.payload["account"])}"
+        BackOffice.ACTION_REMOVE -> "${BackOfficeTexts.APPROVAL_REMOVE} : ${account(approval.targetId)}"
+        BackOffice.ACTION_REINSTATE -> "${BackOfficeTexts.APPROVAL_REINSTATE} : ${account(approval.targetId)}"
         else -> "${BackOfficeTexts.APPROVAL_QUEUE} ${approval.payload["queue"].orEmpty()} : ${approval.payload["action"].orEmpty()} (${approval.payload["item"].orEmpty()})"
     }
 }
@@ -720,7 +768,7 @@ data class JournalForm(
     }
 }
 
-fun HTML.journalPage(auth: Authenticated, records: List<AuditRecord>, form: JournalForm, chain: AuditChain.Check, notice: Notice?, olderThan: Long?) {
+fun HTML.journalPage(auth: Authenticated, records: List<AuditRecord>, form: JournalForm, chain: AuditChain.Check, head: AuditHead?, notice: Notice?, olderThan: Long?) {
     backOfficeLayout(BackOfficeTexts.JOURNAL_TITLE, auth, current = "/journal", notice = notice) {
         h1 { +BackOfficeTexts.JOURNAL_TITLE }
         p { +BackOfficeTexts.JOURNAL_INTRO }
@@ -732,6 +780,19 @@ fun HTML.journalPage(auth: Authenticated, records: List<AuditRecord>, form: Jour
             is AuditChain.Check.Broken -> p(classes = "bo-notice bo-notice-error") {
                 attributes["role"] = "alert"
                 +"${BackOfficeTexts.JOURNAL_CHAIN_BROKEN} ${chain.seq} (${chain.problem})."
+            }
+            is AuditChain.Check.Truncated -> p(classes = "bo-notice bo-notice-error") {
+                attributes["role"] = "alert"
+                +"${BackOfficeTexts.JOURNAL_TRUNCATED} ${chain.found}, ${BackOfficeTexts.JOURNAL_TRUNCATED_EXPECTED} ${chain.expected}."
+            }
+        }
+        head?.let { last ->
+            p {
+                +"${BackOfficeTexts.JOURNAL_HEAD} ${last.seq}, ${BackOfficeTexts.JOURNAL_HEAD_HASH} "
+                code { +last.hash }
+                +" ("
+                dateTime(last.recordedAt)
+                +")."
             }
         }
         section {
@@ -801,7 +862,7 @@ private fun FlowContent.filterField(fieldId: String, name: String, text: String,
 
 // Keys --------------------------------------------------------------------------------------------------
 
-fun HTML.keysPage(auth: Authenticated, keys: List<StoredCredential>, notice: Notice?) {
+fun HTML.keysPage(auth: Authenticated, keys: List<KeyInfo>, notice: Notice?) {
     backOfficeLayout(BackOfficeTexts.KEYS_TITLE, auth, current = "/cles", notice = notice, script = true) {
         h1 { +BackOfficeTexts.KEYS_TITLE }
         p { +BackOfficeTexts.KEYS_INTRO }

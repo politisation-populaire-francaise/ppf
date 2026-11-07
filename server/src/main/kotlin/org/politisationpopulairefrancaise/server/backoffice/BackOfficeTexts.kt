@@ -25,6 +25,10 @@ object BackOfficeTexts {
     const val DEFAULT_BACKUP_KEY_NAME: String = "Clé de secours"
     const val QUEUE_ACTION_FAILED: String = "L’action n’a pas pu être faite. Rien n’a changé ; réessayez plus tard."
     const val REASON_ORGANISATION_UNVERIFIED: String = "L’organisation qui a désigné ce validateur n’est plus vérifiée."
+    const val REASON_PERMANENT_HINT: String = "Le motif est conservé sans limite dans le journal de l’équipe : n’y écrivez rien de personnel."
+    const val WIREGUARD_REMINDER: String = "Pensez aussi à faire retirer du serveur le profil WireGuard des appareils de ce membre."
+    const val ALERT_JOURNAL_BROKEN: String = "Le journal de l’équipe a été modifié ou raccourci en dehors de l’application : à examiner tout de suite."
+    const val ALERT_ORGANISATIONS_SHRANK: String = "Organisations vérifiées : liste vide ou réduite de plus de moitié. Aucun validateur suspendu, leurs séances sont refusées. Vérifiez l’annuaire, puis marquez l’alerte traitée."
 
     // Roles
     const val ROLE_SUPER_ADMIN: String = "Super-administrateur"
@@ -126,10 +130,15 @@ object BackOfficeTexts {
     const val MEMBER_ROLE: String = "Rôle"
     const val MEMBER_REQUEST_BUTTON: String = "Envoyer la demande"
     const val MEMBER_CUT_TITLE: String = "Coupure d’urgence"
-    const val MEMBER_CUT_TEXT: String = "Coupe en un geste toutes les sessions, tous les rôles et toutes les clés de ce compte. À utiliser si un appareil ou une clé est perdu ou volé."
+    const val MEMBER_CUT_TEXT: String = "Suspend en un geste toutes les sessions, tous les rôles et toutes les clés de ce compte. À utiliser si un appareil ou une clé est perdu ou volé. C’est réversible : un deuxième super-administrateur peut réintégrer le compte."
     const val MEMBER_CUT_BUTTON: String = "Couper l’accès maintenant"
     const val MEMBER_REMOVE_TITLE: String = "Retirer de l’équipe"
-    const val MEMBER_REMOVE_TEXT: String = "Retire la personne de l’équipe, immédiatement. Sa trace reste dans le journal."
+    const val MEMBER_REMOVE_TEXT: String = "Retire définitivement la personne de l’équipe ; ses clés sont effacées et sa trace reste dans le journal. Pour un administrateur ou un super-administrateur, la demande attend l’accord d’un deuxième super-administrateur."
+    const val MEMBER_SUSPENDED: String = "Ce compte est coupé : ses rôles et ses clés sont conservés mais inutilisables. Supprimez ci-dessous une clé perdue ou volée avant toute réintégration."
+    const val MEMBER_KEY_DELETE: String = "Supprimer cette clé"
+    const val MEMBER_REINSTATE_TITLE: String = "Réintégrer"
+    const val MEMBER_REINSTATE_TEXT: String = "Rend au compte ses rôles et ses clés restantes. La demande attend l’accord d’un deuxième super-administrateur."
+    const val MEMBER_REINSTATE_BUTTON: String = "Demander la réintégration"
     const val MEMBER_REMOVE_BUTTON: String = "Retirer ce membre"
 
     // Approvals
@@ -146,6 +155,8 @@ object BackOfficeTexts {
     const val APPROVAL_GRANT: String = "Attribuer le rôle"
     const val APPROVAL_REVOKE: String = "Retirer le rôle"
     const val APPROVAL_QUEUE: String = "Action sur une file"
+    const val APPROVAL_REMOVE: String = "Retirer définitivement de l’équipe"
+    const val APPROVAL_REINSTATE: String = "Réintégrer dans l’équipe"
     const val APPROVAL_TO: String = "à"
 
     // Journal
@@ -154,6 +165,10 @@ object BackOfficeTexts {
     const val JOURNAL_CHAIN_OK: String = "Chaîne d’empreintes intacte"
     const val JOURNAL_CHAIN_BROKEN: String = "Chaîne d’empreintes rompue à la ligne"
     const val JOURNAL_LINES: String = "lignes"
+    const val JOURNAL_TRUNCATED: String = "Fin du journal disparue : la dernière ligne est la"
+    const val JOURNAL_TRUNCATED_EXPECTED: String = "alors que ce serveur a vu la ligne"
+    const val JOURNAL_HEAD: String = "Dernière ligne, à noter ou à faire horodater pour prouver plus tard que rien n’a été retiré à la fin du journal : n°"
+    const val JOURNAL_HEAD_HASH: String = "empreinte"
     const val JOURNAL_FILTERS: String = "Filtrer le journal"
     const val JOURNAL_FROM: String = "Du (AAAA-MM-JJ)"
     const val JOURNAL_UNTIL: String = "Au (AAAA-MM-JJ, inclus)"
@@ -266,8 +281,9 @@ object BackOfficeTexts {
         "key_added" to "Clé ajoutée.",
         "key_deleted" to "Clé supprimée.",
         "welcome" to "Bienvenue dans l’équipe. Ajoutez maintenant une clé de secours.",
-        "cut" to "L’accès du compte est coupé : sessions, rôles et clés.",
-        "removed" to "Le membre est retiré de l’équipe.",
+        "cut" to "L’accès du compte est coupé : sessions, rôles et clés sont suspendus. Pensez aussi à faire retirer du serveur le profil WireGuard des appareils de ce membre.",
+        "self_cut" to "L’accès de votre compte est coupé. Demandez qu’on retire aussi du serveur le profil WireGuard de l’appareil perdu.",
+        "removed" to "Le membre est retiré de l’équipe. Pensez aussi à faire retirer du serveur le profil WireGuard de ses appareils.",
         "withdrawn" to "Invitation retirée.",
         "session_opened" to "Séance ouverte.",
         "session_closed" to "Séance fermée.",
@@ -314,6 +330,10 @@ object BackOfficeTexts {
         "own_grant" to "Vous ne pouvez pas valider une demande qui vous concerne.",
         "unknown_action" to "Action inconnue.",
         "already_closed" to "Ce compte est déjà coupé ou retiré.",
+        "own_target" to "Vous ne pouvez pas décider d’une demande qui vous concerne.",
+        "not_suspended" to "Ce compte n’est pas coupé.",
+        "ambiguous" to "Plusieurs comptes portent ce pseudonyme.",
+        "bootstrap_invitation" to "Une invitation de premier super-administrateur ne se retire que sur le serveur.",
         "action_unavailable" to "Cette action n’est plus possible sur cet élément.",
         "queue_unavailable" to "Cette file ne répond pas pour l’instant. Réessayez plus tard.",
         "reason_required" to "Un motif est obligatoire.",
@@ -351,6 +371,8 @@ object BackOfficeTexts {
         "team.validator_suspended" to "Validateur suspendu",
         "team.emergency_cut" to "Coupure d’urgence",
         "team.member_removed" to "Membre retiré",
+        "team.member_reinstated" to "Membre réintégré",
+        "auth.anonymous_failures" to "Échecs sans compte connu (nombres par période de 10 minutes)",
         "approval.requested" to "Demande de validation à deux",
         "approval.approved" to "Demande validée",
         "approval.refused" to "Demande refusée",

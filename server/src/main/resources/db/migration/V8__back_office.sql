@@ -8,7 +8,9 @@
 -- Retention (docs/REGISTRE_DONNEES.md):
 -- - team_account: until the member is removed; afterwards only the identifier, the pseudonym, the dates
 --   and the status stay (they are referenced by the journal and by the grants), the Nostr key is erased;
--- - team_credential: until revoked (deleted at once);
+--   a suspended account (emergency cut) keeps its keys and roles, unusable until it is reinstated;
+-- - team_credential: until deleted by the member, by an administrator for a suspended account, or by a
+--   removal;
 -- - team_invitation: 48 hours at most, deleted when used or expired;
 -- - team_session: 8 hours at most, deleted when closed or expired;
 -- - team_pending_approval: 7 days pending at most, deleted 30 days after the decision;
@@ -218,8 +220,8 @@ CREATE TABLE team_dashboard_alert (
     title         TEXT        NOT NULL CHECK (length(title) BETWEEN 1 AND 200),
     -- Importance level 1 to 5 (S-115).
     level         INTEGER     NOT NULL CHECK (level BETWEEN 1 AND 5),
-    -- Optional link inside the back-office (a path starting with '/').
-    link          TEXT        CHECK (link IS NULL OR link ~ '^/[^/]'),
+    -- Optional link inside the back-office: a path starting with '/' and a letter or digit, no backslash.
+    link          TEXT        CHECK (link IS NULL OR (link ~ '^/[A-Za-z0-9]' AND strpos(link, chr(92)) = 0 AND length(link) <= 200)),
     -- Who sees it and may dismiss it.
     permission    TEXT        NOT NULL,
     created_at    TIMESTAMPTZ NOT NULL,

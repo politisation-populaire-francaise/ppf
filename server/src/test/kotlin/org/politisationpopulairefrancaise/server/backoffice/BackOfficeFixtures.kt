@@ -133,9 +133,18 @@ object BackOfficeTestData {
         clock = clock,
     )
 
+    /** The stores of the tests, on the same database as the back-office (the back-office keeps its own private). */
+    val accounts = TeamAccounts(TestDatabase.dataSource)
+    val grants = TeamGrants(TestDatabase.dataSource)
+    val sessions = TeamSessions(TestDatabase.dataSource)
+    val approvals = PendingApprovals(TestDatabase.dataSource)
+
+    /** A journal reader of the tests (never used to verify the chain: see the tests of truncation). */
+    val audit = AuditLog(TestDatabase.dataSource)
+
     /**
      * A member with [roles] (granted directly, as by the bootstrap) and [keys] passkeys registered through
-     * the real verifier, signed in now.
+     * the real verifier, signed in now (at the clock of [backOffice]).
      */
     fun member(
         backOffice: BackOffice,
@@ -149,7 +158,7 @@ object BackOfficeTestData {
         val handle = Tokens.randomBytes(32)
         val verifier = WebAuthn4jPasskeys(CONFIG.origin, CONFIG.rpId)
         return TestDatabase.dataSource.transaction { connection ->
-            val account = backOffice.accounts.create(connection, pseudonym, handle, null, now)
+            val account = accounts.create(connection, pseudonym, handle, null, now)
             authenticators.forEachIndexed { index, authenticator ->
                 val challenge = Tokens.randomBytes(32)
                 val options = CreationOptionsResponse(
@@ -163,21 +172,29 @@ object BackOfficeTestData {
                     ),
                 )
                 val credential = verifier.verifyRegistration(authenticator.register(options), challenge, "Clé $index")
-                backOffice.accounts.addCredential(connection, account.id, credential, now)
+                accounts.addCredential(connection, account.id, credential, now)
             }
             roles.forEach { role ->
-                backOffice.grants.insert(connection, account.id, role, organisation.takeIf { role == TeamRole.VALIDATOR }, null, null, null, now)
+                grants.insert(connection, account.id, role, organisation.takeIf { role == TeamRole.VALIDATOR }, null, null, null, now)
             }
-            val session = backOffice.sessions.open(connection, account.id, now)
+            val session = sessions.open(connection, account.id, now)
             TestMember(account, authenticators, session.token)
         }
     }
 
     fun auth(backOffice: BackOffice, member: TestMember): Authenticated = requireNotNull(backOffice.authenticate(member.token)) { "The test session is alive" }
 
-    /** The journal lines recorded after [seq] (the journal is shared by every test of the run). */
-    fun journalAfter(backOffice: BackOffice, seq: Long): List<AuditRecord> =
-        backOffice.audit.query(AuditFilter(), AuditLog.MAX_PAGE).filter { it.seq > seq }.sortedBy { it.seq }
+    /** Adds [newKey] to the account of [auth], proving it first with [existing] (D-127). */
+    fun addKey(backOffice: BackOffice, auth: Authenticated, existing: TestAuthenticator, newKey: TestAuthenticator, name: String? = null): Outcome<KeyInfo> {
+        val proof = (backOffice.startAddKeyProof(auth) as Outcome.Ok).value
+        return when (val creation = backOffice.startAddKey(auth, existing.assertion(proof))) {
+            is Outcome.Denied -> creation
+            is Outcome.Ok -> backOffice.finishAddKey(auth, newKey.register(creation.value, name))
+        }
+    }
 
-    fun lastSeq(backOffice: BackOffice): Long = backOffice.audit.head()?.seq ?: 0
+    /** The journal lines recorded after [seq] (the journal is shared by every test of the run). */
+    fun journalAfter(seq: Long): List<AuditRecord> = audit.query(AuditFilter(), AuditLog.MAX_PAGE).filter { it.seq > seq }.sortedBy { it.seq }
+
+    fun lastSeq(): Long = audit.head()?.seq ?: 0
 }

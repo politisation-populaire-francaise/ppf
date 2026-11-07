@@ -107,6 +107,25 @@ class TeamInvitations(private val dataSource: DataSource) {
             delete.executeUpdate() == 1
         }
 
+    /** Deletes the invitations created by [accountId] (emergency cut, removal: they must not outlive its access); returns how many. */
+    fun deleteCreatedBy(connection: Connection, accountId: UUID): Int =
+        connection.prepareStatement("DELETE FROM team_invitation WHERE created_by = ?").use { delete ->
+            delete.setObject(1, accountId)
+            delete.executeUpdate()
+        }
+
+    /** Deletes the bootstrap invitations still valid (command line only); returns how many. */
+    fun deleteBootstrap(connection: Connection): Int =
+        connection.prepareStatement("DELETE FROM team_invitation WHERE bootstrap").use { delete -> delete.executeUpdate() }
+
+    /** The invitation [id], valid or not, without its token. */
+    fun find(connection: Connection, id: UUID): TeamInvitation? =
+        connection.prepareStatement("$SELECT WHERE id = ?").use { statement ->
+            statement.setObject(1, id)
+            val rows = statement.executeQuery()
+            if (rows.next()) rows.toInvitation() else null
+        }
+
     /** Valid bootstrap invitations (counted with the super administrators by the bootstrap command). */
     fun pendingBootstrap(connection: Connection, now: Instant): Int =
         connection.prepareStatement("SELECT count(*) FROM team_invitation WHERE bootstrap AND expires_at > ?").use { statement ->

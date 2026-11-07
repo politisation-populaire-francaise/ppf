@@ -4,14 +4,14 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.Parameters
+import io.ktor.http.parseQueryString
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.html.respondHtml
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.request.contentLength
 import io.ktor.server.request.path
-import io.ktor.server.request.receive
-import io.ktor.server.request.receiveParameters
+import io.ktor.server.request.receiveChannel
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
 import io.ktor.server.response.respondRedirect
@@ -23,14 +23,17 @@ import io.ktor.server.routing.RoutingContext
 import io.ktor.server.routing.RoutingResolveContext
 import io.ktor.server.routing.get
 import io.ktor.server.routing.post
+import io.ktor.utils.io.readBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.html.HTML
 import kotlinx.html.html
 import kotlinx.html.stream.createHTML
+import kotlinx.io.readByteArray
+import kotlinx.serialization.DeserializationStrategy
 import kotlinx.serialization.Serializable
-import kotlinx.serialization.json.Json
 import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.json.Json
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneId
@@ -40,6 +43,9 @@ import kotlin.time.Duration.Companion.hours
 
 /** The session cookie: `__Host-` prefix (Secure, Path=/, no Domain), unreadable by scripts, never sent cross-site. */
 const val SESSION_COOKIE: String = "__Host-ppf-equipe"
+
+/** Every request body of the back-office is read up to this size, chunked bodies included; above, 413. */
+const val MAX_BODY_BYTES: Int = 64 * 1024
 
 /**
  * Routes of a port: matches only the calls received on [port] ([inverse]: every other port). The public
@@ -78,6 +84,9 @@ private data class EnrolStart(val invitation: String)
 
 private val exportJson = Json { prettyPrint = true }
 
+/** The JSON of the ceremonies: strict, as the script writes it. */
+private val ceremonyJson = Json
+
 /** Every route of the back-office, to mount under `PortSelector(backOffice.config.port)`. */
 fun Route.backOfficeRoutes(backOffice: BackOffice) {
     val config = backOffice.config
@@ -89,14 +98,14 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
         if (call.authenticated(backOffice) != null) return@get call.respondRedirect("/")
         call.respondHtml { signInPage(noticeOf(call.request.queryParameters)) }
     }
-    jsonPost("/webauthn/connexion/options", config) {
+    jsonPost("/webauthn/connexion/options", config) { _ ->
         when (val outcome = io { backOffice.startSignIn() }) {
             is Outcome.Ok -> call.respond(outcome.value)
             is Outcome.Denied -> call.refuse(outcome.code)
         }
     }
-    jsonPost("/webauthn/connexion", config) {
-        val response = call.receive<AssertionResponse>()
+    jsonPost("/webauthn/connexion", config) { body ->
+        val response = decode(AssertionResponse.serializer(), body) ?: return@jsonPost call.refuse("bad_form")
         when (val outcome = io { backOffice.finishSignIn(response) }) {
             is Outcome.Ok -> {
                 call.setSessionCookie(outcome.value.token)
@@ -121,15 +130,15 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
             call.respondHtml { enrolPage(invitation, token) }
         }
     }
-    jsonPost("/webauthn/inscription/options", config) {
-        val start = call.receive<EnrolStart>()
+    jsonPost("/webauthn/inscription/options", config) { body ->
+        val start = decode(EnrolStart.serializer(), body) ?: return@jsonPost call.refuse("bad_form")
         when (val outcome = io { backOffice.startEnrolment(start.invitation) }) {
             is Outcome.Ok -> call.respond(outcome.value)
             is Outcome.Denied -> call.refuse(outcome.code)
         }
     }
-    jsonPost("/webauthn/inscription", config) {
-        val response = call.receive<RegistrationResponse>()
+    jsonPost("/webauthn/inscription", config) { body ->
+        val response = decode(RegistrationResponse.serializer(), body) ?: return@jsonPost call.refuse("bad_form")
         when (val outcome = io { backOffice.finishEnrolment(response) }) {
             is Outcome.Ok -> {
                 call.setSessionCookie(outcome.value.token)
@@ -140,30 +149,39 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
     }
 
     // Confirmation and keys of the signed-in member -------------------------------------------------------
-    jsonPost("/webauthn/confirmation/options", config) {
+    jsonPost("/webauthn/confirmation/options", config) { _ ->
         val auth = call.jsonAuth(backOffice, null) ?: return@jsonPost
         when (val outcome = io { backOffice.startConfirmation(auth) }) {
             is Outcome.Ok -> call.respond(outcome.value)
             is Outcome.Denied -> call.refuse(outcome.code)
         }
     }
-    jsonPost("/webauthn/confirmation", config) {
-        val response = call.receive<AssertionResponse>()
+    jsonPost("/webauthn/confirmation", config) { body ->
+        val response = decode(AssertionResponse.serializer(), body) ?: return@jsonPost call.refuse("bad_form")
         val auth = call.jsonAuth(backOffice, response.csrf) ?: return@jsonPost
         when (val outcome = io { backOffice.finishConfirmation(auth, response) }) {
             is Outcome.Ok -> call.respond(CeremonyDone(""))
             is Outcome.Denied -> call.refuse(outcome.code)
         }
     }
-    jsonPost("/webauthn/cle/options", config) {
+    // Adding a key: a verification of an existing key first (at most 60 seconds), then the new key.
+    jsonPost("/webauthn/cle/preuve/options", config) { _ ->
         val auth = call.jsonAuth(backOffice, null) ?: return@jsonPost
-        when (val outcome = io { backOffice.startAddKey(auth) }) {
+        when (val outcome = io { backOffice.startAddKeyProof(auth) }) {
             is Outcome.Ok -> call.respond(outcome.value)
             is Outcome.Denied -> call.refuse(outcome.code)
         }
     }
-    jsonPost("/webauthn/cle", config) {
-        val response = call.receive<RegistrationResponse>()
+    jsonPost("/webauthn/cle/options", config) { body ->
+        val proof = decode(AssertionResponse.serializer(), body) ?: return@jsonPost call.refuse("bad_form")
+        val auth = call.jsonAuth(backOffice, proof.csrf) ?: return@jsonPost
+        when (val outcome = io { backOffice.startAddKey(auth, proof) }) {
+            is Outcome.Ok -> call.respond(outcome.value)
+            is Outcome.Denied -> call.refuse(outcome.code)
+        }
+    }
+    jsonPost("/webauthn/cle", config) { body ->
+        val response = decode(RegistrationResponse.serializer(), body) ?: return@jsonPost call.refuse("bad_form")
         val auth = call.jsonAuth(backOffice, response.csrf) ?: return@jsonPost
         when (val outcome = io { backOffice.finishAddKey(auth, response) }) {
             is Outcome.Ok -> call.respond(CeremonyDone("/cles?ok=key_added"))
@@ -172,7 +190,7 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
     }
     get("/cles") {
         val auth = call.requireAuth(backOffice) ?: return@get
-        val keys = io { backOffice.accounts.credentials(auth.account.id) }
+        val keys = io { backOffice.keysOf(auth.account.id) }
         call.respondHtml { keysPage(auth, keys, noticeOf(call.request.queryParameters)) }
     }
     formPost("/cles/{id}/suppression", backOffice) { auth, form ->
@@ -183,7 +201,7 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
         when (val outcome = io { backOffice.emergencyCut(auth, auth.account.id, null) }) {
             is Outcome.Ok -> {
                 call.clearSessionCookie()
-                call.respondRedirect("/connexion?ok=cut")
+                call.respondRedirect("/connexion?ok=self_cut")
             }
             is Outcome.Denied -> call.redirectWith("/cles", error = outcome.code)
         }
@@ -244,9 +262,8 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
     get("/equipe") {
         val auth = call.requireAuth(backOffice) ?: return@get
         if (TEAM_PERMISSIONS.none(auth.actor::has)) return@get call.forbidden(auth)
-        val now = backOffice.clock.instant()
         val (members, invitations) = io {
-            backOffice.accounts.all().map { MemberLine(it, backOffice.grants.live(it.id, now)) } to backOffice.invitations.pending(now)
+            backOffice.members().map { MemberLine(it, backOffice.liveGrants(it.id)) } to backOffice.pendingInvitations()
         }
         call.respondHtml { teamPage(auth, members, invitations, noticeOf(call.request.queryParameters)) }
     }
@@ -269,8 +286,8 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
         val auth = call.requireAuth(backOffice) ?: return@get
         if (TEAM_PERMISSIONS.none(auth.actor::has)) return@get call.forbidden(auth)
         val id = call.uuidParameter("id") ?: return@get call.notFound(auth)
-        val account = io { backOffice.accounts.find(id) } ?: return@get call.notFound(auth)
-        val (grants, keys) = io { backOffice.grants.history(id) to backOffice.accounts.credentials(id).size }
+        val account = io { backOffice.member(id) } ?: return@get call.notFound(auth)
+        val (grants, keys) = io { backOffice.grantHistory(id) to backOffice.keysOf(id) }
         call.respondHtml { memberPage(auth, account, grants, keys, noticeOf(call.request.queryParameters)) }
     }
     formPost("/equipe/membres/{id}/roles", backOffice) { auth, form ->
@@ -286,11 +303,7 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
     formPost("/equipe/membres/{id}/roles/{grant}/retrait", backOffice) { auth, form ->
         val id = call.uuidParameter("id") ?: return@formPost call.notFound(auth)
         val grant = call.uuidParameter("grant") ?: return@formPost call.notFound(auth)
-        val back = "/equipe/membres/$id"
-        when (val outcome = io { backOffice.revokeGrant(auth, grant, form["motif"]) }) {
-            is Outcome.Ok -> call.redirectWith(back, ok = if (outcome.value is Revocation.Waiting) "requested" else "done")
-            is Outcome.Denied -> if (outcome.code == "confirmation_required") call.confirm(auth, form) else call.redirectWith(back, error = outcome.code)
-        }
+        call.afterChange(auth, form, io { backOffice.revokeGrant(auth, grant, form["motif"]) }, "/equipe/membres/$id", "done")
     }
     formPost("/equipe/membres/{id}/coupure", backOffice) { auth, form ->
         val id = call.uuidParameter("id") ?: return@formPost call.notFound(auth)
@@ -298,13 +311,22 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
     }
     formPost("/equipe/membres/{id}/retrait", backOffice) { auth, form ->
         val id = call.uuidParameter("id") ?: return@formPost call.notFound(auth)
-        call.afterAction(auth, form, io { backOffice.removeMember(auth, id, form["motif"]) }, "/equipe/membres/$id", "removed")
+        call.afterChange(auth, form, io { backOffice.removeMember(auth, id, form["motif"]) }, "/equipe/membres/$id", "removed")
+    }
+    formPost("/equipe/membres/{id}/reintegration", backOffice) { auth, form ->
+        val id = call.uuidParameter("id") ?: return@formPost call.notFound(auth)
+        call.afterAction(auth, form, io { backOffice.requestReinstatement(auth, id, form["motif"]) }, "/equipe/membres/$id", "requested")
+    }
+    formPost("/equipe/membres/{id}/cles/{key}/suppression", backOffice) { auth, form ->
+        val id = call.uuidParameter("id") ?: return@formPost call.notFound(auth)
+        val key = call.uuidParameter("key") ?: return@formPost call.notFound(auth)
+        call.afterAction(auth, form, io { backOffice.deleteMemberKey(auth, id, key) }, "/equipe/membres/$id", "key_deleted")
     }
 
     // Two-person rule ------------------------------------------------------------------------------------------
     get("/validations") {
         val auth = call.requireAuth(backOffice) ?: return@get
-        val (open, pseudonyms) = io { backOffice.openApprovals(auth.actor) to backOffice.accounts.all().associate { it.id to it.pseudonym } }
+        val (open, pseudonyms) = io { backOffice.openApprovals(auth.actor) to backOffice.members().associate { it.id to it.pseudonym } }
         call.respondHtml { approvalsPage(auth, open, pseudonyms, noticeOf(call.request.queryParameters)) }
     }
     formPost("/validations/{id}/accord", backOffice) { auth, form ->
@@ -331,9 +353,10 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
         val (records, chain) = io {
             (backOffice.journal(auth.actor, filter, JOURNAL_PAGE) as Outcome.Ok).value to (backOffice.verifyJournal(auth.actor) as Outcome.Ok).value
         }
+        val head = io { backOffice.journalHead() }
         val older = records.takeIf { it.size == JOURNAL_PAGE }?.lastOrNull()?.seq
         val notice = error?.let { Notice(BackOfficeTexts.error(it), error = true) }
-        call.respondHtml { journalPage(auth, records, form, chain, notice, older) }
+        call.respondHtml { journalPage(auth, records, form, chain, head, notice, older) }
     }
     get("/journal.json") {
         val auth = call.requireAuth(backOffice) ?: return@get
@@ -355,9 +378,9 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
         if (TeamRole.VALIDATOR !in actor.roles && !actor.has(Permissions.TEAM_REVOKE)) return@get call.forbidden(auth)
         val (own, open, pseudonyms) = io {
             Triple(
-                backOffice.validationSessions.openOf(actor.accountId)?.takeIf { it.isUsable(backOffice.clock.instant()) },
-                if (actor.has(Permissions.TEAM_REVOKE)) backOffice.validationSessions.allOpen() else emptyList(),
-                backOffice.accounts.all().associate { it.id to it.pseudonym },
+                backOffice.usableValidationSessionOf(actor.accountId),
+                if (actor.has(Permissions.TEAM_REVOKE)) backOffice.openValidationSessions() else emptyList(),
+                backOffice.members().associate { it.id to it.pseudonym },
             )
         }
         call.respondHtml { sessionsPage(auth, own, open, pseudonyms, noticeOf(call.request.queryParameters)) }
@@ -379,12 +402,28 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
 
 private const val QUEUE_PAGE = 50
 private const val JOURNAL_PAGE = 100
-private const val MAX_JSON_BYTES = 64 * 1024L
 
 private suspend fun <T> io(block: () -> T): T = withContext(Dispatchers.IO) { block() }
 
 /** A whole page rendered on the calling thread (the detail of an item calls the queue, which may block). */
 private fun renderToString(page: HTML.() -> Unit): String = "<!DOCTYPE html>\n" + createHTML().html(block = page)
+
+/**
+ * The body of the request, read through a bounded channel: at most [MAX_BODY_BYTES], whatever the
+ * `Content-Length` says or whether the body is chunked; null when it is larger (answered 413).
+ */
+private suspend fun ApplicationCall.boundedBody(): ByteArray? {
+    val declared = request.contentLength()
+    if (declared != null && declared > MAX_BODY_BYTES) return null
+    val bytes = receiveChannel().readBuffer(MAX_BODY_BYTES + 1L).readByteArray()
+    return bytes.takeIf { it.size <= MAX_BODY_BYTES }
+}
+
+private fun <T> decode(strategy: DeserializationStrategy<T>, body: ByteArray): T? = try {
+    ceremonyJson.decodeFromString(strategy, body.decodeToString())
+} catch (e: Exception) {
+    null
+}
 
 /**
  * Whether a POST comes from a page of the back-office itself: `Sec-Fetch-Site` (sent by every current
@@ -398,33 +437,26 @@ private fun ApplicationCall.isSameOrigin(config: BackOfficeConfig): Boolean {
     return origin == null || origin == "null" || origin == config.origin
 }
 
-/** A POST of a JSON ceremony (no session needed for sign-in and invitation). */
-private fun Route.jsonPost(path: String, config: BackOfficeConfig, body: suspend RoutingContext.() -> Unit) {
+/** A POST of a JSON ceremony (no session needed for sign-in and invitation); [body] receives the bounded body. */
+private fun Route.jsonPost(path: String, config: BackOfficeConfig, body: suspend RoutingContext.(ByteArray) -> Unit) {
     post(path) {
         if (!call.isSameOrigin(config)) return@post call.refuse("forbidden", HttpStatusCode.Forbidden)
-        val length = call.request.contentLength()
-        if (length != null && length > MAX_JSON_BYTES) return@post call.refuse("too_large", HttpStatusCode.PayloadTooLarge)
-        try {
-            body()
-        } catch (e: io.ktor.server.plugins.BadRequestException) {
-            call.refuse("bad_form")
-        }
+        val bytes = call.boundedBody() ?: return@post call.refuse("too_large", HttpStatusCode.PayloadTooLarge)
+        body(bytes)
     }
 }
 
 /**
- * A POST of a form of a signed-in member: same origin, live session, valid anti-forgery token; [body]
- * receives the member and the form fields.
+ * A POST of a form of a signed-in member: same origin, live session, bounded body, valid anti-forgery
+ * token; [body] receives the member and the form fields.
  */
 private fun Route.formPost(path: String, backOffice: BackOffice, body: suspend RoutingContext.(Authenticated, Parameters) -> Unit) {
     post(path) {
         if (!call.isSameOrigin(backOffice.config)) return@post call.respondHtml(HttpStatusCode.Forbidden) { messagePage(BackOfficeTexts.FORBIDDEN_TITLE, BackOfficeTexts.error("forbidden")) }
+        val bytes = call.boundedBody()
+            ?: return@post call.respondHtml(HttpStatusCode.PayloadTooLarge) { messagePage(BackOfficeTexts.FORM_EXPIRED_TITLE, BackOfficeTexts.error("too_large")) }
         val auth = call.authenticated(backOffice) ?: return@post call.respondRedirect("/connexion")
-        val length = call.request.contentLength()
-        if (length != null && length > MAX_JSON_BYTES) {
-            return@post call.respondHtml(HttpStatusCode.PayloadTooLarge) { messagePage(BackOfficeTexts.FORM_EXPIRED_TITLE, BackOfficeTexts.error("too_large"), auth) }
-        }
-        val form = call.receiveParameters()
+        val form = parseQueryString(bytes.decodeToString())
         if (!Csrf.isValid(auth.token, form[Csrf.FIELD])) {
             return@post call.respondHtml(HttpStatusCode.Forbidden) { messagePage(BackOfficeTexts.FORM_EXPIRED_TITLE, BackOfficeTexts.FORM_EXPIRED_TEXT, auth) }
         }
@@ -496,6 +528,14 @@ private suspend fun ApplicationCall.redirectWith(path: String, ok: String? = nul
 private suspend fun <T> ApplicationCall.afterAction(auth: Authenticated, form: Parameters, outcome: Outcome<T>, back: String, ok: String) {
     when (outcome) {
         is Outcome.Ok -> redirectWith(back, ok = ok)
+        is Outcome.Denied -> if (outcome.code == "confirmation_required") confirm(auth, form) else redirectWith(back, error = outcome.code)
+    }
+}
+
+/** Like [afterAction], for a change that may wait for a second person. */
+private suspend fun ApplicationCall.afterChange(auth: Authenticated, form: Parameters, outcome: Outcome<TeamChange>, back: String, ok: String) {
+    when (outcome) {
+        is Outcome.Ok -> redirectWith(back, ok = if (outcome.value is TeamChange.Waiting) "requested" else ok)
         is Outcome.Denied -> if (outcome.code == "confirmation_required") confirm(auth, form) else redirectWith(back, error = outcome.code)
     }
 }

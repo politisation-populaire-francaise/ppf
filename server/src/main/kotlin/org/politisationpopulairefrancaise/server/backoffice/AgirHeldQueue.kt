@@ -27,7 +27,7 @@ import org.politisationpopulairefrancaise.web.mobilizationTypeLabels
  *
  * - approve: publishes the event exactly as its author signed it (the replacement rule of the versions
  *   applies, [AgirSpace.approve]); sensitive (a public publication), so the key is asked again after 5 minutes;
- * - reject: with a mandatory reason, shown to its author by `GET /api/v1/held`;
+ * - reject: with a mandatory reason, shown to its author by `GET /api/v1/held`; sensitive too (D-127);
  * - a mobilization whose date has passed is refused by [HeldQueue] itself right before an approval: the
  *   refusal is shown to the team ([HeldQueue.EXPIRED_REASON]);
  * - a call for witnesses says that it is always reviewed, whoever its author;
@@ -104,7 +104,7 @@ class AgirHeldQueue(private val space: AgirSpace) : BackOfficeQueue {
         if (held.status != HeldStatus.PENDING) return emptyList()
         return listOf(
             QueueAction(APPROVE, BackOfficeTexts.AGIR_APPROVE, viewPermission, sensitive = true),
-            QueueAction(REJECT, BackOfficeTexts.AGIR_REJECT, viewPermission, reasonRequired = true),
+            QueueAction(REJECT, BackOfficeTexts.AGIR_REJECT, viewPermission, reasonRequired = true, sensitive = true),
         )
     }
 
