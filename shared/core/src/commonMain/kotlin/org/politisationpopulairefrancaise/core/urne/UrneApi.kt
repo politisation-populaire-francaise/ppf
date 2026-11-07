@@ -37,8 +37,12 @@ data class UrneInfo(
     }
 }
 
+/** The proofs of work the server asks for, in bits: the device must reach them (D-110, section 5). */
 @Serializable
-data class UrneList(val urnes: List<UrneInfo>)
+data class Difficulties(val register: Int, val tokens: Int, val ballot: Int)
+
+@Serializable
+data class UrneList(val urnes: List<UrneInfo>, val difficulties: Difficulties? = null)
 
 /** What an account learns about itself (authenticated): its level and the ballot boxes still to serve. */
 @Serializable

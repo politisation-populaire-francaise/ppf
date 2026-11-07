@@ -18,6 +18,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.urne.Ballot
 import org.politisationpopulairefrancaise.core.urne.BallotReceipt
+import org.politisationpopulairefrancaise.core.urne.Difficulties
 import org.politisationpopulairefrancaise.core.urne.Nip98
 import org.politisationpopulairefrancaise.core.urne.Nip98ReplayGuard
 import org.politisationpopulairefrancaise.core.urne.UrneList
@@ -87,7 +88,8 @@ fun Route.urneApi(service: UrneService?, config: UrneConfig, clock: Clock = Cloc
             if (service == null || !service.available) return@get call.unavailable()
             val after = call.request.queryParameters["after"]?.toLongOrNull()?.coerceAtLeast(0) ?: 0
             val limit = call.request.queryParameters["limit"]?.toIntOrNull() ?: 100
-            call.respond(UrneList(withContext(Dispatchers.IO) { service.list(after, limit) }))
+            val difficulties = Difficulties(config.registerDifficulty, config.tokenDifficulty, config.ballotDifficulty)
+            call.respond(UrneList(withContext(Dispatchers.IO) { service.list(after, limit) }, difficulties))
         }
         get("/{number}/journal") {
             if (service == null || !service.available) return@get call.unavailable()

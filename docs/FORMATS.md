@@ -480,7 +480,7 @@ Conception : `docs/integration/une-personne-une-voix.md`. Les octets sont en hex
 
 | Requête | Authentification | Rôle | Réponses |
 |---|---|---|---|
-| `GET /api/v1/urnes?after=<n>&limit=<1-500>` | Aucune | Les urnes (numéro, identifiant, objet, choix, ouverture, clôture, version de graine, **clé publique de chaque niveau**, résultats en direct ou non, close ou non), par numéro croissant | 200 |
+| `GET /api/v1/urnes?after=<n>&limit=<1-500>` | Aucune | Les urnes (numéro, identifiant, objet, choix, ouverture, clôture, version de graine, **clé publique de chaque niveau**, résultats en direct ou non, close ou non), par numéro croissant, et les preuves de travail demandées (`difficulties` : inscription, jetons, bulletin) | 200 |
 | `GET /api/v1/urnes/{n}/journal` | Aucune | Journal public en continu : comptes par niveau, jetons délivrés par niveau, bulletins reçus par niveau, remplacements ; résultats si l'urne les montre en direct ou si elle est close | 200, 404 `unknown_urne` |
 | `GET /api/v1/urnes/{n}/closing` | Aucune | Après la clôture : clés secrètes et publiques de chaque niveau, jetons délivrés, bulletins anonymes triés par `y` (`y`, jeton, niveau, choix, heure arrondie), résultats | 200, 409 `not_closed` |
 | `POST /api/v1/urnes/register` | NIP-98 (corps vide) avec preuve de travail NIP-13 | Inscrit le compte au niveau `non-verifie` | 201 nouveau, 200 déjà inscrit ; 401 |

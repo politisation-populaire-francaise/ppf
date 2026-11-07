@@ -1,0 +1,28 @@
+-- Schema version 11 to 12 (2026-11-07): anonymous voting on the device, D-110 (see Vote.sq, which
+-- is the reference for fresh installations; this file must stay identical to its CREATE statements).
+-- Provisional number: the next one after the highest of main, renamed if another team enters main first.
+
+CREATE TABLE vote_state (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 0),
+    account TEXT NOT NULL,
+    registered INTEGER NOT NULL
+);
+
+CREATE TABLE vote_blind (
+    urne_number INTEGER NOT NULL PRIMARY KEY,
+    y BLOB NOT NULL,
+    blind BLOB NOT NULL,
+    blinded BLOB NOT NULL
+);
+
+CREATE TABLE vote_token (
+    urne_number INTEGER NOT NULL PRIMARY KEY,
+    urne_id TEXT NOT NULL,
+    level TEXT NOT NULL,
+    public_key TEXT NOT NULL,
+    y BLOB NOT NULL,
+    token BLOB NOT NULL,
+    choice TEXT,
+    send_after INTEGER,
+    sent_choice TEXT
+);

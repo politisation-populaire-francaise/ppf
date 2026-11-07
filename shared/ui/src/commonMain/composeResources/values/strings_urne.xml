@@ -4,4 +4,21 @@
     <string name="urne_check_running">Vérification du vote anonyme sur cet appareil…</string>
     <string name="urne_check_passed">Vote anonyme : vérification réussie sur cet appareil</string>
     <string name="urne_check_failed">Vote anonyme : vérification échouée sur cet appareil (étape « %1$s »). Le vote restera fermé ici ; merci de le signaler avec la version ci-dessus.</string>
+    <string name="urne_unavailable">Le vote anonyme n’est pas disponible sur cet appareil pour l’instant (vérification échouée ou serveur injoignable).</string>
+    <string name="urne_closed">Ce vote est clos.</string>
+    <string name="urne_no_token">Préparation de votre bulletin anonyme : il faut une connexion au réseau, une seule fois.</string>
+    <string name="urne_sending">Votre vote partira tout seul dans quelques minutes, sans votre compte. Vous pouvez fermer l’application : il partira à la prochaine ouverture.</string>
+    <string name="urne_recorded">Votre vote est enregistré, anonymement. Vous pouvez le changer jusqu’à la clôture.</string>
+    <string name="urne_withdrawn">Votre vote est retiré.</string>
+    <string name="urne_withdraw">Retirer mon vote</string>
+    <string name="urne_privacy">Personne, pas même PPF, ne peut savoir ce que vous avez voté : votre bulletin part sans votre compte, et seul votre appareil garde votre choix.</string>
+    <string name="urne_hidden_until_closing">Les résultats seront publiés à la clôture, avec tous les bulletins anonymes : chacun pourra recompter.</string>
+    <string name="urne_citizens_title">Vote des citoyens</string>
+    <string name="urne_level_verified">Comptes vérifiés en personne</string>
+    <string name="urne_level_not_verified">Comptes non vérifiés</string>
+    <string name="urne_level_total">Total des citoyens</string>
+    <string name="urne_elected_title">Vote des élus</string>
+    <string name="urne_elected_apart">Le vote des élus est compté à part, jamais ajouté à celui des citoyens.</string>
+    <string name="urne_ballots">%1$d bulletins</string>
+    <string name="urne_issued">%1$d bulletins anonymes distribués à ce niveau</string>
 </resources>

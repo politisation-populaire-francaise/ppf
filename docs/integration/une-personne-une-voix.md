@@ -246,7 +246,7 @@ Chaque pôle n'appelle qu'une interface commune (`core/urne`, à créer) et un c
 
 ## 15. Décision du chef d'équipe (D-110) : conditions et exigences
 
-- **T1 à T5 approuvés** : mécanisme de la section 3 ; bibliothèque de 10.1 ; migrations réservées Flyway `V7` et `13.sqm` ; validation en personne après le back-office du Directeur technique (Flyway `V8` à lui) ; volume mesuré à l'étape 1.
+- **T1 à T5 approuvés** : mécanisme de la section 3 ; bibliothèque de 10.1 ; migrations réservées Flyway `V7` et `11.sqm`, numéro provisoire ; validation en personne après le back-office du Directeur technique (Flyway `V8` à lui) ; volume mesuré à l'étape 1.
 - **Conditions de l'étape 1, avant toute suite** (sinon repli RSA aveugle de 10.2) :
   - (a) tous les vecteurs de l'annexe A (ristretto255-SHA512, OPRF et VOPRF) et les tests négatifs passent sur la JVM ;
   - (b) **autotest au premier usage** : l'application rejoue quelques vecteurs sur l'appareil et refuse de voter, avec un message clair, s'ils échouent ; c'est ce qui prouvera que libsodium marche sur un vrai téléphone ;

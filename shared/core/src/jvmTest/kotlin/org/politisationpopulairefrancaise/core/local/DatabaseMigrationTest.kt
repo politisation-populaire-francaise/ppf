@@ -18,6 +18,7 @@ import org.politisationpopulairefrancaise.core.revendications.RevendicationViewS
 import org.politisationpopulairefrancaise.core.revendications.RevendicationViews
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.social.FollowStore
+import org.politisationpopulairefrancaise.core.urne.UrneTokenStore
 import org.politisationpopulairefrancaise.core.voir.ContentFollowStore
 import java.nio.file.Files
 import java.nio.file.Path
@@ -107,12 +108,12 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion11() {
+    fun theSchemaIsAtVersion12() {
         // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
         // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm);
         // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm);
-        // 10: answered calls (9.sqm); 11: directory of elected officials (10.sqm).
-        assertEquals(11L, PpfDatabase.Schema.version)
+        // 10: answered calls (9.sqm); 11: directory of elected officials (10.sqm); 12: anonymous voting (11.sqm).
+        assertEquals(12L, PpfDatabase.Schema.version)
     }
 
     /** Writes a version 10 database (the builds with the answered calls, before the directory of elected officials), with one answered call. */
@@ -149,7 +150,7 @@ class DatabaseMigrationTest {
         assertEquals(10L, userVersion(file))
 
         val database = JvmDatabase.open(file)
-        assertEquals(11L, userVersion(file))
+        assertEquals(PpfDatabase.Schema.version, userVersion(file))
         assertEquals(setOf("30023:${"b".repeat(64)}:appel"), CallResponseStore(database).all())
         assertEquals("[EXEMPLE] ancienne note", assertNotNull(LocalEventStore(database).find(eventId)).content)
 
@@ -165,6 +166,32 @@ class DatabaseMigrationTest {
         JvmDatabase.open(fresh)
         assertEquals(tableDefinitions(fresh, "elus_"), tableDefinitions(file, "elus_"))
         assertEquals(2, tableDefinitions(file, "elus_").size)
+    }
+
+    @Test
+    fun aVersion11DatabaseGainsTheVotingTablesAndKeepsItsCommune() {
+        val file = tempDatabaseFile()
+        writeVersion1Database(file)
+        val driver = JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}")
+        try {
+            PpfDatabase.Schema.migrate(driver, 1, 11)
+            driver.execute(null, "INSERT INTO elus_commune(id, commune_code, department_code) VALUES (0, '69123', '69')", 0)
+            driver.execute(null, "PRAGMA user_version = 11", 0)
+        } finally {
+            driver.close()
+        }
+        val database = JvmDatabase.open(file)
+        assertEquals(12L, userVersion(file))
+        assertEquals(ChosenCommune("69123", "69"), ElusStore(database).commune())
+        val votes = UrneTokenStore(database)
+        assertEquals(emptyList(), votes.tokens())
+        votes.setState("a".repeat(64), registered = true)
+        assertEquals("a".repeat(64) to true, votes.state())
+        // The migration creates exactly the tables of Vote.sq, the reference for fresh installations.
+        val fresh = tempDatabaseFile()
+        JvmDatabase.open(fresh)
+        assertEquals(tableDefinitions(fresh, "vote_"), tableDefinitions(file, "vote_"))
+        assertEquals(3, tableDefinitions(file, "vote_").size)
     }
 
     /** Writes a version 6 database (the builds with the joined rooms, before the answered calls), with one joined room. */
@@ -330,5 +357,6 @@ class DatabaseMigrationTest {
         assertEquals(0L, CallResponseStore(database).count())
         assertEquals(0L, ElusStore(database).countPackages())
         assertEquals(null, ElusStore(database).commune())
+        assertEquals(emptyList(), UrneTokenStore(database).tokens())
     }
 }
