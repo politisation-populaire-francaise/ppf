@@ -136,15 +136,18 @@ class Territoires(
         }
         val candidates = pool.values.filter { it.code.type in types }
 
+        // An official code first (a commune code has five digits, like a postal code: both are tried).
+        val guesses = listOfNotNull(TerritoryCode.parse(query)) + codeGuesses(query)
+        val exact = candidates.filter { territory ->
+            guesses.any { guess -> territory.code == guess || (guess.type == TerritoryType.COMMUNE && guess.code in territory.formerCodes) }
+        }.sortedWith(RANK)
         TerritoiresReader.normalizePostalCode(query)?.let { postalCode ->
             val communes = candidates.filter { postalCode in it.postalCodes }
             val areas = nationalLevel.packagesFor(postalCode).mapNotNull { entry ->
                 (TerritoryCode.departement(entry.code) ?: TerritoryCode.outreMer(entry.code))?.let { nationalLevel.find(it) }
             }.filter { it.code.type in types }
-            return (communes.sortedWith(RANK) + areas).distinctBy { it.code }.take(limit)
+            return (exact + communes.sortedWith(RANK) + areas).distinctBy { it.code }.take(limit)
         }
-        val asCode = TerritoryCode.parse(query) ?: codeGuesses(query).firstOrNull { guess -> candidates.any { it.code == guess } }
-        val exact = asCode?.let { code -> candidates.filter { it.code == code || code.code in it.formerCodes } }.orEmpty()
         val words = queryWords(query)
         if (words.isEmpty()) return exact.take(limit)
         val scored = candidates.mapNotNull { territory ->
