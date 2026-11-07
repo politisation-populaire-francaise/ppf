@@ -1,8 +1,8 @@
 # Note d'intégration : annuaire des organisations et accueil de l'espace « Agir »
 
-- **État à la reprise, fait** : modèle commun, exemples signés, accueil d'Agir, annuaire, page d'une organisation, routage, tests du bloc verts (17 dans `shared/core`, 23 dans `shared/ui`, plus 3 de captures), note ci-dessous.
-- **En cours** : `gradlew build` complet lancé une fois : Android, ordinateur, web et `shared` compilent et passent ; un seul échec, `server` `GroupsApiTest.theSameRoomCreatedAtTheSameInstantByEightAccountsExistsOnce` (test de concurrence des salons, hors de mon périmètre, aucun fichier du serveur modifié sur cette branche ; probablement instable sous la charge de la machine).
-- **À faire** : relancer `gradlew :server:test --tests "*GroupsApiTest*"` seul pour confirmer l'instabilité, puis la session principale branche l'agenda, les appels et l'agenda d'une organisation (section 4).
+- **État final (7 novembre 2026), fait** : modèle commun, exemples signés, accueil d'Agir, annuaire, page d'une organisation, routage, note ; tests du bloc verts (17 dans `shared/core`, 23 dans `shared/ui`, plus 3 de captures). Tous les tests de `shared` passent (`:shared:core:jvmTest` 223, `:shared:ui:jvmTest` 144, 0 échec) ; Android, ordinateur et web compilent et passent dans `gradlew build`.
+- **Vérifié** : le seul échec du `build` complet, `server` `GroupsApiTest.theSameRoomCreatedAtTheSameInstantByEightAccountsExistsOnce` (concurrence des salons), passe relancé seul (`:server:test --tests "*GroupsApiTest*"` : 9 sur 9). C'était la charge de la machine (quatre agents en parallèle) ; aucun fichier du serveur n'est modifié sur cette branche, rien n'a été corrigé (hors périmètre). Ce test reste fragile sous charge : à surveiller en intégration continue.
+- **À faire (session principale)** : brancher l'agenda, les appels et l'agenda d'une organisation (section 4) ; la décision du 7 novembre 2026 (aucune période probatoire) est prise en compte (section 6).
 
 Rédigée le 6 novembre 2026 par l'agent « organisations » (branche `worktree-agent-a5acd468182a4dcf0`, partie de `feature/agir`, commit 8b11d40). Elle s'adresse à la session principale, qui fusionne et met à jour `CHANGELOG.md`, `ROADMAP.md`, `DECISIONS.md`, `FORMATS.md`, `REGISTRE_DONNEES.md`, `THREAT_MODEL.md` et `GUIDE_PROPRIETAIRE.md`. Aucun de ces documents n'a été modifié ici. Le contrat commun (`docs/integration/agir-contrat.md`, version 1) est respecté ; les deux écarts mineurs sont signalés en section 4.
 
@@ -122,6 +122,8 @@ Space.AGIR -> AgirScreen(
 10. **Sites web** : toujours la mise en garde « Vous quittez PPF », choix sûr en premier ; téléphone et courriel sans mise en garde (ils ouvrent une application de l'appareil, pas une page qui peut pister).
 11. **Origine** affichée sur chaque fiche (`ppf-origin`), `ai-assisted` pour les exemples.
 
+Décision de la propriétaire du 7 novembre 2026, transmise par la session principale : **aucune période probatoire**, une organisation vérifiée publie directement dès sa vérification (elle remplace, pour ce point, la publication directe « après un certain temps sans incident » de l'option C du point d'attention n° 6). Vérifié : aucun texte de l'interface ni des exemples n'évoque de délai ou de relecture des organisations vérifiées ; `VerifiedOrganisations.isVerified` ne dépend d'aucune ancienneté (la date `ppf-verified` n'est qu'affichée), ce qui permet à l'agenda et aux appels d'appliquer la règle du contrat (section 5 : organisation vérifiée = publiée, 201) dès la vérification.
+
 ## 7. À reporter dans `docs/REGISTRE_DONNEES.md`
 
 ### Sur l'appareil (section 1 bis)
@@ -147,7 +149,7 @@ Rien de nouveau côté appareil. Les fiches sont des contenus éditoriaux public
 
 ## 9. Questions pour la propriétaire
 
-1. **Procédure réelle de vérification** : qui vérifie une organisation, sur quelles pièces (statuts, récépissé de déclaration, numéro RNA ou SIREN, rencontre ou visio, charte signée comme le prévoit le point d'attention n° 6, option C), à quelle fréquence on la revérifie, et comment on retire le badge. La date affichée (« Vérifiée par PPF le … ») suppose cette procédure.
+1. **Procédure réelle de vérification** : qui vérifie une organisation, sur quelles pièces (statuts, récépissé de déclaration, numéro RNA ou SIREN, rencontre ou visio, charte signée lors de la vérification), à quelle fréquence on la revérifie, et comment on retire le badge. La date affichée (« Vérifiée par PPF le … ») suppose cette procédure. Rappel de ta décision du 7 novembre 2026 : aucune période probatoire, une organisation vérifiée publie directement dès sa vérification ; la vérification elle-même porte donc tout le contrôle.
 2. **Statut juridique de PPF** pour les contenus des organisations (hébergeur ou éditeur) : à confirmer par un avocat (points d'attention n° 6 et n° 21). Tant que ce n'est pas tranché, l'annuaire ne publie que des fiches rédigées par l'équipe ; les publications des organisations (AG-18) ne sont que lues sur l'appareil.
 3. **Partis et candidats** (point n° 7, option A) : l'annuaire les exclut. Faut-il une règle écrite pour les cas limites (organisation de jeunesse d'un parti, association de soutien à un candidat, syndicat proche d'un parti) ?
 4. **Coordonnées** : n'accepter que des coordonnées propres à l'organisation (jamais le téléphone ou l'adresse d'un bénévole) ; que faire pour un petit collectif sans local ni numéro ? Courriel seul, comme dans l'exemple du collectif des Tilleuls ?
