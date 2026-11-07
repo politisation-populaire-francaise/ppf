@@ -470,7 +470,9 @@ class AgendaLibrary(
 
 /** The agenda of the screen, started once; the shell may hoist it to keep it for the whole run. */
 @Composable
-fun rememberAgendaLibrary(dependencies: AppDependencies): AgendaLibrary {
+fun rememberAgendaLibrary(dependencies: AppDependencies, start: Boolean = true): AgendaLibrary {
     val scope = rememberCoroutineScope()
-    return remember(dependencies) { AgendaLibrary.of(dependencies, scope).also { it.start() } }
+    // The shell keeps the library for the whole run but starts it only when the agenda is shown
+    // (start = false), like the other libraries: nothing is loaded or written before.
+    return remember(dependencies) { AgendaLibrary.of(dependencies, scope).also { if (start) it.start() } }
 }

@@ -1,0 +1,7 @@
+-- Schema version 9 to 10 (2026-11-07): the calls of the Agir space the user answered, kept on the
+-- device only (see CallResponse.sq, which is the reference for fresh installations; this file must
+-- stay identical to its CREATE statement).
+
+CREATE TABLE call_response (
+    address TEXT NOT NULL PRIMARY KEY
+);

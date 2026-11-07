@@ -7,6 +7,7 @@ import org.politisationpopulairefrancaise.core.agir.agenda.AgendaResponse
 import org.politisationpopulairefrancaise.core.agir.agenda.AgendaStore
 import org.politisationpopulairefrancaise.core.agir.agenda.ProposalRecord
 import org.politisationpopulairefrancaise.core.agir.agenda.ProposalReview
+import org.politisationpopulairefrancaise.core.agir.calls.CallResponseStore
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.groups.GroupStore
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
@@ -103,11 +104,49 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion9() {
+    fun theSchemaIsAtVersion10() {
         // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
         // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm);
-        // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm).
-        assertEquals(9L, PpfDatabase.Schema.version)
+        // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm);
+        // 10: answered calls (9.sqm).
+        assertEquals(10L, PpfDatabase.Schema.version)
+    }
+
+    /** Writes a version 6 database (the builds with the joined rooms, before the answered calls), with one joined room. */
+    private fun writeVersion6Database(file: Path) {
+        writeVersion1Database(file)
+        val driver = JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}")
+        try {
+            PpfDatabase.Schema.migrate(driver, 1, 6)
+            driver.execute(null, "INSERT INTO group_membership(group_id, joined_at) VALUES ('collectif-demonstration', 12)", 0)
+            driver.execute(null, "PRAGMA user_version = 6", 0)
+        } finally {
+            driver.close()
+        }
+    }
+
+    @Test
+    fun aVersion6DatabaseGainsTheAnsweredCallsAndKeepsItsRoomsAndEvents() {
+        val file = tempDatabaseFile()
+        writeVersion6Database(file)
+        assertEquals(6L, userVersion(file))
+
+        val database = JvmDatabase.open(file)
+        assertEquals(10L, userVersion(file))
+
+        // The rows written at version 6 survive.
+        assertEquals("[EXEMPLE] ancienne note", assertNotNull(LocalEventStore(database).find(eventId)).content)
+        assertTrue(GroupStore(database).isMember("collectif-demonstration"))
+
+        // The new table starts empty and works.
+        val answers = CallResponseStore(database)
+        assertEquals(0L, answers.count())
+        val address = "30023:${"b".repeat(64)}:assemblee-quartier-3f9a"
+        answers.respond(address)
+        answers.respond(address)
+        assertEquals(setOf(address), answers.all())
+        answers.withdraw(address)
+        assertEquals(0L, answers.count())
     }
 
     @Test
@@ -175,7 +214,7 @@ class DatabaseMigrationTest {
         assertEquals(6L, userVersion(file))
 
         val database = JvmDatabase.open(file)
-        assertEquals(9L, userVersion(file))
+        assertEquals(10L, userVersion(file))
         assertTrue(GroupStore(database).isMember("collectif-demonstration"))
         assertEquals("[EXEMPLE] ancienne note", assertNotNull(LocalEventStore(database).find(eventId)).content)
 
@@ -186,6 +225,11 @@ class DatabaseMigrationTest {
         agenda.recordProposal("e".repeat(64), ProposalRecord(ProposalReview.REVIEW))
         assertEquals(AgendaResponse.INTERESTED, agenda.responses().values.single())
         assertEquals(ProposalReview.REVIEW, agenda.proposals().values.single().review)
+        // And the table of the answered calls (version 10).
+        val answers = CallResponseStore(database)
+        assertEquals(0L, answers.count())
+        answers.respond("30023:${"b".repeat(64)}:appel")
+        assertEquals(1L, answers.count())
     }
 
     @Test
@@ -228,5 +272,6 @@ class DatabaseMigrationTest {
         assertEquals(emptyList(), followed.all())
         assertEquals(0L, AgendaStore(database).countResponses())
         assertEquals(0L, AgendaStore(database).countProposals())
+        assertEquals(0L, CallResponseStore(database).count())
     }
 }

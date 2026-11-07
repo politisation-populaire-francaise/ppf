@@ -188,6 +188,7 @@ fun AgendaScreen(
 ) {
     val account = session.state as? AccountUiState.Ready
     val accountKey = account?.publicKey?.hex
+    LaunchedEffect(agenda) { agenda.start() }
     LaunchedEffect(agenda, accountKey) { agenda.setAccount(accountKey) }
     // Where the user's proposals stand is asked again each time the agenda is shown.
     LaunchedEffect(agenda) { agenda.refreshReviews() }

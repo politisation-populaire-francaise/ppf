@@ -72,6 +72,7 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_dossiers_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_private_note
 import org.politisationpopulairefrancaise.ui.resources.comprendre_rights_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_rights_title
+import org.politisationpopulairefrancaise.ui.resources.appels_title
 import org.politisationpopulairefrancaise.ui.resources.content_back
 import org.politisationpopulairefrancaise.ui.resources.content_none
 import org.politisationpopulairefrancaise.ui.resources.content_origin_ai
@@ -417,6 +418,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.REVENDICATION -> Res.string.space_revendications
         ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE -> Res.string.space_voir
         ArticleType.ORGANISATION -> Res.string.organisations_content_type
+        ArticleType.APPEL -> Res.string.appels_title
     },
 )
 

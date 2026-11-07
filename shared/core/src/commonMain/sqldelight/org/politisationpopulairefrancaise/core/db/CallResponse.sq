@@ -1,0 +1,25 @@
+-- The calls of the Agir space the user answered (AP-03: "J'y serai", "Je soutiens", "J'ai signé",
+-- "J'aide"). The answer stays on the device: nothing is published, no counter and no list of people
+-- who answered exist on the server (contract of the Agir space, section 6, like the reactions of the
+-- feed, option C while option B is studied). Which calls someone answers reveals political opinions,
+-- a sensitive datum under article 9 of the GDPR: only the address of the call is kept, no date.
+-- Added in schema version 7: existing databases get it through migrations/6.sqm.
+
+CREATE TABLE call_response (
+    address TEXT NOT NULL PRIMARY KEY
+);
+
+insert:
+INSERT OR IGNORE INTO call_response(address) VALUES (?);
+
+deleteByAddress:
+DELETE FROM call_response WHERE address = ?;
+
+deleteAll:
+DELETE FROM call_response;
+
+selectAll:
+SELECT address FROM call_response ORDER BY address;
+
+countAll:
+SELECT COUNT(*) FROM call_response;

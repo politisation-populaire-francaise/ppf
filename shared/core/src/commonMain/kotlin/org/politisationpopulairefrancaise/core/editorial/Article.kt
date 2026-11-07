@@ -34,6 +34,8 @@ enum class ArticleType(val tagValue: String) {
     /** A right of reply (VO-21) published under the content it answers. */
     REPONSE("reponse"),
     ORGANISATION("organisation"),
+    /** A call of the Agir space (AP-01 to AP-10), read by core.agir.calls.Call; never shown among the guides. */
+    APPEL("appel"),
     ;
 
     companion object {
