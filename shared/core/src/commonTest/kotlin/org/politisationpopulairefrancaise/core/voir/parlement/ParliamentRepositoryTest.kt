@@ -167,4 +167,66 @@ class ParliamentRepositoryTest {
         assertEquals(DataOrigin.BUNDLED, snapshot.origin)
         assertEquals(3, snapshot.held.size)
     }
+
+    private fun history(chamber: Chamber, period: Int, title: String = "[EXEMPLE] titre") = HistoryPackage(
+        example = true,
+        chamber = chamber,
+        period = period,
+        coverage = HistoryCoverage("2014-03-12", "2014-03-12"),
+        parties = listOf(PartyRef("an:PO1", "[EXEMPLE] Groupe", "G", PartyBasis.GROUP, ParliamentHistory.GROUP_BASIS_LABEL)),
+        ballots = listOf(
+            HistoryBallot(
+                id = "an:$period:1", date = "2014-03-12", title = title,
+                counts = Counts(inFavour = 1, against = 0, abstention = 0),
+                parties = listOf(PartyDistribution("an:PO1", PartyBasis.GROUP, inFavour = 1, against = 0, abstention = 0, notVoting = 0, members = 2)),
+            ),
+        ),
+    )
+
+    private fun json(pkg: HistoryPackage): ByteArray = ParliamentFormat.json.encodeToString(HistoryPackage.serializer(), pkg).encodeToByteArray()
+
+    @Test
+    fun theHistoryIsDownloadedWholeOnOneGestureAndReadAgainstTheIndex() = runTest {
+        val all = packages + mapOf(
+            "historique-an-14" to json(history(Chamber.AN, 14)),
+            "historique-an-15" to json(history(Chamber.AN, 15)),
+        )
+        val server = ParliamentFixtures.Server(keys.sign(ParliamentFixtures.index(all)), all)
+        val storage = InMemoryParliamentStorage()
+        val repository = repository(server, storage)
+        val snapshot = assertIs<ParliamentOpening.Ready>(repository.open()).snapshot
+        assertEquals(listOf("historique-an-14", "historique-an-15"), snapshot.history.map { it.name })
+        assertEquals(2, snapshot.history(Chamber.AN).size)
+        assertTrue(snapshot.history(Chamber.SENAT).isEmpty())
+        assertEquals(all.getValue("historique-an-14").size.toLong() + all.getValue("historique-an-15").size, snapshot.historyBytesToDownload)
+        assertNull(repository.history("historique-an-14"))
+
+        val outcomes = repository.downloadHistory()
+        assertEquals(mapOf("historique-an-14" to PackageOutcome.Done, "historique-an-15" to PackageOutcome.Done), outcomes)
+        // Every party at once: the requests name the packages, never a party.
+        assertEquals(listOf(null, "historique-an-14", "historique-an-15"), server.requests)
+        val after = repository.snapshot!!
+        assertTrue(after.historyToDownload.isEmpty())
+        assertTrue(after.catalog.isEmpty)
+        val read = repository.history("historique-an-15")!!
+        assertEquals(15, read.period)
+        assertEquals("an:15:1", read.ballots.single().id)
+        assertEquals(PartyBasis.GROUP, read.ballots.single().parties.single().basis)
+        assertNull(repository.history("membres"))
+
+        // An altered copy on the device is never read.
+        val stored = storage.storedPackage("historique-an-14")!!
+        storage.savePackage(stored.copy(json = stored.json.replace("[EXEMPLE] titre", "[EXEMPLE] autre")))
+        assertNull(repository.history("historique-an-14"))
+    }
+
+    @Test
+    fun aHistoryPackageOfAnotherPeriodIsRefused() = runTest {
+        val all = packages + mapOf("historique-an-14" to json(history(Chamber.AN, 15)))
+        val server = ParliamentFixtures.Server(keys.sign(ParliamentFixtures.index(all)), all)
+        val repository = repository(server)
+        repository.open()
+        assertEquals(PackageOutcome.Refused("historique-an-14"), repository.download("historique-an-14"))
+        assertNull(repository.history("historique-an-14"))
+    }
 }
