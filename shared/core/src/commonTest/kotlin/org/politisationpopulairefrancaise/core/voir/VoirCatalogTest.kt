@@ -218,4 +218,26 @@ class VoirCatalogTest {
         assertEquals("5 nov. 2026", CivilDate(2026, 11, 5).toFrenchShort())
         assertTrue(CivilDate(2026, 11, 5) > CivilDate(2026, 10, 31))
     }
+
+    @Test
+    fun alertsShowTheComingVotesAndTheRecentBans() {
+        val soon = block("soon", ArticleType.TEXTE, "Bientôt", listOf(VoirTags.STAGE, "assemblee"), listOf(VoirTags.NEXT_VOTE, "2026-11-12", "Motion de censure"))
+        val later = block("later", ArticleType.TEXTE, "Plus tard", listOf(VoirTags.STAGE, "senat"), listOf(VoirTags.NEXT_VOTE, "2026-11-30", "Sénat"))
+        val past = block("past", ArticleType.TEXTE, "Passé", listOf(VoirTags.STAGE, "commission"), listOf(VoirTags.NEXT_VOTE, "2026-11-01", "Commission"))
+        fun ban(slug: String, date: String) = block(
+            slug, ArticleType.FAIT, "Arrêté $slug",
+            listOf(VoirTags.FACT, "decision-officielle"), listOf(VoirTags.DATE, date), listOf(VoirTags.FACT_STATUS, "etabli"),
+            listOf(VoirTags.LIBERTY, "interdiction-manifester"),
+        )
+        val catalog = VoirCatalog.from(listOf(soon, later, past, ban("recent", "2026-11-03"), ban("old", "2026-10-02")))
+        val alerts = VoirAlert.of(catalog, today = CivilDate(2026, 11, 7))
+        assertEquals(2, alerts.size)
+        val vote = alerts[0] as VoirAlert.UpcomingVote
+        assertEquals("soon", vote.text.article.slug)
+        assertEquals(5, vote.daysLeft)
+        val recent = alerts[1] as VoirAlert.ProtestBan
+        assertEquals("recent", recent.fact.article.slug)
+        assertEquals(4, recent.daysAgo)
+        assertTrue(VoirAlert.of(catalog, today = CivilDate(2027, 1, 1)).isEmpty())
+    }
 }

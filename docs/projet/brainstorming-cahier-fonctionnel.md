@@ -7,7 +7,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 ---
 
 ### [2026-11-06] Espace « Voir » : première version et questions ouvertes
-- Statut : À valider
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 1.4, D-036)
 - Concerne : cahier-fonctionnel.md (M2, M4, M9, M13.2 ; futur module M17 « Mettre en lumière ») ; vision.md (pilier « Voir »)
 - Contexte : demande de la propriétaire du 6 novembre 2026 : avancer les espaces que l'on peut déjà remplir, en commençant par « Voir », « ultra ergonomique », avec de petites fonctionnalités ajoutées en autonomie quand elles sont pertinentes.
 - Fait (D-034, contenus tous fictifs et marqués [EXEMPLE]) : trois onglets parcourus au doigt (le mouvement, le pouvoir, libertés) ; recherche ; chiffres clés avec toutes les sources côte à côte ; fiche d'indicateur (graphique, tableau, méthode, corrections) ; chronologie ; observatoire des libertés et tableau de bord des contre-pouvoirs ; fiches des responsables publics ; législomètre (étape, prochain vote, 49.3, qui gagne et qui perd, votes, influence) ; mouvements dans le monde ; dossiers ; droit de réponse ; journal des corrections ; lexique des étiquettes.
@@ -19,7 +19,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   4. **Indice de gravité des violences policières** : la grille reste « À étudier » (entrée plus haut) ; l'indicateur affiche seulement le nombre en attendant.
   5. **Témoignages publiés** (VO-08) : ils rejoindront « Le mouvement » quand la modération existera ; d'accord ?
   6. **Chiffres clés dans « En direct »** (MA-01) : reprendre les quatre premiers chiffres de « Voir » sur l'écran « En direct » ? Recommandation : oui, c'est le parcours « Découvrir en 30 secondes ».
-- Décision :
+- Décision de la propriétaire (7 novembre 2026) : (1) méthode M17 validée ; (2) couleurs gardées ; (3) ordre d'entrée des responsables publics : d'abord les personnes citées dans les contenus publiés, puis les grands partis, puis les personnes les plus médiatisées de ces partis, puis les personnes condamnées, celles qui ont une affaire en cours, celles dont une affaire a été classée sans suite, etc. ; (4) chiffres clés repris dans « En direct ». Les questions 4 et 5 (indice de gravité, témoignages) restent ouvertes dans leurs entrées. Intégré au cahier fonctionnel 1.4 (M17) et consigné en D-036.
 
 ### [2026-11-06] Fil social : l'application comme premier réseau social de la vie politique
 - Statut : Intégré le 2026-11-06 (cahier fonctionnel 1.1, module M18) ; modalités détaillées À étudier
@@ -188,7 +188,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Nouveau module M17 « Mettre en lumière »
-- Statut : À valider
+- Statut : Intégré le 2026-11-07 (cahier fonctionnel 1.4, D-036)
 - Concerne : cahier-fonctionnel.md (nouveau module) ; regroupe les fiches des responsables politiques (M4) et l'étage 2 de M13 (« Voir pour qui la loi est faite ») ; brainstorming-vision.md (nouveau pilier)
 - Description : fonctionnalités proposées, au niveau national et européen (représentants français au Parlement européen et au Conseil) :
   1. **Affaires et condamnations** : fiche par responsable public avec le statut exact de chaque procédure, la peine prononcée, la peine réellement exécutée, les aménagements, réductions, prescriptions ou relaxes, et la comparaison avec le traitement habituel d'une même infraction pour un citoyen ordinaire.
@@ -211,7 +211,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - points juridiques à faire valider par un avocat : diffamation (base factuelle suffisante, prudence, bonne foi), amnistie et réhabilitation, réutilisation des décisions de justice en données ouvertes (pseudonymisation), droit à l'oubli.
 - Mise à jour du 2026-11-04 : dans la restructuration par espaces (entrée « Réorganiser le cahier fonctionnel par espaces »), ces fonctionnalités deviennent l'axe « Le pouvoir » et l'axe « Libertés et contre-pouvoirs » de l'espace « Voir ». Leur contenu et leur méthode restent valables.
 - Mise à jour du 2026-11-06 : la première version de « Voir » (D-034) applique la méthode dans le code, avec des contenus fictifs [EXEMPLE] seulement : aucun fait sans statut, aucune affaire sans l'étape de sa procédure, présomption d'innocence affichée, rubriques identiques pour toutes les personnes, droit de réponse, journal des corrections. Voir l'entrée « Espace Voir : première version et questions ouvertes ».
-- Décision :
+- Décision : validé par la propriétaire le 7 novembre 2026, avec la méthode ; intégré au cahier fonctionnel 1.4 (module M17) ; un parti aura sa propre fiche (brique « Organisation », à faire) avant les personnes de ce parti.
 
 ### [2026-11-04] Canal sécurisé pour les lanceurs d'alerte
 - Statut : À étudier

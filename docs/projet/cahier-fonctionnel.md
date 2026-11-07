@@ -1,7 +1,7 @@
 # Politisation Populaire Française : cahier fonctionnel
 
-- Version : 1.3
-- Date : 6 novembre 2026
+- Version : 1.4
+- Date : 7 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-cahier-fonctionnel.md`.
 - Documents liés : `vision.md` (pourquoi), `cahier-des-charges.md` (exigences, architecture, cadre légal, planning).
 
@@ -212,6 +212,28 @@ Montrer les faits, sans affirmer de conclusion :
 - Compte contributeur créé sur l'appareil (paire de clés), sans numéro de téléphone ni e-mail obligatoire, récupérable par phrase secrète.
 - Lecture possible sans compte.
 
+### M17. Mettre en lumière (espace « Voir » : le pouvoir, libertés et contre-pouvoirs)
+
+Validé par la propriétaire le 7 novembre 2026. Au niveau national et européen (représentants français au Parlement européen et au Conseil).
+- **Affaires et condamnations** : fiche par responsable public avec le statut exact de chaque procédure, la peine prononcée, la peine réellement exécutée, les aménagements, réductions, prescriptions ou relaxes, et la comparaison avec le traitement habituel d'une même infraction pour un citoyen ordinaire.
+- **Promesses** : suivi des engagements électoraux (tenus, en cours, abandonnés, contraires), avec la source de la promesse et celle de l'acte.
+- **Discours et votes** : votes contraires aux déclarations publiques et aux programmes (lien avec M4 et M13.2), y compris les votes des eurodéputés français.
+- **Déclarations contredites par les faits** : affirmation, date, contexte, faits établis, sources (lien avec le décryptage de M6).
+- **Argent public** : détournements et condamnations pour atteinte à la probité, rapports de la Cour des comptes et des chambres régionales des comptes, suites données à leurs recommandations.
+- **Conflits d'intérêts et pantouflage** : allers-retours entre fonctions publiques et secteur privé, avis de la HATVP, répertoire des représentants d'intérêts, liens documentés entre décisions publiques et intérêts privés.
+- **Indépendance de la justice** : modes de nomination, liens hiérarchiques avec l'exécutif, interférences établies, décisions et rapports qui en traitent.
+- **À qui appartiennent les médias** : propriétaires, autres activités économiques, liens avec le pouvoir ; analyse des lignes éditoriales selon une méthode publique et chiffrée, jamais par simple appréciation.
+- **État des contre-pouvoirs** : tableau de bord régulier (recours au 49.3, suites données aux rapports d'autorités indépendantes, classements de liberté de la presse, interdictions de manifester, etc.).
+- **Méthode obligatoire** :
+  - uniquement des faits établis par des sources primaires (décisions de justice, Journal officiel, comptes rendus parlementaires, rapports officiels) ou par des enquêtes de presse identifiées ; distinction toujours visible entre ce qui est établi, allégué et en cours d'enquête ;
+  - présomption d'innocence : statut de la procédure affiché sur chaque fiche ;
+  - vocabulaire normé : « déclaration contredite par les faits » plutôt que « mensonge », sauf décision de justice ;
+  - contradictoire : la personne concernée est invitée à réagir avant publication, et sa réaction est publiée ;
+  - droit de réponse (LCEN, article 6, IV) publié sous le contenu dans les trois jours ; journal public des corrections ; double validation éditoriale avant publication ;
+  - points juridiques à faire valider par un avocat avant la publication de personnes réelles : diffamation, amnistie et réhabilitation, réutilisation des décisions de justice en données ouvertes, droit à l'oubli.
+- **Fiches identiques pour tous** : chaque fiche présente les mêmes rubriques dans le même ordre, quelle que soit la personne ; les couleurs décrivent un fait (promesse tenue en vert, contredite en rouge ; « y gagne » en vert, « y perd » en rouge), toujours accompagnées du mot ; les votes restent neutres.
+- **Ordre d'entrée des responsables publics** (décision de la propriétaire du 7 novembre 2026) : d'abord les personnes citées dans les contenus publiés, puis les grands partis, puis les personnes les plus médiatisées de ces partis, puis les personnes condamnées en justice, celles qui ont une affaire en cours, celles dont une affaire a été classée sans suite ou s'est terminée par une relaxe. Les mêmes critères s'appliquent à tous les partis.
+
 ### M18. Fil social
 - **L'écran par défaut de l'application est un fil**, sur le modèle d'un réseau social : le premier réseau social de la vie politique.
 - Contenu du fil : publications des comptes, organisations et collectifs que l'on suit (S-120, AG-22) ; contenus suggérés par un algorithme ; publications éditoriales de PPF (MA-03) ; mobilisations, revendications et campagnes du moment.
@@ -227,4 +249,5 @@ Montrer les faits, sans affirmer de conclusion :
 | 1.0 | 4 novembre 2026 | Création à partir des instructions initiales du projet et des échanges sur le bloc « Se politiser ». |
 | 1.1 | 6 novembre 2026 | Ajout du module M18 « Fil social » (écran par défaut en fil de réseau social, barre du bas fixe) et de la direction de design des fiches pratiques (encarts « En bref », « Légal », « Illégal »), décisions de la propriétaire du 6 novembre 2026 consignées dans les brainstormings. Copie locale modifiée par l'IA sur demande de la propriétaire ; à reporter dans le projet claude.ai. |
 | 1.3 | 6 novembre 2026 | M11 : vues et filtres du mur des revendications, vérifications automatiques des revendications proposées (doublons, loi déjà en vigueur, autres problèmes), demandes de la propriétaire du 6 novembre 2026 (D-029, D-030). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
+| 1.4 | 7 novembre 2026 | Ajout du module M17 « Mettre en lumière » (espace « Voir » : le pouvoir, libertés et contre-pouvoirs) avec sa méthode, les fiches identiques pour tous et l'ordre d'entrée des responsables publics, validés par la propriétaire le 7 novembre 2026 (D-036). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
 | 1.2 | 6 novembre 2026 | Barre du bas à cinq entrées (Fil, En direct, Carte, Messages, Revendications), vues du fil parcourues au doigt dont une vue « Revendications » (M18) ; messagerie confirmée dans les ambitions fonctionnelles avec ses trois vues (M14). Décisions de la propriétaire du 6 novembre 2026 (D-026). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |

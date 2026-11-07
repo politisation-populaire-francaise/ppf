@@ -63,6 +63,7 @@ import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.ui.endirect.EnDirectScreen
 import org.politisationpopulairefrancaise.ui.voir.VoirScreen
 import org.politisationpopulairefrancaise.ui.voir.VoirState
 import org.politisationpopulairefrancaise.ui.voir.rememberVoirState
@@ -218,6 +219,8 @@ private fun SpaceContent(
 ) {
     when (selected) {
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
+        // The coming mobilisations will plug the agenda of "Agir" into EnDirectScreen(upcoming = ...).
+        Space.EN_DIRECT -> EnDirectScreen(contentLibrary, voirState, modifier, onNavigate)
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
