@@ -380,10 +380,10 @@ object SenatICalendar {
     private val COMPACT = DateTimeFormatter.ofPattern("yyyyMMddHHmm")
 
     fun items(events: List<Event>, window: WeekWindow): List<WeekItem> = events.flatMap { event ->
-        val start = event.first("DTSTART")?.let { dateTime(it.value, it.params) } ?: return@flatMap emptyList()
+        val start = event.first("DTSTART")?.let { dateTime(it.value, it.params) } ?: return@flatMap emptyList<WeekItem>()
         val end = event.first("DTEND")?.let { dateTime(it.value, it.params) }
         val duration = end?.let { ChronoUnit.MINUTES.between(start, it) }?.takeIf { it in 0..(24 * 60) }
-        val uid = event.first("UID")?.value?.let { UID.replace(it, "").take(80) }?.ifEmpty { null } ?: return@flatMap emptyList()
+        val uid = event.first("UID")?.value?.let { UID.replace(it, "").take(80) }?.ifEmpty { null } ?: return@flatMap emptyList<WeekItem>()
         val url = event.first("URL")?.value?.trim()?.takeIf { it.startsWith("https://www.senat.fr/") } ?: AGENDA_URL
         val status = when (event.first("STATUS")?.value?.trim()?.uppercase()) {
             "CONFIRMED" -> AgendaStatus.CONFIRMED
