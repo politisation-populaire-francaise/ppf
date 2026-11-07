@@ -2,7 +2,7 @@
 
 Bloc de la vague 3 de « Comprendre » (contrat `docs/integration/comprendre-vague-3.md`, section 1). Périmètre : `server/` et cette note. Rédigée le 7 novembre 2026 pour la session principale, qui fusionne et met à jour CHANGELOG, ROADMAP, DECISIONS, FORMATS, REGISTRE_DONNEES, THREAT_MODEL et GUIDE_PROPRIETAIRE.
 
-**État** : recherche des sources faite (section 1) ; code en cours.
+**État** : terminé. Code, jeu fictif et tests commités ; `:server:test --tests "*.elus.*"` vert (42 tests, dont la vérification manuelle ignorée sans fichiers) ; mode `official` vérifié une fois sur les vrais fichiers (section 5). Reste à la session principale : fusion, docs générales, décisions de la section 8.
 
 ## 1. Sources vérifiées le 7 novembre 2026
 
@@ -126,6 +126,26 @@ Aucune dépendance nouvelle : JDK (`java.net.http`, `java.util.zip`), pilote Pos
 - Sans base de données, la réponse `503 database_unavailable` commune à `/api/v1/` s'applique.
 
 **Pour le bloc elus-app** : l'empreinte à comparer est celle des octets reçus après décompression ; si le client lit l'en-tête `ETag`, il retire les guillemets.
+
+## 5. Vérification sur les vrais fichiers (7 novembre 2026, RNE du 11 août 2026)
+
+Faite une fois par `ElusOfficialCheck` sur les fichiers téléchargés dans un dossier temporaire hors du dépôt (chiffres seulement, aucun nom) :
+- import réussi en 37,5 s sur la machine de développement chargée ; pic de mémoire du tas 310 Mo (tas maximal de 512 Mo, PostgreSQL embarqué dans le même processus de test) ;
+- élus par mandat : municipal 511 225, communautaire 62 129, départemental 4 037, régional 1 745, collectivité 557, député 566 (577 moins les 11 des Français de l'étranger), sénateur 336 (348 moins 12), européen 81 ;
+- 108 paquets (101 départements, 975, 977, 978, 986, 987, 988, `FR`) ; 85,7 Mo de JSON en tout, 8,0 Mo compressés ; index de 66 Ko, 6 342 codes postaux ; plus gros paquet 2,1 Mo (200 Ko compressé environ) ;
+- Nord (59) : 1,96 Mo (187 Ko compressé), 647 communes, 41 cantons, 21 circonscriptions, 13 672 élus ; Rhône (69) : 909 Ko (85 Ko), 266 communes, 150 membres de la Métropole de Lyon ; Paris (75) : 66 Ko (6 Ko), 18 circonscriptions ; `FR` : 10 Ko ;
+- 34 963 communes : toutes ont au moins un code postal ; 9 sans circonscription ; 563 sans canton (Corse, Martinique, Guyane, Paris et Métropole de Lyon, qui n'ont pas de conseil départemental, et quelques communes partagées absentes des résultats de 2021) ; 28 882 avec une intercommunalité.
+
+## 5 bis. Format des codes de circonscription (`territory` des députés, `communes[].circonscriptions`)
+
+Code du RNE = code du département (ou de la collectivité) suivi du numéro sur **deux chiffres** :
+- métropole : `0101`, `6901`, `7518`, `5921` (quatre caractères) ;
+- Corse : `2A01`, `2A02`, `2B01`, `2B02` ;
+- départements d'outre-mer : `97101` à `97104`, `97201`..., `97301`, `97401` à `97407`, `97601`, `97602` (cinq caractères) ;
+- collectivités d'outre-mer : `97501` (Saint-Pierre-et-Miquelon), `97701` (Saint-Barthélemy et Saint-Martin, circonscription commune, présente dans les paquets `977` et `978`), `98601` (Wallis-et-Futuna), `98701` à `98703` (Polynésie française), `98801`, `98802` (Nouvelle-Calédonie) ;
+- Français établis hors de France : `ZZ01` à `ZZ11` dans le RNE, **dans aucun paquet** (aucun paquet `ZZ` dans le contrat).
+
+Le numéro est toujours les deux derniers caractères ; le département ou la collectivité, tout ce qui précède.
 
 ## 6. Tests
 
