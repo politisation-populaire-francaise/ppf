@@ -1,6 +1,6 @@
 [
     {
-        "id": "7d8fff02b27351411462682950ded2c5610eb94ad90b17fb1140fa6e20281397",
+        "id": "2de61be17c2915e1922ad77a3ddbaf7d5e88473085c144fd40ff2decccdd880c",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793188800,
         "kind": 31923,
@@ -30,6 +30,10 @@
                 "Salle municipale du centre-ville (adresse fictive), Rennes"
             ],
             [
+                "g",
+                "gbwc9y2st"
+            ],
+            [
                 "ppf-event-type",
                 "autre"
             ],
@@ -47,10 +51,10 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'a pas eu lieu et ne correspond à aucune organisation réelle.\n\nIl montre à quoi ressemble une mobilisation passée dans l'agenda : elle reste consultable dans l'onglet « Passés ».",
-        "sig": "c95c42947e9dac3d82499f3220be6ef0225379d66bd0290a14d6aaa7c1a214fc62e8414ef991fbdee1c233de1305f65b658cbd7f38fef7b230f5e19e1b5958c3"
+        "sig": "4fba6e112c7ad2d53f2eb8387e432c4cce1651f3790a2fff545007e029b6389cf687d60aabad69d21fdbe472a8a951a7ebf0fb44792d63f83516234222a10c59"
     },
     {
-        "id": "df54cd990140c15576a96dde536fe296bd18cdaf254e132d94cac5cd7f02f10e",
+        "id": "192ba686e61f7e72c7c5f1920de29d8b0efc2790c60aee1b05bd686757a3981f",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
         "kind": 31923,
@@ -80,6 +84,10 @@
                 "Place de la République, Paris"
             ],
             [
+                "g",
+                "u09wjb11y"
+            ],
+            [
                 "ppf-event-type",
                 "rassemblement"
             ],
@@ -103,10 +111,10 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle. Ne vous y rendez pas.\n\nIl montre à quoi ressemblera une mobilisation dans l'agenda : la date, l'heure, le lieu, le territoire et la description.\n\nAvant toute mobilisation, relisez la fiche pratique « Vos droits en manifestation », lisible sans réseau.",
-        "sig": "d7f974aea5606350bcf7f7a42b47a100129d80b5f572d9c60c1d1fb59478417d93853a2c4d2c30ac581c36162cdd76d1059ba49c8cf15150d47592aa967c9679"
+        "sig": "83b1d908de259126887e1d4f4beaa6ba94fcf4c09896e4dd284b5ab0249196b9585dde75b955f767238ca30f7520b78041f0e8f4b56450ceddd680a9f52e01fe"
     },
     {
-        "id": "3d536e5e76d384df421c2f627bc4a01be7ac93e37b5059850cefc18b3a608fbc",
+        "id": "66d70bd3521af7184afb143980f7ee6944cdbfdff3ad51827bc36a22b3a60496",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
         "kind": 31923,
@@ -136,6 +144,10 @@
                 "Maison des associations (adresse fictive), Lyon 7e"
             ],
             [
+                "g",
+                "u05knpwdf"
+            ],
+            [
                 "ppf-event-type",
                 "assemblee-generale"
             ],
@@ -159,10 +171,10 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nOrdre du jour fictif :\n- tour de parole sur la situation du quartier ;\n- propositions d'actions ;\n- vote à main levée et désignation de deux personnes chargées du compte rendu.",
-        "sig": "3426ba0261e3268cee160f5906aa9131fec138ee7865e56395b40d18115693a27e1f719c36b9bd4e3c8aca505680db6cecdf2fbcd35427f0a267d666d4d0b5cc"
+        "sig": "32719f0d0b5ebc22cd5b88a71e5fe114bee8e0d2f5b1217a20ac536e46ebf8a038e80de9fa6673b30c0f91e6e9dafa7158ce1ea01445f213c2101c86723d007b"
     },
     {
-        "id": "1d0a6f75724c2b7b48782d875a1ade2e5f6b2b815260d6fd63ee6f8aed4b1516",
+        "id": "397a584ce2e364e54c6332d05f87a40dd1fb98059f34c64670b5abdef9d5e79d",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
         "kind": 31923,
@@ -192,6 +204,10 @@
                 "Départ devant la gare (lieu fictif), Marseille"
             ],
             [
+                "g",
+                "spey67n19"
+            ],
+            [
                 "ppf-event-type",
                 "manifestation"
             ],
@@ -217,10 +233,10 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle. Ne vous y rendez pas.\n\nLe lien de cette fiche mène à une adresse réservée aux exemples, qui ne s'ouvre pas : il sert à montrer l'avertissement « Vous quittez PPF ».",
-        "sig": "80ca9dbcc5770a92fe91e096a3a5c4a499033a8427ca6d7f3d9d5415b99b66e2ae60019fbb1cee92f0f0c3396e0f38db9b6743b71137277e6326becfe0b0d2d6"
+        "sig": "e51bc652a07cd5714159304dab0e4372d8fcce5eebf7ea3bcf79f10d1ed647e27e1e9483de603ee8fdb1b822265a901a80bfb6e3cc24ff331defd8a6117a999f"
     },
     {
-        "id": "2dc352d6612e94de05f8f9ee910b92f99eb2cc820afeee5a218a8c4b52cc304a",
+        "id": "bcb92d927dc75cbb5848fb36e20a6260acd519abf9a0ef7f80160d1e4b14aa49",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
         "kind": 31923,
@@ -250,6 +266,10 @@
                 "Partout en France ; piquet de grève fictif devant le dépôt central de Lille"
             ],
             [
+                "g",
+                "u140jdng8"
+            ],
+            [
                 "ppf-event-type",
                 "greve"
             ],
@@ -267,10 +287,10 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : cette grève n'est appelée par aucune organisation réelle.\n\nUn événement de plusieurs jours apparaît à sa date de début, avec sa date de fin.",
-        "sig": "c650f684f7fced328a55f2897154a1b9ac15423417cd37d4327c7c1146286e87f2befd7c123c7ec100279fbb8f9b9a29eba7fc52825fc88d341c81b3e740e3a3"
+        "sig": "90f86513a7b150a5e83f40e14392e55e51b343aaaf742d13ffeaa9ccb2842099db04e36461f82b3f9ca5d08a1d925ec514d64de85b8885ab5d97f43e869fde8b"
     },
     {
-        "id": "b75eb9c40f7a05cd1b9e1eb70f9001006f0d895215da06c0c5b79cda2be3906b",
+        "id": "caaddc809ea42b42d2977755483479b98da874aa58b6886ab0c8098e42e255e9",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
         "kind": 31923,
@@ -300,6 +320,10 @@
                 "Campus fictif, entrée principale, Toulouse"
             ],
             [
+                "g",
+                "spc00cgqx"
+            ],
+            [
                 "ppf-event-type",
                 "blocage"
             ],
@@ -321,10 +345,10 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nIl montre la mention « Reporté ». Toute action annoncée sur PPF respecte la charte : aucune violence, ni contre les personnes, ni contre les biens.",
-        "sig": "4890e8a24b12bd3c3c9d6b9b4abce7b6d2f282a6dcdd3e5fc6f91957e667b3ef0e61dcbcc4f9d4f26ceb449c8570a10948a2622b55938a749d39134323f6ae4b"
+        "sig": "97ce21b40540029ef3c4822ac824abb0c8a1204957156ad70b2be01c15547d0e7140a04bea66fab28c752216dc4198ee7dbea71a8f7f5f9237170503dcfae7d2"
     },
     {
-        "id": "d0a884ac2295932de917a2635386c08b0eec38048aff1fd9b49d1825a8c0ff5e",
+        "id": "cbdaadf91b6b51da34fc71ef6f84d59f55eedb841c8747767f86f696fabb729c",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793955600,
         "kind": 31923,
@@ -354,6 +378,10 @@
                 "Devant la maternité (adresse fictive), Seine-Saint-Denis"
             ],
             [
+                "g",
+                "u09wmssd5"
+            ],
+            [
                 "ppf-event-type",
                 "rassemblement"
             ],
@@ -375,10 +403,10 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nUn événement annulé reste visible avec la mention « Annulé » bien en évidence, pour que personne ne se déplace pour rien.",
-        "sig": "144f0e20b6dfc1c2b42506aaf2cca84823c9105b7ca7cbed17641fb68df7f62427734aca66296ada4a1418c6e7bf2c279fad85a23c35c76dd739e8dceab229f0"
+        "sig": "db1b997211e9e7a4ee51fa6c00e8b526405016be8222f655a29b3cb2e02ac131731fc3a6a40f31cf77bf43603b8779285bcdde224c43aeebc9c578c4fa58de22"
     },
     {
-        "id": "34c9b95e85c2cc4b1a1f9b98090fb148d64e079c11ad35e108554c866c7a29f5",
+        "id": "68f6faa01e9b0a36b1fca20a1a1727f85efc645e643564930615b69c44381ab5",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
         "kind": 31923,
@@ -408,6 +436,10 @@
                 "Salle de quartier (adresse fictive), Strasbourg"
             ],
             [
+                "g",
+                "u0ts2k2je"
+            ],
+            [
                 "ppf-event-type",
                 "reunion"
             ],
@@ -425,7 +457,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nSalle accessible en fauteuil roulant (exemple de précision utile à donner dans la description).\n\nL'équipe éditoriale de PPF y annonce sa participation (réponse publique fictive, signée de sa clé) : elle sert à montrer la rubrique « Organisations participantes ».",
-        "sig": "41782b32c0205a9c67beef04822f692eb002a63fc26b1153d443d75ad58274ef5549e6f017cdd5627222140d48c486e2e3effe68676f3047c5837ea5c32d6dcd"
+        "sig": "caad2c7871de09a4c2deead80f7c7136d701b15dd91402b96d52428bb0b40604e73eb5152878a41f4103fabdea4cb712dda8e30dda66717c0c1b2fae0a4f4371"
     },
     {
         "id": "a07974a1e0f7ddc8a76c5a5e233c903a4e4fd390a5b01520ecec675f69ef5dbf",
@@ -455,6 +487,6 @@
             ]
         ],
         "content": "[EXEMPLE] Participation fictive de démonstration.",
-        "sig": "6ac1d94b3509ec29bb5f58bffedd45be92c34cb2aa258c3f6ab50f709479abf0b7a2e20723e062a35121320bd8275bc66537ea36427077f9688b63a74eb917f3"
+        "sig": "3ef28564604c3ad2f9220303880807951aeadd3c5133d963a973de50445ec8491465969943139ffe98f698e46632b229441d6489c752c0af42c69e13a3e236f5"
     }
 ]

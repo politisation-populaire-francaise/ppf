@@ -50,6 +50,13 @@ import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaMapPane
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaMapState
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaMapUnavailable
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaView
+import org.politisationpopulairefrancaise.ui.agir.map.AgendaViewChoice
+import org.politisationpopulairefrancaise.ui.agir.map.LocalAgendaMapRenderer
+import org.politisationpopulairefrancaise.ui.agir.map.rememberAgendaMapState
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -79,8 +86,6 @@ import org.politisationpopulairefrancaise.ui.resources.agenda_filters
 import org.politisationpopulairefrancaise.ui.resources.agenda_filters_active
 import org.politisationpopulairefrancaise.ui.resources.agenda_forget
 import org.politisationpopulairefrancaise.ui.resources.agenda_intro
-import org.politisationpopulairefrancaise.ui.resources.agenda_map_soon_text
-import org.politisationpopulairefrancaise.ui.resources.agenda_map_soon_title
 import org.politisationpopulairefrancaise.ui.resources.agenda_mine_empty
 import org.politisationpopulairefrancaise.ui.resources.agenda_mine_intro
 import org.politisationpopulairefrancaise.ui.resources.agenda_need_account_mine
@@ -199,6 +204,8 @@ fun AgendaScreen(
     val names = remember(agenda, organisationName, isVerifiedOrganisation) { AgendaNames(organisationName, { agenda.isEditorial(it) }, isVerifiedOrganisation) }
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val composer = agenda.composer
+    // The choice "Liste" / "Carte" and the camera survive a visit to the detail (docs/integration/agir-carte.md).
+    val map = rememberAgendaMapState()
 
     // The caller's modifier may carry its own test tag (the first one wins): the screen's goes on an inner box.
     Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
@@ -224,6 +231,7 @@ fun AgendaScreen(
                     onPropose = { composer.open = true },
                     onCreateAccount = { onNavigate(Space.MON_ESPACE) },
                     modifier = listModifier,
+                    map = map,
                 )
             }
             val selected = agenda.selected
@@ -314,6 +322,7 @@ private fun AgendaList(
     onPropose: () -> Unit,
     onCreateAccount: () -> Unit,
     modifier: Modifier,
+    map: AgendaMapState,
 ) {
     val palette = PpfTheme.palette
     val tabs = listOfNotNull(AgendaTab.UPCOMING, AgendaTab.PAST, AgendaTab.MINE.takeIf { agenda.hasAccount })
@@ -338,8 +347,13 @@ private fun AgendaList(
                     modifier = Modifier.padding(horizontal = horizontal),
                     tagFor = { AgendaTags.TAB + tabs[it].name.lowercase() },
                 )
+                if (agenda.tab != AgendaTab.MINE) AgendaViewChoice(map, Modifier.padding(horizontal = horizontal, vertical = 8.dp))
                 HorizontalDivider(color = palette.border)
             }
+        }
+        if (map.view == AgendaView.MAP && agenda.tab != AgendaTab.MINE && LocalAgendaMapRenderer.current != null) {
+            AgendaMapPane(agenda, map, onOpenFilters, Modifier.weight(1f).fillMaxWidth())
+            return@Column
         }
         Column(
             modifier = Modifier.weight(1f).fillMaxWidth().verticalScroll(rememberScrollState()).padding(horizontal = horizontal, vertical = 16.dp),
@@ -384,13 +398,8 @@ private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: (
     }
     Text(pluralStringResource(Res.plurals.agenda_count, shown.size, shown.size), style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag(AgendaTags.COUNT))
     if (filters.constraintCount > 0) ActiveFilters(agenda, names)
-    if (agenda.tab == AgendaTab.UPCOMING) {
-        InfoBox(Lucide.Map, Modifier.testTag(AgendaTags.MAP_SOON)) {
-            Text(stringResource(Res.string.agenda_map_soon_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
-            Spacer(Modifier.height(4.dp))
-            Text(stringResource(Res.string.agenda_map_soon_text), style = MaterialTheme.typography.bodyMedium)
-        }
-    }
+    // Where the platform cannot draw the map, an honest sentence; elsewhere the choice "Liste" / "Carte" is above.
+    if (agenda.tab == AgendaTab.UPCOMING) AgendaMapUnavailable()
     statusText(agenda.status)?.let {
         Text(it, style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.testTag(AgendaTags.STATUS_TEXT))
     }
