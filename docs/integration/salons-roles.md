@@ -40,6 +40,15 @@ Refusés comme aujourd'hui : 9007, 9008 (suppression du salon : par l'équipe se
 - Message retiré : « Message retiré par un modérateur : motif ».
 - Accessibilité et adaptation téléphone, tablette, ordinateur, comme le reste de la messagerie.
 
+## 3 bis. Garde-fous à la création (décision de la propriétaire, D-132, question 26)
+
+« L'idéal est que l'algo de la fonctionnalité mette plein de garde fou pour éviter ce genre de situation ainsi que les doublons. » En plus du refus actuel des doublons exacts (même nom normalisé, même territoire) :
+
+- **noms proches** : à la création, le serveur compare le nom normalisé aux salons du même territoire et des territoires parents (distance d'édition faible, mêmes mots dans un autre ordre, ajout d'un mot vide comme « collectif », « de », « du ») ; s'il en trouve, il répond `409 group_similar` avec la liste, et l'application propose de les rejoindre ; créer quand même demande une confirmation explicite et un champ « En quoi votre salon est différent » (envoyé avec la description) ;
+- **organisations connues** : un nom proche de celui d'une organisation vérifiée (fiches d'organisations d'Agir) ou d'un salon déjà existant ailleurs avec beaucoup d'activité est **mis en attente** (`202 held`) pour une relecture de l'équipe, dans une file du back-office `groups.creations` (approuver, refuser avec motif) ; le créateur voit « En attente de vérification » ;
+- **rythme** : au plus 3 salons créés par compte et par jour, et un compte de moins de 7 jours ne crée pas de salon dont le nom ressemble à une organisation connue ;
+- le **signalement** d'un salon reste possible (file `reports` du socle, étape 2).
+
 ## 4. Hors de cette étape
 
-Salons réservés et chiffrés (MLS), invitations, demandes d'adhésion, suppression d'un salon, reprise d'un salon squatté, rapprochement par le sens, signalements (socle, étape 2).
+Salons réservés et chiffrés (MLS) et bascule transparente d'une conversation de groupe vers un salon chiffré au-delà d'un seuil (décision 26 : aucune limite de taille visible), invitations, demandes d'adhésion, suppression d'un salon, reprise d'un salon squatté, rapprochement par le sens, signalements (socle, étape 2).
