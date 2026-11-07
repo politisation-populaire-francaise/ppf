@@ -1,0 +1,11 @@
+# Imports the parliamentary open data of one environment (%i), every Monday (Parlement européen).
+# Installed by infra/scripts/bootstrap-server.sh; enabled per environment once its import key exists.
+[Unit]
+Description=PPF: import the parliamentary open data (weekly, %i)
+After=docker.service network-online.target
+Wants=network-online.target
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/ppf-open-data-import %i --only pe

@@ -159,6 +159,8 @@ La préproduction ne contient jamais de données réelles : uniquement des donn�
 
 Le pare-feu ne journalise rien.
 
+Réveils des notifications (D-078) : ntfy garde les sujets UnifiedPush (noms aléatoires, sans lien avec un compte pour ntfy) et les réveils chiffrés en attente 12 heures au plus, dans `/srv/ppf/<environnement>/ntfy` ; il ne voit jamais l'adresse d'un client.
+
 ### Personnes publiques citées dans « Voir » (D-034)
 
 Les fiches des responsables publics (mandats, votes, promesses, affaires, intérêts) sont des données personnelles de personnes publiques, traitées pour l'information du public sur l'exercice de leurs fonctions. Elles ne contiennent que des faits liés au mandat public, toujours sourcés, avec le statut de chaque procédure et un droit de réponse. Aujourd'hui, toutes les personnes de l'application sont **fictives** ([EXEMPLE]) ; avant d'y faire figurer une personne réelle : base légale et analyse d'impact à rédiger, relecture juridique (diffamation, présomption d'innocence, réutilisation des décisions de justice et des données de la HATVP), double validation éditoriale.
