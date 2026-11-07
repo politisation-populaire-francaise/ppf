@@ -396,9 +396,9 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : garder la relecture humaine sans gêner les auteurs ; un seul chemin de publication ; un agenda lisible sans application ni JavaScript, y compris sur iPhone.
 - Conséquences : migration `V5__agir.sql` ; variables `PPF_HELD_RETENTION_DAYS` et `PPF_HELD_CLEANUP_INTERVAL_MINUTES` ; routes de développement `/dev/held` ; restent le back-office de relecture (M15), la preuve de travail, une alerte de remplissage du disque, l'unification des deux exports iCal et des deux calculs de l'heure de Paris, le style de la page `/agenda`.
 
-> Les numéros D-044 à D-046 restent libres : ils avaient été réservés par la session « Agir », qui ne les a pas utilisés. Pour éviter tout doublon entre sessions parallèles, « Décider » a pris D-047 à D-049.
+> Numéros réservés entre sessions parallèles (répartition du chef d'équipe de « Voir », 7 novembre 2026) : D-044 (décisions de la propriétaire), D-045, D-046 et D-051 à D-053 (« Agir »), D-059 à D-050 (« Comprendre », vague 3), D-054 à D-058 (« Voir »), D-059 à D-063 (« Décider »), D-064 à D-066 (« Voir », données ouvertes) ; prochaine libre : D-067.
 
-## D-047 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
+## D-059 (2026-11-07) Pétitions officielles : relais, seuils vérifiés, signature sur le site officiel
 
 - Contexte : cahier fonctionnel, M10 et DE-07 (« relais des pétitions officielles », « explication claire des seuils et de leurs effets réels », « kits de partage ») ; demande de la propriétaire du 7 novembre 2026 de commencer « Décider » par ce qui est déjà spécifié. Le cahier fonctionnel demandait de revérifier le droit avant de coder.
 - Droit vérifié le 7 novembre 2026 sur les sources officielles (détail et adresses : `docs/integration/decider-petitions-droit.md`) : Assemblée nationale (Règlement, articles 147 à 151, inchangés depuis 2019 ; 100 000 signatures = mise en ligne sur le site et un an de plus, sans examen obligatoire ; 500 000 signataires dans au moins 30 départements = débat possible, jamais automatique, toujours sans vote) ; Sénat (articles 87 et 88 ; 100 000 en six mois = examen obligatoire par la Conférence des présidents, suite libre) ; CESE (article 69 de la Constitution ; 150 000 signataires de 16 ans et plus en un an ; avis sous six mois) ; référendum d'initiative partagée (article 11 ; 185 parlementaires, un dixième des inscrits fixé par le Conseil constitutionnel pour chaque procédure, neuf mois ; liste des soutiens consultable par toute personne) ; initiative citoyenne européenne (règlement 2019/788 ; un million dans au moins sept États, seuil français 58 320).
@@ -414,7 +414,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **objectifs par territoire reportés** : aucune plateforme ne publie la répartition des signataires par département ; il faudra un référentiel des territoires et de leur population (brainstorming).
 - Raison : relayer sans jamais tromper sur ce qu'une pétition peut obtenir ; aucun tiers depuis l'appareil ; aucune donnée d'opinion enregistrée.
 
-## D-048 (2026-11-07) Pacte démocratique : texte unique, tableau public identique pour tous, archives
+## D-060 (2026-11-07) Pacte démocratique : texte unique, tableau public identique pour tous, archives
 
 - Contexte : cahier fonctionnel, M13.5 et DE-08 ; cahier des charges, section 9.2 (« tout outil qui concerne des candidats les traite tous de façon strictement identique ») ; fondation « archivage horodaté des engagements publics » (CLAUDE.md, section 7). La liste des mesures reste « À valider » (brainstorming, entrée « Liste de départ des mesures du Pacte démocratique ») : les mesures actuelles sont des exemples.
 - Décisions techniques prises en autonomie :
@@ -427,7 +427,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : la force du Pacte vient de ce qu'on ne peut l'accuser de favoriser personne ; l'empreinte permet à chacun de vérifier que tous ont reçu les mêmes mots.
 - Reste : envoi réel du Pacte (courrier, adresse officielle de chaque candidat), preuve d'horodatage réelle (OpenTimestamps ou RFC 3161, D-0xx à choisir), comptes « élu vérifié » qui signeraient eux-mêmes leur réponse (DE-23), page publique du tableau sur le site sans JavaScript.
 
-## D-049 (2026-11-07) Accueil de « Décider », version de l'application dans « Mon espace »
+## D-061 (2026-11-07) Accueil de « Décider », version de l'application dans « Mon espace »
 
 - Accueil de l'espace : le Pacte en cours, les pétitions ouvertes (la date limite la plus proche d'abord), les pétitions closes à part, « Comprendre les seuils », puis « Et aussi » (mur des revendications, « Qui décide de ça ? ») et un encart qui annonce les votations et assemblées tirées au sort, en attente de la méthode « une personne, une voix » (M13.6). Une, deux ou trois colonnes selon la largeur ; retour du système qui ferme la page ouverte ; un candidat, un texte ou un fait s'ouvrent dans « Voir ».
 - « Décider » était le dernier écran provisoire : l'écran qui affichait la disposition et la version a été retiré ; la version installée et le système sont maintenant écrits en bas de « Mon espace », pour qu'une testeuse puisse les donner avec un problème.

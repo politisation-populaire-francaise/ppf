@@ -86,7 +86,7 @@ data class PetitionProgress(
 )
 
 /**
- * The rules of the official petitions, as checked on [VERIFIED_ON] (docs/DECISIONS.md, D-047, with
+ * The rules of the official petitions, as checked on [VERIFIED_ON] (docs/DECISIONS.md, D-059, with
  * the official sources). Any change in the law means updating this object, its sources and the
  * texts of the interface together.
  */

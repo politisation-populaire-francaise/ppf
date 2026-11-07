@@ -259,7 +259,7 @@ Publiée seulement par une clé de l'équipe éditoriale. `content` : la présen
 
 **Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé ; une nouvelle version sans `p` retire la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
 
-## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-047, D-048)
+## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-059, D-060)
 
 Même principe que « Voir » : des événements NIP-23 (type 30023) signés par l'équipe éditoriale, avec `ppf-type`, un corps Markdown et des étiquettes structurées (champs positionnels, champ vide = inconnu). Les étiquettes communes `ppf-source`, `ppf-archive`, `ppf-correction`, `ppf-next` et les liens `a` gardent leur sens. Contenus intégrés : `decider.json`.
 
