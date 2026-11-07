@@ -27,7 +27,7 @@ Vous pouvez laisser le tunnel actif en permanence : il ne concerne que le serveu
 
 ## 3. Ouvrir la préproduction
 
-- **Dans un navigateur** (tunnel actif) : https://preprod.politisation-populaire-francaise.org . Le navigateur demande un identifiant et un mot de passe : identifiant `equipe`, mot de passe dans le fichier que je vous ai indiqué. Enregistrez-les dans votre gestionnaire de mots de passe.
+- **Dans un navigateur** (tunnel actif) : https://preprod.politisation-populaire-francaise.org . Le navigateur demande un identifiant et un mot de passe : identifiant `equipe`, et le mot de passe que vous avez choisi et tapé vous-même lors du premier déploiement (il est dans votre gestionnaire de mots de passe).
 - **Dans l'APK d'essai** (tunnel actif sur le téléphone) : rien à faire. La version d'essai se connecte toute seule à la préproduction : le fil, les messages, les salons et les propositions passent par le serveur. Sans le tunnel, l'application fonctionne hors ligne, comme avant.
 - **Sur l'application de bureau** : je vous donnerai la commande qui la relie à la préproduction.
 
