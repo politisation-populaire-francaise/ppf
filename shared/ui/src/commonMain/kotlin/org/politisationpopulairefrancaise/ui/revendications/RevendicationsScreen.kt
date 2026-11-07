@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
@@ -186,6 +187,8 @@ fun RevendicationsScreen(
     proposal: ProposalComposer? = null,
     onNavigate: (Space) -> Unit = {},
 ) {
+    SystemBack(enabled = proposal?.open == true) { proposal?.open = false }
+    SystemBack(enabled = library.selectedRevendication != null) { library.closeRevendication() }
     if (proposal != null && proposal.open) {
         val existing = remember(library.revendications, library.myRevendications) {
             (library.revendications + library.myRevendications.map { it.article }).distinctBy { it.address }.map(DemandText::of)

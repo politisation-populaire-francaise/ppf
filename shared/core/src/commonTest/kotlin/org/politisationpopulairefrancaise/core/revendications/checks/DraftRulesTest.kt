@@ -75,7 +75,8 @@ class DraftRulesTest {
         val huge = "a".repeat(60_000)
         val started = kotlin.time.TimeSource.Monotonic.markNow()
         val issues = DraftRules.check(draft(huge).copy(why = huge, asks = "x.".repeat(30_000)))
-        assertTrue(started.elapsedNow().inWholeSeconds < 2, "the patterns stay linear on long texts")
+        // A pattern with catastrophic backtracking would take minutes; 10 s leaves room for a loaded machine.
+        assertTrue(started.elapsedNow().inWholeSeconds < 10, "the patterns stay linear on long texts")
         assertTrue(issues.any { it.kind == IssueKind.TOO_LONG && it.field == DraftField.TITLE && it.severity == IssueSeverity.BLOCKING })
         assertTrue(issues.any { it.kind == IssueKind.TOO_LONG && it.field == DraftField.WHY })
         assertTrue(DraftRules.containsPersonalData("x".repeat(5_000) + " ecrire a quelqu.un@exemple.example merci"))

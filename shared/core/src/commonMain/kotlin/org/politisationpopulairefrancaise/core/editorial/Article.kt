@@ -12,8 +12,27 @@ enum class ArticleType(val tagValue: String) {
     DOSSIER("dossier"),
     DECRYPTAGE("decryptage"),
     ARTICLE("article"),
+    /**
+     * A short course of the "Comprendre en 5 minutes" series (cahier fonctionnel, M13.1): steps,
+     * each closing with a quiz, read by `core.comprendre.Parcours`.
+     */
+    PARCOURS("parcours"),
     /** A demand of the demands wall: one idea, in one or two sentences, with its argument as body. */
     REVENDICATION("revendication"),
+
+    // The building blocks of "Voir" (D-034, core/voir): structured tags, Markdown body.
+    /** An indicator of the observatory (M2): definition, unit, method as body, measures as tags. */
+    INDICATEUR("indicateur"),
+    /** A sourced fact: an event of the chronology, a vote, a promise, a case, a contradicted statement... */
+    FAIT("fait"),
+    /** A public person (M4, VO-10): mandates and functions; the facts point to it. */
+    PERSONNE("personne"),
+    /** A bill or a law under discussion (législomètre, VO-20), with its stages and its effects. */
+    TEXTE("texte"),
+    /** A social movement elsewhere in the world (M9). */
+    MOUVEMENT("mouvement"),
+    /** A right of reply (VO-21) published under the content it answers. */
+    REPONSE("reponse"),
     ;
 
     companion object {
@@ -50,7 +69,7 @@ enum class RevendicationStatus(val tagValue: String) {
  * An editorial content (practical guide, dossier, fact-check, article, demand) read from a NIP-23
  * event: kind 30023, Markdown body, `d` identifier, `title`, `summary`, `published_at`, `t`
  * topics, plus the PPF tags `ppf-type` and `ppf-origin`; demands add `ppf-status` and
- * `ppf-territory`. See docs/FORMATS.md.
+ * `ppf-territory`, courses add `ppf-duration`. See docs/FORMATS.md.
  */
 data class Article(
     val event: SignedEvent,
@@ -66,6 +85,8 @@ data class Article(
     val status: RevendicationStatus? = null,
     /** Demands only: the territory concerned (a town, a department, "France"). */
     val territory: String? = null,
+    /** Courses only: the announced reading time, in minutes (`ppf-duration`). */
+    val durationMinutes: Int? = null,
 ) {
     val slug: String get() = address.identifier
     val author: String get() = event.pubkey
@@ -82,6 +103,7 @@ data class Article(
         const val TAG_ORIGIN: String = "ppf-origin"
         const val TAG_STATUS: String = "ppf-status"
         const val TAG_TERRITORY: String = "ppf-territory"
+        const val TAG_DURATION: String = "ppf-duration"
 
         /** Reads an article; null if the event is not a well-formed editorial content. */
         fun from(event: SignedEvent): Article? {
@@ -101,6 +123,7 @@ data class Article(
                 publishedAt = event.firstTagValue(TAG_PUBLISHED_AT)?.toLongOrNull(),
                 status = event.firstTagValue(TAG_STATUS)?.let(RevendicationStatus::fromTag),
                 territory = event.firstTagValue(TAG_TERRITORY)?.takeIf { it.isNotBlank() },
+                durationMinutes = event.firstTagValue(TAG_DURATION)?.toIntOrNull()?.takeIf { it in 1..240 },
             )
         }
 
@@ -118,9 +141,13 @@ data class Article(
             body: String,
             status: RevendicationStatus? = null,
             territory: String? = null,
+            durationMinutes: Int? = null,
+            /** Further tags of a "Voir" building block (core/voir), added after the common ones in their order. */
+            extraTags: List<List<String>> = emptyList(),
         ): UnsignedEvent {
             require(slug.isNotBlank() && slug.none { it.isWhitespace() }) { "slug must be a single word" }
             require(title.isNotBlank()) { "title is required" }
+            require(durationMinutes == null || durationMinutes in 1..240) { "duration must be between 1 and 240 minutes" }
             val tags = buildList {
                 add(listOf("d", slug))
                 add(listOf(TAG_TITLE, title.trim()))
@@ -130,7 +157,12 @@ data class Article(
                 add(listOf(TAG_ORIGIN, origin.tagValue))
                 status?.let { add(listOf(TAG_STATUS, it.tagValue)) }
                 territory?.takeIf { it.isNotBlank() }?.let { add(listOf(TAG_TERRITORY, it.trim())) }
+                durationMinutes?.let { add(listOf(TAG_DURATION, it.toString())) }
                 topics.map { it.trim() }.filter { it.isNotEmpty() }.distinct().forEach { add(listOf(TAG_TOPIC, it)) }
+                extraTags.forEach { tag ->
+                    require(tag.isNotEmpty() && tag[0].isNotBlank()) { "a tag needs a name" }
+                    add(tag)
+                }
             }
             return UnsignedEvent.create(author, KIND, updatedAt, tags, body)
         }

@@ -43,6 +43,7 @@ kotlin {
             implementation(libs.compose.ui)
             implementation(libs.compose.material.icons.core)
             implementation(libs.compose.components.resources)
+            implementation(libs.navigationevent.compose)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

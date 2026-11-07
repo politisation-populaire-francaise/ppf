@@ -1,0 +1,277 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Voir" (vision, pillar 1; cahier fonctionnel M2, M4, M9, M13.2; D-034). French, typographic
+     apostrophe (’), no em dash. -->
+<resources>
+    <!-- Home of the space -->
+    <string name="voir_search_hint">Rechercher un chiffre, un élu, un texte, un fait</string>
+    <string name="voir_search_label">Rechercher dans Voir</string>
+    <string name="voir_search_clear">Effacer la recherche</string>
+    <string name="voir_search_results">Résultats pour « %1$s »</string>
+    <string name="voir_search_none">Aucun résultat. Essayez un autre mot, ou une partie du mot.</string>
+    <string name="voir_tab_mouvement">Le mouvement</string>
+    <string name="voir_tab_pouvoir">Le pouvoir</string>
+    <string name="voir_tab_libertes">Libertés</string>
+    <string name="voir_axis_mouvement_intro">Les chiffres de la mobilisation et de la répression, la chronologie, les mouvements dans le monde.</string>
+    <string name="voir_axis_pouvoir_intro">Les élus et les ministres, leurs votes, leurs promesses, leurs affaires, et les textes en discussion.</string>
+    <string name="voir_axis_libertes_intro">Les libertés publiques et les contre-pouvoirs : Parlement, justice, médias.</string>
+    <string name="voir_key_figures">Chiffres clés</string>
+    <string name="voir_counter_powers">Tableau de bord des contre-pouvoirs</string>
+    <string name="voir_see_all">Tout voir</string>
+    <string name="voir_see_all_count">Tout voir (%1$d)</string>
+    <string name="voir_chronology">Chronologie du mouvement</string>
+    <string name="voir_chronology_intro">Manifestations, déclarations et décisions officielles, réponses du gouvernement, du plus récent au plus ancien.</string>
+    <string name="voir_world">Dans le monde</string>
+    <string name="voir_world_intro">Les mouvements sociaux contre la vie chère et pour la démocratie ailleurs dans le monde : ce qu’ils demandaient, ce qu’ils ont obtenu.</string>
+    <string name="voir_people">Responsables publics</string>
+    <string name="voir_people_intro">Chaque fiche présente les mêmes rubriques, dans le même ordre, quelle que soit la personne.</string>
+    <string name="voir_bills">Textes en discussion</string>
+    <string name="voir_bills_intro">Les projets et propositions de loi : où ils en sont, le prochain vote, qui y gagne et qui y perd.</string>
+    <string name="voir_latest_power">Derniers faits sourcés</string>
+    <string name="voir_liberties">Observatoire des libertés publiques</string>
+    <string name="voir_liberties_intro">Interdictions, dissolutions, lois restrictives, surveillance : chaque mesure avec ses sources et l’état des recours.</string>
+    <string name="voir_dossiers">Dossiers</string>
+    <string name="voir_corrections">Journal des corrections</string>
+    <string name="voir_corrections_intro">Toutes les corrections apportées aux contenus de « Voir », avec leur date et leur motif. Une plateforme qui demande des comptes doit rendre les siens.</string>
+    <string name="voir_corrections_none">Aucune correction pour l’instant.</string>
+    <string name="voir_method_title">Comment lire ces contenus</string>
+    <string name="voir_method_text">Chaque chiffre et chaque fait a sa source, sa date et son niveau de fiabilité. Quand les sources divergent, elles sont affichées côte à côte, jamais fusionnées.</string>
+    <string name="voir_method_open">Établi, allégué, fiabilité : ce que veulent dire les étiquettes</string>
+    <string name="voir_empty">Les contenus de « Voir » ne sont pas encore disponibles sur cet appareil.</string>
+    <string name="voir_all_filter">Tout</string>
+
+    <!-- Following, on the device only -->
+    <string name="voir_followed">Vos suivis</string>
+    <string name="voir_followed_private">Ce que vous suivez reste sur cet appareil : la liste n’est jamais envoyée.</string>
+    <string name="voir_follow">Suivre</string>
+    <string name="voir_following">Suivi</string>
+    <string name="voir_follow_description">Suivre « %1$s » dans Mon espace</string>
+    <string name="voir_unfollow_description">Ne plus suivre « %1$s »</string>
+    <string name="voir_followed_in_my_space">Retrouvez-les dans « Voir », en haut de chaque onglet.</string>
+    <string name="voir_followed_none">Vous ne suivez encore rien. Touchez « Suivre » sur un chiffre, une fiche ou un texte.</string>
+
+    <!-- Indicators -->
+    <string name="voir_sources_diverge">Sources divergentes</string>
+    <string name="voir_declarative">Déclaratif</string>
+    <string name="voir_updated_on">Mis à jour le %1$s</string>
+    <string name="voir_trend_up">En hausse depuis %1$s</string>
+    <string name="voir_trend_down">En baisse depuis %1$s</string>
+    <string name="voir_trend_same">Stable depuis %1$s</string>
+    <string name="voir_breakdown">%1$s : %2$s</string>
+    <string name="voir_value_unit">%1$s %2$s</string>
+    <string name="voir_latest_reading">Dernière mesure</string>
+    <string name="voir_chart_title">Évolution</string>
+    <string name="voir_chart_as_table">Voir les données en tableau</string>
+    <string name="voir_chart_as_graph">Voir le graphique</string>
+    <string name="voir_chart_description">Graphique de l’évolution de « %1$s » : une courbe par source. Les données sont aussi disponibles en tableau.</string>
+    <string name="voir_table_date">Date</string>
+    <string name="voir_all_measures">Toutes les mesures</string>
+    <string name="voir_definition">Ce que l’on compte</string>
+    <string name="voir_method">Méthode</string>
+    <string name="voir_accepted_sources">Sources retenues : %1$s</string>
+    <string name="voir_side_by_side_note">Les sources ne sont jamais fusionnées : chacune est affichée avec son propre chiffre.</string>
+    <string name="voir_declarative_note">Indicateur déclaratif : il additionne ce que déclarent les utilisateurs, sans vérification possible.</string>
+    <string name="voir_copy_figure">Copier avec la source</string>
+    <string name="voir_copied">Copié, avec la source et la date.</string>
+    <string name="voir_copy_text">%1$s : %2$s selon %3$s (%4$s). Source : %5$s</string>
+    <string name="voir_no_measure">Aucune mesure publiée pour l’instant.</string>
+    <string name="voir_open_source">Ouvrir la source</string>
+    <string name="voir_open_source_named">Ouvrir la source : %1$s</string>
+    <string name="voir_link_title">Ouvrir un site extérieur ?</string>
+    <string name="voir_link_text">Vous allez quitter l’application pour ouvrir le site %1$s. Comme pour toute visite, ce site verra votre adresse IP.</string>
+    <string name="voir_link_cancel">Rester ici</string>
+    <string name="voir_link_open">Ouvrir le site</string>
+
+    <!-- Sources and method blocks -->
+    <string name="voir_sources">Sources</string>
+    <string name="voir_archives">Copies archivées</string>
+    <string name="voir_archive_line">Archivée le %1$s, empreinte %2$s</string>
+    <string name="voir_archive_open">Voir la copie archivée</string>
+    <string name="voir_corrected_on">Corrigé le %1$s : %2$s</string>
+    <string name="voir_next_title">Et maintenant ?</string>
+    <string name="voir_origin_human">Rédigé par l’équipe</string>
+    <string name="voir_origin_ai">Rédigé avec l’aide d’une IA, relu par l’équipe</string>
+    <string name="voir_explain">Explication</string>
+    <string name="voir_close">Fermer</string>
+
+    <!-- Facts -->
+    <string name="voir_quote">Ce qui a été dit</string>
+    <string name="voir_concerns">Concerne</string>
+    <string name="voir_sentence">Peine prononcée : %1$s</string>
+    <string name="voir_sentence_served">Peine réellement exécutée : %1$s</string>
+    <string name="voir_presumption">Présomption d’innocence : tant qu’elle n’a pas été condamnée définitivement, la personne est présumée innocente.</string>
+    <string name="voir_vote_position">Vote : %1$s</string>
+    <string name="voir_recourse">Recours : %1$s</string>
+    <string name="voir_reply_title">Droit de réponse de %1$s</string>
+    <string name="voir_reply_published">Publié le %1$s</string>
+    <string name="voir_reply_button">Droit de réponse</string>
+    <string name="voir_reply_dialog_title">Exercer un droit de réponse</string>
+    <string name="voir_reply_dialog_text">Toute personne nommée ou désignée dans un contenu peut y répondre (loi pour la confiance dans l’économie numérique, article 6, IV). Sa réponse est publiée sous le contenu dans les trois jours suivant sa réception, avec la mention « Droit de réponse de [nom] ».</string>
+    <string name="voir_reply_dialog_how">Le formulaire de demande arrivera avec le serveur de PPF. Une personne qui a un compte vérifié pourra écrire sa réponse directement ; toute autre personne passera par ce formulaire en justifiant de son identité.</string>
+
+    <!-- Public persons -->
+    <string name="voir_person_mandates">Mandats et fonctions</string>
+    <string name="voir_since">depuis le %1$s</string>
+    <string name="voir_from_to">du %1$s au %2$s</string>
+    <string name="voir_group">Groupe : %1$s</string>
+    <string name="voir_section_empty">Rien de recensé pour l’instant.</string>
+    <string name="voir_person_counts">%1$d faits sourcés</string>
+    <string name="voir_section_votes">Votes</string>
+    <string name="voir_section_promises">Promesses</string>
+    <string name="voir_section_statements_votes">Discours et votes</string>
+    <string name="voir_section_cases">Affaires judiciaires</string>
+    <string name="voir_section_contradicted">Déclarations contredites par les faits</string>
+    <string name="voir_section_interests">Intérêts et pantouflage</string>
+    <string name="voir_section_lobbying">Rencontres avec des représentants d’intérêts</string>
+    <string name="voir_section_public_money">Argent public</string>
+
+    <!-- Bills -->
+    <string name="voir_text_stage">Où en est le texte</string>
+    <string name="voir_next_vote">Prochain vote le %1$s : %2$s</string>
+    <string name="voir_493_count">Article 49.3 : %1$d recours</string>
+    <string name="voir_493_on">49.3 le %1$s</string>
+    <string name="voir_impacts">Qui gagne, qui perd</string>
+    <string name="voir_impacts_none">Aucun effet chiffré publié pour l’instant.</string>
+    <string name="voir_text_votes">Votes des élus</string>
+    <string name="voir_text_lobbying">Influence des représentants d’intérêts</string>
+    <string name="voir_text_other_facts">Autres faits liés</string>
+    <string name="voir_text_projet">Projet de loi, déposé par le gouvernement</string>
+    <string name="voir_text_proposition">Proposition de loi, déposée par des parlementaires</string>
+    <string name="voir_stage_reached_on">%1$s, le %2$s</string>
+
+    <!-- Movements of the world -->
+    <string name="voir_world_claims">Ce qu’ils demandaient</string>
+    <string name="voir_world_results">Ce qu’ils ont obtenu</string>
+    <string name="voir_world_since">Depuis le %1$s</string>
+    <string name="voir_world_period">Du %1$s au %2$s</string>
+    <string name="voir_world_ongoing">En cours</string>
+
+    <!-- Axes -->
+    <string name="voir_axis_mouvement">Le mouvement</string>
+    <string name="voir_axis_pouvoir">Le pouvoir</string>
+    <string name="voir_axis_libertes">Libertés et contre-pouvoirs</string>
+
+    <!-- Kinds of sources -->
+    <string name="voir_source_autorites">Autorités</string>
+    <string name="voir_source_organisateurs">Organisateurs</string>
+    <string name="voir_source_independant">Comptage indépendant</string>
+    <string name="voir_source_medias">Médias</string>
+    <string name="voir_source_signalements">Signalements vérifiés</string>
+    <string name="voir_source_texte_officiel">Texte officiel</string>
+    <string name="voir_source_justice">Décision de justice</string>
+    <string name="voir_source_parlement">Parlement</string>
+    <string name="voir_source_rapport">Rapport officiel</string>
+    <string name="voir_source_declaration">Déclaration publique</string>
+    <string name="voir_source_enquete">Enquête de presse</string>
+
+    <!-- Reliability -->
+    <string name="voir_reliability_high">Fiabilité élevée</string>
+    <string name="voir_reliability_medium">Fiabilité moyenne</string>
+    <string name="voir_reliability_low">Fiabilité faible</string>
+
+    <!-- Status of a fact -->
+    <string name="voir_status_established">Établi</string>
+    <string name="voir_status_alleged">Allégué</string>
+    <string name="voir_status_investigation">En cours d’enquête</string>
+
+    <!-- Kinds of facts -->
+    <string name="voir_kind_mobilisation">Mobilisation</string>
+    <string name="voir_kind_official_statement">Déclaration officielle</string>
+    <string name="voir_kind_official_decision">Décision officielle</string>
+    <string name="voir_kind_government_response">Réponse du gouvernement</string>
+    <string name="voir_kind_vote">Vote</string>
+    <string name="voir_kind_promise">Promesse</string>
+    <string name="voir_kind_statement_vote">Discours et vote</string>
+    <string name="voir_kind_case">Affaire judiciaire</string>
+    <string name="voir_kind_contradicted">Déclaration contredite</string>
+    <string name="voir_kind_public_money">Argent public</string>
+    <string name="voir_kind_interests">Intérêts</string>
+    <string name="voir_kind_lobbying">Influence</string>
+    <string name="voir_kind_liberty">Libertés publiques</string>
+
+    <!-- Stages of a procedure -->
+    <string name="voir_procedure_enquete">Enquête en cours</string>
+    <string name="voir_procedure_mise_en_examen">Mise en examen</string>
+    <string name="voir_procedure_proces">Procès en cours</string>
+    <string name="voir_procedure_premiere_instance">Condamnation en première instance, appel possible</string>
+    <string name="voir_procedure_appel">Procès en appel</string>
+    <string name="voir_procedure_definitive">Condamnation définitive</string>
+    <string name="voir_procedure_relaxe">Relaxe ou acquittement</string>
+    <string name="voir_procedure_non_lieu">Non-lieu</string>
+    <string name="voir_procedure_classement">Classement sans suite</string>
+
+    <!-- Promises and votes -->
+    <string name="voir_promise_kept">Tenue</string>
+    <string name="voir_promise_in_progress">En cours</string>
+    <string name="voir_promise_abandoned">Abandonnée</string>
+    <string name="voir_promise_contrary">Contredite par les actes</string>
+    <string name="voir_vote_for">Pour</string>
+    <string name="voir_vote_against">Contre</string>
+    <string name="voir_vote_abstention">Abstention</string>
+    <string name="voir_vote_not_voting">Non-votant</string>
+    <string name="voir_vote_absent">Absent</string>
+
+    <!-- Freedoms -->
+    <string name="voir_liberty_protest_ban">Interdictions de manifester</string>
+    <string name="voir_liberty_dissolution">Dissolutions</string>
+    <string name="voir_liberty_restrictive_law">Lois et décrets restrictifs</string>
+    <string name="voir_liberty_surveillance">Surveillance</string>
+    <string name="voir_liberty_other">Autres mesures</string>
+    <string name="voir_recourse_none">Aucun recours</string>
+    <string name="voir_recourse_pending">Recours en cours</string>
+    <string name="voir_recourse_suspended">Suspendu par le juge</string>
+    <string name="voir_recourse_annulled">Annulé par le juge</string>
+    <string name="voir_recourse_rejected">Recours rejeté</string>
+
+    <!-- Public functions (filters) -->
+    <string name="voir_role_depute">Députés</string>
+    <string name="voir_role_senateur">Sénateurs</string>
+    <string name="voir_role_eurodepute">Députés européens</string>
+    <string name="voir_role_ministre">Ministres</string>
+    <string name="voir_role_president">Présidence</string>
+    <string name="voir_role_maire">Maires</string>
+    <string name="voir_role_elu_local">Élus locaux</string>
+    <string name="voir_role_autre">Autres</string>
+
+    <!-- Stages of a bill -->
+    <string name="voir_stage_depot">Dépôt</string>
+    <string name="voir_stage_commission">Commission</string>
+    <string name="voir_stage_assemblee">Assemblée nationale</string>
+    <string name="voir_stage_senat">Sénat</string>
+    <string name="voir_stage_cmp">Commission mixte paritaire</string>
+    <string name="voir_stage_lecture_definitive">Lecture définitive</string>
+    <string name="voir_stage_adopte">Adopté</string>
+    <string name="voir_stage_conseil_constitutionnel">Conseil constitutionnel</string>
+    <string name="voir_stage_promulgue">Promulgué</string>
+    <string name="voir_stage_rejete">Rejeté</string>
+    <string name="voir_stage_retire">Retiré</string>
+    <string name="voir_stage_progress">Étape %1$d sur %2$d : %3$s</string>
+
+    <!-- Who gains, who loses -->
+    <string name="voir_impact_gains">Y gagne</string>
+    <string name="voir_impact_loses">Y perd</string>
+    <string name="voir_impact_mixed">Effet mitigé</string>
+
+    <!-- Glossary -->
+    <string name="voir_glossary_title">Lire les étiquettes de « Voir »</string>
+    <string name="voir_glossary_status">Établi, allégué, en cours d’enquête</string>
+    <string name="voir_glossary_established">Établi : prouvé par une source primaire (décision de justice, Journal officiel, compte rendu parlementaire, rapport officiel) ou par plusieurs sources concordantes.</string>
+    <string name="voir_glossary_alleged">Allégué : affirmé par une source identifiée, sans être encore prouvé.</string>
+    <string name="voir_glossary_investigation">En cours d’enquête : une enquête est ouverte, rien n’est établi à ce stade.</string>
+    <string name="voir_glossary_reliability">Niveaux de fiabilité d’un chiffre</string>
+    <string name="voir_glossary_high">Fiabilité élevée : source primaire, ou comptage dont la méthode est publique et vérifiable.</string>
+    <string name="voir_glossary_medium">Fiabilité moyenne : source connue dont la méthode n’est que partiellement publiée.</string>
+    <string name="voir_glossary_low">Fiabilité faible : déclarations non vérifiables ; le chiffre est montré pour ce qu’il est, jamais mélangé aux autres.</string>
+    <string name="voir_glossary_procedure">Les étapes d’une procédure judiciaire</string>
+    <string name="voir_glossary_enquete">Enquête : la police ou la gendarmerie recherche des preuves sous l’autorité du procureur ou d’un juge d’instruction ; personne n’est encore jugé.</string>
+    <string name="voir_glossary_mise_en_examen">Mise en examen : un juge d’instruction estime qu’il existe des indices graves ou concordants (code de procédure pénale, article 80-1). Ce n’est pas une condamnation.</string>
+    <string name="voir_glossary_proces">Procès : la personne est jugée par un tribunal.</string>
+    <string name="voir_glossary_premiere_instance">Condamnation en première instance : un tribunal a condamné la personne, qui peut faire appel ; la décision n’est pas définitive.</string>
+    <string name="voir_glossary_appel">Appel : l’affaire est jugée une seconde fois, par une cour d’appel.</string>
+    <string name="voir_glossary_definitive">Condamnation définitive : plus aucun recours n’est possible.</string>
+    <string name="voir_glossary_relaxe">Relaxe ou acquittement : la justice a jugé que la personne n’était pas coupable.</string>
+    <string name="voir_glossary_non_lieu">Non-lieu : le juge d’instruction met fin à l’affaire sans procès, faute de charges suffisantes.</string>
+    <string name="voir_glossary_classement">Classement sans suite : le procureur décide de ne pas poursuivre.</string>
+    <string name="voir_glossary_presumption">Toute personne est présumée innocente tant que sa culpabilité n’a pas été établie par une condamnation définitive (Déclaration des droits de l’homme et du citoyen, article 9 ; code civil, article 9-1).</string>
+    <string name="voir_glossary_sources">Les sources côte à côte</string>
+    <string name="voir_glossary_sources_text">Autorités, organisateurs, comptages indépendants, médias : quand ils ne donnent pas le même chiffre, PPF les affiche tous, chacun avec sa méthode. L’écart entre les sources est lui-même une information.</string>
+</resources>

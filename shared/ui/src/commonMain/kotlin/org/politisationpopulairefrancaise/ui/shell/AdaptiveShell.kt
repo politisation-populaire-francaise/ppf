@@ -59,9 +59,13 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.ui.voir.VoirScreen
+import org.politisationpopulairefrancaise.ui.voir.VoirState
+import org.politisationpopulairefrancaise.ui.voir.rememberVoirState
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
@@ -75,6 +79,7 @@ import org.politisationpopulairefrancaise.ui.components.NavSubRow
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.Wordmark
 import org.politisationpopulairefrancaise.ui.components.avatarLetters
+import org.politisationpopulairefrancaise.ui.comprendre.rememberComprendreLibrary
 import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.content.rememberContentLibrary
@@ -147,6 +152,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     })
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
+    // "Voir": the open page, the axis and the follows survive a visit to another space.
+    val voirState = rememberVoirState(dependencies)
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
     val proposalComposer = remember(dependencies) { ProposalComposer(dependencies.contentStore, dependencies.remote) }
     val accountKey = (accountSession.state as? AccountUiState.Ready)?.publicKey?.hex
@@ -157,6 +164,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // How long the server keeps the account's private messages (Mon espace, D-028).
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
     val palette = PpfTheme.palette
+    // The system's back leads from any space to the feed; the screens close what they opened first.
+    SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
     BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
         val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
@@ -172,6 +181,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 messaging = messaging,
                 revendicationViews = revendicationViews,
                 proposalComposer = proposalComposer,
+                voirState = voirState,
                 groupsLibrary = groupsLibrary,
                 mailboxSetting = mailboxSetting,
                 windowClass = windowClass,
@@ -198,6 +208,7 @@ private fun SpaceContent(
     messaging: MessagingSession,
     revendicationViews: RevendicationViewsState,
     proposalComposer: ProposalComposer,
+    voirState: VoirState,
     groupsLibrary: GroupsLibrary,
     mailboxSetting: MailboxSetting,
     windowClass: WindowClass,
@@ -207,7 +218,8 @@ private fun SpaceContent(
 ) {
     when (selected) {
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
-        Space.COMPRENDRE -> ComprendreScreen(contentLibrary, windowClass, modifier)
+        Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate)
+        Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
         Space.REVENDICATIONS -> RevendicationsScreen(

@@ -14,6 +14,7 @@ import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.voir.VoirCatalog
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
@@ -156,6 +157,13 @@ class ContentLibrary(
     private var proposalStates: Map<String, ProposalState> = emptyMap()
 
     var selectedRevendication: Article? by mutableStateOf(null)
+        private set
+
+    /**
+     * Everything "Voir" shows (D-034): indicators, sourced facts, public persons, bills, movements of
+     * the world, dossiers and rights of reply, from the trusted editorial accounts only.
+     */
+    var voir: VoirCatalog by mutableStateOf(VoirCatalog.EMPTY)
         private set
 
     /** [EXEMPLE] Reactions stay on the device until their privacy design is settled (M18). */
@@ -389,7 +397,7 @@ class ContentLibrary(
     }
 
     private suspend fun reload(store: LocalEventStore) {
-        val (freshGuides, freshDemands, freshPosts) = withContext(Dispatchers.Default) {
+        val fresh = withContext(Dispatchers.Default) {
             val guides = store.byTag(listOf(Article.KIND), Article.TAG_TYPE, ArticleType.FICHE_PRATIQUE.tagValue, limit = 200)
                 .filter { trust.isTrusted(it.pubkey) }
                 .mapNotNull(Article::from)
@@ -406,12 +414,19 @@ class ContentLibrary(
             val demands = all.filter { it.author != key || it.event.id in publishedOwn }
             val posts = store.recent(kinds = listOf(EventKinds.TEXT_NOTE), limit = 100)
                 .map { FeedPost(it, editorial = trust.isTrusted(it.pubkey), pending = it.id in pendingIds) }
-            Triple(guides, demands to own, posts)
+            // "Voir" shows only what the editorial team signed: no one else can publish a fact about a person.
+            val voirBlocks = VoirCatalog.TYPES.flatMap { type -> store.byTag(listOf(Article.KIND), Article.TAG_TYPE, type.tagValue, limit = VOIR_LIMIT) }
+                .filter { trust.isTrusted(it.pubkey) }
+                .mapNotNull(Article::from)
+            Reloaded(guides, demands, own, posts, VoirCatalog.from(voirBlocks))
         }
+        val freshGuides = fresh.guides
+        val freshDemands = fresh.demands to fresh.own
         guides = freshGuides
         revendications = freshDemands.first
         myRevendications = freshDemands.second
-        posts = freshPosts
+        posts = fresh.posts
+        voir = fresh.voir
         selected = selected?.let { current -> freshGuides.firstOrNull { it.address == current.address } }
         selectedRevendication = selectedRevendication?.let { current ->
             freshDemands.first.firstOrNull { it.address == current.address } ?: freshDemands.second.firstOrNull { it.article.address == current.address }?.article
@@ -437,10 +452,28 @@ class ContentLibrary(
         /** Recent notes asked for per batch of followed authors. */
         const val FOLLOW_FETCH_LIMIT: Int = 100
 
-        private val BUNDLED_FILES = listOf("files/contents/fiches.json", "files/contents/revendications.json", "files/contents/fil.json")
+        /** At most this many blocks of each "Voir" type are read from the local copy. */
+        const val VOIR_LIMIT: Int = 1_000
+
+        private val BUNDLED_FILES = listOf(
+            "files/contents/fiches.json",
+            "files/contents/parcours.json",
+            "files/contents/revendications.json",
+            "files/contents/fil.json",
+            "files/contents/voir.json",
+        )
         private val json = Json { ignoreUnknownKeys = true }
     }
 }
+
+/** What one reload of the local copy produces. */
+private class Reloaded(
+    val guides: List<Article>,
+    val demands: List<Article>,
+    val own: List<OwnDemand>,
+    val posts: List<FeedPost>,
+    val voir: VoirCatalog,
+)
 
 @Composable
 fun rememberContentLibrary(dependencies: AppDependencies): ContentLibrary {

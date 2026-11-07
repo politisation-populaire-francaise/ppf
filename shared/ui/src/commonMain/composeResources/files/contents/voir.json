@@ -1,0 +1,3813 @@
+[
+    {
+        "id": "3ad6cb8635d0857b039334f18e9f7413a7bc7d6e2f0401b05bd63ebc3d3401ce",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1792497600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "dossier-independance-parquet"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Qui nomme les procureurs ? L'indépendance du parquet en questions"
+            ],
+            [
+                "summary",
+                "Les procureurs dépendent du ministre de la Justice pour leur carrière : ce que cela change, et les réformes proposées."
+            ],
+            [
+                "published_at",
+                "1792497600"
+            ],
+            [
+                "ppf-type",
+                "dossier"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "justice"
+            ],
+            [
+                "t",
+                "contre-pouvoirs"
+            ],
+            [
+                "ppf-axis",
+                "libertes"
+            ]
+        ],
+        "content": "::: en-bref\n- Les juges du siège et les magistrats du parquet (les procureurs) forment ensemble l'autorité judiciaire.\n- Les procureurs sont nommés sur proposition du ministre de la Justice, après un avis simple du Conseil supérieur de la magistrature : le ministre n'est pas obligé de le suivre.\n- Une réforme pour rendre cet avis obligatoire est discutée depuis des années sans avoir abouti.\n:::\n\n**[EXEMPLE] Brouillon de démonstration, à faire relire avant toute publication.**\n\n## Ce que dit la Constitution\n\nLe président de la République est garant de l'indépendance de l'autorité judiciaire, assisté par le Conseil supérieur de la magistrature (Constitution, articles 64 et 65). Pour les magistrats du parquet, le Conseil donne un avis sur les nominations proposées par le ministre ; pour la plupart des juges du siège, son avis s'impose.\n\n## Pourquoi c'est débattu\n\nEn 2010, la Cour européenne des droits de l'homme a jugé que les procureurs français ne remplissaient pas les conditions d'indépendance à l'égard de l'exécutif pour être qualifiés d'« autorité judiciaire » au sens de la Convention (arrêt Moulin contre France).\n\n## Et maintenant ?\n\nLes réformes proposées et leur sort seront suivis dans le législomètre.\n",
+        "sig": "ca5ed7edc494b1f827577d11cb82cc6244ba5346cd3111e1d834cf92563d53c02acf74d1e0a40a66b7f2cc5cccf4dd3316d558f2a632b0a22483047898fe293e"
+    },
+    {
+        "id": "ed41e222a6fb8486cb2f3c5604a0e27481796d6a6c4f9cf613436370e42e3a98",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1792929600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "dossier-proprietaires-medias"
+            ],
+            [
+                "title",
+                "[EXEMPLE] À qui appartiennent les médias ?"
+            ],
+            [
+                "summary",
+                "Les grands groupes qui possèdent les journaux, les radios et les chaînes, leurs autres activités et la méthode pour analyser les lignes éditoriales."
+            ],
+            [
+                "published_at",
+                "1792929600"
+            ],
+            [
+                "ppf-type",
+                "dossier"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "medias"
+            ],
+            [
+                "t",
+                "contre-pouvoirs"
+            ],
+            [
+                "ppf-axis",
+                "libertes"
+            ]
+        ],
+        "content": "::: en-bref\n- Une poignée de groupes possède la plupart des médias nationaux.\n- Leurs propriétaires ont souvent d'autres activités (industrie, banque, télécommunications) qui dépendent de décisions publiques.\n- PPF analyse les lignes éditoriales selon une méthode publique et chiffrée, jamais par simple appréciation.\n:::\n\n**[EXEMPLE] Brouillon de démonstration : les groupes cités sont fictifs.**\n\n## Les groupes (exemple)\n\n- **Groupe Exemple Médias** : un quotidien national, deux radios, une chaîne d'information ; son actionnaire principal est aussi présent dans la construction.\n- **Modèle Presse** : une vingtaine de titres régionaux ; il appartient à une banque.\n\n## La méthode\n\nPour chaque média : temps de parole par sujet, choix des sujets, invités. Les relevés sont publiés avec leurs données, pour que chacun puisse les refaire.\n",
+        "sig": "62ada634ecc8df6b658f0fe0843c2a7e3958845c9746bb3d4a3cdb546d51a61a485ccbd878664c0d6e5573cda06a84b9b16c08e5bd4a61a314976f6ede8afd4e"
+    },
+    {
+        "id": "76e6d1dcefa309144b03815ca5a090e8d26046509cab6e597fdc82871649b229",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "affaire-alex-relaxe"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Relaxe dans une affaire de prise illégale d'intérêts"
+            ],
+            [
+                "summary",
+                "Poursuivi pour la vente d'un terrain communal à une société dirigée par un proche, l'ancien maire est relaxé par le tribunal correctionnel ; le parquet n'a pas fait appel."
+            ],
+            [
+                "published_at",
+                "1765368000"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "affaire"
+            ],
+            [
+                "ppf-date",
+                "2025-12-10"
+            ],
+            [
+                "ppf-place",
+                "Exempleville"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-procedure",
+                "relaxe"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "personne"
+            ],
+            [
+                "ppf-source",
+                "justice",
+                "Jugement du tribunal correctionnel (exemple)",
+                "https://example.org/exemple/jugement-relaxe",
+                "2025-12-10"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe tribunal a jugé que l'élément intentionnel n'était pas établi. La relaxe est définitive.\n",
+        "sig": "ebfbcf6115f5a3bfebc8568ee7f4725a003291feb8f94e455ba7979eee29fdc8b65c20a0d8dcef7f00a56c7772674f09ba5554fb576367c3a33156792827a798"
+    },
+    {
+        "id": "44adbfd0af99355a5ab7a45f1a08afaf0d2c8ac0df2f32576eff4b22d1ce15e7",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1780660800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "affaire-dominique-marche-public"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Enquête préliminaire sur l'attribution d'un marché public"
+            ],
+            [
+                "summary",
+                "Le parquet a ouvert une enquête préliminaire pour favoritisme présumé dans l'attribution d'un marché de la ville de Modèle-sur-Mer en 2016."
+            ],
+            [
+                "published_at",
+                "1780488000"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "affaire"
+            ],
+            [
+                "ppf-date",
+                "2026-06-03"
+            ],
+            [
+                "ppf-place",
+                "Modèle-sur-Mer"
+            ],
+            [
+                "ppf-fact-status",
+                "enquete"
+            ],
+            [
+                "ppf-procedure",
+                "enquete"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dominique-fictif",
+                "",
+                "personne"
+            ],
+            [
+                "ppf-source",
+                "justice",
+                "Communiqué du parquet (exemple)",
+                "https://example.org/exemple/parquet-communique",
+                "2026-06-03"
+            ],
+            [
+                "ppf-source",
+                "enquete-presse",
+                "Enquête d'un hebdomadaire (exemple)",
+                "https://example.org/exemple/hebdomadaire-enquete",
+                "2026-05-28"
+            ],
+            [
+                "ppf-correction",
+                "2026-06-05",
+                "Le statut indiquait par erreur une mise en examen : il s'agit d'une enquête préliminaire."
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nAucune poursuite n'a été engagée à ce stade. Dominique Fictif conteste les faits ; sa réponse est publiée ci-dessous.\n",
+        "sig": "12185ac7e5a788b3b0594abb86b6174db398f6098e104b431146a38a710d86ce7f6041034c51827e449585420fc4db56d8b25299ce91aa43432e6aa949b11fe1"
+    },
+    {
+        "id": "afb061719e810393c8fee9d18e8df86330a6d41567336bd8d2b5a24840924e5d",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "argent-public-exempleville"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Irrégularités relevées dans la gestion d'Exempleville"
+            ],
+            [
+                "summary",
+                "La chambre régionale des comptes relève des subventions versées sans convention entre 2018 et 2022 et recommande d'y mettre fin."
+            ],
+            [
+                "published_at",
+                "1770811200"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "argent-public"
+            ],
+            [
+                "ppf-date",
+                "2026-02-11"
+            ],
+            [
+                "ppf-place",
+                "Exempleville"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "personne"
+            ],
+            [
+                "ppf-source",
+                "rapport",
+                "Rapport d'observations définitives de la chambre régionale des comptes (exemple)",
+                "https://example.org/exemple/crc-exempleville",
+                "2026-02-11"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Suites données** : la commune indique avoir signé des conventions depuis 2023.\n",
+        "sig": "72c569a379fa92b55d1d2a41a93218f93b4a064a789f475f77b8529348c51a0f99fa29dc2aa90a62331fb6bf97bea5379e811b68bbc8cf000499d1894293f037"
+    },
+    {
+        "id": "1f1dc7e7fc84e9d9fbcc7d45876c057bb23245839ef83ef6cebd70422227fb15",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "chrono-49-3-ordre-public"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Article 49.3 sur le projet de loi relatif à l'ordre public"
+            ],
+            [
+                "summary",
+                "Le gouvernement engage sa responsabilité à l'Assemblée nationale ; la motion de censure déposée est rejetée."
+            ],
+            [
+                "published_at",
+                "1792584000"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "decision-officielle"
+            ],
+            [
+                "ppf-date",
+                "2026-10-21"
+            ],
+            [
+                "ppf-place",
+                "Assemblée nationale"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Compte rendu de la séance (exemple)",
+                "https://example.org/exemple/seance-21-10",
+                "2026-10-21"
+            ],
+            [
+                "ppf-next",
+                "Suivre le texte au Sénat",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLa motion de censure a obtenu 241 voix, il en fallait 289.\n",
+        "sig": "f1d8b69d33b4344aec9fa117cec8efd5a57dae064e59a5bb2ab51b9b8cf854dfca02f79c913debb6f5ce9b58aced7aaa7408f391a7d65f998af4d771755eed33"
+    },
+    {
+        "id": "79080b83ea192a8e133ac5b476453212e63d266685a5ffe0d0145d5aece03303",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "chrono-arrete-drones"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Drones autorisés au-dessus des cortèges à Modèle-sur-Mer"
+            ],
+            [
+                "summary",
+                "Un arrêté préfectoral autorise la captation d'images par drone pendant la manifestation ; deux associations ont déposé un recours."
+            ],
+            [
+                "published_at",
+                "1793102400"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "decision-officielle"
+            ],
+            [
+                "ppf-date",
+                "2026-10-27"
+            ],
+            [
+                "ppf-place",
+                "Modèle-sur-Mer"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-liberty",
+                "surveillance"
+            ],
+            [
+                "ppf-recourse",
+                "en-cours"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Recueil des actes administratifs de la préfecture (exemple)",
+                "https://example.org/exemple/raa-drones",
+                "2026-10-26"
+            ],
+            [
+                "ppf-archive",
+                "b7403b29de0568eaa0dacc8f862032fa931d7b12b170187af77feb8e4964c638",
+                "opentimestamps",
+                "https://example.org/exemple/archive/arrete-drones",
+                "2026-10-26"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nL'arrêté est contesté devant le tribunal administratif ; l'audience n'a pas encore eu lieu.\n",
+        "sig": "afdea166453d49850753def327981ed8f8404c97195d2f412b63c4e76e400b36aceebf63ad4195f9291488da7028f8f5d31ac819919c35109ce1ac24a5c81852"
+    },
+    {
+        "id": "34875d7525e8f6a9036e50c8842b417783424c3b87437fca9cec44c4aa91aca3",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "chrono-arrete-interdiction-exempleville"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Arrêté interdisant toute manifestation dans le centre d'Exempleville"
+            ],
+            [
+                "summary",
+                "Le préfet interdit tout rassemblement dans un périmètre de 2 km pendant trois jours ; le tribunal administratif suspend l'arrêté le lendemain."
+            ],
+            [
+                "published_at",
+                "1790942400"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "decision-officielle"
+            ],
+            [
+                "ppf-date",
+                "2026-10-02"
+            ],
+            [
+                "ppf-place",
+                "Exempleville"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-liberty",
+                "interdiction-manifester"
+            ],
+            [
+                "ppf-recourse",
+                "suspendu"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Recueil des actes administratifs de la préfecture (exemple)",
+                "https://example.org/exemple/raa-arrete-02-10",
+                "2026-10-01"
+            ],
+            [
+                "ppf-source",
+                "justice",
+                "Ordonnance du tribunal administratif (exemple)",
+                "https://example.org/exemple/ordonnance-ta",
+                "2026-10-03"
+            ],
+            [
+                "ppf-archive",
+                "95e736e3ff28b3fce550cbe4af937d9a109f02eefdcbafd16dee296c8d6b2b37",
+                "opentimestamps",
+                "https://example.org/exemple/archive/arrete-02-10",
+                "2026-10-01"
+            ],
+            [
+                "ppf-next",
+                "Vos droits en manifestation",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nSaisi en référé-liberté par deux associations, le tribunal a jugé l'interdiction disproportionnée et l'a suspendue.\n",
+        "sig": "50139a3ef23096e02479afccba77dc10b1811c50695ac71072651376c1523a315a4ef5d11ffbb976651205015fc17370723f22cf6e467bf30064ba38d25fc807"
+    },
+    {
+        "id": "1630d8ff16c2d5a190fe210f044f5233ab0f080de11689f4360d099d5b1ab77d",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "chrono-concertation"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Le gouvernement ouvre une concertation avec les syndicats"
+            ],
+            [
+                "summary",
+                "Une première réunion se tient au ministère du Travail ; l'intersyndicale demande le retrait préalable de la réforme."
+            ],
+            [
+                "published_at",
+                "1792065600"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "reponse-gouvernement"
+            ],
+            [
+                "ppf-date",
+                "2026-10-15"
+            ],
+            [
+                "ppf-place",
+                "France"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Communiqué du ministère du Travail (exemple)",
+                "https://example.org/exemple/communique-15-10",
+                "2026-10-15"
+            ],
+            [
+                "ppf-source",
+                "organisateurs",
+                "Communiqué de l'intersyndicale (exemple)",
+                "https://example.org/exemple/intersyndicale-15-10",
+                "2026-10-15"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLes deux communiqués sont publiés côte à côte.\n",
+        "sig": "321624b6773a7f186709e5d2b0005e944794ddcf096c73854605ed5e6933cc777b4f72a4b15c83bff73e6f6c5f623a80825511f9fe3f02e0a37fc6a6e875ad23"
+    },
+    {
+        "id": "17e863aa9a99a346b4026df5477bc7aa8df03f06cf26215328e3927cfaec8a7d",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "chrono-declaration-premier-ministre"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Le Premier ministre annonce qu'il n'y aura « aucun recul »"
+            ],
+            [
+                "summary",
+                "Au journal du soir, le Premier ministre écarte tout retrait de la réforme."
+            ],
+            [
+                "published_at",
+                "1790251200"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "declaration-officielle"
+            ],
+            [
+                "ppf-date",
+                "2026-09-24"
+            ],
+            [
+                "ppf-place",
+                "France"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-quote",
+                "Il n'y aura aucun recul : la réforme ira à son terme."
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Entretien télévisé (exemple)",
+                "https://example.org/exemple/entretien-24-09",
+                "2026-09-24"
+            ],
+            [
+                "ppf-archive",
+                "1493639f8f78f1a9cedcbabb5a09c0cb0182fa55399dd6ace45ef4dc02f1f0d4",
+                "opentimestamps",
+                "https://example.org/exemple/archive/entretien-24-09",
+                "2026-09-24"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLa déclaration est archivée avec son empreinte et son horodatage.\n",
+        "sig": "15450971ad57ac4af37b2f82445a04868af7f2fbfdfe6c6b90951a98e1fb84ad7650b3f3fad3a111d3c6a6a3331c529351919cb138ad855d67c70e6324b61272"
+    },
+    {
+        "id": "d6f1dc03119964101e3da3a63fefc59b2bd2e32159b5415ce230efe7a93120a8",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "chrono-premiere-journee"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Première journée nationale de mobilisation"
+            ],
+            [
+                "summary",
+                "Des cortèges dans plus de 200 villes à l'appel de l'intersyndicale et de 34 organisations."
+            ],
+            [
+                "published_at",
+                "1789732800"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "mobilisation"
+            ],
+            [
+                "ppf-date",
+                "2026-09-18"
+            ],
+            [
+                "ppf-place",
+                "France"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-source",
+                "organisateurs",
+                "Appel de l'intersyndicale (exemple)",
+                "https://example.org/exemple/appel",
+                "2026-09-10"
+            ],
+            [
+                "ppf-source",
+                "medias",
+                "Compte rendu d'un quotidien national (exemple)",
+                "https://example.org/exemple/quotidien-18-09",
+                "2026-09-18"
+            ],
+            [
+                "ppf-next",
+                "Voir les chiffres de la journée",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:manifestants-journees"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLes chiffres de participation de chaque source sont dans l'observatoire.\n",
+        "sig": "12aa333c68925572b4e63660ffc5346c0db81a2d788af2294d4c85d32acae675972225260a364c4b30c79f6aa8b5e1f908cc242bc3c60b788e27d3ef15a0a2dc"
+    },
+    {
+        "id": "90807a88d4bcf35dd93994902833b207ee3af8d4c5ea1cd0b1d4cb778f5fdd01",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "chrono-quatrieme-journee"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Quatrième journée nationale, la plus suivie depuis septembre"
+            ],
+            [
+                "summary",
+                "Les trois sources relèvent une participation en hausse par rapport au 16 octobre."
+            ],
+            [
+                "published_at",
+                "1793880000"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "mobilisation"
+            ],
+            [
+                "ppf-date",
+                "2026-11-05"
+            ],
+            [
+                "ppf-place",
+                "France"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-source",
+                "medias",
+                "Compte rendu d'un quotidien national (exemple)",
+                "https://example.org/exemple/quotidien-05-11",
+                "2026-11-05"
+            ],
+            [
+                "ppf-next",
+                "Voir les chiffres de la journée",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:manifestants-journees"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nProchaine journée annoncée par l'intersyndicale : le 19 novembre.\n",
+        "sig": "e91105a79dfbd3bd81dd54548a552cb9d5f61237e7c8a9092f0df54be8acc1a768957fa4f5a14310fd2566fc02b2cec4b582e7a12033d10ac510870d18fa47cb"
+    },
+    {
+        "id": "464fa36f83da24451105bb105d0df3704c252312cf5b887e52aca3a857c4e579",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "declaration-contredite-sacha"
+            ],
+            [
+                "title",
+                "[EXEMPLE] « Le chômage des jeunes a baissé de moitié en un an »"
+            ],
+            [
+                "summary",
+                "Selon l'institut statistique, le taux de chômage des 15-24 ans a baissé de 1,1 point en un an, soit environ 6 %, et non de moitié."
+            ],
+            [
+                "published_at",
+                "1790769600"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "declaration-contredite"
+            ],
+            [
+                "ppf-date",
+                "2026-09-30"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:sacha-temoin",
+                "",
+                "personne"
+            ],
+            [
+                "ppf-quote",
+                "Le chômage des jeunes a baissé de moitié en un an."
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Débat télévisé (exemple)",
+                "https://example.org/exemple/debat-sacha",
+                "2026-09-30"
+            ],
+            [
+                "ppf-source",
+                "rapport",
+                "Note trimestrielle de l'institut statistique (exemple)",
+                "https://example.org/exemple/note-chomage",
+                "2026-08-14"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Ce que disent les chiffres** : 18,2 % au deuxième trimestre 2025, 17,1 % au deuxième trimestre 2026 (exemple).\n",
+        "sig": "9293b1b6568bc98fea08317eee2610684a35a96d8c856efceb528c3398492f82fc372377bba2f0881e5891626c35856a88cbcd394fb23a4919add9fb5e2be197"
+    },
+    {
+        "id": "413844b488df10c7e1a05cae8a2cee337581542d74fbdfab139d5b65f817fc93",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "discours-vote-alex-retraites"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Défendre « le pouvoir d'achat des retraités », puis voter contre leur revalorisation"
+            ],
+            [
+                "summary",
+                "Deux semaines après cette déclaration, le sénateur vote contre l'amendement revalorisant les petites retraites."
+            ],
+            [
+                "published_at",
+                "1772452800"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "discours-vote"
+            ],
+            [
+                "ppf-date",
+                "2026-03-02"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-vote",
+                "contre"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "personne"
+            ],
+            [
+                "ppf-quote",
+                "Le pouvoir d'achat des retraités est ma priorité."
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Entretien à la radio locale (exemple)",
+                "https://example.org/exemple/radio-alex",
+                "2026-03-02"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Scrutin public du Sénat n° 87 (exemple)",
+                "https://example.org/exemple/senat-scrutin-87",
+                "2026-03-15"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe sénateur a expliqué son vote par le coût de la mesure, évalué à 2 milliards d'euros par an.\n",
+        "sig": "543be1237dad4606af34aa96122a854512a81151d534ade07e4ba34c13480b5ebb10c48be17e0b6d635ec9a8e61a321f4afc2b782b491a4b5ab17bdfc799acb7"
+    },
+    {
+        "id": "2e2f1eb57104387ff1c35e319f86c7f93c423b8fe1153e6bad720ef2ad0b5a32",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "influence-pjl-ordre-public"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Rencontre avec la Fédération d'exemple de la sécurité privée"
+            ],
+            [
+                "summary",
+                "Le cabinet du ministre a reçu la fédération à deux reprises pendant la préparation du projet de loi."
+            ],
+            [
+                "published_at",
+                "1789473600"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "influence"
+            ],
+            [
+                "ppf-date",
+                "2026-09-15"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dominique-fictif",
+                "",
+                "personne"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-source",
+                "rapport",
+                "Répertoire des représentants d'intérêts (exemple)",
+                "https://example.org/exemple/repertoire-federation",
+                "2026-10-31"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLa fédération déclare avoir demandé l'extension des périmètres de sécurité, reprise à l'article 3.\n",
+        "sig": "ee17a5ffc3e7a33187632d4fd1ceee216bf06315e8bc164543ee2a834d74ecc173d2e6d6311e2ab96649dca4a4e7177f4ad0aa98b4d85b13760d084f1706812c"
+    },
+    {
+        "id": "90be8fb22798778fcc1b0e3b17a427ea4a67623a4c797fd5edb7d1dfd0f30f11",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "interets-sacha"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Ancienne consultante pour un groupe de l'industrie chimique"
+            ],
+            [
+                "summary",
+                "La déclaration d'intérêts mentionne une activité de conseil jusqu'en 2024 pour un groupe dont les produits relèvent de la commission où elle siège."
+            ],
+            [
+                "published_at",
+                "1725278400"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "interets"
+            ],
+            [
+                "ppf-date",
+                "2024-09-02"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:sacha-temoin",
+                "",
+                "personne"
+            ],
+            [
+                "ppf-source",
+                "rapport",
+                "Déclaration d'intérêts publiée (exemple)",
+                "https://example.org/exemple/declaration-interets-sacha",
+                "2024-09-02"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLa déclaration est publique ; elle ne constitue en elle-même aucune infraction.\n",
+        "sig": "8ff3c842e42fa987b755efb436bc2046f3da19dab69414b2f7b402452af955ab5059a0dede5822170f5d4f042998aec29dfa89645bc12102cddec989e03d703a"
+    },
+    {
+        "id": "9d0168a7c2cada5dcd01ebd0ced0d9927eb7aed07891ecb3f3c225b2ca9f9f73",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "liberte-dissolution-collectif"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Dissolution du Collectif d'exemple pour le logement"
+            ],
+            [
+                "summary",
+                "Le collectif est dissous par décret pour « provocation à des agissements violents » ; le Conseil d'État rejette le recours."
+            ],
+            [
+                "published_at",
+                "1791547200"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "liberte"
+            ],
+            [
+                "ppf-date",
+                "2026-10-09"
+            ],
+            [
+                "ppf-place",
+                "France"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-liberty",
+                "dissolution"
+            ],
+            [
+                "ppf-recourse",
+                "rejete"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Décret de dissolution au Journal officiel (exemple)",
+                "https://example.org/exemple/jo-dissolution",
+                "2026-10-09"
+            ],
+            [
+                "ppf-source",
+                "justice",
+                "Décision du Conseil d'État (exemple)",
+                "https://example.org/exemple/ce-dissolution",
+                "2026-10-30"
+            ],
+            [
+                "ppf-archive",
+                "771f0116299a5dfae07b63ae8aa1a93418e262ddb193307511e291bbf7fbd405",
+                "opentimestamps",
+                "https://example.org/exemple/archive/decret-dissolution",
+                "2026-10-09"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe collectif conteste les faits retenus par le décret ; le Conseil d'État a estimé la dissolution justifiée.\n",
+        "sig": "fc759836672989aecf2bcb682e700cf33c269ebad5f89c48dacd4de55ad1b648fe4d7ad3c6b4a2434ba15e6e5822d9caec16b50222ef962292a800105bf84aeb"
+    },
+    {
+        "id": "2420625bcda58ea4b035d45b5416b65cd6ce70da98c7705b890cc5c4a5bc3c33",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "liberte-loi-ordre-public"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Interdictions de paraître étendues à trente jours"
+            ],
+            [
+                "summary",
+                "Le projet de loi relatif à l'ordre public, adopté par l'Assemblée nationale, multiplie par trente la durée possible d'une interdiction de paraître."
+            ],
+            [
+                "published_at",
+                "1792584000"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "liberte"
+            ],
+            [
+                "ppf-date",
+                "2026-10-21"
+            ],
+            [
+                "ppf-place",
+                "France"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-liberty",
+                "loi-restrictive"
+            ],
+            [
+                "ppf-recourse",
+                "aucun"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Texte adopté par l'Assemblée nationale (exemple)",
+                "https://example.org/exemple/texte-adopte",
+                "2026-10-21"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nUn recours devant le Conseil constitutionnel sera possible après l'adoption définitive.\n",
+        "sig": "d3827a43d2c8d08ced6214ffa1d138bf3e5752f9e9edd1e2ec5cb492a22af93380a8ed14fec74fa3beb172b5c7f8dd5872c3e5dcf852a20287531a442aac1251"
+    },
+    {
+        "id": "b30006e44554f3b33afa4346c94b9d8604eeeeb056eb540b527875a6259e1d9c",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "promesse-alex-maternite"
+            ],
+            [
+                "title",
+                "[EXEMPLE] « La maternité d'Exempleville restera ouverte »"
+            ],
+            [
+                "summary",
+                "Engagement de la campagne sénatoriale de 2023."
+            ],
+            [
+                "published_at",
+                "1694520000"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "promesse"
+            ],
+            [
+                "ppf-date",
+                "2023-09-12"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-promise",
+                "en-cours"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "personne"
+            ],
+            [
+                "ppf-quote",
+                "Je me battrai pour que la maternité d'Exempleville reste ouverte."
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Tract de campagne sénatoriale (exemple)",
+                "https://example.org/exemple/tract-alex",
+                "2023-09-12"
+            ],
+            [
+                "ppf-source",
+                "rapport",
+                "Avis de l'agence régionale de santé (exemple)",
+                "https://example.org/exemple/ars-avis",
+                "2026-06-01"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Où en est-on** : l'agence régionale de santé étudie une fermeture la nuit ; la décision est attendue en 2027.\n",
+        "sig": "2c02468f1fa57aad841d375ceebbae84329d1c912a2177d9b180d033d5081c15d5c4898195f79a1f3215568f7fe42bd69f7bca5cf87465aedf536a4a68c379b7"
+    },
+    {
+        "id": "492d3248905f6d7427660e874a7abc9547b6e2c01a742cb5eaf72fb26bbc19fa",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "promesse-camille-droit-manifester"
+            ],
+            [
+                "title",
+                "[EXEMPLE] « Je m'opposerai à toute restriction du droit de manifester »"
+            ],
+            [
+                "summary",
+                "Engagement pris dans la profession de foi des élections législatives de 2024."
+            ],
+            [
+                "published_at",
+                "1719230400"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "promesse"
+            ],
+            [
+                "ppf-date",
+                "2024-06-24"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-promise",
+                "tenue"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:camille-exemple",
+                "",
+                "personne"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-quote",
+                "Je m'opposerai à toute restriction du droit de manifester."
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Profession de foi des législatives 2024 (exemple)",
+                "https://example.org/exemple/profession-de-foi-camille",
+                "2024-06-24"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Scrutin public n° 1234 (exemple)",
+                "https://example.org/exemple/scrutin-1234",
+                "2026-10-16"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Acte correspondant** : vote pour l'amendement n° 112 qui supprimait les périmètres de sécurité autour des cortèges.\n",
+        "sig": "8afbf370cf03c09b345e4188e6a6f7ddb4962c7c31c879011b1bbf4157c56823f2dcb264b64ef946a9e0051ddac1357b80b32a61f5cc9f25e8f348163b3af4f8"
+    },
+    {
+        "id": "1fb0765f2d6926c1eae5e9efce71665a2ad13cd6c577023410fe9cbd378cbc25",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "promesse-dominique-concertation"
+            ],
+            [
+                "title",
+                "[EXEMPLE] « Aucune réforme sans concertation préalable avec les syndicats »"
+            ],
+            [
+                "summary",
+                "Engagement pris lors de la passation de pouvoirs au ministère."
+            ],
+            [
+                "published_at",
+                "1760356800"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "promesse"
+            ],
+            [
+                "ppf-date",
+                "2025-10-13"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-promise",
+                "contraire"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dominique-fictif",
+                "",
+                "personne"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-quote",
+                "Aucune réforme ne se fera sans concertation préalable avec les syndicats."
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Discours de passation de pouvoirs (exemple)",
+                "https://example.org/exemple/passation",
+                "2025-10-13"
+            ],
+            [
+                "ppf-source",
+                "organisateurs",
+                "Lettre de l'intersyndicale au ministre (exemple)",
+                "https://example.org/exemple/lettre-intersyndicale",
+                "2026-09-30"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Acte correspondant** : le projet de loi a été déposé le 29 septembre 2026 sans réunion préalable avec les syndicats, selon la lettre de l'intersyndicale ; le ministère n'a pas contesté ce point.\n",
+        "sig": "ba72e18ef65f13e2f36046836a5612ea03ea15f50bd6c0d7d27972367f8a5af533565f63988fc4d623d1f4752265df6bc3bbc07503a8b3a47af9c0e9dd7b2d5b"
+    },
+    {
+        "id": "1351d1eb73566a1ab483020512ac4eaa5981c5059582590228ec1d1f2552fa12",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "vote-alex-revalorisation"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Amendement revalorisant les petites retraites au niveau des prix"
+            ],
+            [
+                "summary",
+                "Le Sénat rejette l'amendement qui alignait les pensions inférieures à 1 500 euros sur la hausse des prix."
+            ],
+            [
+                "published_at",
+                "1773576000"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "vote"
+            ],
+            [
+                "ppf-date",
+                "2026-03-15"
+            ],
+            [
+                "ppf-place",
+                "Sénat"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-vote",
+                "contre"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "personne"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Scrutin public du Sénat n° 87 (exemple)",
+                "https://example.org/exemple/senat-scrutin-87",
+                "2026-03-15"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nRésultat du scrutin : 104 pour, 221 contre.\n",
+        "sig": "c86184661b66577ed708d4919f1da20ca69d9706b95747f87b3d72ec0de7ea097cddaa2af45ce986a17ecc9b5feb763f35a3307a08853546cc1ca98a792e6187"
+    },
+    {
+        "id": "1ca45110aeb63dba568cee433ace2f843ece65b48ab913249dd02ee86cede7a8",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "vote-camille-amendement-112"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Amendement n° 112 supprimant l'article 3 du projet de loi relatif à l'ordre public"
+            ],
+            [
+                "summary",
+                "L'amendement visait à supprimer les nouveaux périmètres de sécurité autour des cortèges ; il a été rejeté."
+            ],
+            [
+                "published_at",
+                "1792152000"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "vote"
+            ],
+            [
+                "ppf-date",
+                "2026-10-16"
+            ],
+            [
+                "ppf-place",
+                "Assemblée nationale"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-vote",
+                "pour"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:camille-exemple",
+                "",
+                "personne"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Scrutin public n° 1234 (exemple)",
+                "https://example.org/exemple/scrutin-1234",
+                "2026-10-16"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nRésultat du scrutin : 198 pour, 251 contre, 12 abstentions.\n",
+        "sig": "e966e763e17b6b905e965b2bb00db953fe7b7dd355440fd71c98a2e5bc315eced5d66ab29c27a92d1f4401bcf53460ba778e1725fd9b0b425c569b9ddf1399f4"
+    },
+    {
+        "id": "15d5291f89b5d9e50ec73d8a2fefb20affa794af0bf100a015d4c3fefe83fbf5",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "vote-sacha-devoir-vigilance"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Directive européenne sur le devoir de vigilance des entreprises"
+            ],
+            [
+                "summary",
+                "Le Parlement européen adopte une directive obligeant les grandes entreprises à prévenir les atteintes aux droits humains chez leurs fournisseurs."
+            ],
+            [
+                "published_at",
+                "1777032000"
+            ],
+            [
+                "ppf-type",
+                "fait"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-fact",
+                "vote"
+            ],
+            [
+                "ppf-date",
+                "2026-04-24"
+            ],
+            [
+                "ppf-place",
+                "Parlement européen"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-vote",
+                "pour"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:sacha-temoin",
+                "",
+                "personne"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Vote par appel nominal du Parlement européen (exemple)",
+                "https://example.org/exemple/pe-vote-vigilance",
+                "2026-04-24"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nRésultat du vote : 374 pour, 235 contre, 19 abstentions.\n",
+        "sig": "b4743d0b49520900b9d1818715ed3441765190486379ba2cbb8c646b291b3830e65a028cd16412fa521db0338a5c89ab54c6f3855b5f4817e6dd67150286e236"
+    },
+    {
+        "id": "36f083e44a7dc8c9fc799e1b7cde3d425356ccae4355bd139101b1e3edf03e61",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1791547200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "associations-dissoutes"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Associations et groupements dissous par décret"
+            ],
+            [
+                "summary",
+                "Dissolutions administratives prononcées en conseil des ministres depuis le début de l'année."
+            ],
+            [
+                "published_at",
+                "1782820800"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "libertes"
+            ],
+            [
+                "ppf-unit",
+                "dissolutions"
+            ],
+            [
+                "ppf-rank",
+                "3"
+            ],
+            [
+                "ppf-accepted-source",
+                "texte-officiel"
+            ],
+            [
+                "ppf-measure",
+                "d1",
+                "2026-06-30",
+                "1",
+                "texte-officiel",
+                "Journal officiel (exemple)",
+                "https://example.org/exemple/jo-dissolutions",
+                "elevee"
+            ],
+            [
+                "ppf-measure",
+                "d2",
+                "2026-10-09",
+                "2",
+                "texte-officiel",
+                "Journal officiel (exemple)",
+                "https://example.org/exemple/jo-dissolutions",
+                "elevee"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe chiffre est cumulé depuis le 1er janvier. Chaque décret est lié à sa fiche dans l'observatoire des libertés publiques, avec les recours engagés.\n",
+        "sig": "cb3069a846a2dcb772978e6d37cf1fb667475ce1786d288f7791b2a51f0f4743ba2924786c041ea2c42f0eb3c2270c3fd8350689d26ef436477c99311af5fb80"
+    },
+    {
+        "id": "98cd6485da257d54fc8546ff043683c40cc6ffcc399cfa2b13030cc80fe95095",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "blesses-manifestants"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Manifestants blessés"
+            ],
+            [
+                "summary",
+                "Personnes blessées parmi les manifestants lors des journées nationales, dont les mineurs."
+            ],
+            [
+                "published_at",
+                "1792238400"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "mouvement"
+            ],
+            [
+                "ppf-unit",
+                "personnes"
+            ],
+            [
+                "ppf-rank",
+                "4"
+            ],
+            [
+                "ppf-breakdown",
+                "dont mineurs"
+            ],
+            [
+                "ppf-accepted-source",
+                "autorites"
+            ],
+            [
+                "ppf-accepted-source",
+                "comptage-independant"
+            ],
+            [
+                "ppf-measure",
+                "w1-aut",
+                "2026-10-16",
+                "38",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-blesses-16-10",
+                "moyenne",
+                "Journée du 16 octobre",
+                "France",
+                "3"
+            ],
+            [
+                "ppf-measure",
+                "w1-sm",
+                "2026-10-16",
+                "112",
+                "comptage-independant",
+                "Coordination des street medics (exemple)",
+                "https://example.org/exemple/street-medics-16-10",
+                "moyenne",
+                "Journée du 16 octobre",
+                "France",
+                "9"
+            ],
+            [
+                "ppf-measure",
+                "w2-aut",
+                "2026-11-05",
+                "44",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-blesses-05-11",
+                "moyenne",
+                "Journée du 5 novembre",
+                "France",
+                "5"
+            ],
+            [
+                "ppf-measure",
+                "w2-sm",
+                "2026-11-05",
+                "136",
+                "comptage-independant",
+                "Coordination des street medics (exemple)",
+                "https://example.org/exemple/street-medics-05-11",
+                "moyenne",
+                "Journée du 5 novembre",
+                "France",
+                "12"
+            ],
+            [
+                "ppf-next",
+                "Premiers réflexes et vos droits",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nLes manifestants pris en charge par des secours (pompiers, Samu, street medics) pour une blessure survenue pendant la manifestation. Les blessés parmi les forces de l'ordre font l'objet d'un indicateur distinct.\n\n## Gravité\n\nL'indice de gravité des violences policières prévu par le cahier fonctionnel attend la validation de sa grille : il n'est pas encore affiché.\n",
+        "sig": "3040aa3eda9d235de318660a4efa703277ee6047d89b33fa3b721cb19e0eff21befc8b1e14cdf9026e9362e700d5c7a8af530263cd1512d075c72574c2f78439"
+    },
+    {
+        "id": "4998cfbea94d7fec09e03c312136303037edab58aab826a397413d7483c2fdfa",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "commerces-degrades"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Vitrines et commerces dégradés"
+            ],
+            [
+                "summary",
+                "Commerces dont la vitrine ou les locaux ont été dégradés ou pillés en marge des journées nationales."
+            ],
+            [
+                "published_at",
+                "1792238400"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "mouvement"
+            ],
+            [
+                "ppf-unit",
+                "commerces"
+            ],
+            [
+                "ppf-rank",
+                "6"
+            ],
+            [
+                "ppf-accepted-source",
+                "autorites"
+            ],
+            [
+                "ppf-accepted-source",
+                "medias"
+            ],
+            [
+                "ppf-measure",
+                "c1-aut",
+                "2026-10-16",
+                "27",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-degradations-16-10",
+                "moyenne",
+                "Journée du 16 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "c1-med",
+                "2026-10-16",
+                "19",
+                "medias",
+                "Recensement de la presse (exemple)",
+                "https://example.org/exemple/presse-degradations-16-10",
+                "moyenne",
+                "Journée du 16 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "c2-aut",
+                "2026-11-05",
+                "15",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-degradations-05-11",
+                "moyenne",
+                "Journée du 5 novembre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "c2-med",
+                "2026-11-05",
+                "12",
+                "medias",
+                "Recensement de la presse (exemple)",
+                "https://example.org/exemple/presse-degradations-05-11",
+                "moyenne",
+                "Journée du 5 novembre",
+                "France"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nCet indicateur est publié comme les autres : PPF montre tous les faits, y compris ceux qui ne servent pas le mouvement.\n",
+        "sig": "e258b0727bdab24644079c8eaaa44ad1dabb9b52125c3567963fcc7bac7cb97f5073835eb3964b6de0880a0f41c4411bb2595b3d1021bd2237175ff46a6b88c8"
+    },
+    {
+        "id": "18a14f811a54b0276d571d23fd1556e0ad58b775de1cc4cf9ae2129acf564193",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "etablissements-bloques"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Lycées et universités bloqués"
+            ],
+            [
+                "summary",
+                "Établissements d'enseignement bloqués ou fermés à cause de la mobilisation, actualisé chaque jour."
+            ],
+            [
+                "published_at",
+                "1792497600"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "mouvement"
+            ],
+            [
+                "ppf-unit",
+                "établissements"
+            ],
+            [
+                "ppf-rank",
+                "2"
+            ],
+            [
+                "ppf-breakdown",
+                "dont universités"
+            ],
+            [
+                "ppf-accepted-source",
+                "autorites"
+            ],
+            [
+                "ppf-accepted-source",
+                "signalements"
+            ],
+            [
+                "ppf-measure",
+                "b1-aut",
+                "2026-10-20",
+                "22",
+                "autorites",
+                "Rectorats (exemple)",
+                "https://example.org/exemple/rectorats-20-10",
+                "moyenne",
+                "20 octobre",
+                "France",
+                "4"
+            ],
+            [
+                "ppf-measure",
+                "b1-sig",
+                "2026-10-20",
+                "35",
+                "signalements",
+                "Signalements vérifiés des utilisateurs (exemple)",
+                "",
+                "moyenne",
+                "20 octobre",
+                "France",
+                "6"
+            ],
+            [
+                "ppf-measure",
+                "b2-aut",
+                "2026-10-27",
+                "31",
+                "autorites",
+                "Rectorats (exemple)",
+                "https://example.org/exemple/rectorats-27-10",
+                "moyenne",
+                "27 octobre",
+                "France",
+                "6"
+            ],
+            [
+                "ppf-measure",
+                "b2-sig",
+                "2026-10-27",
+                "48",
+                "signalements",
+                "Signalements vérifiés des utilisateurs (exemple)",
+                "",
+                "moyenne",
+                "27 octobre",
+                "France",
+                "9"
+            ],
+            [
+                "ppf-measure",
+                "b3-aut",
+                "2026-11-03",
+                "27",
+                "autorites",
+                "Rectorats (exemple)",
+                "https://example.org/exemple/rectorats-03-11",
+                "moyenne",
+                "3 novembre",
+                "France",
+                "5"
+            ],
+            [
+                "ppf-measure",
+                "b3-sig",
+                "2026-11-03",
+                "41",
+                "signalements",
+                "Signalements vérifiés des utilisateurs (exemple)",
+                "",
+                "moyenne",
+                "3 novembre",
+                "France",
+                "8"
+            ],
+            [
+                "ppf-measure",
+                "b4-aut",
+                "2026-11-06",
+                "38",
+                "autorites",
+                "Rectorats (exemple)",
+                "https://example.org/exemple/rectorats-06-11",
+                "moyenne",
+                "6 novembre",
+                "France",
+                "7"
+            ],
+            [
+                "ppf-measure",
+                "b4-sig",
+                "2026-11-06",
+                "57",
+                "signalements",
+                "Signalements vérifiés des utilisateurs (exemple)",
+                "",
+                "moyenne",
+                "6 novembre",
+                "France",
+                "11"
+            ],
+            [
+                "ppf-next",
+                "Proposer une revendication sur l'éducation",
+                "space:revendications"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nUn lycée ou une université est compté lorsqu'au moins une entrée principale est bloquée ou que l'établissement est fermé par sa direction à cause de la mobilisation, pendant au moins une demi-journée.\n\n## Comment\n\n- Les **rectorats** publient un relevé quotidien.\n- Les **signalements des utilisateurs** ne comptent qu'après vérification par l'équipe (photo datée, deux signalements concordants ou confirmation par un média) ; un compte ne peut signaler un établissement qu'une fois par jour.\n",
+        "sig": "7132878aee8673162522fa7e5fc5303622597eaacaa498b5c74d516351fd31953f5ff9b170515938fd4c0781c5fd8a522eee18849bbc93da28dcbb63c8eace18"
+    },
+    {
+        "id": "87defb99142cb1c28cd00e414d223d8fdd9996aa54f547d0521195c863075b2c",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "interdictions-manifester"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Arrêtés d'interdiction de manifester"
+            ],
+            [
+                "summary",
+                "Arrêtés préfectoraux interdisant une manifestation ou tout rassemblement dans un périmètre, publiés chaque mois."
+            ],
+            [
+                "published_at",
+                "1790769600"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "libertes"
+            ],
+            [
+                "ppf-unit",
+                "arrêtés"
+            ],
+            [
+                "ppf-rank",
+                "2"
+            ],
+            [
+                "ppf-accepted-source",
+                "texte-officiel"
+            ],
+            [
+                "ppf-measure",
+                "a1",
+                "2026-09-30",
+                "4",
+                "texte-officiel",
+                "Recueils des actes administratifs des préfectures (exemple)",
+                "https://example.org/exemple/raa-septembre",
+                "elevee",
+                "Septembre 2026",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "a2",
+                "2026-10-31",
+                "11",
+                "texte-officiel",
+                "Recueils des actes administratifs des préfectures (exemple)",
+                "https://example.org/exemple/raa-octobre",
+                "elevee",
+                "Octobre 2026",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "a3",
+                "2026-11-06",
+                "6",
+                "texte-officiel",
+                "Recueils des actes administratifs des préfectures (exemple)",
+                "https://example.org/exemple/raa-novembre",
+                "elevee",
+                "Novembre 2026 (en cours)",
+                "France"
+            ],
+            [
+                "ppf-next",
+                "Vos droits en manifestation",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nChaque arrêté est archivé avec son empreinte et sa date de publication ; ceux qui font l'objet d'un recours apparaissent aussi dans l'observatoire des libertés publiques.\n",
+        "sig": "27320dcf63390f54e008ed7a1e26ac97cf3914650d5a333fbfcb467201c668f709ea044ca4d8462e4c860fca2078a1bc368742cd21abe353d77a0792ba23000b"
+    },
+    {
+        "id": "c9f7161821f6f78df77f86439e5139b9b65fbc8a21ffa1299873792712fde662",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "interpellations"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Interpellations lors des journées nationales"
+            ],
+            [
+                "summary",
+                "Personnes interpellées en France pendant chaque journée nationale de mobilisation, et parmi elles celles placées en garde à vue."
+            ],
+            [
+                "published_at",
+                "1789819200"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "mouvement"
+            ],
+            [
+                "ppf-unit",
+                "interpellations"
+            ],
+            [
+                "ppf-rank",
+                "3"
+            ],
+            [
+                "ppf-breakdown",
+                "dont gardes à vue"
+            ],
+            [
+                "ppf-accepted-source",
+                "autorites"
+            ],
+            [
+                "ppf-accepted-source",
+                "comptage-independant"
+            ],
+            [
+                "ppf-measure",
+                "i1-aut",
+                "2026-09-18",
+                "142",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-i-18-09",
+                "elevee",
+                "Journée du 18 septembre",
+                "France",
+                "98"
+            ],
+            [
+                "ppf-measure",
+                "i1-lt",
+                "2026-09-18",
+                "171",
+                "comptage-independant",
+                "Legal team nationale (exemple)",
+                "https://example.org/exemple/legal-team-18-09",
+                "moyenne",
+                "Journée du 18 septembre",
+                "France",
+                "104"
+            ],
+            [
+                "ppf-measure",
+                "i2-aut",
+                "2026-10-02",
+                "96",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-i-02-10",
+                "elevee",
+                "Journée du 2 octobre",
+                "France",
+                "61"
+            ],
+            [
+                "ppf-measure",
+                "i2-lt",
+                "2026-10-02",
+                "118",
+                "comptage-independant",
+                "Legal team nationale (exemple)",
+                "https://example.org/exemple/legal-team-02-10",
+                "moyenne",
+                "Journée du 2 octobre",
+                "France",
+                "70"
+            ],
+            [
+                "ppf-measure",
+                "i3-aut",
+                "2026-10-16",
+                "187",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-i-16-10",
+                "elevee",
+                "Journée du 16 octobre",
+                "France",
+                "133"
+            ],
+            [
+                "ppf-measure",
+                "i3-lt",
+                "2026-10-16",
+                "240",
+                "comptage-independant",
+                "Legal team nationale (exemple)",
+                "https://example.org/exemple/legal-team-16-10",
+                "moyenne",
+                "Journée du 16 octobre",
+                "France",
+                "151"
+            ],
+            [
+                "ppf-measure",
+                "i4-aut",
+                "2026-11-05",
+                "211",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-i-05-11",
+                "elevee",
+                "Journée du 5 novembre",
+                "France",
+                "160"
+            ],
+            [
+                "ppf-measure",
+                "i4-lt",
+                "2026-11-05",
+                "263",
+                "comptage-independant",
+                "Legal team nationale (exemple)",
+                "https://example.org/exemple/legal-team-05-11",
+                "moyenne",
+                "Journée du 5 novembre",
+                "France",
+                "172"
+            ],
+            [
+                "ppf-next",
+                "Que faire en garde à vue",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:garde-a-vue"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nToute personne conduite au poste par les forces de l'ordre pendant la journée de mobilisation ou dans la soirée qui suit, qu'elle soit ensuite placée en garde à vue, verbalisée ou relâchée.\n\n## Pourquoi les chiffres diffèrent\n\nLa legal team compte les appels reçus et les personnes suivies par ses avocats, y compris les retenues pour vérification d'identité, que les chiffres officiels ne comptent pas toujours comme des interpellations.\n",
+        "sig": "55e9ab0e197436534c9d22c79916366af5462df69ecdc007b0cd803a1d107c94a82c8af1ee164c03b484c9e49bc3cdca3341a91b30fa7107d2a212c7370b8ea1"
+    },
+    {
+        "id": "d6f406142df2051a27aa0b8e9b2991f6fddb0e30eae221998965cbe777919b5f",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "manifestants-journees"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Manifestants lors des journées nationales"
+            ],
+            [
+                "summary",
+                "Nombre de personnes ayant manifesté en France lors de chaque journée nationale de mobilisation, selon chaque source."
+            ],
+            [
+                "published_at",
+                "1789819200"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "mouvement"
+            ],
+            [
+                "ppf-unit",
+                "personnes"
+            ],
+            [
+                "ppf-rank",
+                "1"
+            ],
+            [
+                "ppf-accepted-source",
+                "autorites"
+            ],
+            [
+                "ppf-accepted-source",
+                "organisateurs"
+            ],
+            [
+                "ppf-accepted-source",
+                "comptage-independant"
+            ],
+            [
+                "ppf-measure",
+                "j1-aut",
+                "2026-09-18",
+                "312000",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-18-09",
+                "moyenne",
+                "Journée du 18 septembre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j1-org",
+                "2026-09-18",
+                "1050000",
+                "organisateurs",
+                "Intersyndicale (exemple)",
+                "https://example.org/exemple/intersyndicale-18-09",
+                "moyenne",
+                "Journée du 18 septembre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j1-ind",
+                "2026-09-18",
+                "455000",
+                "comptage-independant",
+                "Collectif de comptage indépendant (exemple)",
+                "https://example.org/exemple/comptage-18-09",
+                "elevee",
+                "Journée du 18 septembre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j2-aut",
+                "2026-10-02",
+                "268000",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-02-10",
+                "moyenne",
+                "Journée du 2 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j2-org",
+                "2026-10-02",
+                "900000",
+                "organisateurs",
+                "Intersyndicale (exemple)",
+                "https://example.org/exemple/intersyndicale-02-10",
+                "moyenne",
+                "Journée du 2 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j2-ind",
+                "2026-10-02",
+                "390000",
+                "comptage-independant",
+                "Collectif de comptage indépendant (exemple)",
+                "https://example.org/exemple/comptage-02-10",
+                "elevee",
+                "Journée du 2 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j3-aut",
+                "2026-10-16",
+                "341000",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-16-10",
+                "moyenne",
+                "Journée du 16 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j3-org",
+                "2026-10-16",
+                "1200000",
+                "organisateurs",
+                "Intersyndicale (exemple)",
+                "https://example.org/exemple/intersyndicale-16-10",
+                "moyenne",
+                "Journée du 16 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j3-ind",
+                "2026-10-16",
+                "512000",
+                "comptage-independant",
+                "Collectif de comptage indépendant (exemple)",
+                "https://example.org/exemple/comptage-16-10",
+                "elevee",
+                "Journée du 16 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j4-aut",
+                "2026-11-05",
+                "405000",
+                "autorites",
+                "Ministère de l'Intérieur (exemple)",
+                "https://example.org/exemple/interieur-05-11",
+                "moyenne",
+                "Journée du 5 novembre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j4-org",
+                "2026-11-05",
+                "1400000",
+                "organisateurs",
+                "Intersyndicale (exemple)",
+                "https://example.org/exemple/intersyndicale-05-11",
+                "moyenne",
+                "Journée du 5 novembre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "j4-ind",
+                "2026-11-05",
+                "598000",
+                "comptage-independant",
+                "Collectif de comptage indépendant (exemple)",
+                "https://example.org/exemple/comptage-05-11",
+                "elevee",
+                "Journée du 5 novembre",
+                "France"
+            ],
+            [
+                "ppf-correction",
+                "2026-10-18",
+                "Les chiffres des organisateurs du 2 et du 16 octobre avaient été inversés."
+            ],
+            [
+                "ppf-next",
+                "Connaître vos droits en manifestation",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+            ],
+            [
+                "ppf-next",
+                "Trouver la prochaine mobilisation",
+                "space:carte"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nLe nombre de personnes présentes dans les cortèges et les rassemblements déclarés, sur toute la France, pendant une journée nationale de mobilisation.\n\n## Pourquoi les chiffres diffèrent\n\n- **Les autorités** comptent à des points de passage fixes, à un moment donné : les personnes arrivées plus tard ou parties plus tôt ne sont pas toujours comptées.\n- **Les organisateurs** additionnent les estimations de chaque ville, souvent sur toute la durée de la journée.\n- **Le comptage indépendant** applique une méthode publique (comptage par images et par capteurs dans plusieurs villes, puis extrapolation) et publie sa marge d'erreur.\n\nLes trois chiffres sont toujours affichés côte à côte, jamais fusionnés en un seul.\n\n## Niveau de fiabilité\n\n- **Élevée** : la méthode est publique et vérifiable.\n- **Moyenne** : la source est connue, sa méthode n'est que partiellement publiée.\n",
+        "sig": "7daadb66c802381847412b48735a065e857ccfaec05499d5d4428f8358fdd1c6ca3f119bebcd2f22ce19d088a2bc915b73e894438270befa83f3d3d963c83b1b"
+    },
+    {
+        "id": "22462eb7865bb0c21be209d93e24c17c4c8a3b3cf7399a0b6b58a0e8eaabcb3a",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "nasses"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Nasses signalées"
+            ],
+            [
+                "summary",
+                "Encerclements de manifestants par les forces de l'ordre, empêchant toute sortie, documentés pendant les journées nationales."
+            ],
+            [
+                "published_at",
+                "1792238400"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "mouvement"
+            ],
+            [
+                "ppf-unit",
+                "nasses"
+            ],
+            [
+                "ppf-rank",
+                "5"
+            ],
+            [
+                "ppf-accepted-source",
+                "signalements"
+            ],
+            [
+                "ppf-accepted-source",
+                "medias"
+            ],
+            [
+                "ppf-measure",
+                "n1-sig",
+                "2026-10-16",
+                "9",
+                "signalements",
+                "Signalements vérifiés des utilisateurs (exemple)",
+                "",
+                "moyenne",
+                "Journée du 16 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "n1-med",
+                "2026-10-16",
+                "6",
+                "medias",
+                "Recensement de la presse (exemple)",
+                "https://example.org/exemple/presse-nasses-16-10",
+                "moyenne",
+                "Journée du 16 octobre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "n2-sig",
+                "2026-11-05",
+                "14",
+                "signalements",
+                "Signalements vérifiés des utilisateurs (exemple)",
+                "",
+                "moyenne",
+                "Journée du 5 novembre",
+                "France"
+            ],
+            [
+                "ppf-measure",
+                "n2-med",
+                "2026-11-05",
+                "11",
+                "medias",
+                "Recensement de la presse (exemple)",
+                "https://example.org/exemple/presse-nasses-05-11",
+                "moyenne",
+                "Journée du 5 novembre",
+                "France"
+            ],
+            [
+                "ppf-next",
+                "Ce que dit le droit sur les nasses",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nUne nasse est comptée lorsqu'un groupe de manifestants est encerclé pendant au moins quinze minutes sans possibilité de sortie, et que l'encerclement est documenté par au moins deux sources (photo ou vidéo datée et localisée, signalement concordant, article de presse).\n",
+        "sig": "2a258f1851609529b59a053c9d85bf955fde2dbd1063a8f7888066822831ad8c2e8f196fc1cd546e31930768ad2805e56328522b316e37e0a557f19ccb210dd3"
+    },
+    {
+        "id": "e6018295038aef5889d452eec70bd19e7c16663609756b50d4f4bdfd6991bee0",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793534400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "organisations-membres"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Syndicats et associations membres du mouvement"
+            ],
+            [
+                "summary",
+                "Organisations ayant signé l'appel commun à la mobilisation."
+            ],
+            [
+                "published_at",
+                "1789041600"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "mouvement"
+            ],
+            [
+                "ppf-unit",
+                "organisations"
+            ],
+            [
+                "ppf-rank",
+                "7"
+            ],
+            [
+                "ppf-accepted-source",
+                "organisateurs"
+            ],
+            [
+                "ppf-measure",
+                "o1",
+                "2026-09-10",
+                "34",
+                "organisateurs",
+                "Liste des signataires de l'appel (exemple)",
+                "https://example.org/exemple/appel-signataires",
+                "elevee"
+            ],
+            [
+                "ppf-measure",
+                "o2",
+                "2026-10-01",
+                "61",
+                "organisateurs",
+                "Liste des signataires de l'appel (exemple)",
+                "https://example.org/exemple/appel-signataires",
+                "elevee"
+            ],
+            [
+                "ppf-measure",
+                "o3",
+                "2026-11-01",
+                "88",
+                "organisateurs",
+                "Liste des signataires de l'appel (exemple)",
+                "https://example.org/exemple/appel-signataires",
+                "elevee"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nChaque organisation est comptée une fois, à la date de sa signature. La liste complète des signataires est publiée par les organisateurs.\n",
+        "sig": "d9c7418ea7b0344e6e792d2a52e546652a7d25f4a8265fe54a66330fd3bdaa1ffc6b726c6d40cd3f89e37cfcdf882b744d01b10a3d4613ceffa241c508646922"
+    },
+    {
+        "id": "5de75c761f09d72ffdedb46928f787b8b6b1eaa491dcf23551efbd05a0e51934",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1769947200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "recommandations-suivies"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Recommandations d'autorités indépendantes suivies d'effet"
+            ],
+            [
+                "summary",
+                "Part des recommandations adressées au gouvernement par les autorités administratives indépendantes qui ont été appliquées dans l'année."
+            ],
+            [
+                "published_at",
+                "1769947200"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "libertes"
+            ],
+            [
+                "ppf-unit",
+                "%"
+            ],
+            [
+                "ppf-rank",
+                "4"
+            ],
+            [
+                "ppf-accepted-source",
+                "rapport"
+            ],
+            [
+                "ppf-measure",
+                "p1",
+                "2024-12-31",
+                "31",
+                "rapport",
+                "Rapports annuels des autorités (exemple)",
+                "https://example.org/exemple/rapports-2024",
+                "moyenne",
+                "Année 2024"
+            ],
+            [
+                "ppf-measure",
+                "p2",
+                "2025-12-31",
+                "24",
+                "rapport",
+                "Rapports annuels des autorités (exemple)",
+                "https://example.org/exemple/rapports-2025",
+                "moyenne",
+                "Année 2025"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe calcul reprend, autorité par autorité, les suites que chacune déclare dans son rapport annuel.\n",
+        "sig": "4221cc8643388aebf01f41b1f5c04ecf4b7774ee8dcaa68abbf3c986c66d59f2e3bda3e6610eae601b5069c6a6cc56a8da9abd552f0bd30dff6a6a27834a5e09"
+    },
+    {
+        "id": "ccdb227d669beeadd9f2d862abc3c30a89cb5732c48bf6a3ce5ee36fe2a4ab1b",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793793600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "recours-49-3"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Recours à l'article 49.3 depuis le début de la législature"
+            ],
+            [
+                "summary",
+                "Nombre de fois où le gouvernement a engagé sa responsabilité sur un texte, qui est alors adopté sans vote sauf si une motion de censure est votée."
+            ],
+            [
+                "published_at",
+                "1790769600"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "libertes"
+            ],
+            [
+                "ppf-unit",
+                "recours"
+            ],
+            [
+                "ppf-rank",
+                "1"
+            ],
+            [
+                "ppf-accepted-source",
+                "parlement"
+            ],
+            [
+                "ppf-measure",
+                "r1",
+                "2026-09-30",
+                "9",
+                "parlement",
+                "Assemblée nationale, comptes rendus (exemple)",
+                "https://example.org/exemple/an-49-3",
+                "elevee"
+            ],
+            [
+                "ppf-measure",
+                "r2",
+                "2026-10-21",
+                "10",
+                "parlement",
+                "Assemblée nationale, comptes rendus (exemple)",
+                "https://example.org/exemple/an-49-3",
+                "elevee"
+            ],
+            [
+                "ppf-measure",
+                "r3",
+                "2026-10-29",
+                "11",
+                "parlement",
+                "Assemblée nationale, comptes rendus (exemple)",
+                "https://example.org/exemple/an-49-3",
+                "elevee"
+            ],
+            [
+                "ppf-measure",
+                "r4",
+                "2026-11-04",
+                "12",
+                "parlement",
+                "Assemblée nationale, comptes rendus (exemple)",
+                "https://example.org/exemple/an-49-3",
+                "elevee"
+            ],
+            [
+                "ppf-next",
+                "Voir les textes en discussion",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations"
+            ],
+            [
+                "ppf-next",
+                "Interpeller vos élus",
+                "space:decider"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que dit la Constitution\n\nL'article 49, alinéa 3, de la Constitution permet au Premier ministre d'engager la responsabilité du gouvernement sur le vote d'un projet de loi de finances ou de financement de la sécurité sociale, et sur un autre texte par session. Le texte est considéré comme adopté, sauf si une motion de censure est déposée dans les vingt-quatre heures et votée.\n\nLe chiffre compte chaque engagement de responsabilité, texte par texte et lecture par lecture.\n",
+        "sig": "8bcab8352db134178e8c2b5d386fcc19731386a6f8cd2c4db52c7f235c52f2689d7bc5ce671c71991a19687c03b90103cde0f53263d48794dfac3b8bbf64337e"
+    },
+    {
+        "id": "ebf7ca203256bac265e03b1752967461f40e8b11bdf2d763820657b283926223",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793534400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "shadowban-declare"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Comptes déclarant une visibilité réduite sur les réseaux sociaux"
+            ],
+            [
+                "summary",
+                "Comptes de réseaux sociaux dont les titulaires déclarent une baisse soudaine de visibilité (« shadowban ») après avoir parlé du mouvement."
+            ],
+            [
+                "published_at",
+                "1792065600"
+            ],
+            [
+                "ppf-type",
+                "indicateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-axis",
+                "mouvement"
+            ],
+            [
+                "ppf-unit",
+                "comptes"
+            ],
+            [
+                "ppf-rank",
+                "8"
+            ],
+            [
+                "ppf-declarative",
+                "true"
+            ],
+            [
+                "ppf-accepted-source",
+                "signalements"
+            ],
+            [
+                "ppf-measure",
+                "s1",
+                "2026-10-15",
+                "1240",
+                "signalements",
+                "Déclarations des utilisateurs (exemple)",
+                "",
+                "faible"
+            ],
+            [
+                "ppf-measure",
+                "s2",
+                "2026-11-01",
+                "2310",
+                "signalements",
+                "Déclarations des utilisateurs (exemple)",
+                "",
+                "faible"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Un indicateur déclaratif\n\nCe chiffre additionne des déclarations : PPF ne peut pas vérifier ce que font les algorithmes des réseaux sociaux. Il est publié comme tel, avec une fiabilité faible, pour mesurer un ressenti largement partagé, pas pour prouver une censure.\n",
+        "sig": "86a1f1a56d0667424653e49cff771c65f18180eee15b101ee3c12f75b5c9bb3ca8267d04bc81e8ca1a132e6fda5711cee240d3d4f0fb7dc5df9154ff187abb12"
+    },
+    {
+        "id": "a81f851ab92afedfc447ebe61bec83aec5ea2e71050e795333df6274132db738",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1790856000,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "monde-pays-a-vie-chere"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Mouvement contre la vie chère au Pays A"
+            ],
+            [
+                "summary",
+                "Six mois de manifestations après une hausse de 40 % du prix de l'énergie."
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "mouvement"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-country",
+                "Pays A (exemple)"
+            ],
+            [
+                "ppf-period",
+                "2025-03-01",
+                "2025-09-30"
+            ],
+            [
+                "ppf-claim",
+                "Gel du prix de l'énergie"
+            ],
+            [
+                "ppf-claim",
+                "Hausse des salaires les plus bas"
+            ],
+            [
+                "ppf-claim",
+                "Référendum sur la réforme fiscale"
+            ],
+            [
+                "ppf-result",
+                "Gel du prix de l'énergie pendant un an"
+            ],
+            [
+                "ppf-result",
+                "Démission du gouvernement en septembre 2025"
+            ],
+            [
+                "ppf-source",
+                "medias",
+                "Dossier d'une agence de presse (exemple)",
+                "https://example.org/exemple/agence-pays-a",
+                ""
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nParti de grèves dans les transports, le mouvement s'est étendu aux enseignants puis aux agriculteurs. Les assemblées locales ont rédigé une liste commune de revendications.\n",
+        "sig": "fe0c6a2862bfad2f6db92bdae702612051b03453da72dde7bf2be609306b35a69074f2d5d92d3c56118ac62a46d3e0d78f7a5564bfc9e21fa474967d6bac5e09"
+    },
+    {
+        "id": "8300e940c8ff79286e67ec9eca1f61546b3dab36556ced5452b8d63b6aeaab33",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1790856000,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "monde-pays-b-assemblee-citoyenne"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Mobilisation pour une assemblée citoyenne au Pays B"
+            ],
+            [
+                "summary",
+                "Des pétitions puis des rassemblements obtiennent une convention de citoyens tirés au sort."
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "mouvement"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-country",
+                "Pays B (exemple)"
+            ],
+            [
+                "ppf-period",
+                "2024-10-01",
+                "2025-05-31"
+            ],
+            [
+                "ppf-claim",
+                "Une assemblée de citoyens tirés au sort"
+            ],
+            [
+                "ppf-claim",
+                "Un référendum sur ses propositions"
+            ],
+            [
+                "ppf-result",
+                "Convention de 150 citoyens tirés au sort"
+            ],
+            [
+                "ppf-result",
+                "Référendum sur ses propositions, rejeté à 52 %"
+            ],
+            [
+                "ppf-source",
+                "rapport",
+                "Rapport d'un centre de recherche (exemple)",
+                "https://example.org/exemple/recherche-pays-b",
+                ""
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe mouvement a combiné une pétition nationale, des rassemblements hebdomadaires et une campagne auprès des élus locaux.\n",
+        "sig": "41f50b84d02ae6ff8083440d6897fbb9ba5bf70a631ac9d2e9474ba64d2d536d4fd74dbc3381750b701730fc72934beafa773dd619455215a839aed5e85226b4"
+    },
+    {
+        "id": "e799b6ae93e820571af07bcc2f7d59b56e7abac8b3282e0fecf079409fd1fd5b",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793534400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "monde-pays-c-greve-salaires"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Grève générale pour les salaires au Pays C"
+            ],
+            [
+                "summary",
+                "Une grève reconductible soutenue par la majorité des syndicats, toujours en cours."
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "mouvement"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-country",
+                "Pays C (exemple)"
+            ],
+            [
+                "ppf-period",
+                "2026-01-15",
+                ""
+            ],
+            [
+                "ppf-claim",
+                "Hausse de 10 % du salaire minimum"
+            ],
+            [
+                "ppf-claim",
+                "Indexation des salaires sur les prix"
+            ],
+            [
+                "ppf-result",
+                "Hausse de 8 % du salaire minimum obtenue en mars 2026"
+            ],
+            [
+                "ppf-source",
+                "medias",
+                "Reportage d'une radio publique (exemple)",
+                "https://example.org/exemple/radio-pays-c",
+                ""
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLes caisses de grève, alimentées par des dons, ont permis de tenir plusieurs semaines.\n",
+        "sig": "4f2f5d7005ce2fe1c3a94d78a6327a0dddeda9be46b5109d53b63e33f46eb832f79df99b69a257cbc285a1a7c6090ee380baa3d0077ad75257f6fc9c5db4f3b6"
+    },
+    {
+        "id": "66c2f96a8786030aafa424b4297065fd0c42adc6ee21ce16041477b1199d94e2",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "alex-modele"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Alex Modèle"
+            ],
+            [
+                "summary",
+                "Sénateur du département d'exemple"
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "personne"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-role",
+                "senateur"
+            ],
+            [
+                "ppf-role",
+                "elu-local"
+            ],
+            [
+                "ppf-group",
+                "Groupe d'exemple C"
+            ],
+            [
+                "ppf-territory",
+                "Département d'exemple"
+            ],
+            [
+                "ppf-mandate",
+                "Sénateur",
+                "Département d'exemple",
+                "2023-10-01",
+                ""
+            ],
+            [
+                "ppf-mandate",
+                "Maire",
+                "Exempleville",
+                "2014-03-30",
+                "2023-10-01"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Sénat, fiche du sénateur (exemple)",
+                "https://example.org/exemple/senat-alex-modele",
+                ""
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nAlex Modèle a été maire d'Exempleville pendant neuf ans avant d'être élu au Sénat.\n",
+        "sig": "8c6e7370fa10402a17441dd70df204ddc76688dcac40520cf8b1f1e9c9b153852c9d123ef508145cebcbdd561eb612248fa2c304b08ecd506304bc18a2d4a410"
+    },
+    {
+        "id": "4e82fa314ff345d322002f1bc594d857a269b3091ac5548698ae6ab5c437c0fb",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "camille-exemple"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Camille Exemple"
+            ],
+            [
+                "summary",
+                "Députée de la 1re circonscription d'Exempleville"
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "personne"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-role",
+                "depute"
+            ],
+            [
+                "ppf-group",
+                "Groupe d'exemple A"
+            ],
+            [
+                "ppf-territory",
+                "Exempleville"
+            ],
+            [
+                "ppf-mandate",
+                "Députée",
+                "1re circonscription d'Exempleville",
+                "2024-07-18",
+                ""
+            ],
+            [
+                "ppf-mandate",
+                "Conseillère municipale",
+                "Exempleville",
+                "2020-07-03",
+                "2024-07-18"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Assemblée nationale, fiche de la députée (exemple)",
+                "https://example.org/exemple/an-camille-exemple",
+                ""
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nCamille Exemple siège à la commission des affaires sociales. Avant son élection, elle était infirmière à l'hôpital d'Exempleville.\n",
+        "sig": "c7ef88b3d817c3d3f0bfa6386c968fdb7c531bb81c4930ae9f5cdb871de77b19e6895b032d1f1e9a8b5533c2cf491155875773176b25ab9cd1d4a3128f0c2188"
+    },
+    {
+        "id": "41e46aabe93a800d19ea74d39bdb67994c36ed811c8da65b00aac199e31dcf59",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "dominique-fictif"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Dominique Fictif"
+            ],
+            [
+                "summary",
+                "Ministre chargé de l'Ordre public"
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "personne"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-role",
+                "ministre"
+            ],
+            [
+                "ppf-group",
+                "Gouvernement d'exemple"
+            ],
+            [
+                "ppf-mandate",
+                "Ministre chargé de l'Ordre public",
+                "",
+                "2025-10-12",
+                ""
+            ],
+            [
+                "ppf-mandate",
+                "Député",
+                "3e circonscription de Modèle-sur-Mer",
+                "2017-06-21",
+                "2025-10-12"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Décret de nomination au Journal officiel (exemple)",
+                "https://example.org/exemple/jo-nomination",
+                "2025-10-12"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nDominique Fictif porte le projet de loi relatif à l'ordre public lors des manifestations.\n",
+        "sig": "2288c3414ff85e701d78a67ff93f234ec8048e9457ce97a37293ead7543983c28680acdd05d250f78b77d522f4e34ea249d255db0f4e3e90affc492fc3a40486"
+    },
+    {
+        "id": "1364c2d4dd4334ac75fb900a4cd9c4ead27af2b541ca2e93a0f18517b1d328f5",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "sacha-temoin"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Sacha Témoin"
+            ],
+            [
+                "summary",
+                "Députée européenne"
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "personne"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-role",
+                "eurodepute"
+            ],
+            [
+                "ppf-group",
+                "Groupe européen d'exemple"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-mandate",
+                "Députée européenne",
+                "France",
+                "2024-07-16",
+                ""
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Parlement européen, fiche de la députée (exemple)",
+                "https://example.org/exemple/pe-sacha-temoin",
+                ""
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nSacha Témoin siège à la commission de l'emploi et des affaires sociales du Parlement européen.\n",
+        "sig": "53baadd3c383c18d8c61d0c3aa85a759f69b327dc310b43d19e899ff7ea5f9b4333dc9f6f77bae492190fe36fe2cb4b004ba7e43c407334e0c149316bfc3bf14"
+    },
+    {
+        "id": "93916a6415595e595fd4ac129df31dc948800680fdbf838685bccd7fc2b20cb4",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1780833600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "reponse-dominique-affaire"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Droit de réponse de Dominique Fictif"
+            ],
+            [
+                "published_at",
+                "1780833600"
+            ],
+            [
+                "ppf-type",
+                "reponse"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-respondent",
+                "[EXEMPLE] Dominique Fictif"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:affaire-dominique-marche-public",
+                "",
+                "cible"
+            ]
+        ],
+        "content": "[EXEMPLE] Je conteste fermement avoir favorisé quiconque dans l'attribution de ce marché, passé selon les règles en vigueur et contrôlé à l'époque par la préfecture. Je me tiens à la disposition de la justice.\n",
+        "sig": "0efc67aa851f999ab3b5911602677ca1966784b75d92316ea535a70f3d6e9ca5b48e050de91f423d5f29930ff7f746158a5061f959af825cf78d6c78c7ecedf3"
+    },
+    {
+        "id": "c9dd495245b5fee58dcafd0e462cb15243d75cbaf83e5a0b167834e53af81f9f",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "pjl-ordre-public-manifestations"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Projet de loi relatif à l'ordre public lors des manifestations"
+            ],
+            [
+                "summary",
+                "Étend les interdictions de paraître en manifestation, crée de nouveaux périmètres de sécurité et autorise de nouveaux moyens de surveillance."
+            ],
+            [
+                "published_at",
+                "1790683200"
+            ],
+            [
+                "ppf-type",
+                "texte"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-text-kind",
+                "projet"
+            ],
+            [
+                "ppf-stage",
+                "senat"
+            ],
+            [
+                "ppf-stage-history",
+                "depot",
+                "2026-09-29"
+            ],
+            [
+                "ppf-stage-history",
+                "commission",
+                "2026-10-06"
+            ],
+            [
+                "ppf-stage-history",
+                "assemblee",
+                "2026-10-14"
+            ],
+            [
+                "ppf-stage-history",
+                "senat",
+                "2026-10-28"
+            ],
+            [
+                "ppf-493",
+                "2026-10-21"
+            ],
+            [
+                "ppf-next-vote",
+                "2026-11-18",
+                "Vote solennel au Sénat"
+            ],
+            [
+                "ppf-impact",
+                "Personnes qui manifestent",
+                "perd",
+                "Une interdiction de paraître peut durer jusqu'à trente jours, contre un jour aujourd'hui.",
+                "Étude d'impact du projet de loi (exemple)",
+                "https://example.org/exemple/etude-impact-ordre-public"
+            ],
+            [
+                "ppf-impact",
+                "Commerçants des centres-villes",
+                "mitige",
+                "Moins de dégradations attendues, mais des périmètres fermés plus souvent les jours de mobilisation.",
+                "Avis de la chambre de commerce (exemple)",
+                "https://example.org/exemple/avis-cci"
+            ],
+            [
+                "ppf-impact",
+                "Forces de l'ordre",
+                "gagne",
+                "Nouveaux moyens de surveillance et procédure simplifiée pour les interdictions.",
+                "Étude d'impact du projet de loi (exemple)",
+                "https://example.org/exemple/etude-impact-ordre-public"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Dossier législatif à l'Assemblée nationale (exemple)",
+                "https://example.org/exemple/dossier-ordre-public",
+                ""
+            ],
+            [
+                "ppf-next",
+                "Interpeller vos élus avant le vote",
+                "space:decider"
+            ],
+            [
+                "ppf-next",
+                "Vos droits en manifestation",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que prévoit le texte\n\n- Article 1 : les interdictions de paraître dans une manifestation peuvent durer jusqu'à trente jours.\n- Article 3 : le préfet peut créer un périmètre de sécurité autour d'un cortège, avec fouille à l'entrée.\n- Article 5 : les drones peuvent filmer les manifestations sur simple autorisation du préfet.\n\n## Où il en est\n\nAdopté par l'Assemblée nationale après le recours à l'article 49.3, il est examiné par le Sénat.\n",
+        "sig": "8de1420bb29d2462b283d696d339d877bd5ad0bd0dbb17769c76bce84ce2401197801b47688e1cda35dd30c8c8e9e6fe4392f28b8ae15cd0c0b5d95169a24ba0"
+    },
+    {
+        "id": "1b064f7311d09f3d260f891635a6aaa955181a6e691cc1c2ad9f62a8625b8bb9",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "plf-2027"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Projet de loi de finances pour 2027"
+            ],
+            [
+                "summary",
+                "Le budget de l'État pour l'année 2027 : recettes, dépenses et mesures fiscales."
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "texte"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-text-kind",
+                "projet"
+            ],
+            [
+                "ppf-stage",
+                "assemblee"
+            ],
+            [
+                "ppf-stage-history",
+                "depot",
+                "2026-10-01"
+            ],
+            [
+                "ppf-stage-history",
+                "commission",
+                "2026-10-10"
+            ],
+            [
+                "ppf-stage-history",
+                "assemblee",
+                "2026-10-20"
+            ],
+            [
+                "ppf-493",
+                "2026-10-29"
+            ],
+            [
+                "ppf-493",
+                "2026-11-04"
+            ],
+            [
+                "ppf-next-vote",
+                "2026-11-12",
+                "Vote sur une motion de censure"
+            ],
+            [
+                "ppf-impact",
+                "10 % des ménages les plus modestes",
+                "perd",
+                "Revenu disponible en baisse de 0,4 % (gel de prestations).",
+                "Évaluation d'un institut public (exemple)",
+                "https://example.org/exemple/evaluation-budget"
+            ],
+            [
+                "ppf-impact",
+                "Classes moyennes",
+                "mitige",
+                "Revenu disponible stable : baisse d'impôt compensée par la hausse de taxes.",
+                "Évaluation d'un institut public (exemple)",
+                "https://example.org/exemple/evaluation-budget"
+            ],
+            [
+                "ppf-impact",
+                "10 % des ménages les plus aisés",
+                "gagne",
+                "Revenu disponible en hausse de 0,6 % (baisse de la fiscalité du capital).",
+                "Évaluation d'un institut public (exemple)",
+                "https://example.org/exemple/evaluation-budget"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Dossier législatif du budget (exemple)",
+                "https://example.org/exemple/dossier-budget",
+                ""
+            ],
+            [
+                "ppf-next",
+                "Interpeller vos élus avant le vote",
+                "space:decider"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe gouvernement a engagé deux fois sa responsabilité sur ce texte. Une motion de censure sera votée le 12 novembre.\n",
+        "sig": "38da815f2bd35a0f160a0524d13e8f6da954e38a63570150283cbd0eec92d9a00f057eaa2544450d8b267ad64f39c47bfb7574f6a34466b36078c3b81e70454e"
+    },
+    {
+        "id": "efc31beafb82c7eead6504fb1ccb5a174db3779601a27e4b8616a7aad12ba9e6",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "ppl-indexation-salaires"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Proposition de loi indexant les salaires sur les prix"
+            ],
+            [
+                "summary",
+                "Revaloriser automatiquement les salaires inférieurs à deux fois le Smic au même rythme que les prix."
+            ],
+            [
+                "published_at",
+                "1791547200"
+            ],
+            [
+                "ppf-type",
+                "texte"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-text-kind",
+                "proposition"
+            ],
+            [
+                "ppf-stage",
+                "commission"
+            ],
+            [
+                "ppf-stage-history",
+                "depot",
+                "2026-10-09"
+            ],
+            [
+                "ppf-stage-history",
+                "commission",
+                "2026-10-30"
+            ],
+            [
+                "ppf-next-vote",
+                "2026-11-24",
+                "Examen en séance à l'Assemblée nationale"
+            ],
+            [
+                "ppf-impact",
+                "Salariés payés moins de deux Smic",
+                "gagne",
+                "Leur salaire suivrait les prix chaque trimestre.",
+                "Évaluation d'un institut de recherche (exemple)",
+                "https://example.org/exemple/evaluation-indexation"
+            ],
+            [
+                "ppf-impact",
+                "Très petites entreprises",
+                "mitige",
+                "Hausse du coût du travail, en partie compensée par une aide prévue à l'article 4.",
+                "Évaluation d'un institut de recherche (exemple)",
+                "https://example.org/exemple/evaluation-indexation"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Texte déposé à l'Assemblée nationale (exemple)",
+                "https://example.org/exemple/ppl-indexation",
+                ""
+            ],
+            [
+                "ppf-next",
+                "Soutenir une revendication sur les salaires",
+                "space:revendications"
+            ]
+        ],
+        "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nDéposée par des députés de plusieurs groupes, la proposition est examinée en commission.\n",
+        "sig": "c1c1d801c7f63f6b8e85e2eb02a6327fb41bf901f0a5cd5e6584cc55d0e8a53984839b2b9b693eca514e2a441309226ff9baaff7fab71ded8d18b6f1bb730e26"
+    }
+]

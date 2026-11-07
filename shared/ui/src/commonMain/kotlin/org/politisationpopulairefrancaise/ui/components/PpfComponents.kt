@@ -133,7 +133,7 @@ fun InfoBox(
     }
 }
 
-enum class BadgeStyle { EXAMPLE, SUCCESS, BRAND, NEUTRAL }
+enum class BadgeStyle { EXAMPLE, SUCCESS, BRAND, NEUTRAL, WARNING, ACCENT }
 
 /** A small bold label with a tinted background: [EXEMPLE], established facts, states. */
 @Composable
@@ -144,6 +144,8 @@ fun PpfBadge(text: String, style: BadgeStyle = BadgeStyle.NEUTRAL, modifier: Mod
         BadgeStyle.SUCCESS -> palette.successTint to palette.success
         BadgeStyle.BRAND -> palette.brandTint to palette.brand
         BadgeStyle.NEUTRAL -> palette.surface1 to palette.inkMuted
+        BadgeStyle.WARNING -> palette.warningTint to palette.warning
+        BadgeStyle.ACCENT -> palette.accentTint to palette.accentInk
     }
     Surface(modifier = modifier, shape = MaterialTheme.shapes.extraSmall, color = container, contentColor = content) {
         Text(

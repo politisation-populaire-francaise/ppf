@@ -55,6 +55,7 @@ require '^AndroidManifest\.xml$' "manifest"
 require '^assets/composeResources/[^/]+/values/strings[^/]*\.cvr$' "interface strings (Compose resources)"
 require '^assets/composeResources/[^/]+/files/contents/fiches\.json$' "bundled contents (fiches.json)"
 require '^assets/composeResources/[^/]+/files/contents/fil\.json$' "bundled feed posts (fil.json)"
+require '^assets/composeResources/[^/]+/files/contents/parcours\.json$' "bundled courses (parcours.json)"
 require '^assets/composeResources/[^/]+/files/contents/revendications\.json$' "bundled demands (revendications.json)"
 require '^assets/composeResources/[^/]+/font/atkinson_hyperlegible_regular\.ttf$' "bundled font (Atkinson Hyperlegible)"
 for abi in arm64-v8a armeabi-v7a x86_64; do

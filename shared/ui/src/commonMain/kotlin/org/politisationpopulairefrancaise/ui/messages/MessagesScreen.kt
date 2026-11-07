@@ -37,6 +37,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.ui.AppDependencies
@@ -128,6 +129,9 @@ fun MessagesScreen(
         )
     }
     val rooms = groups ?: rememberGroupsLibrary(dependencies)
+    SystemBack(enabled = messaging.open != null) { messaging.close() }
+    SystemBack(enabled = messaging.openFlow != null) { messaging.closeFlow() }
+    SystemBack(enabled = rooms.selected != null || rooms.creating) { if (rooms.creating) rooms.cancelCreation() else rooms.close() }
     // On phones and tablets an open room, or the creation of one, takes the whole screen.
     if (collectivesTakeTheScreen(rooms, windowClass)) {
         CollectivesFullScreen(rooms, session, windowClass, onNavigate, modifier)

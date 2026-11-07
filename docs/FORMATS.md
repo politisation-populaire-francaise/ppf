@@ -80,14 +80,28 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `summary` | Résumé | Non |
 | `published_at` | Première publication, secondes depuis 1970, en texte | Non |
 | `t` | Un thème par étiquette (`droits`, `manifestation`, …) | Non |
-| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut) ou `revendication` | Non |
+| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours` ou `revendication` | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
+| `ppf-duration` | Parcours seulement : durée de lecture annoncée, en minutes (1 à 240) | Non |
 | `ppf-origin` | `human` (rédigé par un humain) ou `ai-assisted` (produit avec l'aide d'une IA) | Oui |
 
 La date de dernière mise à jour est `created_at`. Une nouvelle version porte le même `d` et une date plus récente : elle remplace la précédente partout (section 4). L'application n'affiche que les contenus dont l'auteur figure dans sa liste d'auteurs de confiance.
 
 Dans le Markdown, un bloc ouvert par une ligne `::: en-bref`, `::: legal`, `::: illegal`, `::: attention` ou `::: conseil` et fermé par une ligne `:::` est un **encart** (résumé, ce qui est légal, ce qui est illégal, avertissement, conseils). Les lecteurs qui ne connaissent pas cette convention voient simplement le texte du bloc.
+
+### Parcours « Comprendre en 5 minutes »
+
+Un parcours (cahier fonctionnel, M13.1) est un contenu éditorial de `ppf-type` `parcours` (décision D-033). Son Markdown se lit ainsi (`core/comprendre/ParcoursFormat`) :
+
+- le texte avant le premier intertitre `## ` est l'**introduction** (son encart « En bref ») ;
+- chaque intertitre `## ` (hors d'un encart) ouvre une **étape** ; l'intertitre `## Sources` n'est pas une étape : il vient en dernier et porte les sources ;
+- un bloc `::: quiz` ... `:::` clôt chaque étape : une ligne `? question`, de deux à cinq options `- [ ] texte` dont une seule `- [x] texte`, puis une ou plusieurs lignes `> explication` (la bonne réponse et sa source) ;
+- un bloc `::: et-maintenant` ... `:::` porte les actions proposées à la fin (« Et maintenant ? ») : une puce faite d'un seul lien `[texte](ppf:<espace>)` vers un espace de l'application (`revendications`, `agir`, `decider`, `carte`, `comprendre`...) devient un bouton ; les autres puces restent du texte.
+
+L'application lit un quiz mal formé comme une étape sans question ; l'outil de signature refuse un parcours dont une étape, un quiz, le bloc « Et maintenant ? » ou les sources manquent ou sont mal formés. Un lecteur qui ne connaît pas ce format voit un article ordinaire.
+
+**Progression, sur l'appareil seulement** : tables locales `learning_progress(address, furthest_step, completed_at, updated_at)` et `learning_answer(address, step, choice, correct)`, indexées par l'adresse stable du parcours (`30023:<clé>:<identifiant>`), étapes et options numérotées à partir de 0. Elles ne sont jamais envoyées, ne sont pas liées au compte et s'effacent d'un geste.
 
 ### Publications courtes du fil
 
@@ -118,6 +132,33 @@ Une revendication proposée par un citoyen est un contenu éditorial de type `30
 **Rapport des vérifications** (`ProposalReport`, JSON) : `{"issues":[…],"checks":[…],"checked_at":<secondes>}`. Un constat (`ProposalIssue`) : `kind` parmi `duplicate`, `similar`, `already_advanced`, `existing_law`, `pending_bill`, `contradiction`, `several_ideas`, `too_short`, `too_long`, `all_caps`, `missing_theme`, `too_many_themes`, `missing_territory`, `personal_data`, `targets_person`, `charter`, `out_of_scope`, `unclear` ; `severity` parmi `blocking` (règles du formulaire seulement), `warning`, `info` ; `source` parmi `rules`, `similarity`, `legal`, `ai` ; `field` (partie du formulaire en cause) ; `related` (revendications existantes : `address`, `title`, `score` de 0 à 1, `status`, `territory`) ; `references` (textes juridiques : `title`, `nature`, `status`, `identifier`, `url` limitée à Légifrance, Assemblée nationale, Sénat et EUR-Lex, `excerpt`, `verified` vrai seulement pour un texte venu du corpus officiel interrogé par le serveur) ; `detail` (explication du modèle d'IA, 400 caractères au plus, jamais remplie par les règles) ; `alert` (`red` ou `orange`, pour la charte, une personne visée ou des données personnelles relevées par l'IA). Une vérification (`CheckStatus`) : `kind` parmi `rules`, `similarity`, `legal`, `ai` ; `state` parmi `done`, `after_sending` (sur l'appareil : elle tournera sur le serveur), `unavailable` (pas encore en service), `failed` ; `compared` (nombre de revendications comparées) ; `model` (nom du modèle d'IA qui a répondu).
 
 **Vues du mur, sur l'appareil seulement** : table locale `revendication_view(id, position, name, query)` ; une vue intégrée n'a ni nom ni requête (`tout`, `suivis`, `mes-revendications`, `nationales`, `theme:<id>`), une vue personnalisée (`custom:` et 16 caractères hexadécimaux) a un nom et une requête JSON `{"themes":[…],"territories":[…],"statuses":[…],"authors":"anyone"|"followed"|"mine","text":"…","sort":"newest"|"popular"|"updated"}` (valeurs par défaut omises, champs inconnus ignorés). Rien de tout cela n'est jamais envoyé au serveur.
+
+## 4 quinquies. Espace « Voir » : briques sourcées (D-034)
+
+Chaque brique est un contenu éditorial NIP-23 (type `30023`) : étiquettes communes de la section 4 bis (`d`, `title`, `summary`, `published_at`, `t`, `ppf-origin`), corps en Markdown lisible partout, `ppf-type` pour dire ce qu'elle est, puis des étiquettes structurées. Les étiquettes à plusieurs champs sont positionnelles ; un champ vide veut dire « inconnu ». Les dates sont au format `AAAA-MM-JJ`. Seules les briques signées par une clé de l'équipe éditoriale sont affichées ; une brique mal formée est ignorée.
+
+Étiquettes communes à plusieurs briques :
+
+| Étiquette | Champs |
+|---|---|
+| `ppf-source` | type de source, nom, adresse web, date |
+| `ppf-archive` | empreinte SHA-256 de l'original, preuve d'horodatage (`opentimestamps`, `rfc3161`), adresse de la copie archivée, date |
+| `ppf-correction` | date, motif (journal public des corrections) |
+| `ppf-next` | libellé, cible : adresse d'un contenu `30023:<clé>:<identifiant>` ou `space:<espace>` (« Et maintenant ? ») |
+| `a` | `30023:<clé>:<identifiant>`, champ vide, rôle : `personne`, `texte`, `indicateur` ou `cible` (contenu auquel répond un droit de réponse) |
+| `ppf-axis` | `mouvement`, `pouvoir` ou `libertes` |
+
+Types de source : `autorites`, `organisateurs`, `comptage-independant`, `medias`, `signalements`, `texte-officiel`, `justice`, `parlement`, `rapport`, `declaration`, `enquete-presse`. Niveaux de fiabilité : `elevee`, `moyenne`, `faible`.
+
+| `ppf-type` | Étiquettes propres |
+|---|---|
+| `indicateur` | `ppf-unit` (obligatoire), `ppf-rank` (ordre parmi les chiffres clés), `ppf-declarative` (`true` pour un indicateur déclaratif), `ppf-breakdown` (libellé de la part, par exemple « dont mineurs »), `ppf-accepted-source` (une par type retenu), `ppf-measure` : identifiant, date, valeur, type de source, nom de la source, adresse, fiabilité, occasion (« Journée du 18 septembre »), lieu, part. Le corps décrit la méthode. |
+| `fait` | `ppf-fact` (obligatoire) : `mobilisation`, `declaration-officielle`, `decision-officielle`, `reponse-gouvernement` (chronologie), `vote`, `promesse`, `discours-vote`, `affaire`, `declaration-contredite`, `argent-public`, `interets`, `influence`, `liberte` ; `ppf-date` (obligatoire), `ppf-place`, `ppf-fact-status` (obligatoire) : `etabli`, `allegue`, `enquete` ; `ppf-procedure` (obligatoire pour une affaire) : `enquete`, `mise-en-examen`, `proces`, `condamnation-premiere-instance`, `appel`, `condamnation-definitive`, `relaxe`, `non-lieu`, `classement-sans-suite` ; `ppf-sentence` et `ppf-sentence-served` (peine prononcée, peine exécutée) ; `ppf-promise` : `tenue`, `en-cours`, `abandonnee`, `contraire` ; `ppf-vote` : `pour`, `contre`, `abstention`, `non-votant`, `absent` ; `ppf-quote` (propos exacts) ; `ppf-liberty` : `interdiction-manifester`, `dissolution`, `loi-restrictive`, `surveillance`, `autre` ; `ppf-recourse` : `aucun`, `en-cours`, `suspendu`, `annule`, `rejete`. Tout fait qui porte `ppf-liberty` figure dans l'observatoire des libertés, quel que soit son type. |
+| `personne` | `ppf-role` (une par fonction) : `depute`, `senateur`, `eurodepute`, `ministre`, `president`, `maire`, `elu-local`, `autre` ; `ppf-group` ; `ppf-territory` ; `ppf-mandate` : intitulé, territoire, début, fin (vide si en cours). |
+| `texte` | `ppf-text-kind` (`projet` ou `proposition`), `ppf-stage` (obligatoire) : `depot`, `commission`, `assemblee`, `senat`, `cmp`, `lecture-definitive`, `adopte`, `conseil-constitutionnel`, `promulgue`, `rejete`, `retire` ; `ppf-stage-history` : étape, date ; `ppf-next-vote` : date, libellé ; `ppf-493` : date (une par recours à l'article 49.3) ; `ppf-impact` : catégorie de population, `gagne` / `perd` / `mitige`, effet, nom de la source, adresse. |
+| `mouvement` | `ppf-country` (obligatoire), `ppf-period` : début, fin ; `ppf-claim` (une par revendication), `ppf-result` (une par résultat obtenu). |
+| `dossier` | `ppf-axis` (un dossier sans axe n'est pas affiché dans « Voir »). |
+| `reponse` | `ppf-respondent` (nom de la personne qui répond, obligatoire) et un lien `a` de rôle `cible`. Le corps est la réponse. |
 
 ## 5. API du serveur (version 1)
 

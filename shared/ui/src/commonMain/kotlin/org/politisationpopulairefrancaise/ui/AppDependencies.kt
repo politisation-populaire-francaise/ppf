@@ -7,6 +7,7 @@ import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.social.FollowStore
+import org.politisationpopulairefrancaise.core.voir.ContentFollowStore
 
 /**
  * What each platform host (Android activity, desktop window, iOS view controller) provides to
@@ -30,6 +31,8 @@ class AppDependencies(
      * null means no local database.
      */
     val database: PpfDatabase? = null,
+    /** The contents of "Voir" the user follows, on the device only; null keeps them in memory (tests, previews). */
+    val contentFollowStore: ContentFollowStore? = null,
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -51,6 +54,7 @@ class AppDependencies(
             remote = remote,
             followStore = FollowStore(database),
             database = database,
+            contentFollowStore = ContentFollowStore(database),
         )
     }
 }
