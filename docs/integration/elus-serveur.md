@@ -108,7 +108,7 @@ Aucune dépendance nouvelle : JDK (`java.net.http`, `java.util.zip`), pilote Pos
 
 ### 3.2 Mise à jour et sécurité (contrat 1.5)
 
-- `PPF_RNE_SOURCE` : `example` (défaut) ou `official`. **`official` n'est suivi que si `PPF_ENVIRONMENT=production`** ; ailleurs le serveur sert le jeu fictif et l'écrit dans son journal (aucune donnée réelle en développement, en test ni en préproduction, même par erreur de configuration).
+- `PPF_RNE_SOURCE` : `example` (défaut) ou `official`. **`official` n'est suivi que si `PPF_ENVIRONMENT=production` ou `preproduction`** (décision de la propriétaire du 7 novembre 2026 : « on reste dans la vraie info même en preprod ») ; ailleurs le serveur sert le jeu fictif et l'écrit dans son journal (aucune donnée réelle en développement ni en test, même par erreur de configuration).
 - `PPF_RNE_REFRESH_DAYS` : jours entre deux imports (7 par défaut). Import au démarrage si rien n'est servi ou si la source a changé ; après un échec, nouvel essai six heures plus tard ; `0` coupe tout import automatique (tests).
 - Le dernier import réussi reste servi tant qu'un nouvel import n'a pas réussi : un fichier introuvable, une colonne manquante, un encodage cassé, une coupure du téléchargement font échouer l'import sans rien changer.
 - Garde des 20 % : un import est refusé si, pour **un seul** mandat ou au total, le nombre d'élus baisse de plus de 20 % par rapport à l'import servi de la même source (un fichier tronqué, même petit, est ainsi repéré). Le motif (`drop:municipal:55:40`) est gardé dans `elus_import.failure`.
@@ -126,6 +126,37 @@ Aucune dépendance nouvelle : JDK (`java.net.http`, `java.util.zip`), pilote Pos
 - Sans base de données, la réponse `503 database_unavailable` commune à `/api/v1/` s'applique.
 
 **Pour le bloc elus-app** : l'empreinte à comparer est celle des octets reçus après décompression ; si le client lit l'en-tête `ETag`, il retire les guillemets.
+
+## 4 bis. ElusLookup : recherche en lecture seule pour le back-office
+
+Pour la file `elus.certifications` du pôle « Décider » (contrat du back-office, section 7) : le certificateur voit, à côté d'une demande de certification d'un compte d'élu, les mandats en cours de l'annuaire qui lui correspondent. Forme validée par « Décider » le 7 novembre 2026. Fichiers : `server/.../server/elus/ElusLookup.kt` (recherche, statut, identifiant) et `ElusLookupHtml.kt` (fragment kotlinx.html) ; tests `ElusLookupTest`.
+
+```kotlin
+class ElusLookup(service: ElusService) {
+    fun find(name: String, mandate: Mandate? = null, territory: String? = null, limit: Int = 50): List<ElusMatch>
+    fun mandateStatus(id: String): MandateStatus
+    fun sourceUpdatedOn(): LocalDate?            // null tant qu'aucun import n'est servi
+    companion object {
+        fun mandateId(mandate: Mandate, territory: String, name: String, since: String): String   // "rne1:" + 32 hex
+        fun isValidId(id: String): Boolean
+    }
+}
+data class ElusMatch(val id: String, val name: String, val mandate: Mandate, val function: String?,
+                     val territory: String, val territoryName: String, val since: String, val sourceUpdatedOn: LocalDate)
+sealed interface MandateStatus {
+    data class Current(val sourceUpdatedOn: LocalDate)   // figure dans le dernier import servi
+    data class NotFound(val sourceUpdatedOn: LocalDate)  // absent du dernier import servi (fini, corrigé, ou jamais présent)
+    data object Unavailable                              // aucun import servi (premier démarrage) : ne rien conclure
+}
+fun FlowContent.elusMatches(matches: List<ElusMatch>, sourceUpdatedOn: LocalDate?, limit: Int = 50)
+```
+
+- **Identifiant stable** `rne1:` + 32 caractères hexadécimaux : format dans `docs/FORMATS.md`, section 4 octies. Il est calculé sur les données servies (mandat, territoire, nom « Prénom Nom » sans accents ni majuscules, date de début du mandat), jamais stocké : deux imports des mêmes fichiers donnent les mêmes identifiants, et un changement de fonction (un conseiller qui devient maire) ne le change pas. Le paquet ne garde que le nom affiché « Prénom Nom » (D-047) : l'empreinte porte sur ce nom réuni et non sur deux champs séparés ; deux personnes qui ne différeraient que par la frontière entre prénom et nom, sur le même mandat, le même territoire et le même jour, auraient le même identifiant (cas jamais vu, accepté). Deux homonymes parfaits dans ce cas partageraient aussi l'identifiant : le certificateur les voit tous les deux.
+- **`find`** : tous les mots du nom cherché (deux lettres au moins ; accents, casse, traits d'union, apostrophes et ordre des mots ignorés) doivent être des mots du nom de l'élu ; filtres facultatifs par mandat et par code de territoire exact ; résultats dans l'ordre des paquets, sans doublon (un président de région ou une intercommunalité à cheval sur deux départements sont dans plusieurs paquets), 50 au plus par défaut. La recherche lit les paquets du dernier import servi (la table de travail est vidée après chaque import) : seulement le paquet `FR` pour le Parlement européen, seulement celui du département pour un mandat municipal ou sénatorial dont le territoire est donné, tous les paquets sinon (de l'ordre d'une seconde sur le vrai répertoire ; « Décider » passe le mandat et le territoire quand la demande les donne).
+- **`mandateStatus`** : `Current` ou `NotFound`, avec la date de mise à jour de la source. Le RNE ne donne ni date de fin ni identifiant : on répond seulement « en cours selon la source mise à jour le … ». `Unavailable` (ajouté à la forme validée) évite de prendre un serveur qui vient de démarrer pour un mandat terminé. Le statut s'appuie sur un ensemble compact des identifiants de l'import servi (16 octets par mandat, une dizaine de Mo pour tout le répertoire), construit à la première question après chaque import.
+- **`elusMatches`** : tableau accessible (légende, en-têtes de colonnes et de lignes) : nom, mandat (« Conseil municipal », « Assemblée nationale »…, libellés neutres), fonction, territoire (nom et code), début du mandat, identifiant ; la date de la source et l'avertissement « le répertoire ne donne ni date de fin ni identifiant officiel » ; un message quand rien ne correspond, quand l'annuaire n'est pas encore chargé, ou quand la liste atteint la limite.
+- **Vie privée** : seulement les données publiques de l'annuaire (section 1.2 du contrat) ; aucun journal (ni nom cherché, ni résultat) ; rien n'est écrit en base. Le journal d'audit du socle trace la décision du certificateur, pas la recherche.
+- **Branchement** : « Décider » crée `ElusLookup(elusService)` dans `Application.module` à côté de sa file et appelle `find` et `elusMatches` dans `render`, `mandateStatus` pour une certification déjà accordée (contrôle périodique ou à l'affichage).
 
 ## 5. Vérification sur les vrais fichiers (7 novembre 2026, RNE du 11 août 2026)
 
@@ -153,7 +184,8 @@ Le numéro est toujours les deux derniers caractères ; le département ou la co
 - `CsvTest` : BOM, CRLF, lignes vides, guillemets doublés, séparateurs et sauts de ligne entre guillemets, colonne manquante refusée par son nom sans citer de valeur, colonnes trouvées malgré accents, casse et espaces, enregistrements trop courts ignorés et comptés, détection UTF-8 et Windows-1252, séquence UTF-8 cassée refusée.
 - `RneTest` : colonnes conservées (et jamais déclarées : sexe, naissance, profession, nationalité), dates, rangs, sections régionales, Corse, Français de l'étranger, intercommunalités, codes du ministère, suivi des fusions de communes, noms des circonscriptions.
 - `ElusImportTest` : import du jeu fictif (nombres par mandat, paquets, empreintes et tailles de l'index), contenu du paquet du Rhône (commune partagée entre quatre circonscriptions, Métropole de Lyon, président de région d'un autre département), champs exacts du JSON, minimisation, déterminisme (mêmes octets à deux imports), garde des 20 %, import qui échoue sans effacer le précédent, refus d'une personne non marquée `[EXEMPLE]`, planification.
-- `ElusApiTest` : 503 avant le premier import, 200 avec `ETag` et type, 304, 404 `unknown_package`, gzip, drapeau `example`, configuration (`official` en production seulement).
+- `ElusLookupTest` : identifiant (empreinte des champs canoniques, insensible aux accents et à la casse), aucune réponse avant le premier import (`Unavailable`), recherche insensible aux accents, à la casse et à l'ordre des mots, filtres par mandat et territoire, dédoublonnage, identifiants identiques entre deux imports identiques, mandat retiré par l'import suivant (`NotFound`, les autres restent `Current`), fragment HTML.
+- `ElusApiTest` : 503 avant le premier import, 200 avec `ETag` et type, 304, 404 `unknown_package`, gzip, drapeau `example`, configuration (`official` en production et en préproduction seulement).
 - `OfficialSourceTest` : choix du millésime complet le plus récent du Code officiel géographique, import « officiel » sans le drapeau `example` (data.gouv.fr simulé, aucun réseau), ressource disparue, hôtes et schémas refusés.
 - `ElusOfficialCheck` : vérification manuelle sur les vrais fichiers (section 5), ignorée sans `ELUS_OFFICIAL_DIR`.
 
