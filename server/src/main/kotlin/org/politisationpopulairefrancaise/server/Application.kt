@@ -204,6 +204,7 @@ fun Application.module(
         elusApi(elusService)
         agirSpace?.let { agendaPage(it.agendaSource()) }
         tilesRoutes(tiles)
+        parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
         // The pages of "Voir": contents of the editorial keys only (D-034).
         webRoutes(voir ?: repository?.let { EditorialVoirSource(it, policy) })
     }
