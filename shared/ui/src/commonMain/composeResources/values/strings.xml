@@ -94,6 +94,7 @@ Populaire Française</string>
     <string name="revendication_vote_for">Pour</string>
     <string name="revendication_vote_against">Contre</string>
     <string name="revendication_debate">Débat</string>
+    <string name="revendication_petition_open">Pétition officielle en cours : la signer sur %1$s</string>
     <string name="revendication_argument">Argumentaire</string>
 
     <!-- Messages (M14 et bloc communautaire) -->

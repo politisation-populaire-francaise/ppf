@@ -111,6 +111,11 @@ import org.politisationpopulairefrancaise.ui.resources.rv_view_followed
 import org.politisationpopulairefrancaise.ui.resources.rv_view_mine
 import org.politisationpopulairefrancaise.ui.resources.space_revendications
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.core.decider.Petition
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.ui.voir.hostOf
+import org.politisationpopulairefrancaise.ui.voir.rememberOpenUrl
+import org.politisationpopulairefrancaise.ui.resources.revendication_petition_open
 import org.politisationpopulairefrancaise.ui.urne.DemandVoteRow
 import org.politisationpopulairefrancaise.ui.urne.DemandVoteTags
 import org.politisationpopulairefrancaise.core.Space
@@ -136,6 +141,8 @@ object RevendicationTags {
     const val DETAIL = "revendication-detail"
     const val BACK = "revendication-back"
     const val VOTE_FOR = DemandVoteTags.FOR
+    /** The link of the official petition that carries a demand (D-115). */
+    const val PETITION = "revendication-petition"
     const val TAB = "revendication-tab-" // followed by the view id
     const val PAGE = "revendication-page-" // followed by the view id
     const val FILTERS = "revendication-filters"
@@ -400,7 +407,14 @@ private fun WallPage(
     } else {
         library.revendications
     }
-    val results = remember(demands, effective, context) { effective.apply(demands, context) }
+    val today = CivilDate.fromEpochSeconds(currentEpochSeconds())
+    // A demand carried by an open official petition is pinned at the top of the wall (D-115), in the
+    // order of the view among themselves; then the others, in the order of the view.
+    val results = remember(demands, effective, context, library.decider) {
+        val ordered = effective.apply(demands, context)
+        val (pinned, others) = ordered.partition { library.decider.openPetitionFor(it.address, today) != null }
+        pinned + others
+    }
     val territories = remember(demands) { territoriesOf(demands) }
 
     Column(
@@ -451,6 +465,7 @@ private fun WallPage(
                     onOpen = { library.openRevendication(revendication) },
                     selected = library.selectedRevendication?.address == revendication.address,
                     own = library.ownDemand(revendication),
+                    petition = library.decider.openPetitionFor(revendication.address, today),
                 )
             }
         }
@@ -584,7 +599,15 @@ private fun EmptyState(
 
 /** The card of a demand, used on the wall and in the feed: status, the demand, its territory and themes, the vote row. */
 @Composable
-fun RevendicationCard(revendication: Article, onOpen: () -> Unit, modifier: Modifier = Modifier, selected: Boolean = false, own: OwnDemand? = null) {
+fun RevendicationCard(
+    revendication: Article,
+    onOpen: () -> Unit,
+    modifier: Modifier = Modifier,
+    selected: Boolean = false,
+    own: OwnDemand? = null,
+    /** The open official petition that carries it (D-115): pinned, its link on the card. */
+    petition: Petition? = null,
+) {
     val palette = PpfTheme.palette
     val example = revendication.title.startsWith(FeedPost.EXAMPLE_MARKER)
     PpfCard(onClick = onOpen, selected = selected, modifier = modifier.fillMaxWidth().testTag(RevendicationTags.CARD + revendication.slug)) {
@@ -593,6 +616,10 @@ fun RevendicationCard(revendication: Article, onOpen: () -> Unit, modifier: Modi
             if (own != null && own.state != OwnDemandState.PUBLISHED) OwnStateBadge(own.state) else revendication.status?.let { StatusBadge(it) }
             Spacer(Modifier.weight(1f))
             if (example) ExampleBadge()
+        }
+        if (petition != null) {
+            Spacer(Modifier.height(8.dp))
+            PetitionLink(petition)
         }
         Spacer(Modifier.height(10.dp))
         Text(revendication.title.removePrefix(FeedPost.EXAMPLE_MARKER).trim(), style = MaterialTheme.typography.titleSmall)
@@ -606,6 +633,21 @@ fun RevendicationCard(revendication: Article, onOpen: () -> Unit, modifier: Modi
         HorizontalDivider(color = palette.border)
         Spacer(Modifier.height(4.dp))
         VoteRow(revendication)
+    }
+}
+
+/**
+ * The official petition filed by the team for this demand (D-115): pinned at the top of the wall,
+ * signed only on the official site, after the "Vous quittez PPF" warning.
+ */
+@Composable
+private fun PetitionLink(petition: Petition) {
+    val open = rememberOpenUrl()
+    val palette = PpfTheme.palette
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.testTag(RevendicationTags.PETITION)) {
+        Icon(Lucide.ScrollText, contentDescription = null, tint = palette.brand, modifier = Modifier.size(16.dp))
+        Spacer(Modifier.width(6.dp))
+        PpfTextButton(onClick = { open(petition.officialUrl) }, text = stringResource(Res.string.revendication_petition_open, hostOf(petition.officialUrl)))
     }
 }
 

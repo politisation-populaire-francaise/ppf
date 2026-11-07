@@ -29,6 +29,9 @@ object DeciderTags {
      * (shared-initiative referendum: one tenth of the registered voters, published for each one).
      */
     const val REQUIRED = "ppf-required"
+    /** Link role from an official petition to the demand of the wall it carries (D-115). */
+    const val ROLE_DEMAND = "revendication"
+
     /** `ouverte` or `close` ([PetitionStatus]). */
     const val PETITION_STATUS = "ppf-petition-status"
 

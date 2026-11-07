@@ -121,6 +121,8 @@ private val DECIDER_LINK_KEYS = mapOf(
     "person" to VoirTags.ROLE_PERSON,
     "candidate" to DeciderTags.ROLE_CANDIDATE,
     "pacte" to DeciderTags.ROLE_PACTE,
+    // An official petition filed by the team for a demand of the wall (D-115).
+    "revendication" to DeciderTags.ROLE_DEMAND,
 )
 
 private fun deciderEvent(document: Document, author: PublicKey, computed: List<List<String>>): UnsignedEvent {

@@ -34,6 +34,10 @@ class DeciderCatalog(
     fun closedPetitions(today: CivilDate): List<Petition> = petitions.filterNot { it.isOpen(today) }
         .sortedWith(compareByDescending<Petition> { it.openedOn ?: FAR_PAST }.thenBy { sortKey(it.title) })
 
+    /** The open official petition that carries a demand of the wall (D-115), if any. */
+    fun openPetitionFor(demand: ContentAddress, today: CivilDate): Petition? =
+        petitions.filter { demand in it.demands && it.isOpen(today) }.maxByOrNull { it.openedOn ?: FAR_PAST }
+
     /** The petitions about a bill of "Voir". */
     fun petitionsOn(text: ContentAddress): List<Petition> = petitions.filter { text in it.texts }
 
