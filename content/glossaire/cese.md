@@ -1,8 +1,8 @@
 ---
 slug: cese
 title: [EXEMPLE] CESE
-summary: Conseil économique, social et environnemental : assemblée consultative de 175 membres issus de la société civile. Il conseille le Gouvernement et le Parlement et peut être saisi par pétition.
-variants: CESE, Conseil économique social et environnemental
+summary: Conseil économique\, social et environnemental : assemblée consultative de 175 membres issus de la société civile. Il conseille le Gouvernement et le Parlement et peut être saisi par pétition.
+variants: CESE, Conseil économique\, social et environnemental, Conseil économique social et environnemental
 topics: institutions, participation
 see_also: petition, gouvernement, parlement
 related: decryptage:petition-500000-debat-obligatoire
