@@ -1,6 +1,6 @@
 # Délibération citoyenne (DE-25) : conception
 
-- Pôle « Décider », 7 novembre 2026. À valider par le chef d'équipe (questions de la section 8) avant tout code.
+- Pôle « Décider », 7 novembre 2026. Refondue le même soir sur les décisions de la propriétaire (D-115, section 8) : prête à coder.
 - Sources : cahier fonctionnel 2.0, M13.5 (DE-25, DE-08, DE-04) ; décision de la propriétaire D-062 (« c'est le peuple qui doit la modifier et la valider via notre appli ») ; conception du vote, section 11 (`docs/integration/une-personne-une-voix.md`) ; contrat `core/urne` (`docs/integration/urne-contrat.md`).
 - Premier usage : les mesures du Pacte démocratique pour la présidentielle de 2027, ouvertes au plus tard en janvier 2027 ; puis les modalités des campagnes. Le même module servira au Programme du peuple (DE-03), aux cahiers de doléances (DE-02) et aux votations (M13.6).
 
@@ -35,15 +35,18 @@ Calendrier pour le Pacte : ouverture en décembre 2026 dès que le module est pr
 
 ## 4. Du vote des amendements au texte final (mécanique, sans choix de l'équipe)
 
-- Un amendement est **adopté** si la règle du résultat (section 8, Q2) donne une majorité de `pour` sur `pour` + `contre` (l'abstention compte dans la participation, pas dans la majorité).
-- Si plusieurs amendements d'une même proposition sont adoptés, la rédaction retenue est celle de l'amendement adopté avec la **plus forte part de `pour`** ; en cas d'égalité, le plus de bulletins `pour`, puis le plus ancien.
-- Sans amendement adopté, la rédaction d'origine est soumise au vote final.
+- PPF n'adopte rien (« une mesure ne peut pas être adoptée par PPF, nous ne sommes qu'une association qui a pour mission de porter la voix des citoyens ») : ce sont les votes des citoyens qui choisissent la rédaction.
+- Chaque urne propose `pour`, `contre` et `blanc` ; le blanc est compté et affiché ; ne pas voter, c'est l'abstention, montrée par la participation (jetons distribués, bulletins reçus).
+- Un amendement **l'emporte sur la rédaction d'origine** quand les citoyens lui donnent plus de `pour` que de `contre` (les élus votent publiquement à part et ne comptent pas, D-115).
+- Si plusieurs amendements d'une même proposition l'emportent, la rédaction retenue est celle qui a le plus de `pour` ; à égalité, le moins de `contre`, puis le plus ancien.
+- Sinon, la rédaction d'origine est soumise au vote final.
 - Le texte de chaque mesure finale est publié avec son empreinte, l'amendement d'où il vient et les résultats qui l'expliquent ; n'importe qui peut refaire le calcul.
 
 ## 5. Le résultat du vote final
 
-- Chaque mesure obtient son résultat par la méthode choisie (Q1) et la règle de majorité choisie (Q2).
-- Sont retenues, dans l'ordre de leur résultat, les mesures majoritaires, au plus le nombre fixé par la délibération (de 5 à 10 pour le Pacte) ; s'il y en a moins de 5, la délibération le dit et l'équipe ne complète pas la liste elle-même.
+- Chaque mesure est votée `pour`, `contre` ou `blanc`.
+- Le Pacte réunit les **5 à 10 mesures les plus soutenues parmi celles qui ont plus de `pour` que de `contre`** (option A de la propriétaire ; `MeasureSelection` dans `core/decider`). À égalité de soutiens, le moins de `contre`, puis l'ordre de la délibération. Le seuil national de soutiens (D-115) n'est pas exigé : le Pacte est lui-même le moyen de porter ces mesures aux candidats. S'il y en a moins de 5, la délibération le dit et l'équipe ne complète pas la liste elle-même.
+- Aucun seuil de participation : la participation est affichée à côté de chaque résultat.
 - La liste retenue devient le Pacte : même texte (empreinte), envoi, tableau public (D-060, D-062).
 
 ## 6. Côté technique (aperçu)
@@ -59,7 +62,16 @@ Calendrier pour le Pacte : ouverture en décembre 2026 dès que le module est pr
 - Changer les modalités elles-mêmes (durées, méthode, limites) : une délibération « modalités », ouverte avec le même module après celle du Pacte.
 - Fusion de propositions en doublon : signalée par la relecture, décidée par l'équipe avec une trace publique, pas automatique.
 
-## 8. Questions à trancher (recommandation en premier)
+## 8. Décisions de la propriétaire (7 novembre 2026, mots exacts relayés par le chef d'équipe)
+
+- « Prend en compte le vote blanc. » : `pour`, `contre`, `blanc` partout.
+- « Une mesure ne peut pas être adoptée par PPF, nous ne sommes qu'une association qui a pour mission de porter la voix des citoyens. » : plus d'« adoption », les votes choisissent la rédaction et les mesures ; au-delà des seuils de soutiens, PPF porte (D-115, `docs/integration/seuils-soutiens.md`).
+- Durées 3, 2 et 2 semaines : « On peut tenter de partir là dessus oui ».
+- Pas de seuil de participation : « Oui ».
+- Pacte : les 5 à 10 mesures les plus soutenues, avec plus de « pour » que de « contre » (option A).
+- Le vote des élus est public et à part (D-115) ; les organisations ne votent pas.
+
+## 9. Questions posées (historique)
 
 - **Q1. Méthode du vote final.**
   - A (recommandée) : **pour, contre, abstention** par mesure, comme les amendements. Simple, la même partout, et le résultat se lit d'un coup d'œil ; classement par part de `pour`.
