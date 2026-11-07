@@ -48,7 +48,7 @@ Juste après le paiement, Hostinger ouvre l'assistant de configuration du VPS.
 
 Ne touchez à rien d'autre dans hPanel (pare-feu de hPanel, « Docker Manager », terminal IA) : la configuration est faite par mes scripts, et deux pare-feu qui se contredisent sont une source de pannes.
 
-## 5. Ajouter le nom de la préproduction (DNS)
+## 5. Ajouter les noms de la préproduction (DNS)
 
 À faire seulement quand je vous le demande, avec l'adresse IPv4 de l'étape 4. C'est la seule modification du DNS avant le lancement public : le domaine principal lui-même ne change pas.
 
@@ -60,7 +60,8 @@ Ne touchez à rien d'autre dans hPanel (pare-feu de hPanel, « Docker Manager »
    - **Pointe vers** : l'adresse IPv4 du serveur
    - **TTL** : laissez la valeur proposée (par exemple 14400)
 4. Cliquez sur **« Ajouter un enregistrement »**.
-5. N'ajoutez **pas** d'enregistrement `AAAA` pour `preprod` : la préproduction ne doit être jointe qu'en IPv4, à travers le tunnel.
+5. Recommencez les étapes 3 et 4 avec, dans **Nom**, `equipe.preprod` (le back-office de l'équipe, lui aussi joignable seulement à travers le tunnel), le même type `A` et la même adresse IPv4.
+6. N'ajoutez **pas** d'enregistrement `AAAA` pour ces deux noms : la préproduction et le back-office ne doivent être joints qu'en IPv4, à travers le tunnel.
 
 ## 6. Ce que je fais ensuite, sans action de votre part
 

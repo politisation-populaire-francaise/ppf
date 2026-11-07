@@ -233,7 +233,7 @@ new_password() { openssl rand -hex 32; }
 
 # One environment: .env, and the database password in two files (one per container user).
 prepare_environment() {
-    local env="$1" db="$2" server_uid="$3" editor_keys="$4"
+    local env="$1" db="$2" server_uid="$3" editor_keys="$4" backoffice_origin="$5"
     local dir="$DATA_DIR/$env"
     install -d -m 0700 "$dir" "$dir/secrets"
     if [ ! -f "$dir/secrets/db_password" ]; then
@@ -255,11 +255,14 @@ PPF_EDITOR_KEYS=$editor_keys
 EOF
         )
     fi
+    # Settings added after the first run of this script: appended once, never overwritten.
+    grep -q '^PPF_BACKOFFICE_ORIGIN=' "$dir/.env" || echo "PPF_BACKOFFICE_ORIGIN=$backoffice_origin" >> "$dir/.env"
+    grep -q '^PPF_AUDIT_PUBLIC_KEY=' "$dir/.env" || echo "PPF_AUDIT_PUBLIC_KEY=" >> "$dir/.env"
 }
 # The example content signer (EditorialTrust.EXAMPLE_EDITOR) publishes the [EXEMPLE] contents of the
 # preproduction only. The production starts with no editor key.
-prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f"
-prepare_environment production ppf 10001 ""
+prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f" "https://equipe.preprod.$domain"
+prepare_environment production ppf 10001 "" "https://equipe.$domain"
 
 if [ ! -f "$DATA_DIR/proxy/.env" ]; then
     # Password of the preproduction web pages, generated here and shown to the owner once.
@@ -309,6 +312,7 @@ EOF
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 install -m 0755 "$script_dir/deploy.sh" /usr/local/sbin/ppf-deploy
 install -m 0755 "$script_dir/wg-add-peer.sh" /usr/local/sbin/ppf-wg-add-peer
+install -m 0755 "$script_dir/backoffice.sh" /usr/local/sbin/ppf-backoffice
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.service" /etc/systemd/system/
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.timer" /etc/systemd/system/
 systemctl daemon-reload
@@ -320,5 +324,6 @@ Server prepared. Next steps (docs/guides/serveur-hostinger-kvm1.md):
   1. check a login as $ADMIN_USER with the key, then: bootstrap-server.sh --lockdown
   2. ppf-wg-add-peer <device> for each device of the team
   3. ppf-deploy preproduction, then: systemctl start ppf-preprod-update.timer
+  4. ppf-backoffice preproduction bootstrap <pseudonyme> for the first team account
 WireGuard public key of the server: $(cat /etc/wireguard/server.pub)
 EOF

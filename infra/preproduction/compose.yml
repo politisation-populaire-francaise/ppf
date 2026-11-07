@@ -34,6 +34,11 @@ services:
       DATABASE_USER: ${POSTGRES_USER:?}
       DATABASE_PASSWORD_FILE: /run/secrets/server_db_password
       PPF_EDITOR_KEYS: ${PPF_EDITOR_KEYS:-}
+      # Team back-office (docs/integration/back-office.md): off without its origin; its routes answer
+      # only on the second port, which only the proxy reaches (equipe.<domain>, tunnel only).
+      PPF_BACKOFFICE_ORIGIN: ${PPF_BACKOFFICE_ORIGIN:-}
+      PPF_BACKOFFICE_PORT: "8081"
+      PPF_AUDIT_PUBLIC_KEY: ${PPF_AUDIT_PUBLIC_KEY:-}
       # Fictional example contents, bundled in the image, loaded at each start (idempotent).
       PPF_EXAMPLES_DIR: /app/examples
     secrets:

@@ -17,3 +17,20 @@ www.{$PPF_DOMAIN}, politisation-populaire-francaise.fr, www.politisation-populai
 	import security_headers
 	redir https://{$PPF_DOMAIN}{uri} permanent
 }
+
+# Back-office of the team: tunnel only for version 1 (contract docs/integration/back-office.md,
+# section 3, question to the owner), on the second port of the server (8081).
+equipe.{$PPF_DOMAIN} {
+	import security_headers
+	header X-Robots-Tag "noindex, nofollow"
+
+	@outside not remote_ip 10.8.0.0/24
+
+	route {
+		abort @outside
+		reverse_proxy ppf-prod-server-1:8081 {
+			header_up -X-Forwarded-For
+			header_up -X-Real-IP
+		}
+	}
+}

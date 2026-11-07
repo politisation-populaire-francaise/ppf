@@ -30,3 +30,21 @@ preprod.{$PPF_DOMAIN} {
 		}
 	}
 }
+
+# Back-office of the team (D-120 and following): its own name, the tunnel only, and the second port
+# of the server (8081), which never serves the public site; the public port never serves it either.
+# No password here: the back-office has its own passkey login.
+equipe.preprod.{$PPF_DOMAIN} {
+	import security_headers
+	header X-Robots-Tag "noindex, nofollow"
+
+	@outside not remote_ip 10.8.0.0/24
+
+	route {
+		abort @outside
+		reverse_proxy ppf-preprod-server-1:8081 {
+			header_up -X-Forwarded-For
+			header_up -X-Real-IP
+		}
+	}
+}
