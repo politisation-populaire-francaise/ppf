@@ -1,15 +1,28 @@
-# Production. Started as its own Compose project: docker compose -p ppf-prod up -d
-# Nothing here is shared with the preproduction, except the edge network joined by the proxy.
+# Production. Its own Compose project, started by infra/scripts/deploy.sh production, only with
+# an image digest already validated on the preproduction:
+#   docker compose -f infra/production/compose.yml --env-file /srv/ppf/production/.env up -d
+# Nothing here is shared with the preproduction, except the proxy (edge network).
+#
+# Variables (file /srv/ppf/production/.env on the server, never in the repository; model in
+# infra/env/production.env.example):
+# - PPF_SERVER_IMAGE: image to run, always by digest (set by deploy.sh);
+# - PPF_SECRETS_DIR: directory holding the database password files (outside the repository);
+# - POSTGRES_DB, POSTGRES_USER;
+# - PPF_EDITOR_KEYS: keys of the editorial team (never the example key).
 
 name: ppf-prod
 
 services:
   server:
-    image: ${PPF_SERVER_IMAGE:-ppf-server:local}
+    image: ${PPF_SERVER_IMAGE:?set by infra/scripts/deploy.sh}
     restart: unless-stopped
+    # A UID of its own, distinct from the preproduction one (10002).
+    user: "10001:10001"
     read_only: true
+    # The only writable place. "exec": the signature library (secp256k1) unpacks its native code
+    # there before loading it, which Docker's default tmpfs options (noexec) would forbid.
     tmpfs:
-      - /tmp
+      - /tmp:rw,exec,nosuid,nodev,size=64m
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -17,17 +30,24 @@ services:
     environment:
       PORT: "8080"
       PPF_ENVIRONMENT: production
-      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
-      DATABASE_USER: ${POSTGRES_USER}
-      DATABASE_PASSWORD_FILE: /run/secrets/db_password
+      DATABASE_URL: jdbc:postgresql://db:5432/${POSTGRES_DB:?}
+      DATABASE_USER: ${POSTGRES_USER:?}
+      DATABASE_PASSWORD_FILE: /run/secrets/server_db_password
+      PPF_EDITOR_KEYS: ${PPF_EDITOR_KEYS:-}
+      # No PPF_EXAMPLES_DIR here: the server refuses to start in production with it.
     secrets:
-      - db_password
+      - server_db_password
     networks:
       - internal
       - edge
     depends_on:
       db:
         condition: service_healthy
+    logging:
+      driver: local
+      options:
+        max-size: 5m
+        max-file: "3"
     deploy:
       resources:
         limits:
@@ -35,14 +55,27 @@ services:
           cpus: "1.0"
 
   db:
-    image: postgis/postgis:17-3.5
+    # PostgreSQL 17 with PostGIS, pinned by digest (Dependabot proposes updates).
+    image: postgis/postgis:17-3.6@sha256:1ac10b2551ba84ae05db8e7da477afcd0a3fede99bcb7705da2ee157390cb095
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB:?}
+      POSTGRES_USER: ${POSTGRES_USER:?}
       POSTGRES_PASSWORD_FILE: /run/secrets/db_password
+    # Small settings for a small machine; nothing is logged about clients.
+    command:
+      - postgres
+      - -c
+      - shared_buffers=192MB
+      - -c
+      - max_connections=50
+      - -c
+      - log_connections=off
+      - -c
+      - log_disconnections=off
+    shm_size: 128m
     secrets:
       - db_password
     volumes:
@@ -50,25 +83,38 @@ services:
     networks:
       - internal
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      test: ["CMD-SHELL", "pg_isready -U \"$${POSTGRES_USER}\" -d \"$${POSTGRES_DB}\""]
       interval: 10s
       timeout: 5s
       retries: 10
+    logging:
+      driver: local
+      options:
+        max-size: 5m
+        max-file: "3"
     deploy:
       resources:
         limits:
           memory: 768M
           cpus: "1.0"
 
+# The same password in two files, each readable only by the user of its container
+# (10001 for the server, 999 for PostgreSQL): file secrets are bind mounts, so Compose
+# cannot change their owner. Both files are written by infra/scripts/bootstrap-server.sh.
 secrets:
+  server_db_password:
+    file: ${PPF_SECRETS_DIR:?}/server_db_password
   db_password:
-    file: ./secrets/db_password
+    file: ${PPF_SECRETS_DIR:?}/db_password
 
 volumes:
   db-data:
 
 networks:
+  # The database network has no way out.
   internal:
     internal: true
+  # Shared with the proxy only; created once by infra/scripts/bootstrap-server.sh.
   edge:
+    external: true
     name: ppf-prod-edge
