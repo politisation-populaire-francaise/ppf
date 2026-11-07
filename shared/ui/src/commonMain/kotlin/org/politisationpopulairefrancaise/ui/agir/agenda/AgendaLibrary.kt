@@ -22,6 +22,10 @@ import org.politisationpopulairefrancaise.core.agir.agenda.AgendaStore
 import org.politisationpopulairefrancaise.core.agir.agenda.AgendaTiming
 import org.politisationpopulairefrancaise.core.agir.agenda.InMemoryAgendaState
 import org.politisationpopulairefrancaise.core.agir.agenda.Mobilization
+import org.politisationpopulairefrancaise.core.agir.agenda.Participation
+import org.politisationpopulairefrancaise.core.agir.agenda.ParticipationRole
+import org.politisationpopulairefrancaise.core.agir.agenda.ParticipationStatus
+import org.politisationpopulairefrancaise.core.agir.agenda.Participations
 import org.politisationpopulairefrancaise.core.agir.agenda.ProposalRecord
 import org.politisationpopulairefrancaise.core.agir.agenda.ProposalReview
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
@@ -75,6 +79,23 @@ enum class CancelOutcome {
     FAILED,
 }
 
+/** How a public response of the account (a verified organisation or PPF) ended. */
+enum class ParticipationOutcome {
+    /** Published: the participation (or the co-organisation) shows for everyone. */
+    SHOWN,
+
+    /** Published: the participation no longer shows (a newer version, `declined`). */
+    WITHDRAWN,
+
+    /** Signed and kept on the device; it leaves with the next synchronization that reaches the server. */
+    WAITING_FOR_SERVER,
+
+    /** The server refused it; the previous answer is put back. */
+    REFUSED,
+
+    FAILED,
+}
+
 /** The three tabs of the agenda. */
 enum class AgendaTab { UPCOMING, PAST, MINE }
 
@@ -90,9 +111,15 @@ enum class AgendaTab { UPCOMING, PAST, MINE }
  * every event it serves is on the agenda; the user's own proposals appear on the agenda only once
  * published, and in "Mes propositions" with their state meanwhile.
  *
- * The answers "J'y serai" and "Intéressé" (AG-49) stay in [AgendaState] on the device: they are
- * never sent, counted or listed anywhere, and are erased [RESPONSE_GRACE] after the event is over.
+ * The answers "J'y serai" and "Ça m'intéresse" (AG-49) stay in [AgendaState] on the device: they
+ * are never sent, counted or listed anywhere, and are erased [RESPONSE_GRACE] after the event is over.
  * The filters run on the device too ([AgendaQuery]); nothing personal travels to the server.
+ *
+ * The public responses (kind 31925, contract version 2, D-044) are pulled by type, all of them,
+ * so that the server never learns which events are looked at, and kept in the local event store
+ * ([participations]). The screens show only those of verified organisations and editorial keys. An
+ * account that is one of them may publish its own ([answerPublicly]); a citizen's answer never leaves
+ * the device.
  */
 class AgendaLibrary(
     private val store: LocalEventStore?,
@@ -116,6 +143,17 @@ class AgendaLibrary(
 
     /** The user's own proposals, newest first (empty without an account). */
     var mine: List<OwnProposal> by mutableStateOf(emptyList())
+        private set
+
+    /**
+     * The public responses known to the device (kind 31925), the newest of each key for each
+     * mobilization, whoever signed them: the screens keep only those that count.
+     */
+    var participations: Participations by mutableStateOf(Participations.EMPTY)
+        private set
+
+    /** Ids of the public responses of the account still waiting on the device for the server. */
+    var waitingResponses: Set<String> by mutableStateOf(emptySet())
         private set
 
     /** The user's answers, by address of mobilization. Private: never sent. */
@@ -236,6 +274,68 @@ class AgendaLibrary(
         scope.launch { answerWrites.withLock { withContext(Dispatchers.Default) { state.respond(address, next, mobilization.endsAt) } } }
     }
 
+    /** The newest public response of the account on the device to [mobilization], waiting or published; null without one. */
+    fun publicAnswerOf(mobilization: Mobilization): Participation? {
+        val key = accountKey ?: return null
+        return participations.of(key, mobilization.address.toString())
+    }
+
+    /** True while the account's public response to [mobilization] waits on the device for the server. */
+    fun publicAnswerWaiting(mobilization: Mobilization): Boolean = publicAnswerOf(mobilization)?.event?.id?.let { it in waitingResponses } == true
+
+    /**
+     * Publishes the public response of the account to [mobilization] (D-044): `accepted` shows the
+     * participation of the organisation (or, with [ParticipationRole.CO_ORGANISER], confirms that it
+     * co-organises an event that names it), `declined` withdraws it. Only for an account whose answer
+     * counts (a verified organisation or an editorial key): the screen offers it to them alone. The
+     * response is signed, kept on the device, then sent through the single publication port; a
+     * refusal puts the previous answer back. Showing it publicly replaces a private "J'y serai".
+     */
+    suspend fun answerPublicly(
+        mobilization: Mobilization,
+        signer: EventSigner,
+        status: ParticipationStatus,
+        role: ParticipationRole = ParticipationRole.PARTICIPANT,
+    ): ParticipationOutcome {
+        val store = store ?: return ParticipationOutcome.FAILED
+        if (signer.publicKey.hex != accountKey) return ParticipationOutcome.FAILED
+        val previous = publicAnswerOf(mobilization)?.event
+        val outcome = try {
+            val createdAt = maxOf(clock(), (previous?.createdAt ?: 0) + 1)
+            val event = signer.sign(Participation.build(signer.publicKey, mobilization, status, createdAt, role))
+            passes.withLock {
+                withContext(Dispatchers.Default) { store.store(event, pending = true) }
+                val outcome = when (val result = remote?.publish(event) ?: PublicationResult.Unavailable()) {
+                    is PublicationResult.Accepted -> {
+                        withContext(Dispatchers.Default) { store.markPublished(event.id) }
+                        if (status == ParticipationStatus.ACCEPTED) ParticipationOutcome.SHOWN else ParticipationOutcome.WITHDRAWN
+                    }
+                    is PublicationResult.Rejected -> {
+                        withContext(Dispatchers.Default) {
+                            store.delete(event.id)
+                            previous?.let { store.store(it) }
+                        }
+                        ParticipationOutcome.REFUSED
+                    }
+                    is PublicationResult.Unavailable -> ParticipationOutcome.WAITING_FOR_SERVER
+                }
+                reload(store)
+                outcome
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            ParticipationOutcome.FAILED
+        }
+        // A participation shown publicly needs no private answer any more.
+        if (status == ParticipationStatus.ACCEPTED && outcome != ParticipationOutcome.REFUSED && outcome != ParticipationOutcome.FAILED &&
+            responseTo(mobilization) == AgendaResponse.GOING
+        ) {
+            respond(mobilization, AgendaResponse.GOING)
+        }
+        return outcome
+    }
+
     /**
      * Forgets what the device knows of the user in the agenda when the keys are erased (protection
      * by default, like the followed accounts and the conversations): the answers and the follow-up
@@ -326,7 +426,7 @@ class AgendaLibrary(
         val bytes = runCatching { Res.readBytes(BUNDLED_FILE) }.getOrNull() ?: return
         val events = runCatching { json.decodeFromString(ListSerializer(SignedEvent.serializer()), bytes.decodeToString()) }.getOrNull() ?: return
         withContext(Dispatchers.Default) {
-            events.filter { it.kind == Mobilization.KIND && it.verify() && trust.isTrusted(it.pubkey) }.forEach { store.store(it) }
+            events.filter { (it.kind == Mobilization.KIND || it.kind == Participation.KIND) && it.verify() && trust.isTrusted(it.pubkey) }.forEach { store.store(it) }
         }
     }
 
@@ -334,7 +434,19 @@ class AgendaLibrary(
         status = LibraryStatus.Loading
         val report = passes.withLock {
             val up = publishOwnPending(store, remote)
-            val report = if (up) withContext(Dispatchers.Default) { SyncService(store, remote).pull(kinds = listOf(Mobilization.KIND)) } else SyncReport(reachable = false)
+            val report = if (up) {
+                withContext(Dispatchers.Default) {
+                    val sync = SyncService(store, remote)
+                    val mobilizations = sync.pull(kinds = listOf(Mobilization.KIND))
+                    // The public responses, the whole type at once, with their own cursor: from the
+                    // beginning the first time (the bundled examples must not move it).
+                    val cursor = SyncService.cursorName(listOf(Participation.KIND))
+                    if (mobilizations.reachable && store.cursor(cursor) == null) store.setCursor(cursor, 0)
+                    if (mobilizations.reachable) mobilizations + sync.pull(kinds = listOf(Participation.KIND)) else mobilizations
+                }
+            } else {
+                SyncReport(reachable = false)
+            }
             reload(store)
             report
         }
@@ -348,8 +460,17 @@ class AgendaLibrary(
      * be reached. A proposal refused for good is kept, marked "Non publié", so that its author learns it.
      */
     private suspend fun publishOwnPending(store: LocalEventStore, remote: RemoteEvents): Boolean {
-        val waiting = withContext(Dispatchers.Default) { store.pending().filter { it.kind == Mobilization.KIND } }
+        val waiting = withContext(Dispatchers.Default) { store.pending().filter { it.kind == Mobilization.KIND || it.kind == Participation.KIND } }
         for (event in waiting) {
+            if (event.kind == Participation.KIND) {
+                // A public response of the account: published, or refused for good (nothing to follow).
+                when (remote.publish(event)) {
+                    is PublicationResult.Accepted -> withContext(Dispatchers.Default) { store.markPublished(event.id) }
+                    is PublicationResult.Rejected -> withContext(Dispatchers.Default) { store.delete(event.id) }
+                    is PublicationResult.Unavailable -> return false
+                }
+                continue
+            }
             when (val result = remote.publish(event)) {
                 is PublicationResult.Accepted -> withContext(Dispatchers.Default) {
                     store.markPublished(event.id)
@@ -427,12 +548,15 @@ class AgendaLibrary(
             val answers = state.responses()
             // A newer version may move an answered event: its answer is erased after the new end.
             published.filter { it.address.toString() in answers }.forEach { state.updateEnd(it.address.toString(), it.endsAt) }
-            Snapshot(at, AgendaQuery.sort(published, AgendaTiming.ALL), own, answers)
+            val responses = store.recent(kinds = listOf(Participation.KIND), limit = MAX_RESPONSES)
+            Snapshot(at, AgendaQuery.sort(published, AgendaTiming.ALL), own, answers, Participations.fromEvents(responses), responses.map { it.id }.filter { it in pending }.toSet())
         }
         now = snapshot.now
         mobilizations = snapshot.published
         mine = snapshot.own
         responses = snapshot.answers
+        participations = snapshot.participations
+        waitingResponses = snapshot.waiting
         selected = selected?.let { current -> snapshot.published.firstOrNull { it.address == current.address } ?: snapshot.own.firstOrNull { it.mobilization.address == current.address }?.mobilization }
     }
 
@@ -444,7 +568,14 @@ class AgendaLibrary(
         else -> OwnProposal(mobilization, OwnProposalState.IN_REVIEW)
     }
 
-    private data class Snapshot(val now: Long, val published: List<Mobilization>, val own: List<OwnProposal>, val answers: Map<String, AgendaResponse>)
+    private data class Snapshot(
+        val now: Long,
+        val published: List<Mobilization>,
+        val own: List<OwnProposal>,
+        val answers: Map<String, AgendaResponse>,
+        val participations: Participations,
+        val waiting: Set<String>,
+    )
 
     companion object {
         /** Answers are erased this long after the end of their event (seconds). */
@@ -452,6 +583,9 @@ class AgendaLibrary(
 
         /** At most this many mobilizations are read from the local store. */
         const val MAX_EVENTS: Int = 1_000
+
+        /** At most this many public responses are read from the local store (every key's, the screens keep those that count). */
+        const val MAX_RESPONSES: Int = 5_000
 
         const val BUNDLED_FILE: String = "files/contents/agenda.json"
         private val json = Json { ignoreUnknownKeys = true }

@@ -7,6 +7,9 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertCountEquals
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -50,6 +53,43 @@ class OrganisationAgendaTest {
         onAllNodesWithTag(OrganisationAgendaTags.ROW).assertCountEquals(2)
         onNodeWithText("[EXEMPLE] Assemblée de novembre").performClick()
         assertEquals(listOf("ag-de-novembre"), opened.map { it.identifier })
+    }
+
+    @Test
+    fun eachRowSaysWhatTheOrganisationDoesThereAsItSaidWithItsOwnKey() = runComposeUiTest {
+        // D-044: organises (its own), co-organises or takes part (its own response), or only announced.
+        val organisation = AgendaKit()
+        val other = AgendaKit()
+        val device = AgendaDevice(withAccount = false)
+        val hosted = organisation.mobilization("ag-de-novembre", "[EXEMPLE] Assemblée de novembre", start = AgendaClock.at(2026, 11, 20, 18))
+        val coOrganised = other.mobilization("marche-commune", "[EXEMPLE] Marche commune", start = AgendaClock.at(2026, 11, 21, 14), organizers = listOf(organisation.pubkey))
+        val announced = other.mobilization("rassemblement-annonce", "[EXEMPLE] Rassemblement annoncé", start = AgendaClock.at(2026, 11, 22, 14), organizers = listOf(organisation.pubkey))
+        val joined = other.mobilization("greve-locale", "[EXEMPLE] Grève locale", start = AgendaClock.at(2026, 11, 23, 6))
+        val declined = other.mobilization("reunion-declinee", "[EXEMPLE] Réunion déclinée", start = AgendaClock.at(2026, 11, 24, 18))
+        listOf(
+            hosted, coOrganised, announced, joined, declined,
+            organisation.participation(coOrganised, role = org.politisationpopulairefrancaise.core.agir.agenda.ParticipationRole.CO_ORGANISER),
+            organisation.participation(joined),
+            organisation.participation(declined, status = org.politisationpopulairefrancaise.core.agir.agenda.ParticipationStatus.DECLINED),
+        ).forEach { device.store.store(it) }
+        setContent {
+            val scope = rememberCoroutineScope()
+            val agenda = remember {
+                AgendaLibrary(device.store, device.state, EditorialTrust.bundledExamples(), null, scope) { AgendaClock.NOW }.also { it.start() }
+            }
+            PpfTheme {
+                Box(Modifier.requiredSize(400.dp, 700.dp)) {
+                    OrganisationAgenda(agenda, organisation.pubkey, limit = 10) {}
+                }
+            }
+        }
+        waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(OrganisationAgendaTags.ROW).fetchSemanticsNodes().size == 4 }
+        fun row(title: String) = onNode(hasTestTag(OrganisationAgendaTags.ROW) and hasText(title))
+        row("[EXEMPLE] Assemblée de novembre").assertTextContains("Organise")
+        row("[EXEMPLE] Marche commune").assertTextContains("Co-organise")
+        row("[EXEMPLE] Rassemblement annoncé").assertTextContains("Annoncée, non confirmée")
+        row("[EXEMPLE] Grève locale").assertTextContains("Participe")
+        onNodeWithText("[EXEMPLE] Réunion déclinée").assertDoesNotExist()
     }
 
     @Test

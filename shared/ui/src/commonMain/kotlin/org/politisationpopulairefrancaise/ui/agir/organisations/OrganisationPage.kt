@@ -45,6 +45,8 @@ import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.ui.components.LeaveDialogTags
+import org.politisationpopulairefrancaise.ui.components.LeavePpfDialog
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
@@ -244,13 +246,16 @@ fun OrganisationPage(
     }
 
     leavingFor?.let { website ->
-        LeaveDialog(
-            website = website,
+        // The common "Vous quittez PPF" of every space (ui/components), which opens the site itself.
+        LeavePpfDialog(
+            url = website,
+            title = stringResource(Res.string.organisation_leave_title),
+            text = stringResource(Res.string.organisation_leave_text, Organisation.hostOf(website)),
+            stayLabel = stringResource(Res.string.organisation_leave_stay),
+            openLabel = stringResource(Res.string.organisation_leave_go),
             onStay = { leavingFor = null },
-            onGo = {
-                leavingFor = null
-                open(website)
-            },
+            onDone = { leavingFor = null },
+            tags = LeaveDialogTags(OrganisationPageTags.LEAVE_DIALOG, OrganisationPageTags.LEAVE_STAY, OrganisationPageTags.LEAVE_GO),
         )
     }
 }
@@ -381,35 +386,3 @@ private fun Publications(organisation: Organisation, publications: List<SignedEv
     }
 }
 
-/**
- * "Vous quittez PPF": the site's host in plain words and what leaving means. The safe choice comes
- * first, as the main button; opening the site is the second, quieter one.
- */
-@Composable
-private fun LeaveDialog(website: String, onStay: () -> Unit, onGo: () -> Unit) {
-    val palette = PpfTheme.palette
-    AlertDialog(
-        onDismissRequest = onStay,
-        containerColor = palette.surface2,
-        titleContentColor = palette.ink,
-        textContentColor = palette.inkMuted,
-        shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.testTag(OrganisationPageTags.LEAVE_DIALOG),
-        icon = { Icon(Lucide.ExternalLink, contentDescription = null, tint = palette.warning) },
-        title = { Text(stringResource(Res.string.organisation_leave_title), style = MaterialTheme.typography.titleMedium) },
-        text = {
-            Column {
-                Text(stringResource(Res.string.organisation_leave_text, Organisation.hostOf(website)), style = MaterialTheme.typography.bodyLarge)
-                Spacer(Modifier.height(8.dp))
-                SelectionContainer { Text(website, style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle) }
-            }
-        },
-        confirmButton = {
-            Column(horizontalAlignment = Alignment.End) {
-                PpfPrimaryButton(onClick = onStay, text = stringResource(Res.string.organisation_leave_stay), modifier = Modifier.testTag(OrganisationPageTags.LEAVE_STAY))
-                Spacer(Modifier.height(4.dp))
-                PpfTextButton(onClick = onGo, text = stringResource(Res.string.organisation_leave_go), color = palette.inkMuted, modifier = Modifier.testTag(OrganisationPageTags.LEAVE_GO))
-            }
-        },
-    )
-}

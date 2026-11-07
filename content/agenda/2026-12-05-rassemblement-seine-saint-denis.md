@@ -6,6 +6,7 @@ start: 2026-12-05T11:00
 end: 2026-12-05T13:00
 location: Devant la maternité (adresse fictive), Seine-Saint-Denis
 territory: Seine-Saint-Denis
+geohash: u09wmssd5
 status: annule
 summary: Un rassemblement fictif, annulé, pour montrer la mention « Annulé ».
 created_at: 2026-11-06T09:00

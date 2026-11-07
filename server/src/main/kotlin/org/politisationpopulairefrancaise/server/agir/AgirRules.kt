@@ -23,6 +23,13 @@ enum class AgirCategory {
 
     /** Kind 30023 with `ppf-type` = organisation: an entry of the directory, editorial keys only. */
     ORGANISATION,
+
+    /**
+     * Kind 31925 (NIP-52 calendar event RSVP): the public response of a key to a mobilization
+     * (contract, version 2, D-044). Published directly, whoever signs it: it holds no text shown by
+     * the application, and the devices show only those of verified organisations and editorial keys.
+     */
+    PARTICIPATION,
 }
 
 /**
@@ -54,6 +61,9 @@ object AgirRules {
     const val MAX_ARTICLE_ID: Int = DemandDrafts.MAX_IDENTIFIER_LENGTH
 
     private val IDENTIFIER = Regex("[a-z0-9._~-]+")
+
+    /** The `d` of a response: the device writes the address of the mobilization, other clients a UUID. */
+    private val RESPONSE_IDENTIFIER = Regex("[A-Za-z0-9._~:-]+")
     private val SECONDS = Regex("[0-9]{1,12}")
     private val POSITIVE = Regex("[1-9][0-9]{0,11}")
     private val GEOHASH = Regex("[0123456789bcdefghjkmnpqrstuvwxyz]{1,9}")
@@ -62,6 +72,7 @@ object AgirRules {
 
     fun categoryOf(event: SignedEvent): AgirCategory? = when {
         event.kind == AgirFormats.KIND_MOBILIZATION -> AgirCategory.MOBILIZATION
+        event.kind == AgirFormats.KIND_PARTICIPATION -> AgirCategory.PARTICIPATION
         event.kind != Article.KIND -> null
         else -> when (event.firstTagValue(AgirFormats.TAG_TYPE)) {
             AgirFormats.TYPE_CALL -> AgirCategory.CALL
@@ -80,7 +91,47 @@ object AgirRules {
         AgirCategory.MOBILIZATION -> checkMobilization(event)
         AgirCategory.CALL -> checkCall(event)
         AgirCategory.ORGANISATION -> checkOrganisation(event)
+        AgirCategory.PARTICIPATION -> checkParticipation(event)
         null -> null
+    }
+
+    /**
+     * A public response to a mobilization (contract, version 2): exactly one `d` (1 to
+     * [AgirFormats.MAX_PARTICIPATION_ID] characters, letters, digits and `._~:-`, so that the address
+     * of the mobilization fits), exactly one `a` naming a mobilization (`31923:<key>:<d>`), a known
+     * `status`, an optional known `ppf-role`, optional `p` (the author of the mobilization named in
+     * `a`), `e` (an event id) and `fb` (`free` or `busy`), a note of 280 characters at most without
+     * any personal contact detail. Errors: `missing_field` with the name of the tag, `too_long`,
+     * `personal_data` (`content`), `malformed_event`.
+     */
+    private fun checkParticipation(event: SignedEvent): Decision.Refused? {
+        if (event.tags.any { tag -> tag.any { !DemandDrafts.isPlainText(it, multiline = false) } } || !DemandDrafts.isPlainText(event.content, multiline = true)) {
+            return refuse("malformed_event", "A response holds plain text only: no control character.")
+        }
+        val identifiers = event.tagValues("d")
+        if (identifiers.size != 1 || identifiers[0].length > AgirFormats.MAX_PARTICIPATION_ID || !RESPONSE_IDENTIFIER.matches(identifiers[0])) return missing("d")
+        val targets = event.tagValues(AgirFormats.TAG_ADDRESS)
+        val target = targets.singleOrNull()?.let { runCatching { ContentAddress.parse(it) }.getOrNull() }
+        if (target == null || target.kind != AgirFormats.KIND_MOBILIZATION || target.identifier.length > MAX_MOBILIZATION_ID || !IDENTIFIER.matches(target.identifier)) {
+            return missing(AgirFormats.TAG_ADDRESS)
+        }
+        if (event.firstTagValue(AgirFormats.TAG_STATUS) !in AgirFormats.PARTICIPATION_STATUSES) return missing(AgirFormats.TAG_STATUS)
+        oneOf(event, AgirFormats.TAG_ROLE, AgirFormats.PARTICIPATION_ROLES)?.let { return it }
+        oneOf(event, AgirFormats.TAG_FREE_BUSY, AgirFormats.FREE_BUSY)?.let { return it }
+        for (tag in event.tags) {
+            if (tag.size < 2) continue
+            when (tag[0]) {
+                AgirFormats.TAG_PUBKEY -> if (tag[1] != target.pubkey) return missing(AgirFormats.TAG_PUBKEY)
+                AgirFormats.TAG_EVENT_ID -> if (!HEX_KEY.matches(tag[1])) return missing(AgirFormats.TAG_EVENT_ID)
+            }
+        }
+        if (event.content.length > AgirFormats.MAX_PARTICIPATION_NOTE) return tooLong("content")
+        for (tag in event.tags) {
+            val name = tag.firstOrNull() ?: continue
+            if (tag.drop(1).any { it.length > MAX_TAG_VALUE }) return tooLong(name)
+        }
+        if (DraftRules.containsPersonalData(event.content)) return refuse("personal_data", "content")
+        return null
     }
 
     private fun checkMobilization(event: SignedEvent): Decision.Refused? {

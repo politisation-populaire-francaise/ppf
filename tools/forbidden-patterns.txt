@@ -39,5 +39,13 @@ newrelic
 datadoghq
 bugsnag
 api\.mapbox\.com
+# Map tile and style servers of third parties: the map of PPF uses only its own tiles (docs/integration/agir-carte.md).
+tile\.openstreetmap\.org
+demotiles\.maplibre\.org
+api\.protomaps\.com
+api\.maptiler\.com
+tiles\.openfreemap\.org
+tiles\.stadiamaps\.com
+arcgisonline\.com
 hcaptcha
 marianne[ -]?libre
