@@ -84,7 +84,6 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 - Espace « Agir » : questions tranchées le 7 novembre 2026 (D-044) ; reste la contradiction avec le principe 10 sur la visibilité par défaut de la participation (cercle, élus), entrée « Agir : questions ouvertes après la première version » du brainstorming du cahier fonctionnel.
 - Comptage anonyme (réactions du fil, participations aux mobilisations et aux appels, barre de progression) : découle de « une personne, une voix », conception à faire.
 - Vue carte : en cours (bibliothèque de rendu et tuiles auto-hébergées, sans coût en dehors de l'espace disque du futur serveur).
-- Annuaire officiel des élus : décidé et fait le 7 novembre 2026 (D-047) ; reste à valider la réutilisation des résultats des départementales de 2021 pour les 276 communes partagées entre plusieurs cantons (brainstorming du cahier des charges, entrée « Licence des résultats des départementales de 2021 », À valider).
 
 ## À faire relire par un avocat avant l'ouverture publique
 
@@ -96,3 +95,19 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
 - Annuaire et cas limites des partis, candidats et comités de soutien (Code électoral, article L52-8).
 - Secours, sorties et équipe citoyenne de sécurité en manifestation (points d'attention n° 17 et n° 24).
 - Modèles juridiques (mentions légales, confidentialité, conditions d'utilisation, charte, procédure de signalement).
+- Annuaire des élus (D-047) : réutilisation des résultats des départementales de 2021 par commune, licence « non spécifiée » sur data.gouv.fr, utilisés pour les cantons des 276 communes partagées (décision du chef d'équipe du 7 novembre 2026, CRPA L321-1, L322-1, L323-2).
+- Annuaire des élus (D-047) : base légale RGPD de la réutilisation des données des élus (nom, mandat, fonction, territoire, dates), écrite « intérêt légitime (article 6.1.f) » dans REGISTRE_DONNEES.
+
+## À vérifier avant publication
+
+Contenus de « Comprendre » (vague 3, D-049) dont un fait daté peut changer d'ici la publication.
+
+- Présidentielle 2027 : premier tour le 18 avril, second tour le 2 mai, inscription sur les listes jusqu'au vendredi 12 mars 2027 (parcours « S'inscrire et voter », « Se présenter à une élection », fiche « Voter par procuration »). Source à surveiller : décret de convocation des électeurs au Journal officiel (Légifrance), au moins dix semaines avant le premier tour.
+- Encadrement des loyers (fiche « Qui décide de ça ? » logement et loyers) : fin prévue le 23 novembre 2026, proposition de loi de prolongation de deux ans en deuxième lecture à l'Assemblée. Source à surveiller : dossier législatif du Sénat (ppl25-217) et Journal officiel.
+- Montants qui changent chaque année : SMIC (fiche salaires et SMIC), plafonds de dépenses de la présidentielle (CNCCFP).
+
+## Tests sur téléphone (phase de test et débogage)
+
+Reportés à la phase de test et de débogage (règle de la propriétaire du 7 novembre 2026).
+
+- Vague 3 de « Comprendre » (APK 447367) : glossaire (mots soulignés, infobulle, « En savoir plus », glossaire complet et recherche), page « Mes élus » sans serveur (annuaires officiels derrière « Vous quittez PPF »), nouveaux parcours, « Qui décide de ça ? » et fiches pratiques ; avec la préproduction : choix de la commune par code postal et élus fictifs sous chaque niveau.

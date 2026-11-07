@@ -307,7 +307,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : option A validée par la propriétaire le 2026-11-07 (« Pour les élus oui ça serait parfait »), avec l'option C (liens vers les annuaires officiels) tant que l'application n'a pas de serveur. Mise en œuvre le 2026-11-07 (D-047, contrat dans `docs/integration/comprendre-vague-3.md`).
 
 ### [2026-11-07] Licence des résultats des départementales de 2021 (cantons des communes partagées, annuaire des élus)
-- Statut : À valider
+- Statut : Décision technique prise en autonomie (chef d'équipe) le 2026-11-07
 - Concerne : cahier-des-charges.md, section 4 (données publiques réutilisées) ; D-047 ; `docs/integration/elus-serveur.md`, section 1.5
 - Description : pour savoir dans quel canton vote une commune, le serveur utilise le Code officiel géographique de l'Insee (Licence Ouverte). Mais 276 communes sont partagées entre plusieurs cantons (Lille : 6, Rennes : 6, Marseille : 12...) et le Code officiel géographique ne dit pas lesquels. La seule source exacte trouvée est le fichier des résultats du 1er tour des départementales de 2021 par commune, publié par le ministère de l'Intérieur sur data.gouv.fr (jeu `60d1fa73986a6e7da8017808`). Sa page indique une licence « non spécifiée ». Le serveur n'en lit que trois colonnes (département, canton, commune), jamais les candidats. Ce sont des informations publiques produites par une administration : leur réutilisation est libre, même sans licence, lorsqu'elles sont mises à disposition gratuitement, à condition de ne pas les altérer, de ne pas en dénaturer le sens et de citer la source et la date (code des relations entre le public et l'administration, articles L321-1, L322-1 et L323-2, à relire sur Légifrance au moment de la décision).
 - Options :
@@ -315,8 +315,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **B. Ne pas l'utiliser** : pour ces 276 communes, l'application ne connaît pas les cantons de la commune ; il faudrait alors lister tous les cantons du département avec leurs conseillers (règle de repli du contrat, à coder pour ce cas : aujourd'hui, une commune sans canton dans un département qui en a n'affiche aucun conseiller de canton, seulement la présidence du conseil départemental). Avantage : seulement des sources sous licence écrite. Inconvénient : à Marseille ou à Lille, des dizaines de noms au lieu de quelques-uns.
 - Coût : aucun.
 - Recommandation : A, avec la mention de la source et de la date dans la page « Mes élus », et une question au ministère de l'Intérieur (via data.gouv.fr) pour qu'il indique la licence ; relecture par l'avocat avec les autres points avant l'ouverture publique.
-- Décision : en attente de la propriétaire. Le code suit l'option A en attendant ; passer à B ne demande que de retirer cette source.
-- Décision :
+- Décision : option A, tranchée le 2026-11-07 par le chef d'équipe « Team lead [Voir] » selon la doctrine de la propriétaire (D-044 : pousser le curseur au maximum, relecture par un avocat à la fin) : le fichier est utilisé, avec sa source et sa date citées et sans altérer les données (code des relations entre le public et l'administration, L321-1, L322-1, L323-2). Ajouté à la liste « À faire relire par un avocat avant l'ouverture publique » de la ROADMAP.
 
 ### [2026-11-07] Serveur de la préproduction : achat
 - Statut : À valider
