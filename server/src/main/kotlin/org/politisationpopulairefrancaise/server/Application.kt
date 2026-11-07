@@ -8,6 +8,7 @@ import io.ktor.server.application.createApplicationPlugin
 import io.ktor.server.application.hooks.CallFailed
 import io.ktor.server.application.install
 import io.ktor.server.application.log
+import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
@@ -27,6 +28,14 @@ import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PostLimits
 import org.politisationpopulairefrancaise.server.api.eventsApi
 import org.politisationpopulairefrancaise.server.api.groupsApi
+import org.politisationpopulairefrancaise.server.backoffice.BackOffice
+import org.politisationpopulairefrancaise.server.backoffice.BackOfficeConfig
+import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSetup
+import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSpace
+import org.politisationpopulairefrancaise.server.backoffice.PortSelector
+import org.politisationpopulairefrancaise.server.backoffice.backOfficeHeaders
+import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
+import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.elus.ElusConfig
@@ -40,6 +49,9 @@ import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
+import org.politisationpopulairefrancaise.server.push.PushConfig
+import org.politisationpopulairefrancaise.server.push.PushService
+import org.politisationpopulairefrancaise.server.push.pushApi
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.WrapRetention
 import org.politisationpopulairefrancaise.server.revendications.AiReviewConfig
@@ -63,6 +75,8 @@ import javax.sql.DataSource
  * - PORT: TCP port to listen on (default 8080).
  * - PPF_ENVIRONMENT: "production", "preproduction" or "development" (default).
  * - DATABASE_URL, DATABASE_USER, DATABASE_PASSWORD or DATABASE_PASSWORD_FILE: see [DatabaseConfig].
+ * - PPF_DATABASE_MIGRATE (default true only in development; false makes the server refuse to start while a
+ *   migration is pending, see DatabaseCli) and PPF_DATABASE_APP_ROLE: see [Database].
  * - PPF_EDITOR_KEYS: keys of the editorial team, see [PublicationPolicy].
  * - PPF_WRAP_RETENTION_DAYS, PPF_WRAP_RETENTION_MAX_DAYS, PPF_WRAP_CLEANUP_INTERVAL_MINUTES,
  *   PPF_WRAP_MAX_PER_RECIPIENT, PPF_POST_RATE_PER_MINUTE, PPF_POST_GLOBAL_RATE_PER_MINUTE: relay
@@ -81,6 +95,12 @@ import javax.sql.DataSource
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
  *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
  *   to start when it is set in production, see [ExampleSeed].
+ * - PPF_BACKOFFICE_ORIGIN, PPF_BACKOFFICE_PORT, PPF_AUDIT_PUBLIC_KEY, PPF_BACKOFFICE_MAINTENANCE_INTERVAL_MINUTES:
+ *   the team back-office, off unless PPF_BACKOFFICE_ORIGIN is set (for example
+ *   `https://equipe.preprod.politisation-populaire-francaise.org`; `http://localhost:8081` in development
+ *   only). Its routes answer only on PPF_BACKOFFICE_PORT (default 8081), never on PORT; see [BackOfficeConfig].
+ * - PPF_VAPID_PRIVATE_KEY_FILE, PPF_PUSH_ALLOWED_HOSTS, PPF_PUSH_INTERNAL_URL, PPF_PUBLIC_URL: the push
+ *   wake-ups (M31), off unless PPF_VAPID_PRIVATE_KEY_FILE is set, see [PushConfig].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -90,8 +110,12 @@ object ServerConfig {
 fun main() {
     // Checked before anything else: in production, example contents stop the server from starting.
     val examples = ExampleSeed.fromEnvironment()
+    // In production and preproduction the migrations ran before, in their own container, with the owner
+    // role; the server, connected with a restricted role, only checks them (D-127).
+    val migrate = Database.shouldMigrate(ServerConfig.environment)
+    val appRole = Database.appRole()
     val dataSource = DatabaseConfig.fromEnvironment()?.let { config ->
-        Database.connect(config).also(Database::migrate)
+        Database.connect(config).also { Database.prepare(it, migrate, appRole) }
     }
     if (examples != null) {
         if (dataSource == null) {
@@ -101,10 +125,27 @@ fun main() {
             ExampleSeed.load(examples, EventRepository(dataSource))
         }
     }
+    // Checked before the server starts: a back-office under a wrong or plain-http address is refused.
+    val backOffice = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port)
     // Bind on every interface inside the container; the reverse proxy is the only
-    // process allowed to reach it (see infra/).
-    embeddedServer(Netty, port = ServerConfig.port, host = "0.0.0.0") {
-        module(dataSource)
+    // process allowed to reach it (see infra/). The back-office has its own internal port, which the
+    // proxy forwards only for its own host name (contract docs/integration/back-office.md, section 3).
+    embeddedServer(
+        Netty,
+        configure = {
+            connector {
+                port = ServerConfig.port
+                host = "0.0.0.0"
+            }
+            backOffice?.let { setup ->
+                connector {
+                    port = setup.config.port
+                    host = "0.0.0.0"
+                }
+            }
+        },
+    ) {
+        module(dataSource, backOffice = backOffice)
     }.start(wait = true)
 }
 
@@ -145,6 +186,8 @@ fun Application.module(
     tiles: TilesConfig = TilesConfig.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
     territoires: TerritoiresSetup = TerritoiresSetup.fromEnvironment(),
+    backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
+    push: PushConfig = PushConfig.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
@@ -167,14 +210,24 @@ fun Application.module(
         // bounds; the task lives and dies with the application.
         WrapRetention(repository, relay).start(this, relay.cleanupInterval, log)
     }
+    // The team back-office (M15): its own port, accounts by invitation, passkeys, journal; the poles
+    // register their queues on teamBackOffice.queues (contract docs/integration/back-office.md, section 7).
+    val teamBackOffice: BackOffice? = when {
+        backOffice == null -> null
+        dataSource == null -> null.also { log.warn("Back-office: ${BackOfficeConfig.ORIGIN_VARIABLE} is set but no database is configured, back-office off.") }
+        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace)
+    }
     val limits = PostLimits(relay)
     val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
+    // Push wake-ups (M31): a constant, encrypted "synchronize" only; the worker lives with the application.
+    val pushService = PushService.start(this, dataSource, push)
     install(ErrorShield)
     install(ContentNegotiation) {
         json()
     }
+    backOffice?.let { install(backOfficeHeaders(it.config.port)) }
     install(DefaultHeaders) {
         // Strict security headers on every answer. HTTPS and HSTS are handled by the
         // reverse proxy (Caddy) which terminates TLS.
@@ -193,26 +246,34 @@ fun Application.module(
         )
     }
     routing {
-        get("/health") {
-            call.respond(
-                HealthStatus(
-                    status = HealthStatus.OK,
-                    service = "ppf-server",
-                    version = AppInfo.VERSION,
-                    environment = ServerConfig.environment,
-                ),
-            )
+        // The site and the public API never answer on the back-office port, nor the back-office on the
+        // public port: a routing mistake on one side cannot expose the other (contract, section 3).
+        publicPort(backOffice?.config?.port) {
+            get("/health") {
+                call.respond(
+                    HealthStatus(
+                        status = HealthStatus.OK,
+                        service = "ppf-server",
+                        version = AppInfo.VERSION,
+                        environment = ServerConfig.environment,
+                    ),
+                )
+            }
+            eventsApi(repository, policy, limits, groups, proposals, agirSpace, onStored = pushService::stored)
+            pushApi(pushService)
+            groupsApi(groups)
+            revendicationsApi(proposals)
+            agirApi(agirSpace)
+            elusApi(elusService)
+            territoiresApi(territoiresService)
+            agirSpace?.let { agendaPage(it.agendaSource()) }
+            tilesRoutes(tiles)
+            parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
+            // The pages of "Voir": contents of the editorial keys only (D-034).
+            webRoutes(voir ?: repository?.let { EditorialVoirSource(it, policy) })
         }
-        eventsApi(repository, policy, limits, groups, proposals, agirSpace)
-        groupsApi(groups)
-        revendicationsApi(proposals)
-        agirApi(agirSpace)
-        elusApi(elusService)
-        territoiresApi(territoiresService)
-        agirSpace?.let { agendaPage(it.agendaSource()) }
-        tilesRoutes(tiles)
-        parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
-        // The pages of "Voir": contents of the editorial keys only (D-034).
-        webRoutes(voir ?: repository?.let { EditorialVoirSource(it, policy) })
+        if (backOffice != null && teamBackOffice != null) {
+            createChild(PortSelector(backOffice.config.port)).backOfficeRoutes(teamBackOffice)
+        }
     }
 }

@@ -233,18 +233,24 @@ new_password() { openssl rand -hex 32; }
 
 # One environment: .env, and the database password in two files (one per container user).
 prepare_environment() {
-    local env="$1" db="$2" server_uid="$3" editor_keys="$4"
+    local env="$1" db="$2" server_uid="$3" editor_keys="$4" backoffice_origin="$5"
     local dir="$DATA_DIR/$env"
     install -d -m 0700 "$dir" "$dir/secrets"
-    if [ ! -f "$dir/secrets/db_password" ]; then
-        local password
-        password="$(new_password)"
-        (umask 077; printf '%s' "$password" > "$dir/secrets/db_password"; printf '%s' "$password" > "$dir/secrets/server_db_password")
+    # Owner role (migrations only) and restricted role ppf_app (the running server), D-127.
+    if [ ! -f "$dir/secrets/migrate_db_password" ]; then
+        local owner app
+        owner="$(new_password)"
+        app="$(new_password)"
+        (umask 077
+         printf '%s' "$owner" > "$dir/secrets/db_password"
+         printf '%s' "$owner" > "$dir/secrets/migrate_db_password"
+         printf '%s' "$app" > "$dir/secrets/app_db_password"
+         printf '%s' "$app" > "$dir/secrets/server_db_password")
     fi
-    # PostgreSQL runs as 999 in its image; the server as its own UID.
-    chown 999:999 "$dir/secrets/db_password"
-    chown "$server_uid:$server_uid" "$dir/secrets/server_db_password"
-    chmod 400 "$dir/secrets/db_password" "$dir/secrets/server_db_password"
+    # PostgreSQL runs as 999 in its image; the server and the migrations as the environment's UID.
+    chown 999:999 "$dir/secrets/db_password" "$dir/secrets/app_db_password"
+    chown "$server_uid:$server_uid" "$dir/secrets/server_db_password" "$dir/secrets/migrate_db_password"
+    chmod 400 "$dir/secrets/db_password" "$dir/secrets/app_db_password" "$dir/secrets/server_db_password" "$dir/secrets/migrate_db_password"
     if [ ! -f "$dir/.env" ]; then
         (umask 077; cat > "$dir/.env" <<EOF
 # Written by infra/scripts/bootstrap-server.sh (model: infra/env/$env.env.example).
@@ -255,16 +261,45 @@ PPF_EDITOR_KEYS=$editor_keys
 EOF
         )
     fi
+    # Settings added after the first run of this script: appended once, never overwritten.
+    grep -q '^PPF_BACKOFFICE_ORIGIN=' "$dir/.env" || echo "PPF_BACKOFFICE_ORIGIN=$backoffice_origin" >> "$dir/.env"
+    grep -q '^PPF_AUDIT_PUBLIC_KEY=' "$dir/.env" || echo "PPF_AUDIT_PUBLIC_KEY=" >> "$dir/.env"
 }
 # The example content signer (EditorialTrust.EXAMPLE_EDITOR) publishes the [EXEMPLE] contents of the
 # preproduction only. The production starts with no editor key.
-prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f"
-prepare_environment production ppf 10001 ""
+prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f" "https://equipe.preprod.$domain"
+prepare_environment production ppf 10001 "" "https://equipe.$domain"
+# Parliamentary open data of the production (Voir, D-064): the importer (UID 10003) writes, the
+# server reads. The import key file stays empty until the public launch (the importer then exits
+# with code 5 and changes nothing).
+install -d -m 0755 -o 10003 -g 10003 "$DATA_DIR/production/open-data"
+[ -f "$DATA_DIR/production/secrets/import_key" ] || (umask 077; : > "$DATA_DIR/production/secrets/import_key")
+chown 10003:10003 "$DATA_DIR/production/secrets/import_key"
+chmod 400 "$DATA_DIR/production/secrets/import_key"
 
 if [ ! -f "$DATA_DIR/proxy/.env" ]; then
-    # Password of the preproduction web pages, generated here and shown to the owner once.
-    preprod_password="$(openssl rand -base64 18 | tr -d '/+=' | cut -c1-20)"
-    preprod_hash="$(docker run --rm "$CADDY_IMAGE" caddy hash-password --plaintext "$preprod_password")"
+    # Password of the preproduction web pages (D-072). Chosen and typed by the owner herself at this
+    # moment, in the terminal of the deployment (decision of 7 November 2026): it is never written in
+    # the repository, in a message or in a file; only its bcrypt hash is kept, in the proxy settings.
+    [ -t 0 ] || { echo "The preproduction password is typed by the owner: run this script in an interactive terminal." >&2; exit 1; }
+    while true; do
+        printf 'Mot de passe des pages web de la préproduction (12 caractères au moins, rien ne s'"'"'affiche) : '
+        IFS= read -rs preprod_password; echo
+        printf 'Retapez-le : '
+        IFS= read -rs preprod_confirm; echo
+        if [ "${#preprod_password}" -lt 12 ]; then
+            echo "Trop court : 12 caractères au moins."
+        elif [ "$preprod_password" != "$preprod_confirm" ]; then
+            echo "Les deux saisies diffèrent, recommencez."
+        else
+            break
+        fi
+    done
+    unset preprod_confirm
+    # The password goes to Caddy through its standard input, never on a command line.
+    preprod_hash="$(printf '%s\n' "$preprod_password" | docker run --rm -i "$CADDY_IMAGE" caddy hash-password)"
+    unset preprod_password
+    [[ "$preprod_hash" == \$2* ]] || { echo "Caddy did not return a bcrypt hash." >&2; exit 1; }
     (umask 077; cat > "$DATA_DIR/proxy/.env" <<EOF
 # Written by infra/scripts/bootstrap-server.sh (model: infra/env/proxy.env.example).
 PPF_DOMAIN=$domain
@@ -272,9 +307,8 @@ PREPROD_BASIC_AUTH_USER=equipe
 # Single quotes: the bcrypt hash holds "\$" signs, which Compose must not interpolate.
 PREPROD_BASIC_AUTH_HASH='$preprod_hash'
 EOF
-    printf 'Préproduction PPF\nIdentifiant : equipe\nMot de passe : %s\n' "$preprod_password" > /root/ppf-preprod-password.txt)
-    unset preprod_password
-    echo "Preproduction web password written to /root/ppf-preprod-password.txt (give it to the owner, then delete the file)."
+    )
+    echo "Preproduction web password set (identifiant : equipe). Only its hash is kept."
 fi
 
 # --- 8. Repository, cosign, deployment command, automatic update of the preproduction ------------
@@ -309,8 +343,14 @@ EOF
 script_dir="$(cd "$(dirname "$0")" && pwd)"
 install -m 0755 "$script_dir/deploy.sh" /usr/local/sbin/ppf-deploy
 install -m 0755 "$script_dir/wg-add-peer.sh" /usr/local/sbin/ppf-wg-add-peer
+install -m 0755 "$script_dir/backoffice.sh" /usr/local/sbin/ppf-backoffice
+install -m 0755 "$script_dir/wg-remove-peer.sh" /usr/local/sbin/ppf-wg-remove-peer
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.service" /etc/systemd/system/
 install -m 0644 "$script_dir/../systemd/ppf-preprod-update.timer" /etc/systemd/system/
+install -m 0755 "$script_dir/open-data-import.sh" /usr/local/sbin/ppf-open-data-import
+install -m 0644 "$script_dir/../systemd/ppf-open-data-daily.service" "$script_dir/../systemd/ppf-open-data-daily.timer" /etc/systemd/system/
+install -m 0644 "$script_dir/../systemd/ppf-open-data-weekly.service" "$script_dir/../systemd/ppf-open-data-weekly.timer" /etc/systemd/system/
+# The import timers are installed but enabled only at the public launch (infra/README.md).
 systemctl daemon-reload
 systemctl enable ppf-preprod-update.timer >/dev/null 2>&1
 
@@ -320,5 +360,6 @@ Server prepared. Next steps (docs/guides/serveur-hostinger-kvm1.md):
   1. check a login as $ADMIN_USER with the key, then: bootstrap-server.sh --lockdown
   2. ppf-wg-add-peer <device> for each device of the team
   3. ppf-deploy preproduction, then: systemctl start ppf-preprod-update.timer
+  4. ppf-backoffice preproduction bootstrap <pseudonyme> for the first team account
 WireGuard public key of the server: $(cat /etc/wireguard/server.pub)
 EOF

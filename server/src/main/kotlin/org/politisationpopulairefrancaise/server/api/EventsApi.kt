@@ -75,7 +75,16 @@ class PostLimits(
  * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
-fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, limits: PostLimits, groups: GroupDirectory? = null, proposals: RevendicationProposals? = null, agir: AgirSpace? = null) {
+fun Route.eventsApi(
+    repository: EventRepository?,
+    policy: PublicationPolicy,
+    limits: PostLimits,
+    groups: GroupDirectory? = null,
+    proposals: RevendicationProposals? = null,
+    agir: AgirSpace? = null,
+    /** Told of every event this route stored (the push wake-ups); must return at once. */
+    onStored: (SignedEvent) -> Unit = {},
+) {
     if (repository == null) {
         route("/api/v1/{...}") {
             handle {
@@ -161,6 +170,7 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
                             withContext(Dispatchers.IO) { repository.keepNewestByTag(RelayKinds.GIFT_WRAP, "p", recipient, limits.wrapMaxPerRecipient) }
                         }
                     }
+                    onStored(event)
                     call.respond(HttpStatusCode.Created, PublishResponse(event.id, "stored"))
                 }
                 StoreOutcome.DUPLICATE -> {
