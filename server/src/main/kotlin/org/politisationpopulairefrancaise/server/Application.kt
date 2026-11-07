@@ -40,6 +40,9 @@ import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
+import org.politisationpopulairefrancaise.server.push.PushConfig
+import org.politisationpopulairefrancaise.server.push.PushService
+import org.politisationpopulairefrancaise.server.push.pushApi
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.WrapRetention
 import org.politisationpopulairefrancaise.server.revendications.AiReviewConfig
@@ -81,6 +84,8 @@ import javax.sql.DataSource
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
  *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
  *   to start when it is set in production, see [ExampleSeed].
+ * - PPF_VAPID_PRIVATE_KEY_FILE, PPF_PUSH_ALLOWED_HOSTS, PPF_PUSH_INTERNAL_URL, PPF_PUBLIC_URL: the push
+ *   wake-ups (M31), off unless PPF_VAPID_PRIVATE_KEY_FILE is set, see [PushConfig].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -145,6 +150,7 @@ fun Application.module(
     tiles: TilesConfig = TilesConfig.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
     territoires: TerritoiresSetup = TerritoiresSetup.fromEnvironment(),
+    push: PushConfig = PushConfig.fromEnvironment(),
 ) {
     val repository = dataSource?.let(::EventRepository)
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
@@ -171,6 +177,8 @@ fun Application.module(
     val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
+    // Push wake-ups (M31): a constant, encrypted "synchronize" only; the worker lives with the application.
+    val pushService = PushService.start(this, dataSource, push)
     install(ErrorShield)
     install(ContentNegotiation) {
         json()
@@ -203,7 +211,8 @@ fun Application.module(
                 ),
             )
         }
-        eventsApi(repository, policy, limits, groups, proposals, agirSpace)
+        eventsApi(repository, policy, limits, groups, proposals, agirSpace, onStored = pushService::stored)
+        pushApi(pushService)
         groupsApi(groups)
         revendicationsApi(proposals)
         agirApi(agirSpace)
