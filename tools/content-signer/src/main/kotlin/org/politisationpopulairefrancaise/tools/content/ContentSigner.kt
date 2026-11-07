@@ -139,7 +139,7 @@ fun main(args: Array<String>) {
 
     val voirFiles = voirDocuments(content.resolve("voir"))
     val voir = voirFiles.map { document -> voirEvent(document, keys.publicKey) }
-    checkVoir(voirFiles, voir, keys.publicKey.hex)
+    checkVoir(voirFiles, voir, keys.publicKey.hex, guides = articles.mapNotNull { it.firstTagValue("d") }.toSet())
     write(output.resolve("voir.json"), voir.map { signer.signChecked(it) })
     // Directory of organisations (contract of the Agir space, section 4): organisations.json.
     val organisations = signAll(content.resolve("organisations")) { document ->
@@ -344,7 +344,7 @@ private fun voirEvent(document: Document, author: PublicKey): UnsignedEvent {
  * Reads every block back as the application will, and fails on the first one it would leave out
  * (a typo in a status, a missing unit) or on a link to a slug that does not exist.
  */
-private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, authorHex: String) {
+private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, authorHex: String, guides: Set<String>) {
     val articles = events.zip(documents).map { (unsigned, document) ->
         val unchecked = SignedEvent(unsigned.idHex(), unsigned.pubkey, unsigned.createdAt, unsigned.kind, unsigned.tags, unsigned.content, "0".repeat(128))
         Article.from(unchecked) ?: error("${document.name}: not a readable article")
@@ -353,7 +353,6 @@ private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, au
     check(duplicates.isEmpty()) { "voir: the same slug is used twice: ${duplicates.joinToString { it.identifier }}" }
     val catalog = VoirCatalog.from(articles)
     val known = articles.map { it.address.toString() }.toSet()
-    val bundledGuides = setOf("droits-en-manifestation", "filmer-les-forces-de-l-ordre", "garde-a-vue")
     articles.zip(documents).forEach { (article, document) ->
         val readable = catalog.item(article.address) != null || catalog.replies.any { it.article.address == article.address }
         check(readable) { "${document.name}: the application would not read this block (check its fields)" }
@@ -362,7 +361,7 @@ private fun checkVoir(documents: List<Document>, events: List<UnsignedEvent>, au
         }
         article.event.tags.filter { it.size >= 3 && it[0] == VoirTags.NEXT && !it[2].startsWith("space:") }.forEach { tag ->
             val slug = tag[2].substringAfterLast(':')
-            check(tag[2] in known || slug in bundledGuides) { "${document.name}: next step to an unknown slug: $slug" }
+            check(tag[2] in known || slug in guides) { "${document.name}: next step to an unknown slug: $slug" }
         }
     }
     println(
