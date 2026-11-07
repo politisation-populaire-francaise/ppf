@@ -378,6 +378,26 @@ Empreinte du texte envoyé : SHA-256 (hexadécimal) du texte `ppf-pacte-v1\n`, p
 
 Suivi après l'élection : un fait de « Voir » porte `a` rôle `pacte` et `ppf-pacte-measure` = identifiant de la mesure.
 
+### Comparateur d'une élection (`ppf-type` = `comparateur`, DE-16, conception : `docs/integration/comparateur-2027.md`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-election` | `identifiant`, `libellé`, `premier tour (AAAA-MM-JJ, facultatif)` (comme le Pacte) |
+| `ppf-theme` | Un thème, dans l'ordre de la grille (répétée, 1 à 20, distincts) ; identifiants des thèmes des revendications |
+| `a` rôle `candidat` | Chaque candidat : sa fiche de « Voir » |
+
+### Position d'un candidat (`ppf-type` = `position`)
+
+| Étiquette | Contenu |
+|---|---|
+| `title` | Résumé de la position, écrit par l'équipe : 280 caractères au plus, la même limite pour tous |
+| `ppf-election` | L'élection (son identifiant suffit) |
+| `a` rôle `candidat` | Le candidat (un seul) |
+| `ppf-theme` | Le thème (un seul, parmi ceux du comparateur) |
+| `ppf-quote` | Citation courte du candidat : `texte` (300 caractères au plus), `page (https)`, `date` ; obligatoire |
+
+Règles de la grille (`ComparatorGrid`) : une ligne par candidat du comparateur, en ordre alphabétique ; chaque ligne a tous les thèmes, dans l'ordre ; une seule position par candidat et par thème (la plus récente) ; une case sans position reste vide (« pas de position publiée ») ; une position d'une autre élection, d'une personne absente du comparateur ou d'un thème absent est listée à part. Ni note, ni classement, ni questionnaire.
+
 ## 4 octies. Annuaire des élus (D-047)
 
 Données publiques du Répertoire national des élus (RNE), servies par le serveur en JSON (ce ne sont pas des événements signés). Détail des sources et des règles de construction : `docs/integration/elus-serveur.md` ; lecture sur l'appareil : `docs/integration/elus-app.md`.

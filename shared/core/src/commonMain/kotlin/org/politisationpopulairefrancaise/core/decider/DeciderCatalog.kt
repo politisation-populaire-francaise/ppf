@@ -16,6 +16,10 @@ class DeciderCatalog(
     val petitions: List<Petition>,
     val pactes: List<Pacte>,
     val engagements: List<Engagement>,
+    /** The comparators of the elections (DE-16), the most recent first. */
+    val comparators: List<ComparatorSheet> = emptyList(),
+    /** Every position published for a comparator. */
+    val positions: List<Position> = emptyList(),
 ) {
     val isEmpty: Boolean get() = petitions.isEmpty() && pactes.isEmpty()
 
@@ -47,6 +51,13 @@ class DeciderCatalog(
         today = today,
     )
 
+    /** The comparator to show: the most recent one. */
+    fun currentComparator(): ComparatorSheet? = comparators.firstOrNull()
+
+    /** The grid of a comparator, candidates by themes, with the names of "Voir". */
+    fun grid(sheet: ComparatorSheet, voir: VoirCatalog): ComparatorGrid =
+        ComparatorGrid.build(sheet, positions, nameOf = { voir.person(it)?.name })
+
     /** The pacts a candidate was sent, with their line in the table. */
     fun pactesOf(candidate: ContentAddress): List<Pacte> = pactes.filter { candidate in it.candidates }
 
@@ -67,7 +78,7 @@ class DeciderCatalog(
         val EMPTY: DeciderCatalog = DeciderCatalog(emptyList(), emptyList(), emptyList())
 
         /** The editorial types read here, to ask the local copy for them. */
-        val TYPES: List<ArticleType> = listOf(ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT)
+        val TYPES: List<ArticleType> = listOf(ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION)
 
         private fun sortKey(title: String): String = FrenchText.fold(title.removePrefix(VoirCatalog.EXAMPLE_MARKER).trim())
 
@@ -85,6 +96,8 @@ class DeciderCatalog(
                         .thenByDescending { it.article.updatedAt },
                 ),
                 engagements = latest.mapNotNull(Engagement::from),
+                comparators = latest.mapNotNull(ComparatorSheet::from).sortedByDescending { it.article.updatedAt },
+                positions = latest.mapNotNull(Position::from),
             )
         }
     }
