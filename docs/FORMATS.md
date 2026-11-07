@@ -63,7 +63,7 @@ Le numéro détermine le comportement :
 | 20000 à 29999 | Éphémères : non conservés. |
 | 30000 à 39999 | Adressables : remplaçables par identifiant (`d`), voir section 4. |
 
-Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies). Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
+Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies), `1985` (étiquette NIP-32 : statut d'une revendication), `1040` (attestation OpenTimestamps, NIP-03 : preuve d'horodatage d'une archive). Types propres à PPF : `37240` (certificat d'une clé de travail de la plateforme) et `37241` (liste de l'équipe pour les accords de signature), section 4 decies. Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
 
 ## 4. Identifiant stable d'un contenu modifiable
 
@@ -574,6 +574,66 @@ Migration `migrations/12.sqm` (schéma 12 vers 13), identique à `Territoires.sq
 ## 4 octies. Données ouvertes du Parlement (D-064, D-065)
 
 Index : événement NIP-01, kind 30078, `d` = `ppf:parlement-index`, signé par une clé d'import (`OpenDataKeys`) ; `content` = l'index JSON (`example`, `importedOn`, `sources` avec nom, adresse, licence et date, `packages` avec nom, sha256 et taille). Paquets : `membres` (membres et groupes), `scrutins-an-AAAA-MM`, `votes-pe-AAAA-MM` (scrutins avec décomptes, décompte par groupe, positions `pour`, `contre`, `abstention`, `nonVotant`, `delegated`, `corrections` de type `mise-au-point` ou `dysfonctionnement`, `notVotingCauses`). Identifiants préfixés : `an:PA…`, `senat:…`, `pe:…`, scrutins `an:17:<numéro>`, dossiers `an-dossier:DLR5L17N…`. Code de circonscription : département puis numéro sur deux chiffres (`0101`, `2A01`, `97101`), commun avec l'annuaire des élus. Une brique de « Voir » peut porter `ppf-official-id` (personne ou texte). Modèles Kotlin : `core/voir/parlement/ParliamentFormat.kt` ; détail dans `docs/integration/voir-donnees-ouvertes.md`, section 3.
+
+## 4 decies. Signature de la plateforme : certificats, révocations, liste de l'équipe (D-129)
+
+Contrat : `docs/integration/service-signature.md`. Modèles Kotlin communs aux applications, au serveur et au service de signature : `core/platform/` (`KeyCertificate`, `TeamList`, `PlatformTrust`, `ApprovalChallenge`, `SigningProtocol`).
+
+**Clé racine.** Clé secp256k1 de la plateforme, sur le téléphone de la propriétaire (option A du contrat). Elle ne signe que les deux types ci-dessous : un contenu signé par la racine n'est jamais un contenu de la plateforme. Sa clé publique est la seule constante de confiance (`PlatformRoot.PUBLIC_KEY`) ; elle reste vide tant que la racine n'existe pas, et rien n'est alors reconnu comme contenu de la plateforme (jamais « tout »). La préproduction a sa propre racine, qui ne certifie jamais une clé de la production, et inversement.
+
+**Numéros.** Vérifiés le 7 novembre 2026 dans le tableau « Event Kinds » du README du dépôt officiel des NIP (github.com/nostr-protocol/nips) : aucune NIP n'utilise 37240 ni 37241, ni aucun type de 37000 à 37515 (les plus proches : 35128, NIP-5A ; 37516 et 37517, NIP-CC).
+
+### Certificat d'une clé de travail (type 37240, adressable)
+
+Signé par la racine, `content` vide.
+
+| Étiquette | Contenu | Nombre |
+|---|---|---|
+| `d` | Clé publique de la clé de travail, hexadécimal minuscule (jamais la racine) | Une |
+| `ppf-key-use` | Un usage : `editorial.comprendre`, `editorial.voir`, `revendications.status`, `agir.organisations`, `decider.pacte`, `archives.timestamps`, `opendata.index`, `decider.urn_closure` | Une par usage ; un usage inconnu est ignoré |
+| `ppf-not-before` | Début de la validité, secondes depuis 1970, en chiffres | Une |
+| `ppf-not-after` | Fin de la validité (exclue), 90 jours au plus après le début | Une |
+| `ppf-key-status` | `["ppf-key-status","active"]`, ou `["ppf-key-status","revoquee","<date d'effet en secondes>"]` | Une |
+| `alt` | Texte montré par les clients Nostr qui ne connaissent pas ce type (NIP-31) | Facultative |
+
+- **Révocation** : le même certificat republié (même `d`) avec le statut `revoquee` ; les contenus datés (`created_at`) de la date d'effet ou après ne sont plus reconnus ; sans date d'effet, plus aucun contenu de cette clé ne l'est.
+- **La version la plus récente l'emporte** (`created_at` le plus grand, à égalité le plus petit `id`), comme pour tout événement adressable : un certificat plus ancien renvoyé plus tard ne défait jamais une révocation. Les applications gardent sur l'appareil la dernière version reçue de chaque certificat.
+- **Lecture qui échoue fermée** : statut inconnu, absent ou en double, dates illisibles ou en double, fin avant le début, validité de plus de 90 jours : la clé est tenue pour révoquée depuis le début.
+
+Un événement est un **contenu valide de la plateforme pour un usage** (`PlatformTrust.check`) si sa signature est authentique, si sa clé n'est pas la racine, si son type est l'un de ceux de l'usage (tableau ci-dessous), si le dernier certificat de sa clé signé par la racine nomme cet usage, et si son `created_at` est dans la validité (début compris, fin exclue) et avant la date d'effet d'une éventuelle révocation.
+
+| Usage | Types | Accords | Forme exigée par le service de signature (version 1) |
+|---|---|---|---|
+| `editorial.comprendre`, `editorial.voir` | 30023 | Un ; deux pour la double validation | `d`, `title` et `ppf-origin` (`human` ou `ai-assisted`), une fois chacune ; `ppf-type` au plus une fois, jamais `organisation`, `pacte` ni `engagement` (types d'autres usages) |
+| `agir.organisations` | 30023 | Un ; deux sur demande | `d` (1 à 64 caractères `a-z0-9._~-`), `title`, `ppf-type` = `organisation`, au plus un `p` hexadécimal, `ppf-org-status` = `verifiee` ou `revoquee` s'il est présent |
+| `decider.pacte` | 30023 | Un ; deux sur demande | `d`, `title`, `ppf-origin`, `ppf-type` = `pacte` ou `engagement` |
+| `revendications.status` | 1985 | Un ; deux sur demande | Exactement `["L","ppf-status"]`, `["l","<statut>","ppf-status"]` (statuts de la section 4 bis) et un `a` vers une revendication `30023:<clé>:<d>`, aucune autre étiquette |
+| `archives.timestamps` | 1040 | Aucun | Exactement un `e` (64 caractères hexadécimaux) et au plus un `k` (type, en chiffres) ; `content` = la preuve `.ots` en base64 |
+| `opendata.index` | 30078 | Aucun | Exactement `["d","ppf:parlement-index"]` (section 4 octies) ; `content` = un objet JSON |
+| `decider.urn_closure` | 30078 | Aucun | Exactement `d` = `ppf:urne-cloture:<n>`, `ppf-urne` = `<n>` et `ppf-closing-sha256` = l'empreinte SHA-256 du document de clôture (`GET /api/v1/urnes/{n}/closing`) ; `content` = un objet JSON |
+
+Les formes des trois usages automatiques sont celles de la version 1 du contrat : « Décider » les confirme avant de brancher l'archivage horodaté et la clôture des urnes, et toute modification est une modification du contrat (section 4). Pour tous les usages : 64 Kio au plus (forme canonique), 1000 étiquettes au plus, `created_at` au plus 5 minutes dans le futur et au plus 8 jours dans le passé (1 jour pour un usage automatique).
+
+### Liste de l'équipe (type 37241, adressable)
+
+Signée par la racine, `d` = `ppf-equipe`, `content` vide. La plus récente l'emporte ; un membre absent de la dernière liste ne peut plus rien approuver.
+
+| Étiquette | Champs (positionnels) |
+|---|---|
+| `ppf-member` | Identifiant du compte du back-office (1 à 64 caractères `A-Za-z0-9._-`) ; date à partir de laquelle ses accords comptent (secondes) ; clé publique Nostr reliée au compte (hexadécimal) ou champ vide |
+| `ppf-member-use` | Identifiant du compte ; un usage qu'il peut approuver (une étiquette par usage) |
+| `ppf-credential` | Identifiant du compte ; identifiant de sa clé d'accès WebAuthn ; clé publique COSE de cette clé ; les deux en base64url sans remplissage (une étiquette par clé d'accès) |
+| `alt` | Texte montré par les clients Nostr (NIP-31) |
+
+Lecture qui échoue fermée : un compte décrit deux fois, ou dont la ligne est illisible, est écarté ; une clé d'accès listée deux fois est écartée de tous les comptes. Les clés de sécurité physiques des super-administrateurs n'y figurent pas : elles ne servent pas à publier.
+
+### Défi d'un accord
+
+Le défi WebAuthn qu'un membre signe pour approuver la signature d'un événement est SHA-256 du texte `ppf-approval-v1`, saut de ligne, usage, saut de ligne, identifiant hexadécimal de l'événement non signé (`ApprovalChallenge`). Exemple : l'usage `editorial.voir` et l'identifiant fait de 64 fois `a` donnent `6191c603b63bb16d1acb87d97834ad0872576eac06bb6027bd13929c38674f9a`. Le service vérifie l'assertion avec la clé COSE de la liste de l'équipe (jamais avec une clé envoyée dans la requête), l'origine du back-office et la vérification de la personne.
+
+### API interne du service de signature
+
+Hors API publique : port interne de son conteneur (8090 par défaut), joignable seulement par le serveur, qui présente `Authorization: Bearer <jeton>` (fichier secret partagé). Requêtes et réponses en JSON (`core/platform/SigningProtocol.kt`) ; détail dans le contrat, section 5.
 
 ## 5. API du serveur (version 1)
 

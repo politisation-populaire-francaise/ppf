@@ -187,3 +187,15 @@ Détail : `docs/integration/agir-temoignages.md`. Un témoignage révèle des op
 | Brouillon du formulaire (texte, date, lieu, photo d’origine, zones) | Ne pas perdre la saisie pendant la session | Mémoire seulement, jamais écrit en clair | Envoi, fermeture de l’application ou effacement des clés | Le témoin |
 
 Rien de la requête n’est gardé (ni adresse IP, ni en-tête, ni appareil). Les journaux ne reçoivent que des nombres. L’application ne lit jamais la position du téléphone : le lieu est écrit par le témoin. La clé qui signe la déclaration de provenance est créée pour la seule photo et détruite aussitôt. Aucun tiers : la photo est choisie par le sélecteur du système (Android) ou la boîte de dialogue des fichiers (ordinateur), sans permission. Vidéos et sons : refusés pour l’instant (aucune donnée).
+
+## Ajout du 7 novembre 2026 : service de signature de la plateforme (D-129)
+
+Données des membres de l'équipe seulement (pseudonymes), jamais des citoyens. Base légale : intérêt légitime de l'association (authenticité des contenus publiés, traçabilité des signatures).
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Liste de l'équipe signée par la racine : identifiant du compte du back-office, date de début, clé publique Nostr reliée au compte (facultative), usages que le membre peut approuver, identifiant et clé publique de ses clés d'accès | Vérifier les accords avant une signature de la plateforme | Service de signature (`team-list.json`) ; préparée par le back-office, signée sur le téléphone de la propriétaire | Remplacée par chaque nouvelle version ; un membre retiré disparaît de la version suivante | Service de signature, serveur (lecture), propriétaire |
+| Journal du service : numéro, date, action, usage, identifiant et date de l'événement, clé de travail, code de refus, **identifiants des comptes qui ont approuvé**, empreintes de chaînage ; jamais le contenu d'un événement, jamais une adresse | Traçabilité de chaque signature et de chaque refus (contrat, section 4) | Service de signature (`journal.jsonl`), recopié dans le journal d'audit du back-office (étape 4) | Sans limite, comme le journal d'audit (à faire relire par un avocat) | Équipe ayant `audit.read`, propriétaire |
+| Clés de travail de la plateforme (clés secrètes chiffrées) et certificats publics | Signer les contenus de la plateforme | Service de signature (`keys/`, `certificates/`) | Clé secrète détruite à sa révocation ou à son échéance ; certificats publics gardés | Service de signature seul (clés secrètes) ; public (certificats) |
+
+Aucune donnée de citoyen n'entre dans le service : il voit les contenus à signer le temps de la requête, sans les garder.

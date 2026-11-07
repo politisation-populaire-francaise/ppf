@@ -1,6 +1,6 @@
-# Contrat du service de signature de la plateforme, version 1
+# Contrat du service de signature de la plateforme, version 1.1
 
-Rédigé le 7 novembre 2026 par la session « Directeur Technique PPF », pour relecture par le chef d'équipe et les pôles qui en dépendent (« Comprendre » et « Voir » : circuit éditorial ; « Décider » : étiquettes de statut, tableau du Pacte, archives ; « Agir » : fiches d'organisation vérifiées). Version 1 du 7 novembre 2026 au soir : décisions de la propriétaire (clé racine, approbations) et du chef d'équipe intégrées (sections 3, 4 et 5). Décisions : D-079 (et la suite du bloc D-120 à D-129 si besoin).
+Rédigé le 7 novembre 2026 par la session « Directeur Technique PPF », pour relecture par le chef d'équipe et les pôles qui en dépendent (« Comprendre » et « Voir » : circuit éditorial ; « Décider » : étiquettes de statut, tableau du Pacte, archives ; « Agir » : fiches d'organisation vérifiées). Version 1 du 7 novembre 2026 au soir : décisions de la propriétaire (clé racine, approbations) et du chef d'équipe intégrées (sections 3, 4 et 5). Version 1.1 (7 novembre 2026, nuit) : formats, service et interface des étapes 2 et 3 (sections 2 et 5). Décisions : D-079, D-129.
 
 ## 1. Le besoin
 
@@ -14,7 +14,7 @@ Rédigé le 7 novembre 2026 par la session « Directeur Technique PPF », pour r
 2. **Clés de travail** : une par usage (`editorial.comprendre`, `editorial.voir`, statuts des revendications, organisations, Pacte et archives : une clé éditoriale par espace, précisé le 7 novembre 2026 avec « Comprendre »), chacune dans le service de signature, valable 90 jours au plus, renouvelée avant l'échéance. Une clé compromise ne vaut que pour son usage et jusqu'à sa révocation ou son échéance.
 3. **Les applications et le site** acceptent un contenu de la plateforme si sa clé est certifiée par la racine, pour ce type de contenu, à la date du contenu, et non révoquée. Cela remplace, pour les contenus de la plateforme, la liste fixe `EditorialTrust` ; les clés personnelles des éditeurs ne signent plus que leurs brouillons.
 
-Formats (à décrire dans `docs/FORMATS.md`, section nouvelle) : certificat = événement adressable signé par la racine, d'un `kind` dédié à choisir dans la plage 30000 à 39999 (vérifier qu'aucune NIP ne l'utilise), `d` = clé publique de la clé de travail, étiquettes `ppf-key-use` (usages), `ppf-not-before`, `ppf-not-after` ; révocation = la même adresse republiée avec `ppf-key-status` = `revoquee` et la date d'effet (la version la plus récente l'emporte). Les applications gardent sur l'appareil la liste des certificats et des révocations reçus.
+Formats (décrits dans `docs/FORMATS.md`, section 4 decies, D-129) : **certificat** = événement adressable de type `37240` signé par la racine (numéro libre dans la liste des NIP, vérifié le 7 novembre 2026), `d` = clé publique de la clé de travail, étiquettes `ppf-key-use` (une par usage), `ppf-not-before`, `ppf-not-after` (90 jours au plus) et `ppf-key-status` = `active` ; **révocation** = la même adresse republiée avec `["ppf-key-status","revoquee","<date d'effet>"]` (la version la plus récente l'emporte ; un statut inconnu, absent ou illisible vaut révocation depuis le début) ; **liste de l'équipe** = événement adressable de type `37241` signé par la racine, `d` = `ppf-equipe`, une étiquette `ppf-member` par membre (compte, date à partir de laquelle ses accords comptent, clé Nostr), `ppf-member-use` (usages qu'il peut approuver) et `ppf-credential` (identifiant et clé publique COSE de chaque clé d'accès). Les applications gardent sur l'appareil la liste des certificats et des révocations reçus ; la vérification commune est `PlatformTrust` (`shared/core`, paquet `core.platform`), qui ne reconnaît rien tant que la clé publique de la racine (`PlatformRoot.PUBLIC_KEY`) est vide. La préproduction a sa propre racine.
 
 ## 3. Où vit la clé racine : décidé (option A)
 
@@ -36,25 +36,53 @@ Options écartées : la ressaisie des 12 mots à chaque usage (fastidieuse, risq
 
 ## 5. Interface pour les pôles (côté serveur)
 
+Version du 7 novembre 2026 au soir (étape 3, D-129) : `currentKey` ajoutée, preuve d'accord précisée, API du service décrite.
+
 ```kotlin
+// server/.../server/signing/PlatformSigner.kt
 interface PlatformSigner {
+    /** The public key (hex) to put in the events of [use] now, null when the use has no certified key. */
+    suspend fun currentKey(use: SigningUse): String?
     /** Asks for the platform signature of [unsigned] for [use]; [approval] carries the WebAuthn assertions. */
     suspend fun request(unsigned: UnsignedEvent, use: SigningUse, approval: ApprovalProof): SigningTicket
-    suspend fun status(ticket: SigningTicket): SigningStatus   // Pending, Signed(SignedEvent), Refused(reason)
+    suspend fun status(ticket: SigningTicket): SigningStatus   // Pending, Signed(SignedEvent), Refused(code, detail)
 }
 ```
 
-- Le pôle construit l'événement non signé, le back-office recueille les deux accords (validation à deux, D-123), le pôle appelle `request`, puis publie l'événement signé par le port de publication unique.
-- **Preuve d'accord** (`ApprovalProof`) : une assertion WebAuthn par approbation exigée (une pour une publication ordinaire, deux de deux comptes différents pour un contenu de M17 qui met en cause une personne ; aucune pour un usage automatique listé), d'un compte qui a la permission de publier pour cet usage ; chacune porte sur le défi SHA-256(`"ppf-approval-v1\n" + usage + "\n" + identifiant hexadécimal de l'événement non signé`), séparation des domaines qui empêche de réutiliser une assertion pour un autre usage ou un autre événement ; chaque assertion contient l'identifiant du compte, l'identifiant de la clé, `authenticatorData`, `clientDataJSON` et la signature ; le service les vérifie lui-même avec la liste d'équipe signée par la racine. Pour la double validation, l'auteur du brouillon ne peut pas être l'un des deux (vérifié par la file éditoriale, clé Nostr de l'auteur contre celle des comptes).
-" + usage + "
-" + identifiant hexadécimal de l'événement non signé`), séparation des domaines qui empêche de réutiliser une assertion pour un autre usage ou un autre événement ; chaque assertion contient l'identifiant du compte, l'identifiant de la clé, `authenticatorData`, `clientDataJSON` et la signature ; le service les vérifie lui-même avec la liste d'équipe signée par la racine. L'auteur d'un brouillon ne peut pas être l'un des deux (vérifié par la file éditoriale, clé Nostr de l'auteur contre celle des comptes).
-- En tests et en développement : un signataire factice en mémoire avec une clé générée à chaque lancement.
+- Le pôle construit l'événement non signé avec la clé que donne `currentKey` (`pubkey`), le back-office recueille les accords, le pôle appelle `request`, puis publie l'événement signé, sans le modifier, par le port de publication unique. Mises en œuvre : `HttpPlatformSigner` (client du service, qui vérifie que l'événement rendu est bien celui demandé et qu'il est correctement signé) et, pour les tests et le développement, `FakePlatformSigner` (sources de test du serveur : une racine et une clé par usage générées à chaque lancement, en mémoire, avec leur `PlatformTrust`). Aucune file n'est encore branchée.
+- **Preuve d'accord** (`ApprovalProof`, `shared/core`, `core.platform`) : `double_validation` (vrai pour un contenu de M17 qui met en cause une personne, dit par la file), `author` (le compte ou la clé Nostr de l'auteur du brouillon, obligatoire pour la double validation) et `assertions`. Une assertion WebAuthn par approbation exigée : aucune pour un usage automatique listé (toute assertion est alors refusée), une pour une publication ordinaire (l'auteur peut l'être), deux de deux comptes différents pour la double validation, l'auteur n'étant aucun des deux (comparé au compte et à la clé Nostr de la liste de l'équipe). Chaque assertion porte `account`, `credential_id`, `authenticator_data`, `client_data`, `signature` et, facultatif, `user_handle` (base64url sans remplissage) ; elle signe le défi SHA-256(`"ppf-approval-v1\n" + usage + "\n" + identifiant hexadécimal de l'événement non signé`), séparation des domaines qui empêche de réutiliser une assertion pour un autre usage ou un autre événement. Le service la vérifie lui-même : clé d'accès cherchée dans la liste d'équipe signée par la racine, compte identique, usage permis au membre depuis sa date de début, origine du back-office (`PPF_SIGNER_APPROVAL_ORIGIN`), présence et vérification de la personne exigées.
+- **Rejeu** : un même événement n'est signé qu'une fois par usage (le service se souvient des identifiants signés, d'après son journal, au-delà de l'âge maximal d'un événement) ; une assertion rejouée est donc refusée (`already_signed`), et une assertion faite pour un autre événement ou un autre usage ne correspond pas au défi (`assertion_refused`). Le compteur de signatures des clés d'accès n'est pas suivi : les accords peuvent arriver dans n'importe quel ordre.
+- **Limite connue** : la file dit si la double validation est exigée et qui est l'auteur ; un serveur principal compromis pourrait donc demander une seule approbation pour un contenu de M17, mais jamais obtenir une signature sans l'approbation réelle d'un membre autorisé pour cet usage. Une règle de forme propre à M17, vérifiable par le service, est à fixer avec « Voir » (D-129).
+
+### API du service (réseau interne seulement)
+
+Conteneur `signer`, port 8090 par défaut, aucune sortie vers Internet ; chaque requête porte `Authorization: Bearer <jeton>`, comparé en temps constant au fichier secret `PPF_SIGNER_CLIENT_TOKEN_FILE` (le même fichier côté serveur, `PPF_SIGNER_CLIENT_TOKEN_FILE`, avec `PPF_SIGNER_URL`). Réponses en JSON, `Cache-Control: no-store`, sans journal des requêtes.
+
+| Requête | Réponse |
+|---|---|
+| `GET /health` (sans jeton) | `200 {"status":"ok","service":"ppf-signer"}` |
+| `GET /v1/keys` | `200 {"root_configured":true,"team_list":"<id>","keys":[{"use":"editorial.voir","pubkey":"…","state":"active","created_at":…,"current":true,"not_before":…,"not_after":…}]}` ; `state` : `awaiting_certification` (à certifier par la racine), `scheduled` (certifiée, validité future), `active`, `expired`, `revoked` |
+| `POST /v1/sign`, corps `{"use":"…","event":{"pubkey":"…","created_at":…,"kind":…,"tags":[…],"content":"…"},"approval":{"double_validation":false,"author":{"account":"…","pubkey":"…"},"assertions":[…]}}` (160 Kio au plus) | `200 {"status":"signed","event":{…}}` ; refus `{"status":"refused","code":"…","detail":"…"}` : `422` (règle), `409 already_signed`, `429 rate_limited` (avec `Retry-After`), `400 malformed_request`, `413 too_large` |
+| `POST /v1/certificates`, corps : un événement ou un tableau (100 au plus) de certificats et révocations signés par la racine | `200 [{"id":"…","status":"stored"\|"duplicate"\|"superseded"\|"unknown_key"\|"not_a_certificate"\|"no_root"}]` |
+| `POST /v1/team-list`, corps : la liste de l'équipe signée par la racine | `200 {"status":"stored"\|"duplicate"\|"superseded"}` ; `422 not_a_team_list` ou `no_root` |
+| `GET /v1/certificates`, `GET /v1/team-list` | Ce que le service garde (public), pour que le serveur le serve aux applications ; `404 no_team_list` |
+| `GET /v1/journal?after=<n>&limit=<1-1000>`, `GET /v1/journal/head` | Les lignes du journal après `n`, et la dernière ligne (`seq`, `hash`), pour les recopier dans le journal d'audit du back-office et ancrer la fin |
+
+Codes de refus : `unknown_use`, `use_disabled`, `malformed_event`, `too_large`, `kind_not_allowed`, `missing_tag`, `bad_tag`, `tag_not_allowed`, `bad_content` (le détail nomme l'étiquette, jamais une valeur), `created_at_in_future`, `created_at_too_old`, `no_root`, `no_active_key`, `wrong_key`, `key_not_certified`, `key_revoked`, `key_expired`, `outside_certificate`, `no_team_list`, `unexpected_approval`, `approvals_missing`, `unknown_credential`, `account_mismatch`, `not_allowed_for_use`, `assertion_refused`, `same_account_twice`, `author_required`, `author_cannot_approve`, `already_signed`, `rate_limited`. Le client du serveur ajoute `signer_unavailable`, `signer_unauthorized`, `bad_signature_from_signer` et `unknown_ticket`.
+
+Plafonds par heure (réglables par `PPF_SIGNER_MAX_PER_HOUR`) : 60 pour chaque espace éditorial et pour le Pacte, 120 pour les statuts, 30 pour les organisations, 600 pour les preuves d'horodatage, 6 pour l'index des données ouvertes, 30 pour les clôtures d'urnes.
+
+**Journal du service** : un fichier `journal.jsonl` dans son dossier de données, une ligne par signature, refus, clé créée ou détruite, certificat et liste reçus : numéro, date, action, usage, identifiant de l'événement et sa date, clé, code de refus, comptes qui ont approuvé, empreinte de la ligne précédente et de la ligne (SHA-256 d'un tableau JSON canonique, comme D-124) ; jamais le contenu d'un événement ni l'adresse de l'appelant. Toute la chaîne est vérifiée au démarrage, qui échoue si une ligne a été retirée, changée ou déplacée. Au-delà de 1000 refus par heure, les suivants sont comptés en une ligne.
+
+**Clés de travail** : générées dans le service, une par usage, gardées chiffrées au repos (AES-256-GCM, clé dérivée par HKDF-SHA-256 du fichier secret `PPF_SIGNER_KEK_FILE`, données associées : usage, clé publique, date) ; aucune requête ne rend une clé secrète. La clé suivante d'un usage est créée 15 jours avant la fin de la clé en cours (ou aussitôt si elle est révoquée) et montrée comme « à certifier » ; le service signe les nouveaux événements avec la clé active dont le certificat a commencé le plus tard, donc bascule à la date de début du nouveau certificat ; la clé secrète d'une clé révoquée ou échue est détruite.
+
+- En tests et en développement : `FakePlatformSigner` (ci-dessus) côté serveur ; le service lui-même se lance en local par `gradlew :signer:run` avec ses variables (D-129).
 
 ## 6. Étapes
 
 1. Accord sur ce contrat : fait le 7 novembre 2026 (option A de la section 3 choisie par la propriétaire, règles d'accord fixées avec le chef d'équipe).
-2. Formats (certificat, révocation, liste d'équipe) dans `shared/core`, avec la vérification de confiance commune aux applications et au serveur.
-3. Conteneur `signer` (Kotlin, jar distinct dans la même image signée), règles par usage, vérification des assertions, journal.
+2. Formats (certificat, révocation, liste d'équipe) dans `shared/core`, avec la vérification de confiance commune aux applications et au serveur : fait le 7 novembre 2026 (`core.platform`, D-129).
+3. Conteneur `signer` (Kotlin, jar distinct dans la même image signée), règles par usage, vérification des assertions, journal : service fait le 7 novembre 2026 (module `signer`, jar `ppf-signer.jar`, interface `PlatformSigner` du serveur, D-129) ; reste à poser le conteneur et son réseau dans `infra/` (Directeur technique).
 4. Côté back-office : défi WebAuthn = empreinte de l'événement, écrans de certification et de révocation (code QR).
 5. Côté application : espace « Administration de la plateforme » (option A), réservé à l'appareil qui détient la racine.
 6. Bascule des contenus de la plateforme : les applications font confiance aux clés certifiées ; la clé d'exemple reste pour les exemples.
