@@ -1,0 +1,13 @@
+{
+ "organe": {
+  "uid": "PO910000",
+  "codeType": "ASSEMBLEE",
+  "libelle": "[EXEMPLE] Assemblée nationale",
+  "libelleAbrev": "AN",
+  "viMoDe": {
+   "dateDebut": "2012-06-20",
+   "dateFin": null
+  },
+  "couleurAssociee": "#123456"
+ }
+}

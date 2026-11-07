@@ -347,6 +347,244 @@ write("pe/meetings/MTG-PL-2026-10-21/decisions.json", {"data": [
              "person/990003", ["person/990001", FOREIGN[1]], [], (120, 480, 40)),
 ], "@context": [CONTEXT]})
 
+# ================================================================ HISTORY OF THE BALLOTS
+# (voir-historique-sources.md, voir-historique-import.md) Same official formats, other fictional
+# people (identifiers 91xxxx), a few ballots per legislature, session and term.
+
+
+def write_text(rel, text, encoding):
+    path = os.path.join(root, *rel.split("/"))
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding=encoding, newline="\n") as f:
+        f.write(text)
+    files.append(rel)
+
+
+# ---------------------------------------------------------------- Assemblée nationale, AMO30
+LEG_DATES = {14: ("2012-06-20", "2017-06-20"), 15: ("2017-06-21", "2022-06-21"), 16: ("2022-06-22", "2024-06-09"), 17: ("2024-07-18", None)}
+# uid, first name, last name, legislatures, groups (organ, start, end), parties of attachment (organ, start, end)
+history_deputies = [
+    ("PA910001", "Armelle", "Kerjean", [14, 15], [("PO910101", "2012-06-26", "2022-06-21")], [("PO910201", "2012-12-01", None)]),
+    ("PA910002", "Benoît", "Larrieu", [14, 15, 16, 17], [("PO910101", "2012-06-26", None)], [("PO910201", "2012-12-01", "2019-12-31"), ("PO910202", "2020-01-01", None)]),
+    ("PA910003", "Capucine", "Roussel", [14, 15, 16, 17], [("PO910102", "2012-06-26", None)], [("PO910202", "2012-12-01", None)]),
+    # Never declared a party of attachment: the group stands for it.
+    ("PA910004", "Didier", "Marsan", [14, 15, 16, 17], [("PO910102", "2012-06-26", None)], []),
+    ("PA910005", "Estelle", "Guérin", [16, 17], [("PO910101", "2022-06-28", None)], [("PO910201", "2022-06-28", None)]),
+    ("PA910006", "Firmin", "Aubrac", [14], [("PO910102", "2012-06-26", "2017-06-20")], [("PO910202", "2012-12-01", "2017-06-20")]),
+]
+for n, (uid, first, last, legs, gps, parties) in enumerate(history_deputies, start=1):
+    mandates = []
+    for leg in legs:
+        start, end = LEG_DATES[leg]
+        mandates.append({
+            "@xsi:type": "MandatParlementaire_type", "uid": f"PM91{leg}{n:03d}", "acteurRef": uid, "legislature": str(leg), "typeOrgane": "ASSEMBLEE",
+            "dateDebut": start, "datePublication": start, "dateFin": end,
+            "mandature": {"datePriseFonction": start, "causeFin": None, "placeHemicycle": str(300 + n), "mandatRemplaceRef": None},
+            "infosQualite": {"codeQualite": "membre", "libQualite": "membre"},
+            "organes": {"organeRef": "PO910000"},
+            "election": {"lieu": {"region": "[EXEMPLE]", "departement": "[EXEMPLE] Département", "numDepartement": "29", "numCirco": str(n)}},
+            "collaborateurs": {"collaborateur": {"qualite": "M.", "prenom": "[EXEMPLE] Collaborateur", "nom": "Fictif"}},
+        })
+    for k, (organ, start, end) in enumerate(gps, start=1):
+        mandates.append({"@xsi:type": "MandatSimple_type", "uid": f"PM92{n:03d}{k}", "acteurRef": uid, "legislature": None, "typeOrgane": "GP",
+                         "dateDebut": start, "dateFin": end, "infosQualite": {"codeQualite": "Membre"}, "organes": {"organeRef": organ}})
+    for k, (organ, start, end) in enumerate(parties, start=1):
+        mandates.append({"@xsi:type": "MandatSimple_type", "uid": f"PM93{n:03d}{k}", "acteurRef": uid, "legislature": None, "typeOrgane": "PARPOL",
+                         "dateDebut": start, "dateFin": end, "infosQualite": {"codeQualite": "Membre"}, "organes": {"organeRef": organ}})
+    # A committee: never read.
+    mandates.append({"uid": f"PM94{n:03d}", "acteurRef": uid, "typeOrgane": "COMPER", "dateDebut": "2012-07-01", "dateFin": None, "organes": {"organeRef": "PO910301"}})
+    write(f"an-historique/amo30/json/acteur/{uid}.json", {"acteur": {
+        "uid": {"@xsi:type": "IdActeur_type", "#text": uid},
+        "etatCivil": {"ident": {"civ": "Mme" if n % 2 else "M.", "prenom": f"[EXEMPLE] {first}", "nom": last, "alpha": last},
+                      "infoNaissance": {"dateNais": "1970-01-01", "villeNais": "[EXEMPLE] Ville fictive"}},
+        "profession": {"libelleCourant": "[EXEMPLE] Profession fictive"},
+        "adresses": {"adresse": {"@xsi:type": "AdresseMail_type", "valElec": "exemple@example.invalid"}},
+        "mandats": {"mandat": xml_list(mandates)},
+    }})
+# Someone who never sat in the Assemblée (a senator in AMO30): left out.
+write("an-historique/amo30/json/acteur/PA910099.json", {"acteur": {
+    "uid": {"#text": "PA910099"}, "etatCivil": {"ident": {"civ": "M.", "prenom": "[EXEMPLE] Gaston", "nom": "Sénateur"}},
+    "mandats": {"mandat": {"uid": "PM919999", "acteurRef": "PA910099", "typeOrgane": "SENAT", "dateDebut": "2014-10-01", "dateFin": None, "organes": {"organeRef": "PO910400"}}},
+}})
+history_organs = [
+    ("PO910000", "ASSEMBLEE", "[EXEMPLE] Assemblée nationale", "AN"),
+    ("PO910101", "GP", "[EXEMPLE] Groupe des Collines", "GCO"),
+    ("PO910102", "GP", "[EXEMPLE] Groupe des Vallées", "GVA"),
+    ("PO910201", "PARPOL", "[EXEMPLE] Parti des Collines", "PCO"),
+    ("PO910202", "PARPOL", "[EXEMPLE] Mouvement des Vallées", "MVA"),
+    ("PO910301", "COMPER", "[EXEMPLE] Commission fictive", "CF"),
+]
+for uid, code, label, short in history_organs:
+    write(f"an-historique/amo30/json/organe/{uid}.json", {"organe": {"uid": uid, "codeType": code, "libelle": label, "libelleAbrev": short,
+                                                                     "viMoDe": {"dateDebut": "2012-06-20", "dateFin": None}, "couleurAssociee": "#123456"}})
+
+# ---------------------------------------------------------------- Assemblée nationale, ballots of the 14th to 17th legislatures
+KEYS = {"pour": "pours", "contre": "contres", "abst": "abstentions", "nv": "nonVotants"}
+
+
+def history_scrutin(leg, number, date, title, code, adopted, groups, dossier=None):
+    group_blocks = []
+    total = {"nonVotants": 0, "pour": 0, "contre": 0, "abstentions": 0, "nonVotantsVolontaires": 0}
+    for organ, votes in groups:
+        counts = {"nonVotants": len(votes.get("nv", [])), "pour": len(votes.get("pour", [])), "contre": len(votes.get("contre", [])),
+                  "abstentions": len(votes.get("abst", [])), "nonVotantsVolontaires": 0}
+        for k in total:
+            total[k] += counts[k]
+        nominal = {}
+        for short, key in KEYS.items():
+            voters = [{"acteurRef": a, "mandatRef": f"PM9{a[-4:]}", "numPlace": str(300 + int(a[-1])), "parDelegation": "false"} for a in votes.get(short, [])]
+            nominal[key] = {"votant": xml_list(voters)} if voters else None
+        group_blocks.append({"organeRef": organ, "nombreMembresGroupe": "3", "vote": {
+            "positionMajoritaire": "pour", "decompteVoix": {k: str(v) for k, v in counts.items()}, "decompteNominatif": nominal}})
+    voters = total["pour"] + total["contre"] + total["abstentions"]
+    return {
+        "uid": f"VTANR5L{leg}V{number}", "numero": str(number), "organeRef": "PO910000", "legislature": str(leg),
+        "dateScrutin": date, "typeVote": {"codeTypeVote": code, "libelleTypeVote": "[EXEMPLE]"},
+        "sort": {"code": "adopté" if adopted else "rejeté", "libelle": "[EXEMPLE]"},
+        "titre": title, "demandeur": {"texte": "[EXEMPLE] Président du groupe fictif"},
+        "objet": {"libelle": title, "dossierLegislatif": None if not dossier else {"dossierRef": dossier, "libelle": "[EXEMPLE]"}},
+        "modePublicationDesVotes": "DecompteNominatif",
+        "syntheseVote": {"nombreVotants": str(voters), "suffragesExprimes": str(total["pour"] + total["contre"]), "nbrSuffragesRequis": "1",
+                         "annonce": "[EXEMPLE]", "decompte": {k: str(v) for k, v in total.items()}},
+        "ventilationVotes": {"organe": {"organeRef": "PO910000", "groupes": {"groupe": xml_list(group_blocks)}}},
+    }
+
+
+# The 14th legislature is one document with the list of its ballots, and stops on 24 November 2016.
+write("an-historique/scrutins-14/Scrutins_XIV.json", {"scrutins": {"scrutin": [
+    history_scrutin(14, 9001, "2012-07-10", "[EXEMPLE] l'ensemble du projet de loi relatif aux sentiers côtiers (première lecture).", "SPO", True,
+                    [("PO910101", {"pour": ["PA910001", "PA910002"]}), ("PO910102", {"contre": ["PA910003"], "abst": ["PA910004"], "nv": ["PA910006"]})],
+                    dossier="DLR5L14N91001"),
+    history_scrutin(14, 9002, "2014-03-12", "[EXEMPLE] l'amendement n° 12 à l'article 3 du projet de loi relatif aux phares.", "SPS", False,
+                    [("PO910101", {"pour": ["PA910001"], "contre": ["PA910002"]}), ("PO910102", {"contre": ["PA910003", "PA910006"], "abst": ["PA910004"]})]),
+    history_scrutin(14, 9003, "2016-11-24", "[EXEMPLE] l'ensemble de la proposition de loi relative aux moulins.", "SPO", True,
+                    [("PO910101", {"pour": ["PA910001", "PA910002"]}), ("PO910102", {"pour": ["PA910004"]})]),
+]}})
+history_ballots = {
+    15: [
+        (9001, "2018-02-06", "[EXEMPLE] l'article unique de la proposition de loi relative aux haies.", "SPO", True,
+         [("PO910101", {"pour": ["PA910001", "PA910002"]}), ("PO910102", {"contre": ["PA910003"], "nv": ["PA910004"]})]),
+        (9002, "2020-05-12", "[EXEMPLE] la motion de censure déposée en application de l'article 49, alinéa 3, de la Constitution.", "MOC", False,
+         [("PO910101", {"pour": ["PA910002"], "contre": ["PA910001"]}), ("PO910102", {"pour": ["PA910003"], "abst": ["PA910004"]})]),
+    ],
+    16: [
+        (9001, "2023-03-20", "[EXEMPLE] l'ensemble du projet de loi relatif aux ponts.", "SPO", True,
+         [("PO910101", {"pour": ["PA910005"], "contre": ["PA910002"]}), ("PO910102", {"pour": ["PA910003", "PA910004"]})]),
+    ],
+    17: [
+        (9001, "2025-01-15", "[EXEMPLE] l'ensemble du projet de loi relatif aux écluses.", "SPO", True,
+         [("PO910101", {"pour": ["PA910002", "PA910005"]}), ("PO910102", {"abst": ["PA910003"], "contre": ["PA910004"]})]),
+        (9002, "2026-10-14", "[EXEMPLE] la motion de censure déposée en application de l'article 49, alinéa 2, de la Constitution.", "MOC", False,
+         [("PO910101", {"contre": ["PA910005"]}), ("PO910102", {"pour": ["PA910003"]})]),
+    ],
+}
+for leg, ballots in history_ballots.items():
+    for number, date, title, code, adopted, groups in ballots:
+        write(f"an-historique/scrutins-{leg}/json/VTANR5L{leg}V{number}.json", {"scrutin": history_scrutin(leg, number, date, title, code, adopted, groups)})
+
+# ---------------------------------------------------------------- Sénat, ODSEN_HISTOGROUPES.csv (Latin-1, ";")
+histogroupes = [
+    ("99101A", "Hélène", "Castagnet", "EXA", "[EXEMPLE] Groupe des Crêtes", "01/10/2004", ""),
+    ("99102A", "Ignace", "Daubrée", "EXA", "[EXEMPLE] Groupe des Crêtes", "01/10/2004", "30/06/2018"),
+    ("99102A", "Ignace", "Daubrée", "EXB", "[EXEMPLE] Groupe des Estuaires", "01/07/2018", ""),
+    ("99103A", "Jeanne", "Escoffier", "EXB", "[EXEMPLE] Groupe des Estuaires", "01/10/2004", ""),
+    ("99104A", "Kilian", "Fabrègue", "EXB", "[EXEMPLE] Groupe des Estuaires", "01/10/2011", "30/09/2020"),
+    ("99105A", "Léonie", "Gaubert", "RASNAG", "[EXEMPLE] Réunion administrative des non-inscrits", "01/10/2020", ""),
+]
+csv_lines = ['"Matricule";"Nom usuel";"Prénom usuel";"Identifiant de l\'appartenance";"Code du groupe";"Nom court du groupe";'
+             '"Date de début d\'appartenance";"Date de fin d\'appartenance";"Fonction";"Date de début de fonction";"Date de fin de fonction"']
+for k, (m, first, last, code, short, start, end) in enumerate(histogroupes, start=1):
+    csv_lines.append(f'"{m}";"{last}";"[EXEMPLE] {first}";"{k}";"{code}";"{short}";"{start}";"{end}";"Membre";"{start}";"{end}"')
+write_text("senat-historique/ODSEN_HISTOGROUPES.csv", "\n".join(csv_lines) + "\n", "latin-1")
+
+# ---------------------------------------------------------------- Sénat, dosleg.sql (PostgreSQL 8.4 dump, only what is needed)
+scr_rows = [
+    # sesann, scrnum, scrint, scrdat, pour, contre, votants, exprimés, majorité
+    (2005, 12, "[EXEMPLE] Scrutin d'une session antérieure à 2006", "2005-12-01", 200, 100, 310, 300, 151),
+    (2006, 9001, "[EXEMPLE] l'ensemble du projet de loi relatif aux sentiers côtiers", "2006-11-15 00:00:00", 200, 120, 330, 320, 161),
+    (2018, 9001, "[EXEMPLE] l'amendement n° 7 à l'article 2 de la proposition de loi relative aux phares\\tdeuxième lecture", "2018-10-17", 150, 170, 330, 320, 161),
+    (2018, 9002, "[EXEMPLE] l'ensemble de la proposition de loi relative aux moulins", "2019-02-05", 250, 80, 335, 330, 166),
+    (2026, 9001, "[EXEMPLE] l'ensemble du projet de loi de finances pour 2027", "2026-10-20", 180, 140, 340, 320, 161),
+]
+votsen_rows = [
+    (2005, 12, "99101A", "p", "\\N"),
+    (2006, 9001, "99101A", "p", "\\N"), (2006, 9001, "99102A", "p", "\\N"), (2006, 9001, "99103A", "c", "\\N"),
+    (2018, 9001, "99101A", "p", "\\N"), (2018, 9001, "99102A", "c", "\\N"), (2018, 9001, "99103A", "c", "\\N"), (2018, 9001, "99104A", "a", "\\N"),
+    (2018, 9002, "99101A", "p", "\\N"), (2018, 9002, "99102A", "p", "\\N"), (2018, 9002, "99103A", "n", "\\N"), (2018, 9002, "99104A", "p", "99103A"),
+    (2026, 9001, "99101A", "c", "\\N"), (2026, 9001, "99102A", "p", "\\N"), (2026, 9001, "99103A", "p", "\\N"), (2026, 9001, "99105A", "a", "\\N"),
+]
+sql = [
+    "--",
+    "-- [EXEMPLE] PostgreSQL database dump (fictional extract of the Dosleg copy: only the tables read)",
+    "--",
+    "",
+    "SET client_encoding = 'LATIN1';",
+    "SET standard_conforming_strings = off;",
+    "",
+    "CREATE TABLE scr (",
+    "    sesann integer NOT NULL,",
+    "    scrnum integer NOT NULL",
+    ");",
+    "",
+    "COPY sen (senmat, sennomuse, senprenomuse, sendatnai) FROM stdin;",
+]
+for m, first, last, *_ in histogroupes:
+    sql.append(f"{m}\t{last}\t[EXEMPLE] {first}\t1970-01-01")
+sql += ["\\.", "", "COPY posvot (posvotcod, posvotlib) FROM stdin;", "p\tPour", "c\tContre", "a\tAbstention", "n\tN'a pas pris part au vote", "\\.", "",
+        "COPY scr (sesann, scrnum, scrint, scrdat, scrpou, scrcon, scrvot, scrsuf, scrpousea, scrconsea, scrvotsea, scrsufsea, scrmaj, scrobs) FROM stdin;"]
+for s, num, title, date, pour, contre, vot, suf, maj in scr_rows:
+    sql.append(f"{s}\t{num}\t{title}\t{date}\t{pour}\t{contre}\t{vot}\t{suf}\t{pour}\t{contre}\t{vot}\t{suf}\t{maj}\t\\N")
+sql += ["\\.", "", "COPY votsen (sesann, scrnum, senmat, posvotcod, senmatdel, stavotidt) FROM stdin;"]
+for s, num, m, pos, dele in votsen_rows:
+    sql.append(f"{s}\t{num}\t{m}\t{pos}\t{dele}\t1")
+sql += ["\\.", "", "--", "-- PostgreSQL database dump complete", "--", ""]
+write_text("senat-historique/dosleg/dosleg.sql", "\n".join(sql), "latin-1")
+
+# ---------------------------------------------------------------- Parlement européen, 9th and 10th terms
+history_meps = [
+    ("990011", "Maëlle", "Ourcival", [("EU_POLITICAL_GROUP", "990201", "2019-07-02", "2024-07-15"),
+                                      ("NATIONAL_POLITICAL_GROUP", "990101", "2019-07-02", "2021-01-31"),
+                                      ("NATIONAL_POLITICAL_GROUP", "990102", "2021-02-01", "2024-07-15")]),
+    # No national party.
+    ("990012", "Noé", "Prunières", [("EU_POLITICAL_GROUP", "990202", "2019-07-02", "2024-07-15")]),
+]
+
+
+def mep_summary(i, first, last):
+    return {"id": f"person/{i}", "type": "Person", "identifier": i, "label": f"[EXEMPLE] {first} {last.upper()}", "familyName": last,
+            "givenName": f"[EXEMPLE] {first}", "sortLabel": last.upper(), "api:country-of-representation": "FR"}
+
+
+write("pe/meps-term-9.json", {"data": [mep_summary("990003", "Solène", "Marivaux")] + [mep_summary(i, f, l) for i, f, l, _ in history_meps], "@context": [CONTEXT]})
+write("pe/meps-term-10.json", {"data": [mep_summary(i, f, l) for i, f, l, _, _ in meps], "@context": [CONTEXT]})
+for i, first, last, memberships in history_meps:
+    write(f"pe/meps/{i}.json", {"data": [{
+        "id": f"person/{i}", "type": "Person", "identifier": i, "label": f"[EXEMPLE] {first} {last.upper()}", "familyName": last, "givenName": f"[EXEMPLE] {first}",
+        "bday": "1970-01-01", "placeOfBirth": "[EXEMPLE] Ville fictive", "hasEmail": "mailto:exemple@example.invalid",
+        "hasMembership": [{"id": f"membership/{i}-{k}", "type": "Membership", "identifier": f"{i}-{k}", "membershipClassification": f"def/ep-entities/{kind}",
+                           "organization": f"org/{org}", "memberDuring": {"type": "PeriodOfTime", "startDate": start, "endDate": end}, "role": "def/ep-roles/MEMBER"}
+                          for k, (kind, org, start, end) in enumerate(memberships, start=1)],
+    }], "@context": [CONTEXT]})
+write("pe/meetings-2019.json", {"data": [
+    # Before 15 July 2019: the vote of each member is not published, the sitting is not imported.
+    {"id": "eli/dl/event/MTG-PL-2019-07-03", "type": "Activity", "activity_id": "MTG-PL-2019-07-03", "had_activity_type": "def/ep-activities/PLENARY_SITTING", "activity_date": "2019-07-03"},
+], "@context": [CONTEXT]})
+write("pe/meetings-2021.json", {"data": [
+    {"id": "eli/dl/event/MTG-PL-2021-03-10", "type": "Activity", "activity_id": "MTG-PL-2021-03-10", "had_activity_type": "def/ep-activities/PLENARY_SITTING", "activity_date": "2021-03-10"},
+], "@context": [CONTEXT]})
+write("pe/meetings/MTG-PL-2019-07-03/decisions.json", {"data": [
+    decision("MTG-PL-2019-07-03", 1, "[EXEMPLE] Élection du Président - vote non importé", "VOTE_ELECTRONIC_ROLLCALL", "ADOPTED", ["person/990011"], [], [], (400, 200, 50)),
+], "@context": [CONTEXT]})
+pe_2021 = [
+    decision("MTG-PL-2021-03-10", 1, "[EXEMPLE] Rapport sur les sentiers européens - vote unique", "VOTE_ELECTRONIC_ROLLCALL", "ADOPTED",
+             ["person/990011", "person/990003", FOREIGN[0]], ["person/990012", FOREIGN[1]], [], (455, 180, 50)),
+    decision("MTG-PL-2021-03-10", 2, "[EXEMPLE] Résolution sur les moulins - amendement 3", "VOTE_ELECTRONIC_ROLLCALL", "REJECTED",
+             ["person/990012"], ["person/990011", FOREIGN[2]], ["person/990003"], (150, 470, 60)),
+    decision("MTG-PL-2021-03-10", 3, "[EXEMPLE] Ordre du jour - vote à main levée", "VOTE_SHOW_OF_HANDS", "ADOPTED", [], [], [], (0, 0, 0)),
+]
+pe_2021[0]["referenceText"] = "A9-0001/2021"
+write("pe/meetings/MTG-PL-2021-03-10/decisions.json", {"data": pe_2021, "@context": [CONTEXT]})
+
 # ---------------------------------------------------------------- manifest and listing
 write("manifest.json", {"note": "[EXEMPLE] Données fictives au format des fichiers officiels. Aucune personne réelle.", "importedOn": IMPORTED_ON})
 with open(os.path.join(root, "files.txt"), "w", encoding="utf-8", newline="\n") as f:

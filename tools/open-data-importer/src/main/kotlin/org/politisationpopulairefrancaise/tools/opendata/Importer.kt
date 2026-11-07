@@ -8,6 +8,7 @@ import org.politisationpopulairefrancaise.core.voir.parlement.Ballot
 import org.politisationpopulairefrancaise.core.voir.parlement.BallotsPackage
 import org.politisationpopulairefrancaise.core.voir.parlement.Chamber
 import org.politisationpopulairefrancaise.core.voir.parlement.DataSource
+import org.politisationpopulairefrancaise.core.voir.parlement.HistoryPackage
 import org.politisationpopulairefrancaise.core.voir.parlement.ImportGuard
 import org.politisationpopulairefrancaise.core.voir.parlement.MembersPackage
 import org.politisationpopulairefrancaise.core.voir.parlement.PackageRef
@@ -47,8 +48,8 @@ enum class SourceId(val id: String, val chamber: Chamber, val sourceName: String
 class GuardException(message: String) : Exception(message)
 
 /**
- * One import: reads the sources of [only], keeps the members and ballots of the other sources from
- * the previous set in [out], checks the new set against the previous one ([ImportGuard]), writes the
+ * One import: reads the sources of [only] and the history sources of [history], keeps the members,
+ * ballots and history of the other sources from the previous set in [out], checks the new set against the previous one ([ImportGuard]), writes the
  * packages then the signed index. Nothing in [out] changes unless everything succeeded; the logs give
  * numbers and package names only.
  */
@@ -57,6 +58,8 @@ class Importer(
     private val keys: IdentityKeys,
     private val out: Path,
     private val only: Set<SourceId> = SourceId.entries.toSet(),
+    /** The history sources to rebuild (none by default: the history is imported apart, `--history`). */
+    private val history: Set<HistorySourceId> = emptySet(),
     private val log: (String) -> Unit = ::println,
 ) {
     private val json = ParliamentFormat.json
@@ -109,6 +112,38 @@ class Importer(
         }
     }
 
+    private fun historyCount(index: ParliamentIndex?, source: HistorySourceId): Int? {
+        index ?: return null
+        val refs = index.packages.filter { it.name.startsWith(source.packagePrefix) }
+        if (refs.isEmpty()) return null
+        return refs.sumOf { ref ->
+            val bytes = readPackage(ref) ?: throw UnreadableSourceException("previous package ${ref.name} is damaged; remove the folder to start again")
+            json.decodeFromString(HistoryPackage.serializer(), bytes.decodeToString()).ballots.size
+        }
+    }
+
+    /** The packages of one history source, encoded at once (the objects are not kept), with their number of ballots. */
+    private fun historyFiles(source: HistorySourceId, example: Boolean): Pair<Map<String, ByteArray>, Int> {
+        val files = LinkedHashMap<String, ByteArray>()
+        var count = 0
+        fun add(pkg: HistoryPackage) {
+            files[ParliamentFormat.historyPackage(pkg.chamber, pkg.period)] = json.encodeToString(HistoryPackage.serializer(), pkg).encodeToByteArray()
+            count += pkg.ballots.size
+        }
+        when (source) {
+            HistorySourceId.AN -> {
+                val reference = AssembleeHistory.reference(sources.anHistoryActors())
+                AssembleeHistory.LEGISLATURES.forEach { add(AssembleeHistory.ballots(it, sources.anHistoryBallots(it), reference, example)) }
+            }
+            HistorySourceId.SENAT -> {
+                val groups = SenatHistory.groups(sources.senatHistoGroups())
+                SenatHistory.packages(sources.senatDosleg(), groups, example).forEach(::add)
+            }
+            HistorySourceId.PE -> EuroparlHistory.packages(sources.europarl(), sources.today, example).forEach(::add)
+        }
+        return files to count
+    }
+
     private fun importAll() {
         val previous = previous()
         val example = sources.example
@@ -131,6 +166,9 @@ class Importer(
             ballots[Chamber.PE] = Europarl.ballots(api, roster.members.map { it.id.removePrefix("pe:") }.toSet(), sources.today)
         }
 
+        val histories = LinkedHashMap<HistorySourceId, Pair<Map<String, ByteArray>, Int>>()
+        HistorySourceId.entries.filter { it in history }.forEach { histories[it] = historyFiles(it, example) }
+
         // The guard: no source may lose more than 20 % of its members or ballots (a truncated file).
         rosters.forEach { (source, roster) ->
             val before = previous.members?.members?.count { it.chamber == source.chamber }
@@ -140,13 +178,20 @@ class Importer(
             val before = ballotsCount(previous.index, chamber)
             if (!ImportGuard.accepts(before, list.size)) throw GuardException("${chamber.name.lowercase()}: ${list.size} ballot(s) instead of $before")
         }
+        histories.forEach { (source, built) ->
+            val before = historyCount(previous.index, source)
+            if (!ImportGuard.accepts(before, built.second)) throw GuardException("${source.id}: ${built.second} ballot(s) instead of $before")
+        }
 
         // Members and groups of the sources not refreshed now come from the previous set.
         val kept = SourceId.entries.filter { it !in only }.map { it.chamber }.toSet()
         val members = (rosters.values.flatMap { it.members } + previous.members?.members.orEmpty().filter { it.chamber in kept }).sortedBy { it.id }
         val groups = (rosters.values.flatMap { it.groups } + previous.members?.groups.orEmpty().filter { it.chamber in kept }).sortedBy { it.id }
         val files = LinkedHashMap<String, ByteArray>()
-        files[ParliamentFormat.MEMBERS_PACKAGE] = json.encodeToString(MembersPackage.serializer(), MembersPackage(example = example, members = members, groups = groups)).encodeToByteArray()
+        // Without any daily source refreshed (`--history`), the members package of the previous set is kept as it is.
+        if (only.isNotEmpty()) {
+            files[ParliamentFormat.MEMBERS_PACKAGE] = json.encodeToString(MembersPackage.serializer(), MembersPackage(example = example, members = members, groups = groups)).encodeToByteArray()
+        }
         ballots.forEach { (chamber, list) ->
             list.groupBy { it.date.take(7) }.toSortedMap().forEach { (month, monthBallots) ->
                 val name = ParliamentFormat.ballotsPackage(chamber, month.take(4).toInt(), month.substring(5, 7).toInt())
@@ -154,14 +199,19 @@ class Importer(
                 files[name] = json.encodeToString(BallotsPackage.serializer(), BallotsPackage(example = example, chamber = chamber, month = month, ballots = sorted)).encodeToByteArray()
             }
         }
+        histories.values.forEach { (packages, _) -> files.putAll(packages) }
         val refreshedChambers = ballots.keys
         val keptRefs = previous.index?.packages.orEmpty().filter { ref ->
-            ref.name != ParliamentFormat.MEMBERS_PACKAGE && Chamber.entries.none { it in refreshedChambers && ref.name.startsWith(it.ballotsPrefix + "-") }
+            (ref.name != ParliamentFormat.MEMBERS_PACKAGE || only.isEmpty()) &&
+                Chamber.entries.none { it in refreshedChambers && ref.name.startsWith(it.ballotsPrefix + "-") } &&
+                histories.keys.none { ref.name.startsWith(it.packagePrefix) }
         }.onEach { ref -> readPackage(ref) ?: throw UnreadableSourceException("previous package ${ref.name} is damaged; import every source") }
 
         val refs = (files.map { (name, bytes) -> PackageRef(name, ParliamentFormat.sha256Hex(bytes), bytes.size.toLong()) } + keptRefs).sortedBy { it.name }
         val sourcesOfIndex = SourceId.entries.mapNotNull { source ->
             if (source in only) DataSource(source.id, source.sourceName, source.url, source.licence, sources.today) else previous.index?.source(source.id)
+        } + HistorySourceId.entries.mapNotNull { source ->
+            if (source in history) DataSource(source.id, source.sourceName, source.url, source.licence, sources.today) else previous.index?.source(source.id)
         }
         val index = ParliamentIndex(example = example, importedOn = sources.today, sources = sourcesOfIndex, packages = refs)
         val unsigned = ParliamentFormat.indexEvent(keys.publicKey, index, sources.createdAt)
@@ -174,6 +224,7 @@ class Importer(
             "imported (${if (example) "example" else "official"}, ${sources.today}): " +
                 SourceId.entries.filter { it in rosters }.joinToString { "${it.id} ${rosters.getValue(it).members.size} member(s)" } +
                 ballots.entries.sortedBy { it.key }.joinToString("") { ", ${it.key.name.lowercase()} ${it.value.size} ballot(s)" } +
+                histories.entries.joinToString("") { ", ${it.key.id} ${it.value.second} ballot(s) in ${it.value.first.size} package(s)" } +
                 "; ${refs.size} package(s)",
         )
         refs.forEach { log("  ${it.name} ${it.bytes} bytes") }

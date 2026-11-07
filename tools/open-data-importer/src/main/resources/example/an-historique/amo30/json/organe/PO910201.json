@@ -1,0 +1,13 @@
+{
+ "organe": {
+  "uid": "PO910201",
+  "codeType": "PARPOL",
+  "libelle": "[EXEMPLE] Parti des Collines",
+  "libelleAbrev": "PCO",
+  "viMoDe": {
+   "dateDebut": "2012-06-20",
+   "dateFin": null
+  },
+  "couleurAssociee": "#123456"
+ }
+}
