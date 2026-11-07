@@ -42,10 +42,11 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Méthode technique « une personne, une voix »
-- Statut : Approuvée le 2026-11-07 (principe) ; conception technique en cours
+- Statut : Approuvée le 2026-11-07 (principe) ; conception approuvée le 2026-11-07 (D-110, D-112, `docs/integration/une-personne-une-voix.md`) ; réalisation en cours
 - Concerne : cahier-des-charges.md, sections 2 et 5.1 ; cahier-fonctionnel.md, M13.6
 - Description : les votations citoyennes exigent qu'une personne ne vote qu'une fois, sans collecter d'identité (principe de vie privée). Options techniques à comparer : votes physiques dans des stands avec contrôle sur place ; vote en ligne avec limitation par appareil et preuve de travail, aux garanties plus faibles et clairement signalées ; jetons de vote anonymes distribués lors d'événements physiques ; système mixte.
 - Décision : **la propriétaire approuve la méthode (7 novembre 2026, « Oui »)**, telle que décidée au point d'attention n° 10 : combiner les barrières (niveaux de confiance, parrainage, validation en personne lors d'événements, preuve de travail, détection des manipulations) et publier des résultats transparents (votes et soutiens des comptes confirmés affichés en premier, S-91). Elle s'applique aussi aux compteurs de participation de l'espace « Agir » (nombre de « J'y participe », de soutiens d'un appel) : le serveur compte sans jamais relier une participation à un compte. La conception technique (jetons anonymes signés à l'aveugle ou équivalent) est la prochaine étape, consignée dans `docs/DECISIONS.md` quand elle sera faite.
+- Précisions de la propriétaire (2026-11-07, D-112, transmises par le chef d'équipe) : trois niveaux de votants (« élus, compte vérifié, compte non vérifié ») ; « pas de parrainage » ; « validation en personne par bénévoles agréés par ppf via leur association » ; liste anonyme des bulletins publiée après la clôture ; vote modifiable jusqu'à la clôture ; niveau figé à l'ouverture ; envoi du bulletin retardé automatiquement pour tous. Le vote des élus est montré à part, jamais additionné à celui des citoyens ; les organisations ne votent pas. Mécanisme technique : jetons anonymes VOPRF de la RFC 9497 (D-110).
 
 ### [2026-11-04] Modération et assistant IA : hébergement du modèle
 - Statut : À valider
@@ -184,7 +185,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision (2026-11-05) : les 300 € couvrent la mise en route (noms de domaine, serveur KVM 1 payé 24 mois d'avance, sauvegardes hors site, modération par IA au démarrage). La suite du budget dépendra des adhérents et des dons. Sont reportés, faute de budget : compte Apple Developer et compilation iOS, deuxième serveur pour la production, serveur d'IA dédié, audit de sécurité externe, avocat, expert-comptable. Aucune dépense n'est engagée sans l'accord de la propriétaire.
 
 ### [2026-11-04] Conséquences du retrait de la notion de non-partisanerie
-- Statut : Décidé le 2026-11-07 (option A, D-062) ; texte des documents définitifs À valider
+- Statut : Intégré le 2026-11-07 (cahier des charges 1.4, D-062)
 - Concerne : cahier-des-charges.md, section 2 (principe 8) et 9.2 ; cahier-fonctionnel.md, section 3 (règle « Traitement identique ») et M13.5, M13.7 ; instructions du projet, section 5 (garde-fou « Militante mais jamais partisane »)
 - Description : la vision 3.0 ne dit plus que PPF est non partisan. Plusieurs passages des autres documents reposent encore sur cette notion :
   - cahier des charges, principe 8 « Non partisane » ;
@@ -196,12 +197,11 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - A. Supprimer le principe général « Non partisane » et le garde-fou des instructions, mais garder le traitement identique à l'intérieur de trois outils précis (Pacte démocratique, comparateur, baromètre des élus) : leur crédibilité vient justement de ce qu'ils appliquent les mêmes règles à tous.
   - B. Supprimer toute notion de traitement identique, y compris dans ces outils.
 - Recommandation : A. Un Pacte ou un comparateur jugé partial perd sa force de pression et devient facile à contester.
-- Décision de la propriétaire (2026-11-07, D-062) : **option A**. Les documents définitifs ne sont pas modifiés avant qu'elle ait validé le texte exact ci-dessous (statut : À valider, texte seulement).
-  - Cahier des charges, section 2, principe 8, texte actuel : « **Non partisane.** Tous les candidats et tous les partis sont traités de façon strictement identique ; aucun appel à voter pour quiconque. » Texte proposé : « **Traitement identique dans les outils électoraux.** PPF est militante : elle prend position et critique librement les institutions et les élus. Le Pacte démocratique, le comparateur et le baromètre des élus traitent en revanche tous les candidats et tous les partis de façon strictement identique (même texte, même délai, même présentation, mêmes règles de calcul) et ne contiennent aucun appel à voter pour quiconque. Les limites légales de la section 9.2 s'appliquent dans tous les cas. »
-  - Cahier des charges, section 9.2 : inchangée (elle ne parle déjà que des outils qui concernent des candidats).
-  - Cahier fonctionnel, section 3, texte actuel : « **Traitement identique** : tout ce qui concerne des candidats ou des partis les présente tous de la même façon. » Texte proposé : « **Traitement identique** : le Pacte démocratique, le comparateur et le baromètre des élus présentent tous les candidats et tous les partis de la même façon ; les fiches des responsables publics (M17) ont les mêmes rubriques, dans le même ordre, pour tous. »
-  - Instructions du projet (CLAUDE.md) : rien à retirer, le garde-fou « Militante mais jamais partisane » n'y figure plus ; la règle sur les outils électoraux (section 7) reste.
-  - Point à faire relire par un avocat : en dehors de ces trois outils, un appel de PPF à voter pour un candidat pourrait être vu comme un avantage en nature accordé par une personne morale (Code électoral, article L52-8) ; ajouté à la liste « À faire relire par un avocat » de la feuille de route.
+- Décision de la propriétaire (2026-11-07, D-062) : **option A** dans un premier temps, puis, le même jour, transmise par le chef d'équipe : « pas besoin de texte sur la non partisanerie, on n'affirme pas en tant que ppf qu'on est partisans ou non partisans, on est simplement une association engagée et militante dont l'objectif premier est la politisation et redonner une gouvernance réelle au peuple (donc être à nouveau dans une démocratie). Pas besoin de préciser quoi que ce soit, nos actes parleront pour nous. »
+  - Cahier des charges 1.4 : principe 8 retiré **sans texte de remplacement** (les principes 9 et 10 gardent leur numéro) ; la menace de la section 5.5 devient « faire passer la plateforme pour le soutien d'un candidat ou d'un parti ». Les textes de remplacement proposés plus tôt ne sont pas utilisés.
+  - Restent, comme règles de méthode et de droit, pas comme une déclaration : le traitement identique des candidats dans le Pacte, le comparateur et le baromètre (cahier des charges, 9.2, limite légale) et les fiches identiques pour tous (cahier fonctionnel, M17) ; la règle transverse « Traitement identique » du cahier fonctionnel est inchangée.
+  - Nulle part PPF n'est décrite comme partisane ou non partisane : l'invite de l'IA qui vérifie les revendications et le modèle de menaces ont été reformulés ; la vision ne le dit plus depuis la version 3.0 ; CLAUDE.md n'en parle pas.
+  - Point à faire relire par un avocat : en dehors de ces trois outils, un appel de PPF à voter pour un candidat pourrait être vu comme un avantage en nature accordé par une personne morale (Code électoral, article L52-8) ; inscrit dans la feuille de route.
 
 ### [2026-11-04] Navigation et UX : quatre espaces, un accueil, « Mon territoire »
 - Statut : À valider

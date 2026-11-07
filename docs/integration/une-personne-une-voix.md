@@ -11,7 +11,7 @@
 | E1 | Le serveur ne peut pas relier un vote, un soutien ou un amendement voté à un compte, **même s'il le voulait** : impossibilité cryptographique, pas seulement une règle. | CDC principe 9, inventaire « rendre cette consultation impossible, et pas seulement interdite » |
 | E2 | Une personne, une voix par question, au mieux de ce que permet l'absence d'identité, par des barrières combinées. | D-044, point n° 10 |
 | E3 | Ni téléphone, ni e-mail, ni pièce d'identité, ni nom ; aucune adresse IP journalisée. | CLAUDE.md 7, CDC 5.1 |
-| E4 | Résultats transparents : séparés par niveau de confiance, comptes confirmés en premier ; recomptables par n'importe qui après la clôture. | S-91, D-044 « la transparence passe avant tout » |
+| E4 | Résultats transparents : séparés par niveau, comptes vérifiés en premier, vote des élus à part ; recomptables par n'importe qui après la clôture. | S-91, D-044 « la transparence passe avant tout » |
 | E5 | Changer son vote jusqu'à la clôture. | Contre la pression sur le votant |
 | E6 | Fonctionne hors ligne (vote mis en file, envoyé au retour du réseau), sur Android 8, ordinateur et, plus tard, iOS ; aucune bibliothèque réservée à une plateforme dans le code commun. | CLAUDE.md 7 |
 | E7 | Tient sur le serveur KVM 1 (1 processeur virtuel, 4 Go), préproduction comprise. | CLAUDE.md 8 |
@@ -21,16 +21,16 @@
 
 | Menace | Exemple | Barrières (section) | Risque qui reste |
 |---|---|---|---|
-| M1 Comptes multiples | Une personne crée vingt comptes pour voter vingt fois | Niveaux de confiance (4), preuve de travail (5), éligibilité figée à l'ouverture (6.4), résultats par niveau (7) | Les comptes « nouveaux » restent faciles à multiplier : ils sont comptés à part, jamais mélangés aux confirmés dans le chiffre mis en avant |
-| M2 Robots, fermes de comptes | Script qui crée des milliers de comptes la veille d'un vote | Preuve de travail à l'inscription et à chaque demande, éligibilité figée, détection des vagues (8) | Un attaquant riche en calcul peut payer la preuve de travail : il reste au niveau « nouveau » |
+| M1 Comptes multiples | Une personne crée vingt comptes pour voter vingt fois | Niveaux des votants (4), preuve de travail (5), éligibilité figée à l'ouverture (6.4), résultats par niveau (7) | Les comptes non vérifiés restent faciles à multiplier : ils sont comptés à part, jamais mélangés aux vérifiés dans la colonne mise en avant |
+| M2 Robots, fermes de comptes | Script qui crée des milliers de comptes la veille d'un vote | Preuve de travail à l'inscription et à chaque demande, éligibilité figée, détection des vagues (8) | Un attaquant riche en calcul peut payer la preuve de travail : il reste au niveau « non vérifié » |
 | M3 Achat de voix | « 10 euros si tu votes contre » | Vote modifiable jusqu'à la clôture (6.6), aucun reçu avant la clôture | Après la clôture, la liste publique des bulletins permet à un votant de prouver son vote (choix à faire, section 9, Q4) |
 | M4 Pression sur le votant | Un proche ou un militant exige de voir le vote | Vote modifiable en privé plus tard ; aucun historique côté serveur ; historique de l'appareil effaçable | Pression au moment même du vote, sur l'appareil : inévitable pour un vote à distance (la CNIL le reconnaît aussi) |
 | M5 Serveur qui tente de relier (équipe infiltrée, piratage, saisie, réquisition) | Marquer un citoyen avec une clé à lui ; comparer les heures ; lire les adresses IP | Jetons aveugles vérifiables (6.1), clés publiques publiées et vérifiées (6.2), jetons obtenus à l'avance pour toutes les questions (6.3), envoi séparé et différé des bulletins (6.5), aucune IP journalisée | Un serveur pris en main **en direct** peut observer le réseau ; parade complète avec Tor et l'adresse .onion (phase 3) |
 | M6 Serveur qui fabrique ou supprime des voix | Un administrateur s'émet des jetons | Nombre de jetons délivrés publié par question et par niveau ; recomptage public après la clôture ; graine des clés hors du serveur principal à terme | Un émetteur unique peut toujours tricher sur le nombre de jetons ; la publication rend la triche visible si elle dépasse le nombre de comptes de chaque niveau |
 | M7 Rejeu, double usage | Envoyer deux fois le même bulletin | Identifiant de bulletin unique par jeton ; le second remplace le premier | Aucun |
 | M8 Vol de l'appareil | Un tiers vote avec le téléphone | Verrouillage de l'appareil ; jetons dans la base locale effacée avec les clés | Comme pour tout le reste du compte |
-| M9 Validateur complice | Un bénévole confirme cent faux comptes | Quotas par séance, détection des taux anormaux, lien compte-séance chiffré pour pouvoir révoquer (4.3) | Un complice qui reste sous les quotas passe inaperçu un temps |
-| M10 Parrainages en chaîne | Un compte parraine ses propres faux comptes, qui en parrainent d'autres | Seuls les confirmés en personne parrainent, quota mensuel, les parrainés ne parrainent pas (4.2) | Quelques parrainages frauduleux par mois et par tricheur, au niveau « parrainé », compté à part |
+| M9 Validateur complice | Un bénévole valide cent faux comptes | Quotas par séance, détection des taux anormaux, lien compte-séance chiffré pour pouvoir révoquer (4.3) | Un complice qui reste sous les quotas passe inaperçu un temps |
+| M10 Parrainages en chaîne | (sans objet : pas de parrainage, D-112) | | |
 | M11 Inondation | Millions de demandes ou de faux bulletins | Preuve de travail sur les bulletins, limitation de débit en mémoire, vérification d'un jeton peu coûteuse | Attaque réseau massive : relève de l'infrastructure (DDoS) |
 | M12 Petits groupes | Niveau + territoire + heure = une seule personne | Le bulletin ne porte que le niveau (trois valeurs) ; heure arrondie ; aucune autre donnée ; seuil minimal avant d'afficher un croisement (7) | Une question très locale avec peu de votants : résultats montrés seulement au-delà du seuil |
 | M13 Contribution de code malveillante | Affaiblir le tirage aléatoire | Vecteurs de test officiels, relecture ligne à ligne, bibliothèque cryptographique éprouvée | Comme pour tout le dépôt |
@@ -57,35 +57,34 @@ Faits vérifiés le 7 novembre 2026 sur les sources officielles (adresses en fin
 - on n'utilise pas les preuves groupées de la RFC (« no security analysis » pour plusieurs clés, section 7.2.1) : une preuve par jeton, puisque chaque jeton a sa propre clé ;
 - chaque clé ne répond qu'une fois par compte : avec Q demandes, la RFC (7.2.3, attaques Diffie-Hellman statiques) prévoit une perte d'environ log2(Q)/2 bits de sécurité, soit une dizaine de bits pour un million de comptes sur environ 128 ; la limitation de débit s'ajoute.
 
-## 4. Niveaux de confiance (les barrières sur les comptes)
+## 4. Niveaux des votants (les barrières sur les comptes)
+
+Décision de la propriétaire du 7 novembre 2026 (D-112) : trois niveaux, **aucun parrainage**.
 
 Le serveur connaît, pour chaque compte (clé publique Nostr), son niveau et la **semaine** à partir de laquelle il compte : un changement de niveau prend effet le lundi suivant, et le serveur ne garde que cette semaine, jamais le jour (le jour d'une validation en personne pourrait trahir l'événement où elle a eu lieu). Il ne connaît ni nom, ni lieu, ni appareil.
 
-| Niveau | Comment on l'atteint | Ce que le compte peut faire |
+| Niveau (clé) | Comment on l'atteint | Où son vote est compté |
 |---|---|---|
-| N0 « Nouveau compte » | Inscription signée avec une preuve de travail (5) | Voter ; son vote est compté dans la colonne « nouveaux comptes » |
-| N1 « Parrainé » | Une invitation d'un compte N2 (4.2), plus une ancienneté minimale | Voter, compté dans la colonne « parrainés » ; ne parraine pas |
-| N2 « Confirmé en personne » | Validation par un validateur de PPF lors d'un événement (4.3) | Voter, compté dans la colonne mise en avant ; parrainer quelques comptes par mois |
+| Compte non vérifié (`non-verifie`) | Inscription signée avec une preuve de travail (5) | Vote des citoyens, colonne « comptes non vérifiés » |
+| Compte vérifié (`verifie`) | Validation en personne par un bénévole agréé (4.3) | Vote des citoyens, colonne mise en avant « comptes vérifiés » |
+| Élu (`elu`) | Compte d'élu certifié (DE-23) : certification en personne et contrôle du mandat dans l'annuaire officiel des élus (D-047) | **Vote des élus**, toujours à part, jamais ajouté au total des citoyens |
 
-Les comptes d'organisations, les comptes « élu vérifié » (DE-23) et les clés de l'équipe éditoriale ne reçoivent pas de jetons : une organisation n'est pas une personne. Les membres de l'équipe votent avec leur compte personnel, comme tout le monde.
+- Un élu peut avoir aussi un compte personnel de citoyen : chaque compte n'a qu'un jeton par urne, et les deux totaux restent séparés, donc personne n'est compté deux fois dans un même total.
+- Les **organisations ne votent pas** (une organisation n'est pas une personne) ; les clés de l'équipe éditoriale non plus. Les membres de l'équipe votent avec leur compte personnel.
 
 ### 4.1 Rétrogradation
-Un compte reconnu frauduleux redescend au niveau N0 pour les questions ouvertes après la décision. Les jetons déjà délivrés ne peuvent pas être retirés un par un (ils sont anonymes) : c'est la contrepartie de E1, compensée par l'éligibilité figée à l'ouverture (6.4) et l'annotation des résultats (8).
+Un compte reconnu frauduleux redescend au niveau « non vérifié » pour les urnes ouvertes après la décision. Les jetons déjà délivrés ne peuvent pas être retirés un par un (ils sont anonymes) : c'est la contrepartie de E1, compensée par l'éligibilité figée à l'ouverture (6.4) et l'annotation des résultats (8).
 
-### 4.2 Parrainage sans graphe social sur le serveur
-La règle « le graphe social reste sur les appareils » interdit au serveur de savoir qui a parrainé qui. Proposition :
-- chaque compte N2 reçoit au début du mois un petit nombre d'**invitations** (3 par défaut, seuil privé), sous forme de jetons VOPRF d'une clé « parrainage » du mois, obtenues automatiquement par l'application **avant** tout besoin (séparation dans le temps : sinon l'heure de la demande et celle de l'usage trahiraient le lien) ;
-- le parrain montre une invitation en code QR ; le filleul l'envoie avec son compte ; le serveur vérifie le jeton, le marque comme utilisé et fait passer le filleul en N1 ;
-- le serveur sait que A a reçu trois invitations et que B en a utilisé une, jamais que A a invité B ;
-- un parrainé ne parraine pas : pas de chaîne. Un tricheur N2 ne crée au plus que quelques N1 par mois, comptés à part.
-- Limite : si un parrain triche, on ne peut pas retrouver ses filleuls. Option inverse (garder le lien pour révoquer) : section 9, Q2.
+### 4.2 Pas de parrainage
+La propriétaire a écarté le parrainage (D-112) : il n'y a ni invitations ni niveau intermédiaire. Le seul moyen d'être vérifié est la validation en personne.
 
-### 4.3 Validation en personne (S-88)
-- Un **validateur** est un compte de l'équipe ou un bénévole habilité, avec double authentification (socle du back-office M16 du Directeur technique) ; il ouvre une **séance** limitée (40 validations au plus par défaut, seuil privé).
-- La personne montre le code QR de son compte (clé publique et défi signé, pour prouver qu'elle tient la clé) ; le validateur le lit ; le serveur fait passer le compte en N2.
-- **Aucun lieu, aucun événement, aucune identité** : le serveur garde la semaine d'effet (4) et, pour pouvoir annuler les validations d'un complice, le lien « compte, séance » **chiffré avec la clé publique d'une équipe d'audit** dont la clé secrète reste hors ligne (même principe que les contenus sensibles en attente, CLAUDE.md 7). Un serveur saisi ne révèle donc pas qui a été validé par qui.
+### 4.3 Validation en personne (S-88) et certification des élus
+- Un **validateur** est un bénévole **désigné par une organisation vérifiée de l'annuaire d'« Agir »** et **agréé par PPF** (rôle « validateur » du socle du back-office M16 du Directeur technique, avec double authentification) ; il ouvre une **séance** limitée (40 validations au plus par défaut, seuil privé), authentifiée par une clé de séance enregistrée à l'ouverture.
+- La personne montre le code QR de son compte (clé publique et défi signé, pour prouver qu'elle tient la clé) ; le validateur le lit ; le serveur fait passer le compte en « vérifié ».
+- **Aucun lieu, aucun événement, aucune identité** : le serveur garde la semaine d'effet (4) et, pour pouvoir annuler les validations d'un complice, le lien « compte, séance » **chiffré (NIP-44) vers la clé publique « audit »**, dont la clé secrète reste hors ligne chez la propriétaire (même principe que les contenus sensibles en attente, CLAUDE.md 7). Un serveur saisi ne révèle donc pas qui a été validé par qui.
 - En clair, le serveur ne garde que les compteurs par séance (validateur, semaine, nombre de validations, durée de la séance), pour détecter les taux anormaux (8).
-- Limite : une personne qui passe à plusieurs stands avec plusieurs téléphones obtient plusieurs comptes N2. Parades : coût physique, consigne aux validateurs (le compte montré doit être ouvert sur le téléphone présenté), quotas, détection. C'est le risque principal qui reste de M1.
+- **Élus** : même principe, par un membre de l'équipe ; il vérifie en personne que le titulaire du compte est bien l'élu, puis que le mandat figure dans l'annuaire officiel des élus (D-047). Le compte « élu » est public par nature (un élu répond en tant qu'élu, DE-23) ; son vote reste anonyme comme les autres. Un mandat terminé retire le niveau pour les urnes ouvertes ensuite.
+- Limite : une personne qui passe à plusieurs stands avec plusieurs téléphones obtient plusieurs comptes vérifiés. Parades : coût physique, consigne aux validateurs (le compte montré doit être ouvert sur le téléphone présenté), quotas, détection. C'est le risque principal qui reste de M1.
 
 ## 5. Preuve de travail
 
@@ -119,11 +118,11 @@ Chaque question votable a une **urne** : un événement signé par la clé de la
 - Mode économie de données : la demande attend le premier besoin (ouverture d'un écran de vote), mais porte toujours sur toutes les urnes ouvertes.
 
 ### 6.4 Éligibilité figée à l'ouverture
-Le niveau d'un jeton est celui que le compte avait **la semaine de l'ouverture de l'urne** ; un compte créé après l'ouverture vote au niveau N0. Une vague de faux comptes la veille d'un vote ne peut donc toucher que la colonne « nouveaux comptes ». Conséquence voulue : une montée de niveau ne vaut que pour les urnes ouvertes ensuite.
+Le niveau d'un jeton est celui que le compte avait **la semaine de l'ouverture de l'urne** ; un compte créé après l'ouverture vote au niveau « non vérifié ». Une vague de faux comptes la veille d'un vote ne peut donc toucher que la colonne « comptes non vérifiés ». Conséquence voulue : une montée de niveau ne vaut que pour les urnes ouvertes ensuite.
 
 ### 6.5 Voter : un envoi séparé, sans compte
 - Le bulletin contient : urne, niveau, `y`, jeton, choix, preuve de travail. **Ni signature du compte, ni clé, ni en-tête d'authentification.**
-- Il part par un **client HTTP distinct** (sans cookie, sans réutilisation de connexion, sans en-tête d'authentification, avec un agent utilisateur générique, R4), après un **délai aléatoire** (par défaut entre 0 et 10 minutes, réglage le plus protecteur ; le citoyen peut choisir l'envoi immédiat après une mise en garde, principe 10). Le vote est enregistré tout de suite sur l'appareil ; hors ligne, il part au retour du réseau.
+- Il part par un **client HTTP distinct** (sans cookie, sans réutilisation de connexion, sans en-tête d'authentification, avec un agent utilisateur générique, R4), après un **délai aléatoire** de 0 à 10 minutes, **toujours, sans réglage** : c'est une protection commune du système de vote (D-112), pas un réglage de confidentialité. Le vote est enregistré tout de suite sur l'appareil ; hors ligne, il part au retour du réseau.
 - Le serveur vérifie le jeton avec la clé de l'urne, vérifie la preuve de travail, et range le bulletin sous `y`. Il garde l'heure **arrondie à l'heure**, jamais l'adresse IP.
 - Plus tard : passage par Tor et l'adresse .onion (phase 3) ; éventuellement un relais HTTP oblivieux (RFC 9458) tenu par un tiers de confiance.
 
@@ -137,30 +136,31 @@ Les questions sans fin naturelle (une revendication reste ouverte au vote des mo
 
 ## 7. Les résultats
 
-- Une colonne par niveau, toujours dans le même ordre : **confirmés en personne** (mis en avant, S-91), parrainés, nouveaux comptes, puis tous les comptes (chaque compte n'a qu'un jeton par question, donc la somme ne compte personne deux fois).
+Décision de la propriétaire (D-112) :
+- **Le vote des citoyens** : la colonne des **comptes vérifiés** en premier (mise en avant, S-91), puis celle des **comptes non vérifiés**, puis le **total des citoyens** (chaque compte n'a qu'un jeton par urne, donc la somme ne compte personne deux fois).
+- **Le vote des élus**, à part, **jamais additionné** au total des citoyens.
 - À côté de chaque colonne : le nombre de jetons délivrés (la participation) et un rappel de ce que vaut chaque niveau.
-- Les mots avant les couleurs (WCAG) ; même présentation pour toutes les questions.
+- Les mots avant les couleurs (WCAG) ; même présentation pour toutes les urnes.
 - Aucun croisement plus fin (territoire, tranche d'âge, bord politique) sans un **seuil minimal de bulletins par case** (20 par défaut, seuil privé). Le baromètre politique de DE-21 (déclaratif, PR-01 à PR-07) reste À valider : s'il vient, la réponse est saisie dans le bulletin lui-même, jamais rattachée au compte.
 
 ## 8. Détection des manipulations et journal public
 
 Le serveur ne peut rien relier : la détection porte sur des **compteurs agrégés**, publiés **en continu** dans un journal de l'urne, pas seulement à la clôture (R2) : nombre de comptes par niveau et nombre de jetons délivrés par urne et par niveau, pour qu'un bourrage (plus de jetons que de comptes) se voie tout de suite ; puis :
 - jetons délivrés et bulletins reçus par urne, niveau et heure ; remplacements ;
-- inscriptions par jour, montées en N1 et N2 par jour, validations par séance ;
+- inscriptions par jour, validations et certifications d'élus par semaine, validations par séance ;
 - alertes à l'équipe au-delà des seuils privés (vague d'inscriptions, séance trop rapide, pic de bulletins sur une urne) ;
-- réponses possibles : suspendre les montées de niveau, retarder l'ouverture d'une urne, **annoter publiquement** un résultat (« vague anormale de nouveaux comptes le … »), rétrograder les comptes d'une séance révoquée (4.3). Jamais d'effacement silencieux de bulletins.
+- réponses possibles : suspendre les montées de niveau, retarder l'ouverture d'une urne, **annoter publiquement** un résultat (« vague anormale de comptes non vérifiés le … »), rétrograder les comptes d'une séance révoquée (4.3). Jamais d'effacement silencieux de bulletins.
 
-## 9. Questions pour la propriétaire (ce qui change l'expérience)
+## 9. Décisions de la propriétaire (D-112, 7 novembre 2026)
 
-Chaque question a ma recommandation en premier.
-
-1. **Q1 Les trois niveaux** (« nouveau », « parrainé », « confirmé en personne ») et le principe « tout le monde vote, les confirmés sont mis en avant, chaque niveau est montré à part » ; les comptes d'organisations et d'élus ne votent pas (une organisation n'est pas une personne ; leurs membres votent avec leur compte personnel). Recommandation : oui.
-2. **Q2 Parrainage anonyme** (PPF ne sait jamais qui a invité qui ; trois invitations par mois pour un confirmé ; un parrainé ne parraine pas) plutôt qu'un parrainage enregistré qui permettrait d'annuler les filleuls d'un tricheur. Recommandation : anonyme, conforme au graphe social gardé sur les appareils.
-3. **Q3 Validation en personne** par l'équipe et des bénévoles habilités, sans lieu ni identité ; le lien « compte, séance » chiffré pour une équipe d'audit, utilisé seulement pour annuler les validations d'un complice. Recommandation : oui.
-4. **Q4 Publier la liste anonyme des bulletins après la clôture** (chacun peut recompter et vérifier que son bulletin est compté ; mais un votant peut alors prouver son vote à un acheteur) plutôt que les seuls totaux. Recommandation : publier, au nom de la transparence et contre les accusations de chiffres truqués ; les votations n'ont pas de valeur légale.
-5. **Q5 Vote modifiable jusqu'à la clôture.** Recommandation : oui.
-6. **Q6 Niveau figé à l'ouverture de chaque vote** (un nouveau venu vote tout de suite, au niveau « nouveau »). Recommandation : oui.
-7. **Q7 Envoi différé du bulletin** de quelques minutes par défaut, envoi immédiat possible après une mise en garde. Recommandation : oui.
+Les questions Q1 à Q7 de la première version ont reçu ces réponses, transmises par le chef d'équipe :
+1. **Q1** : trois niveaux de votants, « élus, compte vérifié, compte non vérifié » (section 4) ; les organisations ne votent pas.
+2. **Q2** : « pas de parrainage » (4.2).
+3. **Q3** : « validation en personne par bénévoles agréés par ppf via leur association » (4.3).
+4. **Q4** : liste anonyme des bulletins publiée après la clôture (6.7).
+5. **Q5** : vote modifiable jusqu'à la clôture (6.6).
+6. **Q6** : niveau figé à l'ouverture de chaque urne (6.4).
+7. **Q7** : envoi du bulletin retardé « systématiquement de manière automatique sans laisser le choix à l'utilisateur pour ce cas précis » (6.5). C'est une **protection commune du système de vote**, comme le fait que le serveur ne relie jamais un vote à un compte : la liberté du principe 10 porte sur les données de chacun et « ne modifie pas les protections communes ».
 
 ## 10. Bibliothèques et code à écrire
 
@@ -205,7 +205,7 @@ Si la mesure dépasse ce que tient le KVM 1 :
 ### 10.4 Pour les étapes suivantes
 - Site installable (iPhone, plus tard) : ristretto255 existe dans libsodium.js ; le vote demandera du JavaScript, le site reste lisible sans.
 - ALTCHA côté serveur : `org.altcha:altcha` 2.1.1 (MIT, Java 17 ou plus).
-- Lecture et création de codes QR (parrainage, validation) : bibliothèques à vérifier à l'étape 5 (jamais ML Kit, qui est un service Google).
+- Lecture et création de codes QR (validation en personne) : bibliothèques à vérifier à l'étape 5 (jamais ML Kit, qui est un service Google).
 - Archivage horodaté (tâche suivante du pôle) : `java-opentimestamps` n'est plus maintenu (version 1.20 de janvier 2021, LGPL-3.0, dépend de bitcoinj 0.14.7) ; à comparer : un petit client OpenTimestamps écrit par nous, ou l'horodatage RFC 3161 de BouncyCastle (`bcpkix-jdk18on` 1.86, JVM seulement, suffisant pour le serveur).
 
 ## 11. Délibération citoyenne sur le Pacte et les campagnes (D-062)
@@ -231,8 +231,8 @@ Chaque pôle n'appelle qu'une interface commune (`core/urne`, à créer) et un c
 
 ## 13. Ce qui est stocké (pour le registre RGPD)
 
-- **Serveur, par compte** : clé publique, niveau, semaine d'effet de chaque niveau atteint et semaine d'inscription, invitations restantes du mois, curseur des jetons délivrés (il révèle la dernière synchronisation, rien de plus), dernière réponse de délivrance gardée 24 heures. Lien « compte, séance de validation » chiffré pour l'équipe d'audit.
-- **Serveur, par urne** : nombre de jetons délivrés par niveau ; bulletins (`y`, jeton, choix, niveau, heure arrondie), sans compte ni IP ; invitations utilisées (empreinte). Les clés ne sont pas stockées (dérivées de la graine).
+- **Serveur, par compte** : clé publique, niveau, semaine d'effet de chaque niveau atteint et semaine d'inscription, curseur des jetons délivrés (il révèle la dernière synchronisation, rien de plus), dernière réponse de délivrance gardée 24 heures. Lien « compte, séance de validation » chiffré pour l'équipe d'audit.
+- **Serveur, par urne** : nombre de jetons délivrés par niveau ; bulletins (`y`, jeton, choix, niveau, heure arrondie), sans compte ni IP. Les clés ne sont pas stockées (dérivées de la graine).
 - **Appareil** : jetons non utilisés et identifiants `y` de ses bulletins, ses votes (pour « Mes votes et soutiens », TE-06), effacés avec les clés.
 
 ## 14. Étapes de réalisation proposées
@@ -241,7 +241,7 @@ Chaque pôle n'appelle qu'une interface commune (`core/urne`, à créer) et un c
 2. Serveur : niveaux, inscription avec preuve de travail, délivrance des jetons (NIP-98), réception des bulletins, remplacement, clôture et publication, journal ; migration Flyway (numéro à demander au chef d'équipe).
 3. Application : base locale des jetons (migration locale, numéro à demander), synchronisation, file d'envoi différé, composant de vote, résultats par niveau, niveau dans « Mon espace ».
 4. Branchement des revendications (M11), puis délibération (11) ; contrat pour « Agir » et « Voir ».
-5. Parrainage par code QR, puis validation en personne (avec le back-office du Directeur technique).
+5. Validation en personne et certification des élus (avec le back-office du Directeur technique et l'annuaire des élus).
 6. Plus tard : client du site installable (iPhone), Tor.
 
 ## 15. Décision du chef d'équipe (D-110) : conditions et exigences

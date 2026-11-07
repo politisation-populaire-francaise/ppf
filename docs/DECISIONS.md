@@ -503,7 +503,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   5. **Pétitions locales** (Constitution, article 72-1 ; CGCT, article L1112-16) : oui, à ajouter (seuils : un dixième des électeurs inscrits d'une commune, un vingtième dans les autres collectivités).
   6. **Envoi du Pacte** : manuel pour l'instant (envoi et prise de contact par l'équipe), à revoir plus tard.
   7. **Mesures du Pacte et modalités des campagnes** : « la liste des mesures et des modalités sera populaire » ; la liste de PPF n'est qu'un modèle, « rien d'officiel ni de validé tant que les utilisateurs n'y ont pas participé » ; « c'est le peuple qui doit la modifier et la valider via notre appli ». Conséquence : une délibération citoyenne dans l'application (proposer une mesure, l'amender, voter ; même chose pour les modalités des campagnes), qui dépend de « une personne, une voix » ; la liste de départ est affichée comme « proposition de départ, pas encore votée ».
-  8. **Non-partisanerie : option A** : le principe général « Non partisane » est retiré, mais le Pacte démocratique, le comparateur et le baromètre des élus traitent tous les candidats de façon strictement identique (même texte, même délai, même présentation). La limite légale de la section 9.2 du cahier des charges reste (une association ne finance aucune campagne et n'accorde aucun avantage à un candidat, même en nature), ainsi que les fiches « identiques pour tous » de M17. Deux documents définitifs sont concernés (cahier des charges, principe 8 ; cahier fonctionnel, règle transverse « Traitement identique ») : le texte exact est proposé à la propriétaire et n'est pas modifié avant son accord.
+  8. **Non-partisanerie** : d'abord l'option A, puis, le même jour (transmis par le chef d'équipe) : « pas besoin de texte sur la non partisanerie, on n'affirme pas en tant que ppf qu'on est partisans ou non partisans, on est simplement une association engagée et militante [...] nos actes parleront pour nous ». Le principe 8 « Non partisane » est retiré du cahier des charges **sans texte de remplacement** (version 1.4 ; les principes 9 et 10 gardent leur numéro) et PPF n'est décrite nulle part comme partisane ou non partisane (invite de l'IA des revendications, modèle de menaces et section 5.5 reformulés). Restent, comme règles de méthode et de droit : le traitement identique des candidats dans le Pacte, le comparateur et le baromètre (section 9.2, limite légale : une association ne finance aucune campagne et n'accorde aucun avantage à un candidat, même en nature) et les fiches identiques pour tous de M17.
   9. **« Une personne, une voix »** : « il faut le faire ». Conception technique en cours (`docs/integration/une-personne-une-voix.md`), soumise au chef d'équipe avant le code ; elle couvrira les votations (M13.6), les votes des revendications (M11), la délibération sur le Pacte et les campagnes, les compteurs de participation d'« Agir » et les signalements chiffrés de « Voir ».
 - Numéros : « Décider » dispose aussi du bloc D-110 à D-119 (registre du chef d'équipe).
 
@@ -571,3 +571,22 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - tests avec les vecteurs et les fichiers `.ots` d'exemple de python-opentimestamps, après vérification de leur licence ;
   - **preuve immédiate en complément** : horodatage RFC 3161 côté serveur seulement (BouncyCastle `bcpkix`), auprès d'une autorité gratuite dont les conditions permettent cet usage, sans compte ni dépense ; à défaut, OpenTimestamps seul ;
   - tous les hôtes contactés (calendriers, explorateurs, autorité d'horodatage) inscrits dans `THREAT_MODEL.md`, `REGISTRE_DONNEES.md` et la liste des sorties du Directeur technique (`infra/EGRESS.md`).
+
+## D-112 (2026-11-07) « Une personne, une voix » : trois niveaux de votants, pas de parrainage, envoi différé pour tous
+
+- Contexte : réponses de la propriétaire aux questions Q1 à Q7 de `docs/integration/une-personne-une-voix.md`, transmises le 7 novembre 2026 par le chef d'équipe, qu'elle a désigné comme son seul interlocuteur pour les décisions et les validations.
+- Décisions de la propriétaire :
+  1. trois niveaux de votants : « élus, compte vérifié, compte non vérifié » ;
+  2. « pas de parrainage » ;
+  3. « validation en personne par bénévoles agréés par ppf via leur association » ;
+  4. liste anonyme des bulletins publiée après la clôture ;
+  5. vote modifiable jusqu'à la clôture ;
+  6. niveau figé à l'ouverture de chaque urne ;
+  7. envoi du bulletin retardé « systématiquement de manière automatique sans laisser le choix à l'utilisateur pour ce cas précis ».
+- Décisions techniques prises en autonomie (chef d'équipe et pôle « Décider ») :
+  - niveaux `non-verifie` (inscription avec preuve de travail), `verifie` (validation en personne) et `elu` (compte d'élu certifié, DE-23 : certification en personne et contrôle du mandat dans l'annuaire officiel des élus, D-047) ; une clé VOPRF par urne et par niveau (D-110) ; plus de niveau « parrainé » ni d'invitations ;
+  - résultats : le vote des citoyens (comptes vérifiés en premier, puis non vérifiés, puis le total des citoyens) et, à part, le vote des élus, jamais additionné au total des citoyens ; un élu peut avoir aussi un compte personnel, sans double compte dans un même total ; les organisations ne votent pas ;
+  - validateurs : bénévoles désignés par une organisation vérifiée de l'annuaire d'« Agir » et agréés par PPF (rôle du socle M15/M16 du Directeur technique, avec séances, quotas et clé de séance) ;
+  - le délai aléatoire d'envoi du bulletin (0 à 10 minutes) est une **protection commune du système de vote**, comme le fait que le serveur ne relie jamais un vote à un compte : la liberté du principe 10 porte sur les données de chacun et « ne modifie pas les protections communes » ; ce n'est pas un choix imposé sur les données de l'utilisateur ;
+  - l'essai de l'autotest sur le téléphone de la propriétaire (condition b de D-110) est reporté à la phase de test et de débogage, à sa demande ; l'étape 2 (serveur des votes, Flyway `V7`) commence tout de suite.
+- Archivage horodaté (D-111) : Flyway `V9` réservé à la table des preuves ; BouncyCastle `bcpkix` et `bcprov` approuvés par le chef d'équipe, côté serveur seulement.

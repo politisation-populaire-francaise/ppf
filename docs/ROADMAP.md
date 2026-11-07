@@ -35,7 +35,7 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 | Port de publication unique | 🔄 | Interface, mise en œuvre en mémoire, adaptateur vers le serveur (client HTTP), file d'attente hors ligne et synchronisation. Limitation de débit par clé et globale (7 novembre) ; règles de publication par rôle pour l'espace Agir : équipe éditoriale, organisations vérifiées, autres comptes en relecture (7 novembre, D-039). Reste : preuve de travail, rôles des comptes confirmés (S-91). |
 | Identifiants stables et export JSON | 🔄 | `docs/FORMATS.md`, version 1, avec l'API du serveur. |
 | Archivage horodaté des engagements | ⏳ | Empreinte SHA-256 disponible. Choix fait le 7 novembre 2026 (D-111) : OpenTimestamps avec un client écrit par nous (`core/archive`), au moins deux calendriers, demandé par le serveur seul, plus un horodatage RFC 3161 immédiat si une autorité gratuite le permet. À coder après l'étape 1 de « une personne, une voix ». |
-| « Une personne, une voix » (D-044, D-110) | 🔄 | Conception approuvée le 7 novembre 2026 (`docs/integration/une-personne-une-voix.md`). Étape 1 faite : `core/urne`, jetons anonymes VOPRF de la RFC 9497 (ristretto255-SHA512) sur libsodium, tous les vecteurs de la RFC et les refus vérifiés, autotest affiché en bas de « Mon espace » (à lire sur le téléphone de la propriétaire) et mode `--autotest-vote`, qui passe sur l'exécutable Windows empaqueté ; APK de test plus lourd de 1,6 Mo (libsodium et JNA, vérifiés par `tools/check-apk.sh`) ; coût mesuré sur l'ordinateur de développement : environ 1,1 ms par jeton délivré côté serveur, 1,9 ms côté appareil, d'où le vote limité aux revendications « en débat » (T5). iOS : la bibliothèque compile pour iOS, l'édition des liens reste à vérifier sur un Mac. Reste : serveur (niveaux, délivrance, bulletins, clôture, journal ; Flyway V7), application (jetons sur l'appareil, 13.sqm, envoi différé, composant de vote), revendications, délibération sur le Pacte et les campagnes (D-062), parrainage, validation en personne (après le back-office), relecture indépendante avant `main`, contrat pour « Agir » et « Voir ». Questions Q1 à Q7 présentées à la propriétaire. |
+| « Une personne, une voix » (D-044, D-110) | 🔄 | Conception approuvée le 7 novembre 2026 (`docs/integration/une-personne-une-voix.md`, D-110, D-112 : niveaux non vérifié, vérifié et élu, sans parrainage). Étape 1 faite : `core/urne`, jetons anonymes VOPRF de la RFC 9497 (ristretto255-SHA512) sur libsodium, tous les vecteurs de la RFC et les refus vérifiés, autotest affiché en bas de « Mon espace » (à lire sur le téléphone de la propriétaire) et mode `--autotest-vote`, qui passe sur l'exécutable Windows empaqueté ; APK de test plus lourd de 1,6 Mo (libsodium et JNA, vérifiés par `tools/check-apk.sh`) ; coût mesuré sur l'ordinateur de développement : environ 1,1 ms par jeton délivré côté serveur, 1,9 ms côté appareil, d'où le vote limité aux revendications « en débat » (T5). iOS : la bibliothèque compile pour iOS, l'édition des liens reste à vérifier sur un Mac. Reste : serveur (niveaux, délivrance, bulletins, clôture, journal ; Flyway V7), application (jetons sur l'appareil, 13.sqm, envoi différé, composant de vote), revendications, délibération sur le Pacte et les campagnes (D-062), parrainage, validation en personne (après le back-office), relecture indépendante avant `main`, contrat pour « Agir » et « Voir ». Questions Q1 à Q7 présentées à la propriétaire. |
 | Offline-first : base locale | 🔄 | SQLDelight (D-020) : table des événements et de leurs étiquettes, remplacement des versions, publications en attente. Reste : branchement dans les écrans, purge et taille maximale du cache. |
 | Serveur : base PostgreSQL et API des événements | 🔄 | JDBC, HikariCP, Flyway (D-019) ; `POST` et `GET /api/v1/events` (D-021), tests sur PostgreSQL 17 réel ; règle de publication (contenus éditoriaux réservés aux clés d'éditeurs) ; serveur de développement avec PostgreSQL embarqué ; filtres par étiquette, limitation de débit par clé et globale, relais d'enveloppes et salons (7 novembre) ; espace Agir : forme des mobilisations, appels et fiches d'organisation, file de relecture sans plafond, refus automatique des événements passés, annulation et clôture par l'auteur, agenda et flux iCal, page `/agenda` du site (7 novembre, D-043). Reste : déploiement en préproduction, preuve de travail, modération, alerte de remplissage du disque. |
 
@@ -78,14 +78,21 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 - Hébergement du modèle d'IA de modération et des vérifications des revendications (et, avec un prestataire, extension de la section 5.6 aux contenus envoyés pour publication).
 - Liste des thèmes du mur des revendications.
 - Spécification du bouton AIDE (la barre du bas est gardée, D-044 ; le bouton pourra flotter au-dessus).
-- Méthode « une personne, une voix » : approuvée le 7 novembre 2026 (D-044) ; conception technique à faire (mur des revendications, compteurs de participation d'Agir).
+- Méthode « une personne, une voix » : approuvée (D-044), conçue et précisée le 7 novembre 2026 (D-110, D-112) ; étape 1 faite, étape 2 (serveur) en cours.
 - Prestataire de paiement (dons, adhésions).
 - Navigation détaillée et briques de contenu communes (découpage en MVP).
 - Décryptages : échelle des verdicts (brainstorming du cahier des charges, entrée du 2026-11-06).
 - Espace « Agir » : questions tranchées le 7 novembre 2026 (D-044) ; reste la contradiction avec le principe 10 sur la visibilité par défaut de la participation (cercle, élus), entrée « Agir : questions ouvertes après la première version » du brainstorming du cahier fonctionnel.
-- Comptage anonyme (réactions du fil, participations aux mobilisations et aux appels, barre de progression) : découle de « une personne, une voix », conception à faire.
+- Comptage anonyme (réactions du fil, participations aux mobilisations et aux appels, barre de progression) : découle de « une personne, une voix » (`core/urne`, D-110) ; contrat pour « Agir » et « Voir » à l'étape 3.
 - Vue carte : en cours (bibliothèque de rendu et tuiles auto-hébergées, sans coût en dehors de l'espace disque du futur serveur).
 - Annuaire officiel des élus : décidé et fait le 7 novembre 2026 (D-047) ; reste à valider la réutilisation des résultats des départementales de 2021 pour les 276 communes partagées entre plusieurs cantons (brainstorming du cahier des charges, entrée « Licence des résultats des départementales de 2021 », À valider).
+
+## À vérifier pendant la phase de test et de débogage
+
+Essais reportés à la phase de test à la demande de la propriétaire (7 novembre 2026) :
+
+- Autotest du vote anonyme sur un vrai téléphone Android (D-110, condition b) : installer l'APK de test et lire la ligne en bas de « Mon espace » (« Vote anonyme : vérification réussie sur cet appareil ») ; en cas d'échec, repli sur les signatures RSA aveugles (RFC 9474).
+- Édition des liens de libsodium pour iOS, sur un Mac (D-110, condition e).
 
 ## À faire relire par un avocat avant l'ouverture publique
 
@@ -95,6 +102,6 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
 - Mention publique « non déclarée » d'une manifestation.
 - Appels au boycott (dénigrement d'une entreprise).
 - Annuaire et cas limites des partis, candidats et comités de soutien (Code électoral, article L52-8).
-- Retrait du principe « Non partisane » (D-062, option A) : en dehors du Pacte, du comparateur et du baromètre des élus, un appel de PPF à voter pour un candidat pourrait être un avantage en nature accordé par une personne morale (Code électoral, article L52-8).
+- Retrait du principe « Non partisane » (D-062, cahier des charges 1.4) : en dehors du Pacte, du comparateur et du baromètre des élus, un appel de PPF à voter pour un candidat pourrait être un avantage en nature accordé par une personne morale (Code électoral, article L52-8).
 - Secours, sorties et équipe citoyenne de sécurité en manifestation (points d'attention n° 17 et n° 24).
 - Modèles juridiques (mentions légales, confidentialité, conditions d'utilisation, charte, procédure de signalement).

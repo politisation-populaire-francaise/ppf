@@ -1,7 +1,7 @@
 # Politisation Populaire Française : cahier des charges
 
-- Version : 1.3
-- Date : 5 novembre 2026
+- Version : 1.4
+- Date : 7 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-cahier-des-charges.md`.
 - Documents liés : `vision.md` (pourquoi), `cahier-fonctionnel.md` (ce que fait le produit).
 
@@ -58,7 +58,9 @@ Le périmètre fonctionnel comprend 16 modules, détaillés dans le cahier fonct
 5. **Accessibilité.** Conformité WCAG 2.2 niveau AA (référentiel RGAA). Fonctionne sur des téléphones anciens (Android 8+) et avec une connexion faible.
 6. **Aucun traceur.** Aucun service Google Analytics, Firebase, Meta, aucun SDK publicitaire, aucune police ou ressource chargée depuis un tiers.
 7. **Open source**, avec un dépôt protégé (section 8).
-8. **Non partisane.** Tous les candidats et tous les partis sont traités de façon strictement identique ; aucun appel à voter pour quiconque.
+
+<!-- Principe 8 retiré le 7 novembre 2026 (version 1.4) ; les principes 9 et 10 gardent leur numéro, auquel renvoient les autres documents. -->
+
 9. **Les opinions politiques sont des données sensibles** (article 9 du RGPD) : votes, soutiens, revendications, participation à un groupe ou à une campagne ne sont jamais reliés à une identité réelle par la plateforme, sont stockés de façon minimale et ne servent jamais à constituer un profil politique individuel. Seuls des résultats agrégés sont publiés. Un utilisateur peut toutefois choisir de rendre publiques ses propres informations (principe 10).
 10. **Protéger par défaut, laisser le choix.** Tous les réglages de confidentialité et d'anonymat sont au niveau le plus élevé par défaut. Chaque utilisateur peut les assouplir autant qu'il le souhaite pour ses propres données, y compris les rendre publiques ; avant chaque assouplissement, une mise en garde simple explique les risques de rendre une information publique et de la stocker dans l'application. La plateforme est un garde-fou : elle ne décide jamais à la place de l'utilisateur sur sa confidentialité et ses données personnelles. Cette liberté porte sur ses propres données, jamais sur celles des autres, et ne lève ni les obligations légales ni les protections techniques communes à tous (par exemple, le serveur ne relie jamais un vote à un compte).
 
@@ -145,7 +147,7 @@ Si une meilleure option existe au moment du développement, elle est proposée a
 - Référentiels : OWASP MASVS pour les applications mobiles, OWASP ASVS pour le serveur. Checklist de sécurité avant chaque release.
 
 ### 5.5 Modèle de menaces
-Un modèle de menaces est rédigé et tenu à jour. Menaces minimales à couvrir : réquisitions judiciaires, saisie du serveur, suspension du nom de domaine, retrait des stores, attaques DDoS, piratage, campagnes de faux comptes et de manipulation des chiffres, manipulation des votes (mur des revendications, engagements, votations), désinformation injectée, infiltration de l'équipe, contributions de code malveillantes, tentatives de faire passer la plateforme pour partisane afin d'exposer l'association à des poursuites.
+Un modèle de menaces est rédigé et tenu à jour. Menaces minimales à couvrir : réquisitions judiciaires, saisie du serveur, suspension du nom de domaine, retrait des stores, attaques DDoS, piratage, campagnes de faux comptes et de manipulation des chiffres, manipulation des votes (mur des revendications, engagements, votations), désinformation injectée, infiltration de l'équipe, contributions de code malveillantes, tentatives de faire passer la plateforme pour le soutien d'un candidat ou d'un parti afin d'exposer l'association à des poursuites (section 9.2).
 
 ### 5.6 Modération assistée par IA
 - Décision de la propriétaire (5 novembre 2026) : une IA analyse les contenus publics juste après leur mise en ligne, sans retarder la publication.
@@ -261,3 +263,4 @@ Une fonctionnalité n'est livrée que si :
 | 1.1 | 5 novembre 2026 | Ajout du principe 10 « Protéger par défaut, laisser le choix » et précision du principe 9 ; section 5.1 : confidentialité maximale par défaut et libre choix de l'utilisateur ; section 5.6 : décision sur la modération assistée par IA (alerte de l'équipe, décision humaine). Validé par la propriétaire. |
 | 1.2 | 5 novembre 2026 | Section 5.6 : fonctionnement de la modération assistée par IA (alerte rouge avec masquage immédiat, alerte orange sans masquage, publication directe sans notification pour le reste, décision finale humaine, signalement manuel ouvert à tous). Validé par la propriétaire. |
 | 1.3 | 5 novembre 2026 | Section 1.2 : une seule base de code et écrans adaptatifs dès le départ, iOS compatible mais compilé et publié plus tard, noms de domaine. Nouvelle section 3.5 : Hostinger pour les serveurs et les domaines, centre de données dans l'Union européenne hors de France, un seul serveur au départ avec production et préproduction séparées, préproduction fermée par tunnel chiffré, circuit de mise en ligne. Section 4 : intégration continue sans iOS pour l'instant, distribution. Section 5.3 : sauvegardes chez un autre prestataire, protection du compte de l'hébergeur. Section 10.2 : phase 0 et phase 1 (application de bureau dès la première version), iOS hors phase. Section 12 : budget de mise en route et coûts reportés. Validé par la propriétaire. |
+| 1.4 | 7 novembre 2026 | Section 2 : retrait du principe 8 « Non partisane », sans texte de remplacement (les principes 9 et 10 gardent leur numéro). Section 5.5 : la menace devient « faire passer la plateforme pour le soutien d'un candidat ou d'un parti ». Restent, comme règles de méthode et de droit : le traitement identique des candidats dans les outils électoraux (9.2) et les fiches identiques pour tous (cahier fonctionnel, M17). Décision de la propriétaire du 7 novembre 2026, transmise par le chef d'équipe (D-062). Copie locale modifiée par l'IA ; à reporter dans le projet claude.ai. |
