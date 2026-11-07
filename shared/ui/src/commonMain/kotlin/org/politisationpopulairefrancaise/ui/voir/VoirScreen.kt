@@ -199,6 +199,11 @@ private fun MovementAxis(catalog: VoirCatalog, state: VoirState, actions: VoirAc
 
 @Composable
 private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActions, columns: Int) {
+    if (catalog.parties.isNotEmpty()) {
+        SectionHeader(stringResource(Res.string.voir_parties), action = stringResource(Res.string.voir_see_all_count, catalog.parties.size), actionTag = VoirTags.seeAll("parties"), onAction = { state.open(VoirDestination.Parties) })
+        Grid(catalog.parties.take(maxOf(columns, 2)), columns) { party, modifier -> PartyCard(party, catalog, onOpen = { actions.open(party.address) }, modifier = modifier) }
+        Spacer(Modifier.height(24.dp))
+    }
     val persons = catalog.persons(null)
     SectionHeader(stringResource(Res.string.voir_people), action = stringResource(Res.string.voir_see_all_count, persons.size), actionTag = VoirTags.seeAll("people"), onAction = { state.open(VoirDestination.People) })
     Grid(persons.take(maxOf(columns * 2, 4)), columns) { person, modifier -> PersonCard(person, catalog, onOpen = { actions.open(person.address) }, modifier = modifier) }
@@ -324,6 +329,7 @@ private fun describe(item: VoirItem): Pair<ImageVector, String> = when (item) {
     is VoirItem.OfIndicator -> Lucide.ListChecks to stringResource(Res.string.voir_key_figures)
     is VoirItem.OfFact -> Lucide.Flag to "${stringResource(item.fact.kind.label)} · ${item.fact.date.toFrenchShort()}"
     is VoirItem.OfPerson -> Lucide.User to (item.person.function ?: stringResource(Res.string.voir_people))
+    is VoirItem.OfParty -> Lucide.Landmark to listOfNotNull(item.party.acronym, stringResource(Res.string.voir_party_kind)).joinToString(" · ")
     is VoirItem.OfText -> Lucide.ScrollText to stringResource(item.text.stage.label)
     is VoirItem.OfMovement -> Lucide.Globe to item.movement.country
     is VoirItem.OfDossier -> Lucide.BookOpen to stringResource(Res.string.voir_dossiers)
@@ -379,6 +385,7 @@ private fun VoirDetail(current: VoirDestination, catalog: VoirCatalog, state: Vo
                     is VoirItem.OfIndicator -> IndicatorPage(item.indicator, state, wide, actions.next, actions.explain)
                     is VoirItem.OfFact -> FactPage(item.fact, catalog, state, actions)
                     is VoirItem.OfPerson -> PersonPage(item.person, catalog, state, actions, wide)
+                    is VoirItem.OfParty -> PartyPage(item.party, catalog, state, actions, wide, columns)
                     is VoirItem.OfText -> BillPage(item.text, catalog, state, actions, wide)
                     is VoirItem.OfMovement -> MovementPage(item.movement)
                     is VoirItem.OfDossier -> DossierPage(item.dossier)
@@ -387,6 +394,7 @@ private fun VoirDetail(current: VoirDestination, catalog: VoirCatalog, state: Vo
                 VoirDestination.Chronology -> ChronologyPage(catalog, state, actions)
                 VoirDestination.Liberties -> LibertiesPage(catalog, state, actions)
                 VoirDestination.People -> PeoplePage(catalog, state, actions, columns)
+                VoirDestination.Parties -> PartiesPage(catalog, actions, columns)
                 VoirDestination.Bills -> BillsPage(catalog, actions, columns)
                 VoirDestination.World -> WorldPage(catalog, actions, columns)
                 VoirDestination.Corrections -> CorrectionsPage(catalog, actions)
@@ -400,7 +408,7 @@ private fun VoirDetail(current: VoirDestination, catalog: VoirCatalog, state: Vo
 private fun axisOf(destination: VoirDestination, catalog: VoirCatalog, state: VoirState): VoirAxis = when (destination) {
     is VoirDestination.Item -> catalog.item(destination.address)?.axis ?: state.axis
     VoirDestination.Chronology, VoirDestination.World -> VoirAxis.MOUVEMENT
-    VoirDestination.People, VoirDestination.Bills -> VoirAxis.POUVOIR
+    VoirDestination.People, VoirDestination.Parties, VoirDestination.Bills -> VoirAxis.POUVOIR
     VoirDestination.Liberties -> VoirAxis.LIBERTES
     VoirDestination.Corrections -> state.axis
     is VoirDestination.KeyFigures -> destination.axis

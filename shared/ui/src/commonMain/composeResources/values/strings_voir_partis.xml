@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- "Voir": the sheets of the political parties (axis of power; cahier fonctionnel M17, owner's
+     decision of 7 November 2026). French, typographic apostrophe (’), no em dash. -->
+<resources>
+    <string name="voir_parties">Partis politiques</string>
+    <string name="voir_parties_intro">Chaque fiche de parti présente les mêmes rubriques, dans le même ordre, quel que soit le parti. Les partis sont rangés par nombre de sièges, puis par ordre alphabétique.</string>
+    <string name="voir_party_kind">Parti politique</string>
+    <string name="voir_party_of">Parti : %1$s</string>
+    <string name="voir_party_founded">Fondé le %1$s</string>
+    <string name="voir_party_presentation">Présentation</string>
+    <string name="voir_party_website">Site du parti</string>
+    <string name="voir_party_seats">Sièges</string>
+    <string name="voir_party_seats_none">Aucun siège recensé.</string>
+    <string name="voir_party_seats_total">Sièges au total : %1$d</string>
+    <string name="voir_party_seats_line">%1$s : %2$d</string>
+    <string name="voir_party_seats_reference">Chiffre retenu</string>
+    <string name="voir_party_seats_sources">Les chiffres de chaque source sont présentés côte à côte. Le chiffre retenu est celui de la source officielle la plus récente.</string>
+    <string name="voir_party_seats_date">Au %1$s</string>
+    <string name="voir_chamber_assembly">Assemblée nationale</string>
+    <string name="voir_chamber_senate">Sénat</string>
+    <string name="voir_chamber_european">Parlement européen</string>
+    <string name="voir_chamber_other">Autres assemblées</string>
+    <string name="voir_party_leaders">Direction</string>
+    <string name="voir_party_members">Membres qui ont une fiche</string>
+    <string name="voir_party_members_none">Aucune fiche de membre pour l’instant.</string>
+    <string name="voir_party_members_count">Membres qui ont une fiche : %1$d</string>
+    <string name="voir_party_members_note">Les faits qui concernent un membre restent sur sa propre fiche. Cette fiche ne montre que les faits qui concernent le parti lui-même.</string>
+    <string name="voir_party_promises">Promesses du programme</string>
+    <string name="voir_party_votes">Votes du groupe</string>
+    <string name="voir_party_cases">Affaires qui concernent le parti</string>
+    <string name="voir_party_money">Argent public</string>
+    <string name="voir_party_presumption">Présomption d’innocence : tant qu’il n’a pas été condamné définitivement, le parti est présumé innocent.</string>
+    <string name="voir_party_next_default">Voir les revendications des citoyens</string>
+    <string name="voir_party_filter">Par parti</string>
+    <string name="voir_party_filter_all">Tous les partis</string>
+</resources>
