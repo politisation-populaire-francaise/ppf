@@ -1,4 +1,4 @@
-﻿# Note d'intégration : vue carte de l'agenda (M1, AG-01, S-05, S-35)
+# Note d'intégration : vue carte de l'agenda (M1, AG-01, S-05, S-35)
 
 Rédigée le 7 novembre 2026 par l'agent « carte » (branche `worktree-agent-aa2e9d93c925b2c1e`, partie de `feature/agir` à `d99c093`). Elle s'adresse à la session principale, qui fusionne, numérote les décisions et met à jour `CHANGELOG.md`, `ROADMAP.md`, `DECISIONS.md`, `FORMATS.md`, `GUIDE_PROPRIETAIRE.md` et `content/README.md`. `REGISTRE_DONNEES.md` et `THREAT_MODEL.md` ont été complétés ici, à la demande de la session principale.
 
