@@ -54,11 +54,12 @@ Faits vérifiés le 7 novembre 2026 sur les sources officielles (adresses en fin
 - la preuve DLEQ empêche le serveur d'utiliser une clé secrète différente pour un citoyen ciblé, à condition que la clé publique soit la même pour tous (6.2) ;
 - c'est le calcul le plus léger des pistes normalisées (quelques multiplications sur la courbe par jeton) : E7 ;
 - une clé par question peut être **publiée après la clôture** sans rien révéler d'autre : n'importe qui peut alors vérifier chaque bulletin et recompter (E4). C'est la raison pour laquelle on n'utilise pas le mode POPRF, dont la clé de chaque question est liée à la clé maîtresse : la publier révélerait tout.
-- on n'utilise pas les preuves groupées de la RFC (« no security analysis » pour plusieurs clés, section 7.2.1) : une preuve par jeton, puisque chaque jeton a sa propre clé.
+- on n'utilise pas les preuves groupées de la RFC (« no security analysis » pour plusieurs clés, section 7.2.1) : une preuve par jeton, puisque chaque jeton a sa propre clé ;
+- chaque clé ne répond qu'une fois par compte : avec Q demandes, la RFC (7.2.3, attaques Diffie-Hellman statiques) prévoit une perte d'environ log2(Q)/2 bits de sécurité, soit une dizaine de bits pour un million de comptes sur environ 128 ; la limitation de débit s'ajoute.
 
 ## 4. Niveaux de confiance (les barrières sur les comptes)
 
-Le serveur connaît, pour chaque compte (clé publique Nostr), son niveau et le mois où il l'a atteint. Il ne connaît ni nom, ni lieu, ni appareil.
+Le serveur connaît, pour chaque compte (clé publique Nostr), son niveau et la **semaine** à partir de laquelle il compte : un changement de niveau prend effet le lundi suivant, et le serveur ne garde que cette semaine, jamais le jour (le jour d'une validation en personne pourrait trahir l'événement où elle a eu lieu). Il ne connaît ni nom, ni lieu, ni appareil.
 
 | Niveau | Comment on l'atteint | Ce que le compte peut faire |
 |---|---|---|
@@ -82,8 +83,8 @@ La règle « le graphe social reste sur les appareils » interdit au serveur de 
 ### 4.3 Validation en personne (S-88)
 - Un **validateur** est un compte de l'équipe ou un bénévole habilité, avec double authentification (socle du back-office M16 du Directeur technique) ; il ouvre une **séance** limitée (40 validations au plus par défaut, seuil privé).
 - La personne montre le code QR de son compte (clé publique et défi signé, pour prouver qu'elle tient la clé) ; le validateur le lit ; le serveur fait passer le compte en N2.
-- **Aucun lieu, aucun événement, aucune identité** : le serveur garde le mois de validation et, pour pouvoir annuler les validations d'un complice, le lien « compte, séance » **chiffré avec la clé publique d'une équipe d'audit** dont la clé secrète reste hors ligne (même principe que les contenus sensibles en attente, CLAUDE.md 7). Un serveur saisi ne révèle donc pas qui a été validé par qui.
-- En clair, le serveur ne garde que les compteurs par séance (validateur, jour, nombre), pour détecter les taux anormaux (8).
+- **Aucun lieu, aucun événement, aucune identité** : le serveur garde la semaine d'effet (4) et, pour pouvoir annuler les validations d'un complice, le lien « compte, séance » **chiffré avec la clé publique d'une équipe d'audit** dont la clé secrète reste hors ligne (même principe que les contenus sensibles en attente, CLAUDE.md 7). Un serveur saisi ne révèle donc pas qui a été validé par qui.
+- En clair, le serveur ne garde que les compteurs par séance (validateur, semaine, nombre de validations, durée de la séance), pour détecter les taux anormaux (8).
 - Limite : une personne qui passe à plusieurs stands avec plusieurs téléphones obtient plusieurs comptes N2. Parades : coût physique, consigne aux validateurs (le compte montré doit être ouvert sur le téléphone présenté), quotas, détection. C'est le risque principal qui reste de M1.
 
 ## 5. Preuve de travail
@@ -115,7 +116,7 @@ Chaque question votable a une **urne** : un événement signé par la clé de la
 - Mode économie de données : la demande attend le premier besoin (ouverture d'un écran de vote), mais porte toujours sur toutes les urnes ouvertes.
 
 ### 6.4 Éligibilité figée à l'ouverture
-Le niveau d'un jeton est celui que le compte avait **à l'ouverture de l'urne** ; un compte créé après l'ouverture vote au niveau N0. Une vague de faux comptes la veille d'un vote ne peut donc toucher que la colonne « nouveaux comptes ». Conséquence voulue : une montée de niveau ne vaut que pour les urnes ouvertes ensuite.
+Le niveau d'un jeton est celui que le compte avait **la semaine de l'ouverture de l'urne** ; un compte créé après l'ouverture vote au niveau N0. Une vague de faux comptes la veille d'un vote ne peut donc toucher que la colonne « nouveaux comptes ». Conséquence voulue : une montée de niveau ne vaut que pour les urnes ouvertes ensuite.
 
 ### 6.5 Voter : un envoi séparé, sans compte
 - Le bulletin contient : urne, niveau, `y`, jeton, choix, preuve de travail. **Ni signature du compte, ni clé, ni en-tête d'authentification.**
@@ -127,7 +128,7 @@ Le niveau d'un jeton est celui que le compte avait **à l'ouverture de l'urne** 
 Un nouveau bulletin avec le même `y` et le même jeton **remplace** le précédent jusqu'à la clôture ; un bulletin « retiré » annule le vote. Seul l'appareil qui connaît `y` peut le faire. Le compteur public de remplacements par urne fait partie du journal (8).
 
 ### 6.7 Clôture et recomptage par tous
-À la clôture, le serveur publie un événement signé de résultat : totaux par niveau et par choix, nombre de jetons délivrés par niveau, **la clé secrète de l'urne pour chaque niveau**, et la liste anonyme des bulletins (`y`, jeton, choix, niveau, heure arrondie). N'importe qui peut alors vérifier que chaque clé correspond à la clé publique annoncée, recalculer chaque jeton, vérifier qu'aucun `y` n'est en double, recompter, et vérifier que les bulletins ne dépassent pas les jetons délivrés. Publier la clé d'une urne close ne permet ni de créer des jetons utiles (l'urne est close) ni de relier un bulletin (l'aveuglement ne dépend pas de la clé). Choix à confirmer : section 9, Q4.
+À la clôture, le serveur publie un événement signé de résultat : totaux par niveau et par choix, nombre de jetons délivrés par niveau, **la clé secrète de l'urne pour chaque niveau**, et la liste anonyme des bulletins (`y`, jeton, choix, niveau, heure arrondie). N'importe qui peut alors vérifier que chaque clé correspond à la clé publique annoncée, recalculer chaque jeton, vérifier qu'aucun `y` n'est en double, recompter, et vérifier que les bulletins ne dépassent pas les jetons délivrés. Publier la clé d'une urne close ne permet ni de créer des jetons utiles (l'urne est close) ni de relier un bulletin (l'aveuglement ne dépend pas de la clé), ni de retrouver la graine (une clé dérivée ne permet pas de remonter à la graine, ni donc aux clés des autres urnes). Choix à confirmer : section 9, Q4.
 
 Les questions sans fin naturelle (une revendication reste ouverte au vote des mois) ne publient que leurs totaux tant qu'elles sont ouvertes ; la liste vérifiable vient quand l'équipe les arrête (passage au Programme du peuple, fusion, clôture).
 
@@ -160,7 +161,49 @@ Chaque question a ma recommandation en premier.
 
 ## 10. Bibliothèques et code à écrire
 
-*(Section complétée après vérification des bibliothèques.)*
+Vérifié le 7 novembre 2026 sur Maven Central, les dépôts et les binaires publiés. **Aucune bibliothèque Java ou Kotlin maintenue n'implémente la RFC 9497 ni la RFC 9474** : le protocole est à écrire et à tester par nous ; seule l'arithmétique de la courbe vient d'une bibliothèque.
+
+### 10.1 Proposition
+
+| Brique | Choix | État vérifié |
+|---|---|---|
+| Groupe ristretto255 (points, scalaires, multiplication) | `com.ionspin.kotlin:multiplatform-crypto-libsodium-bindings` 0.9.5 (Apache-2.0), qui appelle libsodium (ISC) | Version du 22 novembre 2025 ; ristretto255 complet depuis 0.9.3 (`crypto_core_ristretto255_from_hash`, addition, soustraction, validation, scalaires, `crypto_scalarmult_ristretto255` et sa version de base) ; Android (minSdk 26), JVM, iOS publiés |
+| SHA-512 | `fr.acinq.bitcoin.crypto.Digest.sha512()` de bitcoin-kmp, **déjà dans le projet** | Public dans 0.32.0 |
+| Protocole RFC 9497 (`expand_message_xmd`, `HashToGroup`, `HashToScalar`, preuve DLEQ, `DeriveKeyPair`, aveuglement, finalisation) | **Écrit par nous**, en Kotlin commun pur, au-dessus d'une petite interface `Ristretto255` | Environ 400 lignes ; testé avec **tous les vecteurs de l'annexe A de la RFC 9497** (suite ristretto255-SHA512, modes OPRF et VOPRF) et des tests négatifs |
+| Preuve de travail NIP-13, authentification NIP-98 | Écrites par nous, au-dessus de la signature déjà présente dans `shared/core` | Formats lus dans les NIP le 7 novembre 2026 |
+
+Raisons et précautions :
+- **Interface entre le protocole et la bibliothèque** : le code du protocole ne voit qu'une interface `Ristretto255` (décoder et valider un point, point depuis 64 octets, addition, soustraction, multiplication, scalaires). Si la bibliothèque pose problème sur une plateforme, on change son fournisseur sans toucher au protocole, comme le demande CLAUDE.md pour iOS.
+- **Risques de la bibliothèque, à vérifier dès la première étape** :
+  - son README la dit « expérimentale » : on n'utilise que les fonctions de bas niveau, qui transmettent directement à libsodium, et les vecteurs de la RFC vérifient le résultat de bout en bout ;
+  - elle embarque libsodium 1.0.19 (ordinateur, iOS) et 1.0.20 (Android), alors que la dernière version est 1.0.22 (9 avril 2026) : les fonctions ristretto255 existent depuis longtemps, mais il faudra surveiller les correctifs de libsodium ;
+  - sur JVM et Android, elle passe par JNA (licence double LGPL-2.1 ou Apache-2.0, utilisée sous Apache-2.0) et `com.goterl:resource-loader` (MIT) : deux dépendances de plus ;
+  - elle doit être initialisée (`LibsodiumInitializer.initialize()`, fonction suspendue) avant le premier usage ;
+  - le ticket ouvert n° 56 signale un plantage de l'application Windows empaquetée (`FileSystemNotFoundException: Provider "jar"`) : à tester sur l'exécutable de bureau (`createDistributable`), probablement réglé en ajoutant le module `jdk.zipfs`, non vérifié ;
+  - la bibliothèque iOS a été compilée avec Kotlin/Native 1.9.23 et dépend d'une bibliothèque d'interopérabilité C, dont la compatibilité avec Kotlin 2.4.21 n'est pas garantie : non vérifiable tant qu'iOS n'est pas compilé ; repli prévu, une interopérabilité directe avec la libsodium officielle derrière la même interface ;
+  - taille de l'APK : bibliothèques natives de libsodium et de JNA pour quatre architectures, à mesurer ; `tools/check-apk.sh` devra les attendre.
+- **Licences** : Apache-2.0, ISC et MIT sont compatibles avec l'AGPL-3.0 du projet.
+- **Serveur** : la même bibliothèque sur la JVM ; la graine des clés lue dans la configuration privée (plus tard le service de signature séparé).
+
+### 10.2 Solution de repli : signatures RSA aveugles (RFC 9474)
+Si libsodium se révèle inutilisable :
+- côté application, en Kotlin commun pur : grands entiers `com.ionspin.kotlin:bignum` 0.3.10 (Apache-2.0, juillet 2024 ; utiliser `ModularBigInteger.pow(BigInteger)`, car la puissance par un entier calcule tout avant de réduire ; ni Montgomery ni temps constant, acceptable puisque l'application ne manipule aucune clé secrète RSA), SHA-384 par `org.kotlincrypto.hash:sha2` 0.8.0 (Apache-2.0 ; bitcoin-kmp n'a pas de SHA-384) ;
+- côté serveur : opération RSA privée de la JCA, avec vérification de la signature avant de la rendre (RFC 9474, 4.3) ; BouncyCastle n'a pas d'API RFC 9474 toute faite ;
+- variante RSABSSA-SHA384-PSS-Randomized, clés de 2048 bits ou plus ; vecteurs de test de la RFC.
+- Inconvénients : une clé RSA par question et par niveau à générer et garder, environ dix fois plus de calcul par jeton, jetons de 256 octets. Réservé aux votations et aux délibérations (peu de questions) ; les votes des revendications attendraient une meilleure solution.
+
+### 10.3 Volume : le point à surveiller
+« Tout pour tous » (6.3) veut dire autant de jetons par compte que d'urnes ouvertes. Ordres de grandeur **à mesurer à la première étape** (estimations, non vérifiées) : environ six multiplications sur la courbe par jeton côté application (quelques millisecondes sur un vieux téléphone), trois côté serveur, environ 130 octets échangés par jeton. Pour 5 000 revendications ouvertes : une première synchronisation de quelques secondes en tâche de fond et environ 650 Ko ; ensuite seulement les nouvelles urnes. Côté serveur, 10 000 comptes fois 5 000 urnes représentent quelques heures de calcul étalées dans le temps ; une file d'attente lisse les pics d'inscriptions.
+Si la mesure dépasse ce que tient le KVM 1 :
+- n'ouvrir au vote que les revendications « en débat » (et non tout le mur) ;
+- délivrer les jetons en plusieurs fois, toujours pour toutes les urnes ;
+- plus tard, des signatures BBS avec un pseudonyme par question (un seul titre par compte, aucun jeton par question), quand les brouillons de l'IRTF seront terminés.
+
+### 10.4 Pour les étapes suivantes
+- Site installable (iPhone, plus tard) : ristretto255 existe dans libsodium.js ; le vote demandera du JavaScript, le site reste lisible sans.
+- ALTCHA côté serveur : `org.altcha:altcha` 2.1.1 (MIT, Java 17 ou plus).
+- Lecture et création de codes QR (parrainage, validation) : bibliothèques à vérifier à l'étape 5 (jamais ML Kit, qui est un service Google).
+- Archivage horodaté (tâche suivante du pôle) : `java-opentimestamps` n'est plus maintenu (version 1.20 de janvier 2021, LGPL-3.0, dépend de bitcoinj 0.14.7) ; à comparer : un petit client OpenTimestamps écrit par nous, ou l'horodatage RFC 3161 de BouncyCastle (`bcpkix-jdk18on` 1.86, JVM seulement, suffisant pour le serveur).
 
 ## 11. Délibération citoyenne sur le Pacte et les campagnes (D-062)
 
@@ -185,7 +228,7 @@ Chaque pôle n'appelle qu'une interface commune (`core/urne`, à créer) et un c
 
 ## 13. Ce qui est stocké (pour le registre RGPD)
 
-- **Serveur, par compte** : clé publique, niveau, mois d'atteinte, invitations restantes du mois, curseur des jetons délivrés. Lien « compte, séance de validation » chiffré pour l'équipe d'audit.
+- **Serveur, par compte** : clé publique, niveau, semaine d'effet de chaque niveau atteint et semaine d'inscription, invitations restantes du mois, curseur des jetons délivrés (il révèle la dernière synchronisation, rien de plus), dernière réponse de délivrance gardée 24 heures. Lien « compte, séance de validation » chiffré pour l'équipe d'audit.
 - **Serveur, par urne** : nombre de jetons délivrés par niveau ; bulletins (`y`, jeton, choix, niveau, heure arrondie), sans compte ni IP ; invitations utilisées (empreinte). Les clés ne sont pas stockées (dérivées de la graine).
 - **Appareil** : jetons non utilisés et identifiants `y` de ses bulletins, ses votes (pour « Mes votes et soutiens », TE-06), effacés avec les clés.
 
@@ -210,3 +253,11 @@ Chaque pôle n'appelle qu'une interface commune (`core/urne`, à créer) et un c
 - NIP-13 et NIP-98 : https://github.com/nostr-protocol/nips/blob/master/13.md, https://github.com/nostr-protocol/nips/blob/master/98.md
 - ALTCHA : https://github.com/altcha-org/altcha-lib-java
 - CNIL, délibération n° 2019-053 sur le vote par Internet : https://www.legifrance.gouv.fr/affichTexte.do?cidTexte=JORFTEXT000038661239
+- Liaisons libsodium d'ionspin : https://github.com/ionspin/kotlin-multiplatform-libsodium (README, CHANGELOG, ticket n° 56) et https://repo1.maven.org/maven2/com/ionspin/kotlin/multiplatform-crypto-libsodium-bindings/maven-metadata.xml
+- libsodium, ristretto255 et versions : https://doc.libsodium.org/advanced/point-arithmetic/ristretto et https://github.com/jedisct1/libsodium/releases
+- bignum d'ionspin : https://github.com/ionspin/kotlin-multiplatform-bignum
+- KotlinCrypto (SHA-2) : https://github.com/KotlinCrypto/hash
+- bitcoin-kmp 0.32.0 (sources) : https://repo1.maven.org/maven2/fr/acinq/bitcoin/bitcoin-kmp/0.32.0/
+- BouncyCastle : https://github.com/bcgit/bc-java (RSABlindingEngine, paquet tsp)
+- Implémentations de référence, pour comparer : https://github.com/cloudflare/circl (oprf, blindsign/blindrsa), https://github.com/meta/voprf, https://github.com/apple/swift-crypto (CryptoExtras)
+- java-opentimestamps : https://github.com/opentimestamps/java-opentimestamps
