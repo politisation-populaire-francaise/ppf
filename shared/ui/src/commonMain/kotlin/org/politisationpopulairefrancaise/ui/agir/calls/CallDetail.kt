@@ -157,7 +157,8 @@ internal fun CallDetail(
                 Text(stringResource(Res.string.appels_discuss_soon), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
             }
 
-            if (accountKey != null && call.author == accountKey && call.isOpen && own?.state != OwnDemandState.WAITING) {
+            // Only a published call is closed: the server publishes its closing at once (decision of the owner, 2026-11-07).
+            if (accountKey != null && call.author == accountKey && call.isOpen && own?.state == OwnDemandState.PUBLISHED) {
                 PpfSecondaryButton(onClick = { onClose(call) }, text = stringResource(Res.string.appels_close), icon = Lucide.Flag, modifier = Modifier.testTag(CallTags.CLOSE))
             }
             Spacer(Modifier.height(12.dp))

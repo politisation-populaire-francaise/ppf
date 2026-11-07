@@ -210,8 +210,9 @@ class CallsLibrary(
 
     /**
      * Closes one of the user's own calls with its [report] (AP-09): a new version of the same
-     * address, signed, stored as waiting to leave, then handed to the publication port. An account
-     * that is not a verified organisation sees its closing held for review (contract, section 5).
+     * address, signed, stored as waiting to leave, then handed to the publication port. The server
+     * publishes a closing at once (decision of the owner, 2026-11-07): only the status and the report
+     * change. An answer `202` is still reported as such.
      */
     suspend fun closeCall(signer: EventSigner, call: Call, report: String): CallSendOutcome {
         val store = store ?: return CallSendOutcome.FAILED

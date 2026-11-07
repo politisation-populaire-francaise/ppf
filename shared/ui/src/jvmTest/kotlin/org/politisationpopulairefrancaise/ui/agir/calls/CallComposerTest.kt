@@ -5,6 +5,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
@@ -200,6 +201,49 @@ class CallComposerTest {
         val closing = server.received.last()
         assertEquals("clos", closing.firstTagValue(AgirFormats.TAG_CALL_STATUS))
         assertEquals(slug, closing.firstTagValue("d"))
+    }
+
+    @Test
+    fun onlyAPublishedCallIsClosedAndItsClosingIsPublishedAtOnce() = runComposeUiTest {
+        // New calls are reviewed; closings are published at once (decision of the owner, 2026-11-07).
+        val server = CallServer(held = true)
+        val harness = showCalls(keys = keys, remote = server)
+        fillDemonstration()
+        onNodeWithTag(CallComposerTags.SEND).performScrollTo().performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 5_000) { harness.calls.composer.outcome != null }
+        onNodeWithTag(CallComposerTags.RESULT_BACK).performClick()
+        waitForIdle()
+        val sent = server.received.single()
+        val slug = assertNotNull(Call.from(sent)).slug
+        onNodeWithTag(CallTags.TAB + "mine").performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 5_000) { harness.calls.myCalls.singleOrNull()?.state == OwnDemandState.IN_REVIEW }
+        onNodeWithTag(CallTags.CARD + slug).performScrollTo().performClick()
+        waitForIdle()
+        // Still in review: nothing to close yet.
+        onNodeWithTag(CallTags.DETAIL).assertExists()
+        onNodeWithTag(CallTags.CLOSE).assertDoesNotExist()
+
+        server.decisions[sent.id] = HeldState(sent.id, HeldStatus.APPROVED, sent.createdAt, decidedAt = sent.createdAt + 60)
+        harness.calls.refresh()
+        waitUntil(timeoutMillis = 5_000) { harness.calls.myCalls.single().state == OwnDemandState.PUBLISHED }
+        onNodeWithTag(CallTags.CLOSE).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(CallTags.CLOSE_REPORT).performTextInput("[EXEMPLE] La piscine rouvre en mars.")
+        onNodeWithTag(CallTags.CLOSE_CONFIRM).performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 5_000) { harness.calls.myCalls.single().call.status == CallStatus.CLOSED }
+        onNodeWithText("L’appel est clos et son bilan publié.").performScrollTo().assertExists()
+        assertEquals(OwnDemandState.PUBLISHED, harness.calls.myCalls.single().state)
+        assertTrue(harness.calls.calls.any { it.slug == slug && it.status == CallStatus.CLOSED })
+        val closing = server.received.last()
+        assertTrue(server.published.events.any { it.id == closing.id })
+        // Nothing but the status and the report changed.
+        val before = sent.tags.filter { it[0] != AgirFormats.TAG_CALL_STATUS }
+        val after = closing.tags.filter { it[0] != AgirFormats.TAG_CALL_STATUS && it[0] != AgirFormats.TAG_REPORT }
+        assertEquals(before, after)
+        assertEquals(sent.content, closing.content)
     }
 
     @Test

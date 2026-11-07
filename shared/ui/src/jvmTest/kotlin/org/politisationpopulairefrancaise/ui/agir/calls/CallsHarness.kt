@@ -69,7 +69,11 @@ internal class CallsHarness(val database: PpfDatabase) {
     fun call(slug: String): Call = (calls.calls + calls.myCalls.map { it.call }).first { it.slug == slug }
 }
 
-/** A server that publishes ([held] false) or holds for review ([held] true) every call, and answers where held ones stand. */
+/**
+ * A server that publishes ([held] false) or holds for review ([held] true) every new call, and answers
+ * where held ones stand. The closing of a call by its author is always published at once (decision of
+ * the owner, 2026-11-07).
+ */
 internal class CallServer(var held: Boolean = true) : RemoteEvents, HeldStatusSource {
     val published = InMemoryPublicationPort()
     val received = mutableListOf<SignedEvent>()
@@ -79,7 +83,7 @@ internal class CallServer(var held: Boolean = true) : RemoteEvents, HeldStatusSo
     override suspend fun publish(event: SignedEvent): PublicationResult {
         if (!reachable) return PublicationResult.Unavailable()
         received += event
-        if (held) {
+        if (held && event.firstTagValue("ppf-call-status") != "clos") {
             decisions.getOrPut(event.id) { HeldState(event.id, HeldStatus.PENDING, event.createdAt) }
             return PublicationResult.Accepted(event.id, heldForReview = true)
         }
