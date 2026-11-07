@@ -99,7 +99,8 @@ class VotingState internal constructor(
             val tokenStore = store ?: return@withLock null
             val voteRemote = remote ?: return@withLock null
             val group = try {
-                loadGroup()
+                // Loading the native library may take a moment: never on the main thread.
+                withContext(Dispatchers.Default) { loadGroup() }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Throwable) {
