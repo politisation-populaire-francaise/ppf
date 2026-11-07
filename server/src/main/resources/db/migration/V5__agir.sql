@@ -7,7 +7,8 @@
 --
 --    Nothing about the request is stored: no client address, no header, no device information.
 --    Retention: a decided content (approved or rejected) is deleted by the application 30 days after
---    the decision (PPF_HELD_RETENTION_DAYS); a pending one stays until the team decides.
+--    the decision (PPF_HELD_RETENTION_DAYS); a pending one stays until the team decides, except a
+--    mobilization whose date has passed, refused automatically (decision of the owner, 2026-11-07).
 --
 -- 2. agenda_entry: the index of the published mobilizations (kind 31923, NIP-52) by date, territory,
 --    type, status and organisers, for GET /api/v1/agenda and its iCalendar feed. Like event_tags and
@@ -33,6 +34,9 @@ CREATE TABLE held_content (
     -- The tags useful to sort the queue without parsing every event (title, type, territory, start),
     -- also in the event.
     tags            JSONB       NOT NULL,
+    -- Mobilizations only: their end, or their start without end (seconds since 1970); once passed, a
+    -- pending mobilization is refused automatically. NULL for calls.
+    expires_at      BIGINT,
     status          TEXT        NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
     received_at     TIMESTAMPTZ NOT NULL,
     decided_at      TIMESTAMPTZ,
@@ -44,8 +48,8 @@ CREATE TABLE held_content (
 -- One pending version per address: a new version replaces the pending one.
 CREATE UNIQUE INDEX held_content_pending_address_idx ON held_content (address) WHERE status = 'pending';
 
--- The count of pending contents per key (ceiling per key).
-CREATE INDEX held_content_pending_pubkey_idx ON held_content (pubkey) WHERE status = 'pending';
+-- The pending mobilizations whose date has passed, refused automatically.
+CREATE INDEX held_content_pending_expires_idx ON held_content (expires_at) WHERE status = 'pending' AND expires_at IS NOT NULL;
 
 -- The oldest pending contents first (review order).
 CREATE INDEX held_content_pending_received_idx ON held_content (received_at, id) WHERE status = 'pending';

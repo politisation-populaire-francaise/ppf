@@ -15,11 +15,10 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.TagsJson
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.StoreOutcome
-import org.politisationpopulairefrancaise.server.relay.RateLimiter
-import org.politisationpopulairefrancaise.server.revendications.PeriodBudget
 import org.slf4j.Logger
 import java.sql.Connection
 import java.sql.ResultSet
+import java.sql.Types
 import java.time.Clock
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -56,17 +55,11 @@ sealed interface HoldOutcome {
     /** This very event was approved and published. */
     data object AlreadyApproved : HoldOutcome
 
-    /** This very event was rejected by the team. */
+    /** This very event was rejected by the team (or automatically). */
     data object AlreadyRejected : HoldOutcome
 
     /** A more recent version of this content is already pending or published. */
     data object Superseded : HoldOutcome
-
-    data object TooManyPendingForKey : HoldOutcome
-
-    data object QueueFull : HoldOutcome
-
-    data class OverDailyBudget(val retryAfterSeconds: Long) : HoldOutcome
 }
 
 sealed interface HeldDecision {
@@ -89,6 +82,11 @@ sealed interface HeldDecision {
  * versions applies as for any content; decided contents are deleted [AgirConfig.decidedRetention]
  * after the decision ([deleteDecidedBefore]).
  *
+ * No ceiling on the number of contents (decision of the owner, 2026-11-07): only the limit per minute
+ * of POST /api/v1/events applies. A pending mobilization whose date has passed is refused with
+ * [EXPIRED_REASON] ([rejectExpired]), by the periodic cleanup, when its author reads its status and
+ * before the team decides.
+ *
  * Modelled on the queue of citizen demands (server/revendications/ProposalQueue), which keeps its own
  * table because its report of automatic checks is richer.
  */
@@ -98,35 +96,17 @@ class HeldQueue(
     private val clock: Clock = Clock.systemUTC(),
 ) {
     /**
-     * Queues [event] (addressable, verified and checked by the rules) unless the limits refuse it.
-     * [budget] is asked for a token only when the content is about to be stored, and refunded if
-     * storing fails. Locks (one per author key, one for the whole queue when a new address comes in)
-     * keep the counts exact under concurrent requests.
+     * Queues [event] (addressable, verified and checked by the rules). A lock per address keeps one
+     * pending version per address under concurrent requests.
      */
-    fun submit(event: SignedEvent, maxPendingPerKey: Int, maxPending: Int, budget: PeriodBudget): HoldOutcome {
+    fun submit(event: SignedEvent): HoldOutcome {
         val address = requireNotNull(EventReplacement.replacementKey(event)) { "Only replaceable contents are held" }
         val identifier = requireNotNull(event.firstTagValue("d")) { "A held content has a d tag" }
-        var spent = false
-        return try {
-            transaction { connection -> submitInTransaction(connection, event, address, identifier, maxPendingPerKey, maxPending, budget) { spent = true } }
-        } catch (e: Exception) {
-            // Nothing was stored (the transaction was rolled back): the token goes back.
-            if (spent) budget.refund(event.pubkey)
-            throw e
-        }
+        return transaction { connection -> submitInTransaction(connection, event, address, identifier) }
     }
 
-    private fun submitInTransaction(
-        connection: Connection,
-        event: SignedEvent,
-        address: String,
-        identifier: String,
-        maxPendingPerKey: Int,
-        maxPending: Int,
-        budget: PeriodBudget,
-        onSpent: () -> Unit,
-    ): HoldOutcome {
-        lock(connection, "held_content:${event.pubkey}")
+    private fun submitInTransaction(connection: Connection, event: SignedEvent, address: String, identifier: String): HoldOutcome {
+        lock(connection, "held_content:$address")
         connection.prepareStatement("SELECT status FROM held_content WHERE id = ?").use { statement ->
             statement.setString(1, event.id)
             val rows = statement.executeQuery()
@@ -154,16 +134,6 @@ class HeldQueue(
         if (previous != null && !EventReplacement.supersedes(event.createdAt, event.id, previous.second, previous.first)) {
             return HoldOutcome.Superseded
         }
-        if (previous == null) {
-            if (countPending(connection, event.pubkey) >= maxPendingPerKey) return HoldOutcome.TooManyPendingForKey
-            // Taken after the lock of the key, always in this order: no deadlock.
-            lock(connection, GLOBAL_LOCK)
-            if (countPending(connection, null) >= maxPending) return HoldOutcome.QueueFull
-        }
-        when (val token = budget.tryAcquire(event.pubkey)) {
-            is RateLimiter.Outcome.Limited -> return HoldOutcome.OverDailyBudget(token.retryAfterSeconds)
-            RateLimiter.Outcome.Allowed -> onSpent()
-        }
         if (previous != null) {
             connection.prepareStatement("DELETE FROM held_content WHERE id = ?").use { delete ->
                 delete.setString(1, previous.first)
@@ -172,8 +142,8 @@ class HeldQueue(
         }
         connection.prepareStatement(
             """
-            INSERT INTO held_content (id, pubkey, kind, identifier, address, created_at, event, tags, status, received_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?::jsonb, 'pending', ?)
+            INSERT INTO held_content (id, pubkey, kind, identifier, address, created_at, event, tags, expires_at, status, received_at)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?::jsonb, ?, 'pending', ?)
             """.trimIndent(),
         ).use { insert ->
             insert.setString(1, event.id)
@@ -184,7 +154,9 @@ class HeldQueue(
             insert.setLong(6, event.createdAt)
             insert.setString(7, event.toJson())
             insert.setString(8, TagsJson.encode(usefulTags(event)))
-            insert.setObject(9, now())
+            val expiresAt = expiryOf(event)
+            if (expiresAt != null) insert.setLong(9, expiresAt) else insert.setNull(9, Types.BIGINT)
+            insert.setObject(10, now())
             insert.executeUpdate()
         }
         return HoldOutcome.Queued(previous?.first)
@@ -198,16 +170,6 @@ class HeldQueue(
         }
     }
 
-    private fun countPending(connection: Connection, pubkey: String?): Int {
-        val sql = "SELECT count(*) FROM held_content WHERE status = 'pending'" + if (pubkey != null) " AND pubkey = ?" else ""
-        return connection.prepareStatement(sql).use { statement ->
-            if (pubkey != null) statement.setString(1, pubkey)
-            val rows = statement.executeQuery()
-            rows.next()
-            rows.getInt(1)
-        }
-    }
-
     fun find(id: String): HeldContent? = dataSource.connection.use { connection ->
         connection.prepareStatement("$SELECT WHERE id = ?").use { statement ->
             statement.setString(1, id)
@@ -216,13 +178,24 @@ class HeldQueue(
         }
     }
 
+    /** The version of [address] (`kind:pubkey:d`) that waits for review, if any. */
+    fun pendingAt(address: String): HeldContent? = dataSource.connection.use { connection ->
+        connection.prepareStatement("$SELECT WHERE address = ? AND status = 'pending'").use { statement ->
+            statement.setString(1, address)
+            val rows = statement.executeQuery()
+            if (rows.next()) rows.toHeld() else null
+        }
+    }
+
     /**
      * Where the contents among [ids] stand, in the order asked, duplicates removed; ids the queue does
-     * not know (never held, or deleted after the retention) are left out.
+     * not know (never held, or deleted after the retention) are left out. Mobilizations among them
+     * whose date has passed are refused first.
      */
     fun states(ids: List<String>): List<HeldState> {
         val wanted = ids.distinct()
         if (wanted.isEmpty()) return emptyList()
+        rejectExpired(wanted)
         val found = dataSource.connection.use { connection ->
             connection.prepareStatement("$SELECT WHERE id = ANY(?)").use { statement ->
                 statement.setArray(1, connection.createArrayOf("text", wanted.toTypedArray()))
@@ -233,22 +206,43 @@ class HeldQueue(
         return wanted.mapNotNull { found[it]?.state() }
     }
 
-    /** The pending contents, oldest first, at most [limit]: the review order. */
-    fun pending(limit: Int = MAX_LISTED): List<HeldContent> = dataSource.connection.use { connection ->
-        connection.prepareStatement("$SELECT WHERE status = 'pending' ORDER BY received_at ASC, id ASC LIMIT ?").use { statement ->
-            statement.setInt(1, limit.coerceIn(1, MAX_LISTED))
-            val rows = statement.executeQuery()
-            buildList { while (rows.next()) add(rows.toHeld()) }
+    /** The pending contents, oldest first, at most [limit]: the review order (past mobilizations refused first). */
+    fun pending(limit: Int = MAX_LISTED): List<HeldContent> {
+        rejectExpired()
+        return dataSource.connection.use { connection ->
+            connection.prepareStatement("$SELECT WHERE status = 'pending' ORDER BY received_at ASC, id ASC LIMIT ?").use { statement ->
+                statement.setInt(1, limit.coerceIn(1, MAX_LISTED))
+                val rows = statement.executeQuery()
+                buildList { while (rows.next()) add(rows.toHeld()) }
+            }
+        }
+    }
+
+    /**
+     * Refuses, with [EXPIRED_REASON], the pending mobilizations whose end (or start, without end) is
+     * before now: among [ids] only, or all of them when [ids] is null. Returns how many.
+     */
+    fun rejectExpired(ids: Collection<String>? = null): Int = dataSource.connection.use { connection ->
+        val sql = "UPDATE held_content SET status = 'rejected', decided_at = ?, decision_reason = ? " +
+            "WHERE status = 'pending' AND expires_at IS NOT NULL AND expires_at < ?" + if (ids != null) " AND id = ANY(?)" else ""
+        connection.prepareStatement(sql).use { statement ->
+            val now = now()
+            statement.setObject(1, now)
+            statement.setString(2, EXPIRED_REASON)
+            statement.setLong(3, now.toEpochSecond())
+            if (ids != null) statement.setArray(4, connection.createArrayOf("text", ids.distinct().toTypedArray()))
+            statement.executeUpdate()
         }
     }
 
     /**
      * Publishes a pending content: the event goes to the events table exactly as its author signed it
-     * (a newer version already published wins, as everywhere), the content is marked approved. Only
-     * the team may call this (back-office to come with the moderation, M15: two-factor authentication
-     * and an audit log).
+     * (a newer version already published wins, as everywhere), the content is marked approved. A
+     * mobilization whose date has passed is refused instead. Only the team may call this (back-office
+     * to come with the moderation, M15: two-factor authentication and an audit log).
      */
     fun approve(id: String): HeldDecision {
+        rejectExpired(listOf(id))
         val held = find(id) ?: return HeldDecision.NotFound
         if (held.status != HeldStatus.PENDING) return HeldDecision.AlreadyDecided(held.status)
         // Checked again: what the team approves must be exactly what the author signed.
@@ -285,6 +279,17 @@ class HeldQueue(
         } else {
             find(id)?.let { HeldDecision.AlreadyDecided(it.status) } ?: HeldDecision.NotFound
         }
+    }
+
+    /**
+     * Withdraws, with [AuthorChanges.WITHDRAWN_REASON], the pending version of the address of [ending]
+     * that [ending] supersedes (its author cancelled or closed it); returns whether one was withdrawn.
+     */
+    fun withdrawOlderPending(ending: SignedEvent): Boolean {
+        val address = EventReplacement.replacementKey(ending) ?: return false
+        val pending = pendingAt(address) ?: return false
+        if (!EventReplacement.supersedes(ending, pending.event)) return false
+        return decide(pending.id, HeldStatus.REJECTED, AuthorChanges.WITHDRAWN_REASON)
     }
 
     private fun decide(id: String, status: HeldStatus, reason: String?): Boolean = dataSource.connection.use { connection ->
@@ -337,6 +342,9 @@ class HeldQueue(
         /** At most this many pending contents are listed at once. */
         const val MAX_LISTED: Int = 2_000
 
+        /** The reason of the automatic refusal of a mobilization whose date passed before the review (owner, 2026-11-07). */
+        const val EXPIRED_REASON: String = "La date de l'événement est passée avant la relecture."
+
         /** The tags copied next to the event, to sort the queue (all also in the event). */
         val USEFUL_TAGS: Set<String> = setOf(
             "d", AgirFormats.TAG_TITLE, AgirFormats.TAG_TYPE, AgirFormats.TAG_CALL_TYPE, AgirFormats.TAG_EVENT_TYPE,
@@ -346,8 +354,8 @@ class HeldQueue(
         fun usefulTags(event: SignedEvent): List<List<String>> =
             event.tags.filter { it.size >= 2 && it[0] in USEFUL_TAGS }.map { it.take(2) }.distinctBy { it[0] }
 
-        /** The lock taken to count the whole queue; it cannot collide with "held_content:<hex key>". */
-        private const val GLOBAL_LOCK = "held_content:*"
+        /** When a mobilization is over: its end, or its start without end; null for anything else (calls). */
+        fun expiryOf(event: SignedEvent): Long? = AgendaIndex.entryOf(event)?.let { it.endsAt ?: it.startsAt }
 
         private fun statusOf(column: String): HeldStatus = HeldStatus.entries.first { it.column == column }
 
@@ -356,20 +364,27 @@ class HeldQueue(
 }
 
 /**
- * Deletes the decided contents of the queue once they are older than [retention], counted from the
- * decision. Only counts are logged, never contents, keys or ids.
+ * The periodic cleanup of the queue: refuses the pending mobilizations whose date has passed, then
+ * deletes the decided contents once they are older than [retention], counted from the decision. Only
+ * counts are logged, never contents, keys or ids.
  */
 class HeldMaintenance(
     private val queue: HeldQueue,
     private val retention: Duration,
     private val clock: Clock = Clock.systemUTC(),
 ) {
-    fun purgeOnce(): Int = queue.deleteDecidedBefore(clock.instant().minus(retention.toJavaDuration()))
+    /** Deletes the expired decided contents once and returns how many were removed (past mobilizations are refused first). */
+    fun purgeOnce(): Int {
+        queue.rejectExpired()
+        return queue.deleteDecidedBefore(clock.instant().minus(retention.toJavaDuration()))
+    }
 
     fun start(scope: CoroutineScope, interval: Duration, log: Logger): Job = scope.launch(Dispatchers.IO) {
         while (isActive) {
             try {
-                val deleted = purgeOnce()
+                val refused = queue.rejectExpired()
+                if (refused > 0) log.info("Held contents: $refused past mobilization(s) refused.")
+                val deleted = queue.deleteDecidedBefore(clock.instant().minus(retention.toJavaDuration()))
                 if (deleted > 0) log.info("Held contents retention: $deleted decided content(s) deleted.")
             } catch (e: CancellationException) {
                 throw e

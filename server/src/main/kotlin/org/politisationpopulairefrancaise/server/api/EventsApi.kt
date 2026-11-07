@@ -130,15 +130,16 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
                 is PublicationPolicy.Decision.Refused -> return@post call.refuse(decision)
                 PublicationPolicy.Decision.Allowed -> Unit
             }
-            // Agir space (contract, section 5): a content the key may not publish directly waits for review (202) or is refused.
+            // Agir space (contract, section 5): a content the key may not publish directly waits for review (202) or is refused;
+            // a cancellation by its author withdraws the version still waiting (200).
             if (agirSpace.concerns(event)) {
                 when (val route = withContext(Dispatchers.IO) { agirSpace.route(event) }) {
                     AgirSpace.Route.Publish -> Unit
                     is AgirSpace.Route.Refuse -> return@post call.refuse(route.refusal)
-                    AgirSpace.Route.Hold -> {
+                    AgirSpace.Route.Hold, is AgirSpace.Route.Withdraw -> {
                         when (val admission = withContext(Dispatchers.IO) { directory.admit(event) }) {
                             is PublicationPolicy.Decision.Refused -> return@post call.refuse(admission)
-                            PublicationPolicy.Decision.Allowed -> return@post agirSpace.hold(call, event, limits.perKey)
+                            PublicationPolicy.Decision.Allowed -> return@post agirSpace.hold(call, event, route, limits.perKey)
                         }
                     }
                 }
@@ -152,7 +153,7 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
             }
             when (outcome) {
                 StoreOutcome.STORED -> {
-                    agirSpace.stored(event)
+                    withContext(Dispatchers.IO) { agirSpace.stored(event) }
                     if (event.kind == RelayKinds.GIFT_WRAP) {
                         // One recipient per envelope (policy); the mailbox keeps the newest envelopes only.
                         val recipient = event.firstTagValue("p")

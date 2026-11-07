@@ -153,7 +153,8 @@ class AgendaApiTest {
         val proposed = event("proposee", start = now + DAY, author = organiser)
         assertEquals(HttpStatusCode.Accepted, client.publish(proposed).status)
         assertEquals(emptyList(), client.agenda())
-        HeldQueue(TestDatabase.dataSource, events).approve(proposed.id)
+        // On the clock of the test: a past date would be refused automatically.
+        HeldQueue(TestDatabase.dataSource, events, clock).approve(proposed.id)
         assertEquals(listOf(proposed), client.agenda())
     }
 

@@ -36,6 +36,7 @@ import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupKinds
 import org.politisationpopulairefrancaise.server.module
+import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.revendications.DemandFixtures.demand
 import org.politisationpopulairefrancaise.server.revendications.ProposalQueue
 import org.politisationpopulairefrancaise.server.testRevendications
@@ -110,8 +111,7 @@ class AgirPublicationApiTest {
 
     @Test
     fun callsArePublishedByTrustedKeysAndHeldOtherwise() = testApplication {
-        // One citizen sends a call of every type: more than the default limits per key.
-        start(AgirConfig(maxPendingPerKey = 50, perKeyPerDay = 50, cleanupInterval = kotlin.time.Duration.ZERO))
+        start()
         client.verifyOrganisation()
         val ordinary = AgirFormats.CALL_TYPES - AgirFormats.CALL_TYPE_WITNESSES - AgirFormats.CALL_TYPE_FUNDRAISING
         for (type in ordinary) {
@@ -129,13 +129,13 @@ class AgirPublicationApiTest {
     }
 
     @Test
-    fun onlyVerifiedOrganisationsCallForFunds() = testApplication {
+    fun onlyVerifiedOrganisationsAndTheTeamCallForFunds() = testApplication {
         start()
         client.assertRefused(organisationKey.call(AgirFormats.CALL_TYPE_FUNDRAISING), HttpStatusCode.Forbidden, "not_allowed")
         client.verifyOrganisation()
         client.assertPublished(organisationKey.call(AgirFormats.CALL_TYPE_FUNDRAISING))
-        // An editorial key is not an organisation (point of attention 12), and a citizen even less.
-        client.assertRefused(editor.call(AgirFormats.CALL_TYPE_FUNDRAISING), HttpStatusCode.Forbidden, "not_allowed")
+        // Decision of the owner (2026-11-07): PPF, an association, may call for funds; a citizen may not.
+        client.assertPublished(editor.call(AgirFormats.CALL_TYPE_FUNDRAISING))
         client.assertRefused(citizen.call(AgirFormats.CALL_TYPE_FUNDRAISING), HttpStatusCode.Forbidden, "not_allowed")
         // The shape comes first, whoever sends it.
         val incomplete = citizen.call(AgirFormats.CALL_TYPE_FUNDRAISING, callTags(AgirFormats.CALL_TYPE_FUNDRAISING).filterNot { it[0] == "ppf-beneficiary" })
@@ -227,26 +227,113 @@ class AgirPublicationApiTest {
     }
 
     @Test
-    fun heldContentsHaveTheirLimits() = testApplication {
-        start(AgirConfig(maxPendingPerKey = 2, perKeyPerDay = 3, maxPending = 3, cleanupInterval = kotlin.time.Duration.ZERO))
-        client.assertHeld(citizen.mobilization(mobilizationTags(d = "un")))
-        client.assertHeld(citizen.mobilization(mobilizationTags(d = "deux")))
-        val third = client.publish(citizen.mobilization(mobilizationTags(d = "trois")))
-        assertEquals(HttpStatusCode.TooManyRequests, third.status)
-        assertEquals("too_many_pending", third.error().error)
-        assertEquals("3600", third.headers[HttpHeaders.RetryAfter])
-        // A new version replaces the pending one and does not count twice, but it spends the daily budget.
-        client.assertHeld(citizen.mobilization(mobilizationTags(d = "un"), createdAt = AgirFixtures.nowSeconds()))
-        val overBudget = client.publish(citizen.mobilization(mobilizationTags(d = "deux"), createdAt = AgirFixtures.nowSeconds() + 1))
-        assertEquals(HttpStatusCode.TooManyRequests, overBudget.status)
-        assertEquals("daily_limit", overBudget.error().error)
-        assertNotNull(overBudget.headers[HttpHeaders.RetryAfter])
-        // The whole queue: keys are free to mint.
-        client.assertHeld(LocalEventSigner(IdentityKeys.generate()).mobilization())
-        val full = client.publish(LocalEventSigner(IdentityKeys.generate()).mobilization())
-        assertEquals(HttpStatusCode.TooManyRequests, full.status)
-        assertEquals("queue_full", full.error().error)
-        assertEquals(3, queue.pending().size)
+    fun thereIsNoCeilingOnTheQueue() = testApplication {
+        // Decision of the owner (2026-11-07): no limit per key, per day nor for the whole queue (formerly 10 per key).
+        start()
+        (1..15).forEach { client.assertHeld(citizen.mobilization(mobilizationTags(d = "manif-$it"))) }
+        assertEquals(15, queue.pending().size)
+    }
+
+    @Test
+    fun theLimitPerMinuteOfTheApiStillApplies() = testApplication {
+        // The general anti-spam limit stays: here one event per minute and per key.
+        val relay = RelayConfig(cleanupInterval = kotlin.time.Duration.ZERO, postRatePerMinute = 1)
+        application { module(TestDatabase.dataSource, PublicationPolicy(setOf(editor.publicKey.hex)), relay, testRevendications(), testAgir()) }
+        client.assertHeld(citizen.mobilization(mobilizationTags(d = "premiere")))
+        val second = client.publish(citizen.mobilization(mobilizationTags(d = "deuxieme")))
+        assertEquals(HttpStatusCode.TooManyRequests, second.status)
+        assertEquals("rate_limited", second.error().error)
+        assertNotNull(second.headers[HttpHeaders.RetryAfter])
+        assertEquals(1, queue.pending().size)
+    }
+
+    @Test
+    fun anAuthorCancelsTheirPublishedMobilizationWithoutReview() = testApplication {
+        start()
+        val tags = mobilizationTags()
+        val original = citizen.mobilization(tags, createdAt = 1_000)
+        client.assertHeld(original)
+        assertTrue(queue.approve(original.id) is HeldDecision.Approved)
+        // Decision of the owner (2026-11-07): "il a le droit d'annuler".
+        val cancelled = citizen.mobilization(tags.withTag(AgirFormats.TAG_EVENT_STATUS, "annule"), createdAt = 2_000)
+        client.assertPublished(cancelled)
+        assertNull(events.find(original.id))
+        // Any other change is reviewed: the place, the text.
+        client.assertHeld(citizen.mobilization(tags.withTag(AgirFormats.TAG_EVENT_STATUS, "annule").withTag("location", "[EXEMPLE] Ailleurs"), createdAt = 3_000))
+        client.assertHeld(citizen.mobilization(tags.withTag(AgirFormats.TAG_EVENT_STATUS, "annule"), content = "[EXEMPLE] Autre texte", createdAt = 4_000))
+        // Postponing is not cancelling.
+        client.assertHeld(citizen.mobilization(tags.withTag(AgirFormats.TAG_EVENT_STATUS, "reporte"), createdAt = 5_000))
+    }
+
+    @Test
+    fun cancellingAVersionWaitingForReviewWithdrawsIt() = testApplication {
+        start()
+        val tags = mobilizationTags()
+        val pending = citizen.mobilization(tags, createdAt = 1_000)
+        client.assertHeld(pending)
+        val cancel = citizen.mobilization(tags.withTag(AgirFormats.TAG_EVENT_STATUS, "annule"), createdAt = 2_000)
+        val response = client.publish(cancel)
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals(PublishResponse(cancel.id, AgirSpace.WITHDRAWN), response.published())
+        // Nothing is published: neither the version that was never reviewed nor its cancellation.
+        assertNull(events.find(pending.id))
+        assertNull(events.find(cancel.id))
+        assertNull(queue.find(cancel.id))
+        val state = client.held(pending.id).single()
+        assertEquals(HeldStatus.REJECTED, state.status)
+        assertEquals(AuthorChanges.WITHDRAWN_REASON, state.reason)
+        assertTrue(client.held(cancel.id).isEmpty())
+    }
+
+    @Test
+    fun aPublishedCancellationWithdrawsTheEditWaitingForReview() = testApplication {
+        start()
+        val tags = mobilizationTags()
+        val original = citizen.mobilization(tags, createdAt = 1_000)
+        client.assertHeld(original)
+        queue.approve(original.id)
+        val edit = citizen.mobilization(tags.withTag("location", "[EXEMPLE] Nouveau lieu"), createdAt = 2_000)
+        client.assertHeld(edit)
+        client.assertPublished(citizen.mobilization(tags.withTag(AgirFormats.TAG_EVENT_STATUS, "annule"), createdAt = 3_000))
+        assertEquals(HeldStatus.REJECTED, queue.find(edit.id)?.status)
+        assertEquals(AuthorChanges.WITHDRAWN_REASON, queue.find(edit.id)?.reason)
+    }
+
+    @Test
+    fun anAuthorClosesTheirCallWithoutReview() = testApplication {
+        start()
+        val tags = callTags("petition")
+        val original = citizen.call("petition", tags, createdAt = 1_000)
+        client.assertHeld(original)
+        queue.approve(original.id)
+        val closed = tags.withTag(AgirFormats.TAG_CALL_STATUS, "clos")
+        client.assertPublished(citizen.call("petition", closed.withTag(AgirFormats.TAG_REPORT, "[EXEMPLE] 812 signatures recueillies."), createdAt = 2_000))
+        // Correcting the report is part of the closure.
+        client.assertPublished(citizen.call("petition", closed.withTag(AgirFormats.TAG_REPORT, "[EXEMPLE] 815 signatures recueillies."), createdAt = 3_000))
+        // Changing anything else is reviewed.
+        client.assertHeld(citizen.call("petition", closed.withTag("title", "[EXEMPLE] Autre titre"), createdAt = 4_000))
+
+        // A call for witnesses: its status may change without review, not its report (new text, always reviewed).
+        val witnessTags = callTags(AgirFormats.CALL_TYPE_WITNESSES)
+        val witnesses = citizen.call(AgirFormats.CALL_TYPE_WITNESSES, witnessTags, createdAt = 1_000)
+        client.assertHeld(witnesses)
+        queue.approve(witnesses.id)
+        val witnessesClosed = witnessTags.withTag(AgirFormats.TAG_CALL_STATUS, "clos")
+        client.assertHeld(citizen.call(AgirFormats.CALL_TYPE_WITNESSES, witnessesClosed.withTag(AgirFormats.TAG_REPORT, "[EXEMPLE] Quatre témoignages reçus."), createdAt = 2_000))
+        client.assertPublished(citizen.call(AgirFormats.CALL_TYPE_WITNESSES, witnessesClosed, createdAt = 3_000))
+    }
+
+    @Test
+    fun anotherKeyCannotCancelSomeoneElsesMobilization() = testApplication {
+        start()
+        val tags = mobilizationTags()
+        val original = citizen.mobilization(tags, createdAt = 1_000)
+        client.assertHeld(original)
+        queue.approve(original.id)
+        // Same tags signed by another key: another address, a new mobilization to review.
+        val intruder = LocalEventSigner(IdentityKeys.generate())
+        client.assertHeld(intruder.mobilization(tags.withTag(AgirFormats.TAG_EVENT_STATUS, "annule"), createdAt = 2_000))
+        assertEquals(original, events.find(original.id))
     }
 
     @Test

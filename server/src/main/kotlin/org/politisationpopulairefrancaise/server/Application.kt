@@ -58,8 +58,8 @@ import javax.sql.DataSource
  *   the review queue of citizen demands, see [RevendicationsConfig].
  * - PPF_AI_BASE_URL, PPF_AI_MODEL, PPF_AI_API_KEY_FILE, PPF_AI_JSON_MODE, PPF_AI_TIMEOUT_SECONDS: the
  *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
- * - PPF_HELD_MAX_PENDING_PER_KEY, PPF_HELD_PER_KEY_PER_DAY, PPF_HELD_MAX_PENDING, PPF_HELD_RETENTION_DAYS,
- *   PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space, see [AgirConfig].
+ * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
+ *   see [AgirConfig].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080

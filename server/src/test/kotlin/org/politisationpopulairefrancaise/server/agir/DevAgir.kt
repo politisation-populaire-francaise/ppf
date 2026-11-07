@@ -20,7 +20,6 @@ import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.sign
 import org.politisationpopulairefrancaise.server.api.ApiError
-import org.politisationpopulairefrancaise.server.revendications.PeriodBudget
 
 /** A held content as the development routes list it: everything the team will see. */
 @Serializable
@@ -127,6 +126,6 @@ fun exampleMobilizations(publisher: LocalEventSigner, queue: HeldQueue): SignedE
         ),
         createdAt = now - 300,
     )
-    queue.submit(proposed, maxPendingPerKey = 1, maxPending = 1, budget = PeriodBudget(1))
+    queue.submit(proposed)
     published
 }

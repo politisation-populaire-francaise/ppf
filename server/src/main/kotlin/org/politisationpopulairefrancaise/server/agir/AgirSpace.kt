@@ -1,6 +1,5 @@
 package org.politisationpopulairefrancaise.server.agir
 
-import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.ApplicationCall
@@ -10,14 +9,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.politisationpopulairefrancaise.core.agir.AgirFormats
 import org.politisationpopulairefrancaise.core.publication.HeldState
+import org.politisationpopulairefrancaise.core.signing.EventReplacement
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PublishResponse
+import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.events.StoreOutcome
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
-import org.politisationpopulairefrancaise.server.revendications.PeriodBudget
 import org.politisationpopulairefrancaise.server.revendications.RevendicationProposals
 import java.time.Clock
 import javax.sql.DataSource
@@ -33,27 +33,30 @@ import javax.sql.DataSource
  * | Mobilization (31923) | published | held for review |
  * | Call, except below | published | held for review |
  * | Call for witnesses (`temoins`) | always held | always held |
- * | Fundraising call (`collecte`) | verified organisations only | refused (`403 not_allowed`) |
+ * | Fundraising call (`collecte`) | published (owner, 2026-11-07: PPF, an association, may call for funds) | refused (`403 not_allowed`) |
  * | Directory entry (`organisation`) | editorial keys only (policy) | refused (`403 not_allowed`) |
  *
- * An editorial key is not an organisation: a fundraising call needs a verified organisation, whoever
- * signs it (point of attention 12).
+ * Decisions of the owner of 2026-11-07: a verified organisation publishes directly as soon as it is
+ * verified (no probation period); an author may always cancel their mobilization or close their call
+ * ([AuthorChanges]): such a version is published directly, and a version of theirs still waiting for
+ * review is withdrawn from the queue.
  */
 class AgirSpace(
     val queue: HeldQueue,
     val verified: VerifiedOrganisations,
     val agenda: AgendaIndex,
+    private val events: EventRepository,
     private val policy: PublicationPolicy,
-    private val config: AgirConfig = AgirConfig(),
     val clock: Clock = Clock.systemUTC(),
 ) {
-    private val dailyBudget = PeriodBudget(config.perKeyPerDay)
-
     /** What POST /api/v1/events does with an event the policy allowed. */
     sealed interface Route {
         data object Publish : Route
 
         data object Hold : Route
+
+        /** The author cancels or closes a version that waits for review ([pendingId]): it is withdrawn, nothing is published. */
+        data class Withdraw(val pendingId: String) : Route
 
         data class Refuse(val refusal: PublicationPolicy.Decision.Refused) : Route
     }
@@ -61,13 +64,18 @@ class AgirSpace(
     /** Whether [route] may answer anything but [Route.Publish]: cheap, no database. */
     fun concerns(event: SignedEvent): Boolean = AgirRules.categoryOf(event) != null
 
-    /** Reads the verified organisations (cached) only for the contents of the space. */
-    fun route(event: SignedEvent): Route = when (AgirRules.categoryOf(event)) {
+    /** Reads the verified organisations (cached), and the known versions for a cancellation or a closure. */
+    fun route(event: SignedEvent): Route {
+        val normal = normalRoute(event)
+        if (normal == Route.Publish) return normal
+        return authorsEnding(event) ?: normal
+    }
+
+    private fun normalRoute(event: SignedEvent): Route = when (AgirRules.categoryOf(event)) {
         AgirCategory.MOBILIZATION -> if (isTrusted(event.pubkey)) Route.Publish else Route.Hold
         AgirCategory.CALL -> when (AgirRules.callTypeOf(event)) {
             AgirFormats.CALL_TYPE_WITNESSES -> Route.Hold
-            AgirFormats.CALL_TYPE_FUNDRAISING ->
-                if (verified.isVerified(event.pubkey)) Route.Publish else Route.Refuse(FUNDRAISING_REFUSED)
+            AgirFormats.CALL_TYPE_FUNDRAISING -> if (isTrusted(event.pubkey)) Route.Publish else Route.Refuse(FUNDRAISING_REFUSED)
             else -> if (isTrusted(event.pubkey)) Route.Publish else Route.Hold
         }
         // The policy already refused the entries signed by another key than an editorial one.
@@ -75,16 +83,40 @@ class AgirSpace(
         null -> Route.Publish
     }
 
+    /**
+     * A cancellation or a closure by the author ([AuthorChanges]): published when it only ends the
+     * published version, withdrawing the queued version when it only ends that one; null otherwise.
+     */
+    private fun authorsEnding(event: SignedEvent): Route? {
+        if (!AuthorChanges.isEnding(event)) return null
+        val identifier = event.firstTagValue("d") ?: return null
+        val published = events.query(EventFilter(kinds = listOf(event.kind), authors = listOf(event.pubkey), identifiers = listOf(identifier), limit = 1))
+            .firstOrNull { EventReplacement.replacementKey(it) == EventReplacement.replacementKey(event) }
+        if (published != null && EventReplacement.supersedes(event, published) && AuthorChanges.onlyEnds(published, event)) return Route.Publish
+        val pending = EventReplacement.replacementKey(event)?.let(queue::pendingAt)
+        if (pending != null && EventReplacement.supersedes(event, pending.event) && AuthorChanges.onlyEnds(pending.event, event)) return Route.Withdraw(pending.id)
+        return null
+    }
+
     private fun isTrusted(pubkey: String): Boolean = policy.isEditor(pubkey) || verified.isVerified(pubkey)
 
     /**
-     * Answers the POST of a content to hold, whose signature was checked and which fitted the limit
-     * per minute ([perKey], refunded when the request turns out to cost nothing). The answer has the
-     * same body as for a citizen demand: `202 {"id": …, "status": "pending_review"}`.
+     * Answers the POST of a content to hold ([Route.Hold]) or of a withdrawal ([Route.Withdraw]),
+     * whose signature was checked and which fitted the limit per minute ([perKey], refunded when the
+     * request turns out to cost nothing). A held content gets the same answer as a citizen demand:
+     * `202 {"id": …, "status": "pending_review"}`; a withdrawal `200 {"id": …, "status": "withdrawn"}`.
      */
-    suspend fun hold(call: ApplicationCall, event: SignedEvent, perKey: RateLimiter) {
-        val outcome = withContext(Dispatchers.IO) { queue.submit(event, config.maxPendingPerKey, config.maxPending, dailyBudget) }
-        when (outcome) {
+    suspend fun hold(call: ApplicationCall, event: SignedEvent, route: Route, perKey: RateLimiter) {
+        if (route is Route.Withdraw) {
+            // Only the cancellation is answered: the cancelled version was never published, nor is this one.
+            if (withContext(Dispatchers.IO) { queue.withdrawOlderPending(event) }) {
+                return call.respond(HttpStatusCode.OK, PublishResponse(event.id, WITHDRAWN))
+            }
+            // A newer version came in meanwhile, or the team decided first.
+            perKey.refund(event.pubkey)
+            return call.respond(HttpStatusCode.OK, PublishResponse(event.id, "superseded"))
+        }
+        when (withContext(Dispatchers.IO) { queue.submit(event) }) {
             is HoldOutcome.Queued -> call.respond(HttpStatusCode.Accepted, PublishResponse(event.id, RevendicationProposals.PENDING_REVIEW))
             HoldOutcome.AlreadyPending -> {
                 perKey.refund(event.pubkey)
@@ -100,17 +132,17 @@ class AgirSpace(
             }
             HoldOutcome.AlreadyRejected ->
                 call.respond(HttpStatusCode.Conflict, ApiError("rejected", "This version was refused by the review team; send a corrected version."))
-            HoldOutcome.TooManyPendingForKey ->
-                call.tooMany(RevendicationProposals.RETRY_PENDING_SECONDS, "too_many_pending", "This key already has ${config.maxPendingPerKey} contents waiting for review.")
-            HoldOutcome.QueueFull ->
-                call.tooMany(RevendicationProposals.RETRY_PENDING_SECONDS, "queue_full", "Too many contents are waiting for review; try again later.")
-            is HoldOutcome.OverDailyBudget ->
-                call.tooMany(outcome.retryAfterSeconds, "daily_limit", "This key has sent ${config.perKeyPerDay} contents for review in the last 24 hours.")
         }
     }
 
-    /** Called with every event the server has just stored (forgets the verified keys when the directory changes). */
-    fun stored(event: SignedEvent) = verified.stored(event)
+    /**
+     * Called with every event the server has just stored: forgets the verified keys when the directory
+     * changes; a published cancellation or closure withdraws the older version of its author still in the queue.
+     */
+    fun stored(event: SignedEvent) {
+        verified.stored(event)
+        if (AuthorChanges.isEnding(event)) queue.withdrawOlderPending(event)
+    }
 
     /** Where the held contents among [ids] stand, for their author ([HeldState]: never the content nor the key). */
     fun statuses(ids: List<String>): List<HeldState> = queue.states(ids)
@@ -122,31 +154,29 @@ class AgirSpace(
 
     fun reject(id: String, reason: String): HeldDecision = queue.reject(id, reason)
 
-    private suspend fun ApplicationCall.tooMany(retryAfterSeconds: Long, error: String, message: String) {
-        response.headers.append(HttpHeaders.RetryAfter, retryAfterSeconds.toString())
-        respond(HttpStatusCode.TooManyRequests, ApiError(error, message))
-    }
-
     companion object {
+        /** The status answered when a cancellation or a closure withdrew a version waiting for review. */
+        const val WITHDRAWN: String = "withdrawn"
+
         val FUNDRAISING_REFUSED = PublicationPolicy.Decision.Refused(
             403,
             "not_allowed",
-            "Only verified organisations publish calls to raise funds, towards their own collection page.",
+            "Only verified organisations and the editorial team publish calls to raise funds, towards their own collection page.",
         )
 
         val ORGANISATION_REFUSED = PublicationPolicy.Decision.Refused(403, "not_allowed", "Only the editorial team publishes the directory of organisations.")
 
         /**
          * The space on [dataSource], without periodic task: what the events API builds when it is given
-         * none (the rules then hold as everywhere; only the cleanup of decided contents is missing).
+         * none (the rules then hold as everywhere; only the periodic cleanup of the queue is missing).
          */
         fun create(dataSource: DataSource, events: EventRepository, policy: PublicationPolicy, setup: AgirSetup = AgirSetup()): AgirSpace =
             AgirSpace(
                 queue = HeldQueue(dataSource, events, setup.clock),
                 verified = VerifiedOrganisations(dataSource, policy::isEditor),
                 agenda = AgendaIndex(dataSource),
+                events = events,
                 policy = policy,
-                config = setup.config,
                 clock = setup.clock,
             )
 
