@@ -34,7 +34,8 @@ class UrneTallyTest {
         // The total minus the other column would give the hidden one back: hidden too.
         assertEquals(true, shown.citizens.hidden)
         assertEquals(20L, shown.notVerified.ballots)
-        assertEquals(true, shown.electedOfficials.hidden)
+        // The elected officials vote publicly (D-115): their column is never hidden.
+        assertEquals(false, shown.electedOfficials.hidden)
         assertEquals(5, shown.minimum)
         // Enough everywhere, or nobody at a level: nothing hidden.
         val enough = UrneTally.results(many + (1..5).map { VoteLevel.VERIFIE to "contre" })
