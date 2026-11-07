@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.server
 
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.engine.connector
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
 import io.ktor.server.request.receiveText
@@ -31,6 +32,10 @@ import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySpace
 import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonyStore
 import org.politisationpopulairefrancaise.server.agir.testimonies.devTestimonyRoutes
 import org.politisationpopulairefrancaise.server.api.ApiError
+import org.politisationpopulairefrancaise.server.backoffice.BackOffice
+import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSetup
+import org.politisationpopulairefrancaise.server.backoffice.Outcome
+import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
@@ -64,7 +69,12 @@ const val DEMO_GROUP_ID: String = "collectif-demonstration"
  * (see devHeldRoutes).
  *
  * Testimonies are encrypted for the EXAMPLE moderation key and kept in a temporary folder (or
- * PPF_TESTIMONY_DIR); their review goes through /dev/testimonies (see devTestimonyRoutes).
+ * PPF_TESTIMONY_DIR); their review goes through /dev/testimonies (see devTestimonyRoutes), and their
+ * refusal also through the queue agir.testimonies of the back-office.
+ *
+ * The team back-office opens on http://localhost:8081 when PPF_BACKOFFICE_ORIGIN=http://localhost:8081 is
+ * set: the link of a first super administrator is printed at start (a passkey of the computer, Windows
+ * Hello for example, works on localhost).
  *
  * The pages of "Voir" (http://localhost:8080/voir) show voir.json, signed by the example editor key.
  *
@@ -110,13 +120,36 @@ fun main() {
     // The fictitious example set (PPF_RNE_SOURCE is never `official` outside production), imported at start.
     println("Directory of elected officials: example set, imported in the background, at /api/v1/elus and /api/v1/elus/69.")
     println("Territories: example set (real public figures, a few departments), at /api/v1/territoires and /api/v1/territoires/69.")
-    embeddedServer(Netty, port = port, host = "127.0.0.1") {
-        module(dataSource, PublicationPolicy(editors), revendications = revendications, testimonies = testimonySetup)
+    val backOffice = BackOfficeSetup.fromEnvironment("development", port)
+    backOffice?.let { setup ->
+        (BackOffice(setup.config, dataSource).bootstrapInvitation("Propriétaire") as? Outcome.Ok)?.let { issued ->
+            println("Back-office: ${setup.config.origin}, first super administrator: ${setup.config.origin}/invitation/${issued.value.token}")
+        }
+    }
+    embeddedServer(
+        Netty,
+        configure = {
+            connector {
+                this.port = port
+                host = "127.0.0.1"
+            }
+            backOffice?.let { setup ->
+                connector {
+                    this.port = setup.config.port
+                    host = "127.0.0.1"
+                }
+            }
+        },
+    ) {
+        module(dataSource, PublicationPolicy(editors), revendications = revendications, testimonies = testimonySetup, backOffice = backOffice)
         routing {
-            devReviewRoutes(queue)
-            devHeldRoutes(held)
-            parlementRoutes(devOpenData()) // Example packages of parliamentary open data (DevOpenData.kt).
-            devTestimonyRoutes(testimonies, developmentKey)
+            // The stand-ins of the review answer on the public port only, never on the back-office port.
+            publicPort(backOffice?.config?.port) {
+                devReviewRoutes(queue)
+                devHeldRoutes(held)
+                parlementRoutes(devOpenData()) // Example packages of parliamentary open data (DevOpenData.kt).
+                devTestimonyRoutes(testimonies, developmentKey)
+            }
         }
     }.start(wait = true)
 }

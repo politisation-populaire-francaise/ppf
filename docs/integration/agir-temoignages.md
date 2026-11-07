@@ -53,7 +53,7 @@ Rédigée le 7 novembre 2026 par un agent de la session « Agir », branche `wor
 | Plusieurs photos | Une seule par témoignage | Première version ; le format en accepte jusqu’à 4 par enveloppe |
 | Détection automatique des visages | Non | Pas de service tiers ; un modèle embarqué est à étudier (question 6) |
 | Horodatage réel | `NoTimestamping` | L’archive de « Décider » (D-111) n’est pas dans `main` |
-| Back-office de relecture (M15) | Routes de développement seulement | Confié au Directeur technique ; `approve`, `reject`, `pending`, `encryptedFile`, `evidenceEnvelope` sont prêts |
+| Back-office de relecture (M15) | File `agir.testimonies` (`TestimonyQueue`, permission `queue.agir.testimonies.decide`, rôle modérateur) : liste, détail limité à ce que le serveur sait (date arrondie à l’heure, nombre de photos chiffrées, original confié ou non), refus avec motif obligatoire, action sensible ; journal écrit par le socle. Routes `/dev/testimonies` gardées en développement, sur le port public seulement | Lecture et approbation (publication de la version publique) : avec le client de l’équipe, qui déchiffre sur ses appareils et fait signer par une clé éditoriale ; `approve`, `encryptedFile`, `evidenceEnvelope` sont prêts |
 | Accès des avocats (AG-08) | Conservation chiffrée seulement | Avocat ; procédure de garde de la clé à décider |
 | Galerie et carte des témoignages publiés (VO-08) | Format fourni, affichage non fait | Pôle « Voir » ; le format est en section 3.5 |
 | iOS | Sélecteur et décodeur absents (`available = false`) | Pas de compilation iOS tant que le compte Apple n’existe pas |
@@ -117,7 +117,8 @@ Fichiers partagés modifiés (quelques lignes chacun) :
 | `ui/shell/AdaptiveShell.kt` | La bibliothèque des témoignages vit toute la session, est effacée avec les clés et passée à `AgirScreen` (5 lignes) |
 | `shared/ui/build.gradle.kts`, `shared/ui/gradle.lockfile` | `androidx.activity:activity-compose` 1.13.0 dans `androidMain` (le sélecteur de photos du système) : même artefact et même version que l’application Android, déjà résolu à l’exécution ; Apache 2.0, Google, maintenu ; aucun nouveau téléchargement ; Android seulement |
 | `server/.../Application.kt` | Paramètre `testimonies` ajouté en dernier, démarrage et routes |
-| `server/src/test/.../TestDatabase.kt`, `DevServer.kt` | Tables vidées entre les tests ; routes `/dev/testimonies` |
+| `server/src/test/.../TestDatabase.kt`, `DevServer.kt` | Tables vidées entre les tests ; routes `/dev/testimonies` (dans `publicPort`) |
+| `server/.../agir/testimonies/TestimonyQueue.kt`, `Application.kt`, `backoffice/Permissions.kt` | File `agir.testimonies` du back-office, enregistrée par `teamBackOffice?.queues?.register(...)` ; permission ajoutée au rôle modérateur |
 
 **Migrations provisoires** : `V90__agir_temoignages.sql` (Flyway) et `14.sqm` (schéma local en version 15 ; SQLDelight accepte l’écart avec 11 à 13 réservés aux autres pôles, vérifié par `TestimonyMigrationTest`). À renuméroter à l’entrée dans `main`, avec la ligne de `DatabaseMigrationTest.theSchemaIsAtVersion15`.
 
@@ -163,7 +164,7 @@ C2PA (Coalition for Content Provenance and Authenticity) décrit un « manifeste
 
 1. `gradlew :server:runDev` : la console annonce « Testimonies: encrypted for the example keys, review at /dev/testimonies ».
 2. Lancer l’application de bureau reliée à ce serveur (`PPF_SERVER_URL=http://localhost:8080`, puis `gradlew :desktop:run`), créer un compte dans « Mon espace », ouvrir Agir, puis « Témoigner ». Écrire un texte [EXEMPLE], ajouter une photo, poser une zone floutée, cocher la charte, envoyer.
-3. Ouvrir http://localhost:8080/dev/testimonies : le témoignage déchiffré avec la clé d’exemple ; la photo (lien `url`) n’a plus de métadonnées et porte le flou. Pour l’approuver : `curl -X POST http://localhost:8080/dev/testimonies/<id>/approve` ; pour le refuser : `curl -X POST --data "[EXEMPLE] motif" http://localhost:8080/dev/testimonies/<id>/reject`.
+3. Ouvrir http://localhost:8080/dev/testimonies : le témoignage déchiffré avec la clé d’exemple ; la photo (lien `url`) n’a plus de métadonnées et porte le flou. Pour l’approuver : `curl -X POST http://localhost:8080/dev/testimonies/<id>/approve` ; pour le refuser : `curl -X POST --data "[EXEMPLE] motif" http://localhost:8080/dev/testimonies/<id>/reject`. Avec `PPF_BACKOFFICE_ORIGIN=http://localhost:8081`, la file « Agir : témoignages en relecture » apparaît aussi dans le back-office (refus seulement).
 4. Dans l’application, « Mes témoignages », « Actualiser » : l’état change (publié ou refusé avec le motif).
 5. Dans Agir, « Appels », l’appel à témoins d’exemple : « Je témoigne » ouvre le formulaire relié à l’appel.
 6. Sur téléphone (APK d’essai), la photo se choisit par le sélecteur de photos du système, sans aucune permission ; à tester en phase de test avec une vraie photo prise par le téléphone (vérifier dans la réponse de `/dev/testimonies` que la position a disparu).

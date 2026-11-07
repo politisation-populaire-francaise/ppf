@@ -41,6 +41,7 @@ import org.politisationpopulairefrancaise.server.module
 import org.politisationpopulairefrancaise.server.testRevendications
 import java.nio.file.Files
 import java.time.Instant
+import kotlinx.html.div
 import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertContentEquals
@@ -322,5 +323,39 @@ class TestimonyApiTest {
             ),
             columns,
         )
+    }
+
+    @Test
+    fun theBackOfficeQueueShowsOnlyWhatTheServerKnowsAndRefusesWithAReason() = runBlocking {
+        val queue = TestimonyQueue(space)
+        val built = testimony(photo = true, giveOriginal = true)
+        built.outgoing().files.values.forEach { space.receiveFile(it) }
+        assertIs<SubmitOutcome.Queued>(space.submit(built.outgoing().submission))
+        assertEquals("queue.agir.testimonies.decide", queue.viewPermission)
+        assertTrue(queue.viewPermission in org.politisationpopulairefrancaise.server.backoffice.TeamRole.MODERATOR.permissions)
+        assertEquals(1, queue.pendingCount())
+        val item = queue.page(null, 10).items.single()
+        assertEquals(built.id, item.id)
+        assertEquals("1 photo chiffrée, ${TestimonyQueue.ORIGINAL_GIVEN}", item.summary)
+        val html = kotlinx.html.stream.createHTML().div { queue.render(built.id, this) }
+        assertTrue(TestimonyQueue.UNREADABLE.substringBefore(" :") in html)
+        // Nothing of the testimony reaches the page: neither its text, nor its place, nor the witness key.
+        assertFalse("rue fictive" in html)
+        assertFalse("Place fictive" in html)
+        assertFalse(witness.publicKey.npub in html)
+        val reject = queue.actions(built.id).single()
+        assertEquals(TestimonyQueue.REJECT, reject.id)
+        assertTrue(reject.reasonRequired && reject.sensitive)
+        val actor = org.politisationpopulairefrancaise.server.backoffice.TeamActor.of(
+            java.util.UUID.randomUUID(), "Modo", setOf(org.politisationpopulairefrancaise.server.backoffice.TeamRole.MODERATOR), 2,
+        )
+        assertIs<org.politisationpopulairefrancaise.server.backoffice.ActionOutcome.Refused>(queue.perform(built.id, TestimonyQueue.REJECT, "  ", actor))
+        assertIs<org.politisationpopulairefrancaise.server.backoffice.ActionOutcome.Refused>(queue.perform(built.id, "approve", null, actor))
+        assertEquals(org.politisationpopulairefrancaise.server.backoffice.ActionOutcome.Done, queue.perform(built.id, TestimonyQueue.REJECT, "[EXEMPLE] Hors charte.", actor))
+        assertEquals(org.politisationpopulairefrancaise.server.backoffice.ActionOutcome.AlreadyDecided, queue.perform(built.id, TestimonyQueue.REJECT, "[EXEMPLE] Hors charte.", actor))
+        assertEquals(HeldStatus.REJECTED, space.find(built.id)?.status)
+        assertEquals(0, queue.pendingCount())
+        assertTrue(queue.actions(built.id).isEmpty())
+        assertEquals(org.politisationpopulairefrancaise.server.backoffice.ActionOutcome.NotFound, queue.perform("0".repeat(64), TestimonyQueue.REJECT, "[EXEMPLE] motif", actor))
     }
 }
