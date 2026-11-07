@@ -39,8 +39,10 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.server.seed.ExampleSeed
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.webRoutes
+import org.slf4j.LoggerFactory
 import javax.sql.DataSource
 
 /**
@@ -60,6 +62,9 @@ import javax.sql.DataSource
  *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
  * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
  *   see [AgirConfig].
+ * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
+ *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
+ *   to start when it is set in production, see [ExampleSeed].
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -67,8 +72,18 @@ object ServerConfig {
 }
 
 fun main() {
+    // Checked before anything else: in production, example contents stop the server from starting.
+    val examples = ExampleSeed.fromEnvironment()
     val dataSource = DatabaseConfig.fromEnvironment()?.let { config ->
         Database.connect(config).also(Database::migrate)
+    }
+    if (examples != null) {
+        if (dataSource == null) {
+            LoggerFactory.getLogger(ExampleSeed::class.java)
+                .warn("Example contents: ${ExampleSeed.DIRECTORY_VARIABLE} is set but no database is configured, no example content loaded.")
+        } else {
+            ExampleSeed.load(examples, EventRepository(dataSource))
+        }
     }
     // Bind on every interface inside the container; the reverse proxy is the only
     // process allowed to reach it (see infra/).
