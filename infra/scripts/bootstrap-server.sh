@@ -278,9 +278,28 @@ chown 10003:10003 "$DATA_DIR/production/secrets/import_key"
 chmod 400 "$DATA_DIR/production/secrets/import_key"
 
 if [ ! -f "$DATA_DIR/proxy/.env" ]; then
-    # Password of the preproduction web pages, generated here and shown to the owner once.
-    preprod_password="$(openssl rand -base64 18 | tr -d '/+=' | cut -c1-20)"
-    preprod_hash="$(docker run --rm "$CADDY_IMAGE" caddy hash-password --plaintext "$preprod_password")"
+    # Password of the preproduction web pages (D-072). Chosen and typed by the owner herself at this
+    # moment, in the terminal of the deployment (decision of 7 November 2026): it is never written in
+    # the repository, in a message or in a file; only its bcrypt hash is kept, in the proxy settings.
+    [ -t 0 ] || { echo "The preproduction password is typed by the owner: run this script in an interactive terminal." >&2; exit 1; }
+    while true; do
+        printf 'Mot de passe des pages web de la préproduction (12 caractères au moins, rien ne s'"'"'affiche) : '
+        IFS= read -rs preprod_password; echo
+        printf 'Retapez-le : '
+        IFS= read -rs preprod_confirm; echo
+        if [ "${#preprod_password}" -lt 12 ]; then
+            echo "Trop court : 12 caractères au moins."
+        elif [ "$preprod_password" != "$preprod_confirm" ]; then
+            echo "Les deux saisies diffèrent, recommencez."
+        else
+            break
+        fi
+    done
+    unset preprod_confirm
+    # The password goes to Caddy through its standard input, never on a command line.
+    preprod_hash="$(printf '%s\n' "$preprod_password" | docker run --rm -i "$CADDY_IMAGE" caddy hash-password)"
+    unset preprod_password
+    [[ "$preprod_hash" == \$2* ]] || { echo "Caddy did not return a bcrypt hash." >&2; exit 1; }
     (umask 077; cat > "$DATA_DIR/proxy/.env" <<EOF
 # Written by infra/scripts/bootstrap-server.sh (model: infra/env/proxy.env.example).
 PPF_DOMAIN=$domain
@@ -288,9 +307,8 @@ PREPROD_BASIC_AUTH_USER=equipe
 # Single quotes: the bcrypt hash holds "\$" signs, which Compose must not interpolate.
 PREPROD_BASIC_AUTH_HASH='$preprod_hash'
 EOF
-    printf 'Préproduction PPF\nIdentifiant : equipe\nMot de passe : %s\n' "$preprod_password" > /root/ppf-preprod-password.txt)
-    unset preprod_password
-    echo "Preproduction web password written to /root/ppf-preprod-password.txt (give it to the owner, then delete the file)."
+    )
+    echo "Preproduction web password set (identifiant : equipe). Only its hash is kept."
 fi
 
 # --- 8. Repository, cosign, deployment command, automatic update of the preproduction ------------

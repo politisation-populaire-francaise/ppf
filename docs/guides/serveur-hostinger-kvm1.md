@@ -68,7 +68,7 @@ Ne touchez à rien d'autre dans hPanel (pare-feu de hPanel, « Docker Manager »
 1. Préparation et durcissement (`infra/scripts/bootstrap-server.sh`) : mises à jour de sécurité automatiques, compte d'administration `ppf-admin` accessible par la seule clé, connexion root et mots de passe refusés, pare-feu (SSH, web et WireGuard seulement), journaux du système gardés en mémoire un jour au plus, Docker, tunnel WireGuard.
 2. Création de vos deux profils WireGuard (ordinateur et téléphone) : guide `docs/guides/wireguard-preproduction.md`.
 3. Premier déploiement de la préproduction, puis mise à jour automatique toutes les 10 minutes à partir de la branche principale.
-4. Je vous donne le mot de passe des pages web de la préproduction dans un fichier sur votre ordinateur.
+4. Au moment du premier déploiement, je vous préviens : **vous choisissez le mot de passe des pages web de la préproduction** et vous le tapez vous-même, deux fois, dans l'onglet de terminal que j'ouvre (rien ne s'affiche pendant la frappe). Choisissez-le à ce moment-là : 12 caractères au moins, une phrase de plusieurs mots par exemple, et enregistrez-le dans votre gestionnaire de mots de passe. Il n'est écrit nulle part ailleurs : ni dans le dépôt, ni dans un message, ni dans un fichier ; le serveur n'en garde qu'une empreinte.
 
 ## 7. Après la mise en service
 

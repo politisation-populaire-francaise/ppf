@@ -557,7 +557,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Contexte : CLAUDE.md (section 8) demande une préproduction « accessible uniquement par un tunnel WireGuard, en plus d'un mot de passe ». Les APK d'essai et les applications de bureau produits par l'intégration continue sont téléchargeables par tout compte GitHub (dépôt public) : ils ne peuvent contenir aucun mot de passe.
 - Proposition du Directeur technique, appliquée provisoirement : les pages web de la préproduction demandent un identifiant et un mot de passe (généré sur le serveur, haché par Caddy) ; l'API des applications (`/api/`, `/health`) ne s'appuie que sur le tunnel, dont chaque appareil a sa propre clé.
 - Options : A. ainsi (recommandée : la clé WireGuard de l'appareil est la vraie barrière ; un mot de passe stocké sur le même téléphone n'ajouterait rien) ; B. mot de passe partout, saisi une fois dans un réglage caché des versions d'essai (plus de code, même protection réelle) ; C. mot de passe partout, sans les applications (la préproduction ne sert plus à tester l'application).
-- Statut : en attente de la propriétaire (brainstorming du cahier des charges, entrée « Préproduction : le mot de passe et les applications »).
+- Statut : option A retenue par la propriétaire le 7 novembre 2026 (relayée par le chef d'équipe, qu'elle a désigné comme son interlocuteur pour les décisions). Elle choisit et tape elle-même le mot de passe au premier déploiement (`bootstrap-server.sh` le demande dans le terminal, ne l'écrit nulle part et n'en garde que l'empreinte bcrypt).
 
 ## D-073 (2026-11-07) Serveur : préparation et durcissement décrits en code
 
