@@ -88,7 +88,9 @@ class ElusImportTest {
         val lyon = pack.communes.first { it.code == "69123" }
         // Lyon: postal codes of its districts, no intercommunality nor canton (Métropole de Lyon),
         // and shared between four constituencies, all kept.
-        assertEquals(ElusCommune("69123", "Lyon", (1..9).map { "6900$it" }, null, emptyList(), listOf("6901", "6902", "6903", "6904")), lyon)
+        assertEquals(ElusCommune("69123", "Lyon", (1..9).map { "6900$it" }, null, emptyList(), listOf("6901", "6902", "6903", "6904"), collectivite = "69M"), lyon)
+        // Its departmental level is the assembly of the Métropole, named in the package.
+        assertEquals(listOf(ElusNamed("69M", "Métropole de Lyon")), pack.collectivites)
         assertEquals(ElusCommune("69264", "Villefranche-sur-Saône", listOf("69400"), "200040590", listOf("6913"), listOf("6909")), pack.communes.first { it.code == "69264" })
         assertEquals(listOf(ElusNamed("200040590", "Ca Villefranche Beaujolais Saône")), pack.epcis)
         assertEquals(listOf(ElusNamed("6913", "Villefranche-sur-Saône")), pack.cantons)
@@ -120,8 +122,10 @@ class ElusImportTest {
     fun theJsonHasExactlyTheFieldsOfTheContract() {
         importExample()
         val json = packageJson("69")
-        assertEquals(listOf("format", "example", "code", "name", "region", "sourceUpdatedOn", "communes", "epcis", "cantons", "circonscriptions", "officials"), json.keys.toList())
-        assertEquals(listOf("code", "name", "postalCodes", "epci", "cantons", "circonscriptions"), json["communes"]!!.jsonArray.first().jsonObject.keys.toList())
+        assertEquals(listOf("format", "example", "code", "name", "region", "sourceUpdatedOn", "communes", "epcis", "cantons", "circonscriptions", "officials", "collectivites"), json.keys.toList())
+        assertEquals(listOf("code", "name", "postalCodes", "epci", "cantons", "circonscriptions", "collectivite"), json["communes"]!!.jsonArray.first().jsonObject.keys.toList())
+        // A commune of an ordinary department has no `collectivite`.
+        assertEquals(listOf("code", "name", "postalCodes", "epci", "cantons", "circonscriptions"), json["communes"]!!.jsonArray.first { it.jsonObject["code"]!!.jsonPrimitive.content == "69264" }.jsonObject.keys.toList())
         val officials = json["officials"]!!.jsonArray.map { it.jsonObject }
         assertEquals(listOf("mandate", "territory", "name", "function", "since", "functionSince"), officials.first().keys.toList())
         assertEquals(listOf("mandate", "territory", "commune", "name", "function", "since", "functionSince"), officials.first { it["mandate"]!!.jsonPrimitive.content == "communautaire" }.keys.toList())

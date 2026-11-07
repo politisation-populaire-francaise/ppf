@@ -138,6 +138,13 @@ object ElusFinder {
     }
 
     private fun department(pkg: ElusPackage, commune: ElusCommune): LevelOfficials {
+        // A commune of the Métropole de Lyon, of Corsica, Martinique, Guyane or of an overseas
+        // collectivity: the assembly of its collectivity, never the departmental council.
+        commune.collectivite?.let { code ->
+            val members = ordered(pkg.officials.filter { it.mandate == Mandate.COLLECTIVITE && it.territory == code })
+            val group = OfficialGroup(OfficialGroupKind.COLLECTIVITE, Territory(code, pkg.collectiviteName(code) ?: code), members)
+            return LevelOfficials(DecisionLevel.DEPARTEMENT, if (members.isEmpty() && pkg.collectiviteName(code) == null) emptyList() else listOf(group))
+        }
         val councillors = pkg.officials.filter { it.mandate == Mandate.DEPARTEMENTAL }
         val tableMissing = commune.cantons.isEmpty() && pkg.communes.none { it.cantons.isNotEmpty() }
         val cantons = if (tableMissing) councillors.map { it.territory }.distinct().sortedBy { pkg.cantonName(it)?.lowercase() ?: it } else commune.cantons
@@ -150,8 +157,11 @@ object ElusFinder {
         }
         val presidents = councillors.filter { isPresident(it.function) }
         if (presidents.isNotEmpty()) groups += OfficialGroup(OfficialGroupKind.DEPARTMENT_PRESIDENCY, Territory(pkg.code, pkg.name), presidents)
-        pkg.officials.filter { it.mandate == Mandate.COLLECTIVITE }.groupBy { it.territory }.forEach { (territory, members) ->
-            groups += OfficialGroup(OfficialGroupKind.COLLECTIVITE, Territory(territory, territory), ordered(members))
+        // Packages written before the field `collectivite` do not say who belongs to which assembly: show them all.
+        if (!pkg.knowsCollectivities) {
+            pkg.officials.filter { it.mandate == Mandate.COLLECTIVITE }.groupBy { it.territory }.forEach { (territory, members) ->
+                groups += OfficialGroup(OfficialGroupKind.COLLECTIVITE, Territory(territory, pkg.collectiviteName(territory) ?: territory), ordered(members))
+            }
         }
         val notes = if (tableMissing && councillors.isNotEmpty()) listOf(LevelNote.ALL_CANTONS_OF_DEPARTMENT) else emptyList()
         return LevelOfficials(DecisionLevel.DEPARTEMENT, groups, notes)

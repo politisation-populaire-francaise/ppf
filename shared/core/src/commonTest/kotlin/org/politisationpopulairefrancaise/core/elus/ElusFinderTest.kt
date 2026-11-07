@@ -143,4 +143,29 @@ class ElusFinderTest {
         val ordered = ElusFinder.ordered(listOf(official(null), official("12e adjoint"), official("Conseiller délégué"), official("2ème adjointe"), official("Premier adjoint"), official("Maire")))
         assertEquals(listOf("Maire", "Premier adjoint", "2ème adjointe", "12e adjoint", "Conseiller délégué", null), ordered.map { it.function })
     }
+
+    @Test
+    fun aCommuneOfTheMetropoleDeLyonHasItsAssemblyNotTheDepartmentalCouncil() {
+        val communes = ElusFixtures.rhone["communes"]!!.jsonArray.map { commune ->
+            val fields = commune.jsonObject.toMutableMap()
+            if (fields["code"] == JsonPrimitive("69123")) fields["collectivite"] = JsonPrimitive("69M")
+            JsonObject(fields)
+        }
+        val metropole = ElusFixtures.official("collectivite", "69M", "Dany Metropole", function = "Président du conseil de la Métropole")
+        val fields = ElusFixtures.rhone.toMutableMap()
+        fields["communes"] = JsonArray(communes)
+        fields["officials"] = JsonArray(ElusFixtures.rhone["officials"]!!.jsonArray + metropole)
+        fields["collectivites"] = JsonArray(listOf(JsonObject(mapOf("code" to JsonPrimitive("69M"), "name" to JsonPrimitive("Métropole de Lyon")))))
+        val pkg = assertNotNull(ElusReader.readPackage(ElusFixtures.text(JsonObject(fields))))
+
+        val lyon = assertNotNull(ElusFinder.find(pkg, "69123")).level(DecisionLevel.DEPARTEMENT)
+        assertEquals(listOf(OfficialGroupKind.COLLECTIVITE), lyon.groups.map { it.kind })
+        assertEquals("Métropole de Lyon", lyon.groups.single().territory?.name)
+        assertEquals(listOf("Dany Metropole"), names(lyon))
+
+        // Villefranche keeps its canton and the president of the departmental council, never the Métropole.
+        val villefranche = assertNotNull(ElusFinder.find(pkg, "69264")).level(DecisionLevel.DEPARTEMENT)
+        assertTrue(villefranche.groups.none { it.kind == OfficialGroupKind.COLLECTIVITE })
+        assertTrue("Ariel Canton" in names(villefranche))
+    }
 }

@@ -104,6 +104,11 @@ data class ElusCommune(
     val cantons: List<String>,
     /** Codes of its legislative constituencies (several when the commune is split). */
     val circonscriptions: List<String>,
+    /**
+     * The collectivity whose assembly replaces the departmental council for this commune (`69M`
+     * Métropole de Lyon, `94` Corse, `972`, `973`, overseas collectivities); null otherwise.
+     */
+    val collectivite: String? = null,
 )
 
 /** One mandate of one person, as the directory gives it. */
@@ -138,7 +143,14 @@ data class ElusPackage(
     val cantons: List<Territory>,
     val circonscriptions: List<Territory>,
     val officials: List<ElectedOfficial>,
+    /** Names of the collectivities of [ElusCommune.collectivite]; empty in packages written before this field. */
+    val collectivites: List<Territory> = emptyList(),
 ) {
+    /** True when the package says which communes belong to a collectivity (field added on 7 November 2026). */
+    val knowsCollectivities: Boolean get() = communes.any { it.collectivite != null }
+
+    fun collectiviteName(code: String): String? = collectivites.firstOrNull { it.code == code }?.name
+
     fun commune(code: String): ElusCommune? = communes.firstOrNull { it.code == code }
 
     /** The communes of [postalCode], by name. */
@@ -228,6 +240,7 @@ object ElusReader {
                 epci = commune.text("epci")?.takeIf { TERRITORY_CODE.matches(it) },
                 cantons = commune.texts("cantons").filter { TERRITORY_CODE.matches(it) }.distinct(),
                 circonscriptions = commune.texts("circonscriptions").filter { TERRITORY_CODE.matches(it) }.distinct(),
+                collectivite = commune.text("collectivite")?.takeIf { TERRITORY_CODE.matches(it) },
             )
         }.distinctBy { it.code }
         val officials = root.objects("officials").mapNotNull { official ->
@@ -253,6 +266,7 @@ object ElusReader {
             cantons = root.objects("cantons").mapNotNull(::territory).distinctBy { it.code },
             circonscriptions = root.objects("circonscriptions").mapNotNull(::territory).distinctBy { it.code },
             officials = officials,
+            collectivites = root.objects("collectivites").mapNotNull(::territory).distinctBy { it.code },
         )
     }.getOrNull()
 

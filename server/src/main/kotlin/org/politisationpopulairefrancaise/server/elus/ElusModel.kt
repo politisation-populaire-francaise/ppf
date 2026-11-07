@@ -91,6 +91,8 @@ data class ElusPackage(
     val cantons: List<ElusNamed>,
     val circonscriptions: List<ElusNamed>,
     val officials: List<ElusOfficial>,
+    /** Collectivities with a special status whose assembly is the departmental level of some communes (D-047). */
+    val collectivites: List<ElusNamed> = emptyList(),
 )
 
 @Serializable
@@ -107,6 +109,12 @@ data class ElusCommune(
     val epci: String?,
     val cantons: List<String>,
     val circonscriptions: List<String>,
+    /**
+     * The collectivity whose assembly takes the place of the departmental council for this commune
+     * (`69M` Métropole de Lyon, `94` Corse, `972` Martinique, `973` Guyane, or an overseas
+     * collectivity), null for a commune of an ordinary department.
+     */
+    val collectivite: String? = null,
 )
 
 /**

@@ -51,6 +51,17 @@ class ElusBuilder(
     /** The region of package [code], or null (overseas collectivities, national package). */
     fun regionOf(code: String): String? = geography.departments[code]?.region
 
+    /**
+     * The RNE code of the collectivity whose assembly is the departmental level of [commune]: the
+     * Métropole de Lyon, Corsica, Martinique and Guyane through their code in the Code officiel
+     * géographique (CTCD), an overseas collectivity through its own code.
+     */
+    private fun collectivityOf(commune: GeoCommune): String? =
+        COUNCIL_COLLECTIVITIES[commune.council] ?: commune.area.takeIf { it in geography.collectivities }
+
+    private fun collectivityName(code: String): String =
+        COLLECTIVITY_NAMES[code] ?: geography.collectivities[code]?.name ?: code
+
     /** Builds package [code] from its [communes] and its [officials] (in any order). */
     fun build(code: String, communes: List<GeoCommune>, officials: List<StagedOfficial>): BuiltPackage {
         val name = if (code == NATIONAL_PACKAGE) NATIONAL_NAME else geography.area(code)?.name ?: code
@@ -64,6 +75,7 @@ class ElusBuilder(
                 epci = communeEpcis[commune.code],
                 cantons = geography.cantons[commune.code].orEmpty(),
                 circonscriptions = geography.circonscriptions[commune.code].orEmpty(),
+                collectivite = collectivityOf(commune),
             )
         }
         val sorted = officials.sortedWith(OFFICIAL_ORDER)
@@ -84,6 +96,8 @@ class ElusBuilder(
             epcis = epcis,
             cantons = cantons,
             circonscriptions = circonscriptions,
+            collectivites = (packageCommunes.mapNotNull { it.collectivite } + sorted.filter { it.mandate == Mandate.COLLECTIVITE }.map { it.territory })
+                .toSortedSet().map { ElusNamed(it, collectivityName(it)) },
             officials = sorted.map { official ->
                 ElusOfficial(
                     mandate = official.mandate.code,
@@ -117,6 +131,25 @@ class ElusBuilder(
             "69" to listOf("69M"),
             "977" to listOf("ZX"),
             "978" to listOf("ZX"),
+        )
+
+        /**
+         * Collectivities with departmental powers (CTCD of the Code officiel géographique) whose
+         * assembly replaces the departmental council, to their code in the RNE (`collectivite`
+         * mandate). Paris (75C) is absent: the Conseil de Paris is its municipal council.
+         */
+        val COUNCIL_COLLECTIVITIES: Map<String, String> = mapOf(
+            "69M" to "69M",
+            "20R" to "94",
+            "972R" to "972",
+            "973R" to "973",
+        )
+
+        val COLLECTIVITY_NAMES: Map<String, String> = mapOf(
+            "69M" to "Métropole de Lyon",
+            "94" to "Collectivité de Corse",
+            "972" to "Collectivité territoriale de Martinique",
+            "973" to "Collectivité territoriale de Guyane",
         )
 
         /** By mandate, territory, order of the council, then name: the order of the contract. */
