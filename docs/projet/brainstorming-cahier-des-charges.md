@@ -295,7 +295,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision : option A validée par la propriétaire le 2026-11-07 (« ok pour échelle des décryptage ») : cinq verdicts « Exact », « Plutôt exact », « Trompeur », « Contredit par les faits », « Invérifiable », définis dans une page « Notre méthode » (PP-02). Mis en œuvre le 2026-11-07 (D-038).
 
 ### [2026-11-07] Annuaire officiel des élus (noms des élus locaux dans « Qui décide de ça ? »)
-- Statut : À valider (gratuit, technique ; à coordonner avec l'espace « Voir »)
+- Statut : Décidé le 2026-11-07 (à intégrer dans le cahier fonctionnel 2.0, M13.1)
 - Concerne : cahier-fonctionnel.md, M13.1 (« Qui décide de ça ? », « Mes élus ») ; cahier des charges, section 4 (données publiques : Répertoire national des élus)
 - Description : l'encart « Qui décide ? Les élus concernés » nomme aujourd'hui les personnes publiques liées par l'équipe. Pour nommer les élus de chacun (maire, conseillers, député, sénateurs), il faut la liste officielle des élus et le lien entre une commune et ses élus.
 - Options :
@@ -304,4 +304,4 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **C. Renvoyer vers les annuaires officiels** (Assemblée nationale, Sénat, mairies) : avantage, immédiat ; inconvénient, on quitte l'application et l'encart reste sans noms locaux.
 - Coût : aucun. Minimisation : seulement le nom, la fonction, le territoire et le début du mandat, jamais la date de naissance ni la profession.
 - Recommandation : A, avec C en attendant ; à faire avec la session « Voir », qui affiche déjà les fiches des personnes publiques.
-- Décision :
+- Décision : option A validée par la propriétaire le 2026-11-07 (« Pour les élus oui ça serait parfait »), avec l'option C (liens vers les annuaires officiels) tant que l'application n'a pas de serveur. Mise en œuvre le 2026-11-07 (D-047, contrat dans `docs/integration/comprendre-vague-3.md`).
