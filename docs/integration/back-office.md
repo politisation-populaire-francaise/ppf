@@ -1,6 +1,6 @@
-# Contrat du back-office (socle M15 et M16), version 1
+# Contrat du back-office (socle M15 et M16), version 1.1
 
-Rédigé le 7 novembre 2026 par la session « Directeur Technique PPF » (branche `feature/backoffice`), à la demande du chef d'équipe « Team lead [Voir] ». Il fixe ce que tous les pôles partagent pour brancher leurs files de relecture et de décision sur un seul espace de l'équipe, sans conflit. Le code du socle suit ce contrat ; un pôle qui a besoin d'autre chose l'écrit au Directeur technique avant de coder.
+Rédigé le 7 novembre 2026 (version 1.1 le même soir : lignes des files confirmées par les pôles) par la session « Directeur Technique PPF » (branche `feature/backoffice`), à la demande du chef d'équipe « Team lead [Voir] ». Il fixe ce que tous les pôles partagent pour brancher leurs files de relecture et de décision sur un seul espace de l'équipe, sans conflit. Le code du socle suit ce contrat ; un pôle qui a besoin d'autre chose l'écrit au Directeur technique avant de coder.
 
 - Numéros : décisions D-120 à D-129 ; migration serveur `V8__back_office.sql`.
 - Sources : cahier fonctionnel, section 1 (rôles) et modules M15, M16 ; cahier des charges, section 5 (« double authentification obligatoire (TOTP ou clé de sécurité) pour tous les comptes de l'équipe », « rôles et permissions minimales », « journal d'audit de toutes les actions de modération et d'administration »), section 9.4 (DSA, PHAROS) ; inventaire du socle, bloc A14 (S-56 à S-64, S-115), liste validée le 4 novembre 2026 ; point d'attention n° 8 (deux super-administrateurs avec clé physique, décidé le 4 novembre 2026) ; décisions de la propriétaire transmises le 7 novembre 2026 (votants à trois niveaux, validation en personne par des bénévoles agréés par PPF via leur association).
@@ -91,18 +91,21 @@ interface BackOfficeQueue {
 - `perform` reçoit un `TeamActor` (identifiant du compte, pseudonyme, permissions) et ne doit rien faire d'autre que l'action demandée ; il renvoie un résultat (`Done`, `NotFound`, `AlreadyDecided`, `Refused(raison)`).
 - Une file ne montre pas plus de données personnelles que la décision ne le demande.
 
-Files attendues (à confirmer par chaque pôle) :
+Files attendues (confirmées par les pôles le 7 novembre 2026) :
 
-| File | Pôle | Existant à brancher |
+| File | Pôle | Contenu et actions |
 |---|---|---|
-| `agir.held` : mobilisations et appels en relecture | Agir | `HeldQueue` (approuver, refuser avec motif) ; branchée par le socle en exemple, étape 1 |
-| `agir.organisations` : vérification des organisations | Agir | à préciser |
-| `revendications.proposals` : revendications proposées | Décider | `ProposalQueue` (approuver, refuser avec motif) |
-| `decider.validation_sessions` : séances des validateurs | Décider | section 8 |
-| `elus.certifications` : comptes d'élus à certifier | Comprendre (annuaire des élus) avec Décider | à préciser |
-| `editorial.comprendre`, `editorial.voir` : circuit éditorial, double validation | Comprendre, Voir | à préciser |
-| `voir.right_of_reply` : droits de réponse (insertion sous trois jours, niveau d'importance 5) | Voir | à préciser |
-| `reports` et `appeals` : signalements et recours | Socle, étape 2 | section 9 |
+| `agir.held` : mobilisations et appels en relecture | Agir ; branchée par le socle en exemple, étape 1 | Sur `HeldQueue` : approuver (publie l'événement tel qu'il a été signé), refuser avec motif obligatoire (montré à l'auteur) ; une mobilisation dont la date est passée est refusée automatiquement et ne peut plus être approuvée ; un appel à témoins est signalé comme toujours relu ; pas de modification (l'auteur republie) |
+| `agir.organisations` : vérification des organisations | Agir | Une décision publie, remplace ou retire la fiche d'organisation signée par une clé éditoriale : attend le **service de signature de la plateforme** (fondation à concevoir, la clé ne doit jamais être en clair sur le serveur principal) |
+| `revendications.proposals` : revendications proposées | Décider | Sur `ProposalQueue` : approuver, refuser avec motif |
+| `decider.validation_sessions` : séances des validateurs | Décider | Section 8 |
+| `elus.certifications` : comptes d'élus à certifier | Décider (demandes, clé du compte, statut certifié) ; Comprendre fournit `ElusLookup` (mandat en cours par nom, type de mandat et territoire, avec date de début, fonction et date de mise à jour de la source) et un fragment kotlinx.html des fiches correspondantes | Certifier, refuser avec motif, retirer |
+| `editorial.comprendre` et `editorial.voir` : circuit éditorial | Comprendre construit une file éditoriale commune, paramétrée par l'espace ; Voir la reprend | Brouillon ou bloc corrigé signé par un éditeur, retenu jusqu'à l'accord d'un **deuxième éditeur différent** (double validation, M17) ; approuver (validation à deux), demander des modifications avec motif, refuser avec motif ; détail : le contenu rendu comme sur le site, la différence avec la version publiée et les sources ; journal des corrections |
+| `voir.right_of_reply` : droits de réponse | Voir, avec le futur client de l'équipe | Les demandes arrivent chiffrées de bout en bout (NIP-17) vers la clé de la boîte de l'équipe (D-056) : le serveur ne peut pas les lire. File de **suivi** seulement : le client de l'équipe, qui déchiffre, enregistre l'adresse de la demande, sa date de réception et l'échéance légale (insertion sous trois jours, niveau d'importance 5), jamais le texte ; actions : insérée (avec l'adresse de la réponse publiée), refusée avec motif juridique, en attente de vérification d'identité. Après les étapes 1 et 2, avec le client de l'équipe |
+| `voir.error_reports` : signalements d'erreur | Voir, même mécanisme | Corrigé (avec l'entrée du journal des corrections) ou rejeté avec motif ; sans échéance légale |
+| `reports` et `appeals` : signalements et recours | Socle, étape 2 | Section 9 |
+
+Chaque élément d'une file peut porter une **échéance** et un **niveau d'importance** de 1 à 5 (S-115) : le tableau de bord les trie par échéance puis par niveau, et signale en tête ce qui dépasse ou approche son échéance. Le tableau de bord montre aussi des **alertes** sans file (par exemple « import des données ouvertes refusé », Voir, D-064) que les pôles déposent par une fonction du socle.
 
 ## 8. Validateurs et certificateurs (pour « Décider »)
 
