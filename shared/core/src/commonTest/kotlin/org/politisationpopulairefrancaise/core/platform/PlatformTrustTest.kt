@@ -277,6 +277,23 @@ class PlatformTrustTest {
         assertFalse(SigningUse.OPENDATA_INDEX.matches(EventKinds.TEXT_NOTE, listOf(listOf("d", "ppf:parlement-index"))))
     }
 
+    @Test
+    fun theUseOfDeciderTakesEachOfItsTypesAndNoOther() {
+        fun typed(vararg types: String) = types.map { listOf("ppf-type", it) }
+        for (type in listOf("pacte", "engagement", "petition", "proposition-finale")) {
+            assertTrue(SigningUse.DECIDER_PACTE.matches(EventKinds.LONG_FORM_ARTICLE, typed(type)), type)
+            // A type of « Décider » is never the form of an editorial space, nor of the organisations.
+            for (use in listOf(SigningUse.EDITORIAL_COMPRENDRE, SigningUse.EDITORIAL_VOIR, SigningUse.AGIR_ORGANISATIONS)) {
+                assertFalse(use.matches(EventKinds.LONG_FORM_ARTICLE, typed(type)), "$type as $use")
+            }
+        }
+        for (unknown in listOf("inconnu", "petitions", "proposition", "Petition", "")) {
+            assertFalse(SigningUse.DECIDER_PACTE.matches(EventKinds.LONG_FORM_ARTICLE, typed(unknown)), "type « $unknown »")
+        }
+        assertFalse(SigningUse.DECIDER_PACTE.matches(EventKinds.LONG_FORM_ARTICLE, typed("petition", "pacte")))
+        assertFalse(SigningUse.DECIDER_PACTE.matches(EventKinds.TEXT_NOTE, typed("petition")))
+    }
+
     private fun <T> permutations(items: List<T>): List<List<T>> =
         if (items.size <= 1) listOf(items) else items.flatMap { item -> permutations(items - item).map { listOf(item) + it } }
 

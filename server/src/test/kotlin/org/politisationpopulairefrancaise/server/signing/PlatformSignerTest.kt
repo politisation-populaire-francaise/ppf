@@ -271,7 +271,8 @@ class PlatformSignerTest {
     fun theFakeSignerChecksWhatThePolesMustGetRight() = runBlocking<Unit> {
         val fake = FakePlatformSigner()
         val key = fake.currentKey(SigningUse.EDITORIAL_VOIR)
-        val event = UnsignedEvent(key, System.currentTimeMillis() / 1000, EventKinds.LONG_FORM_ARTICLE, listOf(listOf("d", "x"), listOf("title", "[EXEMPLE]")), "[EXEMPLE]")
+        val frame = listOf(listOf("d", "x"), listOf("title", "[EXEMPLE]"))
+        val event = UnsignedEvent(key, System.currentTimeMillis() / 1000, EventKinds.LONG_FORM_ARTICLE, frame + listOf(listOf("ppf-type", "texte")), "[EXEMPLE]")
         assertEquals(SigningStatus.Refused(SigningRefusals.UNKNOWN_DRAFT), fake.status(fake.request(event, SigningUse.EDITORIAL_VOIR)))
         val submitted = assertIs<DraftSubmission.Submitted>(fake.submitDraft(event, SigningUse.EDITORIAL_VOIR))
         assertTrue(submitted.approvalUrl.startsWith(FakePlatformSigner.APPROVAL_ORIGIN))
@@ -289,10 +290,27 @@ class PlatformSignerTest {
         assertNull(fake.approve(SigningUse.EDITORIAL_VOIR, other.idHex(), "bob"))
         assertEquals(SigningRefusals.ALREADY_APPROVED, fake.approve(SigningUse.EDITORIAL_VOIR, other.idHex(), "bob"))
         assertEquals(SigningStatus.Refused(SigningRefusals.APPROVALS_MISSING), fake.status(fake.request(other, SigningUse.EDITORIAL_VOIR)))
+        // A content of M17 that implicates a person (or of no known type) needs the double validation, as in the service.
+        for (tags in listOf(listOf(listOf("ppf-type", "personne")), listOf(listOf("ppf-type", "texte"), listOf("a", "30023:$key:exemple", "", "cible")), emptyList())) {
+            val implicating = event.copy(tags = frame + tags)
+            assertEquals(DraftSubmission.Refused(SigningRefusals.DOUBLE_VALIDATION_REQUIRED), fake.submitDraft(implicating, SigningUse.EDITORIAL_VOIR), tags.toString())
+            assertIs<DraftSubmission.Submitted>(fake.submitDraft(implicating, SigningUse.EDITORIAL_VOIR, doubleValidation = true, author = DraftAuthor(account = "dan")))
+            assertEquals(2, fake.draftStatus(SigningUse.EDITORIAL_VOIR, implicating.idHex())?.required)
+        }
         // A key or a form of another use, and an automatic use through a draft.
         assertEquals(SigningStatus.Refused(SigningRefusals.WRONG_KEY), fake.status(fake.request(event, SigningUse.EDITORIAL_COMPRENDRE)))
         assertEquals(DraftSubmission.Refused(SigningRefusals.AUTOMATIC_USE), fake.submitDraft(event, SigningUse.OPENDATA_INDEX))
         val opendata = UnsignedEvent(fake.currentKey(SigningUse.OPENDATA_INDEX), event.createdAt, EventKinds.APP_DATA, listOf(listOf("d", "ppf:parlement-index")), "{}")
         assertIs<SigningStatus.Signed>(fake.status(fake.request(opendata, SigningUse.OPENDATA_INDEX)))
+        // The contents of « Décider », official petitions and final texts of a deliberation included; never an unknown type.
+        val pacteKey = fake.currentKey(SigningUse.DECIDER_PACTE)
+        fun decider(type: String) = UnsignedEvent(pacteKey, event.createdAt, EventKinds.LONG_FORM_ARTICLE, frame + listOf(listOf("ppf-origin", "human"), listOf("ppf-type", type)), "[EXEMPLE]")
+        for (type in listOf("petition", "proposition-finale")) {
+            val content = decider(type)
+            assertIs<DraftSubmission.Submitted>(fake.submitDraft(content, SigningUse.DECIDER_PACTE), type)
+            assertNull(fake.approve(SigningUse.DECIDER_PACTE, content.idHex(), "alice"))
+            assertIs<SigningStatus.Signed>(fake.status(fake.request(content, SigningUse.DECIDER_PACTE)), type)
+        }
+        assertEquals(DraftSubmission.Refused(SigningRefusals.BAD_TAG), fake.submitDraft(decider("inconnu"), SigningUse.DECIDER_PACTE))
     }
 }

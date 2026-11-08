@@ -186,10 +186,21 @@ class SignerFixture {
         loadTeam(it)
     }
 
-    fun editorial(pubkey: String, createdAt: Long = now(), title: String = "[EXEMPLE] Un fait sourcé", extra: List<List<String>> = emptyList()): UnsignedEvent =
+    /**
+     * An editorial content: by default an ordinary brick of « Voir » (`ppf-type` = `texte`, one approval is
+     * enough); a [type] such as `fait` or `personne`, or some [extra] tags, make a content of M17 that
+     * needs a double validation (DoubleValidation).
+     */
+    fun editorial(
+        pubkey: String,
+        createdAt: Long = now(),
+        title: String = "[EXEMPLE] Un texte sourcé",
+        extra: List<List<String>> = emptyList(),
+        type: String = "texte",
+    ): UnsignedEvent =
         UnsignedEvent(
             pubkey, createdAt, EventKinds.LONG_FORM_ARTICLE,
-            listOf(listOf("d", "exemple-fait"), listOf("title", title), listOf("ppf-origin", "human"), listOf("ppf-type", "fait")) + extra,
+            listOf(listOf("d", "exemple-brique"), listOf("title", title), listOf("ppf-origin", "human"), listOf("ppf-type", type)) + extra,
             "[EXEMPLE] Texte confidentiel du contenu, jamais dans le journal.",
         )
 
