@@ -73,8 +73,8 @@ data class Sponsorship(
     /** The day of the publication by the Conseil constitutionnel, AAAA-MM-JJ. */
     val publishedOn: String,
 ) {
-    /** « Prénom NOM », as the page shows it. */
-    val displayName: String get() = listOf(firstName, lastName).filter { it.isNotBlank() }.joinToString(" ")
+    /** « Prénom NOM », as the page shows it (the [EXEMPLE] marker of fictional data is shown by a badge instead). */
+    val displayName: String get() = listOf(firstName, lastName.removePrefix(SponsorshipsCatalog.EXAMPLE_MARKER).trim()).filter { it.isNotBlank() }.joinToString(" ")
 }
 
 /** The package `parrainages-2027` of the open data (docs/integration/voir-parrainages.md, section 2). */

@@ -222,7 +222,7 @@ Hôtes contactés par le serveur, et lui seul, quand l'archivage est allumé (pr
 | Exposition de fichiers du serveur | Seuls les noms listés dans l'index sont servis ; noms de paquets limités à lettres, chiffres et tirets |
 | Présentation partiale des votes | Positions écrites en toutes lettres, couleurs neutres, mises au point affichées, participation définie et jamais classée, mêmes rubriques pour tous |
 
-Hôtes sortants de l'outil d'import (production seulement) : data.assemblee-nationale.fr, www.senat.fr, data.europarl.europa.eu ; HTTPS, sans redirection, au plus une requête toutes les 0,7 seconde.
+Hôtes sortants de l'outil d'import (production seulement) : data.assemblee-nationale.fr, www.senat.fr, data.senat.fr, data.europarl.europa.eu, et pour les parrainages de la présidentielle (VO-37, seulement quand `PPF_SPONSORSHIPS_DATASET` est renseigné) www.data.gouv.fr (API du jeu) et static.data.gouv.fr (fichier) ; HTTPS, sans redirection, au plus une requête toutes les 0,7 seconde pour le Parlement européen. Un fichier de parrainages tronqué ou altéré est refusé par le garde-fou (baisse de plus de 20 %) et le paquet précédent reste servi ; l'appareil vérifie l'empreinte de l'index signé.
 
 ## Ajout du 7 novembre 2026 : espace de l'équipe (back-office, D-120 à D-126)
 

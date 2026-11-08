@@ -16,6 +16,7 @@ import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentIndex
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentWeekFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.historyPackage
+import org.politisationpopulairefrancaise.core.voir.parrainages.SponsorshipsFormat
 import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -63,6 +64,8 @@ class Importer(
     /** The history sources to rebuild (none by default: the history is imported apart, `--history`). */
     private val history: Set<HistorySourceId> = emptySet(),
     private val log: (String) -> Unit = ::println,
+    /** The presentations of the presidential election (VO-37, Sponsorships.kt); otherwise the previous package is kept. */
+    private val sponsorships: Boolean = false,
 ) {
     private val json = ParliamentFormat.json
 
@@ -204,6 +207,10 @@ class Importer(
         histories.values.forEach { (packages, _) -> files.putAll(packages) }
         // « Cette semaine au Parlement » (Week.kt) comes with the daily sources; `--history` alone keeps the previous one.
         if (only.isNotEmpty()) files[ParliamentWeekFormat.PACKAGE] = WeekImport(sources, only, out, log).bytes()
+        if (sponsorships) {
+            val before = previous.index?.packageRef(SponsorshipsFormat.PACKAGE_2027)?.let { ref -> readPackage(ref)?.let { SponsorshipsFormat.read(it.decodeToString())?.sponsorships?.size } }
+            SponsorshipsImport(sources, log).bytes(before)?.let { files[SponsorshipsFormat.PACKAGE_2027] = it }
+        }
         val refreshedChambers = ballots.keys
         val keptRefs = previous.index?.packages.orEmpty().filter { ref ->
             ref.name !in files &&
@@ -216,7 +223,9 @@ class Importer(
             if (source in only) DataSource(source.id, source.sourceName, source.url, source.licence, sources.today) else previous.index?.source(source.id)
         } + HistorySourceId.entries.mapNotNull { source ->
             if (source in history) DataSource(source.id, source.sourceName, source.url, source.licence, sources.today) else previous.index?.source(source.id)
-        }
+        } + listOfNotNull(
+            if (SponsorshipsFormat.PACKAGE_2027 in files) SponsorshipsImport.dataSource(sources.today) else previous.index?.source(SponsorshipsFormat.SOURCE_ID),
+        )
         val index = ParliamentIndex(example = example, importedOn = sources.today, sources = sourcesOfIndex, packages = refs)
         val unsigned = ParliamentFormat.indexEvent(keys.publicKey, index, sources.createdAt)
         // The same index as before keeps its event (and signature): two identical imports give the same bytes.

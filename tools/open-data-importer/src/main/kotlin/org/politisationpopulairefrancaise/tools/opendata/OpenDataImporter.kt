@@ -38,10 +38,13 @@ data class Options(
     val from: Path? = null,
     /** The history sources to rebuild. */
     val history: Set<HistorySourceId> = emptySet(),
+    /** The presentations of the presidential election (VO-37): `cc` in `--only`, or a dataset given in `PPF_SPONSORSHIPS_DATASET`. */
+    val sponsorships: Boolean = false,
+    val sponsorshipsDataset: String? = null,
 )
 
 const val USAGE: String = "usage: ppf-open-data-importer [--source example|official] [--only an,senat,pe,an-history,senat-history,pe-history] [--history] [--from <dir>] --out <dir> --key <nsec file>\n" +
-    "  environment: PPF_OPEN_DATA_SOURCE, PPF_OPEN_DATA_DIR, PPF_IMPORT_KEY_FILE"
+    "  environment: PPF_OPEN_DATA_SOURCE, PPF_OPEN_DATA_DIR, PPF_IMPORT_KEY_FILE, PPF_SPONSORSHIPS_DATASET"
 
 /** The options, or the reason they are wrong. */
 fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> = runCatching {
@@ -67,7 +70,7 @@ fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> 
         else -> throw IllegalArgumentException("unknown source $source")
     }
     val listed = values["--only"]?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.onEach {
-        require(SourceId.of(it) != null || HistorySourceId.of(it) != null) { "unknown source id $it" }
+        require(SourceId.of(it) != null || HistorySourceId.of(it) != null || it == SPONSORSHIPS_ID) { "unknown source id $it" }
     }
     require(listed == null || listed.isNotEmpty()) { "--only names no source" }
     val only = when {
@@ -86,8 +89,14 @@ fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> 
     val key = (values["--key"] ?: env("PPF_IMPORT_KEY_FILE")?.takeIf { it.isNotBlank() }) ?: throw IllegalArgumentException("--key (or PPF_IMPORT_KEY_FILE) is required")
     val from = values["--from"]?.let { Path.of(it.trim()) }
     require(from == null || mode == SourceMode.OFFICIAL) { "--from reads official files: use it with --source official" }
-    Options(mode, only, Path.of(out.trim()), Path.of(key.trim()), from, history)
+    val dataset = env("PPF_SPONSORSHIPS_DATASET")?.trim()?.takeIf { it.isNotEmpty() }
+    // Asked by name in `--only`, or by default in production once the dataset of the Conseil constitutionnel is known.
+    val sponsorships = listed?.contains(SPONSORSHIPS_ID) ?: (mode == SourceMode.OFFICIAL && dataset != null && !historyFlag)
+    Options(mode, only, Path.of(out.trim()), Path.of(key.trim()), from, history, sponsorships, dataset)
 }
+
+/** The identifier of the presentations of the presidential election in `--only` (and of their source in the index). */
+const val SPONSORSHIPS_ID: String = "cc"
 
 /** Reads the import key; refuses the example key for official data (it would make real data look fictional, and the reverse). */
 fun loadKey(file: Path, mode: SourceMode): Result<IdentityKeys> = runCatching {
@@ -116,9 +125,9 @@ fun runCommandLine(args: List<String>, env: (String) -> String?, sources: ((Sour
     return try {
         val chosen = sources?.invoke(options.mode) ?: when (options.mode) {
             SourceMode.EXAMPLE -> ExampleSources()
-            SourceMode.OFFICIAL -> options.from?.let(::LocalOfficialSources) ?: OfficialSources()
+            SourceMode.OFFICIAL -> options.from?.let(::LocalOfficialSources) ?: OfficialSources(sponsorshipsDataset = options.sponsorshipsDataset)
         }
-        Importer(chosen, keys, options.out, options.only, options.history).run()
+        Importer(chosen, keys, options.out, options.only, options.history, sponsorships = options.sponsorships).run()
     } catch (e: UnreadableSourceException) {
         System.err.println("unreadable source data: ${e.message}")
         ExitCodes.UNREADABLE_SOURCE
