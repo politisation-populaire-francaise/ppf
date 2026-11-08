@@ -165,6 +165,8 @@ fun main() {
     // In production and preproduction the migrations ran before, in their own container, with the owner
     // role; the server, connected with a restricted role, only checks them (D-127).
     val migrate = Database.shouldMigrate(ServerConfig.environment)
+    // THE platform signer (D-129): one instance for the whole server, null without PPF_SIGNER_URL.
+    val platformSigner = PlatformSignerConfig.fromEnvironment()?.let { HttpPlatformSigner(it) }
     val appRole = Database.appRole()
     val dataSource = DatabaseConfig.fromEnvironment()?.let { config ->
         Database.connect(config).also { Database.prepare(it, migrate, appRole) }
@@ -199,7 +201,7 @@ fun main() {
             }
         },
     ) {
-        module(dataSource, backOffice = backOffice, securityContact = securityContact)
+        module(dataSource, backOffice = backOffice, securityContact = securityContact, platformSigner = platformSigner)
     }.start(wait = true)
 }
 
@@ -262,7 +264,7 @@ fun Application.module(
      * service when PPF_SIGNER_URL is set, null otherwise (what needs it then waits, never signs elsewhere).
      * Passed to every pole that needs it; the tests give a FakePlatformSigner.
      */
-    platformSigner: PlatformSigner? = PlatformSignerConfig.fromEnvironment()?.let { HttpPlatformSigner(it) },
+    platformSigner: PlatformSigner? = null,
     /** Where an approved editorial version goes (circuit éditorial, step 5); nothing is sent until the signing service is plugged. */
     editorialPublisher: EditorialPublisher = UnpluggedEditorialPublisher,
 ) {
