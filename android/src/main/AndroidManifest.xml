@@ -28,12 +28,35 @@
             android:name=".MainActivity"
             android:exported="true"
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize|uiMode"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- The two entries of the launcher (S-45, « Application discrète »): the usual name and icon,
+             or a neutral name and icon without any hint of PPF. One only is enabled at a time, switched
+             by the application (PackageManager.setComponentEnabledSetting); Android 8 (API 26) and later. -->
+        <activity-alias
+            android:name=".LauncherDefault"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:label="@string/app_name"
+            android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
+        </activity-alias>
+        <activity-alias
+            android:name=".LauncherDiscreet"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_neutral"
+            android:label="@string/app_name_neutral"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
 
         <!-- Agenda: shares the .ics file of a mobilization with the application the user chooses
              (read-only, temporary permission per share; files of cache/agenda/ only). -->

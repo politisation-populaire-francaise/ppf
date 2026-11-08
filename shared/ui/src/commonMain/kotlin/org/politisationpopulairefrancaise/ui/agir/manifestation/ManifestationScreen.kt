@@ -37,6 +37,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.agir.manifestation.EmergencyNumbers
+import org.politisationpopulairefrancaise.ui.agir.security.PreparePhoneBlock
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
 import org.politisationpopulairefrancaise.ui.components.PpfCard
@@ -71,6 +72,7 @@ import org.politisationpopulairefrancaise.ui.resources.manif_injury_title
 import org.politisationpopulairefrancaise.ui.resources.manif_intro
 import org.politisationpopulairefrancaise.ui.resources.manif_legal_title
 import org.politisationpopulairefrancaise.ui.resources.manif_numbers_other
+import org.politisationpopulairefrancaise.ui.resources.manif_talk_hint
 import org.politisationpopulairefrancaise.ui.resources.manif_numbers_title
 import org.politisationpopulairefrancaise.ui.resources.manif_open_help
 import org.politisationpopulairefrancaise.ui.resources.manif_phone_1
@@ -151,7 +153,9 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
                 Spacer(Modifier.height(12.dp))
                 Text(stringResource(Res.string.manif_numbers_other), style = MaterialTheme.typography.titleSmall)
                 Spacer(Modifier.height(8.dp))
-                EmergencyNumbersBlock(EmergencyNumbers.listening)
+                EmergencyNumbersBlock(EmergencyNumbers.protest)
+                Spacer(Modifier.height(8.dp))
+                Text(stringResource(Res.string.manif_talk_hint), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
             }
 
             Section(stringResource(Res.string.manif_legal_title), Lucide.ShieldCheck) {
@@ -177,8 +181,11 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
                 listOf(Res.string.manif_phone_1, Res.string.manif_phone_2, Res.string.manif_phone_3).forEach { tip ->
                     Text("• " + stringResource(tip), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(vertical = 2.dp))
                 }
-                Spacer(Modifier.height(6.dp))
-                Text(stringResource(Res.string.manif_phone_soon), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+                Spacer(Modifier.height(12.dp))
+                // « Préparer mon téléphone » (AG-56): the lock, the hidden content and the quick erase of PPF (M33).
+                if (!PreparePhoneBlock()) {
+                    Text(stringResource(Res.string.manif_phone_soon), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+                }
             }
 
             Section(stringResource(Res.string.manif_injury_title), Lucide.Heart, Modifier.testTag(ManifestationTags.INJURY)) {
