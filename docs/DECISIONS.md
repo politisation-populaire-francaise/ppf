@@ -604,6 +604,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - liens avec « Voir » par l'étiquette `ppf-official-id` (`an:PA…`, `senat:…`, `pe:…` sur une personne ; `an-dossier:…` sur un texte) : lien vers les votes sur la fiche d'une personne, scrutins sous la fiche d'un texte ;
   - base locale : migration `12.sqm` (table des paquets et index courant).
 
+## D-066 (2026-11-07) Historique des votes pour le comparateur
+
+- Contexte : demande de la propriétaire relayée par « Décider » (comparateur DE-16) : « Depuis aussi loin que possible sur le parti portant le candidat à la présidentielle, tant que les données officielles existent, tous les votes en france et à l'union européenne » ; format convenu avec le pôle « Décider » ; sources vérifiées et structure réelle : `docs/integration/voir-historique-sources.md` ; outil : `docs/integration/voir-historique-import.md` ; format : `docs/FORMATS.md`, section 4 octies.
+- Décisions techniques prises en autonomie (pôle « Voir », avec « Décider ») :
+  - **un paquet par chambre et par période** (`historique-an-14` à `-17`, `historique-senat-<année de session>`, `historique-pe-9` et `-10`), dans le même index signé, **téléchargés tous ensemble pour tous les partis** sur un geste, taille affichée : jamais une requête par parti, qui révélerait au serveur le parti qui intéresse la personne (opinions politiques, RGPD article 9) ;
+  - par scrutin : identifiant, date, titre officiel, texte ou dossier, commission si la source la donne, résultat, totaux, et la **répartition par parti** (pour, contre, abstention, non-votants, membres à la date du vote) ; **aucun nom de personne ni vote nominatif**, **aucune position majoritaire** calculée (ce serait une lecture éditoriale) ;
+  - **parti à la date du vote** : Assemblée, parti de rattachement (`PARPOL`) depuis décembre 2012, sinon le groupe ; Sénat, toujours le groupe ; Parlement européen, parti national ; un groupe est toujours marqué « groupe, rattachement au parti non publié », jamais rapproché d'un parti par nous ;
+  - **couverture** : Assemblée depuis la 14e législature (juillet 2012 ; le fichier officiel de la 14e s'arrête au 24 novembre 2016) ; Sénat depuis la session 2006-2007 (groupes seulement) ; Parlement européen depuis le 15 juillet 2019 (votes par appel nominal) ; dates de couverture dans chaque paquet pour que l'application dise jusqu'où va le fichier officiel ; rien avant (pas de données ouvertes), Conseil de l'Union non importé ;
+  - **sources** : data.assemblee-nationale.fr (scrutins des 14e à 17e législatures, AMO30 historique, Licence Ouverte), data.senat.fr (Dosleg, `ODSEN_HISTOGROUPES.csv`, Licence Ouverte 2.0, nouvel hôte autorisé), data.europarl.europa.eu (API v2, CC BY 4.0) ;
+  - **import à part** (`--history`), une fois par semaine ou par mois, jamais en même temps que l'import quotidien ; même garde de 20 % par source ; fichiers lus en flux.
+
 ## D-070 (2026-11-07) Chaîne de déploiement : image construite et signée par l'intégration continue, déploiement par empreinte
 
 - Contexte : mise en ligne de la préproduction. Le squelette de la phase 0 compilait le serveur sur le serveur lui-même (`docker build` avec Gradle), ce qui ne pouvait pas fonctionner : la compilation configure tout le projet Kotlin Multiplatform (SDK Android compris) et demande bien plus que 1 vCPU et 4 Go de mémoire ; le contrôle de santé du script de déploiement appelait `wget`, absent de l'image.
@@ -758,6 +769,20 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **styles** : une section « Comprendre » ajoutée en fin de `site.css`, aucun style en ligne, mêmes jetons clair et sombre ; CSP et en-têtes de sécurité inchangés.
 - Fichiers communs touchés (signalés) : `web/.../WebRoutes.kt` (montage, l'emplacement réservé de « Comprendre » disparaît quand une base est configurée), `site.css` (section ajoutée à la fin), `server/.../Application.kt` (paramètre `comprendre`), `BundledContents.kt` et `DevServer.kt` (chargement de `parcours.json`, `comprendre.json`, `glossaire.json`). Aucun fichier de `web/.../voir/` modifié.
 - Reste : liens de « Voir » vers les fiches pratiques (fichiers de « Voir », à faire par son pôle avec `ComprendreLinks`) ; icônes PNG 192 et 512 du manifeste si un navigateur refuse l'icône SVG ; dossiers de « Comprendre » ; version « Facile à lire » ; essai du hors-ligne sur un vrai téléphone (phase de test).
+
+## D-100 (2026-11-07) « Cette semaine au Parlement »
+
+- Contexte : cahier fonctionnel 2.0, M20 (VO-31), repris dans « En direct » (M19) ; sources vérifiées : `docs/integration/voir-historique-sources.md` ; détail : `docs/integration/voir-semaine.md`.
+- Décisions techniques prises en autonomie (pôle « Voir », gratuites, sans dépendance nouvelle) :
+  - **un paquet unique `semaine`**, cité par l'index signé de D-064, réécrit à chaque import (mêmes octets pour deux imports identiques) : l'ordre du jour de l'Assemblée nationale (`Agenda.json.zip`), du Sénat (flux iCalendar de la séance publique, répétitions simples comprises) et du Parlement européen (activités prévues de l'API v2) ;
+  - **fenêtre** : du jour de l'import (heure de Paris) au quatorzième jour suivant inclus ; l'appareil masque les jours passés ;
+  - **robustesse** : une source de la semaine en échec ne fait pas échouer l'import (code 0) ; les points précédents de cette assemblée sont gardés et le journal le dit ; avec `--from`, la semaine n'est pas relue ;
+  - **périmètre** : séances publiques ; réunions de commission seulement pour leurs points liés à un dossier législatif ; tout autre type écarté ;
+  - **minimisation** : heure, assemblée, type de réunion, commission, objet, type de point, dossier, état et lien officiel ; jamais de participant, d'organisateur, de contact ni de lieu ;
+  - **état absent** quand la source ne dit rien (plutôt que d'en supposer un) ; activités du Parlement européen toujours « Prévisionnel » ;
+  - **liens officiels** vérifiés le 7 novembre 2026 : séance publique et agendas de l'Assemblée, ordre du jour du Sénat, page de la plénière du Parlement européen (`https://www.europarl.europa.eu/plenary/fr/home.html`) ; « Interpeller mes élus » mène à l'espace « Décider » tant qu'aucune page DE-09 n'existe ;
+  - **économie de données** : le paquet se télécharge sur un geste (taille affichée), ou à l'ouverture d'« En direct » et de la page quand une version est déjà sur l'appareil et que le mode économie de données est coupé ;
+  - **formulation neutre** : on décrit l'ordre du jour, sans jugement ; bandeau « Données fictives [EXEMPLE] » sur le jeu d'exemple.
 
 ## D-092 (2026-11-07) Circuit éditorial : moteur de formulaires à schéma déclaratif, commun à « Comprendre » et à « Voir »
 

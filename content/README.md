@@ -136,13 +136,13 @@ Le corps est le texte de la publication (type 1, note courte).
 
 ## Format des contenus de « Voir » (`voir/**/*.md`)
 
-Les sous-dossiers (`indicateurs`, `faits`, `personnes`, `textes`, `monde`, `dossiers`, `reponses`) ne servent qu'à ranger : c'est le champ `type` qui compte (`indicateur`, `fait`, `personne`, `texte`, `mouvement`, `dossier`, `reponse`). L'en-tête reprend `slug`, `title`, `summary`, `topics`, `origin`, `published_at` et `updated_at` ; **tout autre champ devient une étiquette `ppf-<champ>`** dont les valeurs sont séparées par `|`. Un champ répété donne plusieurs étiquettes (une mesure, une source, un mandat par ligne). Les lignes qui commencent par `#` sont des commentaires.
+Les sous-dossiers (`indicateurs`, `faits`, `personnes`, `textes`, `monde`, `dossiers`, `reponses`) ne servent qu'à ranger : c'est le champ `type` qui compte (`indicateur`, `fait`, `personne`, `texte`, `mouvement`, `dossier`, `reponse`). L'en-tête reprend `slug`, `title`, `summary`, `topics`, `origin`, `published_at` et `updated_at` ; **chaque autre champ devient une étiquette `ppf-<champ>`** dont les valeurs sont séparées par `|` ; seuls les champs prévus par le schéma du type (`shared/core/.../core/voir/VoirSchemas.kt`) sont acceptés. Un champ répété donne plusieurs étiquettes (une mesure, une source, un mandat par ligne). Les lignes qui commencent par `#` sont des commentaires.
 
 - `person`, `text`, `indicator` et `target` nomment une autre brique par son `slug` (lien).
 - `next` est « libellé | cible », la cible étant `fiche:<slug>`, `voir:<slug>` ou `espace:<carte, revendications, decider…>`.
 - Exemple de mesure : `measure: j1-aut | 2026-09-18 | 312000 | autorites | Ministère de l'Intérieur | https://… | moyenne | Journée du 18 septembre | France`.
 
-La liste complète des champs et des valeurs est dans `docs/FORMATS.md`, section 4 quinquies. L'outil de signature relit chaque brique comme l'application et **refuse** celle qu'elle ignorerait (statut manquant, affaire sans étape de procédure, valeur inconnue, lien vers un `slug` qui n'existe pas).
+La liste complète des champs et des valeurs est dans `docs/FORMATS.md`, section 4 quinquies. L'outil de signature vérifie chaque brique avec son schéma et **refuse** un champ inconnu, une valeur mal écrite (date, adresse `https://`, nombre, valeur hors liste), une affaire sans étape de procédure, un lien vers un `slug` qui n'existe pas ou d'un autre type, et toute brique ou ligne que l'application ignorerait (détail : `docs/integration/voir-schemas.md`).
 
 ## Format des contenus de « Décider » (`decider/**/*.md`)
 

@@ -1,0 +1,29 @@
+{
+ "data": [
+  {
+   "id": "eli/dl/event/MTG-PL-2019-07-03-DEC-1",
+   "type": "Decision",
+   "activity_id": "MTG-PL-2019-07-03-DEC-1",
+   "activity_date": "2019-07-03",
+   "activity_order": "1",
+   "activity_label": {
+    "fr": "[EXEMPLE] Élection du Président - vote non importé",
+    "en": "[EXEMPLE] (en) Élection du Président - vote non importé"
+   },
+   "decision_method": "def/ep-decision-methods/VOTE_ELECTRONIC_ROLLCALL",
+   "decision_outcome": "def/ep-decision-outcomes/ADOPTED",
+   "number_of_votes_favor": 400,
+   "number_of_votes_against": 200,
+   "number_of_votes_abstention": 50,
+   "had_voter_favor": [
+    "person/990011"
+   ],
+   "had_voter_against": [],
+   "had_voter_abstention": [],
+   "number_of_attendees": 650
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

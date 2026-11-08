@@ -43,6 +43,8 @@ data class EpDecision(
     val votersInFavour: List<String>,
     val votersAgainst: List<String>,
     val votersAbstaining: List<String>,
+    /** The reference of the text voted on (`referenceText`), when given. */
+    val reference: String? = null,
 )
 
 /** The few calls of the API used by the import; the example implementation reads bundled files. */
@@ -53,6 +55,8 @@ interface EuroparlApi {
     /** Identifiers of the plenary sittings of a year (`MTG-PL-AAAA-MM-JJ`). */
     fun plenarySittings(year: Int): List<String>
     fun decisions(sittingId: String): List<EpDecision>
+    /** Identifiers of every member elected in France during a term (history of the ballots). */
+    fun frenchMeps(term: Int): List<String> = throw UnreadableSourceException("europarl: members of a term not available")
 }
 
 /**
@@ -90,6 +94,7 @@ class JsonEuroparlApi(private val transport: (path: String, offset: Int, limit: 
         @SerialName("had_voter_favor") val votersInFavour: JsonElement? = null,
         @SerialName("had_voter_against") val votersAgainst: JsonElement? = null,
         @SerialName("had_voter_abstention") val votersAbstaining: JsonElement? = null,
+        val referenceText: JsonElement? = null,
     )
 
     @OptIn(ExperimentalSerializationApi::class)
@@ -150,8 +155,13 @@ class JsonEuroparlApi(private val transport: (path: String, offset: Int, limit: 
             votersInFavour = voters(d.votersInFavour),
             votersAgainst = voters(d.votersAgainst),
             votersAbstaining = voters(d.votersAbstaining),
+            reference = d.referenceText.items().firstNotNullOfOrNull { it.text() ?: languageText(it) }?.take(200),
         )
     }
+
+    override fun frenchMeps(term: Int): List<String> = pages<MepSummary>("meps?parliamentary-term=$term&country-of-representation=FR").map { mep ->
+        mep.identifier.text()?.takeIf(ID::matches) ?: throw UnreadableSourceException("europarl meps: member without identifier")
+    }.distinct()
 
     private fun voters(element: JsonElement?): List<String> = element.items().mapNotNull { it.text()?.substringAfterLast('/') }
 

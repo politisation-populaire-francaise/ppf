@@ -1,0 +1,13 @@
+{
+ "organe": {
+  "uid": "PO910102",
+  "codeType": "GP",
+  "libelle": "[EXEMPLE] Groupe des Vallées",
+  "libelleAbrev": "GVA",
+  "viMoDe": {
+   "dateDebut": "2012-06-20",
+   "dateFin": null
+  },
+  "couleurAssociee": "#123456"
+ }
+}

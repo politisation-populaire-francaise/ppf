@@ -67,7 +67,9 @@ import org.politisationpopulairefrancaise.ui.endirect.EnDirectScreen
 import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.VoirScreen
 import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentState
+import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentWeekSlot
 import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentState
+import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentWeekState
 import org.politisationpopulairefrancaise.ui.voir.rememberVoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.VoirState
 import org.politisationpopulairefrancaise.ui.voir.rememberVoirState
@@ -208,6 +210,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val voirState = rememberVoirState(dependencies)
     // Its parliamentary open data (D-065): the open page and the filters survive a visit elsewhere too.
     val parliamentState = rememberParliamentState(dependencies)
+    // « Cette semaine au Parlement » (VO-31), attached to it: shown in its screen and in « En direct ».
+    rememberParliamentWeekState(dependencies, parliamentState, contentLibrary, voirState) { selected = it }
     // Its requests to the editorial team: drafts and anonymous reports waiting for a server.
     val voirRequests = rememberVoirRequestSession(dependencies, messaging)
     // "Décider": the open page and the follows survive a visit to another space.
@@ -312,6 +316,7 @@ private fun SpaceContent(
                     onNavigate(Space.CARTE)
                 }
             },
+            parliamentWeek = { slotModifier -> ParliamentWeekSlot(parliamentState, slotModifier) },
         )
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate, requests = voirRequests, parliament = parliamentState)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)

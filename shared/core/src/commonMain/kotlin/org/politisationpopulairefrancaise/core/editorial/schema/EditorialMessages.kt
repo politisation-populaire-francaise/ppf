@@ -91,6 +91,17 @@ object EditorialMessages {
         "comprendre.rule.glossary_readable" to "l'application ne lirait pas cette entrée du glossaire",
         "comprendre.rule.glossary_definition" to "la définition (résumé) a {1} caractères, {0} au plus",
         "comprendre.rule.glossary_title" to "le terme (titre) est vide",
+        // Rules of the schemas of Voir.
+        "voir.rule.unreadable" to "l'application ne lirait pas cette brique de « Voir » (vérifiez ses champs)",
+        "voir.rule.line_ignored" to "l'application ignorerait {0} ligne(s) de ce champ",
+        "voir.rule.case_needs_procedure" to "une affaire indique toujours l'étape de la procédure (présomption d'innocence)",
+        "voir.rule.sentence_only_for_cases" to "une peine ne s'écrit que pour une affaire",
+        "voir.rule.no_agent_name" to "n'écrivez jamais le nom ni la référence d'un mandataire financier (une personne privée)",
+        "voir.rule.public_funding_year_once" to "l'aide publique de {0} est déjà donnée",
+        "voir.rule.measure_id_once" to "l'identifiant de mesure « {0} » est déjà utilisé",
+        "voir.rule.measure_part" to "la part ({1}) dépasse la valeur ({0})",
+        "voir.rule.duplicate" to "« {0} » est déjà donné",
+        "voir.rule.next_space" to "« {0} » n'est pas un espace de l'application",
     )
 
     /** The French template of [code], or null when it is unknown. */
