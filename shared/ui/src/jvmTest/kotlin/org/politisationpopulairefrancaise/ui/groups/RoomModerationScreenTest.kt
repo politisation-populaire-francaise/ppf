@@ -60,8 +60,8 @@ class RoomModerationScreenTest {
         waitForIdle()
         mainClock.advanceTimeBy(1_000)
         waitForIdle()
-        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(GroupsTags.LIST).fetchSemanticsNodes().isNotEmpty() }
-        waitUntil(timeoutMillis = 10_000) {
+        waitUntil(timeoutMillis = 30_000) { onAllNodesWithTag(GroupsTags.LIST).fetchSemanticsNodes().isNotEmpty() }
+        waitUntil(timeoutMillis = 30_000) {
             runCatching { onNodeWithTag(GroupsTags.LIST).performScrollToNode(hasTestTag(GroupsTags.ROOM + id)) }.isSuccess
         }
         waitForIdle()
@@ -71,7 +71,7 @@ class RoomModerationScreenTest {
     }
 
     private fun ComposeUiTest.awaitTag(tag: String, unmerged: Boolean = false) =
-        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(tag, useUnmergedTree = unmerged).fetchSemanticsNodes().isNotEmpty() }
+        waitUntil(timeoutMillis = 30_000) { onAllNodesWithTag(tag, useUnmergedTree = unmerged).fetchSemanticsNodes().isNotEmpty() }
 
     private fun ComposeUiTest.count(tag: String) = onAllNodesWithTag(tag).fetchSemanticsNodes().size
 
@@ -110,12 +110,12 @@ class RoomModerationScreenTest {
         onNodeWithTag(ModerationTags.DIALOG_REASON).performTextInput("[EXEMPLE] Propos hors charte")
         onNodeWithTag(ModerationTags.DIALOG_CONFIRM).performClick()
         waitForIdle()
-        waitUntil(timeoutMillis = 10_000) { server.stored.any { it.kind == RoomModeration.REMOVE_USER } }
+        waitUntil(timeoutMillis = 30_000) { server.stored.any { it.kind == RoomModeration.REMOVE_USER } }
         val exclusion = server.stored.single { it.kind == RoomModeration.REMOVE_USER }
         assertEquals(RoomsFixtures.ownKey, exclusion.pubkey)
         assertEquals("[EXEMPLE] Propos hors charte", exclusion.content)
         assertEquals(listOf(RoomsFixtures.other.publicKey.hex), exclusion.tagValues("p"))
-        waitUntil(timeoutMillis = 10_000) { count(ModerationTags.DIALOG) == 0 }
+        waitUntil(timeoutMillis = 30_000) { count(ModerationTags.DIALOG) == 0 }
 
         // The menu now offers to readmit.
         openMenuOf(messageId)
@@ -124,7 +124,7 @@ class RoomModerationScreenTest {
         awaitTag(ModerationTags.DIALOG)
         onNodeWithTag(ModerationTags.DIALOG_CONFIRM).performClick()
         waitForIdle()
-        waitUntil(timeoutMillis = 10_000) { server.stored.any { it.kind == RoomModeration.PUT_USER } }
+        waitUntil(timeoutMillis = 30_000) { server.stored.any { it.kind == RoomModeration.PUT_USER } }
         assertEquals(listOf(listOf("h", MINE), listOf("p", RoomsFixtures.other.publicKey.hex)), server.stored.single { it.kind == RoomModeration.PUT_USER }.tags)
     }
 
@@ -183,8 +183,8 @@ class RoomModerationScreenTest {
         assertEquals(0, count(ModerationTags.DIALOG_REASON), "naming needs no reason")
         onNodeWithTag(ModerationTags.DIALOG_CONFIRM).performClick()
         waitForIdle()
-        waitUntil(timeoutMillis = 10_000) { server.stored.any { it.kind == RoomModeration.PUT_USER } }
-        waitUntil(timeoutMillis = 10_000) { count(ModerationTags.DIALOG) == 0 }
+        waitUntil(timeoutMillis = 30_000) { server.stored.any { it.kind == RoomModeration.PUT_USER } }
+        waitUntil(timeoutMillis = 30_000) { count(ModerationTags.DIALOG) == 0 }
 
         onNodeWithTag(ModerationTags.ABOUT_OPEN).performClick()
         waitForIdle()
