@@ -748,7 +748,7 @@ Chaque message est une rumeur NIP-17 (kind 14, une étiquette `["p", "<destinata
 | `kind` | texte | tous | `opening` (premier message), `message` (suivi de la personne), `reply` (réponse de l'équipe), `status` (changement de statut expliqué) |
 | `text` | texte | tous | 1 à 20 000 caractères |
 | `type` | texte | `opening` | `ticket`, `contact` ou `claim` |
-| `subtype` | texte | `opening` d'un ticket | `bug`, `suggestion`, `report` |
+| `subtype` | texte | `opening` d'un ticket | `bug`, `suggestion`, `report`, `verification` (demande de vérification d'une rumeur pour l'équipe de « Comprendre », CO-18, D-143 : `subject` est l'affirmation telle qu'elle a été vue, `text` dit où, quand et ce qui la rend douteuse, `content` facultatif désigne une vérification proche ; jamais de compte relié) |
 | `category` | texte | `opening` d'un contact | `citizen`, `association`, `union`, `journalist`, `elected`, `institution`, `company`, `other` |
 | `motif` | texte | `opening` d'une réclamation | `moderation_decision`, `data_rights`, `right_of_reply`, `funds`, `team_member`, `other` |
 | `subject` | texte | `opening` | 1 à 200 caractères |
@@ -784,6 +784,7 @@ Calculées à la réception, en heure de Paris, à la même heure (la lecture la
 | Réclamation `moderation_decision` | 15 jours ; la réclamation n'est acceptée que jusqu'à 6 mois après la décision (DSA, article 20, appliqué par choix) | objectif interne |
 | Contact | 15 jours | objectif interne |
 | Réclamation `funds`, `team_member` ou `other` | 30 jours | objectif interne |
+| Ticket `verification` (demande de vérification, CO-18, D-143) | 15 jours | objectif interne |
 | Ticket (bug, suggestion, signalement) | aucune | |
 
 Les objectifs internes se règlent dans la configuration privée du serveur (`PPF_CASE_GOAL_*_DAYS`) ; les délais légaux, jamais.
@@ -882,7 +883,7 @@ Variables d'environnement du serveur pour les dossiers de contact et les réclam
 |---|---|---|
 | `PPF_CONTACT_INBOX_KEY` | Clé publique (hexadécimal ou npub) de la boîte de l'équipe, celle intégrée à l'application pour cet environnement ; sa clé secrète n'est jamais sur un serveur. Vide : les routes `/api/v1/cases` répondent `503 contact_not_open`, sauf en développement où sert la boîte d'exemple (sa clé secrète est publique) ; la boîte d'exemple est refusée en production | vide |
 | `PPF_CASE_POW_BITS` | Preuve de travail NIP-13 demandée pour ouvrir un dossier (0 à 32 bits), réglage privé | 16 |
-| `PPF_CASE_GOAL_CONTACT_DAYS`, `PPF_CASE_GOAL_BUG_DAYS`, `PPF_CASE_GOAL_SUGGESTION_DAYS`, `PPF_CASE_GOAL_REPORT_DAYS`, `PPF_CASE_GOAL_MODERATION_DAYS`, `PPF_CASE_GOAL_FUNDS_DAYS`, `PPF_CASE_GOAL_TEAM_MEMBER_DAYS`, `PPF_CASE_GOAL_OTHER_DAYS` | Objectifs internes, en jours (1 à 365 ; 0 pour aucun) ; les délais légaux ne se règlent pas | 15, aucun, aucun, aucun, 15, 30, 30, 30 |
+| `PPF_CASE_GOAL_CONTACT_DAYS`, `PPF_CASE_GOAL_BUG_DAYS`, `PPF_CASE_GOAL_SUGGESTION_DAYS`, `PPF_CASE_GOAL_REPORT_DAYS`, `PPF_CASE_GOAL_MODERATION_DAYS`, `PPF_CASE_GOAL_FUNDS_DAYS`, `PPF_CASE_GOAL_TEAM_MEMBER_DAYS`, `PPF_CASE_GOAL_OTHER_DAYS`, `PPF_CASE_GOAL_VERIFICATION_DAYS` | Objectifs internes, en jours (1 à 365 ; 0 pour aucun) ; les délais légaux ne se règlent pas. Le dernier est celui des demandes de vérification (CO-18, D-143) | 15, aucun, aucun, aucun, 15, 30, 30, 30, 15 |
 | `PPF_CONTACT_RETENTION_INTERVAL_MINUTES` | Fréquence des durées de conservation (clôture après 60 jours sans nouvelle de la personne, effacement, anonymisation, archives juridiques) ; 0 désactive la tâche, pour les tests | 1440 |
 
 Variables d'environnement du serveur pour l'archivage horodaté (D-111, `docs/integration/archivage-horodate.md`, section 7 ; hôtes contactés : `docs/integration/archivage-egress.md`) :
