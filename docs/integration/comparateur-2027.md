@@ -132,3 +132,29 @@ Rédaction :
   - **liste officielle** (`ppf-official-list`) : dès qu'elle est publiée, le comparateur la suit et le dit, avec le lien vers la source.
 - **Reste** : photos officielles (Q3 : servies par PPF, droits vérifiés pour chacune, aucune photo pour personne tant qu'une seule manque) ; votes passés rangés par thème (Q2), avec les paquets historiques de « Voir » (`historique-an-*`, `historique-senat-*`, `historique-pe-*`, D-066), selon une règle de classement publiée à faire valider ; comparateur sur le site sans JavaScript ; relecture par un avocat (L52-8) ; vrais candidats.
 - **À vérifier avant la mise en ligne** (Légifrance, décret de convocation de 2027) : les jours de vote de l'outre-mer et l'heure de fermeture des derniers bureaux de chaque tour, à reporter dans `ppf-round`.
+
+## 10. Votes passés rangés par thème (Q2) : conception à valider
+
+Demande de la propriétaire (Q2) : « Depuis aussi loin que possible sur le parti portant le candidat à la présidentielle, tant que les données officielles existent, tous les votes en France et à l'Union européenne. » Données : les paquets historiques de « Voir » (D-066, `docs/integration/voir-historique-import.md`), téléchargés en entier sur l'appareil pour tous les partis, avec pour chaque scrutin public la répartition par parti (pour, contre, abstention, non-votants, membres), sans nom ni position majoritaire.
+
+### 10.1 Quel parti pour quel candidat
+
+- Sur la fiche du comparateur, une étiquette répétée `ppf-party` : `candidat | identifiant du parti dans les paquets (an:PO…, senat-grp:…, pe-org:…) | du (AAAA-MM-JJ) | au (facultatif)`, avec ses sources (`ppf-source`). C'est un fait public (le parti qui porte la candidature, puis ses identifiants officiels par chambre et par période), relu comme le reste.
+- Sénat : le paquet ne donne que le groupe ; la mention « groupe, rattachement au parti non publié » reste affichée, pour tous les candidats.
+- Les votes nominatifs de la personne (si elle a eu un mandat) ne sont pas dans ces paquets : ils viendront des paquets mensuels de la législature en cours, dans une étape suivante.
+
+### 10.2 Comment ranger les scrutins par thème : options
+
+| Option | Comment | Pour | Contre |
+|---|---|---|---|
+| **A (recommandée)** | Une règle de mots publiée dans la fiche signée du comparateur, `ppf-theme-words` (le thème, puis ses mots) ; un scrutin entre dans un thème si son titre officiel contient l'un des mots (sans accents ni majuscules, mot entier ou début de mot) ; un scrutin peut entrer dans plusieurs thèmes ; ceux qui n'entrent dans aucun sont comptés et listés à part (« autres scrutins ») | Aucun choix scrutin par scrutin : la même règle pour tous les partis, lisible et vérifiable par n'importe qui, calculée sur l'appareil ; corrigeable par une nouvelle version, journalisée | Les mots eux-mêmes sont un choix de l'équipe : à relire à deux et à publier sous la liste ; des titres d'amendements peu parlants tombent dans « autres scrutins » |
+| B | La commission saisie au fond, rapprochée des thèmes | Officiel | Champ vide aujourd'hui dans les paquets ; absent pour le Sénat et le Parlement européen ; trop grossier (huit commissions) |
+| C | Classement à la main par l'équipe, relu à deux | Précis | Sélection éditoriale, contraire à la demande (« tous les votes », sans choix) ; des milliers de scrutins |
+
+Recommandation : **A**, puis B en complément le jour où la commission figurera dans les paquets.
+
+### 10.3 Affichage
+
+- Pour un thème et un candidat : le nombre de scrutins, puis chacun (date, titre officiel, chambre, résultat, et la répartition des élus du parti : « 12 pour, 3 contre, 1 abstention, 2 non-votants sur 18 »), du plus récent au plus ancien, par pages de 20, avec un filtre par chambre ; jamais de position majoritaire calculée, jamais de note.
+- La règle de mots et sa date sont affichées sous chaque liste, avec le nombre de « autres scrutins ».
+- Hors ligne : tout est calculé sur l'appareil à partir des paquets déjà téléchargés ; le serveur ne sait pas quel candidat ou quel thème est regardé.

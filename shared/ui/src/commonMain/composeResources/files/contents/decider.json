@@ -1,8 +1,8 @@
 [
     {
-        "id": "3b0d6f2fbc1e703452e48da796d8192bcc6c52c889fae4c4bb4179dc00f283ba",
+        "id": "1b54085abe20a78a17cc422b6a7bd28f8e0b699c57f7ab1ae9ca72c73157f8f5",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
-        "created_at": 1794052800,
+        "created_at": 1794139200,
         "kind": 30023,
         "tags": [
             [
@@ -74,10 +74,52 @@
                 "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:sacha-temoin",
                 "",
                 "candidat"
+            ],
+            [
+                "ppf-round",
+                "1",
+                "2027-03-07",
+                "",
+                "20:00"
+            ],
+            [
+                "ppf-round",
+                "2",
+                "2027-03-21",
+                "2027-03-20",
+                "20:00"
+            ],
+            [
+                "ppf-addition-delay",
+                "7"
+            ],
+            [
+                "ppf-request",
+                "alex-modele",
+                "2026-10-01",
+                "2026-10-03"
+            ],
+            [
+                "ppf-request",
+                "camille-exemple",
+                "2026-10-02",
+                "2026-10-03"
+            ],
+            [
+                "ppf-request",
+                "dominique-fictif",
+                "2026-10-10",
+                "2026-10-14"
+            ],
+            [
+                "ppf-request",
+                "sacha-temoin",
+                "2026-10-20",
+                "2026-10-21"
             ]
         ],
-        "content": "Contenu de démonstration : l’élection, les candidats et leurs positions sont fictifs. Chaque candidat a les mêmes thèmes, dans le même ordre ; les candidats sont rangés par ordre alphabétique ; une case vide dit qu’aucune position n’a été publiée.\n",
-        "sig": "09782af2c1d26e24792af6e385a89fb1dfb0ff6f970ce87da274c2dfc74f8881b50214b0333770d3aecd9222838fe9b2b6c7da1258d982f1821eef25dbdc03e8"
+        "content": "Contenu de démonstration : l’élection, les candidats et leurs positions sont fictifs. Chaque candidat a les mêmes thèmes, dans le même ordre ; les candidats sont rangés par ordre alphabétique ; une case vide dit qu’aucune position n’a été publiée. Les dates des tours, des demandes et des ajouts sont fictives elles aussi.\n",
+        "sig": "160a26cc22afaa559067827dd36e52cb62827d1f0789e9b29131b17bd29aafb817c12ab4dcd3dd321a14ceca32b77d4e98e4b45422c46ffc299a44b08e580c33"
     },
     {
         "id": "41631ad0db0b0b5e4f54158b57a0ed1405f9bea19a4aab59b29c7ce39449ef7a",
