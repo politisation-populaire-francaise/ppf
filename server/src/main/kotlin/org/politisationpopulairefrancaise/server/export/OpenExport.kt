@@ -14,6 +14,11 @@ import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
 import kotlinx.serialization.json.JsonUnquotedLiteral
+import org.politisationpopulairefrancaise.core.editorial.CheckQuery
+import org.politisationpopulairefrancaise.core.editorial.CheckResult
+import org.politisationpopulairefrancaise.core.editorial.ContentCheck
+import org.politisationpopulairefrancaise.core.editorial.ContentLookup
+import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
@@ -69,8 +74,22 @@ class ServedFile(val bytes: ByteArray, val contentType: String, val downloadName
     val sha256: String = sha256Hex(bytes)
 }
 
-/** One computed export: the catalog and every file, by its path under `/api/v1/export/`. */
-class ExportBuild(val catalog: ExportCatalog, val catalogFile: ServedFile, val files: Map<String, ServedFile>)
+/** One computed export: the catalog and every file, by its path under `/api/v1/export/`, and the [events] exported. */
+class ExportBuild(val catalog: ExportCatalog, val catalogFile: ServedFile, val files: Map<String, ServedFile>, val events: List<SignedEvent> = emptyList()) {
+    private val idIndex: Map<String, SignedEvent> by lazy { events.associateBy { it.id } }
+    private val addressIndex: Map<ContentAddress, SignedEvent> by lazy { events.mapNotNull { e -> ContentAddress.of(e)?.let { it to e } }.toMap() }
+
+    /**
+     * « Vérifier un contenu PPF » (S-141) on the server: the trusted keys are the editorial keys, the copy is this
+     * export (the latest version of each address of the team; the server keeps no older version).
+     */
+    fun lookup(policy: PublicationPolicy): ContentLookup = object : ContentLookup {
+        override fun isTrusted(pubkeyHex: String): Boolean = policy.isEditor(pubkeyHex)
+        override fun byId(id: String): SignedEvent? = idIndex[id]
+        override fun byCode(prefix: String): List<SignedEvent> = events.filter { it.id.startsWith(prefix) }.take(2)
+        override fun latestAt(address: ContentAddress): SignedEvent? = addressIndex[address]
+    }
+}
 
 /**
  * The open export of PPF (M34, S-48; docs/integration/export-ouvert.md): the latest version of every
@@ -93,6 +112,9 @@ class OpenExport(
     private val lock = Mutex()
     private var cached: ExportBuild? = null
     private var builtAt: Long = 0
+
+    /** The check of a content (S-141) against the current export. */
+    suspend fun check(query: CheckQuery): CheckResult = ContentCheck.check(query, current().lookup(policy))
 
     suspend fun current(): ExportBuild = lock.withLock {
         val now = clock.millis()
@@ -171,7 +193,7 @@ class OpenExport(
             editorialKeys = policy.editorKeys().sorted(),
             datasets = described,
         )
-        return ExportBuild(catalog, ServedFile(JSON_WRITER.encodeToString(ExportCatalog.serializer(), catalog).encodeToByteArray(), JSON), files)
+        return ExportBuild(catalog, ServedFile(JSON_WRITER.encodeToString(ExportCatalog.serializer(), catalog).encodeToByteArray(), JSON), files, events)
     }
 
     companion object {
