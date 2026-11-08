@@ -282,23 +282,46 @@ class EditorialSigningTest {
         assertTrue(client.page("$section/relecture/$wrongId", team.bruno).bodyAsText().contains(EditorialTexts.format(EditorialTexts.SIGNER_REFUSED, SignedEditorialPublisher.CODE_SIGNED_WRONG_ID)))
         assertEquals(DraftStatus.SIGNING_REFUSED, drafts.find(wrongId)!!.status)
         assertTrue(storedArticles().isEmpty())
-        // Another key: the key of the use changed between the submission and the signature.
-        signer.tamper = null
+        // Another key: the service returns the same content signed by a key that is not the one of the event submitted.
+        val other = LocalEventSigner(IdentityKeys.generate())
+        signer.tamper = { status ->
+            if (status is SigningStatus.Signed) {
+                val e = status.event
+                SigningStatus.Signed(runBlocking { other.sign(UnsignedEvent(other.publicKey.hex, e.createdAt, e.kind, e.tags, e.content)) })
+            } else {
+                status
+            }
+        }
         val wrongKey = client.approved(team, title = "[EXEMPLE] Une autre affirmation", slug = "exemple-autre")
         val otherSlugAttempt = attempt(wrongKey)
         approveOnSigner(otherSlugAttempt.eventId)
-        signer.keyOverride = IdentityKeys.generate().publicKey.hex
         assertTrue(client.page("$section/relecture/$wrongKey", team.bruno).bodyAsText().contains(EditorialTexts.format(EditorialTexts.SIGNER_REFUSED, SignedEditorialPublisher.CODE_SIGNED_WRONG_KEY)))
         assertTrue(storedArticles().isEmpty(), "nothing published unsigned or signed by another key")
         // The checks themselves.
-        val other = LocalEventSigner(IdentityKeys.generate())
         val unsigned = otherSlugAttempt.unsigned
         val forged = other.sign(UnsignedEvent(other.publicKey.hex, unsigned.createdAt, unsigned.kind, unsigned.tags, unsigned.content))
-        assertEquals(SignedEditorialPublisher.CODE_SIGNED_WRONG_ID, SignedEditorialPublisher.checkSigned(forged, unsigned, platformKey))
-        val genuine = other.sign(UnsignedEvent(other.publicKey.hex, unsigned.createdAt, unsigned.kind, unsigned.tags, unsigned.content))
-        assertEquals(SignedEditorialPublisher.CODE_SIGNED_WRONG_KEY, SignedEditorialPublisher.checkSigned(genuine, genuine.unsigned(), platformKey))
-        assertEquals(SignedEditorialPublisher.CODE_SIGNED_BAD_SIGNATURE, SignedEditorialPublisher.checkSigned(genuine.copy(sig = "0".repeat(128)), genuine.unsigned(), other.publicKey.hex))
-        assertNull(SignedEditorialPublisher.checkSigned(genuine, genuine.unsigned(), other.publicKey.hex))
+        assertEquals(SignedEditorialPublisher.CODE_SIGNED_WRONG_KEY, SignedEditorialPublisher.checkSigned(forged, unsigned))
+        assertEquals(SignedEditorialPublisher.CODE_SIGNED_WRONG_ID, SignedEditorialPublisher.checkSigned(forged.copy(id = "0".repeat(64)), forged.unsigned()))
+        assertEquals(SignedEditorialPublisher.CODE_SIGNED_BAD_SIGNATURE, SignedEditorialPublisher.checkSigned(forged.copy(sig = "0".repeat(128)), forged.unsigned()))
+        assertNull(SignedEditorialPublisher.checkSigned(forged, forged.unsigned()))
+    }
+
+    @Test
+    fun afterAKeyRotationAnEventBuiltWithThePreviousKeyIsStillPublished() = testApplication {
+        val client = start()
+        val team = team()
+        val id = client.approved(team)
+        val submitted = attempt(id)
+        assertEquals(platformKey, submitted.unsigned.pubkey)
+        approveOnSigner(submitted.eventId)
+        // The key of the use rotates after the submission; the service signs the event with the key it was built with.
+        signer.keyOverride = IdentityKeys.generate().publicKey.hex
+        val page = client.page("$section/relecture/$id", team.bruno).bodyAsText()
+        assertTrue(page.contains(EditorialTexts.SIGNER_PUBLISHED), page)
+        val stored = storedArticles().single()
+        assertEquals(submitted.eventId, stored.id)
+        assertEquals(platformKey, stored.pubkey)
+        assertEquals(DraftStatus.PUBLISHED, drafts.find(id)!!.status)
     }
 
     @Test

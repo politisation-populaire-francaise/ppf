@@ -16,20 +16,24 @@ import kotlin.time.Duration.Companion.seconds
  * The editorial contents already published, as the drafts need them: the type of every slug (links of a
  * draft), the published version of a slug (diff, update) and the editorial key of the space.
  *
- * Until the platform's editorial key exists (step 5, signing service), the key of a space is the editorial
- * key ([isEditor]) that signed the most published contents of that space (D-093); with none, the
- * [PREVIEW_KEY] stands in, only to build the previews (nothing is ever signed with it). Kept [ttl].
+ * The key of a space is the current key of its use on the signing service ([keyOf], D-095) once one is
+ * configured and answers; otherwise, as before (D-093), the editorial key ([isEditor]) that signed the most
+ * published contents of that space; with none, the [PREVIEW_KEY] stands in, only to build the previews
+ * (nothing is ever signed with it). Kept [ttl], the keys of the uses with the contents.
  */
 class PublishedContents(
     private val events: EventRepository,
     private val isEditor: (String) -> Boolean,
     private val ttl: Duration = 30.seconds,
     private val clock: Clock = Clock.systemUTC(),
+    /** The current key of the use of a space (`PlatformSigner.currentKey`), null without a signing service. */
+    private val keyOf: (suspend (EditorialSpace) -> String?)? = null,
 ) {
-    /** The latest version of each address of the editorial keys, by author then slug. */
-    class Snapshot(val latest: Map<String, Map<String, SignedEvent>>) {
-        /** The editorial key of [space]: the one that signed the most contents of its types. */
+    /** The latest version of each address of the editorial keys, by author then slug; [keys]: the current key of each space's use. */
+    class Snapshot(val latest: Map<String, Map<String, SignedEvent>>, val keys: Map<EditorialSpace, String> = emptyMap()) {
+        /** The editorial key of [space]: the current key of its use, else the one that signed the most contents of its types. */
         fun authorOf(space: EditorialSpace): String {
+            keys[space]?.let { return it }
             val types = EditorialSchemas.of(space).map { it.type.tagValue }.toSet()
             return latest.maxByOrNull { (_, bySlug) -> bySlug.values.count { it.firstTagValue(Article.TAG_TYPE) in types } }
                 ?.takeIf { (_, bySlug) -> bySlug.values.any { it.firstTagValue(Article.TAG_TYPE) in types } }?.key
@@ -65,7 +69,7 @@ class PublishedContents(
     fun snapshot(): Snapshot {
         val now = clock.millis()
         cached?.takeIf { now - readAt < ttl.inWholeMilliseconds }?.let { return it }
-        val fresh = Snapshot(read())
+        val fresh = Snapshot(read(), keys())
         cached = fresh
         readAt = now
         return fresh
@@ -75,6 +79,21 @@ class PublishedContents(
     @Synchronized
     fun refresh() {
         cached = null
+    }
+
+    /** The current key of each space's use; a space whose use has no key, or a service that fails, keeps the fallback. */
+    private fun keys(): Map<EditorialSpace, String> {
+        val lookup = keyOf ?: return emptyMap()
+        return EditorialSpace.entries.mapNotNull { space ->
+            val key = try {
+                kotlinx.coroutines.runBlocking { lookup(space) }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                null
+            }
+            key?.takeIf { HEX_KEY.matches(it) }?.let { space to it }
+        }.toMap()
     }
 
     private fun read(): Map<String, Map<String, SignedEvent>> {
@@ -106,6 +125,7 @@ class PublishedContents(
 
     companion object {
         const val MAX_EVENTS: Int = 20_000
+        private val HEX_KEY = Regex("^[0-9a-f]{64}$")
 
         /**
          * The x coordinate of the generator of secp256k1: a valid key that nobody uses to sign, only to build

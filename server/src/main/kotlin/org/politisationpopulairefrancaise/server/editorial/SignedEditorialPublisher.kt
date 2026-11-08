@@ -35,7 +35,7 @@ import java.util.UUID
  *   tags of the published version followed by the new one (date, summary of the editor, nature); then
  *   `submitDraft(unsigned, use, doubleValidation = true, author)`, kept in `editorial_signing`;
  * - [state], at each opening of the review page (no background loop): `draftStatus`, then, when ready,
- *   `request` and `status`; a signed event is checked (same id, key of the use, valid signature, exactly
+ *   `request` and `status`; a signed event is checked (same key and id as submitted, valid signature, exactly
  *   the content submitted) and published unchanged through the single [PublicationPort];
  * - [retry]: after an expiry or a refusal, a new event (new `created_at`).
  *
@@ -200,7 +200,7 @@ class SignedEditorialPublisher(
                 refuse(attempt, outcome.code)
             }
             is SigningStatus.Signed -> {
-                val problem = checkSigned(outcome.event, unsigned, signer.currentKey(attempt.use))
+                val problem = checkSigned(outcome.event, unsigned)
                 if (problem != null) return refuse(attempt, problem)
                 io { signing.markSigned(attempt.eventId, outcome.event) }
                 publish(attempt, outcome.event)
@@ -267,12 +267,15 @@ class SignedEditorialPublisher(
         private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
 
         /**
-         * Why [signed] may not be published for [unsigned], or null: the same id, the key of the use now
-         * ([currentKey]), a valid signature, and exactly the content submitted (nothing added, nothing changed).
+         * Why [signed] may not be published for [unsigned], or null: the key of the event submitted, the same id,
+         * a valid signature, and exactly the content submitted (nothing added, nothing changed). Not the current
+         * key of the use: after a rotation the service still signs, while it is valid, an event built with the
+         * previous key; the trust of the key for the use (certificates, revocations) is checked by
+         * [HttpPlatformSigner] (`untrusted_key_from_signer`).
          */
-        fun checkSigned(signed: SignedEvent, unsigned: UnsignedEvent, currentKey: String?): String? = when {
+        fun checkSigned(signed: SignedEvent, unsigned: UnsignedEvent): String? = when {
+            signed.pubkey != unsigned.pubkey -> CODE_SIGNED_WRONG_KEY
             signed.id != unsigned.idHex() -> CODE_SIGNED_WRONG_ID
-            signed.pubkey != unsigned.pubkey || signed.pubkey != currentKey -> CODE_SIGNED_WRONG_KEY
             !signed.verify() -> CODE_SIGNED_BAD_SIGNATURE
             signed.unsigned() != unsigned -> CODE_SIGNED_CHANGED
             else -> null

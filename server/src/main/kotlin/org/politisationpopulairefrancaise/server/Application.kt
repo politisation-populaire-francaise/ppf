@@ -56,6 +56,7 @@ import org.politisationpopulairefrancaise.server.signing.PlatformSigner
 import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.editorial.PublishedContents
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
+import org.politisationpopulairefrancaise.core.platform.SigningUse
 import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
@@ -284,7 +285,13 @@ fun Application.module(
         val drafts = EditorialDrafts(dataSource, teamBackOffice.clock)
         // The review (step 4): the reviewer never wrote the draft, nor shares a Nostr key with one who did.
         val reviews = EditorialReviews(dataSource, drafts, teamBackOffice.clock) { account -> teamBackOffice.member(account)?.nostrPubkey }
-        val publishedContents = PublishedContents(repository, policy::isEditor)
+        // The key of a space: the current key of its use once the signing service is configured (D-095).
+        val publishedContents = PublishedContents(
+            repository, policy::isEditor,
+            keyOf = platformSigner?.let { signer ->
+                { space: EditorialSpace -> signer.currentKey(if (space == EditorialSpace.VOIR) SigningUse.EDITORIAL_VOIR else SigningUse.EDITORIAL_COMPRENDRE) }
+            },
+        )
         // The signature and the publication (step 5): on the platform signature when it is configured, never unsigned.
         val publisher = editorialPublisher ?: platformSigner?.let { signer ->
             SignedEditorialPublisher(
