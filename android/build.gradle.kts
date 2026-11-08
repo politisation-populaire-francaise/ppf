@@ -55,9 +55,11 @@ android {
         versionCode = commitVersionCode
         versionName = "0.1.0"
 
-        // Native libsecp256k1 is shipped per architecture; 32-bit x86 only exists on old emulators.
+        // Native libraries (libsecp256k1, MapLibre) are shipped per architecture. Phones are ARM: the test
+        // version sent to phones and the release carry only ARM, which keeps them much smaller (the map
+        // engine alone weighs several megabytes per architecture). 32-bit x86 only exists on old emulators.
         ndk {
-            abiFilters += setOf("arm64-v8a", "armeabi-v7a", "x86_64")
+            abiFilters += setOf("arm64-v8a", "armeabi-v7a")
         }
     }
 
@@ -86,6 +88,10 @@ android {
     buildTypes {
         // Development build, for the computer only: debuggable, never sent to a phone.
         debug {
+            // Also x86_64, for an emulator on a computer (added to the ARM filters above).
+            ndk {
+                abiFilters += "x86_64"
+            }
             applicationIdSuffix = ".test"
             versionNameSuffix = "-test"
             buildConfigField("String", "PPF_SERVER_URL", serverUrlField(serverUrlOverride ?: ""))
