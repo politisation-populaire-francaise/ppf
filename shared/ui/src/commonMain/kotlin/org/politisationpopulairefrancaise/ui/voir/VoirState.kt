@@ -39,6 +39,9 @@ sealed interface VoirDestination {
 
     /** The form to report an error in the content at [address] (VO-22). */
     data class Report(val address: ContentAddress) : VoirDestination
+
+    /** « Vérifier un contenu PPF » (S-141): a code, a link or a signed content, checked on the device. */
+    data object Verify : VoirDestination
 }
 
 /**
