@@ -142,7 +142,7 @@ class MessagingSession(
     var ownCompromised: Boolean by mutableStateOf(false)
         private set
 
-    fun setOwnCompromised(compromised: Boolean) {
+    fun markOwnCompromised(compromised: Boolean) {
         ownCompromised = compromised
     }
 

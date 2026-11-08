@@ -53,7 +53,7 @@ class AccountRecoveryUiTest {
     private val phrase = RecoveryPhrase.parse(nip06)
     private val account = phrase.deriveKeys()
 
-    private fun ComposeUiTest.openMySpace(store: InMemoryIdentityStore, server: InMemoryPublicationPort?, width: Int = 1000, height: Int = 900) {
+    private fun ComposeUiTest.openMySpace(store: InMemoryIdentityStore, server: InMemoryPublicationPort?, width: Int = 1000, height: Int = 740) {
         setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(AppDependencies(store, remote = server)) } }
         onNodeWithTag(ShellTags.navItem(Space.MON_ESPACE)).performClick()
         waitForIdle()
@@ -71,6 +71,12 @@ class AccountRecoveryUiTest {
         waitForIdle()
     }
 
+    /** A button of a dialog, outside the scrolled page. */
+    private fun ComposeUiTest.tap(tag: String) {
+        onNodeWithTag(tag).performClick()
+        waitForIdle()
+    }
+
     private fun ComposeUiTest.awaitTag(tag: String) = waitUntil(timeoutMillis = 10_000) { has(tag) }
 
     private fun commitments(server: InMemoryPublicationPort) = server.events.filter { it.kind == AccountRecovery.COMMITMENT_KIND }
@@ -84,7 +90,7 @@ class AccountRecoveryUiTest {
         click(AccountTags.PHRASE_NOTED)
         if (keep) {
             click(RecoveryTags.KEEP_PHRASE)
-            click(RecoveryTags.KEEP_CONFIRM)
+            tap(RecoveryTags.KEEP_CONFIRM)
             assertTrue(sees("La phrase restera sur ce téléphone"))
         }
         val asked = Regex("\\d+").findAll(textOf(AccountTags.VERIFY_INSTRUCTION)).map { it.value.toInt() }.toList()
@@ -122,7 +128,7 @@ class AccountRecoveryUiTest {
         click(AccountTags.PHRASE_NOTED)
         // Cancelling the warning changes nothing.
         click(RecoveryTags.KEEP_PHRASE)
-        click(RecoveryTags.KEEP_CANCEL)
+        tap(RecoveryTags.KEEP_CANCEL)
         assertTrue(sees("sera effacée de ce téléphone"))
         assertNull(store.snapshot)
         click(AccountTags.CANCEL)
@@ -179,7 +185,7 @@ class AccountRecoveryUiTest {
         click(RecoveryTags.CHECK_SUBMIT)
         onNodeWithTag(RecoveryTags.CHECK_ERROR).assertTextContains("autre compte", substring = true)
         click(RecoveryTags.KEEP_PHRASE)
-        click(RecoveryTags.KEEP_CONFIRM)
+        tap(RecoveryTags.KEEP_CONFIRM)
         onNodeWithTag(RecoveryTags.CHECK_WHOLE).performTextInput(nip06.uppercase())
         click(RecoveryTags.CHECK_SUBMIT)
         awaitTag(RecoveryTags.CHECK_DONE)
@@ -212,7 +218,7 @@ class AccountRecoveryUiTest {
         val server = InMemoryPublicationPort()
         runBlocking { AccountRecoveryClient(server).ensureCommitment(LocalEventSigner(account), phrase.deriveRecoveryKeys().publicKey) }
         val store = InMemoryIdentityStore()
-        openMySpace(store, server, width = 360, height = 800)
+        openMySpace(store, server, width = 360, height = 740)
         click(LostControlTags.OPEN)
         onNodeWithTag(LostControlTags.PHRASE).performTextInput(nip06)
         onNodeWithTag(LostControlTags.SINCE).assertTextContains("Maintenant")

@@ -222,7 +222,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         messaging.setAccount(accountSession.messagingSigner)
     }
     // A compromised account no longer writes (S-146): the conversations say why.
-    LaunchedEffect(accountSession.compromise) { messaging.setOwnCompromised(accountSession.compromise != null) }
+    LaunchedEffect(accountSession.compromise) { messaging.markOwnCompromised(accountSession.compromise != null) }
     // How long the server keeps the account's private messages (Mon espace, D-028).
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
     // The notification settings (Mon espace, M31); null without notifications.
