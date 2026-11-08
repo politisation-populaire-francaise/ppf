@@ -1,6 +1,6 @@
 [
     {
-        "id": "1b54085abe20a78a17cc422b6a7bd28f8e0b699c57f7ab1ae9ca72c73157f8f5",
+        "id": "d7bef389156cedcf3f332d4b39e8d6ff718881ecb24be36afe04d2bc706469b6",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1794139200,
         "kind": 30023,
@@ -116,10 +116,79 @@
                 "sacha-temoin",
                 "2026-10-20",
                 "2026-10-21"
+            ],
+            [
+                "ppf-theme-words",
+                "democratie",
+                "motion de censure",
+                "référendum",
+                "élections"
+            ],
+            [
+                "ppf-theme-words",
+                "sante",
+                "santé",
+                "hôpital",
+                "médicament"
+            ],
+            [
+                "ppf-theme-words",
+                "logement",
+                "logement",
+                "loyer",
+                "habitat"
+            ],
+            [
+                "ppf-words-version",
+                "1",
+                "2026-11-08",
+                "[EXEMPLE] Première version des mots"
+            ],
+            [
+                "ppf-party",
+                "alex-modele",
+                "an:PO910201",
+                "2012-06-01",
+                ""
+            ],
+            [
+                "ppf-party",
+                "alex-modele",
+                "pe-org:990101",
+                "2019-07-01",
+                ""
+            ],
+            [
+                "ppf-party",
+                "camille-exemple",
+                "an:PO910202",
+                "2012-06-01",
+                ""
+            ],
+            [
+                "ppf-party",
+                "camille-exemple",
+                "senat-grp:EXB",
+                "2006-10-01",
+                ""
+            ],
+            [
+                "ppf-party",
+                "dominique-fictif",
+                "an:PO910102",
+                "2012-06-01",
+                ""
+            ],
+            [
+                "ppf-party",
+                "sacha-temoin",
+                "pe-org:990103",
+                "2019-07-01",
+                ""
             ]
         ],
         "content": "Contenu de démonstration : l’élection, les candidats et leurs positions sont fictifs. Chaque candidat a les mêmes thèmes, dans le même ordre ; les candidats sont rangés par ordre alphabétique ; une case vide dit qu’aucune position n’a été publiée. Les dates des tours, des demandes et des ajouts sont fictives elles aussi.\n",
-        "sig": "160a26cc22afaa559067827dd36e52cb62827d1f0789e9b29131b17bd29aafb817c12ab4dcd3dd321a14ceca32b77d4e98e4b45422c46ffc299a44b08e580c33"
+        "sig": "0ad4bcd85bdaecae7023fba32b480840cfed99e868fcb9979b0ad2658e215f65789d98440e1b172faa685a8e8a7330035737882cc923c1fd5e8268fd34a34c79"
     },
     {
         "id": "41631ad0db0b0b5e4f54158b57a0ed1405f9bea19a4aab59b29c7ce39449ef7a",

@@ -205,6 +205,7 @@ Les fiches des responsables publics (mandats, votes, promesses, affaires, intér
 | Demande de droit de réponse : nom pour la mention, qualité, texte, contenu visé | Obligation légale (LCEN, article 1-1, III) | Messages privés chiffrés : appareil de l'utilisateur et équipe de rédaction ; le serveur ne garde qu'une enveloppe illisible, pendant la conservation des messages (D-028) | Côté équipe : à fixer avec la propriétaire | L'utilisateur et l'équipe |
 | Signalement d'erreur avec le compte : clé publique et texte | Corriger un contenu (journal des corrections) | Messages privés chiffrés, comme ci-dessus | Idem | L'utilisateur et l'équipe |
 | Signalement d'erreur anonyme : texte et clé à usage unique | Corriger un contenu sans révéler qui signale | En mémoire seulement en attente d'envoi ; rien sur l'appareil après l'envoi | Jusqu'à l'envoi ou la fermeture de l'application | Personne ne peut relier le signalement à quelqu'un |
+| Signalement d'un scrutin mal rangé dans les votes passés du comparateur (DE-16, D-117) : identifiant et titre officiel du scrutin, texte facultatif, clé à usage unique | Corriger la règle de mots du comparateur pour tous | Comme le signalement d'erreur anonyme ci-dessus (même circuit, D-056) | Idem | L'équipe |
 | Brouillons des formulaires | Ne pas perdre le texte | En mémoire seulement | Fermeture de l'application | L'utilisateur |
 
 ## Ajout du 7 novembre 2026 : données ouvertes du Parlement (D-064, D-065)
