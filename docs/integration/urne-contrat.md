@@ -75,6 +75,12 @@ fun open(id: String, subject: String, choices: List<String>, opensAt: Instant, c
 
 La décision de la propriétaire du 7 novembre 2026 (participation publique, élus et organisations affichés, chacun pouvant masquer la sienne tout en comptant) reste un **affichage choisi par la personne** : une réponse signée publiquement (par exemple NIP-52 pour une mobilisation), publiée seulement si la personne le décide. Le **nombre** de participants, lui, vient toujours de l'urne : une personne qui se montre et une personne qui reste discrète comptent chacune une fois, et on ne peut jamais retrouver qui, parmi les bulletins, s'est montré.
 
+## 4 bis. Clôture signée par la plateforme (8 novembre 2026, contrat du service de signature 1.2)
+
+- À la clôture d'une urne, le serveur demande au service de signature (usage automatique `decider.urn_closure`, sans approbation) une **déclaration de clôture** : type 30078, `d` = `ppf:urne-cloture:<n>`, `ppf-urne` = `<n>`, `ppf-closing-sha256` = empreinte SHA-256 des **octets exacts** de `GET /api/v1/urnes/{n}/closing` (une seule mise en forme, servie telle quelle) ; contenu : un objet JSON `{"v":1,"urne":n,"id":…,"subject":…,"results":{…}}`.
+- La déclaration signée est d'abord gardée dans la ligne de l'urne, puis publiée telle quelle par la table des événements : elle ne peut pas se perdre entre la signature et la publication. Un refus `urn_already_closed` (déjà signée, et perdue ici) n'est jamais redemandé et alerte l'équipe ; les refus passagers sont redemandés au passage suivant ; sans service de signature configuré, les clôtures attendent, sans jamais être signées ailleurs.
+- Les applications gardent la **première** déclaration signée par la plateforme pour chaque urne (`UrnClosures.choose` du Directeur technique), vérifient l'empreinte contre le document téléchargé, puis recomptent (`UrneRecount`). La signature prouve que la plateforme a dit ce résultat, pas qu'il est juste : le recomptage par tous reste la garantie.
+
 ## 5. Ce que « Décider » garantit
 
 - Le même code pour tous : les vecteurs de la RFC 9497, l'autotest de l'appareil, le recomptage public (`UrneRecount`).
