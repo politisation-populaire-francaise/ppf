@@ -7,6 +7,7 @@
 //   ./gradlew :signer:buildFatJar   (build/libs/ppf-signer.jar)
 
 import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
+import java.util.zip.ZipFile
 
 plugins {
     alias(libs.plugins.kotlinJvm)
@@ -59,7 +60,7 @@ val verifySignerJar = tasks.register("verifySignerJar") {
     inputs.file(jar)
     val forbidden = forbiddenInSignerJar
     doLast {
-        java.util.zip.ZipFile(jar.get().asFile).use { zip ->
+        ZipFile(jar.get().asFile).use { zip ->
             val found = zip.entries().asSequence().map { it.name }.filter { name -> forbidden.any { name.contains(it) } }.toList()
             check(found.isEmpty()) { "ppf-signer.jar must not contain libsodium, JNA or their loader (D-145): ${found.take(5)}" }
         }

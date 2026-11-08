@@ -6,6 +6,8 @@
 //   ./gradlew :tools:open-data-importer:run --args="--out build/parlement"
 //   ./gradlew :tools:open-data-importer:buildFatJar   (build/libs/ppf-open-data-importer.jar)
 
+import java.util.zip.ZipFile
+
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlinSerialization)
@@ -62,7 +64,7 @@ val verifyImporterJar = tasks.register("verifyImporterJar") {
     inputs.file(jar)
     val forbidden = forbiddenInImporterJar
     doLast {
-        java.util.zip.ZipFile(jar.get().asFile).use { zip ->
+        ZipFile(jar.get().asFile).use { zip ->
             val found = zip.entries().asSequence().map { it.name }.filter { name -> forbidden.any { name.contains(it) } }.toList()
             check(found.isEmpty()) { "ppf-open-data-importer.jar must not contain libsodium, JNA or their loader (D-145): ${found.take(5)}" }
         }
