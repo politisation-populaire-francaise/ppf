@@ -201,3 +201,11 @@ Détail : `docs/integration/agir-temoignages.md`. Un témoignage révèle des op
 | Brouillon du formulaire (texte, date, lieu, photo d’origine, zones) | Ne pas perdre la saisie pendant la session | Mémoire seulement, jamais écrit en clair | Envoi, fermeture de l’application ou effacement des clés | Le témoin |
 
 Rien de la requête n’est gardé (ni adresse IP, ni en-tête, ni appareil). Les journaux ne reçoivent que des nombres. L’application ne lit jamais la position du téléphone : le lieu est écrit par le témoin. La clé qui signe la déclaration de provenance est créée pour la seule photo et détruite aussitôt. Aucun tiers : la photo est choisie par le sélecteur du système (Android) ou la boîte de dialogue des fichiers (ordinateur), sans permission. Vidéos et sons : refusés pour l’instant (aucune donnée).
+
+## Ajout du 8 novembre 2026 : signalement des failles de sécurité (S-92)
+
+| Donnée | Pourquoi | Où, combien de temps |
+|---|---|---|
+| Aucune pour `security.txt` et la page `/securite` | Pages publiques, servies à l'identique à tous, sans formulaire ni journal | Rien n'est stocké |
+| Message d'un chercheur à la clé de l'équipe sécurité (NIP-17) | Recevoir le signalement en privé | Chiffré de bout en bout sur l'appareil de l'expéditeur : le serveur, quand il sert de relais, ne garde qu'une enveloppe illisible, pour la durée de conservation des messages (D-028) ; le texte n'est lisible que sur les appareils de l'équipe sécurité, qui le gardent le temps du traitement et de la publication conjointe |
+| Signalement privé sur GitHub (après la liaison) | Autre canal privé | Chez GitHub (hors Union européenne), visible de l'équipe seulement ; le chercheur choisit ce canal en connaissance de cause |
