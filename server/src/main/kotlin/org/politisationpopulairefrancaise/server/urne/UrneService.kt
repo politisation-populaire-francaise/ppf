@@ -172,7 +172,8 @@ class UrneService(
         if (vote.choice != UrneInfo.WITHDRAWN && vote.choice !in urne.choices) throw UrneRefusal(400, "unknown_choice")
         val account = store.account(vote.official) ?: throw UrneRefusal(403, "not_elected")
         if (account.levelAt(urne.openedWeek) != VoteLevel.ELU) throw UrneRefusal(403, "not_elected")
-        store.recordPublicVote(urne.number, vote.official, vote.choice, vote.createdAt, Json.encodeToString(SignedEvent.serializer(), event))
+        // The box is checked open again inside the transaction that writes the vote and its line of the legal register.
+        if (store.recordPublicVote(vote, now) == PublicVoteWrite.CLOSED) throw UrneRefusal(409, "urne_closed")
     }
 
     // ------------------------------------------------------------------ authenticated (the routes check NIP-98)

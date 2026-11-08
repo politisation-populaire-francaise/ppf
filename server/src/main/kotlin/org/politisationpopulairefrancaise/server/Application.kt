@@ -271,7 +271,7 @@ fun Application.module(
     // Only a natural person votes (D-116): the editorial keys and the organisations of the directory are refused.
     val urnes = dataSource?.takeIf { urne.seeds != null }?.let {
         val organisations = VerifiedOrganisations(it, policy::isEditor)
-        UrneService.create(UrneStore(it), urne, persons = PersonAccounts(it, policy::isEditor, organisations::isVerified))
+        UrneService.create(UrneStore(it, LegalRegister(policy::isEditor)), urne, persons = PersonAccounts(it, policy::isEditor, organisations::isVerified))
     }
     if (urnes != null && dataSource != null) {
         val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)

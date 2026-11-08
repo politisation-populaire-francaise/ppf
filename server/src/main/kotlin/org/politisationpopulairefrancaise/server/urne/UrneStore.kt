@@ -3,8 +3,11 @@ package org.politisationpopulairefrancaise.server.urne
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.urne.PublicVote
 import org.politisationpopulairefrancaise.core.urne.UrneInfo
 import org.politisationpopulairefrancaise.core.urne.VoteLevel
+import org.politisationpopulairefrancaise.server.legal.LegalRegister
 import java.sql.Connection
 import java.sql.ResultSet
 import java.sql.Timestamp
@@ -52,6 +55,17 @@ data class Urne(
 
 data class StoredBallot(val y: ByteArray, val token: ByteArray, val level: VoteLevel, val choice: String, val hour: Instant)
 
+/** What [UrneStore.recordPublicVote] did. */
+enum class PublicVoteWrite {
+    RECORDED,
+
+    /** A vote as recent or newer is stored: nothing changed. */
+    OLDER,
+
+    /** The box closed (or is unknown) when the transaction locked it: nothing changed. */
+    CLOSED,
+}
+
 /** What [UrneStore.deliver] did. */
 enum class Delivery { DONE, CURSOR_MOVED }
 
@@ -60,7 +74,11 @@ enum class Delivery { DONE, CURSOR_MOVED }
  * link between an account and a ballot box is the account's cursor, which says "served up to box n"
  * for every account alike (D-110, 6.3).
  */
-class UrneStore(private val dataSource: DataSource) {
+class UrneStore(
+    private val dataSource: DataSource,
+    /** The legal register (D-077): the public votes of the elected officials enter it, in their own transaction. */
+    private val register: LegalRegister = LegalRegister(),
+) {
 
     private val choicesJson = ListSerializer(String.serializer())
 
@@ -290,22 +308,55 @@ class UrneStore(private val dataSource: DataSource) {
         }
 
     /** The ballots of a box, sorted by their secret identifier (never by arrival, R1). */
-    /** Records the public vote of an elected official unless a newer one is stored; true when recorded. */
-    fun recordPublicVote(number: Long, pubkey: String, choice: String, createdAt: Long, event: String): Boolean = dataSource.connection.use { c ->
+    /**
+     * Records the public vote of an elected official (D-115) and its operation in the legal register (D-077),
+     * in one transaction: both or neither. The box is locked and checked open at [now] inside it (its public
+     * votes are written one after the other; the anonymous ballots are not blocked). In the register: the
+     * first vote is a creation, a newer one a replacement, a withdrawal (`retire`) a deletion of the vote it
+     * removes; a withdrawal with no vote to remove records nothing there (no content), and a vote after a
+     * withdrawal is a creation again.
+     */
+    fun recordPublicVote(vote: PublicVote.Read, now: Instant): PublicVoteWrite = transaction { c ->
+        val open = c.prepareStatement("SELECT closed, opens_at, closes_at FROM urne WHERE number = ? FOR NO KEY UPDATE").use { s ->
+            s.setLong(1, vote.urne)
+            s.executeQuery().use { r ->
+                r.next() && !r.getBoolean(1) && !r.getTimestamp(2).toInstant().isAfter(now) &&
+                    (r.getTimestamp(3)?.toInstant()?.isAfter(now) ?: true)
+            }
+        }
+        if (!open) {
+            c.rollback()
+            return@transaction PublicVoteWrite.CLOSED
+        }
+        val previous = c.prepareStatement("SELECT event->>'id', created_at, choice FROM public_vote WHERE urne_number = ? AND pubkey = ?").use { s ->
+            s.setLong(1, vote.urne)
+            s.setString(2, vote.official)
+            s.executeQuery().use { r -> if (r.next()) Triple(r.getString(1), r.getLong(2), r.getString(3)) else null }
+        }
+        if (previous != null && previous.second >= vote.createdAt) {
+            c.rollback()
+            return@transaction PublicVoteWrite.OLDER
+        }
         c.prepareStatement(
             """
             INSERT INTO public_vote (urne_number, pubkey, choice, created_at, event) VALUES (?, ?, ?, ?, ?::jsonb)
             ON CONFLICT (urne_number, pubkey) DO UPDATE SET choice = excluded.choice, created_at = excluded.created_at, event = excluded.event
-            WHERE public_vote.created_at < excluded.created_at
             """.trimIndent(),
         ).use { s ->
-            s.setLong(1, number)
-            s.setString(2, pubkey)
-            s.setString(3, choice)
-            s.setLong(4, createdAt)
-            s.setString(5, event)
-            s.executeUpdate() == 1
+            s.setLong(1, vote.urne)
+            s.setString(2, vote.official)
+            s.setString(3, vote.choice)
+            s.setLong(4, vote.createdAt)
+            s.setString(5, Json.encodeToString(SignedEvent.serializer(), vote.event))
+            s.executeUpdate()
         }
+        val removed = previous?.takeIf { it.third != UrneInfo.WITHDRAWN }?.let { LegalRegister.ReplacedVersion(it.first, it.second, vote.official) }
+        when {
+            vote.choice == UrneInfo.WITHDRAWN -> removed?.let { register.recordExternal(c, LegalRegister.Operation.DELETE, vote.event, it) }
+            removed == null -> register.recordExternal(c, LegalRegister.Operation.CREATE, vote.event, null)
+            else -> register.recordExternal(c, LegalRegister.Operation.REPLACE, vote.event, removed)
+        }
+        PublicVoteWrite.RECORDED
     }
 
     /** The signed public votes of one box (JSON of the events), by official. */
