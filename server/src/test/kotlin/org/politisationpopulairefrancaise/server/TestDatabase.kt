@@ -26,7 +26,7 @@ object TestDatabase {
                         "testimony_submission, testimony_evidence, testimony_file, published_media, push_subscription, group_role, group_ban, " +
                         "group_removed_event, group_edit, group_held_creation, account_type, recovery_commitment, compromised_account, group_orphan, " +
                         "legal_register.content_operation, legal_register.account_pseudonym, legal_register.requisition_answer, " +
-                        "editorial_review, editorial_draft_version, editorial_draft CASCADE",
+                        "editorial_signing, editorial_review, editorial_draft_version, editorial_draft CASCADE",
                 )
             }
         }

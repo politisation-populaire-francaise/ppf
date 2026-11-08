@@ -81,6 +81,8 @@ class ComprendreCoursesTest {
                 // Third wave (D-049).
                 "s-inscrire-et-voter", "le-droit-de-greve", "le-conseil-constitutionnel", "la-separation-des-pouvoirs",
                 "l-union-europeenne-qui-decide-quoi", "commune-departement-region", "se-presenter-a-une-election", "les-petitions-officielles",
+                // Laicite and fascism (CO-21, CO-22).
+                "la-laicite", "comprendre-le-fascisme",
             ),
             bundled.map { it.article.slug }.toSet(),
         )

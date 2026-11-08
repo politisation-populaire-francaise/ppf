@@ -295,7 +295,7 @@ class EditorialDraftsTest {
         val id = draftIdOf(created)
         val draft = drafts.find(id)!!
         assertEquals(event.id, draft.baseEventId)
-        assertEquals(0, drafts.version(id, 1)!!.problems)
+        assertEquals(2, drafts.version(id, 1)!!.problems, "the nature of the change and its summary are still to give (step 5)")
         val form = client.page("$section/brouillons/$id", editor.token).bodyAsText()
         assertTrue(form.contains("name=\"change_kind\""), "an update asks the nature of the change")
         assertEquals(HttpStatusCode.OK, client.page("$section/brouillons/$id/differences", editor.token).status)
