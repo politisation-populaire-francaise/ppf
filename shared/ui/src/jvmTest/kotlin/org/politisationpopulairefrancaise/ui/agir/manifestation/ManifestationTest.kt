@@ -120,8 +120,13 @@ private fun ComposeUiTest.openSheet() {
     awaitTag(ManifestationTags.SHEET)
 }
 
+/** The guides are imported in the background: their text arrives a moment after the page. */
 @OptIn(ExperimentalTestApi::class)
-private fun ComposeUiTest.top(tag: String): Float = onNodeWithTag(tag).fetchSemanticsNode().boundsInRoot.top
+private fun ComposeUiTest.awaitText(text: String) =
+    waitUntil(timeoutMillis = 30_000) { onAllNodesWithText(text, substring = true).fetchSemanticsNodes().isNotEmpty() }
+
+@OptIn(ExperimentalTestApi::class)
+private fun ComposeUiTest.top(tag: String): Float = onNodeWithTag(tag).fetchSemanticsNode().positionInRoot.y
 
 @OptIn(ExperimentalTestApi::class)
 class ManifestationTest {
@@ -198,7 +203,7 @@ class ManifestationTest {
         onNodeWithTag(ManifestationTags.GUIDE_LINK + ManifestationGuides.CUSTODY).performScrollTo().performClick()
         waitForIdle()
         awaitTag(ManifestationTags.GUIDE)
-        onNodeWithText("Garde à vue : vos droits", substring = true).assertExists()
+        awaitText("Garde à vue : vos droits")
         onNodeWithTag(ManifestationTags.GUIDE_BACK).performClick()
         waitForIdle()
         awaitTag(ManifestationTags.NUMBER + "samu")
@@ -268,7 +273,7 @@ class ManifestationTest {
         onNodeWithTag(ManifestationTags.GUIDE_LINK + ManifestationGuides.INJURY).performScrollTo().performClick()
         waitForIdle()
         awaitTag(ManifestationTags.GUIDE)
-        onNodeWithText("Après une blessure en manifestation", substring = true).assertExists()
+        awaitText("Après une blessure en manifestation")
         onNodeWithText("Défenseur des droits", substring = true).assertExists()
         onNodeWithTag(ManifestationTags.GUIDE_BACK).performClick()
         waitForIdle()
@@ -300,11 +305,13 @@ class ManifestationTest {
         onNodeWithTag(ManifestationTags.RALLY_PLACE).performTextInput("Kiosque secret")
         onNodeWithTag(ManifestationTags.RALLY_SAVE).performScrollTo().performClick()
         waitForIdle()
+        onNodeWithTag(ManifestationTags.NUMBER + "samu").performScrollTo().performClick()
+        waitForIdle()
         onNodeWithTag(ManifestationTags.OPEN_HELP).performScrollTo().performClick()
         waitForIdle()
         awaitTag(ManifestationTags.SHEET)
-        onNodeWithTag(ManifestationTags.NUMBER + "samu").performClick()
-        waitForIdle()
+        // "Roubaix" carries no department number: only the national network is near.
+        awaitTag(ManifestationTags.LEGAL + "reseau-avocats-benevoles")
         mainClock.advanceTimeBy(2_000)
         waitForIdle()
         assertTrue(server.published.isEmpty(), "nothing is published")

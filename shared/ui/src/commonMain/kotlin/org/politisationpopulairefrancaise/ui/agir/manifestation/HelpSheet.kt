@@ -26,6 +26,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.ui.platform.LocalUriHandler
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -112,10 +114,13 @@ fun HelpButton(modifier: Modifier = Modifier, fullWidth: Boolean = false, stacke
 @Composable
 fun HelpSheetHost(help: HelpState) {
     if (!help.isOpen) return
+    // The window of the sheet dials with the same handler as the screen below it (the platform's, or a test's).
+    val uriHandler = LocalUriHandler.current
     Dialog(
         onDismissRequest = help::back,
         properties = DialogProperties(usePlatformDefaultWidth = false),
     ) {
+        CompositionLocalProvider(LocalUriHandler provides uriHandler) {
         BoxWithConstraints(Modifier.fillMaxWidth().padding(12.dp), contentAlignment = Alignment.Center) {
             val title = stringResource(Res.string.help_title)
             Surface(
@@ -135,6 +140,7 @@ fun HelpSheetHost(help: HelpState) {
                     }
                 }
             }
+        }
         }
     }
 }
