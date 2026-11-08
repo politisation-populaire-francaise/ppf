@@ -2,7 +2,7 @@
 
 Ce registre liste exactement ce qui est stocké, pourquoi, où, combien de temps et qui y accède. Toute nouvelle donnée doit y être inscrite avant d'être codée (CLAUDE.md, section 7). Les opinions politiques sont des données sensibles (RGPD, article 9) : la plateforme ne relie jamais un vote, un soutien ou un engagement à une identité réelle.
 
-Dernière mise à jour : 7 novembre 2026 au soir (espace de l'équipe, back-office, D-120 à D-126). Précédentes : 7 novembre 2026 après-midi (vague 3 de « Comprendre » : annuaire officiel des élus, D-047 ; glossaire, D-048, sans donnée nouvelle) ; 7 novembre 2026 (espace « Agir » : agenda des mobilisations, appels, annuaire des organisations, file de relecture du serveur) ; 6 novembre 2026 au soir (messagerie : conversations privées, salons des collectifs, conservation réglable ; revendications proposées et vues du mur).
+Dernière mise à jour : 7 novembre 2026 au soir (registre légal des contenus publics, D-077). Précédentes : 7 novembre 2026 au soir (espace de l'équipe, back-office, D-120 à D-126) ; 7 novembre 2026 après-midi (vague 3 de « Comprendre » : annuaire officiel des élus, D-047 ; glossaire, D-048, sans donnée nouvelle) ; 7 novembre 2026 (espace « Agir » : agenda des mobilisations, appels, annuaire des organisations, file de relecture du serveur) ; 6 novembre 2026 au soir (messagerie : conversations privées, salons des collectifs, conservation réglable ; revendications proposées et vues du mur).
 
 ## 1. Données traitées par la plateforme
 
@@ -63,12 +63,39 @@ Données des membres de l'équipe (bénévoles et salariés de PPF), jamais des 
 
 Ni adresse IP, ni navigateur, ni appareil, ni adresse e-mail dans ces tables (un test le vérifie sur les noms de colonnes) ; aucune donnée du back-office n'est envoyée à un tiers.
 
+### Brouillons du circuit éditorial (8 novembre 2026, étape 3, D-093)
+
+Textes éditoriaux écrits par l'équipe dans l'espace de l'équipe (section `editorial.comprendre`), avant leur relecture et leur publication. Aucune donnée de citoyen. Base légale : intérêt légitime de l'association (traçabilité de la rédaction et de la relecture). Tables de la migration `V11__editorial.sql` (numéro provisoire), sur le serveur.
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Brouillon : identifiant interne, espace, type de contenu, identifiant (`slug`) et titre de la dernière version, contenu publié qu'il met à jour (identifiant d'événement), état, compte de l'équipe qui l'a créé (identifiant interne, pseudonyme), dates de création et de dernière modification, numéro de la dernière version, version soumise et date (pour l'étape 4), événement publié (pour l'étape 5) | Écrire et suivre un contenu jusqu'à sa publication | `editorial_draft` | Un brouillon jamais soumis est effacé avec ses versions 180 jours après sa dernière modification (tâche quotidienne) ; les durées des brouillons soumis, publiés ou refusés seront fixées avec la file (étape 4, proposition : 2 ans) | Membres ayant `editorial.comprendre.write` (rôle éditeur) |
+| Versions d'un brouillon : numéro, champs de l'en-tête dans l'ordre (comme un fichier de `content/`), texte, réponse à « produit avec l'aide d'une IA ? » (vide tant qu'elle n'est pas donnée), nature du changement et note de correction d'une mise à jour, compte qui l'a écrite, date, nombre de problèmes trouvés par le moteur ; jamais modifiées (la base le refuse) | Garder le travail de chacun, comparer les versions, ne jamais écraser le travail d'un autre (concurrence) | `editorial_draft_version` | Comme leur brouillon | Comme leur brouillon |
+| Journal : création et enregistrement de chaque version (identifiant du brouillon, numéro de version, type, identifiant du contenu, nombre de problèmes ; jamais le texte) | Traçabilité (cahier des charges, section 5) | `team_audit_log` (socle) | Comme le journal | Membres ayant `audit.read` |
+
+Ni adresse IP, ni navigateur : le serveur ne garde que les comptes de l'équipe (pseudonymes) et les textes. Les textes d'exemple restent marqués [EXEMPLE].
+
+### Registre légal des contenus publics (LCEN, 7 novembre 2026, D-077)
+
+Données pseudonymes que la loi impose de garder sur les contributions aux **contenus publics** (base légale : obligation légale, RGPD article 6, 1, c, avec l'article 6, V, A de la LCEN, le décret n° 2021-1362, articles 3, 5, 6 et 7, et l'injonction du décret n° 2026-920 ; détail et sources dans `docs/integration/lcen-conservation-identification.md`). Ce sont des données que les événements signés publics contiennent déjà ; le registre les garde après une modification ou une suppression. Schéma PostgreSQL séparé `legal_register`, jamais lu par une fonction de la plateforme : le serveur ne peut qu'y ajouter des lignes.
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Pour chaque création, modification ou suppression d'un contenu public (profils, messages, réactions, commentaires, messages des salons ouverts, appels, revendications publiées, mobilisations et réponses publiques, descriptions de salons ; jamais ceux des clés éditoriales) : identifiant de l'événement, nature de l'opération, date de réception (temps universel, à la seconde), date écrite dans l'événement, type, clé publique de l'auteur, type de protocole (un octet) ; pour une modification ou une suppression, identifiant, date et clé de la version retirée, **jamais son contenu** | Obligation légale de l'hébergeur : pouvoir répondre à une réquisition judiciaire (identifier la clé à l'origine d'un contenu) | `legal_register.content_operation` | Un an à compter de l'opération, puis effacement automatique quotidien (une fonction de la base qui ne peut rien effacer de plus jeune) | Personne en temps normal ; sur réquisition judiciaire écrite seulement, deux membres de l'équipe titulaires de `legal.requisition` (`super_admin`, `admin`), l'un demande et l'autre valide ; la réponse se télécharge une seule fois ; chaque réponse est inscrite au journal de l'équipe (référence et nombres de lignes) |
+| Pour chaque compte : clé publique et pseudonymes successifs (`name` et `display_name` du profil, rien d'autre), avec la date de chaque changement | Même obligation (décret, article 3 : identifiant et pseudonymes) | `legal_register.account_pseudonym` | Un an après la dernière opération inscrite du compte (un compte Nostr n'a pas de date de clôture : approximation, à définir dans les conditions d'utilisation) | Même accès |
+| Réponses aux réquisitions : identifiant de la demande de validation, date, nombre de lignes données | Compteur public des réquisitions (transparence) | `legal_register.requisition_answer` | Sans limite (aucune donnée personnelle) | Public seulement sous forme de nombres par mois (`GET /api/v1/transparence/requisitions`) |
+| Référence de la réquisition (autorité, numéro, date) | Prouver à quoi PPF a répondu | Journal de l'équipe (`team_audit_log`), comme un motif | Sans limite, comme le journal (à faire relire) | Membres titulaires de `audit.read` |
+| Recherche d'une réquisition (clé, identifiant d'un contenu, période) | Faire valider la recherche par une deuxième personne | Demande de validation à deux (`team_pending_approval`), jamais dans le journal | Jusqu'à la réponse, ou jusqu'au refus, à l'expiration ou à 7 jours après l'accord sans téléchargement ; effacée ensuite | Titulaires de `legal.requisition` |
+
+**Jamais** : adresse IP, port, navigateur, appareil, adresse e-mail, numéro de téléphone, texte d'un contenu, lecture, vote, soutien, message privé, signalement, réglage privé. Un champ e-mail ou téléphone, même facultatif, ferait naître cinq ans de conservation de l'identité civile (décret, article 2) : il n'en existe aucun et il ne doit jamais en exister. Le niveau 2 de la note (adresse IP scellée) reste éteint tant qu'un avocat ne l'exige pas. Analyse d'impact (RGPD, article 35) conseillée par la note : à faire avec l'avocat.
+
 ## 1 bis. Données sur l'appareil de l'utilisateur (depuis le 5 novembre 2026)
 
 Les applications stockent sur l'appareil le compte et, depuis le 7 novembre 2026, la liste des comptes suivis. Aucune de ces données ne quitte l'appareil comme telle ; le serveur ne les reçoit jamais. Qui l'on suit peut révéler une appartenance politique ou syndicale (donnée sensible, RGPD article 9) : c'est pourquoi cette liste reste sur l'appareil (S-120, AG-22, point d'attention n° 32).
 
 | Donnée | Finalité | Où | Durée | Accès |
 |---|---|---|---|---|
+| Rapport de plantage (S-101, depuis le 8 novembre 2026) : version, système, jour (UTC), classes des erreurs et lignes du code en cause ; jamais le message d'une erreur, un contenu, une clé ni un identifiant | Aider à corriger un plantage, seulement si l'utilisateur choisit de le partager | Fichier `crash-report.txt` du dossier privé de l'application (un seul, remplacé à chaque plantage) | Effacé sur demande ou, sans action, au bout de 7 jours, sans être montré | L'utilisateur seul : l'application ne l'envoie jamais ; il le copie ou le partage lui-même |
 | Clé secrète de l'identité (32 octets) | Signer les contenus et prouver que l'on est l'auteur de son compte | Android : stockage privé de l'application, chiffré par une clé AES-256 du Keystore (puce sécurisée quand elle existe), exclu des sauvegardes ; ordinateur : fichier `identity.json` dans le dossier de données privé de l'utilisateur (chiffrement par code à venir, S-43) ; iOS : en mémoire seulement tant que le trousseau n'est pas implémenté | Jusqu'à la déconnexion (effacement) | L'utilisateur, par l'application |
 | Phrase de récupération (12 mots) et sa langue | Retrouver son compte sur un autre appareil ; pouvoir la réafficher si elle a été mal notée | Avec la clé secrète, même protection ; absente si le compte a été importé par sa clé « nsec » | Jusqu'à la déconnexion | L'utilisateur, après un avertissement |
 | Clé publique (pseudonyme technique) | Identifier l'auteur d'un contenu signé | Dérivée de la clé secrète ; sera jointe à chaque contenu publié, donc visible publiquement avec lui | Tant que des contenus signés existent | Public, pour les contenus publiés |
@@ -199,3 +226,11 @@ Données des membres de l'équipe seulement (pseudonymes), jamais des citoyens. 
 | Clés de travail de la plateforme (clés secrètes chiffrées) et certificats publics | Signer les contenus de la plateforme | Service de signature (`keys/`, `certificates/`) | Clé secrète détruite à sa révocation ou à son échéance ; certificats publics gardés | Service de signature seul (clés secrètes) ; public (certificats) |
 
 Aucune donnée de citoyen n'entre dans le service : il voit les contenus à signer le temps de la requête, sans les garder.
+
+## Ajout du 8 novembre 2026 : signalement des failles de sécurité (S-92)
+
+| Donnée | Pourquoi | Où, combien de temps |
+|---|---|---|
+| Aucune pour `security.txt` et la page `/securite` | Pages publiques, servies à l'identique à tous, sans formulaire ni journal | Rien n'est stocké |
+| Message d'un chercheur à la clé de l'équipe sécurité (NIP-17) | Recevoir le signalement en privé | Chiffré de bout en bout sur l'appareil de l'expéditeur : le serveur, quand il sert de relais, ne garde qu'une enveloppe illisible, pour la durée de conservation des messages (D-028) ; le texte n'est lisible que sur les appareils de l'équipe sécurité, qui le gardent le temps du traitement et de la publication conjointe |
+| Signalement privé sur GitHub (après la liaison) | Autre canal privé | Chez GitHub (hors Union européenne), visible de l'équipe seulement ; le chercheur choisit ce canal en connaissance de cause |

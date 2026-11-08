@@ -45,6 +45,11 @@ services:
       PPF_AUDIT_PUBLIC_KEY: ${PPF_AUDIT_PUBLIC_KEY:-}
       # Exact public address of this environment (votes: NIP-98 authorisations name it, D-110).
       PPF_PUBLIC_URL: ${PPF_PUBLIC_URL:?}
+      # How researchers report a vulnerability (S-92, security.txt): the public key of the security contact
+      # (encrypted NIP-17 messages) and, once the repository is on GitHub, its private reporting page. In
+      # production the server refuses to start without one of them.
+      PPF_SECURITY_NOSTR_KEY: ${PPF_SECURITY_NOSTR_KEY:-}
+      PPF_SECURITY_GITHUB_URL: ${PPF_SECURITY_GITHUB_URL:-}
       # Seeds of the vote keys, one read-only file per version (Décider, D-110), never in a variable.
       PPF_VOTE_SEEDS_DIR: /run/ppf/vote_seeds
       # Push wake-ups (D-078): only our ntfy is an allowed endpoint; the server reaches it inside, never

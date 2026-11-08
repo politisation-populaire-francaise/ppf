@@ -40,6 +40,12 @@ import org.politisationpopulairefrancaise.server.backoffice.PortSelector
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeHeaders
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
 import org.politisationpopulairefrancaise.server.backoffice.publicPort
+import org.politisationpopulairefrancaise.server.editorial.EditorialDrafts
+import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsPurge
+import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsSection
+import org.politisationpopulairefrancaise.server.editorial.PublishedContents
+import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
+import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.elus.ElusConfig
@@ -53,6 +59,9 @@ import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
+import org.politisationpopulairefrancaise.server.legal.LegalRegister
+import org.politisationpopulairefrancaise.server.legal.LegalRegisterPurge
+import org.politisationpopulairefrancaise.server.legal.transparencyApi
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.WrapRetention
 import org.politisationpopulairefrancaise.server.revendications.AiReviewConfig
@@ -65,8 +74,11 @@ import org.politisationpopulairefrancaise.server.comprendre.EditorialComprendreS
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
+import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
+import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
+import org.politisationpopulairefrancaise.web.securityPages
 import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.webRoutes
 import org.slf4j.LoggerFactory
@@ -97,6 +109,8 @@ import javax.sql.DataSource
  *   by default), see [ElusConfig].
  * - PPF_TESTIMONY_DIR, PPF_MODERATION_KEY, PPF_EVIDENCE_KEY and the other PPF_TESTIMONY_* and
  *   PPF_EVIDENCE_RETENTION_DAYS settings: the testimonies of the Agir space, see [TestimonySetup].
+ * - PPF_PUBLIC_URL, PPF_SECURITY_NOSTR_KEY, PPF_SECURITY_GITHUB_URL: how researchers report a vulnerability
+ *   (security.txt and /securite, S-92); in production one private channel is required, see [SecurityContactSetup].
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
  *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
  *   to start when it is set in production, see [ExampleSeed].
@@ -104,6 +118,9 @@ import javax.sql.DataSource
  *   the team back-office, off unless PPF_BACKOFFICE_ORIGIN is set (for example
  *   `https://equipe.preprod.politisation-populaire-francaise.org`; `http://localhost:8081` in development
  *   only). Its routes answer only on PPF_BACKOFFICE_PORT (default 8081), never on PORT; see [BackOfficeConfig].
+ *
+ * Legal register (D-077, [LegalRegister]): nothing to configure. Its retention (one year) is fixed in the
+ * database and it is never read but on a judicial requisition approved by two people in the back-office.
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -125,9 +142,11 @@ fun main() {
             LoggerFactory.getLogger(ExampleSeed::class.java)
                 .warn("Example contents: ${ExampleSeed.DIRECTORY_VARIABLE} is set but no database is configured, no example content loaded.")
         } else {
-            ExampleSeed.load(examples, EventRepository(dataSource))
+            ExampleSeed.load(examples, EventRepository(dataSource, LegalRegister(PublicationPolicy.fromEnvironment()::isEditor)))
         }
     }
+    // Checked before the server starts: a malformed security contact, or none in production, is refused (S-92).
+    val securityContact = SecurityContactSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port)
     // Checked before the server starts: a back-office under a wrong or plain-http address is refused.
     val backOffice = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port)
     // Bind on every interface inside the container; the reverse proxy is the only
@@ -148,7 +167,7 @@ fun main() {
             }
         },
     ) {
-        module(dataSource, backOffice = backOffice)
+        module(dataSource, backOffice = backOffice, securityContact = securityContact)
     }.start(wait = true)
 }
 
@@ -177,6 +196,15 @@ private val ErrorShield = createApplicationPlugin("ErrorShield") {
  *
  * Privacy rule: no request logging plugin is installed. Client addresses are never
  * written anywhere (cahier des charges, section 5.1).
+ *
+ * Reminders of the legal register (D-077, legal note docs/integration/lcen-conservation-identification.md):
+ * - no IP address (nor port) is ever collected or logged anywhere: neither by Caddy, nor by the server, nor
+ *   by any rate limiting by IP (the limits are per public key and global); this is what makes "nothing
+ *   collected, nothing to keep" hold (décret n° 2021-1362, article 8);
+ * - no e-mail or phone field, even optional, anywhere: it would make five years of retention of civil
+ *   identity (décret n° 2021-1362, article 2);
+ * - the register of level 1 ([LegalRegister]) keeps only pseudonymous data of the public contents, one year;
+ *   level 2 of the note (IP sealed under an offline key) stays off unless a lawyer requires it.
  */
 fun Application.module(
     dataSource: DataSource? = null,
@@ -193,8 +221,11 @@ fun Application.module(
     territoires: TerritoiresSetup = TerritoiresSetup.fromEnvironment(),
     testimonies: TestimonySetup = TestimonySetup.fromEnvironment(),
     backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
+    /** How researchers report a vulnerability (S-92): security.txt and the page /securite. */
+    securityContact: SecurityContact = SecurityContactSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
 ) {
-    val repository = dataSource?.let(::EventRepository)
+    // Every stored public content enters the legal register, except those of the editorial keys (D-077).
+    val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
     val elusService = dataSource?.let { ElusService.start(this, it, elus, log) }
     // The referential of territories (D-090): the last import served at once, the next ones on schedule.
@@ -217,6 +248,8 @@ fun Application.module(
         // bounds; the task lives and dies with the application.
         WrapRetention(repository, relay).start(this, relay.cleanupInterval, log)
     }
+    // The legal register keeps one year (fixed in the database); its daily purge lives with the application.
+    dataSource?.let { LegalRegisterPurge(it).start(this, LegalRegisterPurge.DEFAULT_INTERVAL, log) }
     // The team back-office (M15): its own port, accounts by invitation, passkeys, journal; the poles
     // register their queues on teamBackOffice.queues (contract docs/integration/back-office.md, section 7).
     val teamBackOffice: BackOffice? = when {
@@ -226,6 +259,13 @@ fun Application.module(
     }
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
+    // The writing pages of the editorial circuit of Comprendre (step 3): a section of the back-office.
+    if (teamBackOffice != null && dataSource != null && repository != null) {
+        val drafts = EditorialDrafts(dataSource, teamBackOffice.clock)
+        teamBackOffice.sections.register(EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, PublishedContents(repository, policy::isEditor), teamBackOffice.clock))
+        // A draft never submitted and unchanged for 180 days is deleted (docs/REGISTRE_DONNEES.md).
+        EditorialDraftsPurge(drafts).start(this, 24.hours, log)
+    }
     val limits = PostLimits(relay)
     val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
@@ -273,9 +313,11 @@ fun Application.module(
             testimonyApi(testimonySpace, testimonies.config.maxFileBytes)
             elusApi(elusService)
             territoiresApi(territoiresService)
+            transparencyApi(dataSource) // Requisitions answered per month only (D-077).
             agirSpace?.let { agendaPage(it.agendaSource()) }
             tilesRoutes(tiles)
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
+            securityPages(securityContact) // security.txt (RFC 9116) and the disclosure policy (S-92).
             // The pages of "Voir" and "Comprendre": contents of the editorial keys only (D-034, D-091).
             webRoutes(
                 voir = voir ?: repository?.let { EditorialVoirSource(it, policy) },

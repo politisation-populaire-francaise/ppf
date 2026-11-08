@@ -15,6 +15,7 @@ object BackOfficeTexts {
     const val NAV_JOURNAL: String = "Journal"
     const val NAV_SESSIONS: String = "Séances"
     const val NAV_KEYS: String = "Mes clés"
+    const val NAV_REQUISITIONS: String = "Réquisitions"
     const val SIGN_OUT: String = "Se déconnecter"
     const val FOOTER_PRIVACY: String = "Aucun traceur, aucune ressource extérieure, aucune adresse IP enregistrée."
     const val FOOTER_JOURNAL: String = "Chaque action est inscrite dans le journal de l’équipe, que personne ne peut modifier."
@@ -158,6 +159,52 @@ object BackOfficeTexts {
     const val APPROVAL_REMOVE: String = "Retirer définitivement de l’équipe"
     const val APPROVAL_REINSTATE: String = "Réintégrer dans l’équipe"
     const val APPROVAL_TO: String = "à"
+    const val APPROVAL_REQUISITION: String = "Réquisition judiciaire : recherche dans le registre légal"
+
+    // Judicial requisitions (legal register, D-077)
+    const val REQUISITIONS_TITLE: String = "Réquisitions judiciaires"
+    const val REQUISITIONS_INTRO: String = "Le registre légal ne s’ouvre que sur une réquisition judiciaire écrite (officier de police judiciaire, procureur de la République, juge d’instruction, ou juge saisi par une victime). Vérifiez d’abord qui l’envoie et sur quelle base légale."
+    const val REQUISITIONS_CONTENT: String = "Le registre ne contient que des données pseudonymes, gardées un an : la clé publique et les pseudonymes successifs de chaque compte, et pour chaque création, modification ou suppression d’un contenu public, son identifiant, sa nature, ses dates et la clé de son auteur. PPF ne collecte aucune adresse IP, aucun e-mail, aucun numéro de téléphone, et ne garde jamais le texte d’un contenu supprimé."
+    const val REQUISITIONS_READY: String = "Réponses à télécharger"
+    const val REQUISITIONS_READY_TEXT: String = "Une réponse se télécharge une seule fois, en JSON, par la personne qui a fait la demande ou par celle qui l’a validée, dans les 7 jours qui suivent l’accord. Le téléchargement est inscrit dans le journal de l’équipe avec la référence et le nombre de lignes, jamais les lignes elles-mêmes."
+    const val REQUISITIONS_READY_NONE: String = "Aucune réponse à télécharger."
+    const val REQUISITION_DOWNLOAD: String = "Télécharger la réponse (une seule fois)"
+    const val REQUISITIONS_FORM_TITLE: String = "Nouvelle réquisition"
+    const val REQUISITION_REFERENCE: String = "Référence de la réquisition (autorité, numéro, date)"
+    const val REQUISITION_REFERENCE_HINT: String = "Obligatoire. La référence est conservée sans limite dans le journal de l’équipe : n’y écrivez rien d’autre."
+    const val REQUISITION_KEY: String = "Clé publique visée (npub ou 64 caractères hexadécimaux)"
+    const val REQUISITION_EVENT: String = "Identifiant d’un contenu visé (64 caractères hexadécimaux)"
+    const val REQUISITION_SEARCH_HINT: String = "Indiquez une clé, un contenu, ou les deux (les deux ensemble restreignent la recherche). La recherche n’entre jamais dans le journal."
+    const val REQUISITION_FROM: String = "Reçu à partir du (AAAA-MM-JJ)"
+    const val REQUISITION_UNTIL: String = "Jusqu’au (AAAA-MM-JJ, inclus)"
+    const val REQUISITION_TWO_PERSON: String = "La recherche attendra l’accord d’une deuxième personne qui a la même permission. Votre clé vous sera redemandée si la dernière vérification date de plus de 5 minutes."
+    const val REQUISITION_SUBMIT: String = "Demander l’accord d’une deuxième personne"
+    const val REQUISITIONS_HISTORY: String = "Réquisitions des 30 derniers jours"
+    const val REQUISITIONS_NONE: String = "Aucune réquisition ces 30 derniers jours."
+    const val REQUISITION_REFERENCE_SHORT: String = "Référence"
+    const val REQUISITION_SEARCH: String = "Recherche"
+    const val REQUISITION_STATE: String = "État"
+    const val REQUISITION_KEY_SHORT: String = "clé"
+    const val REQUISITION_EVENT_SHORT: String = "contenu"
+    const val REQUISITION_PERIOD_FROM: String = "reçus du"
+    const val REQUISITION_PERIOD_UNTIL: String = "au"
+    const val REQUISITION_SEARCH_GONE: String = "effacée après la réponse ou le délai"
+    const val REQUISITION_APPROVED_BY: String = "validée par"
+    const val REQUISITION_ANSWERED_ROWS: String = "lignes d’opérations et lignes de pseudonymes"
+    const val REQUISITION_FILE_NOTE: String = "Registre pseudonyme de PPF (niveau 1), tenu en application de l’article 6, V, A de la LCEN, du décret n° 2021-1362 (articles 3, 5, 6 et 7) et de l’injonction du décret n° 2026-920. Il contient, pour les seuls contenus publics, l’identifiant de l’événement, la nature de l’opération (create, replace, delete), la date de réception par le serveur (UTC, à la seconde), la date indiquée dans l’événement, son type, la clé publique de l’auteur et le type de protocole ; pour une modification ou une suppression, l’identifiant, la date et la clé de la version retirée, jamais son contenu ; pour chaque compte, la clé et les pseudonymes successifs (name, display_name) avec la date de chaque changement. Durée : un an. PPF ne collecte aucune adresse IP ni aucun port, aucun e-mail, aucun numéro de téléphone (article 8 du décret)."
+
+    private val requisitionStates: Map<RequisitionState, String> = mapOf(
+        RequisitionState.WAITING to "en attente de l’accord d’une deuxième personne",
+        RequisitionState.READY to "validée, réponse à télécharger",
+        RequisitionState.ANSWERED to "réponse téléchargée",
+        RequisitionState.LAPSED to "validée, mais pas téléchargée dans les 7 jours : à demander de nouveau",
+        RequisitionState.REFUSED to "refusée",
+        RequisitionState.EXPIRED to "expirée sans accord",
+        RequisitionState.CANCELLED to "annulée",
+        RequisitionState.FAILED to "impossible",
+    )
+
+    fun requisitionState(state: RequisitionState): String = requisitionStates.getValue(state)
 
     // Journal
     const val JOURNAL_TITLE: String = "Journal de l’équipe"
@@ -311,6 +358,7 @@ object BackOfficeTexts {
         "busy" to "Trop de connexions sont en cours. Réessayez dans quelques minutes.",
         "bad_encoding" to "La réponse de la clé est illisible. Recommencez.",
         "too_large" to "La réponse de la clé est trop grande.",
+        "too_large_form" to "Le formulaire envoyé est trop long. Raccourcissez le texte, puis enregistrez de nouveau.",
         "registration_refused" to "La clé n’a pas pu être enregistrée (vérification de la personne exigée : code, empreinte ou visage).",
         "assertion_refused" to "La clé n’a pas été reconnue. Recommencez.",
         "credential_mismatch" to "La réponse ne correspond pas à la clé. Recommencez.",
@@ -344,6 +392,16 @@ object BackOfficeTexts {
         "session_key_used" to "Cette clé de séance a déjà servi : votre application doit en créer une nouvelle.",
         "bad_date" to "Une date n’est pas au format AAAA-MM-JJ.",
         "bad_form" to "Le formulaire est incomplet.",
+        "reference_required" to "La référence de la réquisition (autorité, numéro, date) est obligatoire.",
+        "search_required" to "Indiquez la clé publique ou l’identifiant du contenu visés par la réquisition.",
+        "bad_key" to "La clé publique doit être un npub ou 64 caractères hexadécimaux.",
+        "bad_event_id" to "L’identifiant d’un contenu fait 64 caractères hexadécimaux.",
+        "period_required" to "La période (début et fin) est obligatoire.",
+        "bad_period" to "La fin de la période doit venir après son début.",
+        "requisition_not_approved" to "Cette réquisition n’a pas (ou pas encore) l’accord d’une deuxième personne.",
+        "requisition_answered" to "La réponse à cette réquisition a déjà été téléchargée : elle ne se télécharge qu’une fois.",
+        "requisition_lapsed" to "Le délai de 7 jours pour télécharger la réponse est dépassé : faites une nouvelle demande.",
+        "requisition_unavailable" to "Cette réquisition n’a plus de recherche à faire : faites une nouvelle demande.",
     )
 
     /** French label of a role. */
@@ -385,5 +443,6 @@ object BackOfficeTexts {
         "validation.session_opened" to "Séance de validation ouverte",
         "validation.session_closed" to "Séance de validation fermée",
         "validation.session_revoked" to "Séance de validation révoquée",
+        "legal.requisition_answered" to "Réponse à une réquisition judiciaire (référence et nombres de lignes)",
     )
 }

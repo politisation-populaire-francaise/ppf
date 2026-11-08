@@ -21,6 +21,19 @@ object Permissions {
     const val ELECTED_CERTIFY: String = "elected.certify"
     const val ELECTED_REVOKE: String = "elected.revoke"
 
+    /**
+     * Searching the legal register on a judicial requisition (D-077), with a second holder of the same
+     * permission (two-person rule): `super_admin` and `admin` only.
+     */
+    const val LEGAL_REQUISITION: String = "legal.requisition"
+
+    /**
+     * Writing the drafts of the editorial circuit of [space] (`comprendre`, `voir`) in the back-office section
+     * `editorial.<space>` (docs/integration/circuit-editorial.md, step 3). Reviewing and publishing stay the
+     * permissions of the queue (`queue.editorial.<space>.review`, `.publish`).
+     */
+    fun editorialWrite(space: String): String = "editorial.$space.write"
+
     /** The permission to decide on the items of the queue [queueId] (for example `queue.agir.held.decide`). */
     fun queueDecide(queueId: String): String = "queue.$queueId.decide"
 
@@ -49,7 +62,14 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
     ADMIN(
         "admin",
         BackOfficeTexts.ROLE_ADMIN,
-        setOf(Permissions.TEAM_INVITE, Permissions.TEAM_REVOKE, Permissions.TEAM_GRANT, Permissions.AUDIT_READ, Permissions.SETTINGS_MANAGE),
+        setOf(
+            Permissions.TEAM_INVITE,
+            Permissions.TEAM_REVOKE,
+            Permissions.TEAM_GRANT,
+            Permissions.AUDIT_READ,
+            Permissions.SETTINGS_MANAGE,
+            Permissions.LEGAL_REQUISITION,
+        ),
     ),
     MODERATOR(
         "moderator",
@@ -67,6 +87,8 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
         "editor",
         BackOfficeTexts.ROLE_EDITOR,
         setOf(
+            Permissions.editorialWrite("comprendre"),
+            Permissions.editorialWrite("voir"),
             "queue.editorial.comprendre.review",
             "queue.editorial.comprendre.publish",
             "queue.editorial.voir.review",

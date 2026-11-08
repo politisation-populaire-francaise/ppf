@@ -22,12 +22,20 @@ import kotlin.system.exitProcess
  * source data, 5 key error). On any failure the previous packages stay as they were.
  */
 fun main(args: Array<String>) {
+    if (args.firstOrNull() == "keygen") exitProcess(runKeyGen(args.drop(1)))
     exitProcess(runCommandLine(args.toList(), System::getenv))
 }
 
-data class Options(val mode: SourceMode, val only: Set<SourceId>, val out: Path, val keyFile: Path)
+data class Options(
+    val mode: SourceMode,
+    val only: Set<SourceId>,
+    val out: Path,
+    val keyFile: Path,
+    /** Official files already on disk (`amo10/`, `scrutins/`, `dossiers/`, `senat/`), read instead of downloaded. */
+    val from: Path? = null,
+)
 
-const val USAGE: String = "usage: ppf-open-data-importer [--source example|official] [--only an,senat,pe] --out <dir> --key <nsec file>\n" +
+const val USAGE: String = "usage: ppf-open-data-importer [--source example|official] [--only an,senat,pe] [--from <dir>] --out <dir> --key <nsec file>\n" +
     "  environment: PPF_OPEN_DATA_SOURCE, PPF_OPEN_DATA_DIR, PPF_IMPORT_KEY_FILE"
 
 /** The options, or the reason they are wrong. */
@@ -36,7 +44,7 @@ fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> 
     var i = 0
     while (i < args.size) {
         val name = args[i]
-        require(name in setOf("--source", "--only", "--out", "--key")) { "unknown argument $name" }
+        require(name in setOf("--source", "--only", "--out", "--key", "--from")) { "unknown argument $name" }
         require(i + 1 < args.size) { "$name needs a value" }
         require(values.put(name, args[i + 1]) == null) { "$name given twice" }
         i += 2
@@ -51,7 +59,9 @@ fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> 
     require(only.isNotEmpty()) { "--only names no source" }
     val out = (values["--out"] ?: env("PPF_OPEN_DATA_DIR")?.takeIf { it.isNotBlank() }) ?: throw IllegalArgumentException("--out (or PPF_OPEN_DATA_DIR) is required")
     val key = (values["--key"] ?: env("PPF_IMPORT_KEY_FILE")?.takeIf { it.isNotBlank() }) ?: throw IllegalArgumentException("--key (or PPF_IMPORT_KEY_FILE) is required")
-    Options(mode, only, Path.of(out.trim()), Path.of(key.trim()))
+    val from = values["--from"]?.let { Path.of(it.trim()) }
+    require(from == null || mode == SourceMode.OFFICIAL) { "--from reads official files: use it with --source official" }
+    Options(mode, only, Path.of(out.trim()), Path.of(key.trim()), from)
 }
 
 /** Reads the import key; refuses the example key for official data (it would make real data look fictional, and the reverse). */
@@ -81,7 +91,7 @@ fun runCommandLine(args: List<String>, env: (String) -> String?, sources: ((Sour
     return try {
         val chosen = sources?.invoke(options.mode) ?: when (options.mode) {
             SourceMode.EXAMPLE -> ExampleSources()
-            SourceMode.OFFICIAL -> OfficialSources()
+            SourceMode.OFFICIAL -> options.from?.let(::LocalOfficialSources) ?: OfficialSources()
         }
         Importer(chosen, keys, options.out, options.only).run()
     } catch (e: UnreadableSourceException) {
