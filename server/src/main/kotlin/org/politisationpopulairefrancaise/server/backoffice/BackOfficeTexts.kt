@@ -92,6 +92,7 @@ object BackOfficeTexts {
     const val REASON_LABEL: String = "Motif"
     const val REASON_REQUIRED_HINT: String = "obligatoire, montré à l’auteur"
     const val REASON_OPTIONAL_HINT: String = "facultatif"
+    const val CHOICE_TEXT_HINT: String = "Une clé publique ou un identifiant, inscrit dans le journal."
     const val TWO_PERSON_HINT: String = "Cette action attendra l’accord d’une deuxième personne."
     const val SENSITIVE_HINT: String = "Votre clé vous sera redemandée si la dernière vérification date de plus de 5 minutes."
 
@@ -385,6 +386,7 @@ object BackOfficeTexts {
         "action_unavailable" to "Cette action n’est plus possible sur cet élément.",
         "queue_unavailable" to "Cette file ne répond pas pour l’instant. Réessayez plus tard.",
         "reason_required" to "Un motif est obligatoire.",
+        "choice_required" to "Choisissez ou saisissez une valeur valable pour cette action.",
         "bad_session_key" to "La clé de séance doit être une clé publique Nostr (npub ou 64 caractères hexadécimaux).",
         "bad_ceiling" to "Le nombre maximal de validations doit être entre 1 et 40.",
         "bad_duration" to "La durée doit être entre 1 et 12 heures.",
