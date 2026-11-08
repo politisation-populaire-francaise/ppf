@@ -52,7 +52,7 @@ Sources : [RGPD sur EUR-Lex](https://eur-lex.europa.eu/legal-content/FR/TXT/?uri
 
 ## 6. Serveur (étape 1)
 
-### Données (migration serveur : le prochain numéro libre au moment de l'entrée dans main ; provisoirement V20 dans la branche, « Décider » ayant pris V13 et V14 et « Comprendre » V15 ; numéro définitif à l'entrée)
+### Données (migration serveur : le prochain numéro libre au moment de l'entrée dans main ; V20 à l'entrée dans main le 8 novembre 2026, après V13 et V14 de « Décider », V15 de « Comprendre » et V16 à V19 de « Communauté »)
 
 - `contact_case` : `number` (clé), `type`, `subtype`, `category`, `motif`, `status`, `priority` (`normal`, `high`), `assigned_to` (compte de l'équipe, facultatif), `received_at`, `deadline_at`, `deadline_kind` (`legal` ou `goal`), `extended_at`, `extension_reason`, `decision_at` (date de la décision contestée), `decision_author` (compte de l'équipe auteur de la décision contestée, rempli par l'équipe), `concerns` (compte de l'équipe mis en cause par un dossier `team_member`, rempli par l'équipe), `closed_at`, `legal_hold_reason`, `legal_hold_review_at`, `anonymized_at`, `access_hash`, `case_pubkey`, `last_activity_at`. Jamais d'adresse IP, d'e-mail, de téléphone, d'identifiant d'appareil ni de compte de la personne.
 - `contact_envelope` : `id` (identifiant de l'événement), `case_number`, `direction` (`in` ou `out`), `event` (JSON de l'enveloppe), `received_at`, `team_author` (compte de l'équipe pour `out`, S-108). Une enveloppe n'est jamais modifiée.
