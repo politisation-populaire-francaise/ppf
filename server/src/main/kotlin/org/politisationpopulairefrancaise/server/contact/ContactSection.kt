@@ -67,15 +67,22 @@ import kotlin.time.Duration.Companion.days
  * change writes one line of the journal through the base (number of the case, identifiers and codes, never a
  * text of the case); the sensitive ones ask the passkey again ([SectionContext.requireFresh]). A case the
  * member may not see ([ContactRules.canSee]) answers as an unknown one.
+ *
+ * Registered twice (D-143): with [ContactScope.ALL] it is the section `contact` above; with
+ * [ContactScope.VERIFICATION] it is the section `verifications`, « Demandes de vérification », for the
+ * fact-checking team of Comprendre (CO-18, `contact.verification`): only the tickets of sub-type
+ * `verification`, in its inbox (a condition of the query) and its case pages (any other case answers as an
+ * unknown one), with the status, assignment and priority filters and actions only.
  */
 class ContactSection(
     private val space: ContactSpace,
     private val backOffice: BackOffice,
     private val clock: Clock = Clock.systemUTC(),
+    private val scope: ContactScope = ContactScope.ALL,
 ) : BackOfficeSection {
-    override val id: String = ID
-    override val title: String = ContactTexts.SECTION_TITLE
-    override val permission: String = Permissions.CONTACT_TRIAGE
+    override val id: String = scope.sectionId
+    override val title: String = scope.title
+    override val permission: String = scope.permission
 
     private val store: ContactStore get() = space.store()
     private val team = ContactTeam(space.store(), clock)
@@ -108,6 +115,8 @@ class ContactSection(
             val status = CaseStatus.fromWire(form["statut"]) ?: return@post back(case, error = "invalid")
             conclude(case, "status_changed", team.setStatus(actor, case.number, status), "status")
         }
+        // The requests of verification need nothing more (D-143): their legal hold, if ever, is set from the section `contact`.
+        if (scope == ContactScope.VERIFICATION) return
         routes.post("dossiers/{number}/prolongation") { form ->
             val case = visibleCase(pathParameter("number")) ?: return@post notFound()
             if (!requireFresh()) return@post
@@ -159,14 +168,16 @@ class ContactSection(
 
     private suspend fun SectionContext.inbox() {
         val now = clock.instant()
-        val filters = InboxFilters.read(query)
+        val filters = InboxFilters.read(query, scope)
         val restricted = actor.has(Permissions.CONTACT_RESTRICTED)
-        val cases = store.inbox(filters.query(actor.accountId, restricted))
+        val cases = store.inbox(filters.query(actor.accountId, restricted, scope))
         val pending = store.pendingHoldNumbers()
         val names = pseudonyms()
-        respondPage(ContactTexts.SECTION_TITLE) {
-            h1 { +ContactTexts.SECTION_TITLE }
-            p { +ContactTexts.HOME_INTRO }
+        // Every request of verification has the same nature: no column for it.
+        val showNature = scope == ContactScope.ALL
+        respondPage(scope.title) {
+            h1 { +scope.title }
+            p { +scope.intro }
             filterForm(this@inbox, filters, restricted)
             section {
                 attributes["aria-labelledby"] = "boite"
@@ -179,8 +190,8 @@ class ContactSection(
                         caption { +ContactTexts.INBOX_TITLE }
                         thead {
                             tr {
-                                listOf(
-                                    ContactTexts.COLUMN_NUMBER, ContactTexts.COLUMN_NATURE, ContactTexts.COLUMN_STATUS, ContactTexts.COLUMN_RECEIVED,
+                                listOfNotNull(
+                                    ContactTexts.COLUMN_NUMBER, ContactTexts.COLUMN_NATURE.takeIf { showNature }, ContactTexts.COLUMN_STATUS, ContactTexts.COLUMN_RECEIVED,
                                     ContactTexts.COLUMN_DEADLINE, ContactTexts.COLUMN_PRIORITY, ContactTexts.COLUMN_ASSIGNED, ContactTexts.COLUMN_MARKS,
                                 ).forEach { th { attributes["scope"] = "col"; +it } }
                             }
@@ -189,7 +200,7 @@ class ContactSection(
                             cases.forEach { case ->
                                 tr {
                                     td { a(href = this@inbox.path("dossiers/${case.number}")) { +case.number } }
-                                    td { +natureLabel(case.nature) }
+                                    if (showNature) td { +natureLabel(case.nature) }
                                     td { +ContactTexts.status(case.status) }
                                     td { dateTime(case.receivedAt) }
                                     td { deadline(case) }
@@ -209,11 +220,15 @@ class ContactSection(
         form(action = context.path(), method = FormMethod.get, classes = "bo-filters") {
             attributes["aria-label"] = ContactTexts.FILTERS
             div(classes = "bo-row") {
-                choice("filtre-vue", "dossiers", ContactTexts.FILTER_VIEW, filters.view, listOf(
-                    "" to ContactTexts.VIEW_OPEN, "tous" to ContactTexts.VIEW_ALL, "archives" to ContactTexts.VIEW_HOLDS,
+                val all = scope == ContactScope.ALL
+                choice("filtre-vue", "dossiers", ContactTexts.FILTER_VIEW, filters.view, listOfNotNull(
+                    "" to ContactTexts.VIEW_OPEN, "tous" to ContactTexts.VIEW_ALL, ("archives" to ContactTexts.VIEW_HOLDS).takeIf { all },
                 ) + CaseStatus.entries.map { it.wire to ContactTexts.status(it) })
-                choice("filtre-type", "type", ContactTexts.FILTER_TYPE, filters.type?.wire.orEmpty(), listOf("" to ContactTexts.ALL) + CaseType.entries.map { it.wire to ContactTexts.type(it) })
-                choice("filtre-nature", "nature", ContactTexts.FILTER_NATURE, filters.qualifier.orEmpty(), listOf("" to ContactTexts.ALL) + qualifierChoices(restricted))
+                // A request of verification has a single type and sub-type: no filter for them.
+                if (all) {
+                    choice("filtre-type", "type", ContactTexts.FILTER_TYPE, filters.type?.wire.orEmpty(), listOf("" to ContactTexts.ALL) + CaseType.entries.map { it.wire to ContactTexts.type(it) })
+                    choice("filtre-nature", "nature", ContactTexts.FILTER_NATURE, filters.qualifier.orEmpty(), listOf("" to ContactTexts.ALL) + qualifierChoices(restricted))
+                }
                 choice("filtre-assignation", "assignation", ContactTexts.FILTER_ASSIGNED, filters.assigned, listOf(
                     "" to ContactTexts.ALL, "moi" to ContactTexts.ASSIGNED_ME, "personne" to ContactTexts.ASSIGNED_NOBODY,
                 ))
@@ -322,7 +337,8 @@ class ContactSection(
                     case.concerns?.toString() ?: "none")
             }
         }
-        if (actor.has(Permissions.CONTACT_LEGAL_HOLD)) holdActions(context, case, now, request)
+        // The legal hold stays in the section `contact` (its routes are not mounted in `verifications`).
+        if (scope == ContactScope.ALL && actor.has(Permissions.CONTACT_LEGAL_HOLD)) holdActions(context, case, now, request)
     }
 
     private fun FlowContent.holdActions(context: SectionContext, case: StoredCase, now: Instant, request: HoldRequest?) {
@@ -482,10 +498,13 @@ class ContactSection(
 
     // Helpers ---------------------------------------------------------------------------------------
 
-    /** The case of [number] if it exists and [SectionContext.actor] may see it; null otherwise (the same « not found »). */
+    /**
+     * The case of [number] if it exists, belongs to the scope of this section and [SectionContext.actor] may
+     * see it; null otherwise (the same « not found »).
+     */
     private fun SectionContext.visibleCase(number: String?): StoredCase? {
         val parsed = number?.let(CaseNumber::fromDisplay) ?: return null
-        return store.find(parsed.display)?.takeIf { ContactRules.canSee(it, actor) }
+        return store.find(parsed.display)?.takeIf { scope.includes(it) && ContactRules.canSee(it, actor) }
     }
 
     /**
@@ -546,6 +565,9 @@ class ContactSection(
 
     companion object {
         const val ID: String = "contact"
+
+        /** The section of the requests of verification (CO-18, D-143). */
+        const val VERIFICATION_ID: String = "verifications"
         private const val INBOX_LIMIT: Int = 200
         private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
         private val log = org.slf4j.LoggerFactory.getLogger(ContactSection::class.java)
@@ -589,6 +611,20 @@ class ContactSection(
     }
 }
 
+/**
+ * Which cases a registration of [ContactSection] handles (D-143): every case of M30 (section `contact`,
+ * permission `contact.triage`), or the requests of verification only (section `verifications`, permission
+ * `contact.verification`, CO-18).
+ */
+enum class ContactScope(val sectionId: String, val title: String, val permission: String, val intro: String) {
+    ALL(ContactSection.ID, ContactTexts.SECTION_TITLE, Permissions.CONTACT_TRIAGE, ContactTexts.HOME_INTRO),
+    VERIFICATION(ContactSection.VERIFICATION_ID, ContactTexts.VERIFICATION_SECTION_TITLE, Permissions.CONTACT_VERIFICATION, ContactTexts.VERIFICATION_INTRO),
+    ;
+
+    /** Whether [case] belongs to this scope; the case pages of the section answer « not found » for any other. */
+    fun includes(case: StoredCase): Boolean = this == ALL || ContactRules.isVerification(case)
+}
+
 /** The filters of the inbox, as the query string gives them (codes only, never a text). */
 data class InboxFilters(
     val view: String = "",
@@ -598,7 +634,7 @@ data class InboxFilters(
     val assigned: String = "",
     val priority: CasePriority? = null,
 ) {
-    fun query(viewer: UUID, restricted: Boolean): InboxQuery = InboxQuery(
+    fun query(viewer: UUID, restricted: Boolean, scope: ContactScope = ContactScope.ALL): InboxQuery = InboxQuery(
         view = when (view) {
             "tous" -> InboxView.ALL
             "archives" -> InboxView.HOLDS
@@ -617,18 +653,23 @@ data class InboxFilters(
         priority = priority,
         restricted = restricted,
         viewer = viewer,
+        scope = scope,
     )
 
     companion object {
         private val QUALIFIERS: Set<String> = TicketSubtype.entries.map { "subtype:${it.wire}" }.toSet() +
             ContactCategory.entries.map { "category:${it.wire}" } + ClaimMotif.entries.map { "motif:${it.wire}" }
 
-        fun read(query: Parameters): InboxFilters = InboxFilters(
-            view = query["dossiers"]?.takeIf { it in setOf("tous", "archives") || CaseStatus.fromWire(it) != null }.orEmpty(),
-            type = CaseType.fromWire(query["type"]),
-            qualifier = query["nature"]?.takeIf { it in QUALIFIERS },
-            assigned = query["assignation"]?.takeIf { it == "moi" || it == "personne" }.orEmpty(),
-            priority = CasePriority.of(query["priorite"]),
-        )
+        /** The filters of [query]; the section of the requests of verification has no type, nature nor legal hold filter. */
+        fun read(query: Parameters, scope: ContactScope = ContactScope.ALL): InboxFilters {
+            val all = scope == ContactScope.ALL
+            return InboxFilters(
+                view = query["dossiers"]?.takeIf { (all && it == "archives") || it == "tous" || CaseStatus.fromWire(it) != null }.orEmpty(),
+                type = if (all) CaseType.fromWire(query["type"]) else null,
+                qualifier = if (all) query["nature"]?.takeIf { it in QUALIFIERS } else null,
+                assigned = query["assignation"]?.takeIf { it == "moi" || it == "personne" }.orEmpty(),
+                priority = CasePriority.of(query["priorite"]),
+            )
+        }
     }
 }

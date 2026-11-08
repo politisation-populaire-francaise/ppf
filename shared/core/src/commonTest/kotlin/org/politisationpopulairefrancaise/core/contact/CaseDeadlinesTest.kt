@@ -72,7 +72,7 @@ class CaseDeadlinesTest {
         assertEquals(days(30), CaseDeadlines.of(CaseNature.Claim(ClaimMotif.FUNDS), received))
         assertEquals(days(30), CaseDeadlines.of(CaseNature.Claim(ClaimMotif.TEAM_MEMBER), received))
         assertEquals(days(30), CaseDeadlines.of(CaseNature.Claim(ClaimMotif.OTHER), received))
-        TicketSubtype.entries.forEach { assertNull(CaseDeadlines.of(CaseNature.Ticket(it), received), it.wire) }
+        listOf(TicketSubtype.BUG, TicketSubtype.SUGGESTION, TicketSubtype.REPORT).forEach { assertNull(CaseDeadlines.of(CaseNature.Ticket(it), received), it.wire) }
         val goals = CaseGoals(contactDays = 10, bugDays = 20, moderationDecisionDays = 7)
         assertEquals(days(10), CaseDeadlines.of(CaseNature.Contact(ContactCategory.CITIZEN), received, goals))
         assertEquals(days(20), CaseDeadlines.of(CaseNature.Ticket(TicketSubtype.BUG), received, goals))
@@ -81,6 +81,24 @@ class CaseDeadlinesTest {
         assertEquals(DeadlineKind.LEGAL, CaseDeadlines.of(dataRights, received, goals)!!.kind)
         assertFailsWith<IllegalArgumentException> { CaseGoals(contactDays = 0) }
         assertFailsWith<IllegalArgumentException> { CaseGoals(fundsDays = 400) }
+    }
+
+    @Test
+    fun aRequestOfVerificationHasAGoalOfFifteenDays() {
+        // CO-18 (D-143): a ticket for the fact-checking team of Comprendre, an internal goal, never a legal deadline.
+        val verification = CaseNature.Ticket(TicketSubtype.VERIFICATION)
+        assertEquals("verification", TicketSubtype.VERIFICATION.wire)
+        assertEquals(TicketSubtype.VERIFICATION, TicketSubtype.fromWire("verification"))
+        assertEquals(verification, CaseNature.fromWire("ticket", "verification", null, null))
+        assertNull(CaseNature.fromWire("claim", "verification", null, null))
+        // Friday 23 October 2026, 12:00 in Paris: Saturday 7 November, 12:00 in Paris (one hour later in UTC terms, past the change of hour).
+        assertEquals(Deadline(utc(2026, 11, 7, 11), DeadlineKind.GOAL), CaseDeadlines.of(verification, utc(2026, 10, 23, 10)))
+        val received = utc(2026, 11, 8, 11)
+        assertEquals(Deadline(received + 15 * 86_400L, DeadlineKind.GOAL), CaseDeadlines.of(verification, received))
+        assertEquals(received + 5 * 86_400L, CaseDeadlines.of(verification, received, CaseGoals(verificationDays = 5))!!.at)
+        assertNull(CaseDeadlines.of(verification, received, CaseGoals(verificationDays = null)))
+        assertFalse(CaseDeadlines.canExtend(verification, received, received + 86_400, alreadyExtended = false))
+        assertFailsWith<IllegalArgumentException> { CaseGoals(verificationDays = 0) }
     }
 
     @Test

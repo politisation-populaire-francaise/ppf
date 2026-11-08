@@ -241,6 +241,11 @@ class ContactApiTest {
         assertNull(goals.fundsDays)
         assertEquals(7, goals.bugDays)
         assertEquals(30, goals.otherClaimDays)
+        // The requests of verification (CO-18, D-143): 15 days unless set.
+        assertEquals(15, config().goals.verificationDays)
+        assertEquals(20, config("PPF_CASE_GOAL_VERIFICATION_DAYS" to "20").goals.verificationDays)
+        assertNull(config("PPF_CASE_GOAL_VERIFICATION_DAYS" to "0").goals.verificationDays)
+        assertEquals(15, config("PPF_CASE_GOAL_VERIFICATION_DAYS" to "400").goals.verificationDays)
         assertEquals(0, config("PPF_CONTACT_RETENTION_INTERVAL_MINUTES" to "0").retentionInterval.inWholeMinutes)
     }
 

@@ -36,6 +36,15 @@ enum class TicketSubtype(val wire: String) {
     /** The report of a content or an account: it also goes to the moderation queue. */
     @SerialName("report")
     REPORT("report"),
+
+    /**
+     * CO-18 (D-143): a rumour or a doubtful information submitted to the fact-checking team of Comprendre.
+     * Opening fields: `subject` is the claim as seen (200 characters at most, as for every opening), `text`
+     * says where, when and what makes it doubtful, the optional `content` is the stable address of a close
+     * fact-check. The app never offers to link an account to it.
+     */
+    @SerialName("verification")
+    VERIFICATION("verification"),
     ;
 
     companion object {

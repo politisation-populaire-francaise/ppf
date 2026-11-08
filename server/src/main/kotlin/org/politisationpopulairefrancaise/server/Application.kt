@@ -45,6 +45,7 @@ import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
 import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.backoffice.Permissions
 import org.politisationpopulairefrancaise.server.backoffice.sectionPath
+import org.politisationpopulairefrancaise.server.contact.ContactScope
 import org.politisationpopulairefrancaise.server.contact.ContactSection
 import org.politisationpopulairefrancaise.server.contact.ContactSetup
 import org.politisationpopulairefrancaise.server.contact.ContactSpace
@@ -331,8 +332,10 @@ fun Application.module(
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
     // The inbox of the team for the cases (M30): a section of the back-office, metadata only; alerts for the legal holds to review.
+    // The requests of verification of Comprendre (CO-18, D-143) have their own section, for the fact-checking team.
     if (teamBackOffice != null && contactSpace != null) {
         teamBackOffice.sections.register(ContactSection(contactSpace, teamBackOffice, teamBackOffice.clock))
+        teamBackOffice.sections.register(ContactSection(contactSpace, teamBackOffice, teamBackOffice.clock, ContactScope.VERIFICATION))
         contactSpace.onHoldsDue = { count ->
             teamBackOffice.postAlert(ContactSection.ID, ContactTexts.holdsDueAlert(count), 4, Permissions.CONTACT_LEGAL_HOLD, sectionPath(ContactSection.ID) + "?dossiers=archives")
         }

@@ -20,8 +20,9 @@ import kotlin.time.Duration.Companion.minutes
  * - PPF_CASE_POW_BITS (16): the proof of work (NIP-13) asked to create a case, 0 to 32; a private setting.
  * - PPF_CASE_GOAL_CONTACT_DAYS (15), PPF_CASE_GOAL_BUG_DAYS, PPF_CASE_GOAL_SUGGESTION_DAYS,
  *   PPF_CASE_GOAL_REPORT_DAYS (none), PPF_CASE_GOAL_MODERATION_DAYS (15), PPF_CASE_GOAL_FUNDS_DAYS (30),
- *   PPF_CASE_GOAL_TEAM_MEMBER_DAYS (30), PPF_CASE_GOAL_OTHER_DAYS (30): the internal goals, in days, 1 to 365,
- *   0 for none; the legal deadlines are not settings.
+ *   PPF_CASE_GOAL_TEAM_MEMBER_DAYS (30), PPF_CASE_GOAL_OTHER_DAYS (30), PPF_CASE_GOAL_VERIFICATION_DAYS (15, the
+ *   requests of verification of CO-18, D-143): the internal goals, in days, 1 to 365, 0 for none; the legal
+ *   deadlines are not settings.
  * - PPF_CONTACT_RETENTION_INTERVAL_MINUTES (1440): how often the retention rules run; 0 turns the task off
  *   (tests).
  */
@@ -88,6 +89,7 @@ data class ContactConfig(
                     fundsDays = goal("FUNDS", defaults.fundsDays),
                     teamMemberDays = goal("TEAM_MEMBER", defaults.teamMemberDays),
                     otherClaimDays = goal("OTHER", defaults.otherClaimDays),
+                    verificationDays = goal("VERIFICATION", defaults.verificationDays),
                 ),
                 retentionInterval = env("PPF_CONTACT_RETENTION_INTERVAL_MINUTES")?.trim()?.toIntOrNull()?.takeIf { it >= 0 }?.minutes ?: 24.hours,
                 closedReason = closed,

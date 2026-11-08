@@ -4,6 +4,7 @@ import org.politisationpopulairefrancaise.core.contact.CaseDeadlines
 import org.politisationpopulairefrancaise.core.contact.CaseStatus
 import org.politisationpopulairefrancaise.core.contact.ClaimMotif
 import org.politisationpopulairefrancaise.core.contact.DeadlineKind
+import org.politisationpopulairefrancaise.core.contact.TicketSubtype
 import org.politisationpopulairefrancaise.server.backoffice.Permissions
 import org.politisationpopulairefrancaise.server.backoffice.TeamActor
 import org.politisationpopulairefrancaise.server.backoffice.nowSeconds
@@ -16,7 +17,9 @@ import java.util.UUID
  * Who may see and handle a case in the back-office (contract, section 6), checked by the section before it
  * shows anything and again by [ContactTeam] before any change:
  *
- * - the section is open to `contact.triage` (moderators and administrators);
+ * - the section `contact` is open to `contact.triage` (moderators and administrators), who see every case;
+ * - the requests of verification (tickets of sub-type `verification`, CO-18, D-143) are also open to
+ *   `contact.verification` (editors), in the section `verifications`; that permission opens no other case;
  * - the claims about the use of funds or a team member need `contact.restricted` (administrators);
  * - a member never sees a case of which they are the object (`concerns`), whatever their roles;
  * - the requests on one's data are handled (status, closing, extension) with `contact.data_rights`;
@@ -25,9 +28,15 @@ import java.util.UUID
  */
 object ContactRules {
     fun canSee(case: StoredCase, actor: TeamActor): Boolean =
-        actor.has(Permissions.CONTACT_TRIAGE) &&
-            (case.motif?.restricted != true || actor.has(Permissions.CONTACT_RESTRICTED)) &&
-            case.concerns != actor.accountId
+        case.concerns != actor.accountId &&
+            (triages(case, actor) || (isVerification(case) && actor.has(Permissions.CONTACT_VERIFICATION)))
+
+    /** The rule of the section `contact`: `contact.triage`, and `contact.restricted` for the claims reserved to administrators. */
+    private fun triages(case: StoredCase, actor: TeamActor): Boolean =
+        actor.has(Permissions.CONTACT_TRIAGE) && (case.motif?.restricted != true || actor.has(Permissions.CONTACT_RESTRICTED))
+
+    /** A request of verification for the fact-checking team of Comprendre (CO-18, D-143). */
+    fun isVerification(case: StoredCase): Boolean = case.nature.subtype == TicketSubtype.VERIFICATION
 
     fun canHandle(case: StoredCase, actor: TeamActor): Boolean =
         canSee(case, actor) &&

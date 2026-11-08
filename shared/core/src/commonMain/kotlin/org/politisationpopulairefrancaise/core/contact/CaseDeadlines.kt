@@ -21,9 +21,11 @@ data class CaseGoals(
     val fundsDays: Int? = 30,
     val teamMemberDays: Int? = 30,
     val otherClaimDays: Int? = 30,
+    /** A request of verification to the fact-checking team of Comprendre (CO-18, D-143). */
+    val verificationDays: Int? = 15,
 ) {
     init {
-        listOf(contactDays, bugDays, suggestionDays, reportDays, moderationDecisionDays, fundsDays, teamMemberDays, otherClaimDays)
+        listOf(contactDays, bugDays, suggestionDays, reportDays, moderationDecisionDays, fundsDays, teamMemberDays, otherClaimDays, verificationDays)
             .forEach { require(it == null || it in 1..MAX_GOAL_DAYS) { "A goal is between 1 and $MAX_GOAL_DAYS days" } }
     }
 
@@ -57,12 +59,13 @@ object CaseDeadlines {
     /** The decision of a contested moderation may be dated a little after the reception (clocks differ). */
     const val DECISION_CLOCK_SKEW_SECONDS: Long = 10 * 60
 
-    /** The deadline of a case of [nature] received at [receivedAt]; null when there is none (a bug, a suggestion). */
+    /** The deadline of a case of [nature] received at [receivedAt]; null when there is none (a bug, a suggestion, a report). */
     fun of(nature: CaseNature, receivedAt: Long, goals: CaseGoals = CaseGoals.DEFAULT): Deadline? = when (nature) {
         is CaseNature.Ticket -> goal(receivedAt, when (nature.subtype) {
             TicketSubtype.BUG -> goals.bugDays
             TicketSubtype.SUGGESTION -> goals.suggestionDays
             TicketSubtype.REPORT -> goals.reportDays
+            TicketSubtype.VERIFICATION -> goals.verificationDays
         })
         is CaseNature.Contact -> goal(receivedAt, goals.contactDays)
         is CaseNature.Claim -> when (nature.motif) {

@@ -36,6 +36,14 @@ class CaseMessageTest {
         listOf(
             CaseMessage.opening(number, CaseNature.Ticket(TicketSubtype.BUG), "[EXEMPLE] La carte ne s’ouvre pas", "[EXEMPLE] Rien ne s’affiche.", technical = "android 14; version 0.4.0"),
             CaseMessage.opening(number, CaseNature.Contact(ContactCategory.ASSOCIATION), "[EXEMPLE] Partenariat", "[EXEMPLE] Bonjour…"),
+            // CO-18: the claim as seen, where and when, and the address of a close fact-check.
+            CaseMessage.opening(
+                number,
+                CaseNature.Ticket(TicketSubtype.VERIFICATION),
+                "[EXEMPLE] La mairie fermerait toutes les écoles lundi",
+                "[EXEMPLE] Vu sur un réseau social dimanche soir, sans source ni signature.",
+                content = "30023:${"b".repeat(64)}:verification-exemple",
+            ),
             CaseMessage.opening(number, CaseNature.Claim(ClaimMotif.DATA_RIGHTS), "[EXEMPLE] Accès à mes données", "[EXEMPLE] Je demande…", declaredIdentity = "[EXEMPLE] Camille"),
             CaseMessage.followUp(number, "[EXEMPLE] Voici la précision demandée."),
             CaseMessage.reply(number, "[EXEMPLE] Votre commentaire est rétabli.", motives = "[EXEMPLE] Aucune règle de la charte n’était enfreinte.", automated = true),

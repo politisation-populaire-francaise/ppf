@@ -43,6 +43,13 @@ object Permissions {
     const val CONTACT_RESTRICTED: String = "contact.restricted"
 
     /**
+     * The requests of verification sent by citizens to the fact-checking team of Comprendre (CO-18, D-143):
+     * the tickets of sub-type `verification` only, in the section `verifications` (see them, assign them to
+     * oneself or to another member who may handle them, priority, status, closing). Nothing else of M30.
+     */
+    const val CONTACT_VERIFICATION: String = "contact.verification"
+
+    /**
      * Writing the drafts of the editorial circuit of [space] (`comprendre`, `voir`) in the back-office section
      * `editorial.<space>` (docs/integration/circuit-editorial.md, step 3). Reviewing and publishing stay the
      * permissions of the queue (`queue.editorial.<space>.review`, `.publish`).
@@ -120,6 +127,8 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             "queue.editorial.voir.review",
             "queue.editorial.voir.publish",
             Permissions.RIGHT_OF_REPLY_DECIDE,
+            // The requests of verification of Comprendre (CO-18, D-143), a sub-type of the cases of M30.
+            Permissions.CONTACT_VERIFICATION,
         ),
     ),
     ORGANISATION_VERIFIER("organisation_verifier", BackOfficeTexts.ROLE_ORGANISATION_VERIFIER, setOf(Permissions.queueDecide("agir.organisations"))),

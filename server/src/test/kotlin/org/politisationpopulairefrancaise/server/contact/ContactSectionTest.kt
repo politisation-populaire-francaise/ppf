@@ -17,6 +17,7 @@ import org.politisationpopulairefrancaise.core.contact.CaseNature
 import org.politisationpopulairefrancaise.core.contact.CaseStatus
 import org.politisationpopulairefrancaise.core.contact.ClaimMotif
 import org.politisationpopulairefrancaise.core.contact.ContactCategory
+import org.politisationpopulairefrancaise.core.contact.DeadlineKind
 import org.politisationpopulairefrancaise.core.contact.TicketSubtype
 import org.politisationpopulairefrancaise.server.NO_EDITORS
 import org.politisationpopulairefrancaise.server.TEST_RELAY
@@ -53,6 +54,7 @@ class ContactSectionTest {
     private val clock = MutableClock(Instant.parse("2026-11-08T10:00:00Z"))
     private val bo = "http://localhost:${BackOfficeTestData.PORT}"
     private val section = "/equipe/sections/contact"
+    private val verifications = "/equipe/sections/verifications"
     private val space = ContactFixtures.space(clock)
     private val store = space.store()
 
@@ -95,15 +97,18 @@ class ContactSectionTest {
             header("Sec-Fetch-Site", "same-origin")
         }
 
-    private fun open(nature: CaseNature, decisionAt: Long? = null): ContactFixtures.Draft {
+    private fun open(nature: CaseNature, decisionAt: Long? = null, into: ContactSpace = space): ContactFixtures.Draft {
         val draft = ContactFixtures.Draft(nature, clock.instant(), decisionAt = decisionAt)
-        assertIs<CreateOutcome.Created>(space.create(draft.creation()))
+        assertIs<CreateOutcome.Created>(into.create(draft.creation()))
         return draft
     }
 
     private fun caseOf(draft: ContactFixtures.Draft): StoredCase = assertNotNull(store.find(draft.number.display))
 
-    private fun casePath(draft: ContactFixtures.Draft, sub: String = ""): String = "$section/dossiers/${draft.number.display}" + if (sub.isEmpty()) "" else "/$sub"
+    private fun casePath(draft: ContactFixtures.Draft, sub: String = "", base: String = section): String =
+        "$base/dossiers/${draft.number.display}" + if (sub.isEmpty()) "" else "/$sub"
+
+    private fun verificationPath(draft: ContactFixtures.Draft, sub: String = ""): String = casePath(draft, sub, verifications)
 
     private fun location(response: HttpResponse): String = assertNotNull(response.headers[HttpHeaders.Location], "redirected")
 
@@ -276,6 +281,122 @@ class ContactSectionTest {
         assertTrue(confirm.bodyAsText().contains("action=\"${casePath(other, "prolongation")}\""))
         assertNull(caseOf(other).extendedAt)
         assertTrue(journalAfter(seq2).isEmpty())
+    }
+
+    // Requests of verification (CO-18, D-143) ---------------------------------------------------------
+
+    @Test
+    fun anEditorSeesOnlyTheRequestsOfVerificationInTheirOwnSection() = testApplication {
+        val client = start()
+        val editor = member(data, "Éditrice", listOf(TeamRole.EDITOR))
+        val verification = open(CaseNature.Ticket(TicketSubtype.VERIFICATION))
+        val bug = open(CaseNature.Ticket(TicketSubtype.BUG))
+        val claim = open(CaseNature.Claim(ClaimMotif.OTHER))
+        val home = client.page(verifications, editor)
+        assertEquals(HttpStatusCode.OK, home.status)
+        val html = home.bodyAsText()
+        assertTrue(html.contains(ContactTexts.VERIFICATION_SECTION_TITLE) && html.contains(ContactTexts.VERIFICATION_INTRO))
+        assertTrue(html.contains(verification.number.display))
+        assertFalse(html.contains(bug.number.display) || html.contains(claim.number.display), "only the requests of verification")
+        assertFalse(html.contains("name=\"type\"") || html.contains("name=\"nature\""), "no type nor nature filter")
+        assertFalse(html.contains(ContactTexts.VIEW_HOLDS))
+        // A filter of the general inbox changes nothing here; the others still work.
+        assertFalse(client.page("$verifications?type=ticket&nature=subtype:bug&dossiers=tous", editor).bodyAsText().contains(bug.number.display))
+        assertTrue(client.page("$verifications?assignation=personne", editor).bodyAsText().contains(verification.number.display))
+        assertFalse(client.page("$verifications?assignation=moi", editor).bodyAsText().contains(verification.number.display))
+        // The general section stays closed to her, with the same answer whatever the number.
+        assertEquals(HttpStatusCode.Forbidden, client.page(section, editor).status)
+        listOf(verification, bug).forEach { draft -> assertEquals(HttpStatusCode.Forbidden, client.page(casePath(draft), editor).status) }
+        assertEquals(HttpStatusCode.Forbidden, client.page("$section/dossiers/PPF-00000-00000", editor).status)
+        assertEquals(HttpStatusCode.Forbidden, client.form(casePath(bug, "assignation"), editor, "membre" to "me").status)
+        // Any other case answers in her section as an unknown one.
+        listOf(bug, claim).forEach { draft ->
+            assertEquals(HttpStatusCode.NotFound, client.page(verificationPath(draft), editor).status)
+            assertEquals(HttpStatusCode.NotFound, client.form(verificationPath(draft, "assignation"), editor, "membre" to "me").status)
+            assertEquals(HttpStatusCode.NotFound, client.form(verificationPath(draft, "statut"), editor, "statut" to "closed").status)
+            assertEquals(HttpStatusCode.NotFound, client.form(verificationPath(draft, "priorite"), editor, "priorite" to "high").status)
+        }
+        assertEquals(HttpStatusCode.NotFound, client.page("$verifications/dossiers/PPF-00000-00000", editor).status)
+        assertNull(caseOf(bug).assignedTo)
+        assertEquals(CaseStatus.RECEIVED, caseOf(claim).status)
+        // She assigns the request to herself, raises its priority, answers and closes it; each change is journaled.
+        val page = client.page(verificationPath(verification), editor).bodyAsText()
+        assertTrue(page.contains(ContactTexts.STATUS_BUTTON) && page.contains("Ticket : Demande de vérification"))
+        assertFalse(page.contains(ContactTexts.HOLD_TITLE) || page.contains(ContactTexts.EXTEND_TITLE))
+        val seq = lastSeq()
+        assertTrue(location(client.form(verificationPath(verification, "assignation"), editor, "membre" to "me")).endsWith("ok=assigned"))
+        assertEquals(editor.id, caseOf(verification).assignedTo)
+        assertTrue(location(client.form(verificationPath(verification, "priorite"), editor, "priorite" to "high")).endsWith("ok=priority"))
+        assertTrue(location(client.form(verificationPath(verification, "statut"), editor, "statut" to "answered")).endsWith("ok=status"))
+        val closing = client.form(verificationPath(verification, "statut"), editor, "statut" to "closed")
+        assertTrue(location(closing).endsWith("$verifications/dossiers/${verification.number.display}?ok=status"), "back to the case, in her section")
+        val closed = caseOf(verification)
+        assertEquals(CasePriority.HIGH, closed.priority)
+        assertEquals(CaseStatus.CLOSED, closed.status)
+        assertEquals(clock.instant(), closed.closedAt)
+        val lines = journalAfter(seq)
+        assertEquals(
+            listOf("section.verifications.assigned", "section.verifications.priority_changed", "section.verifications.status_changed", "section.verifications.status_changed"),
+            lines.map { it.action },
+        )
+        lines.forEach { line ->
+            assertEquals("verifications:${verification.number.display}", line.targetId)
+            assertEquals(mapOf("type" to "ticket", "nature" to "verification"), line.details.filterKeys { it == "type" || it == "nature" })
+        }
+        assertTrue(client.page("$verifications?dossiers=closed", editor).bodyAsText().contains(verification.number.display))
+        // Nothing else of M30 is mounted in her section.
+        val hold = client.form(verificationPath(verification, "archive"), editor, "motif" to "[EXEMPLE] x", "reexamen" to "2027-01-01")
+        assertNull(hold.headers[HttpHeaders.Location])
+        assertNull(store.holdRequest(verification.number.display))
+    }
+
+    @Test
+    fun moderatorsKeepTheRequestsOfVerificationInTheGeneralInboxAndAssignThemToEditors() = testApplication {
+        val client = start()
+        val moderator = member(data, "Modérateur", listOf(TeamRole.MODERATOR))
+        val editor = member(data, "Éditeur", listOf(TeamRole.EDITOR))
+        val verifier = member(data, "Vérificatrice", listOf(TeamRole.ORGANISATION_VERIFIER))
+        val verification = open(CaseNature.Ticket(TicketSubtype.VERIFICATION))
+        val bug = open(CaseNature.Ticket(TicketSubtype.BUG))
+        val inbox = client.page(section, moderator).bodyAsText()
+        assertTrue(inbox.contains(verification.number.display) && inbox.contains(bug.number.display))
+        assertTrue(client.page("$section?nature=subtype:verification", moderator).bodyAsText().let { it.contains(verification.number.display) && !it.contains(bug.number.display) })
+        // The section of the requests of verification is for contact.verification only.
+        assertEquals(HttpStatusCode.Forbidden, client.page(verifications, moderator).status)
+        // The members offered for a request of verification hold either permission; for a bug, triage only.
+        val offered = client.page(casePath(verification), moderator).bodyAsText()
+        assertTrue(offered.contains("value=\"${editor.id}\""))
+        assertFalse(offered.contains("value=\"${verifier.id}\""))
+        assertFalse(client.page(casePath(bug), moderator).bodyAsText().contains("value=\"${editor.id}\""))
+        assertTrue(client.page(verificationPath(verification), editor).bodyAsText().contains("value=\"${moderator.id}\""))
+        // An editor is assigned only requests of verification; a member without either permission, nothing.
+        assertTrue(location(client.form(casePath(bug, "assignation"), moderator, "membre" to editor.id.toString())).endsWith("erreur=not_eligible"))
+        assertTrue(location(client.form(casePath(verification, "assignation"), moderator, "membre" to verifier.id.toString())).endsWith("erreur=not_eligible"))
+        assertTrue(location(client.form(verificationPath(verification, "assignation"), editor, "membre" to verifier.id.toString())).endsWith("erreur=not_eligible"))
+        assertNull(caseOf(verification).assignedTo)
+        assertTrue(location(client.form(casePath(verification, "assignation"), moderator, "membre" to editor.id.toString())).endsWith("ok=assigned"))
+        assertEquals(editor.id, caseOf(verification).assignedTo)
+        assertTrue(client.page("$verifications?assignation=moi", editor).bodyAsText().contains(verification.number.display))
+        // The editor hands it to the moderator, who holds contact.triage.
+        assertTrue(location(client.form(verificationPath(verification, "assignation"), editor, "membre" to moderator.id.toString())).endsWith("ok=assigned"))
+        assertEquals(moderator.id, caseOf(verification).assignedTo)
+        // A member who holds neither permission opens neither section.
+        assertEquals(HttpStatusCode.Forbidden, client.page(verifications, verifier).status)
+        assertEquals(HttpStatusCode.Forbidden, client.page(section, verifier).status)
+    }
+
+    @Test
+    fun theGoalOfARequestOfVerificationComesFromTheSettings() = testApplication {
+        val client = start()
+        val editor = member(data, "Éditrice", listOf(TeamRole.EDITOR))
+        val byDefault = open(CaseNature.Ticket(TicketSubtype.VERIFICATION))
+        assertEquals(clock.instant().plusSeconds(15 * 86_400L), caseOf(byDefault).deadlineAt)
+        assertEquals(DeadlineKind.GOAL, caseOf(byDefault).deadlineKind)
+        val settings = ContactConfig.fromEnvironment(mapOf("PPF_CASE_GOAL_VERIFICATION_DAYS" to "20")::get)
+        assertEquals(20, settings.goals.verificationDays)
+        val configured = open(CaseNature.Ticket(TicketSubtype.VERIFICATION), into = ContactFixtures.space(clock, ContactFixtures.config().copy(goals = settings.goals)))
+        assertEquals(clock.instant().plusSeconds(20 * 86_400L), caseOf(configured).deadlineAt)
+        assertTrue(client.page(verificationPath(configured), editor).bodyAsText().contains(ContactTexts.GOAL), "shown as a goal")
     }
 
     @Test

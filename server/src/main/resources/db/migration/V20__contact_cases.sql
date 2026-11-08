@@ -18,7 +18,8 @@ CREATE TABLE contact_case (
     -- PPF-XXXXX-XXXXX, 10 random symbols of Crockford's base 32 drawn by the device.
     number                TEXT        PRIMARY KEY CHECK (number ~ '^PPF-[0-9A-HJKMNP-TV-Z]{5}-[0-9A-HJKMNP-TV-Z]{5}$'),
     type                  TEXT        NOT NULL CHECK (type IN ('ticket', 'contact', 'claim')),
-    subtype               TEXT        CHECK (subtype IN ('bug', 'suggestion', 'report')),
+    -- 'verification': a request of verification for the fact-checking team of Comprendre (CO-18, D-143).
+    subtype               TEXT        CHECK (subtype IN ('bug', 'suggestion', 'report', 'verification')),
     category              TEXT        CHECK (category IN ('citizen', 'association', 'union', 'journalist', 'elected', 'institution', 'company', 'other')),
     motif                 TEXT        CHECK (motif IN ('moderation_decision', 'data_rights', 'right_of_reply', 'funds', 'team_member', 'other')),
     status                TEXT        NOT NULL CHECK (status IN ('received', 'in_progress', 'answered', 'awaiting_you', 'closed')),

@@ -8,7 +8,7 @@ import org.politisationpopulairefrancaise.core.contact.DeadlineKind
 import org.politisationpopulairefrancaise.core.contact.TicketSubtype
 
 /**
- * Every French text of the section « Échanges » of the back-office (M30), kept together like
+ * Every French text of the sections « Échanges » and « Demandes de vérification » of the back-office (M30), kept together like
  * [org.politisationpopulairefrancaise.server.backoffice.BackOfficeTexts]. No em dash, typographic apostrophes.
  */
 object ContactTexts {
@@ -17,6 +17,9 @@ object ContactTexts {
     const val HOME_INTRO: String =
         "Les tickets, les messages et les réclamations adressés à l’équipe. Le serveur ne garde que des enveloppes chiffrées pour la boîte de l’équipe : " +
             "les textes se lisent et se répondent dans le client de l’équipe (étape suivante). Ici, seulement le suivi : nature, statut, dates, échéance, priorité, assignation."
+    const val VERIFICATION_SECTION_TITLE: String = "Demandes de vérification"
+    const val VERIFICATION_INTRO: String =
+        "Les demandes de vérification envoyées par les citoyens (CO-18). Seules les métadonnées sont ici ; le texte se lit dans le client de l’équipe."
     const val FILTERS: String = "Filtrer la boîte"
     const val FILTER_VIEW: String = "Dossiers"
     const val FILTER_TYPE: String = "Type"
@@ -176,6 +179,7 @@ object ContactTexts {
         TicketSubtype.BUG -> "Bug"
         TicketSubtype.SUGGESTION -> "Suggestion"
         TicketSubtype.REPORT -> "Signalement d’un contenu ou d’un compte"
+        TicketSubtype.VERIFICATION -> "Demande de vérification"
     }
 
     fun category(category: ContactCategory): String = when (category) {

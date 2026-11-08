@@ -92,6 +92,8 @@ data class InboxQuery(
     val restricted: Boolean = false,
     /** The viewer: the cases that concern them are never listed. */
     val viewer: UUID,
+    /** Every case, or the requests of verification only (section `verifications`, CO-18, D-143). */
+    val scope: ContactScope = ContactScope.ALL,
     val limit: Int = 200,
 )
 
@@ -256,6 +258,11 @@ class ContactStore(private val dataSource: DataSource) {
         if (!query.restricted) conditions += "(c.motif IS NULL OR c.motif NOT IN ('funds', 'team_member'))"
         conditions += "(c.concerns IS NULL OR c.concerns <> ?)"
         binders += { s, i -> s.setObject(i, query.viewer) }
+        if (query.scope == ContactScope.VERIFICATION) {
+            conditions += "c.type = ? AND c.subtype = ?"
+            binders += { s, i -> s.setString(i, CaseType.TICKET.wire) }
+            binders += { s, i -> s.setString(i, TicketSubtype.VERIFICATION.wire) }
+        }
         val pending = "EXISTS (SELECT 1 FROM contact_legal_hold_request r WHERE r.case_number = c.number)"
         when (val view = query.view) {
             InboxView.OPEN -> conditions += "(c.status <> 'closed' OR c.legal_hold_alerted_at IS NOT NULL OR $pending)"
