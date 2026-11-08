@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- M33 "Sécurité de l'appareil" (Agir): the lock of the application (S-43), the quick erase (S-44),
+     the content hidden from the system (S-45) and « Préparer mon téléphone » (AG-56). French, "vous",
+     typographic apostrophe (’), no em dash. The legal texts are [EXEMPLE], to be read by a lawyer. -->
+<resources>
+    <!-- Lock screen -->
+    <string name="sec_lock_title">PPF est verrouillé</string>
+    <string name="sec_lock_text">Tapez votre code pour ouvrir l’application.</string>
+    <string name="sec_pin_label">Code de verrouillage</string>
+    <string name="sec_unlock">Déverrouiller</string>
+    <string name="sec_checking">Vérification du code…</string>
+    <string name="sec_wrong">Code incorrect.</string>
+    <string name="sec_wait">Trop d’essais. Réessayez dans %1$s.</string>
+    <string name="sec_seconds">%1$d s</string>
+    <string name="sec_minutes">%1$d min %2$d s</string>
+    <string name="sec_lock_emergency">Urgence : appeler sans déverrouiller</string>
+    <string name="sec_forgot">Code oublié ?</string>
+    <string name="sec_forgot_text">Sans le code, la seule façon de rouvrir PPF est de tout effacer de cet appareil. Votre compte se retrouve ensuite avec votre phrase de récupération.</string>
+
+    <!-- Mon espace: the card -->
+    <string name="sec_card_title">Sécurité de cet appareil</string>
+    <string name="sec_card_text">Ces réglages restent sur cet appareil. Rien n’est envoyé au serveur.</string>
+    <string name="sec_lock_toggle">Verrouiller PPF par un code</string>
+    <string name="sec_lock_toggle_text">Le code est demandé à l’ouverture et au retour dans l’application.</string>
+    <string name="sec_state_on">Activé</string>
+    <string name="sec_state_off">Désactivé</string>
+    <string name="sec_after_title">Verrouiller après</string>
+    <string name="sec_after_0">Immédiatement</string>
+    <string name="sec_after_60">1 minute</string>
+    <string name="sec_after_300">5 minutes</string>
+    <string name="sec_after_900">15 minutes</string>
+    <string name="sec_lock_now">Verrouiller maintenant</string>
+    <string name="sec_change">Changer le code</string>
+    <string name="sec_code_only">Code seul : PPF ne propose ni l’empreinte digitale ni la reconnaissance du visage.</string>
+    <string name="sec_hide_toggle">Masquer le contenu dans les applications récentes</string>
+    <string name="sec_hide_text">PPF apparaît vide dans la liste des applications ouvertes. Cela bloque aussi les captures et l’enregistrement de l’écran de PPF.</string>
+    <string name="sec_wipe_button">Effacer toutes les données de cet appareil</string>
+    <string name="sec_wipe_hint">En un geste, après confirmation : comptes, messages, suivis, réglages, fichiers.</string>
+
+    <!-- Code dialogs -->
+    <string name="sec_enable_title">Choisir un code</string>
+    <string name="sec_enable_text">De 6 à 16 chiffres, difficile à deviner. Si vous l’oubliez, la seule solution sera de tout effacer : notez d’abord votre phrase de récupération.</string>
+    <string name="sec_new_pin">Nouveau code</string>
+    <string name="sec_confirm_pin">Le même code, une seconde fois</string>
+    <string name="sec_current_pin">Code actuel</string>
+    <string name="sec_enable_confirm">Activer le verrouillage</string>
+    <string name="sec_change_confirm">Changer le code</string>
+    <string name="sec_cancel">Annuler</string>
+    <string name="sec_problem_short">Le code doit avoir au moins 6 chiffres.</string>
+    <string name="sec_problem_long">Le code doit avoir au plus 16 chiffres.</string>
+    <string name="sec_problem_digits">Le code ne contient que des chiffres.</string>
+    <string name="sec_problem_simple">Ce code est trop facile à deviner (chiffres répétés ou à la suite).</string>
+    <string name="sec_problem_mismatch">Les deux codes sont différents.</string>
+    <string name="sec_current_wrong">Le code actuel est incorrect.</string>
+    <string name="sec_disable_title">Désactiver le verrouillage ?</string>
+    <string name="sec_disable_text">Sans verrouillage, toute personne qui tient votre téléphone déverrouillé peut ouvrir PPF, lire vos messages et voir ce que vous suivez. Vous pourrez le réactiver à tout moment.</string>
+    <string name="sec_disable_confirm">Désactiver</string>
+    <string name="sec_show_title">Afficher le contenu dans les applications récentes ?</string>
+    <string name="sec_show_text">Le contenu de PPF sera visible dans la liste des applications ouvertes, et les captures d’écran redeviendront possibles. Une autre application ou une personne qui regarde votre téléphone pourra le voir. Vous pourrez le masquer à nouveau à tout moment.</string>
+    <string name="sec_show_confirm">Afficher quand même</string>
+
+    <!-- Quick erase -->
+    <string name="sec_wipe_title">Tout effacer de cet appareil ?</string>
+    <string name="sec_wipe_text">PPF efface de cet appareil votre clé et ce qui l’accompagne : ce que vous suivez, vos réponses aux appels et à l’agenda, vos témoignages en attente, vos conversations et salons rejoints, votre point de ralliement et ces réglages.</string>
+    <string name="sec_wipe_phrase">Votre phrase de récupération est le seul moyen de retrouver votre compte ensuite : vérifiez que vous l’avez notée sur papier avant d’effacer.</string>
+    <string name="sec_wipe_server">Rien n’est effacé sur le serveur : ce que vous avez publié reste publié.</string>
+    <string name="sec_wipe_not_yet">Dans cette version, quelques données ne sont pas encore effacées par ce bouton (progression des parcours, contenus téléchargés, suivis de « Voir » et de « Décider ») : pour tout effacer, désinstallez aussi l’application.</string>
+    <string name="sec_wipe_confirm">Tout effacer</string>
+    <string name="sec_wipe_running">Effacement en cours…</string>
+    <string name="sec_wipe_done">Les données de PPF ont été effacées de cet appareil.</string>
+    <string name="sec_wipe_restore">Pour retrouver votre compte, rouvrez PPF, allez dans « Mon espace », touchez « J’ai déjà un compte » et tapez votre phrase de récupération.</string>
+    <string name="sec_wipe_close_yourself">Vous pouvez fermer l’application.</string>
+    <string name="sec_wipe_failed">L’effacement n’a pas pu se terminer. Réessayez, ou désinstallez l’application pour tout effacer.</string>
+    <string name="sec_wipe_failed_parts">Parties non effacées : %1$d.</string>
+    <string name="sec_wipe_retry">Réessayer</string>
+    <string name="sec_close">Fermer</string>
+
+    <!-- AIDE sheet -->
+    <string name="sec_help_title">Effacer mes données</string>
+    <string name="sec_help_text">Si votre téléphone risque d’être pris, vous pouvez tout effacer de PPF en un geste.</string>
+
+    <!-- Protest mode: « Préparer mon téléphone » (AG-56) -->
+    <string name="sec_prepare_title">Préparer mon téléphone</string>
+    <string name="sec_prepare_text">Où en est PPF sur ce téléphone :</string>
+    <string name="sec_prepare_lock">Verrouillage de PPF</string>
+    <string name="sec_prepare_lock_on">Activé : le code est demandé.</string>
+    <string name="sec_prepare_lock_off">Désactivé.</string>
+    <string name="sec_prepare_lock_action">Activer le verrouillage</string>
+    <string name="sec_prepare_code_only">Déverrouillage de PPF par code seul</string>
+    <string name="sec_prepare_code_only_on">Toujours : PPF n’utilise ni l’empreinte ni le visage.</string>
+    <string name="sec_prepare_hide">Contenu masqué dans les applications récentes</string>
+    <string name="sec_prepare_hide_action">Masquer</string>
+    <string name="sec_prepare_phrase">Phrase de récupération notée sur papier</string>
+    <string name="sec_prepare_phrase_text">Cochez quand c’est fait (rien n’est enregistré). Elle s’affiche dans « Mon espace ».</string>
+    <string name="sec_prepare_wipe">Effacement rapide</string>
+    <string name="sec_prepare_wipe_text">Prêt : un geste, puis une confirmation.</string>
+    <string name="sec_status_ok">Fait</string>
+    <string name="sec_status_todo">À faire</string>
+    <string name="sec_phone_settings_title">Réglages du téléphone</string>
+    <string name="sec_phone_biometric">[EXEMPLE] Pourquoi un code plutôt que l’empreinte ou le visage : on peut poser votre doigt sur le téléphone ou le tenir devant votre visage sans votre accord, alors qu’un code reste dans votre tête.</string>
+    <string name="sec_phone_settings_1">[EXEMPLE] Avant de partir, désactivez le déverrouillage du téléphone par empreinte ou par visage, ou utilisez son mode « Verrouillage » (Android 9 et plus, menu du bouton marche), qui impose le code.</string>
+    <string name="sec_phone_settings_2">[EXEMPLE] Choisissez un code d’au moins 6 chiffres plutôt qu’un schéma, que l’on devine en regardant par-dessus l’épaule.</string>
+    <string name="sec_phone_settings_3">[EXEMPLE] Masquez le contenu des notifications sur l’écran verrouillé.</string>
+    <string name="sec_phone_settings_4">[EXEMPLE] Si vous filmez, désactivez la sauvegarde automatique des photos vers un service en ligne.</string>
+    <string name="sec_phone_legal">[EXEMPLE, à vérifier par un avocat] La Cour de cassation (assemblée plénière, 7 novembre 2022, n° 21-83.146) a jugé que le code de déverrouillage d’un téléphone peut être une « convention secrète de déchiffrement » quand le téléphone est équipé d’un moyen de cryptologie et que ce code permet de déchiffrer ses données ; le juge le vérifie au cas par cas. Refuser de le remettre sur réquisition de l’autorité judiciaire peut alors être puni, si le téléphone a pu servir à préparer ou commettre un crime ou un délit (Code pénal, article 434-15-2 : jusqu’à trois ans d’emprisonnement et 270 000 € d’amende). Ce texte n’est pas un conseil juridique : demandez à une legal team.</string>
+    <string name="sec_prepare_discreet">Nom et icône discrets</string>
+    <string name="sec_prepare_discreet_on">Activé : l’icône neutre « Outils » est sur l’écran d’accueil.</string>
+    <string name="sec_prepare_discreet_off">Désactivé (facultatif).</string>
+
+    <!-- S-45: discreet application -->
+    <string name="sec_discreet_toggle">Application discrète</string>
+    <string name="sec_discreet_text">Sur l’écran d’accueil, PPF prend un nom et une icône neutres : « Outils ».</string>
+    <string name="sec_discreet_on_title">Passer à l’icône discrète ?</string>
+    <string name="sec_discreet_on_text">L’icône de PPF sera remplacée par une icône neutre nommée « Outils ». L’application peut se fermer, et le raccourci peut disparaître ou changer de place sur l’écran d’accueil : retrouvez l’application dans la liste de toutes les applications. Le vrai nom reste visible dans les Paramètres du téléphone et dans le magasin d’applications.</string>
+    <string name="sec_discreet_off_title">Revenir à l’icône de PPF ?</string>
+    <string name="sec_discreet_off_text">Le nom et l’icône de PPF reviendront sur l’écran d’accueil : une personne qui regarde votre téléphone pourra voir que vous l’utilisez. L’application peut se fermer, et le raccourci peut disparaître ou changer de place. Vous pourrez repasser à l’icône discrète à tout moment.</string>
+    <string name="sec_discreet_confirm">Changer l’icône</string>
+
+    <!-- Creation of an account: the step « Protéger PPF sur cet appareil » (D-083), placed by pôle Communauté -->
+    <string name="sec_setup_title">Protéger PPF sur cet appareil</string>
+    <string name="sec_setup_text">Un code empêche une personne qui tient votre téléphone déverrouillé d’ouvrir PPF, de lire vos messages et de voir ce que vous suivez. Il reste sur cet appareil : rien n’est envoyé.</string>
+    <string name="sec_setup_choose">Choisir un code</string>
+    <string name="sec_setup_choose_text">Recommandé. De 6 à 16 chiffres, demandé à l’ouverture de PPF.</string>
+    <string name="sec_setup_skip">Continuer sans code</string>
+    <string name="sec_setup_skip_text">Vous pourrez en choisir un plus tard dans « Mon espace ».</string>
+    <string name="sec_setup_forgotten">Si vous oubliez ce code, vous ne perdez que cet appareil : effacez PPF de cet appareil, puis retrouvez votre compte avec votre phrase de récupération.</string>
+    <string name="sec_setup_enable">Activer le verrouillage</string>
+    <string name="sec_setup_continue">Continuer</string>
+    <string name="sec_setup_already">Le verrouillage par un code est déjà activé sur cet appareil.</string>
+    <string name="sec_setup_skip_title">Continuer sans code ?</string>
+    <string name="sec_setup_skip_warning">Sans code, toute personne qui tient votre téléphone déverrouillé peut ouvrir PPF, lire vos messages et voir ce que vous suivez. Vous pourrez activer le verrouillage à tout moment dans « Mon espace », « Sécurité de cet appareil ».</string>
+    <string name="sec_setup_skip_confirm">Confirmer</string>
+</resources>

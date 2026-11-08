@@ -24,7 +24,7 @@ Ils se trouvent dans `docs/projet/` :
 |---|---|---|
 | `vision.md` | Pourquoi : constat, mission, piliers, valeurs | Définitif |
 | `cahier-des-charges.md` | Exigences, architecture, hébergement, stack, cadre légal, planning, budget | Définitif |
-| `cahier-fonctionnel.md` | Rôles, parcours, modules et fonctionnalités | Définitif (version 2.1 du 8 novembre 2026, organisée par piliers, modules M1 à M35) |
+| `cahier-fonctionnel.md` | Rôles, parcours, modules et fonctionnalités | Définitif (version 2.2 du 8 novembre 2026, organisée par piliers, modules M1 à M35) |
 | `brainstorming-*.md` | Idées, questions et décisions en attente (l'inventaire des fonctionnalités est réparti en plusieurs documents `brainstorming-cahier-fonctionnel-inventaire-*.md`) | Brouillon |
 
 - **Priorité en cas de contradiction** : vision > cahier des charges > cahier fonctionnel. Ne tranche pas seul : signale la contradiction et ouvre une entrée de brainstorming.
