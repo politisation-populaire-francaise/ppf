@@ -154,6 +154,7 @@ Si une meilleure option existe, propose-la avec ta justification **avant** de co
 /ios          présent pour garder le code compatible ; non compilé pour l'instant
 /desktop      application Windows, macOS, Linux, simple hôte de /shared/ui
 /server       Ktor
+/signer       service de signature de la plateforme (clés de travail, règles par usage, approbations), conteneur à part (D-129)
 /web          site web rendu côté serveur (kotlinx.html), monté par /server
 /infra        Docker Compose (production et préproduction séparées), Caddy, WireGuard, déploiement, sauvegardes
 /tools        scripts de vérification (traceurs, dépendances), /tools/content-signer (signature des contenus de /content), /tools/icons (icônes Lucide et leur convertisseur)
@@ -177,6 +178,7 @@ Tout passe par le wrapper Gradle (`gradlew.bat` sous Windows, `./gradlew` ailleu
 | Installateur Windows (demande WiX, fait par l'intégration continue) | `gradlew :desktop:packageMsi` |
 | Serveur en local | `gradlew :server:run` puis http://localhost:8080 et http://localhost:8080/health |
 | Serveur empaqueté (jar unique) | `gradlew :server:buildFatJar` puis `server/build/libs/ppf-server.jar` |
+| Service de signature : tests et jar unique | `gradlew :signer:test`, `gradlew :signer:buildFatJar` puis `signer/build/libs/ppf-signer.jar` |
 | Tests d'un seul module | `gradlew :shared:ui:jvmTest`, `gradlew :server:test`, etc. |
 | Vérification des traceurs et des tiers | `bash tools/check-no-trackers.sh` |
 | Vérification des dépendances interdites | `bash tools/check-dependencies.sh` |

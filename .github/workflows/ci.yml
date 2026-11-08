@@ -80,7 +80,7 @@ jobs:
         if: ${{ env.PPF_TEST_KEYSTORE_PASSWORD != '' }}
         run: echo "${{ secrets.PPF_TEST_KEYSTORE_B64 }}" | base64 -d > "$PPF_TEST_KEYSTORE"
       - name: Build, test and package
-        run: ./gradlew build :android:assemblePreview :desktop:packageDeb :server:buildFatJar :tools:open-data-importer:buildFatJar --console=plain
+        run: ./gradlew build :android:assemblePreview :desktop:packageDeb :server:buildFatJar :tools:open-data-importer:buildFatJar :signer:buildFatJar --console=plain
       - name: Forbidden dependency groups
         run: bash tools/check-dependencies.sh
       - name: APK contents, not debuggable, test signature
@@ -110,6 +110,7 @@ jobs:
           path: |
             server/build/libs/ppf-server.jar
             tools/open-data-importer/build/libs/ppf-open-data-importer.jar
+            signer/build/libs/ppf-signer.jar
           if-no-files-found: error
       - name: Upload test reports
         if: failure()
@@ -159,7 +160,7 @@ jobs:
         run: |
           for env in preproduction production; do
             mkdir -p "$RUNNER_TEMP/$env"
-            touch "$RUNNER_TEMP/$env/db_password" "$RUNNER_TEMP/$env/server_db_password" "$RUNNER_TEMP/$env/migrate_db_password" "$RUNNER_TEMP/$env/app_db_password" "$RUNNER_TEMP/$env/import_key" "$RUNNER_TEMP/$env/vapid_private_key"
+            touch "$RUNNER_TEMP/$env/db_password" "$RUNNER_TEMP/$env/server_db_password" "$RUNNER_TEMP/$env/migrate_db_password" "$RUNNER_TEMP/$env/app_db_password" "$RUNNER_TEMP/$env/import_key" "$RUNNER_TEMP/$env/vapid_private_key" "$RUNNER_TEMP/$env/signer_kek" "$RUNNER_TEMP/$env/signer_client_token" "$RUNNER_TEMP/$env/server_signer_token"
             sed "s#^PPF_SECRETS_DIR=.*#PPF_SECRETS_DIR=$RUNNER_TEMP/$env#" "infra/env/$env.env.example" > "$RUNNER_TEMP/$env.env"
             docker compose -f "infra/$env/compose.yml" --env-file "$RUNNER_TEMP/$env.env" config --quiet
           done
@@ -208,13 +209,19 @@ jobs:
           printf '%s' "$app" > "$secrets/server_db_password"
           openssl ecparam -name prime256v1 -genkey -noout | openssl pkcs8 -topk8 -nocrypt -out "$secrets/vapid_private_key"
           : > "$secrets/import_key"
+          openssl rand -hex 32 | tr -d '\n' > "$secrets/signer_kek"
+          token=$(openssl rand -hex 32); printf '%s' "$token" > "$secrets/signer_client_token"; printf '%s' "$token" > "$secrets/server_signer_token"
+          sudo mkdir -p /srv/ppf/preproduction/signer && sudo chown 10008:10008 /srv/ppf/preproduction/signer
           sudo mkdir -p /srv/ppf/preproduction/ntfy && sudo chown 10006:10006 /srv/ppf/preproduction/ntfy
           sudo chown 999:999 "$secrets/db_password" "$secrets/app_db_password"
           sudo chown 10002:10002 "$secrets/server_db_password" "$secrets/migrate_db_password" "$secrets/vapid_private_key"
           sudo chown 10004:10004 "$secrets/import_key"
+          sudo chown 10008:10008 "$secrets/signer_kek" "$secrets/signer_client_token"
+          sudo chown 10002:10002 "$secrets/server_signer_token"
           sudo chmod 400 "$secrets"/*
           sed "s#^PPF_SECRETS_DIR=.*#PPF_SECRETS_DIR=$secrets#" infra/env/preproduction.env.example > "$RUNNER_TEMP/preprod.env"
           docker network create ppf-preprod-edge
+          docker network create --internal ppf-preprod-approval
           compose="docker compose -f infra/preproduction/compose.yml --env-file $RUNNER_TEMP/preprod.env"
           export PPF_SERVER_IMAGE=ppf-server:ci
           $compose up -d db
@@ -236,6 +243,14 @@ jobs:
           curl -fsS "http://$ip:8080/api/v1/events?limit=3" | grep -q '"sig"'
           # Parliamentary open data of the preproduction: the signed example packages of the image.
           curl -fsS -o /dev/null "http://$ip:8080/api/v1/parlement"
+          # Signing service: healthy, refuses a caller without the token.
+          for _ in $(seq 1 20); do [ "$(docker inspect --format '{{.State.Health.Status}}' ppf-preprod-signer-1)" = healthy ] && break; sleep 3; done
+          sip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' ppf-preprod-signer-1 | awk '{print $1}')
+          [ "$(curl -s -o /dev/null -w '%{http_code}' "http://$sip:8090/v1/keys")" = 401 ]
+          # Approval pages on their own port (contract 1.2): the script is served there, the internal API is not.
+          [ "$(curl -s -o /dev/null -w '%{http_code}' "http://$sip:8091/approbation/static/approbation.js")" = 200 ]
+          [ "$(curl -s -o /dev/null -w '%{http_code}' "http://$sip:8091/v1/keys")" = 404 ]
+          [ "$(curl -s -o /dev/null -w '%{http_code}' "http://$sip:8090/approbation/static/approbation.js")" = 404 ]
           # Push wake-ups: ntfy healthy, nothing open but the UnifiedPush topics.
           for _ in $(seq 1 20); do [ "$(docker inspect --format '{{.State.Health.Status}}' ppf-preprod-ntfy-1)" = healthy ] && break; sleep 3; done
           docker exec ppf-preprod-ntfy-1 ntfy access everyone 'up*' read-write >/dev/null
