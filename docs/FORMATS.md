@@ -401,6 +401,19 @@ Suivi après l'élection : un fait de « Voir » porte `a` rôle `pacte` et `ppf
 
 Règle d'entrée (décision de la propriétaire, Q1 option B ; `ComparatorSheet.ruleProblems`, appliquée par l'outil de signature, qui refuse une fiche qui la viole) : avant la liste officielle, chaque candidat a sa demande et un délai d'ajout est publié ; chaque demande est honorée dans ce délai ; une demande nomme un candidat de la fiche ; au moins un tour est donné. **Gel** (Q4 option A) : de 0 h, heure de Paris, la veille du premier jour de vote d'un tour jusqu'à la fermeture des derniers bureaux, le serveur refuse (409 `comparator_frozen`) toute publication, mise à jour ou suppression (kind 5) d'un comparateur ou d'une position de cette élection, d'après les tours des comparateurs **déjà enregistrés** (une nouvelle version qui déplacerait les dates ne lève pas un gel en cours) ; un premier comparateur dont ses propres tours disent l'élection gelée est refusé aussi. L'application reste lisible et affiche le gel.
 
+### Élection du calendrier électoral (`ppf-type` = `election`, DE-28, conception : `docs/integration/calendrier-electoral.md`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-election` | `identifiant`, `libellé` (le même que le Pacte et le comparateur de cette élection) |
+| `ppf-election-status` | `annoncee` (dates annoncées, décret attendu) ou `convoquee` (décret publié) |
+| `ppf-decree` | Le décret de convocation : `numéro`, `jour du Journal officiel`, `page sur Légifrance (https)` ; obligatoire pour `convoquee`, interdit pour `annoncee` |
+| `ppf-round` | Les tours, au format du comparateur (au moins un) |
+| `ppf-deadline` | Une échéance (une par type) : `type` (`inscription-mairie`, `inscription-en-ligne`, `procuration-conseillee`, `candidatures`), `date`, `source (https)` ; écrite d'après la source officielle, jamais calculée par PPF |
+| `ppf-territory-code` | Le territoire d'un scrutin local (référentiel des territoires) ; absent pour un scrutin national |
+
+Contrôles de l'outil de signature (avertissements, jamais un refus du droit par le code) : une inscription en mairie qui ne tombe pas le sixième vendredi avant le premier tour (code électoral, article L17), une échéance après le premier tour. L'application montre les élections à venir ; un scrutin local seulement pour les territoires gardés sur l'appareil.
+
 ### Position d'un candidat (`ppf-type` = `position`)
 
 | Étiquette | Contenu |
