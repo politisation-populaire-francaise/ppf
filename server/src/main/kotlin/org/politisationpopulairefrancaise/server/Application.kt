@@ -48,6 +48,14 @@ import org.politisationpopulairefrancaise.server.backoffice.PortSelector
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeHeaders
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
 import org.politisationpopulairefrancaise.server.backoffice.publicPort
+import org.politisationpopulairefrancaise.server.backoffice.Permissions
+import org.politisationpopulairefrancaise.server.backoffice.sectionPath
+import org.politisationpopulairefrancaise.server.contact.ContactScope
+import org.politisationpopulairefrancaise.server.contact.ContactSection
+import org.politisationpopulairefrancaise.server.contact.ContactSetup
+import org.politisationpopulairefrancaise.server.contact.ContactSpace
+import org.politisationpopulairefrancaise.server.contact.ContactTexts
+import org.politisationpopulairefrancaise.server.contact.contactApi
 import org.politisationpopulairefrancaise.server.editorial.EditorialDrafts
 import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsPurge
 import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsSection
@@ -165,6 +173,9 @@ import javax.sql.DataSource
  * - PPF_ARCHIVE_*: the timestamped archive (on in production only by default), see [ArchiveConfig].
  * - PPF_TESTIMONY_DIR, PPF_MODERATION_KEY, PPF_EVIDENCE_KEY and the other PPF_TESTIMONY_* and
  *   PPF_EVIDENCE_RETENTION_DAYS settings: the testimonies of the Agir space, see [TestimonySetup].
+ * - PPF_CONTACT_INBOX_KEY, PPF_CASE_POW_BITS, PPF_CASE_GOAL_*_DAYS, PPF_CONTACT_RETENTION_INTERVAL_MINUTES: contact,
+ *   claims and case follow-up (M30), open when the inbox key of the team is set (the example inbox in
+ *   development), see [org.politisationpopulairefrancaise.server.contact.ContactConfig].
  * - PPF_PUBLIC_URL, PPF_SECURITY_NOSTR_KEY, PPF_SECURITY_GITHUB_URL: how researchers report a vulnerability
  *   (security.txt and /securite, S-92); in production one private channel is required, see [SecurityContactSetup].
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
@@ -284,6 +295,8 @@ fun Application.module(
     archive: ArchiveSetup = ArchiveSetup.fromEnvironment(),
     territoires: TerritoiresSetup = TerritoiresSetup.fromEnvironment(),
     testimonies: TestimonySetup = TestimonySetup.fromEnvironment(),
+    /** Contact, claims and case follow-up (M30): envelopes and metadata only, open when an inbox key is set. */
+    contact: ContactSetup = ContactSetup.fromEnvironment(),
     backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
     push: PushConfig = PushConfig.fromEnvironment(),
     /** How researchers report a vulnerability (S-92): security.txt and the page /securite. */
@@ -322,6 +335,8 @@ fun Application.module(
     val agirSpace = if (dataSource != null && repository != null) AgirSpace.start(this, dataSource, repository, policy, agir) else null
     // Testimonies: encrypted envelopes and files only, open when a folder is configured (docs/integration/agir-temoignages.md).
     val testimonySpace = if (dataSource != null && repository != null) TestimonySpace.start(this, dataSource, repository, policy, testimonies) else null
+    // Cases of contact, tickets and claims (M30, D-140): unreadable envelopes and follow-up metadata, nightly retention.
+    val contactSpace = dataSource?.let { ContactSpace.start(this, it, contact) }
     if (repository == null) {
         log.info("No database configured: the events API answers 503 (health check and web pages work).")
     } else if (relay.cleanupInterval.isPositive()) {
@@ -340,6 +355,15 @@ fun Application.module(
     }
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
+    // The inbox of the team for the cases (M30): a section of the back-office, metadata only; alerts for the legal holds to review.
+    // The requests of verification of Comprendre (CO-18, D-143) have their own section, for the fact-checking team.
+    if (teamBackOffice != null && contactSpace != null) {
+        teamBackOffice.sections.register(ContactSection(contactSpace, teamBackOffice, teamBackOffice.clock))
+        teamBackOffice.sections.register(ContactSection(contactSpace, teamBackOffice, teamBackOffice.clock, ContactScope.VERIFICATION))
+        contactSpace.onHoldsDue = { count ->
+            teamBackOffice.postAlert(ContactSection.ID, ContactTexts.holdsDueAlert(count), 4, Permissions.CONTACT_LEGAL_HOLD, sectionPath(ContactSection.ID) + "?dossiers=archives")
+        }
+    }
     // The demands proposed by citizens, reviewed by the team (Décider, contract of the back-office, section 7).
     proposals?.let { teamBackOffice?.queues?.register(ProposalsBackOfficeQueue(it.queue)) }
     // The writing pages of the editorial circuit of Comprendre (step 3): a section of the back-office.
@@ -515,6 +539,7 @@ fun Application.module(
             revendicationsApi(proposals)
             agirApi(agirSpace)
             testimonyApi(testimonySpace, testimonies.config.maxFileBytes)
+            contactApi(contactSpace) // Cases of contact and claims (M30): 503 contact_not_open without an inbox key.
             elusApi(elusService)
             territoiresApi(territoiresService)
             urneApi(urnes, urne, validations = inPerson, certifications = certifications)
