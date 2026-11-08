@@ -63,7 +63,7 @@ Le numéro détermine le comportement :
 | 20000 à 29999 | Éphémères : non conservés. |
 | 30000 à 39999 | Adressables : remplaçables par identifiant (`d`), voir section 4. |
 
-Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies). Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
+Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies), `1985` (étiquette NIP-32 : statut d'une revendication), `1040` (attestation OpenTimestamps, NIP-03 : preuve d'horodatage d'une archive). Types propres à PPF : `37240` (certificat d'une clé de travail de la plateforme) et `37241` (liste de l'équipe pour les accords de signature), section 4 decies. Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
 
 ## 4. Identifiant stable d'un contenu modifiable
 
@@ -574,6 +574,75 @@ Migration `migrations/12.sqm` (schéma 12 vers 13), identique à `Territoires.sq
 ## 4 octies. Données ouvertes du Parlement (D-064, D-065)
 
 Index : événement NIP-01, kind 30078, `d` = `ppf:parlement-index`, signé par une clé d'import (`OpenDataKeys`) ; `content` = l'index JSON (`example`, `importedOn`, `sources` avec nom, adresse, licence et date, `packages` avec nom, sha256 et taille). Paquets : `membres` (membres et groupes), `scrutins-an-AAAA-MM`, `votes-pe-AAAA-MM` (scrutins avec décomptes, décompte par groupe, positions `pour`, `contre`, `abstention`, `nonVotant`, `delegated`, `corrections` de type `mise-au-point` ou `dysfonctionnement`, `notVotingCauses`). Identifiants préfixés : `an:PA…`, `senat:…`, `pe:…`, scrutins `an:17:<numéro>`, dossiers `an-dossier:DLR5L17N…`. Code de circonscription : département puis numéro sur deux chiffres (`0101`, `2A01`, `97101`), commun avec l'annuaire des élus. Une brique de « Voir » peut porter `ppf-official-id` (personne ou texte). Modèles Kotlin : `core/voir/parlement/ParliamentFormat.kt` ; détail dans `docs/integration/voir-donnees-ouvertes.md`, section 3.
+
+## 4 decies. Signature de la plateforme : certificats, révocations, liste de l'équipe (D-129)
+
+Contrat : `docs/integration/service-signature.md` (version 1.2 du 8 novembre 2026). Modèles Kotlin communs aux applications, au serveur et au service de signature : `core/platform/` (`KeyCertificate`, `TeamList`, `PasskeyFingerprint`, `PlatformTrust`, `SigningUse`, `UrnClosures`, `ApprovalChallenge`, `SigningProtocol`).
+
+**Clé racine.** Clé secp256k1 de la plateforme, sur le téléphone de la propriétaire (option A du contrat). Elle ne signe que les deux types ci-dessous : un contenu signé par la racine n'est jamais un contenu de la plateforme. Sa clé publique est la seule constante de confiance (`PlatformRoot.PUBLIC_KEY`) ; elle reste vide tant que la racine n'existe pas, et rien n'est alors reconnu comme contenu de la plateforme (jamais « tout »). La préproduction a sa propre racine, qui ne certifie jamais une clé de la production, et inversement.
+
+**Numéros.** Vérifiés le 7 novembre 2026 dans le tableau « Event Kinds » du README du dépôt officiel des NIP (github.com/nostr-protocol/nips) : aucune NIP n'utilise 37240 ni 37241, ni aucun type de 37000 à 37515 (les plus proches : 35128, NIP-5A ; 37516 et 37517, NIP-CC).
+
+### Certificat d'une clé de travail (type 37240, adressable)
+
+Signé par la racine, `content` vide.
+
+| Étiquette | Contenu | Nombre |
+|---|---|---|
+| `d` | Clé publique de la clé de travail, hexadécimal minuscule (jamais la racine) | Une |
+| `ppf-key-use` | Un usage : `editorial.comprendre`, `editorial.voir`, `revendications.status`, `agir.organisations`, `decider.pacte`, `archives.timestamps`, `opendata.index`, `decider.urn_closure` | Une par usage ; un usage inconnu est ignoré par les applications ; le service de signature n'accepte un certificat `active` que s'il nomme exactement l'usage de la clé, une seule fois |
+| `ppf-not-before` | Début de la validité, secondes depuis 1970, en chiffres | Une |
+| `ppf-not-after` | Fin de la validité (exclue), 90 jours au plus après le début | Une |
+| `ppf-key-status` | `["ppf-key-status","active"]`, ou `["ppf-key-status","revoquee","<date d'effet en secondes>"]` | Une |
+| `alt` | Texte montré par les clients Nostr qui ne connaissent pas ce type (NIP-31) | Facultative |
+
+- **Révocation** : le même certificat republié (même `d`) avec le statut `revoquee` ; les contenus datés (`created_at`) de la date d'effet ou après ne sont plus reconnus ; sans date d'effet, plus aucun contenu de cette clé ne l'est.
+- **Pour l'usage et la validité, la version la plus récente l'emporte** (`created_at` le plus grand, à égalité le plus petit `id`), comme pour tout événement adressable.
+- **Les révocations sont définitives** (8 novembre 2026) : une fois reçue, une révocation signée par la racine est gardée quel que soit l'ordre d'arrivée des événements, même si elle est plus ancienne qu'un certificat `active` déjà reçu ; si plusieurs révocations existent, la date d'effet la plus ancienne l'emporte (sans date : depuis le début ; à égalité, le plus petit `id`) ; un certificat `active` plus récent ne rend jamais confiance à la clé. Les applications gardent donc, pour chaque clé, le dernier certificat **et** la révocation retenue (`PlatformTrust.events`) ; le service les sert ensemble (`GET /v1/certificates`).
+- **Lecture qui échoue fermée** : statut inconnu, absent ou en double, dates illisibles ou en double, fin avant le début, validité de plus de 90 jours : la clé est tenue pour révoquée depuis le début, et cette révocation est elle aussi définitive.
+- **Révocation de clôture** : au retrait d'une clé de travail, la racine signe une révocation à la date `last_signed_at + 1` (donnée par `GET /v1/keys` : la plus grande des dates de signature et des `created_at` de ce que la clé a signé) ; tout ce que la clé a signé reste valide, rien de ce qu'une copie volée signerait ensuite ne l'est.
+
+Un événement est un **contenu valide de la plateforme pour un usage** (`PlatformTrust.check`) si sa signature est authentique, si sa clé n'est pas la racine, si son type est l'un de ceux de l'usage et s'il a la **forme de l'usage** (`SigningUse.matches`, colonne « Forme commune » ci-dessous), si le dernier certificat de sa clé signé par la racine nomme cet usage, si son `created_at` est dans la validité (début compris, fin exclue) et avant la date d'effet de toute révocation reçue. La forme commune distingue les usages d'un même type : une clé certifiée pour un usage ne valide jamais le contenu d'un autre usage, même si elle est volée ; seuls les deux espaces éditoriaux partagent une forme, et leurs clés les distinguent.
+
+| Usage | Types | Forme commune (applications et service) | Accords | Forme exigée par le service de signature (version 1) |
+|---|---|---|---|---|
+| `editorial.comprendre`, `editorial.voir` | 30023 | Aucun `ppf-type` d'un autre usage (`organisation`, `pacte`, `engagement`) | Un ; deux pour la double validation | `d`, `title` et `ppf-origin` (`human` ou `ai-assisted`), une fois chacune ; `ppf-type` au plus une fois, jamais `organisation`, `pacte` ni `engagement` (types d'autres usages) |
+| `agir.organisations` | 30023 | Exactement un `ppf-type` = `organisation` | Un ; deux sur demande | `d` (1 à 64 caractères `a-z0-9._~-`), `title`, `ppf-type` = `organisation`, au plus un `p` hexadécimal, `ppf-org-status` = `verifiee` ou `revoquee` s'il est présent |
+| `decider.pacte` | 30023 | Exactement un `ppf-type`, `pacte` ou `engagement` | Un ; deux sur demande | `d`, `title`, `ppf-origin`, `ppf-type` = `pacte` ou `engagement` |
+| `revendications.status` | 1985 | Exactement un `L` = `ppf-status` | Un ; deux sur demande | Exactement `["L","ppf-status"]`, `["l","<statut>","ppf-status"]` (statuts de la section 4 bis) et un `a` vers une revendication `30023:<clé>:<d>`, aucune autre étiquette |
+| `archives.timestamps` | 1040 | Le type suffit | Aucun | Exactement un `e` (64 caractères hexadécimaux : l'empreinte horodatée) et au plus un `k` (type, en chiffres) ; `content` = la preuve `.ots` en base64 canonique, 8 Kio au plus une fois décodée, qui commence par l'en-tête OpenTimestamps (`\x00OpenTimestamps\x00\x00Proof\x00` puis `bf89e2e884e89294`), la version majeure 1, l'opération SHA-256 du fichier (`0x08`) et les 32 octets de l'empreinte, égaux à la valeur de `e`. **Aucun autre format de preuve n'est accepté pour l'instant** (RFC 3161 compris : un jeton RFC 3161 n'entre pas dans un événement 1040 de NIP-03 ; s'il en faut un, ce sera un autre type et une modification du contrat) |
+| `opendata.index` | 30078 | Exactement `d` = `ppf:parlement-index` | Aucun | Exactement `["d","ppf:parlement-index"]` (section 4 octies) ; `content` = un objet JSON |
+| `decider.urn_closure` | 30078 | Exactement un `d` qui commence par `ppf:urne-cloture:` | Aucun | Exactement `d` = `ppf:urne-cloture:<n>`, `ppf-urne` = `<n>` et `ppf-closing-sha256` = l'empreinte SHA-256 du document de clôture (`GET /api/v1/urnes/{n}/closing`) ; `content` = un objet JSON ; **jamais une seconde clôture pour le même `d`** |
+
+Les formes des trois usages automatiques sont celles de la version 1 du contrat : « Décider » les confirme avant de brancher l'archivage horodaté et la clôture des urnes, et toute modification est une modification du contrat (section 4). Pour tous les usages : 64 Kio au plus (forme canonique), 1000 étiquettes au plus, `created_at` au plus 5 minutes dans le futur et au plus 8 jours dans le passé (1 jour pour un usage automatique). **La signature prouve que la plateforme a dit le contenu, pas qu'il est vrai** : l'index des données ouvertes et les clôtures d'urnes portent un JSON choisi par le serveur sans relecture humaine, et les applications vérifient tout ce qui peut l'être (empreintes des paquets, empreinte du document de clôture, recomptage quand la méthode le permet).
+
+### Clôture d'une urne : la première l'emporte (pour « Décider »)
+
+Exception à la règle des événements adressables : pour un même `d` = `ppf:urne-cloture:<n>`, l'application garde la **première** clôture signée par la plateforme (le plus petit `created_at`, à égalité le plus petit `id`), jamais la plus récente, et montre toute autre clôture signée par la plateforme pour le même `d` comme un **conflit** (« Deux clôtures signées existent pour cette urne : la première est retenue »). Une clôture plus récente ne remplace jamais la première, qu'elle vienne de la même clé ou de la clé suivante (autre adresse). Code commun : `UrnClosures.choose(événements, confiance)` rend, pour chaque `d`, la clôture retenue et la liste des conflits ; seuls comptent les événements que `PlatformTrust` accepte pour `decider.urn_closure`. Le service de signature, de son côté, refuse définitivement une seconde clôture pour le même `d` (`urn_already_closed`). Le stockage local et le serveur gardent donc **toutes** les clôtures reçues pour un `d` (pas de remplacement par `EventReplacement` pour ce type et ce préfixe), à brancher par « Décider ».
+
+### Liste de l'équipe (type 37241, adressable)
+
+Signée par la racine, `d` = `ppf-equipe`, `content` vide. La plus récente l'emporte ; un membre absent de la dernière liste ne peut plus rien approuver, et ses approbations déjà données ne comptent plus.
+
+| Étiquette | Champs (positionnels) |
+|---|---|
+| `ppf-not-after` | Fin de validité de la liste (exclue), secondes depuis 1970, au plus 90 jours après son `created_at` (comme un certificat, pour que la propriétaire signe tout en une seule fois) ; une seule |
+| `ppf-member` | Identifiant du compte du back-office (1 à 64 caractères `A-Za-z0-9._-`) ; date à partir de laquelle ses accords comptent (secondes) ; clé publique Nostr reliée au compte (hexadécimal) ou champ vide (ou absent) |
+| `ppf-member-use` | Identifiant du compte ; un usage qu'il peut approuver (une étiquette par usage) |
+| `ppf-credential` | Identifiant du compte ; identifiant de sa clé d'accès WebAuthn ; clé publique COSE de cette clé ; les deux en base64url canonique sans remplissage (une étiquette par clé d'accès) |
+| `alt` | Texte montré par les clients Nostr (NIP-31) |
+
+Lecture qui échoue fermée (8 novembre 2026) : une liste sans `ppf-not-after`, avec une fin illisible, en double, avant sa date ou à plus de 90 jours, ou échue, ne permet **aucune** approbation (`team_list_expired`) ; un compte décrit deux fois, dont une ligne `ppf-member` est illisible ou a moins de trois champs, est écarté ; un identifiant de clé d'accès ou une clé COSE qui n'est pas en base64url **canonique** (décoder puis encoder de nouveau doit redonner exactement le même texte : ni `=`, ni bits de fin non nuls) est ignoré ; un identifiant de clé d'accès listé deux fois (comparé sur ses octets) est écarté de tous les comptes ; une **clé COSE listée deux fois**, par le même compte ou par deux comptes, écarte **tous les comptes qui la listent**. Les clés de sécurité physiques des super-administrateurs n'y figurent pas : elles ne servent pas à publier.
+
+**Empreinte d'une clé d'accès** (`PasskeyFingerprint.of`, `TeamCredential.fingerprint`) : les 8 premiers octets du SHA-256 de la clé COSE, en hexadécimal minuscule par groupes de 4 caractères (exemple : la clé de trois octets `abc` donne `ba78 16bf 8f01 cfea`). Montrée par l'écran d'inscription du back-office et par le téléphone de la propriétaire avant de signer la liste.
+
+### Défi d'un accord
+
+Le défi WebAuthn qu'un membre signe pour approuver la signature d'un événement est SHA-256 du texte `ppf-approval-v1`, saut de ligne, usage, saut de ligne, identifiant hexadécimal de l'événement non signé (`ApprovalChallenge`). Exemple : l'usage `editorial.voir` et l'identifiant fait de 64 fois `a` donnent `6191c603b63bb16d1acb87d97834ad0872576eac06bb6027bd13929c38674f9a`. Depuis la version 1.2 du contrat, ce défi est donné au navigateur par le **service de signature lui-même**, sur sa propre page d'approbation (`<PPF_SIGNER_APPROVAL_ORIGIN>/approbation/<usage>/<id>`), jamais par le serveur principal. Le service vérifie l'assertion avec la clé COSE de la liste de l'équipe (jamais avec une clé envoyée dans la requête), son **origine d'approbation seulement** (une assertion faite sur le back-office est refusée), l'identifiant de partie de confiance des clés du back-office (`PPF_SIGNER_RP_ID`) et la vérification de la personne.
+
+### API interne et pages d'approbation du service de signature
+
+Hors API publique. API interne : port 8090 de son conteneur, joignable seulement par le serveur, qui présente `Authorization: Bearer <jeton>` (fichier secret partagé) ; brouillons (`POST /v1/drafts`, `GET /v1/drafts/{usage}/{id}`), signature (`POST /v1/sign`, qui refuse tout corps portant encore une approbation), certificats, liste, journal. Pages d'approbation : port 8091, sur leur propre adresse, servies et vérifiées par le service ; elles reçoivent aussi directement de l'application de la propriétaire les certificats, révocations et listes signés (`POST /racine/certificats`, `POST /racine/liste-equipe`). Requêtes et réponses en JSON (`core/platform/SigningProtocol.kt`) ; détail dans le contrat, section 5.
 
 ## 5. API du serveur (version 1)
 
