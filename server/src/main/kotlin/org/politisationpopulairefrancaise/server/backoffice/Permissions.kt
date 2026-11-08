@@ -28,6 +28,21 @@ object Permissions {
     const val LEGAL_REQUISITION: String = "legal.requisition"
 
     /**
+     * Contact, claims and case follow-up (M30, docs/integration/contact-reclamations.md): the inbox of the team
+     * (section `contact`, metadata only), assigning, priority, status, closing.
+     */
+    const val CONTACT_TRIAGE: String = "contact.triage"
+
+    /** The requests on one's data (RGPD, article 12): their extension, status and closing. */
+    const val CONTACT_DATA_RIGHTS: String = "contact.data_rights"
+
+    /** The legal hold of a case, asked by one holder and confirmed by another (two-person rule). */
+    const val CONTACT_LEGAL_HOLD: String = "contact.legal_hold"
+
+    /** The claims reserved to the administrators: use of funds, behaviour of a team member. */
+    const val CONTACT_RESTRICTED: String = "contact.restricted"
+
+    /**
      * Writing the drafts of the editorial circuit of [space] (`comprendre`, `voir`) in the back-office section
      * `editorial.<space>` (docs/integration/circuit-editorial.md, step 3). Reviewing and publishing stay the
      * permissions of the queue (`queue.editorial.<space>.review`, `.publish`).
@@ -69,6 +84,10 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.AUDIT_READ,
             Permissions.SETTINGS_MANAGE,
             Permissions.LEGAL_REQUISITION,
+            Permissions.CONTACT_TRIAGE,
+            Permissions.CONTACT_DATA_RIGHTS,
+            Permissions.CONTACT_LEGAL_HOLD,
+            Permissions.CONTACT_RESTRICTED,
         ),
     ),
     MODERATOR(
@@ -81,6 +100,7 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.queueDecide("agir.held"),
             Permissions.queueDecide("agir.testimonies"),
             Permissions.queueDecide("revendications.proposals"),
+            Permissions.CONTACT_TRIAGE,
         ),
     ),
     EDITOR(
