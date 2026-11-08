@@ -63,6 +63,18 @@ Données des membres de l'équipe (bénévoles et salariés de PPF), jamais des 
 
 Ni adresse IP, ni navigateur, ni appareil, ni adresse e-mail dans ces tables (un test le vérifie sur les noms de colonnes) ; aucune donnée du back-office n'est envoyée à un tiers.
 
+### Brouillons du circuit éditorial (8 novembre 2026, étape 3, D-093)
+
+Textes éditoriaux écrits par l'équipe dans l'espace de l'équipe (section `editorial.comprendre`), avant leur relecture et leur publication. Aucune donnée de citoyen. Base légale : intérêt légitime de l'association (traçabilité de la rédaction et de la relecture). Tables de la migration `V11__editorial.sql` (numéro provisoire), sur le serveur.
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Brouillon : identifiant interne, espace, type de contenu, identifiant (`slug`) et titre de la dernière version, contenu publié qu'il met à jour (identifiant d'événement), état, compte de l'équipe qui l'a créé (identifiant interne, pseudonyme), dates de création et de dernière modification, numéro de la dernière version, version soumise et date (pour l'étape 4), événement publié (pour l'étape 5) | Écrire et suivre un contenu jusqu'à sa publication | `editorial_draft` | Un brouillon jamais soumis est effacé avec ses versions 180 jours après sa dernière modification (tâche quotidienne) ; les durées des brouillons soumis, publiés ou refusés seront fixées avec la file (étape 4, proposition : 2 ans) | Membres ayant `editorial.comprendre.write` (rôle éditeur) |
+| Versions d'un brouillon : numéro, champs de l'en-tête dans l'ordre (comme un fichier de `content/`), texte, réponse à « produit avec l'aide d'une IA ? » (vide tant qu'elle n'est pas donnée), nature du changement et note de correction d'une mise à jour, compte qui l'a écrite, date, nombre de problèmes trouvés par le moteur ; jamais modifiées (la base le refuse) | Garder le travail de chacun, comparer les versions, ne jamais écraser le travail d'un autre (concurrence) | `editorial_draft_version` | Comme leur brouillon | Comme leur brouillon |
+| Journal : création et enregistrement de chaque version (identifiant du brouillon, numéro de version, type, identifiant du contenu, nombre de problèmes ; jamais le texte) | Traçabilité (cahier des charges, section 5) | `team_audit_log` (socle) | Comme le journal | Membres ayant `audit.read` |
+
+Ni adresse IP, ni navigateur : le serveur ne garde que les comptes de l'équipe (pseudonymes) et les textes. Les textes d'exemple restent marqués [EXEMPLE].
+
 ### Registre légal des contenus publics (LCEN, 7 novembre 2026, D-077)
 
 Données pseudonymes que la loi impose de garder sur les contributions aux **contenus publics** (base légale : obligation légale, RGPD article 6, 1, c, avec l'article 6, V, A de la LCEN, le décret n° 2021-1362, articles 3, 5, 6 et 7, et l'injonction du décret n° 2026-920 ; détail et sources dans `docs/integration/lcen-conservation-identification.md`). Ce sont des données que les événements signés publics contiennent déjà ; le registre les garde après une modification ou une suppression. Schéma PostgreSQL séparé `legal_register`, jamais lu par une fonction de la plateforme : le serveur ne peut qu'y ajouter des lignes.

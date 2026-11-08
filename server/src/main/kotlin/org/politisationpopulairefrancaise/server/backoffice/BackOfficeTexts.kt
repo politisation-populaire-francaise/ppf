@@ -358,6 +358,7 @@ object BackOfficeTexts {
         "busy" to "Trop de connexions sont en cours. Réessayez dans quelques minutes.",
         "bad_encoding" to "La réponse de la clé est illisible. Recommencez.",
         "too_large" to "La réponse de la clé est trop grande.",
+        "too_large_form" to "Le formulaire envoyé est trop long. Raccourcissez le texte, puis enregistrez de nouveau.",
         "registration_refused" to "La clé n’a pas pu être enregistrée (vérification de la personne exigée : code, empreinte ou visage).",
         "assertion_refused" to "La clé n’a pas été reconnue. Recommencez.",
         "credential_mismatch" to "La réponse ne correspond pas à la clé. Recommencez.",
