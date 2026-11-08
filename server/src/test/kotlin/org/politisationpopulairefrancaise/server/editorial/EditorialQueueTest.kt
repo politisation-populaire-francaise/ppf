@@ -32,7 +32,6 @@ import org.politisationpopulairefrancaise.server.backoffice.TestMember
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.module
 import org.politisationpopulairefrancaise.server.testRevendications
-import java.time.Duration
 import java.time.Instant
 import java.util.UUID
 import kotlin.test.BeforeTest
@@ -43,6 +42,7 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlin.time.Duration.Companion.minutes
 
 /** The review of the editorial circuit (step 4): submission, decisions, queue, journal, on the real PostgreSQL of the tests. */
 class EditorialQueueTest {
@@ -286,7 +286,7 @@ class EditorialQueueTest {
         val alice = member(data, "Alice", listOf(TeamRole.EDITOR))
         val bruno = member(data, "Bruno", listOf(TeamRole.EDITOR))
         val id = client.submitted(alice)
-        clock.advance(Duration.ofMinutes(6))
+        clock.advance(6.minutes)
         val seq = lastSeq()
         val approve = client.form("$section/relecture/$id", bruno, decision(EditorialDraftsSection.ACTION_APPROVE, 1))
         assertEquals(HttpStatusCode.OK, approve.status)

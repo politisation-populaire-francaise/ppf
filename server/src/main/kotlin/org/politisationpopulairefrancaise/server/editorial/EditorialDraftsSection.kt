@@ -705,7 +705,7 @@ class EditorialDraftsSection(
         when (result) {
             is ReviewResult.Done -> redirect("brouillons/${draft.id}", "ok=submitted")
             ReviewResult.NotFound -> notFound()
-            else -> formPage(schema, draft, FormState(latest.content), draft.latestVersion, problems, Notice(refusalText(result), error = true), statusOf(result), offerSubmit = true)
+            else -> formPage(schema, draft, FormState(latest.content), draft.latestVersion, problems, Notice(refusalText(result), error = true), statusOf(result))
         }
     }
 
