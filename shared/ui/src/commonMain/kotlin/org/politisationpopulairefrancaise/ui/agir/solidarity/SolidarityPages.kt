@@ -156,7 +156,8 @@ internal fun FundPage(
             }
 
             Section(stringResource(Res.string.solidarite_fund_manager_title))
-            ManagerLine(manager, modifier = Modifier.testTag(SolidarityPageTags.FUND_MANAGER))
+            // Read as one sentence by screen readers: the icon only repeats what the words say.
+            ManagerLine(manager, modifier = Modifier.semantics(mergeDescendants = true) { }.testTag(SolidarityPageTags.FUND_MANAGER))
             val organisation = manager.organisation
             if (organisation != null && onOpenOrganisation != null) {
                 Spacer(Modifier.height(8.dp))
