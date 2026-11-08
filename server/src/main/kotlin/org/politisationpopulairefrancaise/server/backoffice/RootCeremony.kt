@@ -26,6 +26,7 @@ import java.util.UUID
  * | `agir.organisations` | `queue.agir.organisations.decide` | organisation verifier |
  * | `revendications.status` | `queue.revendications.proposals.decide` | moderator |
  * | `decider.pacte` | `queue.decider.pacte.publish` (proposal, to be confirmed by Décider) | none but super administrators |
+ * | `groups.takeover` | `queue.groups.orphans.decide` (D-144) | moderator |
  */
 object SigningApprovals {
     val PERMISSIONS: Map<SigningUse, String> = mapOf(
@@ -34,6 +35,8 @@ object SigningApprovals {
         SigningUse.AGIR_ORGANISATIONS to Permissions.queueDecide("agir.organisations"),
         SigningUse.REVENDICATIONS_STATUS to Permissions.queueDecide("revendications.proposals"),
         SigningUse.DECIDER_PACTE to Permissions.DECIDER_PACTE_PUBLISH,
+        // The takeover of a room left without administrator: approved by another member of the queue groups.orphans (D-144).
+        SigningUse.GROUPS_TAKEOVER to Permissions.queueDecide("groups.orphans"),
     )
 
     init {

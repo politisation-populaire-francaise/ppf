@@ -15,6 +15,7 @@ import org.politisationpopulairefrancaise.core.platform.DraftAuthor
 import org.politisationpopulairefrancaise.core.platform.DraftRequest
 import org.politisationpopulairefrancaise.core.platform.DraftResponse
 import org.politisationpopulairefrancaise.core.platform.DraftStatusResponse
+import org.politisationpopulairefrancaise.core.platform.GroupTakeover
 import org.politisationpopulairefrancaise.core.platform.KeyCertificate
 import org.politisationpopulairefrancaise.core.platform.KeysResponse
 import org.politisationpopulairefrancaise.core.platform.SignRequest
@@ -323,5 +324,55 @@ class PlatformSignerTest {
         assertNull(fake.approve(SigningUse.DECIDER_PACTE, pacte.idHex(), "alice"))
         val comprendre = UnsignedEvent(fake.currentKey(SigningUse.EDITORIAL_COMPRENDRE), event.createdAt, EventKinds.LONG_FORM_ARTICLE, frame + listOf(listOf("ppf-type", "fiche")), "[EXEMPLE]")
         assertEquals(DraftSubmission.Refused(SigningRefusals.AUTHOR_REQUIRED), fake.submitDraft(comprendre, SigningUse.EDITORIAL_COMPRENDRE))
+    }
+
+    @Test
+    fun theFakeSignerTakesTheTakeoverOfARoomWithTheRulesOfTheService() = runBlocking<Unit> {
+        val fake = FakePlatformSigner()
+        val use = SigningUse.GROUPS_TAKEOVER
+        val key = fake.currentKey(use)
+        val now = System.currentTimeMillis() / 1000
+        val target = IdentityKeys.generate().publicKey.hex
+        val reason = "[EXEMPLE] Le seul administrateur a été déclaré compromis."
+        val takeover = GroupTakeover.unsigned(key, "collectif-exemple", target, reason, now)
+        val asker = DraftAuthor(account = "mona")
+        // D-144: the member who asks in the queue is the author, always named, and never approves.
+        assertEquals(DraftSubmission.Refused(SigningRefusals.AUTHOR_REQUIRED), fake.submitDraft(takeover, use))
+        assertEquals(SigningStatus.Refused(SigningRefusals.UNKNOWN_DRAFT), fake.status(fake.request(takeover, use)))
+        assertIs<DraftSubmission.Submitted>(fake.submitDraft(takeover, use, doubleValidation = false, author = asker))
+        assertEquals(1, fake.draftStatus(use, takeover.idHex())?.required)
+        assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, fake.approve(use, takeover.idHex(), "mona"))
+        assertEquals(SigningStatus.Refused(SigningRefusals.APPROVALS_MISSING), fake.status(fake.request(takeover, use)))
+        assertNull(fake.approve(use, takeover.idHex(), "nadia"))
+        val signed = assertIs<SigningStatus.Signed>(fake.status(fake.request(takeover, use))).event
+        assertTrue(fake.trust.isPlatformContent(signed, use))
+        assertTrue(SigningUse.entries.filter { it != use }.none { fake.trust.isPlatformContent(signed, it) })
+        // The form, with the codes of the service.
+        fun event(tags: List<List<String>>, content: String = reason, kind: Int = takeover.kind) = UnsignedEvent(key, now, kind, tags, content)
+        val room = listOf("h", "collectif-exemple")
+        val admin = listOf("p", target, "admin")
+        val refused = listOf(
+            event(listOf(admin)) to SigningRefusals.MISSING_TAG,
+            event(listOf(room, listOf("h", "autre"), admin)) to SigningRefusals.BAD_TAG,
+            event(listOf(room)) to SigningRefusals.MISSING_TAG,
+            event(listOf(room, listOf("p", target, "moderator"))) to SigningRefusals.BAD_TAG,
+            event(listOf(room, admin, listOf("p", IdentityKeys.generate().publicKey.hex, "admin"))) to SigningRefusals.BAD_TAG,
+            event(listOf(room, admin, listOf("alt", "x"))) to SigningRefusals.TAG_NOT_ALLOWED,
+            event(listOf(room, admin), content = " ") to SigningRefusals.BAD_CONTENT,
+            event(listOf(room, admin), content = "x".repeat(501)) to SigningRefusals.BAD_CONTENT,
+            event(listOf(room, admin), kind = EventKinds.TEXT_NOTE) to SigningRefusals.KIND_NOT_ALLOWED,
+            // A key of the platform never receives a role.
+            event(listOf(room, listOf("p", key, "admin"))) to SigningRefusals.BAD_TAG,
+            event(listOf(room, listOf("p", fake.currentKey(SigningUse.EDITORIAL_VOIR), "admin"))) to SigningRefusals.BAD_TAG,
+            event(listOf(room, listOf("p", fake.trust.root!!, "admin"))) to SigningRefusals.BAD_TAG,
+        )
+        for ((unsigned, code) in refused) {
+            assertEquals(DraftSubmission.Refused(code), fake.submitDraft(unsigned, use, author = asker), "${unsigned.tags} ${unsigned.content.length}")
+            assertEquals(SigningStatus.Refused(code), fake.status(fake.request(unsigned, use)), "${unsigned.tags}")
+        }
+        // A key of another use never signs a takeover, and an editorial use never takes a 9000.
+        val byEditorialKey = GroupTakeover.unsigned(fake.currentKey(SigningUse.EDITORIAL_VOIR), "collectif-exemple", target, reason, now)
+        assertEquals(DraftSubmission.Refused(SigningRefusals.WRONG_KEY), fake.submitDraft(byEditorialKey, use, author = asker))
+        assertEquals(DraftSubmission.Refused(SigningRefusals.KIND_NOT_ALLOWED), fake.submitDraft(byEditorialKey, SigningUse.EDITORIAL_VOIR, author = asker))
     }
 }

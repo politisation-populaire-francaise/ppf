@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.core.platform
 
+import org.politisationpopulairefrancaise.core.groups.RoomModeration
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
@@ -14,6 +15,9 @@ import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
  * so that a key certified for one use never validates the content of another use of the same kind. The
  * signing service enforces the whole shape (tags, approvals, rates). [automatic] uses are signed without
  * any human approval, under strict rules, and they are the only ones.
+ *
+ * A new use is a change of the contract: its form here, its rule in the signing service, its permission
+ * in the back-office (`SigningApprovals`) for a human use, and its double validation ([DoubleValidation]).
  */
 enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolean) {
     /** Contents of « Comprendre » (sheets, files, fact checks, courses, glossary...), NIP-23. */
@@ -44,16 +48,28 @@ enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolea
 
     /** The closing statement of a ballot box (NIP-78, kind 30078, `d` = `ppf:urne-cloture:<n>`). */
     DECIDER_URN_CLOSURE("decider.urn_closure", setOf(EventKinds.APP_DATA), automatic = true),
+
+    /**
+     * The takeover of a public room left without administrator (D-144, S-146): a NIP-29 put-user (kind 9000)
+     * signed by the platform that names one administrator, the reason as content ([GroupTakeover]). Human,
+     * never automatic: a compromised main server must not be able to make the platform name an administrator
+     * of any room. The member who asks in the back-office queue `groups.orphans` is the author of the draft
+     * (always named, [AUTHOR_REQUIRED_USES]); another member approves it on the page of the signing service.
+     */
+    GROUPS_TAKEOVER("groups.takeover", setOf(RoomModeration.PUT_USER), automatic = false),
     ;
 
     /**
-     * Whether an event of [kind] with [tags] has the form of this use: one of its kinds and the tags that
-     * tell the uses apart. Editorial contents never carry the `ppf-type` of another use; an organisation
+     * Whether an event of [kind] with [tags] and [content] has the form of this use: one of its kinds and the
+     * tags that tell the uses apart. Editorial contents never carry the `ppf-type` of another use; an organisation
      * sheet has exactly `ppf-type` = `organisation`; a content of « Décider » exactly one of [PACTE_TYPES]; a status
      * label exactly the namespace `ppf-status`; the open data index exactly its `d`; a closing statement a
-     * single `d` of the ballot boxes. An OpenTimestamps attestation is told apart by its kind alone.
+     * single `d` of the ballot boxes. An OpenTimestamps attestation is told apart by its kind alone. A takeover
+     * of a room has the whole form of [GroupTakeover] (one `h`, one `p` with the role `admin`, no other tag),
+     * and its [content], the reason, counts too: the other uses ignore [content], and without one a takeover
+     * never matches (it fails closed).
      */
-    fun matches(kind: Int, tags: List<List<String>>): Boolean {
+    fun matches(kind: Int, tags: List<List<String>>, content: String = ""): Boolean {
         if (kind !in kinds) return false
         fun values(name: String): List<String> = tags.filter { it.isNotEmpty() && it[0] == name }.map { it.getOrElse(1) { "" } }
         return when (this) {
@@ -64,12 +80,13 @@ enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolea
             ARCHIVES_TIMESTAMPS -> true
             OPENDATA_INDEX -> values("d") == listOf(OPENDATA_INDEX_IDENTIFIER)
             DECIDER_URN_CLOSURE -> values("d").let { it.size == 1 && it[0].startsWith(URN_CLOSURE_PREFIX) }
+            GROUPS_TAKEOVER -> GroupTakeover.breach(kind, tags, content) == null
         }
     }
 
-    fun matches(event: SignedEvent): Boolean = matches(event.kind, event.tags)
+    fun matches(event: SignedEvent): Boolean = matches(event.kind, event.tags, event.content)
 
-    fun matches(event: UnsignedEvent): Boolean = matches(event.kind, event.tags)
+    fun matches(event: UnsignedEvent): Boolean = matches(event.kind, event.tags, event.content)
 
     override fun toString(): String = id
 
@@ -92,10 +109,12 @@ enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolea
         /**
          * The uses whose drafts always name their author, in a single validation too (D-142): the editorial
          * spaces, where the reviewer who approves is never the author (« règle des deux personnes » of the
-         * editorial circuit). For the other human uses the author is named for a double validation only. In
-         * every case a named author never approves their own draft.
+         * editorial circuit), and the takeover of a room (D-144: the member who asks in the queue is the
+         * author and another one approves, so that two persons always take part). For the other human uses
+         * the author is named for a double validation only. In every case a named author never approves
+         * their own draft.
          */
-        val AUTHOR_REQUIRED_USES: Set<SigningUse> = setOf(EDITORIAL_COMPRENDRE, EDITORIAL_VOIR)
+        val AUTHOR_REQUIRED_USES: Set<SigningUse> = setOf(EDITORIAL_COMPRENDRE, EDITORIAL_VOIR, GROUPS_TAKEOVER)
 
         fun fromId(id: String): SigningUse? = entries.firstOrNull { it.id == id }
     }

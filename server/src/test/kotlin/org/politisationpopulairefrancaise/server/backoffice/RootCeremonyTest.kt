@@ -50,6 +50,12 @@ class RootCeremonyTest {
         assertEquals("queue.agir.organisations.decide", SigningApprovals.PERMISSIONS[SigningUse.AGIR_ORGANISATIONS])
         assertEquals("queue.revendications.proposals.decide", SigningApprovals.PERMISSIONS[SigningUse.REVENDICATIONS_STATUS])
         assertEquals(Permissions.DECIDER_PACTE_PUBLISH, SigningApprovals.PERMISSIONS[SigningUse.DECIDER_PACTE])
+        // D-144: the takeover of a room left without administrator, by the members of the queue groups.orphans.
+        assertEquals("queue.groups.orphans.decide", SigningApprovals.PERMISSIONS[SigningUse.GROUPS_TAKEOVER])
+        assertTrue(Permissions.queueDecide("groups.orphans") in TeamRole.MODERATOR.permissions)
+        assertEquals(setOf(SigningUse.REVENDICATIONS_STATUS, SigningUse.GROUPS_TAKEOVER), SigningApprovals.usesOf(TeamActor.of(UUID.randomUUID(), "x", setOf(TeamRole.MODERATOR), 2)))
+        assertEquals(setOf(SigningUse.EDITORIAL_COMPRENDRE, SigningUse.EDITORIAL_VOIR), SigningApprovals.usesOf(TeamActor.of(UUID.randomUUID(), "x", setOf(TeamRole.EDITOR), 2)))
+        assertTrue(SigningApprovals.usesOf(TeamActor.of(UUID.randomUUID(), "x", setOf(TeamRole.MODERATOR), 1)).isEmpty(), "a single passkey: no queue permission, no use")
         assertTrue(Permissions.PLATFORM_KEYS in TeamRole.ADMIN.permissions)
         assertTrue(TeamActor.of(UUID.randomUUID(), "x", setOf(TeamRole.SUPER_ADMIN), 2).has(Permissions.PLATFORM_KEYS))
         assertTrue(!TeamActor.of(UUID.randomUUID(), "x", setOf(TeamRole.EDITOR), 2).has(Permissions.PLATFORM_KEYS))
@@ -110,7 +116,9 @@ class RootCeremonyTest {
         assertEquals(editor.keys.map { PasskeyFingerprint.of(it.coseKey) }, listedEditor.credentials.map { it.fingerprint() })
         assertEquals(now, list.members.getValue(moderator.account.id.toString()).validFrom, "a new member counts from now")
         assertNull(list.members.getValue(moderator.account.id.toString()).nostrKey)
-        assertEquals(setOf(SigningUse.REVENDICATIONS_STATUS), list.members.getValue(moderator.account.id.toString()).uses)
+        // The moderator approves the statuses of the demands and the takeovers of rooms (D-144); the editor never a takeover.
+        assertEquals(setOf(SigningUse.REVENDICATIONS_STATUS, SigningUse.GROUPS_TAKEOVER), list.members.getValue(moderator.account.id.toString()).uses)
+        assertTrue(SigningUse.GROUPS_TAKEOVER !in listedEditor.uses)
         assertEquals(setOf(SigningUse.AGIR_ORGANISATIONS), list.members.getValue(verifier.account.id.toString()).uses)
         assertEquals(SigningUse.entries.filter { !it.automatic }.toSet(), list.members.getValue(owner.account.id.toString()).uses)
         assertTrue(list.members.values.none { member -> member.uses.any { it.automatic } }, "an automatic use is never approved by anyone")

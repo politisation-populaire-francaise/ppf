@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.signer
 
+import org.politisationpopulairefrancaise.core.groups.RoomModeration
 import org.politisationpopulairefrancaise.core.platform.SigningRefusals
 import org.politisationpopulairefrancaise.core.platform.SigningUse
 import org.politisationpopulairefrancaise.core.signing.EventKinds
@@ -68,11 +69,13 @@ internal object ApprovalTexts {
         SigningUse.ARCHIVES_TIMESTAMPS -> "Preuve d'horodatage des archives (automatique)"
         SigningUse.OPENDATA_INDEX -> "Index des données ouvertes (automatique)"
         SigningUse.DECIDER_URN_CLOSURE -> "Clôture d'une urne (automatique)"
+        SigningUse.GROUPS_TAKEOVER -> "Reprise d'un salon resté sans administrateur (nomination par l'équipe)"
     }
 
     fun kindLabel(kind: Int): String = when (kind) {
         EventKinds.LONG_FORM_ARTICLE -> "Article long ($kind, NIP-23)"
         EventKinds.LABEL -> "Étiquette ($kind, NIP-32)"
+        RoomModeration.PUT_USER -> "Nomination dans un salon ($kind, NIP-29)"
         else -> "Type $kind"
     }
 

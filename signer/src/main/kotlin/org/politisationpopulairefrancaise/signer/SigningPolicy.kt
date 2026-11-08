@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.signer
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
+import org.politisationpopulairefrancaise.core.platform.GroupTakeover
 import org.politisationpopulairefrancaise.core.platform.SigningRefusals
 import org.politisationpopulairefrancaise.core.platform.SigningUse
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
@@ -74,6 +75,7 @@ object SigningPolicies {
         SigningUse.ARCHIVES_TIMESTAMPS to 600,
         SigningUse.OPENDATA_INDEX to 6,
         SigningUse.DECIDER_URN_CLOSURE to 30,
+        SigningUse.GROUPS_TAKEOVER to 10,
     )
 
     /** The `ppf-type` values that belong to another use and that an editorial key never signs. */
@@ -109,6 +111,7 @@ object SigningPolicies {
             SigningUse.ARCHIVES_TIMESTAMPS -> ::timestamp
             SigningUse.OPENDATA_INDEX -> ::openDataIndex
             SigningUse.DECIDER_URN_CLOSURE -> ::urnClosure
+            SigningUse.GROUPS_TAKEOVER -> ::groupTakeover
         }
         return UsePolicy(use, approvals, ceiling, age, shape)
     }
@@ -205,6 +208,18 @@ object SigningPolicies {
         if (!isHex64(digest.value)) return Refusal(SigningRefusals.BAD_TAG, "ppf-closing-sha256")
         if (event.tags.any { it.size != 2 }) return Refusal(SigningRefusals.BAD_TAG)
         return jsonObjectContent(event)
+    }
+
+    /**
+     * The takeover of a room left without administrator (D-144, FORMATS.md, section 4 decies): exactly the form
+     * of [GroupTakeover], one `h`, one `["p", <key>, "admin"]`, no other tag, the reason as content (500
+     * characters at most); the key named is never the working key that signs it (the service also refuses
+     * any of its own keys and the root, [SignerService]).
+     */
+    private fun groupTakeover(event: UnsignedEvent): Refusal? {
+        GroupTakeover.breach(event.kind, event.tags, event.content)?.let { return Refusal(it.code, it.tag) }
+        if (GroupTakeover.target(event.tags) == event.pubkey) return Refusal(SigningRefusals.BAD_TAG, "p")
+        return null
     }
 
     /** `d`, `title` and, when asked, `ppf-origin`: once each, with a value. */

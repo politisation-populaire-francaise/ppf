@@ -13,6 +13,7 @@ import org.politisationpopulairefrancaise.core.platform.KeysResponse
 import org.politisationpopulairefrancaise.core.platform.MAX_CREDENTIAL_ID_LENGTH
 import org.politisationpopulairefrancaise.core.platform.PlatformTrust
 import org.politisationpopulairefrancaise.core.platform.EventDraft
+import org.politisationpopulairefrancaise.core.platform.GroupTakeover
 import org.politisationpopulairefrancaise.core.platform.RootRequestQr
 import org.politisationpopulairefrancaise.core.platform.RootRequestView
 import org.politisationpopulairefrancaise.core.platform.RootRequests
@@ -631,6 +632,11 @@ class SignerService private constructor(
         if (event.createdAt < time - policy.maxAgeSeconds) return Refusal(SigningRefusals.CREATED_AT_TOO_OLD)
         keyRefusal(time, use, event)?.let { return Refusal(it) }
         if (memory.isSigned(use, eventId)) return Refusal(SigningRefusals.ALREADY_SIGNED)
+        // D-144: a key of the platform never receives a role in a room, neither a working key of this service nor the root.
+        if (use == SigningUse.GROUPS_TAKEOVER) {
+            val target = GroupTakeover.target(event.tags)
+            if (target == null || target in keys || target == root) return Refusal(SigningRefusals.BAD_TAG, "p")
+        }
         if (use == SigningUse.DECIDER_URN_CLOSURE) {
             val d = event.tags.firstOrNull { it.size >= 2 && it[0] == "d" }?.get(1)
             if (d != null && d in memory.closedUrns) return Refusal(SigningRefusals.URN_ALREADY_CLOSED)

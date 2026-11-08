@@ -5,6 +5,7 @@ import org.politisationpopulairefrancaise.core.platform.DraftApproval
 import org.politisationpopulairefrancaise.core.platform.DoubleValidation
 import org.politisationpopulairefrancaise.core.platform.DraftAuthor
 import org.politisationpopulairefrancaise.core.platform.DraftStatusResponse
+import org.politisationpopulairefrancaise.core.platform.GroupTakeover
 import org.politisationpopulairefrancaise.core.platform.KeyCertificate
 import org.politisationpopulairefrancaise.core.platform.PlatformTrust
 import org.politisationpopulairefrancaise.core.platform.SigningRefusals
@@ -18,8 +19,8 @@ import java.util.concurrent.atomic.AtomicLong
  * The platform signer of the tests and of development (contract, section 5): a root and one working key
  * per use generated at each start, in memory. It checks what the poles must get right (the key and the
  * form of the use, a draft for a human use, the double validation the service requires for the contents
- * of M17 ([DoubleValidation]), the number of approvals, the author named for an editorial use or a double
- * validation and never approving (D-142)); the
+ * of M17 ([DoubleValidation]), the number of approvals, the author named for an editorial use, a takeover
+ * of a room (D-144) or a double validation and never approving (D-142)); the
  * approvals themselves are given by the tests with [approve] (the passkeys are covered by the tests of
  * the signing service). [trust] accepts what it signs.
  */
@@ -57,11 +58,11 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
     override suspend fun submitDraft(unsigned: UnsignedEvent, use: SigningUse, doubleValidation: Boolean, author: DraftAuthor?): DraftSubmission {
         val id = unsigned.idHex()
         val named = author?.takeIf { it.isNamed }
+        val form = formRefusal(unsigned, use)
         val refusal = when {
             use.automatic -> SigningRefusals.AUTOMATIC_USE
             unsigned.pubkey != keys.getValue(use).publicKey.hex -> SigningRefusals.WRONG_KEY
-            unsigned.kind !in use.kinds -> SigningRefusals.KIND_NOT_ALLOWED
-            !use.matches(unsigned) -> SigningRefusals.BAD_TAG
+            form != null -> form
             "${use.id}:$id" in signed -> SigningRefusals.ALREADY_SIGNED
             !doubleValidation && DoubleValidation.requiredFor(use, unsigned) -> SigningRefusals.DOUBLE_VALIDATION_REQUIRED
             named == null && (doubleValidation || use in SigningUse.AUTHOR_REQUIRED_USES) -> SigningRefusals.AUTHOR_REQUIRED
@@ -109,12 +110,12 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
     override suspend fun request(unsigned: UnsignedEvent, use: SigningUse): SigningTicket {
         requests += unsigned to use
         val id = unsigned.idHex()
+        val form = formRefusal(unsigned, use)
         val refusal: SigningStatus.Refused? = synchronized(drafts) {
             val draft = drafts["${use.id}:$id"]
             when {
                 unsigned.pubkey != keys.getValue(use).publicKey.hex -> SigningStatus.Refused(SigningRefusals.WRONG_KEY)
-                unsigned.kind !in use.kinds -> SigningStatus.Refused(SigningRefusals.KIND_NOT_ALLOWED)
-                !use.matches(unsigned) -> SigningStatus.Refused(SigningRefusals.BAD_TAG)
+                form != null -> SigningStatus.Refused(form)
                 "${use.id}:$id" in signed -> SigningStatus.Refused(SigningRefusals.ALREADY_SIGNED)
                 !use.automatic && draft == null -> SigningStatus.Refused(SigningRefusals.UNKNOWN_DRAFT)
                 !use.automatic && !draft!!.doubleValidation && DoubleValidation.requiredFor(use, unsigned) -> SigningStatus.Refused(SigningRefusals.DOUBLE_VALIDATION_REQUIRED)
@@ -134,6 +135,21 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
 
     override suspend fun status(ticket: SigningTicket): SigningStatus =
         synchronized(outcomes) { outcomes[ticket.id] } ?: SigningStatus.Refused(HttpPlatformSigner.UNKNOWN_TICKET)
+
+    /**
+     * Why [unsigned] does not have the form of [use], null when it has: its kind, then [SigningUse.matches]
+     * (`bad_tag`); for a takeover of a room (D-144), the codes of the service ([GroupTakeover.breach]) and a
+     * key of the platform (a working key or the root) never named administrator.
+     */
+    private fun formRefusal(unsigned: UnsignedEvent, use: SigningUse): String? {
+        if (unsigned.kind !in use.kinds) return SigningRefusals.KIND_NOT_ALLOWED
+        if (use == SigningUse.GROUPS_TAKEOVER) {
+            GroupTakeover.breach(unsigned.kind, unsigned.tags, unsigned.content)?.let { return it.code }
+            val target = GroupTakeover.target(unsigned.tags)
+            if (target == root.publicKey.hex || keys.values.any { it.publicKey.hex == target }) return SigningRefusals.BAD_TAG
+        }
+        return if (use.matches(unsigned)) null else SigningRefusals.BAD_TAG
+    }
 
     private fun approvalUrl(use: SigningUse, eventId: String) = "$APPROVAL_ORIGIN/approbation/${use.id}/$eventId"
 
