@@ -62,17 +62,31 @@ class EditorialApprovalsTest {
     }
 
     @Test
-    fun aContentThatLinksAPersonNeedsTwoWhateverTheSpace() {
-        // « Qui décide de ça ? » with its `persons`: the content names who decides.
+    fun namingTheHolderOfAMandateIsNotAnImplication() {
+        // « Qui décide de ça ? » with its `persons`: saying who decides is a fact, one approval (team lead, 8 November 2026).
         val named = event("qui-decide", listOf("a", person, "", ComprendreTags.PERSON_LINK_ROLE))
-        assertTrue(EditorialApprovals.linksAPerson(named))
-        assertEquals(EditorialApprovals.M17, EditorialApprovals.required(ComprendreSchemas.QUI_DECIDE, comprendre, named))
+        assertFalse(EditorialApprovals.implicatesAPerson(named))
+        assertEquals(EditorialApprovals.ORDINARY, EditorialApprovals.required(ComprendreSchemas.QUI_DECIDE, comprendre, named))
+        // Nor a link without a role, or with a role that implicates nobody.
+        for (link in listOf(listOf("a", person), listOf("a", person, ""), listOf("a", person, "", "fiche"), listOf("a", person, "", "responsable"))) {
+            assertEquals(EditorialApprovals.ORDINARY, EditorialApprovals.required(ComprendreSchemas.FICHE_PRATIQUE, comprendre, event("fiche-pratique", link)), link.toString())
+        }
+    }
+
+    @Test
+    fun aRoleThatImplicatesAPersonNeedsTwoWhateverTheSpace() {
+        for (role in EditorialApprovals.IMPLICATING_ROLES) {
+            val implicated = event("decryptage", listOf("a", person, "", role))
+            assertTrue(EditorialApprovals.implicatesAPerson(implicated), role)
+            assertEquals(EditorialApprovals.M17, EditorialApprovals.required(ComprendreSchemas.DECRYPTAGE, comprendre, implicated), role)
+        }
+        assertTrue("cible" in EditorialApprovals.IMPLICATING_ROLES)
+        assertFalse(ComprendreTags.PERSON_LINK_ROLE in EditorialApprovals.IMPLICATING_ROLES)
+        // In « Voir », the signing service asks for two for every link to a person, an official, a party or a target.
         for (role in listOf("personne", "responsable", "parti", "cible")) {
             val linked = event("indicateur", listOf("a", person, "", role))
             assertEquals(EditorialApprovals.M17, EditorialApprovals.required(ComprendreSchemas.DECRYPTAGE, voir, linked), role)
         }
-        // A link without a role, or with another role, names no person.
-        assertFalse(EditorialApprovals.linksAPerson(event("qui-decide", listOf("a", person), listOf("a", person, ""), listOf("a", person, "", "fiche"))))
     }
 
     @Test

@@ -15,13 +15,13 @@ import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
  *
  * Two approvals of two editors who wrote nothing ([M17]) when, checked on the event built at the hand-over:
  * - the type has no schema (fails closed);
- * - the schema of the type declares two ([ContentSchema.approvals]);
+ * - the schema of the type declares two ([ContentSchema.approvals]: the types of M17);
  * - the signing service requires it for this event ([DoubleValidation.requiredFor]; it is authoritative and
- *   refuses a single approval with `double_validation_required`);
- * - the event links a person, an official, a party or a target (an `a` tag whose role, fourth element, is
- *   among [DoubleValidation.VOIR_PERSON_ROLES]), whatever the space: a content that points at a person
- *   implicates them (for example « Qui décide de ça ? » with its `persons`).
- * Otherwise one ([ORDINARY]).
+ *   refuses a single approval with `double_validation_required`; for « Voir », every link to a person,
+ *   an official, a party or a target);
+ * - the event links a person with a role that implicates them ([IMPLICATING_ROLES]), whatever the space.
+ * Otherwise one ([ORDINARY]). Saying who holds a mandate or a competence is a fact, not an implication (team
+ * lead, 8 November 2026): the `persons` of « Qui décide de ça ? », the directory and the sheets need one.
  *
  * Common code: no java.*, compatible iOS.
  */
@@ -32,16 +32,23 @@ object EditorialApprovals {
     /** Two approvals of two different editors: a content of M17 that implicates a person. */
     const val M17: Int = 2
 
+    /**
+     * The roles of a link (`["a", <address>, <relay>, <role>]`) that implicate the person linked, in every space;
+     * the one line to change if the rule changes. A plain mention of the holder of a mandate (role `personne` of
+     * « Qui décide de ça ? ») is not among them; « Voir » is covered more widely by [DoubleValidation.requiredFor].
+     */
+    val IMPLICATING_ROLES: Set<String> = setOf("cible")
+
     /** The approvals the platform signature of [event] for [use] needs, [schema] being the schema of its type (null: unknown type). */
     fun required(schema: ContentSchema?, use: SigningUse, event: UnsignedEvent): Int = when {
         schema == null -> M17
         schema.approvals >= M17 -> M17
         DoubleValidation.requiredFor(use, event) -> M17
-        linksAPerson(event) -> M17
+        implicatesAPerson(event) -> M17
         else -> ORDINARY
     }
 
-    /** Whether [event] has a link (`["a", <address>, <relay>, <role>]`) whose role points at a person, an official, a party or a target. */
-    fun linksAPerson(event: UnsignedEvent): Boolean =
-        event.tags.any { it.size >= 4 && it[0] == "a" && it[3] in DoubleValidation.VOIR_PERSON_ROLES }
+    /** Whether [event] links a person with a role among [IMPLICATING_ROLES]. */
+    fun implicatesAPerson(event: UnsignedEvent): Boolean =
+        event.tags.any { it.size >= 4 && it[0] == "a" && it[3] in IMPLICATING_ROLES }
 }
