@@ -1,6 +1,9 @@
 package org.politisationpopulairefrancaise.ui.urne
 
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.assertTextContains
@@ -30,6 +33,7 @@ import org.politisationpopulairefrancaise.core.urne.VoterStatus
 import org.politisationpopulairefrancaise.core.voir.FrenchNumbers
 import org.politisationpopulairefrancaise.core.territoires.InMemoryTerritoiresStorage
 import org.politisationpopulairefrancaise.core.territoires.Territoires
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import org.politisationpopulairefrancaise.ui.territoires.bundledNationalTerritoires
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import kotlin.test.Test
@@ -82,6 +86,21 @@ class DemandVoteTest {
         onNodeWithTag(DemandVoteTags.STATUS).assertTextContains("Créez un compte", substring = true)
         // The whole list in one request, whatever the demand shown.
         assertEquals(1, remote.listed)
+    }
+
+    @Test
+    fun aCompromisedAccountIsToldThatItsTokensAlreadyReceivedStayUsable() = runComposeUiTest {
+        val voting = voting(ListOnly(listOf(box)))
+        runBlocking { voting.refreshBoxes() }
+        var compromised by mutableStateOf(false)
+        setContent {
+            PpfTheme {
+                CompositionLocalProvider(LocalVoting provides voting, LocalCanPublish provides !compromised) { DemandVoteRow(subject, inDebate = true) }
+            }
+        }
+        onNodeWithTag(DemandVoteTags.COMPROMISED).assertDoesNotExist()
+        compromised = true
+        onNodeWithTag(DemandVoteTags.COMPROMISED).assertTextContains("restent utilisables", substring = true)
     }
 
     @Test

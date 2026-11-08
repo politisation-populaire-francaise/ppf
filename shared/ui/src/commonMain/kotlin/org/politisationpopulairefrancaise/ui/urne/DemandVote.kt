@@ -19,6 +19,7 @@ import org.politisationpopulairefrancaise.core.decider.SupportThresholds
 import org.politisationpopulairefrancaise.core.urne.ChoiceCounts
 import org.politisationpopulairefrancaise.core.urne.UrneInfo
 import org.politisationpopulairefrancaise.core.voir.FrenchNumbers
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import org.politisationpopulairefrancaise.ui.components.ActionButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.icons.Lucide
@@ -27,6 +28,7 @@ import org.politisationpopulairefrancaise.ui.resources.revendication_debate
 import org.politisationpopulairefrancaise.ui.resources.revendication_vote_against
 import org.politisationpopulairefrancaise.ui.resources.revendication_vote_for
 import org.politisationpopulairefrancaise.ui.resources.urne_closed
+import org.politisationpopulairefrancaise.ui.resources.urne_compromised_tokens
 import org.politisationpopulairefrancaise.ui.resources.urne_demand_not_open
 import org.politisationpopulairefrancaise.ui.resources.urne_demand_opening
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_line
@@ -64,6 +66,7 @@ object DemandVoteTags {
     const val WITHDRAW = "revendication-vote-withdraw"
     const val SUPPORTS = "revendication-vote-supports"
     const val STAGE = "revendication-vote-stage"
+    const val COMPROMISED = "revendication-vote-compromised"
 }
 
 /**
@@ -175,6 +178,11 @@ fun DemandVoteRow(
             else -> stringResource(Res.string.urne_recorded)
         }
         Text(status, style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.testTag(DemandVoteTags.STATUS))
+        // An account declared compromised gets no new token (S-146), but the tokens already on this device stay the
+        // person's (blinded, never linked to the account): the buttons stay, and this line says why.
+        if (!LocalCanPublish.current && box != null && !box.closed) {
+            Text(stringResource(Res.string.urne_compromised_tokens), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted, modifier = Modifier.testTag(DemandVoteTags.COMPROMISED))
+        }
         if (canVote && state?.choice != null && state.choice != UrneInfo.WITHDRAWN) {
             PpfTextButton(
                 onClick = { voting?.choose(subject, UrneInfo.WITHDRAWN) },
