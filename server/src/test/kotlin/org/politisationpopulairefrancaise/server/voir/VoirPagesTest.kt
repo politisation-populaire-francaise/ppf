@@ -12,6 +12,8 @@ import io.ktor.server.testing.testApplication
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
+import org.politisationpopulairefrancaise.core.voir.VoirItem
+import org.politisationpopulairefrancaise.core.voir.VoirLinks
 import org.politisationpopulairefrancaise.server.BundledContents
 import org.politisationpopulairefrancaise.server.TEST_RELAY
 import org.politisationpopulairefrancaise.server.agir.AgirFixtures.testAgir
@@ -143,9 +145,23 @@ class VoirPagesTest {
     }
 
     @Test
+    fun aPartyHasItsPageAtTheAddressOfVoirLinks() = testApplication {
+        start()
+        val party = examples.parties.first { it.article.slug == "parti-exemple-a" }
+        val path = VoirLinks.pathOf(VoirItem.OfParty(party))
+        assertEquals("/voir/partis/parti-exemple-a", path)
+        val html = client.page(path)
+        assertTrue(html.contains("Parti politique · PEA"), html)
+        assertTrue(html.contains("Statuts déposés en préfecture (exemple)"), "its sources")
+        // Every party of the examples answers, and a party slug under another kind does not.
+        examples.parties.forEach { client.page(VoirLinks.pathOf(VoirItem.OfParty(it))) }
+        client.page("/voir/faits/parti-exemple-a", HttpStatusCode.NotFound)
+    }
+
+    @Test
     fun unknownContentsAnswerNotFound() = testApplication {
         start()
-        listOf("/voir/faits/inexistant", "/voir/inconnu/manifestants-journees", "/voir/personnes/manifestants-journees").forEach { path ->
+        listOf("/voir/faits/inexistant", "/voir/inconnu/manifestants-journees", "/voir/personnes/manifestants-journees", "/voir/partis/inexistant").forEach { path ->
             val html = client.page(path, HttpStatusCode.NotFound)
             assertTrue(html.contains("Contenu introuvable"), path)
         }

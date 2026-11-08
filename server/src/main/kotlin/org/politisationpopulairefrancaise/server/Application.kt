@@ -282,8 +282,13 @@ fun Application.module(
         teamBackOffice.sections.register(
             EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, reviews, PublishedContents(repository, policy::isEditor), teamBackOffice.clock, editorialPublisher),
         )
-        // The queue editorial.comprendre (counts, deadlines and levels of the dashboard); editorial.voir waits for the schemas of Voir.
+        // The queue editorial.comprendre (counts, deadlines and levels of the dashboard).
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.COMPRENDRE, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
+        // The same circuit for Voir (step 6), on the schemas of core/voir/VoirSchemas.kt; its preview is the page of the site.
+        teamBackOffice.sections.register(
+            EditorialDraftsSection(EditorialSpace.VOIR, drafts, reviews, PublishedContents(repository, policy::isEditor), teamBackOffice.clock, editorialPublisher),
+        )
+        teamBackOffice.queues.register(EditorialQueue(EditorialSpace.VOIR, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
         // A draft never submitted and unchanged for 180 days is deleted (docs/REGISTRE_DONNEES.md).
         EditorialDraftsPurge(drafts).start(this, 24.hours, log)
     }

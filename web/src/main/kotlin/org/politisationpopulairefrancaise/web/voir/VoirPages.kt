@@ -102,15 +102,20 @@ fun Route.voirPages(source: VoirSource) {
 fun HTML.voirItemDocument(item: VoirItem, catalog: VoirCatalog) {
     siteLayout(pageTitle = item.title, currentSpace = Space.VOIR) {
         breadcrumb(item.title)
-        when (item) {
-            is VoirItem.OfIndicator -> indicatorPage(item.indicator, catalog)
-            is VoirItem.OfFact -> factPage(item.fact, catalog)
-            is VoirItem.OfPerson -> personPage(item.person, catalog)
-            is VoirItem.OfParty -> partyPage(item.party, catalog)
-            is VoirItem.OfText -> textPage(item.text, catalog)
-            is VoirItem.OfMovement -> movementPage(item.movement, catalog)
-            is VoirItem.OfDossier -> dossierPage(item.dossier, catalog)
-        }
+        voirItemBody(item, catalog)
+    }
+}
+
+/** The content of the page of [item], without the layout of the site: shared by the site and the back-office preview. */
+internal fun FlowContent.voirItemBody(item: VoirItem, catalog: VoirCatalog) {
+    when (item) {
+        is VoirItem.OfIndicator -> indicatorPage(item.indicator, catalog)
+        is VoirItem.OfFact -> factPage(item.fact, catalog)
+        is VoirItem.OfPerson -> personPage(item.person, catalog)
+        is VoirItem.OfParty -> partyPage(item.party, catalog)
+        is VoirItem.OfText -> textPage(item.text, catalog)
+        is VoirItem.OfMovement -> movementPage(item.movement, catalog)
+        is VoirItem.OfDossier -> dossierPage(item.dossier, catalog)
     }
 }
 
