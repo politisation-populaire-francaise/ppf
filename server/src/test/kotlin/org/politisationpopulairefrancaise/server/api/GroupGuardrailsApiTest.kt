@@ -1,5 +1,8 @@
 package org.politisationpopulairefrancaise.server.api
 
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
+import org.politisationpopulairefrancaise.core.identity.RecoveryCommitment
+import org.politisationpopulairefrancaise.core.identity.AccountRecovery
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
 import io.ktor.client.request.post
@@ -187,5 +190,45 @@ class GroupGuardrailsApiTest {
         val rename = client.publish(other.sign(kind = GroupKinds.EDIT_METADATA, tags = listOf(listOf("h", "jardins-nantes"), listOf("name", "[EXEMPLE] Union des locataires")), createdAt = ++clock))
         assertEquals(HttpStatusCode.Forbidden, rename.status)
         assertEquals("organisation_name", rename.error())
+    }
+
+    @Test
+    fun aHeldCreationSignedAfterItsKeyWasDeclaredCompromisedCanOnlyBeRefused() = testApplication {
+        application { module(TestDatabase.dataSource, policy, TEST_RELAY) }
+        val now = java.time.Instant.now().epochSecond
+        val day = 24L * 60 * 60
+        val recovery = LocalEventSigner(IdentityKeys.generate())
+        val commitment = AccountRecovery.signCommitment(citizen, recovery.publicKey, createdAt = now - 20 * day)
+        assertEquals(HttpStatusCode.Created, client.publish(commitment).status)
+        val entry = editor.organisation(tags = organisationTags(d = "union-locataires", member = union.publicKey.hex, title = "[EXEMPLE] Union des Locataires"))
+        assertEquals(HttpStatusCode.Created, client.publish(entry).status)
+        age(citizen)
+        // Two creations held for the team, signed ten days and two days ago.
+        clock = now - 10 * day
+        val before = room(citizen, "union-lyon", "[EXEMPLE] Union des locataires Lyon")
+        assertEquals(HttpStatusCode.Accepted, client.publish(before).status)
+        clock = now - 2 * day
+        val after = room(citizen, "union-villeurbanne", "[EXEMPLE] Union des locataires Villeurbanne", territory = "Villeurbanne")
+        assertEquals(HttpStatusCode.Accepted, client.publish(after).status)
+
+        // The account is declared compromised since five days ago.
+        val committed = AccountRecovery.parseCommitment(commitment)!!
+        val named = RecoveryCommitment(committed.id, committed.account, recovery.publicKey.hex, committed.createdAt)
+        val notice = recovery.sign(AccountRecovery.notice(recovery.publicKey, named, now, since = now - 5 * day))
+        assertEquals(HttpStatusCode.Created, client.publish(notice).status)
+
+        val repository = EventRepository(TestDatabase.dataSource)
+        val directory = GroupDirectory(repository, guardrails = GroupGuardrails(TestDatabase.dataSource, OrganisationNames(TestDatabase.dataSource, policy::isEditor)))
+        val queue = GroupCreationsQueue(directory, CompromisedAccounts(repository))
+        assertTrue(queue.page(null, 10).items.all { "compromis" in it.summary.orEmpty() }, "both carry the mention")
+        // Signed after: only a refusal, and an approval is refused even if asked.
+        assertEquals(listOf("reject"), queue.actions(after.id).map { it.id })
+        assertTrue(queue.perform(after.id, "approve", null, actor) is ActionOutcome.Refused)
+        assertEquals(ActionOutcome.Done, queue.perform(after.id, "reject", "[EXEMPLE] Créé après la compromission du compte", actor))
+        // Signed before: stays in the queue and can still be approved.
+        assertEquals(listOf("approve", "reject"), queue.actions(before.id).map { it.id })
+        assertEquals(ActionOutcome.Done, queue.perform(before.id, "approve", null, actor))
+        assertTrue("union-lyon" in client.ids())
+        assertTrue("union-villeurbanne" !in client.ids())
     }
 }

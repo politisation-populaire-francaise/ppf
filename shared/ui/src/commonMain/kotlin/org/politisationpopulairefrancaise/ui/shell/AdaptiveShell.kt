@@ -88,6 +88,7 @@ import org.politisationpopulairefrancaise.ui.agir.agenda.rememberAgendaLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.rememberTestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsLibrary
+import org.politisationpopulairefrancaise.ui.account.ProvidePublishing
 import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpButton
 import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpSheetHost
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ProvideHelp
@@ -250,7 +251,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The system's back leads from any space to the feed; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideGlossary(glossary) { ProvideHelp(help) {
+    ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) {
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
             val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
             val account = accountSession.state as? AccountUiState.Ready
@@ -317,7 +318,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
             }
             HelpSheetHost(help)
         }
-    } }
+    } } }
 }
 
 @Composable

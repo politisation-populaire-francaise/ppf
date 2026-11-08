@@ -102,4 +102,6 @@
     <string name="messages_suspect">Reçu après la compromission, prudence</string>
     <string name="messages_send_error_compromised">Ce compte est déclaré compromis : aucun message ne peut lui être envoyé.</string>
     <string name="messages_send_error_own_compromised">Votre compte est déclaré compromis : il ne peut plus écrire.</string>
+    <!-- Publication bloquée dans tous les espaces (point commun LocalCanPublish) -->
+    <string name="account_publish_blocked">Ce compte a été déclaré compromis : il ne peut plus rien publier. Créez ou utilisez votre nouveau compte depuis Mon espace.</string>
 </resources>

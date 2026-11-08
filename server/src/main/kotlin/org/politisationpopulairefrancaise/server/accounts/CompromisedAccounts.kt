@@ -107,6 +107,25 @@ class CompromisedAccounts(
         }
     }
 
+    /**
+     * How a content held for review is treated once its key is declared compromised (decision of the
+     * team lead, 8 November 2026): created on or after "compromised since", it is refused; created
+     * before, it stays in the queue with a mention visible to the team.
+     */
+    fun heldVerdict(pubkey: String, createdAt: Long): HeldVerdict {
+        val since = sinceOf(pubkey) ?: return HeldVerdict.Clear
+        return if (createdAt >= since) HeldVerdict.CreatedAfter(since) else HeldVerdict.CreatedBefore(since)
+    }
+
+    /** "Compromised since" of [pubkey], seconds since 1970, or null when it is not compromised. */
+    fun sinceOf(pubkey: String): Long? = single("SELECT since::text FROM compromised_account WHERE pubkey = ?", pubkey)?.toLong()
+
+    sealed interface HeldVerdict {
+        data object Clear : HeldVerdict
+        data class CreatedBefore(val since: Long) : HeldVerdict
+        data class CreatedAfter(val since: Long) : HeldVerdict
+    }
+
     /** `403 account_compromised` for any event of a compromised key; null when the event may go on. */
     fun refusal(event: SignedEvent): PublicationPolicy.Decision.Refused? =
         if (isCompromised(event.pubkey)) COMPROMISED else null

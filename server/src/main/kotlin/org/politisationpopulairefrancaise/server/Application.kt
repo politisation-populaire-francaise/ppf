@@ -306,8 +306,6 @@ fun Application.module(
             ),
         )
     }
-    // The room creations held for the team (contract docs/integration/salons-roles.md, section 3 bis).
-    groups?.let { directory -> teamBackOffice?.queues?.register(GroupCreationsQueue(directory)) }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     // Push wake-ups (M31): a constant, encrypted "synchronize" only; the worker lives with the application.
@@ -315,6 +313,9 @@ fun Application.module(
     // Recovery keys and compromised accounts (S-146, D-134); the OpenTimestamps stamping of the
     // commitments waits for Décider's ArchiveService (CommitmentStamper.NONE until then).
     val compromised = repository?.let { CompromisedAccounts(it) }
+    // The room creations held for the team (contract docs/integration/salons-roles.md, section 3 bis);
+    // a creation signed after its key was declared compromised can only be refused (S-146).
+    groups?.let { directory -> teamBackOffice?.queues?.register(GroupCreationsQueue(directory, compromised)) }
     install(ErrorShield)
     install(ContentNegotiation) {
         json()

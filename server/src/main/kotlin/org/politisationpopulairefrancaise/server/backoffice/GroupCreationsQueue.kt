@@ -11,6 +11,8 @@ import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.ul
 import org.politisationpopulairefrancaise.core.identity.PublicKey
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts.HeldVerdict
 import org.politisationpopulairefrancaise.server.groups.Group
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.groups.GroupKinds
@@ -27,8 +29,13 @@ import org.politisationpopulairefrancaise.server.groups.HoldCause
  * Both are sensitive (a public publication, or a refusal shown to someone).
  *
  * Shown to the team: the description, what it resembles and the pseudonymous key of its creator.
+ * When that key has since been declared compromised (S-146), a creation signed on or after
+ * "compromised since" can only be refused; one signed before stays, with a visible mention.
  */
-class GroupCreationsQueue(private val directory: GroupDirectory) : BackOfficeQueue {
+class GroupCreationsQueue(
+    private val directory: GroupDirectory,
+    private val compromised: CompromisedAccounts? = null,
+) : BackOfficeQueue {
     override val id: String = ID
     override val title: String = TITLE
     override val viewPermission: String = Permissions.queueDecide(ID)
@@ -60,6 +67,21 @@ class GroupCreationsQueue(private val directory: GroupDirectory) : BackOfficeQue
                 held.reason?.let { +" ${BackOfficeTexts.REASON_LABEL} : $it" }
             }
         }
+        when (val verdict = verdictOf(held)) {
+            is HeldVerdict.CreatedAfter -> html.div(classes = "bo-notice") {
+                attributes["role"] = "alert"
+                +COMPROMISED_AFTER
+                +" "
+                dateTime(verdict.since)
+            }
+            is HeldVerdict.CreatedBefore -> html.div(classes = "bo-notice") {
+                attributes["role"] = "status"
+                +COMPROMISED_BEFORE
+                +" "
+                dateTime(verdict.since)
+            }
+            HeldVerdict.Clear -> Unit
+        }
         html.dl(classes = "bo-facts") {
             dt { +CAUSE }
             dd { +causeLabel(held.cause) }
@@ -84,6 +106,8 @@ class GroupCreationsQueue(private val directory: GroupDirectory) : BackOfficeQue
     override fun actions(itemId: String): List<QueueAction> {
         val held = creations.find(itemId) ?: return emptyList()
         if (!held.pending) return emptyList()
+        val reject = QueueAction(REJECT, REJECT_LABEL, viewPermission, reasonRequired = true, sensitive = true)
+        if (verdictOf(held) is HeldVerdict.CreatedAfter) return listOf(reject)
         return listOf(
             QueueAction(APPROVE, APPROVE_LABEL, viewPermission, sensitive = true),
             QueueAction(REJECT, REJECT_LABEL, viewPermission, reasonRequired = true, sensitive = true),
@@ -91,7 +115,9 @@ class GroupCreationsQueue(private val directory: GroupDirectory) : BackOfficeQue
     }
 
     override fun perform(itemId: String, action: String, reason: String?, actor: TeamActor): ActionOutcome = when (action) {
-        APPROVE -> when (val decision = directory.approveCreation(itemId)) {
+        APPROVE -> if (creations.find(itemId)?.let(::verdictOf) is HeldVerdict.CreatedAfter) {
+            ActionOutcome.Refused(REFUSED_COMPROMISED)
+        } else when (val decision = directory.approveCreation(itemId)) {
             GroupDirectory.CreationDecision.Done -> ActionOutcome.Done
             GroupDirectory.CreationDecision.NotFound -> ActionOutcome.NotFound
             GroupDirectory.CreationDecision.AlreadyDecided -> ActionOutcome.AlreadyDecided
@@ -112,13 +138,17 @@ class GroupCreationsQueue(private val directory: GroupDirectory) : BackOfficeQue
         else -> ActionOutcome.Refused(BackOfficeTexts.error("unknown_action"))
     }
 
+    private fun verdictOf(held: HeldCreation): HeldVerdict =
+        compromised?.heldVerdict(held.event.pubkey, held.event.createdAt) ?: HeldVerdict.Clear
+
     private fun itemOf(held: HeldCreation): QueueItem {
         val group = Group.from(held.event)
+        val mention = if (verdictOf(held) == HeldVerdict.Clear) null else COMPROMISED_SHORT
         return QueueItem(
             id = held.id,
             title = group?.name ?: held.id,
             receivedAt = held.receivedAt,
-            summary = listOfNotNull(causeLabel(held.cause), group?.territory).joinToString(", "),
+            summary = listOfNotNull(causeLabel(held.cause), group?.territory, mention).joinToString(", "),
         )
     }
 
@@ -146,6 +176,10 @@ class GroupCreationsQueue(private val directory: GroupDirectory) : BackOfficeQue
         const val CAUSE_ACTIVE_ROOM: String = "Nom proche d’un salon très actif d’un autre territoire"
         const val REFUSED_EXISTS: String = "Un salon du même nom existe déjà sur ce territoire : refusez cette création en indiquant lequel rejoindre."
         const val REFUSED_TAKEN: String = "L’identifiant de ce salon a été pris entre-temps : refusez cette création, son auteur en créera une autre."
+        const val COMPROMISED_SHORT: String = "compte du créateur déclaré compromis"
+        const val COMPROMISED_AFTER: String = "Créé après que le compte de son créateur a été déclaré compromis : ce salon ne peut qu’être refusé. Compromis depuis le"
+        const val COMPROMISED_BEFORE: String = "Le compte de son créateur a été déclaré compromis, mais ce salon a été créé avant. Compromis depuis le"
+        const val REFUSED_COMPROMISED: String = "Ce salon a été créé après la compromission du compte de son créateur : refusez-le avec un motif."
         const val REFUSED_OTHER: String = "Ce salon ne peut plus être publié tel quel : refusez cette création avec un motif."
 
         fun causeLabel(cause: HoldCause): String = when (cause) {
