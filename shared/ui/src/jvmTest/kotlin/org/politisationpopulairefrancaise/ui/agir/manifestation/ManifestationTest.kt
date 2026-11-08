@@ -26,8 +26,6 @@ import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.agir.manifestation.InMemoryRallyPointStorage
 import org.politisationpopulairefrancaise.core.agir.manifestation.RallyPoint
-import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
-import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.publication.RemoteFilter
 import org.politisationpopulairefrancaise.core.publication.TagFilter
@@ -112,11 +110,8 @@ private class HelpHarness(
     }
 }
 
-/** A database on a temporary file (the in-memory one is unreliable under load). */
-private fun fileDependencies(remote: RemoteEvents? = null): AppDependencies {
-    val file = Files.createTempFile("ppf-manifestation", ".db").also { Files.delete(it); it.toFile().deleteOnExit() }
-    return AppDependencies.withDatabase(InMemoryIdentityStore(), JvmDatabase.open(file), editorialTrust = AgirFixtures.trust, remote = remote)
-}
+/** The dependencies of the tests of "Agir" (a database file is locked by the concurrent imports of the libraries). */
+private fun fileDependencies(remote: RemoteEvents? = null): AppDependencies = AgirFixtures.dependencies(remote)
 
 @OptIn(ExperimentalTestApi::class)
 private fun ComposeUiTest.openSheet() {
@@ -166,7 +161,9 @@ class ManifestationTest {
         openSheet()
         val order = listOf("samu", "europe", "police", "pompiers", "sourds").map { top(ManifestationTags.NUMBER + it) }
         assertEquals(order.sorted(), order, "15, 112, 17, 18, 114 in this order")
-        assertTrue(order.first() < top(ManifestationTags.GUIDE_LINK + ManifestationGuides.CUSTODY), "the 15 before the lawyers")
+        awaitTag(ManifestationTags.LEGAL + "legal-team-nord")
+        val lawyers = top(ManifestationTags.LEGAL + "legal-team-nord")
+        assertTrue(order.last() < lawyers, "the emergency numbers before the lawyers: $order, $lawyers")
         onNodeWithText("Appeler le 15", substring = true).assertExists()
         onNodeWithText("Appeler le 112", substring = true).assertExists()
 
