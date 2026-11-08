@@ -88,4 +88,17 @@
     <string name="comprendre_discover_resume">Lire le jour %1$d</string>
     <string name="comprendre_daily_note">Une leçon par jour suffit. Revenez demain pour le jour %1$d, ou continuez maintenant si vous le souhaitez.</string>
     <string name="comprendre_daily_meta">Une leçon par jour · %1$d jours</string>
+    <!-- CO-13 : fiche pédagogique pour la classe (D-096). Le rappel de neutralité est un texte fixe, identique à celui du site. -->
+    <string name="comprendre_teaching_neutrality">L’enseignant reste libre de ses choix pédagogiques. Cette fiche respecte la neutralité de l’enseignement public : elle présente des faits et des débats, jamais une consigne de vote ni une position partisane.</string>
+    <string name="comprendre_teaching_meta">%1$s · %2$d minutes</string>
+    <string name="comprendre_teaching_level_lycee">Lycée</string>
+    <string name="comprendre_teaching_level_cycle_4">Collège (cycle 4)</string>
+    <string name="comprendre_teaching_programme">Programme officiel</string>
+    <string name="comprendre_teaching_questions">Questions à main levée</string>
+    <string name="comprendre_teaching_questions_intro">Les questions du parcours « %1$s », à poser au groupe.</string>
+    <string name="comprendre_teaching_show_answers">Afficher les réponses</string>
+    <string name="comprendre_teaching_hide_answers">Masquer les réponses</string>
+    <string name="comprendre_teaching_answer">Réponse : %1$s</string>
+    <string name="comprendre_teaching_licence">Texte sous licence CC BY 4.0, Politisation Populaire Française.</string>
+    <string name="comprendre_teaching_link">Pour la classe : fiche pédagogique (%1$s)</string>
 </resources>

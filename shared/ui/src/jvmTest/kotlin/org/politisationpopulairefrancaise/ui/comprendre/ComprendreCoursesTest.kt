@@ -125,6 +125,27 @@ class ComprendreCoursesTest {
     }
 
     @Test
+    fun aCourseLeadsToItsTeachingSheetWithTheAnswersFoldedApart() = runComposeUiTest {
+        val database = JvmDatabase.inMemory()
+        openComprendre(database, width = 1000, height = 800)
+        onNodeWithTag(ComprendreTags.COURSE_CARD + loi.article.slug).performScrollTo().performClick()
+        waitForIdle()
+        // « Pour la classe » (CO-13): the sheet of the course, opened from its introduction.
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(CourseTags.TEACHING).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithTag(CourseTags.TEACHING).performScrollTo().assert(hasText("Pour la classe", substring = true)).performClick()
+        waitForIdle()
+        onNodeWithTag(ComprendreDetailTags.TEACHING).assertExists()
+        // The fixed neutrality notice, never the writer's text.
+        onNodeWithTag(ComprendreDetailTags.TEACHING_NEUTRALITY).performScrollTo().assert(hasText("neutralité de l’enseignement public", substring = true))
+        // The questions of the course for a show of hands; the answers stay folded until asked for.
+        onNodeWithTag(ComprendreDetailTags.TEACHING_QUESTIONS).performScrollTo().assertExists()
+        onAllNodesWithTag(ComprendreDetailTags.TEACHING_ANSWERS).fetchSemanticsNodes().let { assertTrue(it.isEmpty(), "answers folded") }
+        onNodeWithText("Afficher les réponses").performScrollTo().performClick()
+        waitForIdle()
+        assertEquals(loi.quizCount, onAllNodesWithTag(ComprendreDetailTags.TEACHING_ANSWERS).fetchSemanticsNodes().size)
+    }
+
+    @Test
     fun aCourseIsReadStepByStepOnAPhoneAndItsAnswersStayOnTheDevice() = runComposeUiTest {
         val database = JvmDatabase.inMemory()
         openComprendre(database, width = 400, height = 800)

@@ -52,6 +52,7 @@ import org.politisationpopulairefrancaise.ui.comprendre.HistoryCard
 import org.politisationpopulairefrancaise.ui.comprendre.HistoryDetail
 import org.politisationpopulairefrancaise.ui.comprendre.QuiDecideCard
 import org.politisationpopulairefrancaise.ui.comprendre.QuiDecideDetail
+import org.politisationpopulairefrancaise.ui.comprendre.TeachingSheetDetail
 import org.politisationpopulairefrancaise.ui.comprendre.CourseScreen
 import org.politisationpopulairefrancaise.ui.comprendre.courseMetaLine
 import org.politisationpopulairefrancaise.ui.comprendre.elus.CommuneChooserDialog
@@ -451,8 +452,10 @@ private fun ArticleDetail(comprendre: ComprendreLibrary, article: Article, onBac
     val check = comprendre.decryptages.firstOrNull { it.article.address == article.address }
     val story = comprendre.stories.firstOrNull { it.article.address == article.address }
     val sheet = comprendre.sheets.firstOrNull { it.article.address == article.address }
+    val teaching = comprendre.teachingSheets.firstOrNull { it.article.address == article.address }
     val method = comprendre.methodPage
     when {
+        teaching != null -> TeachingSheetDetail(teaching, comprendre.courses.firstOrNull { it.address == teaching.courseAddress }, onBack, onNavigate, compact, modifier)
         check != null -> DecryptageDetail(check, onOpenMethod = method?.let { page -> { comprendre.openArticle(page) } }, onBack = onBack, onNavigate = onNavigate, compact = compact, modifier = modifier)
         story != null -> HistoryDetail(story, onBack, onNavigate, compact, modifier)
         sheet != null -> QuiDecideDetail(sheet, comprendre.persons, onBack, onNavigate, compact, modifier, elus = comprendre.elus, onOpenElus = onOpenElus)

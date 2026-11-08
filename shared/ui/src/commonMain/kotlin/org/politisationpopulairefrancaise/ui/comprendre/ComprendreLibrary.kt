@@ -19,6 +19,7 @@ import org.politisationpopulairefrancaise.core.comprendre.QuiDecide
 import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.comprendre.ParcoursProgress
 import org.politisationpopulairefrancaise.core.comprendre.QuizAnswer
+import org.politisationpopulairefrancaise.core.comprendre.TeachingSheet
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.elus.ElusDirectory
 import org.politisationpopulairefrancaise.core.elus.ElusStore
@@ -84,6 +85,14 @@ class ComprendreLibrary(
     var methodPage: Article? by mutableStateOf(null)
         private set
 
+    /** The teaching sheets for the classroom (CO-13, D-096), by title. */
+    var teachingSheets: List<TeachingSheet> by mutableStateOf(emptyList())
+        private set
+
+    /** The teaching sheets of [parcours] (« Pour la classe »), lycée first. */
+    fun teachingSheetsOf(parcours: Parcours): List<TeachingSheet> =
+        teachingSheets.filter { it.courseAddress == parcours.address }.sortedBy { it.level.ordinal }
+
     /** The public persons of "Voir" by address, to name the elected officials of a « Qui décide de ça ? » sheet. */
     var persons: Map<String, PublicPerson> by mutableStateOf(emptyMap())
         private set
@@ -129,6 +138,7 @@ class ComprendreLibrary(
                         .sortedWith(compareBy<HistoryStory>({ it.startYear ?: Int.MAX_VALUE }, { it.article.title.lowercase() })),
                     sheets = articles(ArticleType.QUI_DECIDE).mapNotNull(QuiDecide::from).sortedBy { it.article.title.lowercase() },
                     method = articles(ArticleType.ARTICLE).firstOrNull { it.slug == METHOD_SLUG },
+                    teaching = articles(ArticleType.FICHE_PEDAGOGIQUE).mapNotNull(TeachingSheet::from).sortedBy { it.article.title.lowercase() },
                     persons = articles(ArticleType.PERSONNE).mapNotNull(PublicPerson::from).associateBy { it.address.toString() },
                 )
             }
@@ -138,8 +148,10 @@ class ComprendreLibrary(
             stories = fresh.stories
             sheets = fresh.sheets
             methodPage = fresh.method
+            teachingSheets = fresh.teaching
             persons = fresh.persons
-            val freshChecks = fresh.checks.map { it.article } + fresh.stories.map { it.article } + fresh.sheets.map { it.article } + listOfNotNull(fresh.method)
+            val freshChecks = fresh.checks.map { it.article } + fresh.stories.map { it.article } + fresh.sheets.map { it.article } +
+                fresh.teaching.map { it.article } + listOfNotNull(fresh.method)
             val freshCourses = fresh.courses
             val freshDossiers = fresh.dossiers
             // A newer version of the open course replaces it; a course that disappeared closes.
@@ -290,6 +302,7 @@ class ComprendreLibrary(
         val stories: List<HistoryStory>,
         val sheets: List<QuiDecide>,
         val method: Article?,
+        val teaching: List<TeachingSheet>,
         val persons: Map<String, PublicPerson>,
     )
 
