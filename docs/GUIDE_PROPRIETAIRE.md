@@ -177,6 +177,15 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 9. Où en est un contenu : http://localhost:8080/api/v1/held?id=ID. Une mobilisation en attente dont la date est passée y apparaît refusée, avec le motif « La date de l'événement est passée avant la relecture. ».
 10. À la fin, fermez l'application et arrêtez le serveur (Ctrl+C dans sa fenêtre). Vous pouvez supprimer vous-même le dossier `ppf-essai-1` de votre dossier personnel : il ne contient que ce compte d'essai.
 
+### Tester le bouton AIDE et la sécurité du téléphone (ajouté le 8 novembre 2026)
+
+1. Touchez **AIDE** (rouge, en haut de l'écran du téléphone, en tête du menu sur tablette et ordinateur) : les numéros d'urgence s'affichent, le 15 et le 112 en premier ; touchez-en un, le téléphone propose d'appeler (vous pouvez annuler). Plus bas : les avocats de votre territoire et votre point de ralliement, gardé sur le téléphone seulement.
+2. Dans « Agir », ouvrez **Mode manifestation** : avant de partir, vos droits, numéros utiles, « Préparer mon téléphone ».
+3. Dans **Mon espace**, carte « Sécurité de cet appareil » : activez le **verrouillage** avec un code de 6 chiffres au moins (pas 123456 ni 111111), quittez l'application puis revenez : le code est demandé. Le 15 et le 112 restent appelables sans le code.
+4. Même carte : **icône discrète** ; après la mise en garde, l'icône de PPF devient « Outils » (gris) dans la liste des applications. Revenez en arrière de la même façon.
+5. Le **contenu masqué** est activé : dans la liste des applications ouvertes, PPF apparaît vide, et les captures d'écran sont bloquées (c'est voulu).
+6. **Effacement rapide** (à essayer en dernier, sur un compte d'essai) : il rappelle de noter la phrase de récupération, puis efface ce que PPF garde sur le téléphone ; pour retrouver le compte : Mon espace, « J'ai déjà un compte », puis la phrase.
+
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).

@@ -720,6 +720,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
      - S-43 et S-44 dans `main` avant le mode medic ; analyse d'impact (AIPD) relue par l'avocat avant toute ouverture publique.
 - Consignes pour M33 (S-43 à S-45) : effacement par une interface commune que chaque pôle implémente pour ses données (au lieu d'effacer leurs tables), restauration ensuite par la phrase de récupération ; nom et icône neutres par `activity-alias` (compatible API 26), `expect`/`actual` pour iOS.
 
+## D-082 (2026-11-08) Sécurité de l'appareil, étape 1 (M33 : S-43, S-44, S-45, AG-56)
+
+- Contexte : cahier fonctionnel 2.1 (S-43 à S-45, AG-56), cahier des charges 5.13 et 9.8, consignes du chef d'équipe (D-081). Détail : `docs/integration/agir-securite-appareil.md`.
+- Décisions techniques prises en autonomie (à confirmer par le chef d'équipe pour le réglage par défaut du verrouillage, principe 10) :
+  - **verrouillage de PPF** (S-43) facultatif, désactivé par défaut (lire sans compte reste possible, un code oublié obligerait à tout effacer), délai « Immédiatement » une fois activé ; code de 6 à 16 chiffres, codes trop simples refusés ; seule une empreinte lente et salée est gardée (PBKDF2-HMAC-SHA-256, 600 000 itérations, recommandation OWASP), mêlée sur Android à un secret de l'Android Keystore ; attente croissante après 5 codes faux, sans effacement automatique ; le 15 et le 112 restent appelables sur l'écran de verrouillage ; « Code oublié ? » ne mène qu'à l'effacement ;
+  - **code seul, sans biométrie** : `androidx.biometric` n'a pas de version stable récente, et AG-56 demande le code seul avant une manifestation ;
+  - **effacement rapide** (S-44) par parties : interface commune `DeviceErasable` (`core/device`) et registre `DeviceEraseRegistry` (`AppDependencies.erasables`) ; chaque pôle inscrit ses données ; une partie en échec n'arrête pas les autres ; rappel de la phrase de récupération avant, explication de la restauration après ; branchés : clé et chemin d'« Effacer mes clés » (D-032, D-039), données d'« Agir », point de ralliement, rapports de plantage, cache ; **code PIN de contrainte non codé** (avis d'un avocat, Code pénal 434-4 et 434-15-2) ;
+  - **application discrète** (S-45) : contenu masqué dans les applications récentes (`FLAG_SECURE`, Android), activé par défaut, qui bloque aussi les captures d'écran ; nom et icône neutres (« Outils ») par deux `activity-alias`, désactivés par défaut, avec une mise en garde à chaque changement ; rien sur ordinateur ni iOS ;
+  - **« Préparer mon téléphone »** (AG-56) dans le mode manifestation : état de PPF et geste qui corrige chaque point, guide [EXEMPLE] des réglages du téléphone, information [EXEMPLE] sur l'arrêt de la Cour de cassation du 7 novembre 2022 (n° 21-83.146), à vérifier par un avocat ;
+  - réglages dans une préférence privée, aucune migration, aucune dépendance nouvelle, rien n'est envoyé au serveur.
+
 ## D-090 (2026-11-07) Référentiel des territoires : codes officiels, population, inscrits, règle des 30
 
 - Contexte : demande du pôle « Décider » (objectifs de signatures proportionnels à la population, seuils des pétitions locales) ; les salons, l'agenda, les appels et les revendications écrivent le territoire en texte libre (`ppf-territory`). Conception et sources vérifiées le 7 novembre 2026 : `docs/integration/territoires.md` ; conception validée par le chef d'équipe (« Décider » accepte l'API sans correction).
