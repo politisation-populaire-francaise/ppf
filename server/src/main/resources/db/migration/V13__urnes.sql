@@ -179,3 +179,14 @@ CREATE TABLE deliberation_submission (
 -- One pending version per address; the counts per account and deliberation.
 CREATE UNIQUE INDEX deliberation_submission_pending ON deliberation_submission (pubkey, identifier) WHERE status = 'pending';
 CREATE INDEX deliberation_submission_author ON deliberation_submission (deliberation, pubkey, type);
+
+-- 10. Official petitions attached by the team to a demand (D-115), waiting for the approval of a member on the
+--     page of the signing service (use decider.pacte): the unsigned event, then signed and published as it is.
+--     A team action, never a citizen's datum; deleted once published or after 7 days without approval.
+CREATE TABLE petition_draft (
+    event_id       TEXT  PRIMARY KEY CHECK (event_id ~ '^[0-9a-f]{64}$'),
+    demand         TEXT  NOT NULL UNIQUE CHECK (length(demand) BETWEEN 1 AND 400),
+    unsigned       JSONB NOT NULL,
+    approval_url   TEXT  NOT NULL CHECK (length(approval_url) <= 500),
+    submitted_day  DATE  NOT NULL
+);

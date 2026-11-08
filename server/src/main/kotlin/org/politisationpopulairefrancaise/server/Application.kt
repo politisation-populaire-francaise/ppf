@@ -56,6 +56,8 @@ import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.decider.EditorialDeciderSource
+import org.politisationpopulairefrancaise.server.decider.PetitionLinks
+import org.politisationpopulairefrancaise.server.decider.PetitionLinksQueue
 import org.politisationpopulairefrancaise.server.decider.DeliberationQueue
 import org.politisationpopulairefrancaise.server.decider.DeliberationSubmissions
 import org.politisationpopulairefrancaise.server.decider.deliberationApi
@@ -353,6 +355,12 @@ fun Application.module(
         val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)
         // The boxes of the citizen deliberations, opened as their published phases come (DE-25).
         val deliberations = repository?.let { DeliberationUrnes(it, urnes, policy::isEditor) }
+        // The official petitions attached by the team to the demands (D-115), signed for decider.pacte after an approval.
+        val petitionLinks = if (repository != null && platformSigner != null) {
+            PetitionLinks(repository.dataSource, repository, platformSigner).also { teamBackOffice?.queues?.register(PetitionLinksQueue(it, urnes)) }
+        } else {
+            null
+        }
         // The closing statements signed by the platform (decider.urn_closure), when the signing service is configured.
         val closures = if (urneStore != null && repository != null && platformSigner != null) {
             UrneClosureStatements(urneStore, urnes, platformSigner, repository)
@@ -364,7 +372,7 @@ fun Application.module(
             this,
             UrneService.CLOSING_INTERVAL,
             log,
-            keepers = listOf({ demands.reconcile() }, { deliberations?.reconcile() }, { certifications?.checkMandatesDue() }, { deliberationSubmissions?.purgeDecided() }, { closures?.runDue() }),
+            keepers = listOf({ demands.reconcile() }, { deliberations?.reconcile() }, { certifications?.checkMandatesDue() }, { deliberationSubmissions?.purgeDecided() }, { closures?.runDue() }, { petitionLinks?.runDue() }),
         )
     }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
