@@ -77,6 +77,7 @@ import org.politisationpopulairefrancaise.server.revendications.ProposalsBackOff
 import org.politisationpopulairefrancaise.server.urne.PersonAccounts
 import org.politisationpopulairefrancaise.server.urne.RevendicationUrnes
 import org.politisationpopulairefrancaise.server.urne.UrneConfig
+import org.politisationpopulairefrancaise.server.urne.DeliberationUrnes
 import org.politisationpopulairefrancaise.server.urne.ElectedCertifications
 import org.politisationpopulairefrancaise.server.urne.ElectedCertificationsQueue
 import org.politisationpopulairefrancaise.server.urne.InPersonValidations
@@ -297,8 +298,15 @@ fun Application.module(
     if (urneStore != null && teamBackOffice != null) teamBackOffice.queues.register(ValidationSessionsQueue(urneStore.dataSource))
     if (urnes != null && dataSource != null) {
         val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)
+        // The boxes of the citizen deliberations, opened as their published phases come (DE-25).
+        val deliberations = repository?.let { DeliberationUrnes(it, urnes, policy::isEditor) }
         // Daily, a certified mandate absent from the updated directory ends its certification (DE-23).
-        urnes.startClosing(this, UrneService.CLOSING_INTERVAL, log, keepers = listOf({ demands.reconcile() }, { certifications?.checkMandatesDue() }))
+        urnes.startClosing(
+            this,
+            UrneService.CLOSING_INTERVAL,
+            log,
+            keepers = listOf({ demands.reconcile() }, { deliberations?.reconcile() }, { certifications?.checkMandatesDue() }),
+        )
     }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }

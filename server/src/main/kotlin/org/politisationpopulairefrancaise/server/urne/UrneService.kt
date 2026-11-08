@@ -97,6 +97,16 @@ class UrneService(
     /** The open boxes of one use (their identifiers start with [prefix]), for the code that opens them. */
     fun openWithPrefix(prefix: String): List<Urne> = store.openWithPrefix(prefix)
 
+    /** The box of identifier [id], open or closed, or null. */
+    fun byId(id: String): Urne? = store.urneById(id)
+
+    /** The final results of a closed box (what its closing publishes), or null while it is open. */
+    fun finalResults(number: Long): UrneResults? {
+        val urne = store.urne(number) ?: return null
+        if (!urne.closed) return null
+        return UrneTally.results(store.ballots(number).map { it.level to it.choice } + publicChoices(number))
+    }
+
     // ------------------------------------------------------------------ public
 
     /** The boxes after [after], with the results of those that show them, summed in one query. */
