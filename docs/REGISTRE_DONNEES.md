@@ -216,6 +216,19 @@ Détail : `docs/integration/agir-temoignages.md`. Un témoignage révèle des op
 
 Rien de la requête n’est gardé (ni adresse IP, ni en-tête, ni appareil). Les journaux ne reçoivent que des nombres. L’application ne lit jamais la position du téléphone : le lieu est écrit par le témoin. La clé qui signe la déclaration de provenance est créée pour la seule photo et détruite aussitôt. Aucun tiers : la photo est choisie par le sélecteur du système (Android) ou la boîte de dialogue des fichiers (ordinateur), sans permission. Vidéos et sons : refusés pour l’instant (aucune donnée).
 
+## Ajout du 7 novembre 2026 : bouton AIDE et mode manifestation (M25 : AG-13, AG-27 première version, AG-36)
+
+Détail : `docs/integration/agir-manifestation.md`. Rien n'est envoyé au serveur : les numéros sont composés par le système, les fiches et l'annuaire sont ceux que l'appareil détient.
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Point de ralliement (lieu en mots, précisions), écrit par l'utilisateur ; jamais une position lue sur l'appareil | Retrouver ses proches ou un enfant perdu (AG-36) | Appareil seulement : préférence privée de l'application sur Android (`ppf-manifestation`, sauvegardes du système interdites par `android:allowBackup="false"`), fichier `point-de-ralliement.json` du dossier privé de l'application sur ordinateur ; rien sur iOS pour l'instant | Jusqu'à « Effacer », la désinstallation ou l'effacement des données de l'application | L'utilisateur |
+| Territoire tapé pour « Legal team et avocats près de chez vous » | Mettre en premier les organisations proches | Mémoire seulement | Fermeture de l'application | L'utilisateur |
+| Commune choisie dans « Comprendre » (Mes élus), lue pour son seul numéro de département | Proposer par défaut les legal teams du département | Déjà sur l'appareil (table `elus_commune`, D-047) ; lue, jamais copiée ni envoyée | Celle de « Comprendre » | L'utilisateur |
+| Cases cochées de la liste « Avant de partir » | Se préparer | Mémoire seulement | Fermeture de l'écran ou de l'application | L'utilisateur |
+
+Appeler le 15, le 112, le 17, le 18, envoyer un SMS au 114 ou appeler une legal team ouvre l'application de téléphone ou de messages du système (`tel:`, `sms:`), sans permission : l'utilisateur confirme l'appel dans cette application. PPF ne garde aucune trace de ces appels. Le seul échange réseau possible à l'ouverture de la feuille AIDE est la synchronisation générale de l'annuaire des organisations (la même requête que la rubrique « Organisations », sans aucune donnée de l'utilisateur).
+
 ## Ajout du 7 novembre 2026 : service de signature de la plateforme (D-129)
 
 Données des membres de l'équipe seulement (pseudonymes), jamais des citoyens. Base légale : intérêt légitime de l'association (authenticité des contenus publiés, traçabilité des signatures).

@@ -1,5 +1,51 @@
 [
     {
+        "id": "bb80fc02fa623f3cc8f7150019c0c1dac6358c7a5f4c4cddd5d327c1cb4193da",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "apres-une-blessure-en-manifestation"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Après une blessure en manifestation"
+            ],
+            [
+                "summary",
+                "Se faire soigner, faire constater ses blessures, porter plainte, saisir l'IGPN, l'IGGN ou le Défenseur des droits, trouver de l'aide. Brouillon à faire relire par un avocat."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "fiche-pratique"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "droits"
+            ],
+            [
+                "t",
+                "manifestation"
+            ],
+            [
+                "t",
+                "victimes"
+            ]
+        ],
+        "content": "::: en-bref\n- **Soignez-vous d'abord** : en urgence vitale, appelez le **15** ou le **112**.\n- Faites **constater vos blessures** par un médecin, le plus vite possible : le certificat médical est une preuve.\n- Vous pouvez **porter plainte** dans le commissariat ou la gendarmerie de votre choix, ou écrire au procureur de la République.\n- Vous pouvez aussi **saisir le Défenseur des droits**, gratuitement, et signaler les faits à l'**IGPN** ou à l'**IGGN** ; cela ne remplace pas une plainte.\n- Le **116 006** écoute les victimes et les oriente, tous les jours de 9 h à 20 h, gratuitement.\n:::\n\n**[EXEMPLE] Cette fiche est un brouillon de démonstration, préparé avec l'aide d'une IA à partir des pages officielles citées en bas. Elle doit être relue par un avocat avant toute publication.**\n\n## Se faire soigner\n\nEn cas d'urgence vitale, appelez le 15 (SAMU) ou le 112. Les street medics présents dans les manifestations peuvent donner les premiers soins, mais ils ne remplacent pas les secours publics ni un médecin.\n\n## Faire constater ses blessures\n\n::: conseil\n- Consultez un médecin le plus tôt possible (service des urgences, médecin traitant) et demandez un **certificat médical** qui décrit précisément chaque blessure.\n- Le médecin peut indiquer une durée d'**incapacité totale de travail** (ITT), au sens pénal : elle ne dépend pas de votre emploi.\n- Photographiez vos blessures, plusieurs jours de suite, avec la date.\n- Gardez les vêtements abîmés ou tachés, sans les laver.\n- Notez tout de suite, tant que vos souvenirs sont précis : l'heure, le lieu, ce qui s'est passé, les témoins et leurs coordonnées, le numéro d'identification individuel porté sur l'uniforme si vous l'avez vu.\n:::\n\n## Porter plainte\n\nVous pouvez porter plainte dans le commissariat ou la brigade de gendarmerie de votre choix. Policiers et gendarmes sont tenus d'enregistrer la plainte d'une victime, même si les faits ont eu lieu ailleurs. Apportez votre certificat médical et vos photos, gardez le récépissé et demandez une copie du procès-verbal.\n\nVous pouvez aussi écrire au procureur de la République du tribunal judiciaire du lieu des faits : votre identité, le récit détaillé avec les dates et les lieux, les témoins, une estimation du préjudice et les copies de vos preuves. Si l'auteur n'est pas connu, la plainte est déposée « contre X ».\n\n::: attention\nLes délais pour agir en justice continuent de courir pendant les autres démarches. Un avocat ou une association peut vous aider à choisir la bonne voie et à respecter ces délais.\n:::\n\n## Signaler à l'IGPN ou à l'IGGN\n\nLe comportement d'un policier peut être signalé en ligne à l'Inspection générale de la police nationale (IGPN), celui d'un gendarme à l'Inspection générale de la gendarmerie nationale (IGGN). La suite donnée est communiquée par courriel. Ce signalement **n'est pas une plainte**.\n\n## Saisir le Défenseur des droits\n\nLe Défenseur des droits contrôle le respect de la déontologie par les professionnels de la sécurité (police nationale, police municipale, gendarmerie, agents de sécurité privée). La saisine est gratuite :\n\n- en ligne, sur le site du Défenseur des droits ;\n- auprès d'un délégué territorial, sur rendez-vous ;\n- par courrier sans timbre : Défenseur des droits, Libre réponse 71120, 75342 Paris cedex 07, avec des photocopies de vos documents.\n\nSaisir le Défenseur des droits ne suspend pas les délais pour agir en justice.\n\n## Trouver de l'aide\n\n- Le **116 006**, numéro d'aide aux victimes, vous écoute et vous oriente vers une association d'aide aux victimes, tous les jours de 9 h à 20 h.\n- La **legal team** et les **avocats bénévoles** de votre territoire sont dans l'annuaire de l'espace « Agir ».\n- Si vous allez mal, parlez-en à un médecin ; le **31 14** répond aux personnes en détresse et à leurs proches.\n\n## Et maintenant ?\n\n- Trouvez la legal team ou les avocats bénévoles de votre territoire dans l'espace « Agir », rubrique « Organisations ».\n- Témoignez par le canal sécurisé de la rubrique « Témoigner », dans l'espace « Agir ».\n\n## Sources\n\n- Service-public.gouv.fr, « Porter plainte » (F1435, vérifiée le 8 juillet 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1435\n- Service-public.gouv.fr, « Litige avec les forces de l'ordre ou un organisme privé chargé de la sécurité » (F2546, vérifiée le 13 août 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F2546\n- Service-public.gouv.fr, « Quels sont les numéros en cas d'urgence (Samu, pompiers...) et les numéros d'écoute ? » (F33954, vérifiée le 25 août 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F33954\n- Défenseur des droits, « Contrôler le respect de la déontologie par les professionnels de la sécurité » : https://www.defenseurdesdroits.fr/controler-le-respect-de-la-deontologie-par-les-professionnels-de-la-securite-195\n",
+        "sig": "5c9fe71cb3d0a1bd9b8f176f4c305cc8268a93908b90f71a066ee81f95a4c29efef6abe974c0bb080194b27780d0288afec1b1e5406336f5a5c1a5a5f498ded9"
+    },
+    {
         "id": "258b0104783acf75e738fdcf7b8f2c723cb8603da2d6e7ba38d0bbe282e121c7",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793966400,
