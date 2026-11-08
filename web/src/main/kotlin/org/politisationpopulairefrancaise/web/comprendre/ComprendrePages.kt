@@ -519,7 +519,7 @@ fun HTML.methodDocument(method: Article, catalog: ComprendreCatalog) {
             SiteStep("Lire les étiquettes de « Voir »", VoirLinks.METHOD),
         ))
         sourcesSection(renderer, parts.sources)
-        comprendreOrigin(method)
+        comprendreOrigin(method, ComprendreLinks.METHOD)
         offlineScript()
     }
 }

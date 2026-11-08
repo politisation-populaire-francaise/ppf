@@ -112,6 +112,28 @@ class ComprendrePagesTest {
     }
 
     @Test
+    fun everyContentEndsWithItsLicenceItsReferenceAndItsVerificationCode() {
+        val fiche = catalog.fiche("garde-a-vue")!!
+        val html = render { ficheDocument(fiche, catalog) }
+        checkPage(html)
+        assertTrue(html.indexOf("class=\"origin\"") > html.indexOf("id=\"sources\""), "after the sources")
+        // The licence of the texts of PPF (D-103), a link that leaves the site without referrer.
+        assertTrue(html.contains("Texte sous licence <a href=\"https://creativecommons.org/licenses/by/4.0/deed.fr\" rel=\"noopener noreferrer nofollow external\">"))
+        // « Citer ce contenu » (S-144): the stable address of the page, this version and its fingerprint.
+        assertTrue(html.contains("<summary>Citer ce contenu</summary>"))
+        assertTrue(html.contains("https://politisation-populaire-francaise.org/comprendre/fiches/garde-a-vue"))
+        assertTrue(html.contains("empreinte SHA-256 ${fiche.event.id}, licence CC BY 4.0"))
+        // The code of this version (S-141), to check a printed or copied page.
+        assertTrue(html.contains("<code>${fiche.event.id.take(16)}</code>"))
+        assertTrue(html.contains("href=\"/v/${fiche.event.id.take(16)}\""))
+        // A course too, under its own address.
+        val course = catalog.course("le-referendum")!!
+        val courseHtml = render { parcoursDocument(course, catalog) }
+        assertTrue(courseHtml.contains("https://politisation-populaire-francaise.org/comprendre/parcours/le-referendum"))
+        assertTrue(courseHtml.contains("href=\"/v/${course.article.event.id.take(16)}\""))
+    }
+
+    @Test
     fun glossaryTermsAreLinkedOnceWithAnAccessibleDefinition() {
         val course = catalog.course("le-49-3-et-la-motion-de-censure")!!
         val html = render { parcoursDocument(course, catalog) }

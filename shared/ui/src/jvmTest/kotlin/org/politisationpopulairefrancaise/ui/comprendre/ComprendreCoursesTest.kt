@@ -22,6 +22,7 @@ import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.comprendre.LearningProgressStore
 import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
+import org.politisationpopulairefrancaise.core.editorial.ContentCheck
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
@@ -133,6 +134,10 @@ class ComprendreCoursesTest {
         waitForIdle()
         // « Pour la classe » (CO-13): the sheet of the course, opened from its introduction.
         waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(CourseTags.TEACHING).fetchSemanticsNodes().isNotEmpty() }
+        // The end of the introduction: licence, code of this version and « Citer ce contenu » (D-103, S-141, S-144).
+        onNodeWithText("Code de vérification : ${ContentCheck.codeOf(loi.article.event)}", substring = true).performScrollTo().assertExists()
+        onNodeWithText("Texte sous licence CC BY 4.0, Politisation Populaire Française.").assertExists()
+        onNodeWithTag(ComprendreCiteTags.CITE).performScrollTo().assert(hasText("Citer ce contenu"))
         onNodeWithTag(CourseTags.TEACHING).performScrollTo().assert(hasText("Pour la classe", substring = true)).performClick()
         waitForIdle()
         onNodeWithTag(ComprendreDetailTags.TEACHING).assertExists()
@@ -144,6 +149,9 @@ class ComprendreCoursesTest {
         onNodeWithText("Afficher les réponses").performScrollTo().performClick()
         waitForIdle()
         assertEquals(loi.quizCount, onAllNodesWithTag(ComprendreDetailTags.TEACHING_ANSWERS).fetchSemanticsNodes().size)
+        // The sheet ends with its licence and its reference too, from the common mechanism of "Voir".
+        assertTrue(onAllNodesWithTag(ComprendreCiteTags.LICENSE).fetchSemanticsNodes().isNotEmpty())
+        assertTrue(onAllNodesWithTag(ComprendreCiteTags.CITE).fetchSemanticsNodes().isNotEmpty())
     }
 
     @Test

@@ -206,6 +206,9 @@ private fun IntroductionPage(comprendre: ComprendreLibrary, parcours: Parcours, 
     }
     Spacer(Modifier.height(16.dp))
     Text(stringResource(Res.string.comprendre_private_note), style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkSubtle)
+    // Licence, verification code and « Citer ce contenu » of the course (D-103, S-141, S-144).
+    Spacer(Modifier.height(16.dp))
+    ComprendreCite(parcours.article)
 }
 
 @Composable

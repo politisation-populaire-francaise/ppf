@@ -90,7 +90,6 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_answe
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_hide_answers
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_cycle_4
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_lycee
-import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_licence
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_meta
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_neutrality
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_programme
@@ -403,8 +402,6 @@ fun TeachingSheetDetail(sheet: TeachingSheet, course: Parcours?, onBack: (() -> 
         }
         Spacer(Modifier.height(16.dp))
         BodyWithActions(sheet.article.body, onNavigate, beforeSources = course?.let { linked -> { TeachingQuestions(linked) } })
-        Spacer(Modifier.height(16.dp))
-        Text(stringResource(Res.string.comprendre_teaching_licence), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
     }
 }
 
@@ -482,6 +479,9 @@ private fun DetailColumn(
             Text(detailMeta(article, kind), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
             Spacer(Modifier.height(16.dp))
             content()
+            // Licence, verification code and « Citer ce contenu » end every content (D-103, S-141, S-144).
+            Spacer(Modifier.height(24.dp))
+            ComprendreCite(article)
         }
     }
 }

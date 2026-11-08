@@ -958,6 +958,13 @@ a.gloss:hover {
   overflow-wrap: anywhere;
 }
 
+/* The code to check a version of a content (S-141), under the reference; printed with the page. */
+.verify-line {
+  color: var(--ink-subtle);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
 /* Teaching sheets for the classroom (CO-13, D-096): the questions and the answers for the teacher. */
 .licence {
   color: var(--ink-subtle);
@@ -1011,6 +1018,10 @@ a.gloss:hover {
   .site-header nav,
   .site-footer,
   .skip-link {
+    display: none;
+  }
+  /* The reference opens on a screen only: on paper, the licence and the verification code stay. */
+  .cite {
     display: none;
   }
   .teaching-answers {

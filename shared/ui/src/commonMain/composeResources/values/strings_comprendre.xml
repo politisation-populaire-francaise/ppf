@@ -99,6 +99,10 @@
     <string name="comprendre_teaching_show_answers">Afficher les réponses</string>
     <string name="comprendre_teaching_hide_answers">Masquer les réponses</string>
     <string name="comprendre_teaching_answer">Réponse : %1$s</string>
-    <string name="comprendre_teaching_licence">Texte sous licence CC BY 4.0, Politisation Populaire Française.</string>
     <string name="comprendre_teaching_link">Pour la classe : fiche pédagogique (%1$s)</string>
+    <!-- The end of every content: licence (D-103), verification code (S-141), « Citer ce contenu » (S-144). -->
+    <string name="comprendre_license">Texte sous licence %1$s, %2$s.</string>
+    <string name="comprendre_verify_code">Code de vérification : %1$s. Pour vérifier une copie reçue : « Vérifier un contenu reçu » dans « Voir », ou la page « Vérifier un contenu » du site.</string>
+    <string name="comprendre_cite">Citer ce contenu</string>
+    <string name="comprendre_cite_copied">Référence copiée : titre, dates, version, adresse et empreinte.</string>
 </resources>

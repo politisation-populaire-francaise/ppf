@@ -105,7 +105,11 @@ class TeachingPagesTest {
         assertTrue(html.contains("L’enseignant reste libre de ses choix pédagogiques. Cette fiche respecte la neutralité de l’enseignement public : elle présente des faits et des débats, jamais une consigne de vote ni une position partisane."))
         assertTrue(text(html).contains(sheet.programme))
         assertTrue(html.contains("href=\"/comprendre/parcours/comment-une-loi-est-votee\""))
-        assertTrue(html.contains("Texte sous licence CC BY 4.0, Politisation Populaire Française"))
+        // The licence of the texts of PPF (D-103), from the common mechanism of "Voir".
+        assertTrue(html.contains("Texte sous licence <a href=\"https://creativecommons.org/licenses/by/4.0/deed.fr\""))
+        assertTrue(html.contains(">CC BY 4.0<span class=\"external-mark\"> (site extérieur)</span></a>, Politisation Populaire Française."))
+        // The verification code of this version is printed with the sheet (S-141).
+        assertTrue(html.contains("href=\"/v/${sheet.article.event.id.take(16)}\""))
         assertTrue(html.contains("Contenu d’exemple"))
         assertTrue(html.contains("Rédigé avec l’aide d’une IA"))
         listOf("Objectifs", "Prérequis", "Déroulé", "Débat guidé", "Objections et réponses").forEach { assertTrue(html.contains(it), it) }
@@ -126,7 +130,8 @@ class TeachingPagesTest {
         assertTrue(answersAt > questionsAt, "the answers come after the questions")
         assertTrue(html.contains(">Réponses pour l’enseignant</h2>"))
         assertTrue(html.contains("<section class=\"teaching-answers\""), "the section the print stylesheet starts on a new page")
-        val questions = text(html.substring(questionsAt, answersAt))
+        // The questions section alone (the reference of the page, folded in a <details>, comes before the answers).
+        val questions = text(html.substring(questionsAt, html.indexOf("</section>", questionsAt)))
         val answers = text(html.substring(answersAt))
         quizzes.forEach { quiz ->
             assertTrue(questions.contains(quiz.question), quiz.question)

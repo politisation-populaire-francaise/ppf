@@ -117,7 +117,6 @@ fun HTML.teachingSheetDocument(sheet: TeachingSheet, catalog: ComprendreCatalog)
         }
         glossaryTerms(renderer)
         sourcesSection(renderer, parts.sources)
-        p(classes = "licence") { +"$TEACHING_LICENCE." }
         comprendreOrigin(article)
         if (course != null && questions.isNotEmpty()) answers(renderer, questions, course)
     }
