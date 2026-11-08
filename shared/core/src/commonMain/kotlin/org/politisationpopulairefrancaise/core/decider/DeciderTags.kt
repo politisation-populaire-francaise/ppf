@@ -42,7 +42,10 @@ object DeciderTags {
     const val MEASURE = "ppf-measure"
     /** The day the same text was sent to every candidate. */
     const val SENT = "ppf-sent"
-    /** The same deadline for every candidate. */
+    /**
+     * A deadline. In a Pact: the same one for every candidate. In an election (DE-28): one deadline,
+     * `kind | date | source (https)` ([ElectionDeadline]), several per election.
+     */
     const val DEADLINE = "ppf-deadline"
     /** `proposee` (starting list, to be voted), `envoye`, `clos` ([PacteStatus]). */
     const val PACTE_STATUS = "ppf-pacte-status"
@@ -102,8 +105,6 @@ object DeciderTags {
     /** The decree of convocation: `number | day of the Journal officiel | page on Légifrance (https)` ([Decree]). */
     const val DECREE = "ppf-decree"
 
-    /** One deadline: `kind | date | source (https)` ([ElectionDeadline]). */
-    const val DEADLINE = "ppf-deadline"
 
     /** The territory of a local election (référentiel des territoires). */
     const val TERRITORY_CODE = "ppf-territory-code"
