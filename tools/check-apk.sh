@@ -65,12 +65,14 @@ require '^assets/composeResources/[^/]+/font/atkinson_hyperlegible_regular\.ttf$
 # the glyphs of its labels, and the MapLibre native libraries for every supported architecture.
 require '^assets/composeResources/[^/]+/files/carte/fond-france\.pmtiles$' "bundled map background (fond-france.pmtiles)"
 require '^assets/composeResources/[^/]+/files/carte/glyphes/regular/0-255\.pbf$' "glyphs of the map labels"
-for abi in arm64-v8a armeabi-v7a x86_64; do
+for abi in arm64-v8a armeabi-v7a; do
     require "^lib/$abi/libsecp256k1-jni\.so$" "libsecp256k1 for $abi"
     require "^lib/$abi/libjniMaplibreNativeC\.so$" "MapLibre Native bindings for $abi"
     require "^lib/$abi/libmaplibre-native-c\.so$" "MapLibre Native engine for $abi"
 done
 forbid '^lib/x86/' "32-bit x86 libraries"
+# Phones are ARM: x86_64 is for an emulator on a computer, in the development build only.
+forbid '^lib/x86_64/' "x86_64 libraries (development build only)"
 
 # Newest build-tools directory of the Android SDK, for aapt2 and apksigner.
 build_tools() {

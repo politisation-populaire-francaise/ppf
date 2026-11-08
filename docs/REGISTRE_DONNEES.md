@@ -83,6 +83,7 @@ Les applications stockent sur l'appareil le compte et, depuis le 7 novembre 2026
 
 | Donnée | Finalité | Où | Durée | Accès |
 |---|---|---|---|---|
+| Rapport de plantage (S-101, depuis le 8 novembre 2026) : version, système, jour (UTC), classes des erreurs et lignes du code en cause ; jamais le message d'une erreur, un contenu, une clé ni un identifiant | Aider à corriger un plantage, seulement si l'utilisateur choisit de le partager | Fichier `crash-report.txt` du dossier privé de l'application (un seul, remplacé à chaque plantage) | Effacé sur demande ou, sans action, au bout de 7 jours, sans être montré | L'utilisateur seul : l'application ne l'envoie jamais ; il le copie ou le partage lui-même |
 | Clé secrète de l'identité (32 octets) | Signer les contenus et prouver que l'on est l'auteur de son compte | Android : stockage privé de l'application, chiffré par une clé AES-256 du Keystore (puce sécurisée quand elle existe), exclu des sauvegardes ; ordinateur : fichier `identity.json` dans le dossier de données privé de l'utilisateur (chiffrement par code à venir, S-43) ; iOS : en mémoire seulement tant que le trousseau n'est pas implémenté | Jusqu'à la déconnexion (effacement) | L'utilisateur, par l'application |
 | Phrase de récupération (12 mots) et sa langue | Retrouver son compte sur un autre appareil ; pouvoir la réafficher si elle a été mal notée | Avec la clé secrète, même protection ; absente si le compte a été importé par sa clé « nsec » | Jusqu'à la déconnexion | L'utilisateur, après un avertissement |
 | Clé publique (pseudonyme technique) | Identifier l'auteur d'un contenu signé | Dérivée de la clé secrète ; sera jointe à chaque contenu publié, donc visible publiquement avec lui | Tant que des contenus signés existent | Public, pour les contenus publiés |
@@ -214,3 +215,11 @@ Détail : `docs/integration/agir-manifestation.md`. Rien n'est envoyé au serveu
 | Cases cochées de la liste « Avant de partir » | Se préparer | Mémoire seulement | Fermeture de l'écran ou de l'application | L'utilisateur |
 
 Appeler le 15, le 112, le 17, le 18, envoyer un SMS au 114 ou appeler une legal team ouvre l'application de téléphone ou de messages du système (`tel:`, `sms:`), sans permission : l'utilisateur confirme l'appel dans cette application. PPF ne garde aucune trace de ces appels. Le seul échange réseau possible à l'ouverture de la feuille AIDE est la synchronisation générale de l'annuaire des organisations (la même requête que la rubrique « Organisations », sans aucune donnée de l'utilisateur).
+
+## Ajout du 8 novembre 2026 : signalement des failles de sécurité (S-92)
+
+| Donnée | Pourquoi | Où, combien de temps |
+|---|---|---|
+| Aucune pour `security.txt` et la page `/securite` | Pages publiques, servies à l'identique à tous, sans formulaire ni journal | Rien n'est stocké |
+| Message d'un chercheur à la clé de l'équipe sécurité (NIP-17) | Recevoir le signalement en privé | Chiffré de bout en bout sur l'appareil de l'expéditeur : le serveur, quand il sert de relais, ne garde qu'une enveloppe illisible, pour la durée de conservation des messages (D-028) ; le texte n'est lisible que sur les appareils de l'équipe sécurité, qui le gardent le temps du traitement et de la publication conjointe |
+| Signalement privé sur GitHub (après la liaison) | Autre canal privé | Chez GitHub (hors Union européenne), visible de l'équipe seulement ; le chercheur choisit ce canal en connaissance de cause |
