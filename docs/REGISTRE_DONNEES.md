@@ -322,7 +322,7 @@ Aucune donnée n'est collectée ni stockée : le code, le lien ou le contenu don
 
 ## Ajout du 8 novembre 2026 : solidarité et bénévolat (M35 : AG-10, AG-12)
 
-Détail : `docs/integration/agir-solidarite.md` (écrit, pas encore compilé). Aucune donnée personnelle n'est collectée ni envoyée : les caisses et les missions sont des contenus publics de l'équipe ; ce que l'utilisateur tape ou choisit reste en mémoire sur l'appareil. Aucune migration de base de données.
+Détail : `docs/integration/agir-solidarite.md`. Aucune donnée personnelle n'est collectée ni envoyée : les caisses et les missions sont des contenus publics de l'équipe ; ce que l'utilisateur tape ou choisit reste en mémoire sur l'appareil. Aucune migration de base de données.
 
 | Donnée | Finalité | Où | Durée | Accès |
 |---|---|---|---|---|
