@@ -221,11 +221,12 @@ class HttpPlatformSigner(
                 ?: return@call RootRequestResult.Refused(SIGNER_UNAVAILABLE)
             if (response.status != HttpStatusCode.Created) return@call RootRequestResult.Refused(answer.code ?: SIGNER_UNAVAILABLE, answer.detail)
             val id = answer.id
+            val sha256 = answer.sha256?.takeIf { it == RootRequests.sha256(events) }
             val expiresAt = answer.expiresAt
-            if (id == null || !RootRequestQr.isRequestId(id) || answer.sha256 != RootRequests.sha256(events) || expiresAt == null) {
+            if (id == null || !RootRequestQr.isRequestId(id) || sha256 == null || expiresAt == null) {
                 return@call RootRequestResult.Refused(BAD_ANSWER_FROM_SIGNER)
             }
-            RootRequestResult.Created(id, answer.sha256, expiresAt)
+            RootRequestResult.Created(id, sha256, expiresAt)
         } ?: RootRequestResult.Refused(SIGNER_UNAVAILABLE)
     }
 

@@ -124,7 +124,7 @@ class PlatformKeysAdmin(private val backOffice: BackOffice, private val signer: 
         val time = now()
         val root = signer?.rootPublicKey
         val keys = signer?.keys()
-        val list = if (keys?.teamList != null && root != null) signer.teamList()?.let { TeamList.read(it, root) } else null
+        val list = if (keys?.teamList != null && root != null) signer?.teamList()?.let { TeamList.read(it, root) } else null
         val candidates = io { backOffice.teamListCandidates() }
         val preview = if (root != null && keys != null) RootCeremony.compose(root, keys, candidates, list, time) else null
         val copy = io { backOffice.lastSignerJournalMark() }
