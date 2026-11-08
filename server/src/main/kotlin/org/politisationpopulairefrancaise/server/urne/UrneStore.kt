@@ -116,6 +116,21 @@ class UrneStore(
         }
     }
 
+    /**
+     * Raises the issuance cursor of [pubkey] to the one of [predecessor] when it is further (S-146): the
+     * successor of a compromised key is never served a box already served to it. False when nothing moved.
+     */
+    fun inheritCursor(pubkey: String, predecessor: String): Boolean = dataSource.connection.use { c ->
+        c.prepareStatement(
+            "UPDATE vote_account SET issued_up_to = o.issued_up_to FROM vote_account o " +
+                "WHERE vote_account.pubkey = ? AND o.pubkey = ? AND o.issued_up_to > vote_account.issued_up_to",
+        ).use { s ->
+            s.setString(1, pubkey)
+            s.setString(2, predecessor)
+            s.executeUpdate() == 1
+        }
+    }
+
     fun account(pubkey: String): VoteAccount? = dataSource.connection.use { c ->
         c.prepareStatement("SELECT * FROM vote_account WHERE pubkey = ?").use { s ->
             s.setString(1, pubkey)

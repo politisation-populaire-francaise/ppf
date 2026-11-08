@@ -20,6 +20,7 @@ import kotlinx.coroutines.CancellationException
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.HealthStatus
 import org.politisationpopulairefrancaise.server.accounts.AccountTypes
+import org.politisationpopulairefrancaise.server.accounts.CommitmentStamper
 import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirConfig
 import org.politisationpopulairefrancaise.server.agir.AgirSetup
@@ -70,6 +71,7 @@ import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.decider.ComparatorFreeze
 import org.politisationpopulairefrancaise.server.decider.ComparatorPhotosConfig
+import org.politisationpopulairefrancaise.server.decider.CompromisedAuthors
 import org.politisationpopulairefrancaise.server.decider.comparatorPhotosRoutes
 import org.politisationpopulairefrancaise.server.decider.EditorialDeciderSource
 import org.politisationpopulairefrancaise.server.decider.PetitionLinks
@@ -312,6 +314,11 @@ fun Application.module(
     val openExport = repository?.let { OpenExport(it, policy, openDatasets) }
     // Timestamped archive (D-111): its batches, upgrades and checks live and die with the application.
     val archives = dataSource?.let { ArchiveService.start(this, it, archive) }
+    // Recovery keys and compromised accounts (S-146, D-134): a compromised key publishes and votes no more,
+    // its successor takes over its issuance cursor, and each first commitment (kind 1776) is stamped by the archive.
+    val compromised = repository?.let { CompromisedAccounts(it, archives?.commitmentStamper() ?: CommitmentStamper.NONE) }
+    // The accounts that declared themselves collectives (D-133): they never vote.
+    val accountTypes = repository?.let { AccountTypes(it.dataSource) }
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
     val elusService = dataSource?.let { ElusService.start(this, it, elus, log) }
     // The referential of territories (D-090): the last import served at once, the next ones on schedule.
@@ -346,7 +353,7 @@ fun Application.module(
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
     // The demands proposed by citizens, reviewed by the team (Décider, contract of the back-office, section 7).
-    proposals?.let { teamBackOffice?.queues?.register(ProposalsBackOfficeQueue(it.queue)) }
+    proposals?.let { teamBackOffice?.queues?.register(ProposalsBackOfficeQueue(it.queue, CompromisedAuthors(compromised))) }
     // The writing pages of the editorial circuit of Comprendre (step 3): a section of the back-office.
     if (teamBackOffice != null && dataSource != null && repository != null) {
         val drafts = EditorialDrafts(dataSource, teamBackOffice.clock)
@@ -406,7 +413,17 @@ fun Application.module(
     val urneStore = dataSource?.takeIf { urne.seeds != null }?.let { UrneStore(it, LegalRegister(policy::isEditor)) }
     val urnes = urneStore?.let { store ->
         val organisations = VerifiedOrganisations(store.dataSource, policy::isEditor)
-        UrneService.create(store, urne, persons = PersonAccounts(store.dataSource, policy::isEditor, organisations::isVerified))
+        UrneService.create(
+            store,
+            urne,
+            persons = PersonAccounts(
+                isEditor = policy::isEditor,
+                isOrganisation = organisations::isVerified,
+                isCollective = { key -> accountTypes?.isCollective(key) == true },
+                isCompromised = { key -> compromised?.isCompromised(key) == true },
+                predecessorOf = { key -> compromised?.predecessorOf(key) },
+            ),
+        )
     }
     // In-person validation (D-112, 4.3): only with the back-office (sessions of the validators) and the audit key,
     // which seals the link « account, session » (never kept in clear).
@@ -423,7 +440,7 @@ fun Application.module(
         null
     }
     // The propositions and amendments of citizens to a deliberation, reviewed by the team (DE-25).
-    val deliberationSubmissions = repository?.let { DeliberationSubmissions(it.dataSource, it, policy::isEditor) }
+    val deliberationSubmissions = repository?.let { DeliberationSubmissions(it.dataSource, it, policy::isEditor, authors = CompromisedAuthors(compromised)) }
     // One reading of the contents of "Décider" for the site and for the freeze of the comparators (DE-16).
     val deciderSource = repository?.let { EditorialDeciderSource(it, policy) }
     val comparatorFreeze = deciderSource?.let { source -> ComparatorFreeze(source::catalog) }
@@ -458,9 +475,6 @@ fun Application.module(
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     // Push wake-ups (M31): a constant, encrypted "synchronize" only; the worker lives with the application.
     val pushService = PushService.start(this, dataSource, push)
-    // Recovery keys and compromised accounts (S-146, D-134); the OpenTimestamps stamping of the
-    // commitments waits for Décider's ArchiveService (CommitmentStamper.NONE until then).
-    val compromised = repository?.let { CompromisedAccounts(it) }
     // The room creations held for the team (contract docs/integration/salons-roles.md, section 3 bis);
     // a creation signed after its key was declared compromised can only be refused (S-146).
     groups?.let { directory -> teamBackOffice?.queues?.register(GroupCreationsQueue(directory, compromised)) }
@@ -512,7 +526,7 @@ fun Application.module(
                 proposals,
                 agirSpace,
                 onStored = pushService::stored,
-                accountTypes = repository?.let { AccountTypes(it.dataSource) },
+                accountTypes = accountTypes,
                 compromised = compromised,
                 deliberation = deliberationSubmissions,
                 comparatorFreeze = comparatorFreeze,

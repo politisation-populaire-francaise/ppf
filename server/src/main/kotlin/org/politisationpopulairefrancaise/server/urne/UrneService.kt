@@ -183,6 +183,7 @@ class UrneService(
     fun publicVote(event: SignedEvent) {
         if (!event.verify()) throw UrneRefusal(400, "invalid_signature")
         val vote = PublicVote.parse(event) ?: throw UrneRefusal(400, "malformed_vote")
+        requirePerson(vote.official)
         val now = clock.instant()
         if (vote.createdAt > now.epochSecond + MAX_CLOCK_AHEAD_SECONDS) throw UrneRefusal(400, "dated_in_the_future")
         val urne = store.urne(vote.urne) ?: throw UrneRefusal(404, "unknown_urne")
@@ -204,6 +205,7 @@ class UrneService(
     }
 
     fun status(pubkey: String): VoterStatus {
+        inheritCursor(pubkey)
         val account = store.account(pubkey) ?: throw UrneRefusal(404, "not_registered")
         return VoterStatus(
             level = account.level.code,
@@ -225,6 +227,7 @@ class UrneService(
      */
     fun issue(pubkey: String, body: String): TokenResponse {
         requirePerson(pubkey)
+        inheritCursor(pubkey)
         val account = store.account(pubkey) ?: throw UrneRefusal(404, "not_registered")
         // An account dedicated to a mandate never gets an anonymous token while its certification waits or holds:
         // it votes publicly as « élu » (D-115) from the Monday after the certification.
@@ -364,9 +367,33 @@ class UrneService(
 
     private fun pending(account: VoteAccount): List<Urne> = store.openAfter(account.issuedUpTo, clock.instant(), config.maxTokensPerRequest + 1)
 
-    /** Refuses an account known not to be a natural person, at every level (D-116). */
+    /**
+     * Refuses an account known not to be a natural person, at every level (D-116), and a key declared
+     * compromised by its owner (S-146, D-134) with its own code, so that the application says the real reason.
+     */
     internal fun requirePerson(pubkey: String) {
-        if (persons.refusal(pubkey) != null) throw UrneRefusal(403, "not_a_person")
+        when (persons.refusal(pubkey)) {
+            null -> Unit
+            PersonAccounts.COMPROMISED -> throw UrneRefusal(403, PersonAccounts.COMPROMISED)
+            else -> throw UrneRefusal(403, "not_a_person")
+        }
+    }
+
+    /**
+     * The successor named by a compromise notice takes over the issuance cursor of the key it replaces
+     * (S-146, une-personne-une-voix.md 6 bis): it gets tokens only for the boxes opened after the last
+     * service of the old key, never a second token for the same box. There is no record per person or
+     * per box (D-110): only the cursor moves. A chain of successions is followed back a few steps.
+     */
+    private fun inheritCursor(pubkey: String) {
+        val seen = mutableSetOf(pubkey)
+        var current = pubkey
+        repeat(MAX_SUCCESSIONS) {
+            val previous = persons.predecessorOf(current) ?: return
+            if (!seen.add(previous)) return
+            store.inheritCursor(pubkey, previous)
+            current = previous
+        }
     }
 
     /** The results as shown: everything once closed, small columns hidden while open (R5). */
@@ -393,6 +420,9 @@ class UrneService(
 
     companion object {
         val CLOSING_INTERVAL: Duration = 1.minutes
+
+        /** How many compromised keys in a row a successor's cursor goes back through (S-146). */
+        const val MAX_SUCCESSIONS: Int = 8
 
         /** A public vote dated a little ahead (a device clock) is fine; far ahead, it is refused. */
         const val MAX_CLOCK_AHEAD_SECONDS: Long = 600

@@ -952,13 +952,14 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 ## D-116 (2026-11-07) « Une personne, une voix » : seule une personne physique vote
 
 - Décision de la propriétaire du 7 novembre 2026, mots exacts relayés par le chef d'équipe : « Un compte de type collectif ou association ou bref tout truc qui n'est pas personne physique ne peut pas voter ».
-- Décisions techniques prises en autonomie (`server/urne/PersonAccounts.kt`, `core/urne/AccountTypes.kt`) :
+- Décisions techniques prises en autonomie (`server/urne/PersonAccounts.kt` ; depuis le 8 novembre 2026, les types de compte du pôle « Communauté », `server/accounts/AccountTypes`, D-133, remplacent la lecture provisoire du profil) :
   - le serveur refuse l'inscription et la délivrance de jetons, à tous les niveaux (`403 not_a_person`), à un compte connu comme n'étant pas une personne physique :
     - une clé de l'équipe éditoriale (elle parle au nom de PPF ; ses membres votent avec leur compte personnel) ;
     - une organisation de l'annuaire d'« Agir », vérifiée (clé nommée dans une fiche signée par l'équipe) ;
     - un compte qui se déclare collectif dans son profil (étiquette `ppf-account-type` = `collective` d'un événement de type 0 ; types de compte tenus par le pôle « Communauté », `docs/integration/types-de-compte.md`) ;
   - un compte inscrit avant de devenir l'un d'eux ne reçoit plus de jeton ;
   - le second pseudonyme d'une même personne vote comme tout compte personnel ; les élus votent en public (D-115).
+- Complément du 8 novembre 2026 (compte compromis, S-146, D-134, `docs/integration/compte-compromis.md`, section 6 bis) : une clé déclarée compromise par son propriétaire est refusée à l'inscription, à la demande de jetons, à la validation en personne, à la demande de certification et au vote public, avec un code distinct (`403 account_compromised`) pour que l'application dise la vraie raison ; le successeur nommé par l'avis hérite du curseur de délivrance (`issued_up_to`) de l'ancienne clé, en remontant au plus huit successions : il ne reçoit jamais de jeton pour une urne déjà servie à l'ancienne clé, et part « non vérifié » ; dans les files de relecture de Décider (revendications, propositions et amendements), un contenu signé à partir de « compromis depuis » ne peut qu'être refusé, un contenu signé avant reste avec une mention ; chaque premier engagement de récupération (type 1776) est horodaté par `ArchiveService` (D-111), l'empreinte étant l'identifiant de l'événement.
 
 ## D-117 (2026-11-08) Comparateur 2027 : gel, demandes des candidats, votes passés rangés par une règle de mots publiée
 
