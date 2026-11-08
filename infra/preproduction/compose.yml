@@ -52,6 +52,11 @@ services:
       PPF_PUSH_ALLOWED_HOSTS: push.preprod.politisation-populaire-francaise.org
       PPF_PUSH_INTERNAL_URL: http://ntfy:8080
       PPF_VAPID_PRIVATE_KEY_FILE: /run/secrets/vapid_private_key
+      # Testimonies (Agir, M5): files encrypted on the device for the moderation and evidence keys,
+      # only stored here (4 GB at most by default); the public keys are set in .env.
+      PPF_TESTIMONY_DIR: /data/testimonies
+      PPF_MODERATION_KEY: ${PPF_MODERATION_KEY:-}
+      PPF_EVIDENCE_KEY: ${PPF_EVIDENCE_KEY:-}
       # Fictional example contents, bundled in the image, loaded at each start (idempotent).
       PPF_EXAMPLES_DIR: /app/examples
       # Real public information in the preproduction too (owner's decision of 7 November 2026: "on reste
@@ -73,6 +78,7 @@ services:
     volumes:
       - /srv/ppf/preproduction/open-data:/data/open-data:ro
       - /srv/ppf/preproduction/vote_seeds:/run/ppf/vote_seeds:ro
+      - /srv/ppf/preproduction/testimonies:/data/testimonies
     networks:
       - internal
       - edge

@@ -37,6 +37,7 @@ Commencées le 5 novembre 2026, en parallèle de la fin de la phase 0, parce que
 | Archivage horodaté des engagements | ⏳ | Empreinte SHA-256 disponible ; horodatage (OpenTimestamps ou RFC 3161) à choisir. |
 | Offline-first : base locale | 🔄 | SQLDelight (D-020) : table des événements et de leurs étiquettes, remplacement des versions, publications en attente. Reste : branchement dans les écrans, purge et taille maximale du cache. |
 | Serveur : base PostgreSQL et API des événements | 🔄 | JDBC, HikariCP, Flyway (D-019) ; `POST` et `GET /api/v1/events` (D-021), tests sur PostgreSQL 17 réel ; règle de publication (contenus éditoriaux réservés aux clés d'éditeurs) ; serveur de développement avec PostgreSQL embarqué ; filtres par étiquette, limitation de débit par clé et globale, relais d'enveloppes et salons (7 novembre) ; espace Agir : forme des mobilisations, appels et fiches d'organisation, file de relecture sans plafond, refus automatique des événements passés, annulation et clôture par l'auteur, agenda et flux iCal, page `/agenda` du site (7 novembre, D-043). Reste : déploiement en préproduction, preuve de travail, modération, alerte de remplissage du disque. |
+| Registre légal des contenus publics (LCEN) | 🔄 | Fait le 7 novembre 2026 (D-077) : registre pseudonyme de niveau 1 (schéma `legal_register`, écrit dans la transaction de chaque contenu public, jamais lu par la plateforme, un an), réquisition judiciaire à deux dans l'espace de l'équipe, compteur public `GET /api/v1/transparence/requisitions`. Reste : relecture par un avocat (17 questions), procédure écrite des réquisitions, définition de la clôture d'un compte dans les conditions d'utilisation, effacement réel des contenus visés par une demande de suppression (NIP-09), chiffrement du disque et des sauvegardes. Niveau 2 (adresse IP scellée) éteint. |
 
 ## Phase 1 : premiers modules
 
@@ -115,6 +116,24 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
 - Modèles juridiques (mentions légales, confidentialité, conditions d'utilisation, charte, procédure de signalement).
 - Annuaire des élus (D-047) : réutilisation des résultats des départementales de 2021 par commune, licence « non spécifiée » sur data.gouv.fr, utilisés pour les cantons des 276 communes partagées (décision du chef d'équipe du 7 novembre 2026, CRPA L321-1, L322-1, L323-2).
 - Annuaire des élus (D-047) : base légale RGPD de la réutilisation des données des élus (nom, mandat, fonction, territoire, dates), écrite « intérêt légitime (article 6.1.f) » dans REGISTRE_DONNEES.
+- Conservation des données d'identification et registre légal (D-077, note `docs/integration/lcen-conservation-identification.md`) : les 17 questions de la section 8 de la note, avec la procédure écrite de réponse aux réquisitions et l'analyse d'impact (RGPD, article 35) :
+  1. **Lecture A :** confirmez-vous qu'un hébergeur qui ne journalise jamais l'adresse IP, et ne la traite qu'en mémoire vive pour acheminer la requête, ne « collecte » pas cette donnée au sens de l'article 8 du décret n° 2021-1362 et du point 9 de la décision du Conseil d'État n° 459724 ? Quel est le risque pénal réel au titre de l'article 6, V, B de la LCEN ?
+  2. **Identifiant de connexion :** pour un hébergeur, l'« identifiant de la connexion à l'origine de la communication » désigne-t-il nécessairement l'adresse IP et le port source, ou un identifiant de session interne pourrait-il suffire ?
+  3. **Anti-abus :** une limitation de débit par adresse IP en mémoire vive, sans écriture, ferait-elle basculer PPF dans la « collecte » ? Et un journal d'IP tronquées et hachées, effacé en 24 heures ?
+  4. **Association :** la loi SREN, en renvoyant à la définition du DSA (service « normalement contre rémunération »), a-t-elle changé la situation d'une association gratuite sans publicité ? L'argument peut-il servir en défense subsidiaire ?
+  5. **Avant la déclaration :** qui porte la responsabilité pénale tant que l'association n'est pas déclarée ? Faut-il interdire toute ouverture publique avant la déclaration ?
+  6. **Messagerie privée :** le relais d'enveloppes chiffrées (NIP-17) fait-il de PPF un « opérateur » fournissant un service de communications interpersonnelles non fondé sur la numérotation (CPCE, L. 32) ? Avec quelles obligations (L. 34-1, déclaration, autres) ?
+  7. **Salons :** où passe la frontière entre salon « ouvert » (communication au public, décret applicable) et salon « fermé » (correspondance privée) ?
+  8. **Témoignages relus avant publication :** PPF en devient-elle l'éditeur ? Quelles conséquences, notamment sur la responsabilité de la propriétaire ou du directeur de la publication ?
+  9. **Votes et soutiens :** confirmez-vous qu'ils ne sont pas des « contenus mis en ligne » par l'utilisateur au sens du décret ?
+  10. **Injonction :** le registre pseudonyme du niveau 1 suffit-il à respecter le décret n° 2026-920 pour les données de l'article 6 ? Faut-il garder la date indiquée dans l'événement, la date de réception, ou les deux ?
+  11. **Clôture du compte :** comment la définir pour une identité Nostr, afin de faire courir le délai d'un an de l'article 3 ?
+  12. **« Une personne, une voix » :** quelles méthodes de vérification éviteraient que PPF « collecte » une identité civile soumise à cinq ans de conservation ?
+  13. **RGPD, article 9 :** quelle exception retenir pour le registre du niveau 1 et pour un éventuel niveau 2 ? Une analyse d'impact est-elle obligatoire ?
+  14. **Réquisitions :** quelle procédure suivre (vérification de l'auteur et de la base légale, article 60-1-2, délai, information de l'utilisateur selon l'article 10 du DSA) ? Peut-on publier le nombre annuel de réquisitions sans heurter le secret de l'enquête ?
+  15. **Mesures ciblées futures :** PPF pourrait-elle être tenue de collecter l'IP d'un compte précis à l'avenir (interception, recueil en temps réel prévu par le code de la sécurité intérieure) ? Doit-elle s'y préparer techniquement ?
+  16. **Autres autorités administratives :** lesquelles peuvent exiger de PPF des données de connexion (douanes, finances, marchés financiers, Arcom, etc.), et selon quelle procédure ?
+  17. **Évolutions à surveiller :** une proposition européenne sur la conservation des données (annoncée pour 2026) a-t-elle été publiée ? Le renouvellement annuel de l'injonction a-t-il fait l'objet de recours après 2023 ?
 
 ## À vérifier avant publication
 
