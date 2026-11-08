@@ -46,7 +46,7 @@
     <string name="messages_encryption_title">Comment vos messages sont protégés</string>
     <string name="messages_encryption_text">Chaque message est chiffré sur votre appareil pour chacun des participants, puis glissé dans une enveloppe scellée qui cache l’expéditeur, l’heure réelle et le contenu (protocole NIP-17 de Nostr). Le serveur de PPF ne fait que transmettre ces enveloppes : il voit à quelle clé chacune est destinée, mais il ne peut pas lire les messages.</string>
     <string name="messages_encryption_limit">Limites connues : si votre clé secrète ou vos douze mots sont un jour volés, vos anciens messages pourront être lus ; un serveur malveillant pourrait aussi deviner qui échange avec qui en observant les envois. Gardez vos douze mots en lieu sûr. Un protocole plus robuste (MLS) est prévu pour la suite.</string>
-    <string name="messages_encryption_verify">La vérification d’un contact par QR code arrive bientôt. En attendant, comparez sa clé npub par un autre moyen : en personne ou de vive voix.</string>
+    <string name="messages_encryption_verify">Pour vérifier un contact, ouvrez le menu « Plus d’actions » de la conversation et comparez avec lui le numéro de sécurité, en personne ou de vive voix. La vérification par QR code arrive bientôt.</string>
     <string name="messages_encryption_close">Fermer</string>
 
     <!-- "Nouvelle conversation". -->

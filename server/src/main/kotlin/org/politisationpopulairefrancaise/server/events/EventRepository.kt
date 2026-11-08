@@ -5,6 +5,7 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.TagsJson
 import org.politisationpopulairefrancaise.server.agir.AgendaIndex
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
+import org.politisationpopulairefrancaise.server.groups.GroupModeration
 import org.politisationpopulairefrancaise.server.legal.LegalRegister
 import java.sql.Connection
 import java.sql.PreparedStatement
@@ -95,7 +96,7 @@ enum class StoreOutcome {
  * Every stored public content also enters the legal [register] (D-077), in the same transaction as the
  * event: no publication escapes it and no register row exists for an event that was not stored.
  */
-class EventRepository(internal val dataSource: DataSource, private val register: LegalRegister = LegalRegister()) {
+class EventRepository(internal val dataSource: DataSource, internal val register: LegalRegister = LegalRegister()) {
 
     fun store(event: SignedEvent): StoreOutcome = dataSource.connection.use { connection ->
         connection.autoCommit = false
@@ -119,6 +120,28 @@ class EventRepository(internal val dataSource: DataSource, private val register:
             connection.autoCommit = true
         }
     }
+
+    /**
+     * Runs [block] in one transaction of its own connection, committed when it returns and rolled
+     * back when it throws: what the moderation of the rooms reads, decides and stores (with
+     * [storeIn]) happens all at once or not at all.
+     */
+    fun <T> transaction(block: (Connection) -> T): T = dataSource.connection.use { connection ->
+        connection.autoCommit = false
+        try {
+            val result = block(connection)
+            connection.commit()
+            result
+        } catch (e: Exception) {
+            runCatching { connection.rollback() }
+            throw e
+        } finally {
+            runCatching { connection.autoCommit = true }
+        }
+    }
+
+    /** [store] within the transaction of [connection] (see [transaction]); the caller commits. */
+    fun storeIn(connection: Connection, event: SignedEvent): StoreOutcome = storeInTransaction(connection, event)
 
     private fun storeInTransaction(connection: Connection, event: SignedEvent): StoreOutcome {
         connection.prepareStatement("SELECT 1 FROM events WHERE id = ?").use { statement ->
@@ -164,8 +187,10 @@ class EventRepository(internal val dataSource: DataSource, private val register:
         // The legal register, in this transaction: a failure of anything after it undoes it with the event.
         register.recordStored(connection, event, replaced)
         insertTags(connection, event)
-        // A group description also enters the directory of rooms (and leaves it with the event).
+        // A group description also enters the directory of rooms (and leaves it with the event);
+        // the creator of a new room becomes its first administrator (D-131).
         GroupIndex.write(connection, event)
+        GroupModeration.described(connection, event)
         // A mobilization also enters the agenda (and leaves it with the event).
         AgendaIndex.write(connection, event)
         return StoreOutcome.STORED
@@ -185,17 +210,21 @@ class EventRepository(internal val dataSource: DataSource, private val register:
         }
     }
 
+    /** The event with this id, unless a moderator removed it from its room (D-131). */
     fun find(id: String): SignedEvent? = dataSource.connection.use { connection ->
-        connection.prepareStatement("$SELECT WHERE id = ?").use { statement ->
+        connection.prepareStatement("$SELECT WHERE id = ? AND $NOT_REMOVED").use { statement ->
             statement.setString(1, id)
             val rows = statement.executeQuery()
             if (rows.next()) rows.toEvent() else null
         }
     }
 
-    /** Newest first; on equal dates, by id, so pages are stable. */
+    /**
+     * Newest first; on equal dates, by id, so pages are stable. A message removed from its room by a
+     * moderator (D-131) is never served; the removal (9005) is, with its reason.
+     */
     fun query(filter: EventFilter): List<SignedEvent> = dataSource.connection.use { connection ->
-        val conditions = mutableListOf<String>()
+        val conditions = mutableListOf(NOT_REMOVED)
         val binders = mutableListOf<(PreparedStatement, Int) -> Unit>()
         if (filter.kinds.isNotEmpty()) {
             conditions += "kind = ANY(?)"
@@ -220,7 +249,7 @@ class EventRepository(internal val dataSource: DataSource, private val register:
             conditions += "created_at <= ?"
             binders += { s, i -> s.setLong(i, until) }
         }
-        val where = if (conditions.isEmpty()) "" else " WHERE " + conditions.joinToString(" AND ")
+        val where = " WHERE " + conditions.joinToString(" AND ")
         val limit = filter.limit.coerceIn(1, EventFilter.MAX_LIMIT)
         connection.prepareStatement("$SELECT$where ORDER BY created_at DESC, id ASC LIMIT ?").use { statement ->
             binders.forEachIndexed { index, bind -> bind(statement, index + 1) }
@@ -315,6 +344,9 @@ class EventRepository(internal val dataSource: DataSource, private val register:
 
     private companion object {
         const val SELECT = "SELECT id, pubkey, created_at, kind, tags::text AS tags, content, sig FROM events"
+
+        /** Not removed from its room by a moderator (group_removed_event, V10). */
+        const val NOT_REMOVED = "NOT EXISTS (SELECT 1 FROM group_removed_event r WHERE r.event_id = events.id)"
 
         /** PostgreSQL SQLSTATE of a unique index violation. */
         const val UNIQUE_VIOLATION = "23505"

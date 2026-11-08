@@ -20,11 +20,23 @@
     <string name="help_number_police">Police secours</string>
     <string name="help_number_pompiers">Pompiers</string>
     <string name="help_number_sourds">Personnes sourdes, malentendantes ou aphasiques, par SMS</string>
-    <string name="help_number_enfance">Enfant en danger, ou inquiétude pour un enfant</string>
+    <string name="help_number_enfance">Enfant en danger, ou inquiétude pour un enfant : gratuit, jour et nuit ; l’appel n’apparaît pas sur la facture, mais il n’est pas anonyme</string>
     <string name="help_number_enfant_disparu">Enfant disparu : information et soutien des familles</string>
-    <string name="help_number_victimes">Aide aux victimes, tous les jours de 9 h à 20 h, gratuit</string>
-    <string name="help_number_suicide">Prévention du suicide, pour soi ou pour un proche</string>
+    <string name="help_number_victimes">Aide aux victimes d’une infraction et à leurs proches : gratuit, anonyme, tous les jours de 9 h à 20 h</string>
+    <string name="help_number_suicide">Prévention du suicide, pour soi ou pour un proche : des soignants, gratuit et confidentiel, jour et nuit</string>
+    <string name="help_number_violences_femmes">Violences faites aux femmes, pour les victimes et les témoins : gratuit, anonyme, jour et nuit (ce n’est pas un numéro d’urgence)</string>
+    <string name="help_number_cyberharcelement">Harcèlement et cyberharcèlement, pour les jeunes et leurs parents : gratuit, anonyme, tous les jours de 9 h à 23 h</string>
+    <string name="help_number_croix_rouge">Croix-Rouge Écoute, soutien psychologique pour toute personne qui a besoin de parler : gratuit, anonyme, en semaine de 9 h à 19 h, le week-end de 12 h à 18 h</string>
+    <string name="help_number_sos_amitie">SOS Amitié, des bénévoles à l’écoute des personnes en détresse et de leurs proches : anonyme, jour et nuit</string>
     <string name="help_numbers_source">Numéros vérifiés sur service-public.gouv.fr le 7 novembre 2026.</string>
+
+    <!-- « Besoin de parler ? » (D-081, point 3; D-084): listening lines, apart from the protest mode -->
+    <string name="help_talk_title">Besoin de parler ?</string>
+    <string name="help_talk_text">Après un moment difficile, vous pouvez appeler, pour vous ou parce que vous vous inquiétez pour quelqu’un. Ces lignes ne remplacent pas les secours : en cas de danger, le 17 ou le 112 ; si vous ne pouvez pas parler, en dernier recours, un SMS au 114.</string>
+    <string name="help_talk_associations">Associations d’écoute</string>
+    <string name="help_talk_source">Lignes publiques vérifiées le 8 novembre 2026 sur service-public.gouv.fr, 3114.fr, allo119.gouv.fr et justice.gouv.fr.</string>
+    <string name="help_talk_associations_source">Associations citées par sante.fr (« Les lignes d’écoute »), vérifiées le 8 novembre 2026.</string>
+    <string name="manif_talk_hint">Les lignes d’écoute (suicide, violences, enfance en danger) sont dans la feuille AIDE, rubrique « Besoin de parler ? ».</string>
     <string name="help_no_dialer">Sur cet appareil, composez le numéro vous-même sur un téléphone.</string>
 
     <string name="help_lawyer_title">Besoin d’un avocat</string>

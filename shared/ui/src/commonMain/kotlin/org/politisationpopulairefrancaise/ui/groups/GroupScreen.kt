@@ -60,6 +60,9 @@ import org.politisationpopulairefrancaise.ui.feed.label
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.groups_about_less
+import org.politisationpopulairefrancaise.ui.resources.groups_about_open
+import org.politisationpopulairefrancaise.ui.resources.groups_mod_banned
+import org.politisationpopulairefrancaise.ui.resources.groups_send_failed_banned
 import org.politisationpopulairefrancaise.ui.resources.groups_about_more
 import org.politisationpopulairefrancaise.ui.resources.groups_back
 import org.politisationpopulairefrancaise.ui.resources.groups_closed_room
@@ -145,6 +148,13 @@ object GroupsTags {
     const val FORM_CREATE_ACCOUNT = "group-form-create-account"
     const val FORM_NO_SERVER = "group-form-no-server"
     const val FORM_IDENTITY = "group-form-identity"
+    const val FORM_SIMILAR_SERVER = "group-form-similar-server"
+    const val FORM_SIMILAR_JOIN = "group-form-similar-join-" // followed by the room id
+    const val FORM_DIFFERENCE = "group-form-difference"
+    const val FORM_DIFFERENCE_MISSING = "group-form-difference-missing"
+    const val FORM_CONFIRM_SIMILAR = "group-form-confirm-similar"
+    const val FORM_HELD = "group-form-held"
+    const val FORM_HELD_CLOSE = "group-form-held-close"
 }
 
 /** Two letters for the mark of a room: the first letters of its first two words. */
@@ -176,35 +186,59 @@ fun GroupScreen(
 ) {
     val palette = PpfTheme.palette
     val account = session.state as? AccountUiState.Ready
+    val me = account?.publicKey?.hex
     val joined = groups.isMember(room.id)
-    val messages = groups.messages
+    val timeline = groups.timeline
     val pending = groups.pendingMessageIds
-    val now = remember(messages) { currentEpochSeconds() }
+    val now = remember(timeline) { currentEpochSeconds() }
     val padding = if (compact) 16.dp else 24.dp
+    // The roles, exclusions and edits of the room, computed on the device from its public journal (D-131).
+    val state = groups.moderation?.takeIf { groups.selected?.id == room.id }
+    val shown = state?.applyTo(room) ?: room
+    var showAbout by rememberSaveable(room.id) { mutableStateOf(false) }
+    var request by remember(room.id) { mutableStateOf<ModerationRequest?>(null) }
 
     // The caller's modifier may carry its own test tag (the first one wins): the screen's goes on an inner column.
     Box(modifier.fillMaxSize()) {
-        Column(Modifier.fillMaxSize().background(palette.surface1).testTag(GroupsTags.SCREEN)) {
-            Header(groups, room, joined, onBack, compact)
-            LazyColumn(
-                modifier = Modifier.weight(1f).fillMaxWidth().testTag(GroupsTags.MESSAGES),
-                reverseLayout = true,
-                contentPadding = PaddingValues(horizontal = padding, vertical = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-            ) {
-                // Reversed: the first item sits at the bottom, so the newest message comes first.
-                items(messages.asReversed(), key = { it.id }) { message ->
-                    MessageBubble(message, mine = message.author == account?.publicKey?.hex, pending = message.id in pending, now = now)
+        if (showAbout) {
+            RoomAboutPage(shown, state, me, onClose = { showAbout = false }, compact = compact)
+        } else {
+            Column(Modifier.fillMaxSize().background(palette.surface1).testTag(GroupsTags.SCREEN)) {
+                Header(groups, shown, joined, onBack, compact, onAbout = { showAbout = true })
+                LazyColumn(
+                    modifier = Modifier.weight(1f).fillMaxWidth().testTag(GroupsTags.MESSAGES),
+                    reverseLayout = true,
+                    contentPadding = PaddingValues(horizontal = padding, vertical = 12.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    // Reversed: the first item sits at the bottom, so the newest message comes first.
+                    items(timeline.asReversed(), key = { it.id }) { item ->
+                        when (item) {
+                            is RoomItem.Message -> MessageBubble(
+                                item.message,
+                                mine = item.message.author == me,
+                                pending = item.message.id in pending,
+                                now = now,
+                                choices = if (item.message.id in pending) emptyList() else moderationChoices(state, me, item.message),
+                                onChoose = { request = it },
+                            )
+                            is RoomItem.Removed -> RemovedBubble(item)
+                        }
+                    }
+                    item(key = "intro") { RoomIntro(shown, empty = timeline.isEmpty()) }
                 }
-                item(key = "intro") { RoomIntro(room, empty = messages.isEmpty()) }
+                Composer(groups, shown, session, account, joined, onNavigate, padding, bannedReason = me?.let { state?.banned?.get(it) })
             }
-            Composer(groups, room, session, account, joined, onNavigate, padding)
         }
+    }
+    val asked = request
+    if (asked != null && me != null) {
+        ModerationDialog(asked, groups, session.signer, me, onDone = { request = null })
     }
 }
 
 @Composable
-private fun Header(groups: GroupsLibrary, room: Group, joined: Boolean, onBack: (() -> Unit)?, compact: Boolean) {
+private fun Header(groups: GroupsLibrary, room: Group, joined: Boolean, onBack: (() -> Unit)?, compact: Boolean, onAbout: () -> Unit) {
     val palette = PpfTheme.palette
     Surface(color = palette.surface0, contentColor = palette.ink) {
         Column {
@@ -243,6 +277,7 @@ private fun Header(groups: GroupsLibrary, room: Group, joined: Boolean, onBack: 
                         }
                     }
                 }
+                PpfIconButton(Lucide.Info, stringResource(Res.string.groups_about_open), onAbout, Modifier.testTag(ModerationTags.ABOUT_OPEN))
                 if (groups.hasRemote) {
                     PpfIconButton(Lucide.RefreshCw, stringResource(Res.string.groups_messages_refresh), groups::refreshMessages, Modifier.testTag(GroupsTags.REFRESH_MESSAGES))
                 }
@@ -310,7 +345,14 @@ private fun RoomIntro(room: Group, empty: Boolean) {
 }
 
 @Composable
-private fun MessageBubble(message: GroupMessage, mine: Boolean, pending: Boolean, now: Long) {
+private fun MessageBubble(
+    message: GroupMessage,
+    mine: Boolean,
+    pending: Boolean,
+    now: Long,
+    choices: List<ModerationRequest> = emptyList(),
+    onChoose: (ModerationRequest) -> Unit = {},
+) {
     val palette = PpfTheme.palette
     val author = if (mine) stringResource(Res.string.groups_message_you) else shortNpub(message.author)
     val time = RelativeTime.between(message.createdAt, now).label()
@@ -348,6 +390,8 @@ private fun MessageBubble(message: GroupMessage, mine: Boolean, pending: Boolean
                 }
             }
         }
+        // The menu of the message and its author (D-131), outside the merged bubble so that it is reached on its own.
+        MessageMenu(message.id, choices, onChoose)
     }
 }
 
@@ -361,6 +405,8 @@ private fun Composer(
     joined: Boolean,
     onNavigate: (Space) -> Unit,
     padding: Dp,
+    /** The reason of the user's exclusion from this room, when excluded (D-131). */
+    bannedReason: String? = null,
 ) {
     val palette = PpfTheme.palette
     val scope = rememberCoroutineScope()
@@ -386,6 +432,7 @@ private fun Composer(
                     val text = when (error) {
                         SendError.CLOSED -> Res.string.groups_send_failed_closed
                         SendError.NOT_FOUND -> Res.string.groups_send_failed_not_found
+                        SendError.BANNED -> Res.string.groups_send_failed_banned
                         SendError.REFUSED -> Res.string.groups_send_failed
                     }
                     Text(
@@ -405,6 +452,9 @@ private fun Composer(
                             small = true,
                             modifier = Modifier.testTag(GroupsTags.CREATE_ACCOUNT),
                         )
+                    }
+                    bannedReason != null -> InfoBox(Lucide.Ban, Modifier.testTag(ModerationTags.BANNED)) {
+                        Text(stringResource(Res.string.groups_mod_banned, bannedReason), style = MaterialTheme.typography.bodyMedium)
                     }
                     !room.open -> Text(
                         stringResource(Res.string.groups_closed_room),

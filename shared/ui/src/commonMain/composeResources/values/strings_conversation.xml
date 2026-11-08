@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Actions of a private conversation (M14, S-128): check a contact in person, delete. -->
+    <string name="conversation_more">Plus d’actions</string>
+    <string name="conversation_verify">Vérifier ce contact</string>
+    <string name="conversation_verified">Contact vérifié en personne</string>
+    <string name="conversation_verify_title">Vérifier ce contact</string>
+    <string name="conversation_verify_explain">Lisez-vous ces chiffres à voix haute, en face à face ou lors d’un appel où vous reconnaissez la voix de l’autre. Son téléphone affiche les mêmes chiffres pour cette conversation. S’ils sont identiques, vous êtes certains de vous écrire l’un à l’autre, sans personne au milieu.</string>
+    <string name="conversation_verify_number_label">Numéro de sécurité : %1$s</string>
+    <string name="conversation_verify_mismatch">Des chiffres différents ? N’écrivez rien de sensible : ce compte n’est peut-être pas celui de la personne que vous croyez. Demandez-lui son identifiant par un autre moyen.</string>
+    <string name="conversation_verify_status_yes">Vous avez déjà vérifié ce contact sur cet appareil.</string>
+    <string name="conversation_verify_status_no">Ce contact n’est pas encore vérifié.</string>
+    <string name="conversation_verify_done">Les chiffres sont identiques</string>
+    <string name="conversation_verify_undo">Retirer la vérification</string>
+    <string name="conversation_verify_close">Fermer</string>
+    <string name="conversation_delete">Supprimer la conversation</string>
+    <string name="conversation_delete_title">Supprimer cette conversation ?</string>
+    <string name="conversation_delete_text">Les messages seront effacés de cet appareil, sans retour possible. Vos interlocuteurs gardent leur copie. Le serveur garde les messages chiffrés, qu’il ne peut pas lire, jusqu’à la fin de leur durée de conservation.</string>
+    <string name="conversation_delete_cancel">Garder la conversation</string>
+    <string name="conversation_delete_confirm">Supprimer</string>
+</resources>

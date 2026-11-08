@@ -34,6 +34,14 @@ interface BackOfficeQueue {
     fun actions(itemId: String): List<QueueAction>
 
     fun perform(itemId: String, action: String, reason: String?, actor: TeamActor): ActionOutcome
+
+    /**
+     * The action with the value chosen in its [QueueAction.choice], already checked by the base (present,
+     * within the rules, among the options computed again at the moment of the action). The base calls
+     * this one; a queue without choices keeps only [perform] above.
+     */
+    fun perform(itemId: String, action: String, reason: String?, choice: String?, actor: TeamActor): ActionOutcome =
+        perform(itemId, action, reason, actor)
 }
 
 /** One page of a queue. */
@@ -76,10 +84,65 @@ data class QueueAction(
     val reasonAllowed: Boolean = reasonRequired,
     val sensitive: Boolean = false,
     val twoPerson: Boolean = false,
+    /**
+     * A value the member must choose or type with the action (an account among the moderators of a
+     * room, a public key), checked by the base and written in the journal: never free text.
+     */
+    val choice: QueueChoice? = null,
 ) {
     init {
         require(Regex("^[a-z0-9_]{1,40}$").matches(id)) { "An action id is a short lowercase word" }
         require(!reasonRequired || reasonAllowed)
+        // A request waiting for a second person cannot keep a choice yet (it would need a migration).
+        require(choice == null || !twoPerson) { "An action with a choice cannot wait for a second person" }
+    }
+}
+
+/** What the member chooses with an action (contract of the back-office, section 7, addition of 8 November 2026). */
+sealed interface QueueChoice {
+    val label: String
+
+    /** One of [options], shown as radio buttons; the base accepts only one of the options of the moment. */
+    data class OneOf(override val label: String, val options: List<QueueOption>) : QueueChoice {
+        init {
+            require(options.isNotEmpty()) { "A choice has at least one option" }
+            require(options.map { it.value }.distinct().size == options.size) { "The options of a choice are distinct" }
+        }
+    }
+
+    /**
+     * A short value typed by the member (a public key, an identifier), at most [maxLength] characters,
+     * matching [pattern] as a whole. The pattern is mandatory: the audit journal is kept without limit
+     * and must never receive free text (someone would type a name or an address).
+     */
+    data class Text(override val label: String, val maxLength: Int, val pattern: Regex) : QueueChoice {
+        init {
+            require(maxLength in 1..MAX_LENGTH) { "A typed choice has 1 to $MAX_LENGTH characters" }
+        }
+    }
+
+    companion object {
+        /** The longest value a choice may carry into the journal. */
+        const val MAX_LENGTH: Int = 200
+
+        /**
+         * The value of [choice] if it is acceptable: present, short enough, matching, among the options;
+         * null otherwise.
+         */
+        fun accepted(choice: QueueChoice, value: String?): String? {
+            val given = value?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+            return when (choice) {
+                is OneOf -> given.takeIf { candidate -> choice.options.any { it.value == candidate } }
+                is Text -> given.takeIf { it.length <= choice.maxLength && choice.pattern.matches(it) }
+            }
+        }
+    }
+}
+
+/** One option of a [QueueChoice.OneOf]: the value written in the journal and its French label. */
+data class QueueOption(val value: String, val label: String) {
+    init {
+        require(value.isNotBlank() && value.length <= QueueChoice.MAX_LENGTH) { "An option value has 1 to ${QueueChoice.MAX_LENGTH} characters" }
     }
 }
 
