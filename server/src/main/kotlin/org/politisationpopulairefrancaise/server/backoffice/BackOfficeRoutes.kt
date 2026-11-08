@@ -606,6 +606,7 @@ private suspend fun ApplicationCall.afterRootRequest(auth: Authenticated, form: 
     when (outcome) {
         is Outcome.Ok -> redirectWith(requestPath(outcome.value.id), ok = ok)
         is Outcome.Denied -> when {
+            outcome.code == "forbidden" -> forbidden(auth)
             outcome.code == "confirmation_required" -> confirm(auth, form)
             outcome.code.startsWith(PlatformKeysAdmin.SIGNER_REFUSAL_PREFIX) -> respondHtml(HttpStatusCode.UnprocessableEntity) {
                 messagePage(BackOfficeTexts.REQUEST_REFUSED_TITLE, "${BackOfficeTexts.REQUEST_REFUSED_TEXT} ${outcome.code.removePrefix(PlatformKeysAdmin.SIGNER_REFUSAL_PREFIX).take(60)}.", auth)
