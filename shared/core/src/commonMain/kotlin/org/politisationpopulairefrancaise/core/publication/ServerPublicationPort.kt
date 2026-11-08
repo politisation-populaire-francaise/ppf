@@ -17,6 +17,7 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.decider.ComparatorPhotos
 import org.politisationpopulairefrancaise.core.elus.ElusReader
 import org.politisationpopulairefrancaise.core.groups.Group
 import org.politisationpopulairefrancaise.core.revendications.ProposalState
@@ -241,6 +242,18 @@ class ServerPublicationPort(
             null
         }
         return parliamentAnswer(response.status.value, body, response.headers[HttpHeaders.ETag], isPackage = name != null)
+    }
+
+    override suspend fun fetchComparatorPhoto(sha256: String): ByteArray? {
+        require(ComparatorPhotos.isSha256(sha256)) { "Not a SHA-256: $sha256" }
+        return try {
+            val response: HttpResponse = client.get(baseUrl + ComparatorPhotos.path(sha256))
+            if (response.status.value in 200..299) response.bodyAsBytes().takeIf { it.size <= ComparatorPhotos.MAX_BYTES } else null
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            null
+        }
     }
 
     private fun HttpRequestBuilder.applyFilter(filter: RemoteFilter) {

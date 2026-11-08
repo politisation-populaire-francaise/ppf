@@ -64,6 +64,8 @@ import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.decider.ComparatorFreeze
+import org.politisationpopulairefrancaise.server.decider.ComparatorPhotosConfig
+import org.politisationpopulairefrancaise.server.decider.comparatorPhotosRoutes
 import org.politisationpopulairefrancaise.server.decider.EditorialDeciderSource
 import org.politisationpopulairefrancaise.server.decider.PetitionLinks
 import org.politisationpopulairefrancaise.server.decider.PetitionLinksQueue
@@ -146,6 +148,8 @@ import javax.sql.DataSource
  *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
  * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
  *   see [AgirConfig].
+ * - PPF_DECIDER_PHOTOS_DIR: the folder of the official photos of the comparators (DE-16), files named by their
+ *   SHA-256, served at `/api/v1/decider/photos/`; without it, no photo is served and none is shown.
  * - PPF_TILES_DIR: the folder of the PMTiles files of the map backgrounds, served at `/tiles/` by
  *   range (development and preproduction; in production Caddy serves them), see [TilesConfig].
  * - PPF_RNE_SOURCE, PPF_RNE_REFRESH_DAYS: the directory of elected officials (fictitious example set
@@ -475,6 +479,7 @@ fun Application.module(
             openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
             agirSpace?.let { agendaPage(it.agendaSource()) }
             tilesRoutes(tiles)
+            comparatorPhotosRoutes(ComparatorPhotosConfig.fromEnvironment()) // Official photos of the comparators (DE-16, Q3).
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
             securityPages(securityContact) // security.txt (RFC 9116) and the disclosure policy (S-92).
             // The pages of "Voir" and "Comprendre": contents of the editorial keys only (D-034, D-091).

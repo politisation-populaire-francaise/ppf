@@ -84,6 +84,7 @@ fun DeciderScreen(
 ) {
     val pastVotes = dependencies?.let { rememberPastVotesState(it) }
     val reports = dependencies?.let { rememberVoirRequestSession(it, messaging = null) }
+    val photos = dependencies?.let { rememberComparatorPhotosState(it) }
     val catalog = library.decider
     val voir = library.voir
     val today = CivilDate.fromEpochSeconds(now())
@@ -120,7 +121,7 @@ fun DeciderScreen(
             if (current == null) {
                 DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate)
             } else {
-                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports) }
+                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos) }
             }
         }
     }
@@ -256,6 +257,7 @@ private fun DeciderDetail(
     nowSeconds: Long,
     pastVotes: PastVotesState?,
     reports: VoirRequestSession?,
+    photos: ComparatorPhotosState?,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -290,6 +292,7 @@ private fun DeciderDetail(
                             nowSeconds = nowSeconds,
                             onOpenSheet = onOpenVoir,
                             onOpenVotes = pastVotes?.let { { candidate -> state.open(DeciderDestination.PastVotes(sheet.address, candidate)) } },
+                            photos = photos,
                         )
                     } ?: Missing()
                     is DeciderDestination.PastVotes -> {

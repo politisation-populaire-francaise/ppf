@@ -41,7 +41,14 @@ data class ComparatorSheet(
     val wordsVersions: List<WordsVersion> = emptyList(),
     /** The party of each candidate in the history packages, by assembly and period. */
     val parties: List<CandidateParty> = emptyList(),
+    /** The official photos, one per candidate at most (Q3). */
+    val photos: List<CandidatePhoto> = emptyList(),
 ) {
+    fun photoOf(candidate: ContentAddress): CandidatePhoto? = photos.firstOrNull { it.concerns(candidate) }
+
+    /** All or nothing (Q3): the photos are shown only when every candidate of the sheet has one, with its rights. */
+    val photosShown: Boolean get() = candidates.isNotEmpty() && candidates.all { photoOf(it) != null }
+
     /** The version of the words in force, shown under every list. */
     val currentWords: WordsVersion? get() = wordsVersions.lastOrNull()
 
@@ -78,6 +85,7 @@ data class ComparatorSheet(
         val first = wordsVersions.firstOrNull()
         if (first != null && officialList != null && first.date > officialList.date) problems += "the words were first published after the official list"
         parties.filter { party -> candidates.none { party.concerns(it) } }.forEach { problems += "party of ${it.candidate}, who is not a candidate of the sheet" }
+        photos.filter { photo -> candidates.none { photo.concerns(it) } }.forEach { problems += "photo of ${it.candidate}, who is not a candidate of the sheet" }
         return problems
     }
 
@@ -114,6 +122,8 @@ data class ComparatorSheet(
             if (themeWords.map { it.theme }.distinct().size != themeWords.size) return null
             val wordsVersions = event.fields(DeciderTags.WORDS_VERSION).map { WordsVersion.parse(it) ?: return null }
             val parties = event.fields(DeciderTags.PARTY).map { CandidateParty.parse(it) ?: return null }
+            val photos = event.fields(DeciderTags.PHOTO).map { CandidatePhoto.parse(it) ?: return null }
+            if (photos.map { it.candidate }.distinct().size != photos.size) return null
             return ComparatorSheet(
                 article = article,
                 election = election,
@@ -128,6 +138,7 @@ data class ComparatorSheet(
                 themeWords = themes.mapNotNull { theme -> themeWords.firstOrNull { it.theme == theme } } + themeWords.filter { it.theme !in themes },
                 wordsVersions = wordsVersions.sortedWith(compareBy({ it.version }, { it.date })),
                 parties = parties,
+                photos = photos,
             )
         }
     }

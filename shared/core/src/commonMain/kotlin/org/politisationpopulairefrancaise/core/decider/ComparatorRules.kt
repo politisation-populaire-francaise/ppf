@@ -89,3 +89,42 @@ data class CandidateRequest(
 
 /** The official list of the candidates (`ppf-official-list` = `page (https) | date`): from then on, the comparator follows it. */
 data class OfficialList(val url: String, val date: CivilDate)
+
+/**
+ * The official photo of a candidate (`ppf-photo` = `candidate | sha256 | licence | author | source page`), decision
+ * of the owner Q3: served by PPF only, its rights checked (licence, author, source), tied to the signed sheet by the
+ * fingerprint of the exact file. Shown only when every candidate has one ([ComparatorSheet.photosShown]).
+ */
+data class CandidatePhoto(
+    val candidate: String,
+    /** The SHA-256 of the file, lowercase hexadecimal: also its name on the server ([ComparatorPhotos.path]). */
+    val sha256: String,
+    val licence: String,
+    val author: String,
+    val source: String,
+) {
+    fun concerns(candidate: ContentAddress): Boolean = candidate.identifier == this.candidate
+
+    companion object {
+        fun parse(fields: List<String?>): CandidatePhoto? {
+            val candidate = fields.getOrNull(0)?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+            val sha256 = fields.getOrNull(1)?.trim()?.takeIf(ComparatorPhotos::isSha256) ?: return null
+            val licence = fields.getOrNull(2)?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+            val author = fields.getOrNull(3)?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+            val source = fields.getOrNull(4)?.trim()?.takeIf { it.startsWith("https://") } ?: return null
+            return CandidatePhoto(candidate, sha256, licence, author, source)
+        }
+    }
+}
+
+/** Where the official photos of the comparators are served, by the server of PPF only (no third party). */
+object ComparatorPhotos {
+    const val PATH: String = "/api/v1/decider/photos/"
+
+    /** The largest photo served or kept: a square of a few hundred pixels weighs far less. */
+    const val MAX_BYTES: Int = 512 * 1024
+
+    fun path(sha256: String): String = PATH + sha256
+
+    fun isSha256(value: String): Boolean = value.length == 64 && value.all { it in '0'..'9' || it in 'a'..'f' }
+}

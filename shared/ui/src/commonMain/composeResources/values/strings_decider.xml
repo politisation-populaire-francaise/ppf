@@ -181,6 +181,11 @@
     <string name="decider_comparator_request_official">Sur la liste officielle des candidats</string>
     <string name="decider_comparator_request_missing">Date de la demande non publiée</string>
     <string name="decider_comparator_votes">Votes passés de son parti</string>
+    <string name="decider_comparator_photo">Photo officielle de %1$s</string>
+    <string name="decider_comparator_photos_title">Photos officielles</string>
+    <string name="decider_comparator_photo_credit">%1$s : %2$s, %3$s</string>
+    <string name="decider_comparator_photo_source">Source de la photo</string>
+    <string name="decider_comparator_photos_missing">Les photos officielles ne s’affichent que lorsque celle de chaque candidat a ses droits vérifiés : aucune n’est montrée pour l’instant.</string>
     <string name="decider_votes_title">Votes passés du parti de %1$s</string>
     <string name="decider_votes_intro">Tous les scrutins publics de l’Assemblée nationale, du Sénat et du Parlement européen où les élus de son parti ont voté, aussi loin que les données officielles existent, en nombres et scrutin par scrutin. PPF ne calcule aucune position du parti et ne dit pas pour qui voter.</string>
     <string name="decider_votes_no_party">Le parti de ce candidat n’est pas encore relié aux votes des assemblées.</string>

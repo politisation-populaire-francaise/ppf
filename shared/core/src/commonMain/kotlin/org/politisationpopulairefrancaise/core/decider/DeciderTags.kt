@@ -91,4 +91,7 @@ object DeciderTags {
 
     /** The party of a candidate in the history packages: `candidate | party | from | to (optional)` ([CandidateParty]). */
     const val PARTY = "ppf-party"
+
+    /** The official photo of a candidate: `candidate | sha256 | licence | author | source page (https)` ([CandidatePhoto]). */
+    const val PHOTO = "ppf-photo"
 }

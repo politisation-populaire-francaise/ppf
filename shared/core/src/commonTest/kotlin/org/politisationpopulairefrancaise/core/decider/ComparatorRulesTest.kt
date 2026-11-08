@@ -112,4 +112,20 @@ class ComparatorRulesTest {
         assertNotNull(sheet.requestOf(address("alex")))
         assertNull(sheet.requestOf(address("camille")))
     }
+
+    @Test
+    fun thePhotosAreShownOnlyWhenEveryCandidateHasOneWithItsRights() {
+        fun photo(candidate: String, sha: Char) = listOf(DeciderTags.PHOTO, candidate, sha.toString().repeat(64), "Licence ouverte 2.0", "[EXEMPLE] Service photo", "https://exemple.invalid/photo")
+        val all = assertNotNull(sheet(photo("alex", 'a'), photo("camille", 'b')))
+        assertTrue(all.photosShown)
+        assertEquals("a".repeat(64), all.photoOf(address("alex"))?.sha256)
+        val one = assertNotNull(sheet(photo("alex", 'a')))
+        assertTrue(!one.photosShown, "one missing: none for anybody")
+        assertNull(sheet(listOf(DeciderTags.PHOTO, "alex", "a".repeat(64), "", "[EXEMPLE] Auteur", "https://exemple.invalid/photo")), "a photo without its licence")
+        assertNull(sheet(listOf(DeciderTags.PHOTO, "alex", "A".repeat(64), "Licence", "Auteur", "https://exemple.invalid/photo")), "a fingerprint is lowercase hexadecimal")
+        assertNull(sheet(listOf(DeciderTags.PHOTO, "alex", "a".repeat(64), "Licence", "Auteur", "http://exemple.invalid/photo")), "the source is a page in https")
+        assertNull(sheet(photo("alex", 'a'), photo("alex", 'b')), "two photos for one candidate")
+        val stranger = assertNotNull(sheet(photo("alex", 'a'), photo("camille", 'b'), photo("dominique", 'c')))
+        assertTrue("photo of dominique, who is not a candidate of the sheet" in stranger.ruleProblems())
+    }
 }
