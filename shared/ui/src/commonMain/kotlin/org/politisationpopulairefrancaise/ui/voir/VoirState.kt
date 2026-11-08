@@ -109,6 +109,12 @@ class VoirState(private val follows: ContentFollowStore?, private val scope: Cor
             }
         }
     }
+
+    /** The quick erase (S-44): the follows on screen and the open pages; the table is erased by `VoirDeviceData`. */
+    fun forgetFollows() {
+        followed = emptyList()
+        stack.clear()
+    }
 }
 
 @Composable
