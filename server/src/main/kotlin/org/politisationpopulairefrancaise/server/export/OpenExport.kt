@@ -4,6 +4,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import kotlinx.serialization.ExperimentalSerializationApi
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
@@ -12,6 +13,7 @@ import kotlinx.serialization.json.JsonElement
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.JsonPrimitive
+import kotlinx.serialization.json.JsonUnquotedLiteral
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
@@ -191,6 +193,7 @@ class OpenExport(
             rows.map { row -> JsonObject(columns.zip(row).associate { (column, value) -> column.name to jsonValue(column.type, value) }) },
         )
 
+        @OptIn(ExperimentalSerializationApi::class)
         private fun jsonValue(type: ColumnType, value: Any?): JsonElement = when {
             value == null -> JsonNull
             type == ColumnType.INTEGER || type == ColumnType.NUMBER -> when (value) {
@@ -198,7 +201,8 @@ class OpenExport(
                 is Long -> JsonPrimitive(value)
                 // A whole value is written without « .0 », as in the CSV file.
                 is Double -> if (value % 1.0 == 0.0 && kotlin.math.abs(value) < 9.0e15) JsonPrimitive(value.toLong()) else JsonPrimitive(value)
-                is BigDecimal -> JsonPrimitive(value)
+                // An amount keeps its scale (« 4210345.60 »): written as is, never through a double.
+                is BigDecimal -> JsonUnquotedLiteral(value.toPlainString())
                 else -> error("Not a number: ${value::class.simpleName}")
             }
             else -> JsonPrimitive(value.toString())
