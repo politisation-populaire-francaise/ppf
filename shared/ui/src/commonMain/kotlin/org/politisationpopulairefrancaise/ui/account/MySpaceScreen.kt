@@ -104,6 +104,7 @@ import org.politisationpopulairefrancaise.ui.resources.version_label
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.currentPlatform
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.ui.urne.VoterLevelCard
 import org.politisationpopulairefrancaise.ui.urne.VoteCheckLine
 
 /** Test tags of the account screens. */
@@ -412,6 +413,9 @@ private fun ReadyCards(session: AccountSession, state: AccountUiState.Ready, win
     InfoBox(Lucide.Info) {
         Text(stringResource(Res.string.account_votes_explanation), style = MaterialTheme.typography.bodyMedium)
     }
+
+    // The voter's level, its week, a validation or certification under way (Décider, TE-08).
+    VoterLevelCard()
 
     if (mailbox != null) MailboxCard(mailbox, session)
 

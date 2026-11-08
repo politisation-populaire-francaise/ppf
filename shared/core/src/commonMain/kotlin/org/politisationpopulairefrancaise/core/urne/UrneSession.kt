@@ -69,6 +69,10 @@ class UrneSession(
     var level: VoteLevel? = null
         private set
 
+    /** The whole status the server last gave for the account ([sync]): level, its week, validation, certification (TE-08). */
+    var status: VoterStatus? = null
+        private set
+
     /** Registers if needed and fetches the tokens of the open boxes, a batch at a time. */
     suspend fun sync(signer: EventSigner): UrneSyncOutcome = lock.withLock {
         if (!selfTest().passed) return UrneSyncOutcome.VotingClosedOnThisDevice
@@ -109,6 +113,7 @@ class UrneSession(
             is UrneAnswer.Failure -> return UrneSyncOutcome.Unavailable(answer.code)
         }
         level = VoteLevel.of(status.level)
+        this.status = status
         val batch = status.pending.take(batchSize)
         if (batch.isEmpty()) return UrneSyncOutcome.Done(received, pending = 0)
         val blinds = batch.map { number ->

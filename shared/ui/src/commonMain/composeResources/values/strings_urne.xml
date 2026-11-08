@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Anonymous voting ("une personne, une voix", D-110). -->
 <resources>
+    <string name="voter_title">Mon niveau de votant</string>
+    <string name="voter_waiting">Votre niveau s’affichera après la première synchronisation du vote avec le serveur.</string>
+    <string name="voter_level_non_verifie">Compte non vérifié</string>
+    <string name="voter_level_verifie">Compte vérifié en personne</string>
+    <string name="voter_level_elu">Compte d’élu certifié</string>
+    <string name="voter_since">Compte ainsi depuis le lundi %1$s.</string>
+    <string name="voter_from">Compte ainsi à partir du lundi %1$s ; avant, comme « %2$s ».</string>
+    <string name="voter_explain_non_verifie">Votre vote compte dans la colonne des comptes non vérifiés. Pour être vérifié, présentez-vous à un validateur désigné par une organisation vérifiée : il regarde le code de votre compte sur votre téléphone, sans rien noter sur vous. Un seul compte vérifié par personne.</string>
+    <string name="voter_explain_verifie">Votre vote compte dans la colonne mise en avant des comptes vérifiés. Personne ne peut relier votre bulletin à votre compte.</string>
+    <string name="voter_explain_elu">Vos votes sont publics, signés de votre clé, avec votre mandat, et comptés à part de ceux des citoyens.</string>
+    <string name="voter_validation_pending">Validé en personne cette semaine : votre compte comptera comme vérifié à partir de lundi prochain.</string>
+    <string name="voter_certification_pending">Certification d’élu demandée : un membre de l’équipe vous rencontrera pour la confirmer. D’ici là, ce compte ne vote pas.</string>
+    <string name="voter_certification_refused">Certification d’élu refusée : %1$s</string>
+    <string name="voter_certification_withdrawn">Certification d’élu retirée : %1$s</string>
+    <string name="voter_certification_ended">Certification d’élu terminée : le mandat n’est plus dans l’annuaire officiel des élus.</string>
     <string name="urne_check_running">Vérification du vote anonyme sur cet appareil…</string>
     <string name="urne_check_passed">Vote anonyme : vérification réussie sur cet appareil</string>
     <string name="urne_check_failed">Vote anonyme : vérification échouée sur cet appareil (étape « %1$s »). Le vote restera fermé ici ; merci de le signaler avec la version ci-dessus.</string>

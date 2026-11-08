@@ -20,6 +20,7 @@ import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.decider.SupportThresholds
 import org.politisationpopulairefrancaise.core.territoires.Territoires
+import org.politisationpopulairefrancaise.core.urne.VoterStatus
 import org.politisationpopulairefrancaise.core.urne.LibsodiumRistretto255
 import org.politisationpopulairefrancaise.core.urne.Ristretto255
 import org.politisationpopulairefrancaise.core.urne.UrneAnswer
@@ -86,6 +87,10 @@ class VotingState internal constructor(
      */
     var elected: Boolean by mutableStateOf(false)
         private set
+
+    /** The account's status as the server last gave it (level, week, validation, certification), for "Mon espace" (TE-08). */
+    var status: VoterStatus? by mutableStateOf(null)
+        internal set
 
     /** The public votes of this elected account, by box number (what the server recorded). */
     var publicChoices: Map<Long, String> by mutableStateOf(emptyMap())
@@ -237,6 +242,7 @@ class VotingState internal constructor(
         } finally {
             lastSync = now()
             elected = current.level == VoteLevel.ELU
+            current.status?.let { status = it }
         }
     }
 
@@ -293,6 +299,7 @@ class VotingState internal constructor(
             tokens = emptySet()
             choices = emptyMap()
             alert = false
+            status = null
         }
     }
 
