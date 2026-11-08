@@ -159,6 +159,21 @@ class VoirPagesTest {
     }
 
     @Test
+    fun everyContentPageOffersItsReferenceToCite() = testApplication {
+        start()
+        val fact = examples.facts.first { it.address.identifier == "affaire-dominique-marche-public" }
+        val html = client.page("/voir/faits/affaire-dominique-marche-public")
+        assertTrue(html.contains("<details class=\"cite\"><summary>Citer ce contenu</summary>"), html)
+        val id = fact.article.event.id
+        assertTrue(html.contains("version ${id.take(12)}, https://politisation-populaire-francaise.org/voir/faits/affaire-dominique-marche-public, empreinte SHA-256 $id, consulté le "), html)
+        assertTrue(html.contains("&quot;type&quot;:&quot;webpage&quot;"), "the CSL-JSON, escaped as text: $html")
+        // The same block on every kind of page.
+        listOf("/voir/chiffres/manifestants-journees", "/voir/personnes/alex-modele", "/voir/partis/parti-exemple-a", "/voir/textes/pjl-ordre-public-manifestations").forEach { path ->
+            assertTrue(client.page(path).contains("Citer ce contenu"), path)
+        }
+    }
+
+    @Test
     fun unknownContentsAnswerNotFound() = testApplication {
         start()
         listOf("/voir/faits/inexistant", "/voir/inconnu/manifestants-journees", "/voir/personnes/manifestants-journees", "/voir/partis/inexistant").forEach { path ->

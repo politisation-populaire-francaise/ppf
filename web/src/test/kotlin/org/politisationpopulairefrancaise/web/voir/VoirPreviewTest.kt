@@ -91,6 +91,7 @@ class VoirPreviewTest {
         assertTrue(html.contains("</h3>") && !html.contains("<h2 id="), html)
         assertTrue(html.contains("Article du journal d’exemple"), "the sources, as on the site")
         assertTrue(html.contains("Exempleville"))
+        assertFalse(html.contains("Citer ce contenu"), "a draft has no published version to cite")
         assertFalse(html.contains("<script"))
         assertFalse(html.contains("style="))
     }
