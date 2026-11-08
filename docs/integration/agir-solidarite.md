@@ -142,7 +142,7 @@ Modifiés (fichiers d'Agir) : `ui/agir/AgirHome.kt` (deux rubriques ouvertes), `
 
 Tests écrits (aucun lancé) : `SolidarityFundTest` (10), `VolunteerMissionTest` (5), `SolidarityQueryTest` (5) dans `shared/core/src/commonTest/.../core/agir/solidarity/` ; `SolidarityLibraryTest` (6), `SolidarityScreenTest` (9) dans `shared/ui/src/jvmTest/.../ui/agir/solidarity/` ; `SolidarityContentTest` (6) dans `tools/content-signer/src/test/`. Les tests d'interface construisent leurs caisses et missions en mémoire et ne dépendent pas de `solidarite.json`.
 
-## 8. À reporter dans `docs/FORMATS.md`
+## 8. Formats (reportés dans `docs/FORMATS.md`, section 4 terdecies, le 8 novembre 2026)
 
 Les sections 2.1 et 2.2, sous les sections des contenus d'Agir (fiches d'organisation, section 4 sexies).
 
@@ -152,7 +152,7 @@ Les sections 2.1 et 2.2, sous les sections des contenus d'Agir (fiches d'organis
 - Tests à lancer : `gradlew :shared:core:jvmTest --tests "*agir.solidarity*"`, `gradlew :shared:ui:jvmTest --tests "*agir.solidarity*"` et `--tests "*AgirScreenTest*"`, puis `gradlew :tools:content-signer:test`.
 - Points de doute listés dans le rapport de l'agent (imports, signatures, API de Compose).
 
-## 10. Comment tester (à reporter dans `docs/GUIDE_PROPRIETAIRE.md` une fois compilé et signé)
+## 10. Comment tester (reporté dans `docs/GUIDE_PROPRIETAIRE.md` le 8 novembre 2026 ; compilé, tests verts, `solidarite.json` signé)
 
 1. Ouvrez « Agir » : les cartes « Solidarité et caisses de grève » et « Je veux aider » sont maintenant dans les rubriques ouvertes ; « En préparation » n'en garde que trois.
 2. Touchez « Solidarité et caisses de grève » : des caisses fictives marquées [EXEMPLE], chacune avec son type, son territoire, à qui elle sert et qui la gère (« organisation vérifiée par PPF » ou « n'est pas dans l'annuaire de PPF »).
