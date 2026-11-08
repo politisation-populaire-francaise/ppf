@@ -1,11 +1,5 @@
 # « Voir » : Cette semaine au Parlement (VO-31)
 
-## État à la reprise (7 novembre 2026, 23 h)
-
-- **Fait** : paquet `semaine` (core `ParliamentWeek.kt`, `ParliamentWeekLoader.kt`), import (`Week.kt` : agenda de l'Assemblée, iCalendar du Sénat avec RRULE/RDATE/EXDATE, activités prévues du Parlement européen ; jeux fictifs dans `example/semaine/` et `scripts/generate_week_example.py`), écrans (`ParliamentWeekState.kt`, `ParliamentWeekScreen.kt`, `strings_voir_semaine.xml`), points d'accroche (Importer, ParliamentState, ParliamentScreen, EnDirectScreen, AdaptiveShell), tests écrits (`WeekTest`, `ParliamentWeekTest`, `ParliamentWeekScreenTest`, une ligne d'`ImporterTest`).
-- **Reste** : compiler et lancer les tests (`:tools:open-data-importer:test`, `:shared:core:jvmTest`, `:shared:ui:jvmTest` sur `*ParliamentWeek*`, `*voir.parlement*`, `*EnDirect*`), corriger ; construire le jar et régénérer les paquets embarqués (`shared/ui/src/commonMain/composeResources/files/parlement/`, clé `~/.ppf/open-data-example.nsec`) avant le test `theAppShowsTheBlockInEnDirect` ; remplir la section « Tests » ; vérifier le lien du Parlement européen.
-- **Dernier résultat de test** : aucun ; rien n'a encore été compilé (le verrou commun de compilation était pris par d'autres sessions pendant toute la séance).
-
 Écrit le 7 novembre 2026 sur la branche `feature/voir-semaine` (cahier fonctionnel 2.0, M20, VO-31, repris dans « En direct », M19). Sources vérifiées : `voir-historique-sources.md`.
 
 ## En bref
@@ -62,14 +56,14 @@ Fichier nouveau `Week.kt` :
 
 Aucune modification de `infra/`, `.github/`, `server/`, `ui/comprendre/`, `MarkdownText.kt`. Le serveur sert déjà tout paquet cité par l'index (`ParliamentFormat.isPackageName("semaine")` est vrai) : rien à changer.
 
-## Décisions (techniques, à consigner dans D-064 et D-065)
+## Décisions (techniques, consignées dans D-100)
 
 1. Fenêtre : du jour de l'import (heure de Paris) au quatorzième jour suivant inclus ; l'appareil masque les jours passés.
 2. Un paquet unique `semaine`, réécrit à chaque import ; deux imports identiques donnent les mêmes octets.
 3. Une source de la semaine en échec ne fait pas échouer l'import (code 0) : points précédents gardés, journal explicite.
 4. Réunions de commission gardées seulement pour leurs points liés à un dossier législatif (le reste est hors du sujet « textes en discussion »).
 5. État absent quand la source ne dit rien (le flux du Sénat n'a souvent pas de `STATUS`) : on n'affiche alors aucun état plutôt que d'en supposer un.
-6. Liens officiels : `https://www.assemblee-nationale.fr/dyn/seance-publique` (séance publique), `https://www2.assemblee-nationale.fr/agendas/les-agendas` (commissions), `https://www.senat.fr/ordre-du-jour/ordre-du-jour.html` (Sénat, si l'événement n'a pas d'adresse sur www.senat.fr) : vérifiés le 7 novembre 2026 (réponse 200). `https://www.europarl.europa.eu/plenary/fr/home.html` pour le Parlement européen : **à vérifier** (le site bloque les robots).
+6. Liens officiels : `https://www.assemblee-nationale.fr/dyn/seance-publique` (séance publique), `https://www2.assemblee-nationale.fr/agendas/les-agendas` (commissions), `https://www.senat.fr/ordre-du-jour/ordre-du-jour.html` (Sénat, si l'événement n'a pas d'adresse sur www.senat.fr) : vérifiés le 7 novembre 2026 (réponse 200). `https://www.europarl.europa.eu/plenary/fr/home.html` pour le Parlement européen : vérifié le 8 novembre 2026 (page officielle « Accueil | Plénière | Parlement européen », avec ses « Ordres du jour »).
 7. « Interpeller mes élus » mène à l'espace « Décider » tant qu'aucune page DE-09 n'existe.
 
 ## À vérifier au premier import réel
@@ -80,4 +74,9 @@ Aucune modification de `infra/`, `.github/`, `server/`, `ui/comprendre/`, `Markd
 
 ## Tests
 
-À remplir à la reprise : aucun test lancé à ce jour.
+Lancés le 8 novembre 2026 après l'intégration de `main` (bdae4c3), tous au vert :
+- `gradlew :tools:open-data-importer:test` : **24 tests** (`WeekTest` 8 : fenêtre du jour de l'import aux quatorze jours suivants, heure de Paris, agenda de l'Assemblée (séances publiques et commissions sur un dossier législatif seulement), calendrier du Sénat avec ses répétitions et sans aucune donnée personnelle, règle hebdomadaire sans jours, activités prévues du Parlement européen, paquet `semaine` cité par l'index signé, assemblée non rafraîchie ou illisible qui garde ses points ; `ImporterTest` 8 avec `semaine` dans la liste des paquets ; `ParsersTest` 6 ; `KeyGenTest` 2).
+- `gradlew :shared:core:jvmTest --tests "*voir.parlement*"` : **35 tests** dont `ParliamentWeekTest` 5 (lecture stricte du format, jours dans l'ordre, paquet gardé seulement s'il correspond à l'index, index plus récent qui le rend périmé, jeu embarqué vérifié contre son index).
+- `gradlew :shared:ui:jvmTest --tests "*ParliamentWeek*" --tests "*EnDirect*" --tests "*voir.parlement*"` : **23 tests** dont `ParliamentWeekScreenTest` 6 (téléphone : téléchargement sur un geste puis jours et liens ; ordinateur : jours à côté de leurs points, filtre par assemblée ; bloc d'« En direct » qui attend un geste et respecte l'économie de données ; quatre prochains points et ouverture de la semaine dans « Voir » ; mise à jour à l'ouverture seulement sans économie de données ; bloc présent dans l'application avec le jeu d'exemple embarqué).
+- Paquets embarqués régénérés avec `java -jar tools/open-data-importer/build/libs/ppf-open-data-importer.jar --source example --out shared/ui/src/commonMain/composeResources/files/parlement --key ~/.ppf/open-data-example.nsec` : seuls `index.event.json` et `semaine.json` (nouveau) changent ; deux imports de suite donnent les mêmes octets.
+- Le jeu d'exemple couvre du 7 au 21 novembre 2026 : après le 21 novembre, la page affiche « Aucune séance prévue » tant que les paquets d'exemple ne sont pas régénérés avec une nouvelle date d'import.
