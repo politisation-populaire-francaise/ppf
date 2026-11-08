@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.revendications.propose
 
+import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
@@ -50,10 +51,15 @@ class ProposeFromTheWallTest {
     private val phrase = RecoveryPhrase.parse("leader monkey parrot ring guide accident before fence cannon height naive bean")
     private val title = "Un médecin de garde joignable le soir dans chaque canton rural"
 
+    private companion object {
+        /** No step of this test waits longer: a stuck one fails fast and says where. */
+        const val MAX_WAIT_MILLIS: Long = 10_000
+    }
+
     private fun ComposeUiTest.openForm(dependencies: AppDependencies) {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
         onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
-        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(RevendicationTags.PROPOSE).fetchSemanticsNodes().isNotEmpty() }
+        waitOrDump("the form's button") { onAllNodesWithTag(RevendicationTags.PROPOSE).fetchSemanticsNodes().isNotEmpty() }
         onNode(hasTestTag(RevendicationTags.PROPOSE) and hasAnyAncestor(hasTestTag(RevendicationTags.PAGE + "tout"))).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(ProposalTags.SCREEN).assertExists()
@@ -67,9 +73,7 @@ class ProposeFromTheWallTest {
         onNodeWithTag(ProposalTags.CHARTER).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(ProposalTags.SEND).performScrollTo().performClick()
-        // Known flake (Décider, 8 November 2026): in a full run of every module, the variant without server
-        // sometimes never gets here (stuck, not slow: 30 seconds did not help; alone it passes in a second).
-        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ProposalTags.RESULT).fetchSemanticsNodes().isNotEmpty() }
+        waitOrDump("the result of the sending") { onAllNodesWithTag(ProposalTags.RESULT).fetchSemanticsNodes().isNotEmpty() }
     }
 
     private fun ComposeUiTest.showMine() {
@@ -81,10 +85,36 @@ class ProposeFromTheWallTest {
         waitForIdle()
     }
 
+    /**
+     * A server that cannot be reached, answering at once: the same path as no server at all for the demand
+     * (kept as pending, sent at the next synchronisation), without any real network nor real waiting.
+     */
+    private object UnreachableServer : RemoteEvents {
+        override suspend fun publish(event: SignedEvent): PublicationResult = PublicationResult.Unavailable()
+        override suspend fun fetch(filter: RemoteFilter): FetchResult = FetchResult.Unavailable()
+        override suspend fun fetchByTags(tags: List<TagFilter>, filter: RemoteFilter): FetchResult = FetchResult.Unavailable()
+    }
+
+    /**
+     * [waitUntil] with an explicit maximum; on a timeout, the state of every thread goes to the test's error output
+     * (seen once in a full run of every module: the sending never ended, while it takes a second alone).
+     */
+    private fun ComposeUiTest.waitOrDump(what: String, condition: () -> Boolean) {
+        try {
+            waitUntil(timeoutMillis = MAX_WAIT_MILLIS, condition = condition)
+        } catch (e: ComposeTimeoutException) {
+            System.err.println("ProposeFromTheWallTest: $what did not come within $MAX_WAIT_MILLIS ms. Threads:")
+            Thread.getAllStackTraces().forEach { (thread, frames) ->
+                System.err.println("  ${thread.name} (${thread.state}): " + frames.take(12).joinToString(" <- "))
+            }
+            throw e
+        }
+    }
+
     @Test
     fun withoutServerTheDemandWaitsInMesRevendicationsAndStaysOffTheWall() = runComposeUiTest {
         val store = LocalEventStore(JvmDatabase.inMemory())
-        openForm(AppDependencies(InMemoryIdentityStore(StoredIdentity.of(phrase.deriveKeys(), phrase)), contentStore = store))
+        openForm(AppDependencies(InMemoryIdentityStore(StoredIdentity.of(phrase.deriveKeys(), phrase)), contentStore = store, remote = UnreachableServer))
         fillAndSend()
         onNodeWithText("Revendication gardée sur cet appareil").assertExists()
         assertEquals(1, store.pending().size)
