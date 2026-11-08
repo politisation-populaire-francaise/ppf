@@ -958,6 +958,72 @@ a.gloss:hover {
   overflow-wrap: anywhere;
 }
 
+/* Teaching sheets for the classroom (CO-13, D-096): the questions and the answers for the teacher. */
+.licence {
+  color: var(--ink-subtle);
+  font-size: 0.875rem;
+}
+
+.teaching-question-list > li,
+.teaching-answer-list > li {
+  margin: 0 0 1rem;
+}
+
+.teaching-answer-list h3 {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+/*
+ * Printed: without the header, the navigation and the footer of the site, black on white whatever the
+ * colour scheme of the screen, and the answers for the teacher on a page of their own.
+ */
+@media print {
+  :root {
+    color-scheme: light;
+    --surface-0: #ffffff;
+    --surface-1: #ffffff;
+    --surface-2: #ffffff;
+    --ink: #000000;
+    --ink-muted: #000000;
+    --ink-subtle: #000000;
+    --border: #000000;
+    --border-strong: #000000;
+    --brand: #000000;
+    --brand-strong: #000000;
+    --brand-tint: #ffffff;
+    --on-brand: #ffffff;
+    --accent: #000000;
+    --accent-tint: #ffffff;
+    --accent-ink: #000000;
+    --success: #000000;
+    --success-tint: #ffffff;
+    --warning: #000000;
+    --warning-tint: #ffffff;
+    --focus: #000000;
+    --shadow-card: none;
+  }
+  body {
+    color: #000000;
+    background: #ffffff;
+  }
+  .site-header,
+  .site-header nav,
+  .site-footer,
+  .skip-link {
+    display: none;
+  }
+  .teaching-answers {
+    break-before: page;
+    page-break-before: always;
+  }
+  .teaching-question-list > li,
+  .teaching-answer-list > li {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+}
+
 /* « Vérifier un contenu » (S-141): the verdict is said in words first; its colour only repeats them. */
 .verdict {
   margin: 0 0 1.5rem;

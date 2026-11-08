@@ -56,7 +56,10 @@ object ComprendreSchemas {
         sourceDirectory = "parcours",
         bundle = "parcours.json",
         duration = Presence.REQUIRED,
-        fields = emptyList(),
+        // « rhythm: quotidien »: one lesson a day (CO-19 « Je découvre »); absent for the other courses.
+        fields = listOf(
+            FieldSpec("rhythm", "editorial.field.rhythm", "editorial.help.rhythm", occurs = Occurs.OPTIONAL, value = ValueSpec.Single(FieldType.Choice(CourseRhythm.entries.map { it.tagValue }, "comprendre.rhythm.")), tag = ComprendreTags.RHYTHM),
+        ),
         body = BodySpec(
             blocks = listOf(
                 BlockSpec(ParcoursFormat.QUIZ_BLOCK, min = 1),
@@ -191,6 +194,50 @@ object ComprendreSchemas {
         ),
     )
 
-    /** In the order the tool writes them (comprendre.json: fact-checks, stories, sheets, method). */
-    val all: List<ContentSchema> = listOf(FICHE_PRATIQUE, PARCOURS, DECRYPTAGE, HISTOIRE, QUI_DECIDE, METHODE, GLOSSAIRE)
+    /**
+     * A teaching sheet for the classroom (CO-13, D-096, docs/integration/comprendre-enseignants.md): one course,
+     * one level, the official programme it serves, and the sections of [TeachingSheetFormat]. The quiz is the
+     * one of the linked course, never rewritten in the sheet.
+     */
+    val FICHE_PEDAGOGIQUE: ContentSchema = ContentSchema(
+        type = ArticleType.FICHE_PEDAGOGIQUE,
+        space = EditorialSpace.COMPRENDRE,
+        labelKey = "editorial.type.fiche_pedagogique",
+        sourceDirectory = "enseignants",
+        bundle = "comprendre.json",
+        duration = Presence.REQUIRED,
+        fields = listOf(
+            // « course: le-referendum »: one ["a", "30023:<key>:le-referendum", "", "parcours"], a published course.
+            FieldSpec("course", "editorial.field.course", "editorial.help.course", value = ValueSpec.Link(ComprendreTags.COURSE_LINK_ROLE, TargetType.COURSE)),
+            FieldSpec("level", "editorial.field.level", "editorial.help.level", value = ValueSpec.Single(FieldType.Choice(TeachingLevel.entries.map { it.tagValue }, "comprendre.level.")), tag = ComprendreTags.LEVEL),
+            FieldSpec("programme", "editorial.field.programme", "editorial.help.programme", value = ValueSpec.Single(FieldType.Text(TeachingSheetFormat.PROGRAMME_MAX)), tag = ComprendreTags.PROGRAMME),
+        ),
+        body = BodySpec(
+            blocks = listOf(
+                BlockSpec(ContentBlocks.OBJECTIONS, min = 1, parser = objections),
+                BlockSpec(ContentBlocks.TIMELINE, parser = timeline),
+                // The questions « à main levée » are those of the course: a sheet never writes its own quiz.
+                BlockSpec(ParcoursFormat.QUIZ_BLOCK, max = 0),
+            ),
+            requiredSections = TeachingSheetFormat.REQUIRED_SECTIONS,
+            templateKey = "editorial.template.fiche_pedagogique",
+        ),
+        checks = listOf(
+            // Order of the sections, timed steps adding up to the duration, two objections in the debate.
+            SchemaCheck { draft, _, _ ->
+                val duration = draft.entries.lastOrNull { it.first == ContentSchema.DURATION }?.second?.trim()?.toIntOrNull()
+                TeachingSheetFormat.problems(draft.body, duration)
+            },
+            SchemaCheck { _, event, _ ->
+                val unchecked = SignedEvent(event.idHex(), event.pubkey, event.createdAt, event.kind, event.tags, event.content, "0".repeat(128))
+                if (Article.from(unchecked)?.let(TeachingSheet::from) == null) listOf(Problem(TeachingSheetFormat.RULE_READABLE)) else emptyList()
+            },
+        ),
+    )
+
+    /**
+     * In the order the tool writes them (comprendre.json: fact-checks, stories, sheets, method, then the
+     * teaching sheets, written last so that the events before them keep their place).
+     */
+    val all: List<ContentSchema> = listOf(FICHE_PRATIQUE, PARCOURS, DECRYPTAGE, HISTOIRE, QUI_DECIDE, METHODE, GLOSSAIRE, FICHE_PEDAGOGIQUE)
 }

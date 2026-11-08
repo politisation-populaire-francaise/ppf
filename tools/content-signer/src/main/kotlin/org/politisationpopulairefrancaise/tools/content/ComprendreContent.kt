@@ -57,10 +57,11 @@ internal fun guideEvents(content: Path, author: PublicKey, context: CheckContext
 
 /**
  * The contents of "Comprendre" beyond the guides and the courses (comprendre.json), in this order:
- * fact-checks, stories, « Qui décide de ça ? » sheets, the method page.
+ * fact-checks, stories, « Qui décide de ça ? » sheets, the method page, the teaching sheets (CO-13, last so
+ * that the events before them keep their place).
  */
 internal fun comprendreEvents(content: Path, author: PublicKey, context: CheckContext): List<UnsignedEvent> =
-    listOf(ComprendreSchemas.DECRYPTAGE, ComprendreSchemas.HISTOIRE, ComprendreSchemas.QUI_DECIDE, ComprendreSchemas.METHODE)
+    listOf(ComprendreSchemas.DECRYPTAGE, ComprendreSchemas.HISTOIRE, ComprendreSchemas.QUI_DECIDE, ComprendreSchemas.METHODE, ComprendreSchemas.FICHE_PEDAGOGIQUE)
         .flatMap { engineEvents(content, it, author, context) }
 
 /**
