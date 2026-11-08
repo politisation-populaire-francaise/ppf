@@ -48,6 +48,7 @@
     <string name="urne_sending">Votre vote partira tout seul dans quelques minutes, sans votre compte. Vous pouvez fermer l’application : il partira à la prochaine ouverture.</string>
     <string name="urne_recorded">Votre vote est enregistré, anonymement. Vous pouvez le changer jusqu’à la clôture.</string>
     <string name="urne_withdrawn">Votre vote est retiré.</string>
+    <string name="urne_compromised_tokens">Ce compte a été déclaré compromis : il ne reçoit plus de jeton. Ceux que ce téléphone a déjà reçus restent utilisables ; le nouveau compte annoncé dans la déclaration, s’il y en a un, recevra ceux des urnes suivantes.</string>
     <string name="urne_withdraw">Retirer mon vote</string>
     <string name="urne_privacy">Personne, pas même PPF, ne peut savoir ce que vous avez voté : votre bulletin part sans votre compte, et seul votre appareil garde votre choix.</string>
     <string name="urne_hidden_until_closing">Les résultats seront publiés à la clôture, avec tous les bulletins anonymes : chacun pourra recompter.</string>

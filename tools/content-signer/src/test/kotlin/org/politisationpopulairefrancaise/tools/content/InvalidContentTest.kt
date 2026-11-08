@@ -45,6 +45,13 @@ class InvalidContentTest {
         assertContains(message, "aucun contenu ne porte l'identifiant « personne-inconnue »")
     }
 
+    @Test
+    fun aTeachingSheetLinkingAnUnknownCourseIsRefused() {
+        val body = "## Objectifs\n- O\n\n## Prérequis\n- P\n\n## Déroulé\n- 55 min : Tout.\n\n## Débat guidé\n::: objections\n? A\n> R\n? B\n> R\n:::\n\n## Sources\n- S\n"
+        val message = refused("enseignants", front("fiche-pedagogique", "duration: 55", "course: parcours-inconnu", "level: lycee", "programme: Un programme.") + body)
+        assertContains(message, "aucun contenu ne porte l'identifiant « parcours-inconnu »")
+    }
+
     private val source = "source: justice | Jugement (exemple) | https://example.org/exemple/jugement | 2025-12-10"
 
     @Test

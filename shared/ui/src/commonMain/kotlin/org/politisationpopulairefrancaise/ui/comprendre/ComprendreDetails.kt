@@ -20,6 +20,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -35,7 +39,10 @@ import org.politisationpopulairefrancaise.core.comprendre.ContentBlocks
 import org.politisationpopulairefrancaise.core.comprendre.DecisionLevel
 import org.politisationpopulairefrancaise.core.comprendre.Decryptage
 import org.politisationpopulairefrancaise.core.comprendre.HistoryStory
+import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.comprendre.QuiDecide
+import org.politisationpopulairefrancaise.core.comprendre.TeachingLevel
+import org.politisationpopulairefrancaise.core.comprendre.TeachingSheet
 import org.politisationpopulairefrancaise.core.comprendre.Verdict
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
@@ -78,6 +85,18 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_role_ministre
 import org.politisationpopulairefrancaise.ui.resources.comprendre_role_president
 import org.politisationpopulairefrancaise.ui.resources.comprendre_role_senateur
 import org.politisationpopulairefrancaise.ui.resources.comprendre_sources
+import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_teaching
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_answer
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_hide_answers
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_cycle_4
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_lycee
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_licence
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_meta
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_neutrality
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_programme
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_questions
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_questions_intro
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_show_answers
 import org.politisationpopulairefrancaise.ui.resources.comprendre_verdict_contradicted
 import org.politisationpopulairefrancaise.ui.resources.comprendre_verdict_exact
 import org.politisationpopulairefrancaise.ui.resources.comprendre_verdict_label
@@ -101,6 +120,10 @@ object ComprendreDetailTags {
     const val METHOD = "decryptage-method"
     const val ELUS = "who-decides-elus"
     const val BACK = "comprendre-detail-back"
+    const val TEACHING = "teaching-sheet-detail"
+    const val TEACHING_NEUTRALITY = "teaching-sheet-neutrality"
+    const val TEACHING_QUESTIONS = "teaching-sheet-questions"
+    const val TEACHING_ANSWERS = "teaching-sheet-answers"
 
     fun level(level: DecisionLevel): String = "who-decides-level-${level.key}"
 }
@@ -344,6 +367,84 @@ private fun PersonLine(person: PublicPerson) {
 }
 
 // ---------------------------------------------------------------------------------------------
+// Teaching sheets for the classroom (CO-13, D-096)
+
+@Composable
+fun teachingLevelLabel(level: TeachingLevel): String = stringResource(
+    when (level) {
+        TeachingLevel.LYCEE -> Res.string.comprendre_teaching_level_lycee
+        TeachingLevel.CYCLE_4 -> Res.string.comprendre_teaching_level_cycle_4
+    },
+)
+
+/**
+ * A teaching sheet: the fixed neutrality notice (never the writer's text), the official programme it serves,
+ * its text (objectives, prerequisites, timed outline, guided debate with its objections), the questions of
+ * the linked [course] for a show of hands with the answers folded apart, the sources and the licence.
+ * Nothing is asked, counted or sent from the classroom.
+ */
+@Composable
+fun TeachingSheetDetail(sheet: TeachingSheet, course: Parcours?, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier = Modifier) {
+    val palette = PpfTheme.palette
+    val subtitle = stringResource(Res.string.comprendre_teaching_meta, teachingLevelLabel(sheet.level), sheet.article.durationMinutes ?: sheet.totalMinutes)
+    DetailColumn(sheet.article, stringResource(Res.string.comprendre_kind_teaching), onBack, compact, modifier.testTag(ComprendreDetailTags.TEACHING), subtitle = subtitle) {
+        Surface(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.medium, color = palette.surface2, border = BorderStroke(1.dp, palette.border)) {
+            Column(Modifier.padding(16.dp)) {
+                Text(
+                    stringResource(Res.string.comprendre_teaching_neutrality),
+                    style = MaterialTheme.typography.bodyMedium,
+                    modifier = Modifier.testTag(ComprendreDetailTags.TEACHING_NEUTRALITY),
+                )
+                Spacer(Modifier.height(12.dp))
+                Text(stringResource(Res.string.comprendre_teaching_programme), style = MaterialTheme.typography.labelLarge, color = palette.inkMuted)
+                Spacer(Modifier.height(4.dp))
+                Text(sheet.programme, style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+        Spacer(Modifier.height(16.dp))
+        BodyWithActions(sheet.article.body, onNavigate, beforeSources = course?.let { linked -> { TeachingQuestions(linked) } })
+        Spacer(Modifier.height(16.dp))
+        Text(stringResource(Res.string.comprendre_teaching_licence), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
+    }
+}
+
+/** The questions of the course, to ask the group; the answers stay folded until the teacher opens them. */
+@Composable
+private fun TeachingQuestions(course: Parcours) {
+    val palette = PpfTheme.palette
+    val quizzes = course.steps.mapNotNull { it.quiz }
+    if (quizzes.isEmpty()) return
+    var answers by remember(course.address) { mutableStateOf(false) }
+    Spacer(Modifier.height(20.dp))
+    Column(Modifier.fillMaxWidth().testTag(ComprendreDetailTags.TEACHING_QUESTIONS)) {
+        Text(stringResource(Res.string.comprendre_teaching_questions), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(Res.string.comprendre_teaching_questions_intro, displayTitle(course)), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+        quizzes.forEachIndexed { index, quiz ->
+            Spacer(Modifier.height(12.dp))
+            Text("${index + 1}. ${quiz.question}", style = MaterialTheme.typography.titleSmall)
+            quiz.options.forEach { option ->
+                Text("· $option", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.padding(start = 12.dp, top = 2.dp))
+            }
+            if (answers) {
+                Spacer(Modifier.height(4.dp))
+                Text(
+                    stringResource(Res.string.comprendre_teaching_answer, quiz.options.getOrElse(quiz.correctIndex) { "" }),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = palette.success,
+                    modifier = Modifier.padding(start = 12.dp).testTag(ComprendreDetailTags.TEACHING_ANSWERS),
+                )
+            }
+        }
+        Spacer(Modifier.height(8.dp))
+        PpfTextButton(
+            onClick = { answers = !answers },
+            text = stringResource(if (answers) Res.string.comprendre_teaching_hide_answers else Res.string.comprendre_teaching_show_answers),
+        )
+    }
+}
+
+// ---------------------------------------------------------------------------------------------
 // Shared pieces
 
 /** Badge, title, meta line (type, update, origin), then [content], in a readable column. */
@@ -397,7 +498,7 @@ private fun detailMeta(article: Article, kind: String): String {
  * before the sources, which come last.
  */
 @Composable
-private fun BodyWithActions(body: String, onNavigate: (Space) -> Unit) {
+private fun BodyWithActions(body: String, onNavigate: (Space) -> Unit, beforeSources: (@Composable () -> Unit)? = null) {
     val actions = mutableListOf<List<String>>()
     val lines = ContentBlocks.extract(body.lines(), NEXT_ACTIONS_BLOCK, actions)
     val sourcesAt = lines.indexOfFirst { it.trim() == "## Sources" }
@@ -408,6 +509,7 @@ private fun BodyWithActions(body: String, onNavigate: (Space) -> Unit) {
         Spacer(Modifier.height(8.dp))
         NextActionsCard(it, onNavigate)
     }
+    beforeSources?.invoke()
     if (sources.isNotEmpty()) {
         Spacer(Modifier.height(20.dp))
         Text(stringResource(Res.string.comprendre_sources), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })

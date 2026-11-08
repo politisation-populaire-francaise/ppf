@@ -15,7 +15,10 @@ import org.politisationpopulairefrancaise.core.urne.VoprfMode
 import org.politisationpopulairefrancaise.core.urne.Voprf
 import org.politisationpopulairefrancaise.core.urne.VoteLevel
 import org.politisationpopulairefrancaise.core.signing.sign
-import org.politisationpopulairefrancaise.core.urne.AccountTypes
+import org.politisationpopulairefrancaise.core.identity.AccountRecovery
+import org.politisationpopulairefrancaise.core.identity.AccountType
+import org.politisationpopulairefrancaise.server.accounts.AccountTypes
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.revendications.MutableClock
@@ -51,7 +54,7 @@ class UrneServiceTest {
         service.open(id, "30023:${"b".repeat(64)}:$id", listOf("pour", "contre"), opensAt, clock.instant().plus(Duration.ofDays(days)), liveResults = false)
 
     /** Token request and finalization, as a device does it. */
-    private fun tokens(pubkey: String): Map<Long, Triple<String, ByteArray, ByteArray>> {
+    private fun tokens(pubkey: String, service: UrneService = this.service): Map<Long, Triple<String, ByteArray, ByteArray>> {
         val pending = service.status(pubkey).pending
         val ys = pending.associateWith { ByteArray(32).also { SecureRandom().nextBytes(it) } }
         val blinded = ys.mapValues { voprf.blind(it.value) }
@@ -163,23 +166,63 @@ class UrneServiceTest {
         val editor = pubkey()
         val organisation = pubkey()
         val collective = LocalEventSigner(IdentityKeys.generate())
-        val persons = PersonAccounts(TestDatabase.dataSource, isEditor = { it == editor }, isOrganisation = { it == organisation })
+        val types = AccountTypes(TestDatabase.dataSource)
+        val persons = PersonAccounts(isEditor = { it == editor }, isOrganisation = { it == organisation }, isCollective = types::isCollective)
         val guarded = UrneService.create(store, UrneFixtures.CONFIG, clock, persons)
-        // A collective that says so in its profile (kind 0, ppf-account-type).
-        EventRepository(TestDatabase.dataSource).store(collective.sign(kind = 0, tags = listOf(listOf(AccountTypes.TAG, AccountTypes.COLLECTIVE)), createdAt = 1_794_000_000))
+        // A collective that says so in its profile (kind 0, ppf-account-type, D-133), recorded as the events API does.
+        val profile = collective.sign(kind = 0, tags = listOf(AccountType.COLLECTIVE.tag()), createdAt = 1_794_000_000)
+        EventRepository(TestDatabase.dataSource).store(profile)
+        types.stored(profile)
         for (key in listOf(editor, organisation, collective.publicKey.hex)) {
             assertEquals("not_a_person", assertFailsWith<UrneRefusal> { guarded.register(key) }.code, key)
         }
         // A person, and a person's profile that says « personne », vote.
         val person = LocalEventSigner(IdentityKeys.generate())
-        EventRepository(TestDatabase.dataSource).store(person.sign(kind = 0, tags = listOf(listOf(AccountTypes.TAG, AccountTypes.PERSON)), createdAt = 1_794_000_000))
+        val personProfile = person.sign(kind = 0, tags = listOf(AccountType.PERSON.tag()), createdAt = 1_794_000_000)
+        EventRepository(TestDatabase.dataSource).store(personProfile)
+        types.stored(personProfile)
         assertTrue(guarded.register(person.publicKey.hex).second)
         assertTrue(guarded.register(pubkey()).second)
         // An account registered before it became an organisation gets no token either.
         val later = pubkey()
         guarded.register(later)
-        val becomes = PersonAccounts(TestDatabase.dataSource, isEditor = { false }, isOrganisation = { it == later })
+        val becomes = PersonAccounts(isEditor = { false }, isOrganisation = { it == later })
         assertEquals("not_a_person", assertFailsWith<UrneRefusal> { UrneService.create(store, UrneFixtures.CONFIG, clock, becomes).issue(later, """{"requests":[]}""") }.code)
+    }
+
+    @Test
+    fun aCompromisedKeyVotesNoMoreAndItsSuccessorIsNeverServedTheSameBoxAgain() = runBlocking {
+        TestDatabase.reset()
+        val compromised = CompromisedAccounts(EventRepository(TestDatabase.dataSource))
+        val persons = PersonAccounts({ false }, { false }, isCompromised = compromised::isCompromised, predecessorOf = compromised::predecessorOf)
+        val guarded = UrneService.create(store, UrneFixtures.CONFIG, clock, persons)
+        val old = LocalEventSigner(IdentityKeys.generate())
+        val recovery = LocalEventSigner(IdentityKeys.generate())
+        val successor = IdentityKeys.generate().publicKey
+        // The successor already had an account of its own, served nothing yet; the old key is served the first box.
+        guarded.register(successor.hex)
+        guarded.register(old.publicKey.hex)
+        val first = box("premiere")
+        assertEquals(setOf(first.number), tokens(old.publicKey.hex, guarded).keys)
+
+        // [EXEMPLE] The owner declares the old key compromised and names the new one (S-146, D-134).
+        val now = Instant.now().epochSecond
+        val day = 24L * 60 * 60
+        val commitment = AccountRecovery.signCommitment(old, recovery.publicKey, createdAt = now - 20 * day)
+        assertTrue(compromised.admitAndStore(commitment) is CompromisedAccounts.Admission.Stored)
+        val committed = AccountRecovery.parseCommitment(commitment)!!
+        val notice = AccountRecovery.signNotice(recovery, committed, createdAt = now, since = now - day, successor = successor)
+        assertTrue(compromised.admitAndStore(notice) is CompromisedAccounts.Admission.Stored)
+
+        // The old key gets nothing more, and the application is told the real reason.
+        assertEquals(PersonAccounts.COMPROMISED, assertFailsWith<UrneRefusal> { guarded.issue(old.publicKey.hex, """{"requests":[]}""") }.code)
+        assertEquals(PersonAccounts.COMPROMISED, assertFailsWith<UrneRefusal> { guarded.register(old.publicKey.hex) }.code)
+        // The successor takes over the cursor: the first box is never served twice, the next one is.
+        assertEquals(emptyList(), guarded.status(successor.hex).pending)
+        val second = box("seconde")
+        assertEquals(listOf(second.number), guarded.status(successor.hex).pending)
+        assertEquals(setOf(second.number), tokens(successor.hex, guarded).keys)
+        assertEquals(mapOf("non-verifie" to 1L, "verifie" to 0L, "elu" to 0L), store.issuedByLevel(first.number))
     }
 
     @Test

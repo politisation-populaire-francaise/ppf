@@ -17,6 +17,7 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.accounts.AccountTypes
 import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
+import org.politisationpopulairefrancaise.server.decider.ComparatorFreeze
 import org.politisationpopulairefrancaise.server.decider.DeliberationSubmissions
 import org.politisationpopulairefrancaise.server.decider.receive
 import org.politisationpopulairefrancaise.server.events.EventFilter
@@ -101,6 +102,8 @@ fun Route.eventsApi(
     compromised: CompromisedAccounts? = null,
     /** The propositions and amendments of citizens to a deliberation, held for review (DE-25). */
     deliberation: DeliberationSubmissions? = null,
+    /** Refuses the comparators and positions of an election while it is frozen (DE-16, Q4 option A). */
+    comparatorFreeze: ComparatorFreeze? = null,
 ) {
     if (repository == null) {
         route("/api/v1/{...}") {
@@ -166,6 +169,7 @@ fun Route.eventsApi(
                 is PublicationPolicy.Decision.Refused -> return@post call.refuse(decision)
                 PublicationPolicy.Decision.Allowed -> Unit
             }
+            comparatorFreeze?.refusal(event)?.let { return@post call.refuse(it) }
             accountTypes?.let { types -> withContext(Dispatchers.IO) { types.check(event) } }?.let { return@post call.refuse(it) }
             // A recovery commitment (1776) or a compromise notice (1777): checked and stored together, under the lock of the account.
             if (recovery.concerns(event)) {
