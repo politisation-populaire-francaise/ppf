@@ -308,6 +308,8 @@ EOF
     install -d -m 0700 -o "$server_uid" -g "$server_uid" "$dir/testimonies"
     grep -q '^PPF_MODERATION_KEY=' "$dir/.env" || echo "PPF_MODERATION_KEY=" >> "$dir/.env"
     grep -q '^PPF_EVIDENCE_KEY=' "$dir/.env" || echo "PPF_EVIDENCE_KEY=" >> "$dir/.env"
+    # Contact and claims (M30): the public key of the inbox of the team, empty until it is created (cases closed).
+    grep -q '^PPF_CONTACT_INBOX_KEY=' "$dir/.env" || echo "PPF_CONTACT_INBOX_KEY=" >> "$dir/.env"
     # Push wake-ups (D-078): ntfy's data (topics, 12-hour cache) and the VAPID private key of the server.
     install -d -m 0700 -o "$ntfy_uid" -g "$ntfy_uid" "$dir/ntfy"
     if [ ! -f "$dir/secrets/vapid_private_key" ]; then

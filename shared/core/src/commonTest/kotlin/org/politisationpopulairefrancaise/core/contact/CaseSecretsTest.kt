@@ -8,6 +8,7 @@ import kotlin.test.Test
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
 import kotlin.test.assertNotEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -90,6 +91,19 @@ class CaseSecretsTest {
         val sibling = Crockford32.ALPHABET.first { it != last }
         val stray = CaseAccess.tokenFromAuthorization("Bearer ${secrets.accessToken.dropLast(1)}$sibling")
         if (stray != null) assertEquals(secrets.accessToken.dropLast(1) + sibling, CaseAccess.encodeToken(stray))
+    }
+
+    @Test
+    fun theServerChecksTheShapeOfWhatItKeeps() {
+        val secrets = CaseSecrets.derive(number, code)
+        assertTrue(CaseAccess.isValidCaseKey(secrets.publicKey.hex))
+        // An x coordinate above the size of the field is no point of the curve.
+        assertFalse(CaseAccess.isValidCaseKey("f".repeat(64)))
+        assertFalse(CaseAccess.isValidCaseKey(secrets.publicKey.hex.uppercase()))
+        assertFalse(CaseAccess.isValidCaseKey(secrets.publicKey.hex.drop(2)))
+        assertTrue(CaseAccess.isValidHash(secrets.accessHash))
+        assertFalse(CaseAccess.isValidHash(secrets.accessHash.uppercase()))
+        assertFalse(CaseAccess.isValidHash(secrets.accessHash + "0"))
     }
 
     @Test
