@@ -95,6 +95,7 @@ import org.politisationpopulairefrancaise.server.urne.UrneService
 import org.politisationpopulairefrancaise.server.urne.UrneStore
 import org.politisationpopulairefrancaise.server.urne.UrneClosureStatements
 import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformSigner
 import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
 import org.politisationpopulairefrancaise.server.urne.urneApi
@@ -252,6 +253,12 @@ fun Application.module(
     backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
     /** How researchers report a vulnerability (S-92): security.txt and the page /securite. */
     securityContact: SecurityContact = SecurityContactSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
+    /**
+     * THE platform signer of the server (D-129, docs/integration/service-signature.md): the separate signing
+     * service when PPF_SIGNER_URL is set, null otherwise (what needs it then waits, never signs elsewhere).
+     * Passed to every pole that needs it; the tests give a FakePlatformSigner.
+     */
+    platformSigner: PlatformSigner? = PlatformSignerConfig.fromEnvironment()?.let { HttpPlatformSigner(it) },
 ) {
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
@@ -333,8 +340,8 @@ fun Application.module(
         // The boxes of the citizen deliberations, opened as their published phases come (DE-25).
         val deliberations = repository?.let { DeliberationUrnes(it, urnes, policy::isEditor) }
         // The closing statements signed by the platform (decider.urn_closure), when the signing service is configured.
-        val closures = if (urneStore != null && repository != null) {
-            PlatformSignerConfig.fromEnvironment()?.let { UrneClosureStatements(urneStore, urnes, HttpPlatformSigner(it), repository) }
+        val closures = if (urneStore != null && repository != null && platformSigner != null) {
+            UrneClosureStatements(urneStore, urnes, platformSigner, repository)
         } else {
             null
         }
