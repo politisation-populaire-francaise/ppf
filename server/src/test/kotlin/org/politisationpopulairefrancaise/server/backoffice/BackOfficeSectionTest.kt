@@ -13,7 +13,9 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.parameters
+import io.ktor.serialization.kotlinx.json.json
 import io.ktor.server.application.install
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.server.engine.connector
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder
@@ -84,6 +86,7 @@ class BackOfficeSectionTest {
             }
         }
         application {
+            install(ContentNegotiation) { json() }
             install(backOfficeHeaders(BackOfficeTestData.PORT))
             routing { createChild(PortSelector(BackOfficeTestData.PORT)).backOfficeRoutes(backOffice) }
         }
@@ -168,7 +171,7 @@ class BackOfficeSectionTest {
         val seq = lastSeq()
         assertEquals(HttpStatusCode.Forbidden, client.form("/equipe/sections/essai.notes/note", editor.token, emptyMap()).status)
         assertEquals(HttpStatusCode.Forbidden, client.form("/equipe/sections/essai.notes/note", editor.token, mapOf("csrf" to Csrf.tokenFor(Tokens.generate()))).status)
-        val crossSite = client.submitForm("$bo/equipe/sections/essai.notes/note", parameters { append("csrf", Csrf.tokenFor(editor.token)) }) {
+        val crossSite = client.submitForm("http://localhost:${BackOfficeTestData.PORT}/equipe/sections/essai.notes/note", parameters { append("csrf", Csrf.tokenFor(editor.token)) }) {
             header(HttpHeaders.Cookie, "$SESSION_COOKIE=${editor.token}")
             header("Sec-Fetch-Site", "cross-site")
         }
