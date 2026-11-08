@@ -86,6 +86,7 @@ internal object ApprovalTexts {
         SigningRefusals.ASSERTION_REFUSED -> "La réponse de la clé d'accès n'a pas été acceptée (clé, adresse de la page ou vérification de la personne)."
         SigningRefusals.NOT_ALLOWED_FOR_USE -> "Aucun compte autorisé ne peut approuver ce contenu avec cette clé d'accès."
         SigningRefusals.AUTHOR_CANNOT_APPROVE -> "L'auteur du brouillon ne peut pas l'approuver lui-même quand une double validation est demandée."
+        SigningRefusals.DOUBLE_VALIDATION_REQUIRED -> "Ce contenu met en cause une personne : il demande une double validation, que ce brouillon ne prévoit pas."
         SigningRefusals.ALREADY_APPROVED -> "Vous avez déjà approuvé ce brouillon : la seconde approbation doit venir d'un autre membre."
         SigningRefusals.UNKNOWN_USE, SigningRefusals.AUTOMATIC_USE, SigningRefusals.USE_DISABLED -> "Ce type de contenu ne s'approuve pas ici."
         SigningRefusals.MALFORMED_REQUEST, SigningRefusals.TOO_LARGE -> "La demande est mal formée."

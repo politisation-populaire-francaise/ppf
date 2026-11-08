@@ -220,7 +220,7 @@ case "$command" in
         revision="$(tr -d '[:space:]' < "$tmp/REVISION" 2>/dev/null || true)"
         [[ "$revision" =~ ^[0-9a-f]{40}$ ]] || { rm -rf "$tmp"; fail "the bundle carries no commit (REVISION)"; }
         for needed in infra/docker/server.Dockerfile .dockerignore server/build/libs/ppf-server.jar \
-            tools/open-data-importer/build/libs/ppf-open-data-importer.jar; do
+            tools/open-data-importer/build/libs/ppf-open-data-importer.jar signer/build/libs/ppf-signer.jar; do
             [ -e "$tmp/$needed" ] || { rm -rf "$tmp"; fail "the bundle lacks $needed"; }
         done
         release="$PPF_DATA_DIR/preproduction/releases/$revision"

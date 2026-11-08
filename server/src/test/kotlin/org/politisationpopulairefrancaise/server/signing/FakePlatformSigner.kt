@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.server.signing
 
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.platform.DraftApproval
+import org.politisationpopulairefrancaise.core.platform.DoubleValidation
 import org.politisationpopulairefrancaise.core.platform.DraftAuthor
 import org.politisationpopulairefrancaise.core.platform.DraftStatusResponse
 import org.politisationpopulairefrancaise.core.platform.KeyCertificate
@@ -16,9 +17,10 @@ import java.util.concurrent.atomic.AtomicLong
 /**
  * The platform signer of the tests and of development (contract, section 5): a root and one working key
  * per use generated at each start, in memory. It checks what the poles must get right (the key and the
- * form of the use, a draft for a human use, the number of approvals and the author of a double
- * validation); the approvals themselves are given by the tests with [approve] (the passkeys are covered by
- * the tests of the signing service). [trust] accepts what it signs.
+ * form of the use, a draft for a human use, the double validation the service requires for the contents
+ * of M17 ([DoubleValidation]), the number of approvals and the author of a double validation); the
+ * approvals themselves are given by the tests with [approve] (the passkeys are covered by the tests of
+ * the signing service). [trust] accepts what it signs.
  */
 class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMillis() / 1000 }) : PlatformSigner {
     private val root = IdentityKeys.generate()
@@ -58,6 +60,7 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
             unsigned.kind !in use.kinds -> SigningRefusals.KIND_NOT_ALLOWED
             !use.matches(unsigned) -> SigningRefusals.BAD_TAG
             "${use.id}:$id" in signed -> SigningRefusals.ALREADY_SIGNED
+            !doubleValidation && DoubleValidation.requiredFor(use, unsigned) -> SigningRefusals.DOUBLE_VALIDATION_REQUIRED
             doubleValidation && named == null -> SigningRefusals.AUTHOR_REQUIRED
             else -> null
         }
@@ -109,6 +112,7 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
                 !use.matches(unsigned) -> SigningStatus.Refused(SigningRefusals.BAD_TAG)
                 "${use.id}:$id" in signed -> SigningStatus.Refused(SigningRefusals.ALREADY_SIGNED)
                 !use.automatic && draft == null -> SigningStatus.Refused(SigningRefusals.UNKNOWN_DRAFT)
+                !use.automatic && !draft!!.doubleValidation && DoubleValidation.requiredFor(use, unsigned) -> SigningStatus.Refused(SigningRefusals.DOUBLE_VALIDATION_REQUIRED)
                 !use.automatic && draft!!.approvals.size < draft.required -> SigningStatus.Refused(SigningRefusals.APPROVALS_MISSING)
                 else -> {
                     signed += "${use.id}:$id"
