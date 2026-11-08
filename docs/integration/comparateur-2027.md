@@ -133,7 +133,7 @@ Rédaction :
 - **Reste** : photos officielles (Q3 : servies par PPF, droits vérifiés pour chacune, aucune photo pour personne tant qu'une seule manque) ; votes passés rangés par thème (Q2), avec les paquets historiques de « Voir » (`historique-an-*`, `historique-senat-*`, `historique-pe-*`, D-066), selon une règle de classement publiée à faire valider ; comparateur sur le site sans JavaScript ; relecture par un avocat (L52-8) ; vrais candidats.
 - **À vérifier avant la mise en ligne** (Légifrance, décret de convocation de 2027) : les jours de vote de l'outre-mer et l'heure de fermeture des derniers bureaux de chaque tour, à reporter dans `ppf-round`.
 
-## 10. Votes passés rangés par thème (Q2) : conception à valider
+## 10. Votes passés rangés par thème (Q2) : option A validée par le chef d'équipe (D-117)
 
 Demande de la propriétaire (Q2) : « Depuis aussi loin que possible sur le parti portant le candidat à la présidentielle, tant que les données officielles existent, tous les votes en France et à l'Union européenne. » Données : les paquets historiques de « Voir » (D-066, `docs/integration/voir-historique-import.md`), téléchargés en entier sur l'appareil pour tous les partis, avec pour chaque scrutin public la répartition par parti (pour, contre, abstention, non-votants, membres), sans nom ni position majoritaire.
 
@@ -151,7 +151,12 @@ Demande de la propriétaire (Q2) : « Depuis aussi loin que possible sur le part
 | B | La commission saisie au fond, rapprochée des thèmes | Officiel | Champ vide aujourd'hui dans les paquets ; absent pour le Sénat et le Parlement européen ; trop grossier (huit commissions) |
 | C | Classement à la main par l'équipe, relu à deux | Précis | Sélection éditoriale, contraire à la demande (« tous les votes », sans choix) ; des milliers de scrutins |
 
-Recommandation : **A**, puis B en complément le jour où la commission figurera dans les paquets.
+**Décision du chef d'équipe (8 novembre 2026, D-117) : A**, avec cinq garde-fous :
+1. noms de thèmes neutres, repris des intitulés officiels (commissions permanentes, domaines des ministères) ;
+2. mots fixés et publiés avant la liste officielle des candidats ; ensuite, toute modification datée, motivée et visible dans un historique public de la fiche signée ; aucune pendant le gel ; chaque fiche montre la version des mots ;
+3. partout, « Tous les votes de ce parti » sans thème et une recherche libre par mot dans les titres officiels, sur l'appareil : les thèmes aident à lire, ils ne filtrent jamais ;
+4. sous chaque liste : « classement automatique par mots du titre officiel, il peut contenir des erreurs », les mots affichés et un moyen de signaler un scrutin mal rangé (correction par la règle de mots, jamais à la main) ;
+5. B plus tard, en filtre de plus, quand la commission sera dans les paquets ; C refusée.
 
 ### 10.3 Affichage
 
