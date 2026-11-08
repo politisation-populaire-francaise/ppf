@@ -88,8 +88,11 @@ import org.politisationpopulairefrancaise.server.urne.UrneService
 import org.politisationpopulairefrancaise.server.urne.UrneStore
 import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
 import org.politisationpopulairefrancaise.server.urne.urneApi
+import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
+import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
+import org.politisationpopulairefrancaise.web.securityPages
 import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.webRoutes
 import org.slf4j.LoggerFactory
@@ -121,6 +124,8 @@ import javax.sql.DataSource
  * - PPF_ARCHIVE_*: the timestamped archive (on in production only by default), see [ArchiveConfig].
  * - PPF_TESTIMONY_DIR, PPF_MODERATION_KEY, PPF_EVIDENCE_KEY and the other PPF_TESTIMONY_* and
  *   PPF_EVIDENCE_RETENTION_DAYS settings: the testimonies of the Agir space, see [TestimonySetup].
+ * - PPF_PUBLIC_URL, PPF_SECURITY_NOSTR_KEY, PPF_SECURITY_GITHUB_URL: how researchers report a vulnerability
+ *   (security.txt and /securite, S-92); in production one private channel is required, see [SecurityContactSetup].
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
  *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
  *   to start when it is set in production, see [ExampleSeed].
@@ -157,6 +162,8 @@ fun main() {
             ExampleSeed.load(examples, EventRepository(dataSource, LegalRegister(PublicationPolicy.fromEnvironment()::isEditor)))
         }
     }
+    // Checked before the server starts: a malformed security contact, or none in production, is refused (S-92).
+    val securityContact = SecurityContactSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port)
     // Checked before the server starts: a back-office under a wrong or plain-http address is refused.
     val backOffice = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port)
     // Bind on every interface inside the container; the reverse proxy is the only
@@ -177,7 +184,7 @@ fun main() {
             }
         },
     ) {
-        module(dataSource, backOffice = backOffice)
+        module(dataSource, backOffice = backOffice, securityContact = securityContact)
     }.start(wait = true)
 }
 
@@ -233,6 +240,8 @@ fun Application.module(
     territoires: TerritoiresSetup = TerritoiresSetup.fromEnvironment(),
     testimonies: TestimonySetup = TestimonySetup.fromEnvironment(),
     backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
+    /** How researchers report a vulnerability (S-92): security.txt and the page /securite. */
+    securityContact: SecurityContact = SecurityContactSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
 ) {
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
@@ -366,6 +375,7 @@ fun Application.module(
             agirSpace?.let { agendaPage(it.agendaSource()) }
             tilesRoutes(tiles)
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
+            securityPages(securityContact) // security.txt (RFC 9116) and the disclosure policy (S-92).
             // The pages of "Voir" and "Comprendre": contents of the editorial keys only (D-034, D-091).
             webRoutes(
                 voir = voir ?: repository?.let { EditorialVoirSource(it, policy) },

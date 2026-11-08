@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Crash report offered after a crash (S-101): nothing is sent by the application. -->
+<resources>
+    <string name="crash_title">L’application s’est fermée de façon inattendue</string>
+    <string name="crash_text">Voici le rapport technique écrit sur votre appareil : la version, le système, le jour et l’endroit du code où l’erreur s’est produite. Il ne contient aucun de vos contenus, aucune clé et rien qui vous identifie. Rien n’est envoyé : vous pouvez le copier ou le partager pour nous aider, ou l’effacer. Il s’efface tout seul au bout d’une semaine.</string>
+    <string name="crash_copy">Copier le rapport</string>
+    <string name="crash_copied">Rapport copié</string>
+    <string name="crash_share">Partager le rapport</string>
+    <string name="crash_share_title">Partager le rapport de plantage</string>
+    <string name="crash_delete">Effacer le rapport</string>
+    <string name="crash_close">Plus tard</string>
+</resources>

@@ -6,6 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import io.ktor.client.HttpClient
+import org.politisationpopulairefrancaise.core.AppInfo
+import org.politisationpopulairefrancaise.core.crash.CrashReportFile
+import org.politisationpopulairefrancaise.core.currentPlatform
 import org.politisationpopulairefrancaise.core.identity.AndroidIdentityStore
 import org.politisationpopulairefrancaise.core.local.AndroidDatabase
 import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
@@ -13,6 +16,8 @@ import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.urne.HttpUrneRemote
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
+import org.politisationpopulairefrancaise.ui.crash.PendingCrashReport
+import java.io.File
 
 /** The single activity of the Android app: it hosts the shared Compose UI. */
 class MainActivity : ComponentActivity() {
@@ -24,6 +29,12 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        // After a crash, a report is written in the app's private files, and offered at the next launch:
+        // never sent by the app (S-101). The previous report, if any, is read before the handler is set.
+        val crashes = CrashReportFile(File(filesDir, "crash-report.txt"))
+        val pendingCrash = crashes.pending()?.let { PendingCrashReport(it, crashes::delete) }
+        val platform = currentPlatform()
+        crashes.install("${AppInfo.VERSION} (${BuildConfig.VERSION_NAME}, ${BuildConfig.BUILD_TYPE})", "${platform.name} ${platform.version}")
         enableEdgeToEdge()
         // The server is fixed at build time (see build.gradle.kts): the preproduction for the test
         // version, none for the others, which then work with the contents bundled in the APK. HTTPS
@@ -47,7 +58,7 @@ class MainActivity : ComponentActivity() {
             openDataTrust = if (BuildConfig.BUILD_TYPE == "release") OpenDataKeys.release() else OpenDataKeys.testBuilds(),
         )
         setContent {
-            PpfApp(dependencies)
+            PpfApp(dependencies, crashReport = pendingCrash)
         }
     }
 
