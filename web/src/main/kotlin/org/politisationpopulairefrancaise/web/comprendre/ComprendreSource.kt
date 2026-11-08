@@ -37,6 +37,8 @@ class ComprendreCatalog(
     val glossary: GlossaryIndex,
     /** The public persons of "Voir", by address (`30023:<key>:<identifier>`), to name them in the « Qui décide de ça ? » sheets. */
     val persons: Map<String, PublicPerson>,
+    /** The public journal of corrections: the `ppf-correction` tags of the published versions, the most recent first. */
+    val corrections: List<PublicCorrection> = emptyList(),
 ) {
     private val byPath: Map<String, Any> = buildMap {
         fiches.forEach { a -> ComprendreLinks.pathOf(a)?.let { put(it, a) } }
@@ -108,6 +110,7 @@ class ComprendreCatalog(
                 method = newest(ArticleType.ARTICLE).firstOrNull { it.slug == METHOD_SLUG },
                 glossary = GlossaryIndex(newest(ArticleType.GLOSSAIRE).mapNotNull(GlossaryEntry::from)),
                 persons = newest(ArticleType.PERSONNE).mapNotNull(PublicPerson::from).associateBy { it.address.toString() },
+                corrections = PublicCorrection.of(articles),
             )
         }
     }

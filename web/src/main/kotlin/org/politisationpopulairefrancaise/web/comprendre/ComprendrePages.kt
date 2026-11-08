@@ -60,6 +60,8 @@ import org.politisationpopulairefrancaise.web.voir.badge
  */
 fun Route.comprendrePages(source: ComprendreSource) {
     get(OfflineWorker.PATH) { OfflineWorker.respond(call, source.catalog()) }
+    // The public journal of corrections (circuit éditorial, section 3.4), read from the signed events only.
+    get(CORRECTIONS_PATH) { page(source) { correctionsDocument(it) } }
     route(ComprendreLinks.HOME) {
         get { page(source) { comprendreHomeDocument(it) } }
         get("/${ComprendreLinks.FICHES}") { page(source) { fichesDocument(it) } }
@@ -128,6 +130,10 @@ fun HTML.comprendreHomeDocument(catalog: ComprendreCatalog) {
         comprendreSection("glossaire", "Glossaire") {
             p { +"${catalog.glossary.size} mots de la vie politique, expliqués simplement. Dans les textes, ces mots mènent à leur définition." }
             p { a(href = ComprendreLinks.listPath(ComprendreLinks.GLOSSAIRE)) { +"Ouvrir le glossaire" } }
+        }
+        comprendreSection("corrections", "Journal des corrections") {
+            p { +"Ce que nous avons corrigé ou mis à jour dans les contenus publiés, avec la date et la raison." }
+            p { a(href = CORRECTIONS_PATH) { +"Lire le journal des corrections" } }
         }
         if (catalog.method != null) {
             comprendreSection("methode", "Notre méthode") {
