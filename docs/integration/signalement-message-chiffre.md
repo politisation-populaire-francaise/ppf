@@ -64,8 +64,14 @@ Je recommande l'option 1, avec la possibilité de choisir plusieurs messages de 
 - Un téléphone saisi : il ne contient pas plus de preuves qu'aujourd'hui (aucun sceau gardé).
 - Le serveur principal compromis : il ne lit pas les signalements (chiffrés pour l'équipe).
 
-## 7. Questions pour le Directeur technique (étape 2 du socle)
+## 7. Réponses du Directeur technique (8 novembre 2026)
 
-1. La clé de l'équipe de modération : la même que la « clé de boîte » de M30 (option B, client d'équipe), ou une clé distincte ? Je recommande une clé distincte par usage (modération, M30), gardée de la même façon.
-2. Le format du contenu chiffré d'un signalement : je propose un objet JSON versionné `{v: 1, reason, note, messages: [{wrap_id, keys: {wrap, seal}, text, created_at, author}]}`, décrit dans `docs/FORMATS.md` le moment venu.
-3. La vérification de la preuve se fait dans le client de l'équipe (qui seul déchiffre) : le socle doit-il seulement afficher un bloc chiffré, ou prévoir un emplacement « vérification » que le client remplit ?
+1. **Clé** : une clé par usage, et elle existe déjà : `PPF_MODERATION_KEY`, la clé de l'équipe de modération (témoignages d'Agir, infrastructure des deux environnements), distincte de la boîte de M30. Côté application, intégrée par environnement (comme `ContactInbox`), jamais reçue du serveur.
+2. **Format** (à écrire dans `docs/FORMATS.md` avec le code) : `{"format":"ppf-report-dm","version":1,"reason":<liste fermée de la charte>,"note":<500 caractères au plus, facultatif>,"reporter":<clé publique du signaleur, destinataire des enveloppes>,"messages":[{"wrap_id","keys":{"wrap":{...},"seal":{...}},"text","created_at","author"}]}` ; 11 messages au plus (le signalé, 5 avant, 5 après : borne haute, le nombre retenu dépend de la décision du chef d'équipe sur le contexte, section 2) ; clés NIP-44 d'un message en hexadécimal (clé ChaCha, nonce, clé HMAC) ; lecteur strict qui refuse une version inconnue.
+3. **Transport** (direction du Directeur technique, à confirmer à l'étape 2 du socle) : **pas** un événement 1984 avec des étiquettes `p` ou `e` en clair (le serveur apprendrait qui signale qui : un identifiant d'enveloppe désigne son destinataire). Plutôt un dossier de M30, ticket `report`, adressé à la boîte de modération (boîtes par usage à l'étape 2 de M30, D-146) : auteur à usage unique, preuve de travail, aucun lien avec le compte côté serveur, et un numéro de dossier pour informer le signaleur de la décision (DSA, article 16, paragraphe 5) dans « Mes échanges ». Le contenu reste indépendant du transport : le même JSON part dans le texte du dossier. La section 3 ci-dessus est à relire en ce sens.
+4. **Vérification** : le socle n'affiche que des métadonnées et ne déchiffre jamais. Elle se fait dans le client de l'équipe (étape 3 de M30), par du code commun du pôle Communauté : par exemple `core/messages/ReportProof.verify(wrap, keys, reporter)` qui répond `Proven(author)` ou `Unproven(reason)`, avec ses tests ; le client affiche « Message prouvé : écrit par cette clé » ou « copie non prouvée », et peut renvoyer au serveur un code `proof=proven|unproven` (métadonnée journalisée) pour la file ; rien de plus.
+
+## 8. Ce qui reste avant de coder
+
+- La validation du chef d'équipe (options de la section 2, contexte de la conversation).
+- L'étape 2 du socle (signalements, DSA) et l'étape 2 de M30 (boîtes par usage) du Directeur technique.
