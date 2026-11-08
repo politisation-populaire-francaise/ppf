@@ -592,6 +592,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - liens avec « Voir » par l'étiquette `ppf-official-id` (`an:PA…`, `senat:…`, `pe:…` sur une personne ; `an-dossier:…` sur un texte) : lien vers les votes sur la fiche d'une personne, scrutins sous la fiche d'un texte ;
   - base locale : migration `12.sqm` (table des paquets et index courant).
 
+## D-066 (2026-11-07) Historique des votes pour le comparateur
+
+- Contexte : demande de la propriétaire relayée par « Décider » (comparateur DE-16) : « Depuis aussi loin que possible sur le parti portant le candidat à la présidentielle, tant que les données officielles existent, tous les votes en france et à l'union européenne » ; format convenu avec le pôle « Décider » ; sources vérifiées et structure réelle : `docs/integration/voir-historique-sources.md` ; outil : `docs/integration/voir-historique-import.md` ; format : `docs/FORMATS.md`, section 4 octies.
+- Décisions techniques prises en autonomie (pôle « Voir », avec « Décider ») :
+  - **un paquet par chambre et par période** (`historique-an-14` à `-17`, `historique-senat-<année de session>`, `historique-pe-9` et `-10`), dans le même index signé, **téléchargés tous ensemble pour tous les partis** sur un geste, taille affichée : jamais une requête par parti, qui révélerait au serveur le parti qui intéresse la personne (opinions politiques, RGPD article 9) ;
+  - par scrutin : identifiant, date, titre officiel, texte ou dossier, commission si la source la donne, résultat, totaux, et la **répartition par parti** (pour, contre, abstention, non-votants, membres à la date du vote) ; **aucun nom de personne ni vote nominatif**, **aucune position majoritaire** calculée (ce serait une lecture éditoriale) ;
+  - **parti à la date du vote** : Assemblée, parti de rattachement (`PARPOL`) depuis décembre 2012, sinon le groupe ; Sénat, toujours le groupe ; Parlement européen, parti national ; un groupe est toujours marqué « groupe, rattachement au parti non publié », jamais rapproché d'un parti par nous ;
+  - **couverture** : Assemblée depuis la 14e législature (juillet 2012 ; le fichier officiel de la 14e s'arrête au 24 novembre 2016) ; Sénat depuis la session 2006-2007 (groupes seulement) ; Parlement européen depuis le 15 juillet 2019 (votes par appel nominal) ; dates de couverture dans chaque paquet pour que l'application dise jusqu'où va le fichier officiel ; rien avant (pas de données ouvertes), Conseil de l'Union non importé ;
+  - **sources** : data.assemblee-nationale.fr (scrutins des 14e à 17e législatures, AMO30 historique, Licence Ouverte), data.senat.fr (Dosleg, `ODSEN_HISTOGROUPES.csv`, Licence Ouverte 2.0, nouvel hôte autorisé), data.europarl.europa.eu (API v2, CC BY 4.0) ;
+  - **import à part** (`--history`), une fois par semaine ou par mois, jamais en même temps que l'import quotidien ; même garde de 20 % par source ; fichiers lus en flux.
+
 ## D-070 (2026-11-07) Chaîne de déploiement : image construite et signée par l'intégration continue, déploiement par empreinte
 
 - Contexte : mise en ligne de la préproduction. Le squelette de la phase 0 compilait le serveur sur le serveur lui-même (`docker build` avec Gradle), ce qui ne pouvait pas fonctionner : la compilation configure tout le projet Kotlin Multiplatform (SDK Android compris) et demande bien plus que 1 vCPU et 4 Go de mémoire ; le contrôle de santé du script de déploiement appelait `wget`, absent de l'image.

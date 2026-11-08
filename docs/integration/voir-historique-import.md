@@ -1,10 +1,5 @@
 # « Voir » : l'import de l'historique des votes (comparateur de « Décider », DE-16)
 
-**État à la reprise (7 novembre 2026, soir)**
-- **Fait** : format `ParliamentHistory.kt` (core) et son test ; analyseurs AN (AMO30, 14e à 17e en flux), Sénat (Dosleg par blocs `COPY`, `ODSEN_HISTOGROUPES.csv`), Parlement européen (9e et 10e) ; `--history` et `--only …-history` ; `data.senat.fr` autorisé ; fichiers d'exemple de l'historique ; `HistoryTest` (13 tests) ; cette documentation (brouillon).
-- **Reste** : lancer `:shared:core:jvmTest --tests *Parliament*` (jamais lancé) ; construire le jar et régénérer les paquets embarqués de `shared/ui/.../files/parlement/` avec la clé d'exemple, puis les committer ; remplacer `TESTS_PLACEHOLDER` ci-dessous ; reporter dans `docs/FORMATS.md` et `DECISIONS.md`.
-- **Dernier résultat de test** : `gradlew :tools:open-data-importer:test` vert, 29 tests (HistoryTest 13, ImporterTest 8, ParsersTest 6, KeyGenTest 2), commit 6dd43d3.
-
 Écrit le 7 novembre 2026 sur la branche `feature/voir-historique`. Sources vérifiées et structure réelle des fichiers : `voir-historique-sources.md`. Outil d'import de départ : `voir-donnees-import.md`.
 
 Demande de la propriétaire, relayée par « Décider » : « Depuis aussi loin que possible sur le parti portant le candidat à la présidentielle, tant que les données officielles existent, tous les votes en france et à l'union européenne ».
@@ -17,7 +12,7 @@ Demande de la propriétaire, relayée par « Décider » : « Depuis aussi loin 
 - L'application télécharge **tous les paquets d'historique d'un coup, pour tous les partis** : jamais une requête par parti, qui révélerait au serveur le parti qui intéresse la personne (opinions politiques, RGPD article 9).
 - L'import de l'historique tourne **à part** de l'import quotidien (`--history`) ; l'import quotidien garde les paquets d'historique tels quels, et l'inverse.
 
-## Format des paquets (à reporter dans `docs/FORMATS.md`)
+## Format des paquets (résumé dans `docs/FORMATS.md`, section 4 octies)
 
 Classes Kotlin dans `shared/core/src/commonMain/kotlin/org/politisationpopulairefrancaise/core/voir/parlement/ParliamentHistory.kt` : `HistoryPackage`, `HistoryBallot`, `PartyDistribution`, `PartyRef`, `PartyBasis`, `HistoryCoverage` ; nom d'un paquet : `ParliamentFormat.historyPackage(chamber, period)` ; lecture vérifiée (nom, chambre, période, format) : `ParliamentHistory.read(name, json)`. Même JSON que les autres paquets (`ParliamentFormat.json` : champs inconnus ignorés, valeurs par défaut non écrites).
 
@@ -124,7 +119,7 @@ Avec `--from <dossier>` (fichiers déjà sur le disque) : `amo30/`, `scrutins-14
 - **Lu pour compter, jamais écrit** : identifiants des députés (`acteurRef`), matricules des sénateurs (`senmat`), identifiants des eurodéputés, leurs positions et leurs appartenances datées.
 - **Jamais lu** : noms et prénoms (AMO30, `ODSEN_HISTOGROUPES.csv`, table `sen` de Dosleg), naissance, profession, adresses, place dans l'hémicycle, délégations (`senmatdel`), statut du vote (`stavotidt`), photo, courriel.
 
-## Décisions prises (à consigner dans `DECISIONS.md`)
+## Décisions prises (D-066 dans `DECISIONS.md`)
 
 1. **Un paquet par chambre et par période**, dans l'index commun, téléchargé en entier : la confidentialité de l'intérêt pour un parti l'emporte sur le volume (quelques Mo par législature, compressés par le reverse proxy).
 2. **Le groupe tient lieu de parti** quand aucun parti n'est publié, toujours marqué `groupe` avec le libellé « groupe, rattachement au parti non publié » ; jamais de correspondance groupe → parti écrite par nous (ce serait une interprétation).
@@ -148,7 +143,12 @@ Paquets embarqués régénérés dans `shared/ui/src/commonMain/composeResources
 
 ## Tests
 
-TESTS_PLACEHOLDER
+Lancés le 8 novembre 2026 par `gradle-safe.ps1`, tous verts :
+
+- `:tools:open-data-importer:test` : 29 tests (`HistoryTest` 13 : analyseurs AN, Sénat et Parlement européen, parti à la date du vote, repli sur le groupe, garde de 20 %, déterminisme ; `ImporterTest` 8 ; `ParsersTest` 6 ; `KeyGenTest` 2).
+- `:shared:core:jvmTest --tests *Parliament*` : 38 tests, dont `ParliamentHistoryTest` 2 (noms des paquets, lecture stricte du nom, de la chambre et de la période) et `ParliamentRepositoryTest` 12, avec deux nouveaux : tout l'historique téléchargé d'un coup sur un geste (les requêtes nomment les paquets, jamais un parti), taille annoncée, relecture vérifiée, copie altérée refusée ; paquet d'une autre période refusé.
+- `:shared:ui:jvmTest` : `BundledHistoryTest` 1 (les 9 paquets d'historique intégrés sont cités par l'index d'exemple signé, correspondent à leur empreinte et se lisent ; Sénat toujours en `groupe`) et `ParliamentScreenTest` 10, inchangés avec le nouvel index.
+- Régénération : deux exécutions de l'outil donnent les mêmes paquets à l'octet près (seule la signature de l'index change : signature Schnorr à aléa auxiliaire, même identifiant d'événement).
 
 ## À vérifier au premier import réel (préproduction, avec l'accord de la propriétaire)
 
@@ -162,4 +162,5 @@ TESTS_PLACEHOLDER
 
 - `shared/core/.../voir/parlement/ParliamentHistory.kt` (nouveau) et son test `ParliamentHistoryTest.kt` (nouveau) ; `ParliamentFormat.kt` inchangé.
 - `shared/ui/src/commonMain/composeResources/files/parlement/` : paquets d'exemple régénérés.
-- Aucun changement dans `server/`, `infra/`, `.github/`, ni dans le code de `shared/ui`. L'application ignore pour l'instant les paquets `historique-*` (`ParliamentRepository.readPackage` ne les reconnaît pas) : leur lecture et leur téléchargement sont à brancher par « Décider » ou « Voir » avec `ParliamentHistory.read`.
+- `shared/core/.../voir/parlement/ParliamentRepository.kt` : les paquets `historique-*` sont reconnus (`readPackage`), cités dans `ParliamentSnapshot.history`, `history(chamber)`, `historyToDownload` et `historyBytesToDownload` (taille à afficher avant le geste) ; `downloadHistory()` télécharge tous les paquets d'historique manquants ou périmés d'un coup, pour tous les partis ; `history(name)` relit un paquet de l'appareil (ou intégré), vérifié de nouveau contre l'empreinte de l'index, jamais gardé en mémoire. C'est l'entrée du comparateur pour « Décider », qui construit l'écran.
+- `shared/ui/src/jvmTest/.../voir/parlement/BundledHistoryTest.kt` (nouveau). Aucun changement dans `server/`, `infra/`, `.github/`, ni dans le code de l'interface de `shared/ui`.

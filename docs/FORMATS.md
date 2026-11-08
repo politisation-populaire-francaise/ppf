@@ -575,6 +575,20 @@ Migration `migrations/12.sqm` (schéma 12 vers 13), identique à `Territoires.sq
 
 Index : événement NIP-01, kind 30078, `d` = `ppf:parlement-index`, signé par une clé d'import (`OpenDataKeys`) ; `content` = l'index JSON (`example`, `importedOn`, `sources` avec nom, adresse, licence et date, `packages` avec nom, sha256 et taille). Paquets : `membres` (membres et groupes), `scrutins-an-AAAA-MM`, `votes-pe-AAAA-MM` (scrutins avec décomptes, décompte par groupe, positions `pour`, `contre`, `abstention`, `nonVotant`, `delegated`, `corrections` de type `mise-au-point` ou `dysfonctionnement`, `notVotingCauses`). Identifiants préfixés : `an:PA…`, `senat:…`, `pe:…`, scrutins `an:17:<numéro>`, dossiers `an-dossier:DLR5L17N…`. Code de circonscription : département puis numéro sur deux chiffres (`0101`, `2A01`, `97101`), commun avec l'annuaire des élus. Une brique de « Voir » peut porter `ppf-official-id` (personne ou texte). Modèles Kotlin : `core/voir/parlement/ParliamentFormat.kt` ; détail dans `docs/integration/voir-donnees-ouvertes.md`, section 3.
 
+### Historique des votes, pour le comparateur de « Décider » (D-066)
+
+Paquets `historique-an-<législature>` (14 à 17), `historique-senat-<année de session>` (octobre à septembre, depuis 2006), `historique-pe-<législature européenne>` (9 et 10), cités dans le même index signé, avec trois sources de plus (`an-history`, `senat-history`, `pe-history`). Même JSON que les autres paquets (champs inconnus ignorés, valeurs par défaut non écrites). Modèles Kotlin : `core/voir/parlement/ParliamentHistory.kt` (`HistoryPackage`, `HistoryBallot`, `PartyDistribution`, `PartyRef`, `PartyBasis`, `HistoryCoverage`) ; lecture vérifiée : `ParliamentHistory.read(name, json)`, et dans l'application `ParliamentRepository.history(name)` et `downloadHistory()`.
+
+| Champ | Contenu |
+|---|---|
+| `format`, `example`, `chamber`, `period` | version (1), données fictives, `an`, `senat` ou `pe`, législature ou année de session ; doivent correspondre au nom du paquet |
+| `coverage` | `first` et `last` (AAAA-MM-JJ) : premier et dernier jour des scrutins du paquet ; absent pour un paquet vide |
+| `parties[]` | `id` (`an:PO…`, `senat-grp:<code>`, `pe-org:<identifiant>`, lignes spéciales `senat-grp:aucun` et `pe-org:aucun`), `label` tel que la source l'écrit, `abbreviation`, `basis` (`parti` ou `groupe`), `basisLabel` pour un groupe (« groupe, rattachement au parti non publié ») ; trié par `id` |
+| `ballots[]` | `id` (`an:<lég.>:<numéro>`, `senat:<session>:<numéro>`, `pe:<date>:<numéro du vote>`), `date`, `title` officiel, `kind` (`SPO`, `SPS`, `MOC`, `appel-nominal`), `text`, `dossier` (`an-dossier:…`), `committee` (prévu, vide pour l'instant), `adopted` (absent sans résultat), `counts` (totaux de toute l'assemblée), `parties[]`, `url` ; trié par date puis identifiant |
+| `ballots[].parties[]` | `party`, `basis` (toujours écrit), `pour`, `contre`, `abstention`, `nonVotant`, `members` (membres du parti à la date du scrutin) ; trié par `party` |
+
+Parti à la date du vote : Assemblée, parti de rattachement (`PARPOL`, publié depuis décembre 2012) sinon le groupe ; Sénat, toujours le groupe ; Parlement européen, parti national des élus en France. **Aucun nom de personne, aucun vote nominatif, aucune position majoritaire calculée.** Détail : `docs/integration/voir-historique-import.md`.
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.
