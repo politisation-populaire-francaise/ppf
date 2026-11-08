@@ -42,6 +42,8 @@ object Permissions {
      * but `super_admin` for now, that the Décider pole must confirm or replace when it plugs its queue.
      */
     const val DECIDER_PACTE_PUBLISH: String = "queue.decider.pacte.publish"
+
+    /**
      * Contact, claims and case follow-up (M30, docs/integration/contact-reclamations.md): the inbox of the team
      * (section `contact`, metadata only), assigning, priority, status, closing.
      */
