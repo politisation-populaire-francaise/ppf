@@ -1,7 +1,7 @@
 ---
 slug: laicite-signe-religieux-dans-la-rue
 title: [EXEMPLE] « La laïcité interdit de porter un signe religieux dans la rue »
-summary: Non : la laïcité impose la neutralité à l'État et à ses agents, pas aux citoyens. Dans la rue, porter un signe religieux est libre ; l'interdiction des signes ostensibles vise les élèves des écoles, collèges et lycées publics.
+summary: Non : la laïcité impose la neutralité à l'État et à ses agents, pas aux citoyens. Dans la rue, porter un signe religieux est libre, tant que le visage reste découvert (loi de 2010) ; l'interdiction des signes ostensibles vise les élèves des écoles, collèges et lycées publics.
 topics: laicite, libertes
 type: decryptage
 origin: ai-assisted
@@ -15,6 +15,7 @@ updated_at: 2026-11-08
 - La laïcité garantit la **liberté de conscience** et le **libre exercice des cultes** (loi du 9 décembre 1905, article 1er).
 - La **neutralité** s'impose à l'État et à ses agents dans leur travail, **pas aux citoyens**.
 - Aucune loi n'interdit de porter un signe religieux dans la rue. L'interdiction des signes **ostensibles** vise les **élèves** des écoles, collèges et lycées **publics** (loi du 15 mars 2004).
+- La loi du 11 octobre 2010 interdit de **dissimuler son visage** dans l'espace public, quel que soit le motif : elle ne nomme aucune religion et ne concerne pas les signes qui laissent le visage découvert.
 :::
 
 **[EXEMPLE] Ce décryptage est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
@@ -27,11 +28,11 @@ L'affirmation soutient qu'au nom de la laïcité, il serait interdit de porter d
 
 La loi du 9 décembre 1905 commence par une liberté : la République assure la liberté de conscience et garantit le libre exercice des cultes, sous les seules restrictions prévues pour l'ordre public (article 1er). La Constitution ajoute que la République respecte toutes les croyances (article 1er), et la Déclaration de 1789 protège les opinions « même religieuses », tant que leur manifestation ne trouble pas l'ordre public établi par la loi (article 10).
 
-La neutralité religieuse est une obligation de l'État et de ses agents. Un agent public ne doit pas manifester ses convictions religieuses dans l'exercice de ses fonctions (code général de la fonction publique, article L121-2). Les usagers des services publics, eux, ont le droit d'exprimer leurs convictions, dans les limites du bon fonctionnement du service et des règles d'ordre public, de sécurité, de santé et d'hygiène (Charte de la laïcité dans les services publics, 2007).
+La neutralité religieuse est une obligation de l'État et de ses agents. Un agent public s'abstient notamment de manifester ses opinions religieuses dans l'exercice de ses fonctions (code général de la fonction publique, article L121-2). Les usagers des services publics, eux, ont le droit d'exprimer leurs convictions religieuses, dans les limites de la neutralité du service, de son bon fonctionnement et des impératifs d'ordre public, de sécurité, de santé et d'hygiène (Charte de la laïcité dans les services publics, version adoptée le 9 décembre 2021).
 
-La seule interdiction générale des signes religieux ostensibles concerne les élèves des écoles, des collèges et des lycées publics (code de l'éducation, article L141-5-1, issu de la loi du 15 mars 2004). Elle ne s'applique ni dans la rue, ni aux adultes qui passent devant l'école, ni dans les établissements privés.
+La loi interdit le port de signes ou de tenues manifestant ostensiblement une appartenance religieuse aux élèves des écoles, des collèges et des lycées publics (code de l'éducation, article L141-5-1, issu de la loi du 15 mars 2004). Cette règle ne s'applique ni dans la rue, ni aux adultes qui passent devant l'école, ni dans les établissements privés.
 
-Enfin, la loi du 11 octobre 2010 interdit de porter dans l'espace public une tenue destinée à dissimuler le visage. Ce texte ne parle d'aucune religion et ne vise pas les signes religieux en tant que tels : un signe religieux qui laisse le visage découvert n'est pas concerné. Il ne découle pas non plus de la loi de 1905.
+Enfin, la loi du 11 octobre 2010 interdit de porter dans l'espace public une tenue destinée à dissimuler le visage. Ce texte ne parle d'aucune religion et ne vise pas les signes religieux en tant que tels : un signe religieux qui laisse le visage découvert n'est pas concerné. Il ne découle pas non plus de la loi de 1905 : le Conseil constitutionnel l'a examiné au regard de la sécurité publique, des exigences minimales de la vie en société et de l'égalité entre les femmes et les hommes, sans invoquer la laïcité (décision n° 2010-613 DC du 7 octobre 2010).
 
 ## Pourquoi cette idée circule
 
@@ -47,7 +48,7 @@ Les débats publics sur la laïcité portent souvent sur l'école ou sur la diss
 ::: et-maintenant
 - [Voir les autres contenus de Comprendre](ppf:comprendre)
 - Suivre le parcours « La laïcité : ce qu'elle garantit, ce qu'elle interdit ».
-- Lire la Charte de la laïcité dans les services publics (https://www.fonction-publique.gouv.fr/files/files/Autres%20pages/Textes%20de%20r%C3%A9f%C3%A9rence/2007/C_20070413_PM5209.pdf).
+- Lire la Charte de la laïcité dans les services publics (https://www.info.gouv.fr/upload/media/organization/0001/01/sites_default_files_contenu_piece-jointe_2022_12_charte_de_la_laicite-.pdf).
 :::
 
 ## Sources
@@ -55,7 +56,9 @@ Les débats publics sur la laïcité portent souvent sur l'école ou sur la diss
 - Loi du 9 décembre 1905 concernant la séparation des Églises et de l'État (article 1er) : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000508749
 - Constitution du 4 octobre 1958, texte intégral en vigueur (article 1er) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
 - Déclaration des droits de l'homme et du citoyen de 1789 (article 10) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/declaration-des-droits-de-l-homme-et-du-citoyen-de-1789
-- Ministère de la Fonction publique, « Laïcité et neutralité de la fonction publique » (code général de la fonction publique, article L121-2) : https://www.fonction-publique.gouv.fr/etre-agent-public/mes-droits-et-obligations/laicite-et-neutralite-de-la-fonction-publique
-- Circulaire du Premier ministre n° 5209 du 13 avril 2007 relative à la Charte de la laïcité dans les services publics : https://www.fonction-publique.gouv.fr/files/files/Autres%20pages/Textes%20de%20r%C3%A9f%C3%A9rence/2007/C_20070413_PM5209.pdf
+- Code général de la fonction publique, article L121-2, version en vigueur au 8 novembre 2026 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044427911
+- Charte de la laïcité dans les services publics, version adoptée par le comité interministériel de la laïcité du 9 décembre 2021 (texte publié par le Gouvernement) : https://www.info.gouv.fr/upload/media/organization/0001/01/sites_default_files_contenu_piece-jointe_2022_12_charte_de_la_laicite-.pdf
+- Préfecture de la Loire, « La Charte de la laïcité dans les services publics » (date d'adoption) : https://www.loire.gouv.fr/Actions-de-l-Etat/Elections-citoyennete-et-ceremonies/Laicite/La-Charte-de-la-laicite-dans-les-services-publics
 - Code de l'éducation, article L141-5-1 (loi n° 2004-228 du 15 mars 2004) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524456
 - Loi n° 2010-1192 du 11 octobre 2010 interdisant la dissimulation du visage dans l'espace public (articles 1er et 2) : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000022911670
+- Conseil constitutionnel, décision n° 2010-613 DC du 7 octobre 2010 : https://www.conseil-constitutionnel.fr/decision/2010/2010613DC.htm
