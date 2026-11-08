@@ -4,5 +4,6 @@
 *
 !server/build/libs/ppf-server.jar
 !tools/open-data-importer/build/libs/ppf-open-data-importer.jar
+!signer/build/libs/ppf-signer.jar
 !shared/ui/src/commonMain/composeResources/files/parlement/*.json
 !shared/ui/src/commonMain/composeResources/files/contents/*.json

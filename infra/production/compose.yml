@@ -59,6 +59,11 @@ services:
       PPF_VAPID_PRIVATE_KEY_FILE: /run/secrets/vapid_private_key
       # Testimonies (Agir, M5): files encrypted on the device for the moderation and evidence keys,
       # only stored here (4 GB at most by default); the public keys are set in .env.
+      # The separate signing service (D-129), reached on the internal network "signing" only.
+      PPF_SIGNER_URL: http://signer:8090
+      PPF_SIGNER_CLIENT_TOKEN_FILE: /run/secrets/server_signer_token
+      # Root of this environment (D-079), the same as the signing service's: what the server accepts back from it.
+      PPF_SIGNER_ROOT_PUBKEY: ${PPF_SIGNER_ROOT_PUBKEY:-}
       PPF_TESTIMONY_DIR: /data/testimonies
       PPF_MODERATION_KEY: ${PPF_MODERATION_KEY:-}
       PPF_EVIDENCE_KEY: ${PPF_EVIDENCE_KEY:-}
@@ -76,6 +81,7 @@ services:
     secrets:
       - server_db_password
       - vapid_private_key
+      - server_signer_token
     volumes:
       - /srv/ppf/production/open-data:/data/open-data:ro
       - /srv/ppf/production/vote_seeds:/run/ppf/vote_seeds:ro
@@ -83,6 +89,7 @@ services:
     networks:
       - internal
       - edge
+      - signing
     depends_on:
       db:
         condition: service_healthy
@@ -223,6 +230,61 @@ services:
           memory: 64M
           cpus: "0.25"
 
+  # Platform signing service (D-079, D-129, docs/integration/service-signature.md): holds the working keys,
+  # signs only what its rules and the approvals allow. Its own UID, read-only filesystem except its data,
+  # no way out to the Internet (internal network shared with the server only), keys encrypted at rest.
+  signer:
+    image: ${PPF_SERVER_IMAGE:?set by infra/scripts/deploy.sh}
+    restart: unless-stopped
+    user: "10007:10007"
+    read_only: true
+    tmpfs:
+      - /tmp:rw,exec,nosuid,nodev,size=32m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    entrypoint: ["java", "-Xmx128m", "-XX:+ExitOnOutOfMemoryError", "-jar", "/app/ppf-signer.jar"]
+    environment:
+      PPF_SIGNER_HOST: 0.0.0.0
+      PPF_SIGNER_PORT: "8090"
+      PPF_SIGNER_DATA_DIR: /data/signer
+      PPF_SIGNER_KEK_FILE: /run/secrets/signer_kek
+      PPF_SIGNER_CLIENT_TOKEN_FILE: /run/secrets/signer_client_token
+      # Public key of the root of this environment (a root of its own for the preproduction); empty until
+      # the owner has created it on her phone: then nothing is signed.
+      PPF_SIGNER_ROOT_PUBKEY: ${PPF_SIGNER_ROOT_PUBKEY:-}
+      # Approvals are given on the signing service's own pages (port 8091, through the proxy), never on the
+      # back-office: the main server can neither choose what is approved nor speak for that origin.
+      PPF_SIGNER_APPROVAL_PORT: "8091"
+      PPF_SIGNER_APPROVAL_ORIGIN: ${PPF_SIGNER_APPROVAL_ORIGIN:-}
+      PPF_SIGNER_RP_ID: ${PPF_SIGNER_RP_ID:-}
+      PPF_SIGNER_BACKOFFICE_ORIGIN: ${PPF_BACKOFFICE_ORIGIN:-}
+      PPF_ENVIRONMENT: production
+    secrets:
+      - signer_kek
+      - signer_client_token
+    volumes:
+      - /srv/ppf/production/signer:/data/signer
+    networks:
+      - signing
+      - approval
+    healthcheck:
+      test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8090 && printf 'GET /health HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q ' 200 ' <&3"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    logging:
+      driver: local
+      options:
+        max-size: 1m
+        max-file: "2"
+    deploy:
+      resources:
+        limits:
+          memory: 192M
+          cpus: "0.25"
+
   db:
     # PostgreSQL 17 with PostGIS, pinned by digest (Dependabot proposes updates).
     image: postgis/postgis:17-3.6@sha256:1ac10b2551ba84ae05db8e7da477afcd0a3fede99bcb7705da2ee157390cb095
@@ -244,6 +306,19 @@ services:
       - log_connections=off
       - -c
       - log_disconnections=off
+      # No trace that could link accounts to the order of operations (Décider, validations, D-112):
+      # no commit timestamps, no WAL archiving or point-in-time recovery, the smallest WAL; backups are
+      # logical dumps only (infra/scripts/backup.md).
+      - -c
+      - track_commit_timestamp=off
+      - -c
+      - archive_mode=off
+      - -c
+      - wal_level=minimal
+      - -c
+      - max_wal_senders=0
+      - -c
+      - wal_keep_size=0
     shm_size: 128m
     secrets:
       - db_password
@@ -279,6 +354,14 @@ secrets:
   # VAPID private key of the push wake-ups (EC P-256, PKCS#8 PEM), readable by the server only.
   vapid_private_key:
     file: ${PPF_SECRETS_DIR:?}/vapid_private_key
+  # Signing service (D-129): key-encryption key and the token the server presents (two files, same
+  # token, one per container user).
+  signer_kek:
+    file: ${PPF_SECRETS_DIR:?}/signer_kek
+  signer_client_token:
+    file: ${PPF_SECRETS_DIR:?}/signer_client_token
+  server_signer_token:
+    file: ${PPF_SECRETS_DIR:?}/server_signer_token
   migrate_db_password:
     file: ${PPF_SECRETS_DIR:?}/migrate_db_password
   db_password:
@@ -296,6 +379,14 @@ networks:
   # The database network has no way out.
   internal:
     internal: true
+  # Between the server and the signing service only, no way out.
+  signing:
+    internal: true
+  # Between the proxy and the approval pages of the signing service only, no way out; created once by
+  # infra/scripts/bootstrap-server.sh.
+  approval:
+    external: true
+    name: ppf-prod-approval
   # Shared with the proxy only; created once by infra/scripts/bootstrap-server.sh.
   edge:
     external: true

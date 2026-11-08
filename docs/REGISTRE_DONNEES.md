@@ -63,6 +63,18 @@ Données des membres de l'équipe (bénévoles et salariés de PPF), jamais des 
 
 Ni adresse IP, ni navigateur, ni appareil, ni adresse e-mail dans ces tables (un test le vérifie sur les noms de colonnes) ; aucune donnée du back-office n'est envoyée à un tiers.
 
+### Brouillons du circuit éditorial (8 novembre 2026, étape 3, D-093)
+
+Textes éditoriaux écrits par l'équipe dans l'espace de l'équipe (section `editorial.comprendre`), avant leur relecture et leur publication. Aucune donnée de citoyen. Base légale : intérêt légitime de l'association (traçabilité de la rédaction et de la relecture). Tables de la migration `V11__editorial.sql` (numéro provisoire), sur le serveur.
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Brouillon : identifiant interne, espace, type de contenu, identifiant (`slug`) et titre de la dernière version, contenu publié qu'il met à jour (identifiant d'événement), état, compte de l'équipe qui l'a créé (identifiant interne, pseudonyme), dates de création et de dernière modification, numéro de la dernière version, version soumise et date (pour l'étape 4), événement publié (pour l'étape 5) | Écrire et suivre un contenu jusqu'à sa publication | `editorial_draft` | Un brouillon jamais soumis est effacé avec ses versions 180 jours après sa dernière modification (tâche quotidienne) ; les durées des brouillons soumis, publiés ou refusés seront fixées avec la file (étape 4, proposition : 2 ans) | Membres ayant `editorial.comprendre.write` (rôle éditeur) |
+| Versions d'un brouillon : numéro, champs de l'en-tête dans l'ordre (comme un fichier de `content/`), texte, réponse à « produit avec l'aide d'une IA ? » (vide tant qu'elle n'est pas donnée), nature du changement et note de correction d'une mise à jour, compte qui l'a écrite, date, nombre de problèmes trouvés par le moteur ; jamais modifiées (la base le refuse) | Garder le travail de chacun, comparer les versions, ne jamais écraser le travail d'un autre (concurrence) | `editorial_draft_version` | Comme leur brouillon | Comme leur brouillon |
+| Journal : création et enregistrement de chaque version (identifiant du brouillon, numéro de version, type, identifiant du contenu, nombre de problèmes ; jamais le texte) | Traçabilité (cahier des charges, section 5) | `team_audit_log` (socle) | Comme le journal | Membres ayant `audit.read` |
+
+Ni adresse IP, ni navigateur : le serveur ne garde que les comptes de l'équipe (pseudonymes) et les textes. Les textes d'exemple restent marqués [EXEMPLE].
+
 ### Registre légal des contenus publics (LCEN, 7 novembre 2026, D-077)
 
 Données pseudonymes que la loi impose de garder sur les contributions aux **contenus publics** (base légale : obligation légale, RGPD article 6, 1, c, avec l'article 6, V, A de la LCEN, le décret n° 2021-1362, articles 3, 5, 6 et 7, et l'injonction du décret n° 2026-920 ; détail et sources dans `docs/integration/lcen-conservation-identification.md`). Ce sont des données que les événements signés publics contiennent déjà ; le registre les garde après une modification ou une suppression. Schéma PostgreSQL séparé `legal_register`, jamais lu par une fonction de la plateforme : le serveur ne peut qu'y ajouter des lignes.
@@ -202,6 +214,19 @@ Détail : `docs/integration/agir-temoignages.md`. Un témoignage révèle des op
 | Brouillon du formulaire (texte, date, lieu, photo d’origine, zones) | Ne pas perdre la saisie pendant la session | Mémoire seulement, jamais écrit en clair | Envoi, fermeture de l’application ou effacement des clés | Le témoin |
 
 Rien de la requête n’est gardé (ni adresse IP, ni en-tête, ni appareil). Les journaux ne reçoivent que des nombres. L’application ne lit jamais la position du téléphone : le lieu est écrit par le témoin. La clé qui signe la déclaration de provenance est créée pour la seule photo et détruite aussitôt. Aucun tiers : la photo est choisie par le sélecteur du système (Android) ou la boîte de dialogue des fichiers (ordinateur), sans permission. Vidéos et sons : refusés pour l’instant (aucune donnée).
+
+## Ajout du 7 novembre 2026 : service de signature de la plateforme (D-129)
+
+Données des membres de l'équipe seulement (pseudonymes), jamais des citoyens. Base légale : intérêt légitime de l'association (authenticité des contenus publiés, traçabilité des signatures).
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Liste de l'équipe signée par la racine : identifiant du compte du back-office, date de début, clé publique Nostr reliée au compte (facultative), usages que le membre peut approuver, identifiant et clé publique de ses clés d'accès | Vérifier les accords avant une signature de la plateforme | Service de signature (`team-list.json`) ; préparée par le back-office, signée sur le téléphone de la propriétaire | Remplacée par chaque nouvelle version ; un membre retiré disparaît de la version suivante | Service de signature, serveur (lecture), propriétaire |
+| Journal du service : numéro, date, action, usage, identifiant et date de l'événement, clé de travail, code de refus, **identifiants des comptes qui ont approuvé**, identifiant de la clé d'accès d'une approbation, double validation demandée ou non, **auteur du brouillon** (identifiant du compte ou clé Nostr, tels que la file les donne), `d` d'une clôture d'urne, empreintes de chaînage ; jamais le contenu d'un événement, jamais une adresse | Traçabilité de chaque brouillon, approbation, signature et refus (contrat, sections 4 et 5, version 1.2) ; preuve que l'auteur n'a pas approuvé sa propre double validation | Service de signature (`journal.jsonl`), recopié dans le journal d'audit du back-office (étape 4) | Sans limite, comme le journal d'audit (à faire relire par un avocat) | Équipe ayant `audit.read`, propriétaire |
+| Brouillons en attente d'approbation (8 novembre 2026) : l'événement non signé à approuver (contenu d'un texte de l'équipe, jamais d'un citoyen), la règle (double validation, auteur) et les approbations recueillies (compte, clé d'accès, date) | Montrer aux membres, sur la page du service, exactement ce qui sera signé, et ne signer qu'avec leurs approbations | Mémoire du service de signature seulement (le contenu n'est jamais écrit sur le disque ; la règle et les approbations sont dans le journal) | 7 jours au plus, oubliés dès la signature ; au plus 1000 ; le contenu disparaît au redémarrage | Service de signature ; la page d'approbation, derrière le tunnel de l'équipe |
+| Clés de travail de la plateforme (clés secrètes chiffrées) et certificats publics | Signer les contenus de la plateforme | Service de signature (`keys/`, `certificates/`) | Clé secrète détruite à sa révocation ou à son échéance ; certificats publics gardés | Service de signature seul (clés secrètes) ; public (certificats) |
+
+Aucune donnée de citoyen n'entre dans le service : il voit les contenus de l'équipe à signer, garde en mémoire seulement ceux qui attendent une approbation (7 jours au plus), et n'écrit jamais un contenu sur le disque. Les pages d'approbation ne gardent ni adresse IP, ni cookie, ni journal des requêtes.
 
 ## Ajout du 8 novembre 2026 : signalement des failles de sécurité (S-92)
 
