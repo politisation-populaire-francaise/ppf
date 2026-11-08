@@ -88,6 +88,10 @@ import org.politisationpopulairefrancaise.ui.agir.agenda.rememberAgendaLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.rememberTestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsLibrary
+import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpButton
+import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpSheetHost
+import org.politisationpopulairefrancaise.ui.agir.manifestation.ProvideHelp
+import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
 import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
@@ -190,6 +194,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     var centerOpen by rememberSaveable { mutableStateOf(false) }
     val shellScope = rememberCoroutineScope()
     val testimonyLibrary = rememberTestimonyLibrary(dependencies, start = false)
+    // The AIDE button (M25, AG-27): its emergency sheet over every screen, its rally point on the device.
+    val help = rememberHelpState(dependencies, organisationsLibrary, contentLibrary)
     // Erasing the keys also forgets the followed accounts, the conversations and the joined rooms (protection by default).
     val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = {
         contentLibrary.clearFollowed()
@@ -242,7 +248,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The system's back leads from any space to the feed; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideGlossary(glossary) {
+    ProvideGlossary(glossary) { ProvideHelp(help) {
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
             val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
             val account = accountSession.state as? AccountUiState.Ready
@@ -307,8 +313,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 windowClass.width == WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, bell, centerScreen ?: content)
                 else -> ExpandedShell(selected, navigate, account, bell, centerScreen ?: content)
             }
+            HelpSheetHost(help)
         }
-    }
+    } }
 }
 
 @Composable
@@ -508,6 +515,7 @@ private fun MediumShell(
                 containerColor = palette.surface0,
                 contentColor = palette.inkMuted,
                 modifier = Modifier.testTag(ShellTags.NAV_RAIL).verticalScroll(rememberScrollState()),
+                header = { HelpButton(Modifier.padding(top = 8.dp).width(68.dp), stacked = true) },
             ) {
                 Spacer(Modifier.height(8.dp))
                 quickAccessSections.forEach { section -> RailItem(section, selected, onSelect) }
@@ -564,6 +572,7 @@ private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifi
     val palette = PpfTheme.palette
     Column(modifier.background(palette.surface0)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
+            HelpButton(Modifier.padding(bottom = 12.dp), fullWidth = true)
             quickAccessSections.forEach { section ->
                 NavRow(section.icon, stringResource(section.title), section.space == selected, { onSelect(section.space) }, Modifier.testTag(ShellTags.navItem(section.space)))
                 Spacer(Modifier.height(4.dp))
@@ -660,6 +669,10 @@ private fun TopBar(
                 PpfIconButton(Lucide.Menu, stringResource(Res.string.action_open_menu), onMenu, Modifier.testTag(ShellTags.MENU_BUTTON), tint = palette.ink)
             }
             Wordmark(Modifier.weight(1f).padding(start = if (onMenu != null) 4.dp else 8.dp))
+            // Phones (the bar with the menu): the AIDE button sits in the top bar, where it never
+            // covers a list, a composer or its send button; tablets and computers have it in the rail
+            // and the side bar.
+            if (onMenu != null) HelpButton(Modifier.padding(horizontal = 4.dp), compact = true)
             PpfIconButton(Lucide.Search, stringResource(Res.string.action_search_soon), onClick = { }, enabled = false)
             BellButton(bell)
             AvatarButton(account, mySpaceSelected, onMySpace)

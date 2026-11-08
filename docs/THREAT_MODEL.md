@@ -210,6 +210,20 @@ Détail : `docs/integration/agir-temoignages.md`.
 | Téléphone saisi ou perdu : la liste « Mes témoignages » révèle qu’on a témoigné | Ni texte, ni photo, ni lieu dans la liste ; effacée avec les clés ; bouton « Effacer cette liste » | Verrouillage de l’application (S-43) |
 | Publication de l’identité d’agents d’unités protégées (loi de 1881, article 39 sexies) ou d’une accusation non établie | Relecture humaine, motifs de refus, distinction établi, allégué, en cours d’enquête (méthode de M17) ; file `agir.testimonies` du back-office (refus avec motif, inscrit au journal par le socle ; le serveur n’y montre que la date, le nombre de photos et la présence d’un original) | Lecture et publication par le client de l’équipe, qui déchiffre sur ses appareils ; grille de relecture ; avis d’un avocat |
 
+## Ajout du 7 novembre 2026 : bouton AIDE et mode manifestation (M25 : AG-13, AG-27 première version, AG-36)
+
+Détail : `docs/integration/agir-manifestation.md` ; conception de l'alerte aux street medics, avec ses menaces propres : `docs/integration/agir-secours-conception.md`.
+
+| Menace | Parade en place | Reste à faire |
+|---|---|---|
+| PPF retarde les secours (une personne cherche dans l'application au lieu d'appeler) | Le 15 et le 112 en tête de la feuille AIDE, en gros boutons de couleur d'accent, appel en un geste ; « PPF ne remplace jamais les secours » écrit au-dessus ; les fonctions pas prêtes sont annoncées « bientôt » et ne peuvent pas être pressées | Essai sur un vrai téléphone (phase de test) ; relecture par un avocat et les organisations |
+| Mauvais numéro affiché | Numéros vérifiés sur service-public.gouv.fr (F33954 du 25 août 2026, F1435 du 8 juillet 2026), source citée dans l'application ; testés | Revérifier avant chaque release (checklist) |
+| Révélation de la participation à une manifestation par le point de ralliement (téléphone saisi, perdu ou fouillé) | Gardé sur l'appareil seulement, jamais envoyé ni sauvegardé par le système ; effaçable en un geste ; lieu en mots, aucune position | Verrouillage de l'application (S-43), effacement rapide (S-44) : prochaine étape d'Agir ; chiffrement local de la préférence à étudier avec S-43 |
+| Fuite du territoire tapé | Mémoire seulement, comparé sur l'appareil ; testé : aucune requête ne le contient | Aucun |
+| Appel vers un faux numéro de legal team | Seules les fiches signées par l'équipe éditoriale et vérifiées sont affichées (D-042) ; une vérification retirée les écarte | Procédure réelle de vérification des organisations |
+| Conseils juridiques erronés | Tous les textes marqués [EXEMPLE], à relire par un avocat, construits avec les organisations | Relecture avant le lancement (liste de la feuille de route) |
+| Affichage de la position des forces de l'ordre | Aucun champ ni aucune donnée de ce genre dans cette étape | Règle reprise dans la conception de la carte en direct (AG-24, AG-42, AG-43) |
+
 ## Ajout du 7 novembre 2026 : service de signature de la plateforme (D-079, D-129)
 
 Revu le 8 novembre 2026 après une relecture de sécurité indépendante (contrat version 1.2, révision de D-129).

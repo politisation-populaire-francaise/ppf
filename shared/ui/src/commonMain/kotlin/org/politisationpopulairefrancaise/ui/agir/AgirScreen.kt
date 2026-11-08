@@ -34,6 +34,9 @@ import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
+import org.politisationpopulairefrancaise.ui.agir.manifestation.LocalHelpState
+import org.politisationpopulairefrancaise.ui.agir.manifestation.ManifestationScreen
+import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsScreen
 import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisationsLibrary
@@ -69,6 +72,7 @@ enum class AgirRoute(val id: String) {
     ORGANISATIONS("organisations"),
     COLLECTIVES("collectifs"),
     TESTIFY("temoigner"),
+    MANIFESTATION("mode-manifestation"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -116,6 +120,8 @@ fun AgirScreen(
     }
     val home: () -> Unit = { route = AgirRoute.HOME }
     val testimonyLibrary = testimonies ?: rememberTestimonyLibrary(dependencies, start = false)
+    // The protest mode shares the AIDE button's state (rally point, legal teams); alone (tests), its own.
+    val help = LocalHelpState.current ?: rememberHelpState(dependencies, directory, library)
     // "Je témoigne" of a call for witnesses opens the form linked to the call; back returns to the calls.
     val testify: (String, String) -> Unit = { address, title ->
         testimonyLibrary.answer(address, title)
@@ -150,6 +156,7 @@ fun AgirScreen(
                             AgirRubrics.ORGANISATIONS.id -> route = AgirRoute.ORGANISATIONS
                             AgirRubrics.COLLECTIVES.id -> route = AgirRoute.COLLECTIVES
                             AgirRubrics.TESTIFY.id -> route = AgirRoute.TESTIFY
+                            AgirRubrics.MANIFESTATION.id -> route = AgirRoute.MANIFESTATION
                             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
                         }
                     },
@@ -170,6 +177,7 @@ fun AgirScreen(
                     organisationAgenda = organisationAgenda,
                 )
                 AgirRoute.COLLECTIVES -> Collectives(dependencies, groups, session, windowClass, onNavigate, onBack = home)
+                AgirRoute.MANIFESTATION -> ManifestationScreen(help, windowClass, onBack = home)
                 AgirRoute.TESTIFY -> TestimonyScreen(
                     library = testimonyLibrary,
                     session = session,
