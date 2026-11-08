@@ -337,10 +337,20 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Décision :
 
 ### [2026-11-04] Ressources pour les enseignants
-- Statut : À étudier
-- Concerne : cahier-fonctionnel.md, M13.1
+- Statut : Décidé par le chef d'équipe (délégation de la propriétaire) le 2026-11-08 (CO-13 ; décision technique D-096) ; à intégrer à la prochaine version du cahier fonctionnel (annexe C)
+- Concerne : cahier-fonctionnel.md, M13.1 puis M23 (CO-13), et CO-24 (kit d'atelier d'éducation populaire)
 - Description : proposer des contenus librement réutilisables en classe (enseignement moral et civique), à condition qu'ils soient strictement pluralistes, l'école étant tenue à la neutralité. Mise à jour du 2026-11-04 : les professeurs et leurs élèves font désormais partie des publics de la vision (version 2.0) ; reste à définir la fonctionnalité dans le cahier fonctionnel (format des ressources, niveaux visés, licence de réutilisation).
-- Décision :
+- Options (présentées par le pôle « Comprendre » le 2026-11-08) :
+  - Format : **A.** une « fiche pédagogique » rattachée à chaque parcours existant (objectifs, durée de 55 minutes, prérequis, déroulé, quiz à main levée, débat guidé avec les objections des deux côtés, version imprimable du site sans JavaScript), le même format servant au kit d'atelier CO-24 ; **B.** un espace « Enseignants » séparé avec ses propres ressources ; **C.** les parcours tels quels, avec un simple mode « projection ».
+  - Niveaux : lycée (EMC de la seconde à la terminale) et cycle 4 (5e à 3e), alignés sur les programmes officiels du Bulletin officiel ; les adultes par CO-24.
+  - Licence : la licence commune de tous les contenus de PPF (alors en attente), plutôt qu'une licence propre aux enseignants.
+- Coût : aucun. Aucun compte, aucune donnée d'élève, rien n'est envoyé depuis la classe.
+- Recommandation : format A (un seul format pour CO-13 et CO-24, peu de contenu nouveau) ; le lycée d'abord, le plus proche des parcours actuels ; la licence commune.
+- Décision : les trois recommandations retenues par le chef d'équipe le 2026-11-08, par délégation de la propriétaire (« Pour les decisions a prendre, je suis tes recommandations ») :
+  1. format A : une fiche pédagogique rattachée à chaque parcours (objectifs, durée de 55 minutes, prérequis, déroulé, quiz à main levée, débat guidé avec les objections des deux côtés, version imprimable sur le site sans JavaScript) ; le même format sert au kit d'atelier CO-24 ; aucun compte, aucune donnée d'élève, rien n'est envoyé depuis la classe ;
+  2. niveaux : le lycée d'abord (EMC de la seconde à la terminale), puis le cycle 4 ; chaque fiche cite le programme officiel du Bulletin officiel qu'elle sert (vérifié et daté) ; une phrase rappelle que l'enseignant reste libre de ses choix pédagogiques et que la fiche respecte la neutralité de l'enseignement public : les faits et les débats, jamais une consigne de vote ni une position partisane ;
+  3. licence : celle de tous les contenus de PPF, choisie par la propriétaire le 2026-11-08 (« Ok licence option b ») : CC BY 4.0 pour les textes et les images, Licence Ouverte 2.0 pour les données ; pas de licence propre aux enseignants.
+  Les fiches restent marquées [EXEMPLE], avec la mention « rédigé avec l'aide d'une IA », jusqu'à leur relecture.
 
 ### [2026-11-04] Campagne sur la transparence des archives
 - Statut : Idée
