@@ -34,10 +34,12 @@ import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertCodes
 import org.politisationpopulairefrancaise.core.notifications.NotificationCategory
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
@@ -72,6 +74,10 @@ import org.politisationpopulairefrancaise.ui.resources.notif_center_message_gene
 import org.politisationpopulairefrancaise.ui.resources.notif_center_settings
 import org.politisationpopulairefrancaise.ui.resources.notif_center_title
 import org.politisationpopulairefrancaise.ui.resources.notif_center_unread
+import org.politisationpopulairefrancaise.ui.resources.voir_alert_my_officials
+import org.politisationpopulairefrancaise.ui.resources.voir_alert_title
+import org.politisationpopulairefrancaise.ui.resources.voir_alert_word
+import org.politisationpopulairefrancaise.ui.resources.voir_alert_word_generic
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** Test tags of the notification centre. */
@@ -207,6 +213,17 @@ private fun EntryCard(entry: NotificationEntry, showDetails: Boolean, now: Long,
             AccountAlerts.CONTACT_COMPROMISED ->
                 stringResource(Res.string.notif_center_account_contact) to
                     stringResource(Res.string.notif_center_account_contact_detail, shortNpub(entry.detail.orEmpty()))
+            else -> entry.title to entry.detail
+        }
+        // « Mes élus ont voté » (VO-34): a fixed title; the followed word only if the user allowed details.
+        NotificationCategory.VOTES -> when (entry.title) {
+            VoteAlertCodes.MY_OFFICIALS -> {
+                val count = entry.detail?.toIntOrNull() ?: 0
+                stringResource(Res.string.voir_alert_title) to pluralStringResource(Res.plurals.voir_alert_my_officials, count, count)
+            }
+            VoteAlertCodes.WORD ->
+                stringResource(Res.string.voir_alert_title) to
+                    (entry.detail?.takeIf { showDetails }?.let { stringResource(Res.string.voir_alert_word, it) } ?: stringResource(Res.string.voir_alert_word_generic))
             else -> entry.title to entry.detail
         }
         else -> entry.title to entry.detail

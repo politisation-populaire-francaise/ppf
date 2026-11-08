@@ -14,6 +14,7 @@ import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
 import org.politisationpopulairefrancaise.core.notifications.NotificationCategory
 import org.politisationpopulairefrancaise.core.notifications.SystemNotification
 import org.politisationpopulairefrancaise.core.notifications.SystemNotifier
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertCodes
 
 /**
  * The system notifications of Android: one channel per category (the user can also silence each
@@ -74,12 +75,20 @@ class AndroidSystemNotifier(private val context: Context) : SystemNotifier {
     private fun titleOf(notification: SystemNotification): String =
         if (notification.category == NotificationCategory.ACCOUNT) {
             context.getString(labelOf(notification.category))
+        } else if (notification.title == VoteAlertCodes.MY_OFFICIALS || notification.title == VoteAlertCodes.WORD) {
+            // « Mes élus ont voté » (VO-34): a fixed title, never a name.
+            context.getString(R.string.notification_votes_parliament)
         } else {
             notification.title?.let { shortKey(it) } ?: context.getString(labelOf(notification.category))
         }
 
     /** The account's alerts carry a fixed code (S-146): a fixed text, never the contact's key. */
     private fun textOf(notification: SystemNotification, generic: String): String {
+        val detail = notification.detail
+        when (notification.title) {
+            VoteAlertCodes.MY_OFFICIALS -> detail?.toIntOrNull()?.let { return context.resources.getQuantityString(R.plurals.notification_votes_my_officials, it, it) }
+            VoteAlertCodes.WORD -> if (detail != null) return context.getString(R.string.notification_votes_word, detail)
+        }
         if (notification.category != NotificationCategory.ACCOUNT) return notification.detail ?: generic
         val text = when (notification.title) {
             AccountAlerts.PHRASE_CHECK -> R.string.notification_account_phrase

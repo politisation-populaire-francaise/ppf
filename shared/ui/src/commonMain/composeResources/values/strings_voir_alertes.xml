@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- « Mes élus ont voté » and the followed words (VO-34, D-102): neutral texts of the notification centre. -->
+    <string name="voir_alert_title">Nouveaux votes au Parlement</string>
+    <plurals name="voir_alert_my_officials">
+        <item quantity="one">Vos élus ont pris part à %d nouveau scrutin.</item>
+        <item quantity="many">Vos élus ont pris part à %d nouveaux scrutins.</item>
+        <item quantity="other">Vos élus ont pris part à %d nouveaux scrutins.</item>
+    </plurals>
+    <string name="voir_alert_word">Un nouveau scrutin sur « %1$s ».</string>
+    <string name="voir_alert_word_generic">Un nouveau scrutin sur un mot que vous suivez.</string>
+</resources>

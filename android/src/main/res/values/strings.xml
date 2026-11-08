@@ -14,6 +14,14 @@
     <string name="notification_account_phrase">Vérifiez votre phrase de récupération</string>
     <string name="notification_account_own">Votre compte a été déclaré compromis</string>
     <string name="notification_account_contact">Un contact a déclaré son compte compromis</string>
+    <!-- « Mes élus ont voté » (VO-34, D-102): neutral texts, shown once unlocked and only with details allowed. -->
+    <string name="notification_votes_parliament">Nouveaux votes au Parlement</string>
+    <plurals name="notification_votes_my_officials">
+        <item quantity="one">Vos élus ont pris part à %d nouveau scrutin</item>
+        <item quantity="many">Vos élus ont pris part à %d nouveaux scrutins</item>
+        <item quantity="other">Vos élus ont pris part à %d nouveaux scrutins</item>
+    </plurals>
+    <string name="notification_votes_word">Un nouveau scrutin sur « %1$s »</string>
     <!-- The only text ever shown on the lock screen. -->
     <string name="notification_public_title">PPF : nouvelle activité</string>
     <plurals name="notification_count_messages">
