@@ -1,6 +1,12 @@
 package org.politisationpopulairefrancaise.core.publication
 
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import org.politisationpopulairefrancaise.core.groups.Group
+import org.politisationpopulairefrancaise.core.identity.AccountRecovery
+import org.politisationpopulairefrancaise.core.identity.AccountStatus
+import org.politisationpopulairefrancaise.core.identity.AccountStatusResult
+import org.politisationpopulairefrancaise.core.identity.NoticeCheck
 import org.politisationpopulairefrancaise.core.groups.GroupMessage
 import org.politisationpopulairefrancaise.core.groups.RoomModeration
 import org.politisationpopulairefrancaise.core.signing.EventKinds
@@ -104,6 +110,35 @@ enum class RejectionReason {
 
     /** An edit that touches something else than the name and the presentation. */
     EDIT_NOT_ALLOWED,
+
+    // Recovery key and compromised accounts (S-146, D-134).
+    /** The author's account is declared compromised: nothing new is accepted from it. */
+    ACCOUNT_COMPROMISED,
+
+    /** The account already has a commitment to a recovery key; only the first one counts. */
+    RECOVERY_ALREADY_SET,
+
+    /** The account is already declared compromised: a notice is irreversible and unique. */
+    ALREADY_COMPROMISED,
+
+    /** The successor named by the notice already succeeds another account. */
+    SUCCESSOR_TAKEN,
+
+    /** A commitment of the wrong form. */
+    INVALID_COMMITMENT,
+
+    /** A notice that does not check out (signature, commitment, recovery key, dates). */
+    INVALID_NOTICE,
+}
+
+/**
+ * Implemented by the destinations that tell which accounts they refused as compromised
+ * (`403 account_compromised`, S-146): "Mon espace" learns at once that the user's account is
+ * declared compromised, whichever screen tried to publish.
+ */
+interface CompromisedRefusals {
+    /** The public keys (lowercase hex) whose events were refused as compromised during this run. */
+    val refusedAsCompromised: StateFlow<Set<String>>
 }
 
 /** A room of close name, as a `409 group_similar` lists it (D-132). */
@@ -116,14 +151,18 @@ data class SimilarRoom(val id: String, val name: String? = null, val territory: 
  * store until the database arrives; it refuses anything whose signature does not check out, like
  * every adapter must.
  */
-class InMemoryPublicationPort : RemoteEvents {
+class InMemoryPublicationPort : RemoteEvents, CompromisedRefusals {
     private val stored = LinkedHashMap<String, SignedEvent>()
+
+    private val refused = MutableStateFlow<Set<String>>(emptySet())
+    override val refusedAsCompromised: StateFlow<Set<String>> get() = refused
 
     val events: List<SignedEvent> get() = stored.values.toList()
 
     override suspend fun publish(event: SignedEvent): PublicationResult {
         if (!event.verify()) return PublicationResult.Rejected(event.id, RejectionReason.INVALID_SIGNATURE)
         if (event.id in stored) return PublicationResult.Accepted(event.id)
+        checkRecoveryRules(event)?.let { return it }
         checkRoomRules(event)?.let { return it }
         if (event.kind == EventKinds.GROUP_METADATA) {
             // Addressable: the author's newer description replaces the older one, as on the server;
@@ -176,6 +215,59 @@ class InMemoryPublicationPort : RemoteEvents {
         }
         if (event.kind == EventKinds.GROUP_CHAT && moderationOf(room).isBanned(event.pubkey)) return reject(RejectionReason.BANNED)
         return null
+    }
+
+    /** The first commitment (kind 1776) of [account] received, as the server records it. */
+    private fun firstCommitment(account: String): SignedEvent? =
+        stored.values.firstOrNull { it.kind == AccountRecovery.COMMITMENT_KIND && it.pubkey == account }
+
+    /** The accepted notice (kind 1777) of [account], if any. */
+    private fun noticeOf(account: String): SignedEvent? =
+        stored.values.firstOrNull { it.kind == AccountRecovery.NOTICE_KIND && it.firstTagValue("p") == account }
+
+    /**
+     * The server's rules for recovery (S-146, docs/FORMATS.md, section 4 decies): nothing new from a
+     * compromised key, one commitment per account, a notice checked against the first commitment,
+     * one notice per account, one predecessor per successor.
+     */
+    private fun checkRecoveryRules(event: SignedEvent): PublicationResult? {
+        fun reject(reason: RejectionReason) = PublicationResult.Rejected(event.id, reason)
+        if (noticeOf(event.pubkey) != null) {
+            refused.value = refused.value + event.pubkey
+            return reject(RejectionReason.ACCOUNT_COMPROMISED)
+        }
+        when (event.kind) {
+            AccountRecovery.COMMITMENT_KIND -> {
+                AccountRecovery.parseCommitment(event) ?: return reject(RejectionReason.INVALID_COMMITMENT)
+                if (firstCommitment(event.pubkey) != null) return reject(RejectionReason.RECOVERY_ALREADY_SET)
+            }
+            AccountRecovery.NOTICE_KIND -> {
+                val parsed = (AccountRecovery.parseNotice(event) as? NoticeCheck.Valid)?.notice ?: return reject(RejectionReason.INVALID_NOTICE)
+                if (noticeOf(parsed.compromised) != null) return reject(RejectionReason.ALREADY_COMPROMISED)
+                val commitment = firstCommitment(parsed.compromised) ?: return reject(RejectionReason.INVALID_NOTICE)
+                if (AccountRecovery.checkNotice(event, commitment) !is NoticeCheck.Valid) return reject(RejectionReason.INVALID_NOTICE)
+                val successor = parsed.successor
+                if (successor != null && stored.values.any { it.kind == AccountRecovery.NOTICE_KIND && successor in it.tagValues(AccountRecovery.SUCCESSOR_TAG) }) {
+                    return reject(RejectionReason.SUCCESSOR_TAKEN)
+                }
+            }
+        }
+        return null
+    }
+
+    /** Like `GET /api/v1/accounts/<key>/status`. */
+    override suspend fun fetchAccountStatus(pubkey: String): AccountStatusResult {
+        val notice = noticeOf(pubkey)
+        val parsed = notice?.let { (AccountRecovery.parseNotice(it) as? NoticeCheck.Valid)?.notice }
+        return AccountStatusResult.Known(
+            AccountStatus(
+                compromised = parsed != null,
+                since = parsed?.since,
+                successor = parsed?.successor,
+                notice = notice,
+                commitment = firstCommitment(pubkey)?.id,
+            ),
+        )
     }
 
     private fun roomEvents(groupId: String): List<SignedEvent> =
