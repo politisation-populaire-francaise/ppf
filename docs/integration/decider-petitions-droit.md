@@ -9,8 +9,9 @@ Recherche faite par un agent le 7 novembre 2026 sur les sources officielles. À 
 - Durée : jusqu'à la fin de la législature, ou un an après 100 000 signatures, ou fermeture en cas de classement.
 - Classement d'office selon les commissions (Lois : moins de 5 000 signatures en 6 mois ; Affaires sociales et culturelles : moins de 10 000).
 - Toute pétition : renvoyée en commission, rapporteur, classement ou examen (rapport). Un député peut demander sous 8 jours qu'une pétition classée soit soumise à l'Assemblée (art. 149).
-- 100 000 : mise en ligne sur le site de l'Assemblée (art. 148, al. 1), aucun examen obligatoire.
-- 500 000 signataires domiciliés dans au moins 30 départements ou collectivités d'outre-mer : la Conférence des présidents peut inscrire un débat sur un rapport, sur proposition d'un président de commission ou de groupe. Débat sans vote (art. 151).
+- Plus de 100 000 : mise en ligne sur le site de l'Assemblée (art. 148, al. 1 : « signées par plus de 100 000 pétitionnaires »), aucun examen obligatoire.
+- Plus de 500 000 signataires domiciliés dans trente départements ou collectivités d'outre-mer au moins : la Conférence des présidents peut inscrire un débat sur un rapport, sur proposition d'un président de commission ou de groupe (art. 148, al. 6 ; la condition de domiciliation est précisée par une décision du Bureau). Débat sans vote : l'article 151 décrit le déroulé du débat, après lequel « le Président passe à la suite de l'ordre du jour ».
+- Corrigé le 7 novembre 2026 sur le texte officiel (signalé par le pôle « Comprendre ») : « plus de » et non « au moins », et l'article 148, alinéa 6, et non l'article 151, pour la règle des trente départements.
 - Réforme envisagée en 2026 (article 15 bis de la proposition n° 2990) retirée de l'ordre du jour le 15 juillet 2026.
 - Pétition Duplomb n° 3014 : 2 131 368 signatures, débat le 11 février 2026, sans vote.
 - Pas d'API ; jeu de données « Pétitions de l'Assemblée Nationale » sur data.gouv.fr (Licence Ouverte 2.0, mis à jour chaque lundi).

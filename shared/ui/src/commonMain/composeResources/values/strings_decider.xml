@@ -45,7 +45,9 @@
     <string name="decider_petition_threshold_unknown">Le nombre de soutiens nécessaire sera fixé par le Conseil constitutionnel pour cette procédure.</string>
     <string name="decider_petition_all_reached">Tous les seuils sont atteints.</string>
     <string name="decider_petition_next_threshold">Prochain seuil : %1$s signatures</string>
+    <string name="decider_petition_next_threshold_more_than">Prochain seuil : plus de %1$s signatures</string>
     <string name="decider_petition_remaining">Plus que %1$s signatures pour atteindre %2$s</string>
+    <string name="decider_petition_remaining_more_than">Plus que %1$s signatures pour dépasser %2$s</string>
     <string name="decider_petition_progress_description">%1$d pour cent du prochain seuil</string>
     <string name="decider_petition_sign">Signer sur le site officiel (%1$s)</string>
     <string name="decider_petition_see_official">Voir sur le site officiel (%1$s)</string>
@@ -62,6 +64,7 @@
     <string name="decider_thresholds_of_petition">Les seuils et ce qu’ils obtiennent</string>
     <string name="decider_thresholds_explain">Comment fonctionnent les pétitions : %1$s</string>
     <string name="decider_threshold_signatures">%1$s signatures</string>
+    <string name="decider_threshold_more_than">Plus de %1$s signatures</string>
     <string name="decider_threshold_reached">Atteint</string>
     <string name="decider_threshold_not_reached">Pas encore atteint</string>
     <string name="decider_threshold_departments">venant d’au moins %1$d départements ou collectivités d’outre-mer</string>
@@ -108,6 +111,7 @@
     <string name="decider_share_platform">Pétition officielle : %1$s</string>
     <string name="decider_share_count">Déjà %1$s signatures (le %2$s).</string>
     <string name="decider_share_next">Objectif : %1$s signatures.</string>
+    <string name="decider_share_next_more_than">Objectif : plus de %1$s signatures.</string>
     <string name="decider_share_link">Signer sur le site officiel : %1$s</string>
     <string name="decider_share_copy">Copier le message</string>
 
@@ -123,7 +127,7 @@
     <string name="decider_pacte_answered_until">%1$d candidats sur %2$d ont répondu. Réponses attendues jusqu’au %3$s.</string>
     <string name="decider_pacte_first_round">Premier tour le %1$s</string>
     <string name="decider_pacte_method_title">Les mêmes règles pour tous les candidats</string>
-    <string name="decider_pacte_method_text">Le même texte, envoyé le même jour, avec le même délai, à tous les candidats sans exception. Ils apparaissent par ordre alphabétique. Chaque réponse est archivée avec son empreinte et sa date. Une réponse portant sur un autre texte n’est pas comptée.</string>
+    <string name="decider_pacte_method_text">Le même texte, envoyé le même jour, avec le même délai, à tous les candidats sans exception. Ils apparaissent par ordre alphabétique. Chaque réponse est archivée avec son empreinte et sa date. Une réponse portant sur un autre texte, ou reçue après la date limite, n’est pas comptée : elle reste visible sous le tableau.</string>
     <string name="decider_pacte_sent_on">Envoyé le %1$s aux %2$d candidats</string>
     <string name="decider_pacte_deadline">Réponses attendues jusqu’au %1$s inclus</string>
     <string name="decider_pacte_deadline_passed">Délai écoulé le %1$s : l’absence de réponse est maintenant affichée « Sans réponse »</string>
@@ -136,8 +140,6 @@
     <string name="decider_cell_refused">Refusé</string>
     <string name="decider_cell_awaiting">En attente</string>
     <string name="decider_cell_no_answer">Sans réponse</string>
-    <string name="decider_pacte_late">réponse reçue après le délai</string>
-    <string name="decider_pacte_late_short">(en retard)</string>
     <string name="decider_pacte_open_candidate">Ouvrir la fiche de %1$s</string>
     <string name="decider_pacte_no_answer_received">Aucune réponse reçue</string>
     <string name="decider_pacte_received_on">Réponse reçue le %1$s</string>
@@ -149,6 +151,7 @@
     <string name="decider_pacte_set_aside_title">Réponses non comptées (%1$d)</string>
     <string name="decider_pacte_set_aside_other_text">%1$s : porte sur un autre texte que celui envoyé à tous</string>
     <string name="decider_pacte_set_aside_not_candidate">%1$s : ne vient pas d’un candidat de cette élection</string>
+    <string name="decider_pacte_set_aside_late">%1$s : reçue le %2$s, après la date limite, donc non comptée</string>
     <string name="decider_pacte_archives_title">Les réponses archivées</string>
     <string name="decider_pacte_archives_text">Chaque document reçu est conservé avec son empreinte (SHA-256) et une preuve d’horodatage : personne ne peut le modifier après coup sans que cela se voie.</string>
     <string name="decider_pacte_archive_missing">Archive du document en cours de dépôt.</string>
@@ -157,4 +160,16 @@
     <string name="decider_pacte_fingerprint_copy">Copier l’empreinte</string>
     <string name="decider_pacte_proposed_title">Une liste de départ, à choisir ensemble</string>
     <string name="decider_pacte_proposed_text">Ces mesures sont proposées en attendant que le mur des revendications fasse émerger les priorités. La liste définitive sera choisie par le vote des citoyens, puis envoyée à tous les candidats.</string>
+    <!-- The comparator of an election (DE-16). -->
+    <string name="decider_comparator_section">Comparer les candidats</string>
+    <string name="decider_comparator_section_intro">Les mêmes thèmes, dans le même ordre, pour chaque candidat, avec ses propres mots et leur source. Aucune note, aucun classement, aucune consigne de vote.</string>
+    <string name="decider_comparator_card_line">%1$d candidats, %2$d thèmes</string>
+    <string name="decider_comparator_method_title">Les mêmes règles pour tous</string>
+    <string name="decider_comparator_method">Chaque candidat a les mêmes thèmes, dans le même ordre ; les candidats sont rangés par ordre alphabétique. Chaque position est résumée en une ou deux phrases et accompagnée d’une courte citation du candidat, avec le lien vers le document d’où elle vient et sa date. Quand un candidat n’a rien publié sur un thème, la case le dit. PPF ne dit pas pour qui voter.</string>
+    <string name="decider_comparator_themes">Thèmes</string>
+    <string name="decider_comparator_none">Pas de position publiée sur ce thème.</string>
+    <string name="decider_comparator_quote">Ses mots : « %1$s »</string>
+    <string name="decider_comparator_source">Lire la source (%1$s)</string>
+    <string name="decider_comparator_sheet">Sa fiche dans « Voir »</string>
+    <string name="decider_comparator_aside">%1$d positions publiées ne sont pas affichées (autre élection, autre personne ou thème absent de la grille).</string>
 </resources>

@@ -19,10 +19,13 @@ object BundledContents {
      * organisations.json (directory), and voir.json (the blocks of "Voir": figures, facts, persons,
      * bills, movements, dossiers, replies), each loaded only if it exists.
      */
-    val FILES: List<String> get() = listOf("fiches.json", "revendications.json", "fil.json") + AGIR_FILES + VOIR_FILE + COMPRENDRE_FILES
+    val FILES: List<String> get() = listOf("fiches.json", "revendications.json", "fil.json") + AGIR_FILES + VOIR_FILE + COMPRENDRE_FILES + DECIDER_FILE
 
     /** The example contents of "Voir", shown by the site at /voir. */
     const val VOIR_FILE: String = "voir.json"
+
+    /** The petitions, the pact, the answers and the comparator of "Décider" (pages at /decider). */
+    const val DECIDER_FILE: String = "decider.json"
 
     /**
      * The other example contents of "Comprendre", shown by the site at /comprendre (D-091): courses,

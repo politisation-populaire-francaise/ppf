@@ -126,15 +126,36 @@ class PacteTest {
     }
 
     @Test
-    fun afterTheDeadlineSilenceIsNoAnswerAndLateAnswersSaySo() {
+    fun afterTheDeadlineSilenceIsNoAnswerAndALateAnswerIsNotCounted() {
         val pacte = Pacte.from(pacte())!!
         val catalog = DeciderCatalog.from(listOf(pacte.article, engagement("r-zoe", "zoe", pacte.fingerprint, "2027-02-12", "ric | signe")))
-        val board = catalog.board(catalog.pactes.single(), voir, today = CivilDate(2027, 2, 11))
+        val board = catalog.board(catalog.pactes.single(), voir, today = CivilDate(2027, 2, 13))
         assertTrue(board.deadlinePassed)
         assertEquals(CellStatus.NO_ANSWER, board.row(ContentAddress.parse(address("alex")))!!.cells[0].status)
         val zoe = board.row(ContentAddress.parse(address("zoe")))!!
-        assertTrue(zoe.late)
-        assertEquals(listOf(CellStatus.SIGNED, CellStatus.NO_ANSWER, CellStatus.NO_ANSWER), zoe.cells.map { it.status })
+        assertNull(zoe.engagement, "an answer received after the deadline is not counted (D-062)")
+        assertEquals(listOf(CellStatus.NO_ANSWER, CellStatus.NO_ANSWER, CellStatus.NO_ANSWER), zoe.cells.map { it.status })
+        assertEquals(0, board.answeredCandidates)
+        assertEquals(listOf(SetAsideReason.LATE), board.setAside.map { it.reason }, "but it stays visible below the table")
+        assertEquals("r-zoe", board.setAside.single().engagement.article.slug)
+    }
+
+    @Test
+    fun anAnswerReceivedOnTheDeadlineCountsAndALaterChangeDoesNot() {
+        val pacte = Pacte.from(pacte())!!
+        assertEquals(CivilDate(2027, 2, 10), pacte.deadline)
+        val catalog = DeciderCatalog.from(
+            listOf(
+                pacte.article,
+                engagement("r-zoe-1", "zoe", pacte.fingerprint, "2027-02-10", "ric | refuse"),
+                engagement("r-zoe-2", "zoe", pacte.fingerprint, "2027-02-11", "ric | signe"),
+            ),
+        )
+        val board = catalog.board(catalog.pactes.single(), voir, today = CivilDate(2027, 2, 12))
+        val zoe = board.row(ContentAddress.parse(address("zoe")))!!
+        assertEquals("r-zoe-1", zoe.engagement!!.article.slug)
+        assertEquals(CellStatus.REFUSED, zoe.cells[0].status)
+        assertEquals(listOf("r-zoe-2"), board.setAside.filter { it.reason == SetAsideReason.LATE }.map { it.engagement.article.slug })
     }
 
     @Test

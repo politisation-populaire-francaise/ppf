@@ -154,6 +154,15 @@ private fun DeciderHome(
                 }
             }
         }
+        catalog.currentComparator()?.let { sheet ->
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.testTag(DeciderTags.section("comparateur"))) {
+                SectionHeader(stringResource(Res.string.decider_comparator_section))
+                Text(stringResource(Res.string.decider_comparator_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+                Spacer(Modifier.height(12.dp))
+                ComparatorCard(catalog.grid(sheet, voir), onOpen = { state.open(DeciderDestination.Comparator(sheet.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+            }
+        }
         Spacer(Modifier.height(24.dp))
         val open = catalog.openPetitions(today)
         val closed = catalog.closedPetitions(today)
@@ -263,6 +272,9 @@ private fun DeciderDetail(
                     } ?: Missing()
                     is DeciderDestination.Pacte -> catalog.pacte(current.address)?.let { pacte ->
                         PactePage(catalog.board(pacte, voir, today), state, actions, wide)
+                    } ?: Missing()
+                    is DeciderDestination.Comparator -> catalog.comparators.firstOrNull { it.address == current.address }?.let { sheet ->
+                        ComparatorPage(catalog.grid(sheet, voir), wide, onOpenSheet = onOpenVoir)
                     } ?: Missing()
                     is DeciderDestination.Thresholds -> ThresholdsPage(current.platform, columns)
                     DeciderDestination.ClosedPetitions -> ClosedPetitionsPage(catalog.closedPetitions(today), today, columns) {

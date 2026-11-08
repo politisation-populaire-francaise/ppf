@@ -63,7 +63,7 @@ data class SigningAttempt(
 )
 
 /**
- * The submissions of the editorial circuit to the signing service (step 5, `V13__editorial_signing.sql`,
+ * The submissions of the editorial circuit to the signing service (step 5, `V15__editorial_signing.sql`,
  * provisional number), and the state of the draft that goes with them. Plain JDBC, blocking.
  */
 class EditorialSigning(private val dataSource: DataSource, private val clock: Clock = Clock.systemUTC()) {

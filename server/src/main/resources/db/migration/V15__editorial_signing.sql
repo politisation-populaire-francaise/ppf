@@ -1,5 +1,5 @@
 -- The signature and the publication of the editorial circuit (docs/integration/circuit-editorial.md,
--- section 6, step 5). Provisional number: renumbered when it enters main (register of the team).
+-- section 6, step 5). Number V15, after V13 (urnes) and V14 (archives) of Décider in main.
 --
 -- Personal data (docs/REGISTRE_DONNEES.md): the internal identifier of the team account that withdrew an
 -- approved version (pseudonymous) and the reason it wrote; no data of a citizen, never an IP address nor a

@@ -52,10 +52,20 @@ class PetitionTest {
         val progress = PetitionRules.progress(p)
         assertEquals(listOf(100_000L), progress.reached.map { it.signatures })
         assertEquals(500_000L, progress.next!!.signatures)
-        assertEquals(87_050L, progress.remaining)
+        assertEquals(87_051L, progress.remaining, "« plus de 500 000 » (article 148, alinéa 6)")
         assertEquals(30, progress.next!!.minDepartments)
         assertFalse(progress.next!!.guaranteed, "a debate at the Assemblée is never automatic")
         assertTrue(progress.fraction in 0.82f..0.83f)
+    }
+
+    @Test
+    fun theAssembleeThresholdsAreStrictlyMoreThan() {
+        // Règlement de l'Assemblée nationale, article 148, alinéa 1 : « plus de 100 000 pétitionnaires ».
+        val exactly = PetitionRules.progress(Petition.from(petition(tags = arrayOf(count("100000", "2026-11-06"))))!!)
+        assertTrue(exactly.reached.isEmpty(), "100 000 is not more than 100 000")
+        assertEquals(1L, exactly.remaining)
+        val oneMore = PetitionRules.progress(Petition.from(petition(tags = arrayOf(count("100001", "2026-11-06"))))!!)
+        assertEquals(listOf(100_000L), oneMore.reached.map { it.signatures })
     }
 
     @Test
