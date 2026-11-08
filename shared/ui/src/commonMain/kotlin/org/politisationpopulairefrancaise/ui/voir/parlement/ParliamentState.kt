@@ -22,6 +22,7 @@ import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentSnapshot
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentStore
 import org.politisationpopulairefrancaise.core.voir.parlement.InMemoryVoteAlertStorage
 import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertStore
+import org.politisationpopulairefrancaise.core.voir.parrainages.SponsorshipsLoader
 import org.politisationpopulairefrancaise.core.elus.ElusDirectory
 import org.politisationpopulairefrancaise.core.elus.ElusStore
 import org.politisationpopulairefrancaise.core.elus.InMemoryElusStorage
@@ -35,6 +36,8 @@ sealed interface ParliamentPage {
     data object Week : ParliamentPage // « Cette semaine au Parlement » (ParliamentWeekScreen.kt)
     data object MyVotes : ParliamentPage // « Mes élus ont voté » (MyVotesPage.kt, VO-34)
     data object Presence : ParliamentPage // « Présence et délégations » (PresencePage.kt, VO-35)
+    data object Sponsorships : ParliamentPage // « Parrainages de la présidentielle 2027 » (SponsorshipsPage.kt, VO-37)
+    data class SponsorshipsOf(val candidate: String) : ParliamentPage
 }
 
 /**
@@ -48,6 +51,8 @@ class ParliamentState(
     private val scope: CoroutineScope,
     /** « Mes élus ont voté » (VO-34): my officials, the followed words and members of the European Parliament. */
     val myVotes: MyVotesState = MyVotesState(InMemoryVoteAlertStorage(), ElusDirectory(null, InMemoryElusStorage()), scope),
+    /** « Parrainages de la présidentielle 2027 » (VO-37). */
+    val sponsorships: SponsorshipsState = SponsorshipsState(SponsorshipsLoader(null, InMemoryParliamentStorage()), scope),
 ) {
     private val lock = Mutex()
 
@@ -177,6 +182,7 @@ fun rememberParliamentState(dependencies: AppDependencies): ParliamentState {
         val elus = ElusDirectory(dependencies.remote, dependencies.database?.let(::ElusStore) ?: InMemoryElusStorage())
         // The same table as the notification source of the platform host (VO-34).
         val myVotes = MyVotesState(dependencies.database?.let(::VoteAlertStore) ?: InMemoryVoteAlertStorage(), elus, scope)
-        ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope, myVotes)
+        val sponsorships = SponsorshipsState(SponsorshipsLoader(dependencies.remote, storage, bundled = ::bundledParliamentFile), scope)
+        ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope, myVotes, sponsorships)
     }
 }

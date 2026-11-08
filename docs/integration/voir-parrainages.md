@@ -55,6 +55,13 @@ Dans l'index signé des données ouvertes (même clé d'import, même route `/ap
 
 Noms et mandats d'élus, rendus publics par la loi (article 3), repris tels quels sans la civilité. Sur le serveur : fichier du paquet seulement (pas de base). Sur l'appareil : le paquet, effacé par l'effacement rapide (S-44, partie « voir-data », table des paquets du Parlement). Après l'élection, le paquet reste comme archive publique de l'élection.
 
+## 5 bis. État au 8 novembre 2026 (branche `feature/voir-presence`, pas encore compilée)
+
+- Cœur : `core/voir/parrainages/Sponsorships.kt` (`SponsorMandate.of`, `Sponsorship`, `SponsorshipsPackage`, `SponsorshipsFormat`, `CandidateSponsors`, `SponsorshipsCatalog`), `MySponsors.kt`, `SponsorshipsLoader.kt` ; tests `SponsorshipsTest`, `SponsorshipsLoaderTest`.
+- Import : `tools/open-data-importer/.../Sponsorships.kt` (`CcSponsorships.read`, `SponsorshipsImport`), `OfficialSources.sponsorships()` (API data.gouv.fr puis fichier JSON le plus récent du jeu), option `--only cc` et `PPF_SPONSORSHIPS_DATASET`, `ALLOWED_HOSTS` complété ; exemple `example/cc/parrainages.json` (format officiel, [EXEMPLE], noms rapprochables des élus d'exemple du serveur) ; test `SponsorshipsImportTest`. Par défaut, l'import ne demande les parrainages qu'en production et seulement quand le jeu est renseigné ; en préproduction, ajouter `cc` à `--only`.
+- Application : `ParliamentPage.Sponsorships` et `SponsorshipsOf`, `SponsorshipsPage.kt`, `SponsorshipsState.kt`, carte sur la liste du Parlement, `strings_voir_parrainages.xml` ; test `SponsorshipsScreenTest`.
+- Pour les autres pôles : « Mes élus » (Comprendre, TE-01) lit `MySponsors.of(officials, catalog)` ; le comparateur (Décider, DE-16) lit `SponsorshipsCatalog.candidates()` (mêmes chiffres pour tous) ; tous deux obtiennent le catalogue par `SponsorshipsLoader.held(snapshot)`.
+
 ## 6. Étapes et tests
 
 | Étape | Contenu | Tests |
