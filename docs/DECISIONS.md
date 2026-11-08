@@ -702,6 +702,24 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Mise en ligne (Directeur technique, D-075 à D-079) : fichier préparé sur un ordinateur de développement, envoyé par SSH, vérifié par sa somme SHA-256, servi par Caddy en requêtes partielles avec un cache long sous un nom daté, aucun journal d'accès ; mise à jour tous les deux ou trois mois.
 - Mention « © contributeurs d'OpenStreetMap » (ODbL) visible dans l'application et sur le site.
 
+## D-081 (2026-11-08) Bouton AIDE, mode manifestation et street medics : décisions sur les questions de D-053
+
+- Décision du chef d'équipe par délégation de la propriétaire, 8 novembre 2026 (« Pour les decisions a prendre, je suis tes recommandations ») ; questions : `docs/integration/agir-manifestation.md` (section 6) et `docs/integration/agir-secours-conception.md` (section 9).
+  1. le bouton **AIDE est visible partout, tout le temps** (fait) ; la question du bouton flottant est sans objet (AIDE dans la barre du haut du téléphone) ;
+  2. **numéros d'écoute** (3919, 3114, 119, 116 006, etc.) : pas dans le mode manifestation, mais une rubrique distincte « Besoin de parler ? » dans la feuille AIDE, chaque numéro vérifié sur une source officielle et cité (tâche courte après S-45) ;
+  3. les **textes [EXEMPLE] écrits avec une IA** affichent leur origine et sont relus par l'avocat, une legal team et une organisation de street medics avant le lancement (feuille de route) ;
+  4. **street medics** (aucun code avant S-43, S-44 et les séances de certification du back-office, D-126) :
+     - l'attestation d'un medic reste sur son appareil, présentée seulement pendant ses sessions de disponibilité ; liste de révocation publique faite d'empreintes (option C) ;
+     - positions et gravités effacées des appareils 2 heures après la clôture, 6 heures au plus pour une alerte jamais close ;
+     - transport par relais aveugle du serveur, messages NIP-44 chiffrés pour chaque medic (option B) ; Bluetooth en phase 4 ;
+     - cases : geohash à 5 caractères (environ 5 km) plus les huit voisines ;
+     - fausses alertes : seuil de 3 et plus de la moitié des alertes d'une clé, dans la configuration privée ; jamais de refus, seulement « à vérifier » vers la coordination ;
+     - répondants : 2, 3 et 5 selon la gravité, réglables par la coordination ;
+     - échelle des niveaux provisoire, à valider avec les organisations ;
+     - seuls les représentants désignés d'une organisation `street-medics` vérifiée certifient, avec un quota par séance (S-88) ;
+     - S-43 et S-44 dans `main` avant le mode medic ; analyse d'impact (AIPD) relue par l'avocat avant toute ouverture publique.
+- Consignes pour M33 (S-43 à S-45) : effacement par une interface commune que chaque pôle implémente pour ses données (au lieu d'effacer leurs tables), restauration ensuite par la phrase de récupération ; nom et icône neutres par `activity-alias` (compatible API 26), `expect`/`actual` pour iOS.
+
 ## D-090 (2026-11-07) Référentiel des territoires : codes officiels, population, inscrits, règle des 30
 
 - Contexte : demande du pôle « Décider » (objectifs de signatures proportionnels à la population, seuils des pétitions locales) ; les salons, l'agenda, les appels et les revendications écrivent le territoire en texte libre (`ppf-territory`). Conception et sources vérifiées le 7 novembre 2026 : `docs/integration/territoires.md` ; conception validée par le chef d'équipe (« Décider » accepte l'API sans correction).
