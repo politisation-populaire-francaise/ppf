@@ -17,6 +17,9 @@ import kotlinx.coroutines.withContext
 import org.politisationpopulairefrancaise.core.groups.Group
 import org.politisationpopulairefrancaise.core.groups.GroupMessage
 import org.politisationpopulairefrancaise.core.groups.GroupStore
+import org.politisationpopulairefrancaise.core.groups.RemovedMessage
+import org.politisationpopulairefrancaise.core.groups.RoomModeration
+import org.politisationpopulairefrancaise.core.groups.RoomRole
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.publication.FetchResult
 import org.politisationpopulairefrancaise.core.publication.GroupsResult
@@ -24,8 +27,11 @@ import org.politisationpopulairefrancaise.core.publication.PublicationResult
 import org.politisationpopulairefrancaise.core.publication.RejectionReason
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.publication.RemoteFilter
+import org.politisationpopulairefrancaise.core.publication.SimilarRoom
 import org.politisationpopulairefrancaise.core.publication.TagFilter
 import org.politisationpopulairefrancaise.core.signing.EventSigner
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
 import org.politisationpopulairefrancaise.core.sync.SyncService
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.AppDependencies
@@ -56,7 +62,13 @@ data class GroupDraft(
     val about: String = "",
     /** Unticked until the user ticks it: the charter is never accepted on their behalf. */
     val charterAccepted: Boolean = false,
+    /** How the room differs from the rooms of close name the server listed (D-132), public. */
+    val difference: String = "",
+    /** The user confirmed the creation despite the rooms of close name. */
+    val confirmSimilar: Boolean = false,
 ) {
+    val differenceTooLong: Boolean get() = difference.trim().length > Group.MAX_DIFFERENCE_LENGTH
+
     /** The id the room would get, empty while the name holds no letter or digit. */
     val proposedId: String get() = Group.idFor(name, territory)
 
@@ -84,10 +96,38 @@ sealed interface CreationError {
     data object Offline : CreationError
 
     data class Refused(val reason: RejectionReason) : CreationError
+
+    /** Rooms of close name exist on the territory or a parent one (D-132): join one, or confirm with a difference. */
+    data class Similar(val rooms: List<SimilarRoom>) : CreationError
+
+    /** Three rooms created in the last 24 hours. */
+    data object TooMany : CreationError
+
+    /** A name of an organisation, from an account of less than 7 days. */
+    data object TooRecent : CreationError
 }
 
 /** Why the server refused a message. */
-enum class SendError { CLOSED, NOT_FOUND, REFUSED }
+enum class SendError { CLOSED, NOT_FOUND, BANNED, REFUSED }
+
+/** Why the server refused a moderation action (D-131). */
+enum class ModerationError { NOT_ALLOWED, LAST_ADMIN, REASON, OFFLINE, OTHER }
+
+/** One line of a room: a message, or the place of a message removed by a moderator or its author. */
+sealed interface RoomItem {
+    val id: String
+    val createdAt: Long
+
+    data class Message(val message: GroupMessage) : RoomItem {
+        override val id: String get() = message.id
+        override val createdAt: Long get() = message.createdAt
+    }
+
+    /** [author] is known when the device had the message before its removal. */
+    data class Removed(val removal: RemovedMessage, val author: String?, override val createdAt: Long) : RoomItem {
+        override val id: String get() = removal.eventId
+    }
+}
 
 /**
  * The rooms of collectives (NIP-29, decisions D-027 and D-028) as the screens need them: the rooms
@@ -138,8 +178,26 @@ class GroupsLibrary(
     var selected: Group? by mutableStateOf(null)
         private set
 
-    /** The messages of [selected], oldest first. */
+    /** The messages of [selected] still shown (not removed), oldest first. */
     var messages: List<GroupMessage> by mutableStateOf(emptyList())
+        private set
+
+    /** The messages of [selected] and the places of the removed ones, oldest first. */
+    var timeline: List<RoomItem> by mutableStateOf(emptyList())
+        private set
+
+    /** Roles, exclusions, removals and journal of [selected], computed on the device (D-131). */
+    var moderation: RoomModeration? by mutableStateOf(null)
+        private set
+
+    var moderationBusy: Boolean by mutableStateOf(false)
+        private set
+
+    var moderationError: ModerationError? by mutableStateOf(null)
+        private set
+
+    /** A creation the server holds for the team's review (D-132): "En attente de vérification". */
+    var heldCreation: Group? by mutableStateOf(null)
         private set
 
     /** The user's own messages not yet accepted by the server. */
@@ -302,6 +360,9 @@ class GroupsLibrary(
     fun open(group: Group) {
         selected = group
         messages = emptyList()
+        timeline = emptyList()
+        moderation = null
+        moderationError = null
         pendingMessageIds = emptySet()
         sendError = null
         messageDraft = ""
@@ -312,6 +373,9 @@ class GroupsLibrary(
     fun close() {
         selected = null
         messages = emptyList()
+        timeline = emptyList()
+        moderation = null
+        moderationError = null
         sendError = null
         messageDraft = ""
     }
@@ -325,6 +389,7 @@ class GroupsLibrary(
     /** Opens the creation form, its name prefilled with [name] (the search text, typically). */
     fun beginCreation(name: String = query) {
         creationError = null
+        heldCreation = null
         if (!creating) creationDraft = GroupDraft(name = name.trim())
         selected = null
         creating = true
@@ -333,6 +398,7 @@ class GroupsLibrary(
     fun cancelCreation() {
         creating = false
         creationError = null
+        heldCreation = null
         creationDraft = GroupDraft()
     }
 
@@ -340,6 +406,26 @@ class GroupsLibrary(
     fun updateDraft(draft: GroupDraft) {
         creationDraft = draft
         if (creationError != null && creationError !is CreationError.Offline) creationError = null
+    }
+
+    /** Types the difference with the rooms of close name, keeping their list on screen. */
+    fun updateDifference(text: String) {
+        creationDraft = creationDraft.copy(difference = text)
+    }
+
+    /** Creates the room despite the rooms of close name, with the difference typed (D-132). */
+    suspend fun confirmSimilar(signer: EventSigner): Group? {
+        if (creationDraft.difference.isBlank() || creationDraft.differenceTooLong) return null
+        creationDraft = creationDraft.copy(confirmSimilar = true)
+        return create(signer)
+    }
+
+    /** Joins a room listed by `group_similar`, fetching its description first when the device lacks it. */
+    suspend fun joinSimilar(groupId: String) {
+        val store = store
+        val remote = remote
+        if (groups.none { it.id == groupId } && store != null && remote != null) pullDescription(store, remote, groupId)
+        joinExisting(groupId)
     }
 
     /** Dismisses the error of the last attempt, so that the user corrects the form. */
@@ -411,12 +497,18 @@ class GroupsLibrary(
                     number++
                     id = Group.numbered(base, number)
                 }
-                val unsigned = runCatching { Group.build(signer.publicKey, id, name, about, territory, createdAt = clock()) }.getOrNull()
+                val difference = if (draft.confirmSimilar) draft.difference.trim().takeIf { it.isNotEmpty() } else null
+                val unsigned = runCatching { Group.build(signer.publicKey, id, name, about, territory, createdAt = clock(), difference = difference) }.getOrNull()
                     ?: run { creationError = CreationError.InvalidName; return null }
                 val event = signer.sign(unsigned)
                 when (val result = remote.publish(event)) {
                     is PublicationResult.Accepted -> {
                         val group = Group.from(event) ?: run { creationError = CreationError.InvalidName; return null }
+                        if (result.heldForReview) {
+                            // Not public yet: the team checks the name first (D-132). Nothing is stored nor joined.
+                            heldCreation = group
+                            return null
+                        }
                         withContext(Dispatchers.Default) { store.store(event) }
                         join(group.id)
                         reload(store)
@@ -440,6 +532,18 @@ class GroupsLibrary(
                             if (groups.none { it.id == existingId }) pullDescription(store, remote, existingId)
                             val existing = groups.firstOrNull { it.id == existingId }
                             creationError = CreationError.Exists(existingId, existing?.displayName ?: name)
+                            return null
+                        }
+                        RejectionReason.GROUP_SIMILAR -> {
+                            creationError = CreationError.Similar(result.similar)
+                            return null
+                        }
+                        RejectionReason.TOO_MANY_GROUPS -> {
+                            creationError = CreationError.TooMany
+                            return null
+                        }
+                        RejectionReason.ACCOUNT_TOO_RECENT -> {
+                            creationError = CreationError.TooRecent
                             return null
                         }
                         else -> {
@@ -486,6 +590,7 @@ class GroupsLibrary(
                     sendError = when (result.reason) {
                         RejectionReason.GROUP_CLOSED -> SendError.CLOSED
                         RejectionReason.GROUP_NOT_FOUND -> SendError.NOT_FOUND
+                        RejectionReason.BANNED -> SendError.BANNED
                         else -> SendError.REFUSED
                     }
                 }
@@ -494,6 +599,66 @@ class GroupsLibrary(
             return true
         } finally {
             sending = false
+        }
+    }
+
+    /** Removes [message] from the open room, with a public [reason] (moderators, administrators, its author). */
+    suspend fun removeMessage(signer: EventSigner, message: GroupMessage, reason: String): Boolean =
+        moderate(signer) { RoomModeration.deleteEvent(signer.publicKey, message.groupId, message.id, reason, clock()) }
+
+    /** Names [target] administrator or moderator ([role]), or takes their role back ([role] null). */
+    suspend fun setRole(signer: EventSigner, target: String, role: RoomRole?): Boolean =
+        moderate(signer) { group -> RoomModeration.putUser(signer.publicKey, group.id, target, role, clock()) }
+
+    /** Excludes [target] from the open room, with a public [reason]. */
+    suspend fun exclude(signer: EventSigner, target: String, reason: String): Boolean =
+        moderate(signer) { group -> RoomModeration.removeUser(signer.publicKey, group.id, target, reason, clock()) }
+
+    /** Readmits the excluded [target] in the open room. */
+    suspend fun readmit(signer: EventSigner, target: String): Boolean =
+        moderate(signer) { group -> RoomModeration.putUser(signer.publicKey, group.id, target, null, clock()) }
+
+    fun dismissModerationError() {
+        moderationError = null
+    }
+
+    /**
+     * Signs and publishes a moderation event of the open room. It needs the server at once, which
+     * alone decides whether the account still holds the role: nothing waits on the device.
+     */
+    private suspend fun moderate(signer: EventSigner, build: (Group) -> UnsignedEvent): Boolean {
+        val group = selected ?: return false
+        val store = store ?: return false
+        if (moderationBusy) return false
+        moderationError = null
+        val remote = remote ?: run { moderationError = ModerationError.OFFLINE; return false }
+        val unsigned = runCatching { build(group) }.getOrNull() ?: run { moderationError = ModerationError.REASON; return false }
+        moderationBusy = true
+        try {
+            val event = signer.sign(unsigned)
+            return when (val result = remote.publish(event)) {
+                is PublicationResult.Accepted -> {
+                    withContext(Dispatchers.Default) { store.store(event) }
+                    reloadMessages(store, group)
+                    if (event.kind == RoomModeration.EDIT_METADATA) reload(store)
+                    true
+                }
+                is PublicationResult.Unavailable -> {
+                    moderationError = ModerationError.OFFLINE
+                    false
+                }
+                is PublicationResult.Rejected -> {
+                    moderationError = when (result.reason) {
+                        RejectionReason.NOT_ALLOWED -> ModerationError.NOT_ALLOWED
+                        RejectionReason.LAST_ADMIN -> ModerationError.LAST_ADMIN
+                        RejectionReason.REASON_REQUIRED -> ModerationError.REASON
+                        else -> ModerationError.OTHER
+                    }
+                    false
+                }
+            }
+        } finally {
+            moderationBusy = false
         }
     }
 
@@ -522,7 +687,11 @@ class GroupsLibrary(
             is GroupsResult.Groups -> {
                 withContext(Dispatchers.Default) {
                     result.groups.forEach { room ->
-                        if (room.event.verify() && Group.from(room.event)?.id == room.id) store.store(room.event)
+                        if (room.event.verify() && Group.from(room.event)?.id == room.id) {
+                            store.store(room.event)
+                            // The edit in force of the name and presentation (D-131), kept to read it offline.
+                            room.edit?.takeIf { it.kind == RoomModeration.EDIT_METADATA && it.tagValues("h") == listOf(room.id) && it.verify() }?.let { store.store(it) }
+                        }
                     }
                 }
                 GroupsStatus.Synced
@@ -573,32 +742,58 @@ class GroupsLibrary(
                 GroupsStatus.Synced
             }
         }
+        // The public journal of the room (D-131): roles, exclusions, edits and removals, all of it.
+        val journal = remote.fetchByTags(listOf(TagFilter(RoomModeration.TAG_GROUP, group.id)), RemoteFilter(kinds = RoomModeration.KINDS, limit = JOURNAL_LIMIT))
+        if (journal is FetchResult.Events) {
+            withContext(Dispatchers.Default) {
+                journal.events.forEach { event ->
+                    if (event.kind in RoomModeration.KINDS && event.tagValues(RoomModeration.TAG_GROUP) == listOf(group.id) && event.verify()) store.store(event)
+                }
+            }
+        }
         reloadMessages(store, group)
     }
 
     private suspend fun reload(store: LocalEventStore) {
         val fresh = withContext(Dispatchers.Default) {
+            // The edits of the name and presentation (D-131) apply to the rooms they belong to.
+            val edits = store.recent(kinds = RoomModeration.KINDS, limit = JOURNAL_LIMIT * 4)
+                .groupBy { it.tagValues(RoomModeration.TAG_GROUP).singleOrNull() }
             store.recent(kinds = listOf(Group.KIND), limit = DIRECTORY_LIMIT)
                 .mapNotNull(Group::from)
+                .map { room -> edits[room.id]?.takeIf { list -> list.any { it.kind == RoomModeration.EDIT_METADATA } }?.let { RoomModeration.compute(room, it).applyTo(room) } ?: room }
                 .sortedWith(compareBy<Group> { it.displayName.lowercase() }.thenBy { it.id })
         }
         groups = fresh
         selected = selected?.let { current -> fresh.firstOrNull { it.id == current.id } ?: current }
     }
 
+    private class RoomView(val messages: List<GroupMessage>, val timeline: List<RoomItem>, val moderation: RoomModeration, val pending: Set<String>)
+
     private suspend fun reloadMessages(store: LocalEventStore, group: Group) {
-        val (fresh, pending) = withContext(Dispatchers.Default) {
+        val view = withContext(Dispatchers.Default) {
             val list = store.byTag(listOf(GroupMessage.KIND), GroupMessage.TAG_GROUP, group.id, limit = MESSAGES_PAGE)
                 .mapNotNull(GroupMessage::from)
                 .filter { it.groupId == group.id }
                 .distinctBy { it.id }
                 .sortedWith(compareBy<GroupMessage> { it.createdAt }.thenBy { it.id })
+            val authors = list.associate { it.id to it.author }
+            val journal: List<SignedEvent> = store.byTag(RoomModeration.KINDS, RoomModeration.TAG_GROUP, group.id, limit = JOURNAL_LIMIT)
+            val state = RoomModeration.compute(group, journal, authors::get)
+            val shown = list.filter { it.id !in state.removed }
+            val known = list.associateBy { it.id }
+            val items = shown.map { RoomItem.Message(it) } + state.removed.values.map { removal ->
+                val original = known[removal.eventId]
+                RoomItem.Removed(removal, original?.author, original?.createdAt ?: removal.at)
+            }
             val waiting = store.pending().filter { it.kind == GroupMessage.KIND }.map { it.id }.toSet()
-            list to waiting
+            RoomView(shown, items.sortedWith(compareBy<RoomItem> { it.createdAt }.thenBy { it.id }), state, waiting)
         }
         if (selected?.id != group.id) return
-        messages = fresh
-        pendingMessageIds = pending
+        messages = view.messages
+        timeline = view.timeline
+        moderation = view.moderation
+        pendingMessageIds = view.pending
     }
 
     companion object {
@@ -607,6 +802,9 @@ class GroupsLibrary(
 
         /** Messages asked for and shown per room. */
         const val MESSAGES_PAGE: Int = 200
+
+        /** Moderation events of a room asked for and kept (its public journal). */
+        const val JOURNAL_LIMIT: Int = 500
 
         /** How many ids are tried on the server when the derived one belongs to another key. */
         const val MAX_ID_ATTEMPTS: Int = 5

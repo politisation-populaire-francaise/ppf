@@ -84,8 +84,9 @@ class MySpaceScreenTest {
         waitForIdle()
 
         val stored = assertNotNull(store.snapshot)
-        assertEquals(words, stored.recoveryWords)
-        assertEquals("fr", stored.phraseLanguage)
+        // Checked, the phrase is erased from the device by default (S-146, D-134).
+        assertNull(stored.recoveryWords)
+        assertTrue(stored.phraseVerified)
         val expectedNpub = RecoveryPhrase.parse(words.joinToString(" ")).deriveKeys().publicKey.npub
         onNodeWithTag(AccountTags.PUBLIC_KEY).assertTextContains(expectedNpub)
         assertEquals(expectedNpub, stored.keys().publicKey.npub)
@@ -101,7 +102,9 @@ class MySpaceScreenTest {
         onNodeWithTag(AccountTags.RESTORE_SUBMIT).performClick()
         waitForIdle()
         onNodeWithTag(AccountTags.PUBLIC_KEY).assertTextContains(nip06Npub)
-        assertEquals("en", store.snapshot?.phraseLanguage)
+        // Typed in full, the phrase counts as checked and is not kept on the device.
+        assertNull(store.snapshot?.recoveryWords)
+        assertTrue(store.snapshot?.phraseVerified == true)
     }
 
     @Test
@@ -149,13 +152,13 @@ class MySpaceScreenTest {
         waitForIdle()
         onNodeWithTag(AccountTags.SECRET_KEY).assertDoesNotExist()
 
-        // The phrase too.
-        onNodeWithTag(AccountTags.SHOW_PHRASE).performClick()
+        // The phrase too (still on the device: this account has not checked it yet).
+        onNodeWithTag(AccountTags.SHOW_PHRASE).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(AccountTags.DIALOG_CONFIRM).performClick()
         waitForIdle()
         assertTrue(textOf(AccountTags.PHRASE_WORD + 0).endsWith("leader"))
-        onNodeWithText("Masquer").performClick()
+        onNodeWithText("Masquer").performScrollTo().performClick()
         waitForIdle()
 
         // Signing out (at the bottom of the page) asks for confirmation, then erases the keys from the device.

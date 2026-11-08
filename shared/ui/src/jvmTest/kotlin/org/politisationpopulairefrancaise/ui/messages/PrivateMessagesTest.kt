@@ -269,10 +269,14 @@ class PrivateMessagesTest {
     @Test
     fun theThreadIsGroupedByDayWithTheLocalHour() = runComposeUiTest {
         val device = device(identity(aliceKeys))
+        // Fixed on the local calendar, never on the real hour: right after midnight, "now - 60" would
+        // fall on the day before. Today's message is at noon, or at the current time before noon
+        // (never in the future); yesterday and ten days ago are at noon.
         val now = currentEpochSeconds()
-        val older = now - 10 * 86_400
-        val yesterday = now - 86_400
-        val today = now - 60
+        val startOfToday = now - (now + localUtcOffsetSeconds(now)).mod(86_400L)
+        val today = minOf(now, startOfToday + 12 * 3_600)
+        val yesterday = startOfToday - 12 * 3_600
+        val older = startOfToday - 10 * 86_400 + 12 * 3_600
         listOf(fromBob("[EXEMPLE] Il y a dix jours", older), fromBob("[EXEMPLE] Hier", yesterday), fromBob("[EXEMPLE] Tout à l’heure", today))
             .forEach { device.store.store(it, read = true) }
         launch(device)

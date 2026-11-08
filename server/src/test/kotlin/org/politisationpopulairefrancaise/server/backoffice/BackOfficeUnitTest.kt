@@ -1,6 +1,8 @@
 package org.politisationpopulairefrancaise.server.backoffice
 
 import kotlinx.coroutines.runBlocking
+import kotlinx.html.div
+import kotlinx.html.stream.appendHTML
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.messaging.Nip44
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
@@ -311,6 +313,40 @@ class BackOfficeUnitTest {
         assertFailsWith<IllegalArgumentException> { queues.register(queue) }
         assertEquals(listOf(queue), queues.visibleTo(TeamActor.of(id, "s", setOf(TeamRole.SUPER_ADMIN), 2)))
         assertEquals(emptyList(), queues.visibleTo(TeamActor.of(id, "m", setOf(TeamRole.MODERATOR), 2)))
+    }
+
+    @Test
+    fun aQueueChoiceIsCheckedAndDrawnWithoutJavaScript() {
+        val first = "a".repeat(64)
+        val keys = QueueChoice.OneOf("[EXEMPLE] Qui ?", listOf(QueueOption(first, "[EXEMPLE] Modératrice"), QueueOption("b".repeat(64), "[EXEMPLE] Modérateur")))
+        assertEquals(first, QueueChoice.accepted(keys, " $first "))
+        assertNull(QueueChoice.accepted(keys, "c".repeat(64)))
+        assertNull(QueueChoice.accepted(keys, null))
+        assertNull(QueueChoice.accepted(keys, "   "))
+        val typed = QueueChoice.Text("[EXEMPLE] Clé", maxLength = 64, pattern = Regex("^[0-9a-f]{64}$"))
+        assertNull(QueueChoice.accepted(typed, "xyz"))
+        assertNull(QueueChoice.accepted(typed, "a".repeat(65)))
+        assertEquals(first, QueueChoice.accepted(typed, first))
+        assertFailsWith<IllegalArgumentException> { QueueChoice.OneOf("x", emptyList()) }
+        assertFailsWith<IllegalArgumentException> { QueueChoice.OneOf("x", listOf(QueueOption("a", "A"), QueueOption("a", "B"))) }
+        assertFailsWith<IllegalArgumentException> { QueueChoice.Text("x", maxLength = 0, pattern = Regex("^[a-z]+$")) }
+        // Never free text in the journal: a name or an address does not match a key.
+        assertNull(QueueChoice.accepted(typed, "Claire Dupont"))
+        assertFailsWith<IllegalArgumentException> { QueueOption("", "x") }
+        // A request waiting for a second person cannot keep a choice.
+        assertFailsWith<IllegalArgumentException> { QueueAction("pick", "x", "queue.x.decide", twoPerson = true, choice = typed) }
+
+        val radios = buildString { appendHTML(prettyPrint = false).div { choiceField(keys, "bo-choice-0") } }
+        assertEquals(2, Regex("type=\"radio\"").findAll(radios).count())
+        assertEquals(2, Regex("name=\"choix\"").findAll(radios).count())
+        assertTrue(radios.contains("<legend>[EXEMPLE] Qui ?</legend>"))
+        assertTrue(radios.contains("value=\"$first\""))
+        assertTrue(radios.contains("for=\"bo-choice-0-1\""))
+        val field = buildString { appendHTML(prettyPrint = false).div { choiceField(typed, "bo-choice-1") } }
+        assertTrue(field.contains("maxlength=\"64\""))
+        assertTrue(field.contains("name=\"choix\""))
+        assertTrue(field.contains("aria-describedby=\"bo-choice-1-hint\""))
+        assertFalse(radios.contains("<script") || field.contains("<script"))
     }
 
     @Test
