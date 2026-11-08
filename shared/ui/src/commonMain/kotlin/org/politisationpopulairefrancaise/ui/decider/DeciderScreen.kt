@@ -42,6 +42,7 @@ import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.voir.NextTarget
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
+import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentLinks
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -301,7 +302,8 @@ private fun DeciderDetail(
                             Missing()
                         } else {
                             val name = catalog.grid(sheet, voir).rows.firstOrNull { it.candidate == current.candidate }?.name ?: current.candidate.identifier
-                            PastVotesPage(sheet, current.candidate, name, pastVotes, reports)
+                            val memberId = voir.person(current.candidate)?.article?.event?.let(ParliamentLinks::memberId)
+                            PastVotesPage(sheet, current.candidate, name, pastVotes, reports, memberId)
                         }
                     }
                     is DeciderDestination.Thresholds -> ThresholdsPage(current.platform, columns)

@@ -201,6 +201,10 @@
     <string name="decider_votes_empty">Aucun scrutin ici.</string>
     <string name="decider_votes_more">Afficher 20 scrutins de plus</string>
     <string name="decider_votes_all_rule">Tous les scrutins publics où ce parti a voté, sans aucun tri, du plus récent au plus ancien.</string>
+    <string name="decider_votes_own">Ses propres votes</string>
+    <string name="decider_votes_own_rule">Ses votes nominatifs pendant son mandat en cours, tels qu’ils ont été enregistrés, d’après les fichiers mensuels des assemblées déjà sur cet appareil.</string>
+    <string name="decider_votes_own_position">Son vote : %1$s</string>
+    <string name="decider_votes_own_position_delegated">Son vote : %1$s (par délégation)</string>
     <string name="decider_votes_others_rule">Les scrutins dont le titre officiel ne contient aucun mot des thèmes : ils restent tous visibles ici.</string>
     <string name="decider_votes_theme_rule">Classement automatique par mots du titre officiel, il peut contenir des erreurs. Un scrutin peut entrer dans plusieurs thèmes.</string>
     <string name="decider_votes_words">Mots de ce thème : %1$s</string>

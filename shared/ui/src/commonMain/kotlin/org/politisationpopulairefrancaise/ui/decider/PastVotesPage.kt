@@ -31,6 +31,8 @@ import org.politisationpopulairefrancaise.core.decider.PartyBallot
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.text.FrenchText
 import org.politisationpopulairefrancaise.core.voir.ErrorReport
+import org.politisationpopulairefrancaise.core.time.CivilDate
+import org.politisationpopulairefrancaise.core.voir.parlement.MemberVote
 import org.politisationpopulairefrancaise.core.voir.parlement.PartyBasis
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -56,6 +58,10 @@ import org.politisationpopulairefrancaise.ui.resources.decider_votes_no_party
 import org.politisationpopulairefrancaise.ui.resources.decider_votes_official
 import org.politisationpopulairefrancaise.ui.resources.decider_votes_others
 import org.politisationpopulairefrancaise.ui.resources.decider_votes_others_rule
+import org.politisationpopulairefrancaise.ui.resources.decider_votes_own
+import org.politisationpopulairefrancaise.ui.resources.decider_votes_own_position
+import org.politisationpopulairefrancaise.ui.resources.decider_votes_own_position_delegated
+import org.politisationpopulairefrancaise.ui.resources.decider_votes_own_rule
 import org.politisationpopulairefrancaise.ui.resources.decider_votes_report
 import org.politisationpopulairefrancaise.ui.resources.decider_votes_report_done
 import org.politisationpopulairefrancaise.ui.resources.decider_votes_report_failed
@@ -78,8 +84,10 @@ import org.politisationpopulairefrancaise.ui.revendications.themeLabel
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.ui.voir.RequestOutcome
 import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
+import org.politisationpopulairefrancaise.ui.voir.parlement.causeLabel
 import org.politisationpopulairefrancaise.ui.voir.parlement.count
 import org.politisationpopulairefrancaise.ui.voir.parlement.label
+import org.politisationpopulairefrancaise.ui.voir.parlement.text
 import org.politisationpopulairefrancaise.ui.voir.rememberOpenUrl
 import org.politisationpopulairefrancaise.ui.voir.withoutExample
 
@@ -91,6 +99,8 @@ object PastVotesTags {
     const val RULE = "decider-past-votes-rule"
     const val ALL = "decider-past-votes-all"
     const val OTHERS = "decider-past-votes-others"
+    const val OWN = "decider-past-votes-own"
+    fun own(id: String) = "decider-past-votes-own-$id"
     const val MORE = "decider-past-votes-more"
     const val REPORT_DIALOG = "decider-past-votes-report-dialog"
     const val REPORT_SEND = "decider-past-votes-report-send"
@@ -104,6 +114,9 @@ private sealed interface VotesView {
     data object All : VotesView
     data class Theme(val id: String) : VotesView
     data object Others : VotesView
+
+    /** The candidate's own nominal votes, when they sit or sat in the assemblies of the current mandates. */
+    data object Own : VotesView
 }
 
 private const val PAGE_SIZE = 20
@@ -122,6 +135,8 @@ internal fun PastVotesPage(
     name: String,
     state: PastVotesState,
     reports: VoirRequestSession?,
+    /** The official identifier of the candidate as a member (`an:PA…`, `senat:…`, `pe:…`), from their sheet in "Voir". */
+    memberId: String? = null,
 ) {
     val palette = PpfTheme.palette
     LaunchedEffect(state) { state.start() }
@@ -180,6 +195,9 @@ internal fun PastVotesPage(
             if (sheet.themeWords.isNotEmpty()) {
                 PpfSelectableChip(stringResource(Res.string.decider_votes_others), selected = view == VotesView.Others, onClick = { view = VotesView.Others }, modifier = Modifier.testTag(PastVotesTags.OTHERS))
             }
+            if (memberId != null) {
+                PpfSelectableChip(stringResource(Res.string.decider_votes_own), selected = view == VotesView.Own, onClick = { view = VotesView.Own }, modifier = Modifier.testTag(PastVotesTags.OWN))
+            }
         }
         Spacer(Modifier.height(12.dp))
         PpfTextField(
@@ -192,10 +210,16 @@ internal fun PastVotesPage(
         Spacer(Modifier.height(12.dp))
 
         val current = view
+        val ready = state.status as? PastVotesStatus.Ready
+        if (current == VotesView.Own && memberId != null && ready != null) {
+            OwnVotes(ready.catalog.votesOf(memberId).sortedByDescending { it.ballot.date }, query, shown, onMore = { shown += PAGE_SIZE })
+            return@Column
+        }
         val base = when (current) {
             VotesView.All -> votes.all
             is VotesView.Theme -> sheet.wordsOf(current.id)?.let(votes::inTheme).orEmpty()
             VotesView.Others -> votes.outsideEveryTheme(sheet.themeWords)
+            VotesView.Own -> emptyList()
         }
         val listed = if (query.isBlank()) base else base.filter { FrenchText.matchesAllWords(it.ballot.title, query) }
         Text(stringResource(Res.string.decider_votes_count, count(listed.size)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
@@ -226,6 +250,7 @@ private fun RuleBox(sheet: ComparatorSheet, view: VotesView) {
         when (view) {
             VotesView.All -> Text(stringResource(Res.string.decider_votes_all_rule), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
             VotesView.Others -> Text(stringResource(Res.string.decider_votes_others_rule), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+            VotesView.Own -> Text(stringResource(Res.string.decider_votes_own_rule), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
             is VotesView.Theme -> {
                 Text(stringResource(Res.string.decider_votes_theme_rule), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
                 sheet.wordsOf(view.id)?.let { words ->
@@ -243,6 +268,39 @@ private fun RuleBox(sheet: ComparatorSheet, view: VotesView) {
             }
         }
     }
+}
+
+/** The candidate's own votes, as recorded, with a correction declared afterwards shown beside, never instead. */
+@Composable
+private fun OwnVotes(votes: List<MemberVote>, query: String, shown: Int, onMore: () -> Unit) {
+    val palette = PpfTheme.palette
+    val open = rememberOpenUrl()
+    val listed = if (query.isBlank()) votes else votes.filter { FrenchText.matchesAllWords(it.ballot.title, query) }
+    Text(stringResource(Res.string.decider_votes_count, count(listed.size)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
+    Text(stringResource(Res.string.decider_votes_own_rule), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted, modifier = Modifier.testTag(PastVotesTags.RULE))
+    Spacer(Modifier.height(8.dp))
+    if (listed.isEmpty()) Text(stringResource(Res.string.decider_votes_empty), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
+    listed.take(shown).forEachIndexed { index, vote ->
+        if (index > 0) HorizontalDivider(color = palette.border)
+        val ballot = vote.ballot
+        Column(Modifier.fillMaxWidth().padding(vertical = 10.dp).testTag(PastVotesTags.own(ballot.id))) {
+            val date = CivilDate.parseIso(ballot.date)?.toFrenchShort() ?: ballot.date
+            Text("$date · ${stringResource(vote.entry.chamber.label)}", style = MaterialTheme.typography.labelMedium, color = palette.inkMuted)
+            Spacer(Modifier.height(2.dp))
+            Text(ballot.title.withoutExample(), style = MaterialTheme.typography.bodyMedium)
+            val position = stringResource(vote.position.label)
+            Text(
+                stringResource(if (vote.delegated) Res.string.decider_votes_own_position_delegated else Res.string.decider_votes_own_position, position),
+                style = MaterialTheme.typography.bodyMedium,
+            )
+            vote.correction?.let { correction ->
+                Text(stringResource(correction.kind.text, stringResource(correction.intended.label)), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+            }
+            vote.notVotingCause?.let { Text(causeLabel(it), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted) }
+            ballot.url?.let { url -> PpfTextButton(onClick = { open(url) }, text = stringResource(Res.string.decider_votes_official)) }
+        }
+    }
+    if (listed.size > shown) PpfTextButton(onClick = onMore, text = stringResource(Res.string.decider_votes_more), modifier = Modifier.testTag(PastVotesTags.MORE))
 }
 
 /** One ballot: date, assembly, official title, result, and how the party voted, in numbers only. */

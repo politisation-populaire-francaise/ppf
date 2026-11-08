@@ -17,6 +17,7 @@ import org.politisationpopulairefrancaise.core.decider.CandidateVotes
 import org.politisationpopulairefrancaise.core.decider.ComparatorSheet
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.voir.parlement.InMemoryParliamentStorage
+import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentCatalog
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentOpening
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentRepository
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentStore
@@ -28,7 +29,13 @@ sealed interface PastVotesStatus {
     data object Loading : PastVotesStatus
 
     /** [names]: the history packages the index lists; [bytesToDownload]: what is missing or outdated, for every party at once. */
-    data class Ready(val names: List<String>, val bytesToDownload: Long, val example: Boolean) : PastVotesStatus
+    data class Ready(
+        val names: List<String>,
+        val bytesToDownload: Long,
+        val example: Boolean,
+        /** The monthly packages of the mandates in course already on the device: the nominal votes of members. */
+        val catalog: ParliamentCatalog,
+    ) : PastVotesStatus
 
     /** No trusted index of the parliamentary data anywhere. */
     data object Unavailable : PastVotesStatus
@@ -65,6 +72,7 @@ class PastVotesState(private val repository: ParliamentRepository, private val s
                     names = opening.snapshot.history.map { it.name },
                     bytesToDownload = opening.snapshot.historyBytesToDownload,
                     example = opening.snapshot.example,
+                    catalog = opening.snapshot.catalog,
                 )
                 is ParliamentOpening.Nothing -> PastVotesStatus.Unavailable
             }
