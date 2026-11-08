@@ -202,6 +202,32 @@ class GroupModerationApiTest {
         assertEquals(listOf(spam.id), served.tagValues("e"))
         assertTrue(!served.toJson().contains("Publicité"), "the removal does not carry the removed text")
 
+        // The legal register (D-077) gets one "delete" row per removal: who removed what, never the text.
+        val deletions = TestDatabase.dataSource.connection.use { connection ->
+            connection.createStatement().use { statement ->
+                val rows = statement.executeQuery(
+                    "SELECT event_id, kind, pubkey, removed_event_id, removed_created_at, removed_pubkey " +
+                        "FROM legal_register.content_operation WHERE operation = 'delete' ORDER BY id",
+                )
+                buildList { while (rows.next()) add(listOf(rows.getString(1), rows.getInt(2).toString(), rows.getString(3), rows.getString(4), rows.getLong(5).toString(), rows.getString(6))) }
+            }
+        }
+        assertEquals(
+            listOf(
+                listOf(removal.id, GroupKinds.DELETE_EVENT.toString(), bob.publicKey.hex, spam.id, spam.createdAt.toString(), carol.publicKey.hex),
+                listOf(deletions[1][0], GroupKinds.DELETE_EVENT.toString(), alice.publicKey.hex, mine.id, mine.createdAt.toString(), alice.publicKey.hex),
+            ),
+            deletions,
+        )
+        val register = TestDatabase.dataSource.connection.use { connection ->
+            connection.createStatement().use { statement ->
+                val rows = statement.executeQuery("SELECT string_agg(t::text, ' ') FROM legal_register.content_operation t")
+                rows.next()
+                rows.getString(1).orEmpty()
+            }
+        }
+        assertTrue(!register.contains("Publicité") && !register.contains("Hors sujet"), "the register keeps neither the text nor the reason")
+
         // Only a message of this room.
         assertEquals(HttpStatusCode.Created, client.publish(description(id = "autre", name = "[EXEMPLE] Autre salon")).status)
         val elsewhere = alice.sign(kind = GroupKinds.CHAT_MESSAGE, content = "[EXEMPLE] Ailleurs", tags = listOf(listOf("h", "autre")), createdAt = next())

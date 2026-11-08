@@ -255,7 +255,9 @@ class GroupModeration(private val events: EventRepository, private val clock: ()
                     statement.setString(3, event.pubkey)
                     statement.setString(4, event.content.trim())
                     statement.setObject(5, now)
-                    statement.executeUpdate()
+                    val removed = statement.executeUpdate() > 0
+                    // The legal register (D-077) records the removal, never the removed text.
+                    if (removed) events.register.recordRemoval(connection, event, event.tagValues("e").first())
                 }
             }
         }

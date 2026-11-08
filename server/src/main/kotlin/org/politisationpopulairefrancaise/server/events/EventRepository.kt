@@ -96,7 +96,7 @@ enum class StoreOutcome {
  * Every stored public content also enters the legal [register] (D-077), in the same transaction as the
  * event: no publication escapes it and no register row exists for an event that was not stored.
  */
-class EventRepository(internal val dataSource: DataSource, private val register: LegalRegister = LegalRegister()) {
+class EventRepository(internal val dataSource: DataSource, internal val register: LegalRegister = LegalRegister()) {
 
     fun store(event: SignedEvent): StoreOutcome = dataSource.connection.use { connection ->
         connection.autoCommit = false

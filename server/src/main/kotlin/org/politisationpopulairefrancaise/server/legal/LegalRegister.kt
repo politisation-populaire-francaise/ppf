@@ -142,6 +142,36 @@ class LegalRegister(
         }
     }
 
+    /**
+     * A moderator of a room removed a public message from it (NIP-29 delete-event, kind 9005, D-131): the
+     * message stays stored but is no longer served, so the register gets the same "delete" row as for a
+     * deletion request, inside the transaction of [connection]: the id and date of the removal, the
+     * moderator's key, and the id, date and key of the removed version, never its content. Nothing when
+     * the removed id is not a stored public content.
+     */
+    internal fun recordRemoval(connection: Connection, removal: SignedEvent, removedId: String) {
+        if (!isHex64(removedId)) return
+        val kinds = (PUBLIC_KINDS - EventKinds.DELETION_REQUEST).toTypedArray()
+        connection.prepareStatement(
+            """
+            INSERT INTO legal_register.content_operation
+                (event_id, operation, created_at, kind, pubkey, protocol, removed_event_id, removed_created_at, removed_pubkey)
+            SELECT ?, 'delete', ?, ?, ?, ?, t.id, t.created_at, t.pubkey
+            FROM events t
+            WHERE t.id = ? AND t.kind = ANY(?)
+            """.trimIndent(),
+        ).use { insert ->
+            insert.setString(1, removal.id)
+            insert.setLong(2, removal.createdAt)
+            insert.setInt(3, removal.kind)
+            insert.setString(4, removal.pubkey)
+            insert.setInt(5, PROTOCOL_HTTPS_API)
+            insert.setString(6, removedId)
+            insert.setArray(7, connection.createArrayOf("integer", kinds))
+            insert.executeUpdate()
+        }
+    }
+
     /** A pseudonym row when the profile's pair (name, display_name) differs from the version it replaces. */
     private fun recordPseudonyms(connection: Connection, event: SignedEvent, replaced: ReplacedVersion?) {
         val current = Pseudonyms.of(event.content)
