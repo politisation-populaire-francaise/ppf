@@ -14,6 +14,7 @@ import org.politisationpopulairefrancaise.core.voir.parlement.MembersPackage
 import org.politisationpopulairefrancaise.core.voir.parlement.PackageRef
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentIndex
+import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentWeekFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.historyPackage
 import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
@@ -201,9 +202,10 @@ class Importer(
             }
         }
         histories.values.forEach { (packages, _) -> files.putAll(packages) }
+        files[ParliamentWeekFormat.PACKAGE] = WeekImport(sources, only, out, log).bytes() // « Cette semaine au Parlement » (Week.kt)
         val refreshedChambers = ballots.keys
         val keptRefs = previous.index?.packages.orEmpty().filter { ref ->
-            (ref.name != ParliamentFormat.MEMBERS_PACKAGE || only.isEmpty()) &&
+            ref.name !in files &&
                 Chamber.entries.none { it in refreshedChambers && ref.name.startsWith(it.ballotsPrefix + "-") } &&
                 histories.keys.none { ref.name.startsWith(it.packagePrefix) }
         }.onEach { ref -> readPackage(ref) ?: throw UnreadableSourceException("previous package ${ref.name} is damaged; import every source") }

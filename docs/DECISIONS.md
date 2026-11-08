@@ -714,6 +714,20 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Fichiers communs touchés (signalés) : `web/.../WebRoutes.kt` (montage, l'emplacement réservé de « Comprendre » disparaît quand une base est configurée), `site.css` (section ajoutée à la fin), `server/.../Application.kt` (paramètre `comprendre`), `BundledContents.kt` et `DevServer.kt` (chargement de `parcours.json`, `comprendre.json`, `glossaire.json`). Aucun fichier de `web/.../voir/` modifié.
 - Reste : liens de « Voir » vers les fiches pratiques (fichiers de « Voir », à faire par son pôle avec `ComprendreLinks`) ; icônes PNG 192 et 512 du manifeste si un navigateur refuse l'icône SVG ; dossiers de « Comprendre » ; version « Facile à lire » ; essai du hors-ligne sur un vrai téléphone (phase de test).
 
+## D-100 (2026-11-07) « Cette semaine au Parlement »
+
+- Contexte : cahier fonctionnel 2.0, M20 (VO-31), repris dans « En direct » (M19) ; sources vérifiées : `docs/integration/voir-historique-sources.md` ; détail : `docs/integration/voir-semaine.md`.
+- Décisions techniques prises en autonomie (pôle « Voir », gratuites, sans dépendance nouvelle) :
+  - **un paquet unique `semaine`**, cité par l'index signé de D-064, réécrit à chaque import (mêmes octets pour deux imports identiques) : l'ordre du jour de l'Assemblée nationale (`Agenda.json.zip`), du Sénat (flux iCalendar de la séance publique, répétitions simples comprises) et du Parlement européen (activités prévues de l'API v2) ;
+  - **fenêtre** : du jour de l'import (heure de Paris) au quatorzième jour suivant inclus ; l'appareil masque les jours passés ;
+  - **robustesse** : une source de la semaine en échec ne fait pas échouer l'import (code 0) ; les points précédents de cette assemblée sont gardés et le journal le dit ; avec `--from`, la semaine n'est pas relue ;
+  - **périmètre** : séances publiques ; réunions de commission seulement pour leurs points liés à un dossier législatif ; tout autre type écarté ;
+  - **minimisation** : heure, assemblée, type de réunion, commission, objet, type de point, dossier, état et lien officiel ; jamais de participant, d'organisateur, de contact ni de lieu ;
+  - **état absent** quand la source ne dit rien (plutôt que d'en supposer un) ; activités du Parlement européen toujours « Prévisionnel » ;
+  - **liens officiels** vérifiés le 7 novembre 2026 : séance publique et agendas de l'Assemblée, ordre du jour du Sénat, page de la plénière du Parlement européen (`https://www.europarl.europa.eu/plenary/fr/home.html`) ; « Interpeller mes élus » mène à l'espace « Décider » tant qu'aucune page DE-09 n'existe ;
+  - **économie de données** : le paquet se télécharge sur un geste (taille affichée), ou à l'ouverture d'« En direct » et de la page quand une version est déjà sur l'appareil et que le mode économie de données est coupé ;
+  - **formulation neutre** : on décrit l'ordre du jour, sans jugement ; bandeau « Données fictives [EXEMPLE] » sur le jeu d'exemple.
+
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
 - Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.

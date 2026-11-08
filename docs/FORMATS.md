@@ -589,6 +589,10 @@ Paquets `historique-an-<législature>` (14 à 17), `historique-senat-<année de 
 
 Parti à la date du vote : Assemblée, parti de rattachement (`PARPOL`, publié depuis décembre 2012) sinon le groupe ; Sénat, toujours le groupe ; Parlement européen, parti national des élus en France. **Aucun nom de personne, aucun vote nominatif, aucune position majoritaire calculée.** Détail : `docs/integration/voir-historique-import.md`.
 
+### Paquet `semaine` : « Cette semaine au Parlement » (D-100)
+
+Cité par le même index signé, réécrit à chaque import (deux imports identiques donnent les mêmes octets). JSON : `format` (1), `example`, `from` et `to` (AAAA-MM-JJ : le jour de l'import, heure de Paris, et le quatorzième jour suivant), `items` triés par heure, assemblée puis identifiant. Chaque point : `id` stable (`an:<uid de la réunion>:<rang du point>` ou `an:<uid>`, `senat:<UID>:<AAAAMMJJHHMM>`, `pe:<séance>:<ordre>`), `chamber` (`an`, `senat`, `pe`), `start` et `end` (heure de Paris, `AAAA-MM-JJTHH:MM`), `kind` (`seance-publique`, `commission`, `autre`), `body` (commission), `title`, `pointKind`, `detail` (2 000 caractères au plus), `dossier` (`an-dossier:DLR5L17N…`) et `dossierUrl`, `status` (`confirme`, `previsionnel`, `annule`, absent quand la source ne dit rien), `url` (page officielle de l'ordre du jour). Jamais de participant, d'organisateur, de contact ni de lieu. Lecture stricte sur le format, tolérante sur les champs inconnus ; un paquet illisible est ignoré. Modèles Kotlin : `core/voir/parlement/ParliamentWeek.kt` ; détail dans `docs/integration/voir-semaine.md`.
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.
