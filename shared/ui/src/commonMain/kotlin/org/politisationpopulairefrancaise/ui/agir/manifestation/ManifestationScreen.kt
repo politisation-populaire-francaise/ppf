@@ -188,8 +188,7 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(Res.string.manif_testify), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
             }
-            // Room for the floating AIDE button of phones, so that it never hides the last line.
-            Spacer(Modifier.height(if (compact) 72.dp else 8.dp))
+            Spacer(Modifier.height(8.dp))
         }
     }
 }

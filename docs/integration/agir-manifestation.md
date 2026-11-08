@@ -5,7 +5,7 @@ Rédigée le 7 novembre 2026 par un agent de la session « Agir », branche `wor
 ## 1. Ce qui est fait
 
 1. **Bouton AIDE** (AG-27, D-044) : couleur d'accent, mot « AIDE » toujours écrit avec la bouée, 56 dp de haut au moins, nom pour le lecteur d'écran « AIDE : urgence, avocat, point de ralliement », atteignable au clavier (c'est un bouton). Il est visible depuis tous les espaces :
-   - téléphone : bouton flottant au-dessus de la barre du bas (emplacement `floatingActionButton` du `Scaffold`, jamais sur la barre) ;
+   - téléphone : dans la barre du haut, à côté de la recherche (un bouton flottant couvrait le bouton « Envoyer » des conversations ; corrigé le 8 novembre 2026) ;
    - tablette : en tête du rail de navigation (icône au-dessus du mot) ;
    - ordinateur : en tête de la barre latérale, sur toute sa largeur.
 2. **Feuille d'urgence** (fenêtre par-dessus l'écran, `Dialog` : le lecteur d'écran y reste, « Retour » du système et la touche Échap ferment d'abord une fiche ouverte, puis la feuille), dans cet ordre :
@@ -56,7 +56,7 @@ Voir la section ajoutée à `THREAT_MODEL.md` : retard des secours (15 et 112 d'
 ## 5. Décisions proposées (à numéroter par la session « Agir » : bloc D-053, D-081 à D-089)
 
 Prises en autonomie, techniques et gratuites :
-1. **Emplacement du bouton AIDE** : flottant au-dessus de la barre du bas sur téléphone (D-044), en tête du rail sur tablette, en tête de la barre latérale sur ordinateur ; toujours visible, y compris dans « Mon espace » et les messages.
+1. **Emplacement du bouton AIDE** : dans la barre du haut sur téléphone (un bouton flottant couvrait « Envoyer » dans les messages), en tête du rail sur tablette, en tête de la barre latérale sur ordinateur ; toujours visible, y compris dans « Mon espace » et les messages.
 2. **Feuille en fenêtre** (`Dialog`) plutôt qu'en panneau du bas : même rendu sur les trois formats, lecteur d'écran confiné à la feuille, retour et Échap gérés, testable.
 3. **Ordre de la feuille** : urgence vitale (15, 112, puis 17, 18, 114 par SMS), avocat, street medics et sortie (bientôt), point de ralliement. Les street medics sont placés avant la sortie, plus urgents.
 4. **Numéros** : ceux de service-public.gouv.fr (F33954, vérifiée le 25 août 2026) ; 3919 non retenu (numéro d'écoute « non urgent » pour les violences faites aux femmes, sans lien direct avec la manifestation ; facile à ajouter), 119, 116 000, 116 006 et 31 14 retenus pour le mode manifestation.
@@ -67,7 +67,7 @@ Prises en autonomie, techniques et gratuites :
 ## 6. Questions, avec recommandations (à transmettre au chef d'équipe)
 
 1. **Le bouton AIDE partout, ou seulement pendant une manifestation ?** L'entrée « Maquettes de l'interface communautaire (bouton AIDE) » est encore en attente. Recommandation : **partout, tout le temps** (règle « en un geste » ; une urgence n'attend pas que l'application sache qu'une manifestation a lieu) ; plus tard, le rendre plus visible pendant une manifestation suivie.
-2. **Le bouton flottant cache parfois la dernière ligne d'une liste sur téléphone.** Recommandation : garder le bouton visible et ajouter, écran par écran, un espace en bas des listes longues (fait pour le mode manifestation) ; les autres pôles peuvent le faire pour leurs écrans.
+2. ~~Le bouton flottant cache parfois la dernière ligne d'une liste sur téléphone.~~ Sans objet : le bouton est dans la barre du haut du téléphone depuis le 8 novembre 2026.
 3. **Ajouter le 3919 et d'autres numéros d'écoute** au mode manifestation ? Recommandation : non pour l'instant (pas de lien direct), oui dans une page « Numéros d'écoute » commune à toute l'application si la propriétaire le souhaite.
 4. **Relecture** : la liste « Avant de partir », les conseils de sécurité du téléphone et la fiche « Après une blessure » sont des [EXEMPLE] préparés avec l'aide d'une IA. Recommandation : les ajouter à la liste « à faire relire par un avocat » de la feuille de route et les faire relire aussi par une legal team et une organisation de street medics.
 5. **Conception des street medics** : neuf questions dans `agir-secours-conception.md`, section 9 (attestation gardée par le medic, effacement à 2 heures, relais aveugle par cases de 5 km, seuils).

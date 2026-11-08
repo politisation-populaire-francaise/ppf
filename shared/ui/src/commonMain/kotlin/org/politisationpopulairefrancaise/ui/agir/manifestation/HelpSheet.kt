@@ -75,7 +75,7 @@ object HelpSoon {
  * the side bar on computers. [fullWidth] fills the side bar. Nothing without the shell's help state.
  */
 @Composable
-fun HelpButton(modifier: Modifier = Modifier, fullWidth: Boolean = false, stacked: Boolean = false) {
+fun HelpButton(modifier: Modifier = Modifier, fullWidth: Boolean = false, stacked: Boolean = false, compact: Boolean = false) {
     val help = LocalHelpState.current ?: return
     val palette = PpfTheme.palette
     val description = stringResource(Res.string.help_button_description)
@@ -85,10 +85,14 @@ fun HelpButton(modifier: Modifier = Modifier, fullWidth: Boolean = false, stacke
         colors = ButtonDefaults.buttonColors(containerColor = palette.accent, contentColor = palette.onAccent),
         border = BorderStroke(2.dp, palette.surface0),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
-        contentPadding = if (stacked) PaddingValues(horizontal = 4.dp, vertical = 6.dp) else PaddingValues(horizontal = 18.dp, vertical = 0.dp),
+        contentPadding = when {
+            stacked -> PaddingValues(horizontal = 4.dp, vertical = 6.dp)
+            compact -> PaddingValues(horizontal = 12.dp, vertical = 0.dp)
+            else -> PaddingValues(horizontal = 18.dp, vertical = 0.dp)
+        },
         modifier = modifier
             .then(if (fullWidth) Modifier.fillMaxWidth() else Modifier)
-            .heightIn(min = 56.dp)
+            .heightIn(min = if (compact) 44.dp else 56.dp)
             .semantics { contentDescription = description }
             .testTag(ManifestationTags.HELP_BUTTON),
     ) {
@@ -99,9 +103,9 @@ fun HelpButton(modifier: Modifier = Modifier, fullWidth: Boolean = false, stacke
                 Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = 15.sp, letterSpacing = 1.sp)
             }
         } else {
-            Icon(Lucide.LifeBuoy, contentDescription = null, modifier = Modifier.size(24.dp))
-            Spacer(Modifier.width(8.dp))
-            Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = 18.sp, letterSpacing = 1.sp)
+            Icon(Lucide.LifeBuoy, contentDescription = null, modifier = Modifier.size(if (compact) 20.dp else 24.dp))
+            Spacer(Modifier.width(if (compact) 6.dp else 8.dp))
+            Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = if (compact) 16.sp else 18.sp, letterSpacing = 1.sp)
         }
     }
 }

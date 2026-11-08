@@ -393,7 +393,6 @@ private fun CompactShell(
                 )
             },
             bottomBar = { BottomBar(selected, onSelect) },
-            floatingActionButton = { HelpButton() },
         ) { padding ->
             content(Modifier.padding(padding))
         }
@@ -586,6 +585,10 @@ private fun TopBar(
                 PpfIconButton(Lucide.Menu, stringResource(Res.string.action_open_menu), onMenu, Modifier.testTag(ShellTags.MENU_BUTTON), tint = palette.ink)
             }
             Wordmark(Modifier.weight(1f).padding(start = if (onMenu != null) 4.dp else 8.dp))
+            // Phones (the bar with the menu): the AIDE button sits in the top bar, where it never
+            // covers a list, a composer or its send button; tablets and computers have it in the rail
+            // and the side bar.
+            if (onMenu != null) HelpButton(Modifier.padding(horizontal = 4.dp), compact = true)
             PpfIconButton(Lucide.Search, stringResource(Res.string.action_search_soon), onClick = { }, enabled = false)
             PpfIconButton(Lucide.Bell, stringResource(Res.string.action_notifications_soon), onClick = { }, enabled = false)
             AvatarButton(account, mySpaceSelected, onMySpace)

@@ -132,7 +132,7 @@ private fun ComposeUiTest.top(tag: String): Float = onNodeWithTag(tag).fetchSema
 class ManifestationTest {
 
     @Test
-    fun theAideButtonIsOnPhonesTabletsAndComputersAboveTheBottomBar() {
+    fun theAideButtonIsOnPhonesTabletsAndComputersAndNeverOverTheContent() {
         for (width in listOf(360, 700, 1000)) {
             runComposeUiTest {
                 setContent {
@@ -144,9 +144,9 @@ class ManifestationTest {
                 onNodeWithTag(ManifestationTags.HELP_BUTTON).assert(hasClickAction())
                 onNodeWithText("AIDE", useUnmergedTree = true).assertExists()
                 if (width == 360) {
-                    // It floats above the bottom bar, never over it.
+                    // On phones it sits in the top bar, above the content: it never covers a send button.
                     val button = onNodeWithTag(ManifestationTags.HELP_BUTTON).fetchSemanticsNode().boundsInRoot
-                    assertTrue(button.bottom <= top(ShellTags.BOTTOM_BAR), "above the bottom bar at $width dp")
+                    assertTrue(button.bottom < top(ShellTags.BOTTOM_BAR) / 4, "in the top bar at $width dp")
                 }
                 // One gesture opens the emergency sheet, from any space.
                 openSheet()
