@@ -12,6 +12,8 @@ import io.ktor.server.testing.testApplication
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
+import org.politisationpopulairefrancaise.core.voir.VoirItem
+import org.politisationpopulairefrancaise.core.voir.VoirLinks
 import org.politisationpopulairefrancaise.server.BundledContents
 import org.politisationpopulairefrancaise.server.TEST_RELAY
 import org.politisationpopulairefrancaise.server.agir.AgirFixtures.testAgir
@@ -143,9 +145,38 @@ class VoirPagesTest {
     }
 
     @Test
+    fun aPartyHasItsPageAtTheAddressOfVoirLinks() = testApplication {
+        start()
+        val party = examples.parties.first { it.article.slug == "parti-exemple-a" }
+        val path = VoirLinks.pathOf(VoirItem.OfParty(party))
+        assertEquals("/voir/partis/parti-exemple-a", path)
+        val html = client.page(path)
+        assertTrue(html.contains("Parti politique · PEA"), html)
+        assertTrue(html.contains("Statuts déposés en préfecture (exemple)"), "its sources")
+        // Every party of the examples answers, and a party slug under another kind does not.
+        examples.parties.forEach { client.page(VoirLinks.pathOf(VoirItem.OfParty(it))) }
+        client.page("/voir/faits/parti-exemple-a", HttpStatusCode.NotFound)
+    }
+
+    @Test
+    fun everyContentPageOffersItsReferenceToCite() = testApplication {
+        start()
+        val fact = examples.facts.first { it.address.identifier == "affaire-dominique-marche-public" }
+        val html = client.page("/voir/faits/affaire-dominique-marche-public")
+        assertTrue(html.contains("<details class=\"cite\"><summary>Citer ce contenu</summary>"), html)
+        val id = fact.article.event.id
+        assertTrue(html.contains("version ${id.take(12)}, https://politisation-populaire-francaise.org/voir/faits/affaire-dominique-marche-public, empreinte SHA-256 $id, consulté le "), html)
+        assertTrue(html.contains("&quot;type&quot;:&quot;webpage&quot;"), "the CSL-JSON, escaped as text: $html")
+        // The same block on every kind of page.
+        listOf("/voir/chiffres/manifestants-journees", "/voir/personnes/alex-modele", "/voir/partis/parti-exemple-a", "/voir/textes/pjl-ordre-public-manifestations").forEach { path ->
+            assertTrue(client.page(path).contains("Citer ce contenu"), path)
+        }
+    }
+
+    @Test
     fun unknownContentsAnswerNotFound() = testApplication {
         start()
-        listOf("/voir/faits/inexistant", "/voir/inconnu/manifestants-journees", "/voir/personnes/manifestants-journees").forEach { path ->
+        listOf("/voir/faits/inexistant", "/voir/inconnu/manifestants-journees", "/voir/personnes/manifestants-journees", "/voir/partis/inexistant").forEach { path ->
             val html = client.page(path, HttpStatusCode.NotFound)
             assertTrue(html.contains("Contenu introuvable"), path)
         }

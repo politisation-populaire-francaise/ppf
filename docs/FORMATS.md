@@ -742,6 +742,8 @@ Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est jo
 | `GET /api/v1/territoires` | Le niveau national du référentiel des territoires (section 4 nonies) : régions, départements, collectivités, outre-mer avec population et inscrits, et l'index des paquets. Sans compte ; `ETag`, `If-None-Match`, gzip | `200` ; `304` ; `503 territoires_unavailable` avec `Retry-After: 60` tant qu'aucun import n'a réussi |
 | `GET /api/v1/territoires/{code}` | Le paquet d'un département ou d'une collectivité d'outre-mer, ou `communes` (index des noms). Aucune commune, aucun code postal, aucune recherche n'est envoyé par l'appareil | `200` ; `304` ; `404 unknown_package` ; `503 territoires_unavailable` |
 | `GET /api/v1/transparence/requisitions` | Transparence du registre légal (D-077) : le nombre de réquisitions judiciaires auxquelles PPF a répondu, par mois (temps universel, `YYYY-MM`, les mois sans réquisition sont absents), jamais une référence, une clé, un contenu ni une date plus fine. Corps : `{"format":1,"months":[{"month":"2026-11","answered":1}],"total":1}` | `200` ; `503 database_unavailable` sans base |
+| `GET /api/v1/export` | Catalogue de l'export ouvert (section 5 bis) : licence, clés de l'équipe éditoriale, jeux de données et leurs fichiers avec empreinte, taille et nombre de lignes. Sans compte ; `ETag`, `If-None-Match` | `200` ; `304` |
+| `GET /api/v1/export/<fichier>` et `GET /api/v1/export/schemas/<jeu>-<version>.schema.json` | Un fichier de l'export : `contenus.json` (événements signés), `<jeu>.json`, `<jeu>.csv` (téléchargé sous le nom `ppf-<jeu>.csv`), schéma JSON d'un jeu | `200` ; `304` ; `404 unknown_file` |
 | `GET /health` | État du serveur | `200` `{"status":"ok","service":"ppf-server","version":"0.1.0","environment":"…"}` |
 
 Quand la base de données n'est pas configurée, toute adresse sous `/api/v1/` répond `503` `{"error":"database_unavailable"}`.
@@ -815,3 +817,38 @@ Adresses : `https`, ou `http` vers `localhost` ou `127.0.0.1` seulement (faux se
 | Table | Rôle |
 |---|---|
 | `archive_proof` | Une ligne par empreinte horodatée : `digest` (32 octets, clé), `state` (`queued`, `pending`, `anchored`, `verified`), `requested_on` (jour UTC de la demande, une date), `batch_root` (racine du lot), `ots` (preuve `.ots`, 256 Kio au plus), `bitcoin_height`, `block_hash`, `block_time` (seulement pour `verified`), `rfc3161_token`, `tsa_time`, `tsa_cert_sha256` (ensemble ou pas du tout, les mêmes pour tout un lot). Jamais effacée par l'application ; aucune donnée personnelle |
+
+## 5 bis. Export ouvert (M34, S-48, D-101)
+
+Conception : `docs/integration/export-ouvert.md`. Tout se lit sans compte ; rien n'est journalisé ; chaque réponse porte `ETag: "<sha256 du corps>"` et `Cache-Control: public, no-cache`.
+
+**Catalogue** (`GET /api/v1/export`, format 1) :
+
+```json
+{"format":1,"updated_at":1794000000,"publisher":"Politisation Populaire Française",
+ "license":{"status":"a-decider","text":"…","url":null},
+ "editorial_keys":["<hex>"],
+ "datasets":[{"id":"voir-mesures","title":"Chiffres de l’observatoire","description":"…","space":"voir","version":1,
+   "schema":"/api/v1/export/schemas/voir-mesures-1.schema.json",
+   "files":[{"format":"json","url":"/api/v1/export/voir-mesures.json","sha256":"…","bytes":1234,"rows":12},
+            {"format":"csv","url":"/api/v1/export/voir-mesures.csv","sha256":"…","bytes":987,"rows":12}]}]}
+```
+
+- `updated_at` : le `created_at` du contenu exporté le plus récent (null si rien n'est publié) ; les mêmes contenus donnent les mêmes octets, donc le même `ETag`.
+- `license.status` : `a-decider` tant que la propriétaire n'a pas choisi la licence ; ensuite `choisie`, avec `text` et `url`.
+- Le jeu `contenus` (fichier `contenus.json`, sans schéma) est un tableau JSON des événements signés (section 2) : la dernière version de chaque adresse (même règle qu'à la section 5), types 30023 et 31923, **signés par les seules clés de l'équipe éditoriale** (`editorial_keys`), triés par type, clé puis identifiant `d`. Les contenus des comptes citoyens ne sont jamais rassemblés dans un fichier.
+- Les autres jeux sont des tableaux dérivés de ces événements : en JSON, un tableau d'objets, une propriété par colonne, `null` pour une cellule vide ; en CSV (RFC 4180), UTF-8 sans marque d'ordre, virgule, fin de ligne CRLF, première ligne des noms de colonnes, nombres avec un point et sans exposant (un montant garde ses centimes : `4210345.60`), et une apostrophe devant un texte qui commence par `=`, `+`, `-`, `@`, une tabulation ou un retour chariot (protection contre l'injection de formules ; le JSON garde la valeur exacte).
+- **Schéma** de chaque jeu : JSON Schema 2020-12, `<jeu>-<version>.schema.json`. Une colonne ajoutée à la fin garde la version ; toute autre modification crée la version suivante, l'ancienne restant servie six mois.
+- Chaque ligne nomme le contenu d'où elle vient (`content`, adresse stable `kind:pubkey:d`), sa version (`version`, identifiant de l'événement, à retrouver dans `contenus.json` pour vérifier la signature) et sa source.
+
+**Jeux de « Voir », version 1** (`server/.../voir/VoirDatasets.kt`) :
+
+| Jeu | Une ligne par | Colonnes |
+|---|---|---|
+| `voir-mesures` | valeur d'un indicateur, source par source | `content`, `indicator_title`, `unit`, `measure_id`, `date`, `value`, `part`, `part_label`, `occasion`, `place`, `reliability`, `declarative` (`oui` ou `non`), `source_kind`, `source_name`, `source_url`, `source_date`, `version` |
+| `voir-partis-aides` | année d'aide publique d'un parti | `content`, `party_name`, `year`, `amount_eur`, `decree`, `source_url`, `version` |
+| `voir-partis-sieges` | nombre de sièges d'un parti dans une assemblée, source par source | `content`, `party_name`, `chamber`, `seats`, `date`, `source_kind`, `source_name`, `source_url`, `version` |
+
+Aucun tableau des personnes, des affaires ni des peines avant la relecture de l'avocat (RGPD, article 10) : ces contenus restent dans `contenus.json`, comme dans l'API. Les autres pôles ajoutent leurs jeux par l'interface `OpenDataset` (`server/.../export/OpenDataset.kt`), chacun dans son fichier.
+
+**Page du site** : `/donnees`, lisible sans JavaScript, liée en bas de chaque page.
