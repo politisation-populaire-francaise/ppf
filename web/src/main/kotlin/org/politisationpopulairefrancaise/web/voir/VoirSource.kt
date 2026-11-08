@@ -22,6 +22,7 @@ class VoirIndex(val catalog: VoirCatalog) {
         catalog.indicators.forEach { add(VoirItem.OfIndicator(it)) }
         catalog.facts.forEach { add(VoirItem.OfFact(it)) }
         catalog.persons.forEach { add(VoirItem.OfPerson(it)) }
+        catalog.parties.forEach { add(VoirItem.OfParty(it)) }
         catalog.texts.forEach { add(VoirItem.OfText(it)) }
         catalog.movements.forEach { add(VoirItem.OfMovement(it)) }
         catalog.dossiers.forEach { add(VoirItem.OfDossier(it)) }
