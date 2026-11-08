@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- S-146 « Déclarer mon compte compromis » (D-134) : phrase de récupération, clé de secours, avis de compromission. -->
+<resources>
+    <!-- Création du compte -->
+    <string name="account_phrase_paper">Sans cette feuille, personne ne pourra vous rendre ce compte. Un compte dont la phrase est perdue et qui n’a jamais été vérifié en personne ne peut pas être récupéré, ni par vous ni par l’équipe.</string>
+    <string name="account_erase_after_check">Après la vérification, la phrase sera effacée de ce téléphone : seule votre copie papier la gardera.</string>
+    <string name="account_keep_phrase">Garder la phrase sur ce téléphone</string>
+    <string name="account_keep_phrase_on">La phrase restera sur ce téléphone, comme vous l’avez choisi.</string>
+    <string name="account_keep_phrase_undo">Annuler ce choix</string>
+    <string name="account_keep_warning_title">Garder la phrase sur ce téléphone ?</string>
+    <string name="account_keep_warning">Si ce téléphone est saisi, volé ou piraté, la personne qui le détient aura aussi votre clé de secours : elle pourra déclarer votre compte compromis à votre place et annoncer un faux nouveau compte. Vous pourrez effacer la phrase à tout moment depuis Mon espace.</string>
+    <string name="account_keep_confirm">Garder la phrase</string>
+    <string name="account_verify_later">Vérifier plus tard</string>
+    <string name="account_verify_later_hint">Si vous vérifiez plus tard, la phrase reste sur ce téléphone jusque-là, et Mon espace vous le rappellera dans une semaine.</string>
+
+    <!-- Mon espace : phrase et clé de secours -->
+    <string name="account_recovery_title">Phrase de récupération et clé de secours</string>
+    <string name="account_phrase_state_kept">Vous avez choisi de garder la phrase sur ce téléphone. Si le téléphone est saisi ou volé, la clé de secours l’est aussi.</string>
+    <string name="account_phrase_state_awaiting">Vous n’avez pas encore vérifié votre copie papier. La phrase reste sur ce téléphone jusqu’à la vérification.</string>
+    <string name="account_phrase_state_erased">La phrase n’est plus sur ce téléphone. Votre copie papier est le seul moyen de retrouver ce compte ou de le déclarer compromis.</string>
+    <string name="account_check_phrase">Vérifier ma phrase</string>
+    <string name="account_erase_phrase">Effacer la phrase de ce téléphone</string>
+    <string name="account_reminder_title">Vérifiez votre phrase de récupération</string>
+    <string name="account_reminder_text">Vous avez remis à plus tard la vérification de votre copie. Prenez votre feuille et retapez trois mots : la phrase sera ensuite effacée de ce téléphone.</string>
+    <string name="account_recovery_key_label">Clé de secours</string>
+    <string name="account_recovery_key_set">Enregistrée</string>
+    <string name="account_recovery_key_pending">En attente du serveur</string>
+    <string name="account_recovery_key_unknown">Pas encore vérifiée</string>
+    <string name="account_recovery_key_missing_short">Absente</string>
+    <string name="account_recovery_key_mismatch_short">Ne correspond pas</string>
+    <string name="account_recovery_key_explanation">La clé de secours est tirée de votre phrase. Si votre téléphone est saisi, volé ou piraté, elle permet, depuis un autre appareil, de déclarer ce compte compromis. Personne d’autre ne peut le faire à votre place.</string>
+    <string name="account_recovery_key_missing">Votre compte n’a pas encore de clé de secours. Vérifiez votre phrase pour l’enregistrer : sans elle, vous ne pourrez pas déclarer ce compte compromis.</string>
+    <string name="account_recovery_key_mismatch">La clé de secours enregistrée pour ce compte ne vient pas de cette phrase : vous ne pourrez pas déclarer ce compte compromis avec elle. Contactez l’équipe.</string>
+    <string name="account_retry">Réessayer</string>
+
+    <!-- Vérifier ma phrase -->
+    <string name="account_check_words">Prenez votre copie papier et saisissez les mots n° %1$d, %2$d et %3$d.</string>
+    <string name="account_check_whole">Prenez votre copie papier et saisissez vos douze mots, dans l’ordre.</string>
+    <string name="account_check_whole_label">Vos douze mots</string>
+    <string name="account_check_submit">Vérifier</string>
+    <string name="account_check_wrong_words">Un mot ne correspond pas. Vérifiez votre copie et réessayez.</string>
+    <string name="account_check_other_account">Cette phrase est valide, mais c’est celle d’un autre compte.</string>
+    <string name="account_check_done_erased">Votre copie est juste. La phrase a été effacée de ce téléphone.</string>
+    <string name="account_check_done_kept">Votre copie est juste. La phrase reste sur ce téléphone, comme vous l’avez choisi.</string>
+    <string name="account_close">Fermer</string>
+
+    <!-- Mon compte est déclaré compromis -->
+    <string name="account_compromised_title">Ce compte a été déclaré compromis</string>
+    <string name="account_compromised_text">Depuis le %1$s, ce compte n’est plus considéré comme le vôtre. Le serveur refuse tout nouveau contenu signé par lui : publier, voter, écrire dans un salon ou changer un réglage n’est plus possible avec ce compte. Ce qu’il a publié après cette date est marqué « suspect » chez vos contacts.</string>
+    <string name="account_compromised_successor">Nouveau compte annoncé : %1$s.</string>
+    <string name="account_compromised_next">Créez ou restaurez votre nouveau compte, puis faites-le vérifier en personne : rien ne passe automatiquement de l’ancien au nouveau.</string>
+
+    <!-- J’ai perdu le contrôle de mon compte -->
+    <string name="moment_at">%1$s à %2$s</string>
+    <string name="lost_open">J’ai perdu le contrôle de mon compte</string>
+    <string name="lost_title">J’ai perdu le contrôle de mon compte</string>
+    <string name="lost_intro">Téléphone saisi, volé ou piraté : avec votre phrase de récupération, vous pouvez déclarer publiquement que ce compte n’est plus entre vos mains. Plus rien ne pourra être publié avec lui, et vos contacts seront prévenus.</string>
+    <string name="lost_phrase_label">Les douze mots du compte perdu</string>
+    <string name="lost_since_title">Compromis depuis</string>
+    <string name="lost_since_hint">Jusqu’à 30 jours en arrière, par exemple l’heure où vous avez perdu le téléphone. Les contenus du compte datés d’après seront marqués « suspect ».</string>
+    <string name="lost_since_now">Maintenant</string>
+    <string name="lost_earlier_day">1 jour plus tôt</string>
+    <string name="lost_earlier_hour">1 heure plus tôt</string>
+    <string name="lost_later_hour">1 heure plus tard</string>
+    <string name="lost_later_day">1 jour plus tard</string>
+    <string name="lost_successor_title">Nouveau compte (facultatif)</string>
+    <string name="lost_successor_current">Le compte de cet appareil (%1$s)</string>
+    <string name="lost_successor_new">Un nouveau compte créé sur cet appareil</string>
+    <string name="lost_successor_none">Aucun</string>
+    <string name="lost_successor_other">Une autre clé publique</string>
+    <string name="lost_successor_other_label">Clé publique (npub…)</string>
+    <string name="lost_successor_hint">Le nouveau compte est une simple annonce, pas une preuve : vos contacts devront le vérifier en personne avant de lui faire confiance.</string>
+    <string name="lost_continue">Continuer</string>
+    <string name="lost_new_title">La phrase de votre nouveau compte</string>
+    <string name="lost_confirm_title">Déclaration définitive</string>
+    <string name="lost_confirm_text">Le compte %1$s sera déclaré compromis depuis le %2$s. C’est irréversible : ce compte ne pourra plus jamais rien publier, même si vous retrouvez votre téléphone. L’avis est public.</string>
+    <string name="lost_confirm_successor">Nouveau compte annoncé : %1$s.</string>
+    <string name="lost_confirm_no_successor">Aucun nouveau compte n’est annoncé.</string>
+    <string name="lost_confirm_button">Déclarer le compte compromis</string>
+    <string name="lost_edit">Modifier</string>
+    <string name="lost_sending">Publication de l’avis…</string>
+    <string name="lost_done_title">Le compte est déclaré compromis</string>
+    <string name="lost_done_text">Depuis le %1$s, le compte %2$s n’est plus le vôtre aux yeux de tous. Le serveur refusera tout ce qu’il tentera de publier.</string>
+    <string name="lost_done_new">Votre nouveau compte est prêt sur cet appareil et sa phrase en a été effacée. Faites-le vérifier en personne pour retrouver votre niveau de vérification.</string>
+    <string name="lost_error_successor_invalid">Cette clé publique n’est pas valide.</string>
+    <string name="lost_error_successor_self">Le nouveau compte ne peut pas être le compte compromis lui-même.</string>
+    <string name="lost_error_device_account">Cet appareil a déjà un autre compte : choisissez-le comme nouveau compte, ou déconnectez-le d’abord.</string>
+    <string name="lost_error_no_server">Aucun serveur n’est configuré : rien ne peut être déclaré depuis cet appareil.</string>
+    <string name="lost_error_unavailable">Le serveur ne répond pas. Rien n’a été publié : réessayez plus tard.</string>
+    <string name="lost_error_no_commitment">Ce compte n’a jamais enregistré de clé de secours : sa phrase ne permet pas de le déclarer compromis. Si le compte a été vérifié en personne, l’équipe pourra le faire après une nouvelle vérification.</string>
+    <string name="lost_error_wrong_phrase">La clé de secours enregistrée pour ce compte ne vient pas de cette phrase.</string>
+    <string name="lost_error_already">Ce compte est déjà déclaré compromis. Un avis est définitif : il ne peut pas être publié deux fois.</string>
+    <string name="lost_error_successor_taken">Ce nouveau compte est déjà annoncé comme successeur d’un autre compte. Choisissez-en un autre.</string>
+    <string name="lost_error_invalid">Le serveur a jugé l’avis invalide (date hors des 30 derniers jours, ou nouveau compte refusé). Vérifiez la date et réessayez.</string>
+    <string name="lost_error_refused">Le serveur a refusé l’avis.</string>
+
+    <!-- Conversations : contact déclaré compromis -->
+    <string name="messages_compromised_title">Ce compte a été déclaré compromis le %1$s</string>
+    <string name="messages_compromised_text">Son propriétaire dit ne plus le contrôler depuis le %1$s. Les messages reçus après cette date peuvent venir d’une autre personne. Vous ne pouvez plus lui écrire.</string>
+    <string name="messages_compromised_successor">Nouveau compte annoncé : %1$s. Ce n’est pas une preuve : vérifiez-le en personne avant de lui faire confiance.</string>
+    <string name="messages_compromised_write_successor">Écrire au nouveau compte</string>
+    <string name="messages_suspect">Reçu après la compromission, prudence</string>
+    <string name="messages_send_error_compromised">Ce compte est déclaré compromis : aucun message ne peut lui être envoyé.</string>
+    <string name="messages_send_error_own_compromised">Votre compte est déclaré compromis : il ne peut plus écrire.</string>
+</resources>

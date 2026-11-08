@@ -191,7 +191,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val shellScope = rememberCoroutineScope()
     val testimonyLibrary = rememberTestimonyLibrary(dependencies, start = false)
     // Erasing the keys also forgets the followed accounts, the conversations and the joined rooms (protection by default).
-    val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = {
+    val accountSession = rememberAccountSession(dependencies.identityStore, remote = dependencies.remote, onSignOut = {
         contentLibrary.clearFollowed()
         messaging.forgetAll()
         groupsLibrary.clearMemberships()
@@ -221,6 +221,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         callsLibrary.setAccount(accountKey)
         messaging.setAccount(accountSession.messagingSigner)
     }
+    // A compromised account no longer writes (S-146): the conversations say why.
+    LaunchedEffect(accountSession.compromise) { messaging.setOwnCompromised(accountSession.compromise != null) }
     // How long the server keeps the account's private messages (Mon espace, D-028).
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
     // The notification settings (Mon espace, M31); null without notifications.

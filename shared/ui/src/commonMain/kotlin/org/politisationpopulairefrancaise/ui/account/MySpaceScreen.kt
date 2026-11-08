@@ -60,7 +60,6 @@ import org.politisationpopulairefrancaise.ui.resources.account_intro_title
 import org.politisationpopulairefrancaise.ui.resources.account_language_english
 import org.politisationpopulairefrancaise.ui.resources.account_language_french
 import org.politisationpopulairefrancaise.ui.resources.account_loading
-import org.politisationpopulairefrancaise.ui.resources.account_no_phrase
 import org.politisationpopulairefrancaise.ui.resources.account_phrase_noted
 import org.politisationpopulairefrancaise.ui.resources.account_phrase_title
 import org.politisationpopulairefrancaise.ui.resources.account_phrase_warning
@@ -83,7 +82,6 @@ import org.politisationpopulairefrancaise.ui.resources.account_reveal_secret_war
 import org.politisationpopulairefrancaise.ui.resources.account_reveal_warning_title
 import org.politisationpopulairefrancaise.ui.resources.account_review_phrase
 import org.politisationpopulairefrancaise.ui.resources.account_secret_label
-import org.politisationpopulairefrancaise.ui.resources.account_show_phrase
 import org.politisationpopulairefrancaise.ui.resources.account_show_secret
 import org.politisationpopulairefrancaise.ui.resources.account_sign_out
 import org.politisationpopulairefrancaise.ui.resources.account_sign_out_confirm
@@ -97,6 +95,10 @@ import org.politisationpopulairefrancaise.ui.resources.account_visibility_title
 import org.politisationpopulairefrancaise.ui.resources.account_votes_explanation
 import org.politisationpopulairefrancaise.ui.resources.account_votes_label
 import org.politisationpopulairefrancaise.ui.resources.account_votes_never
+import org.politisationpopulairefrancaise.ui.resources.account_phrase_paper
+import org.politisationpopulairefrancaise.ui.resources.account_verify_later
+import org.politisationpopulairefrancaise.ui.resources.account_verify_later_hint
+import org.politisationpopulairefrancaise.ui.resources.lost_open
 import org.politisationpopulairefrancaise.ui.resources.desc_mon_espace
 import org.politisationpopulairefrancaise.ui.resources.space_mon_espace
 import org.politisationpopulairefrancaise.ui.resources.platform_label
@@ -151,7 +153,11 @@ fun MySpaceScreen(
         Column(Modifier.widthIn(max = 640.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             PageHeader(stringResource(Res.string.space_mon_espace), stringResource(Res.string.desc_mon_espace))
             Spacer(Modifier.height(4.dp))
-            when (val state = session.state) {
+            val state = session.state
+            if (session.lostControl.state != null && state != AccountUiState.Loading && state != AccountUiState.Unreadable) {
+                // "J'ai perdu le contrôle de mon compte" takes the page while it is open.
+                LostControlCard(session, windowClass)
+            } else when (state) {
                 AccountUiState.Loading -> LoadingCard()
                 AccountUiState.Unreadable -> MessageCard(stringResource(Res.string.account_failed))
                 AccountUiState.NoAccount -> {
@@ -203,6 +209,8 @@ private fun NoAccountCard(session: AccountSession) {
             PpfPrimaryButton(onClick = session::beginCreation, text = stringResource(Res.string.account_create), modifier = Modifier.weight(1f).testTag(AccountTags.CREATE))
             PpfSecondaryButton(onClick = session::beginRestore, text = stringResource(Res.string.account_restore), modifier = Modifier.weight(1f).testTag(AccountTags.RESTORE))
         }
+        Spacer(Modifier.height(8.dp))
+        PpfTextButton(onClick = session.lostControl::begin, text = stringResource(Res.string.lost_open), modifier = Modifier.testTag(LostControlTags.OPEN), color = PpfTheme.palette.inkMuted)
     }
 }
 
@@ -214,6 +222,9 @@ private fun CreatingCard(session: AccountSession, state: AccountUiState.Creating
                 Text(stringResource(Res.string.account_phrase_title), style = MaterialTheme.typography.titleMedium)
                 Spacer(Modifier.height(8.dp))
                 Text(stringResource(Res.string.account_phrase_warning), style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.inkMuted)
+                Spacer(Modifier.height(8.dp))
+                // D-134: without the sheet of paper, an account never checked in person cannot be recovered.
+                Text(stringResource(Res.string.account_phrase_paper), style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.ink)
                 Spacer(Modifier.height(16.dp))
                 PhraseGrid(state.phrase, windowClass)
                 Spacer(Modifier.height(16.dp))
@@ -257,17 +268,24 @@ private fun VerifyStep(session: AccountSession, state: AccountUiState.Creating) 
             modifier = Modifier.testTag(AccountTags.VERIFY_ERROR),
         )
     }
-    Spacer(Modifier.height(16.dp))
+    Spacer(Modifier.height(12.dp))
+    var warning by remember { mutableStateOf(false) }
+    KeepChoice(keep = state.keepPhrase, onKeep = { warning = true }, onUndo = { session.setCreationKeepPhrase(false) })
+    if (warning) KeepPhraseDialog(onConfirm = { session.setCreationKeepPhrase(true); warning = false }, onCancel = { warning = false })
+    Spacer(Modifier.height(12.dp))
     PpfPrimaryButton(onClick = { session.verifyAndCreate(answers.value) }, text = stringResource(Res.string.account_verify_submit), modifier = Modifier.fillMaxWidth().testTag(AccountTags.VERIFY_SUBMIT))
     Row {
         PpfTextButton(onClick = session::reviewPhrase, text = stringResource(Res.string.account_review_phrase))
         PpfTextButton(onClick = session::cancel, text = stringResource(Res.string.account_cancel), modifier = Modifier.testTag(AccountTags.CANCEL), color = PpfTheme.palette.inkMuted)
     }
+    Spacer(Modifier.height(8.dp))
+    Text(stringResource(Res.string.account_verify_later_hint), style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkSubtle)
+    PpfTextButton(onClick = session::postponeVerification, text = stringResource(Res.string.account_verify_later), modifier = Modifier.testTag(RecoveryTags.VERIFY_LATER), color = PpfTheme.palette.inkMuted)
 }
 
 /** The numbered words, two columns on a phone, three elsewhere. */
 @Composable
-private fun PhraseGrid(phrase: RecoveryPhrase, windowClass: WindowClass) {
+internal fun PhraseGrid(phrase: RecoveryPhrase, windowClass: WindowClass) {
     val columns = if (windowClass.width == WindowWidthClass.COMPACT) 2 else 3
     SelectionContainer {
         Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -328,7 +346,7 @@ private fun RestoringCard(session: AccountSession, state: AccountUiState.Restori
 }
 
 @Composable
-private fun restoreErrorText(error: RestoreError): String = when (error) {
+internal fun restoreErrorText(error: RestoreError): String = when (error) {
     RestoreError.WordCount -> stringResource(Res.string.account_restore_error_word_count)
     is RestoreError.UnknownWords -> stringResource(Res.string.account_restore_error_unknown_words, error.words.joinToString(", "))
     RestoreError.Checksum -> stringResource(Res.string.account_restore_error_checksum)
@@ -350,6 +368,9 @@ private fun ReadyCards(
     val palette = PpfTheme.palette
     var pending by remember { mutableStateOf<PendingDialog?>(null) }
     val hex = state.publicKey.hex
+
+    session.compromise?.let { CompromisedBanner(it) }
+    if (state.reminderDue && session.phraseCheck == null) PhraseReminderCard(session)
 
     PpfCard(Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 20.dp)) {
         Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -399,17 +420,13 @@ private fun ReadyCards(
                 PpfSecondaryButton(onClick = session::hideRevealed, text = stringResource(Res.string.account_hide), icon = Lucide.EyeOff)
             }
             null -> {
-                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    if (state.hasRecoveryPhrase) {
-                        PpfSecondaryButton(onClick = { pending = PendingDialog.REVEAL_PHRASE }, text = stringResource(Res.string.account_show_phrase), icon = Lucide.Eye, modifier = Modifier.fillMaxWidth().testTag(AccountTags.SHOW_PHRASE))
-                    } else {
-                        Text(stringResource(Res.string.account_no_phrase), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
-                    }
-                    PpfSecondaryButton(onClick = { pending = PendingDialog.REVEAL_SECRET }, text = stringResource(Res.string.account_show_secret), icon = Lucide.KeyRound, modifier = Modifier.fillMaxWidth().testTag(AccountTags.SHOW_SECRET))
-                }
+                PpfSecondaryButton(onClick = { pending = PendingDialog.REVEAL_SECRET }, text = stringResource(Res.string.account_show_secret), icon = Lucide.KeyRound, modifier = Modifier.fillMaxWidth().testTag(AccountTags.SHOW_SECRET))
             }
         }
     }
+
+    // The phrase, its check and the recovery key (S-146, D-134).
+    RecoveryCard(session, state, onShowPhrase = { pending = PendingDialog.REVEAL_PHRASE })
 
     PpfCard(Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
         Text(stringResource(Res.string.account_visibility_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp, bottom = 4.dp))
@@ -423,10 +440,12 @@ private fun ReadyCards(
         Text(stringResource(Res.string.account_votes_explanation), style = MaterialTheme.typography.bodyMedium)
     }
 
-    if (mailbox != null) MailboxCard(mailbox, session)
+    // A compromised account can no longer change its settings on the server: the card would only fail.
+    if (mailbox != null && session.compromise == null) MailboxCard(mailbox, session)
 
     if (notifications != null) NotificationsCard(notifications)
 
+    PpfTextButton(onClick = session.lostControl::begin, text = stringResource(Res.string.lost_open), modifier = Modifier.testTag(LostControlTags.OPEN), color = palette.inkMuted)
     PpfTextButton(onClick = { pending = PendingDialog.SIGN_OUT }, text = stringResource(Res.string.account_sign_out), modifier = Modifier.testTag(AccountTags.SIGN_OUT), color = palette.accentInk)
 
     pending?.let { dialog ->
