@@ -1,6 +1,6 @@
 # Note d'intégration : bouton AIDE et mode manifestation (M25 : AG-13, AG-27 première version, AG-36, AG-14)
 
-Rédigée le 7 novembre 2026 par un agent de la session « Agir », branche `worktree-agent-a6bbc59bcf9fcaf8f` (partie de `feature/agir`, partie de 3051dc7). La session « Agir » fusionne, numérote les décisions proposées (section 5) et met à jour `DECISIONS.md`, `CHANGELOG.md`, `ROADMAP.md` et `GUIDE_PROPRIETAIRE.md`. Cette note a mis à jour elle-même `REGISTRE_DONNEES.md` et `THREAT_MODEL.md` (sections « Ajout du 7 novembre 2026 : bouton AIDE et mode manifestation »). La suite (alerte aux street medics, tableau de coordination) est **conçue sans être codée** dans `agir-secours-conception.md`.
+Rédigée le 7 novembre 2026 par un agent de la session « Agir », branche `worktree-agent-a6bbc59bcf9fcaf8f` (partie de `feature/agir` 3051dc7, `feature/agir` dd50129 intégré). La session « Agir » fusionne, numérote les décisions proposées (section 5) et met à jour `DECISIONS.md`, `CHANGELOG.md`, `ROADMAP.md` et `GUIDE_PROPRIETAIRE.md`. Cette note a mis à jour elle-même `REGISTRE_DONNEES.md` et `THREAT_MODEL.md` (sections « Ajout du 7 novembre 2026 : bouton AIDE et mode manifestation »). La suite (alerte aux street medics, tableau de coordination) est **conçue sans être codée** dans `agir-secours-conception.md`.
 
 ## 1. Ce qui est fait
 
@@ -38,7 +38,7 @@ Nouveaux (pôle Agir) :
 Modifiés :
 - `ui/agir/AgirHome.kt` (rubrique `MANIFESTATION` ouverte, retirée de « En préparation »), `ui/agir/AgirScreen.kt` (route `mode-manifestation`) ;
 - **`ui/shell/AdaptiveShell.kt`** (fichier partagé, 15 lignes) : l'état `rememberHelpState`, `ProvideHelp` autour de l'interface, `HelpSheetHost`, le bouton dans le `Scaffold` du téléphone, l'en-tête du rail et la barre latérale ;
-- tests d'Agir : `AgirScreenTest` (5 rubriques en préparation), `CallsLibraryTest` (6 fiches pratiques) ;
+- tests d’Agir : `AgirScreenTest` (5 rubriques en préparation), `CallsLibraryTest` (6 fiches pratiques) ; tests de « Comprendre » (une ligne chacun, nombre de fiches intégrées 5 vers 6) : `shared/ui/.../content/ComprendreScreenTest.kt`, `web/.../comprendre/ComprendrePagesTest.kt` ;
 - `docs/REGISTRE_DONNEES.md`, `docs/THREAT_MODEL.md`.
 
 Aucune dépendance nouvelle, aucune icône nouvelle, aucune migration (locale ou Flyway), aucun hôte contacté.
