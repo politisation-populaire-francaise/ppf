@@ -49,7 +49,7 @@ class RootCeremonyTest {
         assertEquals("queue.editorial.voir.publish", SigningApprovals.PERMISSIONS[SigningUse.EDITORIAL_VOIR])
         assertEquals("queue.agir.organisations.decide", SigningApprovals.PERMISSIONS[SigningUse.AGIR_ORGANISATIONS])
         assertEquals("queue.revendications.proposals.decide", SigningApprovals.PERMISSIONS[SigningUse.REVENDICATIONS_STATUS])
-        assertEquals(Permissions.DECIDER_PACTE_PUBLISH, SigningApprovals.PERMISSIONS[SigningUse.DECIDER_PACTE])
+        assertEquals(Permissions.queueDecide("decider.petitions"), SigningApprovals.PERMISSIONS[SigningUse.DECIDER_PACTE])
         // D-144: the takeover of a room left without administrator, by the members of the queue groups.orphans.
         assertEquals("queue.groups.orphans.decide", SigningApprovals.PERMISSIONS[SigningUse.GROUPS_TAKEOVER])
         assertTrue(Permissions.queueDecide("groups.orphans") in TeamRole.MODERATOR.permissions)

@@ -25,7 +25,7 @@ import java.util.UUID
  * | `editorial.voir` | `queue.editorial.voir.publish` | editor |
  * | `agir.organisations` | `queue.agir.organisations.decide` | organisation verifier |
  * | `revendications.status` | `queue.revendications.proposals.decide` | moderator |
- * | `decider.pacte` | `queue.decider.pacte.publish` (proposal, to be confirmed by Décider) | none but super administrators |
+ * | `decider.pacte` | `queue.decider.petitions.decide` (the official petitions, D-115: the only queue of Décider that signs this use today; its other queues are added here when they sign) | administrator |
  * | `groups.takeover` | `queue.groups.orphans.decide` (D-144) | moderator |
  */
 object SigningApprovals {
@@ -34,7 +34,7 @@ object SigningApprovals {
         SigningUse.EDITORIAL_VOIR to "queue.editorial.voir.publish",
         SigningUse.AGIR_ORGANISATIONS to Permissions.queueDecide("agir.organisations"),
         SigningUse.REVENDICATIONS_STATUS to Permissions.queueDecide("revendications.proposals"),
-        SigningUse.DECIDER_PACTE to Permissions.DECIDER_PACTE_PUBLISH,
+        SigningUse.DECIDER_PACTE to Permissions.queueDecide("decider.petitions"),
         // The takeover of a room left without administrator: approved by another member of the queue groups.orphans (D-144).
         SigningUse.GROUPS_TAKEOVER to Permissions.queueDecide("groups.orphans"),
     )

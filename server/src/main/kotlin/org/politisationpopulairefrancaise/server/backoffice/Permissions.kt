@@ -36,14 +36,6 @@ object Permissions {
     const val PLATFORM_KEYS: String = "platform.keys"
 
     /**
-     * Approving the platform signature of the contents of « Décider » (`decider.pacte`: Pact, candidates'
-     * answers, official petitions relayed, final texts of a deliberation). No queue of Décider holds a
-     * publishing permission yet: this one is a proposal of the Directeur technique (D-141), given to no role
-     * but `super_admin` for now, that the Décider pole must confirm or replace when it plugs its queue.
-     */
-    const val DECIDER_PACTE_PUBLISH: String = "queue.decider.pacte.publish"
-
-    /**
      * Contact, claims and case follow-up (M30, docs/integration/contact-reclamations.md): the inbox of the team
      * (section `contact`, metadata only), assigning, priority, status, closing.
      */
