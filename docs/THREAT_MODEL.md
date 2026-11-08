@@ -175,6 +175,7 @@ Reste ouvert, à trancher ou à faire :
 | Ordre d'insertion visible dans une copie de la base (colonnes cachées de PostgreSQL) | Faible (les jetons sont délivrés bien avant le vote) ; insertion des bulletins par lots mélangés à étudier |
 | Inondation de faux bulletins jusqu'à la limite globale | Disponibilité seulement (l'appareil réessaie plus tard) ; à surveiller |
 | `y` sert de reçu (achat de vote, contrainte) | Contrepartie du recomptage par tous ; documenté |
+| Copie de la base pendant la semaine : traces techniques reliant une validation en personne à sa séance (identifiants de transaction, journal d'écriture, blocs libérés) | Validations appliquées en un seul lot le lundi, dans l'ordre des clés ; rien en clair (séance scellée pour la clé « audit », ni date ni numéro) ; PostgreSQL sans archivage du journal ni horodatage des transactions, sauvegardes logiques seulement (D-112, suite du 8 novembre 2026). Reste : la dernière validation de chaque séance ouverte, et l'ordre de la semaine dans des fragments du disque jusqu'à leur écrasement (pas de chiffrement du disque sur ce serveur) |
 ## Ajout du 7 novembre 2026 : archivage horodaté, côté serveur (D-111)
 
 Hôtes contactés par le serveur, et lui seul, quand l'archivage est allumé (production par défaut ; préproduction seulement si réglée ; jamais en développement ni en test), tous en HTTPS sur le port 443 (détail pour le pare-feu : `docs/integration/archivage-egress.md`) :
