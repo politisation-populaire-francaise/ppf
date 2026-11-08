@@ -15,6 +15,8 @@ import org.politisationpopulairefrancaise.core.notifications.Notifications
 import org.politisationpopulairefrancaise.core.notifications.PushClient
 import org.politisationpopulairefrancaise.core.notifications.PushManager
 import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.core.urne.HttpUrneRemote
 
 /**
  * What lives as long as the application process, not only its screen: the local database, the
@@ -48,6 +50,16 @@ class PpfApplication : Application() {
         val url = serverUrl ?: return@lazy null
         val client = httpClient ?: return@lazy null
         ServerPublicationPort(client, url)
+    }
+
+    /**
+     * The ballot-box API (D-110): the account's requests on [httpClient], the anonymous ballots on a
+     * second client of their own, never used with the account. Null without server.
+     */
+    val urneRemote: HttpUrneRemote? by lazy {
+        val url = serverUrl ?: return@lazy null
+        val client = httpClient ?: return@lazy null
+        HttpUrneRemote(client, HttpClient(), url) { currentEpochSeconds() }
     }
 
     /** Work started by a wake-up or a registration answer, outliving the screen that asked it. */

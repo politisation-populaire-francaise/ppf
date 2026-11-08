@@ -84,7 +84,7 @@ Pas encore là : la synchronisation de cette liste entre vos appareils (sauvegar
 
 ### Tester les revendications et les messages (ajouté le 6 novembre 2026)
 
-1. Touchez **Revendications** dans la barre du bas. Huit revendications d'exemple s'affichent en cards : le statut (Nouvelle, En débat, Très soutenue), la revendication en une phrase, son résumé, son territoire et ses thèmes. Les boutons **Pour**, **Contre** et **Débat** sont grisés : ils s'activeront quand la méthode « une personne, une voix » sera validée. Touchez une card : l'argumentaire s'ouvre ; la flèche revient à la liste. Sur l'ordinateur, la liste et le détail sont côte à côte.
+1. Touchez **Revendications** dans la barre du bas. Huit revendications d'exemple s'affichent en cards : le statut (Nouvelle, En débat, Très soutenue), la revendication en une phrase, son résumé, son territoire et ses thèmes. Les boutons **Pour** et **Contre** restent grisés sans connexion au serveur de PPF (c'est le cas de l'APK de test pour l'instant), et **Débat** viendra plus tard ; la ligne sous les boutons dit pourquoi. Pour essayer le vote, voir plus bas « Essayer le vote anonyme sur l'ordinateur ». Touchez une card : l'argumentaire s'ouvre ; la flèche revient à la liste. Sur l'ordinateur, la liste et le détail sont côte à côte.
 2. Dans le Fil, l'onglet **Revendications** montre les mêmes cards.
 3. Touchez **Messages** dans la barre du bas : trois onglets, **Privé**, **Collectifs**, **Flux**, se parcourent au doigt (détail dans « Tester la messagerie » ci-dessous).
 
@@ -194,7 +194,7 @@ Sur l'ordinateur, l'écran se présente en deux colonnes.
 Tout est inventé et marqué [EXEMPLE] : pétitions, chiffres, élection, candidats et réponses. Seules les règles des pétitions sont réelles (vérifiées le 7 novembre 2026). Aucun compte n'est nécessaire, et tout marche sans réseau.
 
 1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Décider**. En haut, le **Pacte démocratique**, puis les **pétitions officielles ouvertes**, puis « Et aussi ».
-2. Touchez la carte du **Pacte**. Lisez l'encart « Les mêmes règles pour tous les candidats », puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
+2. Touchez la carte du **Pacte**. Lisez l'encart « Les mêmes règles pour tous les candidats » (il dit maintenant qu'une réponse reçue après la date limite n'est pas comptée, votre décision du 7 novembre ; aucune réponse d'exemple n'est en retard), puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
 3. Touchez le nom d'un candidat : sa fiche s'ouvre dans « Voir ». Revenez avec le bouton retour.
 4. En bas de la page du Pacte, **Empreinte du texte envoyé** : cette suite de caractères changerait si un seul mot des mesures changeait. Touchez **Copier l'empreinte**.
 5. Revenez à l'accueil de « Décider » et touchez la pétition **Retirer le projet de loi relatif à l'ordre public**. Vous voyez le compteur, la barre vers 500 000 signatures, puis chaque seuil avec **ce qu'il obtient** et, en orange, **ce qu'il ne garantit pas** (le débat se termine sans vote).
@@ -206,6 +206,51 @@ Tout est inventé et marqué [EXEMPLE] : pétitions, chiffres, élection, candid
 11. Allez dans **Mon espace** (l'avatar en haut à droite) : tout en bas, la version installée et votre système. Donnez-les-moi si vous me signalez un problème.
 
 Sur l'ordinateur, les réponses au Pacte forment un vrai tableau, une colonne par mesure.
+
+### Vérifier que le vote anonyme peut marcher sur votre téléphone (ajouté le 7 novembre 2026)
+
+Le vote anonyme (« une personne, une voix ») n'est pas encore ouvert, mais son moteur est déjà dans l'application. Le téléphone le vérifie lui-même, au premier lancement de « Mon espace ». C'est le seul moyen de savoir s'il fonctionne sur un vrai téléphone, car l'ordinateur n'a pas d'émulateur Android.
+
+1. Ouvrez **Mon espace** (l'avatar en haut à droite) et faites défiler tout en bas.
+2. Sous la version installée, une ligne indique d'abord « Vérification du vote anonyme sur cet appareil… », puis, au bout d'une seconde environ :
+   - **« Vote anonyme : vérification réussie sur cet appareil »** : tout va bien ;
+   - ou une ligne orange **« vérification échouée (étape …) »** : envoyez-moi une capture de cette ligne avec la version juste au-dessus. Rien n'est envoyé nulle part, et le vote restera simplement fermé sur ce téléphone.
+
+### Tester le comparateur des candidats (ajouté le 7 novembre 2026, au soir)
+
+Tout est inventé et marqué [EXEMPLE] : l'élection, les quatre candidats et leurs positions. Aucun compte n'est nécessaire, et tout marche sans réseau.
+
+1. Ouvrez **Décider**. Sous le Pacte démocratique, la rubrique **Comparer les candidats** affiche « 4 candidats, 3 thèmes ». Touchez la carte.
+2. L'encadré du haut rappelle les règles : mêmes thèmes, même ordre, ordre alphabétique, aucune consigne de vote.
+3. Sur le téléphone, touchez un thème (Démocratie, Santé, Logement) : les quatre candidats s'affichent dessous, toujours dans le même ordre. Quand un candidat n'a rien publié, la case dit « Pas de position publiée sur ce thème ».
+4. Touchez **Lire la source** : l'application demande d'abord si vous voulez quitter PPF. Touchez **Rester ici**.
+5. **Sa fiche dans « Voir »** ouvre la fiche du candidat.
+6. Sur l'ordinateur, la même page est un tableau : une colonne par candidat, une ligne par thème.
+
+### Essayer le vote anonyme sur l'ordinateur (ajouté le 7 novembre 2026, au soir)
+
+Le vote marche maintenant de bout en bout, mais seulement avec un serveur. Sur votre ordinateur, un serveur de développement suffit ; il ne contient que des exemples. Il faut deux fenêtres de commande, ouvertes dans le dossier du projet.
+
+1. Dans la première fenêtre, lancez le serveur de développement et laissez-le tourner :
+
+   `gradlew.bat :server:runDev`
+
+   Attendez la ligne « Development server: … http://localhost:8080 ».
+2. Dans la seconde fenêtre, lancez l'application de bureau reliée à ce serveur :
+
+   `set PPF_SERVER_URL=http://localhost:8080`
+
+   puis
+
+   `gradlew.bat :desktop:run`
+3. Dans l'application, créez un compte dans **Mon espace** (une minute, avec les douze mots), puis ouvrez **Revendications**.
+4. Les trois revendications d'exemple « En débat » ou « Très soutenue » ont chacune leur urne. La ligne sous les boutons passe de « s'ouvre dans quelques minutes » à « Votre vote est anonyme » ; comptez deux à quatre minutes après le démarrage du serveur.
+5. Touchez **Pour**. Le bouton devient actif, et la ligne dit que votre vote partira tout seul dans quelques minutes, sans votre compte. Ce délai tiré au hasard est voulu : c'est ce qui empêche de relier votre vote à votre compte. Laissez l'application ouverte une dizaine de minutes.
+6. La ligne devient « Votre vote est enregistré, anonymement », et les résultats « Citoyens : 1 pour, 0 contre » s'affichent. Les votes des autres arrivent ensuite toutes les trente minutes environ.
+7. Vous pouvez changer d'avis (touchez **Contre**) ou **Retirer mon vote** jusqu'à la clôture.
+8. Les revendications « Nouvelle », « Retenue » et « Campagne » n'ont pas d'urne : la ligne l'explique.
+
+Pour arrêter, fermez l'application, puis tapez Ctrl+C dans la première fenêtre. Rien n'est gardé : le serveur de développement oublie tout à l'arrêt.
 
 ### Tester les partis, le droit de réponse et le signalement d'erreur dans « Voir » (ajouté le 7 novembre 2026)
 
@@ -423,6 +468,14 @@ Le site est la version de PPF pour les iPhone tant que l'application iOS n'exist
 6. Hors ligne : après avoir ouvert http://localhost:8080/comprendre une fois, arrêtez le serveur (Ctrl+C dans sa fenêtre) puis rouvrez une fiche : elle s'affiche toujours. Une page jamais ouverte affiche alors « Lire hors ligne ».
 7. Mode sombre : réglez Windows en mode sombre (Paramètres, Personnalisation, Couleurs) ; les pages suivent. Réduisez la fenêtre à la largeur d'un téléphone : tout reste lisible.
 8. À la fin, arrêtez le serveur (Ctrl+C).
+
+### Voir « Décider » sur le site, sur votre ordinateur (ajouté le 8 novembre 2026)
+
+1. Lancez le serveur de développement comme ci-dessus (`gradlew :server:runDev`) et attendez la ligne qui commence par « Décider: ».
+2. Ouvrez http://localhost:8080/decider : le Pacte démocratique d'exemple, les pétitions officielles ouvertes, puis à part les pétitions closes.
+3. Ouvrez une pétition, par exemple http://localhost:8080/decider/petitions/petition-senat-indexation : le bouton « Signer sur le site officiel » mène au site du Sénat (marqué « site extérieur ») ; PPF ne recueille aucune signature. Plus bas : les relevés du compteur officiel, les étapes et les sources.
+4. Ouvrez le Pacte : http://localhost:8080/decider/pacte/pacte-election-exemple : les mesures, la méthode (même texte, même jour, même délai pour tous) et le tableau des réponses des candidats.
+5. Réduisez la fenêtre à la largeur d'un téléphone et passez Windows en mode sombre : tout reste lisible. Arrêtez le serveur à la fin (Ctrl+C).
 
 ## 3. Lancer l'application de bureau sur votre ordinateur
 

@@ -196,23 +196,24 @@ class BackOfficeUnitTest {
         assertFailsWith<IllegalArgumentException> { BackOfficeConfig.parseAuditKey("pas une clé") }
     }
 
-    // NIP-98 (stand-in until core/urne/Nip98.kt) -------------------------------------------------------------
+    // NIP-98 (the shared verification of core/urne/Nip98.kt, with the two properties of the back-office) ----------
 
     private val url = "https://equipe.example.org/api/v1/decider/validation"
 
-    private fun verifier() = MinimalNip98Verifier(startedAt = NOW.minusSeconds(3_600))
+    private fun verifier() = Nip98SessionVerifier(startedAt = NOW.minusSeconds(3_600))
 
     private fun header(event: SignedEvent): String = "Nostr " + Base64.getEncoder().encodeToString(event.toJson().toByteArray())
 
     private fun signed(
         keys: IdentityKeys = IdentityKeys.generate(),
-        kind: Int = MinimalNip98Verifier.KIND,
+        kind: Int = Nip98SessionVerifier.KIND,
         createdAt: Long = NOW.epochSecond,
         u: String = url,
         method: String = "POST",
         payload: String? = null,
+        extra: List<List<String>> = emptyList(),
     ): SignedEvent = runBlocking {
-        LocalEventSigner(keys).sign(kind = kind, createdAt = createdAt, tags = listOfNotNull(listOf("u", u), listOf("method", method), payload?.let { listOf("payload", it) }))
+        LocalEventSigner(keys).sign(kind = kind, createdAt = createdAt, tags = listOfNotNull(listOf("u", u), listOf("method", method), payload?.let { listOf("payload", it) }) + extra)
     }
 
     @Test
@@ -229,20 +230,25 @@ class BackOfficeUnitTest {
         fun code(authorization: String?, body: ByteArray? = null, method: String = "POST", at: Instant = NOW) =
             (verifier.check(SignedSessionRequest(authorization, url, method, body), at) { true } as SessionRequestCheck.Refused).code
         assertEquals("missing_authorization", code(null))
-        assertEquals("bad_scheme", code("Bearer abc"))
-        assertEquals("bad_encoding", code("Nostr %%%"))
-        assertEquals("bad_event", code("Nostr " + Base64.getEncoder().encodeToString("{}".toByteArray())))
-        assertEquals("bad_kind", code(header(signed(kind = 1))))
-        assertEquals("stale", code(header(signed(createdAt = NOW.epochSecond - 61))))
-        assertEquals("stale", code(header(signed(createdAt = NOW.epochSecond + 61))))
-        assertEquals("bad_url", code(header(signed(u = "$url/autre"))))
-        assertEquals("bad_method", code(header(signed()), method = "GET"))
-        assertEquals("bad_payload", code(header(signed()), body = "{}".toByteArray()))
-        assertEquals("bad_payload", code(header(signed(payload = "0".repeat(64))), body = "{}".toByteArray()))
+        assertEquals("missing_authorization", code("Bearer abc"))
+        assertEquals("malformed_authorization", code("Nostr %%%"))
+        assertEquals("malformed_authorization", code("Nostr " + Base64.getEncoder().encodeToString("{}".toByteArray())))
+        assertEquals("malformed_authorization", code("Nostr " + "A".repeat(20_000)))
+        assertEquals("invalid_signature", code(header(signed(kind = 1))))
+        assertEquals("expired_authorization", code(header(signed(createdAt = NOW.epochSecond - 61))))
+        assertEquals("expired_authorization", code(header(signed(createdAt = NOW.epochSecond + 61))))
+        assertEquals("wrong_url", code(header(signed(u = "$url/autre"))))
+        // Exactly one address and one method: a second tag is not ignored.
+        assertEquals("wrong_url", code(header(signed(extra = listOf(listOf("u", "$url/autre"))))))
+        assertEquals("wrong_method", code(header(signed(extra = listOf(listOf("method", "DELETE"))))))
+        assertEquals("wrong_method", code(header(signed()), method = "GET"))
+        assertEquals("wrong_payload", code(header(signed()), body = "{}".toByteArray()))
+        assertEquals("wrong_payload", code(header(signed(payload = "0".repeat(64))), body = "{}".toByteArray()))
+        assertEquals("wrong_payload", code(header(signed(payload = "0".repeat(64)))), "a digest without a body")
         val good = signed(payload = Tokens.sha256Hex("{}".toByteArray()))
         assertIs<SessionRequestCheck.Signed>(verifier.check(SignedSessionRequest(header(good), url, "POST", "{}".toByteArray()), NOW) { true })
         val forged = signed().copy(sig = "0".repeat(128))
-        assertEquals("bad_signature", code(header(forged)))
+        assertEquals("invalid_signature", code(header(forged)))
     }
 
     @Test
@@ -256,7 +262,7 @@ class BackOfficeUnitTest {
 
     @Test
     fun eventsOlderThanTheStartOfTheProcessAreRefused() {
-        val started = MinimalNip98Verifier(startedAt = NOW)
+        val started = Nip98SessionVerifier(startedAt = NOW)
         val before = signed(createdAt = NOW.epochSecond - 10)
         assertEquals(SessionRequestCheck.Refused("before_start"), started.check(SignedSessionRequest(header(before), url, "POST"), NOW) { true })
         assertIs<SessionRequestCheck.Signed>(started.check(SignedSessionRequest(header(signed()), url, "POST"), NOW) { true })

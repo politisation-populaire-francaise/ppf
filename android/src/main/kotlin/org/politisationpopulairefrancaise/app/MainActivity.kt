@@ -33,13 +33,15 @@ class MainActivity : ComponentActivity() {
         // only, checked again here because the HTTP engine does not consult Android's cleartext rule.
         // When the server cannot be reached (no WireGuard tunnel to the preproduction, no network),
         // the application stays offline as without a server and tries again at the next refresh.
-        // The database, the connection and the notifications belong to the application process
+        // The database, the connections and the notifications belong to the application process
         // (PpfApplication), so that a wake-up can use them while no screen is open.
         val app = application as PpfApplication
         val dependencies = AppDependencies.withDatabase(
             identityStore = app.identityStore,
             database = app.database,
             remote = app.remote,
+            // Voting: the account's requests on the usual client, the ballots on a second one of their own.
+            urneRemote = app.urneRemote,
             notifications = app.notifications,
             push = app.push,
             pushServer = app.pushServer,

@@ -9,6 +9,7 @@ import org.politisationpopulairefrancaise.core.notifications.Notifications
 import org.politisationpopulairefrancaise.core.notifications.PushManager
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.social.FollowStore
+import org.politisationpopulairefrancaise.core.urne.UrneRemote
 import org.politisationpopulairefrancaise.core.voir.ContentFollowStore
 import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
 import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataTrust
@@ -62,6 +63,11 @@ class AppDependencies(
      * was granted; elsewhere there is nothing to ask.
      */
     val requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
+    /**
+     * The ballot-box API of the server (D-110), with its two HTTP clients: the one of the account and
+     * a separate anonymous one for the ballots. Null keeps voting unavailable (no server, tests).
+     */
+    val urneRemote: UrneRemote? = null,
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -80,6 +86,7 @@ class AppDependencies(
             push: PushManager? = null,
             pushServer: String? = null,
             requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
+            urneRemote: UrneRemote? = null,
             openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
@@ -94,6 +101,7 @@ class AppDependencies(
             push = push,
             pushServer = pushServer,
             requestNotificationPermission = requestNotificationPermission,
+            urneRemote = urneRemote,
         )
     }
 }

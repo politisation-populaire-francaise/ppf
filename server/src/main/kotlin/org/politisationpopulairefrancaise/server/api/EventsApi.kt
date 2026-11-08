@@ -17,6 +17,8 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.accounts.AccountTypes
 import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
+import org.politisationpopulairefrancaise.server.decider.DeliberationSubmissions
+import org.politisationpopulairefrancaise.server.decider.receive
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
@@ -97,6 +99,8 @@ fun Route.eventsApi(
     accountTypes: AccountTypes? = null,
     /** Recovery keys and compromised accounts (S-146, D-134); by default on the same database. */
     compromised: CompromisedAccounts? = null,
+    /** The propositions and amendments of citizens to a deliberation, held for review (DE-25). */
+    deliberation: DeliberationSubmissions? = null,
 ) {
     if (repository == null) {
         route("/api/v1/{...}") {
@@ -151,6 +155,12 @@ fun Route.eventsApi(
             // A citizen demand is not published at once: it waits for the review of a person (202).
             if (proposals != null && policy.isCitizenDemand(event)) {
                 return@post proposals.receive(call, event, limits.perKey)
+            }
+            // A citizen's proposition or amendment of a deliberation waits for review too (202), or is refused.
+            if (deliberation != null && DeliberationSubmissions.isCitizenContribution(event, policy::isEditor)) {
+                val outcome = withContext(Dispatchers.IO) { deliberation.submit(event) }
+                if (outcome !is DeliberationSubmissions.Outcome.Queued) limits.perKey.refund(event.pubkey)
+                return@post deliberation.receive(call, event.id, outcome)
             }
             when (val decision = policy.check(event)) {
                 is PublicationPolicy.Decision.Refused -> return@post call.refuse(decision)

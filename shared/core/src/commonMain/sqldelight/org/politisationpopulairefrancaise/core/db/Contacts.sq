@@ -2,7 +2,7 @@
 -- the other person, face to face or by a channel they trust. Kept on the device only, never sent:
 -- who one has met in person belongs to the social graph, which stays on the devices (point
 -- d'attention n° 26, option C).
--- Added in schema version 15: existing databases get it through migrations/14.sqm.
+-- Added in schema version 16: existing databases get it through migrations/15.sqm.
 
 CREATE TABLE contact_verification (
     pubkey TEXT NOT NULL PRIMARY KEY,

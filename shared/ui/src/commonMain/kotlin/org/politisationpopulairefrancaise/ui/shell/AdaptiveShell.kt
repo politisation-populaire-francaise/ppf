@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -146,6 +147,9 @@ import org.politisationpopulairefrancaise.ui.notifications.rememberNotifications
 import org.politisationpopulairefrancaise.ui.resources.action_notifications
 import org.politisationpopulairefrancaise.ui.resources.notif_bell_unread_many
 import org.politisationpopulairefrancaise.ui.resources.notif_bell_unread_one
+import org.politisationpopulairefrancaise.ui.urne.LocalVoting
+import org.politisationpopulairefrancaise.ui.urne.RunVoting
+import org.politisationpopulairefrancaise.ui.urne.rememberVotingState
 
 /** Test tags, also useful for accessibility tooling. */
 object ShellTags {
@@ -198,11 +202,14 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val notificationCenter = rememberNotificationCenter(dependencies)
     var centerOpen by rememberSaveable { mutableStateOf(false) }
     val shellScope = rememberCoroutineScope()
+    // Anonymous voting (D-110): the boxes, the tokens and the choices of the device, kept for the whole run.
+    val voting = rememberVotingState(dependencies)
     val testimonyLibrary = rememberTestimonyLibrary(dependencies, start = false)
     // The AIDE button (M25, AG-27): its emergency sheet over every screen, its rally point on the device.
     val help = rememberHelpState(dependencies, organisationsLibrary, contentLibrary)
     // Erasing the keys also forgets the followed accounts, the conversations and the joined rooms (protection by default).
     val accountSession = rememberAccountSession(dependencies.identityStore, remote = dependencies.remote, onSignOut = {
+        voting.forget()
         contentLibrary.clearFollowed()
         messaging.forgetAll()
         groupsLibrary.clearMemberships()
@@ -229,6 +236,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
     val proposalComposer = remember(dependencies) { ProposalComposer(dependencies.contentStore, dependencies.remote) }
     val accountKey = (accountSession.state as? AccountUiState.Ready)?.publicKey?.hex
+    // Its two tasks, apart from each other: tokens with the account, ballots without it.
+    RunVoting(voting, accountSession, dependencies.dataSaver)
     LaunchedEffect(accountKey) {
         contentLibrary.setAccount(accountKey)
         callsLibrary.setAccount(accountKey)
@@ -263,7 +272,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The system's back leads from any space to the feed; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) {
+    ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting) {
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
             val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
             val account = accountSession.state as? AccountUiState.Ready
@@ -332,7 +341,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
             }
             HelpSheetHost(help)
         }
-    } } }
+    } } } }
 }
 
 @Composable

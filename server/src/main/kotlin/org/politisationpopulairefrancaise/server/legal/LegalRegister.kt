@@ -46,6 +46,11 @@ import javax.sql.DataSource
  * Content held for review (Agir, citizen demands) is recorded when it is published (stored after approval),
  * never when submitted.
  *
+ * **Outside the events table**, one public store records through [recordExternal], in its own transaction:
+ * the public votes of certified elected officials (D-115: kind 30078, `d` = `ppf-vote:<n>`, table
+ * `public_vote`), with their creation, replacement by a newer vote and withdrawal. The anonymous ballots,
+ * tokens and voter accounts never enter the register.
+ *
  * **Never recorded:** the events signed by the editorial keys ([isEditorialKey]: PPF is the publisher of
  * those, not their host); reading, searching, downloading; votes, ballots and anonymous supports (they are
  * not events of this API); encrypted private messages and anything only their recipient can read (gift
@@ -91,23 +96,46 @@ class LegalRegister(
             recordDeletion(connection, event)
             return
         }
+        insertOperation(connection, event, if (replaced == null) Operation.CREATE else Operation.REPLACE, replaced)
+        if (event.kind == EventKinds.METADATA) recordPseudonyms(connection, event, replaced)
+    }
+
+    /**
+     * Records an operation on a public content kept OUTSIDE the events table, inside the transaction of
+     * [connection] (the caller commits or rolls back both together). **Only explicitly public stores call it**;
+     * today one: the public votes of certified elected officials (D-115, table `public_vote`,
+     * `UrneStore.recordPublicVote`), signed events of kind 30078 that are public and nominative by the owner's
+     * decision. Kind 30078 stays out of [PUBLIC_KINDS]: the private settings of that kind are never recorded.
+     *
+     * The same rules as [recordStored], without the [PUBLIC_KINDS] filter: editorial keys excluded,
+     * pseudonymous fields only, the reception date set by the database, never the content. [removed] is the
+     * version replaced or withdrawn: required for [Operation.REPLACE] and [Operation.DELETE] (then [event] is
+     * the withdrawal itself), forbidden for [Operation.CREATE].
+     */
+    fun recordExternal(connection: Connection, operation: Operation, event: SignedEvent, removed: ReplacedVersion?) {
+        require((operation == Operation.CREATE) == (removed == null)) { "a creation has no removed version, a replacement or a deletion has one" }
+        if (isEditorialKey(event.pubkey)) return
+        insertOperation(connection, event, operation, removed)
+    }
+
+    /** One row of content_operation; the reception date and the identifier are the database's. */
+    private fun insertOperation(connection: Connection, event: SignedEvent, operation: Operation, removed: ReplacedVersion?) {
         connection.prepareStatement(
             "INSERT INTO legal_register.content_operation " +
                 "(event_id, operation, created_at, kind, pubkey, protocol, removed_event_id, removed_created_at, removed_pubkey) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
         ).use { insert ->
             insert.setString(1, event.id)
-            insert.setString(2, if (replaced == null) Operation.CREATE.column else Operation.REPLACE.column)
+            insert.setString(2, operation.column)
             insert.setLong(3, event.createdAt)
             insert.setInt(4, event.kind)
             insert.setString(5, event.pubkey)
             insert.setInt(6, PROTOCOL_HTTPS_API)
-            insert.setString(7, replaced?.id)
-            if (replaced == null) insert.setNull(8, Types.BIGINT) else insert.setLong(8, replaced.createdAt)
-            insert.setString(9, replaced?.pubkey)
+            insert.setString(7, removed?.id)
+            if (removed == null) insert.setNull(8, Types.BIGINT) else insert.setLong(8, removed.createdAt)
+            insert.setString(9, removed?.pubkey)
             insert.executeUpdate()
         }
-        if (event.kind == EventKinds.METADATA) recordPseudonyms(connection, event, replaced)
     }
 
     /**

@@ -1,0 +1,84 @@
+-- Anonymous voting on the device (D-110, D-112; docs/integration/une-personne-une-voix.md).
+-- The tokens and the secret identifiers `y` let the device vote, and change its vote, without its
+-- account: they leave the device only inside an anonymous ballot. The choices made are kept here
+-- for "Mes votes et soutiens" (TE-06): a political opinion, which never leaves the device except in
+-- the anonymous ballot itself, and is erased with the keys.
+-- Added in schema version 15: existing databases get it through migrations/14.sqm.
+
+-- The account the tokens belong to, and whether it registered to vote on the server.
+CREATE TABLE vote_state (
+    id INTEGER NOT NULL PRIMARY KEY CHECK (id = 0),
+    account TEXT NOT NULL,
+    registered INTEGER AS kotlin.Boolean NOT NULL
+);
+
+-- Blinded requests sent but not yet answered: the same request is sent again after a failure,
+-- so a lost answer never costs a token (the server answers it again within a day).
+CREATE TABLE vote_blind (
+    urne_number INTEGER NOT NULL PRIMARY KEY,
+    y BLOB NOT NULL,
+    blind BLOB NOT NULL,
+    blinded BLOB NOT NULL
+);
+
+-- One token per ballot box, with the public key seen at its delivery (pinned: never replaced).
+-- choice: the choice made on this device, NULL before any vote. send_after: seconds since 1970 after
+-- which the ballot with `choice` may leave (random delay, D-112), NULL when nothing waits.
+-- sent_choice: the last choice the server accepted. (Comments stay outside the CREATE statement, so
+-- that the table is exactly the one migrations/14.sqm creates.)
+CREATE TABLE vote_token (
+    urne_number INTEGER NOT NULL PRIMARY KEY,
+    urne_id TEXT NOT NULL,
+    level TEXT NOT NULL,
+    public_key TEXT NOT NULL,
+    y BLOB NOT NULL,
+    token BLOB NOT NULL,
+    choice TEXT,
+    send_after INTEGER,
+    sent_choice TEXT
+);
+
+selectState:
+SELECT * FROM vote_state WHERE id = 0;
+
+setState:
+INSERT OR REPLACE INTO vote_state(id, account, registered) VALUES (0, ?, ?);
+
+insertBlind:
+INSERT OR REPLACE INTO vote_blind(urne_number, y, blind, blinded) VALUES (?, ?, ?, ?);
+
+selectBlinds:
+SELECT * FROM vote_blind ORDER BY urne_number;
+
+deleteBlind:
+DELETE FROM vote_blind WHERE urne_number = ?;
+
+insertToken:
+INSERT OR IGNORE INTO vote_token(urne_number, urne_id, level, public_key, y, token) VALUES (?, ?, ?, ?, ?, ?);
+
+selectToken:
+SELECT * FROM vote_token WHERE urne_number = ?;
+
+selectTokens:
+SELECT * FROM vote_token ORDER BY urne_number;
+
+setChoice:
+UPDATE vote_token SET choice = ?, send_after = ? WHERE urne_number = ?;
+
+selectDue:
+SELECT urne_number FROM vote_token WHERE send_after IS NOT NULL AND send_after <= ? ORDER BY send_after;
+
+markSent:
+UPDATE vote_token SET sent_choice = choice, send_after = NULL WHERE urne_number = ? AND choice = ?;
+
+stopSending:
+UPDATE vote_token SET send_after = NULL WHERE urne_number = ?;
+
+deleteAllTokens:
+DELETE FROM vote_token;
+
+deleteAllBlinds:
+DELETE FROM vote_blind;
+
+deleteState:
+DELETE FROM vote_state;

@@ -37,7 +37,14 @@ data class Threshold(
     val minMemberStates: Int? = null,
     /** The signatures must be gathered within this many months. */
     val withinMonths: Int? = null,
-)
+    /** The text says « plus de » (strictly more than [signatures]), as the Règlement de l'Assemblée does. */
+    val moreThan: Boolean = false,
+) {
+    /** The smallest number of signatures that reaches this threshold. */
+    val needed: Long get() = if (moreThan) signatures + 1 else signatures
+
+    fun isReachedBy(count: Long): Boolean = count >= needed
+}
 
 /** Who can sign on a platform, as the interface explains it. */
 enum class SignerRule {
@@ -97,15 +104,17 @@ object PetitionRules {
         PlatformRules(
             platform = PetitionPlatform.ASSEMBLEE,
             thresholds = listOf(
-                Threshold(100_000, ThresholdEffect.ASSEMBLEE_HIGHLIGHT, guaranteed = true),
-                Threshold(500_000, ThresholdEffect.ASSEMBLEE_DEBATE, guaranteed = false, minDepartments = 30),
+                // Article 148, alinéa 1: « plus de 100 000 pétitionnaires » ; alinéa 6: « plus de 500 000 pétitionnaires
+                // domiciliés dans trente départements ou collectivités d'outre-mer au moins » (read on 7 November 2026).
+                Threshold(100_000, ThresholdEffect.ASSEMBLEE_HIGHLIGHT, guaranteed = true, moreThan = true),
+                Threshold(500_000, ThresholdEffect.ASSEMBLEE_DEBATE, guaranteed = false, minDepartments = 30, moreThan = true),
             ),
             signers = SignerRule.FRANCECONNECT,
             minimumAge = 18,
             // Open until the end of the legislature, or one year after 100 000 signatures.
             collectionMonths = null,
             thresholdPerProcedure = false,
-            legalReference = "Règlement de l’Assemblée nationale, articles 147 à 151 (résolution n° 281 du 4 juin 2019)",
+            legalReference = "Règlement de l’Assemblée nationale, articles 147 à 151, notamment article 148, alinéas 1 et 6 (résolution n° 281 du 4 juin 2019)",
             sourceUrl = "https://www.assemblee-nationale.fr/dyn/17/divers/texte_reference/02_reglement_assemblee_nationale.html",
             verifiedOn = VERIFIED_ON,
         ),
@@ -169,12 +178,12 @@ object PetitionRules {
         val thresholds = thresholdsOf(petition).sortedBy { it.signatures }
         val count = petition.latestCount
         val signatures = count?.count ?: 0L
-        val reached = thresholds.filter { signatures >= it.signatures }
-        val next = thresholds.firstOrNull { signatures < it.signatures }
+        val reached = thresholds.filter { it.isReachedBy(signatures) }
+        val next = thresholds.firstOrNull { !it.isReachedBy(signatures) }
         val fraction = when {
             thresholds.isEmpty() -> 0f
             next == null -> 1f
-            else -> (signatures.toDouble() / next.signatures).toFloat().coerceIn(0f, 1f)
+            else -> (signatures.toDouble() / next.needed).toFloat().coerceIn(0f, 1f)
         }
         val spread = reached.lastOrNull { it.minDepartments != null }
         val departmentsMissing = spread?.minDepartments?.let { needed -> petition.departments?.count?.let { (needed - it).coerceAtLeast(0) } }
@@ -183,7 +192,7 @@ object PetitionRules {
             thresholds = thresholds,
             reached = reached,
             next = next,
-            remaining = next?.let { it.signatures - signatures },
+            remaining = next?.let { it.needed - signatures },
             fraction = fraction,
             departmentsMissing = departmentsMissing,
         )
