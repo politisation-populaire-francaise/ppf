@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.web.comprendre
 import kotlinx.html.HTML
 import kotlinx.html.html
 import kotlinx.html.stream.createHTML
+import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
@@ -28,7 +29,7 @@ class CorrectionsPageTest {
         corrections: List<List<String>>,
     ): SignedEvent {
         val unsigned = Article.build(signer.publicKey, slug, title, "[EXEMPLE] Résumé.", emptyList(), type, ContentOrigin.HUMAN, 1_800_000_000, createdAt, "[EXEMPLE] Texte.\n")
-        return signer.sign(unsigned.copy(tags = unsigned.tags + corrections))
+        return runBlocking { signer.sign(unsigned.copy(tags = unsigned.tags + corrections)) }
     }
 
     private fun render(document: HTML.() -> Unit): String = createHTML().html { document() }

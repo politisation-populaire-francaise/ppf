@@ -132,8 +132,8 @@ class SignedEditorialPublisher(
             if (published == null) return Built.Refused(CODE_ADDRESS_MISMATCH)
             if (content.changeNote.isNullOrBlank() || content.changeKind == null) return Built.Refused(CODE_CORRECTION_REQUIRED)
         }
-        val earlier = io { signing.attempts(version.draftId) }.maxOfOrNull { it.unsigned.createdAt } ?: 0
-        val createdAt = maxOf(clock.instant().epochSecond, (published?.createdAt ?: 0) + 1, earlier + 1)
+        val earlier = io { signing.attempts(version.draftId) }.maxOfOrNull { it.unsigned.createdAt } ?: 0L
+        val createdAt = maxOf(clock.instant().epochSecond, (published?.createdAt ?: 0L) + 1, earlier + 1)
         val base = try {
             EditorialEngine.build(schema, content.draft(schema.type), PublicKey.fromHex(key), createdAt)
         } catch (e: IllegalArgumentException) {
@@ -168,6 +168,9 @@ class SignedEditorialPublisher(
         // The row holds exactly the event submitted: anything else is never asked for.
         if (unsigned.idHex() != attempt.eventId) return refuse(attempt, CODE_SIGNED_WRONG_ID)
         if (!clock.instant().isBefore(attempt.expiresAt)) return expire(attempt)
+        // A signature already asked: its ticket first (the signing service forgets the draft once it signs).
+        val asked = attempt.ticket?.let { signer.status(SigningTicket(it)) }
+        if (asked != null && !(asked is SigningStatus.Refused && asked.code == HttpPlatformSigner.UNKNOWN_TICKET)) return outcome(attempt, unsigned, asked)
         val status = signer.draftStatus(attempt.use, attempt.eventId)
         if (status == null) {
             // Unknown to the service (restarted) or no answer: submitting the same event again restores it.
@@ -182,12 +185,12 @@ class SignedEditorialPublisher(
             val url = status.approvalUrl ?: attempt.approvalUrl.orEmpty()
             return PublisherAnswer.AwaitingApproval(attempt.eventId, url, approvals = status.approvals.size, required = status.required)
         }
-        var outcome = attempt.ticket?.let { signer.status(SigningTicket(it)) }
-        if (outcome == null || (outcome is SigningStatus.Refused && outcome.code == HttpPlatformSigner.UNKNOWN_TICKET)) {
-            val ticket = signer.request(unsigned, attempt.use)
-            io { signing.setTicket(attempt.eventId, ticket.id) }
-            outcome = signer.status(ticket)
-        }
+        val ticket = signer.request(unsigned, attempt.use)
+        io { signing.setTicket(attempt.eventId, ticket.id) }
+        return outcome(attempt, unsigned, signer.status(ticket))
+    }
+
+    private suspend fun outcome(attempt: SigningAttempt, unsigned: UnsignedEvent, outcome: SigningStatus): PublisherAnswer {
         return when (outcome) {
             SigningStatus.Pending -> PublisherAnswer.SignaturePending
             is SigningStatus.Refused -> if (outcome.code == HttpPlatformSigner.SIGNER_UNAVAILABLE) {
