@@ -12,6 +12,7 @@ import kotlinx.html.h4
 import kotlinx.html.id
 import kotlinx.html.li
 import kotlinx.html.p
+import kotlinx.html.pre
 import kotlinx.html.section
 import kotlinx.html.span
 import kotlinx.html.summary
@@ -19,6 +20,7 @@ import kotlinx.html.time
 import kotlinx.html.ul
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.Citation
 import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.voir.ArchivedCopy
 import org.politisationpopulairefrancaise.core.voir.Correction
@@ -376,5 +378,30 @@ internal fun periodText(movement: WorldMovement): String {
         start != null && end != null -> "Du ${start.toFrenchShort()} au ${end.toFrenchShort()}"
         start != null -> "Depuis le ${start.toFrenchShort()}"
         else -> "En cours"
+    }
+}
+
+/** The editorial content of [item], whatever its kind. */
+internal fun articleOf(item: VoirItem): Article = when (item) {
+    is VoirItem.OfIndicator -> item.indicator.article
+    is VoirItem.OfFact -> item.fact.article
+    is VoirItem.OfPerson -> item.person.article
+    is VoirItem.OfParty -> item.party.article
+    is VoirItem.OfText -> item.text.article
+    is VoirItem.OfMovement -> item.movement.article
+    is VoirItem.OfDossier -> item.dossier.article
+}
+
+/**
+ * « Citer ce contenu » (S-144): the reference of the published page, ready to select and copy without script,
+ * and the same in CSL-JSON for bibliography software. Never on a preview: a draft has no published version.
+ */
+internal fun FlowContent.citeSection(item: VoirItem, consultedOn: CivilDate) {
+    val citation = Citation.of(articleOf(item), VoirLinks.urlOf(item), consultedOn)
+    details(classes = "cite") {
+        summary { +"Citer ce contenu" }
+        p { +citation.text }
+        p(classes = "muted") { +"La même référence au format CSL-JSON, pour un logiciel de bibliographie (Zotero, par exemple) :" }
+        pre { code { +citation.cslJson } }
     }
 }
