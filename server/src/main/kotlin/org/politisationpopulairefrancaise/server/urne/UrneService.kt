@@ -14,6 +14,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.urne.Ballot
+import org.politisationpopulairefrancaise.core.urne.CertificationAnswer
 import org.politisationpopulairefrancaise.core.urne.IssuedToken
 import org.politisationpopulairefrancaise.core.urne.LibsodiumRistretto255
 import org.politisationpopulairefrancaise.core.urne.ProofOfWork
@@ -194,7 +195,10 @@ class UrneService(
             previousLevel = account.previousLevel.code,
             registeredWeek = account.registeredWeek.toString(),
             validationPending = store.isValidationPending(pubkey),
-        )
+        ).let { status ->
+            val certification = store.certification(pubkey) ?: return@let status
+            status.copy(certification = certification.status, mandate = certification.mandate, certificationReason = certification.reason)
+        }
     }
 
     /**
@@ -205,6 +209,9 @@ class UrneService(
     fun issue(pubkey: String, body: String): TokenResponse {
         requirePerson(pubkey)
         val account = store.account(pubkey) ?: throw UrneRefusal(404, "not_registered")
+        // An account dedicated to a mandate never gets an anonymous token while its certification waits or holds:
+        // it votes publicly as « élu » (D-115) from the Monday after the certification.
+        if (store.certification(pubkey)?.status in DEDICATED) throw UrneRefusal(409, "elected_account")
         val requestHash = MessageDigest.getInstance("SHA-256").digest(body.encodeToByteArray())
         val today = LocalDate.ofInstant(clock.instant(), ZoneOffset.UTC)
         if (account.lastRequest != null && MessageDigest.isEqual(account.lastRequest, requestHash) &&
@@ -372,6 +379,9 @@ class UrneService(
 
         /** A public vote dated a little ahead (a device clock) is fine; far ahead, it is refused. */
         const val MAX_CLOCK_AHEAD_SECONDS: Long = 600
+
+        /** The certifications that make an account dedicated to its mandate (no anonymous token). */
+        private val DEDICATED = setOf(CertificationAnswer.PENDING, CertificationAnswer.CERTIFIED)
 
         /** The sealed links of the in-person validations are kept this many weeks (a fraudulent session can be undone). */
         const val VALIDATION_LINKS_WEEKS: Long = 52

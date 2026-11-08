@@ -46,6 +46,7 @@ import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.elus.ElusConfig
+import org.politisationpopulairefrancaise.server.elus.ElusLookup
 import org.politisationpopulairefrancaise.server.elus.ElusService
 import org.politisationpopulairefrancaise.server.elus.ElusSetup
 import org.politisationpopulairefrancaise.server.elus.elusApi
@@ -76,6 +77,8 @@ import org.politisationpopulairefrancaise.server.revendications.ProposalsBackOff
 import org.politisationpopulairefrancaise.server.urne.PersonAccounts
 import org.politisationpopulairefrancaise.server.urne.RevendicationUrnes
 import org.politisationpopulairefrancaise.server.urne.UrneConfig
+import org.politisationpopulairefrancaise.server.urne.ElectedCertifications
+import org.politisationpopulairefrancaise.server.urne.ElectedCertificationsQueue
 import org.politisationpopulairefrancaise.server.urne.InPersonValidations
 import org.politisationpopulairefrancaise.server.urne.UrneService
 import org.politisationpopulairefrancaise.server.urne.UrneStore
@@ -282,9 +285,17 @@ fun Application.module(
     } else {
         null
     }
+    // The certification of elected officials' accounts (DE-23): with the directory (D-047) and the back-office,
+    // where a certifier decides after meeting the official (queue elus.certifications).
+    val certifications = if (urneStore != null && urnes != null && teamBackOffice != null && elusService != null) {
+        ElectedCertifications(urneStore, urnes, ElusLookup(elusService)).also { teamBackOffice.queues.register(ElectedCertificationsQueue(it, urneStore)) }
+    } else {
+        null
+    }
     if (urnes != null && dataSource != null) {
         val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)
-        urnes.startClosing(this, UrneService.CLOSING_INTERVAL, log, keepers = listOf({ demands.reconcile() }))
+        // Daily, a certified mandate absent from the updated directory ends its certification (DE-23).
+        urnes.startClosing(this, UrneService.CLOSING_INTERVAL, log, keepers = listOf({ demands.reconcile() }, { certifications?.checkMandatesDue() }))
     }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
@@ -331,7 +342,7 @@ fun Application.module(
             testimonyApi(testimonySpace, testimonies.config.maxFileBytes)
             elusApi(elusService)
             territoiresApi(territoiresService)
-            urneApi(urnes, urne, validations = inPerson)
+            urneApi(urnes, urne, validations = inPerson, certifications = certifications)
             archivesApi(archives)
             transparencyApi(dataSource) // Requisitions answered per month only (D-077).
             agirSpace?.let { agendaPage(it.agendaSource()) }

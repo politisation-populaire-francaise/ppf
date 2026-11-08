@@ -4,6 +4,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.urne.CertificationAnswer
 import org.politisationpopulairefrancaise.core.urne.PublicVote
 import org.politisationpopulairefrancaise.core.urne.UrneInfo
 import org.politisationpopulairefrancaise.core.urne.VoteLevel
@@ -54,6 +55,22 @@ data class Urne(
 }
 
 data class StoredBallot(val y: ByteArray, val token: ByteArray, val level: VoteLevel, val choice: String, val hour: Instant)
+
+/** A certification of an elected official's account (table elected_certification). */
+data class Certification(
+    val pubkey: String,
+    val mandate: String,
+    val mandateType: String,
+    val territory: String,
+    /** One of the constants of [CertificationAnswer]. */
+    val status: String,
+    val requestedWeek: LocalDate,
+    val decidedWeek: LocalDate?,
+    val reason: String?,
+)
+
+/** What [UrneStore.requestCertification] did. */
+enum class CertificationWrite { RECORDED, ALREADY_CERTIFIED, MANDATE_TAKEN }
 
 /** What [UrneStore.addPendingValidation] did. */
 enum class PendingValidation { ADDED, ALREADY, FULL }
@@ -111,7 +128,11 @@ class UrneStore(
      * during the week [currentWeek]. A change that has not taken effect yet is replaced, and the level
      * before it stays the previous one: the boxes opened meanwhile keep the level in force (review R5).
      */
-    fun setLevel(pubkey: String, level: VoteLevel, week: LocalDate, currentWeek: LocalDate): Boolean = dataSource.connection.use { c ->
+    fun setLevel(pubkey: String, level: VoteLevel, week: LocalDate, currentWeek: LocalDate): Boolean =
+        dataSource.connection.use { c -> setLevel(c, pubkey, level, week, currentWeek) }
+
+    /** The same inside the transaction of [c]. */
+    fun setLevel(c: Connection, pubkey: String, level: VoteLevel, week: LocalDate, currentWeek: LocalDate): Boolean =
         c.prepareStatement(
             "UPDATE vote_account SET previous_level = CASE WHEN level_week <= ? THEN level ELSE previous_level END, level = ?, level_week = ? WHERE pubkey = ?",
         ).use { s ->
@@ -121,7 +142,6 @@ class UrneStore(
             s.setString(4, pubkey)
             s.executeUpdate() == 1
         }
-    }
 
     fun accountsByLevel(): Map<String, Long> = dataSource.connection.use { c ->
         c.createStatement().use { s ->
@@ -489,6 +509,104 @@ class UrneStore(
         return applied
     }
 
+    // ------------------------------------------------------------------ certification of elected officials (DE-23, D-112)
+
+    fun certification(pubkey: String): Certification? = dataSource.connection.use { c ->
+        c.prepareStatement("SELECT * FROM elected_certification WHERE pubkey = ?").use { s ->
+            s.setString(1, pubkey)
+            s.executeQuery().use { r -> if (r.next()) r.certification() else null }
+        }
+    }
+
+    /** The certifications of [statuses], those waiting first, then by week of request and key. */
+    fun certifications(statuses: Set<String>, offset: Int, limit: Int): List<Certification> = dataSource.connection.use { c ->
+        c.prepareStatement(
+            "SELECT * FROM elected_certification WHERE status = ANY(?) ORDER BY (status = 'pending') DESC, requested_week, pubkey OFFSET ? LIMIT ?",
+        ).use { s ->
+            s.setArray(1, c.createArrayOf("text", statuses.toTypedArray()))
+            s.setInt(2, offset)
+            s.setInt(3, limit)
+            s.executeQuery().use { r -> buildList { while (r.next()) add(r.certification()) } }
+        }
+    }
+
+    fun countCertifications(status: String): Int = dataSource.connection.use { c ->
+        c.prepareStatement("SELECT count(*) FROM elected_certification WHERE status = ?").use { s ->
+            s.setString(1, status)
+            s.executeQuery().use { r -> r.next(); r.getInt(1) }
+        }
+    }
+
+    /**
+     * Records the request of [pubkey] for [mandate] (a new request replaces one waiting, refused, withdrawn
+     * or ended), unless the account is certified already or the mandate is certified for another account.
+     */
+    fun requestCertification(pubkey: String, mandate: String, mandateType: String, territory: String, week: LocalDate): CertificationWrite = transaction { c ->
+        val current = c.prepareStatement("SELECT status FROM elected_certification WHERE pubkey = ? FOR UPDATE").use { s ->
+            s.setString(1, pubkey)
+            s.executeQuery().use { r -> if (r.next()) r.getString(1) else null }
+        }
+        if (current == CertificationAnswer.CERTIFIED) return@transaction CertificationWrite.ALREADY_CERTIFIED
+        val taken = c.prepareStatement("SELECT 1 FROM elected_certification WHERE mandate = ? AND status = 'certified' AND pubkey <> ?").use { s ->
+            s.setString(1, mandate)
+            s.setString(2, pubkey)
+            s.executeQuery().use { it.next() }
+        }
+        if (taken) return@transaction CertificationWrite.MANDATE_TAKEN
+        c.prepareStatement(
+            """
+            INSERT INTO elected_certification (pubkey, mandate, mandate_type, territory, status, requested_week) VALUES (?, ?, ?, ?, 'pending', ?)
+            ON CONFLICT (pubkey) DO UPDATE SET mandate = excluded.mandate, mandate_type = excluded.mandate_type, territory = excluded.territory,
+                status = 'pending', requested_week = excluded.requested_week, decided_week = NULL, reason = NULL
+            """.trimIndent(),
+        ).use { s ->
+            s.setString(1, pubkey)
+            s.setString(2, mandate)
+            s.setString(3, mandateType)
+            s.setString(4, territory)
+            s.setObject(5, week)
+            s.executeUpdate()
+        }
+        CertificationWrite.RECORDED
+    }
+
+    /**
+     * Moves the certification of [pubkey] from [from] to [to] with [reason], decided the week [week], and,
+     * in the same transaction, gives the account [level] from next Monday. Certifying also requires the
+     * account to be still dedicated to the mandate ([isDedicated]). Returns false when the certification is
+     * not in [from] any more, or the account is no longer dedicated (nothing changed).
+     */
+    fun decideCertification(pubkey: String, from: String, to: String, reason: String?, week: LocalDate, level: VoteLevel?): Boolean = transaction { c ->
+        val updated = c.prepareStatement("UPDATE elected_certification SET status = ?, reason = ?, decided_week = ? WHERE pubkey = ? AND status = ?").use { s ->
+            s.setString(1, to)
+            s.setString(2, reason)
+            s.setObject(3, week)
+            s.setString(4, pubkey)
+            s.setString(5, from)
+            s.executeUpdate() == 1
+        }
+        if (!updated || (to == CertificationAnswer.CERTIFIED && !isDedicated(c, pubkey))) {
+            c.rollback()
+            return@transaction false
+        }
+        if (level != null) setLevel(c, pubkey, level, week.plusWeeks(1), week)
+        true
+    }
+
+    /** An account dedicated to a mandate: registered, never verified nor waiting for it, never served a token. */
+    fun isDedicated(pubkey: String): Boolean = dataSource.connection.use { c -> isDedicated(c, pubkey) }
+
+    private fun isDedicated(c: Connection, pubkey: String): Boolean =
+        c.prepareStatement(
+            """
+            SELECT 1 FROM vote_account a WHERE a.pubkey = ? AND a.level = 'non-verifie' AND a.previous_level = 'non-verifie' AND a.issued_up_to = 0
+                AND NOT EXISTS (SELECT 1 FROM vote_validation_pending p WHERE p.pubkey = a.pubkey)
+            """.trimIndent(),
+        ).use { s ->
+            s.setString(1, pubkey)
+            s.executeQuery().use { it.next() }
+        }
+
     // ------------------------------------------------------------------ helpers
 
     private fun <T> transaction(block: (Connection) -> T): T = dataSource.connection.use { c ->
@@ -503,6 +621,17 @@ class UrneStore(
             c.autoCommit = autoCommit
         }
     }
+
+    private fun ResultSet.certification() = Certification(
+        pubkey = getString("pubkey"),
+        mandate = getString("mandate"),
+        mandateType = getString("mandate_type"),
+        territory = getString("territory"),
+        status = getString("status"),
+        requestedWeek = getObject("requested_week", LocalDate::class.java),
+        decidedWeek = getObject("decided_week", LocalDate::class.java),
+        reason = getString("reason"),
+    )
 
     private fun ResultSet.account() = VoteAccount(
         pubkey = getString("pubkey"),

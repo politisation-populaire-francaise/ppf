@@ -42,6 +42,8 @@ fun Route.urneApi(
     clock: Clock = Clock.systemUTC(),
     /** The in-person validation (D-112, 4.3): null without back-office or audit key, the route then answers 503. */
     validations: InPersonValidations? = null,
+    /** The certification of elected officials' accounts (DE-23): null without directory or back-office (503). */
+    certifications: ElectedCertifications? = null,
 ) {
     // In memory only: after a restart, an authorization of the last two minutes could be replayed once. Harmless here, unlike the
     // back-office (which refuses those older than its start): every authenticated request of the urns is idempotent, and
@@ -176,6 +178,19 @@ fun Route.urneApi(
                 call.refuse(r)
             }
         }
+        // An account dedicated to a mandate asks to be certified (DE-23): a team member then meets the official.
+        post("/certifications") {
+            if (service == null || !service.available || certifications == null) {
+                return@post call.respond(HttpStatusCode.ServiceUnavailable, ApiError("certification_unavailable", MESSAGES.getValue("certification_unavailable")))
+            }
+            val body = call.boundedBody(MAX_CERTIFICATION_BYTES) ?: return@post
+            val pubkey = call.account(body, 0) ?: return@post
+            try {
+                call.respond(HttpStatusCode.Accepted, withContext(Dispatchers.IO) { certifications.request(pubkey, body) })
+            } catch (r: UrneRefusal) {
+                call.refuse(r)
+            }
+        }
         post("/tokens") {
             if (service == null || !service.available) return@post call.unavailable()
             val body = call.boundedBody(MAX_TOKEN_REQUEST_BYTES) ?: return@post
@@ -215,6 +230,7 @@ private const val BALLOTS_PER_MINUTE = 6000
 private const val MAX_TOKEN_REQUEST_BYTES = 512L * 1024
 private const val MAX_BALLOT_BYTES = 4L * 1024
 private const val MAX_PUBLIC_VOTE_BYTES = 8L * 1024
+private const val MAX_CERTIFICATION_BYTES = 1L * 1024
 
 private val MESSAGES = mapOf(
     "voting_unavailable" to "Voting is not available on this server.",
@@ -236,6 +252,14 @@ private val MESSAGES = mapOf(
     "proof_of_work_too_low" to "The proof of work is too low.",
     "invalid_token" to "The token does not match this ballot box.",
     "validation_unavailable" to "In-person validation is not available on this server.",
+    "certification_unavailable" to "The certification of elected officials is not available on this server.",
+    "invalid_mandate" to "The mandate is not a reference of the official directory of elected officials.",
+    "mandate_not_found" to "This mandate is not in the official directory of elected officials.",
+    "not_a_dedicated_account" to "Only an account created for the mandate, never verified and never served a token, can be certified.",
+    "already_certified" to "This account is already certified.",
+    "mandate_taken" to "This mandate is already certified for another account.",
+    "directory_unavailable" to "The directory of elected officials is not available.",
+    "elected_account" to "An account dedicated to a mandate votes publicly, never with an anonymous token.",
     "invalid_proof" to "The QR code shown is not a proof of this account.",
     "expired_proof" to "The QR code shown is too old: ask the person to show it again.",
     "proof_replayed" to "This QR code was already used: ask the person to show it again.",

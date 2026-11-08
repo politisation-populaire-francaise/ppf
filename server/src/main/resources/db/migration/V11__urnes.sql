@@ -120,8 +120,11 @@ CREATE TABLE vote_validation_batch (
 --    (ElusLookup, D-047), never an identity document, a name typed by the team or a photo.
 CREATE TABLE elected_certification (
     pubkey          TEXT  PRIMARY KEY CHECK (pubkey ~ '^[0-9a-f]{64}$'),
-    -- Stable identifier of the mandate in the directory served.
+    -- Stable identifier of the mandate in the directory served, and the two public codes that find it there
+    -- (type of mandate, code of the territory): the name is read from the directory, never stored here.
     mandate         TEXT  NOT NULL CHECK (mandate ~ '^rne1:[0-9a-f]{32}$'),
+    mandate_type    TEXT  NOT NULL CHECK (length(mandate_type) BETWEEN 1 AND 40),
+    territory       TEXT  NOT NULL CHECK (length(territory) BETWEEN 1 AND 20),
     status          TEXT  NOT NULL CHECK (status IN ('pending', 'certified', 'refused', 'withdrawn', 'ended')),
     -- Monday of the request and of the last decision (never the day).
     requested_week  DATE  NOT NULL,
@@ -131,3 +134,5 @@ CREATE TABLE elected_certification (
 );
 
 CREATE INDEX elected_certification_status ON elected_certification (status);
+-- One certified account per mandate.
+CREATE UNIQUE INDEX elected_certification_mandate ON elected_certification (mandate) WHERE status = 'certified';

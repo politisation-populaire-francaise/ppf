@@ -64,3 +64,31 @@ data class ValidationAnswer(
         const val ALREADY: String = "already"
     }
 }
+
+/**
+ * The request of an account dedicated to a mandate to be certified as an elected official (DE-23, D-112),
+ * body of `POST /api/v1/urnes/certifications` (NIP-98 with the account): the public reference of the
+ * mandate in the official directory, as the official picked it there, and the two public codes that find
+ * it (type of mandate, code of the territory). Never a name, a document or a photo.
+ */
+@Serializable
+data class CertificationRequest(
+    /** `rne1:` and 32 hexadecimal characters. */
+    val mandate: String,
+    /** The code of the type of mandate in the directory (`municipal`, `depute`...). */
+    val mandateType: String,
+    /** The code of the territory of the mandate in the directory. */
+    val territory: String,
+)
+
+/** The answer of `POST /api/v1/urnes/certifications`: a team member then meets the official in person. */
+@Serializable
+data class CertificationAnswer(val status: String) {
+    companion object {
+        const val PENDING: String = "pending"
+        const val CERTIFIED: String = "certified"
+        const val REFUSED: String = "refused"
+        const val WITHDRAWN: String = "withdrawn"
+        const val ENDED: String = "ended"
+    }
+}
