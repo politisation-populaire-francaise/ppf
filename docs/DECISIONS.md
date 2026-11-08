@@ -742,6 +742,20 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **« Préparer mon téléphone »** (AG-56) dans le mode manifestation : état de PPF et geste qui corrige chaque point, guide [EXEMPLE] des réglages du téléphone, information [EXEMPLE] sur l'arrêt de la Cour de cassation du 7 novembre 2022 (n° 21-83.146), à vérifier par un avocat ;
   - réglages dans une préférence privée, aucune migration, aucune dépendance nouvelle, rien n'est envoyé au serveur.
 
+## D-083 (2026-11-08) Sécurité de l'appareil : réponses du chef d'équipe et étape « Choisir un code »
+
+- Contexte : les huit questions de D-082 (`docs/integration/agir-securite-appareil.md`, section 5), tranchées le 8 novembre 2026 au matin par le chef d'équipe, par délégation de la propriétaire (« Pour les decisions a prendre, je suis tes recommandations »).
+- Décisions :
+  1. **Verrouillage et principe 10** : sans compte, rien n'est imposé (le verrouillage reste proposé dans « Mon espace » et « Préparer mon téléphone ») ; **à la création d'un compte, une étape « Protéger PPF sur cet appareil » présélectionne « Choisir un code »** ; « Continuer sans code » reste possible après une mise en garde (« Confirmer » ou « Annuler ») et le choix est réversible dans « Mon espace ». L'étape dit qu'un code oublié ne fait perdre que l'appareil : on efface PPF de l'appareil, puis on retrouve son compte avec sa phrase de récupération. Composant `ui.agir.security.AppLockSetupStep(onDone, onSkip, modifier)`, placé par le pôle Communauté après « Vérifier ma phrase ».
+  2. **Pas d'effacement automatique après plusieurs codes faux** : l'attente croissante suffit ; l'option est inscrite parmi les questions pour l'avocat (destruction de preuves, Code pénal, article 434-4), avec le code de contrainte.
+  3. **Pas de biométrie** dans PPF ; « Préparer mon téléphone » explique pourquoi : une empreinte ou un visage peuvent être obtenus de force, un code reste dans la tête.
+  4. **Chiffrement de la base locale** : étape 2, avec le Directeur technique, qui propose deux ou trois options (clé aléatoire de 256 bits enveloppée par l'Android Keystore, SQLCipher…) ; rien n'est codé avant.
+  5. **Références juridiques** de « Préparer mon téléphone » vérifiées sur Légifrance et Judilibre, citées dans la note ; les textes restent [EXEMPLE] et dans la liste « à relire par un avocat ».
+  6. **Guide du chiffrement du disque** pour l'application de bureau, clic par clic : « Chiffrement de l'appareil » de Windows 11 Famille et BitLocker de Windows 11 Professionnel.
+  7. **Feuille de route** : les parties d'effacement des autres pôles sont dans la liste « avant le lancement », Communauté d'abord ; d'ici là, l'écran de confirmation dit honnêtement ce qui n'est pas encore effacé.
+  8. **« Outils » et l'icône grise** confirmés ; en mode discret, **notifications neutres** (pôle Communauté : titre neutre, sans aperçu, `VISIBILITY_SECRET`, canaux neutres) grâce à `ui.agir.security.DiscreetMode.isOn(context)` (Android) et à la petite icône monochrome `@drawable/ic_notification_neutral` ; le lecteur d'écran lit le nom neutre : celui de l'entrée du lanceur, et, dans la liste des applications récentes, la tâche prend le nom et l'icône de l'entrée active (`DiscreetMode.applyToTask`), même juste après un changement.
+  9. **« Masquer le contenu »** activé par défaut, retirable après une mise en garde avec annulation : vérifié, déjà fait en D-082.
+
 ## D-090 (2026-11-07) Référentiel des territoires : codes officiels, population, inscrits, règle des 30
 
 - Contexte : demande du pôle « Décider » (objectifs de signatures proportionnels à la population, seuils des pétitions locales) ; les salons, l'agenda, les appels et les revendications écrivent le territoire en texte libre (`ppf-territory`). Conception et sources vérifiées le 7 novembre 2026 : `docs/integration/territoires.md` ; conception validée par le chef d'équipe (« Décider » accepte l'API sans correction).

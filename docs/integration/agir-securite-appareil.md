@@ -109,6 +109,31 @@ Prises en autonomie, techniques et gratuites, sauf la 1 (principe 10) à confirm
 7. **Stockage des réglages en préférence privée** (comme le point de ralliement), pas dans la base locale : pas de migration.
 8. **Application discrète** : deux `activity-alias`, nom « Outils » et icône neutre, **désactivée par défaut** (changer l'icône d'office dérouterait la personne, qui ne retrouverait plus l'application ; c'est un réglage d'apparence, pas de confidentialité des données), mise en garde dans les deux sens.
 
+## 6 bis. Réponses du chef d'équipe (8 novembre 2026, D-083) et ce qui en a été fait
+
+Les huit questions de la section 5 ont été tranchées par le chef d'équipe, par délégation de la propriétaire.
+
+1. **Verrouillage** : rien d'imposé sans compte ; à la création d'un compte, étape « Protéger PPF sur cet appareil » avec « Choisir un code » présélectionné. **Fait** : `shared/ui/.../ui/agir/security/AppLockSetupStep.kt`, `AppLockSetupStep(onDone, onSkip, modifier)` :
+   - deux choix (boutons radio), « Choisir un code » sélectionné d'abord, avec les deux champs du code tout de suite ; « Continuer sans code » cache les champs ; le bouton principal dit « Activer le verrouillage » ou « Continuer » ;
+   - « Continuer sans code » ouvre une mise en garde (« Confirmer » ou « Annuler ») qui rappelle où le réactiver ;
+   - phrase toujours visible : un code oublié ne fait perdre que l'appareil (effacer PPF, puis la phrase de récupération) ;
+   - si le verrouillage est déjà activé (choisi avant la création du compte), l'étape le dit et « Continuer » appelle `onDone` ;
+   - hors de la coquille (pas de `LocalDeviceSecurity`), l'étape n'affiche rien et appelle `onDone` aussitôt ;
+   - **à placer par le pôle Communauté** après « Vérifier ma phrase » (la signature promise prenait `dependencies` : retiré, l'état vient de la coquille) ;
+   - tests : `AppLockSetupStepTest` (360, 700 et 1000 dp, clair et sombre ; code trop simple refusé ; deux codes différents ; code accepté, jamais stocké en clair ; mise en garde, annulation puis confirmation ; verrouillage déjà actif ; hors de la coquille).
+2. **Effacement automatique après N codes faux** : non ; inscrit dans la liste de l'avocat de la feuille de route avec le code de contrainte (articles 434-4 et 434-15-2 du Code pénal).
+3. **Biométrie** : non ; « Préparer mon téléphone » ajoute en tête des réglages du téléphone : « on peut poser votre doigt sur le téléphone ou le tenir devant votre visage sans votre accord, alors qu'un code reste dans votre tête » ([EXEMPLE]). **Fait** (`sec_phone_biometric`).
+4. **Chiffrement de la base locale** : étape 2 avec le Directeur technique ; rien de codé.
+5. **Références juridiques** : vérifiées sur les sources officielles (section 9).
+6. **Chiffrement du disque sur ordinateur** : guide clic par clic dans `docs/GUIDE_PROPRIETAIRE.md` (section « Protéger l'ordinateur : chiffrer le disque »).
+7. **Feuille de route** : section « Avant le lancement public » (parties d'effacement des pôles, Communauté d'abord ; chiffrement de la base).
+8. **Mode discret** : « Outils » et l'icône grise confirmés. **Fait** :
+   - `shared/ui/src/androidMain/.../ui/agir/security/DiscreetMode.kt` : `DiscreetMode.isOn(context)` (Android, sans Compose, n'importe quel fil) lit l'état que garde Android pour `.LauncherDiscreet` ; les entrées du lanceur sont retrouvées par leur nom court dans le paquet (les versions d'essai, suffixe `.test`, marchent aussi) ; faux si l'entrée n'a jamais été activée ou en cas d'erreur ;
+   - `android/src/main/res/drawable/ic_notification_neutral.xml` : petite icône monochrome à quatre carrés pour les notifications ; nom neutre `app_name_neutral` (« Outils ») ;
+   - **le pôle Communauté** fait les notifications neutres : titre neutre, sans aperçu, `VISIBILITY_SECRET`, canaux neutres, cette icône, quand `DiscreetMode.isOn` est vrai ;
+   - lecteur d'écran : sur l'écran d'accueil, le lanceur lit le libellé de l'entrée active (« Outils ») ; dans la liste des applications récentes, la tâche prend le nom et l'icône de l'entrée active (`DiscreetMode.applyToTask`, appelé au démarrage par `KeepTaskLikeLauncher()` dans `DeviceSecurityGate` et juste après chaque changement d'icône) ; essai sur téléphone avec TalkBack dans la liste de la phase de test.
+9. **« Masquer le contenu »** retirable avec mise en garde : vérifié (`ShowContentDialog`, D-082).
+
 ## 7. Comment tester
 
 Tests ciblés (par le lanceur `gradle-safe.ps1`) :
