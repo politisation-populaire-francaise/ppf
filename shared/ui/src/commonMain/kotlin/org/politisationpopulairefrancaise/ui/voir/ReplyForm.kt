@@ -44,6 +44,8 @@ import org.politisationpopulairefrancaise.core.voir.RequestProblem
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
 import org.politisationpopulairefrancaise.core.voir.VoirItem
 import org.politisationpopulairefrancaise.core.voir.VoirRequests
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfPrimaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfRadioRow
@@ -113,6 +115,8 @@ internal fun ReplyFormPage(item: VoirItem, catalog: VoirCatalog, session: VoirRe
     var outcome by remember { mutableStateOf<RequestOutcome?>(null) }
     var tried by remember { mutableStateOf(false) }
     val draft = session.replyDraft
+    // An account declared compromised no longer writes to the team (S-146, D-134).
+    val canPublish = LocalCanPublish.current
     val subject = stringResource(Res.string.voir_req_reply_subject, item.title.withoutExample())
 
     Column(Modifier.fillMaxWidth().testTag(VoirRequestTags.REPLY_FORM)) {
@@ -218,16 +222,17 @@ internal fun ReplyFormPage(item: VoirItem, catalog: VoirCatalog, session: VoirRe
         val problems = remember(request) { request.problems() }
         if (tried && problems.isNotEmpty()) ProblemsBox(problems)
         if (done == RequestOutcome.FAILED) FailedBox()
+        PublishBlockedNotice(Modifier.padding(top = 12.dp))
         Spacer(Modifier.height(16.dp))
         @OptIn(ExperimentalLayoutApi::class)
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp), itemVerticalAlignment = Alignment.CenterVertically) {
             PpfPrimaryButton(
                 onClick = {
                     tried = true
-                    if (problems.isEmpty()) session.sendReply(request, subject) { outcome = it }
+                    if (problems.isEmpty() && canPublish) session.sendReply(request, subject) { outcome = it }
                 },
                 text = stringResource(if (session.sending) Res.string.voir_req_sending else Res.string.voir_req_reply_send),
-                enabled = session.canWriteMessages && !session.sending,
+                enabled = canPublish && session.canWriteMessages && !session.sending,
                 icon = Lucide.Send,
                 modifier = Modifier.testTag(VoirRequestTags.REPLY_SEND),
             )

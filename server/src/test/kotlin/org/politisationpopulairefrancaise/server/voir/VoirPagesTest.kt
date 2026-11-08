@@ -165,7 +165,7 @@ class VoirPagesTest {
         val html = client.page("/voir/faits/affaire-dominique-marche-public")
         assertTrue(html.contains("<details class=\"cite\"><summary>Citer ce contenu</summary>"), html)
         val id = fact.article.event.id
-        assertTrue(html.contains("version ${id.take(12)}, https://politisation-populaire-francaise.org/voir/faits/affaire-dominique-marche-public, empreinte SHA-256 $id, consulté le "), html)
+        assertTrue(html.contains("version ${id.take(12)}, https://politisation-populaire-francaise.org/voir/faits/affaire-dominique-marche-public, empreinte SHA-256 $id, licence CC BY 4.0, consulté le "), html)
         assertTrue(html.contains("&quot;type&quot;:&quot;webpage&quot;"), "the CSL-JSON, escaped as text: $html")
         // The same block on every kind of page.
         listOf("/voir/chiffres/manifestants-journees", "/voir/personnes/alex-modele", "/voir/partis/parti-exemple-a", "/voir/textes/pjl-ordre-public-manifestations").forEach { path ->

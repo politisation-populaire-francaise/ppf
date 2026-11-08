@@ -53,6 +53,7 @@ import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.core.editorial.ContentLookup
 import org.politisationpopulairefrancaise.core.voir.NextTarget
 import org.politisationpopulairefrancaise.core.voir.VoirAxis
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
@@ -149,7 +150,7 @@ fun VoirScreen(
             } else if (current == null) {
                 VoirHome(catalog, library.status, state, actions, compact, columns, parliament)
             } else {
-                key(current) { VoirDetail(current, catalog, state, actions, compact, wide, columns, session, callbacks, parliament) }
+                key(current) { VoirDetail(current, catalog, state, actions, compact, wide, columns, session, callbacks, parliament, verify = library::checkLookup) }
             }
         }
     }
@@ -249,6 +250,7 @@ private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActio
     Grid(catalog.latestAboutPower(if (columns == 1) 4 else columns * 2), columns) { fact, modifier -> FactCard(fact, onOpen = { actions.open(fact.address) }, catalog = catalog, modifier = modifier) }
     Spacer(Modifier.height(24.dp))
     CorrectionsLink(state)
+    VerifyLink(state)
     Spacer(Modifier.height(12.dp))
     MethodCard(actions)
 }
@@ -275,6 +277,7 @@ private fun FreedomsAxis(catalog: VoirCatalog, state: VoirState, actions: VoirAc
     }
     Spacer(Modifier.height(24.dp))
     CorrectionsLink(state)
+    VerifyLink(state)
     Spacer(Modifier.height(12.dp))
     MethodCard(actions)
 }
@@ -288,6 +291,13 @@ private fun MethodCard(actions: VoirActions) {
         Text(stringResource(Res.string.voir_method_text), style = MaterialTheme.typography.bodyMedium)
         PpfTextButton(onClick = actions.explain, text = stringResource(Res.string.voir_method_open), modifier = Modifier.testTag(VoirTags.GLOSSARY_OPEN))
     }
+}
+
+/** « Vérifier un contenu reçu » (S-141), under the log of corrections. */
+@Composable
+private fun VerifyLink(state: VoirState) {
+    Spacer(Modifier.height(8.dp))
+    LinkRow(stringResource(Res.string.voir_verify_open), Lucide.ShieldCheck, onClick = { state.open(VoirDestination.Verify) }, modifier = Modifier.testTag(VoirTags.VERIFY_OPEN))
 }
 
 @Composable
@@ -410,6 +420,8 @@ private fun VoirDetail(
     session: VoirRequestSession,
     callbacks: RequestCallbacks,
     parliament: ParliamentState? = null,
+    /** The trusted keys and the local copy of the device, for « Vérifier un contenu » (S-141). */
+    verify: () -> ContentLookup? = { null },
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -464,6 +476,7 @@ private fun VoirDetail(
                 VoirDestination.World -> WorldPage(catalog, actions, columns)
                 VoirDestination.Corrections -> CorrectionsPage(catalog, actions)
                 is VoirDestination.KeyFigures -> KeyFiguresPage(catalog, current.axis, actions, columns)
+                VoirDestination.Verify -> VerifyPage(verify, catalog, onOpen = { state.open(it) })
             }
         }
         }
@@ -479,4 +492,5 @@ private fun axisOf(destination: VoirDestination, catalog: VoirCatalog, state: Vo
     is VoirDestination.KeyFigures -> destination.axis
     is VoirDestination.Reply -> catalog.item(destination.address)?.axis ?: state.axis
     is VoirDestination.Report -> catalog.item(destination.address)?.axis ?: state.axis
+    VoirDestination.Verify -> state.axis
 }

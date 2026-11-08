@@ -92,7 +92,9 @@ class OpenExportTest {
         val build = export().current()
         val catalog = build.catalog
         assertEquals(1, catalog.format)
-        assertEquals(ExportLicense.PENDING, catalog.license)
+        assertEquals(ExportLicense.CHOSEN, catalog.license)
+        assertEquals("CC-BY-4.0", catalog.datasets.first { it.id == "contenus" }.license?.id)
+        assertTrue(catalog.datasets.filter { it.id != "contenus" }.all { it.license?.id == "etalab-2.0" }, "the tables are data: Licence Ouverte 2.0")
         assertEquals(policy.editorKeys().sorted(), catalog.editorialKeys)
         assertEquals(listOf("contenus", "voir-mesures", "voir-partis-aides", "voir-partis-sieges"), catalog.datasets.map { it.id })
         catalog.datasets.flatMap { it.files }.forEach { file ->
@@ -102,7 +104,7 @@ class OpenExportTest {
         }
         val catalogJson = Json.parseToJsonElement(build.catalogFile.bytes.decodeToString()).jsonObject
         assertEquals(JsonPrimitive(1), catalogJson["format"])
-        assertEquals(JsonPrimitive("a-decider"), catalogJson["license"]!!.jsonObject["status"])
+        assertEquals(JsonPrimitive("choisie"), catalogJson["license"]!!.jsonObject["status"])
         // The same contents give the same bytes: the ETag only changes when something is published.
         assertTrue(build.catalogFile.bytes.contentEquals(export().current().catalogFile.bytes))
     }
@@ -180,11 +182,11 @@ class OpenExportTest {
             assertEquals(HttpStatusCode.NotFound, missing.status, path)
         }
 
-        // The page of the site lists the same datasets, without script, with the licence still to choose.
+        // The page of the site lists the same datasets, without script, with their licences (D-103).
         val page = client.get("/donnees")
         assertEquals(HttpStatusCode.OK, page.status)
         val html = page.bodyAsText()
-        listOf("Données ouvertes", "Chiffres de l’observatoire", "Licence en cours de choix", "/api/v1/export/voir-mesures.csv", "Tableur (CSV)").forEach {
+        listOf("Données ouvertes", "Chiffres de l’observatoire", "Creative Commons Attribution 4.0", "Licence Ouverte 2.0", "/api/v1/export/voir-mesures.csv", "Tableur (CSV)", "restent à leurs auteurs").forEach {
             assertTrue(html.contains(it), it)
         }
         assertFalse(html.contains("<script"))

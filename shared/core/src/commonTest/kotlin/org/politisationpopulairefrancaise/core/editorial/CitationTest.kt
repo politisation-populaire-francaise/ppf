@@ -33,7 +33,7 @@ class CitationTest {
         val citation = Citation.of(article, url, today)
         assertEquals(
             "Politisation Populaire Française, « [EXEMPLE] Un fait \"cité\" », publié le 10 décembre 2025, mis à jour le 6 novembre 2026, " +
-                "version ${article.event.id.take(12)}, $url, empreinte SHA-256 ${article.event.id}, consulté le 8 novembre 2026.",
+                "version ${article.event.id.take(12)}, $url, empreinte SHA-256 ${article.event.id}, licence CC BY 4.0, consulté le 8 novembre 2026.",
             citation.text,
         )
         assertFalse(citation.text.contains("—"))
@@ -60,5 +60,17 @@ class CitationTest {
         assertEquals(url, csl["URL"]!!.jsonPrimitive.content)
         assertEquals(article.event.id.take(12), csl["version"]!!.jsonPrimitive.content)
         assertTrue(csl["note"]!!.jsonPrimitive.content.contains(article.event.id))
+        assertTrue(csl["note"]!!.jsonPrimitive.content.contains("licence CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/deed.fr)"))
+    }
+
+    @Test
+    fun aTextWhoseRightsStayWithItsAuthorCarriesNoLicenceOfPpf() = runTest {
+        val event = signer.sign(Article.build(keys.publicKey, "reponse", "[EXEMPLE] Droit de réponse", null, emptyList(), ArticleType.REPONSE, ContentOrigin.HUMAN, 1_765_368_000, 1_765_368_000, "Texte."))
+        val citation = Citation.of(Article.from(event)!!, url, today)
+        assertFalse(citation.text.contains("licence"), citation.text)
+        assertFalse(citation.cslJson.contains("licence"))
+        assertEquals(null, ContentLicenses.of(ArticleType.REPONSE))
+        assertEquals("CC-BY-4.0", ContentLicenses.of(ArticleType.FAIT)?.spdx)
+        assertEquals("etalab-2.0", ContentLicenses.DATA.spdx)
     }
 }

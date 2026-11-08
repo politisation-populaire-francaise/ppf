@@ -1,5 +1,8 @@
 package org.politisationpopulairefrancaise.core.voir
 
+import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.ArticleType
+
 /**
  * The stable web addresses of the contents of "Voir": one page per content, linkable and
  * shareable, built from the content's identifier (the `d` tag, which never changes when the
@@ -51,6 +54,21 @@ object VoirLinks {
 
     /** The path of the page of [item], from the root of the site: `/voir/faits/chrono-premiere-journee`. */
     fun pathOf(item: VoirItem): String = "$HOME/${segmentOf(item)}/${encodeSegment(item.address.identifier)}"
+
+    /** The segment of a block of « Voir » of [type]; null for a type without its own page (a right of reply is shown under its content). */
+    fun segmentOf(type: ArticleType): String? = when (type) {
+        ArticleType.INDICATEUR -> INDICATORS
+        ArticleType.FAIT -> FACTS
+        ArticleType.PERSONNE -> PERSONS
+        ArticleType.PARTI -> PARTIES
+        ArticleType.TEXTE -> TEXTS
+        ArticleType.MOUVEMENT -> WORLD
+        ArticleType.DOSSIER -> DOSSIERS
+        else -> null
+    }
+
+    /** The path of the page of [article] when it is a block of « Voir » with its own page, null otherwise. */
+    fun pathOf(article: Article): String? = segmentOf(article.type)?.let { "$HOME/$it/${encodeSegment(article.slug)}" }
 
     /** The full address of the page of [item], to share it: `https://politisation-populaire-francaise.org/voir/...`. */
     fun urlOf(item: VoirItem, base: String = SITE): String = base.trimEnd('/') + pathOf(item)
