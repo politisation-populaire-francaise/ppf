@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 # Runs the importer of the parliamentary open data (Voir, D-064) once, in its own one-shot container.
 # Installed as /usr/local/sbin/ppf-open-data-import by bootstrap-server.sh and started by the timers
-# ppf-open-data-daily@<environment> (--only an,senat) and ppf-open-data-weekly@<environment> (--only pe):
+# ppf-open-data-daily@<environment> (--only an,senat,cc) and ppf-open-data-weekly@<environment> (--only pe);
+# `cc` is the presentations of the presidential election (VO-37), asked only once PPF_SPONSORSHIPS_DATASET is set:
 #
-#   ppf-open-data-import preproduction --only an,senat
+#   ppf-open-data-import preproduction --only an,senat,cc
 #   ppf-open-data-import production keygen      (once: creates the import key, prints its public key)
 #
 # Exit codes of the importer (docs/integration/voir-donnees-import.md): 0 done, 1 usage, 2 download

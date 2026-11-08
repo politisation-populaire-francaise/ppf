@@ -8,4 +8,4 @@ Requires=docker.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/ppf-open-data-import %i --only an,senat
+ExecStart=/usr/local/sbin/ppf-open-data-import %i --only an,senat,cc

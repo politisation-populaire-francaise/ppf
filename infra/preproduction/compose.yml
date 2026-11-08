@@ -169,6 +169,8 @@ services:
       PPF_OPEN_DATA_SOURCE: official
       PPF_OPEN_DATA_DIR: /data/open-data
       PPF_IMPORT_KEY_FILE: /run/secrets/import_key
+      # Parrainages de la présidentielle (VO-37): the dataset of 2027 on data.gouv.fr, empty until the decree of convocation.
+      PPF_SPONSORSHIPS_DATASET: ${PPF_SPONSORSHIPS_DATASET:-}
     secrets:
       - import_key
     volumes:
