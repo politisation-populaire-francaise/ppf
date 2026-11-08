@@ -62,6 +62,8 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.AUDIT_READ,
             Permissions.SETTINGS_MANAGE,
             Permissions.LEGAL_REQUISITION,
+            // The sessions of the validators with an abnormal pace (Décider, une-personne-une-voix.md 4.3 and 8).
+            Permissions.queueDecide("decider.validation_sessions"),
         ),
     ),
     MODERATOR(

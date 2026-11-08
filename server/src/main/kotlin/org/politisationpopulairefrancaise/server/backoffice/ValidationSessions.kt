@@ -117,6 +117,15 @@ class ValidationSessions(private val dataSource: DataSource) {
         }
     }
 
+    /** The sessions opened since [since], oldest first (the queue decider.validation_sessions of Décider). */
+    fun openedSince(since: Instant): List<ValidationSession> = dataSource.connection.use { connection ->
+        connection.prepareStatement("$SELECT WHERE opened_at >= ? ORDER BY opened_at, id").use { statement ->
+            statement.setInstant(1, since)
+            val rows = statement.executeQuery()
+            buildList { while (rows.next()) add(rows.toSession()) }
+        }
+    }
+
     /** Every open session, oldest first (the page of the administrators). */
     fun allOpen(): List<ValidationSession> = dataSource.connection.use { connection ->
         connection.prepareStatement("$SELECT WHERE state = 'open' ORDER BY opened_at, id").use { statement ->

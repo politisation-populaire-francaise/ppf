@@ -82,6 +82,7 @@ import org.politisationpopulairefrancaise.server.urne.ElectedCertificationsQueue
 import org.politisationpopulairefrancaise.server.urne.InPersonValidations
 import org.politisationpopulairefrancaise.server.urne.UrneService
 import org.politisationpopulairefrancaise.server.urne.UrneStore
+import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
 import org.politisationpopulairefrancaise.server.urne.urneApi
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
@@ -292,6 +293,8 @@ fun Application.module(
     } else {
         null
     }
+    // The sessions of the validators with an abnormal pace, for the administrators (D-112, design 8).
+    if (urneStore != null && teamBackOffice != null) teamBackOffice.queues.register(ValidationSessionsQueue(urneStore.dataSource))
     if (urnes != null && dataSource != null) {
         val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)
         // Daily, a certified mandate absent from the updated directory ends its certification (DE-23).

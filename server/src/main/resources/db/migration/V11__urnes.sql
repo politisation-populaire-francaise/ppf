@@ -136,3 +136,12 @@ CREATE TABLE elected_certification (
 CREATE INDEX elected_certification_status ON elected_certification (status);
 -- One certified account per mandate.
 CREATE UNIQUE INDEX elected_certification_mandate ON elected_certification (mandate) WHERE status = 'certified';
+
+-- 8. The review of the validation sessions by the team (queue decider.validation_sessions, design 8): a
+--    session with an abnormal pace leaves the queue once reviewed. Never who was validated: undoing the
+--    validations of a session needs the sealed links, read offline with the audit key.
+CREATE TABLE vote_session_review (
+    session_id     UUID  PRIMARY KEY,
+    outcome        TEXT  NOT NULL CHECK (outcome IN ('normal', 'to_undo')),
+    reviewed_week  DATE  NOT NULL
+);
