@@ -274,7 +274,7 @@ class ManifestationTest {
         waitForIdle()
         awaitTag(ManifestationTags.GUIDE)
         awaitText("Après une blessure en manifestation")
-        onNodeWithText("Défenseur des droits", substring = true).assertExists()
+        assertTrue(onAllNodesWithText("Libre réponse 71120", substring = true).fetchSemanticsNodes().isNotEmpty())
         onNodeWithTag(ManifestationTags.GUIDE_BACK).performClick()
         waitForIdle()
         awaitTag(ManifestationTags.SCREEN)
