@@ -124,6 +124,7 @@ private fun FlowContent.navigation(auth: Authenticated, current: String?) {
             if (actor.has(Permissions.VALIDATION_SESSION_OPEN) || actor.has(Permissions.TEAM_REVOKE) || TeamRole.VALIDATOR in actor.roles) {
                 navLink("/seances", BackOfficeTexts.NAV_SESSIONS, current)
             }
+            auth.sections.forEach { navLink(it.href, it.title, current) }
             navLink("/cles", BackOfficeTexts.NAV_KEYS, current)
         }
         form(action = "/deconnexion", method = FormMethod.post, classes = "bo-signout") {

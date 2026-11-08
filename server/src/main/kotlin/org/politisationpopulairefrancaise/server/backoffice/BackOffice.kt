@@ -26,6 +26,8 @@ class Authenticated(
     val account: TeamAccount,
     val actor: TeamActor,
     val credentialCount: Int,
+    /** The sections of the poles this member may open, for the navigation (contract, section 14). */
+    val sections: List<SectionLink> = emptyList(),
 ) {
     val csrf: String get() = Csrf.tokenFor(token)
 
@@ -89,6 +91,8 @@ class BackOffice(
     val config: BackOfficeConfig,
     private val dataSource: DataSource,
     val queues: BackOfficeQueues = BackOfficeQueues(),
+    /** The pages of the poles (contract, section 14), mounted under `/equipe/sections/<id>`. */
+    val sections: BackOfficeSections = BackOfficeSections(),
     /** Whether a key is a verified organisation of the Agir directory (null when the Agir space is off). */
     private val isVerifiedOrganisation: ((String) -> Boolean)? = null,
     /** Every verified organisation key, for the periodic check of the validators (null when Agir is off). */
@@ -358,7 +362,8 @@ class BackOffice(
         val (roles, keys) = dataSource.connection.use { connection ->
             grants.live(connection, account.id, now).map { it.role }.toSet() to accounts.credentialCount(connection, account.id)
         }
-        return Authenticated(session, token, account, TeamActor.of(account.id, account.pseudonym, roles, keys), keys)
+        val actor = TeamActor.of(account.id, account.pseudonym, roles, keys)
+        return Authenticated(session, token, account, actor, keys, sections.linksFor(actor))
     }
 
     fun signOut(auth: Authenticated) {
@@ -931,6 +936,22 @@ class BackOffice(
         },
     )
 
+    // Sections ----------------------------------------------------------------------------------------
+
+    /**
+     * The journal line of an action of a section (contract, section 14), written by the base only:
+     * `section.<sectionId>.<action>` on `section_item` `<sectionId>:<target>`. Refused (IllegalArgumentException)
+     * when the member may not open the section, or when the identifier is not a stable dotted one.
+     */
+    fun recordSectionAction(actor: TeamActor, sectionId: String, action: String, target: String?, reason: String?, details: Map<String, String>): AuditRecord {
+        val section = requireNotNull(sections.find(sectionId)) { "Unknown section" }
+        require(actor.has(section.permission)) { "The member may not act in this section" }
+        require(ACTION_PART.matches(action)) { "A section action is a short lowercase word" }
+        return audit.record(
+            AuditEntry(AuditActor.of(actor), "section.$sectionId.$action", TARGET_SECTION_ITEM, target?.let { "$sectionId:${it.take(200)}" }, cleanReason(reason), details),
+        )
+    }
+
     /** The dashboard of [actor] (S-64): counts of the queues they may see, priorities, alerts, requests. */
     fun dashboard(actor: TeamActor): Dashboard {
         val now = clock.instant().epochSecond
@@ -1296,6 +1317,9 @@ class BackOffice(
         const val TARGET_ACCOUNT: String = "team_account"
         const val TARGET_GRANT: String = "team_role_grant"
         const val TARGET_QUEUE_ITEM: String = "queue_item"
+        const val TARGET_SECTION_ITEM: String = "section_item"
+
+        private val ACTION_PART = Regex("^[a-z0-9_]{1,40}$")
 
         /** The source of the alerts posted by the base itself. */
         const val ALERT_SOURCE: String = "backoffice"
