@@ -117,7 +117,7 @@ class DeciderScreenTest {
     @Test
     fun theThresholdsSayWhatTheyDoNotGuarantee() = runComposeUiTest {
         show(width = 1000)
-        onNodeWithTag(DeciderTags.THRESHOLDS_OPEN).performClick()
+        onNodeWithTag(DeciderTags.THRESHOLDS_OPEN).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(DeciderTags.detail("seuils")).assertExists()
         for (platform in listOf("assemblee", "senat", "cese", "rip", "ice")) onNodeWithTag(DeciderTags.platform(platform)).performScrollTo().assertExists()
