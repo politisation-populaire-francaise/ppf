@@ -120,7 +120,10 @@ class VoirScreenTest {
     @Test
     fun aCodeIsCheckedOnTheDeviceAndALinkElsewhereIsNeverPpf() = runComposeUiTest {
         openVoir(dependencies(), width = 1000, height = 740)
-        onNodeWithTag(VoirTags.VERIFY_OPEN).performScrollTo().performClick()
+        // The link sits at the end of the axes « Le pouvoir » and « Libertés »: the pager builds the shown page only.
+        onNodeWithTag(VoirTags.tab(1)).performClick()
+        waitForIdle()
+        onAllNodesWithTag(VoirTags.VERIFY_OPEN).onFirst().performScrollTo().performClick()
         waitForIdle()
         val event = LocalEventStore(database).recent(listOf(30023), 2_000).first { it.firstTagValue("d") == "manifestants-journees" }
         // A link to a look-alike site is never followed, even with a real code.

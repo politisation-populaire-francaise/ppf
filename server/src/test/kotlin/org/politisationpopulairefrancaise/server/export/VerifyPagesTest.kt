@@ -31,6 +31,7 @@ import org.politisationpopulairefrancaise.server.agir.AgirFixtures.testAgir
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.module
+import org.politisationpopulairefrancaise.web.PASTED_FIELD
 import org.politisationpopulairefrancaise.server.testRevendications
 import kotlin.test.BeforeTest
 import kotlin.test.Test
@@ -78,7 +79,7 @@ class VerifyPagesTest {
         return html
     }
 
-    private suspend fun HttpClient.paste(text: String): HttpResponse = submitForm("/verifier", parameters { append("contenu", text) })
+    private suspend fun HttpClient.paste(text: String): HttpResponse = submitForm("/verifier", parameters { append(PASTED_FIELD, text) })
 
     @Test
     fun aCodeAnIdentifierOrTheShortAddressFindTheCurrentVersion() = testApplication {

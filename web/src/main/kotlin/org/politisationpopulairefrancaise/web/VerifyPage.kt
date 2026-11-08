@@ -76,7 +76,7 @@ fun Route.verifyPages(verifier: ContentVerifier) {
         if (declared != null && declared > MAX_BODY_BYTES) return@post call.respondHtml(HttpStatusCode.PayloadTooLarge) { verifyDocument("", null, tooLarge = true) }
         val bytes = call.receiveChannel().readRemaining(MAX_BODY_BYTES + 1).readByteArray()
         if (bytes.size > MAX_BODY_BYTES) return@post call.respondHtml(HttpStatusCode.PayloadTooLarge) { verifyDocument("", null, tooLarge = true) }
-        val pasted = runCatching { parseQueryString(bytes.decodeToString())["contenu"] }.getOrNull().orEmpty()
+        val pasted = runCatching { parseQueryString(bytes.decodeToString())[PASTED_FIELD] }.getOrNull().orEmpty()
         call.answer(verifier, pasted, shown = "")
     }
 }
@@ -111,12 +111,12 @@ fun HTML.verifyDocument(shown: String, result: CheckResult?, tooLarge: Boolean =
         }
         form(action = "/verifier", method = FormMethod.post, classes = "verify-form") {
             label {
-                htmlFor = "contenu"
+                htmlFor = PASTED_FIELD
                 +"Ou collez le contenu signé (le texte JSON d’un fichier enregistré depuis PPF)"
             }
             textArea(rows = "6") {
-                id = "contenu"
-                name = "contenu"
+                id = PASTED_FIELD
+                name = PASTED_FIELD
                 attributes["spellcheck"] = "false"
             }
             button(type = ButtonType.submit) { +"Vérifier ce contenu" }
@@ -181,3 +181,6 @@ private fun FlowContent.facts(event: SignedEvent, label: String) {
         }
     }
 }
+
+/** The field of the pasted content; not « contenu », the id of the main region the skip link of every page leads to. */
+const val PASTED_FIELD: String = "contenu-signe"
