@@ -124,6 +124,13 @@ class VoirRequestSession(
         messaging?.openWith(listOf(teamKey))
     }
 
+    /** The quick erase (S-44): the drafts and the anonymous reports still waiting, with their single-use keys. */
+    suspend fun forget() {
+        replyDraft = ReplyDraft()
+        reportDraft = ReportDraft()
+        outbox.forget()
+    }
+
     /** Sends the anonymous reports still waiting, when "Voir" opens. */
     fun retryPending() {
         scope.launch { runCatching { outbox.flush() } }

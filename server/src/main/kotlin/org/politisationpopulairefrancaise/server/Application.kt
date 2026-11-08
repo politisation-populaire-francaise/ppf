@@ -135,10 +135,12 @@ import org.politisationpopulairefrancaise.server.urne.UrneClosureStatements
 import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
 import org.politisationpopulairefrancaise.server.urne.urneApi
 import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
+import org.politisationpopulairefrancaise.web.ContentVerifier
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
 import org.politisationpopulairefrancaise.web.openDataPage
+import org.politisationpopulairefrancaise.web.verifyPages
 import org.politisationpopulairefrancaise.web.securityPages
 import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.webRoutes
@@ -547,6 +549,7 @@ fun Application.module(
             transparencyApi(dataSource) // Requisitions answered per month only (D-077).
             exportApi(openExport) // The open export and its datasets (M34, S-48).
             openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
+            openExport?.let { export -> verifyPages(ContentVerifier { export.check(it) }) } // « Vérifier un contenu PPF » (S-141).
             agirSpace?.let { agendaPage(it.agendaSource()) }
             tilesRoutes(tiles)
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).

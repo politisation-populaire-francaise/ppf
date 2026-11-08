@@ -268,6 +268,12 @@ class VoirRequestOutbox(
         return AnonymousReceipt(delivery, message.authorKey(), message.id)
     }
 
+    /** Drops the requests still waiting and destroys their single-use keys (the quick erase, S-44). */
+    suspend fun forget() = lock.withLock {
+        pending.forEach { it.keys.destroy() }
+        pending.clear()
+    }
+
     /** Sends the pending requests again, oldest first; stops at the first network failure. Returns how many left. */
     suspend fun flush(): Int = lock.withLock {
         var sent = 0

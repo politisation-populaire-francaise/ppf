@@ -17,6 +17,7 @@ import kotlinx.html.li
 import kotlinx.html.p
 import kotlinx.html.section
 import kotlinx.html.ul
+import org.politisationpopulairefrancaise.core.editorial.ContentLicenses
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -26,7 +27,16 @@ import java.util.Locale
 data class OpenDataFileView(val format: String, val url: String, val bytes: Int)
 
 /** A dataset, as the page lists it. */
-data class OpenDataSetView(val id: String, val title: String, val description: String, val rows: Int, val schemaUrl: String?, val files: List<OpenDataFileView>)
+data class OpenDataSetView(
+    val id: String,
+    val title: String,
+    val description: String,
+    val rows: Int,
+    val schemaUrl: String?,
+    val files: List<OpenDataFileView>,
+    val licenseName: String? = null,
+    val licenseUrl: String? = null,
+)
 
 /** What the page « Données ouvertes » shows, read from the catalog of the open export (M34, S-48). */
 data class OpenDataView(
@@ -62,14 +72,24 @@ fun HTML.openDataDocument(view: OpenDataView) {
         section {
             attributes["aria-labelledby"] = "licence"
             h2 { id = "licence"; +"Licence" }
-            p(classes = if (view.licenseChosen) null else "notice") {
-                +view.licenseText
-                view.licenseUrl?.let {
-                    +" "
-                    a(href = it) { +"Texte de la licence" }
+            if (!view.licenseChosen) {
+                p(classes = "notice") { +view.licenseText }
+            } else {
+                ul(classes = "link-list") {
+                    li {
+                        +"Textes et images publiés par PPF : "
+                        a(href = ContentLicenses.TEXTS.url) { +"licence Creative Commons Attribution 4.0 (CC BY 4.0)" }
+                        +"."
+                    }
+                    li {
+                        +"Jeux de données : "
+                        a(href = ContentLicenses.DATA.url) { +"Licence Ouverte 2.0 (Etalab)" }
+                        +"."
+                    }
                 }
+                p { +"Pour réutiliser, créditez « ${ContentLicenses.ATTRIBUTION} » avec le titre, la date et le lien du contenu (le bloc « Citer ce contenu » le donne tout prêt), indiquez si vous l’avez modifié, et pour un jeu de données, la date de sa dernière mise à jour." }
             }
-            p { +"Les citations et les titres d’articles de presse restent à leurs auteurs." }
+            p { +"Les citations et les titres d’articles de presse restent à leurs auteurs, comme les droits de réponse, les réponses des candidats, les revendications et les témoignages. Les contenus des comptes citoyens ne sont pas dans ces fichiers." }
         }
         section {
             attributes["aria-labelledby"] = "jeux"
@@ -84,6 +104,10 @@ fun HTML.openDataDocument(view: OpenDataView) {
                     dl {
                         dt { +"Lignes" }
                         dd { +dataset.rows.toString() }
+                        dataset.licenseName?.let { name ->
+                            dt { +"Licence" }
+                            dd { dataset.licenseUrl?.let { url -> a(href = url) { +name } } ?: +name }
+                        }
                         dt { +"Fichiers" }
                         dd {
                             ul(classes = "link-list") {

@@ -20,15 +20,21 @@ import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performTextReplacement
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
+import org.politisationpopulairefrancaise.core.identity.AccountRecoveryClient
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
+import org.politisationpopulairefrancaise.core.identity.RecoveryPhrase
 import org.politisationpopulairefrancaise.core.identity.StoredIdentity
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.messaging.Conversation
 import org.politisationpopulairefrancaise.core.messaging.MessageStore
+import org.politisationpopulairefrancaise.core.publication.InMemoryPublicationPort
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.signing.EventKinds
+import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.voir.ErrorReport
 import org.politisationpopulairefrancaise.core.voir.ReplyCapacity
 import org.politisationpopulairefrancaise.core.voir.ReplyRequest
@@ -36,10 +42,12 @@ import org.politisationpopulairefrancaise.core.voir.VoirRequests
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
 import org.politisationpopulairefrancaise.ui.account.AccountTags
+import org.politisationpopulairefrancaise.ui.account.PUBLISH_BLOCKED_TAG
 import org.politisationpopulairefrancaise.ui.messages.ConversationTags
 import org.politisationpopulairefrancaise.ui.messages.FakeRelay
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue
 
 /**
@@ -251,5 +259,53 @@ class VoirRequestsScreenTest {
         assertEquals(listOf(team), relay.events.single().tagValues("p"))
         assertTrue(relay.events.single().pubkey != keys.publicKey.hex)
         assertEquals(0L, store.count())
+    }
+
+    /** An account declared compromised an hour ago (S-146), on a server that knows it. */
+    private fun ComposeUiTest.openVoirWithACompromisedAccount(): Pair<IdentityKeys, InMemoryPublicationPort> {
+        val phrase = RecoveryPhrase.parse("leader monkey parrot ring guide accident before fence cannon height naive bean")
+        val account = phrase.deriveKeys()
+        val server = InMemoryPublicationPort()
+        runBlocking {
+            val client = AccountRecoveryClient(server)
+            client.ensureCommitment(LocalEventSigner(account), phrase.deriveRecoveryKeys().publicKey)
+            client.declareCompromised(phrase, currentEpochSeconds() - 3600, null)
+        }
+        openVoir(
+            AppDependencies.withDatabase(
+                identityStore = InMemoryIdentityStore(StoredIdentity.of(account, null, verified = true)),
+                database = database,
+                editorialTrust = EditorialTrust.bundledExamples(),
+                remote = server,
+            ),
+        )
+        return account to server
+    }
+
+    @Test
+    fun aCompromisedAccountCannotSendARightOfReplyAndIsToldWhy() = runComposeUiTest {
+        openVoirWithACompromisedAccount()
+        openPerson()
+        click(VoirTags.REPLY_OPEN)
+        waitUntil(timeoutMillis = 10_000) { has(PUBLISH_BLOCKED_TAG) }
+        assertTrue(sees("il ne peut plus rien publier"))
+        onNodeWithTag(VoirRequestTags.REPLY_SEND).performScrollTo().assertIsNotEnabled()
+    }
+
+    @Test
+    fun aCompromisedAccountStillReportsAnErrorAnonymouslyButNeverWithTheAccount() = runComposeUiTest {
+        val (account, server) = openVoirWithACompromisedAccount()
+        onNodeWithTag(VoirTags.card("manifestants-journees")).performClick()
+        waitForIdle()
+        click(VoirRequestTags.REPORT_LINK)
+        waitUntil(timeoutMillis = 10_000) { has(PUBLISH_BLOCKED_TAG) }
+        onNodeWithTag(VoirRequestTags.REPORT_ANONYMOUS).performScrollTo().assertIsSelected()
+        onNodeWithTag(VoirRequestTags.REPORT_ACCOUNT).performScrollTo().assertIsNotEnabled()
+        onNodeWithTag(VoirRequestTags.REPORT_WRONG).performScrollTo().performTextInput("[EXEMPLE] Erreur de date.")
+        onNodeWithTag(VoirRequestTags.REPORT_SEND).performScrollTo().assertIsEnabled()
+        click(VoirRequestTags.REPORT_SEND)
+        waitUntil(timeoutMillis = 5_000) { has(VoirRequestTags.OUTCOME) }
+        // It left under a key used for this report only, never the compromised one.
+        assertNotEquals(account.publicKey.hex, server.events.last().pubkey)
     }
 }
