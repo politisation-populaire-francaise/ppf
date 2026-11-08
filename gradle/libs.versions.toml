@@ -15,6 +15,11 @@ kotlinxHtml = "0.12.0"
 kotlinxSerialization = "1.12.0"
 logback = "1.6.6"
 androidxActivity = "1.13.0"
+# QR codes: ZXing core draws and reads them (Apache 2.0, pure Java, no network, no transitive dependency;
+# 3.5.3 on Maven Central, checked on 2026-11-08). Same entries as the Décider pole (in-person validation,
+# team lead's decision of 8 November 2026, download agreed by the owner the same day); the server uses it
+# for the QR code of the ceremony of the root (D-141).
+zxing = "3.5.3"
 # Identities and content signatures (cahier des charges, section 3.2). Bitcoin Core's audited
 # libsecp256k1 (Schnorr BIP-340) wrapped for Kotlin Multiplatform by ACINQ, and ACINQ's bitcoin-kmp
 # for BIP-39 recovery phrases, BIP-32 derivation (NIP-06), SHA-256 and bech32 (NIP-19).
@@ -62,6 +67,7 @@ navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:nav
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html", version.ref = "kotlinxHtml" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
+zxing-core = { module = "com.google.zxing:core", version.ref = "zxing" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }

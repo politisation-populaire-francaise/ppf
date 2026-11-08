@@ -1,7 +1,10 @@
 package org.politisationpopulairefrancaise.server.backoffice
 
 import org.politisationpopulairefrancaise.core.identity.PublicKey
+import org.politisationpopulairefrancaise.core.platform.PasskeyFingerprint
 import org.politisationpopulairefrancaise.server.legal.LegalRegister
+import org.politisationpopulairefrancaise.server.signing.SignerAdmin
+import org.politisationpopulairefrancaise.server.signing.SignerJournalLine
 import org.slf4j.LoggerFactory
 import java.sql.Connection
 import java.time.Clock
@@ -63,8 +66,12 @@ data class Dashboard(
     val approvalsToDecide: Int,
 )
 
-/** What the pages show of a key: never its public key nor its counter. */
-data class KeyInfo(val id: UUID, val name: String, val createdAt: Instant, val lastUsedAt: Instant?)
+/**
+ * What the pages show of a key: never its public key nor its counter, only the short fingerprint of its
+ * public key ([org.politisationpopulairefrancaise.core.platform.PasskeyFingerprint]), that the member
+ * compares with the owner's phone at the ceremony of the root (D-141); null when it cannot be read.
+ */
+data class KeyInfo(val id: UUID, val name: String, val createdAt: Instant, val lastUsedAt: Instant?, val fingerprint: String? = null)
 
 /** Counts of an emergency cut or a removal. */
 data class CutReport(
@@ -100,6 +107,8 @@ class BackOffice(
     private val passkeys: PasskeyVerifier = WebAuthn4jPasskeys(config.origin, config.rpId),
     val clock: Clock = Clock.systemUTC(),
     sessionRequestVerifier: SessionRequestVerifier = MinimalNip98Verifier(clock.instant()),
+    /** The administration routes of the signing service (« Clés de la plateforme », D-141); null when `PPF_SIGNER_URL` is not set. */
+    val signer: SignerAdmin? = null,
 ) {
     private val audit = AuditLog(dataSource, clock)
     private val accounts = TeamAccounts(dataSource)
@@ -131,6 +140,9 @@ class BackOffice(
     /** NIP-44 towards `PPF_AUDIT_PUBLIC_KEY` (contract, section 8); null when the key is not configured. */
     val auditSealer: AuditSealer? = config.auditPublicKey?.let(::AuditSealer)
 
+    /** « Clés de la plateforme » (D-141): the keys of the signing service and the requests for the root. */
+    val platformKeys: PlatformKeysAdmin by lazy { PlatformKeysAdmin(this, signer) }
+
     /** The door of Décider's validation endpoints (NIP-98 with a session key). */
     val validationGate = ValidationSessionGate(validationSessions, sessionRequestVerifier, ::organisationVerified, clock)
 
@@ -146,7 +158,24 @@ class BackOffice(
 
     fun member(id: UUID): TeamAccount? = accounts.find(id)
 
-    fun keysOf(accountId: UUID): List<KeyInfo> = accounts.credentials(accountId).map { KeyInfo(it.id, it.name, it.createdAt, it.lastUsedAt) }
+    fun keysOf(accountId: UUID): List<KeyInfo> = accounts.credentials(accountId).map(::keyInfo)
+
+    private fun keyInfo(stored: StoredCredential): KeyInfo =
+        KeyInfo(stored.id, stored.name, stored.createdAt, stored.lastUsedAt, CoseKeys.of(stored)?.let(PasskeyFingerprint::of))
+
+    /**
+     * The active accounts of the team with their permissions and their passkeys (credential id and COSE public
+     * key, public data of the authenticators), for the team list the root signs (D-141). Read-only.
+     */
+    fun teamListCandidates(): List<TeamListCandidate> {
+        val now = clock.instant()
+        return accounts.all().filter { it.status == AccountStatus.ACTIVE }.map { account ->
+            val stored = accounts.credentials(account.id)
+            val roles = grants.live(account.id, now).map { it.role }.toSet()
+            val keys = stored.mapNotNull { credential -> CoseKeys.of(credential)?.let { CandidateKey(credential.id, credential.name, credential.credentialId, it) } }
+            TeamListCandidate(account, TeamActor.of(account.id, account.pseudonym, roles, stored.size), keys)
+        }
+    }
 
     fun liveGrants(accountId: UUID): List<RoleGrant> = grants.live(accountId, clock.instant())
 
@@ -448,7 +477,7 @@ class BackOffice(
             if (accounts.credentialCount(connection, auth.account.id) >= MAX_KEYS) return@transaction Outcome.Denied("too_many_keys")
             val stored = accounts.addCredential(connection, auth.account.id, credential, now)
             audit.record(connection, AuditEntry(AuditActor.of(auth.actor), "team.key_added", TARGET_ACCOUNT, auth.account.id.toString(), details = mapOf("credential" to stored.id.toString())))
-            Outcome.Ok(KeyInfo(stored.id, stored.name, stored.createdAt, null))
+            Outcome.Ok(keyInfo(stored))
         }
     }
 
@@ -977,6 +1006,54 @@ class BackOffice(
         log.warn("Queue ${queue.id} could not be read (${e::class.simpleName}).")
     }
 
+    // Keys of the platform and journal of the signing service (D-141) -----------------------------------
+
+    /**
+     * The journal line of an action of « Clés de la plateforme » (`platform.<action>`, permission
+     * [Permissions.PLATFORM_KEYS]): identifiers, counts and dates only, the reason kept as for every action.
+     */
+    fun recordPlatformAction(actor: TeamActor, action: String, targetId: String?, reason: String?, details: Map<String, String>): AuditRecord {
+        require(actor.has(Permissions.PLATFORM_KEYS)) { "The member may not act on the keys of the platform" }
+        require(ACTION_PART.matches(action)) { "A platform action is a short lowercase word" }
+        return audit.record(AuditEntry(AuditActor.of(actor), "platform.$action", TARGET_PLATFORM, targetId, cleanReason(reason), details))
+    }
+
+    /** The newest line of the copy of the journal of the signing service kept under [targetType], null before the first one. */
+    fun lastSignerJournalMark(targetType: String = SignerJournalCopy.TARGET): AuditRecord? =
+        audit.query(AuditFilter(targetType = targetType), 1).firstOrNull()
+
+    /**
+     * Copies [lines] of the journal of the signing service into this journal, in one transaction, as lines of
+     * the server (« système »): action `signer.<action>`, target `<targetType>` `<seq>`, details the number, the
+     * hashes, the use, the event, the key, the code and the accounts; never a content (the service has none).
+     */
+    fun copySignerJournal(lines: List<SignerJournalLine>, targetType: String = SignerJournalCopy.TARGET) {
+        if (lines.isEmpty()) return
+        dataSource.transaction { connection ->
+            lines.forEach { line -> audit.record(connection, SignerJournalCopy.entryOf(line, targetType)) }
+        }
+    }
+
+    /**
+     * A break of the chain of the journal of the signing service: an alert of the highest level (the copy stops
+     * until an administrator marks it treated) and a line `signer.journal_break` naming it.
+     */
+    fun signerJournalBroken(details: Map<String, String>, targetType: String = SignerJournalCopy.TARGET): DashboardAlert {
+        val alert = postAlert(SignerJournalCopy.ALERT_SOURCE, BackOfficeTexts.ALERT_SIGNER_JOURNAL_BROKEN, 5, Permissions.PLATFORM_KEYS, PLATFORM_PATH)
+        audit.record(AuditEntry(AuditActor.System, SignerJournalCopy.ACTION_BREAK, targetType, null, details = details + ("alert" to alert.id.toString())))
+        return alert
+    }
+
+    /** The copy resumes after the alert of a break was treated, from the point in [details] (`after_seq`, `previous_hash`). */
+    fun signerJournalResumed(details: Map<String, String>, targetType: String = SignerJournalCopy.TARGET): AuditRecord =
+        audit.record(AuditEntry(AuditActor.System, SignerJournalCopy.ACTION_RESUMED, targetType, null, details = details))
+
+    /** Whether the alert [id] is still waiting to be treated. */
+    fun isAlertOpen(id: UUID): Boolean {
+        val alert = dataSource.transaction { connection -> alerts.find(connection, id) } ?: return false
+        return alert.dismissedAt == null
+    }
+
     // Alerts ----------------------------------------------------------------------------------------
 
     /**
@@ -1323,6 +1400,12 @@ class BackOffice(
         const val TARGET_GRANT: String = "team_role_grant"
         const val TARGET_QUEUE_ITEM: String = "queue_item"
         const val TARGET_SECTION_ITEM: String = "section_item"
+
+        /** The target of the actions of « Clés de la plateforme » (a working key, a root request). */
+        const val TARGET_PLATFORM: String = "platform"
+
+        /** The page « Clés de la plateforme ». */
+        const val PLATFORM_PATH: String = "/plateforme"
 
         private val ACTION_PART = Regex("^[a-z0-9_]{1,40}$")
 

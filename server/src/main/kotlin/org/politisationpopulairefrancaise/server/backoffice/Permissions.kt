@@ -28,6 +28,22 @@ object Permissions {
     const val LEGAL_REQUISITION: String = "legal.requisition"
 
     /**
+     * The section « Clés de la plateforme » (D-141): the working keys of the signing service, the preparation
+     * of the ceremony of the root (certificates, closing revocations, team list) and of a revocation after a
+     * compromise, the copy of the journal of the service. `super_admin` and `admin`; the root itself only
+     * signs on the owner's phone.
+     */
+    const val PLATFORM_KEYS: String = "platform.keys"
+
+    /**
+     * Approving the platform signature of the contents of « Décider » (`decider.pacte`: Pact, candidates'
+     * answers, official petitions relayed, final texts of a deliberation). No queue of Décider holds a
+     * publishing permission yet: this one is a proposal of the Directeur technique (D-141), given to no role
+     * but `super_admin` for now, that the Décider pole must confirm or replace when it plugs its queue.
+     */
+    const val DECIDER_PACTE_PUBLISH: String = "queue.decider.pacte.publish"
+
+    /**
      * Writing the drafts of the editorial circuit of [space] (`comprendre`, `voir`) in the back-office section
      * `editorial.<space>` (docs/integration/circuit-editorial.md, step 3). Reviewing and publishing stay the
      * permissions of the queue (`queue.editorial.<space>.review`, `.publish`).
@@ -69,6 +85,7 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.AUDIT_READ,
             Permissions.SETTINGS_MANAGE,
             Permissions.LEGAL_REQUISITION,
+            Permissions.PLATFORM_KEYS,
         ),
     ),
     MODERATOR(

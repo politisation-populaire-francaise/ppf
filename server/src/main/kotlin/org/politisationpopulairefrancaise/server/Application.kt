@@ -79,6 +79,9 @@ import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
 import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
+import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
+import org.politisationpopulairefrancaise.server.signing.SignerAdmin
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
@@ -122,6 +125,9 @@ import javax.sql.DataSource
  *   the team back-office, off unless PPF_BACKOFFICE_ORIGIN is set (for example
  *   `https://equipe.preprod.politisation-populaire-francaise.org`; `http://localhost:8081` in development
  *   only). Its routes answer only on PPF_BACKOFFICE_PORT (default 8081), never on PORT; see [BackOfficeConfig].
+ * - PPF_SIGNER_URL, PPF_SIGNER_CLIENT_TOKEN_FILE, PPF_SIGNER_ROOT_PUBKEY: the signing service of the platform,
+ *   off unless PPF_SIGNER_URL is set; with the back-office, the page « Clés de la plateforme » and the copy of
+ *   the journal of the service (D-141); see [PlatformSignerConfig].
  *
  * Legal register (D-077, [LegalRegister]): nothing to configure. Its retention (one year) is fixed in the
  * database and it is never read but on a judicial requisition approved by two people in the back-office.
@@ -229,6 +235,8 @@ fun Application.module(
     securityContact: SecurityContact = SecurityContactSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
     /** Where an approved editorial version goes (circuit éditorial, step 5); nothing is sent until the signing service is plugged. */
     editorialPublisher: EditorialPublisher = UnpluggedEditorialPublisher,
+    /** The administration routes of the signing service (D-141); none unless PPF_SIGNER_URL is set. */
+    signer: SignerAdmin? = PlatformSignerConfig.fromEnvironment()?.let(::HttpPlatformSigner),
 ) {
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
@@ -261,7 +269,7 @@ fun Application.module(
     val teamBackOffice: BackOffice? = when {
         backOffice == null -> null
         dataSource == null -> null.also { log.warn("Back-office: ${BackOfficeConfig.ORIGIN_VARIABLE} is set but no database is configured, back-office off.") }
-        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace)
+        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace, signer)
     }
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }

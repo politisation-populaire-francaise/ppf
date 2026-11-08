@@ -429,6 +429,39 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
         call.afterAction(auth, form, io { backOffice.revokeValidationSession(auth, id, form["motif"]) }, "/seances", "done")
     }
 
+    // Keys of the platform (D-141): the working keys of the signing service, the requests for the root -------------
+    get(BackOffice.PLATFORM_PATH) {
+        val auth = call.requireAuth(backOffice) ?: return@get
+        when (val outcome = backOffice.platformKeys.overview(auth.actor)) {
+            is Outcome.Denied -> call.forbidden(auth)
+            is Outcome.Ok -> call.respondHtml { platformKeysPage(auth, outcome.value, noticeOf(call.request.queryParameters)) }
+        }
+    }
+    formPost("${BackOffice.PLATFORM_PATH}/ceremonie", backOffice) { auth, form ->
+        call.afterRootRequest(auth, form, backOffice.platformKeys.prepareCeremony(auth), "ceremony_prepared")
+    }
+    formPost("${BackOffice.PLATFORM_PATH}/revocation", backOffice) { auth, form ->
+        val date = when (val parsed = parseLocalDateTime(form["date"])) {
+            is Outcome.Denied -> return@formPost call.redirectWith(BackOffice.PLATFORM_PATH, error = parsed.code)
+            is Outcome.Ok -> parsed.value
+        }
+        val outcome = backOffice.platformKeys.prepareRevocation(auth, form["cle"].orEmpty().trim(), date, form["motif"])
+        call.afterRootRequest(auth, form, outcome, "revocation_prepared")
+    }
+    get("${BackOffice.PLATFORM_PATH}/demandes/{id}") {
+        val auth = call.requireAuth(backOffice) ?: return@get
+        if (!auth.actor.has(Permissions.PLATFORM_KEYS)) return@get call.forbidden(auth)
+        val admin = backOffice.platformKeys
+        val request = admin.prepared(call.parameters["id"].orEmpty())
+        val root = backOffice.signer?.rootPublicKey
+        if (request == null || root == null) {
+            return@get call.respondHtml(HttpStatusCode.NotFound) { messagePage(BackOfficeTexts.REQUEST_GONE_TITLE, BackOfficeTexts.REQUEST_GONE_TEXT, auth) }
+        }
+        val states = admin.states(request)
+        val notice = noticeOf(call.request.queryParameters)
+        call.respondHtml { rootRequestPage(auth, request, admin.qr(request).text(), root, states, notice) }
+    }
+
     // Sections of the poles (contract, section 14): under /equipe/sections/<id>, with the same guards ---------------
     mountSections(backOffice)
 }
@@ -562,6 +595,33 @@ private suspend fun <T> ApplicationCall.afterAction(auth: Authenticated, form: P
     when (outcome) {
         is Outcome.Ok -> redirectWith(back, ok = ok)
         is Outcome.Denied -> if (outcome.code == "confirmation_required") confirm(auth, form) else redirectWith(back, error = outcome.code)
+    }
+}
+
+/**
+ * After a request for the root (D-141): its page, the passkey asked again when the base requires it, or the
+ * refusal (the code of the signing service shown as it is: a stable identifier, never a value).
+ */
+private suspend fun ApplicationCall.afterRootRequest(auth: Authenticated, form: Parameters, outcome: Outcome<PreparedRequest>, ok: String) {
+    when (outcome) {
+        is Outcome.Ok -> redirectWith(requestPath(outcome.value.id), ok = ok)
+        is Outcome.Denied -> when {
+            outcome.code == "confirmation_required" -> confirm(auth, form)
+            outcome.code.startsWith(PlatformKeysAdmin.SIGNER_REFUSAL_PREFIX) -> respondHtml(HttpStatusCode.UnprocessableEntity) {
+                messagePage(BackOfficeTexts.REQUEST_REFUSED_TITLE, "${BackOfficeTexts.REQUEST_REFUSED_TEXT} ${outcome.code.removePrefix(PlatformKeysAdmin.SIGNER_REFUSAL_PREFIX).take(60)}.", auth)
+            }
+            else -> redirectWith(BackOffice.PLATFORM_PATH, error = outcome.code)
+        }
+    }
+}
+
+/** An optional date and time typed in a `datetime-local` field (AAAA-MM-JJTHH:MM), Paris time; null when empty. */
+private fun parseLocalDateTime(value: String?): Outcome<Instant?> {
+    val text = value?.trim()?.takeIf { it.isNotEmpty() } ?: return Outcome.Ok(null)
+    return try {
+        Outcome.Ok(java.time.LocalDateTime.parse(text).atZone(PARIS).toInstant())
+    } catch (e: DateTimeParseException) {
+        Outcome.Denied("bad_date")
     }
 }
 

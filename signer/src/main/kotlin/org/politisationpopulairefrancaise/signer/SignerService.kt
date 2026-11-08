@@ -12,6 +12,10 @@ import org.politisationpopulairefrancaise.core.platform.KeyStatus
 import org.politisationpopulairefrancaise.core.platform.KeysResponse
 import org.politisationpopulairefrancaise.core.platform.MAX_CREDENTIAL_ID_LENGTH
 import org.politisationpopulairefrancaise.core.platform.PlatformTrust
+import org.politisationpopulairefrancaise.core.platform.EventDraft
+import org.politisationpopulairefrancaise.core.platform.RootRequestQr
+import org.politisationpopulairefrancaise.core.platform.RootRequestView
+import org.politisationpopulairefrancaise.core.platform.RootRequests
 import org.politisationpopulairefrancaise.core.platform.SignRequest
 import org.politisationpopulairefrancaise.core.platform.SigningProtocol
 import org.politisationpopulairefrancaise.core.platform.SigningRefusals
@@ -84,6 +88,17 @@ class ApprovalView(
 
 /** The outcome of one root-signed event offered to the service (`stored`, `duplicate`, `superseded`, or a refusal code). */
 data class LoadOutcome(val id: String?, val status: String)
+
+/** The outcome of a root request deposited by the back-office (D-141). */
+sealed interface RootRequestOutcome {
+    data class Created(val id: String, val sha256: String, val expiresAt: Long) : RootRequestOutcome
+    data class Refused(val refusal: Refusal) : RootRequestOutcome
+}
+
+/** A root request kept in memory for the owner's phone, 24 hours at most. */
+internal class PendingRootRequest(val id: String, val createdAt: Long, val sha256: String, val events: List<UnsignedEvent>) {
+    val expiresAt: Long get() = createdAt + RootRequests.LIFETIME_SECONDS
+}
 
 /** A content waiting for its approvals; [event] is null when it was rebuilt from the journal (the content is never journaled). */
 internal class Draft(
@@ -320,6 +335,55 @@ class SignerService private constructor(
 
     @Synchronized
     fun journalHead(): JournalHead = journal.head()
+
+    // ---------------------------------------------------------------- root requests (D-141)
+
+    /** The root requests waiting for the owner's phone, oldest first (in memory only: a restart loses them). */
+    private val rootRequests = LinkedHashMap<String, PendingRootRequest>()
+
+    /**
+     * Keeps the unsigned events the root must sign, prepared by the back-office, for the owner's phone: each
+     * a well-formed certificate, revocation or team list of the root ([RootRequests.check]), each certificate
+     * and revocation for a key of this service with its use. Kept 24 hours at most, [RootRequests.MAX_PENDING]
+     * at most (the oldest is dropped). Journaled with its id, its hash and its number of events, never the events.
+     */
+    @Synchronized
+    fun createRootRequest(drafts: List<EventDraft>): RootRequestOutcome {
+        val time = now()
+        purgeRootRequests(time)
+        val root = root ?: return refuseRootRequest(time, Refusal(SigningRefusals.NO_ROOT))
+        val events = try {
+            drafts.map { it.toUnsigned() }
+        } catch (e: IllegalArgumentException) {
+            return refuseRootRequest(time, Refusal(SigningRefusals.MALFORMED_EVENT))
+        }
+        RootRequests.check(events, root, { key -> keys[key]?.use }, time)?.let { return refuseRootRequest(time, Refusal(it.code, it.detail)) }
+        val id = ByteArray(16).also(random::nextBytes).toHexString()
+        val sha256 = RootRequests.sha256(events)
+        while (rootRequests.size >= RootRequests.MAX_PENDING) rootRequests.remove(rootRequests.keys.first())
+        val request = PendingRootRequest(id, time, sha256, events)
+        rootRequests[id] = request
+        journal.append(time, JournalActions.ROOT_REQUEST_CREATED, JournalFields(event = sha256, d = id, code = events.size.toString()))
+        return RootRequestOutcome.Created(id, sha256, request.expiresAt)
+    }
+
+    /** The pending root request [id], for `GET /racine/demandes/{id}`; null when unknown or expired. */
+    @Synchronized
+    fun rootRequest(id: String): RootRequestView? {
+        purgeRootRequests(now())
+        if (!RootRequestQr.isRequestId(id)) return null
+        val request = rootRequests[id] ?: return null
+        return RootRequestView(request.id, request.createdAt, request.expiresAt, request.sha256, request.events.map(EventDraft::of))
+    }
+
+    private fun purgeRootRequests(time: Long) {
+        rootRequests.values.removeIf { it.expiresAt <= time }
+    }
+
+    private fun refuseRootRequest(time: Long, refusal: Refusal): RootRequestOutcome {
+        refuse(time, JournalActions.ROOT_REQUEST_REFUSED, JournalFields(), refusal)
+        return RootRequestOutcome.Refused(refusal)
+    }
 
     // ---------------------------------------------------------------- drafts and approvals
 
@@ -681,6 +745,8 @@ class SignerService private constructor(
         const val MAX_REFUSALS_PER_HOUR: Int = 1_000
 
         private val ACCOUNT = Regex("^[A-Za-z0-9._-]{1,64}$")
+
+        private val random = java.security.SecureRandom()
 
         internal fun draftKey(use: SigningUse, eventId: String): String = "${use.id}:$eventId"
 

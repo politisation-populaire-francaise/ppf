@@ -24,6 +24,9 @@ import org.politisationpopulairefrancaise.core.platform.DraftRequest
 import org.politisationpopulairefrancaise.core.platform.DraftResponse
 import org.politisationpopulairefrancaise.core.platform.DraftStatusResponse
 import org.politisationpopulairefrancaise.core.platform.KeysResponse
+import org.politisationpopulairefrancaise.core.platform.RootRequestBody
+import org.politisationpopulairefrancaise.core.platform.RootRequestResponse
+import org.politisationpopulairefrancaise.core.platform.RootRequests
 import org.politisationpopulairefrancaise.core.platform.SignRequest
 import org.politisationpopulairefrancaise.core.platform.SignResponse
 import org.politisationpopulairefrancaise.core.platform.SigningProtocol
@@ -68,7 +71,10 @@ internal data class ErrorBody(val status: String = SignResponse.REFUSED, val cod
  * - `POST /v1/team-list`: the root-signed team list → its status;
  * - `GET /v1/certificates`, `GET /v1/team-list`: what the service holds (public);
  * - `GET /v1/journal?after=<seq>&limit=<n>` and `GET /v1/journal/head`: the journal, to copy it into the
- *   audit log of the back-office and to anchor its head.
+ *   audit log of the back-office and to anchor its head;
+ * - `POST /v1/root-requests`: `{"events":[<unsigned root events>]}` (100 at most, 512 KiB at most) prepared
+ *   by the back-office for the owner's phone → `201 {"id","sha256","expires_at"}` or a refusal (`422`);
+ *   the phone reads it on the approval origin (`GET /racine/demandes/{id}`, D-141).
  *
  * Every answer has `Cache-Control: no-store`. Nothing about the caller is logged.
  */
@@ -163,6 +169,28 @@ fun Application.signerModule(service: SignerService, token: ClientToken) {
             if (!call.authorized(token)) return@get
             val head = withContext(Dispatchers.IO) { service.journalHead() }
             call.respondJson(HttpStatusCode.OK, encode(JournalHead.serializer(), head))
+        }
+        post("/v1/root-requests") {
+            if (!call.authorized(token)) return@post
+            val body = call.boundedBody(RootRequests.MAX_BODY_BYTES) ?: return@post
+            val request = try {
+                SigningProtocol.json.decodeFromString(RootRequestBody.serializer(), body)
+            } catch (e: Exception) {
+                return@post call.refusal(HttpStatusCode.BadRequest, SigningRefusals.MALFORMED_REQUEST)
+            }
+            if (request.events.isEmpty() || request.events.size > RootRequests.MAX_EVENTS) {
+                return@post call.refusal(HttpStatusCode.BadRequest, SigningRefusals.MALFORMED_REQUEST)
+            }
+            when (val outcome = withContext(Dispatchers.IO) { service.createRootRequest(request.events) }) {
+                is RootRequestOutcome.Created -> {
+                    val response = RootRequestResponse(id = outcome.id, sha256 = outcome.sha256, expiresAt = outcome.expiresAt)
+                    call.respondJson(HttpStatusCode.Created, encode(RootRequestResponse.serializer(), response))
+                }
+                is RootRequestOutcome.Refused -> {
+                    val response = RootRequestResponse(status = RootRequestResponse.REFUSED, code = outcome.refusal.code, detail = outcome.refusal.detail)
+                    call.respondJson(HttpStatusCode.UnprocessableEntity, encode(RootRequestResponse.serializer(), response))
+                }
+            }
         }
     }
 }
