@@ -87,6 +87,7 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_decryptages_ti
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_history
+import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_teaching
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_who
 import org.politisationpopulairefrancaise.ui.resources.comprendre_who_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_who_title
@@ -610,6 +611,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.APPEL -> Res.string.appels_title
         ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION -> Res.string.space_decider
         ArticleType.TEMOIGNAGE -> Res.string.temoignages_content_type
+        ArticleType.FICHE_PEDAGOGIQUE -> Res.string.comprendre_kind_teaching
     },
 )
 

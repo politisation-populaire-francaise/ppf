@@ -18,6 +18,15 @@ object ComprendreTags {
 
     /** The rhythm of a course (`ppf-rhythm`, [CourseRhythm]): absent for a course read at once. */
     const val RHYTHM: String = "ppf-rhythm"
+
+    /** The level a teaching sheet serves (`ppf-level`, [TeachingLevel]). */
+    const val LEVEL: String = "ppf-level"
+
+    /** The official programme a teaching sheet serves, in one sentence with its Bulletin officiel (`ppf-programme`). */
+    const val PROGRAMME: String = "ppf-programme"
+
+    /** The role of the link (`a` tag) from a teaching sheet to the course it brings to the classroom. */
+    const val COURSE_LINK_ROLE: String = "parcours"
 }
 
 /**
