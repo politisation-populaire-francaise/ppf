@@ -1,15 +1,19 @@
 package org.politisationpopulairefrancaise.core.platform
 
 import org.politisationpopulairefrancaise.core.signing.EventKinds
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
 
 /**
  * What a working key of the platform may sign (contract docs/integration/service-signature.md,
  * sections 2 and 4; decision D-129). Each use has its own working key, certified by the root for this
  * use only: a key compromised for one use is worth nothing for the others.
  *
- * [kinds] are the only event kinds a key of this use may sign; the signing service enforces finer
- * rules (tags, approvals, rates), the applications check at least the kind. [automatic] uses are signed
- * without any human approval, under strict rules, and they are the only ones.
+ * [kinds] are the only event kinds a key of this use may sign, and [matches] tells, by the kind and the
+ * tags that set the uses apart, whether an event has the form of this use: the applications check both,
+ * so that a key certified for one use never validates the content of another use of the same kind. The
+ * signing service enforces the whole shape (tags, approvals, rates). [automatic] uses are signed without
+ * any human approval, under strict rules, and they are the only ones.
  */
 enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolean) {
     /** Contents of « Comprendre » (sheets, files, fact checks, courses, glossary...), NIP-23. */
@@ -37,9 +41,46 @@ enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolea
     DECIDER_URN_CLOSURE("decider.urn_closure", setOf(EventKinds.APP_DATA), automatic = true),
     ;
 
+    /**
+     * Whether an event of [kind] with [tags] has the form of this use: one of its kinds and the tags that
+     * tell the uses apart. Editorial contents never carry the `ppf-type` of another use; an organisation
+     * sheet has exactly `ppf-type` = `organisation`; the Pact exactly `pacte` or `engagement`; a status
+     * label exactly the namespace `ppf-status`; the open data index exactly its `d`; a closing statement a
+     * single `d` of the ballot boxes. An OpenTimestamps attestation is told apart by its kind alone.
+     */
+    fun matches(kind: Int, tags: List<List<String>>): Boolean {
+        if (kind !in kinds) return false
+        fun values(name: String): List<String> = tags.filter { it.isNotEmpty() && it[0] == name }.map { it.getOrElse(1) { "" } }
+        return when (this) {
+            EDITORIAL_COMPRENDRE, EDITORIAL_VOIR -> values(TAG_TYPE).none { it in TYPES_OF_OTHER_USES }
+            AGIR_ORGANISATIONS -> values(TAG_TYPE) == listOf(TYPE_ORGANISATION)
+            DECIDER_PACTE -> values(TAG_TYPE).let { it.size == 1 && it[0] in PACTE_TYPES }
+            REVENDICATIONS_STATUS -> values("L") == listOf(STATUS_NAMESPACE)
+            ARCHIVES_TIMESTAMPS -> true
+            OPENDATA_INDEX -> values("d") == listOf(OPENDATA_INDEX_IDENTIFIER)
+            DECIDER_URN_CLOSURE -> values("d").let { it.size == 1 && it[0].startsWith(URN_CLOSURE_PREFIX) }
+        }
+    }
+
+    fun matches(event: SignedEvent): Boolean = matches(event.kind, event.tags)
+
+    fun matches(event: UnsignedEvent): Boolean = matches(event.kind, event.tags)
+
     override fun toString(): String = id
 
     companion object {
+        const val TAG_TYPE: String = "ppf-type"
+        const val TYPE_ORGANISATION: String = "organisation"
+        const val STATUS_NAMESPACE: String = "ppf-status"
+        const val OPENDATA_INDEX_IDENTIFIER: String = "ppf:parlement-index"
+        const val URN_CLOSURE_PREFIX: String = "ppf:urne-cloture:"
+
+        /** The `ppf-type` values of the Pact and of the candidates' answers. */
+        val PACTE_TYPES: Set<String> = setOf("pacte", "engagement")
+
+        /** The `ppf-type` values that belong to a use other than the editorial ones. */
+        val TYPES_OF_OTHER_USES: Set<String> = setOf(TYPE_ORGANISATION) + PACTE_TYPES
+
         fun fromId(id: String): SigningUse? = entries.firstOrNull { it.id == id }
     }
 }
