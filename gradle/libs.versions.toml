@@ -15,6 +15,12 @@ kotlinxHtml = "0.12.0"
 kotlinxSerialization = "1.12.0"
 logback = "1.6.6"
 androidxActivity = "1.13.0"
+# QR codes of the in-person validation (D-112, 4.3; team lead's decision of 8 November 2026, option A; download
+# agreed by the owner the same day). ZXing core draws and reads them (Apache 2.0, pure Java, no network, no
+# transitive dependency; 3.5.3 on Maven Central, checked on 2026-11-08). CameraX shows the camera on Android only
+# (AndroidX, Apache 2.0, no Google Play services; 1.6.1 stable, checked on 2026-11-08). Never ML Kit.
+zxing = "3.5.3"
+camerax = "1.6.1"
 # Identities and content signatures (cahier des charges, section 3.2). Bitcoin Core's audited
 # libsecp256k1 (Schnorr BIP-340) wrapped for Kotlin Multiplatform by ACINQ, and ACINQ's bitcoin-kmp
 # for BIP-39 recovery phrases, BIP-32 derivation (NIP-06), SHA-256 and bech32 (NIP-19).
@@ -72,6 +78,11 @@ navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:nav
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html", version.ref = "kotlinxHtml" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
+zxing-core = { module = "com.google.zxing:core", version.ref = "zxing" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "camerax" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "camerax" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
