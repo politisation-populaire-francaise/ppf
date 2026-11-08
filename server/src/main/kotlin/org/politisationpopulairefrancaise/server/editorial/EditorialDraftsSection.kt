@@ -5,11 +5,17 @@ import io.ktor.http.Parameters
 import kotlinx.html.ButtonType
 import kotlinx.html.FlowContent
 import kotlinx.html.FormMethod
+import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.button
 import kotlinx.html.caption
 import kotlinx.html.code
+import kotlinx.html.dd
 import kotlinx.html.div
+import kotlinx.html.dl
+import kotlinx.html.dt
+import kotlinx.html.input
+import kotlinx.html.textArea
 import kotlinx.html.form
 import kotlinx.html.h1
 import kotlinx.html.h2
@@ -58,13 +64,24 @@ import java.util.UUID
  * without JavaScript, the checks of [EditorialEngine.check] at every save (a draft with problems is saved
  * all the same: no work is lost), the preview rendered as on the site and the diff with the published
  * version. Every save adds a version (optimistic concurrency) and a line of the journal, written by the
- * base. No queue action, no signing, no publication here: steps 4 and 5.
+ * base.
+ *
+ * Step 4: a writer submits a version without problem (`brouillons/{id}/soumettre`); another editor decides
+ * on the review page (`relecture/{id}`): request changes (message, back to the writers), reject (reason,
+ * closed), approve for publication (state `ready_to_sign`, handed to [EditorialPublisher]). Every decision
+ * writes two journal lines through the base, `<action>_requested` before and `<action>` with its outcome
+ * after, with identifiers and codes only: the free text stays in `editorial_review`. No signing and no
+ * publication here: step 5, on the pages of the signing service.
  */
 class EditorialDraftsSection(
     private val space: EditorialSpace,
     private val drafts: EditorialDrafts,
+    /** The review of step 4: submission, and the decisions taken on the review page (the queue `editorial.<space>` lists them). */
+    private val reviews: EditorialReviews,
     private val published: PublishedContents,
     private val clock: Clock = Clock.systemUTC(),
+    /** Where an approved version goes (step 5); nothing is sent until the signing service is plugged. */
+    private val publisher: EditorialPublisher = UnpluggedEditorialPublisher,
 ) : BackOfficeSection {
     override val id: String = "editorial.${space.id}"
     override val title: String = if (space == EditorialSpace.COMPRENDRE) EditorialTexts.SECTION_COMPRENDRE else EditorialTexts.SECTION_VOIR
@@ -97,13 +114,32 @@ class EditorialDraftsSection(
                 "created" -> Notice(EditorialTexts.CREATED)
                 "saved" -> Notice(EditorialTexts.SAVED)
                 "unchanged" -> Notice(EditorialTexts.UNCHANGED)
+                "submitted" -> Notice(EditorialTexts.SUBMITTED)
                 else -> null
             }
-            formPage(schema, draft, FormState(latest.content), draft.latestVersion, check(schema, latest.content), notice = notice)
+            if (!draft.status.editable) return@get readOnlyPage(draft, schema, latest, notice)
+            formPage(schema, draft, FormState(latest.content), draft.latestVersion, check(schema, latest.content), notice = notice, offerSubmit = true)
         }
         routes.post("brouillons/{id}") { form ->
             val (draft, schema) = draftOf(pathParameter("id")) ?: return@post notFound()
             postEdit(draft, schema, form)
+        }
+        routes.post("brouillons/{id}/soumettre") { form ->
+            val (draft, schema) = draftOf(pathParameter("id")) ?: return@post notFound()
+            postSubmit(draft, schema, form)
+        }
+        routes.get("relecture/{id}") {
+            val (draft, schema) = draftOf(pathParameter("id")) ?: return@get notFound()
+            val notice = when (query["ok"]) {
+                "changes_requested" -> Notice(EditorialTexts.DONE_CHANGES_REQUESTED)
+                "rejected" -> Notice(EditorialTexts.DONE_REJECTED)
+                else -> null
+            }
+            reviewPage(draft, schema, notice)
+        }
+        routes.post("relecture/{id}") { form ->
+            val (draft, schema) = draftOf(pathParameter("id")) ?: return@post notFound()
+            postDecision(draft, schema, form)
         }
         routes.get("brouillons/{id}/apercu") {
             val (draft, schema) = draftOf(pathParameter("id")) ?: return@get notFound()
@@ -192,6 +228,7 @@ class EditorialDraftsSection(
                                 th { +EditorialTexts.COLUMN_TYPE }
                                 th { +EditorialTexts.common(ContentSchema.SLUG) }
                                 th { +EditorialTexts.VERSION }
+                                th { +EditorialTexts.COLUMN_STATUS }
                                 th { +EditorialTexts.COLUMN_UPDATED }
                                 th { +EditorialTexts.COLUMN_BY }
                             }
@@ -202,7 +239,15 @@ class EditorialDraftsSection(
                                     td { a(href = path("brouillons/${draft.id}")) { +draft.title.ifBlank { EditorialTexts.UNTITLED } } }
                                     td { +typeLabel(draft.type) }
                                     td { draft.slug?.let { code { +it } } }
-                                    td { +"${draft.latestVersion} (${EditorialTexts.status(draft.status)})" }
+                                    td { +draft.latestVersion.toString() }
+                                    td {
+                                        +EditorialTexts.status(draft.status)
+                                        if (draft.status == DraftStatus.IN_REVIEW) {
+                                            +" ("
+                                            a(href = path("relecture/${draft.id}")) { +EditorialTexts.REVIEW_LINK.lowercase() }
+                                            +")"
+                                        }
+                                    }
                                     td { dateTime(draft.updatedAt) }
                                     td { +(authors[draft.author] ?: "") }
                                 }
@@ -263,6 +308,8 @@ class EditorialDraftsSection(
         status: HttpStatusCode = HttpStatusCode.OK,
         showPreview: Boolean = false,
         conflict: DraftVersion? = null,
+        /** Whether the page shows the saved latest version, which may then be submitted. */
+        offerSubmit: Boolean = false,
     ) {
         val snapshot = published.snapshot()
         val known = drafts.openSlugs() + snapshot.types(snapshot.authorOf(space))
@@ -284,10 +331,24 @@ class EditorialDraftsSection(
                 }
             }
             if (problems.isEmpty() && draft != null) p(classes = "bo-notice") { attributes["role"] = "status"; +EditorialTexts.NO_PROBLEM }
+            draft?.let { lastMessage(it) }
             EditorialForm.render(
                 this,
                 EditorialForm.View(schema, state, problems, action, version, isUpdate = draft?.baseEventId != null, known = known, csrf = { csrfInput(it) }),
             )
+            // The submission, a separate form: only the latest saved version, without any problem, leaves for review.
+            if (offerSubmit && draft != null && draft.status.editable && problems.isEmpty()) {
+                section {
+                    attributes["aria-labelledby"] = "soumettre"
+                    h2 { id = "soumettre"; +EditorialTexts.SUBMIT_TITLE }
+                    p { +EditorialTexts.format(EditorialTexts.SUBMIT_INTRO, draft.latestVersion) }
+                    form(action = path("brouillons/${draft.id}/soumettre"), method = FormMethod.post) {
+                        csrfInput(this)
+                        input(type = InputType.hidden, name = "version") { value = draft.latestVersion.toString() }
+                        button(type = ButtonType.submit, classes = "bo-button") { +EditorialTexts.SUBMIT }
+                    }
+                }
+            }
             if (showPreview) {
                 section(classes = "bo-preview") {
                     attributes["aria-labelledby"] = "apercu"
@@ -320,6 +381,14 @@ class EditorialDraftsSection(
                         a(href = context.path("brouillons/${draft.id}$suffix")) {
                             if (page == null && suffix.isEmpty() || page == pageName(suffix)) attributes["aria-current"] = "page"
                             +text
+                        }
+                    }
+                }
+                if (draft.submittedVersion != null) {
+                    li {
+                        a(href = context.path("relecture/${draft.id}")) {
+                            if (page == EditorialTexts.REVIEW_TITLE) attributes["aria-current"] = "page"
+                            +EditorialTexts.LINK_REVIEW
                         }
                     }
                 }
@@ -470,6 +539,289 @@ class EditorialDraftsSection(
         }
     }
 
+    // Review (step 4) -------------------------------------------------------------------------------
+
+    /** A draft that is not editable (in review, ready to sign, finished): its state, the last message and its content. */
+    private suspend fun SectionContext.readOnlyPage(draft: EditorialDraft, schema: ContentSchema, latest: DraftVersion, notice: Notice?, status: HttpStatusCode = HttpStatusCode.OK) {
+        respondPage("${EditorialTexts.FORM_EDIT_TITLE} : ${draft.title.ifBlank { EditorialTexts.UNTITLED }}", notice, status) {
+            draftHeader(this@readOnlyPage, draft, schema, null)
+            p(classes = "bo-notice") {
+                attributes["role"] = "status"
+                +stateText(draft.status)
+            }
+            lastMessage(draft)
+            section(classes = "bo-preview") {
+                attributes["aria-labelledby"] = "apercu"
+                h2 { id = "apercu"; +EditorialTexts.PREVIEW_TITLE }
+                preview(schema, latest.content)
+            }
+        }
+    }
+
+    private fun stateText(status: DraftStatus): String = when (status) {
+        DraftStatus.IN_REVIEW -> EditorialTexts.STATE_IN_REVIEW
+        DraftStatus.READY_TO_SIGN -> EditorialTexts.STATE_READY_TO_SIGN
+        DraftStatus.REJECTED -> EditorialTexts.STATE_REJECTED
+        else -> EditorialTexts.STATE_FINISHED
+    }
+
+    /** The message of the last request for changes, or the reason of the refusal, for the writers. */
+    private fun FlowContent.lastMessage(draft: EditorialDraft) {
+        if (draft.status != DraftStatus.CHANGES_REQUESTED && draft.status != DraftStatus.REJECTED) return
+        val last = reviews.decisions(draft.id).firstOrNull { it.reason != null } ?: return
+        section(classes = "bo-notice bo-notice-warning") {
+            attributes["aria-labelledby"] = "dernier-message"
+            h2 { id = "dernier-message"; +"${EditorialTexts.LAST_MESSAGE} (${EditorialTexts.status(last.decision.status).lowercase()}, ${EditorialTexts.VERSION.lowercase()} ${last.version})" }
+            last.reason.orEmpty().lines().forEach { line -> p { +line } }
+        }
+    }
+
+    /** The review page: the submitted version as the site would show it, its facts, the decisions, the forms. */
+    private suspend fun SectionContext.reviewPage(draft: EditorialDraft, schema: ContentSchema, notice: Notice?, status: HttpStatusCode = HttpStatusCode.OK) {
+        val submitted = draft.submittedVersion?.let { drafts.version(draft.id, it) }
+        val history = reviews.decisions(draft.id)
+        val names = (history.map { it.reviewer } + draft.author).distinct().associateWith { pseudonymOf(it) }
+        val queued = reviews.queued(space).firstOrNull { it.draft.id == draft.id }
+        val problems = if (submitted != null && draft.status == DraftStatus.IN_REVIEW) check(schema, submitted.content) else emptyList()
+        val writer = reviews.isWriterOf(draft.id, actor.accountId)
+        respondPage("${EditorialTexts.REVIEW_TITLE} : ${draft.title.ifBlank { EditorialTexts.UNTITLED }}", notice, status) {
+            draftHeader(this@reviewPage, draft, schema, EditorialTexts.REVIEW_TITLE)
+            dl(classes = "bo-facts") {
+                dt { +EditorialTexts.COLUMN_STATUS }
+                dd { +EditorialTexts.status(draft.status) }
+                draft.submittedVersion?.let { version -> dt { +EditorialTexts.REVIEW_SUBMITTED_VERSION }; dd { +version.toString() } }
+                dt { +EditorialTexts.REVIEW_AUTHOR }
+                dd { +(names[draft.author] ?: "") }
+                draft.submittedAt?.let { at -> dt { +EditorialTexts.REVIEW_SUBMITTED }; dd { dateTime(at) } }
+                queued?.let { item ->
+                    dt { +EditorialTexts.REVIEW_DEADLINE }
+                    dd { dateTime(item.deadline) }
+                    dt { +EditorialTexts.REVIEW_LEVEL }
+                    dd { +("${item.level} / 5" + if (item.correction) " (${EditorialTexts.QUEUE_CORRECTION})" else "") }
+                }
+            }
+            submitted?.content?.changeNote?.let { note -> p { +"${EditorialTexts.CHANGE_NOTE} : $note" } }
+            if (problems.isNotEmpty()) {
+                div(classes = "bo-notice bo-notice-error") {
+                    attributes["role"] = "alert"
+                    p { +EditorialTexts.format(EditorialTexts.REVIEW_PROBLEMS, problems.size) }
+                    ul { problems.forEach { li { +EditorialTexts.problem(schema, it) } } }
+                }
+            }
+            section {
+                attributes["aria-labelledby"] = "historique"
+                h2 { id = "historique"; +EditorialTexts.REVIEW_HISTORY }
+                if (history.isEmpty()) {
+                    p { +EditorialTexts.REVIEW_HISTORY_EMPTY }
+                } else {
+                    ul(classes = "bo-list") {
+                        history.forEach { record ->
+                            li {
+                                p {
+                                    +"${EditorialTexts.VERSION} ${record.version} : ${EditorialTexts.status(record.decision.status)}, ${EditorialTexts.REVIEW_BY} ${names[record.reviewer] ?: ""}, "
+                                    dateTime(record.decidedAt)
+                                }
+                                record.reason?.lines()?.forEach { line -> p { +line } }
+                            }
+                        }
+                    }
+                }
+            }
+            section {
+                attributes["aria-labelledby"] = "decision"
+                h2 { id = "decision"; +EditorialTexts.REVIEW_ACTIONS }
+                when {
+                    draft.status != DraftStatus.IN_REVIEW -> p { +EditorialTexts.REVIEW_NOT_IN_REVIEW }
+                    writer -> p(classes = "bo-notice") { +EditorialTexts.REVIEW_YOU_WROTE }
+                    !actor.has(EditorialQueue.reviewPermission(space)) -> p { +EditorialTexts.REVIEW_NO_PERMISSION }
+                    else -> {
+                        val version = requireNotNull(draft.submittedVersion)
+                        val context = this@reviewPage
+                        decisionForm(context, draft, version, ACTION_REQUEST_CHANGES, EditorialTexts.REQUEST_CHANGES, EditorialTexts.REVIEW_MESSAGE_LABEL, sensitive = false)
+                        decisionForm(context, draft, version, ACTION_REJECT, EditorialTexts.REJECT, EditorialTexts.REVIEW_REASON_LABEL, sensitive = true)
+                        if (problems.isEmpty() && actor.has(EditorialQueue.publishPermission(space))) {
+                            decisionForm(context, draft, version, ACTION_APPROVE, EditorialTexts.APPROVE, null, sensitive = true)
+                        }
+                    }
+                }
+            }
+            if (submitted != null) {
+                section(classes = "bo-preview") {
+                    attributes["aria-labelledby"] = "contenu-soumis"
+                    h2 { id = "contenu-soumis"; +"${EditorialTexts.REVIEW_CONTENT} (${EditorialTexts.VERSION.lowercase()} ${submitted.version})" }
+                    p { +"${EditorialTexts.common(ContentSchema.ORIGIN)} : ${originText(submitted.content.origin)}" }
+                    preview(schema, submitted.content)
+                }
+            }
+        }
+    }
+
+    /** One decision form; [reasonLabel] null for an approval (no text). */
+    private fun FlowContent.decisionForm(context: SectionContext, draft: EditorialDraft, version: Int, action: String, button: String, reasonLabel: String?, sensitive: Boolean) {
+        form(action = context.path("relecture/${draft.id}"), method = FormMethod.post, classes = "bo-action") {
+            context.csrfInput(this)
+            input(type = InputType.hidden, name = "decision") { value = action }
+            input(type = InputType.hidden, name = "version") { value = version.toString() }
+            if (reasonLabel != null) {
+                val fieldId = "motif-$action"
+                label {
+                    htmlFor = fieldId
+                    +reasonLabel
+                }
+                textArea(rows = "4") {
+                    id = fieldId
+                    name = "motif"
+                    required = true
+                    maxLength = EditorialReviews.MAX_REASON.toString()
+                    attributes["aria-describedby"] = "$fieldId-aide"
+                }
+                p(classes = "bo-hint") {
+                    id = "$fieldId-aide"
+                    +EditorialTexts.format(EditorialTexts.REVIEW_TEXT_HINT, EditorialTexts.number(EditorialReviews.MAX_REASON))
+                }
+            } else {
+                p(classes = "bo-hint") { +EditorialTexts.APPROVE_HINT }
+            }
+            if (sensitive) p(classes = "bo-hint") { +EditorialTexts.SENSITIVE_HINT }
+            button(type = ButtonType.submit, classes = "bo-button") { +button }
+        }
+    }
+
+    private suspend fun SectionContext.postSubmit(draft: EditorialDraft, schema: ContentSchema, form: Parameters) {
+        val version = form["version"]?.toIntOrNull() ?: 0
+        val latest = requireNotNull(drafts.version(draft.id, draft.latestVersion))
+        if (!draft.status.editable) {
+            return readOnlyPage(draft, schema, latest, Notice(EditorialTexts.format(EditorialTexts.WRONG_STATE, EditorialTexts.status(draft.status).lowercase()), error = true), HttpStatusCode.Conflict)
+        }
+        // The rules of the engine, again, on the version saved: a version with problems never leaves for review.
+        val problems = check(schema, latest.content)
+        if (problems.isNotEmpty()) {
+            return formPage(
+                schema, draft, FormState(latest.content), draft.latestVersion, problems,
+                Notice(EditorialTexts.format(EditorialTexts.SUBMIT_REFUSED_PROBLEMS, problems.size), error = true), HttpStatusCode.UnprocessableEntity,
+            )
+        }
+        val result = tracked(ACTION_SUBMIT, draft, version) { reviews.submit(draft.id, version, actor.accountId) } ?: return
+        when (result) {
+            is ReviewResult.Done -> redirect("brouillons/${draft.id}", "ok=submitted")
+            ReviewResult.NotFound -> notFound()
+            else -> formPage(schema, draft, FormState(latest.content), draft.latestVersion, problems, Notice(refusalText(result), error = true), statusOf(result), offerSubmit = true)
+        }
+    }
+
+    private suspend fun SectionContext.postDecision(draft: EditorialDraft, schema: ContentSchema, form: Parameters) {
+        val action = form["decision"] ?: return notFound()
+        val decision = when (action) {
+            ACTION_REQUEST_CHANGES -> ReviewDecision.CHANGES_REQUESTED
+            ACTION_REJECT -> ReviewDecision.REJECTED
+            ACTION_APPROVE -> ReviewDecision.READY_TO_SIGN
+            else -> return notFound()
+        }
+        val permission = if (decision == ReviewDecision.READY_TO_SIGN) EditorialQueue.publishPermission(space) else EditorialQueue.reviewPermission(space)
+        if (!actor.has(permission)) return forbidden()
+        // A refusal and an approval are sensitive: the passkey again after 5 minutes (the base's confirmation page).
+        if (decision != ReviewDecision.CHANGES_REQUESTED && !requireFresh()) return
+        val version = form["version"]?.toIntOrNull() ?: 0
+        val reason = form["motif"]?.trim()?.takeIf { it.isNotEmpty() }
+        if (decision.needsReason && (reason == null || reason.length > EditorialReviews.MAX_REASON)) {
+            return reviewPage(draft, schema, Notice(EditorialTexts.format(EditorialTexts.REASON_REQUIRED, EditorialTexts.number(EditorialReviews.MAX_REASON)), error = true), HttpStatusCode.UnprocessableEntity)
+        }
+        if (decision == ReviewDecision.READY_TO_SIGN) {
+            // The rules may have changed since the submission: a version with problems is never approved.
+            val submitted = draft.submittedVersion?.takeIf { it == version }?.let { drafts.version(draft.id, it) }
+            val problems = submitted?.let { check(schema, it.content) }.orEmpty()
+            if (problems.isNotEmpty()) {
+                return reviewPage(draft, schema, Notice(EditorialTexts.format(EditorialTexts.REVIEW_PROBLEMS, problems.size), error = true), HttpStatusCode.UnprocessableEntity)
+            }
+        }
+        val result = tracked(action, draft, version) { reviews.decide(draft.id, version, decision, actor.accountId, reason) } ?: return
+        val decided = (result as? ReviewResult.Done)?.draft
+        when {
+            decided == null && result == ReviewResult.NotFound -> notFound()
+            decided == null -> reviewPage(drafts.find(draft.id) ?: draft, schema, Notice(refusalText(result), error = true), statusOf(result))
+            decision == ReviewDecision.READY_TO_SIGN -> {
+                val answer = handOver(decided, version)
+                val text = when (answer) {
+                    is PublisherAnswer.Submitted -> EditorialTexts.format(EditorialTexts.SIGNER_SUBMITTED, answer.approvalUrl)
+                    is PublisherAnswer.NotConnected -> answer.message
+                }
+                reviewPage(decided, schema, Notice("${EditorialTexts.DONE_READY_TO_SIGN} $text"))
+            }
+            else -> redirect("relecture/${draft.id}", "ok=${decision.db}")
+        }
+    }
+
+    /** Hands an approved version to the signing seam; a failure never undoes the approval (the version stays ready to sign). */
+    private fun handOver(draft: EditorialDraft, version: Int): PublisherAnswer {
+        val content = drafts.version(draft.id, version)?.content
+        val request = ReadyToSign(
+            space = space, draftId = draft.id, version = version, type = draft.type, slug = draft.slug, baseEventId = draft.baseEventId,
+            author = draft.author, approvedBy = requireNotNull(reviews.decisions(draft.id).firstOrNull { it.version == version }).reviewer,
+            correction = draft.baseEventId != null && content?.changeKind == ChangeKind.CORRECTION,
+        )
+        return try {
+            publisher.readyToSign(request)
+        } catch (e: Exception) {
+            log.error("Editorial review: the signing seam failed (${e::class.qualifiedName}).")
+            PublisherAnswer.NotConnected(EditorialTexts.SIGNER_NOT_PLUGGED)
+        }
+    }
+
+    /**
+     * Runs [block] between two journal lines written by the base: `<action>_requested` before (when it cannot
+     * be written, nothing is done) and `<action>` with its outcome after. Identifiers and codes only: never the
+     * message nor the reason, which stay in `editorial_review`. Returns null when an error page was sent.
+     */
+    private suspend fun SectionContext.tracked(action: String, draft: EditorialDraft, version: Int, block: () -> ReviewResult): ReviewResult? {
+        val before = mapOf("version" to version.toString(), "status" to draft.status.db)
+        if (!journalLine("${action}_requested", draft, before)) {
+            respondPage(EditorialTexts.JOURNAL_FAILED_TITLE, Notice(EditorialTexts.JOURNAL_FAILED_BEFORE, error = true), HttpStatusCode.InternalServerError) {
+                h1 { +EditorialTexts.JOURNAL_FAILED_TITLE }
+                p { a(href = path("brouillons/${draft.id}")) { +EditorialTexts.LINK_FORM } }
+            }
+            return null
+        }
+        val result = block()
+        val after = buildMap {
+            put("version", version.toString())
+            put("outcome", result.code)
+            if (result is ReviewResult.Done) put("status", result.draft.status.db)
+            if (result is ReviewResult.WrongState) put("status", result.status.db)
+        }
+        if (!journalLine(action, draft, after)) {
+            respondPage(EditorialTexts.JOURNAL_FAILED_TITLE, Notice(EditorialTexts.JOURNAL_FAILED_DECISION, error = true), HttpStatusCode.InternalServerError) {
+                h1 { +EditorialTexts.JOURNAL_FAILED_TITLE }
+                p { a(href = path("brouillons/${draft.id}")) { +EditorialTexts.LINK_FORM } }
+            }
+            return null
+        }
+        return result
+    }
+
+    private fun SectionContext.journalLine(action: String, draft: EditorialDraft, details: Map<String, String>): Boolean = try {
+        audit(action, draft.id.toString(), reason = null, details = details)
+        true
+    } catch (e: Exception) {
+        log.error("Editorial review: a journal line could not be written (${e::class.qualifiedName}).")
+        false
+    }
+
+    private fun refusalText(result: ReviewResult): String = when (result) {
+        is ReviewResult.WrongState -> EditorialTexts.format(EditorialTexts.WRONG_STATE, EditorialTexts.status(result.status).lowercase())
+        ReviewResult.StaleVersion -> EditorialTexts.STALE_VERSION
+        ReviewResult.AlreadyReviewed -> EditorialTexts.SUBMIT_REFUSED_ALREADY_REVIEWED
+        ReviewResult.Writer -> EditorialTexts.REVIEW_REFUSED_WRITER
+        ReviewResult.NotWriter -> EditorialTexts.SUBMIT_REFUSED_NOT_WRITER
+        ReviewResult.ReasonRequired -> EditorialTexts.format(EditorialTexts.REASON_REQUIRED, EditorialTexts.number(EditorialReviews.MAX_REASON))
+        ReviewResult.NotFound, is ReviewResult.Done -> EditorialTexts.STATE_FINISHED
+    }
+
+    private fun statusOf(result: ReviewResult): HttpStatusCode = when (result) {
+        ReviewResult.Writer, ReviewResult.NotWriter -> HttpStatusCode.Forbidden
+        ReviewResult.ReasonRequired -> HttpStatusCode.UnprocessableEntity
+        else -> HttpStatusCode.Conflict
+    }
+
     // Helpers ---------------------------------------------------------------------------------------
 
     private fun draftOf(id: String?): Pair<EditorialDraft, ContentSchema>? {
@@ -527,6 +879,12 @@ class EditorialDraftsSection(
 
     companion object {
         private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
+
+        /** The actions of the review, as the forms post them and the journal names them (`section.editorial.<space>.<action>`). */
+        const val ACTION_SUBMIT: String = "submit"
+        const val ACTION_REQUEST_CHANGES: String = "request_changes"
+        const val ACTION_REJECT: String = "reject"
+        const val ACTION_APPROVE: String = "approve"
         private val log = org.slf4j.LoggerFactory.getLogger(EditorialDraftsSection::class.java)
     }
 }
