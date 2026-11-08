@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.selection.selectableGroup
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
@@ -26,6 +27,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.voir.ErrorReport
 import org.politisationpopulairefrancaise.core.voir.VoirItem
 import org.politisationpopulairefrancaise.core.voir.VoirRequests
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfPrimaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfRadioRow
@@ -61,7 +64,9 @@ internal fun ErrorReportPage(item: VoirItem, session: VoirRequestSession, callba
     var tried by remember { mutableStateOf(false) }
     var warning by remember { mutableStateOf(false) }
     val draft = session.reportDraft
-    val withAccount = draft.withAccount && session.hasAccount && session.canWriteMessages
+    // A compromised account (S-146) can still report anonymously, never with the account.
+    val canPublish = LocalCanPublish.current
+    val withAccount = draft.withAccount && session.hasAccount && session.canWriteMessages && canPublish
     val subject = stringResource(Res.string.voir_req_report_subject, item.title.withoutExample())
 
     Column(Modifier.fillMaxWidth().testTag(VoirRequestTags.REPORT_FORM)) {
@@ -134,8 +139,10 @@ internal fun ErrorReportPage(item: VoirItem, session: VoirRequestSession, callba
                     // Leaving anonymity is a loosening: a warning first, with confirm and cancel (principle 10).
                     onClick = { if (!withAccount) warning = true },
                     modifier = Modifier.testTag(VoirRequestTags.REPORT_ACCOUNT),
+                    enabled = canPublish,
                 )
             }
+            PublishBlockedNotice(Modifier.padding(top = 8.dp))
         } else {
             InfoBox(Lucide.EyeOff, Modifier.testTag(VoirRequestTags.NO_ACCOUNT)) {
                 Text(stringResource(Res.string.voir_req_report_no_account), style = MaterialTheme.typography.bodyMedium)
