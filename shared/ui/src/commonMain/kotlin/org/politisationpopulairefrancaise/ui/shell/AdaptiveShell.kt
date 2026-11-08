@@ -61,6 +61,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.ui.components.SystemBack
+import org.politisationpopulairefrancaise.core.comprendre.ComprendreDeviceData
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
@@ -233,6 +234,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         accountSession.signOut()
     }
     RegisterErasable(dependencies, "agir-rally-point") { help.clearRallyPoint() }
+    // « Comprendre » (S-44): progress of the courses, chosen commune and directory packages, department packages of the territories.
+    dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.

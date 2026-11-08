@@ -70,7 +70,7 @@ Chaque pôle implémente `DeviceErasable` pour ses données et l'inscrit (`depen
 |---|---|---|---|
 | Communauté | messages privés (`Messaging.sq`), salons et appartenances (`Groups.sq`), cercles et statuts (à venir) | Oubliés par le chemin d'« Effacer mes clés » (`messaging.forgetAll`, `groupsLibrary.clearMemberships`), lancés sans être attendus | Partie `communaute-…` qui efface ses tables et attend la fin |
 | Décider | jetons de vote, suivis de « Décider », validations en personne | Non effacés | Partie `decider-…` (le serveur ne relie toujours jamais un vote à un compte) |
-| Comprendre | progression des parcours (`Learning.sq`), commune choisie (`elus_commune`) | Non effacés | Partie `comprendre-…` |
+| Comprendre | progression des parcours (`Learning.sq`), commune choisie et paquets de l'annuaire (`Elus.sq`), paquets de département du référentiel des territoires | **Branché le 8 novembre 2026** (`core/comprendre/ComprendreDeviceData.kt`, inscrit dans `AdaptiveShell`) : `comprendre-progression`, `comprendre-elus`, `comprendre-territoires` (le paquet national et l'index des noms de communes restent, les mêmes pour tous) | Rien |
 | Voir | suivis de contenus (`ContentFollow.sq`), vues de revendications (`RevendicationView.sq`), données ouvertes du Parlement en cache, brouillons de demandes | Non effacés | Partie `voir-…` |
 | Socle partagé (Directeur technique) | comptes suivis (`Follow.sq` : déjà vidés par `contentLibrary.clearFollowed`, sans attendre), copie locale des contenus (`Event.sq`, `LocalEventStore`), territoires | Partiel | Partie `core-follows` attendue, partie `core-contents` (la copie locale peut révéler ce qui a été lu) ; `PRAGMA secure_delete` à étudier pour la base |
 
