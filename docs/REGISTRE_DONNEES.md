@@ -286,3 +286,15 @@ Détail : `docs/integration/agir-securite-appareil.md`. Rien n'est envoyé au se
 ## Ajout du 8 novembre 2026 : export ouvert (M34, S-48, D-101)
 
 Aucune donnée nouvelle n'est collectée ni stockée : l'export et la page `/donnees` sont calculés en mémoire à partir des contenus publiés par l'équipe (table `events`), au plus une fois par minute ; aucune requête n'est journalisée, aucun compte ni cookie. Les contenus des comptes citoyens n'y sont pas rassemblés. Les clés publiques de l'équipe éditoriale y sont listées (elles signent déjà chaque contenu publié).
+
+## Ajout du 8 novembre 2026 : solidarité et bénévolat (M35 : AG-10, AG-12)
+
+Détail : `docs/integration/agir-solidarite.md` (écrit, pas encore compilé). Aucune donnée personnelle n'est collectée ni envoyée : les caisses et les missions sont des contenus publics de l'équipe ; ce que l'utilisateur tape ou choisit reste en mémoire sur l'appareil. Aucune migration de base de données.
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Fiches des caisses de solidarité et missions de bénévolat (événements signés publics de l'équipe éditoriale : nom, à qui la caisse sert, qui la gère, page de dons, date de vérification ; mission, compétences recherchées, lieu ou « à distance ») | Consulter l'annuaire des caisses et les missions hors ligne | Table `event` de la base locale (comme l'annuaire des organisations) ; sur le serveur, table `events` comme tout contenu de l'équipe | Jusqu'à une version plus récente ou la désinstallation | Public. Une fiche ne contient jamais les coordonnées d'une personne ni la liste des personnes aidées |
+| Curseurs de synchronisation des caisses et des missions (`pull:30023:tag:ppf-type=caisse`, `pull:30023:tag:ppf-type=mission`, une date chacun) | Ne redemander que ce qui est nouveau | Table `sync_cursor` | Jusqu'à la désinstallation | Technique |
+| Recherche, filtres, territoire « près de chez moi », compétences choisies dans « Mes compétences », onglet et fiche ouverts | Trier les caisses et les missions | Mémoire seulement | Tant que l'espace « Agir » est affiché ; oubliés par l'effacement rapide (partie `agir-solidarity`) | L'utilisateur. Jamais enregistrés ni transmis : des compétences peuvent révéler un engagement, elles ne servent qu'au tri sur l'appareil |
+
+PPF ne détient ni ne fait transiter aucun argent (point d'attention n° 12) : le don se fait sur la page de la caisse, ouverte par le navigateur après « Vous quittez PPF » ; PPF ne sait pas si l'utilisateur a donné. « Proposer mon aide » n'envoie rien tant que le chemin vers l'équipe n'est pas décidé (question 3 de la note).

@@ -130,7 +130,9 @@ Nouveaux :
 - `tools/content-signer/.../SolidarityContent.kt` et les exemples `content/solidarite/`.
 - Tests : `shared/core/src/commonTest/.../core/agir/solidarity/` et `shared/ui/src/jvmTest/.../ui/agir/solidarity/`.
 
-Modifiés (fichiers d'Agir) : `ui/agir/AgirHome.kt` (deux rubriques ouvertes), `ui/agir/AgirScreen.kt` (route `solidarite`, paramètre facultatif `solidarity` ajouté à la fin, retour du système), `strings_agir.xml` (textes des deux cartes), `AgirScreenTest.kt` (trois rubriques « En préparation » au lieu de cinq). Commun : `ContentSigner.kt` (une ligne dans `main`, une ligne de KDoc).
+Modifiés (fichiers d'Agir) : `ui/agir/AgirHome.kt` (deux rubriques ouvertes), `ui/agir/AgirScreen.kt` (route `solidarite`, paramètre facultatif `solidarity` ajouté à la fin, retour du système), `strings_agir.xml` (textes des deux cartes), `AgirScreenTest.kt` (trois rubriques « En préparation » au lieu de cinq). Commun : `ContentSigner.kt` (une ligne dans `main`, une ligne de KDoc). Documents : une ligne dans `CHANGELOG.md` (« Non publié », « Ajouté »), la ligne « Accueil de l'espace « Agir » » de `ROADMAP.md`, une section dans `REGISTRE_DONNEES.md` et dans `THREAT_MODEL.md`. `DECISIONS.md`, `FORMATS.md`, `GUIDE_PROPRIETAIRE.md` et `content/README.md` ne sont pas modifiés (sections 6, 8 et 10 à reporter).
+
+Tests écrits (aucun lancé) : `SolidarityFundTest` (10), `VolunteerMissionTest` (5), `SolidarityQueryTest` (5) dans `shared/core/src/commonTest/.../core/agir/solidarity/` ; `SolidarityLibraryTest` (6), `SolidarityScreenTest` (9) dans `shared/ui/src/jvmTest/.../ui/agir/solidarity/` ; `SolidarityContentTest` (6) dans `tools/content-signer/src/test/`. Les tests d'interface construisent leurs caisses et missions en mémoire et ne dépendent pas de `solidarite.json`.
 
 ## 8. À reporter dans `docs/FORMATS.md`
 
