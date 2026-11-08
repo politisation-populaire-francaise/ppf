@@ -6,7 +6,7 @@ import java.sql.Timestamp
 import java.time.LocalDate
 import javax.sql.DataSource
 
-/** Where a proof stands (column `state` of V13__archives.sql). */
+/** Where a proof stands (column `state` of V14__archives.sql). */
 enum class ProofState(val code: String) {
     QUEUED("queued"),
     PENDING("pending"),
@@ -34,7 +34,7 @@ class StoredProof(
 )
 
 /**
- * The table of V13__archives.sql (plain JDBC, blocking: call it from Dispatchers.IO). Every update
+ * The table of V14__archives.sql (plain JDBC, blocking: call it from Dispatchers.IO). Every update
  * names the state it expects, so that a slow round never overwrites the work of a newer one.
  */
 class ArchiveStore(private val dataSource: DataSource) {

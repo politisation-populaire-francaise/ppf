@@ -413,7 +413,7 @@ class ArchiveService internal constructor(
         /** A block hash or a header in hexadecimal: a few hundred bytes. */
         const val MAX_EXPLORER_ANSWER: Int = 1_000
 
-        /** The largest proof stored (also a CHECK of V13__archives.sql). */
+        /** The largest proof stored (also a CHECK of V14__archives.sql). */
         const val MAX_OTS_BYTES: Int = 262_144
 
         /** Digests per batch; the others wait for the next one. */

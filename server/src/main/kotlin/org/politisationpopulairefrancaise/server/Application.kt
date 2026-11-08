@@ -46,6 +46,10 @@ import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.editorial.EditorialDrafts
 import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsPurge
 import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsSection
+import org.politisationpopulairefrancaise.server.editorial.EditorialPublisher
+import org.politisationpopulairefrancaise.server.editorial.EditorialQueue
+import org.politisationpopulairefrancaise.server.editorial.EditorialReviews
+import org.politisationpopulairefrancaise.server.editorial.UnpluggedEditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.PublishedContents
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
 import kotlin.time.Duration.Companion.hours
@@ -259,6 +263,8 @@ fun Application.module(
      * Passed to every pole that needs it; the tests give a FakePlatformSigner.
      */
     platformSigner: PlatformSigner? = PlatformSignerConfig.fromEnvironment()?.let { HttpPlatformSigner(it) },
+    /** Where an approved editorial version goes (circuit éditorial, step 5); nothing is sent until the signing service is plugged. */
+    editorialPublisher: EditorialPublisher = UnpluggedEditorialPublisher,
 ) {
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
@@ -302,7 +308,13 @@ fun Application.module(
     // The writing pages of the editorial circuit of Comprendre (step 3): a section of the back-office.
     if (teamBackOffice != null && dataSource != null && repository != null) {
         val drafts = EditorialDrafts(dataSource, teamBackOffice.clock)
-        teamBackOffice.sections.register(EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, PublishedContents(repository, policy::isEditor), teamBackOffice.clock))
+        // The review (step 4): the reviewer never wrote the draft, nor shares a Nostr key with one who did.
+        val reviews = EditorialReviews(dataSource, drafts, teamBackOffice.clock) { account -> teamBackOffice.member(account)?.nostrPubkey }
+        teamBackOffice.sections.register(
+            EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, reviews, PublishedContents(repository, policy::isEditor), teamBackOffice.clock, editorialPublisher),
+        )
+        // The queue editorial.comprendre (counts, deadlines and levels of the dashboard); editorial.voir waits for the schemas of Voir.
+        teamBackOffice.queues.register(EditorialQueue(EditorialSpace.COMPRENDRE, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
         // A draft never submitted and unchanged for 180 days is deleted (docs/REGISTRE_DONNEES.md).
         EditorialDraftsPurge(drafts).start(this, 24.hours, log)
     }

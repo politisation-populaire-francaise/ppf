@@ -16,7 +16,7 @@ import java.time.Instant
 import java.time.LocalDate
 import javax.sql.DataSource
 
-/** An account registered to vote (table vote_account of V12__urnes.sql). */
+/** An account registered to vote (table vote_account of V13__urnes.sql). */
 data class VoteAccount(
     val pubkey: String,
     val level: VoteLevel,
