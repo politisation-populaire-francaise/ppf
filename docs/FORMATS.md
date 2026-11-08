@@ -389,6 +389,12 @@ Suivi après l'élection : un fait de « Voir » porte `a` rôle `pacte` et `ppf
 | `ppf-election` | `identifiant`, `libellé`, `premier tour (AAAA-MM-JJ, facultatif)` (comme le Pacte) |
 | `ppf-theme` | Un thème, dans l'ordre de la grille (répétée, 1 à 20, distincts) ; identifiants des thèmes des revendications |
 | `a` rôle `candidat` | Chaque candidat : sa fiche de « Voir » |
+| `ppf-round` | Un tour (répétée, numéros distincts) : `numéro`, `jour du vote en métropole`, `premier jour de vote (outre-mer, facultatif, au plus 2 jours avant)`, `fermeture des derniers bureaux (HH:MM, heure de Paris, facultatif : 20:00)`. Fixe le gel (`ElectionRound`) ; un tour illisible fait refuser toute la fiche, jamais ignorer |
+| `ppf-addition-delay` | Le délai d'ajout, le même pour tous : nombre de jours (1 à 30) entre la demande d'un candidat et son ajout |
+| `ppf-request` | La demande d'un candidat déclaré (répétée, une par candidat) : `candidat (identifiant de sa fiche)`, `demandé le`, `ajouté le` (pas avant la demande) |
+| `ppf-official-list` | La liste officielle des candidats, quand elle est publiée : `page (https)`, `date` ; le comparateur la suit dès lors |
+
+Règle d'entrée (décision de la propriétaire, Q1 option B ; `ComparatorSheet.ruleProblems`, appliquée par l'outil de signature, qui refuse une fiche qui la viole) : avant la liste officielle, chaque candidat a sa demande et un délai d'ajout est publié ; chaque demande est honorée dans ce délai ; une demande nomme un candidat de la fiche ; au moins un tour est donné. **Gel** (Q4 option A) : de 0 h, heure de Paris, la veille du premier jour de vote d'un tour jusqu'à la fermeture des derniers bureaux, le serveur refuse (409 `comparator_frozen`) toute publication, mise à jour ou suppression (kind 5) d'un comparateur ou d'une position de cette élection, d'après les tours des comparateurs **déjà enregistrés** (une nouvelle version qui déplacerait les dates ne lève pas un gel en cours) ; un premier comparateur dont ses propres tours disent l'élection gelée est refusé aussi. L'application reste lisible et affiche le gel.
 
 ### Position d'un candidat (`ppf-type` = `position`)
 

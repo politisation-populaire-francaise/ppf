@@ -122,3 +122,13 @@ Rédaction :
 - **Q4. Gel la veille du scrutin.**
   - A (recommandée) : contenu figé de la veille à zéro heure jusqu'à la fermeture des bureaux, l'application restant lisible.
   - B : aucun gel, le comparateur n'étant pas de la propagande.
+
+## 9. Réalisation
+
+- **7 novembre 2026** : grille identique pour tous (`ComparatorGrid`), page dans « Décider » (un thème à la fois sur téléphone, tableau sur grand écran), contenus [EXEMPLE].
+- **8 novembre 2026, Q1 et Q4** :
+  - tours de l'élection (`ppf-round`) et **gel** : de 0 h, heure de Paris, la veille du premier jour de vote (l'outre-mer qui vote la veille compte) jusqu'à la fermeture des derniers bureaux (20 h par défaut), le serveur refuse toute publication, mise à jour ou suppression du comparateur et de ses positions (`server/decider/ComparatorFreeze.kt`, branché dans `POST /api/v1/events`, refus 409 `comparator_frozen`) ; les tours qui comptent sont ceux des comparateurs déjà enregistrés ; l'application affiche « Contenu figé jusqu'à la fermeture des bureaux de vote » et reste lisible ;
+  - **demandes des candidats** (`ppf-request`, `ppf-addition-delay`) : chaque demande reste visible avec sa date et la date de l'ajout, dans un délai publié, le même pour tous ; avant la liste officielle, un candidat sans demande, ou ajouté après le délai, fait refuser la fiche par l'outil de signature ;
+  - **liste officielle** (`ppf-official-list`) : dès qu'elle est publiée, le comparateur la suit et le dit, avec le lien vers la source.
+- **Reste** : photos officielles (Q3 : servies par PPF, droits vérifiés pour chacune, aucune photo pour personne tant qu'une seule manque) ; votes passés rangés par thème (Q2), avec les paquets historiques de « Voir » (`historique-an-*`, `historique-senat-*`, `historique-pe-*`, D-066), selon une règle de classement publiée à faire valider ; comparateur sur le site sans JavaScript ; relecture par un avocat (L52-8) ; vrais candidats.
+- **À vérifier avant la mise en ligne** (Légifrance, décret de convocation de 2027) : les jours de vote de l'outre-mer et l'heure de fermeture des derniers bureaux de chaque tour, à reporter dans `ppf-round`.
