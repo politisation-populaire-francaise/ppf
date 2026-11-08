@@ -25,7 +25,12 @@ object TestDatabase {
                     "TRUNCATE events, revendication_proposal, held_content, elus_import, elus_staging, territoires_import, " +
                         "testimony_submission, testimony_evidence, testimony_file, published_media, " +
                         "legal_register.content_operation, legal_register.account_pseudonym, legal_register.requisition_answer, " +
-                        "editorial_signing, editorial_review, editorial_draft_version, editorial_draft CASCADE",
+                        "editorial_signing, editorial_review, editorial_draft_version, editorial_draft, " +
+                        // Décider: the ballot boxes and what they hold, the validations, the petitions to sign, the proofs
+                        // of the archive; their background tasks must find nothing left by another test.
+                        "vote_account, urne, urne_issued, ballot, public_vote, vote_validation_pending, vote_validation, " +
+                        "vote_validation_batch, elected_certification, vote_session_review, deliberation_submission, petition_draft, " +
+                        "archive_proof CASCADE",
                 )
             }
         }
