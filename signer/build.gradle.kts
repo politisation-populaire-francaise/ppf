@@ -31,6 +31,14 @@ tasks.withType<ShadowJar>().configureEach {
     mergeServiceFiles()
 }
 
+// The service never opens the local database of the applications: neither SQLDelight nor the SQLite
+// driver (and its native libraries) enter its jar, a smaller surface for the container holding the keys.
+// Excluded from the tests too, so that they prove the service runs without them.
+configurations.matching { it.name == "runtimeClasspath" || it.name == "testRuntimeClasspath" }.configureEach {
+    exclude(group = "app.cash.sqldelight")
+    exclude(group = "org.xerial")
+}
+
 // The tests never see the PPF_* settings of the machine running them.
 tasks.withType<Test>().configureEach {
     environment = environment.filterKeys { !it.startsWith("PPF_") }
