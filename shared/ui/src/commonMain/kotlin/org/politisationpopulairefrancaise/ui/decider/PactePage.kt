@@ -242,7 +242,7 @@ private fun StatusLegend() {
 }
 
 @Composable
-internal fun StatusChip(status: CellStatus, modifier: Modifier = Modifier, late: Boolean = false) {
+internal fun StatusChip(status: CellStatus, modifier: Modifier = Modifier) {
     val (icon, style) = when (status) {
         CellStatus.SIGNED -> Lucide.CircleCheck to BadgeStyle.SUCCESS
         CellStatus.REFUSED -> Lucide.X to BadgeStyle.ACCENT
@@ -259,7 +259,7 @@ internal fun StatusChip(status: CellStatus, modifier: Modifier = Modifier, late:
     Row(modifier, verticalAlignment = Alignment.CenterVertically) {
         Icon(icon, contentDescription = null, tint = tint, modifier = Modifier.size(16.dp))
         Spacer(Modifier.width(4.dp))
-        Text(stringResource(status.label) + if (late) " " + stringResource(Res.string.decider_pacte_late_short) else "", style = MaterialTheme.typography.labelMedium, color = tint)
+        Text(stringResource(status.label), style = MaterialTheme.typography.labelMedium, color = tint)
     }
 }
 
@@ -273,7 +273,7 @@ private fun BoardByCandidate(board: PacteBoard, actions: DeciderActions) {
                 Spacer(Modifier.height(8.dp))
                 row.cells.forEachIndexed { index, cell ->
                     if (index > 0) HorizontalDivider(color = PpfTheme.palette.border, modifier = Modifier.padding(vertical = 6.dp))
-                    CellLine(index + 1, cell, row.late, actions)
+                    CellLine(index + 1, cell, actions)
                 }
             }
         }
@@ -307,18 +307,17 @@ private fun CandidateHeader(row: CandidateRow, actions: DeciderActions) {
 private fun answerLine(row: CandidateRow): String {
     val engagement = row.engagement ?: return stringResource(Res.string.decider_pacte_no_answer_received)
     val received = stringResource(Res.string.decider_pacte_received_on, engagement.receivedOn.toFrench())
-    val late = if (row.late) " · " + stringResource(Res.string.decider_pacte_late) else ""
-    return stringResource(Res.string.decider_pacte_row_counts, row.signed, row.refused, row.unanswered) + " · " + received + late
+    return stringResource(Res.string.decider_pacte_row_counts, row.signed, row.refused, row.unanswered) + " · " + received
 }
 
 @Composable
-private fun CellLine(number: Int, cell: BoardCell, late: Boolean, actions: DeciderActions) {
+private fun CellLine(number: Int, cell: BoardCell, actions: DeciderActions) {
     val palette = PpfTheme.palette
     Column(Modifier.fillMaxWidth().testTag(DeciderTags.cell(cell.measure.id))) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text("$number. ${cell.measure.title}", style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
             Spacer(Modifier.width(8.dp))
-            StatusChip(cell.status, late = late && (cell.status == CellStatus.SIGNED || cell.status == CellStatus.REFUSED))
+            StatusChip(cell.status)
         }
         cell.comment?.let {
             Spacer(Modifier.height(2.dp))
@@ -375,7 +374,7 @@ private fun BoardTable(board: PacteBoard, actions: DeciderActions) {
                         Column(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalArrangement = Arrangement.Center) {
                             Text(row.name.withoutExample(), style = MaterialTheme.typography.titleSmall)
                             Text(
-                                row.engagement?.let { stringResource(Res.string.decider_pacte_received_on, it.receivedOn.toFrenchShort()) + if (row.late) " · " + stringResource(Res.string.decider_pacte_late) else "" }
+                                row.engagement?.let { stringResource(Res.string.decider_pacte_received_on, it.receivedOn.toFrenchShort()) }
                                     ?: stringResource(Res.string.decider_pacte_no_answer_received),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = palette.inkMuted,
@@ -423,10 +422,13 @@ private fun SetAsideSection(board: PacteBoard) {
     InfoBox(Lucide.Info, Modifier.testTag(DeciderTags.SET_ASIDE)) {
         Text(stringResource(Res.string.decider_pacte_set_aside_title, board.setAside.size), style = MaterialTheme.typography.titleSmall)
         board.setAside.forEach { item ->
-            Text(
-                "· " + stringResource(if (item.reason == SetAsideReason.OTHER_TEXT) Res.string.decider_pacte_set_aside_other_text else Res.string.decider_pacte_set_aside_not_candidate, item.engagement.article.title.withoutExample()),
-                style = MaterialTheme.typography.bodySmall,
-            )
+            val title = item.engagement.article.title.withoutExample()
+            val line = when (item.reason) {
+                SetAsideReason.OTHER_TEXT -> stringResource(Res.string.decider_pacte_set_aside_other_text, title)
+                SetAsideReason.NOT_A_CANDIDATE -> stringResource(Res.string.decider_pacte_set_aside_not_candidate, title)
+                SetAsideReason.LATE -> stringResource(Res.string.decider_pacte_set_aside_late, title, item.engagement.receivedOn.toFrench())
+            }
+            Text("· $line", style = MaterialTheme.typography.bodySmall, modifier = Modifier.testTag(DeciderTags.setAside(item.reason.name.lowercase())))
         }
     }
 }

@@ -42,6 +42,26 @@ object Permissions {
      * but `super_admin` for now, that the Décider pole must confirm or replace when it plugs its queue.
      */
     const val DECIDER_PACTE_PUBLISH: String = "queue.decider.pacte.publish"
+     * Contact, claims and case follow-up (M30, docs/integration/contact-reclamations.md): the inbox of the team
+     * (section `contact`, metadata only), assigning, priority, status, closing.
+     */
+    const val CONTACT_TRIAGE: String = "contact.triage"
+
+    /** The requests on one's data (RGPD, article 12): their extension, status and closing. */
+    const val CONTACT_DATA_RIGHTS: String = "contact.data_rights"
+
+    /** The legal hold of a case, asked by one holder and confirmed by another (two-person rule). */
+    const val CONTACT_LEGAL_HOLD: String = "contact.legal_hold"
+
+    /** The claims reserved to the administrators: use of funds, behaviour of a team member. */
+    const val CONTACT_RESTRICTED: String = "contact.restricted"
+
+    /**
+     * The requests of verification sent by citizens to the fact-checking team of Comprendre (CO-18, D-143):
+     * the tickets of sub-type `verification` only, in the section `verifications` (see them, assign them to
+     * oneself or to another member who may handle them, priority, status, closing). Nothing else of M30.
+     */
+    const val CONTACT_VERIFICATION: String = "contact.verification"
 
     /**
      * Writing the drafts of the editorial circuit of [space] (`comprendre`, `voir`) in the back-office section
@@ -86,6 +106,14 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.SETTINGS_MANAGE,
             Permissions.LEGAL_REQUISITION,
             Permissions.PLATFORM_KEYS,
+            Permissions.CONTACT_TRIAGE,
+            Permissions.CONTACT_DATA_RIGHTS,
+            Permissions.CONTACT_LEGAL_HOLD,
+            Permissions.CONTACT_RESTRICTED,
+            // The sessions of the validators with an abnormal pace (Décider, une-personne-une-voix.md 4.3 and 8).
+            Permissions.queueDecide("decider.validation_sessions"),
+            // The official petitions attached to the demands (Décider, D-115): signed after an approval on the signing service.
+            Permissions.queueDecide("decider.petitions"),
         ),
     ),
     MODERATOR(
@@ -98,6 +126,13 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.queueDecide("agir.held"),
             Permissions.queueDecide("agir.testimonies"),
             Permissions.queueDecide("revendications.proposals"),
+            Permissions.CONTACT_TRIAGE,
+            // Room creations held because their name resembles an organisation's (D-132).
+            Permissions.queueDecide("groups.creations"),
+            // Rooms left without administrator by a compromised account (S-146, salons-reprise.md).
+            Permissions.queueDecide("groups.orphans"),
+            // The propositions and amendments of the citizen deliberations (Décider, DE-25).
+            Permissions.queueDecide("decider.deliberation"),
         ),
     ),
     EDITOR(
@@ -111,6 +146,8 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             "queue.editorial.voir.review",
             "queue.editorial.voir.publish",
             Permissions.RIGHT_OF_REPLY_DECIDE,
+            // The requests of verification of Comprendre (CO-18, D-143), a sub-type of the cases of M30.
+            Permissions.CONTACT_VERIFICATION,
         ),
     ),
     ORGANISATION_VERIFIER("organisation_verifier", BackOfficeTexts.ROLE_ORGANISATION_VERIFIER, setOf(Permissions.queueDecide("agir.organisations"))),

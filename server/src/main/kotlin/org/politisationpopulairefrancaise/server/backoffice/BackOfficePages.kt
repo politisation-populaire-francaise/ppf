@@ -389,6 +389,7 @@ fun HTML.queueItemPage(auth: Authenticated, queue: BackOfficeQueue, itemId: Stri
                 form(action = itemPath(queue.id, itemId), method = FormMethod.post, classes = "bo-action") {
                     csrfField(auth)
                     input(type = InputType.hidden, name = "action") { value = action.id }
+                    action.choice?.let { choice -> choiceField(choice, "bo-choice-$index") }
                     if (action.reasonAllowed) {
                         val fieldId = "bo-reason-$index"
                         label {
@@ -411,6 +412,39 @@ fun HTML.queueItemPage(auth: Authenticated, queue: BackOfficeQueue, itemId: Stri
                     if (action.sensitive) p(classes = "bo-hint") { +BackOfficeTexts.SENSITIVE_HINT }
                     button(type = ButtonType.submit, classes = "bo-button") { +action.label }
                 }
+            }
+        }
+    }
+}
+
+/** The value an action asks (QueueChoice): radio buttons for one of the options, a short field otherwise; no JavaScript. */
+internal fun FlowContent.choiceField(choice: QueueChoice, fieldId: String) {
+    when (choice) {
+        is QueueChoice.OneOf -> fieldSet {
+            legend { +choice.label }
+            choice.options.forEachIndexed { index, option ->
+                div(classes = "bo-check") {
+                    input(type = InputType.radio, name = "choix") {
+                        id = "$fieldId-$index"
+                        value = option.value
+                        required = true
+                    }
+                    label { htmlFor = "$fieldId-$index"; +option.label }
+                }
+            }
+        }
+        is QueueChoice.Text -> {
+            label { htmlFor = fieldId; +choice.label }
+            input(type = InputType.text, name = "choix") {
+                id = fieldId
+                required = true
+                maxLength = choice.maxLength.toString()
+                attributes["autocomplete"] = "off"
+                attributes["aria-describedby"] = "$fieldId-hint"
+            }
+            p(classes = "bo-hint") {
+                id = "$fieldId-hint"
+                +BackOfficeTexts.CHOICE_TEXT_HINT
             }
         }
     }

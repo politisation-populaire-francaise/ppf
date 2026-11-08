@@ -1,12 +1,18 @@
 package org.politisationpopulairefrancaise.ui
 
+import org.politisationpopulairefrancaise.core.agir.security.DeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
+import org.politisationpopulairefrancaise.core.device.DeviceErasable
+import org.politisationpopulairefrancaise.core.device.DeviceEraseRegistry
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.IdentityStore
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
+import org.politisationpopulairefrancaise.core.notifications.Notifications
+import org.politisationpopulairefrancaise.core.notifications.PushManager
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.social.FollowStore
+import org.politisationpopulairefrancaise.core.urne.UrneRemote
 import org.politisationpopulairefrancaise.core.voir.ContentFollowStore
 import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
 import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataTrust
@@ -43,6 +49,37 @@ class AppDependencies(
      * hosts do not report it yet, so it answers false by default.
      */
     val dataSaver: () -> Boolean = { false },
+    /**
+     * The notifications of the device (settings, centre, wake-up round, D-130); null without a
+     * local database (tests, previews).
+     */
+    val notifications: Notifications? = null,
+    /** The push registrations; null without a server or a push system (desktop, iOS for now). */
+    val push: PushManager? = null,
+    /**
+     * The address of our own ntfy server, to type in the distributor application (production or
+     * preproduction, given by the host); null shows the production address.
+     */
+    val pushServer: String? = null,
+    /**
+     * Asks the system permission to show notifications (Android 13 and later) and tells whether it
+     * was granted; elsewhere there is nothing to ask.
+     */
+    val requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
+    /**
+     * The ballot-box API of the server (D-110), with its two HTTP clients: the one of the account and
+     * a separate anonymous one for the ballots. Null keeps voting unavailable (no server, tests).
+     */
+    val urneRemote: UrneRemote? = null,
+    /** Where the lock and the other security settings of the device are kept (S-43, S-45); null keeps them in memory (tests, previews). */
+    val securityStorage: DeviceSecurityStorage? = null,
+    /**
+     * What the quick erase (S-44) goes through: each pole registers here what it keeps on the
+     * device ([DeviceErasable]); the shell adds the identity, the rally point and the settings.
+     */
+    val erasables: DeviceEraseRegistry = DeviceEraseRegistry(),
+    /** Closes the application after the quick erase; null where it cannot (tests, previews). */
+    val closeApplication: (() -> Unit)? = null,
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -57,7 +94,14 @@ class AppDependencies(
             database: PpfDatabase,
             editorialTrust: EditorialTrust = EditorialTrust.bundledExamples(),
             remote: RemoteEvents? = null,
+            notifications: Notifications? = null,
+            push: PushManager? = null,
+            pushServer: String? = null,
+            requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
+            urneRemote: UrneRemote? = null,
             openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
+            securityStorage: DeviceSecurityStorage? = null,
+            closeApplication: (() -> Unit)? = null,
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
             openDataTrust = openDataTrust,
@@ -67,6 +111,13 @@ class AppDependencies(
             followStore = FollowStore(database),
             database = database,
             contentFollowStore = ContentFollowStore(database),
+            notifications = notifications ?: Notifications(database, identityStore, remote, notifier = null),
+            push = push,
+            pushServer = pushServer,
+            requestNotificationPermission = requestNotificationPermission,
+            urneRemote = urneRemote,
+            securityStorage = securityStorage,
+            closeApplication = closeApplication,
         )
     }
 }

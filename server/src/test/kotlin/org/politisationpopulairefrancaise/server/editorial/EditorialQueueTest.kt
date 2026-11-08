@@ -13,6 +13,8 @@ import io.ktor.server.engine.connector
 import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
+import org.politisationpopulairefrancaise.core.editorial.schema.EditorialApprovals
+import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSchemas
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.platform.SigningUse
@@ -58,7 +60,7 @@ class EditorialQueueTest {
 
     /** A fake of the signing seam of step 5: records each call, answers [answer] (an approval page by default). */
     private class RecordingPublisher(
-        val answer: PublisherAnswer = PublisherAnswer.AwaitingApproval("draft-1", APPROVAL_URL, approvals = 0, required = 2),
+        val answer: PublisherAnswer = PublisherAnswer.AwaitingApproval("draft-1", APPROVAL_URL, approvals = 0, required = 1),
     ) : EditorialPublisher {
         val handedOver = mutableListOf<ReadyToSign>()
         val asked = mutableListOf<ReadyToSign>()
@@ -261,7 +263,7 @@ class EditorialQueueTest {
         val html = approved.bodyAsText()
         assertTrue(html.contains(EditorialTexts.DONE_READY_TO_SIGN))
         assertTrue(html.contains("<a href=\"$APPROVAL_URL\">${EditorialTexts.SIGNER_LINK}</a>"), "a plain link to the signing service's page")
-        assertTrue(html.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 2)))
+        assertTrue(html.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 1)))
         assertTrue(publisher.asked.isEmpty(), "the hand-over answer is shown, the state is not asked twice")
         val draft = drafts.find(id)!!
         assertEquals(DraftStatus.READY_TO_SIGN, draft.status)
@@ -273,13 +275,16 @@ class EditorialQueueTest {
         val call = publisher.handedOver.single()
         assertEquals(ReadyToSign(EditorialSpace.COMPRENDRE, id, 1, ArticleType.DECRYPTAGE, "exemple-decryptage", null, alice.id, null, bruno.id, correction = false), call)
         assertEquals(SigningUse.EDITORIAL_COMPRENDRE, call.use)
-        assertTrue(call.doubleValidation)
+        // An ordinary content: one approval in all, the reviewer of the queue confirming on the signing service.
+        assertEquals(EditorialApprovals.ORDINARY, EditorialSchemas.of(call.type)!!.approvals)
+        assertTrue(html.contains(EditorialTexts.SIGNER_AWAITING_ONE))
+        assertFalse(html.contains(EditorialTexts.SIGNER_AWAITING_TWO))
         // On reload the state is asked again (no background loop); the link is for who may approve, never a writer.
         val reload = client.page("$section/relecture/$id", bruno).bodyAsText()
         assertTrue(reload.contains(EditorialTexts.SIGNER_LINK))
         assertEquals(1, publisher.asked.size)
         val forAuthor = client.page("$section/relecture/$id", alice).bodyAsText()
-        assertTrue(forAuthor.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 2)))
+        assertTrue(forAuthor.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 1)))
         assertFalse(forAuthor.contains(EditorialTexts.SIGNER_LINK), "the author never approves")
         assertEquals(
             listOf("section.editorial.comprendre.approve_requested", "section.editorial.comprendre.approve"),

@@ -1,0 +1,47 @@
+{
+ "reunion": {
+  "@xmlns": "http://schemas.assemblee-nationale.fr/referentiel",
+  "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+  "@xsi:type": "seance_type",
+  "uid": "RUANR5L17S2026IDS99002",
+  "timeStampDebut": "2026-11-12T09:00:00.000+01:00",
+  "timeStampFin": "2026-11-12T13:00:00.000+01:00",
+  "lieu": {
+   "code": "AN",
+   "libelleCourt": "AN",
+   "libelleLong": "[EXEMPLE] Salle fictive"
+  },
+  "cycleDeVie": {
+   "etat": "Éventuel",
+   "chrono": {
+    "creation": "2026-10-30T10:00:00.000+01:00",
+    "cloture": null
+   }
+  },
+  "demandeurs": {
+   "acteur": {
+    "acteurRef": "PA900001",
+    "nom": "[EXEMPLE] Élise Arnaud"
+   }
+  },
+  "organeReuniRef": "PO838901",
+  "sessionRef": "SCR5A2027O1",
+  "ouverturePresse": "false",
+  "ODJ": {
+   "convocationODJ": null,
+   "resumeODJ": {
+    "item": [
+     "[EXEMPLE] Suite de l'ordre du jour de la veille.",
+     "[EXEMPLE] Discussion de propositions de loi fictives."
+    ]
+   },
+   "pointsODJ": null
+  },
+  "identifiants": {
+   "numSeanceJO": "99",
+   "idJO": "EXEMPLE",
+   "quantieme": "Première",
+   "DateSeance": "2026-11-12+01:00"
+  }
+ }
+}

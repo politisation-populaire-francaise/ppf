@@ -616,7 +616,7 @@ class BackOfficeServiceTest {
 
     private suspend fun signed(keys: IdentityKeys, url: String, method: String): SignedSessionRequest {
         clock.advance(1.seconds)
-        val event = LocalEventSigner(keys).sign(kind = MinimalNip98Verifier.KIND, createdAt = clock.instant().epochSecond, tags = listOf(listOf("u", url), listOf("method", method)))
+        val event = LocalEventSigner(keys).sign(kind = Nip98SessionVerifier.KIND, createdAt = clock.instant().epochSecond, tags = listOf(listOf("u", url), listOf("method", method)))
         return SignedSessionRequest("Nostr " + Base64.getEncoder().encodeToString(event.toJson().toByteArray()), url, method)
     }
 
@@ -847,5 +847,49 @@ class BackOfficeServiceTest {
         assertEquals("Hors charte", line.reason)
         assertEquals("Claire", line.actorLabel)
         assertEquals(claire.id.toString(), line.actorId)
+    }
+
+    @Test
+    fun aQueueActionWithAChoiceChecksTheValueAgainAndJournalsIt() {
+        val first = "a".repeat(64)
+        val second = "b".repeat(64)
+        var options = listOf(QueueOption(first, "[EXEMPLE] Modératrice"), QueueOption(second, "[EXEMPLE] Modérateur"))
+        val chosen = mutableListOf<String?>()
+        val queue = object : BackOfficeQueue {
+            override val id = "test.choice"
+            override val title = "[EXEMPLE] Choix"
+            override val viewPermission = "queue.test.choice.decide"
+            override fun pendingCount() = 1
+            override fun page(cursor: String?, limit: Int) = QueuePage(listOf(QueueItem("item-1", "[EXEMPLE] Élément")))
+            override fun render(itemId: String, html: kotlinx.html.FlowContent) = Unit
+            override fun actions(itemId: String) = listOf(
+                QueueAction("pick", "Choisir", viewPermission, choice = QueueChoice.OneOf("[EXEMPLE] Qui ?", options)),
+                QueueAction("type", "Saisir", viewPermission, choice = QueueChoice.Text("[EXEMPLE] Clé", maxLength = 64, pattern = Regex("^[0-9a-f]{64}$"))),
+            )
+            override fun perform(itemId: String, action: String, reason: String?, actor: TeamActor): ActionOutcome = ActionOutcome.Refused("[EXEMPLE] jamais sans le choix")
+            override fun perform(itemId: String, action: String, reason: String?, choice: String?, actor: TeamActor): ActionOutcome {
+                chosen += choice
+                return ActionOutcome.Done
+            }
+        }
+        val backOffice = BackOfficeTestData.backOffice(clock, queues = BackOfficeQueues().apply { register(queue) })
+        val claire = member(backOffice, "Claire", listOf(TeamRole.SUPER_ADMIN))
+        fun perform(action: String, choice: String?) = backOffice.performQueueAction(auth(backOffice, claire), "test.choice", "item-1", action, null, choice)
+        assertEquals("choice_required", perform("pick", null).code())
+        assertEquals("choice_required", perform("pick", "c".repeat(64)).code(), "not one of the options")
+        assertEquals("choice_required", perform("type", "xyz").code(), "does not match")
+        assertEquals("choice_required", perform("type", "a".repeat(65)).code(), "too long")
+        // The options are computed again at the moment of the action.
+        options = listOf(options.first())
+        assertEquals("choice_required", perform("pick", second).code())
+        assertTrue(chosen.isEmpty())
+        val seq = lastSeq()
+        assertEquals(QueueResult.Performed(ActionOutcome.Done), perform("pick", " $first ").ok())
+        assertEquals(listOf<String?>(first), chosen)
+        val lines = journalAfter(seq)
+        assertEquals(listOf("queue.test.choice.pick.requested", "queue.test.choice.pick"), lines.map { it.action })
+        assertTrue(lines.all { it.details["choice"] == first })
+        perform("type", second).ok()
+        assertEquals(listOf<String?>(first, second), chosen)
     }
 }

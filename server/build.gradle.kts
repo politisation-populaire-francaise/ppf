@@ -32,10 +32,14 @@ tasks.withType<ShadowJar>().configureEach {
 // The tests never see the PPF_* settings of the machine running them (an AI model configured for
 // the development server, editor keys...): each test states its own configuration. The periodic
 // cleanup of demand proposals stays off, as the envelope cleanup does with TEST_RELAY, and so do
-// the automatic imports of the directory of elected officials (the tests of the directory run their own).
+// the automatic imports of the directory of elected officials (the tests of the directory run their own),
+// and the retention of the cases of contact (the tests of the cases run it by hand).
 tasks.withType<Test>().configureEach {
     environment = environment.filterKeys { !it.startsWith("PPF_") } +
-        mapOf("PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0", "PPF_RNE_REFRESH_DAYS" to "0", "PPF_TERRITOIRES_REFRESH_DAYS" to "0")
+        mapOf(
+            "PPF_PROPOSALS_CLEANUP_INTERVAL_MINUTES" to "0", "PPF_RNE_REFRESH_DAYS" to "0", "PPF_TERRITOIRES_REFRESH_DAYS" to "0",
+            "PPF_CONTACT_RETENTION_INTERVAL_MINUTES" to "0",
+        )
 }
 
 // Development only: the server with an in-process PostgreSQL 17 and the bundled example contents.
@@ -63,6 +67,10 @@ dependencies {
     // HTTP client towards the AI model that reads proposed demands (off unless configured). Already
     // in the runtime classpath through shared/core; declared here because the server builds its own client.
     implementation(libs.ktor.client.cio)
+    // RFC 3161 timestamps of the archive batches (D-111): requests and checks of the tokens. The JDK's
+    // own providers do the cryptography; Bouncy Castle is never registered as a provider.
+    implementation(libs.bouncycastle.bcpkix)
+    implementation(libs.bouncycastle.bcprov)
     // Verification of the passkeys and security keys of the team back-office (WebAuthn, D-120).
     implementation(libs.webauthn4j.core)
     // The QR code of the ceremony of the root, drawn as an inline SVG by the back-office (D-141): ZXing core,

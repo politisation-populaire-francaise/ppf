@@ -120,8 +120,8 @@ private fun nextThresholdLine(progress: PetitionProgress): String {
     return when {
         progress.thresholds.isEmpty() -> stringResource(Res.string.decider_petition_threshold_unknown)
         next == null -> stringResource(Res.string.decider_petition_all_reached)
-        progress.count == null -> stringResource(Res.string.decider_petition_next_threshold, signatures(next.signatures))
-        else -> stringResource(Res.string.decider_petition_remaining, signatures(progress.remaining ?: 0), signatures(next.signatures))
+        progress.count == null -> stringResource(if (next.moreThan) Res.string.decider_petition_next_threshold_more_than else Res.string.decider_petition_next_threshold, signatures(next.signatures))
+        else -> stringResource(if (next.moreThan) Res.string.decider_petition_remaining_more_than else Res.string.decider_petition_remaining, signatures(progress.remaining ?: 0), signatures(next.signatures))
     }
 }
 
@@ -302,7 +302,7 @@ internal fun ThresholdLine(threshold: Threshold, reached: Boolean?, modifier: Mo
     val palette = PpfTheme.palette
     Inset(modifier.fillMaxWidth()) {
         Row(verticalAlignment = Alignment.CenterVertically) {
-            Text(stringResource(Res.string.decider_threshold_signatures, signatures(threshold.signatures)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
+            Text(stringResource(if (threshold.moreThan) Res.string.decider_threshold_more_than else Res.string.decider_threshold_signatures, signatures(threshold.signatures)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.weight(1f))
             when (reached) {
                 true -> PpfBadge(stringResource(Res.string.decider_threshold_reached), BadgeStyle.SUCCESS)
                 false -> PpfBadge(stringResource(Res.string.decider_threshold_not_reached), BadgeStyle.NEUTRAL)
@@ -357,7 +357,7 @@ private fun ShareKit(petition: Petition, progress: PetitionProgress) {
     var copied by remember { mutableStateOf(false) }
     val platform = stringResource(petition.platform.shortLabel)
     val countLine = progress.count?.let { stringResource(Res.string.decider_share_count, signatures(it.count), it.readOn.toFrenchShort()) }
-    val nextLine = progress.next?.let { stringResource(Res.string.decider_share_next, signatures(it.signatures)) }
+    val nextLine = progress.next?.let { stringResource(if (it.moreThan) Res.string.decider_share_next_more_than else Res.string.decider_share_next, signatures(it.signatures)) }
     val text = listOfNotNull(
         petition.title,
         stringResource(Res.string.decider_share_platform, platform),

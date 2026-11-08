@@ -100,6 +100,29 @@ class ElusLookup(private val service: ElusService) {
         return matches
     }
 
+    /**
+     * The mandate in progress [id] ([mandateId]) of [mandate] in [territory] in the import served, or null when
+     * it is not there or nothing is served ([mandateStatus] tells both apart). For the queue
+     * `elus.certifications` of Décider, which keeps only the identifier and these two public codes, never
+     * the name. Reads only the packages that may hold it ([packagesFor]).
+     */
+    fun byId(id: String, mandate: Mandate, territory: String): ElusMatch? {
+        if (!isValidId(id)) return null
+        val served = service.current()?.served ?: return null
+        for (code in packagesFor(served.packages.keys, mandate, territory)) {
+            val pack = packageOf(code) ?: continue
+            for (official in pack.officials) {
+                if (official.mandate != mandate.code || official.territory != territory) continue
+                if (mandateId(mandate, official.territory, official.name, official.since) != id) continue
+                return ElusMatch(
+                    id, official.name, mandate, official.function, official.territory,
+                    territoryName(pack, mandate, official.territory), official.since, LocalDate.parse(pack.sourceUpdatedOn),
+                )
+            }
+        }
+        return null
+    }
+
     /** Whether the mandate [id] ([mandateId]) is in the import served. */
     fun mandateStatus(id: String): MandateStatus {
         val served = service.current()?.served ?: return MandateStatus.Unavailable

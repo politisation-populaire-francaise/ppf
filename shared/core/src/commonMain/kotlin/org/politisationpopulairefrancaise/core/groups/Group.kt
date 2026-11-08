@@ -33,6 +33,11 @@ data class Group(
     val open: Boolean,
     /** The signed description itself, verified by the caller before it is trusted or stored. */
     val event: SignedEvent,
+    /**
+     * The latest edit of the name and presentation by an administrator (kind 9002, D-131), when the
+     * server sends it; [name] and [about] are then those in force. Verified by the caller like [event].
+     */
+    val edit: SignedEvent? = null,
 ) {
     /** Example rooms carry the marker required by the cahier des charges; it is shown as a badge. */
     val example: Boolean get() = name.trimStart().startsWith(EXAMPLE_MARKER)
@@ -49,6 +54,12 @@ data class Group(
         const val TAG_PICTURE: String = "picture"
         const val TAG_TERRITORY: String = "ppf-territory"
         const val TAG_CHARTER: String = "ppf-charter"
+
+        /** D-132: a creation confirmed despite rooms of close name, and how it differs (public). */
+        const val TAG_SIMILAR: String = "ppf-similar"
+        const val SIMILAR_CONFIRMED: String = "confirmed"
+        const val TAG_DIFFERENCE: String = "ppf-difference"
+        const val MAX_DIFFERENCE_LENGTH: Int = 500
 
         /** The current version of the charter of values, written in the `ppf-charter` tag. */
         const val CHARTER_VERSION: String = "1.0"
@@ -107,6 +118,8 @@ data class Group(
             territory: String,
             charter: String = CHARTER_VERSION,
             createdAt: Long,
+            /** How the room differs from the rooms of close name, when the creator confirms despite them (D-132). */
+            difference: String? = null,
         ): UnsignedEvent {
             require(isValidId(id)) { "A room id has 1 to $MAX_ID_LENGTH characters among a-z, 0-9, '.', '_', '~' and '-'" }
             val cleanName = name.trim()
@@ -116,12 +129,18 @@ data class Group(
             require(cleanTerritory.isNotEmpty() && cleanTerritory.length <= MAX_TERRITORY_LENGTH) { "A territory has 1 to $MAX_TERRITORY_LENGTH characters" }
             require(cleanAbout == null || cleanAbout.length <= MAX_ABOUT_LENGTH) { "A description has at most $MAX_ABOUT_LENGTH characters" }
             require(charter.isNotBlank()) { "The charter version is required" }
+            val cleanDifference = difference?.trim()?.takeIf { it.isNotEmpty() }
+            require(cleanDifference == null || cleanDifference.length <= MAX_DIFFERENCE_LENGTH) { "A difference has at most $MAX_DIFFERENCE_LENGTH characters" }
             val tags = buildList {
                 add(listOf(TAG_ID, id))
                 add(listOf(TAG_NAME, cleanName))
                 if (cleanAbout != null) add(listOf(TAG_ABOUT, cleanAbout))
                 add(listOf(TAG_TERRITORY, cleanTerritory))
                 add(listOf(TAG_CHARTER, charter))
+                if (cleanDifference != null) {
+                    add(listOf(TAG_SIMILAR, SIMILAR_CONFIRMED))
+                    add(listOf(TAG_DIFFERENCE, cleanDifference))
+                }
             }
             return UnsignedEvent.create(author, KIND, createdAt, tags)
         }

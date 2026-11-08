@@ -19,6 +19,8 @@ import io.ktor.server.routing.routing
 import kotlinx.coroutines.CancellationException
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.HealthStatus
+import org.politisationpopulairefrancaise.server.accounts.AccountTypes
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirConfig
 import org.politisationpopulairefrancaise.server.agir.AgirSetup
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
@@ -30,16 +32,30 @@ import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySpace
 import org.politisationpopulairefrancaise.server.agir.testimonies.testimonyApi
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PostLimits
+import org.politisationpopulairefrancaise.server.api.accountsApi
 import org.politisationpopulairefrancaise.server.api.eventsApi
 import org.politisationpopulairefrancaise.server.api.groupsApi
+import org.politisationpopulairefrancaise.server.archive.ArchiveService
+import org.politisationpopulairefrancaise.server.archive.ArchiveSetup
+import org.politisationpopulairefrancaise.server.archive.archivesApi
 import org.politisationpopulairefrancaise.server.backoffice.BackOffice
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeConfig
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSetup
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSpace
+import org.politisationpopulairefrancaise.server.backoffice.GroupCreationsQueue
+import org.politisationpopulairefrancaise.server.backoffice.GroupOrphansQueue
 import org.politisationpopulairefrancaise.server.backoffice.PortSelector
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeHeaders
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
 import org.politisationpopulairefrancaise.server.backoffice.publicPort
+import org.politisationpopulairefrancaise.server.backoffice.Permissions
+import org.politisationpopulairefrancaise.server.backoffice.sectionPath
+import org.politisationpopulairefrancaise.server.contact.ContactScope
+import org.politisationpopulairefrancaise.server.contact.ContactSection
+import org.politisationpopulairefrancaise.server.contact.ContactSetup
+import org.politisationpopulairefrancaise.server.contact.ContactSpace
+import org.politisationpopulairefrancaise.server.contact.ContactTexts
+import org.politisationpopulairefrancaise.server.contact.contactApi
 import org.politisationpopulairefrancaise.server.editorial.EditorialDrafts
 import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsPurge
 import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsSection
@@ -47,12 +63,28 @@ import org.politisationpopulairefrancaise.server.editorial.EditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.EditorialQueue
 import org.politisationpopulairefrancaise.server.editorial.EditorialReviews
 import org.politisationpopulairefrancaise.server.editorial.UnpluggedEditorialPublisher
+import org.politisationpopulairefrancaise.server.editorial.EditorialSigning
+import org.politisationpopulairefrancaise.server.editorial.EditorialTexts
+import org.politisationpopulairefrancaise.server.editorial.SignedEditorialPublisher
+import org.politisationpopulairefrancaise.server.editorial.StorePublicationPort
+import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformKeys
+import org.politisationpopulairefrancaise.server.signing.PlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.editorial.PublishedContents
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
+import org.politisationpopulairefrancaise.core.platform.SigningUse
 import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
+import org.politisationpopulairefrancaise.server.decider.EditorialDeciderSource
+import org.politisationpopulairefrancaise.server.decider.PetitionLinks
+import org.politisationpopulairefrancaise.server.decider.PetitionLinksQueue
+import org.politisationpopulairefrancaise.server.decider.DeliberationQueue
+import org.politisationpopulairefrancaise.server.decider.DeliberationSubmissions
+import org.politisationpopulairefrancaise.server.decider.deliberationApi
 import org.politisationpopulairefrancaise.server.elus.ElusConfig
+import org.politisationpopulairefrancaise.server.elus.ElusLookup
 import org.politisationpopulairefrancaise.server.elus.ElusService
 import org.politisationpopulairefrancaise.server.elus.ElusSetup
 import org.politisationpopulairefrancaise.server.elus.elusApi
@@ -61,8 +93,18 @@ import org.politisationpopulairefrancaise.server.territoires.TerritoiresSetup
 import org.politisationpopulairefrancaise.server.territoires.territoiresApi
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
+import org.politisationpopulairefrancaise.server.export.OpenDatasets
+import org.politisationpopulairefrancaise.server.export.OpenExport
+import org.politisationpopulairefrancaise.server.export.exportApi
+import org.politisationpopulairefrancaise.server.export.pageSource
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
+import org.politisationpopulairefrancaise.server.groups.GroupGuardrails
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
+import org.politisationpopulairefrancaise.server.groups.GroupOrphans
+import org.politisationpopulairefrancaise.server.groups.OrganisationNames
+import org.politisationpopulairefrancaise.server.push.PushConfig
+import org.politisationpopulairefrancaise.server.push.PushService
+import org.politisationpopulairefrancaise.server.push.pushApi
 import org.politisationpopulairefrancaise.server.legal.LegalRegister
 import org.politisationpopulairefrancaise.server.legal.LegalRegisterPurge
 import org.politisationpopulairefrancaise.server.legal.transparencyApi
@@ -74,17 +116,31 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationsCo
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
 import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
+import org.politisationpopulairefrancaise.server.voir.VoirDatasets
 import org.politisationpopulairefrancaise.server.comprendre.EditorialComprendreSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
 import org.politisationpopulairefrancaise.server.seed.ExampleSeed
+import org.politisationpopulairefrancaise.server.agir.VerifiedOrganisations
+import org.politisationpopulairefrancaise.server.revendications.ProposalsBackOfficeQueue
+import org.politisationpopulairefrancaise.server.urne.PersonAccounts
+import org.politisationpopulairefrancaise.server.urne.RevendicationUrnes
+import org.politisationpopulairefrancaise.server.urne.UrneConfig
+import org.politisationpopulairefrancaise.server.urne.DeliberationUrnes
+import org.politisationpopulairefrancaise.server.urne.ElectedCertifications
+import org.politisationpopulairefrancaise.server.urne.ElectedCertificationsQueue
+import org.politisationpopulairefrancaise.server.urne.InPersonValidations
+import org.politisationpopulairefrancaise.server.urne.UrneService
+import org.politisationpopulairefrancaise.server.urne.UrneStore
+import org.politisationpopulairefrancaise.server.urne.UrneClosureStatements
+import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
+import org.politisationpopulairefrancaise.server.urne.urneApi
 import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
-import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
-import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.signing.SignerAdmin
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
+import org.politisationpopulairefrancaise.web.openDataPage
 import org.politisationpopulairefrancaise.web.securityPages
 import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.webRoutes
@@ -108,19 +164,27 @@ import javax.sql.DataSource
  *   the review queue of citizen demands, see [RevendicationsConfig].
  * - PPF_AI_BASE_URL, PPF_AI_MODEL, PPF_AI_API_KEY_FILE, PPF_AI_JSON_MODE, PPF_AI_TIMEOUT_SECONDS: the
  *   AI model that reads proposed demands, off unless PPF_AI_BASE_URL is set, see [AiReviewConfig].
+ * - PPF_GROUP_YOUNG_ACCOUNT_DAYS: how long a key must be known before it creates a room named like a
+ *   verified organisation (7 days by default, D-132), see [GroupGuardrails].
  * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
  *   see [AgirConfig].
  * - PPF_TILES_DIR: the folder of the PMTiles files of the map backgrounds, served at `/tiles/` by
  *   range (development and preproduction; in production Caddy serves them), see [TilesConfig].
  * - PPF_RNE_SOURCE, PPF_RNE_REFRESH_DAYS: the directory of elected officials (fictitious example set
  *   by default), see [ElusConfig].
+ * - PPF_ARCHIVE_*: the timestamped archive (on in production only by default), see [ArchiveConfig].
  * - PPF_TESTIMONY_DIR, PPF_MODERATION_KEY, PPF_EVIDENCE_KEY and the other PPF_TESTIMONY_* and
  *   PPF_EVIDENCE_RETENTION_DAYS settings: the testimonies of the Agir space, see [TestimonySetup].
+ * - PPF_CONTACT_INBOX_KEY, PPF_CASE_POW_BITS, PPF_CASE_GOAL_*_DAYS, PPF_CONTACT_RETENTION_INTERVAL_MINUTES: contact,
+ *   claims and case follow-up (M30), open when the inbox key of the team is set (the example inbox in
+ *   development), see [org.politisationpopulairefrancaise.server.contact.ContactConfig].
  * - PPF_PUBLIC_URL, PPF_SECURITY_NOSTR_KEY, PPF_SECURITY_GITHUB_URL: how researchers report a vulnerability
  *   (security.txt and /securite, S-92); in production one private channel is required, see [SecurityContactSetup].
  * - PPF_EXAMPLES_DIR: preproduction only, a directory of example contents (JSON arrays of signed
  *   events, all marked [EXEMPLE]) stored at startup when a database is configured; the server refuses
  *   to start when it is set in production, see [ExampleSeed].
+ * - PPF_VOTE_SEEDS_DIR, PPF_VOTE_POW_REGISTER, PPF_VOTE_POW_TOKENS, PPF_VOTE_POW_BALLOT, PPF_PUBLIC_URL,
+ *   PPF_VOTE_MAX_TOKENS_PER_REQUEST: the anonymous ballot boxes, see [UrneConfig] (D-110).
  * - PPF_BACKOFFICE_ORIGIN, PPF_BACKOFFICE_PORT, PPF_AUDIT_PUBLIC_KEY, PPF_BACKOFFICE_MAINTENANCE_INTERVAL_MINUTES:
  *   the team back-office, off unless PPF_BACKOFFICE_ORIGIN is set (for example
  *   `https://equipe.preprod.politisation-populaire-francaise.org`; `http://localhost:8081` in development
@@ -128,6 +192,8 @@ import javax.sql.DataSource
  * - PPF_SIGNER_URL, PPF_SIGNER_CLIENT_TOKEN_FILE, PPF_SIGNER_ROOT_PUBKEY: the signing service of the platform,
  *   off unless PPF_SIGNER_URL is set; with the back-office, the page « Clés de la plateforme » and the copy of
  *   the journal of the service (D-141); see [PlatformSignerConfig].
+ * - PPF_VAPID_PRIVATE_KEY_FILE, PPF_PUSH_ALLOWED_HOSTS, PPF_PUSH_INTERNAL_URL, PPF_PUBLIC_URL: the push
+ *   wake-ups (M31), off unless PPF_VAPID_PRIVATE_KEY_FILE is set, see [PushConfig].
  *
  * Legal register (D-077, [LegalRegister]): nothing to configure. Its retention (one year) is fixed in the
  * database and it is never read but on a judicial requisition approved by two people in the back-office.
@@ -143,6 +209,8 @@ fun main() {
     // In production and preproduction the migrations ran before, in their own container, with the owner
     // role; the server, connected with a restricted role, only checks them (D-127).
     val migrate = Database.shouldMigrate(ServerConfig.environment)
+    // THE platform signer (D-129): one instance for the whole server, null without PPF_SIGNER_URL.
+    val platformSigner = PlatformSignerConfig.fromEnvironment()?.let { HttpPlatformSigner(it) }
     val appRole = Database.appRole()
     val dataSource = DatabaseConfig.fromEnvironment()?.let { config ->
         Database.connect(config).also { Database.prepare(it, migrate, appRole) }
@@ -177,7 +245,7 @@ fun main() {
             }
         },
     ) {
-        module(dataSource, backOffice = backOffice, securityContact = securityContact)
+        module(dataSource, backOffice = backOffice, securityContact = securityContact, platformSigner = platformSigner)
     }.start(wait = true)
 }
 
@@ -228,18 +296,39 @@ fun Application.module(
     comprendre: ComprendreSource? = null,
     tiles: TilesConfig = TilesConfig.fromEnvironment(),
     elus: ElusSetup = ElusSetup.fromEnvironment(),
+    urne: UrneConfig = UrneConfig.fromEnvironment(),
+    archive: ArchiveSetup = ArchiveSetup.fromEnvironment(),
     territoires: TerritoiresSetup = TerritoiresSetup.fromEnvironment(),
     testimonies: TestimonySetup = TestimonySetup.fromEnvironment(),
+    /** Contact, claims and case follow-up (M30): envelopes and metadata only, open when an inbox key is set. */
+    contact: ContactSetup = ContactSetup.fromEnvironment(),
     backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
+    push: PushConfig = PushConfig.fromEnvironment(),
     /** How researchers report a vulnerability (S-92): security.txt and the page /securite. */
     securityContact: SecurityContact = SecurityContactSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
-    /** Where an approved editorial version goes (circuit éditorial, step 5); nothing is sent until the signing service is plugged. */
-    editorialPublisher: EditorialPublisher = UnpluggedEditorialPublisher,
-    /** The administration routes of the signing service (D-141); none unless PPF_SIGNER_URL is set. */
-    signer: SignerAdmin? = PlatformSignerConfig.fromEnvironment()?.let(::HttpPlatformSigner),
+    /**
+     * THE platform signer of the server (D-129, docs/integration/service-signature.md): the separate signing
+     * service when PPF_SIGNER_URL is set, null otherwise (what needs it then waits, never signs elsewhere).
+     * Passed to every pole that needs it; the tests give a FakePlatformSigner.
+     */
+    platformSigner: PlatformSigner? = null,
+    /**
+     * Where an approved editorial version goes (circuit éditorial, step 5): given here (tests), else the platform
+     * signature when [platformSigner] is configured, else nothing is sent ([UnpluggedEditorialPublisher]).
+     */
+    editorialPublisher: EditorialPublisher? = null,
 ) {
+    // The contents signed by a working key certified by the root for their use are platform contents (D-129,
+    // step 6, server side): accepted by the policy, and kept out of the legal register like the editorial ones.
+    @Suppress("NAME_SHADOWING")
+    val policy = policy.withPlatformKeys(platformSigner as? PlatformKeys ?: PlatformKeys.NONE)
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
+    // The open export (M34, S-48): the contents of the editorial keys and the tables each pole registers.
+    val openDatasets = OpenDatasets().also(VoirDatasets::registerOn)
+    val openExport = repository?.let { OpenExport(it, policy, openDatasets) }
+    // Timestamped archive (D-111): its batches, upgrades and checks live and die with the application.
+    val archives = dataSource?.let { ArchiveService.start(this, it, archive) }
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
     val elusService = dataSource?.let { ElusService.start(this, it, elus, log) }
     // The referential of territories (D-090): the last import served at once, the next ones on schedule.
@@ -255,6 +344,8 @@ fun Application.module(
     val agirSpace = if (dataSource != null && repository != null) AgirSpace.start(this, dataSource, repository, policy, agir) else null
     // Testimonies: encrypted envelopes and files only, open when a folder is configured (docs/integration/agir-temoignages.md).
     val testimonySpace = if (dataSource != null && repository != null) TestimonySpace.start(this, dataSource, repository, policy, testimonies) else null
+    // Cases of contact, tickets and claims (M30, D-140): unreadable envelopes and follow-up metadata, nightly retention.
+    val contactSpace = dataSource?.let { ContactSpace.start(this, it, contact) }
     if (repository == null) {
         log.info("No database configured: the events API answers 503 (health check and web pages work).")
     } else if (relay.cleanupInterval.isPositive()) {
@@ -269,27 +360,139 @@ fun Application.module(
     val teamBackOffice: BackOffice? = when {
         backOffice == null -> null
         dataSource == null -> null.also { log.warn("Back-office: ${BackOfficeConfig.ORIGIN_VARIABLE} is set but no database is configured, back-office off.") }
-        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace, signer)
+        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace, platformSigner as? SignerAdmin)
     }
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
+    // The inbox of the team for the cases (M30): a section of the back-office, metadata only; alerts for the legal holds to review.
+    // The requests of verification of Comprendre (CO-18, D-143) have their own section, for the fact-checking team.
+    if (teamBackOffice != null && contactSpace != null) {
+        teamBackOffice.sections.register(ContactSection(contactSpace, teamBackOffice, teamBackOffice.clock))
+        teamBackOffice.sections.register(ContactSection(contactSpace, teamBackOffice, teamBackOffice.clock, ContactScope.VERIFICATION))
+        contactSpace.onHoldsDue = { count ->
+            teamBackOffice.postAlert(ContactSection.ID, ContactTexts.holdsDueAlert(count), 4, Permissions.CONTACT_LEGAL_HOLD, sectionPath(ContactSection.ID) + "?dossiers=archives")
+        }
+    }
+    // The demands proposed by citizens, reviewed by the team (Décider, contract of the back-office, section 7).
+    proposals?.let { teamBackOffice?.queues?.register(ProposalsBackOfficeQueue(it.queue)) }
     // The writing pages of the editorial circuit of Comprendre (step 3): a section of the back-office.
     if (teamBackOffice != null && dataSource != null && repository != null) {
         val drafts = EditorialDrafts(dataSource, teamBackOffice.clock)
         // The review (step 4): the reviewer never wrote the draft, nor shares a Nostr key with one who did.
         val reviews = EditorialReviews(dataSource, drafts, teamBackOffice.clock) { account -> teamBackOffice.member(account)?.nostrPubkey }
-        teamBackOffice.sections.register(
-            EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, reviews, PublishedContents(repository, policy::isEditor), teamBackOffice.clock, editorialPublisher),
+        // The key of a space: the current key of its use once the signing service is configured (D-095).
+        val publishedContents = PublishedContents(
+            repository, policy::isEditor,
+            keyOf = platformSigner?.let { signer ->
+                { space: EditorialSpace -> signer.currentKey(if (space == EditorialSpace.VOIR) SigningUse.EDITORIAL_VOIR else SigningUse.EDITORIAL_COMPRENDRE) }
+            },
         )
-        // The queue editorial.comprendre (counts, deadlines and levels of the dashboard); editorial.voir waits for the schemas of Voir.
+        // The signature and the publication (step 5): on the platform signature when it is configured, never unsigned.
+        val publisher = editorialPublisher ?: platformSigner?.let { signer ->
+            SignedEditorialPublisher(
+                signer, drafts, EditorialSigning(dataSource, teamBackOffice.clock), repository, StorePublicationPort(repository, policy), teamBackOffice.clock,
+                onPublished = { publishedContents.refresh() },
+                onRefused = { space, draftId ->
+                    try {
+                        teamBackOffice.postAlert(EditorialQueue.idOf(space), EditorialTexts.ALERT_SIGNING_REFUSED, 5, EditorialQueue.publishPermission(space), EditorialQueue.reviewPath(space, draftId))
+                    } catch (e: Exception) {
+                        log.warn("Editorial signing: the dashboard alert could not be posted (${e::class.simpleName}).")
+                    }
+                },
+            )
+        } ?: UnpluggedEditorialPublisher
+        teamBackOffice.sections.register(
+            EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, reviews, publishedContents, teamBackOffice.clock, publisher),
+        )
+        // The queue editorial.comprendre (counts, deadlines and levels of the dashboard).
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.COMPRENDRE, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
+        // The same circuit for Voir (step 6), on the schemas of core/voir/VoirSchemas.kt; its preview is the page of the site.
+        teamBackOffice.sections.register(
+            EditorialDraftsSection(EditorialSpace.VOIR, drafts, reviews, publishedContents, teamBackOffice.clock, publisher),
+        )
+        teamBackOffice.queues.register(EditorialQueue(EditorialSpace.VOIR, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
         // A draft never submitted and unchanged for 180 days is deleted (docs/REGISTRE_DONNEES.md).
         EditorialDraftsPurge(drafts).start(this, 24.hours, log)
     }
     val limits = PostLimits(relay)
-    val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
+    // Rooms (NIP-29): directory, roles and moderation (D-131), guardrails of the creation (D-132).
+    val groups = repository?.let {
+        GroupDirectory(
+            it,
+            GroupIndex(it.dataSource, relay.groupLockWait),
+            guardrails = GroupGuardrails(
+                it.dataSource,
+                OrganisationNames(it.dataSource, policy::isEditor),
+                isTrusted = policy::isEditor,
+                youngAccountDays = GroupGuardrails.youngAccountDaysFromEnvironment(),
+            ),
+        )
+    }
+    // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published; the
+    // demands in debate get theirs, closed when they leave the debate.
+    // Only a natural person votes (D-116): the editorial keys and the organisations of the directory are refused.
+    val urneStore = dataSource?.takeIf { urne.seeds != null }?.let { UrneStore(it, LegalRegister(policy::isEditor)) }
+    val urnes = urneStore?.let { store ->
+        val organisations = VerifiedOrganisations(store.dataSource, policy::isEditor)
+        UrneService.create(store, urne, persons = PersonAccounts(store.dataSource, policy::isEditor, organisations::isVerified))
+    }
+    // In-person validation (D-112, 4.3): only with the back-office (sessions of the validators) and the audit key,
+    // which seals the link « account, session » (never kept in clear).
+    val inPerson = if (urneStore != null && urnes != null && teamBackOffice?.auditSealer != null) {
+        InPersonValidations(urneStore, urnes, teamBackOffice.validationGate, teamBackOffice.auditSealer)
+    } else {
+        null
+    }
+    // The certification of elected officials' accounts (DE-23): with the directory (D-047) and the back-office,
+    // where a certifier decides after meeting the official (queue elus.certifications).
+    val certifications = if (urneStore != null && urnes != null && teamBackOffice != null && elusService != null) {
+        ElectedCertifications(urneStore, urnes, ElusLookup(elusService)).also { teamBackOffice.queues.register(ElectedCertificationsQueue(it, urneStore)) }
+    } else {
+        null
+    }
+    // The propositions and amendments of citizens to a deliberation, reviewed by the team (DE-25).
+    val deliberationSubmissions = repository?.let { DeliberationSubmissions(it.dataSource, it, policy::isEditor) }
+    deliberationSubmissions?.let { teamBackOffice?.queues?.register(DeliberationQueue(it)) }
+    // The sessions of the validators with an abnormal pace, for the administrators (D-112, design 8).
+    if (urneStore != null && teamBackOffice != null) teamBackOffice.queues.register(ValidationSessionsQueue(urneStore.dataSource))
+    if (urnes != null && dataSource != null) {
+        val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)
+        // The boxes of the citizen deliberations, opened as their published phases come (DE-25).
+        val deliberations = repository?.let { DeliberationUrnes(it, urnes, policy::isEditor) }
+        // The official petitions attached by the team to the demands (D-115), signed for decider.pacte after an approval.
+        val petitionLinks = if (repository != null && platformSigner != null) {
+            PetitionLinks(repository.dataSource, repository, platformSigner).also { teamBackOffice?.queues?.register(PetitionLinksQueue(it, urnes)) }
+        } else {
+            null
+        }
+        // The closing statements signed by the platform (decider.urn_closure), when the signing service is configured.
+        val closures = if (urneStore != null && repository != null && platformSigner != null) {
+            UrneClosureStatements(urneStore, urnes, platformSigner, repository)
+        } else {
+            null
+        }
+        // Daily, a certified mandate absent from the updated directory ends its certification (DE-23).
+        urnes.startClosing(
+            this,
+            UrneService.CLOSING_INTERVAL,
+            log,
+            keepers = listOf({ demands.reconcile() }, { deliberations?.reconcile() }, { certifications?.checkMandatesDue() }, { deliberationSubmissions?.purgeDecided() }, { closures?.runDue() }, { petitionLinks?.runDue() }),
+        )
+    }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
+    // Push wake-ups (M31): a constant, encrypted "synchronize" only; the worker lives with the application.
+    val pushService = PushService.start(this, dataSource, push)
+    // Recovery keys and compromised accounts (S-146, D-134); the OpenTimestamps stamping of the
+    // commitments waits for Décider's ArchiveService (CommitmentStamper.NONE until then).
+    val compromised = repository?.let { CompromisedAccounts(it) }
+    // The room creations held for the team (contract docs/integration/salons-roles.md, section 3 bis);
+    // a creation signed after its key was declared compromised can only be refused (S-146).
+    groups?.let { directory -> teamBackOffice?.queues?.register(GroupCreationsQueue(directory, compromised)) }
+    // The rooms left without administrator by a compromised account, for the team (docs/integration/salons-reprise.md).
+    if (groups != null && compromised != null && repository != null) {
+        teamBackOffice?.queues?.register(GroupOrphansQueue(GroupOrphans(repository.dataSource), groups, compromised))
+    }
     install(ErrorShield)
     install(ContentNegotiation) {
         json()
@@ -326,14 +529,33 @@ fun Application.module(
                     ),
                 )
             }
-            eventsApi(repository, policy, limits, groups, proposals, agirSpace)
+            eventsApi(
+                repository,
+                policy,
+                limits,
+                groups,
+                proposals,
+                agirSpace,
+                onStored = pushService::stored,
+                accountTypes = repository?.let { AccountTypes(it.dataSource) },
+                compromised = compromised,
+                deliberation = deliberationSubmissions,
+            )
+            accountsApi(compromised)
+            pushApi(pushService, isCompromised = { key -> compromised?.isCompromised(key) == true })
+            deliberationApi(deliberationSubmissions)
             groupsApi(groups)
             revendicationsApi(proposals)
             agirApi(agirSpace)
             testimonyApi(testimonySpace, testimonies.config.maxFileBytes)
+            contactApi(contactSpace) // Cases of contact and claims (M30): 503 contact_not_open without an inbox key.
             elusApi(elusService)
             territoiresApi(territoiresService)
+            urneApi(urnes, urne, validations = inPerson, certifications = certifications)
+            archivesApi(archives)
             transparencyApi(dataSource) // Requisitions answered per month only (D-077).
+            exportApi(openExport) // The open export and its datasets (M34, S-48).
+            openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
             agirSpace?.let { agendaPage(it.agendaSource()) }
             tilesRoutes(tiles)
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
@@ -342,6 +564,7 @@ fun Application.module(
             webRoutes(
                 voir = voir ?: repository?.let { EditorialVoirSource(it, policy) },
                 comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
+                decider = repository?.let { EditorialDeciderSource(it, policy) },
             )
         }
         if (backOffice != null && teamBackOffice != null) {

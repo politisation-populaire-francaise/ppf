@@ -87,10 +87,18 @@ class LearningProgressStoreTest {
             // A real version 6 database: the current schema, minus what the later versions added
             // (7: courses, 8: followed contents of Voir, 9: agenda of Agir, 10: answered calls,
             // 11: directory of elected officials, 12: parliamentary open data, 13: referential of territories,
-            // 14: testimonies of Agir).
+            // 14: testimonies of Agir, 15: anonymous voting, 16: notifications and verified contacts).
             JvmDatabase.open(file)
             DriverManager.getConnection("jdbc:sqlite:${file.toAbsolutePath()}").use { connection ->
                 connection.createStatement().use { statement ->
+                    statement.executeUpdate("DROP TABLE contact_verification")
+                    statement.executeUpdate("DROP TABLE push_registration")
+                    statement.executeUpdate("DROP TABLE notification_mark")
+                    statement.executeUpdate("DROP TABLE notification_entry")
+                    statement.executeUpdate("DROP TABLE notification_setting")
+                    statement.executeUpdate("DROP TABLE vote_token")
+                    statement.executeUpdate("DROP TABLE vote_blind")
+                    statement.executeUpdate("DROP TABLE vote_state")
                     statement.executeUpdate("DROP TABLE testimony_file")
                     statement.executeUpdate("DROP TABLE testimony")
                     statement.executeUpdate("DROP TABLE territoire_package")

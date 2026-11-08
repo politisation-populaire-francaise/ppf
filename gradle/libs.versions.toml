@@ -11,21 +11,33 @@ compose = "1.12.2"
 # paired with Compose Multiplatform 1.12.x (release notes of 1.12.0). No stable 1.12 exists yet.
 composeMaterial3 = "1.12.0-alpha03"
 ktor = "3.6.1"
+# UnifiedPush connector (Apache 2.0): notifications without Google, wake-ups only (D-130).
+unifiedpush = "3.3.5"
+# Tink for Android (Apache 2.0), used by the UnifiedPush connector to decrypt RFC 8291 messages; the
+# Android flavour embeds a light protobuf instead of the whole protobuf-java of the JVM flavour.
+tinkAndroid = "1.23.0"
 kotlinxHtml = "0.12.0"
 kotlinxSerialization = "1.12.0"
 logback = "1.6.6"
 androidxActivity = "1.13.0"
-# QR codes: ZXing core draws and reads them (Apache 2.0, pure Java, no network, no transitive dependency;
-# 3.5.3 on Maven Central, checked on 2026-11-08). Same entries as the Décider pole (in-person validation,
-# team lead's decision of 8 November 2026, download agreed by the owner the same day); the server uses it
-# for the QR code of the ceremony of the root (D-141).
+# QR codes of the in-person validation (D-112, 4.3; team lead's decision of 8 November 2026, option A; download
+# agreed by the owner the same day). ZXing core draws and reads them (Apache 2.0, pure Java, no network, no
+# transitive dependency; 3.5.3 on Maven Central, checked on 2026-11-08). CameraX shows the camera on Android only
+# (AndroidX, Apache 2.0, no Google Play services; 1.6.1 stable, checked on 2026-11-08). Never ML Kit.
+# The server uses ZXing core too, for the QR code of the ceremony of the root (D-141).
 zxing = "3.5.3"
+camerax = "1.6.1"
 # Identities and content signatures (cahier des charges, section 3.2). Bitcoin Core's audited
 # libsecp256k1 (Schnorr BIP-340) wrapped for Kotlin Multiplatform by ACINQ, and ACINQ's bitcoin-kmp
 # for BIP-39 recovery phrases, BIP-32 derivation (NIP-06), SHA-256 and bech32 (NIP-19).
 # Apache 2.0; releases of August and September 2026, checked on Maven Central on 2026-11-05.
 secp256k1Kmp = "0.24.0"
 bitcoinKmp = "0.32.0"
+# "One person, one vote" (D-110): the ristretto255 group of libsodium (ISC) through ionspin's
+# Kotlin Multiplatform bindings (Apache 2.0; JNA on the JVM and Android, used under Apache 2.0).
+# Only the group arithmetic comes from it; the RFC 9497 protocol is our own code, checked against
+# the RFC test vectors. Release of 22 November 2025, checked on Maven Central on 2026-11-07.
+libsodiumBindings = "0.9.5"
 # Released in May 2026, checked on 2026-11-05 (Compose 1.12 declares 1.9.0; Gradle keeps the newest).
 kotlinxCoroutines = "1.11.0"
 # Server database access: plain JDBC with a connection pool and SQL migrations (all Apache 2.0,
@@ -47,6 +59,11 @@ webauthn4j = "0.32.0.RELEASE"
 # Release of 2026-10-10, checked on Maven Central on 2026-11-07 (built with Kotlin 2.4.20 and
 # Compose 1.12.1). Android only for now: its desktop runtime needs Java 25 (we build with 21).
 maplibreCompose = "0.20.0"
+# Timestamped archive (D-111), server only: RFC 3161 requests and the check of the tokens (signature,
+# certificate, nonce, imprint). Bouncy Castle Licence (MIT style), approved by the team lead for the
+# server. 1.86 is the latest stable release on Maven Central (published 11 September 2026), checked
+# on 2026-11-07 in the maven-metadata.xml of bcpkix-jdk18on and bcprov-jdk18on.
+bouncycastle = "1.86"
 
 # Compose 1.12 libraries require compiling against API 37 or later.
 android-compileSdk = "37"
@@ -66,8 +83,14 @@ compose-components-resources = { module = "org.jetbrains.compose.components:comp
 navigationevent-compose = { module = "org.jetbrains.androidx.navigationevent:navigationevent-compose", version = "1.1.0" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html", version.ref = "kotlinxHtml" }
+tink-android = { module = "com.google.crypto.tink:tink-android", version.ref = "tinkAndroid" }
+unifiedpush-connector = { module = "org.unifiedpush.android:connector", version.ref = "unifiedpush" }
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidxActivity" }
 zxing-core = { module = "com.google.zxing:core", version.ref = "zxing" }
+androidx-camera-core = { module = "androidx.camera:camera-core", version.ref = "camerax" }
+androidx-camera-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "camerax" }
+androidx-camera-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "camerax" }
+androidx-camera-view = { module = "androidx.camera:camera-view", version.ref = "camerax" }
 ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
 ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
 ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
@@ -81,6 +104,7 @@ secp256k1-kmp = { module = "fr.acinq.secp256k1:secp256k1-kmp", version.ref = "se
 secp256k1-kmp-jni-jvm = { module = "fr.acinq.secp256k1:secp256k1-kmp-jni-jvm", version.ref = "secp256k1Kmp" }
 secp256k1-kmp-jni-android = { module = "fr.acinq.secp256k1:secp256k1-kmp-jni-android", version.ref = "secp256k1Kmp" }
 bitcoin-kmp = { module = "fr.acinq.bitcoin:bitcoin-kmp", version.ref = "bitcoinKmp" }
+libsodium-bindings = { module = "com.ionspin.kotlin:multiplatform-crypto-libsodium-bindings", version.ref = "libsodiumBindings" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-coroutines = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }
@@ -104,6 +128,8 @@ maplibre-compose = { module = "org.maplibre.compose:maplibre-compose", version.r
 maplibre-compose-runtime-opengl-android = { module = "org.maplibre.compose:maplibre-compose-runtime-opengl-android", version.ref = "maplibreCompose" }
 kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutines" }
+bouncycastle-bcpkix = { module = "org.bouncycastle:bcpkix-jdk18on", version.ref = "bouncycastle" }
+bouncycastle-bcprov = { module = "org.bouncycastle:bcprov-jdk18on", version.ref = "bouncycastle" }
 
 [plugins]
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

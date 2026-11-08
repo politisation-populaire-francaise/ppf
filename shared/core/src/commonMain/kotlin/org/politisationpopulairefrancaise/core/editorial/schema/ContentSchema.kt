@@ -45,8 +45,15 @@ data class ContentSchema(
     /** Kotlin extension point for the rules that do not describe themselves. */
     val checks: List<SchemaCheck> = emptyList(),
     val tagging: Tagging = Tagging.PPF_PREFIX,
+    /**
+     * The approvals of editors who wrote no version that a content of this type needs before the platform
+     * signs it: [EditorialApprovals.ORDINARY] (one, the default) or [EditorialApprovals.M17] (two, for the
+     * types of M17 that implicate a person). The event itself may ask for two ([EditorialApprovals.required]).
+     */
+    val approvals: Int = EditorialApprovals.ORDINARY,
 ) {
     init {
+        require(approvals in EditorialApprovals.ORDINARY..EditorialApprovals.M17) { "${type.tagValue}: approvals must be 1 or 2" }
         val keys = fields.map { it.key }
         require(keys.size == keys.toSet().size) { "${type.tagValue}: a field key is declared twice" }
         require(keys.none { it in COMMON_KEYS }) { "${type.tagValue}: a specific field uses a common key" }

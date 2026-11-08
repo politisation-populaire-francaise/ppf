@@ -14,13 +14,18 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.server.accounts.AccountTypes
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
+import org.politisationpopulairefrancaise.server.decider.DeliberationSubmissions
+import org.politisationpopulairefrancaise.server.decider.receive
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.events.StoreOutcome
 import org.politisationpopulairefrancaise.server.events.TagIndex
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
+import org.politisationpopulairefrancaise.server.groups.SimilarGroup
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.RelayKinds
@@ -35,6 +40,10 @@ data class ApiError(val error: String, val message: String)
 /** The `409 group_exists` answer: [existing] is the id of the group to join instead of creating a duplicate (D-028). */
 @Serializable
 data class GroupExistsError(val error: String, val message: String, val existing: String)
+
+/** The `409 group_similar` answer (D-132): the rooms of close name on the same territory or a parent one. */
+@Serializable
+data class GroupSimilarError(val error: String, val message: String, val similar: List<SimilarGroup>)
 
 /** Events above this size are refused before being read in full. */
 const val MAX_EVENT_BYTES: Long = 64 * 1024
@@ -72,10 +81,27 @@ class PostLimits(
  *   allow are stored; nothing is logged about the sender. Encrypted envelopes (kind 1059) are
  *   stored as they are, never opened. A citizen demand goes to the review queue ([RevendicationProposals]);
  *   a content of the Agir space that its key may not publish directly goes to the queue of [AgirSpace].
+ *   Nothing more is accepted from a key declared compromised; recovery commitments (1776) and
+ *   compromise notices (1777) are checked by [CompromisedAccounts].
  * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
-fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, limits: PostLimits, groups: GroupDirectory? = null, proposals: RevendicationProposals? = null, agir: AgirSpace? = null) {
+fun Route.eventsApi(
+    repository: EventRepository?,
+    policy: PublicationPolicy,
+    limits: PostLimits,
+    groups: GroupDirectory? = null,
+    proposals: RevendicationProposals? = null,
+    agir: AgirSpace? = null,
+    /** Told of every event this route stored (the push wake-ups); must return at once. */
+    onStored: (SignedEvent) -> Unit = {},
+    /** Collective accounts (D-133): a collective cannot publish a profile that makes it a person again. */
+    accountTypes: AccountTypes? = null,
+    /** Recovery keys and compromised accounts (S-146, D-134); by default on the same database. */
+    compromised: CompromisedAccounts? = null,
+    /** The propositions and amendments of citizens to a deliberation, held for review (DE-25). */
+    deliberation: DeliberationSubmissions? = null,
+) {
     if (repository == null) {
         route("/api/v1/{...}") {
             handle {
@@ -87,6 +113,8 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
     val directory = groups ?: GroupDirectory(repository)
     // Without one, the rules of the Agir space still hold (only the cleanup of its queue is missing).
     val agirSpace = agir ?: AgirSpace.create(repository.dataSource, repository, policy)
+    // Without one, commitments and notices are still checked (only the stamping is missing).
+    val recovery = compromised ?: CompromisedAccounts(repository)
     route("/api/v1/events") {
         post {
             val declaredLength = call.request.contentLength() ?: 0
@@ -122,13 +150,38 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
                 is RateLimiter.Outcome.Limited -> return@post call.rateLimited(budget, "Too many events from this key; try again later.")
                 RateLimiter.Outcome.Allowed -> Unit
             }
+            // A key declared compromised by its owner publishes nothing more, of any kind (D-134).
+            withContext(Dispatchers.IO) { recovery.refusal(event) }?.let { return@post call.refuse(it) }
             // A citizen demand is not published at once: it waits for the review of a person (202).
             if (proposals != null && policy.isCitizenDemand(event)) {
                 return@post proposals.receive(call, event, limits.perKey)
             }
+            // A citizen's proposition or amendment of a deliberation waits for review too (202), or is refused.
+            if (deliberation != null && DeliberationSubmissions.isCitizenContribution(event, policy::isEditor)) {
+                val outcome = withContext(Dispatchers.IO) { deliberation.submit(event) }
+                if (outcome !is DeliberationSubmissions.Outcome.Queued) limits.perKey.refund(event.pubkey)
+                return@post deliberation.receive(call, event.id, outcome)
+            }
             when (val decision = policy.check(event)) {
                 is PublicationPolicy.Decision.Refused -> return@post call.refuse(decision)
                 PublicationPolicy.Decision.Allowed -> Unit
+            }
+            accountTypes?.let { types -> withContext(Dispatchers.IO) { types.check(event) } }?.let { return@post call.refuse(it) }
+            // A recovery commitment (1776) or a compromise notice (1777): checked and stored together, under the lock of the account.
+            if (recovery.concerns(event)) {
+                return@post when (val admission = withContext(Dispatchers.IO) { recovery.admitAndStore(event) }) {
+                    is CompromisedAccounts.Admission.Refused -> call.refuse(admission.refusal)
+                    is CompromisedAccounts.Admission.Stored -> when (admission.outcome) {
+                        StoreOutcome.STORED -> {
+                            onStored(event)
+                            call.respond(HttpStatusCode.Created, PublishResponse(event.id, "stored"))
+                        }
+                        else -> {
+                            limits.perKey.refund(event.pubkey)
+                            call.respond(HttpStatusCode.OK, PublishResponse(event.id, "duplicate"))
+                        }
+                    }
+                }
             }
             // Agir space (contract, section 5): a content the key may not publish directly waits for review (202) or is refused;
             // a cancellation by its author withdraws the version still waiting (200).
@@ -149,11 +202,17 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
             // checked and stored under a lock, so that two identical rooms cannot be created at once.
             val outcome = when (val admission = withContext(Dispatchers.IO) { directory.admitAndStore(event) }) {
                 is GroupDirectory.Admission.Refused -> return@post call.refuse(admission.refusal)
+                // A new room whose name resembles a verified organisation's waits for the team (D-132).
+                is GroupDirectory.Admission.Held -> return@post call.respond(HttpStatusCode.Accepted, PublishResponse(event.id, "held"))
                 is GroupDirectory.Admission.Stored -> admission.outcome
             }
             when (outcome) {
                 StoreOutcome.STORED -> {
-                    withContext(Dispatchers.IO) { agirSpace.stored(event) }
+                    withContext(Dispatchers.IO) {
+                        agirSpace.stored(event)
+                        accountTypes?.stored(event)
+                    }
+                    directory.stored(event)
                     if (event.kind == RelayKinds.GIFT_WRAP) {
                         // One recipient per envelope (policy); the mailbox keeps the newest envelopes only.
                         val recipient = event.firstTagValue("p")
@@ -161,6 +220,7 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
                             withContext(Dispatchers.IO) { repository.keepNewestByTag(RelayKinds.GIFT_WRAP, "p", recipient, limits.wrapMaxPerRecipient) }
                         }
                     }
+                    onStored(event)
                     call.respond(HttpStatusCode.Created, PublishResponse(event.id, "stored"))
                 }
                 StoreOutcome.DUPLICATE -> {
@@ -230,6 +290,8 @@ private suspend fun RoutingCall.refuse(decision: PublicationPolicy.Decision.Refu
     val existing = decision.existing
     if (existing != null) {
         respond(status, GroupExistsError(decision.error, decision.message, existing))
+    } else if (decision.similar.isNotEmpty()) {
+        respond(status, GroupSimilarError(decision.error, decision.message, decision.similar))
     } else {
         respond(status, ApiError(decision.error, decision.message))
     }

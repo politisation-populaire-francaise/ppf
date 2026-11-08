@@ -59,7 +59,7 @@ class ImporterTest {
         assertEquals("2026-11-07", index.importedOn)
         assertEquals(listOf("an", "senat", "pe"), index.sources.map { it.id })
         assertEquals(
-            listOf("membres", "scrutins-an-2026-09", "scrutins-an-2026-10", "votes-pe-2026-09", "votes-pe-2026-10"),
+            listOf("membres", "scrutins-an-2026-09", "scrutins-an-2026-10", "semaine", "votes-pe-2026-09", "votes-pe-2026-10"),
             index.packages.map { it.name },
         )
         index.packages.forEach { ref -> assertTrue(ParliamentIndexReader.matches(ref, Files.readAllBytes(out.resolve(ref.name + ".json"))), ref.name) }
@@ -187,7 +187,7 @@ class ImporterTest {
         assertFailsWith<DownloadException> { downloader.download("https://example.org/data.zip", file) }
         assertFailsWith<DownloadException> { downloader.download("http://data.assemblee-nationale.fr/x.zip", file) }
         assertFailsWith<DownloadException> { downloader.get("https://data.europarl.europa.eu.example.org/api", throttle = false) }
-        assertEquals(setOf("data.assemblee-nationale.fr", "www.senat.fr", "data.europarl.europa.eu"), ALLOWED_HOSTS)
+        assertEquals(setOf("data.assemblee-nationale.fr", "www.senat.fr", "data.senat.fr", "data.europarl.europa.eu"), ALLOWED_HOSTS)
         listOf(OfficialSources.AMO10, OfficialSources.SCRUTINS, OfficialSources.DOSSIERS, OfficialSources.SENATEURS, OfficialSources.EUROPARL_API).forEach {
             assertTrue(java.net.URI.create(it).host in ALLOWED_HOSTS && it.startsWith("https://"))
         }

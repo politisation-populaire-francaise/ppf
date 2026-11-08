@@ -106,7 +106,7 @@ class BackOffice(
     private val verifiedOrganisations: (() -> Set<String>)? = null,
     private val passkeys: PasskeyVerifier = WebAuthn4jPasskeys(config.origin, config.rpId),
     val clock: Clock = Clock.systemUTC(),
-    sessionRequestVerifier: SessionRequestVerifier = MinimalNip98Verifier(clock.instant()),
+    sessionRequestVerifier: SessionRequestVerifier = Nip98SessionVerifier(clock.instant()),
     /** The administration routes of the signing service (« Clés de la plateforme », D-141); null when `PPF_SIGNER_URL` is not set. */
     val signer: SignerAdmin? = null,
 ) {
@@ -706,7 +706,7 @@ class BackOffice(
                 ActionOutcome.NotFound
             } else {
                 audit.record(queueEntry(actor, queueId, item, action, queueApproval.reason, null, queueApproval.id))
-                runQueueAction(queue, item, action, queueApproval.reason, actor)
+                runQueueAction(queue, item, action, queueApproval.reason, null, actor)
             }
             audit.record(queueEntry(actor, queueId, item, action, queueApproval.reason, outcome, queueApproval.id))
             if (outcome != ActionOutcome.Done) {
@@ -912,7 +912,7 @@ class BackOffice(
      * when required, new verification when sensitive, second person when required, and two journal lines,
      * `….requested` before the action and its outcome after (D-127).
      */
-    fun performQueueAction(auth: Authenticated, queueId: String, itemId: String, actionId: String, reason: String?): Outcome<QueueResult> {
+    fun performQueueAction(auth: Authenticated, queueId: String, itemId: String, actionId: String, reason: String?, choice: String? = null): Outcome<QueueResult> {
         val actor = auth.actor
         val queue = queues.find(queueId) ?: return Outcome.Denied("not_found")
         if (!actor.has(queue.viewPermission)) return Outcome.Denied("forbidden")
@@ -923,6 +923,8 @@ class BackOffice(
         if (!actor.has(action.permission)) return Outcome.Denied("forbidden")
         val text = if (action.reasonAllowed) cleanReason(reason) else null
         if (action.reasonRequired && text == null) return Outcome.Denied("reason_required")
+        // The choice is checked against the options of the moment ([available] was just computed again).
+        val chosen = action.choice?.let { QueueChoice.accepted(it, choice) ?: return Outcome.Denied("choice_required") }
         if ((action.sensitive || action.twoPerson) && !auth.isFresh(clock.instant())) return Outcome.Denied("confirmation_required")
         if (action.twoPerson) {
             val now = now()
@@ -937,14 +939,14 @@ class BackOffice(
                 Outcome.Ok(QueueResult.Waiting(approval))
             }
         }
-        audit.record(queueEntry(actor, queueId, itemId, actionId, text, null, null))
-        val outcome = runQueueAction(queue, itemId, actionId, text, actor)
-        audit.record(queueEntry(actor, queueId, itemId, actionId, text, outcome, null))
+        audit.record(queueEntry(actor, queueId, itemId, actionId, text, null, null, chosen))
+        val outcome = runQueueAction(queue, itemId, actionId, text, chosen, actor)
+        audit.record(queueEntry(actor, queueId, itemId, actionId, text, outcome, null, chosen))
         return Outcome.Ok(QueueResult.Performed(outcome))
     }
 
-    private fun runQueueAction(queue: BackOfficeQueue, itemId: String, actionId: String, reason: String?, actor: TeamActor): ActionOutcome = try {
-        queue.perform(itemId, actionId, reason, actor)
+    private fun runQueueAction(queue: BackOfficeQueue, itemId: String, actionId: String, reason: String?, choice: String?, actor: TeamActor): ActionOutcome = try {
+        queue.perform(itemId, actionId, reason, choice, actor)
     } catch (e: Exception) {
         // Only the class: the message of a database error can quote the content in question.
         log.error("Queue ${queue.id}: action $actionId failed with ${e::class.qualifiedName}.")
@@ -952,7 +954,16 @@ class BackOffice(
     }
 
     /** The line before an action ([outcome] null: `….requested`) or after it, with its outcome. */
-    private fun queueEntry(actor: TeamActor, queueId: String, itemId: String, actionId: String, reason: String?, outcome: ActionOutcome?, approval: UUID?): AuditEntry = AuditEntry(
+    private fun queueEntry(
+        actor: TeamActor,
+        queueId: String,
+        itemId: String,
+        actionId: String,
+        reason: String?,
+        outcome: ActionOutcome?,
+        approval: UUID?,
+        choice: String? = null,
+    ): AuditEntry = AuditEntry(
         AuditActor.of(actor),
         "queue.$queueId.$actionId" + if (outcome == null) ".requested" else "",
         TARGET_QUEUE_ITEM,
@@ -962,6 +973,8 @@ class BackOffice(
             outcome?.let { put("outcome", outcomeCode(it)) }
             if (outcome is ActionOutcome.Refused) put("refusal", outcome.reason.take(500))
             approval?.let { put("approval", it.toString()) }
+            // A key or an identifier chosen by the member, never free text (QueueChoice).
+            choice?.let { put("choice", it) }
         },
     )
 

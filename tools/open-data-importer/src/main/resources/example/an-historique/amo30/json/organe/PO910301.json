@@ -1,0 +1,13 @@
+{
+ "organe": {
+  "uid": "PO910301",
+  "codeType": "COMPER",
+  "libelle": "[EXEMPLE] Commission fictive",
+  "libelleAbrev": "CF",
+  "viMoDe": {
+   "dateDebut": "2012-06-20",
+   "dateFin": null
+  },
+  "couleurAssociee": "#123456"
+ }
+}

@@ -110,6 +110,9 @@ data class EditorialDraft(
     /** The version sent to review, if any, and when (step 4). */
     val submittedVersion: Int? = null,
     val submittedAt: Instant? = null,
+    /** The reason of the last withdrawal of an approved version (step 5), for the writers; cleared at the next submission. */
+    val withdrawReason: String? = null,
+    val withdrawnAt: Instant? = null,
 )
 
 /** What one save writes: the front matter entries in order, the body, the change of an update. */
@@ -333,6 +336,8 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
         latestVersion = getInt("latest_version"),
         submittedVersion = getInt("submitted_version").takeIf { !wasNull() },
         submittedAt = instant("submitted_at"),
+        withdrawReason = getString("withdraw_reason"),
+        withdrawnAt = instant("withdrawn_at"),
     )
 
     private fun ResultSet.toVersion(): DraftVersion = DraftVersion(
@@ -356,7 +361,7 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
         private val SLUG = Regex("^[a-z0-9][a-z0-9-]{0,99}$")
 
         private const val DRAFT_COLUMNS =
-            "SELECT id, space, type, slug, title, base_event_id, status, author_account, created_at, updated_at, latest_version, submitted_version, submitted_at FROM editorial_draft"
+            "SELECT id, space, type, slug, title, base_event_id, status, author_account, created_at, updated_at, latest_version, submitted_version, submitted_at, withdraw_reason, withdrawn_at FROM editorial_draft"
         private const val VERSION_COLUMNS =
             "SELECT draft_id, version, entries::text AS entries, body, change_kind, change_note, written_by, written_at, problems FROM editorial_draft_version"
 

@@ -243,7 +243,7 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
         val item = call.parameters["item"].orEmpty().take(200)
         val action = form["action"].orEmpty()
         val back = itemPath(queueId, item)
-        when (val outcome = io { backOffice.performQueueAction(auth, queueId, item, action, form["motif"]) }) {
+        when (val outcome = io { backOffice.performQueueAction(auth, queueId, item, action, form["motif"], form["choix"]) }) {
             is Outcome.Denied -> if (outcome.code == "confirmation_required") call.confirm(auth, form) else call.redirectWith(back, error = outcome.code)
             is Outcome.Ok -> when (val result = outcome.value) {
                 is QueueResult.Waiting -> call.redirectWith(queuePath(queueId), ok = "requested")

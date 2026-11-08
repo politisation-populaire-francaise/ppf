@@ -29,6 +29,9 @@ object DeciderTags {
      * (shared-initiative referendum: one tenth of the registered voters, published for each one).
      */
     const val REQUIRED = "ppf-required"
+    /** Link role from an official petition to the demand of the wall it carries (D-115). */
+    const val ROLE_DEMAND = "revendication"
+
     /** `ouverte` or `close` ([PetitionStatus]). */
     const val PETITION_STATUS = "ppf-petition-status"
 
@@ -58,4 +61,10 @@ object DeciderTags {
 
     /** On a fact of "Voir" linked to a pact: the measure it follows after the election. */
     const val PACTE_MEASURE = "ppf-pacte-measure"
+
+    // The comparator of an election (cahier fonctionnel, M13.7; DE-16).
+    /** One theme of a comparator, in its order (repeat the tag), or the theme of a position. */
+    const val THEME = "ppf-theme"
+    /** A short quotation of the candidate: `text | page (https) | date (AAAA-MM-JJ)`. */
+    const val QUOTE = "ppf-quote"
 }

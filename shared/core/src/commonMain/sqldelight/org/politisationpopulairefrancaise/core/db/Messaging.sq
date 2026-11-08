@@ -95,6 +95,9 @@ UPDATE message SET is_read = 1 WHERE id = ?;
 countUnread:
 SELECT COUNT(*) FROM message WHERE is_read = 0;
 
+selectUnreadReceivedAfter:
+SELECT * FROM message WHERE is_read = 0 AND author != ? AND received_at > ? ORDER BY received_at ASC, id ASC LIMIT ?;
+
 countMessages:
 SELECT COUNT(*) FROM message;
 

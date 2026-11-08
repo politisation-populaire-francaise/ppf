@@ -1,0 +1,225 @@
+{
+ "acteur": {
+  "uid": {
+   "@xsi:type": "IdActeur_type",
+   "#text": "PA910003"
+  },
+  "etatCivil": {
+   "ident": {
+    "civ": "Mme",
+    "prenom": "[EXEMPLE] Capucine",
+    "nom": "Roussel",
+    "alpha": "Roussel"
+   },
+   "infoNaissance": {
+    "dateNais": "1970-01-01",
+    "villeNais": "[EXEMPLE] Ville fictive"
+   }
+  },
+  "profession": {
+   "libelleCourant": "[EXEMPLE] Profession fictive"
+  },
+  "adresses": {
+   "adresse": {
+    "@xsi:type": "AdresseMail_type",
+    "valElec": "exemple@example.invalid"
+   }
+  },
+  "mandats": {
+   "mandat": [
+    {
+     "@xsi:type": "MandatParlementaire_type",
+     "uid": "PM9114003",
+     "acteurRef": "PA910003",
+     "legislature": "14",
+     "typeOrgane": "ASSEMBLEE",
+     "dateDebut": "2012-06-20",
+     "datePublication": "2012-06-20",
+     "dateFin": "2017-06-20",
+     "mandature": {
+      "datePriseFonction": "2012-06-20",
+      "causeFin": null,
+      "placeHemicycle": "303",
+      "mandatRemplaceRef": null
+     },
+     "infosQualite": {
+      "codeQualite": "membre",
+      "libQualite": "membre"
+     },
+     "organes": {
+      "organeRef": "PO910000"
+     },
+     "election": {
+      "lieu": {
+       "region": "[EXEMPLE]",
+       "departement": "[EXEMPLE] Département",
+       "numDepartement": "29",
+       "numCirco": "3"
+      }
+     },
+     "collaborateurs": {
+      "collaborateur": {
+       "qualite": "M.",
+       "prenom": "[EXEMPLE] Collaborateur",
+       "nom": "Fictif"
+      }
+     }
+    },
+    {
+     "@xsi:type": "MandatParlementaire_type",
+     "uid": "PM9115003",
+     "acteurRef": "PA910003",
+     "legislature": "15",
+     "typeOrgane": "ASSEMBLEE",
+     "dateDebut": "2017-06-21",
+     "datePublication": "2017-06-21",
+     "dateFin": "2022-06-21",
+     "mandature": {
+      "datePriseFonction": "2017-06-21",
+      "causeFin": null,
+      "placeHemicycle": "303",
+      "mandatRemplaceRef": null
+     },
+     "infosQualite": {
+      "codeQualite": "membre",
+      "libQualite": "membre"
+     },
+     "organes": {
+      "organeRef": "PO910000"
+     },
+     "election": {
+      "lieu": {
+       "region": "[EXEMPLE]",
+       "departement": "[EXEMPLE] Département",
+       "numDepartement": "29",
+       "numCirco": "3"
+      }
+     },
+     "collaborateurs": {
+      "collaborateur": {
+       "qualite": "M.",
+       "prenom": "[EXEMPLE] Collaborateur",
+       "nom": "Fictif"
+      }
+     }
+    },
+    {
+     "@xsi:type": "MandatParlementaire_type",
+     "uid": "PM9116003",
+     "acteurRef": "PA910003",
+     "legislature": "16",
+     "typeOrgane": "ASSEMBLEE",
+     "dateDebut": "2022-06-22",
+     "datePublication": "2022-06-22",
+     "dateFin": "2024-06-09",
+     "mandature": {
+      "datePriseFonction": "2022-06-22",
+      "causeFin": null,
+      "placeHemicycle": "303",
+      "mandatRemplaceRef": null
+     },
+     "infosQualite": {
+      "codeQualite": "membre",
+      "libQualite": "membre"
+     },
+     "organes": {
+      "organeRef": "PO910000"
+     },
+     "election": {
+      "lieu": {
+       "region": "[EXEMPLE]",
+       "departement": "[EXEMPLE] Département",
+       "numDepartement": "29",
+       "numCirco": "3"
+      }
+     },
+     "collaborateurs": {
+      "collaborateur": {
+       "qualite": "M.",
+       "prenom": "[EXEMPLE] Collaborateur",
+       "nom": "Fictif"
+      }
+     }
+    },
+    {
+     "@xsi:type": "MandatParlementaire_type",
+     "uid": "PM9117003",
+     "acteurRef": "PA910003",
+     "legislature": "17",
+     "typeOrgane": "ASSEMBLEE",
+     "dateDebut": "2024-07-18",
+     "datePublication": "2024-07-18",
+     "dateFin": null,
+     "mandature": {
+      "datePriseFonction": "2024-07-18",
+      "causeFin": null,
+      "placeHemicycle": "303",
+      "mandatRemplaceRef": null
+     },
+     "infosQualite": {
+      "codeQualite": "membre",
+      "libQualite": "membre"
+     },
+     "organes": {
+      "organeRef": "PO910000"
+     },
+     "election": {
+      "lieu": {
+       "region": "[EXEMPLE]",
+       "departement": "[EXEMPLE] Département",
+       "numDepartement": "29",
+       "numCirco": "3"
+      }
+     },
+     "collaborateurs": {
+      "collaborateur": {
+       "qualite": "M.",
+       "prenom": "[EXEMPLE] Collaborateur",
+       "nom": "Fictif"
+      }
+     }
+    },
+    {
+     "@xsi:type": "MandatSimple_type",
+     "uid": "PM920031",
+     "acteurRef": "PA910003",
+     "legislature": null,
+     "typeOrgane": "GP",
+     "dateDebut": "2012-06-26",
+     "dateFin": null,
+     "infosQualite": {
+      "codeQualite": "Membre"
+     },
+     "organes": {
+      "organeRef": "PO910102"
+     }
+    },
+    {
+     "@xsi:type": "MandatSimple_type",
+     "uid": "PM930031",
+     "acteurRef": "PA910003",
+     "legislature": null,
+     "typeOrgane": "PARPOL",
+     "dateDebut": "2012-12-01",
+     "dateFin": null,
+     "infosQualite": {
+      "codeQualite": "Membre"
+     },
+     "organes": {
+      "organeRef": "PO910202"
+     }
+    },
+    {
+     "uid": "PM94003",
+     "acteurRef": "PA910003",
+     "typeOrgane": "COMPER",
+     "dateDebut": "2012-07-01",
+     "dateFin": null,
+     "organes": {
+      "organeRef": "PO910301"
+     }
+    }
+   ]
+  }
+ }
+}
