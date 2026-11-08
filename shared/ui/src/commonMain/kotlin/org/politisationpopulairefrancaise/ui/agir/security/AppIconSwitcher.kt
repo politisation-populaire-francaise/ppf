@@ -27,3 +27,10 @@ expect fun rememberPlatformAppIconSwitcher(): AppIconSwitcher?
 
 @Composable
 fun rememberAppIconSwitcher(): AppIconSwitcher? = LocalAppIconSwitcher.current ?: rememberPlatformAppIconSwitcher()
+
+/**
+ * Gives the entry of PPF in the list of recent applications the name and icon the launcher shows
+ * (« Outils » in discreet mode, also for the screen reader). Android only; nothing elsewhere.
+ */
+@Composable
+expect fun KeepTaskLikeLauncher()

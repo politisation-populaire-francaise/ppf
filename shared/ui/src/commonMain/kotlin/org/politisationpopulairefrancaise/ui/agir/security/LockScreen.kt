@@ -81,6 +81,7 @@ import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 @Composable
 fun DeviceSecurityGate(security: DeviceSecurityState, content: @Composable () -> Unit) {
     HideContentFromSystem(security.settings.hideContent)
+    KeepTaskLikeLauncher()
     val owner = LocalLifecycleOwner.current
     DisposableEffect(owner, security) {
         val observer = LifecycleEventObserver { _, event ->

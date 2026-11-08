@@ -71,6 +71,7 @@ import org.politisationpopulairefrancaise.ui.resources.sec_hide_toggle
 import org.politisationpopulairefrancaise.ui.resources.sec_lock_now
 import org.politisationpopulairefrancaise.ui.resources.sec_lock_toggle
 import org.politisationpopulairefrancaise.ui.resources.sec_lock_toggle_text
+import org.politisationpopulairefrancaise.ui.resources.sec_phone_biometric
 import org.politisationpopulairefrancaise.ui.resources.sec_phone_legal
 import org.politisationpopulairefrancaise.ui.resources.sec_phone_settings_1
 import org.politisationpopulairefrancaise.ui.resources.sec_phone_settings_2
@@ -264,7 +265,7 @@ fun PreparePhoneBlock(modifier: Modifier = Modifier): Boolean {
 
         Spacer(Modifier.height(4.dp))
         Text(stringResource(Res.string.sec_phone_settings_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
-        listOf(Res.string.sec_phone_settings_1, Res.string.sec_phone_settings_2, Res.string.sec_phone_settings_3, Res.string.sec_phone_settings_4).forEach { tip ->
+        listOf(Res.string.sec_phone_biometric, Res.string.sec_phone_settings_1, Res.string.sec_phone_settings_2, Res.string.sec_phone_settings_3, Res.string.sec_phone_settings_4).forEach { tip ->
             Text("• " + stringResource(tip), style = MaterialTheme.typography.bodyMedium)
         }
         InfoBox(Lucide.Info) {

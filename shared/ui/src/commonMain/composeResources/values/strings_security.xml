@@ -97,6 +97,7 @@
     <string name="sec_status_ok">Fait</string>
     <string name="sec_status_todo">À faire</string>
     <string name="sec_phone_settings_title">Réglages du téléphone</string>
+    <string name="sec_phone_biometric">[EXEMPLE] Pourquoi un code plutôt que l’empreinte ou le visage : on peut poser votre doigt sur le téléphone ou le tenir devant votre visage sans votre accord, alors qu’un code reste dans votre tête.</string>
     <string name="sec_phone_settings_1">[EXEMPLE] Avant de partir, désactivez le déverrouillage du téléphone par empreinte ou par visage, ou utilisez son mode « Verrouillage » (Android 9 et plus, menu du bouton marche), qui impose le code.</string>
     <string name="sec_phone_settings_2">[EXEMPLE] Choisissez un code d’au moins 6 chiffres plutôt qu’un schéma, que l’on devine en regardant par-dessus l’épaule.</string>
     <string name="sec_phone_settings_3">[EXEMPLE] Masquez le contenu des notifications sur l’écran verrouillé.</string>
@@ -114,4 +115,19 @@
     <string name="sec_discreet_off_title">Revenir à l’icône de PPF ?</string>
     <string name="sec_discreet_off_text">Le nom et l’icône de PPF reviendront sur l’écran d’accueil : une personne qui regarde votre téléphone pourra voir que vous l’utilisez. L’application peut se fermer, et le raccourci peut disparaître ou changer de place. Vous pourrez repasser à l’icône discrète à tout moment.</string>
     <string name="sec_discreet_confirm">Changer l’icône</string>
+
+    <!-- Creation of an account: the step « Protéger PPF sur cet appareil » (D-083), placed by pôle Communauté -->
+    <string name="sec_setup_title">Protéger PPF sur cet appareil</string>
+    <string name="sec_setup_text">Un code empêche une personne qui tient votre téléphone déverrouillé d’ouvrir PPF, de lire vos messages et de voir ce que vous suivez. Il reste sur cet appareil : rien n’est envoyé.</string>
+    <string name="sec_setup_choose">Choisir un code</string>
+    <string name="sec_setup_choose_text">Recommandé. De 6 à 16 chiffres, demandé à l’ouverture de PPF.</string>
+    <string name="sec_setup_skip">Continuer sans code</string>
+    <string name="sec_setup_skip_text">Vous pourrez en choisir un plus tard dans « Mon espace ».</string>
+    <string name="sec_setup_forgotten">Si vous oubliez ce code, vous ne perdez que cet appareil : effacez PPF de cet appareil, puis retrouvez votre compte avec votre phrase de récupération.</string>
+    <string name="sec_setup_enable">Activer le verrouillage</string>
+    <string name="sec_setup_continue">Continuer</string>
+    <string name="sec_setup_already">Le verrouillage par un code est déjà activé sur cet appareil.</string>
+    <string name="sec_setup_skip_title">Continuer sans code ?</string>
+    <string name="sec_setup_skip_warning">Sans code, toute personne qui tient votre téléphone déverrouillé peut ouvrir PPF, lire vos messages et voir ce que vous suivez. Vous pourrez activer le verrouillage à tout moment dans « Mon espace », « Sécurité de cet appareil ».</string>
+    <string name="sec_setup_skip_confirm">Confirmer</string>
 </resources>

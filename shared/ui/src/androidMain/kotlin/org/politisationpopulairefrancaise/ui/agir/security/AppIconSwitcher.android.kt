@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.ContextWrapper
 import android.content.pm.PackageManager
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 
@@ -20,13 +21,24 @@ actual fun rememberPlatformAppIconSwitcher(): AppIconSwitcher? {
     val context = LocalContext.current
     return remember(context) {
         val activity = context.findActivity() ?: return@remember null
-        AliasIconSwitcher(activity.applicationContext, activity.javaClass.name.substringBeforeLast('.'))
+        AliasIconSwitcher(activity, activity.javaClass.name.substringBeforeLast('.'))
     }
 }
 
-private class AliasIconSwitcher(private val context: Context, aliasPackage: String) : AppIconSwitcher {
-    private val normal = ComponentName(context.packageName, "$aliasPackage.LauncherDefault")
-    private val discreet = ComponentName(context.packageName, "$aliasPackage.LauncherDiscreet")
+/** The task in the recent applications takes the name and icon of the launcher entry enabled now ([DiscreetMode.applyToTask]). */
+@Composable
+actual fun KeepTaskLikeLauncher() {
+    val context = LocalContext.current
+    DisposableEffect(context) {
+        context.findActivity()?.let(DiscreetMode::applyToTask)
+        onDispose { }
+    }
+}
+
+private class AliasIconSwitcher(private val activity: Activity, aliasPackage: String) : AppIconSwitcher {
+    private val context: Context = activity.applicationContext
+    private val normal = ComponentName(context.packageName, "$aliasPackage.${DiscreetMode.DEFAULT_ENTRY}")
+    private val discreet = ComponentName(context.packageName, "$aliasPackage.${DiscreetMode.DISCREET_ENTRY}")
 
     override val isDiscreet: Boolean
         get() = runCatching { context.packageManager.getComponentEnabledSetting(discreet) == PackageManager.COMPONENT_ENABLED_STATE_ENABLED }.getOrDefault(false)
@@ -37,6 +49,8 @@ private class AliasIconSwitcher(private val context: Context, aliasPackage: Stri
         // The new entry first, so that the application always has one in the launcher.
         manager.setComponentEnabledSetting(on, PackageManager.COMPONENT_ENABLED_STATE_ENABLED, PackageManager.DONT_KILL_APP)
         manager.setComponentEnabledSetting(off, PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP)
+        // The running task still carries the name of the entry that opened it: give it the new one at once.
+        DiscreetMode.applyToTask(activity)
     }
 }
 

@@ -9,3 +9,9 @@ import androidx.compose.runtime.Composable
  */
 @Composable
 actual fun rememberPlatformAppIconSwitcher(): AppIconSwitcher? = null
+
+/** Nothing yet on iOS (no discreet entry there). */
+@Composable
+actual fun KeepTaskLikeLauncher() {
+    // Nothing yet on iOS.
+}
