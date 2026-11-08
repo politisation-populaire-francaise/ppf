@@ -10,10 +10,9 @@ import com.webauthn4j.data.attestation.authenticator.EC2COSEKey
 import com.webauthn4j.data.attestation.statement.COSEAlgorithmIdentifier
 import com.webauthn4j.data.extension.authenticator.AuthenticationExtensionAuthenticatorOutput
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
-import org.politisationpopulairefrancaise.core.platform.ApprovalAssertion
 import org.politisationpopulairefrancaise.core.platform.ApprovalChallenge
-import org.politisationpopulairefrancaise.core.platform.ApprovalProof
 import org.politisationpopulairefrancaise.core.platform.DraftAuthor
+import org.politisationpopulairefrancaise.core.platform.DraftRequest
 import org.politisationpopulairefrancaise.core.platform.EventDraft
 import org.politisationpopulairefrancaise.core.platform.KeyCertificate
 import org.politisationpopulairefrancaise.core.platform.KeyStatus
@@ -39,9 +38,14 @@ import java.time.Instant
 import java.time.ZoneId
 import java.time.ZoneOffset
 import java.util.Base64
+import kotlin.test.assertIs
 
-const val TEST_ORIGIN: String = "https://equipe.preprod.example"
+/** The origin of the approval pages of the service (a subdomain of the back-office host). */
+const val TEST_ORIGIN: String = "https://signature.equipe.preprod.example"
+
+/** The relying party of the back-office passkeys: the host of the back-office. */
 const val TEST_RP_ID: String = "equipe.preprod.example"
+const val TEST_BACKOFFICE: String = "https://equipe.preprod.example"
 const val TEST_TOKEN: String = "test-token-of-the-server-0123456789abcdef"
 const val DAY: Long = 86_400
 
@@ -70,7 +74,8 @@ class MutableClock(var now: Instant = Instant.parse("2026-11-07T10:00:00Z")) : C
 /**
  * A software passkey (EC P-256, ES256) built with WebAuthn4J's own data classes, as in the back-office
  * tests: it signs a challenge as a browser and an authenticator would, with user presence and (unless
- * told otherwise) user verification, so that the real verifier of the service is exercised end to end.
+ * told otherwise) user verification, writing the origin of the page into the client data as a browser
+ * does, so that the real verifier of the service is exercised end to end.
  */
 class TestPasskey(private val rpId: String = TEST_RP_ID, private val userVerified: Boolean = true) {
     private val keyPair = KeyPairGenerator.getInstance("EC").apply { initialize(ECGenParameterSpec("secp256r1")) }.generateKeyPair()
@@ -85,9 +90,9 @@ class TestPasskey(private val rpId: String = TEST_RP_ID, private val userVerifie
         TeamCredential(b64url(credentialId), b64url(bytes.copyOfRange(16 + 2 + credentialId.size, bytes.size)))
     }
 
-    fun assert(account: String, challenge: ByteArray, origin: String = TEST_ORIGIN): ApprovalAssertion {
+    fun assert(challenge: ByteArray, origin: String = TEST_ORIGIN, crossOrigin: Boolean = false): PasskeyAssertion {
         counter++
-        val clientData = """{"type":"webauthn.get","challenge":"${b64url(challenge)}","origin":"$origin","crossOrigin":false}""".toByteArray()
+        val clientData = """{"type":"webauthn.get","challenge":"${b64url(challenge)}","origin":"$origin","crossOrigin":$crossOrigin}""".toByteArray()
         var flags = AuthenticatorData.BIT_UP.toInt()
         if (userVerified) flags = flags or AuthenticatorData.BIT_UV.toInt()
         val authenticatorData = AuthenticatorDataConverter(converter).convert(
@@ -99,12 +104,12 @@ class TestPasskey(private val rpId: String = TEST_RP_ID, private val userVerifie
             update(sha256(clientData))
             sign()
         }
-        return ApprovalAssertion(account, b64url(credentialId), b64url(authenticatorData), b64url(clientData), b64url(signature))
+        return PasskeyAssertion(b64url(credentialId), b64url(authenticatorData), b64url(clientData), b64url(signature))
     }
 
-    /** An approval of [event] for [use] by [account]. */
-    fun approve(account: String, use: SigningUse, event: UnsignedEvent, origin: String = TEST_ORIGIN): ApprovalAssertion =
-        assert(account, ApprovalChallenge.of(use, event.idHex()), origin)
+    /** An approval of [event] for [use], made on the page of [origin]. */
+    fun approve(use: SigningUse, event: UnsignedEvent, origin: String = TEST_ORIGIN): PasskeyAssertion =
+        assert(ApprovalChallenge.of(use, event.idHex()), origin)
 }
 
 /** A member of the test team with their passkey. */
@@ -115,7 +120,7 @@ class TestMember(val account: String, val uses: Set<SigningUse>, val validFrom: 
     fun member(withSpare: Boolean = false): TeamMember =
         TeamMember(account, validFrom, nostr.publicKey.hex, uses, listOfNotNull(passkey.credential, if (withSpare) spare.credential else null))
 
-    fun approve(use: SigningUse, event: UnsignedEvent, origin: String = TEST_ORIGIN): ApprovalAssertion = passkey.approve(account, use, event, origin)
+    fun approve(use: SigningUse, event: UnsignedEvent, origin: String = TEST_ORIGIN): PasskeyAssertion = passkey.approve(use, event, origin)
 }
 
 /** A service in a temporary data directory, its root key and a team, all fictional. */
@@ -134,7 +139,7 @@ class SignerFixture {
         uses: Set<SigningUse> = SigningUse.entries.toSet(),
         maxPerHour: Map<SigningUse, Int> = emptyMap(),
         kek: ByteArray = this.kek,
-    ): SignerConfig = SignerConfig(dir, kek, TEST_TOKEN, root, TEST_ORIGIN, enabledUses = uses, maxPerHour = maxPerHour)
+    ): SignerConfig = SignerConfig(dir, kek, TEST_TOKEN, root, TEST_ORIGIN, TEST_RP_ID, TEST_BACKOFFICE, enabledUses = uses, maxPerHour = maxPerHour)
 
     fun open(config: SignerConfig = config()): SignerService = SignerService.open(config, clock)
 
@@ -168,7 +173,8 @@ class SignerFixture {
         SigningUse.entries.forEach { certify(service, it) }
     }
 
-    fun teamList(members: List<TeamMember>, createdAt: Long = now()): SignedEvent = signWith(root, TeamList.unsigned(rootHex, members, createdAt))
+    fun teamList(members: List<TeamMember>, createdAt: Long = now(), notAfter: Long = createdAt + 90 * DAY): SignedEvent =
+        signWith(root, TeamList.unsigned(rootHex, members, createdAt, notAfter))
 
     fun loadTeam(service: SignerService, vararg members: TeamMember = arrayOf(alice.member(), bob.member(), carole.member())) {
         check(service.loadTeamList(teamList(members.toList())).status == "stored")
@@ -187,6 +193,20 @@ class SignerFixture {
             "[EXEMPLE] Texte confidentiel du contenu, jamais dans le journal.",
         )
 
-    fun request(use: SigningUse, event: UnsignedEvent, assertions: List<ApprovalAssertion> = emptyList(), double: Boolean = false, author: DraftAuthor? = null): SignRequest =
-        SignRequest(use.id, EventDraft.of(event), ApprovalProof(double, author, assertions))
+    fun request(use: SigningUse, event: UnsignedEvent): SignRequest = SignRequest(use.id, EventDraft.of(event))
+
+    fun draft(use: SigningUse, event: UnsignedEvent, double: Boolean = false, author: DraftAuthor? = null): DraftRequest =
+        DraftRequest(use.id, EventDraft.of(event), double, author)
+
+    /** Submits the draft of [event] and checks that it is known. */
+    fun submit(service: SignerService, use: SigningUse, event: UnsignedEvent, double: Boolean = false, author: DraftAuthor? = null): DraftOutcome.Submitted =
+        assertIs<DraftOutcome.Submitted>(service.submitDraft(draft(use, event, double, author)), "expected the draft to be accepted")
+
+    /** Records the approval of [member] (their main passkey) and checks that it is recorded. */
+    fun approve(service: SignerService, member: TestMember, use: SigningUse, event: UnsignedEvent): ApprovalOutcome.Recorded =
+        assertIs<ApprovalOutcome.Recorded>(service.approve(use.id, event.idHex(), member.approve(use, event)), "expected the approval of ${member.account}")
+
+    /** The refusal code of an approval. */
+    fun approvalRefusal(service: SignerService, use: SigningUse, event: UnsignedEvent, assertion: PasskeyAssertion): String? =
+        (service.approve(use.id, event.idHex(), assertion) as? ApprovalOutcome.Refused)?.refusal?.code
 }
