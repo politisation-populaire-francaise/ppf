@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.test.performTextClearance
 import androidx.navigationevent.DirectNavigationEventInput
 import androidx.navigationevent.compose.LocalNavigationEventDispatcherOwner
 import androidx.compose.ui.test.ComposeUiTest
@@ -21,6 +22,7 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
+import org.politisationpopulairefrancaise.core.editorial.ContentCheck
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
@@ -113,6 +115,31 @@ class VoirScreenTest {
         onNodeWithTag(VoirTags.card("dominique-fictif")).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(VoirTags.CITE).performScrollTo().assertExists()
+    }
+
+    @Test
+    fun aCodeIsCheckedOnTheDeviceAndALinkElsewhereIsNeverPpf() = runComposeUiTest {
+        openVoir(dependencies(), width = 1000, height = 740)
+        // The link sits at the end of the axes « Le pouvoir » and « Libertés »: the pager builds the shown page only.
+        onNodeWithTag(VoirTags.tab(1)).performClick()
+        waitForIdle()
+        onAllNodesWithTag(VoirTags.VERIFY_OPEN).onFirst().performScrollTo().performClick()
+        waitForIdle()
+        val event = LocalEventStore(database).recent(listOf(30023), 2_000).first { it.firstTagValue("d") == "manifestants-journees" }
+        // A link to a look-alike site is never followed, even with a real code.
+        onNodeWithTag(VoirTags.VERIFY_INPUT).performTextInput("https://politisation-populaire-francaise.org.piege.example/v/${ContentCheck.codeOf(event)}")
+        onNodeWithTag(VoirTags.VERIFY_SUBMIT).performClick()
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(VoirTags.VERIFY_RESULT).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithText("Lien qui n’est pas de PPF").assertExists()
+        // The code printed on an image, in groups of four: checked on the device, offline.
+        onNodeWithTag(VoirTags.VERIFY_INPUT).performTextClearance()
+        onNodeWithTag(VoirTags.VERIFY_INPUT).performTextInput(ContentCheck.codeOf(event).chunked(4).joinToString(" "))
+        onNodeWithTag(VoirTags.VERIFY_SUBMIT).performClick()
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithText("Authentique").fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithText("Empreinte SHA-256 : ${event.id}").assertExists()
+        onNodeWithTag(VoirTags.VERIFY_OPEN_CONTENT).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.detail("manifestants-journees")).assertExists()
     }
 
     @Test

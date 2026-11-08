@@ -100,6 +100,7 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpStat
 import org.politisationpopulairefrancaise.ui.agir.security.DeviceSecurityGate
 import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
+import org.politisationpopulairefrancaise.core.voir.VoirDeviceData
 import org.politisationpopulairefrancaise.ui.agir.security.rememberDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
 import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
@@ -246,6 +247,14 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     rememberParliamentWeekState(dependencies, parliamentState, contentLibrary, voirState) { selected = it }
     // Its requests to the editorial team: drafts and anonymous reports waiting for a server.
     val voirRequests = rememberVoirRequestSession(dependencies, messaging)
+    // The quick erase (S-44): what « Voir » keeps on the device (follows, views of the demands wall, parliamentary
+    // open data) and in memory (drafts, anonymous reports waiting with their single-use keys).
+    RegisterErasable(dependencies, VoirDeviceData.ID) {
+        dependencies.database?.let { VoirDeviceData(it).eraseFromDevice() }
+        voirState.forgetFollows()
+        revendicationViews.reset()
+        voirRequests.forget()
+    }
     // "Décider": the open page and the follows survive a visit to another space.
     val deciderState = rememberDeciderState(dependencies)
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).

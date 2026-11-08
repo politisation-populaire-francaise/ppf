@@ -902,6 +902,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **licence** : `a-decider` tant que la propriétaire n'a pas choisi (options présentées au chef d'équipe le 8 novembre 2026 : Licence Ouverte 2.0 ; CC BY 4.0 pour les textes et Licence Ouverte 2.0 pour les données, recommandée ; CC BY-SA 4.0 et ODbL).
 - Reste : choix de la licence ; jeux des autres pôles ; « Citer ce contenu » (S-144) et « Vérifier un contenu PPF » (S-141), étapes B et C de la conception.
 
+## D-103 (2026-11-08) Licences des contenus et des données publiés par PPF
+
+- Contexte : cahier des charges 2.2, section 3.8 (« La licence des contenus et des données publiés par PPF est à proposer à la propriétaire […] avant la première publication réelle ») ; export ouvert (D-101) et « Citer ce contenu » (S-144) livrés le 8 novembre 2026 avec une licence « en cours de choix ».
+- Options présentées par le pôle « Voir » au chef d'équipe, puis à la propriétaire, le 8 novembre 2026 (coût nul pour les trois) :
+  - A. Licence Ouverte 2.0 (Etalab) pour tout : celle de l'administration française, attribution seule ; moins connue à l'étranger, pensée pour les données ;
+  - B. CC BY 4.0 pour les textes et images, Licence Ouverte 2.0 pour les jeux de données : la licence de texte que connaissent journalistes et chercheurs, et la même licence de données que les sources officielles réutilisées ; deux licences à expliquer (**recommandée**) ;
+  - C. CC BY-SA 4.0 et ODbL (partage à l'identique) : empêche de fermer une version modifiée, mais freine la reprise par les médias et les études.
+- Choix : **option B**, par la propriétaire le 8 novembre 2026, mot pour mot : « Ok licence option b » (relayé par le chef d'équipe).
+- Raison : que les chiffres et les textes de PPF circulent avec leur source, le plus simplement possible (M34).
+- Conséquences : identifiants SPDX `CC-BY-4.0` et `etalab-2.0` (liste SPDX 3.29.0) ; textes officiels : https://creativecommons.org/licenses/by/4.0/deed.fr et https://www.data.gouv.fr/pages/legal/licences/etalab-2.0 (l'ancienne adresse d'etalab.gouv.fr y renvoie) ; mécanisme commun `core/editorial/ContentLicense.kt` : une licence par type de contenu (`ContentLicenses.of`), aucune pour les types dont le texte reste à son auteur (droit de réponse, réponse d'un candidat, revendication, témoignage : `AUTHORS_OWN`) ; catalogue de l'export (`license` « choisie » et licence de chaque jeu), page `/donnees`, « Citer ce contenu » (« …, licence CC BY 4.0, consulté le … »), pied du site, ligne d'origine des fiches de « Voir » dans l'application ; fichier `LICENSE-CONTENUS.md` ; les citations et titres d'articles de presse restent à leurs auteurs ; relecture par un avocat avant le lancement (ROADMAP).
+
 ## D-110 (2026-11-07) « Une personne, une voix » : jetons anonymes VOPRF, conditions de la bibliothèque, exigences
 
 - Contexte : conception de `docs/integration/une-personne-une-voix.md` (méthode approuvée par la propriétaire, D-044 ; usages de D-062). Décision technique prise en autonomie (chef d'équipe), le 7 novembre 2026, après relecture complète du document.

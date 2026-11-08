@@ -64,7 +64,7 @@
     <string name="sec_wipe_text">PPF efface de cet appareil votre clé et ce qui l’accompagne : ce que vous suivez, vos réponses aux appels et à l’agenda, vos témoignages en attente, vos conversations et salons rejoints, votre point de ralliement et ces réglages.</string>
     <string name="sec_wipe_phrase">Votre phrase de récupération est le seul moyen de retrouver votre compte ensuite : vérifiez que vous l’avez notée sur papier avant d’effacer.</string>
     <string name="sec_wipe_server">Rien n’est effacé sur le serveur : ce que vous avez publié reste publié.</string>
-    <string name="sec_wipe_not_yet">Dans cette version, quelques données ne sont pas encore effacées par ce bouton (progression des parcours, contenus téléchargés, suivis de « Voir » et de « Décider ») : pour tout effacer, désinstallez aussi l’application.</string>
+    <string name="sec_wipe_not_yet">Dans cette version, quelques données ne sont pas encore effacées par ce bouton (progression des parcours, contenus téléchargés) : pour tout effacer, désinstallez aussi l’application.</string>
     <string name="sec_wipe_confirm">Tout effacer</string>
     <string name="sec_wipe_running">Effacement en cours…</string>
     <string name="sec_wipe_done">Les données de PPF ont été effacées de cet appareil.</string>

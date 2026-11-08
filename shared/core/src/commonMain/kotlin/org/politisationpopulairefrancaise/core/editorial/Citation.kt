@@ -17,7 +17,9 @@ import org.politisationpopulairefrancaise.core.time.CivilDate
  * reference in CSL-JSON, the format of bibliography software (Zotero, for example).
  *
  * The version is the identifier of the signed event (its SHA-256), given short in the text and in full
- * as the fingerprint: anyone can find this exact version and check its signature (S-141).
+ * as the fingerprint: anyone can find this exact version and check its signature (S-141). The licence of
+ * PPF's own texts (CC BY 4.0, D-103) ends the reference, as its attribution asks; a text whose rights stay with
+ * its author (a right of reply, a candidate's answer) carries none.
  */
 data class Citation(val text: String, val cslJson: String) {
     companion object {
@@ -33,6 +35,8 @@ data class Citation(val text: String, val cslJson: String) {
             val updated = CivilDate.fromEpochSeconds(article.updatedAt)
             val published = article.publishedAt?.let(CivilDate::fromEpochSeconds)
             val version = article.event.id.take(SHORT_VERSION)
+            // The licence of PPF's own texts (D-103); none for a text whose rights stay with its author.
+            val license = ContentLicenses.of(article.type)
             val text = buildString {
                 append(PUBLISHER).append(", « ").append(article.title.trim()).append(" »")
                 if (article.origin == ContentOrigin.AI_ASSISTED) append(" (rédigé avec l’aide d’une IA)")
@@ -41,6 +45,7 @@ data class Citation(val text: String, val cslJson: String) {
                 append(", version ").append(version)
                 append(", ").append(url)
                 append(", empreinte SHA-256 ").append(article.event.id)
+                license?.let { append(", licence ").append(it.shortName) }
                 append(", consulté le ").append(consultedOn.toFrench()).append('.')
             }
             val csl = buildJsonObject {
@@ -53,7 +58,12 @@ data class Citation(val text: String, val cslJson: String) {
                 put("accessed", dateParts(consultedOn))
                 put("URL", url)
                 put("version", version)
-                put("note", "Empreinte SHA-256 : ${article.event.id}" + if (article.origin == ContentOrigin.AI_ASSISTED) " ; rédigé avec l’aide d’une IA" else "")
+                put(
+                    "note",
+                    "Empreinte SHA-256 : ${article.event.id}" +
+                        (if (article.origin == ContentOrigin.AI_ASSISTED) " ; rédigé avec l’aide d’une IA" else "") +
+                        (license?.let { " ; licence ${it.shortName} (${it.url})" } ?: ""),
+                )
             }
             return Citation(text, JSON.encodeToString(JsonObject.serializer(), csl))
         }
