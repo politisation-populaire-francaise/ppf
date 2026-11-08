@@ -23,6 +23,20 @@ class ManifestationCoreTest {
     }
 
     @Test
+    fun theListeningLinesAreInBesoinDeParlerAndNotInTheProtestMode() {
+        // « Besoin de parler ? » (D-081, point 3): the public lines first, then the associations.
+        assertEquals(listOf("31 14", "39 19", "119", "116 006", "30 18"), EmergencyNumbers.talk.map { it.number })
+        assertEquals(listOf("tel:3114", "tel:3919", "tel:119", "tel:116006", "tel:3018"), EmergencyNumbers.talk.map { it.uri })
+        assertEquals(listOf("tel:0800858858", "tel:0972394050"), EmergencyNumbers.talkAssociations.map { it.uri })
+        // The protest mode keeps a lost child and the support after an injury, no listening line.
+        assertEquals(listOf("116 000", "116 006"), EmergencyNumbers.protest.map { it.number })
+        assertTrue(EmergencyNumbers.protest.none { it == EmergencyNumbers.SUICIDE || it == EmergencyNumbers.WOMEN || it == EmergencyNumbers.CHILDREN })
+        // None of them is a vital emergency: the 15 and the 112 stay the only ones offered first.
+        assertTrue((EmergencyNumbers.talk + EmergencyNumbers.talkAssociations).none { it.vital })
+        assertTrue(EmergencyNumbers.all.containsAll(EmergencyNumbers.talk + EmergencyNumbers.talkAssociations + EmergencyNumbers.protest))
+    }
+
+    @Test
     fun aRallyPointIsTrimmedCutAndReadBack() {
         assertNull(RallyPoint.of("   "))
         val point = RallyPoint.of("  Devant la fontaine\u0007 ", " À 18 h\nsinon on s'appelle ")!!

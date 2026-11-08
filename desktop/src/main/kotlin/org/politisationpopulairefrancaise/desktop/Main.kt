@@ -13,6 +13,8 @@ import org.politisationpopulairefrancaise.core.urne.UrneSelfTest
 import kotlin.system.exitProcess
 import org.politisationpopulairefrancaise.core.crash.CrashReportFile
 import org.politisationpopulairefrancaise.core.currentPlatform
+import org.politisationpopulairefrancaise.core.device.deviceErasable
+import org.politisationpopulairefrancaise.core.agir.security.FileDeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.identity.FileIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
@@ -48,7 +50,12 @@ fun main(args: Array<String>) {
         database = JvmDatabase.open(dataDirectory.resolve("ppf.db")),
         remote = remote,
         urneRemote = urneRemote,
+        // The lock of the application and the quick erase (M33: S-43, S-44).
+        securityStorage = FileDeviceSecurityStorage(dataDirectory.resolve(FileDeviceSecurityStorage.FILE_NAME)),
+        closeApplication = { exitProcess(0) },
     )
+    // What the host itself keeps, for the quick erase: the crash report.
+    dependencies.erasables.register(deviceErasable("host-crash-report") { crashes.delete() })
     application {
         Window(
             onCloseRequest = ::exitApplication,

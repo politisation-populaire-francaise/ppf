@@ -1,6 +1,9 @@
 package org.politisationpopulairefrancaise.ui
 
+import org.politisationpopulairefrancaise.core.agir.security.DeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
+import org.politisationpopulairefrancaise.core.device.DeviceErasable
+import org.politisationpopulairefrancaise.core.device.DeviceEraseRegistry
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.IdentityStore
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
@@ -68,6 +71,15 @@ class AppDependencies(
      * a separate anonymous one for the ballots. Null keeps voting unavailable (no server, tests).
      */
     val urneRemote: UrneRemote? = null,
+    /** Where the lock and the other security settings of the device are kept (S-43, S-45); null keeps them in memory (tests, previews). */
+    val securityStorage: DeviceSecurityStorage? = null,
+    /**
+     * What the quick erase (S-44) goes through: each pole registers here what it keeps on the
+     * device ([DeviceErasable]); the shell adds the identity, the rally point and the settings.
+     */
+    val erasables: DeviceEraseRegistry = DeviceEraseRegistry(),
+    /** Closes the application after the quick erase; null where it cannot (tests, previews). */
+    val closeApplication: (() -> Unit)? = null,
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -88,6 +100,8 @@ class AppDependencies(
             requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
             urneRemote: UrneRemote? = null,
             openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
+            securityStorage: DeviceSecurityStorage? = null,
+            closeApplication: (() -> Unit)? = null,
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
             openDataTrust = openDataTrust,
@@ -102,6 +116,8 @@ class AppDependencies(
             pushServer = pushServer,
             requestNotificationPermission = requestNotificationPermission,
             urneRemote = urneRemote,
+            securityStorage = securityStorage,
+            closeApplication = closeApplication,
         )
     }
 }

@@ -67,6 +67,10 @@ services:
       PPF_TESTIMONY_DIR: /data/testimonies
       PPF_MODERATION_KEY: ${PPF_MODERATION_KEY:-}
       PPF_EVIDENCE_KEY: ${PPF_EVIDENCE_KEY:-}
+      # Contact and claims (M30, D-140): public key of the inbox of the team, the one built into the app;
+      # empty: the routes /api/v1/cases answer 503. Proof of work asked to open a case (16 bits when empty).
+      PPF_CONTACT_INBOX_KEY: ${PPF_CONTACT_INBOX_KEY:-}
+      PPF_CASE_POW_BITS: ${PPF_CASE_POW_BITS:-}
       # No PPF_EXAMPLES_DIR here: the server refuses to start in production with it.
       # Parliamentary open data written by the importer below, read-only for the server.
       PPF_OPEN_DATA_DIR: /data/open-data

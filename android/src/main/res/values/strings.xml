@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Politisation Populaire Française</string>
+    <!-- The neutral name of the discreet launcher entry (S-45): generic, without any hint of PPF. -->
+    <string name="app_name_neutral">Outils</string>
 
     <!-- Notifications (M31, D-130): the system shows these names in the notification settings. -->
     <string name="notification_channel_messages">Messages</string>
