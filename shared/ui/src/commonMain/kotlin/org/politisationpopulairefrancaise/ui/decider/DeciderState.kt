@@ -24,6 +24,8 @@ sealed interface DeciderDestination {
     data class Pacte(val address: ContentAddress) : DeciderDestination
     /** The comparator of an election (DE-16). */
     data class Comparator(val address: ContentAddress) : DeciderDestination
+    /** The past votes of the party of one candidate of a comparator (DE-16, D-117). */
+    data class PastVotes(val sheet: ContentAddress, val candidate: ContentAddress) : DeciderDestination
     /** The rules of the official petitions; [platform] opens one of them first. */
     data class Thresholds(val platform: PetitionPlatform? = null) : DeciderDestination
     data object ClosedPetitions : DeciderDestination

@@ -18,6 +18,16 @@ request: alex-modele | 2026-10-01 | 2026-10-03
 request: camille-exemple | 2026-10-02 | 2026-10-03
 request: dominique-fictif | 2026-10-10 | 2026-10-14
 request: sacha-temoin | 2026-10-20 | 2026-10-21
+theme-words: democratie | motion de censure | référendum | élections
+theme-words: sante | santé | hôpital | médicament
+theme-words: logement | logement | loyer | habitat
+words-version: 1 | 2026-11-08 | [EXEMPLE] Première version des mots
+party: alex-modele | an:PO910201 | 2012-06-01 |
+party: alex-modele | pe-org:990101 | 2019-07-01 |
+party: camille-exemple | an:PO910202 | 2012-06-01 |
+party: camille-exemple | senat-grp:EXB | 2006-10-01 |
+party: dominique-fictif | an:PO910102 | 2012-06-01 |
+party: sacha-temoin | pe-org:990103 | 2019-07-01 |
 topics: élections
 origin: human
 published_at: 2026-11-07

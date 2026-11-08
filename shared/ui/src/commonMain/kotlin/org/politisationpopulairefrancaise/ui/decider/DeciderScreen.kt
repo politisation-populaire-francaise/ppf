@@ -42,6 +42,7 @@ import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.voir.NextTarget
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
+import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
@@ -54,6 +55,8 @@ import org.politisationpopulairefrancaise.ui.resources.*
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.ui.voir.LinkRow
 import org.politisationpopulairefrancaise.ui.voir.SectionHeader
+import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
+import org.politisationpopulairefrancaise.ui.voir.rememberVoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.withoutExample
 
 /**
@@ -76,7 +79,11 @@ fun DeciderScreen(
     /** Opens a content of "Voir" (a candidate's sheet, a bill, a fact) in its space. */
     onOpenVoir: (ContentAddress) -> Unit = {},
     now: () -> Long = ::currentEpochSeconds,
+    /** For the past votes of the comparator (history packages of "Voir") and their reports; null in previews. */
+    dependencies: AppDependencies? = null,
 ) {
+    val pastVotes = dependencies?.let { rememberPastVotesState(it) }
+    val reports = dependencies?.let { rememberVoirRequestSession(it, messaging = null) }
     val catalog = library.decider
     val voir = library.voir
     val today = CivilDate.fromEpochSeconds(now())
@@ -113,7 +120,7 @@ fun DeciderScreen(
             if (current == null) {
                 DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate)
             } else {
-                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now()) }
+                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports) }
             }
         }
     }
@@ -247,6 +254,8 @@ private fun DeciderDetail(
     columns: Int,
     onOpenVoir: (ContentAddress) -> Unit,
     nowSeconds: Long,
+    pastVotes: PastVotesState?,
+    reports: VoirRequestSession?,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -275,8 +284,23 @@ private fun DeciderDetail(
                         PactePage(catalog.board(pacte, voir, today), state, actions, wide)
                     } ?: Missing()
                     is DeciderDestination.Comparator -> catalog.comparators.firstOrNull { it.address == current.address }?.let { sheet ->
-                        ComparatorPage(catalog.grid(sheet, voir), wide, nowSeconds = nowSeconds, onOpenSheet = onOpenVoir)
+                        ComparatorPage(
+                            catalog.grid(sheet, voir),
+                            wide,
+                            nowSeconds = nowSeconds,
+                            onOpenSheet = onOpenVoir,
+                            onOpenVotes = pastVotes?.let { { candidate -> state.open(DeciderDestination.PastVotes(sheet.address, candidate)) } },
+                        )
                     } ?: Missing()
+                    is DeciderDestination.PastVotes -> {
+                        val sheet = catalog.comparators.firstOrNull { it.address == current.sheet }
+                        if (sheet == null || pastVotes == null) {
+                            Missing()
+                        } else {
+                            val name = catalog.grid(sheet, voir).rows.firstOrNull { it.candidate == current.candidate }?.name ?: current.candidate.identifier
+                            PastVotesPage(sheet, current.candidate, name, pastVotes, reports)
+                        }
+                    }
                     is DeciderDestination.Thresholds -> ThresholdsPage(current.platform, columns)
                     DeciderDestination.ClosedPetitions -> ClosedPetitionsPage(catalog.closedPetitions(today), today, columns) {
                         state.open(DeciderDestination.Petition(it.address))

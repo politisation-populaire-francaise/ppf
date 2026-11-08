@@ -57,6 +57,7 @@ import org.politisationpopulairefrancaise.ui.resources.decider_comparator_reques
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_request_missing
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_request_official
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_sheet
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_votes
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_source
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_themes
 import org.politisationpopulairefrancaise.ui.revendications.themeLabel
@@ -73,6 +74,7 @@ object ComparatorTags {
     const val ENTRY = "decider-comparator-entry"
     const val FROZEN = "decider-comparator-frozen"
     fun request(candidate: String) = "decider-comparator-request-$candidate"
+    fun votes(candidate: String) = "decider-comparator-votes-$candidate"
     fun theme(id: String) = "decider-comparator-theme-$id"
     fun row(candidate: String) = "decider-comparator-row-$candidate"
     fun cell(candidate: String, theme: String) = "decider-comparator-cell-$candidate-$theme"
@@ -102,7 +104,14 @@ internal fun ComparatorCard(grid: ComparatorGrid, onOpen: () -> Unit, modifier: 
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, nowSeconds: Long, onOpenSheet: (ContentAddress) -> Unit) {
+internal fun ComparatorPage(
+    grid: ComparatorGrid,
+    wide: Boolean,
+    nowSeconds: Long,
+    onOpenSheet: (ContentAddress) -> Unit,
+    /** Opens the past votes of a candidate's party; null when the device cannot read them. */
+    onOpenVotes: ((ContentAddress) -> Unit)? = null,
+) {
     val palette = PpfTheme.palette
     var theme by rememberSaveable(grid.sheet.address.toString()) { mutableStateOf(grid.themes.first()) }
     Column(Modifier.fillMaxWidth().testTag(ComparatorTags.PAGE)) {
@@ -123,7 +132,7 @@ internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, nowSeconds: Lon
         EntryRule(grid.sheet)
         Spacer(Modifier.height(16.dp))
         if (wide) {
-            ComparatorTable(grid, onOpenSheet)
+            ComparatorTable(grid, onOpenSheet, onOpenVotes)
         } else {
             SectionHeader(stringResource(Res.string.decider_comparator_themes))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -146,6 +155,7 @@ internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, nowSeconds: Lon
                     Spacer(Modifier.height(4.dp))
                     PositionText(row, cell)
                     PpfTextButton(onClick = { onOpenSheet(row.candidate) }, text = stringResource(Res.string.decider_comparator_sheet))
+                    VotesLink(grid.sheet, row, onOpenVotes)
                 }
             }
         }
@@ -163,7 +173,7 @@ internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, nowSeconds: Lon
 
 /** One column per candidate, one line per theme: the same cells for all, sideways scrolling when needed. */
 @Composable
-private fun ComparatorTable(grid: ComparatorGrid, onOpenSheet: (ContentAddress) -> Unit) {
+private fun ComparatorTable(grid: ComparatorGrid, onOpenSheet: (ContentAddress) -> Unit, onOpenVotes: ((ContentAddress) -> Unit)?) {
     val palette = PpfTheme.palette
     Row(Modifier.horizontalScroll(rememberScrollState())) {
         Column(Modifier.width(160.dp)) {
@@ -179,6 +189,7 @@ private fun ComparatorTable(grid: ComparatorGrid, onOpenSheet: (ContentAddress) 
                     Text(row.name.withoutExample(), style = MaterialTheme.typography.titleSmall, maxLines = 2)
                     RequestLine(grid.sheet, row)
                     PpfTextButton(onClick = { onOpenSheet(row.candidate) }, text = stringResource(Res.string.decider_comparator_sheet))
+                    VotesLink(grid.sheet, row, onOpenVotes)
                 }
                 row.cells.forEach { cell ->
                     HorizontalDivider(color = palette.border)
@@ -257,8 +268,19 @@ private fun FrozenNotice(round: ElectionRound) {
     }
 }
 
+/** The way to the past votes of the candidate's party, the same for every candidate whose party is linked. */
+@Composable
+private fun VotesLink(sheet: ComparatorSheet, row: ComparatorRow, onOpenVotes: ((ContentAddress) -> Unit)?) {
+    if (onOpenVotes == null || sheet.parties.none { it.concerns(row.candidate) }) return
+    PpfTextButton(
+        onClick = { onOpenVotes(row.candidate) },
+        text = stringResource(Res.string.decider_comparator_votes),
+        modifier = Modifier.testTag(ComparatorTags.votes(row.candidate.identifier)),
+    )
+}
+
 /** "20 h", "19 h 30". */
 internal fun frenchClock(hour: Int, minute: Int): String = if (minute == 0) "$hour h" else "$hour h ${minute.toString().padStart(2, '0')}"
 
 private val CELL_HEIGHT = 200.dp
-private val HEADER_HEIGHT = 84.dp
+private val HEADER_HEIGHT = 112.dp

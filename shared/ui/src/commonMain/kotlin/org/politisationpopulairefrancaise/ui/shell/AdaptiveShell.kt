@@ -353,6 +353,7 @@ private fun SpaceContent(
                 voirState.open(address)
                 onNavigate(Space.VOIR)
             },
+            dependencies = dependencies,
         )
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
