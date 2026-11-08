@@ -56,7 +56,10 @@ object ComprendreSchemas {
         sourceDirectory = "parcours",
         bundle = "parcours.json",
         duration = Presence.REQUIRED,
-        fields = emptyList(),
+        // « rhythm: quotidien »: one lesson a day (CO-19 « Je découvre »); absent for the other courses.
+        fields = listOf(
+            FieldSpec("rhythm", "editorial.field.rhythm", "editorial.help.rhythm", occurs = Occurs.OPTIONAL, value = ValueSpec.Single(FieldType.Choice(CourseRhythm.entries.map { it.tagValue }, "comprendre.rhythm.")), tag = ComprendreTags.RHYTHM),
+        ),
         body = BodySpec(
             blocks = listOf(
                 BlockSpec(ParcoursFormat.QUIZ_BLOCK, min = 1),

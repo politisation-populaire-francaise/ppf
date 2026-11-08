@@ -79,4 +79,12 @@
     <string name="comprendre_role_president">Président de la République</string>
     <string name="comprendre_role_autre">Autres</string>
     <string name="comprendre_who_levels">Niveaux : %1$s</string>
+    <!-- CO-19 « Je découvre » : une leçon par jour, simple suggestion, jamais un verrou. -->
+    <string name="comprendre_discover_title">Nouveau ici ?</string>
+    <string name="comprendre_discover_text">Une petite leçon par jour pendant sept jours, pour comprendre qui décide et comment agir. Rien ne vous est demandé : votre progression reste sur cet appareil.</string>
+    <string name="comprendre_discover_day">Jour %1$d sur %2$d</string>
+    <string name="comprendre_discover_start">Commencer le jour 1</string>
+    <string name="comprendre_discover_resume">Lire le jour %1$d</string>
+    <string name="comprendre_daily_note">Une leçon par jour suffit. Revenez demain pour le jour %1$d, ou continuez maintenant si vous le souhaitez.</string>
+    <string name="comprendre_daily_meta">Une leçon par jour · %1$d jours</string>
 </resources>

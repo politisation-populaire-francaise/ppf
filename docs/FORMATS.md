@@ -85,6 +85,7 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-territory-code` | Code du référentiel des territoires (section 4 nonies) à côté du libellé ; pas encore accepté par le serveur pour les revendications | Non |
 | `ppf-duration` | Parcours seulement : durée de lecture annoncée, en minutes (1 à 240) | Non |
+| `ppf-rhythm` | Parcours seulement : rythme de lecture conseillé ; seule valeur, `quotidien` (une leçon, c'est-à-dire une étape, par jour, comme « Je découvre », CO-19). Simple suggestion affichée au lecteur, jamais un verrou ; une valeur inconnue est ignorée | Non |
 | `ppf-origin` | `human` (rédigé par un humain) ou `ai-assisted` (produit avec l'aide d'une IA) | Oui |
 | `ppf-correction` | Journal public des corrections (circuit éditorial, D-095) : date `AAAA-MM-JJ` (heure de Paris), résumé public du changement, nature `correction` (erreur de fond) ou `mise-a-jour` ; une étiquette par mise à jour d'un contenu publié, celles des versions précédentes reprises à l'identique et jamais retirées ; mêmes deux premières positions que dans « Voir » (section 4 quinquies) | Non (obligatoire sur une mise à jour publiée par le circuit éditorial) |
 

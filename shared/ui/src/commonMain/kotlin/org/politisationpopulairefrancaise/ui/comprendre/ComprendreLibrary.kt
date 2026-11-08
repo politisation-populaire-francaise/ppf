@@ -246,6 +246,12 @@ class ComprendreLibrary(
         persist { it.clear() }
     }
 
+    /** Goes to the lesson [step] of the open course: the lesson of the day of « Je découvre » (CO-19). */
+    fun goToLesson(step: Int) {
+        val parcours = openCourse ?: return
+        goToStep(parcours, step.coerceIn(0, parcours.steps.lastIndex))
+    }
+
     private fun goToStep(parcours: Parcours, step: Int) {
         page = CoursePage.Step(step)
         val now = clock()

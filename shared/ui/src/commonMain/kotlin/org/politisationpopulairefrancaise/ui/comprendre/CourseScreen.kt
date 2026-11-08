@@ -66,6 +66,7 @@ import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.comprendre_back
 import org.politisationpopulairefrancaise.ui.resources.comprendre_course_kind
+import org.politisationpopulairefrancaise.ui.resources.comprendre_daily_note
 import org.politisationpopulairefrancaise.ui.resources.comprendre_end_score
 import org.politisationpopulairefrancaise.ui.resources.comprendre_end_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_end_unanswered
@@ -98,6 +99,7 @@ object CourseTags {
     const val NEXT = "course-next"
     const val PREVIOUS = "course-previous"
     const val STEP_TITLE = "course-step-title"
+    const val DAILY_NOTE = "course-daily-note"
     const val PROGRESS = "course-progress"
     const val QUIZ = "course-quiz"
     const val VALIDATE = "course-quiz-validate"
@@ -215,6 +217,17 @@ private fun StepPage(comprendre: ComprendreLibrary, parcours: Parcours, step: Pa
             onAnswer = { choice -> comprendre.answer(step.index, choice) },
             onRetry = { comprendre.retry(step.index) },
             key = "${parcours.address}#${step.index}",
+        )
+    }
+    // « Je découvre » (CO-19): once the lesson is read, a suggestion to come back tomorrow, never a lock.
+    val lessonDone = step.quiz == null || progress?.answers?.containsKey(step.index) == true
+    if (parcours.daily && lessonDone && step.index < parcours.steps.lastIndex) {
+        Spacer(Modifier.height(12.dp))
+        Text(
+            text = stringResource(Res.string.comprendre_daily_note, step.index + 2),
+            style = MaterialTheme.typography.bodyMedium,
+            color = PpfTheme.palette.inkMuted,
+            modifier = Modifier.testTag(CourseTags.DAILY_NOTE),
         )
     }
     Spacer(Modifier.height(20.dp))

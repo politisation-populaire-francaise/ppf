@@ -15,6 +15,23 @@ object ComprendreTags {
 
     /** The role of a link (`a` tag) to a public person of "Voir" concerned by a « Qui décide de ça ? » sheet. */
     const val PERSON_LINK_ROLE: String = "personne"
+
+    /** The rhythm of a course (`ppf-rhythm`, [CourseRhythm]): absent for a course read at once. */
+    const val RHYTHM: String = "ppf-rhythm"
+}
+
+/**
+ * How a course is meant to be read (CO-19 « Je découvre », cahier fonctionnel M23): one lesson, that is one
+ * step, a day. A suggestion only, never a lock (design loyalty, PP-09): the reader may go on at once, nothing
+ * counts days or streaks, and the progress stays on the device like every course.
+ */
+enum class CourseRhythm(val tagValue: String) {
+    DAILY("quotidien"),
+    ;
+
+    companion object {
+        fun from(tagValue: String?): CourseRhythm? = entries.firstOrNull { it.tagValue == tagValue }
+    }
 }
 
 /**

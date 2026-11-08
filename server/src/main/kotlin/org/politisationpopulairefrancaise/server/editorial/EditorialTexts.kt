@@ -295,6 +295,8 @@ object EditorialTexts {
         "editorial.type.methode" to "Page de méthode",
         "editorial.type.glossaire" to "Entrée du glossaire",
         // Fields.
+        "editorial.field.rhythm" to "Rythme du parcours",
+        "editorial.help.rhythm" to "Une leçon par jour, comme « Je découvre » : une simple suggestion au lecteur, jamais un verrou. Ne rien choisir pour un parcours lu d’une traite.",
         "editorial.field.verdict" to "Verdict",
         "editorial.help.verdict" to "Ce que disent les faits de l’affirmation vérifiée.",
         "editorial.field.claim" to "Affirmation vérifiée",
@@ -327,6 +329,7 @@ object EditorialTexts {
         "comprendre.verdict.trompeur" to "Trompeur",
         "comprendre.verdict.contredit-par-les-faits" to "Contredit par les faits",
         "comprendre.verdict.inverifiable" to "Invérifiable",
+        "comprendre.rhythm.quotidien" to "Une leçon par jour",
         // Templates of an empty draft (the blocks already written).
         "editorial.template.fiche_pratique" to """
             ::: en-bref

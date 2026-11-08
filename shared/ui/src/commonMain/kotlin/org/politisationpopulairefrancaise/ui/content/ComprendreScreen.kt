@@ -40,6 +40,7 @@ import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.comprendre.Parcours
+import org.politisationpopulairefrancaise.core.comprendre.ParcoursProgress
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
@@ -76,6 +77,11 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_course_kind
 import org.politisationpopulairefrancaise.ui.resources.comprendre_courses_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_courses_none
 import org.politisationpopulairefrancaise.ui.resources.comprendre_courses_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_discover_day
+import org.politisationpopulairefrancaise.ui.resources.comprendre_discover_resume
+import org.politisationpopulairefrancaise.ui.resources.comprendre_discover_start
+import org.politisationpopulairefrancaise.ui.resources.comprendre_discover_text
+import org.politisationpopulairefrancaise.ui.resources.comprendre_discover_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_checks_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_decryptages_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_intro
@@ -143,6 +149,7 @@ object ComprendreTags {
     const val HISTORY_LIST = "history-list"
     const val GLOSSARY = "comprendre-glossary"
     const val GLOSSARY_OPEN = "comprendre-glossary-open"
+    const val DISCOVER = "comprendre-discover"
 
     /** A card of the home: followed by the slug of the content. */
     const val CARD = "comprendre-card-"
@@ -276,6 +283,14 @@ private fun ComprendreHome(
             }
             Spacer(Modifier.height(16.dp))
 
+            // « Je découvre » (CO-19): the lesson of the day of a daily course, until the course is done.
+            comprendre.courses.firstOrNull { it.daily && comprendre.progressOf(it)?.completed != true }?.let { course ->
+                DiscoverCard(course, comprendre.progressOf(course)) { lesson ->
+                    actions.openCourse(course)
+                    comprendre.goToLesson(lesson)
+                }
+            }
+
             Column(Modifier.fillMaxWidth().testTag(ComprendreTags.COURSE_LIST)) {
                 SectionHeading(stringResource(Res.string.comprendre_courses_title), stringResource(Res.string.comprendre_courses_intro))
                 if (comprendre.courses.isEmpty() && library.status != LibraryStatus.Loading) {
@@ -351,6 +366,47 @@ private fun ComprendreHome(
             },
         )
     }
+}
+
+/**
+ * « Je découvre » (CO-19, cahier fonctionnel M23): for newcomers, the lesson to read today of a course of one
+ * lesson a day. A suggestion only: nothing counts days, nothing is locked, the progress stays on the device.
+ */
+@Composable
+private fun DiscoverCard(course: Parcours, progress: ParcoursProgress?, onOpen: (Int) -> Unit) {
+    val lesson = course.nextLesson(progress) ?: return
+    val palette = PpfTheme.palette
+    PpfCard(onClick = { onOpen(lesson) }, modifier = Modifier.fillMaxWidth().testTag(ComprendreTags.DISCOVER)) {
+        Row(verticalAlignment = Alignment.Top) {
+            Text(
+                stringResource(Res.string.comprendre_discover_title),
+                style = MaterialTheme.typography.titleMedium,
+                color = palette.brand,
+                modifier = Modifier.weight(1f).semantics { heading() },
+            )
+            if (course.article.title.startsWith(FeedPost.EXAMPLE_MARKER)) {
+                Spacer(Modifier.width(8.dp))
+                ExampleBadge()
+            }
+        }
+        Spacer(Modifier.height(4.dp))
+        Text(displayTitle(course), style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(Res.string.comprendre_discover_text), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+        Spacer(Modifier.height(8.dp))
+        Text(stringResource(Res.string.comprendre_discover_day, lesson + 1, course.steps.size), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
+        Spacer(Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                if (progress == null) stringResource(Res.string.comprendre_discover_start) else stringResource(Res.string.comprendre_discover_resume, lesson + 1),
+                style = MaterialTheme.typography.titleSmall,
+                color = palette.brand,
+                modifier = Modifier.weight(1f),
+            )
+            Icon(Lucide.ChevronRight, contentDescription = null, tint = palette.brand, modifier = Modifier.size(18.dp))
+        }
+    }
+    Spacer(Modifier.height(20.dp))
 }
 
 /** The entry « Glossaire » of the home (D-048), shown once the device holds entries. */
