@@ -75,7 +75,7 @@ class EditorialSigningTest {
     private val data get() = BackOfficeTestData.backOffice(clock)
 
     /** One `submitDraft` received by the signing service. */
-    private data class Submission(val unsigned: UnsignedEvent, val doubleValidation: Boolean, val author: DraftAuthor?)
+    private data class Submission(val unsigned: UnsignedEvent, val use: SigningUse, val doubleValidation: Boolean, val author: DraftAuthor?)
 
     /** The fake signing service, with the faults the tests need; records each submission. */
     private class ScriptedSigner(val fake: FakePlatformSigner) : PlatformSigner by fake {
@@ -88,7 +88,7 @@ class EditorialSigningTest {
         override suspend fun currentKey(use: SigningUse): String? = if (!keyAvailable) null else keyOverride ?: fake.currentKey(use)
 
         override suspend fun submitDraft(unsigned: UnsignedEvent, use: SigningUse, doubleValidation: Boolean, author: DraftAuthor?): DraftSubmission {
-            submissions += Submission(unsigned, doubleValidation, author)
+            submissions += Submission(unsigned, use, doubleValidation, author)
             return fake.submitDraft(unsigned, use, doubleValidation, author)
         }
 
@@ -178,6 +178,9 @@ class EditorialSigningTest {
 
     private fun attempt(id: UUID): SigningAttempt = signing.attempts(id).first()
 
+    /** The signatures asked for the editorial use only: other poles (Décider's closures and petitions) share the same signer in the application. */
+    private fun editorialRequests(): List<Pair<UnsignedEvent, SigningUse>> = fake.requests.filter { it.second == use }
+
     private fun storedArticles() = events.query(EventFilter(kinds = listOf(Article.KIND), limit = 100))
 
     @Test
@@ -197,7 +200,7 @@ class EditorialSigningTest {
         assertFalse(status.doubleValidation, "an ordinary content asks for one approval")
         assertEquals(1, status.required)
         // The author is always named, in a single validation too, so that the signing service can refuse the author.
-        val submitted = signer.submissions.single()
+        val submitted = signer.submissions.single { it.use == use }
         assertFalse(submitted.doubleValidation)
         assertEquals(team.alice.id.toString(), submitted.author?.account)
         assertEquals(first.unsigned, submitted.unsigned)
@@ -208,13 +211,13 @@ class EditorialSigningTest {
         assertFalse(waiting.contains(EditorialTexts.SIGNER_AWAITING_TWO))
         assertTrue(waiting.contains("<a href=\"${first.approvalUrl}\">${EditorialTexts.SIGNER_LINK}</a>"))
         assertTrue(storedArticles().isEmpty(), "nothing published before the signature")
-        assertTrue(fake.requests.isEmpty(), "no signature asked before the approvals")
+        assertTrue(editorialRequests().isEmpty(), "no signature asked before the approvals")
         // Approved on the signing service: the next opening of the page asks the signature and publishes it.
         approveOnSigner(first.eventId)
         val published = client.page("$section/relecture/$id", team.bruno).bodyAsText()
         assertTrue(published.contains(EditorialTexts.SIGNER_PUBLISHED), published)
-        assertEquals(1, fake.requests.size)
-        assertEquals(first.unsigned, fake.requests.single().first, "the signature asked for exactly the event submitted")
+        assertEquals(1, editorialRequests().size)
+        assertEquals(first.unsigned, editorialRequests().single().first, "the signature asked for exactly the event submitted")
         val stored = storedArticles().single()
         assertEquals(first.eventId, stored.id)
         assertEquals(platformKey, stored.pubkey)
@@ -225,7 +228,7 @@ class EditorialSigningTest {
         assertEquals(SigningState.PUBLISHED, attempt(id).state)
         // A reload says published, without asking again.
         assertTrue(client.page("$section/relecture/$id", team.bruno).bodyAsText().contains(EditorialTexts.SIGNER_PUBLISHED))
-        assertEquals(1, fake.requests.size)
+        assertEquals(1, editorialRequests().size)
         // The site shows it at once.
         val page = client.get("$site/comprendre/decryptages/$SLUG")
         assertEquals(HttpStatusCode.OK, page.status)
@@ -245,7 +248,7 @@ class EditorialSigningTest {
         assertTrue(storedArticles().isEmpty())
         signer.pending = false
         assertTrue(client.page("$section/relecture/$id", team.bruno).bodyAsText().contains(EditorialTexts.SIGNER_PUBLISHED))
-        assertEquals(1, fake.requests.size, "the ticket is followed, the signature not asked twice")
+        assertEquals(1, editorialRequests().size, "the ticket is followed, the signature not asked twice")
         assertEquals(1, storedArticles().size)
     }
 
@@ -350,7 +353,7 @@ class EditorialSigningTest {
         val id = client.approved(team)
         assertTrue(signing.attempts(id).isEmpty(), "nothing sent")
         assertTrue(client.page("$section/relecture/$id", team.bruno).bodyAsText().contains(EditorialTexts.SIGNER_UNAVAILABLE))
-        assertTrue(fake.requests.isEmpty())
+        assertTrue(editorialRequests().isEmpty())
         assertTrue(storedArticles().isEmpty(), "never a content published unsigned")
         assertEquals(DraftStatus.READY_TO_SIGN, drafts.find(id)!!.status)
         signer.keyAvailable = true
@@ -375,7 +378,7 @@ class EditorialSigningTest {
         // An approval arriving late changes nothing: the expired event is never signed.
         approveOnSigner(first.eventId)
         assertTrue(client.page("$section/relecture/$id", bruno).bodyAsText().contains(EditorialTexts.SIGNER_EXPIRED))
-        assertTrue(fake.requests.isEmpty())
+        assertTrue(editorialRequests().isEmpty())
         val retried = client.form("$section/relecture/$id", bruno, decision(EditorialDraftsSection.ACTION_RETRY, 1))
         assertEquals(HttpStatusCode.OK, retried.status)
         val second = attempt(id)
@@ -486,7 +489,7 @@ class EditorialSigningTest {
         // The submission is never signed now, even with its approvals.
         approveOnSigner(attempt(id).eventId)
         client.page("$section/relecture/$id", team.bruno)
-        assertTrue(fake.requests.isEmpty())
+        assertTrue(editorialRequests().isEmpty())
         assertTrue(storedArticles().isEmpty())
         // The writers see the reason with their editable draft.
         val page = client.page("$section/brouillons/$id", team.alice).bodyAsText()
