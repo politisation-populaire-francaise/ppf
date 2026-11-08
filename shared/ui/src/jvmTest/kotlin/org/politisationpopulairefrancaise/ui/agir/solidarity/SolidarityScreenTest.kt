@@ -251,7 +251,8 @@ class SolidarityScreenTest {
         val harness = SolidarityHarness(AgirFixtures.dependencies(remote = server))
         openRubric(harness, storeExamples = false)
         waitUntil(timeoutMillis = 60_000) { harness.solidarity.status is SolidarityStatus.Synced }
-        fun solidarityRequests() = server.tagRequests.map { (tags, _) -> tags.single { it.name == AgirFormats.TAG_TYPE }.value }
+        // The other parts of the application ask the same server for their own contents: only the rubric's requests are counted here.
+        fun solidarityRequests(): List<String> = server.tagRequests.mapNotNull { (tags, _) -> tags.firstOrNull { it.name == AgirFormats.TAG_TYPE }?.value }
             .filter { it == SolidarityFormats.TYPE_FUND || it == SolidarityFormats.TYPE_MISSION }
         assertEquals(listOf(SolidarityFormats.TYPE_FUND, SolidarityFormats.TYPE_MISSION), solidarityRequests())
         countIs(SolidarityTags.FUND_COUNT, "3 caisses")
