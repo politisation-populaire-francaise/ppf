@@ -116,6 +116,7 @@ fun ParliamentScreen(
                         is ParliamentPage.OfMember -> key(page) { MemberPage(state, snapshot, page.id, padding, voirSheetFor) }
                         is ParliamentPage.OfBallot -> key(page) { BallotPage(state, snapshot, page.id, padding) }
                         ParliamentPage.Week -> key(page) { ParliamentWeekPage(state, padding) }
+                        ParliamentPage.MyVotes -> key(page) { MyVotesPage(state, snapshot, padding) }
                     }
                 }
             }
@@ -153,6 +154,7 @@ private fun ListPage(state: ParliamentState, snapshot: ParliamentSnapshot, colum
             }
         }
         state.week?.let { week -> item(key = "week") { ParliamentWeekEntry(week, Modifier.padding(horizontal = padding, vertical = 12.dp).widthIn(max = 720.dp)) } }
+        item(key = "my-votes") { MyVotesEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
         if (!membersHeld || membersRef != null && membersRef.name in snapshot.outdated) {
             item(key = "members-download") {
                 Column(Modifier.padding(horizontal = padding, vertical = 12.dp).widthIn(max = 720.dp)) {
@@ -425,13 +427,13 @@ private fun VotesSection(state: ParliamentState, catalog: ParliamentCatalog, mem
 
 /** The recorded position in words, then what the source adds: delegation, reason, correction. Neutral colours only. */
 @Composable
-private fun VoteDetail(vote: MemberVote) {
+internal fun VoteDetail(vote: MemberVote, showPosition: Boolean = true) {
     val palette = PpfTheme.palette
     Spacer(Modifier.height(4.dp))
     Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(stringResource(Res.string.parl_vote_position, stringResource(vote.position.label)), style = MaterialTheme.typography.labelLarge, color = palette.ink)
+        if (showPosition) Text(stringResource(Res.string.parl_vote_position, stringResource(vote.position.label)), style = MaterialTheme.typography.labelLarge, color = palette.ink)
         if (vote.delegated) {
-            Spacer(Modifier.width(8.dp))
+            if (showPosition) Spacer(Modifier.width(8.dp))
             PpfBadge(stringResource(Res.string.parl_vote_delegated), BadgeStyle.NEUTRAL)
         }
     }

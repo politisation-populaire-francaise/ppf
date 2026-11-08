@@ -20,6 +20,10 @@ import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentOpening
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentRepository
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentSnapshot
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentStore
+import org.politisationpopulairefrancaise.core.voir.parlement.InMemoryVoteAlertStorage
+import org.politisationpopulairefrancaise.core.elus.ElusDirectory
+import org.politisationpopulairefrancaise.core.elus.ElusStore
+import org.politisationpopulairefrancaise.core.elus.InMemoryElusStorage
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.resources.Res
 
@@ -28,6 +32,7 @@ sealed interface ParliamentPage {
     data class OfMember(val id: String) : ParliamentPage
     data class OfBallot(val id: String) : ParliamentPage
     data object Week : ParliamentPage // « Cette semaine au Parlement » (ParliamentWeekScreen.kt)
+    data object MyVotes : ParliamentPage // « Mes élus ont voté » (MyVotesPage.kt, VO-34)
 }
 
 /**
@@ -39,6 +44,8 @@ sealed interface ParliamentPage {
 class ParliamentState(
     private val repository: ParliamentRepository,
     private val scope: CoroutineScope,
+    /** « Mes élus ont voté » (VO-34): my officials, the followed words and members of the European Parliament. */
+    val myVotes: MyVotesState = MyVotesState(InMemoryVoteAlertStorage(), ElusDirectory(null, InMemoryElusStorage()), scope),
 ) {
     private val lock = Mutex()
 
@@ -159,6 +166,9 @@ fun rememberParliamentState(dependencies: AppDependencies): ParliamentState {
     val scope = rememberCoroutineScope()
     return remember(dependencies) {
         val storage = dependencies.database?.let(::ParliamentStore) ?: InMemoryParliamentStorage()
-        ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope)
+        val elus = ElusDirectory(dependencies.remote, dependencies.database?.let(::ElusStore) ?: InMemoryElusStorage())
+        // In memory until its local table is numbered (VO-34); the notification source will read the same storage.
+        val myVotes = MyVotesState(InMemoryVoteAlertStorage(), elus, scope)
+        ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope, myVotes)
     }
 }

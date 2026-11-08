@@ -9,4 +9,39 @@
     </plurals>
     <string name="voir_alert_word">Un nouveau scrutin sur « %1$s ».</string>
     <string name="voir_alert_word_generic">Un nouveau scrutin sur un mot que vous suivez.</string>
+    <!-- The page « Mes élus ont voté » in the Parliament of « Voir ». -->
+    <string name="my_votes_entry_title">Mes élus ont voté</string>
+    <string name="my_votes_entry_text">Les votes de vos députés et sénateurs, triés sur votre appareil.</string>
+    <string name="my_votes_title">Mes élus ont voté</string>
+    <string name="my_votes_privacy">Tout est calculé sur votre appareil, à partir des fichiers de scrutins qu’il a téléchargés, les mêmes pour tout le monde : le serveur ne sait pas qui sont vos élus ni quels mots vous suivez.</string>
+    <string name="my_votes_no_commune">Choisissez votre commune dans « Mes élus », dans l’espace Comprendre : vos députés et vos sénateurs apparaîtront ici.</string>
+    <string name="my_votes_officials">Vos parlementaires</string>
+    <string name="my_votes_shared_commune">Votre commune compte plusieurs circonscriptions : chacun de leurs députés est affiché.</string>
+    <string name="my_votes_unmatched">%1$s : aucun vote rapproché dans les données du Parlement.</string>
+    <string name="my_votes_recent">Derniers scrutins</string>
+    <string name="my_votes_none">Aucun scrutin de vos élus parmi ceux de cet appareil. Téléchargez des mois de scrutins depuis la liste du Parlement, ou allumez les alertes.</string>
+    <string name="my_votes_member_vote">%1$s : %2$s</string>
+    <string name="my_votes_alerts">Alertes</string>
+    <string name="my_votes_alerts_text">Éteintes par défaut. Pour les recevoir, allumez « Votes et pétitions » dans les notifications de Mon espace. À chaque synchronisation, l’appareil télécharge alors les scrutins du mois en cours et du mois précédent de vos assemblées, puis vous envoie un seul résumé.</string>
+    <string name="my_votes_wifi_only">Seulement en Wi-Fi</string>
+    <string name="my_votes_wifi_only_hint">Rien n’est téléchargé sur le réseau mobile. Jamais rien en mode économie de données.</string>
+    <string name="my_votes_europeans">Eurodéputés suivis</string>
+    <string name="my_votes_europeans_text">La France élit ses eurodéputés sur des listes nationales : aucun n’est suivi par défaut. Choisissez ceux que vous voulez suivre.</string>
+    <string name="my_votes_europeans_none">Aucun</string>
+    <string name="my_votes_europeans_all">Tous (%1$d)</string>
+    <string name="my_votes_europeans_list">Toute la liste « %1$s » (%2$d)</string>
+    <string name="my_votes_europeans_other_list">Sans liste indiquée</string>
+    <string name="my_votes_europeans_count">%1$d suivis.</string>
+    <string name="my_votes_europeans_expected">Sur cet appareil, le Parlement européen compte %1$d scrutins sur les derniers mois téléchargés : chacun peut apparaître dans vos alertes.</string>
+    <string name="my_votes_europeans_expected_unknown">Le Parlement européen vote souvent : suivre beaucoup d’eurodéputés donne de longs résumés.</string>
+    <string name="my_votes_europeans_download">Téléchargez la liste des parlementaires pour choisir des eurodéputés.</string>
+    <string name="my_votes_words">Mots suivis</string>
+    <string name="my_votes_words_text">Un scrutin dont le titre contient tous les mots d’une entrée vous est signalé, sans accents ni majuscules (« retraite » trouve « retraites »). Ces mots restent sur cet appareil.</string>
+    <string name="my_votes_word_field">Mot ou expression à suivre</string>
+    <string name="my_votes_word_add">Suivre</string>
+    <string name="my_votes_word_remove">Ne plus suivre « %1$s »</string>
+    <string name="my_votes_word_empty">Écrivez au moins un mot.</string>
+    <string name="my_votes_word_already">Ce mot est déjà suivi.</string>
+    <string name="my_votes_word_too_many">50 mots au plus : retirez-en un pour en ajouter un autre.</string>
+    <string name="my_votes_words_none">Aucun mot suivi.</string>
 </resources>
