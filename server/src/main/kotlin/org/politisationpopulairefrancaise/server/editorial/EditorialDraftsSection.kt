@@ -52,6 +52,7 @@ import org.politisationpopulairefrancaise.server.backoffice.SectionContext
 import org.politisationpopulairefrancaise.server.backoffice.SectionRoutes
 import org.politisationpopulairefrancaise.server.backoffice.dateTime
 import org.politisationpopulairefrancaise.web.comprendre.comprendreBodyPreview
+import org.politisationpopulairefrancaise.web.voir.voirBlockPreview
 import java.time.Clock
 import java.time.LocalDate
 import java.time.ZoneId
@@ -420,7 +421,12 @@ class EditorialDraftsSection(
             p(classes = "bo-notice bo-notice-warning") { +EditorialTexts.PREVIEW_IMPOSSIBLE }
             return
         }
-        div(classes = "bo-preview-content") {
+        // Voir (step 6): the block as its page on the site, with the published blocks it links to.
+        if (space == EditorialSpace.VOIR) {
+            div(classes = "bo-preview-content") {
+                if (!voirBlockPreview(event, published.snapshot().ofSpace(space))) p(classes = "bo-notice bo-notice-warning") { +EditorialTexts.PREVIEW_IMPOSSIBLE }
+            }
+        } else div(classes = "bo-preview-content") {
             h2 { +event.tags.firstOrNull { it.firstOrNull() == Article.TAG_TITLE }?.getOrNull(1).orEmpty() }
             event.tags.firstOrNull { it.firstOrNull() == Article.TAG_SUMMARY }?.getOrNull(1)?.let { p(classes = "bo-summary") { +it } }
             p(classes = "bo-badge") { +originText(content.origin) }

@@ -66,6 +66,9 @@ class PublicationPolicy(private val editors: Set<String>) {
 
     fun isEditor(pubkeyHex: String): Boolean = pubkeyHex in editors
 
+    /** The public keys of the editorial team (public by nature: they sign every published content), for the open export. */
+    fun editorKeys(): Set<String> = editors
+
     /** A demand of the wall (kind 30023, `ppf-type` = revendication) signed by a key outside the editorial team. */
     fun isCitizenDemand(event: SignedEvent): Boolean =
         event.kind == Article.KIND && !isEditor(event.pubkey) && event.firstTagValue(Article.TAG_TYPE) == ArticleType.REVENDICATION.tagValue

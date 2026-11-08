@@ -339,4 +339,16 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Un avis révèle que la personne a été interpellée | L'avis dit seulement « compromis depuis » (date choisie, 30 jours en arrière au plus) ; aucun motif ni circonstance n'est demandé ni stocké | Aucun |
 | Avis antidaté ou daté dans le futur pour déplacer la frontière des messages « suspects » | « Compromis depuis » entre 30 jours avant l'avis et l'avis lui-même ; avis refusé s'il est daté de plus de 10 minutes dans le futur | Aucun |
 | Révélation des contacts d'une personne quand son appareil vérifie s'ils sont compromis | L'appareil lit les avis par lots mélangés (`GET /api/v1/events?kind=1777&tag=p:…`), comme pour les comptes suivis ; `GET /api/v1/accounts/<clé>/status` sert à son propre compte | Circuits distincts (Tor, phase 3) |
-| Salon sans administrateur après le retrait des rôles d'une clé compromise | Le salon et son journal restent ; ses messages restent lisibles | Reprise d'un salon orphelin par l'équipe (back-office, à concevoir) |
+| Salon sans administrateur après le retrait des rôles d'une clé compromise | Le salon et son journal restent ; ses messages restent lisibles ; il entre dans la file « Salons sans administrateur » du back-office (`groups.orphans`), où l'équipe peut le laisser tel quel, à deux et avec un motif (`docs/integration/salons-reprise.md`) | Nomination d'un administrateur par l'équipe : 9000 signé par la plateforme (usage humain `groups.takeover`), approuvé par une deuxième personne sur la page du service de signature, seulement dans un salon sans administrateur |
+| Une équipe (ou un serveur compromis) s'empare de salons | Seuls les salons sans administrateur entrent dans la file ; action à deux, motif obligatoire, journal d'audit inaltérable (D-124) | Usage `groups.takeover` humain (jamais automatique) et trace publique signée dans le journal du salon |
+
+## Ajout du 8 novembre 2026 : export ouvert (M34, S-48, D-101)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Fichier en vrac qui relie des pseudonymes de citoyens à leurs opinions (revendications, mobilisations, messages) | Seuls les contenus signés par les clés éditoriales sont exportés, vérifiés de nouveau à la lecture | |
+| Réutilisation en masse de données sur des personnes ou sur la justice (affaires, peines) | Aucun tableau des personnes, des affaires ni des peines ; ces contenus restent seulement sous forme d'événements, comme dans l'API | Avis de l'avocat avant tout tableau de ce genre |
+| Injection de formules dans un tableur (cellule qui commence par `=`, `+`, `-`, `@`) | Apostrophe ajoutée devant ces textes dans le CSV ; le JSON garde la valeur exacte | |
+| Tableau modifié après téléchargement et présenté comme venant de PPF | Chaque ligne donne la version du contenu, à vérifier par sa signature dans `contenus.json` ; empreinte de chaque fichier dans le catalogue | « Vérifier un contenu PPF » (S-141) |
+| Saturation du serveur par des téléchargements répétés | Export recalculé au plus une fois par minute, en mémoire, borné à 20 000 contenus ; `ETag` et `304` | Mode sobre du Directeur technique en cas d'afflux |
+| Pistage des personnes qui téléchargent (journalistes, chercheurs) | Aucun compte, aucun cookie, aucun journal des requêtes | |
