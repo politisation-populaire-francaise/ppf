@@ -20,6 +20,10 @@
 | ZXing core (`com.google.zxing:core`) | 3.5.3 (Maven Central, vérifiée le 8 novembre 2026) | Apache 2.0 | Android et ordinateur | 0,61 Mo | Dessiner et lire les codes ; Java pur, aucune dépendance, aucun réseau. En maintenance (stable, sans nouveautés) : suffisant pour un format figé. |
 | CameraX (`androidx.camera:camera-core`, `camera-camera2`, `camera-lifecycle`, `camera-view`) | 1.6.1 (Google Maven, stable, vérifiée le 8 novembre 2026) | Apache 2.0 | Android seulement | 2,6 Mo | Afficher la caméra et analyser ses images ; AndroidX, sans services Google Play. |
 
+Ce que CameraX entraîne avec lui (fichiers de verrouillage du 8 novembre 2026, Android seulement, toutes sous licence Apache 2.0, aucune ne contacte un serveur) : `camera-video` (demandée par `camera-view`), `camera-camera2-pipe` avec Dagger 2.59, `viewfinder-core`, `featurecombinationquery`, Media3 1.9.0 (`media3-common`, `media3-container`, `media3-muxer`, pour la vidéo, inutilisée ici) et quelques bibliothèques AndroidX (appcompat, fragment, exifinterface, tracing). `tools/check-dependencies.sh` ne trouve aucun groupe interdit.
+
+**Poids mesuré** : l'APK de test passe de 31,6 Mo (main a900559, sans codes QR) à 35,9 Mo (+4,3 Mo, +14 %). L'APK de test n'est pas réduit par R8 : la version de publication, réduite, retirera la plus grande part du code vidéo inutilisé. Piste si le poids gêne : remplacer `camera-view` par un affichage de la caméra écrit avec `camera-core` seul (sans `camera-video` ni Media3).
+
 Écartés : **ML Kit** (service Google, interdit par `tools/forbidden-dependency-groups.txt`) ; QRose (une bibliothèque de plus, plus jeune) ; un encodeur maison (environ 500 lignes à maintenir). iOS : le code commun reste compatible (`QrCode.ios.kt`, sans encodeur ni lecteur pour l'instant) ; l'encodeur et la caméra du système viendront avec la compilation iOS.
 
 ## 3. Vie privée et permission
