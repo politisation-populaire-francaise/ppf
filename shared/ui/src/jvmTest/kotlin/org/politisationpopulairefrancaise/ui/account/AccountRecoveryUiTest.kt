@@ -7,6 +7,7 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
@@ -34,6 +35,8 @@ import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
+import org.politisationpopulairefrancaise.ui.agir.security.AppLockSetupTags
+import org.politisationpopulairefrancaise.ui.agir.security.SecurityTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -99,7 +102,21 @@ class AccountRecoveryUiTest {
         val asked = Regex("\\d+").findAll(textOf(AccountTags.VERIFY_INSTRUCTION)).map { it.value.toInt() }.toList()
         asked.forEachIndexed { field, position -> onNodeWithTag(AccountTags.VERIFY_FIELD + field).performTextInput(words[position - 1]) }
         click(AccountTags.VERIFY_SUBMIT)
+        passLockStep()
         return words
+    }
+
+    /**
+     * « Protéger PPF sur cet appareil » (Agir, M33, D-082), right after the account arrives on the
+     * device: « Choisir un code » is preselected; these tests continue without a code, after its warning.
+     */
+    private fun ComposeUiTest.passLockStep() {
+        awaitTag(AppLockSetupTags.STEP)
+        onNodeWithTag(AppLockSetupTags.CHOOSE).assertIsSelected()
+        click(AppLockSetupTags.SKIP)
+        click(AppLockSetupTags.CONTINUE)
+        tap(SecurityTags.DIALOG_CONFIRM)
+        waitUntil(timeoutMillis = 10_000) { !has(AppLockSetupTags.STEP) }
     }
 
     @Test
@@ -155,6 +172,7 @@ class AccountRecoveryUiTest {
         click(AccountTags.CREATE)
         click(AccountTags.PHRASE_NOTED)
         click(RecoveryTags.VERIFY_LATER)
+        passLockStep()
         val postponed = assertNotNull(store.snapshot)
         assertNotNull(postponed.recoveryWords)
         assertFalse(postponed.phraseVerified)

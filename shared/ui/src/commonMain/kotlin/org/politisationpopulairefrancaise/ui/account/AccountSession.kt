@@ -172,6 +172,19 @@ class AccountSession(
     var phraseCheck: PhraseCheckState? by mutableStateOf(null)
         private set
 
+    /**
+     * True once an account arrives on this device (created or restored) until the step « Protéger PPF
+     * sur cet appareil » (M33, Agir's AppLockSetupStep, D-082) is passed: a code chosen, or « Continuer
+     * sans code » confirmed after its warning. Not kept: a restart shows Mon espace directly.
+     */
+    var lockStepPending: Boolean by mutableStateOf(false)
+        private set
+
+    /** The step « Protéger PPF sur cet appareil » is passed (either way: it can be changed in Mon espace). */
+    fun lockStepDone() {
+        lockStepPending = false
+    }
+
     /** "J'ai perdu le contrôle de mon compte". */
     val lostControl: LostControlFlow = LostControlFlow(this, remote, clock)
 
@@ -245,6 +258,7 @@ class AccountSession(
         }
         val phrase = creating.phrase
         val created = phrase.deriveKeys()
+        lockStepPending = true
         persist(created, StoredIdentity.of(created, if (creating.keepPhrase) phrase else null, verified = true, pendingRecoveryKey = StoredIdentity.recoveryKeyOf(phrase)))
     }
 
@@ -256,6 +270,7 @@ class AccountSession(
         val creating = state as? AccountUiState.Creating ?: return
         val phrase = creating.phrase
         val keysOfPhrase = phrase.deriveKeys()
+        lockStepPending = true
         persist(keysOfPhrase, StoredIdentity.of(keysOfPhrase, phrase, verified = false, checkDueAt = clock() + REMINDER_DELAY_SECONDS))
     }
 
@@ -280,6 +295,7 @@ class AccountSession(
             if (restored == null) {
                 state = AccountUiState.Restoring(RestoreError.InvalidSecretKey)
             } else {
+                lockStepPending = true
                 persist(restored, StoredIdentity.of(restored, null))
             }
             return
@@ -292,6 +308,7 @@ class AccountSession(
             }
         }
         val restored = phrase.deriveKeys()
+        lockStepPending = true
         persist(restored, StoredIdentity.of(restored, null, verified = true, pendingRecoveryKey = StoredIdentity.recoveryKeyOf(phrase)))
     }
 
@@ -386,6 +403,7 @@ class AccountSession(
             stored = null
             compromise = null
             phraseCheck = null
+            lockStepPending = false
             recoveryKey = RecoveryKeyState.UNKNOWN
             state = AccountUiState.NoAccount
             onSignOut()
