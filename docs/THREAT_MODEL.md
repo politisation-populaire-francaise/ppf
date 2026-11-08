@@ -398,3 +398,14 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Ancienne version présentée comme actuelle | « Authentique, mais ancien » avec la version actuelle | |
 | Ce que vérifie une personne révèle ce qu'elle a reçu | Rien n'est enregistré ni journalisé ; le contenu collé n'est jamais réécrit dans la page ; dans l'application, la vérification se fait sur l'appareil, sans connexion | |
 | Requête démesurée | 96 Kio au plus pour un contenu collé, corps lu par un canal borné, `413` au-delà | |
+
+## Ajout du 8 novembre 2026 : solidarité et bénévolat (M35 : AG-10, AG-12)
+
+Détail : `docs/integration/agir-solidarite.md`, section 4.
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Fausse caisse, cagnotte frauduleuse, hameçonnage par une page de dons | Seule une clé éditoriale publie une caisse (le serveur refuse tout autre contenu de type 30023 qui n'est pas un appel ; l'appareil n'affiche que les clés de confiance) ; date de vérification affichée ; lien `https` à hôte ASCII seulement, sans « utilisateur@ » ; « Vous quittez PPF » nomme l'hôte, rappelle que les fausses cagnottes existent, le choix sûr en premier ; caisse close ou retirée : plus aucun lien | Procédure écrite de vérification et de revérification des caisses (question 6) |
+| Caisse détournée au profit d'un candidat ou d'un parti (financement interdit à une personne morale) | Étiquette `ppf-no-party` = `oui` obligatoire, sans laquelle l'outil de signature refuse la fiche et l'appareil l'ignore ; partis et candidats exclus de l'annuaire des organisations | Cas limites soumis à l'avocat (question 7) |
+| Profilage par la recherche ou les compétences (qui cherche une caisse de grève, qui est juriste) | Deux requêtes générales, les mêmes pour tous ; recherche, territoire et compétences jamais envoyés ni enregistrés, oubliés par l'effacement rapide | |
+| Exposition des personnes par l'entraide (adresse, trajet, présence à une manifestation) ou par une offre d'aide (engagement) | Rien n'est codé : entraide et « Proposer mon aide » annoncés « bientôt » | Questions 1 à 3 de la note |
