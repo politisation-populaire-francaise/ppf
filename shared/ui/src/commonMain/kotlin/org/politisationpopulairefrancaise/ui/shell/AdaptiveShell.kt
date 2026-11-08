@@ -96,6 +96,10 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpButton
 import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpSheetHost
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ProvideHelp
 import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
+import org.politisationpopulairefrancaise.ui.agir.security.DeviceSecurityGate
+import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
+import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
+import org.politisationpopulairefrancaise.ui.agir.security.rememberDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
 import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
@@ -221,6 +225,14 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         dependencies.push?.let { push -> shellScope.launch { runCatching { push.clear() } } }
         testimonyLibrary.forgetAll()
     })
+    // M33: the lock of the application, the content hidden from the system and the quick erase (S-43 to S-45).
+    val security = rememberDeviceSecurity(dependencies)
+    // The quick erase (S-44): the keys, with what « Effacer mes clés » already forgets (D-032, D-039), and the rally point.
+    RegisterErasable(dependencies, "core-identity") {
+        dependencies.identityStore.clear()
+        accountSession.signOut()
+    }
+    RegisterErasable(dependencies, "agir-rally-point") { help.clearRallyPoint() }
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.
@@ -272,7 +284,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The system's back leads from any space to the feed; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting) {
+    ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
             val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
             val account = accountSession.state as? AccountUiState.Ready
@@ -341,7 +353,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
             }
             HelpSheetHost(help)
         }
-    } } } }
+    } } } } } }
 }
 
 @Composable
