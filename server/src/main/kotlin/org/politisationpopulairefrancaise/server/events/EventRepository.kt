@@ -5,6 +5,7 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.TagsJson
 import org.politisationpopulairefrancaise.server.agir.AgendaIndex
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
+import org.politisationpopulairefrancaise.server.legal.LegalRegister
 import java.sql.Connection
 import java.sql.PreparedStatement
 import java.sql.ResultSet
@@ -90,8 +91,11 @@ enum class StoreOutcome {
 /**
  * Stores and reads signed events in PostgreSQL. Signature verification is the API's job, before
  * anything reaches this class. Replacement follows [EventReplacement], like the local database.
+ *
+ * Every stored public content also enters the legal [register] (D-077), in the same transaction as the
+ * event: no publication escapes it and no register row exists for an event that was not stored.
  */
-class EventRepository(internal val dataSource: DataSource) {
+class EventRepository(internal val dataSource: DataSource, private val register: LegalRegister = LegalRegister()) {
 
     fun store(event: SignedEvent): StoreOutcome = dataSource.connection.use { connection ->
         connection.autoCommit = false
@@ -122,8 +126,10 @@ class EventRepository(internal val dataSource: DataSource) {
             if (statement.executeQuery().next()) return StoreOutcome.DUPLICATE
         }
         val address = EventReplacement.replacementKey(event)
+        var replaced: LegalRegister.ReplacedVersion? = null
         if (address != null) {
-            connection.prepareStatement("SELECT id, created_at FROM events WHERE address = ? FOR UPDATE").use { statement ->
+            // The content of an old version is read only for a profile, whose pseudonyms the register compares.
+            connection.prepareStatement("SELECT id, created_at, CASE WHEN kind = 0 THEN content END FROM events WHERE address = ? FOR UPDATE").use { statement ->
                 statement.setString(1, address)
                 val existing = statement.executeQuery()
                 if (existing.next()) {
@@ -132,6 +138,8 @@ class EventRepository(internal val dataSource: DataSource) {
                     if (!EventReplacement.supersedes(event.createdAt, event.id, existingCreatedAt, existingId)) {
                         return StoreOutcome.SUPERSEDED
                     }
+                    // The address holds the key: the old version has the same author.
+                    replaced = LegalRegister.ReplacedVersion(existingId, existingCreatedAt, event.pubkey, existing.getString(3))
                     // The tag rows of the old version go with it (ON DELETE CASCADE).
                     connection.prepareStatement("DELETE FROM events WHERE id = ?").use { delete ->
                         delete.setString(1, existingId)
@@ -153,6 +161,8 @@ class EventRepository(internal val dataSource: DataSource) {
             insert.setString(8, address)
             insert.executeUpdate()
         }
+        // The legal register, in this transaction: a failure of anything after it undoes it with the event.
+        register.recordStored(connection, event, replaced)
         insertTags(connection, event)
         // A group description also enters the directory of rooms (and leaves it with the event).
         GroupIndex.write(connection, event)

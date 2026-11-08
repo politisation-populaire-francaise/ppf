@@ -120,6 +120,7 @@ private fun FlowContent.navigation(auth: Authenticated, current: String?) {
             navLink("/validations", BackOfficeTexts.NAV_APPROVALS, current)
             if (TEAM_PERMISSIONS.any(actor::has)) navLink("/equipe", BackOfficeTexts.NAV_TEAM, current)
             if (actor.has(Permissions.AUDIT_READ)) navLink("/journal", BackOfficeTexts.NAV_JOURNAL, current)
+            if (actor.has(Permissions.LEGAL_REQUISITION)) navLink("/requisitions", BackOfficeTexts.NAV_REQUISITIONS, current)
             if (actor.has(Permissions.VALIDATION_SESSION_OPEN) || actor.has(Permissions.TEAM_REVOKE) || TeamRole.VALIDATOR in actor.roles) {
                 navLink("/seances", BackOfficeTexts.NAV_SESSIONS, current)
             }
@@ -712,7 +713,8 @@ fun HTML.approvalsPage(auth: Authenticated, approvals: List<PendingApproval>, ps
                             +", ${BackOfficeTexts.APPROVAL_EXPIRES} "
                             dateTime(approval.expiresAt)
                         }
-                        approval.reason?.let { reason -> p { +"${BackOfficeTexts.REASON_LABEL} : $reason" } }
+                        val reasonLabel = if (approval.action == BackOffice.ACTION_REQUISITION) BackOfficeTexts.REQUISITION_REFERENCE_SHORT else BackOfficeTexts.REASON_LABEL
+                        approval.reason?.let { reason -> p { +"$reasonLabel : $reason" } }
                         if (approval.requestedBy == auth.actor.accountId) {
                             p(classes = "bo-hint") { +BackOfficeTexts.APPROVAL_YOURS }
                             form(action = "/validations/${approval.id}/annulation", method = FormMethod.post) {
@@ -745,7 +747,129 @@ private fun describe(approval: PendingApproval, pseudonyms: Map<UUID, String>): 
         BackOffice.ACTION_REVOKE -> "${BackOfficeTexts.APPROVAL_REVOKE} « $role » ${BackOfficeTexts.APPROVAL_TO} ${account(approval.payload["account"])}"
         BackOffice.ACTION_REMOVE -> "${BackOfficeTexts.APPROVAL_REMOVE} : ${account(approval.targetId)}"
         BackOffice.ACTION_REINSTATE -> "${BackOfficeTexts.APPROVAL_REINSTATE} : ${account(approval.targetId)}"
+        BackOffice.ACTION_REQUISITION -> "${BackOfficeTexts.APPROVAL_REQUISITION} (${describeSearch(RequisitionSearch.of(approval.payload))})"
         else -> "${BackOfficeTexts.APPROVAL_QUEUE} ${approval.payload["queue"].orEmpty()} : ${approval.payload["action"].orEmpty()} (${approval.payload["item"].orEmpty()})"
+    }
+}
+
+/** The search of a requisition in words: key, content, period (Paris days, end included). */
+private fun describeSearch(search: RequisitionSearch?): String {
+    if (search == null) return BackOfficeTexts.REQUISITION_SEARCH_GONE
+    val day = DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.FRENCH)
+    return listOfNotNull(
+        search.pubkey?.let { "${BackOfficeTexts.REQUISITION_KEY_SHORT} $it" },
+        search.eventId?.let { "${BackOfficeTexts.REQUISITION_EVENT_SHORT} $it" },
+        "${BackOfficeTexts.REQUISITION_PERIOD_FROM} ${day.format(search.from.atZone(PARIS))} ${BackOfficeTexts.REQUISITION_PERIOD_UNTIL} " +
+            day.format(search.until.minusSeconds(1).atZone(PARIS)),
+    ).joinToString(", ")
+}
+
+// Judicial requisitions (legal register, D-077) ---------------------------------------------------------
+
+/**
+ * The requisitions of the last 30 days and the form of a new one (`legal.requisition`). The answer of an
+ * approved requisition is offered to the person who asked and to the one who approved, once.
+ */
+fun HTML.requisitionsPage(auth: Authenticated, requisitions: List<PendingApproval>, pseudonyms: Map<UUID, String>, now: Instant, notice: Notice?) {
+    fun who(id: UUID?): String = id?.let(pseudonyms::get) ?: BackOfficeTexts.ACTOR_UNKNOWN
+    backOfficeLayout(BackOfficeTexts.REQUISITIONS_TITLE, auth, current = "/requisitions", notice = notice) {
+        h1 { +BackOfficeTexts.REQUISITIONS_TITLE }
+        p { +BackOfficeTexts.REQUISITIONS_INTRO }
+        p { +BackOfficeTexts.REQUISITIONS_CONTENT }
+        section {
+            attributes["aria-labelledby"] = "bo-requisitions-ready"
+            h2 { id = "bo-requisitions-ready"; +BackOfficeTexts.REQUISITIONS_READY }
+            p { +BackOfficeTexts.REQUISITIONS_READY_TEXT }
+            val ready = requisitions.filter { LegalRequisitions.mayDownload(it, auth.actor.accountId, now) }
+            if (ready.isEmpty()) p { +BackOfficeTexts.REQUISITIONS_READY_NONE }
+            ul(classes = "bo-list") {
+                ready.forEach { requisition ->
+                    li {
+                        h3(classes = "bo-item-title") { +"${BackOfficeTexts.REQUISITION_REFERENCE_SHORT} : ${requisition.reason.orEmpty()}" }
+                        p { +"${BackOfficeTexts.REQUISITION_SEARCH} : ${describeSearch(RequisitionSearch.of(requisition.payload))}" }
+                        p {
+                            +"${BackOfficeTexts.APPROVAL_REQUESTED_BY} ${who(requisition.requestedBy)}, ${BackOfficeTexts.REQUISITION_APPROVED_BY} ${who(requisition.decidedBy)} ${BackOfficeTexts.APPROVAL_ON} "
+                            requisition.decidedAt?.let { dateTime(it) }
+                        }
+                        form(action = "/requisitions/${requisition.id}/reponse", method = FormMethod.post) {
+                            csrfField(auth)
+                            p(classes = "bo-hint") { +BackOfficeTexts.SENSITIVE_HINT }
+                            button(type = ButtonType.submit, classes = "bo-button") { +BackOfficeTexts.REQUISITION_DOWNLOAD }
+                        }
+                    }
+                }
+            }
+        }
+        section {
+            attributes["aria-labelledby"] = "bo-requisition-new"
+            h2 { id = "bo-requisition-new"; +BackOfficeTexts.REQUISITIONS_FORM_TITLE }
+            form(action = "/requisitions", method = FormMethod.post) {
+                csrfField(auth)
+                div(classes = "bo-field") {
+                    label { htmlFor = "bo-requisition-reference"; +BackOfficeTexts.REQUISITION_REFERENCE }
+                    input(type = InputType.text, name = "reference") {
+                        id = "bo-requisition-reference"
+                        required = true
+                        maxLength = AuditEntry.MAX_REASON_LENGTH.toString()
+                        attributes["aria-describedby"] = "bo-requisition-reference-hint"
+                        attributes["autocomplete"] = "off"
+                    }
+                    p(classes = "bo-hint") { id = "bo-requisition-reference-hint"; +BackOfficeTexts.REQUISITION_REFERENCE_HINT }
+                }
+                fieldSet {
+                    legend { +BackOfficeTexts.REQUISITION_SEARCH }
+                    p(classes = "bo-hint") { id = "bo-requisition-search-hint"; +BackOfficeTexts.REQUISITION_SEARCH_HINT }
+                    requisitionField("bo-requisition-key", "cle", BackOfficeTexts.REQUISITION_KEY, InputType.text, required = false)
+                    requisitionField("bo-requisition-event", "evenement", BackOfficeTexts.REQUISITION_EVENT, InputType.text, required = false)
+                    requisitionField("bo-requisition-from", "du", BackOfficeTexts.REQUISITION_FROM, InputType.date, required = true)
+                    requisitionField("bo-requisition-until", "au", BackOfficeTexts.REQUISITION_UNTIL, InputType.date, required = true)
+                }
+                p(classes = "bo-hint") { +BackOfficeTexts.REQUISITION_TWO_PERSON }
+                button(type = ButtonType.submit, classes = "bo-button") { +BackOfficeTexts.REQUISITION_SUBMIT }
+            }
+        }
+        section {
+            attributes["aria-labelledby"] = "bo-requisitions-history"
+            h2 { id = "bo-requisitions-history"; +BackOfficeTexts.REQUISITIONS_HISTORY }
+            if (requisitions.isEmpty()) p { +BackOfficeTexts.REQUISITIONS_NONE }
+            ul(classes = "bo-list") {
+                requisitions.forEach { requisition ->
+                    li {
+                        h3(classes = "bo-item-title") { +"${BackOfficeTexts.REQUISITION_REFERENCE_SHORT} : ${requisition.reason.orEmpty()}" }
+                        dl(classes = "bo-facts") {
+                            dt { +BackOfficeTexts.REQUISITION_STATE }
+                            dd {
+                                +BackOfficeTexts.requisitionState(LegalRequisitions.state(requisition, now))
+                                val operations = requisition.payload["operations"]
+                                val found = requisition.payload["pseudonyms"]
+                                if (operations != null && found != null) +" ($operations, $found ${BackOfficeTexts.REQUISITION_ANSWERED_ROWS})"
+                            }
+                            dt { +BackOfficeTexts.REQUISITION_SEARCH }
+                            dd { +describeSearch(RequisitionSearch.of(requisition.payload)) }
+                            dt { +BackOfficeTexts.APPROVAL_REQUESTED_BY }
+                            dd {
+                                +"${who(requisition.requestedBy)} ${BackOfficeTexts.APPROVAL_ON} "
+                                dateTime(requisition.requestedAt)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+private fun FlowContent.requisitionField(fieldId: String, name: String, text: String, type: InputType, required: Boolean) {
+    div(classes = "bo-field") {
+        label { htmlFor = fieldId; +text }
+        input(type = type, name = name) {
+            id = fieldId
+            maxLength = "100"
+            if (required) this.required = true
+            attributes["aria-describedby"] = "bo-requisition-search-hint"
+            attributes["autocomplete"] = "off"
+            attributes["spellcheck"] = "false"
+        }
     }
 }
 
