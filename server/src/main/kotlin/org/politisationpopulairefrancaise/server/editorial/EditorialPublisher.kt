@@ -1,8 +1,11 @@
 package org.politisationpopulairefrancaise.server.editorial
 
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
+import org.politisationpopulairefrancaise.core.editorial.schema.EditorialApprovals
+import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSchemas
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
 import org.politisationpopulairefrancaise.core.platform.SigningUse
+import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
 import java.util.UUID
 
 /**
@@ -27,8 +30,12 @@ data class ReadyToSign(
     /** The use of the platform signature for the contents of [space]. */
     val use: SigningUse get() = if (space == EditorialSpace.VOIR) SigningUse.EDITORIAL_VOIR else SigningUse.EDITORIAL_COMPRENDRE
 
-    /** Editorial contents always ask for two approvals of two accounts that are not the author (M17). */
-    val doubleValidation: Boolean get() = true
+    /**
+     * The approvals the platform signature of [unsigned], the event built from this version, needs on the signing
+     * service ([EditorialApprovals.required]): one for an ordinary content (the reviewer of the queue confirms
+     * there), two for a content of M17 that implicates a person. Never the author, never a writer of the draft.
+     */
+    fun approvalsFor(unsigned: UnsignedEvent): Int = EditorialApprovals.required(EditorialSchemas.of(type), use, unsigned)
 }
 
 /** Where a version ready to sign stands on the side of the signing service. */
@@ -44,7 +51,7 @@ sealed interface PublisherAnswer {
      * link to the members allowed to approve; [approvals] of [required] recorded (`draftStatus`, read when the
      * review page is opened, never by a background loop).
      */
-    data class AwaitingApproval(val signerDraftId: String, val approvalUrl: String, val approvals: Int = 0, val required: Int = 2) : PublisherAnswer
+    data class AwaitingApproval(val signerDraftId: String, val approvalUrl: String, val approvals: Int = 0, val required: Int = EditorialApprovals.ORDINARY) : PublisherAnswer
 
     /** Refused by the signing service or by this server, with the stable code of `SigningStatus.Refused` / `DraftSubmission.Refused`. */
     data class Refused(val code: String, val detail: String? = null) : PublisherAnswer
@@ -68,14 +75,16 @@ sealed interface PublisherAnswer {
  *
  * 1. [handOver], once, right after the approval in the queue: `currentKey(use)` (null: [PublisherAnswer.KeyUnavailable],
  *    nothing is published), build the unsigned event with that key ([org.politisationpopulairefrancaise.core.editorial.schema.EditorialEngine.build],
- *    `created_at` strictly after the published version), `submitDraft(unsigned, use, doubleValidation = true,
- *    DraftAuthor(author, authorPubkey))`: `Submitted(draftId, approvalUrl)` or `Refused(code, detail)`;
+ *    `created_at` strictly after the published version), `submitDraft(unsigned, use, doubleValidation =
+ *    ([ReadyToSign.approvalsFor] is 2), DraftAuthor(author, authorPubkey))`, the author always named:
+ *    `Submitted(draftId, approvalUrl)` or `Refused(code, detail)`;
  * 2. [state], each time the review page of a version ready to sign is opened: `draftStatus(use, eventId)`;
  *    when `ready`, `request(unsigned, use)` then `status(ticket)`: `Pending`, `Signed(event)` (publish
  *    `event` unchanged through the `PublicationPort`, then [PublisherAnswer.Published]) or `Refused`.
  *    A draft expires after 7 days on the signing service: it needs a new event, with a new `created_at`.
  *
- * No passkey, no approval ceremony on this server: two editors approve on the signing service's own page.
+ * No passkey, no approval ceremony on this server: the editors approve on the signing service's own page (one,
+ * the reviewer of the queue, for an ordinary content; two for a content of M17).
  * Called after the decision is stored and journaled, outside its transaction; a failure never undoes the
  * decision (the version stays `ready_to_sign`).
  */

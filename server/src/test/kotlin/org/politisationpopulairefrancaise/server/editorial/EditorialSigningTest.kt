@@ -16,7 +16,6 @@ import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.platform.DraftAuthor
-import org.politisationpopulairefrancaise.core.platform.SigningRefusals
 import org.politisationpopulairefrancaise.core.platform.SigningUse
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
@@ -75,14 +74,23 @@ class EditorialSigningTest {
     private val events = EventRepository(TestDatabase.dataSource)
     private val data get() = BackOfficeTestData.backOffice(clock)
 
-    /** The fake signing service, with the faults the tests need. */
+    /** One `submitDraft` received by the signing service. */
+    private data class Submission(val unsigned: UnsignedEvent, val doubleValidation: Boolean, val author: DraftAuthor?)
+
+    /** The fake signing service, with the faults the tests need; records each submission. */
     private class ScriptedSigner(val fake: FakePlatformSigner) : PlatformSigner by fake {
         var keyAvailable = true
         var keyOverride: String? = null
         var pending = false
         var tamper: ((SigningStatus) -> SigningStatus)? = null
+        val submissions = mutableListOf<Submission>()
 
         override suspend fun currentKey(use: SigningUse): String? = if (!keyAvailable) null else keyOverride ?: fake.currentKey(use)
+
+        override suspend fun submitDraft(unsigned: UnsignedEvent, use: SigningUse, doubleValidation: Boolean, author: DraftAuthor?): DraftSubmission {
+            submissions += Submission(unsigned, doubleValidation, author)
+            return fake.submitDraft(unsigned, use, doubleValidation, author)
+        }
 
         override suspend fun status(ticket: SigningTicket): SigningStatus {
             if (pending) return SigningStatus.Pending
@@ -159,10 +167,13 @@ class EditorialSigningTest {
         return id
     }
 
-    /** The two approvals on the signing service's own page, by two accounts that did not write the draft. */
-    private fun approveOnSigner(eventId: String) {
-        assertNull(fake.approve(use, eventId, "carla"))
-        assertNull(fake.approve(use, eventId, "dora"))
+    /**
+     * The approvals the signing service asks for on its own page (`required`), by accounts that did not write the
+     * draft: one for an ordinary content (the reviewer of the queue confirms there), two for a content of M17.
+     */
+    private suspend fun approveOnSigner(eventId: String) {
+        val required = assertNotNull(fake.draftStatus(use, eventId), "the signing service knows the draft").required
+        listOf("relecteur", "carla").take(required).forEach { assertNull(fake.approve(use, eventId, it)) }
     }
 
     private fun attempt(id: UUID): SigningAttempt = signing.attempts(id).first()
@@ -182,12 +193,19 @@ class EditorialSigningTest {
         assertEquals(SLUG, first.unsigned.tags.first { it[0] == "d" }[1])
         assertTrue(first.approvalUrl!!.startsWith(FakePlatformSigner.APPROVAL_ORIGIN))
         val status = assertNotNull(fake.draftStatus(use, first.eventId), "the signing service knows the draft")
-        assertTrue(status.doubleValidation)
-        assertEquals(2, status.required)
-        assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, fake.approve(use, first.eventId, team.alice.id.toString()), "the author is never one of the approvals")
+        // An ordinary content: ONE approval in all (decision of the owner of 7 November 2026), Bruno confirming his own.
+        assertFalse(status.doubleValidation, "an ordinary content asks for one approval")
+        assertEquals(1, status.required)
+        // The author is always named, in a single validation too, so that the signing service can refuse the author.
+        val submitted = signer.submissions.single()
+        assertFalse(submitted.doubleValidation)
+        assertEquals(team.alice.id.toString(), submitted.author?.account)
+        assertEquals(first.unsigned, submitted.unsigned)
         // Waiting: the link for Bruno, nothing published.
         val waiting = client.page("$section/relecture/$id", team.bruno).bodyAsText()
-        assertTrue(waiting.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 2)), waiting)
+        assertTrue(waiting.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 1)), waiting)
+        assertTrue(waiting.contains(EditorialTexts.SIGNER_AWAITING_ONE))
+        assertFalse(waiting.contains(EditorialTexts.SIGNER_AWAITING_TWO))
         assertTrue(waiting.contains("<a href=\"${first.approvalUrl}\">${EditorialTexts.SIGNER_LINK}</a>"))
         assertTrue(storedArticles().isEmpty(), "nothing published before the signature")
         assertTrue(fake.requests.isEmpty(), "no signature asked before the approvals")
@@ -337,7 +355,7 @@ class EditorialSigningTest {
         assertEquals(DraftStatus.READY_TO_SIGN, drafts.find(id)!!.status)
         signer.keyAvailable = true
         val page = client.page("$section/relecture/$id", team.bruno).bodyAsText()
-        assertTrue(page.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 2)), page)
+        assertTrue(page.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 1)), page)
         assertEquals(SigningState.SUBMITTED, attempt(id).state)
     }
 

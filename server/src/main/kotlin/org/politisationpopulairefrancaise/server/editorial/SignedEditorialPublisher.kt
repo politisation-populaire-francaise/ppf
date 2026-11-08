@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.server.editorial
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.schema.EditorialApprovals
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialEngine
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSchemas
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
@@ -33,7 +34,8 @@ import java.util.UUID
  *   built by [EditorialEngine.build] from the approved version with that key, `created_at` strictly after the
  *   published version of the address and after every earlier submission; for an update, the `ppf-correction`
  *   tags of the published version followed by the new one (date, summary of the editor, nature); then
- *   `submitDraft(unsigned, use, doubleValidation = true, author)`, kept in `editorial_signing`;
+ *   `submitDraft(unsigned, use, doubleValidation, author)`, kept in `editorial_signing`: one approval for an
+ *   ordinary content, two for a content of M17 ([ReadyToSign.approvalsFor]), the author always named;
  * - [state], at each opening of the review page (no background loop): `draftStatus`, then, when ready,
  *   `request` and `status`; a signed event is checked (same key and id as submitted, valid signature, exactly
  *   the content submitted) and published unchanged through the single [PublicationPort];
@@ -93,11 +95,11 @@ class SignedEditorialPublisher(
             }
         }
         if (!version.use.matches(unsigned)) return refuseBuild(version, CODE_WRONG_USE)
-        return when (val submission = signer.submitDraft(unsigned, version.use, doubleValidation = version.doubleValidation, author = author(version))) {
+        return when (val submission = submit(version, unsigned)) {
             is DraftSubmission.Submitted -> {
                 if (submission.draftId != unsigned.idHex()) return refuseBuild(version, HttpPlatformSigner.BAD_ANSWER_FROM_SIGNER)
                 io { signing.recordSubmitted(version.draftId, version.version, version.use, unsigned, submission.draftId, submission.approvalUrl) }
-                PublisherAnswer.AwaitingApproval(submission.draftId, submission.approvalUrl, approvals = 0, required = if (version.doubleValidation) 2 else 1)
+                PublisherAnswer.AwaitingApproval(submission.draftId, submission.approvalUrl, approvals = 0, required = version.approvalsFor(unsigned))
             }
             is DraftSubmission.Refused -> {
                 if (submission.code == HttpPlatformSigner.SIGNER_UNAVAILABLE) return PublisherAnswer.Unavailable
@@ -149,6 +151,14 @@ class SignedEditorialPublisher(
         return Built.Event(base.copy(tags = tags))
     }
 
+    /**
+     * Submits [unsigned] for [version]: one approval for an ordinary content, two for a content of M17
+     * ([ReadyToSign.approvalsFor], computed on this very event, as the signing service does); the author is
+     * always named, in a single validation too, so that the service can refuse the author as an approver.
+     */
+    private suspend fun submit(version: ReadyToSign, unsigned: UnsignedEvent): DraftSubmission =
+        signer.submitDraft(unsigned, version.use, doubleValidation = version.approvalsFor(unsigned) >= EditorialApprovals.M17, author = author(version))
+
     private fun author(version: ReadyToSign): DraftAuthor = DraftAuthor(account = version.author.toString(), pubkey = version.authorPubkey)
 
     // Follow-up -------------------------------------------------------------------------------------
@@ -174,8 +184,8 @@ class SignedEditorialPublisher(
         val status = signer.draftStatus(attempt.use, attempt.eventId)
         if (status == null) {
             // Unknown to the service (restarted) or no answer: submitting the same event again restores it.
-            return when (val again = signer.submitDraft(unsigned, attempt.use, doubleValidation = version.doubleValidation, author = author(version))) {
-                is DraftSubmission.Submitted -> PublisherAnswer.AwaitingApproval(again.draftId, again.approvalUrl, approvals = 0, required = if (version.doubleValidation) 2 else 1)
+            return when (val again = submit(version, unsigned)) {
+                is DraftSubmission.Submitted -> PublisherAnswer.AwaitingApproval(again.draftId, again.approvalUrl, approvals = 0, required = version.approvalsFor(unsigned))
                 is DraftSubmission.Refused ->
                     if (again.code == HttpPlatformSigner.SIGNER_UNAVAILABLE) PublisherAnswer.Unavailable else refuse(attempt, again.code)
             }

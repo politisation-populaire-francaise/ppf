@@ -40,6 +40,7 @@ import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.editorial.schema.ContentSchema
+import org.politisationpopulairefrancaise.core.editorial.schema.EditorialApprovals
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialEngine
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSchemas
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
@@ -844,6 +845,7 @@ class EditorialDraftsSection(
                 PublisherAnswer.Expired -> p(classes = "bo-notice bo-notice-warning") { +EditorialTexts.SIGNER_EXPIRED }
                 is PublisherAnswer.AwaitingApproval -> {
                     p { +EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, answer.approvals, answer.required) }
+                    p { +if (answer.required >= EditorialApprovals.M17) EditorialTexts.SIGNER_AWAITING_TWO else EditorialTexts.SIGNER_AWAITING_ONE }
                     // A plain link to the signing service's own page: no ceremony on this server.
                     if (mayApprove && isSignerLink(answer.approvalUrl)) p { a(href = answer.approvalUrl) { +EditorialTexts.SIGNER_LINK } }
                 }
