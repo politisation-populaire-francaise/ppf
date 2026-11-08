@@ -4,11 +4,13 @@ import kotlinx.coroutines.runBlocking
 import kotlinx.html.div
 import kotlinx.html.stream.createHTML
 import org.politisationpopulairefrancaise.core.agir.AgirFormats
+import org.politisationpopulairefrancaise.core.identity.AccountRecovery
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.publication.HeldStatus
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.server.NO_EDITORS
 import org.politisationpopulairefrancaise.server.TestDatabase
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirFixtures
 import org.politisationpopulairefrancaise.server.agir.AgirFixtures.call
 import org.politisationpopulairefrancaise.server.agir.AgirFixtures.mobilization
@@ -86,6 +88,39 @@ class AgirHeldQueueTest {
         assertEquals(ActionOutcome.Refused(HeldQueue.EXPIRED_REASON), queue.perform(event.id, "approve", null, actor))
         assertEquals(HeldStatus.REJECTED, space.queue.find(event.id)!!.status)
         assertNull(events.find(event.id))
+    }
+
+    @Test
+    fun aContentSignedAfterItsKeyWasDeclaredCompromisedCanOnlyBeRefused() = runBlocking {
+        val now = clock.instant().epochSecond
+        val accounts = CompromisedAccounts(events)
+        val guarded = AgirHeldQueue(space, accounts)
+        // Two mobilizations held for the team, signed six days and one day ago.
+        val before = author.mobilization(AgirFixtures.mobilizationTags(d = "avant", start = now + 2 * AgirFixtures.DAY), createdAt = now - 6 * AgirFixtures.DAY)
+        val after = author.mobilization(AgirFixtures.mobilizationTags(d = "apres", start = now + 2 * AgirFixtures.DAY), createdAt = now - AgirFixtures.DAY)
+        assertIs<HoldOutcome.Queued>(space.queue.submit(before))
+        assertIs<HoldOutcome.Queued>(space.queue.submit(after))
+        assertTrue(guarded.page(null, 10).items.none { "compromis" in it.summary.orEmpty() }, "no mention while the account is not compromised")
+
+        // The author declares the account compromised since five days ago (S-146).
+        val recovery = LocalEventSigner(IdentityKeys.generate())
+        val commitment = AccountRecovery.signCommitment(author, recovery.publicKey, createdAt = now - 100 * AgirFixtures.DAY)
+        assertIs<CompromisedAccounts.Admission.Stored>(accounts.admitAndStore(commitment))
+        val notice = AccountRecovery.signNotice(recovery, accounts.commitmentOf(author.publicKey.hex)!!, createdAt = now, since = now - 5 * AgirFixtures.DAY)
+        assertIs<CompromisedAccounts.Admission.Stored>(accounts.admitAndStore(notice))
+
+        assertTrue(guarded.page(null, 10).items.all { "compromis" in it.summary.orEmpty() }, "both carry the mention")
+        // Signed after: only a refusal, and an approval is refused even if asked.
+        assertEquals(listOf("reject"), guarded.actions(after.id).map { it.id })
+        assertTrue(createHTML().div { guarded.render(after.id, this) }.contains(AgirHeldQueue.COMPROMISED_AFTER))
+        assertEquals(ActionOutcome.Refused(AgirHeldQueue.REFUSED_COMPROMISED), guarded.perform(after.id, "approve", null, actor))
+        assertNull(events.find(after.id))
+        assertEquals(ActionOutcome.Done, guarded.perform(after.id, "reject", "[EXEMPLE] Signé après la compromission du compte", actor))
+        // Signed before: stays, with the mention, and can still be approved.
+        assertEquals(listOf("approve", "reject"), guarded.actions(before.id).map { it.id })
+        assertTrue(createHTML().div { guarded.render(before.id, this) }.contains(AgirHeldQueue.COMPROMISED_BEFORE))
+        assertEquals(ActionOutcome.Done, guarded.perform(before.id, "approve", null, actor))
+        assertNotNull(events.find(before.id))
     }
 
     @Test

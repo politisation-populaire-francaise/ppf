@@ -346,12 +346,16 @@ fun Application.module(
     }
     // The legal register keeps one year (fixed in the database); its daily purge lives with the application.
     dataSource?.let { LegalRegisterPurge(it).start(this, LegalRegisterPurge.DEFAULT_INTERVAL, log) }
+    // Recovery keys and compromised accounts (S-146, D-134); the OpenTimestamps stamping of the
+    // commitments waits for Décider's ArchiveService (CommitmentStamper.NONE until then).
+    // Made before the back-office, whose queues refuse a held content signed after a compromise.
+    val compromised = repository?.let { CompromisedAccounts(it) }
     // The team back-office (M15): its own port, accounts by invitation, passkeys, journal; the poles
     // register their queues on teamBackOffice.queues (contract docs/integration/back-office.md, section 7).
     val teamBackOffice: BackOffice? = when {
         backOffice == null -> null
         dataSource == null -> null.also { log.warn("Back-office: ${BackOfficeConfig.ORIGIN_VARIABLE} is set but no database is configured, back-office off.") }
-        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace)
+        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace, compromised)
     }
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
@@ -474,9 +478,6 @@ fun Application.module(
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     // Push wake-ups (M31): a constant, encrypted "synchronize" only; the worker lives with the application.
     val pushService = PushService.start(this, dataSource, push)
-    // Recovery keys and compromised accounts (S-146, D-134); the OpenTimestamps stamping of the
-    // commitments waits for Décider's ArchiveService (CommitmentStamper.NONE until then).
-    val compromised = repository?.let { CompromisedAccounts(it) }
     // The room creations held for the team (contract docs/integration/salons-roles.md, section 3 bis);
     // a creation signed after its key was declared compromised can only be refused (S-146).
     groups?.let { directory -> teamBackOffice?.queues?.register(GroupCreationsQueue(directory, compromised)) }
