@@ -119,4 +119,8 @@ class ValidationSessionGate(
 
     /** Counts one validation in [session]; false when it is full or no longer usable. */
     fun recordValidation(session: ValidationSession): Boolean = sessions.recordValidation(session.id, clock.instant())
+
+    /** The same inside the transaction of [connection] (Décider writes the validation in it: both or neither). */
+    fun recordValidation(connection: java.sql.Connection, session: ValidationSession): Boolean =
+        sessions.recordValidation(connection, session.id, clock.instant())
 }

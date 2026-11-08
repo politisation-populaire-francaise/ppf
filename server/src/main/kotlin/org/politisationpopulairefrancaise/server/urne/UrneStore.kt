@@ -55,6 +55,9 @@ data class Urne(
 
 data class StoredBallot(val y: ByteArray, val token: ByteArray, val level: VoteLevel, val choice: String, val hour: Instant)
 
+/** What [UrneStore.addPendingValidation] did. */
+enum class PendingValidation { ADDED, ALREADY, FULL }
+
 /** What [UrneStore.recordPublicVote] did. */
 enum class PublicVoteWrite {
     RECORDED,
@@ -75,7 +78,7 @@ enum class Delivery { DONE, CURSOR_MOVED }
  * for every account alike (D-110, 6.3).
  */
 class UrneStore(
-    private val dataSource: DataSource,
+    internal val dataSource: DataSource,
     /** The legal register (D-077): the public votes of the elected officials enter it, in their own transaction. */
     private val register: LegalRegister = LegalRegister(),
 ) {
@@ -403,6 +406,87 @@ class UrneStore(
             s.setLong(1, number)
             s.executeQuery().use { r -> r.next(); r.getLong(1) }
         }
+    }
+
+    // ------------------------------------------------------------------ in-person validation (D-112, 4.3; option B of the DT)
+
+    /**
+     * Adds the validation of [pubkey] to the ones waiting for next Monday, with its [sealed] link (JSON of
+     * the AuditSealer), and lets [count] count it in its session, in one transaction: both or neither.
+     * [PendingValidation.ALREADY] when the account already waits (nothing counted); [PendingValidation.FULL]
+     * when [count] refuses (the session is full or no longer usable: nothing written).
+     */
+    fun addPendingValidation(pubkey: String, sealed: String, count: (Connection) -> Boolean): PendingValidation = transaction { c ->
+        val added = c.prepareStatement("INSERT INTO vote_validation_pending (pubkey, sealed) VALUES (?, ?::jsonb) ON CONFLICT DO NOTHING").use { s ->
+            s.setString(1, pubkey)
+            s.setString(2, sealed)
+            s.executeUpdate() == 1
+        }
+        when {
+            !added -> PendingValidation.ALREADY
+            !count(c) -> {
+                c.rollback()
+                PendingValidation.FULL
+            }
+            else -> PendingValidation.ADDED
+        }
+    }
+
+    /** Whether [pubkey] waits for next Monday's batch. */
+    fun isValidationPending(pubkey: String): Boolean = dataSource.connection.use { c ->
+        c.prepareStatement("SELECT 1 FROM vote_validation_pending WHERE pubkey = ?").use { s ->
+            s.setString(1, pubkey)
+            s.executeQuery().use { it.next() }
+        }
+    }
+
+    /**
+     * The batch of the Monday [monday], at most once (null when it already ran): in ONE transaction, every
+     * waiting account becomes « vérifié » from [monday] on, in the order of the keys (so that the order of
+     * the rows carries nothing), registered that Monday when it was not; an elected or already verified
+     * account is left as it is. The sealed links are kept in the order of their random ephemeral keys, the
+     * pending rows deleted, and the links older than [keepFrom] deleted. Returns how many accounts changed.
+     */
+    fun applyValidations(monday: LocalDate, keepFrom: LocalDate): Int? {
+        val applied = transaction { c ->
+            val first = c.prepareStatement("INSERT INTO vote_validation_batch (week) VALUES (?) ON CONFLICT DO NOTHING").use { s ->
+                s.setObject(1, monday)
+                s.executeUpdate() == 1
+            }
+            if (!first) {
+                c.rollback()
+                return@transaction null
+            }
+            val changed = c.prepareStatement(
+                """
+                INSERT INTO vote_account (pubkey, level, level_week, previous_level, registered_week)
+                SELECT pubkey, 'verifie', ?, 'non-verifie', ? FROM vote_validation_pending ORDER BY pubkey
+                ON CONFLICT (pubkey) DO UPDATE SET
+                    previous_level = CASE WHEN vote_account.level_week <= excluded.level_week THEN vote_account.level ELSE vote_account.previous_level END,
+                    level = 'verifie', level_week = excluded.level_week
+                WHERE vote_account.level = 'non-verifie'
+                """.trimIndent(),
+            ).use { s ->
+                s.setObject(1, monday)
+                s.setObject(2, monday)
+                s.executeUpdate()
+            }
+            c.prepareStatement(
+                "INSERT INTO vote_validation (week, sealed) SELECT ?, sealed FROM vote_validation_pending ORDER BY sealed->>'ephemeral_pubkey'",
+            ).use { s ->
+                s.setObject(1, monday)
+                s.executeUpdate()
+            }
+            c.createStatement().use { it.executeUpdate("DELETE FROM vote_validation_pending") }
+            c.prepareStatement("DELETE FROM vote_validation WHERE week < ?").use { s ->
+                s.setObject(1, keepFrom)
+                s.executeUpdate()
+            }
+            changed
+        } ?: return null
+        // The deleted rows leave the table's pages at once when the role may vacuum it (autovacuum otherwise).
+        runCatching { dataSource.connection.use { c -> c.createStatement().use { it.execute("VACUUM vote_validation_pending") } } }
+        return applied
     }
 
     // ------------------------------------------------------------------ helpers

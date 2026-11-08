@@ -63,6 +63,14 @@ data class VoterStatus(
     val previousLevel: String? = null,
     /** Monday (AAAA-MM-JJ) of the registration: a box opened before it is voted « non vérifié ». */
     val registeredWeek: String? = null,
+    /** Validated in person this week: the account counts as verified from next Monday (D-112, 4.3). */
+    val validationPending: Boolean = false,
+    /** Certification as an elected official (DE-23): `pending`, `certified`, `refused`, `withdrawn` or `ended`; null without request. */
+    val certification: String? = null,
+    /** The public reference `rne1:` of the mandate asked for or certified. */
+    val mandate: String? = null,
+    /** Why a certification was refused or withdrawn, as the team wrote it. */
+    val certificationReason: String? = null,
 ) {
     /**
      * The level a token of a box opened at [opensAt] must carry (D-110, 6.4: the level of the week

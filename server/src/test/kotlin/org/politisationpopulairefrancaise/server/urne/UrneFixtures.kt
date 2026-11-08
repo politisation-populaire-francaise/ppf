@@ -19,10 +19,10 @@ object UrneFixtures {
 
     fun service(clock: Clock = Clock.systemUTC()): UrneService = UrneService.create(UrneStore(TestDatabase.dataSource), CONFIG, clock)
 
-    /** The tables of V7, emptied before each test (the shared reset does not know them). */
+    /** The tables of V11__urnes.sql, emptied before each test (the shared reset does not know them). */
     fun reset() {
         TestDatabase.dataSource.connection.use { c ->
-            c.createStatement().use { it.executeUpdate("TRUNCATE vote_account, urne, urne_issued, ballot CASCADE") }
+            c.createStatement().use { it.executeUpdate("TRUNCATE vote_account, urne, urne_issued, ballot, vote_validation_pending, vote_validation, vote_validation_batch, elected_certification CASCADE") }
         }
     }
 }

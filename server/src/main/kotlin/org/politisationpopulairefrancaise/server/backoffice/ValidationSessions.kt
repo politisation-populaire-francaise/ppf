@@ -169,8 +169,14 @@ class ValidationSessions(private val dataSource: DataSource) {
      * Counts one validation in the open session [id] when its ceiling allows it; false when the session
      * is no longer usable or full. Only the counter changes.
      */
-    fun recordValidation(id: UUID, now: Instant): Boolean = dataSource.connection.use { connection ->
-        connection.prepareStatement(
+    fun recordValidation(id: UUID, now: Instant): Boolean = dataSource.connection.use { connection -> recordValidation(connection, id, now) }
+
+    /**
+     * The same inside the transaction of [connection], so that Décider counts a validation in the same
+     * transaction as the validation itself (both or neither; une-personne-une-voix.md 4.3).
+     */
+    fun recordValidation(connection: Connection, id: UUID, now: Instant): Boolean {
+        return connection.prepareStatement(
             "UPDATE team_validation_session SET validations = validations + 1 WHERE id = ? AND state = 'open' AND expires_at > ? AND validations < max_validations",
         ).use { update ->
             update.setObject(1, id)

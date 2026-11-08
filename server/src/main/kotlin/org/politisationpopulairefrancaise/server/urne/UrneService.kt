@@ -193,6 +193,7 @@ class UrneService(
             pending = pending(account).map { it.number },
             previousLevel = account.previousLevel.code,
             registeredWeek = account.registeredWeek.toString(),
+            validationPending = store.isValidationPending(pubkey),
         )
     }
 
@@ -264,6 +265,26 @@ class UrneService(
     /** Closes the ballot boxes whose end has come; their keys and ballots become public (D-110, 6.7). */
     fun closeDue(): Int = store.closeDue(clock.instant()).size
 
+    @Volatile
+    private var validationsAppliedFor: LocalDate? = null
+
+    /**
+     * The batch of the in-person validations of this Monday (une-personne-une-voix.md 4.3, option B of the
+     * Directeur technique), once: every account validated last week counts as verified from today on. Run
+     * by the task of the ballot boxes every minute, and before any new validation. Returns how many
+     * accounts changed (0 when the batch already ran).
+     */
+    fun applyValidationsDue(): Int {
+        val monday = mondayOf(clock.instant())
+        if (validationsAppliedFor == monday) return 0
+        synchronized(this) {
+            if (validationsAppliedFor == monday) return 0
+            val changed = store.applyValidations(monday, keepFrom = monday.minusWeeks(VALIDATION_LINKS_WEEKS)) ?: 0
+            validationsAppliedFor = monday
+            return changed
+        }
+    }
+
     /**
      * Closes the ballot box [id] early (a cancelled mobilisation, a call closed by its author, a
      * demand that leaves the debate): its end moves to [at], or to now when [at] has passed, and
@@ -297,6 +318,13 @@ class UrneService(
                     }
                 }
                 try {
+                    applyValidationsDue()
+                } catch (e: CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    log.warn("Voting: the Monday batch of the in-person validations failed (${e::class.simpleName}).")
+                }
+                try {
                     closeDue()
                 } catch (e: CancellationException) {
                     throw e
@@ -313,7 +341,7 @@ class UrneService(
     private fun pending(account: VoteAccount): List<Urne> = store.openAfter(account.issuedUpTo, clock.instant(), config.maxTokensPerRequest + 1)
 
     /** Refuses an account known not to be a natural person, at every level (D-116). */
-    private fun requirePerson(pubkey: String) {
+    internal fun requirePerson(pubkey: String) {
         if (persons.refusal(pubkey) != null) throw UrneRefusal(403, "not_a_person")
     }
 
@@ -344,6 +372,9 @@ class UrneService(
 
         /** A public vote dated a little ahead (a device clock) is fine; far ahead, it is refused. */
         const val MAX_CLOCK_AHEAD_SECONDS: Long = 600
+
+        /** The sealed links of the in-person validations are kept this many weeks (a fraudulent session can be undone). */
+        const val VALIDATION_LINKS_WEEKS: Long = 52
 
         /** The Monday of the week of [instant] (UTC): levels and openings are kept by the week, never the day. */
         fun mondayOf(instant: Instant): LocalDate =

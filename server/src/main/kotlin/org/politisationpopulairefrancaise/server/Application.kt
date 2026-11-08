@@ -76,6 +76,7 @@ import org.politisationpopulairefrancaise.server.revendications.ProposalsBackOff
 import org.politisationpopulairefrancaise.server.urne.PersonAccounts
 import org.politisationpopulairefrancaise.server.urne.RevendicationUrnes
 import org.politisationpopulairefrancaise.server.urne.UrneConfig
+import org.politisationpopulairefrancaise.server.urne.InPersonValidations
 import org.politisationpopulairefrancaise.server.urne.UrneService
 import org.politisationpopulairefrancaise.server.urne.UrneStore
 import org.politisationpopulairefrancaise.server.urne.urneApi
@@ -269,9 +270,17 @@ fun Application.module(
     // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published; the
     // demands in debate get theirs, closed when they leave the debate.
     // Only a natural person votes (D-116): the editorial keys and the organisations of the directory are refused.
-    val urnes = dataSource?.takeIf { urne.seeds != null }?.let {
-        val organisations = VerifiedOrganisations(it, policy::isEditor)
-        UrneService.create(UrneStore(it, LegalRegister(policy::isEditor)), urne, persons = PersonAccounts(it, policy::isEditor, organisations::isVerified))
+    val urneStore = dataSource?.takeIf { urne.seeds != null }?.let { UrneStore(it, LegalRegister(policy::isEditor)) }
+    val urnes = urneStore?.let { store ->
+        val organisations = VerifiedOrganisations(store.dataSource, policy::isEditor)
+        UrneService.create(store, urne, persons = PersonAccounts(store.dataSource, policy::isEditor, organisations::isVerified))
+    }
+    // In-person validation (D-112, 4.3): only with the back-office (sessions of the validators) and the audit key,
+    // which seals the link « account, session » (never kept in clear).
+    val inPerson = if (urneStore != null && urnes != null && teamBackOffice?.auditSealer != null) {
+        InPersonValidations(urneStore, urnes, teamBackOffice.validationGate, teamBackOffice.auditSealer)
+    } else {
+        null
     }
     if (urnes != null && dataSource != null) {
         val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)
@@ -322,7 +331,7 @@ fun Application.module(
             testimonyApi(testimonySpace, testimonies.config.maxFileBytes)
             elusApi(elusService)
             territoiresApi(territoiresService)
-            urneApi(urnes, urne)
+            urneApi(urnes, urne, validations = inPerson)
             archivesApi(archives)
             transparencyApi(dataSource) // Requisitions answered per month only (D-077).
             agirSpace?.let { agendaPage(it.agendaSource()) }

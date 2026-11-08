@@ -22,6 +22,7 @@ import org.politisationpopulairefrancaise.core.urne.BallotReceipt
 import org.politisationpopulairefrancaise.core.urne.Difficulties
 import org.politisationpopulairefrancaise.core.urne.Nip98
 import org.politisationpopulairefrancaise.core.urne.Nip98ReplayGuard
+import org.politisationpopulairefrancaise.server.backoffice.SignedSessionRequest
 import org.politisationpopulairefrancaise.core.urne.UrneList
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.relay.RateLimiter
@@ -35,7 +36,13 @@ import java.time.Clock
  * With the account (NIP-98): POST /api/v1/urnes/register, GET /api/v1/urnes/me, POST /api/v1/urnes/tokens.
  * Anonymous: POST /api/v1/ballots, with a proof of work and without any authentication.
  */
-fun Route.urneApi(service: UrneService?, config: UrneConfig, clock: Clock = Clock.systemUTC()) {
+fun Route.urneApi(
+    service: UrneService?,
+    config: UrneConfig,
+    clock: Clock = Clock.systemUTC(),
+    /** The in-person validation (D-112, 4.3): null without back-office or audit key, the route then answers 503. */
+    validations: InPersonValidations? = null,
+) {
     // In memory only: after a restart, an authorization of the last two minutes could be replayed once. Harmless here, unlike the
     // back-office (which refuses those older than its start): every authenticated request of the urns is idempotent, and
     // evaluated tokens are useless without the blinding factor that never leaves the device.
@@ -152,6 +159,23 @@ fun Route.urneApi(service: UrneService?, config: UrneConfig, clock: Clock = Cloc
                 call.refuse(r)
             }
         }
+        // In-person validation (D-112, 4.3): the validator's application, signed (NIP-98) with the key of
+        // its open session, sends the proof the citizen shows. The address signed is the configured public
+        // one (PPF_PUBLIC_URL), never the Host header.
+        post("/validations") {
+            if (service == null || !service.available || validations == null) {
+                return@post call.respond(HttpStatusCode.ServiceUnavailable, ApiError("validation_unavailable", MESSAGES.getValue("validation_unavailable")))
+            }
+            val origin = config.publicUrl
+                ?: return@post call.respond(HttpStatusCode.ServiceUnavailable, ApiError("validation_unavailable", MESSAGES.getValue("validation_unavailable")))
+            val body = call.boundedBody(InPersonValidations.MAX_PROOF_BYTES.toLong()) ?: return@post
+            val request = SignedSessionRequest(call.request.headers[HttpHeaders.Authorization], origin + call.request.uri, "POST", body.encodeToByteArray())
+            try {
+                call.respond(HttpStatusCode.Accepted, withContext(Dispatchers.IO) { validations.validate(request) })
+            } catch (r: UrneRefusal) {
+                call.refuse(r)
+            }
+        }
         post("/tokens") {
             if (service == null || !service.available) return@post call.unavailable()
             val body = call.boundedBody(MAX_TOKEN_REQUEST_BYTES) ?: return@post
@@ -211,4 +235,13 @@ private val MESSAGES = mapOf(
     "malformed_ballot" to "The body is not a ballot.",
     "proof_of_work_too_low" to "The proof of work is too low.",
     "invalid_token" to "The token does not match this ballot box.",
+    "validation_unavailable" to "In-person validation is not available on this server.",
+    "invalid_proof" to "The QR code shown is not a proof of this account.",
+    "expired_proof" to "The QR code shown is too old: ask the person to show it again.",
+    "proof_replayed" to "This QR code was already used: ask the person to show it again.",
+    "session_full" to "The validation session is full or no longer open.",
+    "no_open_session" to "No open validation session for this key.",
+    "before_start" to "This request was signed before the server started: sign it again.",
+    "replayed" to "This request was already received.",
+    "organisation_not_verified" to "The organisation that designated the validator is no longer verified.",
 )

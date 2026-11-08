@@ -88,3 +88,46 @@ CREATE TABLE public_vote (
     event       JSONB   NOT NULL,
     PRIMARY KEY (urne_number, pubkey)
 );
+
+-- 6. In-person validation (D-112, une-personne-une-voix.md 4.3; decision of the Directeur technique of
+--    8 November 2026, option B): a seized database must not link an account to the session that
+--    validated it. A validation waits in vote_validation_pending until the next Monday 00:00 UTC (the
+--    level takes effect that Monday anyway); one transaction then moves every pending row, in the order
+--    of the keys, to vote_account, and keeps only the sealed links. No serial, no timestamp, no session
+--    in clear: the link "account, session, week" is sealed in NIP-44 for the offline audit key.
+CREATE TABLE vote_validation_pending (
+    pubkey  TEXT  PRIMARY KEY CHECK (pubkey ~ '^[0-9a-f]{64}$'),
+    -- {"ephemeral_pubkey", "payload"} (AuditSealer): only the audit key reads it.
+    sealed  JSONB NOT NULL
+);
+
+-- The sealed links of the validations applied, by Monday of effect; kept one year (a session found
+-- fraudulent is undone by the owner with the audit key), then deleted by the Monday batch.
+CREATE TABLE vote_validation (
+    week    DATE  NOT NULL,
+    sealed  JSONB NOT NULL
+);
+
+CREATE INDEX vote_validation_week ON vote_validation (week);
+
+-- The Mondays whose batch ran (at most one per Monday).
+CREATE TABLE vote_validation_batch (
+    week    DATE  PRIMARY KEY
+);
+
+-- 7. Certification of elected officials (DE-23, D-112): public by nature (an elected official answers as
+--    such and votes publicly, D-115). Only the public reference of the mandate in the official directory
+--    (ElusLookup, D-047), never an identity document, a name typed by the team or a photo.
+CREATE TABLE elected_certification (
+    pubkey          TEXT  PRIMARY KEY CHECK (pubkey ~ '^[0-9a-f]{64}$'),
+    -- Stable identifier of the mandate in the directory served.
+    mandate         TEXT  NOT NULL CHECK (mandate ~ '^rne1:[0-9a-f]{32}$'),
+    status          TEXT  NOT NULL CHECK (status IN ('pending', 'certified', 'refused', 'withdrawn', 'ended')),
+    -- Monday of the request and of the last decision (never the day).
+    requested_week  DATE  NOT NULL,
+    decided_week    DATE,
+    -- Shown to the account when refused or withdrawn.
+    reason          TEXT  CHECK (length(reason) <= 1000)
+);
+
+CREATE INDEX elected_certification_status ON elected_certification (status);
