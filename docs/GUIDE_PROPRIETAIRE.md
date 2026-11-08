@@ -177,6 +177,15 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 9. Où en est un contenu : http://localhost:8080/api/v1/held?id=ID. Une mobilisation en attente dont la date est passée y apparaît refusée, avec le motif « La date de l'événement est passée avant la relecture. ».
 10. À la fin, fermez l'application et arrêtez le serveur (Ctrl+C dans sa fenêtre). Vous pouvez supprimer vous-même le dossier `ppf-essai-1` de votre dossier personnel : il ne contient que ce compte d'essai.
 
+### Tester le bouton AIDE et la sécurité du téléphone (ajouté le 8 novembre 2026)
+
+1. Touchez **AIDE** (rouge, en haut de l'écran du téléphone, en tête du menu sur tablette et ordinateur) : les numéros d'urgence s'affichent, le 15 et le 112 en premier ; touchez-en un, le téléphone propose d'appeler (vous pouvez annuler). Plus bas : les avocats de votre territoire, la rubrique **Besoin de parler ?** (lignes d'écoute : prévention du suicide, violences faites aux femmes, enfance en danger, aide aux victimes, harcèlement, puis deux associations), et votre point de ralliement, gardé sur le téléphone seulement.
+2. Dans « Agir », ouvrez **Mode manifestation** : avant de partir, vos droits, numéros utiles, « Préparer mon téléphone ».
+3. Dans **Mon espace**, carte « Sécurité de cet appareil » : activez le **verrouillage** avec un code de 6 chiffres au moins (pas 123456 ni 111111), quittez l'application puis revenez : le code est demandé. Le 15 et le 112 restent appelables sans le code.
+4. Même carte : **icône discrète** ; après la mise en garde, l'icône de PPF devient « Outils » (gris) dans la liste des applications. Revenez en arrière de la même façon.
+5. Le **contenu masqué** est activé : dans la liste des applications ouvertes, PPF apparaît vide, et les captures d'écran sont bloquées (c'est voulu).
+6. **Effacement rapide** (à essayer en dernier, sur un compte d'essai) : il rappelle de noter la phrase de récupération, puis efface ce que PPF garde sur le téléphone ; pour retrouver le compte : Mon espace, « J'ai déjà un compte », puis la phrase.
+
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).
@@ -496,6 +505,38 @@ Quand je l'ai préparée, l'application se trouve dans `C:\Users\clair\Documents
 - Réduisez la fenêtre : à moins d'environ 840 pixels de large, la barre devient une colonne d'icônes ; à moins d'environ 600, elle devient un menu.
 - Mode sombre de Windows respecté.
 - Le compte : mêmes étapes que sur le téléphone (section 2, « Tester le compte »). Sur l'ordinateur, le compte est enregistré dans le fichier `%APPDATA%\PolitisationPopulaireFrancaise\identity.json` (tapez `%APPDATA%` dans la barre d'adresse de l'Explorateur). Ce fichier est privé à votre session Windows mais n'est pas encore chiffré par un mot de passe : c'est prévu avant le lancement public, et noté dans le modèle de menaces. Pour tout effacer, utilisez « Se déconnecter de cet appareil » ou supprimez ce fichier.
+
+### Protéger l'ordinateur : chiffrer le disque (ajouté le 8 novembre 2026)
+
+Pourquoi : sur un ordinateur, le code de PPF ferme la porte de l'application, mais ses fichiers restent lisibles par quelqu'un qui emporte l'ordinateur ou son disque. **Chiffrer le disque** (le rendre illisible sans votre session Windows) les protège vraiment ; c'est aussi ce que PPF conseillera aux militants qui utilisent l'application sur ordinateur. Votre ordinateur est sous **Windows 11 Famille** (vu le 8 novembre 2026) : suivez la partie A. La partie B ne concerne que Windows 11 Professionnel. Sources : pages du support de Microsoft en français, consultées le 8 novembre 2026 (« Chiffrement d'appareil dans Windows », « Rechercher votre clé de récupération BitLocker », « Chiffrement de lecteur BitLocker »).
+
+**Savoir quelle édition de Windows vous avez** : clic droit sur le bouton **Démarrer**, **Paramètres**, **Système**, puis tout en bas **Informations système** (Microsoft l'appelle aussi « À propos ») ; l'édition se lit sous **Spécifications Windows** (« Windows 11 Famille » ou « Windows 11 Professionnel »). Raccourci : touches **Windows + R**, tapez `ms-settings:about`, **OK**.
+
+**A. Windows 11 Famille : « Chiffrement de l'appareil »**
+
+1. Ouvrez votre session Windows avec un compte **administrateur** (c'est le cas du compte principal de l'ordinateur).
+2. Touches **Windows + R**, tapez `ms-settings:deviceencryption`, puis **OK** : la bonne page des Paramètres s'ouvre directement. (Par les menus : **Démarrer**, **Paramètres**, **Confidentialité et sécurité**, **Chiffrement de l'appareil**.)
+3. Si l'interrupteur **Chiffrement de l'appareil** est sur **Désactivé**, mettez-le sur **Activé**. Le chiffrement se fait pendant que vous continuez à utiliser l'ordinateur.
+4. Si vous ouvrez Windows avec un **compte Microsoft**, la **clé de récupération** (48 chiffres, à taper si Windows ne reconnaît plus l'ordinateur, par exemple après un changement de matériel) est enregistrée dans ce compte. Pour la noter sur papier : depuis un autre appareil, allez sur `aka.ms/myrecoverykey`, connectez-vous, repérez votre ordinateur et recopiez la clé. Rangez ce papier loin de l'ordinateur. Microsoft ne peut ni retrouver ni refaire une clé perdue.
+5. Si vous ouvrez Windows avec un **compte local** (sans adresse Microsoft), le chiffrement ne s'active pas tout seul. Faites quand même les étapes 2 et 3, puis dites-moi ce que Windows affiche à propos de la clé : je vous dirai comment la sauvegarder.
+
+**Si « Chiffrement de l'appareil » n'apparaît pas** : votre ordinateur ne remplit pas une condition. Pour savoir laquelle : **Démarrer**, tapez `Informations système`, clic droit sur le résultat, **Exécuter en tant qu'administrateur**, puis lisez la ligne **Prise en charge du chiffrement automatique de l'appareil** :
+- « Conforme aux conditions préalables » : l'option devrait être là ; vérifiez que vous êtes sur un compte administrateur ;
+- « Le module de plateforme sécurisée n'est pas utilisable » : la puce de sécurité (TPM) est absente ou désactivée dans les réglages de démarrage (BIOS ou UEFI) ;
+- « La liaison PCR7 n'est pas prise en charge » : le démarrage sécurisé est désactivé, ou un appareil est branché au démarrage (station d'accueil, carte graphique externe) ;
+- « WinRE n'est pas configuré » : l'environnement de récupération de Windows manque.
+Dans ces trois derniers cas, envoyez-moi une capture de cette ligne : changer les réglages de démarrage demande de la prudence, je vous guiderai pas à pas. Passer à Windows 11 Professionnel pour avoir BitLocker est payant : je ne le recommande pas sans en parler d'abord.
+
+**B. Windows 11 Professionnel : BitLocker**
+
+1. Session **administrateur**. **Démarrer**, tapez `BitLocker`, puis choisissez **Gérer BitLocker** (si ce choix n'apparaît pas, votre Windows est l'édition Famille : partie A).
+2. Dans la fenêtre **Chiffrement de lecteur BitLocker**, en face du disque `C:`, cliquez sur **Activer BitLocker**.
+3. Laissez Windows déverrouiller le disque automatiquement à l'ouverture de session.
+4. **Sauvegardez la clé de récupération**, de préférence de deux façons : **Enregistrer dans votre compte Microsoft**, et **Imprimer la clé de récupération** (ou **Enregistrer sur une clé USB**). Ne gardez jamais la clé dans un fichier sur le disque que vous chiffrez, ni la clé USB ou le papier rangés avec l'ordinateur. **Suivant**.
+5. Choisissez **Chiffrer le lecteur entier** (recommandé : un disque déjà utilisé garde des traces de fichiers effacés que « l'espace utilisé uniquement » laisserait lisibles).
+6. Choisissez **Nouveau mode de chiffrement**, puis **Continuer**, et redémarrez si Windows le demande. Le chiffrement continue en arrière-plan ; l'ordinateur reste utilisable.
+
+Les libellés des écrans de BitLocker viennent d'une page de Microsoft traduite automatiquement : ils peuvent varier un peu à l'écran. En cas de doute, une capture me suffit.
 
 ## 4. Relire et accepter une demande de fusion (pull request)
 

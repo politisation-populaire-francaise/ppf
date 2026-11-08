@@ -56,13 +56,37 @@ object EmergencyNumbers {
     /** Help for the victims of an offence, every day from 9:00 to 20:00, free. */
     val VICTIMS = EmergencyNumber("victimes", "116 006")
 
+    /** Violence against women (Violences Femmes Info): victims and witnesses; free, anonymous, day and night; not an emergency number. */
+    val WOMEN = EmergencyNumber("violences-femmes", "39 19")
+
+    /** Harassment and cyber-harassment of young people (e-Enfance): free, anonymous, every day from 9:00 to 23:00. */
+    val CYBER_HARASSMENT = EmergencyNumber("cyberharcelement", "30 18")
+
+    /** Croix-Rouge Écoute (association cited by sante.fr): psychological support for anyone who needs to talk. */
+    val RED_CROSS_LISTENING = EmergencyNumber("croix-rouge-ecoute", "0 800 858 858")
+
+    /** SOS Amitié (association cited by sante.fr): volunteers, for people in distress and their relatives, day and night. */
+    val SOS_AMITIE = EmergencyNumber("sos-amitie", "09 72 39 40 50")
+
     /** The emergency services, in the order of the AIDE button: 15 and 112 first. */
     val emergency: List<EmergencyNumber> = listOf(SAMU, EUROPE, POLICE, FIREFIGHTERS, DEAF)
 
-    /** The other useful numbers of the protest mode (lost child, support after an injury, distress). */
-    val listening: List<EmergencyNumber> = listOf(CHILDREN, MISSING_CHILD, VICTIMS, SUICIDE)
+    /** The other useful numbers of the protest mode: a lost child, the support after an injury. */
+    val protest: List<EmergencyNumber> = listOf(MISSING_CHILD, VICTIMS)
 
-    val all: List<EmergencyNumber> = emergency + listening
+    /**
+     * « Besoin de parler ? » in the AIDE sheet (D-081, point 3; D-084): the public listening lines,
+     * apart from the protest mode. Checked on 8 November 2026: service-public.gouv.fr F33954
+     * (3919, 3114, 119, 3018) and F12544 (3919), 3114.fr, allo119.gouv.fr, justice.gouv.fr
+     * (« Prise en charge des victimes d'infractions pénales », 116 006).
+     */
+    val talk: List<EmergencyNumber> = listOf(SUICIDE, WOMEN, CHILDREN, VICTIMS, CYBER_HARASSMENT)
+
+    /** Listening associations of « Besoin de parler ? », cited by sante.fr and Psycom (« Les lignes d'écoute », checked on 8 November 2026). */
+    val talkAssociations: List<EmergencyNumber> = listOf(RED_CROSS_LISTENING, SOS_AMITIE)
+
+    /** Every number, each once (the 116 006 is in the protest mode and in « Besoin de parler ? »). */
+    val all: List<EmergencyNumber> = (emergency + protest + talk + talkAssociations).distinct()
 
     const val SOURCE_URL: String = "https://www.service-public.gouv.fr/particuliers/vosdroits/F33954"
 }
