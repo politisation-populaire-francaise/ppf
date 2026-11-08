@@ -113,7 +113,7 @@ fun DeciderScreen(
             if (current == null) {
                 DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate)
             } else {
-                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir) }
+                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now()) }
             }
         }
     }
@@ -246,6 +246,7 @@ private fun DeciderDetail(
     wide: Boolean,
     columns: Int,
     onOpenVoir: (ContentAddress) -> Unit,
+    nowSeconds: Long,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -274,7 +275,7 @@ private fun DeciderDetail(
                         PactePage(catalog.board(pacte, voir, today), state, actions, wide)
                     } ?: Missing()
                     is DeciderDestination.Comparator -> catalog.comparators.firstOrNull { it.address == current.address }?.let { sheet ->
-                        ComparatorPage(catalog.grid(sheet, voir), wide, onOpenSheet = onOpenVoir)
+                        ComparatorPage(catalog.grid(sheet, voir), wide, nowSeconds = nowSeconds, onOpenSheet = onOpenVoir)
                     } ?: Missing()
                     is DeciderDestination.Thresholds -> ThresholdsPage(current.platform, columns)
                     DeciderDestination.ClosedPetitions -> ClosedPetitionsPage(catalog.closedPetitions(today), today, columns) {

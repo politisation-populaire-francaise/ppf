@@ -30,6 +30,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.decider.ComparatorCell
 import org.politisationpopulairefrancaise.core.decider.ComparatorGrid
 import org.politisationpopulairefrancaise.core.decider.ComparatorRow
+import org.politisationpopulairefrancaise.core.decider.ComparatorSheet
+import org.politisationpopulairefrancaise.core.decider.ElectionRound
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -40,10 +42,20 @@ import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_aside
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_card_line
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_entry_official
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_entry_requests
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_entry_title
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_freeze_rule
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_frozen
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_frozen_title
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_method
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_method_title
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_none
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_official_source
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_quote
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_request
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_request_missing
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_request_official
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_sheet
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_source
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_themes
@@ -58,6 +70,9 @@ object ComparatorTags {
     const val PAGE = "decider-comparator"
     const val METHOD = "decider-comparator-method"
     const val ASIDE = "decider-comparator-aside"
+    const val ENTRY = "decider-comparator-entry"
+    const val FROZEN = "decider-comparator-frozen"
+    fun request(candidate: String) = "decider-comparator-request-$candidate"
     fun theme(id: String) = "decider-comparator-theme-$id"
     fun row(candidate: String) = "decider-comparator-row-$candidate"
     fun cell(candidate: String, theme: String) = "decider-comparator-cell-$candidate-$theme"
@@ -87,17 +102,25 @@ internal fun ComparatorCard(grid: ComparatorGrid, onOpen: () -> Unit, modifier: 
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, onOpenSheet: (ContentAddress) -> Unit) {
+internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, nowSeconds: Long, onOpenSheet: (ContentAddress) -> Unit) {
     val palette = PpfTheme.palette
     var theme by rememberSaveable(grid.sheet.address.toString()) { mutableStateOf(grid.themes.first()) }
     Column(Modifier.fillMaxWidth().testTag(ComparatorTags.PAGE)) {
         PageHeader(grid.sheet.article.title.withoutExample(), grid.sheet.election.label)
         Spacer(Modifier.height(12.dp))
+        grid.sheet.frozenRound(nowSeconds)?.let { round ->
+            FrozenNotice(round)
+            Spacer(Modifier.height(12.dp))
+        }
         InfoBox(Lucide.ListChecks, Modifier.testTag(ComparatorTags.METHOD)) {
             Text(stringResource(Res.string.decider_comparator_method_title), style = MaterialTheme.typography.titleSmall)
             Spacer(Modifier.height(4.dp))
             Text(stringResource(Res.string.decider_comparator_method), style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(stringResource(Res.string.decider_comparator_freeze_rule), style = MaterialTheme.typography.bodyMedium)
         }
+        Spacer(Modifier.height(12.dp))
+        EntryRule(grid.sheet)
         Spacer(Modifier.height(16.dp))
         if (wide) {
             ComparatorTable(grid, onOpenSheet)
@@ -119,6 +142,7 @@ internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, onOpenSheet: (C
                 if (index > 0) HorizontalDivider(color = palette.border)
                 Column(Modifier.fillMaxWidth().padding(vertical = 12.dp).testTag(ComparatorTags.row(row.candidate.identifier))) {
                     Text(row.name.withoutExample(), style = MaterialTheme.typography.titleSmall)
+                    RequestLine(grid.sheet, row)
                     Spacer(Modifier.height(4.dp))
                     PositionText(row, cell)
                     PpfTextButton(onClick = { onOpenSheet(row.candidate) }, text = stringResource(Res.string.decider_comparator_sheet))
@@ -143,7 +167,7 @@ private fun ComparatorTable(grid: ComparatorGrid, onOpenSheet: (ContentAddress) 
     val palette = PpfTheme.palette
     Row(Modifier.horizontalScroll(rememberScrollState())) {
         Column(Modifier.width(160.dp)) {
-            Spacer(Modifier.height(56.dp))
+            Spacer(Modifier.height(HEADER_HEIGHT))
             grid.themes.forEach { id ->
                 HorizontalDivider(color = palette.border)
                 Text(themeLabel(id), style = MaterialTheme.typography.labelLarge, modifier = Modifier.height(CELL_HEIGHT).padding(vertical = 8.dp).semantics { heading() })
@@ -151,8 +175,9 @@ private fun ComparatorTable(grid: ComparatorGrid, onOpenSheet: (ContentAddress) 
         }
         grid.rows.forEach { row ->
             Column(Modifier.width(280.dp).padding(start = 12.dp).testTag(ComparatorTags.row(row.candidate.identifier))) {
-                Column(Modifier.height(56.dp)) {
+                Column(Modifier.height(HEADER_HEIGHT)) {
                     Text(row.name.withoutExample(), style = MaterialTheme.typography.titleSmall, maxLines = 2)
+                    RequestLine(grid.sheet, row)
                     PpfTextButton(onClick = { onOpenSheet(row.candidate) }, text = stringResource(Res.string.decider_comparator_sheet))
                 }
                 row.cells.forEach { cell ->
@@ -185,4 +210,55 @@ private fun PositionText(row: ComparatorRow, cell: ComparatorCell) {
     }
 }
 
+/**
+ * Who appears in the comparator (decision of the owner, Q1 option B): anyone who declared their candidacy and
+ * asks, within the same delay for everyone, until the official list, which the comparator then follows.
+ */
+@Composable
+private fun EntryRule(sheet: ComparatorSheet) {
+    val open = rememberOpenUrl()
+    InfoBox(Lucide.Users, Modifier.testTag(ComparatorTags.ENTRY)) {
+        Text(stringResource(Res.string.decider_comparator_entry_title), style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(4.dp))
+        val official = sheet.officialList
+        if (official != null) {
+            Text(stringResource(Res.string.decider_comparator_entry_official, official.date.toFrench()), style = MaterialTheme.typography.bodyMedium)
+            PpfTextButton(onClick = { open(official.url) }, text = stringResource(Res.string.decider_comparator_official_source))
+        } else {
+            sheet.additionDelayDays?.let { delay ->
+                Text(stringResource(Res.string.decider_comparator_entry_requests, delay), style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
+/** The request of a candidate and the day of the addition, the same line for everyone. */
+@Composable
+private fun RequestLine(sheet: ComparatorSheet, row: ComparatorRow) {
+    val request = sheet.requestOf(row.candidate)
+    val text = when {
+        request != null -> stringResource(Res.string.decider_comparator_request, request.requestedOn.toFrenchShort(), request.addedOn.toFrenchShort())
+        sheet.officialList != null -> stringResource(Res.string.decider_comparator_request_official)
+        else -> stringResource(Res.string.decider_comparator_request_missing)
+    }
+    Text(text, style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkMuted, modifier = Modifier.testTag(ComparatorTags.request(row.candidate.identifier)))
+}
+
+/** From 0 h the day before the first voting day until the polling stations close: nothing is published (Q4 option A). */
+@Composable
+private fun FrozenNotice(round: ElectionRound) {
+    InfoBox(Lucide.Lock, Modifier.testTag(ComparatorTags.FROZEN)) {
+        Text(stringResource(Res.string.decider_comparator_frozen_title), style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(4.dp))
+        Text(
+            stringResource(Res.string.decider_comparator_frozen, round.number, round.day.toFrench(), frenchClock(round.closingHour, round.closingMinute)),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+/** "20 h", "19 h 30". */
+internal fun frenchClock(hour: Int, minute: Int): String = if (minute == 0) "$hour h" else "$hour h ${minute.toString().padStart(2, '0')}"
+
 private val CELL_HEIGHT = 200.dp
+private val HEADER_HEIGHT = 84.dp

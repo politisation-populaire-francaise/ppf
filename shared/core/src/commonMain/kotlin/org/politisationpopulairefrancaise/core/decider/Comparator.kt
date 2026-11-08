@@ -27,12 +27,48 @@ data class ComparatorSheet(
     val themes: List<String>,
     val sources: List<Source>,
     val corrections: List<Correction>,
+    /** The rounds of the election, in their order: they set the freeze ([ElectionRound]). */
+    val rounds: List<ElectionRound> = emptyList(),
+    /** The requests of the declared candidates, with their dates (Q1 option B). */
+    val requests: List<CandidateRequest> = emptyList(),
+    /** The same delay for everyone between a request and the addition, in days. */
+    val additionDelayDays: Int? = null,
+    /** Once published, the comparator follows the official list of the candidates. */
+    val officialList: OfficialList? = null,
 ) {
     val address: ContentAddress get() = article.address
+
+    fun requestOf(candidate: ContentAddress): CandidateRequest? = requests.firstOrNull { it.concerns(candidate) }
+
+    /** The round whose freeze holds at [epochSeconds], if any: nothing of this comparator is published meanwhile. */
+    fun frozenRound(epochSeconds: Long): ElectionRound? = rounds.firstOrNull { it.isFrozen(epochSeconds) }
+
+    /**
+     * What breaks the published rule of entry (Q1 option B), in plain words for the editorial team; the signing
+     * tool refuses a sheet with any: before the official list, every candidate has a request; every request was
+     * honoured within the same delay; a request names a candidate of the sheet.
+     */
+    fun ruleProblems(): List<String> {
+        val problems = mutableListOf<String>()
+        if (requests.isNotEmpty() && additionDelayDays == null) problems += "requests without the delay of addition (${DeciderTags.ADDITION_DELAY})"
+        if (officialList == null) {
+            if (additionDelayDays == null) problems += "no official list and no delay of addition (${DeciderTags.ADDITION_DELAY})"
+            candidates.filter { requestOf(it) == null }.forEach { problems += "no request for ${it.identifier} before the official list" }
+        }
+        additionDelayDays?.let { delay ->
+            requests.filter { it.delayDays > delay }.forEach { problems += "${it.candidate} added after ${it.delayDays} days, more than $delay" }
+        }
+        requests.filter { request -> candidates.none { request.concerns(it) } }.forEach { problems += "request of ${it.candidate}, who is not a candidate of the sheet" }
+        if (rounds.isEmpty()) problems += "no round (${DeciderTags.ROUND}): the comparator could not be frozen"
+        return problems
+    }
 
     companion object {
         /** Enough to compare, few enough to read on a phone. */
         const val MAX_THEMES: Int = 20
+
+        /** The longest delay of addition a sheet may announce. */
+        const val MAX_ADDITION_DELAY_DAYS: Int = 30
 
         fun from(article: Article): ComparatorSheet? {
             if (article.type != ArticleType.COMPARATEUR) return null
@@ -44,6 +80,18 @@ data class ComparatorSheet(
             } ?: return null
             val themes = event.fields(DeciderTags.THEME).mapNotNull { it.at(0) }
             if (themes.isEmpty() || themes.size > MAX_THEMES || themes.distinct().size != themes.size) return null
+            // A wrong round could lift the freeze without anyone noticing: the whole sheet is then not read.
+            val roundFields = event.fields(DeciderTags.ROUND)
+            val rounds = roundFields.map { ElectionRound.parse(it) ?: return null }.sortedBy { it.number }
+            if (rounds.map { it.number }.distinct().size != rounds.size) return null
+            val requests = event.fields(DeciderTags.REQUEST).map { CandidateRequest.parse(it) ?: return null }
+            if (requests.map { it.candidate }.distinct().size != requests.size) return null
+            val delayText = event.value(DeciderTags.ADDITION_DELAY)
+            val delay = delayText?.let { text -> text.trim().toIntOrNull()?.takeIf { it in 1..MAX_ADDITION_DELAY_DAYS } ?: return null }
+            val officialList = event.fields(DeciderTags.OFFICIAL_LIST).firstOrNull()?.let { f ->
+                val url = f.at(0)?.takeIf(::isWebAddress) ?: return null
+                OfficialList(url, CivilDate.parseIso(f.at(1)) ?: return null)
+            }
             return ComparatorSheet(
                 article = article,
                 election = election,
@@ -51,6 +99,10 @@ data class ComparatorSheet(
                 themes = themes,
                 sources = event.sources(),
                 corrections = event.corrections(),
+                rounds = rounds,
+                requests = requests,
+                additionDelayDays = delay,
+                officialList = officialList,
             )
         }
     }

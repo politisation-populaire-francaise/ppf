@@ -91,6 +91,9 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
         sheet.candidates.forEach { candidate ->
             checkNotNull(voir.person(candidate)) { "${sheet.article.slug}: candidate without a sheet in Voir: ${candidate.identifier}" }
         }
+        // The published rule of entry and the freeze (owner's decisions Q1 B and Q4 A): never signed when broken.
+        val problems = sheet.ruleProblems()
+        check(problems.isEmpty()) { "${sheet.article.slug}: " + problems.joinToString("; ") }
         val grid = catalog.grid(sheet, voir)
         grid.aside.forEach { (position, reason) ->
             println("decider: ${position.article.slug} is not shown in ${sheet.article.slug} ($reason)")

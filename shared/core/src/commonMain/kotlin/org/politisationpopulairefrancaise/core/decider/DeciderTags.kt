@@ -67,4 +67,19 @@ object DeciderTags {
     const val THEME = "ppf-theme"
     /** A short quotation of the candidate: `text | page (https) | date (AAAA-MM-JJ)`. */
     const val QUOTE = "ppf-quote"
+
+    /**
+     * One round of the election of a comparator: `number | voting day | first voting day (overseas, optional) |
+     * closing of the last polling stations (HH:MM, Paris time, optional: 20:00)`. Sets the freeze ([ElectionRound]).
+     */
+    const val ROUND = "ppf-round"
+
+    /** The request of a declared candidate: `candidate (identifier of the sheet) | requested on | added on` ([CandidateRequest]). */
+    const val REQUEST = "ppf-request"
+
+    /** The same delay for everyone between a request and the addition, in days. */
+    const val ADDITION_DELAY = "ppf-addition-delay"
+
+    /** The official list of the candidates: `page (https) | date of publication` ([OfficialList]). */
+    const val OFFICIAL_LIST = "ppf-official-list"
 }

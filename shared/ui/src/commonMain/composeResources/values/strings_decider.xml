@@ -172,4 +172,14 @@
     <string name="decider_comparator_source">Lire la source (%1$s)</string>
     <string name="decider_comparator_sheet">Sa fiche dans « Voir »</string>
     <string name="decider_comparator_aside">%1$d positions publiées ne sont pas affichées (autre élection, autre personne ou thème absent de la grille).</string>
+    <string name="decider_comparator_freeze_rule">À chaque tour, le comparateur est figé de la veille du scrutin à zéro heure jusqu’à la fermeture des derniers bureaux de vote : plus rien n’y est publié ni corrigé pendant ce temps, et il reste lisible.</string>
+    <string name="decider_comparator_entry_title">Qui figure au comparateur</string>
+    <string name="decider_comparator_entry_requests">Toute personne qui a déclaré publiquement sa candidature et qui le demande y est ajoutée, dans un délai de %1$d jours au plus, le même pour toutes. Chaque demande reste visible avec sa date et la date de l’ajout. Dès que la liste officielle des candidats est publiée, le comparateur la suit.</string>
+    <string name="decider_comparator_entry_official">Le comparateur suit la liste officielle des candidats, publiée le %1$s. Les demandes faites avant restent visibles avec leurs dates.</string>
+    <string name="decider_comparator_official_source">Lire la liste officielle</string>
+    <string name="decider_comparator_request">Demande le %1$s, ajout le %2$s</string>
+    <string name="decider_comparator_request_official">Sur la liste officielle des candidats</string>
+    <string name="decider_comparator_request_missing">Date de la demande non publiée</string>
+    <string name="decider_comparator_frozen_title">Contenu figé jusqu’à la fermeture des bureaux de vote</string>
+    <string name="decider_comparator_frozen">Tour %1$d : depuis la veille du scrutin à zéro heure et jusqu’au %2$s à %3$s, plus rien n’est publié ni corrigé dans ce comparateur. Il reste lisible.</string>
 </resources>
