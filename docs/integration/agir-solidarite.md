@@ -1,6 +1,6 @@
 # Note d'intégration : solidarité, soutien et bénévolat (M35 : AG-10, AG-12)
 
-- **État (8 novembre 2026)** : conception écrite, puis code du cœur, de l'interface, des exemples et des tests **écrit sans être compilé** (consigne de la session : une seule compilation à la fois sur la machine, réservée à d'autres sessions). Rien n'a été lancé : ni Gradle, ni test, ni l'outil de signature.
+- **État (8 novembre 2026)** : conception, code du cœur, de l'interface, des exemples et des tests écrits sans compiler sur `feature/agir-solidarite` (machine réservée), puis fusionnés dans `feature/agir`, compilés et verts du premier coup (41 tests de M35, interface d'Agir) ; `solidarite.json` signé ; `tools/check-apk.sh` l'exige. Décisions D-085 et D-086.
 - **À faire au moment de compiler** : section 9.
 - Rédigée par l'agent « solidarité » (branche `feature/agir-solidarite`, partie de `feature/agir` au commit `c824c76`). Elle s'adresse à la session « Agir », qui fusionne, numérote les décisions (D-085 à D-089) et reporte les formats dans `docs/FORMATS.md` et `content/README.md`.
 
