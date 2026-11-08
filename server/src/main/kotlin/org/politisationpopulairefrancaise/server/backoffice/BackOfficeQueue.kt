@@ -110,8 +110,12 @@ sealed interface QueueChoice {
         }
     }
 
-    /** A short value typed by the member (a public key, an identifier), at most [maxLength] characters, matching [pattern]. */
-    data class Text(override val label: String, val maxLength: Int, val pattern: Regex? = null) : QueueChoice {
+    /**
+     * A short value typed by the member (a public key, an identifier), at most [maxLength] characters,
+     * matching [pattern] as a whole. The pattern is mandatory: the audit journal is kept without limit
+     * and must never receive free text (someone would type a name or an address).
+     */
+    data class Text(override val label: String, val maxLength: Int, val pattern: Regex) : QueueChoice {
         init {
             require(maxLength in 1..MAX_LENGTH) { "A typed choice has 1 to $MAX_LENGTH characters" }
         }
@@ -129,7 +133,7 @@ sealed interface QueueChoice {
             val given = value?.trim()?.takeIf { it.isNotEmpty() } ?: return null
             return when (choice) {
                 is OneOf -> given.takeIf { candidate -> choice.options.any { it.value == candidate } }
-                is Text -> given.takeIf { it.length <= choice.maxLength && (choice.pattern == null || choice.pattern.matches(it)) }
+                is Text -> given.takeIf { it.length <= choice.maxLength && choice.pattern.matches(it) }
             }
         }
     }

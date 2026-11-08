@@ -329,7 +329,9 @@ class BackOfficeUnitTest {
         assertEquals(first, QueueChoice.accepted(typed, first))
         assertFailsWith<IllegalArgumentException> { QueueChoice.OneOf("x", emptyList()) }
         assertFailsWith<IllegalArgumentException> { QueueChoice.OneOf("x", listOf(QueueOption("a", "A"), QueueOption("a", "B"))) }
-        assertFailsWith<IllegalArgumentException> { QueueChoice.Text("x", maxLength = 0) }
+        assertFailsWith<IllegalArgumentException> { QueueChoice.Text("x", maxLength = 0, pattern = Regex("^[a-z]+$")) }
+        // Never free text in the journal: a name or an address does not match a key.
+        assertNull(QueueChoice.accepted(typed, "Claire Dupont"))
         assertFailsWith<IllegalArgumentException> { QueueOption("", "x") }
         // A request waiting for a second person cannot keep a choice.
         assertFailsWith<IllegalArgumentException> { QueueAction("pick", "x", "queue.x.decide", twoPerson = true, choice = typed) }
