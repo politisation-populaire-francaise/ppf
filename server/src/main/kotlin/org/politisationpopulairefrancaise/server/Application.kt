@@ -360,10 +360,6 @@ fun Application.module(
     }
     // The legal register keeps one year (fixed in the database); its daily purge lives with the application.
     dataSource?.let { LegalRegisterPurge(it).start(this, LegalRegisterPurge.DEFAULT_INTERVAL, log) }
-    // Recovery keys and compromised accounts (S-146, D-134); the OpenTimestamps stamping of the
-    // commitments waits for Décider's ArchiveService (CommitmentStamper.NONE until then).
-    // Made before the back-office, whose queues refuse a held content signed after a compromise.
-    val compromised = repository?.let { CompromisedAccounts(it) }
     // The team back-office (M15): its own port, accounts by invitation, passkeys, journal; the poles
     // register their queues on teamBackOffice.queues (contract docs/integration/back-office.md, section 7).
     val teamBackOffice: BackOffice? = when {
