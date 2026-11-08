@@ -947,6 +947,11 @@ class BackOffice(
         val section = requireNotNull(sections.find(sectionId)) { "Unknown section" }
         require(actor.has(section.permission)) { "The member may not act in this section" }
         require(ACTION_PART.matches(action)) { "A section action is a short lowercase word" }
+        // Identifiers and counts only: no text of a content can slip into the journal through the details.
+        require(details.size <= MAX_SECTION_DETAILS) { "A section action has at most $MAX_SECTION_DETAILS details" }
+        require(details.all { (key, value) -> ACTION_PART.matches(key) && value.length <= MAX_SECTION_DETAIL_LENGTH }) {
+            "A detail of a section action has a short lowercase key and at most $MAX_SECTION_DETAIL_LENGTH characters"
+        }
         return audit.record(
             AuditEntry(AuditActor.of(actor), "section.$sectionId.$action", TARGET_SECTION_ITEM, target?.let { "$sectionId:${it.take(200)}" }, cleanReason(reason), details),
         )
@@ -1320,6 +1325,10 @@ class BackOffice(
         const val TARGET_SECTION_ITEM: String = "section_item"
 
         private val ACTION_PART = Regex("^[a-z0-9_]{1,40}$")
+
+        /** The details of a section action: at most 20, keys like the action, values of 200 characters at most. */
+        const val MAX_SECTION_DETAILS: Int = 20
+        const val MAX_SECTION_DETAIL_LENGTH: Int = 200
 
         /** The source of the alerts posted by the base itself. */
         const val ALERT_SOURCE: String = "backoffice"

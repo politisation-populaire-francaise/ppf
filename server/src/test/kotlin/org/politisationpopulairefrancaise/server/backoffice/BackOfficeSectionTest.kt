@@ -51,6 +51,9 @@ class BackOfficeSectionTest {
         override val title: String = "Notes d’essai"
         override val permission: String = Permissions.editorialWrite("comprendre")
 
+        /** How many times a form handler ran (the guards of the base must stop a refused post before it). */
+        val calls = java.util.concurrent.atomic.AtomicInteger()
+
         override fun routes(routes: SectionRoutes) {
             routes.get("") {
                 respondPage(title) {
@@ -67,6 +70,7 @@ class BackOfficeSectionTest {
                 respondPage(title) { p { +"Fiche $id" } }
             }
             routes.post("note") { form ->
+                calls.incrementAndGet()
                 audit("note_written", "n-1", form["motif"], mapOf("size" to form["texte"].orEmpty().length.toString()))
                 redirect(query = "ok=1")
             }
@@ -165,7 +169,8 @@ class BackOfficeSectionTest {
 
     @Test
     fun aFormWithoutAValidAntiForgeryTokenIsRefusedAndNothingIsJournaled() = testApplication {
-        val bo = backOffice(TestSection())
+        val section = TestSection()
+        val bo = backOffice(section)
         val client = start(bo)
         val editor = member(bo, "Éditrice", listOf(TeamRole.EDITOR))
         val seq = lastSeq()
@@ -176,7 +181,16 @@ class BackOfficeSectionTest {
             header("Sec-Fetch-Site", "cross-site")
         }
         assertEquals(HttpStatusCode.Forbidden, crossSite.status)
+        val otherOrigin = client.submitForm("http://localhost:${BackOfficeTestData.PORT}/equipe/sections/essai.notes/note", parameters { append("csrf", Csrf.tokenFor(editor.token)) }) {
+            header(HttpHeaders.Cookie, "$SESSION_COOKIE=${editor.token}")
+            header(HttpHeaders.Origin, "https://ailleurs.example")
+        }
+        assertEquals(HttpStatusCode.Forbidden, otherOrigin.status)
         assertTrue(journalAfter(seq).isEmpty())
+        assertEquals(0, section.calls.get(), "the handler never ran")
+        // The same form, valid, does reach it.
+        assertEquals(HttpStatusCode.Found, client.form("/equipe/sections/essai.notes/note", editor.token, mapOf("csrf" to Csrf.tokenFor(editor.token))).status)
+        assertEquals(1, section.calls.get())
     }
 
     @Test
@@ -200,6 +214,14 @@ class BackOfficeSectionTest {
         assertFailsWith<IllegalArgumentException> { bo.recordSectionAction(BackOfficeTestData.auth(bo, moderator).actor, "essai.notes", "note_written", null, null, emptyMap()) }
         assertFailsWith<IllegalArgumentException> { bo.recordSectionAction(BackOfficeTestData.auth(bo, editor).actor, "essai.notes", "Note écrite", null, null, emptyMap()) }
         assertFailsWith<IllegalArgumentException> { bo.recordSectionAction(BackOfficeTestData.auth(bo, editor).actor, "inconnue", "note", null, null, emptyMap()) }
+        // The details are bounded: no text of a content can enter the journal through them.
+        val actor = BackOfficeTestData.auth(bo, editor).actor
+        fun record(details: Map<String, String>) = bo.recordSectionAction(actor, "essai.notes", "note_written", "n-1", null, details)
+        record((1..20).associate { "cle_$it" to "x".repeat(200) })
+        assertFailsWith<IllegalArgumentException> { record((1..21).associate { "cle_$it" to "1" }) }
+        assertFailsWith<IllegalArgumentException> { record(mapOf("texte" to "x".repeat(201))) }
+        assertFailsWith<IllegalArgumentException> { record(mapOf("Texte libre" to "1")) }
+        assertFailsWith<IllegalArgumentException> { record(mapOf("k".repeat(41) to "1")) }
     }
 
     @Test

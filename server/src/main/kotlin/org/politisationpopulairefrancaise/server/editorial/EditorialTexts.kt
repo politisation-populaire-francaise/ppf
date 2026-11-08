@@ -61,6 +61,12 @@ object EditorialTexts {
     const val BODY_HINT: String = "Titres « ## », listes « - », gras « **…** », liens « [texte](https://…) ». Aucun HTML : il serait affiché tel quel."
     const val BODY_BLOCKS: String = "Blocs attendus :"
     const val BODY_SECTIONS: String = "Sections obligatoires :"
+    const val BODY_LIMIT: String = "{0} caractères au plus (espaces compris) ; {1} pour tout le formulaire."
+    const val BODY_TOO_LONG_CHARS: String = "Le texte a {0} caractères, {1} au plus. Rien n’a été enregistré : raccourcissez-le (il reste dans le formulaire), puis enregistrez de nouveau."
+    const val FIELD_TOO_LONG: String = "Le champ « {0} » a {1} caractères, {2} au plus. Rien n’a été enregistré : raccourcissez-le, puis enregistrez de nouveau."
+    const val FORM_TOO_LONG: String = "Le formulaire a {0} caractères en tout, {1} au plus. Rien n’a été enregistré : raccourcissez le texte, puis enregistrez de nouveau."
+    const val JOURNAL_FAILED_TITLE: String = "Journal non écrit"
+    const val JOURNAL_FAILED: String = "La version {0} du brouillon est enregistrée, mais sa ligne du journal de l’équipe n’a pas pu être écrite. Signalez-le au Directeur technique avant de continuer : chaque enregistrement doit être tracé."
     const val SAVE: String = "Enregistrer"
     const val PREVIEW: String = "Prévisualiser sans enregistrer"
     const val DATE_HINT: String = "AAAA-MM-JJ"
@@ -156,6 +162,9 @@ object EditorialTexts {
         }
         return if (where.isEmpty()) text.replaceFirstChar { it.uppercase() } else where.joinToString(", ") + " : " + text
     }
+
+    /** A number written the French way, with a narrow no-break space between thousands: « 60 000 ». */
+    fun number(value: Int): String = value.toString().reversed().chunked(3).joinToString("\u202F").reversed()
 
     fun format(template: String, vararg args: Any): String {
         var text = template

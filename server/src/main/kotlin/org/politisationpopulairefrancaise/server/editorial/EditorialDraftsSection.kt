@@ -334,7 +334,12 @@ class EditorialDraftsSection(
         else -> null
     }
 
-    /** The content built from [content] as the site would show it, and the tags of the event. */
+    /**
+     * The content built from [content] as the site would show it, and the tags of the event. The unsigned
+     * event built here lives only during this request: it is rendered as HTML (never its id, never as JSON),
+     * never stored, never exported, never given to the publication port nor to the signing service. Only
+     * the queue action of steps 4 and 5 builds the event to sign, again, from the version under review.
+     */
     private fun FlowContent.preview(schema: ContentSchema, content: DraftContent) {
         val author = published.snapshot().authorOf(space)
         val event = try {
@@ -407,10 +412,10 @@ class EditorialDraftsSection(
         if (posted.action != FormAction.Save) {
             return formPage(schema, null, posted.state, null, problems, showPreview = posted.action == FormAction.Preview)
         }
-        if (content.body.length > EditorialDrafts.MAX_BODY) return formPage(schema, null, posted.state, null, problems, Notice(bodyTooLong(schema, content), error = true), HttpStatusCode.UnprocessableEntity)
+        posted.tooLong?.let { return formPage(schema, null, posted.state, null, problems, Notice(it, error = true), HttpStatusCode.UnprocessableEntity) }
         when (val result = drafts.create(space, schema.type, content, problems.size, actor.accountId)) {
             is SaveResult.Saved -> {
-                audit("draft_created", result.draft.id.toString(), details = details(result.draft, 1, problems))
+                if (!journal("draft_created", result.draft, 1, details(result.draft, 1, problems))) return
                 redirect("brouillons/${result.draft.id}", "ok=created")
             }
             SaveResult.SlugTaken -> formPage(schema, null, posted.state, null, problems, Notice(EditorialTexts.SLUG_TAKEN, error = true), HttpStatusCode.Conflict)
@@ -429,10 +434,10 @@ class EditorialDraftsSection(
         if (posted.action != FormAction.Save) {
             return formPage(schema, draft, posted.state, version, problems, showPreview = posted.action == FormAction.Preview)
         }
-        if (content.body.length > EditorialDrafts.MAX_BODY) return formPage(schema, draft, posted.state, version, problems, Notice(bodyTooLong(schema, content), error = true), HttpStatusCode.UnprocessableEntity)
+        posted.tooLong?.let { return formPage(schema, draft, posted.state, version, problems, Notice(it, error = true), HttpStatusCode.UnprocessableEntity) }
         when (val result = drafts.save(draft.id, version, content, problems.size, actor.accountId)) {
             is SaveResult.Saved -> {
-                audit("draft_saved", draft.id.toString(), details = details(result.draft, result.draft.latestVersion, problems))
+                if (!journal("draft_saved", result.draft, result.draft.latestVersion, details(result.draft, result.draft.latestVersion, problems))) return
                 redirect("brouillons/${draft.id}", "ok=saved")
             }
             is SaveResult.Unchanged -> redirect("brouillons/${draft.id}", "ok=unchanged")
@@ -457,7 +462,7 @@ class EditorialDraftsSection(
         val problems = check(schema, content)
         when (val result = drafts.create(space, schema.type, content, problems.size, actor.accountId, baseEventId = event.id)) {
             is SaveResult.Saved -> {
-                audit("draft_created", result.draft.id.toString(), details = details(result.draft, 1, problems) + ("base_event" to event.id))
+                if (!journal("draft_created", result.draft, 1, details(result.draft, 1, problems) + ("base_event" to event.id))) return
                 redirect("brouillons/${result.draft.id}", "ok=created")
             }
             SaveResult.SlugTaken -> redirect(query = "erreur=slug_taken")
@@ -479,8 +484,28 @@ class EditorialDraftsSection(
         return EditorialEngine.check(schema, content.draft(schema.type), context)
     }
 
-    private fun bodyTooLong(schema: ContentSchema, content: DraftContent): String =
-        EditorialTexts.problem(schema, Problem(org.politisationpopulairefrancaise.core.editorial.schema.Codes.BODY_TOO_LONG, EditorialEngine.BODY, args = listOf(EditorialDrafts.MAX_BODY.toString(), content.body.length.toString())))
+    /**
+     * The journal line of a save, written right after the version, in the same handler. When the base
+     * cannot write it, the member gets an error page, never a success page nor a redirect, so that the
+     * gap is seen (the version stays saved: never lose the work). Returns whether the line was written.
+     */
+    private suspend fun SectionContext.journal(action: String, draft: EditorialDraft, version: Int, details: Map<String, String>): Boolean {
+        val written = try {
+            audit(action, draft.id.toString(), details = details)
+            true
+        } catch (e: Exception) {
+            // Only the class: a database message could quote the content.
+            log.error("Editorial drafts: the journal line of a save could not be written (${e::class.qualifiedName}).")
+            false
+        }
+        if (!written) {
+            respondPage(EditorialTexts.JOURNAL_FAILED_TITLE, Notice(EditorialTexts.format(EditorialTexts.JOURNAL_FAILED, version), error = true), HttpStatusCode.InternalServerError) {
+                h1 { +EditorialTexts.JOURNAL_FAILED_TITLE }
+                p { a(href = path("brouillons/${draft.id}")) { +EditorialTexts.LINK_FORM } }
+            }
+        }
+        return written
+    }
 
     /** What the journal keeps of a save: identifiers and counts, never the text. */
     private fun details(draft: EditorialDraft, version: Int, problems: List<Problem>): Map<String, String> = buildMap {
@@ -502,5 +527,6 @@ class EditorialDraftsSection(
 
     companion object {
         private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
+        private val log = org.slf4j.LoggerFactory.getLogger(EditorialDraftsSection::class.java)
     }
 }

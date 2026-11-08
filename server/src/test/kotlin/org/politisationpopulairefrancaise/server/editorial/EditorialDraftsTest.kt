@@ -318,6 +318,72 @@ class EditorialDraftsTest {
     }
 
     @Test
+    fun theSectionIsNeverServedOnThePublicPort() = testApplication {
+        val client = start()
+        val editor = member(data, "Éditrice", listOf(TeamRole.EDITOR))
+        listOf("", "/nouveau/decryptage").forEach { path ->
+            val response = client.get("http://localhost:8080$section$path") { header(HttpHeaders.Cookie, "$SESSION_COOKIE=${editor.token}") }
+            assertEquals(HttpStatusCode.NotFound, response.status, path)
+        }
+        val post = client.submitForm("http://localhost:8080$section/nouveau/decryptage", parameters { validDecryptage(editor.token).forEach { (key, value) -> append(key, value) } }) {
+            header(HttpHeaders.Cookie, "$SESSION_COOKIE=${editor.token}")
+            header("Sec-Fetch-Site", "same-origin")
+        }
+        assertEquals(HttpStatusCode.NotFound, post.status)
+        assertTrue(drafts.list(EditorialSpace.COMPRENDRE).isEmpty())
+        assertEquals(HttpStatusCode.OK, client.page(section, editor.token).status, "only on the back-office port")
+    }
+
+    @Test
+    fun aTextOverItsLimitInCharactersIsRefusedWithAClearMessageAndKeptInTheForm() = testApplication {
+        val client = start()
+        val editor = member(data, "Éditrice", listOf(TeamRole.EDITOR))
+        val empty = client.page("$section/nouveau/decryptage", editor.token).bodyAsText()
+        assertTrue(empty.contains("maxlength=\"60000\""), "the browser stops at the limit too")
+        assertTrue(empty.contains("60\u202F000 caractères au plus"), "the limit is said in the help of the text")
+        val tooLong = client.form("$section/nouveau/decryptage", editor.token, validDecryptage(editor.token).map { if (it.first == "body") "body" to "a".repeat(EditorialDrafts.MAX_BODY + 1) else it })
+        assertEquals(HttpStatusCode.UnprocessableEntity, tooLong.status)
+        val html = tooLong.bodyAsText()
+        assertTrue(html.contains("Le texte a 60\u202F002 caractères, 60\u202F000 au plus. Rien n’a été enregistré"), "clear French message")
+        assertTrue(html.contains("a".repeat(1000)), "the text stays in the form")
+        assertTrue(drafts.list(EditorialSpace.COMPRENDRE).isEmpty(), "nothing saved")
+        // A field of the front matter is never cut silently either.
+        val field = client.form("$section/nouveau/decryptage", editor.token, validDecryptage(editor.token).map { if (it.first == "f.claim.0") it.first to "b".repeat(EditorialForm.MAX_VALUE + 1) else it })
+        assertEquals(HttpStatusCode.UnprocessableEntity, field.status)
+        assertTrue(field.bodyAsText().contains("Le champ « Affirmation vérifiée » a 5001 caractères"))
+        assertTrue(drafts.list(EditorialSpace.COMPRENDRE).isEmpty())
+    }
+
+    @Test
+    fun whenTheJournalCannotBeWrittenTheEditorSeesAnErrorNeverASuccess() = testApplication {
+        val client = start()
+        val editor = member(data, "Éditrice", listOf(TeamRole.EDITOR))
+        val id = draftIdOf(client.form("$section/nouveau/decryptage", editor.token, validDecryptage(editor.token)))
+        // The database refuses the lines of the drafts for the time of the test.
+        sql(
+            "CREATE OR REPLACE FUNCTION ppf_test_refuse_line() RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN RAISE EXCEPTION 'refused for the test'; END $$",
+            "CREATE TRIGGER ppf_test_refuse_line BEFORE INSERT ON team_audit_log FOR EACH ROW WHEN (NEW.action LIKE 'section.editorial.%') EXECUTE FUNCTION ppf_test_refuse_line()",
+        )
+        try {
+            val saved = client.form("$section/brouillons/$id", editor.token, validDecryptage(editor.token, title = "[EXEMPLE] Autre titre") + ("version" to "1"))
+            assertEquals(HttpStatusCode.InternalServerError, saved.status, "never a redirect to a success")
+            assertNull(saved.headers[HttpHeaders.Location])
+            val html = saved.bodyAsText()
+            assertTrue(html.contains(EditorialTexts.format(EditorialTexts.JOURNAL_FAILED, 2)))
+            assertFalse(html.contains(EditorialTexts.SAVED))
+            assertEquals(2, drafts.find(id)!!.latestVersion, "the version is written first, then the line: the work is kept")
+            val created = client.form("$section/nouveau/fiche-pratique", editor.token, validDecryptage(editor.token, slug = "autre-fiche"))
+            assertEquals(HttpStatusCode.InternalServerError, created.status)
+        } finally {
+            sql("DROP TRIGGER IF EXISTS ppf_test_refuse_line ON team_audit_log", "DROP FUNCTION IF EXISTS ppf_test_refuse_line()")
+        }
+    }
+
+    private fun sql(vararg statements: String) = TestDatabase.dataSource.connection.use { connection ->
+        connection.createStatement().use { statement -> statements.forEach { statement.execute(it) } }
+    }
+
+    @Test
     fun theStoreKeepsEveryVersionAndOneOpenDraftPerAddress() {
         val author = member(data, "Éditrice", listOf(TeamRole.EDITOR)).id
         val content = DraftContent(listOf("slug" to "meme-adresse", "title" to "[EXEMPLE] Un"), "Texte\n")

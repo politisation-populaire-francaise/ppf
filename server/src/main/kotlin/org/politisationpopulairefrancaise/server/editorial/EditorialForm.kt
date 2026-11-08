@@ -53,7 +53,12 @@ sealed interface FormAction {
 }
 
 /** A posted form, read: the state, the action, the version it started from (null: a new draft). */
-data class PostedForm(val state: FormState, val action: FormAction, val version: Int?)
+/**
+ * A posted form, read: the state, the action, the version it started from (null: a new draft), and
+ * [tooLong], the French message when a text is over its limit in characters (nothing is then saved, the
+ * text stays in the form).
+ */
+data class PostedForm(val state: FormState, val action: FormAction, val version: Int?, val tooLong: String? = null)
 
 /**
  * The form of a draft generated from its [ContentSchema] (docs/integration/circuit-editorial.md, section
@@ -74,8 +79,16 @@ object EditorialForm {
     /** No field shows more rows than this, whatever its schema says. */
     const val MAX_ROWS: Int = 200
 
-    /** No single value is read longer than this (the controls say less; the engine checks the real limits). */
+    /** No single value of the front matter is saved longer than this (the controls say less; the engine checks the real limits). */
     const val MAX_VALUE: Int = 5_000
+
+    /**
+     * All the texts of one form together, in characters (body included). Checked on the server before any
+     * save, so that editors meet a clear message in characters long before the limit of the section in
+     * bytes (256 KiB of URL-encoded body, where an accented letter takes up to 6 bytes and a typographic
+     * apostrophe 9).
+     */
+    const val MAX_TOTAL: Int = 75_000
 
     private const val CHOICE_RADIOS_BELOW = 8
 
@@ -143,12 +156,30 @@ object EditorialForm {
         }
         val body = form["body"].orEmpty().replace("\r\n", "\n").let { if (it.isBlank()) "" else it.trim() + "\n" }
         val changeKind = if (isUpdate) ChangeKind.of(form["change_kind"]?.trim()) else null
-        val note = if (isUpdate) form["change_note"]?.let(::clean)?.takeIf { it.isNotEmpty() }?.take(EditorialDrafts.MAX_CHANGE_NOTE) else null
+        val note = if (isUpdate) form["change_note"]?.let(::clean)?.takeIf { it.isNotEmpty() } else null
         val version = form["version"]?.trim()?.toIntOrNull()?.takeIf { it >= 1 }
-        return PostedForm(FormState(DraftContent(entries, body, changeKind, note), blanks), action, version)
+        val content = DraftContent(entries, body, changeKind, note)
+        return PostedForm(FormState(content, blanks), action, version, tooLong(schema, content))
     }
 
-    private fun clean(value: String): String = value.replace("\r\n", "\n").trim().take(MAX_VALUE)
+    /** The message of the first text over its limit in characters, or null (never a silent cut). */
+    fun tooLong(schema: ContentSchema, content: DraftContent): String? {
+        val note = content.changeNote.orEmpty()
+        content.entries.firstOrNull { it.second.length > MAX_VALUE }?.let { (key, value) ->
+            return EditorialTexts.format(EditorialTexts.FIELD_TOO_LONG, EditorialTexts.fieldLabel(schema, key) ?: key, value.length, MAX_VALUE)
+        }
+        if (note.length > EditorialDrafts.MAX_CHANGE_NOTE) {
+            return EditorialTexts.format(EditorialTexts.FIELD_TOO_LONG, EditorialTexts.CHANGE_NOTE, note.length, EditorialDrafts.MAX_CHANGE_NOTE)
+        }
+        if (content.body.length > EditorialDrafts.MAX_BODY) {
+            return EditorialTexts.format(EditorialTexts.BODY_TOO_LONG_CHARS, EditorialTexts.number(content.body.length), EditorialTexts.number(EditorialDrafts.MAX_BODY))
+        }
+        val total = content.body.length + content.entries.sumOf { it.second.length } + note.length
+        if (total > MAX_TOTAL) return EditorialTexts.format(EditorialTexts.FORM_TOO_LONG, EditorialTexts.number(total), EditorialTexts.number(MAX_TOTAL))
+        return null
+    }
+
+    private fun clean(value: String): String = value.replace("\r\n", "\n").trim()
 
     private fun actionOf(value: String?): FormAction {
         val text = value?.trim().orEmpty()
@@ -459,6 +490,7 @@ object EditorialForm {
             div(classes = "bo-hint") {
                 id = "body-aide"
                 p { +EditorialTexts.BODY_HINT }
+                p { +EditorialTexts.format(EditorialTexts.BODY_LIMIT, EditorialTexts.number(minOf(body.maxLength, EditorialDrafts.MAX_BODY)), EditorialTexts.number(MAX_TOTAL)) }
                 if (body.blocks.isNotEmpty()) {
                     p { +("${EditorialTexts.BODY_BLOCKS} " + body.blocks.joinToString(", ") { block -> "::: ${block.name}" + bounds(block.min, block.max) } + ".") }
                 }
@@ -470,7 +502,7 @@ object EditorialForm {
             textArea(rows = "30", classes = "bo-body") {
                 id = "body"
                 name = "body"
-                maxLength = body.maxLength.toString()
+                maxLength = minOf(body.maxLength, EditorialDrafts.MAX_BODY).toString()
                 attributes["spellcheck"] = "true"
                 describe("body-aide", errors)
                 +view.state.content.body
