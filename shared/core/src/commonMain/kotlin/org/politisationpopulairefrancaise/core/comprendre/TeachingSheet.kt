@@ -155,7 +155,7 @@ object TeachingSheetFormat {
             val trimmed = line.trimEnd()
             val heading = if (depth == 0) HEADING.matchEntire(trimmed) else null
             if (heading != null) {
-                sections += heading.groupValues[1].trim() to mutableListOf()
+                sections += heading.groupValues[1].trim() to mutableListOf<String>()
                 continue
             }
             (sections.lastOrNull()?.second ?: introduction).add(line)
