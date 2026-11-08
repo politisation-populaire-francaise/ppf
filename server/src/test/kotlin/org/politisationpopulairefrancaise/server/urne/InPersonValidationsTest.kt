@@ -31,6 +31,7 @@ import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 import kotlin.time.Duration.Companion.hours
+import kotlin.time.Duration.Companion.seconds
 
 /**
  * The in-person validation (D-112, une-personne-une-voix.md 4.3; option B of the Directeur technique):
@@ -78,7 +79,11 @@ class InPersonValidationsTest {
         return SignedSessionRequest(runBlocking { Nip98.authorization(session, url, "POST", body, clock.instant().epochSecond) }, url, "POST", body)
     }
 
-    private fun validate(session: LocalEventSigner, citizen: LocalEventSigner) = validations.validate(request(session, proof(citizen)))
+    /** A new proof each time, as the application draws one every minute (the same proof twice is a replay). */
+    private fun validate(session: LocalEventSigner, citizen: LocalEventSigner): ValidationAnswer {
+        clock.advance(1.seconds)
+        return validations.validate(request(session, proof(citizen)))
+    }
 
     private fun pendingRows(): List<String> = TestDatabase.dataSource.connection.use { c ->
         c.createStatement().use { s -> s.executeQuery("SELECT row_to_json(p)::text FROM vote_validation_pending p").use { r -> buildList { while (r.next()) add(r.getString(1)) } } }

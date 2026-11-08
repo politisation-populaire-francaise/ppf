@@ -76,7 +76,8 @@ class DeliberationUrnesTest {
         assertEquals(0, urnes.reconcile())
         at(60)
         val first = ContentAddress.of(publish(alice, "alice-1", DeliberationFormats.TYPE_PROPOSITION, deliberation))!!
-        publish(alice, "alice-2", DeliberationFormats.TYPE_PROPOSITION, deliberation)
+        // Created a second later: the first one created is kept (the same second would be decided by the identifiers).
+        publish(alice, "alice-2", DeliberationFormats.TYPE_PROPOSITION, deliberation, at = clock.instant.epochSecond + 1)
         // A citizen cannot pass a proposal off as PPF's starting one.
         val fake = ContentAddress.of(publish(bob, "faux-depart", DeliberationFormats.TYPE_PROPOSITION, deliberation, listOf(listOf("ppf-origin", "depart"))))!!
         assertEquals(2, urnes.reconcile(), "the starting proposal and Alice's first one")
