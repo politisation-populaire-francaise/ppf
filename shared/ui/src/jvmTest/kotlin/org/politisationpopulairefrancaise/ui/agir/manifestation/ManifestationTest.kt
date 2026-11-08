@@ -186,6 +186,32 @@ class ManifestationTest {
     }
 
     @Test
+    fun besoinDeParlerOffersTheListeningLinesAfterTheEmergencyNumbersWithTheirSources() = runComposeUiTest {
+        val harness = HelpHarness()
+        setContent { harness.Content(360) }
+        awaitTag(AgirTags.HOME)
+        openSheet()
+        onNodeWithTag(ManifestationTags.TALK).performScrollTo()
+        onNodeWithText("Besoin de parler ?").assertExists()
+        // Never before the 15 and the 112: the listening lines are not emergency services.
+        assertTrue(top(ManifestationTags.NUMBER + "europe") < top(ManifestationTags.NUMBER + "suicide"))
+        val lines = listOf("suicide", "violences-femmes", "enfance", "victimes", "cyberharcelement", "croix-rouge-ecoute", "sos-amitie")
+        val order = lines.map { top(ManifestationTags.NUMBER + it) }
+        assertEquals(order.sorted(), order, "the public lines, then the associations")
+        // What each line is, said honestly: anonymous or only confidential, not an emergency number.
+        onNodeWithText("gratuit et confidentiel", substring = true).assertExists()
+        onNodeWithText("ce n’est pas un numéro d’urgence", substring = true).assertExists()
+        onNodeWithText("mais il n’est pas anonyme", substring = true).assertExists()
+        onNodeWithText("Associations citées par sante.fr", substring = true).assertExists()
+
+        onNodeWithTag(ManifestationTags.NUMBER + "suicide").performScrollTo().performClick()
+        onNodeWithTag(ManifestationTags.NUMBER + "violences-femmes").performScrollTo().performClick()
+        onNodeWithTag(ManifestationTags.NUMBER + "croix-rouge-ecoute").performScrollTo().performClick()
+        waitForIdle()
+        assertEquals(listOf("tel:3114", "tel:3919", "tel:0800858858"), harness.uris.opened)
+    }
+
+    @Test
     fun theLawyersOfTheDirectoryAreCalledInOneGestureAndTheCustodyGuideIsReadInTheSheet() = runComposeUiTest {
         val harness = HelpHarness()
         setContent { harness.Content(360) }

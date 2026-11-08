@@ -97,6 +97,7 @@ object ManifestationTags {
     const val GUIDE = "help-guide-reader"
     const val GUIDE_BACK = "help-guide-back"
     const val SOON = "help-soon-" // followed by the id of the function
+    const val TALK = "help-talk"
     const val RALLY = "help-rally"
     const val RALLY_ADD = "help-rally-add"
     const val RALLY_PLACE = "help-rally-place"
@@ -121,6 +122,10 @@ internal fun numberLabel(number: EmergencyNumber): StringResource = when (number
     EmergencyNumbers.CHILDREN.id -> Res.string.help_number_enfance
     EmergencyNumbers.MISSING_CHILD.id -> Res.string.help_number_enfant_disparu
     EmergencyNumbers.VICTIMS.id -> Res.string.help_number_victimes
+    EmergencyNumbers.WOMEN.id -> Res.string.help_number_violences_femmes
+    EmergencyNumbers.CYBER_HARASSMENT.id -> Res.string.help_number_cyberharcelement
+    EmergencyNumbers.RED_CROSS_LISTENING.id -> Res.string.help_number_croix_rouge
+    EmergencyNumbers.SOS_AMITIE.id -> Res.string.help_number_sos_amitie
     else -> Res.string.help_number_suicide
 }
 
@@ -148,7 +153,7 @@ internal fun SectionHeading(text: String, icon: ImageVector, modifier: Modifier 
  * 114 by text message. [onFailed] is told when the platform could not dial.
  */
 @Composable
-internal fun EmergencyNumbersBlock(numbers: List<EmergencyNumber>, modifier: Modifier = Modifier) {
+internal fun EmergencyNumbersBlock(numbers: List<EmergencyNumber>, modifier: Modifier = Modifier, source: StringResource = Res.string.help_numbers_source) {
     val dial = rememberDialer()
     var failed by remember { mutableStateOf(false) }
     Column(modifier, verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -158,7 +163,7 @@ internal fun EmergencyNumbersBlock(numbers: List<EmergencyNumber>, modifier: Mod
         if (failed) {
             Text(stringResource(Res.string.help_no_dialer), style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.inkMuted)
         }
-        Text(stringResource(Res.string.help_numbers_source), style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkSubtle)
+        Text(stringResource(source), style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkSubtle)
     }
 }
 

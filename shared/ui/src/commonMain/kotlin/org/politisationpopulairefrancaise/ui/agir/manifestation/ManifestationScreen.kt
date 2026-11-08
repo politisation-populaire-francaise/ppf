@@ -72,6 +72,7 @@ import org.politisationpopulairefrancaise.ui.resources.manif_injury_title
 import org.politisationpopulairefrancaise.ui.resources.manif_intro
 import org.politisationpopulairefrancaise.ui.resources.manif_legal_title
 import org.politisationpopulairefrancaise.ui.resources.manif_numbers_other
+import org.politisationpopulairefrancaise.ui.resources.manif_talk_hint
 import org.politisationpopulairefrancaise.ui.resources.manif_numbers_title
 import org.politisationpopulairefrancaise.ui.resources.manif_open_help
 import org.politisationpopulairefrancaise.ui.resources.manif_phone_1
@@ -152,7 +153,9 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
                 Spacer(Modifier.height(12.dp))
                 Text(stringResource(Res.string.manif_numbers_other), style = MaterialTheme.typography.titleSmall)
                 Spacer(Modifier.height(8.dp))
-                EmergencyNumbersBlock(EmergencyNumbers.listening)
+                EmergencyNumbersBlock(EmergencyNumbers.protest)
+                Spacer(Modifier.height(8.dp))
+                Text(stringResource(Res.string.manif_talk_hint), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
             }
 
             Section(stringResource(Res.string.manif_legal_title), Lucide.ShieldCheck) {

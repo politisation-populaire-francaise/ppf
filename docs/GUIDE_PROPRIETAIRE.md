@@ -179,7 +179,7 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 
 ### Tester le bouton AIDE et la sécurité du téléphone (ajouté le 8 novembre 2026)
 
-1. Touchez **AIDE** (rouge, en haut de l'écran du téléphone, en tête du menu sur tablette et ordinateur) : les numéros d'urgence s'affichent, le 15 et le 112 en premier ; touchez-en un, le téléphone propose d'appeler (vous pouvez annuler). Plus bas : les avocats de votre territoire et votre point de ralliement, gardé sur le téléphone seulement.
+1. Touchez **AIDE** (rouge, en haut de l'écran du téléphone, en tête du menu sur tablette et ordinateur) : les numéros d'urgence s'affichent, le 15 et le 112 en premier ; touchez-en un, le téléphone propose d'appeler (vous pouvez annuler). Plus bas : les avocats de votre territoire, la rubrique **Besoin de parler ?** (lignes d'écoute : prévention du suicide, violences faites aux femmes, enfance en danger, aide aux victimes, harcèlement, puis deux associations), et votre point de ralliement, gardé sur le téléphone seulement.
 2. Dans « Agir », ouvrez **Mode manifestation** : avant de partir, vos droits, numéros utiles, « Préparer mon téléphone ».
 3. Dans **Mon espace**, carte « Sécurité de cet appareil » : activez le **verrouillage** avec un code de 6 chiffres au moins (pas 123456 ni 111111), quittez l'application puis revenez : le code est demandé. Le 15 et le 112 restent appelables sans le code.
 4. Même carte : **icône discrète** ; après la mise en garde, l'icône de PPF devient « Outils » (gris) dans la liste des applications. Revenez en arrière de la même façon.

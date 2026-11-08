@@ -59,6 +59,11 @@ import org.politisationpopulairefrancaise.ui.resources.help_lawyer_title
 import org.politisationpopulairefrancaise.ui.resources.help_medics_text
 import org.politisationpopulairefrancaise.ui.resources.help_medics_title
 import org.politisationpopulairefrancaise.ui.resources.help_rally_title
+import org.politisationpopulairefrancaise.ui.resources.help_talk_associations
+import org.politisationpopulairefrancaise.ui.resources.help_talk_associations_source
+import org.politisationpopulairefrancaise.ui.resources.help_talk_source
+import org.politisationpopulairefrancaise.ui.resources.help_talk_text
+import org.politisationpopulairefrancaise.ui.resources.help_talk_title
 import org.politisationpopulairefrancaise.ui.resources.help_title
 import org.politisationpopulairefrancaise.ui.resources.help_vital_text
 import org.politisationpopulairefrancaise.ui.resources.help_vital_title
@@ -180,6 +185,20 @@ private fun HelpSheetContent(help: HelpState, title: String) {
     GuideLink(stringResource(Res.string.help_lawyer_guide), ManifestationGuides.CUSTODY, help::showGuide)
     Spacer(Modifier.height(8.dp))
     SoonItem(HelpSoon.LAWYER_ALERT, stringResource(Res.string.help_lawyer_alert), stringResource(Res.string.help_lawyer_alert_text), Lucide.Send)
+
+    // « Besoin de parler ? » (D-081, point 3): the listening lines, apart from the protest mode; never a vital emergency.
+    SheetDivider()
+    Column(Modifier.testTag(ManifestationTags.TALK)) {
+        SectionHeading(stringResource(Res.string.help_talk_title), Lucide.MessageCircle)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(Res.string.help_talk_text), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+        Spacer(Modifier.height(8.dp))
+        EmergencyNumbersBlock(EmergencyNumbers.talk, source = Res.string.help_talk_source)
+        Spacer(Modifier.height(12.dp))
+        Text(stringResource(Res.string.help_talk_associations), style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(8.dp))
+        EmergencyNumbersBlock(EmergencyNumbers.talkAssociations, source = Res.string.help_talk_associations_source)
+    }
 
     SheetDivider()
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {

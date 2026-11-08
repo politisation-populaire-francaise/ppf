@@ -756,6 +756,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   8. **« Outils » et l'icône grise** confirmés ; en mode discret, **notifications neutres** (pôle Communauté : titre neutre, sans aperçu, `VISIBILITY_SECRET`, canaux neutres) grâce à `ui.agir.security.DiscreetMode.isOn(context)` (Android) et à la petite icône monochrome `@drawable/ic_notification_neutral` ; le lecteur d'écran lit le nom neutre : celui de l'entrée du lanceur, et, dans la liste des applications récentes, la tâche prend le nom et l'icône de l'entrée active (`DiscreetMode.applyToTask`), même juste après un changement.
   9. **« Masquer le contenu »** activé par défaut, retirable après une mise en garde avec annulation : vérifié, déjà fait en D-082.
 
+## D-084 (2026-11-08) « Besoin de parler ? » dans la feuille AIDE
+
+- Contexte : réponse du chef d'équipe à D-053 (D-081, point 3) : les numéros d'écoute ne vont pas dans le mode manifestation, mais dans une rubrique distincte de la feuille AIDE, chaque numéro vérifié sur une source officielle et cité (CLAUDE.md, section 6).
+- Décisions techniques prises en autonomie (contenu factuel, sans coût) :
+  - rubrique **« Besoin de parler ? »** après « Besoin d'un avocat », jamais avant le 15 et le 112 ; une phrase rappelle que ces lignes ne remplacent pas les secours (17, 112, et en dernier recours un SMS au 114 pour qui ne peut pas parler) ;
+  - **lignes publiques**, dans cet ordre : 3114 (prévention du suicide), 3919 (violences faites aux femmes), 119 (enfance en danger), 116 006 (aide aux victimes), 3018 (harcèlement et cyberharcèlement) ; puis **associations d'écoute** citées par sante.fr : Croix-Rouge Écoute (0 800 858 858) et SOS Amitié (09 72 39 40 50) ;
+  - chaque numéro dit **honnêtement** ce qu'il est : anonyme (3919, 116 006, 3018, associations), seulement confidentiel (3114), ou absent de la facture mais pas anonyme (119, appel identifié et géolocalisé selon service-public.gouv.fr) ; le 3919 n'est pas un numéro d'urgence ;
+  - le mode manifestation garde seulement l'enfant disparu (116 000) et l'aide aux victimes (116 006), avec un renvoi vers « Besoin de parler ? » ;
+  - écartés : le 39 39 (renseignement administratif, pas une ligne d'écoute), le Défenseur des droits (saisine, déjà dans la fiche « Après une blessure »), SOS homophobie, Fil Santé Jeunes et Suicide Écoute (horaires ou sources à confirmer ; à reconsidérer avec les organisations).
+- Sources, consultées le 8 novembre 2026 : service-public.gouv.fr F33954 (vérifiée par la DILA le 25 août 2026) et F12544, 3114.fr, allo119.gouv.fr, justice.gouv.fr (« Prise en charge des victimes d'infractions pénales », 9 mars 2026), sante.fr et Psycom (« Les lignes d'écoute », 4 novembre 2026). Points contradictoires entre sources, à revérifier avant la publication (feuille de route) : application des personnes sourdes au 3919 (Roger Voice ou ACCEO), horaires et âge du tchat du 119, horaires du 116 006 (9 h à 19 h ou 9 h à 20 h ; 20 h retenu, source du ministère de la Justice de 2026).
+
 ## D-090 (2026-11-07) Référentiel des territoires : codes officiels, population, inscrits, règle des 30
 
 - Contexte : demande du pôle « Décider » (objectifs de signatures proportionnels à la population, seuils des pétitions locales) ; les salons, l'agenda, les appels et les revendications écrivent le territoire en texte libre (`ppf-territory`). Conception et sources vérifiées le 7 novembre 2026 : `docs/integration/territoires.md` ; conception validée par le chef d'équipe (« Décider » accepte l'API sans correction).
