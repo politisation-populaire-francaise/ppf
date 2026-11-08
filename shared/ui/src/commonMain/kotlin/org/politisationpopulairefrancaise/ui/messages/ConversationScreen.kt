@@ -42,7 +42,22 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.messaging.ChatMessage
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import androidx.compose.foundation.layout.size
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import org.politisationpopulairefrancaise.ui.account.momentLabel
+import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.DaySeparator
+import org.politisationpopulairefrancaise.ui.components.PpfBadge
+import org.politisationpopulairefrancaise.ui.components.PpfTextButton
+import org.politisationpopulairefrancaise.ui.components.shortNpub
+import org.politisationpopulairefrancaise.ui.resources.messages_compromised_successor
+import org.politisationpopulairefrancaise.ui.resources.messages_compromised_text
+import org.politisationpopulairefrancaise.ui.resources.messages_compromised_title
+import org.politisationpopulairefrancaise.ui.resources.messages_compromised_write_successor
+import org.politisationpopulairefrancaise.ui.resources.messages_send_error_compromised
+import org.politisationpopulairefrancaise.ui.resources.messages_send_error_own_compromised
+import org.politisationpopulairefrancaise.ui.resources.messages_suspect
 import org.politisationpopulairefrancaise.ui.components.EncryptedNotice
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.MessageBubble
@@ -88,6 +103,9 @@ object ConversationTags {
     const val STATUS = "conversation-status"
     const val ENCRYPTION_DIALOG = "encryption-dialog"
     const val ENCRYPTION_CLOSE = "encryption-dialog-close"
+    const val COMPROMISED = "conversation-compromised-" // followed by the first 8 characters of the key
+    const val WRITE_SUCCESSOR = "conversation-write-successor-" // same suffix
+    const val SUSPECT = "message-suspect-" // followed by the first 8 characters of the message id
 }
 
 /** One element of a thread: a day separator or an entry, oldest first. */
@@ -140,7 +158,7 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
 
     val send: () -> Unit = {
         val text = draft
-        if (text.isNotBlank() && messaging.canWrite) scope.launch { if (messaging.send(text)) draft = "" }
+        if (text.isNotBlank() && messaging.canWriteOpen) scope.launch { if (messaging.send(text)) draft = "" }
     }
     val items = remember(messaging.messages) { threadItems(messaging.messages, key = ChatMessage::id, date = ChatMessage::createdAt) }
 
@@ -151,7 +169,12 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
             backDescription = stringResource(Res.string.messages_back),
             modifier = Modifier.testTag(ConversationTags.TITLE),
             avatar = { ConversationAvatar(others, open.id, trust) },
-            subtitle = { EncryptedNotice(stringResource(Res.string.messages_encrypted)) },
+            subtitle = {
+                Column {
+                    EncryptedNotice(stringResource(Res.string.messages_encrypted))
+                    VerifiedLine(messaging, others)
+                }
+            },
             actions = {
                 PpfIconButton(
                     icon = Lucide.Info,
@@ -159,8 +182,21 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
                     onClick = { explaining = true },
                     modifier = Modifier.testTag(ConversationTags.INFO),
                 )
+                ConversationMoreMenu(messaging, me, others)
             },
         )
+        // A participant declared compromised (S-146): said at once, above the thread.
+        val alerts = messaging.alerts
+        messaging.compromisedInOpen.forEach { key ->
+            val notice = alerts?.noticeFor(key) ?: return@forEach
+            CompromisedContactBanner(
+                key = key,
+                declaredAt = notice.createdAt,
+                since = notice.since,
+                successor = notice.successor,
+                onWriteSuccessor = { successor -> messaging.openWith(listOf(successor)) },
+            )
+        }
         Box(Modifier.weight(1f).fillMaxWidth()) {
             if (messaging.messages.isEmpty()) {
                 Column(
@@ -193,6 +229,7 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
                                 val message = item.value
                                 val mine = message.author == me
                                 val suffix = message.id.take(8)
+                                val suspect = !mine && alerts?.isSuspect(message) == true
                                 MessageBubble(
                                     text = org.politisationpopulairefrancaise.ui.voir.voirRequestText(message.text),
                                     mine = mine,
@@ -204,6 +241,11 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
                                     pendingDescription = pendingLabel,
                                     pendingModifier = Modifier.testTag(ConversationTags.PENDING + suffix),
                                     modifier = Modifier.testTag(ConversationTags.MESSAGE + suffix),
+                                    label = if (suspect) {
+                                        { PpfBadge(stringResource(Res.string.messages_suspect), BadgeStyle.WARNING, Modifier.testTag(ConversationTags.SUSPECT + suffix)) }
+                                    } else {
+                                        null
+                                    },
                                 )
                             }
                         }
@@ -227,6 +269,10 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
                     MessagingStatus.Offline -> stringResource(Res.string.messages_status_offline)
                     MessagingStatus.Unreachable -> stringResource(Res.string.messages_status_unreachable)
                     else -> null
+                } ?: when {
+                    messaging.ownCompromised -> stringResource(Res.string.messages_send_error_own_compromised)
+                    messaging.compromisedInOpen.isNotEmpty() -> stringResource(Res.string.messages_send_error_compromised)
+                    else -> null
                 }
                 if (status != null) {
                     Text(
@@ -243,6 +289,8 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
                                 SendError.INVALID_RECIPIENT -> Res.string.messages_send_error_recipient
                                 SendError.TOO_LONG -> Res.string.messages_send_error_long
                                 SendError.FAILED -> Res.string.messages_send_error_other
+                                SendError.COMPROMISED_CONTACT -> Res.string.messages_send_error_compromised
+                                SendError.OWN_COMPROMISED -> Res.string.messages_send_error_own_compromised
                             },
                         ),
                         style = MaterialTheme.typography.bodySmall,
@@ -263,7 +311,7 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
                         icon = Lucide.Send,
                         contentDescription = stringResource(Res.string.messages_send),
                         onClick = send,
-                        enabled = draft.isNotBlank() && messaging.canWrite,
+                        enabled = draft.isNotBlank() && messaging.canWriteOpen,
                         modifier = Modifier.testTag(ConversationTags.SEND),
                     )
                 }
@@ -272,6 +320,40 @@ fun ConversationScreen(messaging: MessagingSession, trust: EditorialTrust, onBac
     }
 
     if (explaining) EncryptionDialog(onDismiss = { explaining = false })
+}
+
+/**
+ * The alert of a contact declared compromised (S-146): since when, what it means for the messages
+ * received after that date, and the successor it names, proposed only (never followed
+ * automatically: the successor is a claim, to check in person).
+ */
+@Composable
+private fun CompromisedContactBanner(key: String, declaredAt: Long, since: Long, successor: String?, onWriteSuccessor: (String) -> Unit) {
+    val palette = PpfTheme.palette
+    Surface(
+        color = palette.warningTint,
+        contentColor = palette.ink,
+        modifier = Modifier.fillMaxWidth().testTag(ConversationTags.COMPROMISED + key.take(8)).semantics { liveRegion = LiveRegionMode.Polite },
+    ) {
+        Row(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
+            Icon(Lucide.TriangleExclamationPoint, contentDescription = null, tint = palette.warning, modifier = Modifier.padding(top = 2.dp).size(20.dp))
+            Spacer(Modifier.width(12.dp))
+            Column(Modifier.weight(1f)) {
+                Text(stringResource(Res.string.messages_compromised_title, momentLabel(declaredAt)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
+                Spacer(Modifier.height(4.dp))
+                Text(stringResource(Res.string.messages_compromised_text, momentLabel(since)), style = MaterialTheme.typography.bodyMedium)
+                if (successor != null) {
+                    Spacer(Modifier.height(4.dp))
+                    Text(stringResource(Res.string.messages_compromised_successor, shortNpub(successor)), style = MaterialTheme.typography.bodyMedium)
+                    PpfTextButton(
+                        onClick = { onWriteSuccessor(successor) },
+                        text = stringResource(Res.string.messages_compromised_write_successor),
+                        modifier = Modifier.testTag(ConversationTags.WRITE_SUCCESSOR + key.take(8)),
+                    )
+                }
+            }
+        }
+    }
 }
 
 /**

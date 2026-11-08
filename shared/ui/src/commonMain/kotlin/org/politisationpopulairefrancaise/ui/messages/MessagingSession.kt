@@ -27,6 +27,7 @@ import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.publication.RemoteFilter
 import org.politisationpopulairefrancaise.core.publication.TagFilter
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.social.ContactVerificationStore
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import kotlin.concurrent.Volatile
@@ -61,6 +62,12 @@ enum class SendError {
 
     /** Anything else (the keys were erased meanwhile, the database refused): nothing was stored. */
     FAILED,
+
+    /** A participant's account is declared compromised (S-146): nothing is written to it any more. */
+    COMPROMISED_CONTACT,
+
+    /** The user's own account is declared compromised: it no longer writes. */
+    OWN_COMPROMISED,
 }
 
 /** A conversation of the list with what the row shows: its last message and whether it still waits for the server. */
@@ -98,6 +105,10 @@ class MessagingSession(
     private val store: MessageStore?,
     private val remote: RemoteEvents?,
     private val scope: CoroutineScope,
+    /** The contacts checked in person (S-128), on the device only; null without a database. */
+    private val verifications: ContactVerificationStore? = null,
+    /** The notices of compromise of the contacts (S-146); null shows none. */
+    val alerts: ContactAlerts? = null,
 ) {
     /** The account whose conversations are shown, with its service; replaced when the account changes. */
     private class Account(val signer: MessagingSigner, val service: MessagingService) {
@@ -126,6 +137,24 @@ class MessagingSession(
 
     /** Whether messages can be written on this device: a database and an account. */
     val canWrite: Boolean get() = store != null && myKey != null
+
+    /** True when the user's own account is declared compromised (S-146): it no longer writes. */
+    var ownCompromised: Boolean by mutableStateOf(false)
+        private set
+
+    fun markOwnCompromised(compromised: Boolean) {
+        ownCompromised = compromised
+    }
+
+    /** The other participants of the open conversation whose account is declared compromised. */
+    val compromisedInOpen: List<String>
+        get() = open?.others(myKey).orEmpty().filter { alerts?.notices?.containsKey(it) == true }
+
+    /**
+     * Whether the user can write in the open conversation: an account that is not compromised, and
+     * no participant declared compromised (whoever holds that key now would read the message).
+     */
+    val canWriteOpen: Boolean get() = canWrite && !ownCompromised && compromisedInOpen.isEmpty()
 
     /** Whether a server is configured; without one, every message waits on the device. */
     val hasServer: Boolean get() = remote != null
@@ -198,6 +227,11 @@ class MessagingSession(
         refreshing = false
         clearView()
         status = if (store == null) MessagingStatus.Unavailable else MessagingStatus.NoAccount
+        // The contacts checked in person belonged to that identity too.
+        verifications?.clear()
+        alerts?.clear()
+        ownCompromised = false
+        verificationsVersion++
         val store = store ?: return
         val previous = clearing
         clearing = scope.launch {
@@ -250,6 +284,37 @@ class MessagingSession(
         openFlow = null
     }
 
+    /** Whether [pubkeyHex] was checked in person on this device (S-128). */
+    fun isVerified(pubkeyHex: String): Boolean = verifications?.isVerified(pubkeyHex) == true
+
+    /** Increases when a verification changes, so the screens read [isVerified] again. */
+    var verificationsVersion: Int by mutableStateOf(0)
+        private set
+
+    /** Records that the user compared the safety number with [pubkeyHex] in person, or undoes it. */
+    fun setVerified(pubkeyHex: String, verified: Boolean) {
+        val store = verifications ?: return
+        if (verified) store.markVerified(pubkeyHex) else store.unmarkVerified(pubkeyHex)
+        verificationsVersion++
+    }
+
+    /**
+     * Deletes the open conversation from this device: its messages and those still waiting to be
+     * sent. The server keeps the encrypted envelopes it holds until their retention ends, unreadable
+     * by it; the device does not fetch them again (its cursor has passed them).
+     */
+    fun deleteOpen() {
+        val current = account ?: return
+        val target = open ?: return
+        val store = store ?: return
+        open = null
+        messages = emptyList()
+        scope.launch {
+            safely { withContext(Dispatchers.Default) { operations.withLock { if (account === current) store.deleteConversation(target.id) } } }
+            reload(current)
+        }
+    }
+
     /**
      * Called by the conversation screen while it shows the open conversation: its messages are
      * marked read, on the device only (no read receipt ever leaves it).
@@ -292,6 +357,14 @@ class MessagingSession(
         val target = open ?: return false
         val content = text.trim()
         if (content.isEmpty()) return false
+        if (ownCompromised) {
+            sendError = SendError.OWN_COMPROMISED
+            return false
+        }
+        if (compromisedInOpen.isNotEmpty()) {
+            sendError = SendError.COMPROMISED_CONTACT
+            return false
+        }
         val recipients = target.others(current.key).map { PublicKey.fromHex(it) }
         // The subject travels with the first message of a conversation; the store keeps the newest one.
         val subject = target.subject?.takeIf { messages.isEmpty() }
@@ -321,7 +394,7 @@ class MessagingSession(
      */
     suspend fun sendTo(recipientHex: String, text: String, subject: String? = null): SendReport? {
         val current = account ?: return null
-        if (store == null || text.isBlank()) return null
+        if (store == null || text.isBlank() || ownCompromised || alerts?.notices?.containsKey(recipientHex) == true) return null
         val recipient = runCatching { PublicKey.fromHex(recipientHex) }.getOrNull() ?: return null
         val sent = try {
             withContext(Dispatchers.Default) {
@@ -367,6 +440,7 @@ class MessagingSession(
                 }
             }
             reload(current)
+            checkContacts(current)
             if (account === current) {
                 status = if (reports != null && reports.first.reachable && reports.second.reachable) {
                     MessagingStatus.Synced(reports.second.received.stored)
@@ -380,6 +454,20 @@ class MessagingSession(
                 refreshing = false
             }
         }
+    }
+
+    /**
+     * Asks the notices of compromise of the participants of the conversations (S-146); a contact
+     * newly found compromised loses its in-person check (it no longer proves anything).
+     */
+    private suspend fun checkContacts(current: Account) {
+        val alerts = alerts ?: return
+        val contacts = conversations.flatMap { it.conversation.participants }.filter { it != current.key }.distinct()
+        if (contacts.isEmpty()) return
+        val added = safely { alerts.refresh(contacts) }.orEmpty()
+        if (account !== current) return
+        val unchecked = added.filter { isVerified(it) }
+        unchecked.forEach { setVerified(it, false) }
     }
 
     private class Snapshot(val list: List<ConversationSummary>, val thread: List<ChatMessage>, val queued: Set<String>)
@@ -405,6 +493,7 @@ class MessagingSession(
         if (account !== current) return
         conversations = snapshot.list
         pending = snapshot.queued
+        alerts?.let { known -> safely { known.load(snapshot.list.flatMap { it.conversation.participants }.filter { it != current.key }.distinct()) } }
         val shown = open
         if (shown != null && shown.id == target?.id) {
             messages = snapshot.thread
@@ -457,6 +546,12 @@ class MessagingSession(
 fun rememberMessagingSession(dependencies: AppDependencies): MessagingSession {
     val scope = rememberCoroutineScope()
     return remember(dependencies) {
-        MessagingSession(store = dependencies.database?.let(::MessageStore), remote = dependencies.remote, scope = scope)
+        MessagingSession(
+            store = dependencies.database?.let(::MessageStore),
+            remote = dependencies.remote,
+            scope = scope,
+            verifications = dependencies.database?.let(::ContactVerificationStore),
+            alerts = ContactAlerts(dependencies.contentStore, dependencies.remote),
+        )
     }
 }

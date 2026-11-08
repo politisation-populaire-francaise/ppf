@@ -1,19 +1,17 @@
 package org.politisationpopulairefrancaise.app
 
-import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import io.ktor.client.HttpClient
+import androidx.activity.result.contract.ActivityResultContracts
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.crash.CrashReportFile
 import org.politisationpopulairefrancaise.core.currentPlatform
-import org.politisationpopulairefrancaise.core.identity.AndroidIdentityStore
-import org.politisationpopulairefrancaise.core.local.AndroidDatabase
-import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
-import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
-import org.politisationpopulairefrancaise.core.urne.HttpUrneRemote
+import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
 import org.politisationpopulairefrancaise.ui.crash.PendingCrashReport
@@ -21,12 +19,6 @@ import java.io.File
 
 /** The single activity of the Android app: it hosts the shared Compose UI. */
 class MainActivity : ComponentActivity() {
-    /** The connection to the server, closed with the activity; null when the build has no server. */
-    private var httpClient: HttpClient? = null
-
-    /** The separate client of the anonymous ballots (D-110), never used with the account. */
-    private var ballotClient: HttpClient? = null
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         // After a crash, a report is written in the app's private files, and offered at the next launch:
@@ -41,19 +33,19 @@ class MainActivity : ComponentActivity() {
         // only, checked again here because the HTTP engine does not consult Android's cleartext rule.
         // When the server cannot be reached (no WireGuard tunnel to the preproduction, no network),
         // the application stays offline as without a server and tries again at the next refresh.
-        val url = serverUrl()
-        val client = url?.let { HttpClient().also { httpClient = it } }
-        val remote = url?.let { ServerPublicationPort(client!!, it) }
-        // Voting: the account's requests on the usual client, the ballots on a second one of their own.
-        val urneRemote = url?.let {
-            HttpUrneRemote(client!!, HttpClient().also { ballots -> ballotClient = ballots }, it) { currentEpochSeconds() }
-        }
-        // One local database, opened once, shared by every store (contents, followed accounts).
+        // The database, the connections and the notifications belong to the application process
+        // (PpfApplication), so that a wake-up can use them while no screen is open.
+        val app = application as PpfApplication
         val dependencies = AppDependencies.withDatabase(
-            identityStore = AndroidIdentityStore(applicationContext),
-            database = AndroidDatabase.open(applicationContext),
-            remote = remote,
-            urneRemote = urneRemote,
+            identityStore = app.identityStore,
+            database = app.database,
+            remote = app.remote,
+            // Voting: the account's requests on the usual client, the ballots on a second one of their own.
+            urneRemote = app.urneRemote,
+            notifications = app.notifications,
+            push = app.push,
+            pushServer = app.pushServer,
+            requestNotificationPermission = ::requestNotificationPermission,
             // The published build trusts the production import key only; test builds the preproduction and the examples.
             openDataTrust = if (BuildConfig.BUILD_TYPE == "release") OpenDataKeys.release() else OpenDataKeys.testBuilds(),
         )
@@ -62,14 +54,20 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    override fun onDestroy() {
-        httpClient?.close()
-        httpClient = null
-        ballotClient?.close()
-        ballotClient = null
-        super.onDestroy()
+    private var permissionAnswer: ((Boolean) -> Unit)? = null
+
+    private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->
+        permissionAnswer?.invoke(granted)
+        permissionAnswer = null
     }
 
-    private fun serverUrl(): String? =
-        BuildConfig.PPF_SERVER_URL.trim().takeIf { it.startsWith("https://") }?.trimEnd('/')
+    /** Android 13 and later ask the user before an application may show notifications. */
+    private fun requestNotificationPermission(answer: (Boolean) -> Unit) {
+        if (Build.VERSION.SDK_INT < 33 || checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED) {
+            answer(true)
+            return
+        }
+        permissionAnswer = answer
+        notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
 }

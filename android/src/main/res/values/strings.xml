@@ -1,4 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Politisation Populaire Française</string>
+
+    <!-- Notifications (M31, D-130): the system shows these names in the notification settings. -->
+    <string name="notification_channel_messages">Messages</string>
+    <string name="notification_channel_mobilisations">Mobilisations et appels</string>
+    <string name="notification_channel_votes">Votes et pétitions</string>
+    <string name="notification_channel_followed">Contenus suivis</string>
+    <string name="notification_channel_team">Équipe PPF</string>
+    <string name="notification_channel_silent">Silence total</string>
+    <string name="notification_channel_account">Mon compte</string>
+    <!-- The account's alerts (S-146): fixed texts, never a name nor an excerpt. -->
+    <string name="notification_account_phrase">Vérifiez votre phrase de récupération</string>
+    <string name="notification_account_own">Votre compte a été déclaré compromis</string>
+    <string name="notification_account_contact">Un contact a déclaré son compte compromis</string>
+    <!-- The only text ever shown on the lock screen. -->
+    <string name="notification_public_title">PPF : nouvelle activité</string>
+    <plurals name="notification_count_messages">
+        <item quantity="one">%d nouveau message</item>
+        <item quantity="many">%d nouveaux messages</item>
+        <item quantity="other">%d nouveaux messages</item>
+    </plurals>
+    <plurals name="notification_count_other">
+        <item quantity="one">%d nouveauté</item>
+        <item quantity="many">%d nouveautés</item>
+        <item quantity="other">%d nouveautés</item>
+    </plurals>
 </resources>

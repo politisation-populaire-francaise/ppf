@@ -9,12 +9,16 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
  * chosen in D-027. Current version: public open groups, which any account may create (D-028) by
  * publishing a description that names a territory and accepts the charter of values.
  *
+ * Roles and moderation (D-131, docs/integration/salons-roles.md): `put-user` (9000) names an
+ * administrator or a moderator, or removes a role, or readmits an excluded account; `remove-user`
+ * (9001) excludes an account, with a reason; `edit-metadata` (9002) changes the name and the
+ * presentation only; `delete-event` (9005) removes a message, with a reason. The creator is the first
+ * administrator; the state is computed by [GroupModeration] in the order of reception.
+ *
  * Extension points, in the order they are expected:
- * - membership: moderation events `put-user` (9000) and `remove-user` (9001), join and leave
- *   requests (9021, 9022), then `restricted` and `closed` groups; membership is derived from the
- *   latest 9000/9001 per key and is never published as a list (39002 stays refused);
- * - moderation: `edit-metadata` (9002), `delete-event` (9005), `delete-group` (9008), `create-invite`
- *   (9009), issued by the managing key or by admins (39001);
+ * - join and leave requests (9021, 9022), then `restricted` and `closed` groups; membership is never
+ *   published as a list (39002 stays refused);
+ * - `delete-group` (9008, by the team only) and `create-invite` (9009, with the restricted groups);
  * - timeline references (`previous` tag) once clients send them;
  * - `private` and `hidden` groups, which need reader authentication (NIP-42) before the relay can
  *   restrict who reads them; until then descriptions carrying these flags are refused;
@@ -26,8 +30,32 @@ object GroupKinds {
     /** A chat message in a group; carries the group id in an `h` tag. */
     const val CHAT_MESSAGE: Int = 9
 
-    /** Moderation events (put-user, remove-user, edit-metadata, delete-event...), not accepted yet. */
+    /** Moderation events of NIP-29 (put-user, remove-user, edit-metadata, delete-event...). */
     val MODERATION: IntRange = 9000..9020
+    const val PUT_USER: Int = 9000
+    const val REMOVE_USER: Int = 9001
+    const val EDIT_METADATA: Int = 9002
+    const val DELETE_EVENT: Int = 9005
+
+    /** The moderation events this relay accepts (D-131); every other one of [MODERATION] stays refused. */
+    val ACCEPTED_MODERATION: Set<Int> = setOf(PUT_USER, REMOVE_USER, EDIT_METADATA, DELETE_EVENT)
+
+    /** The roles a `put-user` may give, third value of its `p` tag. */
+    const val ROLE_ADMIN: String = "admin"
+    const val ROLE_MODERATOR: String = "moderator"
+    val ROLES_GIVEN: Set<String> = setOf(ROLE_ADMIN, ROLE_MODERATOR)
+
+    /** Longest reason of an exclusion or a removal, in characters. */
+    const val MAX_REASON_LENGTH: Int = 1000
+
+    /**
+     * PPF (D-132): a creation confirmed despite similar rooms carries `["ppf-similar", "confirmed"]`
+     * and says how it differs in `["ppf-difference", text]` (public, like the rest of the description).
+     */
+    const val SIMILAR_TAG: String = "ppf-similar"
+    const val SIMILAR_CONFIRMED: String = "confirmed"
+    const val DIFFERENCE_TAG: String = "ppf-difference"
+    const val MAX_DIFFERENCE_LENGTH: Int = 500
     const val JOIN_REQUEST: Int = 9021
     const val LEAVE_REQUEST: Int = 9022
 
@@ -83,6 +111,8 @@ object GroupKinds {
     fun isGroupMetadata(kind: Int): Boolean = kind in RELAY_METADATA
 
     fun isMembershipOrModeration(kind: Int): Boolean = kind in MODERATION || kind == JOIN_REQUEST || kind == LEAVE_REQUEST
+
+    fun isAcceptedModeration(kind: Int): Boolean = kind in ACCEPTED_MODERATION
 }
 
 /**
@@ -109,7 +139,19 @@ data class Group(
     @SerialName("open") val isOpen: Boolean,
     /** The signed metadata, so that clients can check who published it. */
     val event: SignedEvent,
+    /**
+     * The latest edit of the name and presentation by an administrator (9002), already applied to
+     * [name] and [about]; null when the description was never edited. Signed, so that clients check it.
+     */
+    val edit: SignedEvent? = null,
 ) {
+    /** This group with the name and presentation in force after the edits of its administrators. */
+    fun withEdit(edit: GroupEdit): Group = copy(
+        name = edit.name ?: name,
+        about = edit.about ?: about,
+        edit = edit.event,
+    )
+
     /** The name as compared for duplicates and searched (see [GroupNames]); empty without a usable name. */
     val normalizedName: String get() = GroupNames.normalize(name.orEmpty())
 
@@ -140,3 +182,7 @@ data class Group(
         }
     }
 }
+
+/** A room whose name is close to the one being created (`409 group_similar`, D-132). */
+@Serializable
+data class SimilarGroup(val id: String, val name: String?, val territory: String?)
