@@ -1,6 +1,6 @@
 # Alerte « mes élus ont voté » et mots suivis (VO-34) : conception, version 0.1
 
-Rédigé le 8 novembre 2026 par le pôle « Voir » (« [Voir] Team Dev 2 »), d'après le cahier fonctionnel 2.1 (M20, VO-34 ; TE-01 « Mes élus » ; M31 notifications, règle D-044) et le cahier des charges 2.2 (sections 3.8 et 5). Document de conception : rien n'est codé. Trois questions attendent le chef d'équipe (section 7).
+Rédigé le 8 novembre 2026 par le pôle « Voir » (« [Voir] Team Dev 2 »), d'après le cahier fonctionnel 2.1 (M20, VO-34 ; TE-01 « Mes élus » ; M31 notifications, règle D-044) et le cahier des charges 2.2 (sections 3.8 et 5). Document de conception ; l'étape 1 du cœur est écrite (`MyParliamentarians`, `VoteAlerts`). Les trois questions de la section 7 sont tranchées par le chef d'équipe le 8 novembre 2026 (D-102).
 
 ## 0. Ce qui existe déjà (relevé du 8 novembre 2026)
 
@@ -50,7 +50,13 @@ Rédigé le 8 novembre 2026 par le pôle « Voir » (« [Voir] Team Dev 2 »), d
 | 2 | mots suivis (table, comparaison repliée, limite) | accents, majuscules, plusieurs mots, aucun envoi |
 | 3 | téléchargement automatique si allumé, `VoteAlertSource`, page « Mes élus ont voté », lien depuis TE-01 | éteint par défaut : aucune requête ; mode économie de données ; une notification par synchronisation ; écran verrouillé discret ; lecteur d'écran |
 
-## 7. Questions pour le chef d'équipe (avec recommandations)
+## 7. Décisions du chef d'équipe (8 novembre 2026, D-102)
+
+- **Eurodéputés** : aucun suivi par défaut ; l'écran de choix propose « tous ceux d'une liste » et « tous », avec une phrase sur le nombre d'alertes à prévoir.
+- **Téléchargement automatique** : oui, comme à la section 5, avec une option « seulement en Wi-Fi » activée par défaut.
+- **Une notification-résumé par synchronisation** : texte neutre ; sur l'écran verrouillé, seulement « Nouveaux votes au Parlement » par défaut, détail réglable par la personne ; en mode discret (S-45), le titre neutre décidé avec Communauté.
+
+### Questions telles qu'elles ont été posées
 
 1. **Eurodéputés** : la France élit ses 81 eurodéputés sur une seule liste nationale. Options : A) n'en suivre aucun par défaut, la personne choisit ceux qu'elle veut suivre (recommandé : protecteur et sans inondation) ; B) les suivre tous, résumé chaque semaine ; C) les suivre par parti national choisi par la personne. Coût : nul.
 2. **Téléchargement automatique** quand « Votes au Parlement » est allumé (section 5) : je recommande de l'autoriser hors mode économie de données, pour les seules chambres de mes parlementaires, en affichant la taille au moment d'allumer ; sans cela, l'alerte ne peut pas respecter la règle D-044 (l'appareil vérifie lui-même à chaque synchronisation).

@@ -840,6 +840,16 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **licence** : `a-decider` tant que la propriétaire n'a pas choisi (options présentées au chef d'équipe le 8 novembre 2026 : Licence Ouverte 2.0 ; CC BY 4.0 pour les textes et Licence Ouverte 2.0 pour les données, recommandée ; CC BY-SA 4.0 et ODbL).
 - Reste : choix de la licence ; jeux des autres pôles ; « Citer ce contenu » (S-144) et « Vérifier un contenu PPF » (S-141), étapes B et C de la conception.
 
+## D-102 (2026-11-08) Alerte « mes élus ont voté » et mots suivis (VO-34)
+
+- Contexte : cahier fonctionnel 2.1, M20 (VO-34), TE-01 « Mes élus », M31 et règle D-044 ; conception : `docs/integration/voir-alertes-elus.md`. Principes retenus par le pôle « Voir » et confirmés par le chef d'équipe le 8 novembre 2026 : le serveur ne sait jamais qui sont les élus d'une personne ni quels mots elle suit (l'appareil télécharge les paquets entiers, les mêmes pour tous, et trie lui-même) ; tout est éteint par défaut ; formulation neutre, sans classement.
+- Décisions du chef d'équipe (8 novembre 2026, par délégation de la propriétaire, sur les recommandations du pôle) :
+  - **eurodéputés** : aucun suivi par défaut (option A) ; l'écran de choix propose deux raccourcis, « tous ceux d'une liste » et « tous », avec une phrase sur le nombre d'alertes à prévoir : le choix par liste (ancienne option C) est une aide au choix, jamais un réglage par défaut ;
+  - **téléchargement automatique** quand « Votes au Parlement » est allumé : mois en cours et mois précédent, chambres des élus de la personne seulement, jamais en mode économie de données, taille affichée au moment d'allumer ; option « seulement en Wi-Fi », activée par défaut ;
+  - **une notification-résumé par synchronisation**, le détail dans l'application ; texte neutre, sans mot ni couleur qui juge un vote ; sur l'écran verrouillé, aucun détail par défaut (seulement « Nouveaux votes au Parlement »), réglable par la personne ; en mode discret (S-45, pôle Agir), le titre neutre décidé avec Communauté.
+- Rapprochement des élus (décision technique du pôle) : député par code de circonscription, sénateur par département et nom replié, jamais sur le seul nom ; un élu non rapproché est montré sans votes plutôt que deviné.
+- Reste : numéro de la migration locale (scrutins vus, mots suivis), à demander au chef d'équipe ; branchement sur le moteur de notifications de Communauté quand il est dans main ; détection du Wi-Fi par plateforme (`expect`/`actual`).
+
 ## D-110 (2026-11-07) « Une personne, une voix » : jetons anonymes VOPRF, conditions de la bibliothèque, exigences
 
 - Contexte : conception de `docs/integration/une-personne-une-voix.md` (méthode approuvée par la propriétaire, D-044 ; usages de D-062). Décision technique prise en autonomie (chef d'équipe), le 7 novembre 2026, après relecture complète du document.
