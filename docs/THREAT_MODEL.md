@@ -333,3 +333,13 @@ Revu le 8 novembre 2026 après une relecture de sécurité indépendante (contra
 | Tableau modifié après téléchargement et présenté comme venant de PPF | Chaque ligne donne la version du contenu, à vérifier par sa signature dans `contenus.json` ; empreinte de chaque fichier dans le catalogue | « Vérifier un contenu PPF » (S-141) |
 | Saturation du serveur par des téléchargements répétés | Export recalculé au plus une fois par minute, en mémoire, borné à 20 000 contenus ; `ETag` et `304` | Mode sobre du Directeur technique en cas d'afflux |
 | Pistage des personnes qui téléchargent (journalistes, chercheurs) | Aucun compte, aucun cookie, aucun journal des requêtes | |
+
+## Ajout du 8 novembre 2026 : comparateur de la présidentielle 2027 (DE-16, D-117)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Mise à jour du comparateur pendant le scrutin (avantage de dernière minute, propagande la veille, code électoral L49) | Le serveur refuse toute publication, mise à jour ou suppression d'un comparateur ou d'une position de 0 h la veille du premier jour de vote jusqu'à la fermeture des derniers bureaux (409 `comparator_frozen`), d'après les tours des fiches déjà enregistrées : une nouvelle version ne peut pas déplacer les dates d'un gel en cours ; un tour illisible fait refuser toute la fiche | Dates de l'outre-mer et heure de fermeture prises dans le décret de convocation de 2027 |
+| Traitement inégal des candidats (L52-8 : avantage en nature d'une personne morale) | Mêmes thèmes, même ordre, ordre alphabétique ; demandes visibles avec leurs dates et délai d'ajout identique ; photos affichées pour tous ou pour personne ; l'outil de signature refuse une fiche qui viole ces règles | Relecture par un avocat avant la mise en ligne |
+| Sélection orientée des votes passés | Aucun choix scrutin par scrutin : règle de mots publiée dans la fiche signée, fixée avant la liste officielle, versionnée avec un motif ; « Tous les votes de ce parti », « Autres scrutins » et la recherche libre toujours disponibles ; aucune position calculée | Filtre par commission saisie au fond (officiel) quand « Voir » le donnera |
+| Le serveur apprend quel candidat ou quel parti intéresse une personne (opinion politique, RGPD article 9) | Historique des votes téléchargé en entier pour tous les partis ; calcul et recherche sur l'appareil ; photos d'une fiche demandées toutes ensemble ; aucun journal des requêtes de photos | |
+| Photo remplacée sur le serveur (montage, mauvaise personne) | L'empreinte de chaque photo est dans la fiche signée ; le serveur ne sert un fichier que si ses octets correspondent à son nom, l'application revérifie l'empreinte et n'affiche rien si une seule photo manque ou diffère | |
