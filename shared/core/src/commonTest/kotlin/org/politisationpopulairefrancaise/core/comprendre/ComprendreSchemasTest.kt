@@ -50,7 +50,7 @@ class ComprendreSchemasTest {
     @Test
     fun everyTypeOfComprendreHasItsSchema() {
         assertEquals(
-            setOf(ArticleType.FICHE_PRATIQUE, ArticleType.PARCOURS, ArticleType.DECRYPTAGE, ArticleType.HISTOIRE, ArticleType.QUI_DECIDE, ArticleType.ARTICLE, ArticleType.GLOSSAIRE),
+            setOf(ArticleType.FICHE_PRATIQUE, ArticleType.PARCOURS, ArticleType.DECRYPTAGE, ArticleType.HISTOIRE, ArticleType.QUI_DECIDE, ArticleType.ARTICLE, ArticleType.GLOSSAIRE, ArticleType.FICHE_PEDAGOGIQUE),
             EditorialSchemas.of(EditorialSpace.COMPRENDRE).map { it.type }.toSet(),
         )
         assertEquals(ComprendreSchemas.QUI_DECIDE, EditorialSchemas.of(ArticleType.QUI_DECIDE))

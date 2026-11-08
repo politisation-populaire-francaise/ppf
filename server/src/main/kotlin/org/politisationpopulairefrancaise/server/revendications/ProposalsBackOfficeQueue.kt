@@ -15,6 +15,7 @@ import kotlinx.html.ul
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatus
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts.HeldVerdict
 import org.politisationpopulairefrancaise.server.backoffice.ActionOutcome
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeQueue
 import org.politisationpopulairefrancaise.server.backoffice.Permissions
@@ -23,6 +24,8 @@ import org.politisationpopulairefrancaise.server.backoffice.QueueItem
 import org.politisationpopulairefrancaise.server.backoffice.QueuePage
 import org.politisationpopulairefrancaise.server.backoffice.TeamActor
 import org.politisationpopulairefrancaise.server.backoffice.dateTime
+import org.politisationpopulairefrancaise.server.decider.CompromisedAuthors
+import org.politisationpopulairefrancaise.server.decider.compromisedNotice
 
 /**
  * The queue `revendications.proposals` of the team back-office (contract of the back-office, section 7):
@@ -36,7 +39,11 @@ import org.politisationpopulairefrancaise.server.backoffice.dateTime
  * Shown to the team: the demand, its themes and territory, the findings of the automatic checks
  * (rules and, when on, the AI model: an aid, never a decision), and the pseudonymous key of its author.
  */
-class ProposalsBackOfficeQueue(private val queue: ProposalQueue) : BackOfficeQueue {
+class ProposalsBackOfficeQueue(
+    private val queue: ProposalQueue,
+    /** The authors whose key was declared compromised since (S-146): what they signed after it is only refused. */
+    private val authors: CompromisedAuthors = CompromisedAuthors.NONE,
+) : BackOfficeQueue {
     override val id: String = ID
     override val title: String = "Revendications proposées"
     override val viewPermission: String = Permissions.queueDecide(ID)
@@ -67,6 +74,7 @@ class ProposalsBackOfficeQueue(private val queue: ProposalQueue) : BackOfficeQue
                 proposal.reason?.let { +" Motif : $it" }
             }
         }
+        if (proposal.status == ProposalStatus.PENDING) html.compromisedNotice(authors.verdictOf(event))
         html.dl(classes = "bo-facts") {
             dt { +"Reçue" }
             dd { dateTime(proposal.receivedAt) }
@@ -94,14 +102,15 @@ class ProposalsBackOfficeQueue(private val queue: ProposalQueue) : BackOfficeQue
     override fun actions(itemId: String): List<QueueAction> {
         val proposal = queue.find(itemId) ?: return emptyList()
         if (proposal.status != ProposalStatus.PENDING) return emptyList()
-        return listOf(
-            QueueAction(APPROVE, "Approuver et publier", viewPermission, sensitive = true),
-            QueueAction(REJECT, "Refuser (motif montré à l'auteur)", viewPermission, reasonRequired = true, sensitive = true),
-        )
+        val reject = QueueAction(REJECT, "Refuser (motif montré à l'auteur)", viewPermission, reasonRequired = true, sensitive = true)
+        if (authors.onlyRefusable(proposal.event)) return listOf(reject)
+        return listOf(QueueAction(APPROVE, "Approuver et publier", viewPermission, sensitive = true), reject)
     }
 
     override fun perform(itemId: String, action: String, reason: String?, actor: TeamActor): ActionOutcome = when (action) {
-        APPROVE -> when (queue.approve(itemId)) {
+        APPROVE -> if (queue.find(itemId)?.event?.let(authors::onlyRefusable) == true) {
+            ActionOutcome.Refused(CompromisedAuthors.REFUSED)
+        } else when (queue.approve(itemId)) {
             is DecisionOutcome.Approved -> ActionOutcome.Done
             DecisionOutcome.NotFound -> ActionOutcome.NotFound
             is DecisionOutcome.AlreadyDecided, DecisionOutcome.Rejected -> ActionOutcome.AlreadyDecided
@@ -127,7 +136,11 @@ class ProposalsBackOfficeQueue(private val queue: ProposalQueue) : BackOfficeQue
             id = proposal.id,
             title = article?.title?.take(200) ?: UNTITLED,
             receivedAt = proposal.receivedAt,
-            summary = listOfNotNull(article?.territory, article?.topics?.takeIf { it.isNotEmpty() }?.joinToString(", ")).joinToString(" · ").ifEmpty { null },
+            summary = listOfNotNull(
+                article?.territory,
+                article?.topics?.takeIf { it.isNotEmpty() }?.joinToString(", "),
+                CompromisedAuthors.SHORT.takeIf { authors.verdictOf(proposal.event) != HeldVerdict.Clear },
+            ).joinToString(" · ").ifEmpty { null },
         )
     }
 

@@ -52,6 +52,8 @@ import org.politisationpopulairefrancaise.core.revendications.checks.IssueKind
 import org.politisationpopulairefrancaise.core.revendications.checks.ProposalIssue
 import org.politisationpopulairefrancaise.core.revendications.checks.ProposalReport
 import org.politisationpopulairefrancaise.core.signing.EventSigner
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
@@ -305,10 +307,12 @@ private fun ColumnScope.Form(
             PpfPrimaryButton(onCreateAccount, stringResource(Res.string.propose_create_account), Modifier.testTag(ProposalTags.CREATE_ACCOUNT))
         }
     } else {
+        // An account declared compromised publishes nothing more (S-146): the server refuses it anyway.
+        PublishBlockedNotice(Modifier.padding(bottom = 8.dp))
         PpfPrimaryButton(
             onClick = onSend,
             text = stringResource(if (composer.sending) Res.string.propose_sending else Res.string.propose_send),
-            enabled = composer.ready(report),
+            enabled = LocalCanPublish.current && composer.ready(report),
             icon = Lucide.Send,
             modifier = Modifier.testTag(ProposalTags.SEND),
         )

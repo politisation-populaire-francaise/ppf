@@ -15,6 +15,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.decider.DeciderCatalog
+import org.politisationpopulairefrancaise.core.editorial.ContentLookup
+import org.politisationpopulairefrancaise.core.editorial.DeviceContentLookup
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
@@ -188,6 +190,12 @@ class ContentLibrary(
      * a dedicated query by author will replace this when the feed grows.
      */
     val followedPosts: List<FeedPost> get() = posts.filter { it.event.pubkey in followed }
+
+    /**
+     * « Vérifier un contenu PPF » (S-141) on the device, even offline: the trusted editorial keys and the local
+     * copy of the contents; null without a local copy (tests, previews).
+     */
+    fun checkLookup(): ContentLookup? = store?.let { DeviceContentLookup(it, trust) }
 
     fun start() {
         if (store == null) {

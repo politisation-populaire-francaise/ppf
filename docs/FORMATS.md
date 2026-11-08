@@ -82,11 +82,12 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `summary` | Résumé | Non |
 | `published_at` | Première publication, secondes depuis 1970, en texte | Non |
 | `t` | Un thème par étiquette (`droits`, `manifestation`, …) | Non |
-| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
+| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide`, `fiche-pedagogique` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-territory-code` | Code du référentiel des territoires (section 4 nonies) à côté du libellé ; pas encore accepté par le serveur pour les revendications | Non |
-| `ppf-duration` | Parcours seulement : durée de lecture annoncée, en minutes (1 à 240) | Non |
+| `ppf-duration` | Parcours : durée de lecture annoncée ; fiches pédagogiques : durée de la séance ; en minutes (1 à 240) | Non |
+| `ppf-rhythm` | Parcours seulement : rythme de lecture conseillé ; seule valeur, `quotidien` (une leçon, c'est-à-dire une étape, par jour, comme « Je découvre », CO-19). Simple suggestion affichée au lecteur, jamais un verrou ; une valeur inconnue est ignorée | Non |
 | `ppf-origin` | `human` (rédigé par un humain) ou `ai-assisted` (produit avec l'aide d'une IA) | Oui |
 | `ppf-correction` | Journal public des corrections (circuit éditorial, D-095) : date `AAAA-MM-JJ` (heure de Paris), résumé public du changement, nature `correction` (erreur de fond) ou `mise-a-jour` ; une étiquette par mise à jour d'un contenu publié, celles des versions précédentes reprises à l'identique et jamais retirées ; mêmes deux premières positions que dans « Voir » (section 4 quinquies) | Non (obligatoire sur une mise à jour publiée par le circuit éditorial) |
 
@@ -119,6 +120,7 @@ Blocs communs du Markdown de « Comprendre » (`core/comprendre/ContentBlocks`) 
 | `decryptage` | `ppf-verdict` (obligatoire) : `exact`, `plutot-exact`, `trompeur`, `contredit-par-les-faits`, `inverifiable` ; `ppf-claim` (obligatoire) : l'affirmation mot pour mot ; `ppf-claim-context` : où et quand elle circule. Corps : l'explication, un bloc `objections` (obligatoire), « Et maintenant ? », `## Sources` en dernier. |
 | `histoire` | `ppf-country` et `ppf-period` (début, fin facultative ; obligatoires), `ppf-claim` (une par revendication), `ppf-result` (une par résultat obtenu), comme les mouvements de « Voir ». Corps : contexte, déroulé avec un bloc `chronologie`, ce qui a été obtenu, ce qui a fonctionné ou échoué, un bloc `objections` (obligatoire), « Et maintenant ? », `## Sources`. |
 | `qui-decide` | Corps commençant par un bloc `::: decideurs` : une ligne `- niveau | rôles | ce que ce niveau décide (référence)` par niveau, du plus proche au plus lointain ; niveaux `commune`, `intercommunalite`, `departement`, `region`, `etat`, `union-europeenne` ; rôles `maire`, `elu-local`, `depute`, `senateur`, `eurodepute`, `ministre`, `president`. Étiquettes `a` de rôle `personne` vers les personnes publiques de « Voir » à nommer dans l'encart des élus concernés. « Et maintenant ? » et `## Sources` obligatoires. |
+| `fiche-pedagogique` | Fiche pédagogique pour la classe (CO-13, D-096, `docs/integration/comprendre-enseignants.md`), dossier `content/enseignants/`, identifiant `classe-<identifiant du parcours>-<niveau>`, paquet `comprendre.json`. Étiquette `a` de rôle `parcours` vers le parcours qu'elle fait vivre (`["a", "30023:<clé>:<identifiant>", "", "parcours"]`, une seule, obligatoire) ; `ppf-level` (obligatoire) : `lycee` ou `cycle-4` (`atelier` viendra avec CO-24) ; `ppf-programme` (obligatoire, 500 caractères au plus) : le programme officiel servi en une phrase, avec le numéro et la date du Bulletin officiel et « vérifié le AAAA-MM-JJ » ; `ppf-duration` obligatoire (55 pour une heure de cours). Corps : sections `## Objectifs`, `## Prérequis`, `## Déroulé` (étapes `- 10 min : texte` dont la somme fait la durée), `## Débat guidé` (un bloc `objections` d'au moins deux objections, une de chaque côté du débat), `## Pour aller plus loin` (facultative), `## Sources`, dans cet ordre ; aucun bloc `quiz` : les questions à main levée sont celles du parcours lié, réponses à part pour l'enseignant. Le rappel de neutralité et la licence sont des textes fixes de l'application et du site. |
 
 La page qui définit la méthode et les verdicts est un article d'identifiant `notre-methode`.
 
@@ -392,6 +394,29 @@ Suivi après l'élection : un fait de « Voir » porte `a` rôle `pacte` et `ppf
 | `ppf-election` | `identifiant`, `libellé`, `premier tour (AAAA-MM-JJ, facultatif)` (comme le Pacte) |
 | `ppf-theme` | Un thème, dans l'ordre de la grille (répétée, 1 à 20, distincts) ; identifiants des thèmes des revendications |
 | `a` rôle `candidat` | Chaque candidat : sa fiche de « Voir » |
+| `ppf-round` | Un tour (répétée, numéros distincts) : `numéro`, `jour du vote en métropole`, `premier jour de vote (outre-mer, facultatif, au plus 2 jours avant)`, `fermeture des derniers bureaux (HH:MM, heure de Paris, facultatif : 20:00)`. Fixe le gel (`ElectionRound`) ; un tour illisible fait refuser toute la fiche, jamais ignorer |
+| `ppf-addition-delay` | Le délai d'ajout, le même pour tous : nombre de jours (1 à 30) entre la demande d'un candidat et son ajout |
+| `ppf-request` | La demande d'un candidat déclaré (répétée, une par candidat) : `candidat (identifiant de sa fiche)`, `demandé le`, `ajouté le` (pas avant la demande) |
+| `ppf-official-list` | La liste officielle des candidats, quand elle est publiée : `page (https)`, `date` ; le comparateur la suit dès lors |
+| `ppf-theme-words` | Les mots d'un thème pour les votes passés (D-117, option A) : `thème`, puis les mots (1 à 60) ; un scrutin entre dans le thème si son titre officiel contient l'un d'eux (sans accents ni majuscules, mot entier ou début de mot, expression permise) ; plusieurs thèmes possibles ; les scrutins hors de tout thème restent listés à part |
+| `ppf-words-version` | L'historique public des mots (répétée) : `version`, `date`, `motif` (obligatoire) ; la dernière est en vigueur et affichée sous chaque liste ; la première doit dater d'avant la liste officielle |
+| `ppf-photo` | La photo officielle d'un candidat (Q3, une au plus par candidat) : `candidat`, `sha256` du fichier (minuscules), `licence`, `auteur`, `page de la source (https)` ; fichier servi par PPF seulement à `GET /api/v1/decider/photos/{sha256}` (dossier `PPF_DECIDER_PHOTOS_DIR`, 512 Ko au plus), seulement si ses octets correspondent à l'empreinte ; affichées seulement si **chaque** candidat a la sienne, sinon aucune |
+| `ppf-party` | Le parti d'un candidat dans les paquets historiques de « Voir » (répétée) : `candidat`, `identifiant du parti` (`an:PO…`, `senat-grp:…`, `pe-org:…`), `du`, `au (facultatif)` ; sourcé par les `ppf-source` de la fiche |
+
+Règle d'entrée (décision de la propriétaire, Q1 option B ; `ComparatorSheet.ruleProblems`, appliquée par l'outil de signature, qui refuse une fiche qui la viole) : avant la liste officielle, chaque candidat a sa demande et un délai d'ajout est publié ; chaque demande est honorée dans ce délai ; une demande nomme un candidat de la fiche ; au moins un tour est donné. **Gel** (Q4 option A) : de 0 h, heure de Paris, la veille du premier jour de vote d'un tour jusqu'à la fermeture des derniers bureaux, le serveur refuse (409 `comparator_frozen`) toute publication, mise à jour ou suppression (kind 5) d'un comparateur ou d'une position de cette élection, d'après les tours des comparateurs **déjà enregistrés** (une nouvelle version qui déplacerait les dates ne lève pas un gel en cours) ; un premier comparateur dont ses propres tours disent l'élection gelée est refusé aussi. L'application reste lisible et affiche le gel.
+
+### Élection du calendrier électoral (`ppf-type` = `election`, DE-28, conception : `docs/integration/calendrier-electoral.md`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-election` | `identifiant`, `libellé` (le même que le Pacte et le comparateur de cette élection) |
+| `ppf-election-status` | `annoncee` (dates annoncées, décret attendu) ou `convoquee` (décret publié) |
+| `ppf-decree` | Le décret de convocation : `numéro`, `jour du Journal officiel`, `page sur Légifrance (https)` ; obligatoire pour `convoquee`, interdit pour `annoncee` |
+| `ppf-round` | Les tours, au format du comparateur (au moins un) |
+| `ppf-deadline` | Une échéance (une par type) : `type` (`inscription-mairie`, `inscription-en-ligne`, `procuration-conseillee`, `candidatures`), `date`, `source (https)` ; écrite d'après la source officielle, jamais calculée par PPF |
+| `ppf-territory-code` | Le territoire d'un scrutin local (référentiel des territoires) ; absent pour un scrutin national |
+
+Contrôles de l'outil de signature (avertissements, jamais un refus du droit par le code) : une inscription en mairie qui ne tombe pas le sixième vendredi avant le premier tour (code électoral, article L17), une échéance après le premier tour. L'application montre les élections à venir ; un scrutin local seulement pour les territoires gardés sur l'appareil.
 
 ### Position d'un candidat (`ppf-type` = `position`)
 
@@ -987,7 +1012,7 @@ Conception : `docs/integration/export-ouvert.md`. Tout se lit sans compte ; rien
 ```
 
 - `updated_at` : le `created_at` du contenu exporté le plus récent (null si rien n'est publié) ; les mêmes contenus donnent les mêmes octets, donc le même `ETag`.
-- `license.status` : `a-decider` tant que la propriétaire n'a pas choisi la licence ; ensuite `choisie`, avec `text` et `url`.
+- `license.status` : `choisie` depuis le 8 novembre 2026 (D-103), avec `text` (les deux licences et ce qui reste aux auteurs) et `url` (`/donnees#licence`) ; `a-decider` avant ce choix. Chaque jeu porte en plus sa licence : `license` = `{"id":"CC-BY-4.0",…}` pour `contenus` (sauf les types dont le texte reste à son auteur : droits de réponse, réponses des candidats, revendications, témoignages), `{"id":"etalab-2.0",…}` pour les tableaux (identifiants SPDX, nom, adresse du texte officiel).
 - Le jeu `contenus` (fichier `contenus.json`, sans schéma) est un tableau JSON des événements signés (section 2) : la dernière version de chaque adresse (même règle qu'à la section 5), types 30023 et 31923, **signés par les seules clés de l'équipe éditoriale** (`editorial_keys`), triés par type, clé puis identifiant `d`. Les contenus des comptes citoyens ne sont jamais rassemblés dans un fichier.
 - Les autres jeux sont des tableaux dérivés de ces événements : en JSON, un tableau d'objets, une propriété par colonne, `null` pour une cellule vide ; en CSV (RFC 4180), UTF-8 sans marque d'ordre, virgule, fin de ligne CRLF, première ligne des noms de colonnes, nombres avec un point et sans exposant (un montant garde ses centimes : `4210345.60`), et une apostrophe devant un texte qui commence par `=`, `+`, `-`, `@`, une tabulation ou un retour chariot (protection contre l'injection de formules ; le JSON garde la valeur exacte).
 - **Schéma** de chaque jeu : JSON Schema 2020-12, `<jeu>-<version>.schema.json`. Une colonne ajoutée à la fin garde la version ; toute autre modification crée la version suivante, l'ancienne restant servie six mois.

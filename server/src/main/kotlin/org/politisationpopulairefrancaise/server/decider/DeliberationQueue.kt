@@ -21,6 +21,7 @@ import org.politisationpopulairefrancaise.core.decider.DeliberationFormats
 import org.politisationpopulairefrancaise.core.decider.Proposition
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts.HeldVerdict
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PublishResponse
 import org.politisationpopulairefrancaise.server.backoffice.ActionOutcome
@@ -53,7 +54,10 @@ class DeliberationQueue(private val submissions: DeliberationSubmissions) : Back
                 id = submission.id,
                 title = titleOf(submission),
                 receivedAt = submission.receivedDay.atStartOfDay().toEpochSecond(ZoneOffset.UTC),
-                summary = if (submission.type == DeliberationFormats.TYPE_PROPOSITION) "Proposition" else "Amendement",
+                summary = listOfNotNull(
+                    if (submission.type == DeliberationFormats.TYPE_PROPOSITION) "Proposition" else "Amendement",
+                    CompromisedAuthors.SHORT.takeIf { submissions.authors.verdictOf(submission.event) != HeldVerdict.Clear },
+                ).joinToString(" · "),
             )
         }
         return QueuePage(items, (offset + limit).takeIf { listed.size > limit }?.toString())
@@ -79,6 +83,7 @@ class DeliberationQueue(private val submissions: DeliberationSubmissions) : Back
                 submission.reason?.let { +" Motif : $it" }
             }
         }
+        if (submission.status == DeliberationSubmissions.PENDING) html.compromisedNotice(submissions.authors.verdictOf(submission.event))
         html.dl(classes = "bo-facts") {
             dt { +"Délibération" }
             dd { +(deliberation?.title ?: submission.deliberation) }
@@ -103,11 +108,10 @@ class DeliberationQueue(private val submissions: DeliberationSubmissions) : Back
     }
 
     override fun actions(itemId: String): List<QueueAction> {
-        if (submissions.find(itemId)?.status != DeliberationSubmissions.PENDING) return emptyList()
-        return listOf(
-            QueueAction(APPROVE, "Approuver et publier", viewPermission, sensitive = true),
-            QueueAction(REJECT, "Refuser (motif montré à l'auteur)", viewPermission, reasonRequired = true, sensitive = true),
-        )
+        val submission = submissions.find(itemId)?.takeIf { it.status == DeliberationSubmissions.PENDING } ?: return emptyList()
+        val reject = QueueAction(REJECT, "Refuser (motif montré à l'auteur)", viewPermission, reasonRequired = true, sensitive = true)
+        if (submissions.authors.onlyRefusable(submission.event)) return listOf(reject)
+        return listOf(QueueAction(APPROVE, "Approuver et publier", viewPermission, sensitive = true), reject)
     }
 
     override fun perform(itemId: String, action: String, reason: String?, actor: TeamActor): ActionOutcome {

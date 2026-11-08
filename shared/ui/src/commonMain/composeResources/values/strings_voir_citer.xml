@@ -4,4 +4,5 @@
 <resources>
     <string name="voir_cite">Citer ce contenu</string>
     <string name="voir_cite_copied">Référence copiée : titre, dates, version, adresse et empreinte.</string>
+    <string name="voir_license">Licence %1$s</string>
 </resources>

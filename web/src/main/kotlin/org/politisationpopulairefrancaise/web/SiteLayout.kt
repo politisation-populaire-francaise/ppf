@@ -81,6 +81,11 @@ fun HTML.siteLayout(pageTitle: String, currentSpace: Space? = null, content: MAI
         footer(classes = "site-footer") {
             p { +"[EXEMPLE] Squelette de la phase 0. Aucun contenu réel. Version ${AppInfo.VERSION}." }
             p { +"Aucun traceur, aucune ressource tierce : tout est hébergé par Politisation Populaire Française." }
+            p {
+                +"Textes et images de PPF : licence CC BY 4.0 ; données : Licence Ouverte 2.0. "
+                a(href = "/donnees#licence") { +"Réutiliser nos contenus" }
+            }
+            p { a(href = "/verifier") { +"Vérifier un contenu" } }
             p { a(href = "/donnees") { +"Données ouvertes" } }
             p { a(href = "/securite") { +"Signaler une faille de sécurité" } }
         }

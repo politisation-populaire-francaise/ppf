@@ -8,7 +8,12 @@ import org.politisationpopulairefrancaise.core.archive.OtsBitcoinVerifier
 import org.politisationpopulairefrancaise.core.archive.OtsFile
 import org.politisationpopulairefrancaise.core.archive.OtsOperation
 import org.politisationpopulairefrancaise.core.archive.OtsTimestamp
+import org.politisationpopulairefrancaise.core.identity.AccountRecovery
+import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.server.TestDatabase
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
+import org.politisationpopulairefrancaise.server.events.EventRepository
 import java.security.SecureRandom
 import java.time.Clock
 import java.time.Instant
@@ -59,6 +64,16 @@ class ArchiveServiceTest {
             node.operations.forEach { stack += it.second }
         }
         return found
+    }
+
+    @Test
+    fun eachFirstRecoveryCommitmentIsQueuedUnderItsEventId() = runBlocking {
+        // S-146, D-134: the proof that the commitment existed before any compromise, which anyone checks from the public event.
+        TestDatabase.reset()
+        val accounts = CompromisedAccounts(EventRepository(TestDatabase.dataSource), service().commitmentStamper())
+        val commitment = AccountRecovery.signCommitment(LocalEventSigner(IdentityKeys.generate()), IdentityKeys.generate().publicKey)
+        assertTrue(accounts.admitAndStore(commitment) is CompromisedAccounts.Admission.Stored)
+        assertContentEquals(commitment.id.hexToByteArray(), store.queued(10).single())
     }
 
     @Test

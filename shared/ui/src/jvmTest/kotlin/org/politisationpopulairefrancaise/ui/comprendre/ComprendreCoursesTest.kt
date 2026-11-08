@@ -83,6 +83,8 @@ class ComprendreCoursesTest {
                 "l-union-europeenne-qui-decide-quoi", "commune-departement-region", "se-presenter-a-une-election", "les-petitions-officielles",
                 // Laicite and fascism (CO-21, CO-22).
                 "la-laicite", "comprendre-le-fascisme",
+                // One lesson a day for newcomers (CO-19).
+                "je-decouvre",
             ),
             bundled.map { it.article.slug }.toSet(),
         )
@@ -92,6 +94,56 @@ class ComprendreCoursesTest {
             assertNotNull(course.nextActions, course.article.slug)
             assertNotNull(course.sources, course.article.slug)
         }
+    }
+
+    @Test
+    fun jeDecouvreProposesTheLessonOfTheDayWithoutEverLocking() = runComposeUiTest {
+        val discover = bundled.first { it.article.slug == "je-decouvre" }
+        assertTrue(discover.daily, "« Je découvre » is read one lesson a day (CO-19)")
+        val database = JvmDatabase.inMemory()
+        openComprendre(database, width = 400, height = 800)
+        // « Nouveau ici ? » on the home, at day 1 for a newcomer.
+        // The card is one clickable element: its texts are merged into it.
+        onNodeWithTag(ComprendreTags.DISCOVER).performScrollTo().assert(hasText("Jour 1 sur ${discover.steps.size}", substring = true))
+        onNodeWithTag(ComprendreTags.DISCOVER).performClick()
+        waitForIdle()
+        // The card opens the lesson itself, not the introduction.
+        onNodeWithTag(CourseTags.STEP_TITLE).assert(hasText(discover.steps[0].title))
+        onNodeWithTag(CourseTags.DAILY_NOTE).assertDoesNotExist()
+        val quiz = assertNotNull(discover.steps[0].quiz)
+        onNodeWithTag(CourseTags.option(quiz.correctIndex)).performScrollTo().performClick()
+        onNodeWithTag(CourseTags.VALIDATE).performScrollTo().performClick()
+        waitForIdle()
+        // Once read: a suggestion to come back tomorrow, and the next lesson stays open.
+        onNodeWithTag(CourseTags.DAILY_NOTE).performScrollTo().assert(hasText("Revenez demain pour le jour 2", substring = true))
+        onNodeWithTag(CourseTags.NEXT).performScrollTo().assertIsEnabled().performClick()
+        waitForIdle()
+        onNodeWithTag(CourseTags.STEP_TITLE).assert(hasText(discover.steps[1].title))
+        // Back home, the card points at day 2: the progress stayed on the device.
+        onNodeWithTag(CourseTags.BACK).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ComprendreTags.DISCOVER).performScrollTo().assert(hasText("Jour 2 sur ${discover.steps.size}", substring = true))
+    }
+
+    @Test
+    fun aCourseLeadsToItsTeachingSheetWithTheAnswersFoldedApart() = runComposeUiTest {
+        val database = JvmDatabase.inMemory()
+        openComprendre(database, width = 1000, height = 800)
+        onNodeWithTag(ComprendreTags.COURSE_CARD + loi.article.slug).performScrollTo().performClick()
+        waitForIdle()
+        // « Pour la classe » (CO-13): the sheet of the course, opened from its introduction.
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(CourseTags.TEACHING).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithTag(CourseTags.TEACHING).performScrollTo().assert(hasText("Pour la classe", substring = true)).performClick()
+        waitForIdle()
+        onNodeWithTag(ComprendreDetailTags.TEACHING).assertExists()
+        // The fixed neutrality notice, never the writer's text.
+        onNodeWithTag(ComprendreDetailTags.TEACHING_NEUTRALITY).performScrollTo().assert(hasText("neutralité de l’enseignement public", substring = true))
+        // The questions of the course for a show of hands; the answers stay folded until asked for.
+        onNodeWithTag(ComprendreDetailTags.TEACHING_QUESTIONS).performScrollTo().assertExists()
+        onAllNodesWithTag(ComprendreDetailTags.TEACHING_ANSWERS).fetchSemanticsNodes().let { assertTrue(it.isEmpty(), "answers folded") }
+        onNodeWithText("Afficher les réponses").performScrollTo().performClick()
+        waitForIdle()
+        assertEquals(loi.quizCount, onAllNodesWithTag(ComprendreDetailTags.TEACHING_ANSWERS).fetchSemanticsNodes().size)
     }
 
     @Test

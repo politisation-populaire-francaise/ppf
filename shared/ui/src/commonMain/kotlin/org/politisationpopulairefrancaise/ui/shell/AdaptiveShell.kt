@@ -61,6 +61,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.ui.components.SystemBack
+import org.politisationpopulairefrancaise.core.comprendre.ComprendreDeviceData
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
@@ -99,6 +100,7 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpStat
 import org.politisationpopulairefrancaise.ui.agir.security.DeviceSecurityGate
 import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
+import org.politisationpopulairefrancaise.core.voir.VoirDeviceData
 import org.politisationpopulairefrancaise.ui.agir.security.rememberDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
 import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
@@ -153,6 +155,7 @@ import org.politisationpopulairefrancaise.ui.resources.notif_bell_unread_many
 import org.politisationpopulairefrancaise.ui.resources.notif_bell_unread_one
 import org.politisationpopulairefrancaise.ui.urne.LocalVoting
 import org.politisationpopulairefrancaise.ui.urne.RunVoting
+import org.politisationpopulairefrancaise.ui.urne.VotingState
 import org.politisationpopulairefrancaise.ui.urne.rememberVotingState
 
 /** Test tags, also useful for accessibility tooling. */
@@ -233,6 +236,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         accountSession.signOut()
     }
     RegisterErasable(dependencies, "agir-rally-point") { help.clearRallyPoint() }
+    // « Comprendre » (S-44): progress of the courses, chosen commune and directory packages, department packages of the territories.
+    dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
+    // Décider: the voting tokens, pending requests and choices of the device (S-44).
+    RegisterErasable(dependencies, VotingState.ERASABLE_ID) { voting.eraseFromDevice() }
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.
@@ -243,6 +250,14 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     rememberParliamentWeekState(dependencies, parliamentState, contentLibrary, voirState) { selected = it }
     // Its requests to the editorial team: drafts and anonymous reports waiting for a server.
     val voirRequests = rememberVoirRequestSession(dependencies, messaging)
+    // The quick erase (S-44): what « Voir » keeps on the device (follows, views of the demands wall, parliamentary
+    // open data) and in memory (drafts, anonymous reports waiting with their single-use keys).
+    RegisterErasable(dependencies, VoirDeviceData.ID) {
+        dependencies.database?.let { VoirDeviceData(it).eraseFromDevice() }
+        voirState.forgetFollows()
+        revendicationViews.reset()
+        voirRequests.forget()
+    }
     // "Décider": the open page and the follows survive a visit to another space.
     val deciderState = rememberDeciderState(dependencies)
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
@@ -433,6 +448,7 @@ private fun SpaceContent(
                 voirState.open(address)
                 onNavigate(Space.VOIR)
             },
+            dependencies = dependencies,
         )
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting, notifications = notificationsSettings)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
