@@ -40,6 +40,33 @@ configurations.matching { it.name == "runtimeClasspath" || it.name == "testRunti
     exclude(group = "org.xerial")
 }
 
+// D-145: The signing service never computes anonymous voting tokens. libsodium (the ristretto255 group of « une personne,
+// une voix », in shared/core since D-110), its native loader and JNA stay out of this container holding a
+// key; the check below fails the build if any of them comes back into ppf-signer.jar. JNA is excluded from the
+// runtime only: libsodium was its only user there, and a test library may still need it.
+configurations.matching { it.name == "runtimeClasspath" || it.name == "testRuntimeClasspath" }.configureEach {
+    exclude(group = "com.ionspin.kotlin")
+    exclude(group = "com.goterl")
+}
+configurations.matching { it.name == "runtimeClasspath" }.configureEach {
+    exclude(group = "net.java.dev.jna")
+}
+val forbiddenInSignerJar = listOf("com/ionspin/", "com/goterl/", "com/sun/jna/", "libsodium")
+val verifySignerJar = tasks.register("verifySignerJar") {
+    group = "verification"
+    description = "Checks that ppf-signer.jar holds neither libsodium, nor JNA, nor their native loader (D-145)."
+    val jar = tasks.named<ShadowJar>("shadowJar").flatMap { it.archiveFile }
+    inputs.file(jar)
+    val forbidden = forbiddenInSignerJar
+    doLast {
+        java.util.zip.ZipFile(jar.get().asFile).use { zip ->
+            val found = zip.entries().asSequence().map { it.name }.filter { name -> forbidden.any { name.contains(it) } }.toList()
+            check(found.isEmpty()) { "ppf-signer.jar must not contain libsodium, JNA or their loader (D-145): ${found.take(5)}" }
+        }
+    }
+}
+tasks.named("check") { dependsOn(verifySignerJar) }
+
 // The tests never see the PPF_* settings of the machine running them.
 tasks.withType<Test>().configureEach {
     environment = environment.filterKeys { !it.startsWith("PPF_") }
