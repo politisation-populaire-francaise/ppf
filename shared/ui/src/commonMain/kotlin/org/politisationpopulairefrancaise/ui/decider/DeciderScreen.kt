@@ -53,6 +53,8 @@ import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
+import org.politisationpopulairefrancaise.ui.resources.decider_elections_section
+import org.politisationpopulairefrancaise.ui.resources.decider_elections_section_intro
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.ui.voir.LinkRow
 import org.politisationpopulairefrancaise.ui.voir.SectionHeader
@@ -149,6 +151,18 @@ private fun DeciderHome(
         if (catalog.isEmpty && status != LibraryStatus.Loading) {
             Spacer(Modifier.height(16.dp))
             Text(stringResource(Res.string.decider_empty), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted)
+        }
+        val elections = catalog.upcomingElections(today)
+        if (elections.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.testTag(DeciderTags.section("elections"))) {
+                SectionHeader(stringResource(Res.string.decider_elections_section))
+                Text(stringResource(Res.string.decider_elections_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+                elections.forEach { election ->
+                    Spacer(Modifier.height(12.dp))
+                    ElectionCard(election, today, onOpen = { state.open(DeciderDestination.Election(election.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+                }
+            }
         }
         catalog.currentPacte()?.let { pacte ->
             Spacer(Modifier.height(24.dp))
@@ -295,6 +309,9 @@ private fun DeciderDetail(
                             onOpenVotes = pastVotes?.let { { candidate -> state.open(DeciderDestination.PastVotes(sheet.address, candidate)) } },
                             photos = photos,
                         )
+                    } ?: Missing()
+                    is DeciderDestination.Election -> catalog.elections.firstOrNull { it.address == current.address }?.let { election ->
+                        ElectionPage(election, today)
                     } ?: Missing()
                     is DeciderDestination.PastVotes -> {
                         val sheet = catalog.comparators.firstOrNull { it.address == current.sheet }

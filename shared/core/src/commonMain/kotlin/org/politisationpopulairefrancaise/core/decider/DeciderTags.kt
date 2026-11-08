@@ -94,4 +94,17 @@ object DeciderTags {
 
     /** The official photo of a candidate: `candidate | sha256 | licence | author | source page (https)` ([CandidatePhoto]). */
     const val PHOTO = "ppf-photo"
+
+    // The personal electoral calendar (cahier fonctionnel, M13.7; DE-28).
+    /** `annoncee` or `convoquee` ([ElectionStatus]). */
+    const val ELECTION_STATUS = "ppf-election-status"
+
+    /** The decree of convocation: `number | day of the Journal officiel | page on Légifrance (https)` ([Decree]). */
+    const val DECREE = "ppf-decree"
+
+    /** One deadline: `kind | date | source (https)` ([ElectionDeadline]). */
+    const val DEADLINE = "ppf-deadline"
+
+    /** The territory of a local election (référentiel des territoires). */
+    const val TERRITORY_CODE = "ppf-territory-code"
 }

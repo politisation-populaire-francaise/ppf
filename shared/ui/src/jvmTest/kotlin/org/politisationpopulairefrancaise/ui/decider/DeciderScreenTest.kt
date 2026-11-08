@@ -227,6 +227,24 @@ class DeciderScreenTest {
     }
 
     @Test
+    fun theNextElectionSaysItsDatesAreOnlyAnnouncedAndGivesEachDeadlineWithItsSource() = runComposeUiTest {
+        show(width = 400)
+        onNodeWithTag(DeciderTags.card("election-exemple")).performScrollTo().assert(has("Tour 1 : 7 mars 2027")).performClick()
+        waitForIdle()
+        onNodeWithTag(ElectionTags.page("election-exemple")).assertExists()
+        onNodeWithTag(ElectionTags.STATUS).assert(has("décret de convocation"))
+        onNodeWithTag(ElectionTags.round(2)).performScrollTo().assert(has("21 mars 2027")).assert(has("dès le 20 mars 2027"))
+        onNodeWithTag(ElectionTags.deadline("inscription-mairie")).performScrollTo().assert(has("29 janvier 2027")).assert(has("Voir la source officielle"))
+        onNodeWithTag(ElectionTags.PRIVACY).performScrollTo().assert(has("restent sur cet appareil"))
+    }
+
+    @Test
+    fun anElectionOverLeavesTheHome() = runComposeUiTest {
+        show(width = 1000, today = CivilDate(2027, 3, 22))
+        onNodeWithTag(DeciderTags.card("election-exemple")).assertDoesNotExist()
+    }
+
+    @Test
     fun theComparatorIsATableOnAWideWindow() = runComposeUiTest {
         show(width = 1200)
         onNodeWithTag(DeciderTags.card("comparateur-election-exemple")).performScrollTo().performClick()

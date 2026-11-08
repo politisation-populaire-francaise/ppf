@@ -20,7 +20,13 @@ class DeciderCatalog(
     val comparators: List<ComparatorSheet> = emptyList(),
     /** Every position published for a comparator. */
     val positions: List<Position> = emptyList(),
+    /** The elections of the personal electoral calendar (DE-28), the nearest first. */
+    val elections: List<ElectionCalendar> = emptyList(),
 ) {
+    /** The elections not over on [today], the nearest first; the local ones only for [territories] (codes kept on the device). */
+    fun upcomingElections(today: CivilDate, territories: Set<String> = emptySet()): List<ElectionCalendar> =
+        elections.filter { it.isUpcoming(today) && (it.territory == null || it.territory in territories) }
+
     val isEmpty: Boolean get() = petitions.isEmpty() && pactes.isEmpty()
 
     fun petition(address: ContentAddress): Petition? = petitions.firstOrNull { it.address == address }
@@ -82,7 +88,7 @@ class DeciderCatalog(
         val EMPTY: DeciderCatalog = DeciderCatalog(emptyList(), emptyList(), emptyList())
 
         /** The editorial types read here, to ask the local copy for them. */
-        val TYPES: List<ArticleType> = listOf(ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION)
+        val TYPES: List<ArticleType> = listOf(ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION, ArticleType.ELECTION)
 
         private fun sortKey(title: String): String = FrenchText.fold(title.removePrefix(VoirCatalog.EXAMPLE_MARKER).trim())
 
@@ -102,6 +108,7 @@ class DeciderCatalog(
                 engagements = latest.mapNotNull(Engagement::from),
                 comparators = latest.mapNotNull(ComparatorSheet::from).sortedByDescending { it.article.updatedAt },
                 positions = latest.mapNotNull(Position::from),
+                elections = latest.mapNotNull(ElectionCalendar::from).sortedWith(compareBy({ it.firstDay ?: FAR_AWAY }, { it.election.label })),
             )
         }
     }
