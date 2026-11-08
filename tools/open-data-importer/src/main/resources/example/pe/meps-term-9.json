@@ -1,0 +1,37 @@
+{
+ "data": [
+  {
+   "id": "person/990003",
+   "type": "Person",
+   "identifier": "990003",
+   "label": "[EXEMPLE] Solène MARIVAUX",
+   "familyName": "Marivaux",
+   "givenName": "[EXEMPLE] Solène",
+   "sortLabel": "MARIVAUX",
+   "api:country-of-representation": "FR"
+  },
+  {
+   "id": "person/990011",
+   "type": "Person",
+   "identifier": "990011",
+   "label": "[EXEMPLE] Maëlle OURCIVAL",
+   "familyName": "Ourcival",
+   "givenName": "[EXEMPLE] Maëlle",
+   "sortLabel": "OURCIVAL",
+   "api:country-of-representation": "FR"
+  },
+  {
+   "id": "person/990012",
+   "type": "Person",
+   "identifier": "990012",
+   "label": "[EXEMPLE] Noé PRUNIÈRES",
+   "familyName": "Prunières",
+   "givenName": "[EXEMPLE] Noé",
+   "sortLabel": "PRUNIÈRES",
+   "api:country-of-representation": "FR"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

@@ -52,8 +52,11 @@ class ProposeFromTheWallTest {
     private val title = "Un médecin de garde joignable le soir dans chaque canton rural"
 
     private companion object {
-        /** No step of this test waits longer: a stuck one fails fast and says where. */
-        const val MAX_WAIT_MILLIS: Long = 10_000
+        /**
+         * No step of this test waits longer: a stuck one fails and says where. 30 s, as in main (0ae239d), for
+         * the first composition on a loaded machine; nothing here waits on a real network.
+         */
+        const val MAX_WAIT_MILLIS: Long = 30_000
     }
 
     private fun ComposeUiTest.openForm(dependencies: AppDependencies) {
@@ -120,7 +123,7 @@ class ProposeFromTheWallTest {
         assertEquals(1, store.pending().size)
 
         showMine()
-        waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(RevendicationTags.OWN_STATE + "waiting", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+        waitOrDump("the waiting demand in Mes revendications") { onAllNodesWithTag(RevendicationTags.OWN_STATE + "waiting", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithText(title).assertExists()
 
         onNodeWithTag(RevendicationTags.TAB + "tout").performScrollTo().performClick()
@@ -141,7 +144,7 @@ class ProposeFromTheWallTest {
         assertEquals(1, server.held.size)
 
         showMine()
-        waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(RevendicationTags.OWN_STATE + "in_review", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+        waitOrDump("the demand in review in Mes revendications") { onAllNodesWithTag(RevendicationTags.OWN_STATE + "in_review", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithText(title).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(RevendicationTags.OWN_REVIEW).assertExists()

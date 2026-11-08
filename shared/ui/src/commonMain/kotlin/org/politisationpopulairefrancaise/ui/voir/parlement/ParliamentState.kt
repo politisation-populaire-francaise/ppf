@@ -27,6 +27,7 @@ import org.politisationpopulairefrancaise.ui.resources.Res
 sealed interface ParliamentPage {
     data class OfMember(val id: String) : ParliamentPage
     data class OfBallot(val id: String) : ParliamentPage
+    data object Week : ParliamentPage // « Cette semaine au Parlement » (ParliamentWeekScreen.kt)
 }
 
 /**
@@ -72,6 +73,9 @@ class ParliamentState(
     var groupFilter: String? by mutableStateOf(null)
 
     val today get() = repository.today
+
+    /** « Cette semaine au Parlement », attached by rememberParliamentWeekState (ParliamentWeekState.kt). */
+    var week: ParliamentWeekState? = null
 
     /** Opens the screen on its list; the index is asked again on each opening. */
     fun open() {

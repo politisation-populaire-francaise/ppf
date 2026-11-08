@@ -1,0 +1,59 @@
+{
+ "data": [
+  {
+   "id": "person/990011",
+   "type": "Person",
+   "identifier": "990011",
+   "label": "[EXEMPLE] Maëlle OURCIVAL",
+   "familyName": "Ourcival",
+   "givenName": "[EXEMPLE] Maëlle",
+   "bday": "1970-01-01",
+   "placeOfBirth": "[EXEMPLE] Ville fictive",
+   "hasEmail": "mailto:exemple@example.invalid",
+   "hasMembership": [
+    {
+     "id": "membership/990011-1",
+     "type": "Membership",
+     "identifier": "990011-1",
+     "membershipClassification": "def/ep-entities/EU_POLITICAL_GROUP",
+     "organization": "org/990201",
+     "memberDuring": {
+      "type": "PeriodOfTime",
+      "startDate": "2019-07-02",
+      "endDate": "2024-07-15"
+     },
+     "role": "def/ep-roles/MEMBER"
+    },
+    {
+     "id": "membership/990011-2",
+     "type": "Membership",
+     "identifier": "990011-2",
+     "membershipClassification": "def/ep-entities/NATIONAL_POLITICAL_GROUP",
+     "organization": "org/990101",
+     "memberDuring": {
+      "type": "PeriodOfTime",
+      "startDate": "2019-07-02",
+      "endDate": "2021-01-31"
+     },
+     "role": "def/ep-roles/MEMBER"
+    },
+    {
+     "id": "membership/990011-3",
+     "type": "Membership",
+     "identifier": "990011-3",
+     "membershipClassification": "def/ep-entities/NATIONAL_POLITICAL_GROUP",
+     "organization": "org/990102",
+     "memberDuring": {
+      "type": "PeriodOfTime",
+      "startDate": "2021-02-01",
+      "endDate": "2024-07-15"
+     },
+     "role": "def/ep-roles/MEMBER"
+    }
+   ]
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

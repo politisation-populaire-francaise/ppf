@@ -1,0 +1,13 @@
+{
+ "organe": {
+  "uid": "PO910101",
+  "codeType": "GP",
+  "libelle": "[EXEMPLE] Groupe des Collines",
+  "libelleAbrev": "GCO",
+  "viMoDe": {
+   "dateDebut": "2012-06-20",
+   "dateFin": null
+  },
+  "couleurAssociee": "#123456"
+ }
+}

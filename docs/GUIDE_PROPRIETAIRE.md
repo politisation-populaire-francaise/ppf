@@ -270,6 +270,16 @@ Tout est fictif et marqué [EXEMPLE] : 12 députés, 4 sénateurs, 3 eurodéput�
 4. Ouvrez un scrutin : le résultat, le décompte et le tableau par groupe.
 5. Ouvrez un sénateur : « Votes du Sénat : bientôt », avec le lien vers sa page officielle (après la mise en garde « Vous quittez PPF »).
 
+### Tester « Cette semaine au Parlement » (ajouté le 7 novembre 2026)
+
+Tout est fictif et marqué [EXEMPLE] : quelques séances de l'Assemblée nationale, du Sénat et du Parlement européen sur les quinze jours qui suivent l'import d'exemple.
+
+1. Ouvrez **En direct** : un bloc « Cette semaine au Parlement » montre les quatre prochains points (heure, assemblée, objet). Touchez **Voir toute la semaine**.
+2. La page présente un jour après l'autre (les jours passés sont masqués). Filtrez par assemblée : Assemblée nationale, Sénat, Parlement européen.
+3. Chaque point indique l'heure, le type de réunion, l'objet et, quand la source le dit, son état (« Confirmé », « Prévisionnel », « Annulé ») en badge neutre.
+4. Touchez un lien officiel (dossier législatif, ordre du jour) : la fenêtre « Vous quittez PPF » s'ouvre d'abord. Essayez aussi « Qui décide de ça ? » (espace Comprendre) et « Interpeller mes élus » (espace Décider).
+5. La même page s'ouvre depuis **Voir**, onglet **Le pouvoir**, carte **Tous les parlementaires et leurs votes**, puis, sous la liste, la carte « Cette semaine au Parlement » et son bouton **Voir l'ordre du jour**.
+
 ### Tester l'espace « Voir » (ajouté le 6 novembre 2026, tard le soir)
 
 Tout ce que vous verrez est inventé et marqué [EXEMPLE] : personnes, pays, organisations et chiffres. Aucun compte n'est nécessaire, et tout marche sans réseau.

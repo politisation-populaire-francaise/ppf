@@ -95,6 +95,8 @@ fun EnDirectScreen(
     modifier: Modifier = Modifier,
     onNavigate: (Space) -> Unit = {},
     upcoming: (@Composable (Modifier) -> Unit)? = null,
+    /** « Cette semaine au Parlement » (VO-31), filled by `ParliamentWeekSlot`; nothing when null. */
+    parliamentWeek: (@Composable (Modifier) -> Unit)? = null,
     now: () -> Long = ::currentEpochSeconds,
 ) {
     val catalog = library.voir
@@ -224,6 +226,7 @@ fun EnDirectScreen(
                         liveBlock()
                         headlineBlock()
                         upcomingBlock()
+                        parliamentWeek?.invoke(Modifier.fillMaxWidth())
                         newsBlock()
                     }
                 }
@@ -234,6 +237,7 @@ fun EnDirectScreen(
                     alertsBlock()
                     figuresBlock()
                     upcomingBlock()
+                    parliamentWeek?.invoke(Modifier.fillMaxWidth())
                     headlineBlock()
                     newsBlock()
                     chronologyBlock()

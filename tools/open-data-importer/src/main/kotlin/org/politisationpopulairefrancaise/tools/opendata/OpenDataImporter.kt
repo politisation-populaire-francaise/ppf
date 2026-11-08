@@ -10,11 +10,14 @@ import kotlin.system.exitProcess
  * The importer of parliamentary open data (D-064). One run, then it stops (no loop: the systemd
  * timer starts it again).
  *
- *     java -jar ppf-open-data-importer.jar [--source example|official] [--only an,senat,pe] --out <dir> --key <nsec file>
+ *     java -jar ppf-open-data-importer.jar [--source example|official] [--only an,senat,pe] [--history] --out <dir> --key <nsec file>
  *
  * - `--source` (or `PPF_OPEN_DATA_SOURCE`): `example` (default) reads the fictional files bundled
  *   with the importer; `official` downloads the files of the institutions (production only).
- * - `--only`: the sources to refresh (default all); the others are kept from the previous set.
+ * - `--only`: the sources to refresh, among `an,senat,pe` (daily) and `an-history,senat-history,pe-history`
+ *   (history of the ballots); the others are kept from the previous set. Default: every daily
+ *   source, plus the history in `example` mode only.
+ * - `--history` (no value): the three history sources (with the daily sources listed by `--only`, if any).
  * - `--out` (or `PPF_OPEN_DATA_DIR`): the folder of the packages, served read-only by the server.
  * - `--key` (or `PPF_IMPORT_KEY_FILE`): the file holding the import key (`nsec1…`), out of the repository.
  *
@@ -33,17 +36,26 @@ data class Options(
     val keyFile: Path,
     /** Official files already on disk (`amo10/`, `scrutins/`, `dossiers/`, `senat/`), read instead of downloaded. */
     val from: Path? = null,
+    /** The history sources to rebuild. */
+    val history: Set<HistorySourceId> = emptySet(),
 )
 
-const val USAGE: String = "usage: ppf-open-data-importer [--source example|official] [--only an,senat,pe] [--from <dir>] --out <dir> --key <nsec file>\n" +
+const val USAGE: String = "usage: ppf-open-data-importer [--source example|official] [--only an,senat,pe,an-history,senat-history,pe-history] [--history] [--from <dir>] --out <dir> --key <nsec file>\n" +
     "  environment: PPF_OPEN_DATA_SOURCE, PPF_OPEN_DATA_DIR, PPF_IMPORT_KEY_FILE"
 
 /** The options, or the reason they are wrong. */
 fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> = runCatching {
     val values = HashMap<String, String>()
+    var historyFlag = false
     var i = 0
     while (i < args.size) {
         val name = args[i]
+        if (name == "--history") {
+            require(!historyFlag) { "--history given twice" }
+            historyFlag = true
+            i++
+            continue
+        }
         require(name in setOf("--source", "--only", "--out", "--key", "--from")) { "unknown argument $name" }
         require(i + 1 < args.size) { "$name needs a value" }
         require(values.put(name, args[i + 1]) == null) { "$name given twice" }
@@ -54,14 +66,27 @@ fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> 
         "official" -> SourceMode.OFFICIAL
         else -> throw IllegalArgumentException("unknown source $source")
     }
-    val only = values["--only"]?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.map { SourceId.of(it) ?: throw IllegalArgumentException("unknown source id $it") }?.toSet()
-        ?: SourceId.entries.toSet()
-    require(only.isNotEmpty()) { "--only names no source" }
+    val listed = values["--only"]?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.onEach {
+        require(SourceId.of(it) != null || HistorySourceId.of(it) != null) { "unknown source id $it" }
+    }
+    require(listed == null || listed.isNotEmpty()) { "--only names no source" }
+    val only = when {
+        listed != null -> listed.mapNotNull(SourceId::of).toSet()
+        historyFlag -> emptySet()
+        else -> SourceId.entries.toSet()
+    }
+    val history = when {
+        historyFlag -> HistorySourceId.entries.toSet()
+        listed != null -> listed.mapNotNull(HistorySourceId::of).toSet()
+        // The fictional set always holds the history too; the official history is imported apart.
+        mode == SourceMode.EXAMPLE -> HistorySourceId.entries.toSet()
+        else -> emptySet()
+    }
     val out = (values["--out"] ?: env("PPF_OPEN_DATA_DIR")?.takeIf { it.isNotBlank() }) ?: throw IllegalArgumentException("--out (or PPF_OPEN_DATA_DIR) is required")
     val key = (values["--key"] ?: env("PPF_IMPORT_KEY_FILE")?.takeIf { it.isNotBlank() }) ?: throw IllegalArgumentException("--key (or PPF_IMPORT_KEY_FILE) is required")
     val from = values["--from"]?.let { Path.of(it.trim()) }
     require(from == null || mode == SourceMode.OFFICIAL) { "--from reads official files: use it with --source official" }
-    Options(mode, only, Path.of(out.trim()), Path.of(key.trim()), from)
+    Options(mode, only, Path.of(out.trim()), Path.of(key.trim()), from, history)
 }
 
 /** Reads the import key; refuses the example key for official data (it would make real data look fictional, and the reverse). */
@@ -93,7 +118,7 @@ fun runCommandLine(args: List<String>, env: (String) -> String?, sources: ((Sour
             SourceMode.EXAMPLE -> ExampleSources()
             SourceMode.OFFICIAL -> options.from?.let(::LocalOfficialSources) ?: OfficialSources()
         }
-        Importer(chosen, keys, options.out, options.only).run()
+        Importer(chosen, keys, options.out, options.only, options.history).run()
     } catch (e: UnreadableSourceException) {
         System.err.println("unreadable source data: ${e.message}")
         ExitCodes.UNREADABLE_SOURCE

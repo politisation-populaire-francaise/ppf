@@ -1,0 +1,26 @@
+{
+ "acteur": {
+  "uid": {
+   "#text": "PA910099"
+  },
+  "etatCivil": {
+   "ident": {
+    "civ": "M.",
+    "prenom": "[EXEMPLE] Gaston",
+    "nom": "Sénateur"
+   }
+  },
+  "mandats": {
+   "mandat": {
+    "uid": "PM919999",
+    "acteurRef": "PA910099",
+    "typeOrgane": "SENAT",
+    "dateDebut": "2014-10-01",
+    "dateFin": null,
+    "organes": {
+     "organeRef": "PO910400"
+    }
+   }
+  }
+ }
+}
