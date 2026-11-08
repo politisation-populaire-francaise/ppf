@@ -1,6 +1,6 @@
 # Reprise d'un salon resté sans administrateur (M14, S-146) : conception
 
-Pôle Communauté, brouillon 0.1 du 8 novembre 2026, à caler avec le Directeur technique (back-office M15 et service de signature). Décision du chef d'équipe du 8 novembre 2026, par délégation de la propriétaire (« Pour les decisions a prendre, je suis tes recommandations ») : un salon dont le seul administrateur est déclaré compromis peut être repris par l'équipe, **par une action à deux du back-office**. Complète `salons-roles.md` (D-131, D-132) et `compte-compromis.md` (D-134).
+Pôle Communauté, version 0.2 du 8 novembre 2026, calée avec le Directeur technique (réponses du 8 novembre, section 8). Décision du chef d'équipe du 8 novembre 2026, par délégation de la propriétaire (« Pour les decisions a prendre, je suis tes recommandations ») : un salon dont le seul administrateur est déclaré compromis peut être repris par l'équipe, **par une action à deux du back-office**. Complète `salons-roles.md` (D-131, D-132) et `compte-compromis.md` (D-134).
 
 ## 1. Le cas
 
@@ -54,8 +54,14 @@ Un salon public est tenu en public : la reprise doit se voir dans son journal co
 - Menace : une équipe qui s'empare de salons. Parades : seulement des salons sans administrateur, action à deux, motif public, journal d'audit inaltérable (D-124), et trace publique (option A).
 - Menace : un attaquant qui détient l'ancienne clé se fait nommer par un tiers. Parade : la clé compromise ne peut rien publier ; `admin_key` exige une clé qui a écrit dans le salon et un motif ; le successeur n'est jamais nommé automatiquement.
 
-## 8. Questions pour le Directeur technique
+## 8. Réponses du Directeur technique (8 novembre 2026)
 
-1. Option A ou B ? Si A : un usage `groups.takeover` (kind 9000) **automatique** pour le service de signature, puisque la décision humaine à deux a déjà eu lieu dans le back-office, ou un usage humain avec son approbation sur la page du service (soit trois personnes en tout) ? Ma recommandation : A avec un usage automatique, réservé au serveur principal, appelé seulement après l'accord à deux.
-2. Le choix d'un modérateur ou la saisie d'une clé (`admin_key`) dans l'action : le contrat de file prévoit un motif, pas de paramètre. Faut-il un champ de plus dans `QueueAction` (liste de choix ou texte), ou une action par modérateur (`admin_moderator_<n>`) ?
-3. Permission : `queue.groups.orphans.decide` pour le rôle `moderator` du back-office, comme `groups.creations` ?
+1. **Option A, usage humain** `groups.takeover` (kind 9000), pas automatique : un usage automatique permettrait à un serveur principal compromis de fabriquer des nominations « par l'équipe de PPF » dans n'importe quel salon. Pas trois personnes pour autant : la personne qui demande dans la file est l'**auteur** du brouillon (`submitDraft(unsigned, GROUPS_TAKEOVER, doubleValidation = false, author = DraftAuthor(compte, clé Nostr))`), une deuxième personne l'approuve sur la page du service de signature (lien `approvalUrl` montré par la file), l'auteur n'approuve jamais (D-142, contrat 1.3) ; puis `draftStatus`, `request`, `status` à la réouverture de l'élément, et le serveur publie seulement si le salon n'a toujours pas d'administrateur (`409 room_has_admin`). Les actions de reprise ne sont donc **pas** `twoPerson` dans le socle ; `leave` (sans signature) l'est. Forme de l'usage (Directeur technique, sur feature/signature-infra) : exactement une étiquette `h`, exactement une `p` avec le rôle `admin`, contenu = le motif (500 caractères au plus), 10 par heure au plus, la clé de la plateforme ne reçoit jamais de rôle, approbation par les membres qui ont `queue.groups.orphans.decide`.
+2. **Champ de choix générique** dans le socle (`QueueAction.choice`, `QueueChoice.OneOf` ou `Text`, `QueueOption`), écrit par Communauté avec l'accord du Directeur technique, additif et sans migration : vérifié par le socle avant l'appel à la file (valeur présente, longueur, motif, option parmi celles du moment), dessiné sans JavaScript, inscrit au journal d'audit ; une action à deux ne porte pas de choix.
+3. `queue.groups.orphans.decide` pour le rôle `moderator` du back-office.
+
+## 9. État
+
+**Fait le 8 novembre 2026 (branche feature/communaute, pas encore compilé)** : table `group_orphan` (migration provisoire `V19__account_recovery.sql`), remplie par `CompromisedAccounts` quand il retire le dernier administrateur d'un salon (et remise en attente si le salon redevient orphelin) ; `server/groups/GroupOrphans.kt` ; file `GroupOrphansQueue` (`groups.orphans`) avec l'action `leave` (à deux, sensible, motif obligatoire) ; permission du rôle `moderator` ; champ de choix du socle et ses tests.
+
+**À faire après l'entrée du contrat 1.3 du service de signature dans `main`** : les trois actions de reprise (`admin_moderator` avec un choix parmi les modérateurs, `admin_successor`, `admin_key` avec une clé saisie), le brouillon 9000, le lien d'approbation, la publication à la réouverture, `409 room_has_admin` côté serveur, et l'affichage « par l'équipe de PPF » dans le journal du salon de l'application.
