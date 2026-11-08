@@ -67,6 +67,9 @@ require '^assets/composeResources/[^/]+/files/carte/fond-france\.pmtiles$' "bund
 require '^assets/composeResources/[^/]+/files/carte/glyphes/regular/0-255\.pbf$' "glyphs of the map labels"
 for abi in arm64-v8a armeabi-v7a; do
     require "^lib/$abi/libsecp256k1-jni\.so$" "libsecp256k1 for $abi"
+    # Anonymous voting (D-110): libsodium, reached through JNA, for every architecture.
+    require "^lib/$abi/libsodium\.so$" "libsodium for $abi"
+    require "^lib/$abi/libjnidispatch\.so$" "JNA dispatch library for $abi"
     require "^lib/$abi/libjniMaplibreNativeC\.so$" "MapLibre Native bindings for $abi"
     require "^lib/$abi/libmaplibre-native-c\.so$" "MapLibre Native engine for $abi"
 done

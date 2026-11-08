@@ -16,7 +16,10 @@ enum class Approvals {
     /** Automatic use: none, and any approval sent is refused. */
     NONE,
 
-    /** One member of the group, or two different ones when the queue asks for the double validation. */
+    /**
+     * One member of the group, or two different ones for a double validation: asked by the queue, and
+     * required by the service itself for the contents that need it ([org.politisationpopulairefrancaise.core.platform.DoubleValidation]).
+     */
     HUMAN,
 }
 
@@ -132,11 +135,14 @@ object SigningPolicies {
         return null
     }
 
-    /** The Pact and the candidates' answers (FORMATS.md, section 4 septies). */
+    /**
+     * The contents of « Décider » (FORMATS.md, section 4 septies): the Pact, the candidates' answers, the
+     * official petitions and the final texts of a deliberation, exactly one `ppf-type` of [SigningUse.PACTE_TYPES].
+     */
     private fun pacte(event: UnsignedEvent): Refusal? {
         frame(event, requireOrigin = true)?.let { return it }
         val type = (single(event, "ppf-type") as? Single.One)?.value
-        if (type != "pacte" && type != "engagement") return Refusal(SigningRefusals.BAD_TAG, "ppf-type")
+        if (type !in SigningUse.PACTE_TYPES) return Refusal(SigningRefusals.BAD_TAG, "ppf-type")
         return null
     }
 

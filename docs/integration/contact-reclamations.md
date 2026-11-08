@@ -52,7 +52,7 @@ Sources : [RGPD sur EUR-Lex](https://eur-lex.europa.eu/legal-content/FR/TXT/?uri
 
 ## 6. Serveur (étape 1)
 
-### Données (migration serveur : le prochain numéro libre au moment de l'entrée dans main ; V13 le 8 novembre 2026, « Comprendre » et « Décider » ayant V12)
+### Données (migration serveur : le prochain numéro libre au moment de l'entrée dans main ; provisoirement V20 dans la branche, « Décider » ayant pris V13 et V14 et « Comprendre » V15 ; numéro définitif à l'entrée)
 
 - `contact_case` : `number` (clé), `type`, `subtype`, `category`, `motif`, `status`, `priority` (`normal`, `high`), `assigned_to` (compte de l'équipe, facultatif), `received_at`, `deadline_at`, `deadline_kind` (`legal` ou `goal`), `extended_at`, `extension_reason`, `decision_at` (date de la décision contestée), `decision_author` (compte de l'équipe auteur de la décision contestée, rempli par l'équipe), `concerns` (compte de l'équipe mis en cause par un dossier `team_member`, rempli par l'équipe), `closed_at`, `legal_hold_reason`, `legal_hold_review_at`, `anonymized_at`, `access_hash`, `case_pubkey`, `last_activity_at`. Jamais d'adresse IP, d'e-mail, de téléphone, d'identifiant d'appareil ni de compte de la personne.
 - `contact_envelope` : `id` (identifiant de l'événement), `case_number`, `direction` (`in` ou `out`), `event` (JSON de l'enveloppe), `received_at`, `team_author` (compte de l'équipe pour `out`, S-108). Une enveloppe n'est jamais modifiée.
@@ -109,7 +109,7 @@ Contrôles d'une enveloppe : type 1059, identifiant et signature valides, une se
 
 ## 11. Étape 1 : ce qui est codé et les écarts (8 novembre 2026)
 
-Codé dans la branche `feature/contact` : code commun `shared/core/.../core/contact/` (numéro, code, dérivations, format `ppf-case`, échéances, preuve de travail, enveloppes, JSON de l'API, boîte d'exemple), serveur `server/.../server/contact/`, migration `V13__contact_cases.sql`, permissions, section « Échanges », durées. Formats détaillés : `docs/FORMATS.md`, section 4 undecies. Précisions et écarts, chacun avec sa raison :
+Codé dans la branche `feature/contact` : code commun `shared/core/.../core/contact/` (numéro, code, dérivations, format `ppf-case`, échéances, preuve de travail, enveloppes, JSON de l'API, boîte d'exemple), serveur `server/.../server/contact/`, migration `V20__contact_cases.sql`, permissions, section « Échanges », durées. Formats détaillés : `docs/FORMATS.md`, section 4 undecies. Précisions et écarts, chacun avec sa raison :
 
 1. **Permission `contact.restricted`** (administrateurs) : c'est elle qui ouvre les réclamations `funds` et `team_member`, « réservées aux administrateurs » ; le socle donne les droits par permission, pas par rôle.
 2. **Archive juridique à deux, tenue par la section** (table `contact_legal_hold_request`) au lieu des demandes à deux du socle (`PendingApprovals`) : celles-ci ne servent qu'aux files, dont l'affichage ne connaît pas le membre qui regarde (impossible d'y cacher un dossier `team_member` au membre mis en cause), et une action de file ne porte qu'un motif, pas de date de réexamen. Les règles du socle sont reprises : deuxième personne différente du demandeur, avec la même permission, clé d'accès vérifiée de nouveau pour les deux, demande périmée après 7 jours, une ligne du journal à chaque étape ; la levée de l'archive suit le même chemin. À reprendre le jour où le socle offrira la validation à deux aux sections.

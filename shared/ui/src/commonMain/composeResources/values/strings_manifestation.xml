@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- M25 "Secours, sécurité et défense en manifestation": the AIDE button and its emergency sheet
+     (AG-27, first version), and the protest mode (AG-13). French, "vous", typographic apostrophe (’),
+     no em dash. Every legal text here is an [EXEMPLE] to be read again by a lawyer before launch. -->
+<resources>
+    <!-- The AIDE button -->
+    <string name="help_button">AIDE</string>
+    <string name="help_button_description">AIDE : urgence, avocat, point de ralliement</string>
+
+    <!-- The emergency sheet -->
+    <string name="help_title">De quoi avez-vous besoin ?</string>
+    <string name="help_close">Fermer</string>
+    <string name="help_back">Retour à l’aide</string>
+    <string name="help_vital_title">Urgence vitale</string>
+    <string name="help_vital_text">PPF ne remplace jamais les secours. Si une vie est en danger, appelez d’abord le 15 ou le 112.</string>
+    <string name="help_call">Appeler le %1$s</string>
+    <string name="help_sms">Envoyer un SMS au %1$s</string>
+    <string name="help_number_samu">SAMU, urgence médicale</string>
+    <string name="help_number_europe">Numéro d’urgence européen, depuis tout pays de l’Union</string>
+    <string name="help_number_police">Police secours</string>
+    <string name="help_number_pompiers">Pompiers</string>
+    <string name="help_number_sourds">Personnes sourdes, malentendantes ou aphasiques, par SMS</string>
+    <string name="help_number_enfance">Enfant en danger, ou inquiétude pour un enfant</string>
+    <string name="help_number_enfant_disparu">Enfant disparu : information et soutien des familles</string>
+    <string name="help_number_victimes">Aide aux victimes, tous les jours de 9 h à 20 h, gratuit</string>
+    <string name="help_number_suicide">Prévention du suicide, pour soi ou pour un proche</string>
+    <string name="help_numbers_source">Numéros vérifiés sur service-public.gouv.fr le 7 novembre 2026.</string>
+    <string name="help_no_dialer">Sur cet appareil, composez le numéro vous-même sur un téléphone.</string>
+
+    <string name="help_lawyer_title">Besoin d’un avocat</string>
+    <string name="help_lawyer_text">Les legal teams et les avocats bénévoles de l’annuaire, ceux de votre territoire d’abord. En garde à vue, vous avez droit à un avocat dès le début.</string>
+    <string name="help_lawyer_none">Aucune legal team ni aucun réseau d’avocats avec un téléphone n’est encore connu de cet appareil.</string>
+    <string name="help_lawyer_call">Appeler %1$s au %2$s</string>
+    <string name="help_lawyer_guide">Lire : que faire en garde à vue</string>
+    <string name="help_lawyer_alert">Alerter un avocat bénévole</string>
+    <string name="help_lawyer_alert_text">Bientôt : la demande partira chiffrée vers les avocats bénévoles certifiés par les organisations partenaires. Elle se prépare avec elles et sera relue par un avocat.</string>
+
+    <string name="help_exit_title">J’ai besoin d’aide pour sortir</string>
+    <string name="help_exit_text">Bientôt : des bénévoles formés pourront vous guider vers une sortie ouverte. Cette fonction se prépare avec les organisations expérimentées, elle n’arrivera que lorsqu’elle sera sûre.</string>
+    <string name="help_medics_title">Alerter les street medics</string>
+    <string name="help_medics_text">Bientôt : votre alerte partira chiffrée vers les seuls street medics certifiés proches de vous. Elle demande des secouristes certifiés en personne : elle se prépare avec les organisations de street medics. En attendant, appelez le 15 ou le 112.</string>
+    <string name="help_soon_badge">Bientôt</string>
+    <string name="help_soon_state">Pas encore disponible</string>
+
+    <string name="help_rally_title">Mon point de ralliement</string>
+    <string name="help_rally_text">Un lieu convenu à l’avance pour retrouver vos proches ou un enfant perdu. Il reste sur cet appareil, il n’est envoyé nulle part.</string>
+    <string name="help_rally_empty">Aucun point de ralliement noté.</string>
+    <string name="help_rally_add">Noter un point de ralliement</string>
+    <string name="help_rally_edit">Modifier</string>
+    <string name="help_rally_clear">Effacer</string>
+    <string name="help_rally_place">Lieu</string>
+    <string name="help_rally_place_hint">Par exemple : devant la pharmacie de la place</string>
+    <string name="help_rally_details">Précisions (heure, qui attendre…)</string>
+    <string name="help_rally_save">Enregistrer sur cet appareil</string>
+    <string name="help_rally_cancel">Annuler</string>
+    <string name="help_rally_saved">Point de ralliement enregistré sur cet appareil.</string>
+    <string name="help_rally_unavailable">Cet appareil ne peut pas garder de point de ralliement : notez-le sur papier.</string>
+
+    <string name="help_guide_missing">Cette fiche n’est pas encore sur cet appareil. Elle arrivera avec les contenus de l’application.</string>
+
+    <!-- The protest mode (AG-13) -->
+    <string name="manif_title">Mode manifestation</string>
+    <string name="manif_intro">Préparez votre manifestation avant de partir : tout ce qui est ici reste lisible sans réseau et sans compte. Sur place, le bouton AIDE est toujours à portée de main.</string>
+    <string name="manif_example_title">[EXEMPLE] Textes à relire par un avocat</string>
+    <string name="manif_example_text">Ces conseils sont des brouillons de démonstration, préparés avec l’aide d’une IA. Ils seront relus par un avocat et construits avec les organisations existantes avant le lancement.</string>
+    <string name="manif_open_help">Ouvrir l’AIDE</string>
+
+    <string name="manif_checklist_title">Avant de partir</string>
+    <string name="manif_checklist_text">[EXEMPLE] Cochez au fur et à mesure. Rien n’est enregistré.</string>
+    <string name="manif_check_1">Noter sur papier, ou sur le bras, le numéro de la legal team et celui d’un proche.</string>
+    <string name="manif_check_2">Convenir d’un point de ralliement avec vos proches.</string>
+    <string name="manif_check_3">Prévenir un proche : où vous allez, avec qui, quand vous pensez rentrer.</string>
+    <string name="manif_check_4">Charger votre téléphone, prendre une batterie de secours.</string>
+    <string name="manif_check_5">Prendre de l’eau, de quoi manger, vos médicaments, une pièce d’identité.</string>
+    <string name="manif_check_6">Lunettes plutôt que lentilles de contact ; sérum physiologique.</string>
+    <string name="manif_check_7">Des vêtements couvrants et des chaussures confortables.</string>
+    <string name="manif_check_8">Repérer le parcours, les sorties et les postes de secours.</string>
+    <string name="manif_check_9">Relire vos droits en cas de contrôle ou d’interpellation.</string>
+    <string name="manif_check_10">Vous former aux gestes de premiers secours (PSC1) quand vous le pouvez.</string>
+    <string name="manif_check_state_done">Fait</string>
+    <string name="manif_check_state_todo">À faire</string>
+
+    <string name="manif_rights_title">Vos droits</string>
+    <string name="manif_rights_text">Les fiches pratiques de l’espace « Comprendre », lisibles hors ligne.</string>
+    <string name="manif_guide_missing_short">pas encore sur cet appareil</string>
+
+    <string name="manif_numbers_title">Numéros utiles</string>
+    <string name="manif_numbers_other">Autres numéros</string>
+
+    <string name="manif_legal_title">Legal team et avocats près de chez vous</string>
+    <string name="manif_territory_label">Votre commune, département ou code postal</string>
+    <string name="manif_territory_hint">Il reste sur cet appareil, en mémoire seulement.</string>
+
+    <string name="manif_phone_title">Sécurité de votre téléphone</string>
+    <string name="manif_phone_1">[EXEMPLE] Verrouillez votre téléphone par un code et vérifiez que son chiffrement est activé.</string>
+    <string name="manif_phone_2">[EXEMPLE] Laissez à la maison ce dont vous n’avez pas besoin : photos personnelles, comptes sensibles.</string>
+    <string name="manif_phone_3">[EXEMPLE] Avant de partager une photo, floutez les visages des autres manifestants.</string>
+    <string name="manif_phone_soon">Bientôt dans l’application : verrouillage de PPF, effacement rapide et application discrète.</string>
+
+    <string name="manif_injury_title">Après une blessure</string>
+    <string name="manif_injury_text">Certificat médical, plainte, saisine de l’IGPN, de l’IGGN ou du Défenseur des droits, associations d’aide aux victimes.</string>
+    <string name="manif_injury_open">Lire la fiche « Après une blessure en manifestation »</string>
+    <string name="manif_testify">Vous pouvez aussi témoigner, par le canal sécurisé de la rubrique « Témoigner ».</string>
+</resources>

@@ -53,6 +53,17 @@ kotlin {
             implementation(libs.androidx.activity.compose)
             implementation(libs.maplibre.compose)
             runtimeOnly(libs.maplibre.compose.runtime.opengl.android)
+            // QR codes (components/qr): ZXing draws and reads them, CameraX shows the camera of « Valider une
+            // personne » (permission asked only there). Never ML Kit.
+            implementation(libs.zxing.core)
+            implementation(libs.androidx.camera.core)
+            implementation(libs.androidx.camera.camera2)
+            implementation(libs.androidx.camera.lifecycle)
+            implementation(libs.androidx.camera.view)
+        }
+        // On the computer, QR codes are drawn (ZXing); reading one needs a phone's camera.
+        jvmMain.dependencies {
+            implementation(libs.zxing.core)
         }
         commonTest.dependencies {
             implementation(kotlin("test"))

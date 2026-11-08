@@ -1,0 +1,111 @@
+{
+ "acteur": {
+  "uid": {
+   "@xsi:type": "IdActeur_type",
+   "#text": "PA910006"
+  },
+  "etatCivil": {
+   "ident": {
+    "civ": "M.",
+    "prenom": "[EXEMPLE] Firmin",
+    "nom": "Aubrac",
+    "alpha": "Aubrac"
+   },
+   "infoNaissance": {
+    "dateNais": "1970-01-01",
+    "villeNais": "[EXEMPLE] Ville fictive"
+   }
+  },
+  "profession": {
+   "libelleCourant": "[EXEMPLE] Profession fictive"
+  },
+  "adresses": {
+   "adresse": {
+    "@xsi:type": "AdresseMail_type",
+    "valElec": "exemple@example.invalid"
+   }
+  },
+  "mandats": {
+   "mandat": [
+    {
+     "@xsi:type": "MandatParlementaire_type",
+     "uid": "PM9114006",
+     "acteurRef": "PA910006",
+     "legislature": "14",
+     "typeOrgane": "ASSEMBLEE",
+     "dateDebut": "2012-06-20",
+     "datePublication": "2012-06-20",
+     "dateFin": "2017-06-20",
+     "mandature": {
+      "datePriseFonction": "2012-06-20",
+      "causeFin": null,
+      "placeHemicycle": "306",
+      "mandatRemplaceRef": null
+     },
+     "infosQualite": {
+      "codeQualite": "membre",
+      "libQualite": "membre"
+     },
+     "organes": {
+      "organeRef": "PO910000"
+     },
+     "election": {
+      "lieu": {
+       "region": "[EXEMPLE]",
+       "departement": "[EXEMPLE] Département",
+       "numDepartement": "29",
+       "numCirco": "6"
+      }
+     },
+     "collaborateurs": {
+      "collaborateur": {
+       "qualite": "M.",
+       "prenom": "[EXEMPLE] Collaborateur",
+       "nom": "Fictif"
+      }
+     }
+    },
+    {
+     "@xsi:type": "MandatSimple_type",
+     "uid": "PM920061",
+     "acteurRef": "PA910006",
+     "legislature": null,
+     "typeOrgane": "GP",
+     "dateDebut": "2012-06-26",
+     "dateFin": "2017-06-20",
+     "infosQualite": {
+      "codeQualite": "Membre"
+     },
+     "organes": {
+      "organeRef": "PO910102"
+     }
+    },
+    {
+     "@xsi:type": "MandatSimple_type",
+     "uid": "PM930061",
+     "acteurRef": "PA910006",
+     "legislature": null,
+     "typeOrgane": "PARPOL",
+     "dateDebut": "2012-12-01",
+     "dateFin": "2017-06-20",
+     "infosQualite": {
+      "codeQualite": "Membre"
+     },
+     "organes": {
+      "organeRef": "PO910202"
+     }
+    },
+    {
+     "uid": "PM94006",
+     "acteurRef": "PA910006",
+     "typeOrgane": "COMPER",
+     "dateDebut": "2012-07-01",
+     "dateFin": null,
+     "organes": {
+      "organeRef": "PO910301"
+     }
+    }
+   ]
+  }
+ }
+}

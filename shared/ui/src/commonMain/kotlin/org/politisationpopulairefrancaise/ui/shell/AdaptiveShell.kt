@@ -39,6 +39,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
@@ -67,7 +68,9 @@ import org.politisationpopulairefrancaise.ui.endirect.EnDirectScreen
 import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.VoirScreen
 import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentState
+import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentWeekSlot
 import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentState
+import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentWeekState
 import org.politisationpopulairefrancaise.ui.voir.rememberVoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.VoirState
 import org.politisationpopulairefrancaise.ui.voir.rememberVoirState
@@ -88,6 +91,10 @@ import org.politisationpopulairefrancaise.ui.agir.agenda.rememberAgendaLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.rememberTestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsLibrary
+import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpButton
+import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpSheetHost
+import org.politisationpopulairefrancaise.ui.agir.manifestation.ProvideHelp
+import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
 import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
@@ -129,6 +136,9 @@ import org.politisationpopulairefrancaise.ui.decider.DeciderScreen
 import org.politisationpopulairefrancaise.ui.decider.DeciderState
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.ui.urne.LocalVoting
+import org.politisationpopulairefrancaise.ui.urne.RunVoting
+import org.politisationpopulairefrancaise.ui.urne.rememberVotingState
 
 /** Test tags, also useful for accessibility tooling. */
 object ShellTags {
@@ -174,9 +184,14 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // Started when their screens are first shown, as the rooms are: nothing is loaded before.
     val agendaLibrary = rememberAgendaLibrary(dependencies, start = false)
     val callsLibrary = rememberCallsLibrary(dependencies, start = false)
+    // Anonymous voting (D-110): the boxes, the tokens and the choices of the device, kept for the whole run.
+    val voting = rememberVotingState(dependencies)
     val testimonyLibrary = rememberTestimonyLibrary(dependencies, start = false)
+    // The AIDE button (M25, AG-27): its emergency sheet over every screen, its rally point on the device.
+    val help = rememberHelpState(dependencies, organisationsLibrary, contentLibrary)
     // Erasing the keys also forgets the followed accounts, the conversations and the joined rooms (protection by default).
     val accountSession = rememberAccountSession(dependencies.identityStore, onSignOut = {
+        voting.forget()
         contentLibrary.clearFollowed()
         messaging.forgetAll()
         groupsLibrary.clearMemberships()
@@ -190,6 +205,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val voirState = rememberVoirState(dependencies)
     // Its parliamentary open data (D-065): the open page and the filters survive a visit elsewhere too.
     val parliamentState = rememberParliamentState(dependencies)
+    // « Cette semaine au Parlement » (VO-31), attached to it: shown in its screen and in « En direct ».
+    rememberParliamentWeekState(dependencies, parliamentState, contentLibrary, voirState) { selected = it }
     // Its requests to the editorial team: drafts and anonymous reports waiting for a server.
     val voirRequests = rememberVoirRequestSession(dependencies, messaging)
     // "Décider": the open page and the follows survive a visit to another space.
@@ -197,6 +214,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The form to propose a demand: its draft survives a visit to another space (to create an account, for example).
     val proposalComposer = remember(dependencies) { ProposalComposer(dependencies.contentStore, dependencies.remote) }
     val accountKey = (accountSession.state as? AccountUiState.Ready)?.publicKey?.hex
+    // Its two tasks, apart from each other: tokens with the account, ballots without it.
+    RunVoting(voting, accountSession, dependencies.dataSaver)
     LaunchedEffect(accountKey) {
         contentLibrary.setAccount(accountKey)
         callsLibrary.setAccount(accountKey)
@@ -219,7 +238,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The system's back leads from any space to the feed; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideGlossary(glossary) {
+    ProvideGlossary(glossary) { ProvideHelp(help) { CompositionLocalProvider(LocalVoting provides voting) {
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
             val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
             val account = accountSession.state as? AccountUiState.Ready
@@ -253,8 +272,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, content)
                 WindowWidthClass.EXPANDED -> ExpandedShell(selected, navigate, account, content)
             }
+            HelpSheetHost(help)
         }
-    }
+    } } }
 }
 
 @Composable
@@ -293,6 +313,7 @@ private fun SpaceContent(
                     onNavigate(Space.CARTE)
                 }
             },
+            parliamentWeek = { slotModifier -> ParliamentWeekSlot(parliamentState, slotModifier) },
         )
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate, requests = voirRequests, parliament = parliamentState)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)
@@ -450,6 +471,7 @@ private fun MediumShell(
                 containerColor = palette.surface0,
                 contentColor = palette.inkMuted,
                 modifier = Modifier.testTag(ShellTags.NAV_RAIL).verticalScroll(rememberScrollState()),
+                header = { HelpButton(Modifier.padding(top = 8.dp).width(68.dp), stacked = true) },
             ) {
                 Spacer(Modifier.height(8.dp))
                 quickAccessSections.forEach { section -> RailItem(section, selected, onSelect) }
@@ -505,6 +527,7 @@ private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifi
     val palette = PpfTheme.palette
     Column(modifier.background(palette.surface0)) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
+            HelpButton(Modifier.padding(bottom = 12.dp), fullWidth = true)
             quickAccessSections.forEach { section ->
                 NavRow(section.icon, stringResource(section.title), section.space == selected, { onSelect(section.space) }, Modifier.testTag(ShellTags.navItem(section.space)))
                 Spacer(Modifier.height(4.dp))
@@ -576,6 +599,10 @@ private fun TopBar(
                 PpfIconButton(Lucide.Menu, stringResource(Res.string.action_open_menu), onMenu, Modifier.testTag(ShellTags.MENU_BUTTON), tint = palette.ink)
             }
             Wordmark(Modifier.weight(1f).padding(start = if (onMenu != null) 4.dp else 8.dp))
+            // Phones (the bar with the menu): the AIDE button sits in the top bar, where it never
+            // covers a list, a composer or its send button; tablets and computers have it in the rail
+            // and the side bar.
+            if (onMenu != null) HelpButton(Modifier.padding(horizontal = 4.dp), compact = true)
             PpfIconButton(Lucide.Search, stringResource(Res.string.action_search_soon), onClick = { }, enabled = false)
             PpfIconButton(Lucide.Bell, stringResource(Res.string.action_notifications_soon), onClick = { }, enabled = false)
             AvatarButton(account, mySpaceSelected, onMySpace)

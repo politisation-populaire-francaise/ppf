@@ -16,6 +16,10 @@ class DeciderCatalog(
     val petitions: List<Petition>,
     val pactes: List<Pacte>,
     val engagements: List<Engagement>,
+    /** The comparators of the elections (DE-16), the most recent first. */
+    val comparators: List<ComparatorSheet> = emptyList(),
+    /** Every position published for a comparator. */
+    val positions: List<Position> = emptyList(),
 ) {
     val isEmpty: Boolean get() = petitions.isEmpty() && pactes.isEmpty()
 
@@ -29,6 +33,10 @@ class DeciderCatalog(
     /** The closed petitions, the most recently opened first: what they obtained stays visible. */
     fun closedPetitions(today: CivilDate): List<Petition> = petitions.filterNot { it.isOpen(today) }
         .sortedWith(compareByDescending<Petition> { it.openedOn ?: FAR_PAST }.thenBy { sortKey(it.title) })
+
+    /** The open official petition that carries a demand of the wall (D-115), if any. */
+    fun openPetitionFor(demand: ContentAddress, today: CivilDate): Petition? =
+        petitions.filter { demand in it.demands && it.isOpen(today) }.maxByOrNull { it.openedOn ?: FAR_PAST }
 
     /** The petitions about a bill of "Voir". */
     fun petitionsOn(text: ContentAddress): List<Petition> = petitions.filter { text in it.texts }
@@ -46,6 +54,13 @@ class DeciderCatalog(
         followUps = voir.facts.mapNotNull(PacteFollowUps::of),
         today = today,
     )
+
+    /** The comparator to show: the most recent one. */
+    fun currentComparator(): ComparatorSheet? = comparators.firstOrNull()
+
+    /** The grid of a comparator, candidates by themes, with the names of "Voir". */
+    fun grid(sheet: ComparatorSheet, voir: VoirCatalog): ComparatorGrid =
+        ComparatorGrid.build(sheet, positions, nameOf = { voir.person(it)?.name })
 
     /** The pacts a candidate was sent, with their line in the table. */
     fun pactesOf(candidate: ContentAddress): List<Pacte> = pactes.filter { candidate in it.candidates }
@@ -67,7 +82,7 @@ class DeciderCatalog(
         val EMPTY: DeciderCatalog = DeciderCatalog(emptyList(), emptyList(), emptyList())
 
         /** The editorial types read here, to ask the local copy for them. */
-        val TYPES: List<ArticleType> = listOf(ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT)
+        val TYPES: List<ArticleType> = listOf(ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION)
 
         private fun sortKey(title: String): String = FrenchText.fold(title.removePrefix(VoirCatalog.EXAMPLE_MARKER).trim())
 
@@ -85,6 +100,8 @@ class DeciderCatalog(
                         .thenByDescending { it.article.updatedAt },
                 ),
                 engagements = latest.mapNotNull(Engagement::from),
+                comparators = latest.mapNotNull(ComparatorSheet::from).sortedByDescending { it.article.updatedAt },
+                positions = latest.mapNotNull(Position::from),
             )
         }
     }

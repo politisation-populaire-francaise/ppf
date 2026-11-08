@@ -56,6 +56,10 @@ enum class ArticleType(val tagValue: String) {
     PACTE("pacte"),
     /** The answer of one candidate to a pact: signed or refused, measure by measure, with its archive. */
     ENGAGEMENT("engagement"),
+    /** The comparator of an election (DE-16): its candidates and its themes, the same for all. */
+    COMPARATEUR("comparateur"),
+    /** The position of one candidate on one theme of a comparator: a summary, a quotation, its source. */
+    POSITION("position"),
 
     /** A political party of "Voir" (axis of power), read by core.voir.PoliticalParty; persons and facts link to it. */
     PARTI("parti"),

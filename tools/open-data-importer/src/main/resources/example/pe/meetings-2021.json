@@ -1,0 +1,14 @@
+{
+ "data": [
+  {
+   "id": "eli/dl/event/MTG-PL-2021-03-10",
+   "type": "Activity",
+   "activity_id": "MTG-PL-2021-03-10",
+   "had_activity_type": "def/ep-activities/PLENARY_SITTING",
+   "activity_date": "2021-03-10"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

@@ -1,0 +1,13 @@
+{
+ "organe": {
+  "uid": "PO910202",
+  "codeType": "PARPOL",
+  "libelle": "[EXEMPLE] Mouvement des Vallées",
+  "libelleAbrev": "MVA",
+  "viMoDe": {
+   "dateDebut": "2012-06-20",
+   "dateFin": null
+  },
+  "couleurAssociee": "#123456"
+ }
+}

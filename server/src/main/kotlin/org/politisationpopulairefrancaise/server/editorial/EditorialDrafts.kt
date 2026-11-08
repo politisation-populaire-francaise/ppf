@@ -49,12 +49,16 @@ class EditorialDraftsPurge(private val drafts: EditorialDrafts) {
         }
 }
 
-/** The states of a draft (docs/integration/circuit-editorial.md, section 4); only [DRAFT] is used before the queue. */
+/**
+ * The states of a draft (docs/integration/circuit-editorial.md, sections 4 and 5). [READY_TO_SIGN] replaces
+ * the « approved » of the design: since the D-129 revision the two-person validation and the signature
+ * happen on the pages of the signing service, the queue only marks the version ready to sign (step 4).
+ */
 enum class DraftStatus(val db: String, val editable: Boolean) {
     DRAFT("draft", true),
     IN_REVIEW("in_review", false),
     CHANGES_REQUESTED("changes_requested", true),
-    APPROVED("approved", false),
+    READY_TO_SIGN("ready_to_sign", false),
     SIGNING("signing", false),
     PUBLISHED("published", false),
     REJECTED("rejected", false),
@@ -62,8 +66,20 @@ enum class DraftStatus(val db: String, val editable: Boolean) {
     SIGNING_REFUSED("signing_refused", false),
     ;
 
+    /** Whether the draft is in the queue `editorial.<space>`. */
+    val queued: Boolean get() = this == IN_REVIEW || this == READY_TO_SIGN
+
     companion object {
         fun of(db: String): DraftStatus = entries.first { it.db == db }
+
+        /** The states that hold the address of the draft (one open draft per slug). */
+        val OPEN: Set<DraftStatus> = setOf(DRAFT, IN_REVIEW, CHANGES_REQUESTED, READY_TO_SIGN, SIGNING, SIGNING_REFUSED)
+
+        /** The finished states, kept [EditorialDrafts.FINISHED_DAYS] days for the traceability of the review. */
+        val FINISHED: Set<DraftStatus> = setOf(PUBLISHED, REJECTED, WITHDRAWN)
+
+        /** The SQL list of [statuses], for the queries (fixed identifiers, never a member's text). */
+        fun sqlList(statuses: Set<DraftStatus>): String = statuses.joinToString(", ") { "'${it.db}'" }
     }
 }
 
@@ -91,6 +107,9 @@ data class EditorialDraft(
     val createdAt: Instant,
     val updatedAt: Instant,
     val latestVersion: Int,
+    /** The version sent to review, if any, and when (step 4). */
+    val submittedVersion: Int? = null,
+    val submittedAt: Instant? = null,
 )
 
 /** What one save writes: the front matter entries in order, the body, the change of an update. */
@@ -206,14 +225,23 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
     }
 
     /**
-     * Deletes the drafts never submitted and unchanged for [STALE_DAYS] days, with their versions (section 4
-     * of the design: a draft nobody sent to review is not kept). Returns how many were deleted.
+     * Deletes the drafts never submitted and unchanged for [STALE_DAYS] days, and the finished ones (published,
+     * refused, withdrawn) unchanged for [FINISHED_DAYS] days, with their versions and review decisions (section 4
+     * of the design: a draft nobody sent to review is not kept; a reviewed one is kept two years for the
+     * traceability of the review, then only the journal and the published events remain). Returns how many
+     * were deleted.
      */
     fun purgeStale(): Int = dataSource.connection.use { connection ->
-        connection.prepareStatement("DELETE FROM editorial_draft WHERE status = 'draft' AND submitted_version IS NULL AND updated_at < ?").use { delete ->
-            delete.setInstant(1, clock.nowSeconds().minus(java.time.Duration.ofDays(STALE_DAYS)))
+        val now = clock.nowSeconds()
+        val stale = connection.prepareStatement("DELETE FROM editorial_draft WHERE status = 'draft' AND submitted_version IS NULL AND updated_at < ?").use { delete ->
+            delete.setInstant(1, now.minus(java.time.Duration.ofDays(STALE_DAYS)))
             delete.executeUpdate()
         }
+        val finished = connection.prepareStatement("DELETE FROM editorial_draft WHERE status IN (${DraftStatus.sqlList(DraftStatus.FINISHED)}) AND updated_at < ?").use { delete ->
+            delete.setInstant(1, now.minus(java.time.Duration.ofDays(FINISHED_DAYS)))
+            delete.executeUpdate()
+        }
+        stale + finished
     }
 
     fun find(id: UUID): EditorialDraft? = dataSource.connection.use { find(it, id) }
@@ -242,7 +270,7 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
     /** The slugs of the open drafts of every space and their types (the « other drafts of the batch » of a check). */
     fun openSlugs(): Map<String, ArticleType> = dataSource.connection.use { connection ->
         connection.prepareStatement(
-            "SELECT slug, type FROM editorial_draft WHERE slug IS NOT NULL AND status IN ('draft', 'in_review', 'changes_requested', 'approved', 'signing', 'signing_refused')",
+            "SELECT slug, type FROM editorial_draft WHERE slug IS NOT NULL AND status IN (${DraftStatus.sqlList(DraftStatus.OPEN)})",
         ).use { query ->
             query.executeQuery().use { rows ->
                 buildMap {
@@ -252,13 +280,13 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
         }
     }
 
-    private fun find(connection: Connection, id: UUID, lock: Boolean = false): EditorialDraft? =
+    internal fun find(connection: Connection, id: UUID, lock: Boolean = false): EditorialDraft? =
         connection.prepareStatement("$DRAFT_COLUMNS WHERE id = ?" + if (lock) " FOR UPDATE" else "").use { query ->
             query.setUuid(1, id)
             query.executeQuery().use { rows -> if (rows.next()) rows.toDraft() else null }
         }
 
-    private fun version(connection: Connection, id: UUID, version: Int): DraftVersion? =
+    internal fun version(connection: Connection, id: UUID, version: Int): DraftVersion? =
         connection.prepareStatement("$VERSION_COLUMNS WHERE draft_id = ? AND version = ?").use { query ->
             query.setUuid(1, id)
             query.setInt(2, version)
@@ -303,6 +331,8 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
         createdAt = requireNotNull(instant("created_at")),
         updatedAt = requireNotNull(instant("updated_at")),
         latestVersion = getInt("latest_version"),
+        submittedVersion = getInt("submitted_version").takeIf { !wasNull() },
+        submittedAt = instant("submitted_at"),
     )
 
     private fun ResultSet.toVersion(): DraftVersion = DraftVersion(
@@ -317,13 +347,16 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
     companion object {
         /** A draft never submitted is deleted after this many days without a change. */
         const val STALE_DAYS: Long = 180
+
+        /** A published, refused or withdrawn draft is deleted after this many days without a change (2 years). */
+        const val FINISHED_DAYS: Long = 730
         const val MAX_BODY: Int = 60_000
         const val MAX_CHANGE_NOTE: Int = 1_000
         private const val UNIQUE_VIOLATION = "23505"
         private val SLUG = Regex("^[a-z0-9][a-z0-9-]{0,99}$")
 
         private const val DRAFT_COLUMNS =
-            "SELECT id, space, type, slug, title, base_event_id, status, author_account, created_at, updated_at, latest_version FROM editorial_draft"
+            "SELECT id, space, type, slug, title, base_event_id, status, author_account, created_at, updated_at, latest_version, submitted_version, submitted_at FROM editorial_draft"
         private const val VERSION_COLUMNS =
             "SELECT draft_id, version, entries::text AS entries, body, change_kind, change_note, written_by, written_at, problems FROM editorial_draft_version"
 

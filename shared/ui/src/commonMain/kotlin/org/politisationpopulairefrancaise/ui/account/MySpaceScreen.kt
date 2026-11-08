@@ -104,6 +104,8 @@ import org.politisationpopulairefrancaise.ui.resources.version_label
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.currentPlatform
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.ui.urne.VoterLevelCard
+import org.politisationpopulairefrancaise.ui.urne.VoteCheckLine
 
 /** Test tags of the account screens. */
 object AccountTags {
@@ -163,6 +165,8 @@ fun MySpaceScreen(
                 color = PpfTheme.palette.inkSubtle,
                 modifier = Modifier.padding(top = 12.dp).testTag(MY_SPACE_VERSION_TAG),
             )
+            // Whether anonymous voting works on this device (self-test of D-110).
+            VoteCheckLine()
         }
     }
 }
@@ -409,6 +413,9 @@ private fun ReadyCards(session: AccountSession, state: AccountUiState.Ready, win
     InfoBox(Lucide.Info) {
         Text(stringResource(Res.string.account_votes_explanation), style = MaterialTheme.typography.bodyMedium)
     }
+
+    // The voter's level, its week, a validation or certification under way (Décider, TE-08).
+    VoterLevelCard()
 
     if (mailbox != null) MailboxCard(mailbox, session)
 

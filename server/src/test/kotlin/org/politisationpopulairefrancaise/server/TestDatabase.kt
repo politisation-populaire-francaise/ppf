@@ -25,7 +25,7 @@ object TestDatabase {
                     "TRUNCATE events, revendication_proposal, held_content, elus_import, elus_staging, territoires_import, " +
                         "testimony_submission, testimony_evidence, testimony_file, published_media, " +
                         "legal_register.content_operation, legal_register.account_pseudonym, legal_register.requisition_answer, " +
-                        "editorial_draft_version, editorial_draft, contact_envelope, contact_legal_hold_request, contact_case CASCADE",
+                        "editorial_review, editorial_draft_version, editorial_draft, contact_envelope, contact_legal_hold_request, contact_case CASCADE",
                 )
             }
         }

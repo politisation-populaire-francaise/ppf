@@ -98,6 +98,24 @@ class VoirScreenTest {
     }
 
     @Test
+    fun everyPublishedSheetOffersItsReferenceToCite() = runComposeUiTest {
+        openVoir(dependencies(), width = 1000, height = 740)
+        onNodeWithTag(VoirTags.card("manifestants-journees")).performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.detail("manifestants-journees")).assertExists()
+        // « Citer ce contenu » (S-144) under the origin of the content; the reference itself is tested in CitationTest.
+        onNodeWithTag(VoirTags.CITE).performScrollTo().assertExists()
+        onNodeWithText("Citer ce contenu").assertExists()
+        onNodeWithTag(VoirTags.BACK).performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.tab(1)).performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.card("dominique-fictif")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(VoirTags.CITE).performScrollTo().assertExists()
+    }
+
+    @Test
     fun followingStaysOnTheDeviceAndAppearsAboveTheTabs() = runComposeUiTest {
         val dependencies = dependencies()
         openVoir(dependencies, width = 1000, height = 740)

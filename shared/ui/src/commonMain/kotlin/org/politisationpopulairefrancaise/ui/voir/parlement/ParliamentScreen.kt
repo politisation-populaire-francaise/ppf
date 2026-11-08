@@ -115,6 +115,7 @@ fun ParliamentScreen(
                         null -> ListPage(state, snapshot, columns, padding)
                         is ParliamentPage.OfMember -> key(page) { MemberPage(state, snapshot, page.id, padding, voirSheetFor) }
                         is ParliamentPage.OfBallot -> key(page) { BallotPage(state, snapshot, page.id, padding) }
+                        ParliamentPage.Week -> key(page) { ParliamentWeekPage(state, padding) }
                     }
                 }
             }
@@ -151,6 +152,7 @@ private fun ListPage(state: ParliamentState, snapshot: ParliamentSnapshot, colum
                 DownloadProblem(state.lastOutcome)
             }
         }
+        state.week?.let { week -> item(key = "week") { ParliamentWeekEntry(week, Modifier.padding(horizontal = padding, vertical = 12.dp).widthIn(max = 720.dp)) } }
         if (!membersHeld || membersRef != null && membersRef.name in snapshot.outdated) {
             item(key = "members-download") {
                 Column(Modifier.padding(horizontal = padding, vertical = 12.dp).widthIn(max = 720.dp)) {

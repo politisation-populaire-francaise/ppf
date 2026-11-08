@@ -939,3 +939,21 @@ a.gloss:hover {
     box-shadow: none;
   }
 }
+
+/* « Citer ce contenu » (S-144): the reference and its CSL-JSON stay within the width of the page. */
+.cite {
+  margin: 1.5rem 0 0;
+}
+
+.cite p {
+  overflow-wrap: anywhere;
+}
+
+.cite pre {
+  margin: 0;
+  padding: 0.75rem;
+  border-radius: var(--radius-md);
+  background: var(--surface-1);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}

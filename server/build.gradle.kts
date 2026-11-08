@@ -67,6 +67,10 @@ dependencies {
     // HTTP client towards the AI model that reads proposed demands (off unless configured). Already
     // in the runtime classpath through shared/core; declared here because the server builds its own client.
     implementation(libs.ktor.client.cio)
+    // RFC 3161 timestamps of the archive batches (D-111): requests and checks of the tokens. The JDK's
+    // own providers do the cryptography; Bouncy Castle is never registered as a provider.
+    implementation(libs.bouncycastle.bcpkix)
+    implementation(libs.bouncycastle.bcprov)
     // Verification of the passkeys and security keys of the team back-office (WebAuthn, D-120).
     implementation(libs.webauthn4j.core)
 

@@ -1,0 +1,7 @@
+"Matricule";"Nom usuel";"Prénom usuel";"Identifiant de l'appartenance";"Code du groupe";"Nom court du groupe";"Date de début d'appartenance";"Date de fin d'appartenance";"Fonction";"Date de début de fonction";"Date de fin de fonction"
+"99101A";"Castagnet";"[EXEMPLE] Hélène";"1";"EXA";"[EXEMPLE] Groupe des Crêtes";"01/10/2004";"";"Membre";"01/10/2004";""
+"99102A";"Daubrée";"[EXEMPLE] Ignace";"2";"EXA";"[EXEMPLE] Groupe des Crêtes";"01/10/2004";"30/06/2018";"Membre";"01/10/2004";"30/06/2018"
+"99102A";"Daubrée";"[EXEMPLE] Ignace";"3";"EXB";"[EXEMPLE] Groupe des Estuaires";"01/07/2018";"";"Membre";"01/07/2018";""
+"99103A";"Escoffier";"[EXEMPLE] Jeanne";"4";"EXB";"[EXEMPLE] Groupe des Estuaires";"01/10/2004";"";"Membre";"01/10/2004";""
+"99104A";"Fabrègue";"[EXEMPLE] Kilian";"5";"EXB";"[EXEMPLE] Groupe des Estuaires";"01/10/2011";"30/09/2020";"Membre";"01/10/2011";"30/09/2020"
+"99105A";"Gaubert";"[EXEMPLE] Léonie";"6";"RASNAG";"[EXEMPLE] Réunion administrative des non-inscrits";"01/10/2020";"";"Membre";"01/10/2020";""
