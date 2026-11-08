@@ -79,3 +79,8 @@ Proposition : pas de condition de répartition. Quand la validation en personne 
 - **Q2. Répartition.** A : aucune condition, en le disant (anonymat). B : une part de comptes vérifiés au second seuil dès que la validation existe.
 - **Q3. Le Pacte.** A : les 5 à 10 mesures les plus soutenues, avec plus de `pour` que de `contre`. B : seulement celles au-dessus du seuil national.
 - **Q4. Les `contre`.** A : affichés et transmis, sans effet sur le seuil (comme les pétitions de l'Assemblée, qui n'ont pas de « contre »). B : ne porter que si les `pour` dépassent aussi les `contre`.
+
+## Réalisation du second seuil (8 novembre 2026)
+
+- Au second seuil, l'équipe dépose la pétition sur le site officiel, puis relie son adresse à la revendication dans la file `decider.petitions` du back-office (administrateurs) ; la pétition relayée (`ppf-type` = `petition`, lien de rôle `revendication`) est signée par la plateforme pour l'usage `decider.pacte` après l'approbation d'un membre sur la page du service de signature, puis publiée telle quelle.
+- La carte montre le lien et épingle la revendication tant que la pétition est ouverte, dès que les applications reconnaissent les clés de la plateforme (étape 6 du contrat du service de signature).
