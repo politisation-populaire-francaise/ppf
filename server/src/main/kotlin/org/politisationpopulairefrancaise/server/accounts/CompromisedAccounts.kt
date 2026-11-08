@@ -126,7 +126,7 @@ class CompromisedAccounts(
             }
         } catch (e: SQLException) {
             // Two notices naming the same successor at the same instant: the unique index decides.
-            if (e.sqlState == EventRepository.UNIQUE_VIOLATION && event.kind == AccountRecovery.NOTICE_KIND) SUCCESSOR_TAKEN else throw e
+            if (e.sqlState == UNIQUE_VIOLATION && event.kind == AccountRecovery.NOTICE_KIND) SUCCESSOR_TAKEN else throw e
         }
         if (event.kind == AccountRecovery.COMMITMENT_KIND && admission == Admission.Stored(StoreOutcome.STORED)) {
             runCatching { stamper.stamp(event) }.onFailure { log.warn("Commitment stamping failed: ${it.javaClass.simpleName}") }
@@ -265,6 +265,9 @@ class CompromisedAccounts(
 
         /** Namespace of the account locks (the two-key form of the advisory locks); "PPFR" in ASCII. */
         private const val LOCK_NAMESPACE: Int = 0x50504652
+
+        /** PostgreSQL SQLSTATE of a unique index violation. */
+        private const val UNIQUE_VIOLATION = "23505"
 
         val COMPROMISED = PublicationPolicy.Decision.Refused(
             403,
