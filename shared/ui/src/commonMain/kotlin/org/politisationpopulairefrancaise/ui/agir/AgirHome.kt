@@ -92,14 +92,18 @@ object AgirRubrics {
     /** The protest mode (AG-13, M25): prepare a protest, offline. */
     val MANIFESTATION = AgirRubric("mode-manifestation", Res.string.agir_protest_mode_title, Res.string.agir_protest_mode_text, Lucide.HandFist)
 
+    /** Solidarity funds (M35, AG-10): opens the solidarity rubric on its funds. */
+    val SOLIDARITY = AgirRubric("solidarite", Res.string.agir_solidarity_title, Res.string.agir_solidarity_text, Lucide.HandHelping)
+
+    /** "Je veux aider" (M35, AG-12): opens the solidarity rubric on the volunteer missions. */
+    val HELP = AgirRubric("aider", Res.string.agir_help_title, Res.string.agir_help_text, Lucide.Heart)
+
     /** What can be opened today. */
-    val available: List<AgirRubric> = listOf(AGENDA, CALLS, TESTIFY, MANIFESTATION, ORGANISATIONS, COLLECTIVES, GUIDES)
+    val available: List<AgirRubric> = listOf(AGENDA, CALLS, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, COLLECTIVES, GUIDES)
 
     /** Planned but not ready: shown honestly, disabled, without any date. */
     val inPreparation: List<AgirRubric> = listOf(
         AgirRubric("secours", Res.string.agir_safety_title, Res.string.agir_safety_text, Lucide.LifeBuoy),
-        AgirRubric("solidarite", Res.string.agir_solidarity_title, Res.string.agir_solidarity_text, Lucide.HandHelping),
-        AgirRubric("aider", Res.string.agir_help_title, Res.string.agir_help_text, Lucide.Heart),
         AgirRubric("materiel", Res.string.agir_material_title, Res.string.agir_material_text, Lucide.Printer),
         AgirRubric("sans-internet", Res.string.agir_offline_title, Res.string.agir_offline_text, Lucide.Bluetooth),
     )
