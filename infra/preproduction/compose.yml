@@ -296,6 +296,19 @@ services:
       - log_connections=off
       - -c
       - log_disconnections=off
+      # No trace that could link accounts to the order of operations (Décider, validations, D-112):
+      # no commit timestamps, no WAL archiving or point-in-time recovery, the smallest WAL; backups are
+      # logical dumps only (infra/scripts/backup.md).
+      - -c
+      - track_commit_timestamp=off
+      - -c
+      - archive_mode=off
+      - -c
+      - wal_level=minimal
+      - -c
+      - max_wal_senders=0
+      - -c
+      - wal_keep_size=0
     shm_size: 64m
     secrets:
       - db_password

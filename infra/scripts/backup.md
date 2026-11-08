@@ -5,3 +5,4 @@
 - Quand : chaque nuit ; conservation 7 jours, 4 semaines, 6 mois.
 - Restauration : testée au moins une fois par trimestre sur la préproduction, procédure écrite dans `docs/GUIDE_PROPRIETAIRE.md`.
 - La préproduction n'est pas sauvegardée : elle ne contient que des données fictives.
+- Jamais d'archivage des journaux de transactions (WAL) ni de restauration à un instant donné : seulement des exports logiques (`pg_dump`), qui ne gardent ni l'ordre des écritures ni les identifiants de transaction (protection du lien entre comptes et séances de validation, « Décider », D-112). Après une restauration, clore les urnes ouvertes et les rouvrir sous un nouvel identifiant (procédure de « Décider »).
