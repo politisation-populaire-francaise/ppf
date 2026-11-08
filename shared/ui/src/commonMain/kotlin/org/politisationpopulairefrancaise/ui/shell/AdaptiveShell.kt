@@ -68,6 +68,7 @@ import org.politisationpopulairefrancaise.ui.endirect.EnDirectScreen
 import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.VoirScreen
 import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentState
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertCodes
 import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentWeekSlot
 import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentState
 import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentWeekState
@@ -289,6 +290,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     navigate(Space.MESSAGES)
                 } else if (entry.target == AccountAlerts.MY_SPACE_TARGET) {
                     navigate(Space.MON_ESPACE)
+                } else if (entry.target == VoteAlertCodes.TARGET) {
+                    // « Mes élus ont voté » (VO-34), in the Parliament of « Voir ».
+                    parliamentState.openMyVotes()
+                    navigate(Space.VOIR)
                 }
             }
             val bell = notificationCenter?.let { center -> Bell(center.unreadCount) { centerOpen = true } }

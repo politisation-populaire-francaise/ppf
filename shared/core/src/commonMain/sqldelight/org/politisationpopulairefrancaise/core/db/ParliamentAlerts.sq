@@ -1,0 +1,73 @@
+-- « Mes élus ont voté » and the followed words (VO-34, D-102; docs/integration/voir-alertes-elus.md).
+-- Everything here stays on the device and is never sent, not even in the optional backup unless it
+-- is encrypted end to end: the followed words and the members of the European Parliament chosen
+-- reveal political interests (GDPR, article 9). Erased by the quick erase (S-44, part « voir-data »).
+-- Added in schema version 17: existing databases get it through migrations/16.sqm (provisional number).
+
+-- The ballots already looked at, dated by their reception on the device (a ballot's own date has no hour).
+CREATE TABLE parliament_ballot_seen (
+    ballot_id TEXT NOT NULL PRIMARY KEY,
+    first_seen_at INTEGER NOT NULL
+);
+
+-- The followed words or phrases, at most 50, compared folded (no accents, no case).
+CREATE TABLE followed_word (
+    folded TEXT NOT NULL PRIMARY KEY,
+    word TEXT NOT NULL,
+    added_at INTEGER NOT NULL
+);
+
+-- The members of the European Parliament the person chose to follow (none by default).
+CREATE TABLE parliament_alert_member (
+    member_id TEXT NOT NULL PRIMARY KEY,
+    added_at INTEGER NOT NULL
+);
+
+-- The settings of the alert, as name and value; a missing row means the default
+-- (« seulement en Wi-Fi » on, no round run yet).
+CREATE TABLE parliament_alert_option (
+    name TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+selectSeen:
+SELECT ballot_id FROM parliament_ballot_seen;
+
+insertSeen:
+INSERT OR IGNORE INTO parliament_ballot_seen(ballot_id, first_seen_at) VALUES (?, ?);
+
+deleteAllSeen:
+DELETE FROM parliament_ballot_seen;
+
+selectWords:
+SELECT word FROM followed_word ORDER BY added_at ASC, folded ASC;
+
+countWords:
+SELECT COUNT(*) FROM followed_word;
+
+insertWord:
+INSERT OR IGNORE INTO followed_word(folded, word, added_at) VALUES (?, ?, ?);
+
+deleteWord:
+DELETE FROM followed_word WHERE folded = ?;
+
+deleteAllWords:
+DELETE FROM followed_word;
+
+selectMembers:
+SELECT member_id FROM parliament_alert_member ORDER BY member_id;
+
+insertMember:
+INSERT OR IGNORE INTO parliament_alert_member(member_id, added_at) VALUES (?, ?);
+
+deleteAllMembers:
+DELETE FROM parliament_alert_member;
+
+selectOption:
+SELECT value FROM parliament_alert_option WHERE name = ?;
+
+saveOption:
+INSERT OR REPLACE INTO parliament_alert_option(name, value) VALUES (?, ?);
+
+deleteAllOptions:
+DELETE FROM parliament_alert_option;

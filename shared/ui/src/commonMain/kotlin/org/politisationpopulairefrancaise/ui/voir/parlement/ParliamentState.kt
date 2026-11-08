@@ -21,6 +21,7 @@ import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentReposito
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentSnapshot
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentStore
 import org.politisationpopulairefrancaise.core.voir.parlement.InMemoryVoteAlertStorage
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertStore
 import org.politisationpopulairefrancaise.core.elus.ElusDirectory
 import org.politisationpopulairefrancaise.core.elus.ElusStore
 import org.politisationpopulairefrancaise.core.elus.InMemoryElusStorage
@@ -101,6 +102,12 @@ class ParliamentState(
         show(ParliamentPage.OfMember(id))
     }
 
+    /** Opens the screen on « Mes élus ont voté » (a notification of VO-34). */
+    fun openMyVotes() {
+        open()
+        show(ParliamentPage.MyVotes)
+    }
+
     fun show(page: ParliamentPage) {
         if (stack.lastOrNull() != page) stack.add(page)
     }
@@ -167,8 +174,8 @@ fun rememberParliamentState(dependencies: AppDependencies): ParliamentState {
     return remember(dependencies) {
         val storage = dependencies.database?.let(::ParliamentStore) ?: InMemoryParliamentStorage()
         val elus = ElusDirectory(dependencies.remote, dependencies.database?.let(::ElusStore) ?: InMemoryElusStorage())
-        // In memory until its local table is numbered (VO-34); the notification source will read the same storage.
-        val myVotes = MyVotesState(InMemoryVoteAlertStorage(), elus, scope)
+        // The same table as the notification source of the platform host (VO-34).
+        val myVotes = MyVotesState(dependencies.database?.let(::VoteAlertStore) ?: InMemoryVoteAlertStorage(), elus, scope)
         ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope, myVotes)
     }
 }

@@ -1,8 +1,12 @@
 package org.politisationpopulairefrancaise.core.voir.parlement
 
+import org.politisationpopulairefrancaise.core.db.PpfDatabase
+import org.politisationpopulairefrancaise.core.elus.ElusDirectory
+import org.politisationpopulairefrancaise.core.elus.ElusStore
 import org.politisationpopulairefrancaise.core.notifications.NotificationCandidate
 import org.politisationpopulairefrancaise.core.notifications.NotificationCategory
 import org.politisationpopulairefrancaise.core.notifications.NotificationSource
+import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.text.FrenchText
 
 /**
@@ -37,6 +41,29 @@ class VoteAlertSource(private val round: VoteAlertRound) : NotificationSource {
     }
 
     companion object {
+        /**
+         * The source as a platform host wires it on its local database: the officials of the commune chosen in
+         * « Mes élus » (device only), the parliamentary open data of the same tables as the screens, the storage
+         * of the page « Mes élus ont voté », and the network as the platform reads it.
+         */
+        fun on(database: PpfDatabase, remote: RemoteEvents?, trust: OpenDataTrust, network: () -> NetworkConditions): VoteAlertSource {
+            val elus = ElusDirectory(remote, ElusStore(database))
+            val round = VoteAlertRound(
+                repository = ParliamentRepository(remote, ParliamentStore(database), trust = trust),
+                storage = VoteAlertStore(database),
+                parliamentarians = { catalog, europeans ->
+                    val mine = runCatching { elus.mine() }.getOrNull()
+                    when {
+                        mine != null -> MyParliamentarians.of(mine.officials, catalog.members(), europeans)
+                        europeans.isNotEmpty() -> MyParliamentarians(emptyList(), emptyList(), europeans.mapNotNull(catalog::member))
+                        else -> null
+                    }
+                },
+                network = network,
+            )
+            return VoteAlertSource(round)
+        }
+
         fun candidatesOf(found: VoteAlertFindings): List<NotificationCandidate> {
             if (found.first || found.isEmpty) return emptyList()
             val votes = if (found.votes.isEmpty()) emptyList() else listOf(
