@@ -68,7 +68,7 @@ Chaque pôle implémente `DeviceErasable` pour ses données et l'inscrit (`depen
 
 | Pôle | Données | État aujourd'hui | À faire |
 |---|---|---|---|
-| Communauté | messages privés (`Messaging.sq`), salons et appartenances (`Groups.sq`), cercles et statuts (à venir) | Oubliés par le chemin d'« Effacer mes clés » (`messaging.forgetAll`, `groupsLibrary.clearMemberships`), lancés sans être attendus | Partie `communaute-…` qui efface ses tables et attend la fin |
+| Communauté | messages privés (`Messaging.sq`), contacts vérifiés (`Contacts.sq`), salons et appartenances (`Groups.sq`), centre et réglages des notifications, inscriptions aux réveils (`Notifications.sq`), cercles et statuts (à venir) | **Fait le 8 novembre 2026** : `core/social/CommunauteDeviceData`, trois parties `communaute-messaging`, `communaute-groups`, `communaute-notifications`, inscrites dans la coquille, attendues et rappelables ; « Effacer mes clés » attend aussi la fin (`forgetAllAndWait`, `clearMembershipsAndWait`) | Cercles et statuts (M28) quand ils existeront ; les avis de compromission des contacts sont des événements publics de la copie locale (partie `core-contents`) ; le serveur oublie une inscription aux réveils sans nouvelles en 30 jours |
 | Décider | jetons de vote, suivis de « Décider », validations en personne | Non effacés | Partie `decider-…` (le serveur ne relie toujours jamais un vote à un compte) |
 | Comprendre | progression des parcours (`Learning.sq`), commune choisie (`elus_commune`) | Non effacés | Partie `comprendre-…` |
 | Voir | suivis de contenus (`ContentFollow.sq`), vues de revendications (`RevendicationView.sq`), données ouvertes du Parlement en cache, brouillons de demandes | Non effacés | Partie `voir-…` |
