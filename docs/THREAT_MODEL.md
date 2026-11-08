@@ -177,6 +177,19 @@ Hôtes sortants de l'outil d'import (production seulement) : data.assemblee-nati
 | Requête d'une application de validateur rejouée ou falsifiée | Signature NIP-98 de la clé de séance vérifiée (après avoir trouvé une séance ouverte pour cette clé), 60 secondes au plus, adresse et méthode signées, empreinte du corps, rejeu refusé, événement daté d'avant le démarrage du serveur refusé ; séance révoquée ou échue refusée aussitôt ; plafond de 40 validations | Vérificateur commun de « Décider » (`core/urne/Nip98.kt`, avec preuve de travail) à la fusion |
 | Lecture par le serveur du lien entre un citoyen et la séance qui l'a validé | Chiffré en NIP-44 vers la clé « audit » dont la clé secrète reste hors ligne chez la propriétaire ; une paire de clés jetable par texte | Aucun |
 
+## Ajout du 7 novembre 2026 : registre légal des contenus publics (D-077)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Saisie, fuite ou piratage d'un fichier « qui a publié quoi » dans un contexte politique | Registre de niveau 1 seulement : données pseudonymes déjà publiques dans les événements signés (clé, identifiants, dates, pseudonymes), jamais d'adresse IP, d'e-mail, de téléphone ni de texte ; un an au plus | Chiffrement du disque et des sauvegardes du serveur (`infra/`) ; le niveau 2 (IP scellée sous clé hors ligne) reste éteint |
+| Le serveur compromis lit ou modifie le registre (profilage des comptes) | Schéma séparé ; le rôle restreint du serveur ne peut qu'ajouter des lignes : ni lecture, ni modification, ni effacement, ni vidage, ni création d'objet ; la date de réception est fixée par la base (aucune ligne antidatée) ; un test le prouve sur PostgreSQL | Audit externe de la séparation (note, section 7.2) |
+| Un membre de l'équipe consulte le registre sans réquisition (curiosité, pression, chantage) | Aucune page ne le lit ; seule la réponse à une réquisition, demandée par un titulaire de `legal.requisition` et validée par une deuxième personne, jamais par elle-même, avec la référence obligatoire ; nouvelle vérification de la clé ; une seule réponse par demande (refusée une deuxième fois par la base) ; chaque réponse inscrite au journal inaltérable | Procédure écrite de vérification des réquisitions (avocat) |
+| Le journal de l'équipe devient lui-même un fichier des personnes visées | Le journal ne garde que la référence et le nombre de lignes, jamais la recherche (clé, contenu, période) ni les lignes ; la recherche quitte la demande après la réponse ou son délai | Aucun |
+| Effacement prématuré du registre pour faire disparaître une trace (manquement à la loi) | Effacement seulement par la fonction `purge`, qui décide avec la date de la base et ne peut rien effacer de plus jeune qu'un an ; le serveur ne peut pas antidater une ligne | Aucun |
+| Publication qui échappe au registre, ou ligne pour un événement refusé | Ligne écrite dans la transaction de l'événement : l'un ne va jamais sans l'autre (test) | Aucun |
+| Le compteur public trahit une enquête en cours | Seulement le nombre de réponses par mois, sans référence, clé ni date plus fine | Avis de l'avocat sur la publication (question 14 de la note) |
+| Un champ d'identité ajouté plus tard fait naître cinq ans de conservation | Rappel écrit dans le code (`LegalRegister`, `Application.module`) et dans D-077 : jamais d'e-mail ni de téléphone, même facultatifs | Vérification à chaque relecture de sécurité |
+
 ## Ajout du 7 novembre 2026 : témoignages et chaîne des médias (M5 : AG-07, AG-08, AG-54)
 
 Détail : `docs/integration/agir-temoignages.md`.

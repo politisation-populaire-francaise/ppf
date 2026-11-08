@@ -60,6 +60,9 @@ import org.politisationpopulairefrancaise.server.groups.OrganisationNames
 import org.politisationpopulairefrancaise.server.push.PushConfig
 import org.politisationpopulairefrancaise.server.push.PushService
 import org.politisationpopulairefrancaise.server.push.pushApi
+import org.politisationpopulairefrancaise.server.legal.LegalRegister
+import org.politisationpopulairefrancaise.server.legal.LegalRegisterPurge
+import org.politisationpopulairefrancaise.server.legal.transparencyApi
 import org.politisationpopulairefrancaise.server.relay.RelayConfig
 import org.politisationpopulairefrancaise.server.relay.WrapRetention
 import org.politisationpopulairefrancaise.server.revendications.AiReviewConfig
@@ -115,6 +118,9 @@ import javax.sql.DataSource
  *   only). Its routes answer only on PPF_BACKOFFICE_PORT (default 8081), never on PORT; see [BackOfficeConfig].
  * - PPF_VAPID_PRIVATE_KEY_FILE, PPF_PUSH_ALLOWED_HOSTS, PPF_PUSH_INTERNAL_URL, PPF_PUBLIC_URL: the push
  *   wake-ups (M31), off unless PPF_VAPID_PRIVATE_KEY_FILE is set, see [PushConfig].
+ *
+ * Legal register (D-077, [LegalRegister]): nothing to configure. Its retention (one year) is fixed in the
+ * database and it is never read but on a judicial requisition approved by two people in the back-office.
  */
 object ServerConfig {
     val port: Int = System.getenv("PORT")?.toIntOrNull() ?: 8080
@@ -136,7 +142,7 @@ fun main() {
             LoggerFactory.getLogger(ExampleSeed::class.java)
                 .warn("Example contents: ${ExampleSeed.DIRECTORY_VARIABLE} is set but no database is configured, no example content loaded.")
         } else {
-            ExampleSeed.load(examples, EventRepository(dataSource))
+            ExampleSeed.load(examples, EventRepository(dataSource, LegalRegister(PublicationPolicy.fromEnvironment()::isEditor)))
         }
     }
     // Checked before the server starts: a back-office under a wrong or plain-http address is refused.
@@ -188,6 +194,15 @@ private val ErrorShield = createApplicationPlugin("ErrorShield") {
  *
  * Privacy rule: no request logging plugin is installed. Client addresses are never
  * written anywhere (cahier des charges, section 5.1).
+ *
+ * Reminders of the legal register (D-077, legal note docs/integration/lcen-conservation-identification.md):
+ * - no IP address (nor port) is ever collected or logged anywhere: neither by Caddy, nor by the server, nor
+ *   by any rate limiting by IP (the limits are per public key and global); this is what makes "nothing
+ *   collected, nothing to keep" hold (décret n° 2021-1362, article 8);
+ * - no e-mail or phone field, even optional, anywhere: it would make five years of retention of civil
+ *   identity (décret n° 2021-1362, article 2);
+ * - the register of level 1 ([LegalRegister]) keeps only pseudonymous data of the public contents, one year;
+ *   level 2 of the note (IP sealed under an offline key) stays off unless a lawyer requires it.
  */
 fun Application.module(
     dataSource: DataSource? = null,
@@ -206,7 +221,8 @@ fun Application.module(
     backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
     push: PushConfig = PushConfig.fromEnvironment(),
 ) {
-    val repository = dataSource?.let(::EventRepository)
+    // Every stored public content enters the legal register, except those of the editorial keys (D-077).
+    val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
     val elusService = dataSource?.let { ElusService.start(this, it, elus, log) }
     // The referential of territories (D-090): the last import served at once, the next ones on schedule.
@@ -229,6 +245,8 @@ fun Application.module(
         // bounds; the task lives and dies with the application.
         WrapRetention(repository, relay).start(this, relay.cleanupInterval, log)
     }
+    // The legal register keeps one year (fixed in the database); its daily purge lives with the application.
+    dataSource?.let { LegalRegisterPurge(it).start(this, LegalRegisterPurge.DEFAULT_INTERVAL, log) }
     // The team back-office (M15): its own port, accounts by invitation, passkeys, journal; the poles
     // register their queues on teamBackOffice.queues (contract docs/integration/back-office.md, section 7).
     val teamBackOffice: BackOffice? = when {
@@ -311,6 +329,7 @@ fun Application.module(
             testimonyApi(testimonySpace, testimonies.config.maxFileBytes)
             elusApi(elusService)
             territoiresApi(territoiresService)
+            transparencyApi(dataSource) // Requisitions answered per month only (D-077).
             agirSpace?.let { agendaPage(it.agendaSource()) }
             tilesRoutes(tiles)
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
