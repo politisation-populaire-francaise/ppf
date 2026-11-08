@@ -10,6 +10,7 @@ import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.social.FollowStore
+import org.politisationpopulairefrancaise.core.urne.UrneRemote
 import org.politisationpopulairefrancaise.core.voir.ContentFollowStore
 import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
 import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataTrust
@@ -46,6 +47,11 @@ class AppDependencies(
      * hosts do not report it yet, so it answers false by default.
      */
     val dataSaver: () -> Boolean = { false },
+    /**
+     * The ballot-box API of the server (D-110), with its two HTTP clients: the one of the account and
+     * a separate anonymous one for the ballots. Null keeps voting unavailable (no server, tests).
+     */
+    val urneRemote: UrneRemote? = null,
     /** Where the lock and the other security settings of the device are kept (S-43, S-45); null keeps them in memory (tests, previews). */
     val securityStorage: DeviceSecurityStorage? = null,
     /**
@@ -69,6 +75,7 @@ class AppDependencies(
             database: PpfDatabase,
             editorialTrust: EditorialTrust = EditorialTrust.bundledExamples(),
             remote: RemoteEvents? = null,
+            urneRemote: UrneRemote? = null,
             openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
             securityStorage: DeviceSecurityStorage? = null,
             closeApplication: (() -> Unit)? = null,
@@ -81,6 +88,7 @@ class AppDependencies(
             followStore = FollowStore(database),
             database = database,
             contentFollowStore = ContentFollowStore(database),
+            urneRemote = urneRemote,
             securityStorage = securityStorage,
             closeApplication = closeApplication,
         )

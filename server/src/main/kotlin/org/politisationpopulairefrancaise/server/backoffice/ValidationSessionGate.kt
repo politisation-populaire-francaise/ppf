@@ -1,10 +1,9 @@
 package org.politisationpopulairefrancaise.server.backoffice
 
-import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.urne.Nip98
+import org.politisationpopulairefrancaise.core.urne.Nip98ReplayGuard
 import java.time.Clock
 import java.time.Instant
-import java.util.Base64
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  * A request of a validator's application, as the server received it. The caller builds [url] from the
@@ -31,9 +30,8 @@ sealed interface SessionRequestCheck {
 
 /**
  * Checks the NIP-98 signature of a request (kind 27235, `u` and `method` tags, `created_at` within
- * 60 seconds, `payload` tag when there is a body) and gives the signing key. Behind an interface because
- * Décider writes the shared implementation (`shared/core/.../core/urne/Nip98.kt`, with proof of work and
- * a replay guard): [MinimalNip98Verifier] is the stand-in of the back-office until that merge.
+ * 60 seconds, `payload` tag when there is a body) and gives the signing key: [Nip98SessionVerifier], over the
+ * shared implementation of the ballot boxes; behind an interface for the tests.
  */
 fun interface SessionRequestVerifier {
     /**
@@ -44,57 +42,48 @@ fun interface SessionRequestVerifier {
 }
 
 /**
- * TO BE REPLACED by `core/urne/Nip98.kt` (Décider) at the merge: the minimum NIP-98 verification needed by
- * the back-office and its tests. Uses the signature code of shared/core ([SignedEvent.verify]); refuses
- * an event seen in the last two minutes (replay), in memory only, and every event dated before [startedAt]
- * (the start of the process: the memory of seen events does not survive a restart).
+ * The NIP-98 verification of the back-office, over the shared implementation of the ballot boxes
+ * (`core/urne/Nip98.kt`): kind 27235, exactly one `u` (the configured origin and the path) and one `method`,
+ * `payload` when there is a body and only then, `created_at` within [maxSkewSeconds]. Two properties of its own:
+ * - the session is looked up by key BEFORE the signature is verified: an unknown key costs no signature check
+ *   (`no_open_session`);
+ * - an event dated before [startedAt] (the start of the process) is refused (`before_start`): the memory of the
+ *   events already seen (`replayed`, two minutes, in memory only) does not survive a restart.
+ * The codes are those of [Nip98.verify] (`missing_authorization`, `malformed_authorization`,
+ * `expired_authorization`, `wrong_url`, `wrong_method`, `wrong_payload`, `invalid_signature`) and the three above.
  */
-class MinimalNip98Verifier(
+class Nip98SessionVerifier(
     private val startedAt: Instant = Instant.now(),
-    private val maxSkewSeconds: Long = MAX_SKEW_SECONDS,
+    private val maxSkewSeconds: Long = Nip98.DEFAULT_MAX_SKEW_SECONDS,
 ) : SessionRequestVerifier {
-    private val seen = ConcurrentHashMap<String, Long>()
+    private val replay = Nip98ReplayGuard(windowSeconds = 2 * maxSkewSeconds + 10)
 
     override fun check(request: SignedSessionRequest, now: Instant, acceptsSigner: (String) -> Boolean): SessionRequestCheck {
-        val header = request.authorization?.trim() ?: return SessionRequestCheck.Refused("missing_authorization")
-        if (!header.startsWith(SCHEME, ignoreCase = true) || header.length > MAX_HEADER_LENGTH) return SessionRequestCheck.Refused("bad_scheme")
-        val json = try {
-            String(Base64.getDecoder().decode(header.substring(SCHEME.length).trim()), Charsets.UTF_8)
-        } catch (e: IllegalArgumentException) {
-            return SessionRequestCheck.Refused("bad_encoding")
+        val seconds = now.epochSecond
+        val result = Nip98.verify(
+            request.authorization?.trim(),
+            { it == request.url },
+            request.method,
+            request.body,
+            seconds,
+            maxSkewSeconds = maxSkewSeconds,
+            acceptsSigner = acceptsSigner,
+        )
+        return when (result) {
+            is Nip98.Result.Invalid -> SessionRequestCheck.Refused(if (result.reason == Nip98.UNKNOWN_SIGNER) NO_OPEN_SESSION else result.reason)
+            is Nip98.Result.Valid -> when {
+                result.createdAt < startedAt.epochSecond -> SessionRequestCheck.Refused(BEFORE_START)
+                !synchronized(replay) { replay.firstUse(result.eventId, seconds) } -> SessionRequestCheck.Refused(REPLAYED)
+                else -> SessionRequestCheck.Signed(result.pubkey, result.eventId)
+            }
         }
-        val event = try {
-            SignedEvent.fromJson(json)
-        } catch (e: Exception) {
-            return SessionRequestCheck.Refused("bad_event")
-        }
-        if (event.kind != KIND) return SessionRequestCheck.Refused("bad_kind")
-        val nowSeconds = now.epochSecond
-        if (event.createdAt < nowSeconds - maxSkewSeconds || event.createdAt > nowSeconds + maxSkewSeconds) return SessionRequestCheck.Refused("stale")
-        if (event.createdAt < startedAt.epochSecond) return SessionRequestCheck.Refused("before_start")
-        if (event.tagValues("u") != listOf(request.url)) return SessionRequestCheck.Refused("bad_url")
-        if (event.tagValues("method").map { it.uppercase() } != listOf(request.method.uppercase())) return SessionRequestCheck.Refused("bad_method")
-        val body = request.body
-        if (body != null && body.isNotEmpty()) {
-            if (event.tagValues("payload") != listOf(Tokens.sha256Hex(body))) return SessionRequestCheck.Refused("bad_payload")
-        }
-        if (!isHexKey(event.pubkey) || !acceptsSigner(event.pubkey)) return SessionRequestCheck.Refused("no_open_session")
-        if (!event.verify()) return SessionRequestCheck.Refused("bad_signature")
-        forgetOlderThan(nowSeconds - 2 * maxSkewSeconds)
-        if (seen.putIfAbsent(event.id, nowSeconds) != null) return SessionRequestCheck.Refused("replayed")
-        return SessionRequestCheck.Signed(event.pubkey, event.id)
-    }
-
-    private fun forgetOlderThan(limit: Long) {
-        if (seen.size < 1_000) return
-        seen.entries.removeIf { it.value < limit }
     }
 
     companion object {
-        const val KIND: Int = 27235
-        const val MAX_SKEW_SECONDS: Long = 60
-        private const val SCHEME = "Nostr "
-        private const val MAX_HEADER_LENGTH = 16_384
+        const val KIND: Int = Nip98.KIND
+        const val NO_OPEN_SESSION: String = "no_open_session"
+        const val BEFORE_START: String = "before_start"
+        const val REPLAYED: String = "replayed"
     }
 }
 
@@ -130,4 +119,8 @@ class ValidationSessionGate(
 
     /** Counts one validation in [session]; false when it is full or no longer usable. */
     fun recordValidation(session: ValidationSession): Boolean = sessions.recordValidation(session.id, clock.instant())
+
+    /** The same inside the transaction of [connection] (Décider writes the validation in it: both or neither). */
+    fun recordValidation(connection: java.sql.Connection, session: ValidationSession): Boolean =
+        sessions.recordValidation(connection, session.id, clock.instant())
 }

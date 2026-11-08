@@ -453,8 +453,6 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : la commune d'une personne dit où elle vit ; elle ne quitte jamais l'appareil, et le serveur sait seulement qu'un appareil a téléchargé la liste d'un département, sans en garder l'adresse IP. Les données réelles n'existent qu'en production.
 - Conséquences : migration serveur `V6__elus.sql` ; variables `PPF_RNE_SOURCE` et `PPF_RNE_REFRESH_DAYS` ; schéma local 11 (`migrations/10.sqm`) ; formats dans `docs/FORMATS.md`, section 4 octies ; aucune dépendance nouvelle. Restent : signature des paquets par le service de signature, compression demandée par le client (`ktor-client-encoding`), branchement du mode économie de données sur Android, libellés des intercommunalités tels que le RNE les écrit, nouveau découpage des circonscriptions à surveiller, licence des résultats de 2021 à confirmer.
 
-- **Complément du 7 novembre 2026 (soir) : `ElusLookup` pour le back-office.** Contexte : la file `elus.certifications` du pôle « Décider » (contrat du back-office, section 7) doit vérifier qu'un compte d'élu correspond à un mandat en cours. Options : A. recherche en lecture seule sur les paquets de l'import servi, identifiant calculé à la volée ; B. nouvelle table des mandats remplie à chaque import (nouvelle migration Flyway) ; C. identifiant écrit dans les paquets (changement du format 1 lu par l'appareil). Choix : A, forme validée par « Décider ». Identifiant `rne1:` + 32 caractères hexadécimaux (128 bits) du SHA-256 de (mandat, territoire, nom canonique, date de début), format dans `docs/FORMATS.md`, section 4 octies ; `find(name, mandate?, territory?)` insensible aux accents, à la casse et à l'ordre des mots ; `mandateStatus(id)` = `Current` ou `NotFound` avec la date de la source, plus `Unavailable` tant qu'aucun import n'est servi ; fragment kotlinx.html `elusMatches`. Raison : ni migration, ni changement de format, ni donnée nouvelle ; aucun journal des noms cherchés. Limite acceptée : le paquet ne garde que « Prénom Nom » réunis, l'empreinte porte donc sur le nom réuni et non sur nom et prénom séparés. Détail : `docs/integration/elus-serveur.md`, section 4 bis.
-
 ## D-048 (2026-11-07) Glossaire : mots repérés dans chaque contenu, infobulle, « En savoir plus », glossaire complet
 
 - Contexte : demande de la propriétaire du 7 novembre 2026 : le glossaire doit être consultable en entier, et les mots compliqués de **chaque** contenu soulignés en pointillés discrets avec un petit « ? » dans un rond ; un geste ouvre une infobulle avec la définition rapide et un bouton « En savoir plus » vers la définition détaillée. Contrat commun `docs/integration/comprendre-vague-3.md`, section 2 ; détail dans `docs/integration/glossaire.md`.
@@ -561,6 +559,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **CESE ajouté** aux plateformes de M10 (pétition officielle prévue par la Constitution) : à confirmer par la propriétaire ;
   - **objectifs par territoire reportés** : aucune plateforme ne publie la répartition des signataires par département ; il faudra un référentiel des territoires et de leur population (brainstorming).
 - Raison : relayer sans jamais tromper sur ce qu'une pétition peut obtenir ; aucun tiers depuis l'appareil ; aucune donnée d'opinion enregistrée.
+- Correction du 7 novembre 2026, vérifiée sur le texte officiel du Règlement : les seuils de l'Assemblée sont « plus de » 100 000 (article 148, alinéa 1) et « plus de » 500 000 dans trente départements ou collectivités d'outre-mer au moins (article 148, alinéa 6, et non l'article 151, qui décrit le débat) ; le code compte maintenant strictement plus (`Threshold.moreThan`).
 
 ## D-060 (2026-11-07) Pacte démocratique : texte unique, tableau public identique pour tous, archives
 
@@ -579,6 +578,21 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 
 - Accueil de l'espace : le Pacte en cours, les pétitions ouvertes (la date limite la plus proche d'abord), les pétitions closes à part, « Comprendre les seuils », puis « Et aussi » (mur des revendications, « Qui décide de ça ? ») et un encart qui annonce les votations et assemblées tirées au sort, en attente de la méthode « une personne, une voix » (M13.6). Une, deux ou trois colonnes selon la largeur ; retour du système qui ferme la page ouverte ; un candidat, un texte ou un fait s'ouvrent dans « Voir ».
 - « Décider » était le dernier écran provisoire : l'écran qui affichait la disposition et la version a été retiré ; la version installée et le système sont maintenant écrits en bas de « Mon espace », pour qu'une testeuse puisse les donner avec un problème.
+
+## D-062 (2026-11-07) « Décider » : décisions de la propriétaire sur les pétitions, le Pacte, les campagnes et la non-partisanerie
+
+- Contexte : questions de l'entrée « Espace Décider : première version et questions ouvertes » du brainstorming du cahier fonctionnel, entrées « Liste de départ des mesures du Pacte démocratique » et « Modalités du choix des campagnes par les citoyens » (même brainstorming), « Conséquences du retrait de la notion de non-partisanerie » et « Méthode technique une personne, une voix » (brainstorming du cahier des charges). Réponses données par la propriétaire le 7 novembre 2026 dans la session du pôle « Décider ».
+- Décisions de la propriétaire :
+  1. **CESE** : gardé parmi les plateformes de pétitions officielles (D-059 confirmé).
+  2. **Réponse au Pacte reçue après la date limite : non comptée** (« si le candidat est en retard c'est qu'il n'a pas pris les choses au sérieux, donc on ne compte pas »). Mise en œuvre (`PacteBoard`, raison `LATE`) : la réponse reste visible sous le tableau avec sa date de réception, par transparence (D-044) ; une réponse reçue le jour de la date limite compte ; si un candidat a répondu à temps puis a changé sa réponse après la date limite, c'est la réponse reçue à temps qui compte. Remplace la règle provisoire de D-060 (réponse tardive comptée et signalée).
+  3. **Relevé automatique des compteurs de pétitions** : oui, par le serveur, à partir des données ouvertes publiées sur data.gouv.fr ; l'application ne contacte jamais ces sites. Hôtes annoncés au Directeur technique (liste des sorties `infra/EGRESS.md`).
+  4. **Objectifs de signatures par territoire** : oui. Le référentiel des territoires (codes, noms, population, électeurs inscrits) est confié par le chef d'équipe au pôle « Comprendre », comme module partagé ; les besoins de « Décider » lui ont été transmis.
+  5. **Pétitions locales** (Constitution, article 72-1 ; CGCT, article L1112-16) : oui, à ajouter (seuils : un dixième des électeurs inscrits d'une commune, un vingtième dans les autres collectivités).
+  6. **Envoi du Pacte** : manuel pour l'instant (envoi et prise de contact par l'équipe), à revoir plus tard.
+  7. **Mesures du Pacte et modalités des campagnes** : « la liste des mesures et des modalités sera populaire » ; la liste de PPF n'est qu'un modèle, « rien d'officiel ni de validé tant que les utilisateurs n'y ont pas participé » ; « c'est le peuple qui doit la modifier et la valider via notre appli ». Conséquence : une délibération citoyenne dans l'application (proposer une mesure, l'amender, voter ; même chose pour les modalités des campagnes), qui dépend de « une personne, une voix » ; la liste de départ est affichée comme « proposition de départ, pas encore votée ».
+  8. **Non-partisanerie** : d'abord l'option A, puis, le même jour (transmis par le chef d'équipe) : « pas besoin de texte sur la non partisanerie, on n'affirme pas en tant que ppf qu'on est partisans ou non partisans, on est simplement une association engagée et militante [...] nos actes parleront pour nous ». Le principe 8 « Non partisane » est retiré du cahier des charges **sans texte de remplacement** (version 1.4 ; les principes 9 et 10 gardent leur numéro) et PPF n'est décrite nulle part comme partisane ou non partisane (invite de l'IA des revendications, modèle de menaces et section 5.5 reformulés). Restent, comme règles de méthode et de droit : le traitement identique des candidats dans le Pacte, le comparateur et le baromètre (section 9.2, limite légale : une association ne finance aucune campagne et n'accorde aucun avantage à un candidat, même en nature) et les fiches identiques pour tous de M17.
+  9. **« Une personne, une voix »** : « il faut le faire ». Conception technique en cours (`docs/integration/une-personne-une-voix.md`), soumise au chef d'équipe avant le code ; elle couvrira les votations (M13.6), les votes des revendications (M11), la délibération sur le Pacte et les campagnes, les compteurs de participation d'« Agir » et les signalements chiffrés de « Voir ».
+- Numéros : « Décider » dispose aussi du bloc D-110 à D-119 (registre du chef d'équipe).
 
 ## D-064 (2026-11-07) Données ouvertes du Parlement : import séparé, paquets signés, minimisation
 
@@ -602,7 +616,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - mention partout « D'après les données ouvertes de l'Assemblée nationale (ou du Sénat, du Parlement européen), mises à jour le … ; réutilisation par PPF, sans lien avec ces institutions » ; bandeau « Données fictives [EXEMPLE] » ;
   - **économie de données** : l'index (quelques centaines d'octets) est relu à l'ouverture ; chaque paquet seulement sur un geste, taille affichée ; « Votes du Sénat : bientôt » ;
   - liens avec « Voir » par l'étiquette `ppf-official-id` (`an:PA…`, `senat:…`, `pe:…` sur une personne ; `an-dossier:…` sur un texte) : lien vers les votes sur la fiche d'une personne, scrutins sous la fiche d'un texte ;
-  - base locale : migration `12.sqm` (table des paquets et index courant).
+  - base locale : migration `11.sqm` (table des paquets et index courant).
 
 ## D-066 (2026-11-07) Historique des votes pour le comparateur
 
@@ -690,6 +704,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **transparence** : `GET /api/v1/transparence/requisitions` donne seulement le nombre de réquisitions auxquelles PPF a répondu, par mois (temps universel), sans référence ni clé ;
   - **rappels écrits dans le code** (`LegalRegister`, `Application.module`) : aucune adresse IP n'est jamais collectée ni journalisée (ni Caddy, ni le serveur, ni une limitation de débit par adresse) ; aucun champ e-mail ou téléphone, même facultatif (il ferait naître cinq ans de conservation de l'identité civile, article 2 du décret) ; le niveau 2 reste éteint.
 - Limites et suites : le serveur stocke les demandes de suppression NIP-09 mais n'efface pas encore les contenus visés (à coder avec la modération) ; « chiffrement au repos » de la note (section 7.1) : à assurer par le chiffrement du disque et des sauvegardes du serveur (`infra/`), pas par l'application ; procédure écrite de réponse aux réquisitions (vérification de l'auteur et de la base légale, article 60-1-2 du code de procédure pénale, information de l'utilisateur selon l'article 10 du DSA) à faire relire par un avocat, comme les 17 questions de la note (liste « à faire relire par un avocat » de `docs/ROADMAP.md`) ; si l'injonction n'est pas renouvelée à l'automne 2027, réévaluer le registre.
+- Suite du 8 novembre 2026 (Directeur technique, décision technique ; code de « Décider ») : les **votes publics des élus certifiés** (D-115 : type 30078, `d` = `ppf-vote:<n>`, table `public_vote`) sont des contributions publiques et nominatives : ils entrent au registre à leur création, à leur remplacement par un vote plus récent et à leur retrait (`retire`, inscrit comme une suppression de la version retirée), dans la même transaction SQL que l'écriture du vote (`UrneStore.recordPublicVote`, qui verrouille l'urne et la revérifie ouverte). Point d'entrée étroit `LegalRegister.recordExternal`, réservé aux magasins explicitement publics tenus hors de la table `events` (aujourd'hui ce seul cas), avec les mêmes règles que `recordStored` (clés éditoriales exclues, champs pseudonymes seulement, date de réception fixée par la base, jamais le contenu) ; le type 30078 reste hors de `PUBLIC_KINDS` (les réglages privés de ce type ne sont jamais inscrits). Un retrait sans vote à retirer n'inscrit rien ; un vote après un retrait est une nouvelle création. Les bulletins anonymes, les jetons et les comptes votants restent hors du registre. Tests : `PublicVoteRegisterTest`.
 
 ## D-078 (2026-11-07) Notifications : ntfy auto-hébergé pour les réveils
 
@@ -795,20 +810,6 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Fichiers communs touchés (signalés) : `web/.../WebRoutes.kt` (montage, l'emplacement réservé de « Comprendre » disparaît quand une base est configurée), `site.css` (section ajoutée à la fin), `server/.../Application.kt` (paramètre `comprendre`), `BundledContents.kt` et `DevServer.kt` (chargement de `parcours.json`, `comprendre.json`, `glossaire.json`). Aucun fichier de `web/.../voir/` modifié.
 - Reste : liens de « Voir » vers les fiches pratiques (fichiers de « Voir », à faire par son pôle avec `ComprendreLinks`) ; icônes PNG 192 et 512 du manifeste si un navigateur refuse l'icône SVG ; dossiers de « Comprendre » ; version « Facile à lire » ; essai du hors-ligne sur un vrai téléphone (phase de test).
 
-## D-100 (2026-11-07) « Cette semaine au Parlement »
-
-- Contexte : cahier fonctionnel 2.0, M20 (VO-31), repris dans « En direct » (M19) ; sources vérifiées : `docs/integration/voir-historique-sources.md` ; détail : `docs/integration/voir-semaine.md`.
-- Décisions techniques prises en autonomie (pôle « Voir », gratuites, sans dépendance nouvelle) :
-  - **un paquet unique `semaine`**, cité par l'index signé de D-064, réécrit à chaque import (mêmes octets pour deux imports identiques) : l'ordre du jour de l'Assemblée nationale (`Agenda.json.zip`), du Sénat (flux iCalendar de la séance publique, répétitions simples comprises) et du Parlement européen (activités prévues de l'API v2) ;
-  - **fenêtre** : du jour de l'import (heure de Paris) au quatorzième jour suivant inclus ; l'appareil masque les jours passés ;
-  - **robustesse** : une source de la semaine en échec ne fait pas échouer l'import (code 0) ; les points précédents de cette assemblée sont gardés et le journal le dit ; avec `--from`, la semaine n'est pas relue ;
-  - **périmètre** : séances publiques ; réunions de commission seulement pour leurs points liés à un dossier législatif ; tout autre type écarté ;
-  - **minimisation** : heure, assemblée, type de réunion, commission, objet, type de point, dossier, état et lien officiel ; jamais de participant, d'organisateur, de contact ni de lieu ;
-  - **état absent** quand la source ne dit rien (plutôt que d'en supposer un) ; activités du Parlement européen toujours « Prévisionnel » ;
-  - **liens officiels** vérifiés le 7 novembre 2026 : séance publique et agendas de l'Assemblée, ordre du jour du Sénat, page de la plénière du Parlement européen (`https://www.europarl.europa.eu/plenary/fr/home.html`) ; « Interpeller mes élus » mène à l'espace « Décider » tant qu'aucune page DE-09 n'existe ;
-  - **économie de données** : le paquet se télécharge sur un geste (taille affichée), ou à l'ouverture d'« En direct » et de la page quand une version est déjà sur l'appareil et que le mode économie de données est coupé ;
-  - **formulation neutre** : on décrit l'ordre du jour, sans jugement ; bandeau « Données fictives [EXEMPLE] » sur le jeu d'exemple.
-
 ## D-092 (2026-11-07) Circuit éditorial : moteur de formulaires à schéma déclaratif, commun à « Comprendre » et à « Voir »
 
 - Décision technique prise en autonomie (chef d'équipe), sur la conception validée le 7 novembre 2026 par le chef d'équipe, « Voir » et le Directeur technique (`docs/integration/circuit-editorial.md`, sections 1 et 3 ; étapes 1 et 2 de la section 7).
@@ -844,6 +845,140 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Point de branchement de l'étape 5, calqué sur `PlatformSigner` (dans `main` depuis `e017998`) : `EditorialPublisher.handOver(ReadyToSign)` après l'approbation (`currentKey`, construction de l'événement, `submitDraft`) et `EditorialPublisher.state(ReadyToSign)` à chaque ouverture de la page de relecture (`draftStatus`, puis `request`, `status` et le `PublicationPort`), sans boucle en arrière-plan ; réponses `NotConnected`, `KeyUnavailable` (aucune clé certifiée : rien n'est envoyé, jamais de publication sans signature), `AwaitingApproval(draftId, approvalUrl, approbations)` (simple lien « Approuver sur la page de signature » pour qui peut approuver, jamais une personne qui a écrit le brouillon), `Refused(code)`, `Published`. `ReadyToSign` ne porte que des identifiants (usage `SigningUse.EDITORIAL_<ESPACE>`, validation à deux toujours demandée, auteur et sa clé Nostr pour `DraftAuthor`). Par défaut `UnpluggedEditorialPublisher` répond « service de signature pas encore branché » et rien n'est envoyé.
 - Conservation : un brouillon publié, refusé ou retiré s'efface avec ses versions et ses décisions 2 ans après sa dernière modification (proposition de la conception, section 4).
 - La même classe `EditorialQueue` sert à « Voir » : elle sera enregistrée pour `editorial.voir` avec ses schémas (étape 6), pas avant.
+
+## D-100 (2026-11-07) « Cette semaine au Parlement »
+
+- Contexte : cahier fonctionnel 2.0, M20 (VO-31), repris dans « En direct » (M19) ; sources vérifiées : `docs/integration/voir-historique-sources.md` ; détail : `docs/integration/voir-semaine.md`.
+- Décisions techniques prises en autonomie (pôle « Voir », gratuites, sans dépendance nouvelle) :
+  - **un paquet unique `semaine`**, cité par l'index signé de D-064, réécrit à chaque import (mêmes octets pour deux imports identiques) : l'ordre du jour de l'Assemblée nationale (`Agenda.json.zip`), du Sénat (flux iCalendar de la séance publique, répétitions simples comprises) et du Parlement européen (activités prévues de l'API v2) ;
+  - **fenêtre** : du jour de l'import (heure de Paris) au quatorzième jour suivant inclus ; l'appareil masque les jours passés ;
+  - **robustesse** : une source de la semaine en échec ne fait pas échouer l'import (code 0) ; les points précédents de cette assemblée sont gardés et le journal le dit ; avec `--from`, la semaine n'est pas relue ;
+  - **périmètre** : séances publiques ; réunions de commission seulement pour leurs points liés à un dossier législatif ; tout autre type écarté ;
+  - **minimisation** : heure, assemblée, type de réunion, commission, objet, type de point, dossier, état et lien officiel ; jamais de participant, d'organisateur, de contact ni de lieu ;
+  - **état absent** quand la source ne dit rien (plutôt que d'en supposer un) ; activités du Parlement européen toujours « Prévisionnel » ;
+  - **liens officiels** vérifiés le 7 novembre 2026 : séance publique et agendas de l'Assemblée, ordre du jour du Sénat, page de la plénière du Parlement européen (`https://www.europarl.europa.eu/plenary/fr/home.html`) ; « Interpeller mes élus » mène à l'espace « Décider » tant qu'aucune page DE-09 n'existe ;
+  - **économie de données** : le paquet se télécharge sur un geste (taille affichée), ou à l'ouverture d'« En direct » et de la page quand une version est déjà sur l'appareil et que le mode économie de données est coupé ;
+  - **formulation neutre** : on décrit l'ordre du jour, sans jugement ; bandeau « Données fictives [EXEMPLE] » sur le jeu d'exemple.
+
+## D-110 (2026-11-07) « Une personne, une voix » : jetons anonymes VOPRF, conditions de la bibliothèque, exigences
+
+- Contexte : conception de `docs/integration/une-personne-une-voix.md` (méthode approuvée par la propriétaire, D-044 ; usages de D-062). Décision technique prise en autonomie (chef d'équipe), le 7 novembre 2026, après relecture complète du document.
+- Décisions :
+  - **T1, mécanisme** : VOPRF de la RFC 9497, mode 0x01, suite ristretto255-SHA512 ; une clé par urne et par niveau de confiance, `DeriveKeyPair(graine, "ppf-urne-v1" ‖ urne ‖ niveau)` ; une preuve DLEQ par jeton, jamais de preuve groupée ; mode POPRF écarté ; clés secrètes des urnes publiées à la clôture pour le recomptage par tous. Écartés : Schnorr aveugle (attaque ROS), RSA partiellement aveugle (brouillon expiré), ARC (abandonné par l'IETF le 22 juillet 2026), BBS (brouillons inachevés, piste d'avenir).
+  - **T2, bibliothèque** : `com.ionspin.kotlin:multiplatform-crypto-libsodium-bindings` 0.9.5 pour le groupe ristretto255, derrière une interface à nous ; protocole écrit par nous. Conditions vérifiées à l'étape 1 avant toute suite : (a) tous les vecteurs de l'annexe A (ristretto255-SHA512, OPRF et VOPRF) et des tests négatifs passent sur la JVM ; (b) autotest au premier usage dans l'application, qui refuse de voter s'il échoue (seule preuve possible sur le téléphone de la propriétaire, faute d'émulateur) ; (c) l'exécutable de bureau empaqueté démarre et passe l'autotest (ticket n° 56) ; (d) hausse de taille de l'APK mesurée et `tools/check-apk.sh` mis à jour ; (e) iOS : la dépendance seulement là où elle compile, sinon interface commune et implémentation iOS à écrire plus tard. Si (a), (b) ou (c) échoue sans remède simple : repli sur les signatures RSA aveugles de la RFC 9474.
+  - **T3, migrations réservées** : Flyway `V7` (serveur) et `13.sqm` (appareil) ; numéros devenus provisoires le 7 novembre 2026 (chef d'équipe) : à l'entrée dans `main`, le suivant du plus haut de `main` (`11.sqm` à ce jour) ; devenu `13.sqm` (schéma local en version 14) et Flyway `V13__urnes.sql` le 7 novembre 2026, après les données du Parlement de « Voir » (`11.sqm`) et les territoires de « Comprendre » (`12.sqm`, `V7`), entrés les premiers dans `main`.
+  - **T4** : validation en personne (étape 5) après le socle du back-office du Directeur technique (Flyway `V8` lui est réservé).
+  - **T5** : volume mesuré à l'étape 1 ; si le KVM 1 ne tient pas, vote limité aux revendications « en débat ».
+  - **Exigences en plus** : R1 aucune corrélation par la base (bulletins indexés par `y`, aucun identifiant séquentiel, heure arrondie à l'heure, liste publiée triée par `y`, délivrance des jetons datée au jour au plus, journalisation des requêtes SQL et des corps de requête désactivée sur ces routes) ; R2 journal public en continu (comptes par niveau, jetons délivrés par urne et par niveau) ; R3 graine maîtresse dans un fichier secret Docker lisible seulement par l'utilisateur du serveur, jamais en variable d'environnement ni en base, puis service de signature séparé ; R4 client des bulletins distinct (sans cookie, sans réutilisation de connexion, sans en-tête d'authentification, agent utilisateur générique) ; R5 relecture indépendante de `core/urne` par un agent séparé, qui ne reçoit que le code et la RFC, avant la fusion dans `main` ; R6 contrat `core/urne` pour « Agir » et « Voir », envoyé au chef d'équipe pour diffusion.
+- Questions Q1 à Q7 du document : présentées à la propriétaire par le chef d'équipe ; l'étape 1 n'en dépend pas.
+
+## D-111 (2026-11-07) Archivage horodaté : OpenTimestamps écrit par nous, RFC 3161 en complément
+
+- Contexte : fondation de la phase 1 « archivage horodaté des engagements publics » (CLAUDE.md, section 7 ; cahier des charges, 3.2) ; premier usage, le Pacte (texte et réponses), puis les archives de « Voir » (M4) et les témoignages d'« Agir ». Décision technique prise en autonomie (chef d'équipe), le 7 novembre 2026.
+- Décisions :
+  - **preuve principale OpenTimestamps**, avec un petit client écrit par nous en Kotlin commun (`core/archive`) ; `java-opentimestamps` écarté (version 1.20 de 2021, non maintenu, LGPL-3.0, dépend de bitcoinj) ;
+  - **seul le serveur** contacte les calendriers, **au moins deux calendriers indépendants** par empreinte ; seule une empreinte SHA-256 sort, jamais un contenu ni une donnée d'utilisateur ;
+  - mise à niveau de la preuve une fois ancrée dans Bitcoin ; format `.ots` standard, exportable et lisible par le client officiel ; chemin de Merkle vérifié sur l'appareil ; en-tête de bloc vérifié par le serveur auprès de plusieurs explorateurs publics qui doivent concorder ; chacun peut revérifier avec le client officiel ;
+  - tests avec les vecteurs et les fichiers `.ots` d'exemple de python-opentimestamps, après vérification de leur licence ;
+  - **preuve immédiate en complément** : horodatage RFC 3161 côté serveur seulement (BouncyCastle `bcpkix`), auprès d'une autorité gratuite dont les conditions permettent cet usage, sans compte ni dépense ; à défaut, OpenTimestamps seul ;
+  - tous les hôtes contactés (calendriers, explorateurs, autorité d'horodatage) inscrits dans `THREAT_MODEL.md`, `REGISTRE_DONNEES.md` et la liste des sorties du Directeur technique (`infra/EGRESS.md`).
+
+## D-112 (2026-11-07) « Une personne, une voix » : trois niveaux de votants, pas de parrainage, envoi différé pour tous
+
+- Contexte : réponses de la propriétaire aux questions Q1 à Q7 de `docs/integration/une-personne-une-voix.md`, transmises le 7 novembre 2026 par le chef d'équipe, qu'elle a désigné comme son seul interlocuteur pour les décisions et les validations.
+- Décisions de la propriétaire :
+  1. trois niveaux de votants : « élus, compte vérifié, compte non vérifié » ;
+  2. « pas de parrainage » ;
+  3. « validation en personne par bénévoles agréés par ppf via leur association » ;
+  4. liste anonyme des bulletins publiée après la clôture ;
+  5. vote modifiable jusqu'à la clôture ;
+  6. niveau figé à l'ouverture de chaque urne ;
+  7. envoi du bulletin retardé « systématiquement de manière automatique sans laisser le choix à l'utilisateur pour ce cas précis ».
+- Décisions techniques prises en autonomie (chef d'équipe et pôle « Décider ») :
+  - niveaux `non-verifie` (inscription avec preuve de travail), `verifie` (validation en personne) et `elu` (compte d'élu certifié, DE-23 : certification en personne et contrôle du mandat dans l'annuaire officiel des élus, D-047) ; une clé VOPRF par urne et par niveau (D-110) ; plus de niveau « parrainé » ni d'invitations ;
+  - résultats : le vote des citoyens (comptes vérifiés en premier, puis non vérifiés, puis le total des citoyens) et, à part, le vote des élus, jamais additionné au total des citoyens ; un élu peut avoir aussi un compte personnel, sans double compte dans un même total ; les organisations ne votent pas ;
+  - validateurs : bénévoles désignés par une organisation vérifiée de l'annuaire d'« Agir » et agréés par PPF (rôle du socle M15/M16 du Directeur technique, avec séances, quotas et clé de séance) ;
+  - le délai aléatoire d'envoi du bulletin (0 à 10 minutes) est une **protection commune du système de vote**, comme le fait que le serveur ne relie jamais un vote à un compte : la liberté du principe 10 porte sur les données de chacun et « ne modifie pas les protections communes » ; ce n'est pas un choix imposé sur les données de l'utilisateur ;
+  - l'essai de l'autotest sur le téléphone de la propriétaire (condition b de D-110) est reporté à la phase de test et de débogage, à sa demande ; l'étape 2 (serveur des votes, Flyway `V7`) commence tout de suite.
+- Archivage horodaté (D-111) : Flyway `V9` réservé à la table des preuves (numéro devenu provisoire le même jour ; aujourd'hui `V14__archives.sql`, après `V7__territoires.sql`, `V8__back_office.sql`, `V9__agir_temoignages.sql`, `V10__legal_register.sql`, `V11__editorial.sql` et `V12__editorial_queue.sql` de main, puis `V13__urnes.sql`) ; BouncyCastle `bcpkix` et `bcprov` approuvés par le chef d'équipe, côté serveur seulement.
+- Suite du 8 novembre 2026, validation en personne (étape 5, côté serveur ; décision technique du Directeur technique, option B parmi trois) :
+  - **problème** : une validation écrite d'un coup (niveau du compte, compteur de la séance, lien scellé) laisse dans la base des traces techniques (identifiants de transaction de PostgreSQL, journal d'écriture) qui relient un compte à la séance qui l'a validé, alors que la conception promet qu'« un serveur saisi ne révèle pas qui a été validé par qui » ;
+  - **choix B** : le niveau prend effet le lundi suivant de toute façon (D-112) ; la validation attend donc ce lundi dans `vote_validation_pending` (clé du compte et lien « compte, séance, semaine » scellé en NIP-44 pour la clé « audit » hors ligne ; aucune séance en clair, aucune date, aucun numéro d'ordre), le compteur de la séance compté dans la même transaction (plafond de 40) ; le lundi à 0 h (temps universel), **une seule transaction** fait passer tous les comptes en attente au niveau « vérifié » dans l'ordre des clés, garde les liens scellés (`vote_validation`, un an, dans l'ordre de leurs clés éphémères aléatoires) et vide la file ; un compte jamais inscrit est inscrit ce lundi-là ;
+  - écartés : A (écriture immédiate, risque seulement écrit) ; C (compteur en mémoire, perdu au redémarrage) ;
+  - **côté serveur** (Directeur technique) : PostgreSQL sans horodatage des transactions (`track_commit_timestamp=off`), sans archivage du journal d'écriture ni restauration à un instant donné (`archive_mode=off`, `wal_level=minimal`, `max_wal_senders=0`, `wal_keep_size=0`), sauvegardes logiques `pg_dump` seulement ;
+  - **risque résiduel écrit** : pendant la semaine, une copie de la base relie la dernière validation de chaque séance ouverte, et des fragments du journal recyclé ou des blocs libérés du disque (pas de chiffrement du disque sur ce serveur) peuvent garder l'ordre des validations de la semaine jusqu'à leur écrasement ; après le lot du lundi, une copie ne relie plus rien ;
+  - preuve montrée par le citoyen : événement éphémère de PPF de type 22243 (`ppf-proof` = `validation`), signé de la clé du compte, valable cinq minutes, accepté une fois (`docs/FORMATS.md`) ; route publique `POST /api/v1/urnes/validations`, signée NIP-98 par la clé de la séance (adresse `PPF_PUBLIC_URL`, jamais l'en-tête `Host`) ; le port du back-office reste interne ;
+  - application (8 novembre 2026) : codes QR par le composant commun `ui/components/qr` (décision du chef d'équipe, option A : ZXing core 3.5.3 et CameraX 1.6.1, Apache 2.0 ; téléchargement accepté par la propriétaire dans le chat ; jamais ML Kit ; permission caméra demandée seulement à l'ouverture du lecteur) ; la clé de séance du validateur est tirée sur son appareil et gardée en mémoire seulement ; chaque code lu est envoyé une fois ; détail : `docs/integration/qr-codes.md`.
+- Suite du 8 novembre 2026, certification des élus (étape 5, côté serveur ; décisions techniques prises en autonomie) :
+  - un **compte dédié au mandat** (inscrit, jamais vérifié, jamais servi d'un jeton, sans validation en attente) demande sa certification avec la référence publique du mandat dans l'annuaire officiel (`rne1:`, type de mandat et code du territoire, tels que l'élu les a choisis dans l'annuaire), `POST /api/v1/urnes/certifications` signé NIP-98 par le compte ; jamais un nom, une pièce ou une photo : le nom, la fonction et le territoire sont relus dans l'annuaire servi (`ElusLookup.byId`, ajouté au code de « Comprendre ») ;
+  - un mandat absent de l'annuaire servi est refusé aussitôt ; sans annuaire servi, la demande attend ; un seul compte certifié par mandat ;
+  - un membre de l'équipe au rôle `elected_certifier` rencontre l'élu, vérifie sans rien saisir ni photographier que c'est bien lui et que l'application ouverte montre ce compte, puis décide dans la file `elus.certifications` : certifier (action sensible, mandat « en cours » exigé), refuser avec un motif montré au compte, ou retirer une certification (`elected.revoke`) ;
+  - le compte vote comme « élu », publiquement (D-115), à partir du lundi suivant ; tant que sa certification attend ou tient, il ne reçoit aucun jeton anonyme (`409 elected_account`) ;
+  - une fois par jour, un mandat certifié absent de l'annuaire mis à jour termine la certification (niveau « non vérifié » pour les urnes ouvertes à partir du lundi suivant) ; un annuaire pas encore servi ne termine jamais rien.
+
+## D-113 (2026-11-07) « Une personne, une voix », étape 2 : le serveur des urnes
+
+- Contexte : étape 2 de `docs/integration/une-personne-une-voix.md` (D-110, D-112). Décisions techniques prises en autonomie (pôle « Décider »).
+- Décisions :
+  - **tables** (`V13__urnes.sql`, d’abord `V7`, après `V10__legal_register.sql`, `V11__editorial.sql` et `V12__editorial_queue.sql` de main) : `vote_account` (niveau, lundi d'effet, niveau précédent, lundi d'inscription, curseur, dernière demande gardée un jour), `urne`, `urne_issued` (jetons par urne et par niveau), `ballot` (clé primaire : urne et identifiant secret `y`, aucun identifiant séquentiel, heure arrondie) ;
+  - **curseur** : un compte est « servi jusqu'à l'urne n » ; il ne peut demander que des jetons pour un **préfixe** de ses urnes en attente, toutes dans l'ordre, jamais un sous-ensemble choisi (`409 pending_changed`) ; la même requête dans la journée renvoie la même réponse ; un déplacement concurrent du curseur est refusé ;
+  - **niveau d'un jeton** = niveau du compte la semaine de l'ouverture de l'urne (niveau courant, ou niveau précédent si le changement est plus récent ; « non vérifié » pour un compte inscrit après) ;
+  - **certification d'un élu** (étape 5) : seulement pour un compte qui n'a encore reçu aucun jeton, compte dédié au mandat, distinct du compte personnel ; le mandat est contrôlé dans l'annuaire officiel (`ElusLookup` du pôle « Comprendre », identifiant `rne1:` et `mandateStatus`) ; si l'annuaire a plus de 6 mois, les résultats des élus portent la date de sa mise à jour ;
+  - **bulletin** : JSON sans compte, preuve de travail sur `SHA-256(ppf-bulletin-v1 ␟ urne ␟ niveau ␟ y ␟ jeton ␟ choix ␟ nonce)`, vérification du jeton par `Evaluate` en temps constant, remplacement par le même `y`, retrait par le choix `retire`, même réponse `202` pour un nouveau bulletin et un remplacement ;
+  - **résultats** : en direct pour les urnes qui le demandent (revendications), seulement après la clôture pour les questions (votations, délibérations) ; le journal (comptes et jetons par niveau, bulletins par niveau, remplacements) est toujours public ;
+  - **clôture** : tâche du serveur chaque minute ; la clôture publie clés secrètes et publiques, jetons délivrés, bulletins triés par `y` et résultats ; `UrneRecount` (code commun) recompte tout et sert à chacun, l'application comprise ;
+  - **NIP-98** et **NIP-13** dans le code commun (`core/urne/Nip98.kt`, `ProofOfWork.kt`) : l'application crée, le serveur vérifie ; adresse exacte via `PPF_PUBLIC_URL` (le chemin seul en développement) ; chaque autorisation n'est acceptée qu'une fois ; le back-office du Directeur technique reprendra cette implémentation ;
+  - **limites** : 30 demandes authentifiées par minute et par compte, 6000 bulletins par minute pour tout le serveur, 500 jetons par requête (`PPF_VOTE_MAX_TOKENS_PER_REQUEST`), seuils de preuve de travail privés (`PPF_VOTE_POW_*`, valeurs par défaut 20, 12 et 12 bits) ;
+  - **développement** : sans `PPF_VOTE_SEEDS_DIR`, une graine tirée au démarrage (ses jetons meurent avec le processus) ; en production et en préproduction, l'API répond `503`.
+- Reste : publication des clés en événements signés, page de l'urne sur le site, ouverture des urnes par le back-office et par les revendications « en débat » (étape 4).
+
+## D-114 (2026-11-07) « Une personne, une voix » : relecture indépendante R5, urnes des revendications
+
+- Contexte : exigence R5 de D-110 (relecture de `core/urne` par un agent distinct, code et RFC seulement, avant `main`) ; étape 4 de la conception (revendications) ; clôture anticipée promise à « Agir ».
+- Relecture : le VOPRF suit la RFC 9497 pas à pas (vecteurs compris) ; aucun défaut cryptographique. Constats d'usage et corrections : `docs/THREAT_MODEL.md`, section « Relecture indépendante R5 ».
+- Décisions techniques prises en autonomie :
+  - une requête de jetons restée sans réponse est renvoyée d'abord, inchangée (le vote n'est plus perdu) ;
+  - une urne s'ouvre au moment de son ouverture, jamais à l'avance ; `closeEarly(id, at)` avance une clôture, jamais ne la recule ;
+  - sel aléatoire de 16 octets par urne dans la dérivation des clés ;
+  - preuve de travail des bulletins fixée dans le code commun (12 bits), bulletins complétés à 640 octets, liste des urnes demandée par le client anonyme, un bulletin par passage et jamais avec une synchronisation, bulletins en retard renvoyés à un nouveau moment tiré au hasard ;
+  - l'appareil vérifie le niveau de chaque jeton (niveau, niveau précédent, semaine d'inscription annoncés par le serveur) ;
+  - publication du jour, et non plus de l'heure, de chaque bulletin à la clôture ;
+  - `PPF_PUBLIC_URL` obligatoire hors développement ; autotest du VOPRF au démarrage du serveur ;
+  - résultats des urnes qui les montrent joints à la liste publique (une seule requête pour toutes) ;
+  - **urnes des revendications** : une revendication « en débat » ou « très soutenue », signée par l'équipe, reçoit son urne (`decider:revendication:<adresse>`, choix « pour » et « contre », résultats en direct, sans fin) ; l'urne se ferme quand la revendication est retenue, devient une campagne, revient à « nouvelle » ou disparaît, ce qui publie ses clés et ses bulletins ; une urne n'est jamais rouverte.
+- Questions posées au chef d'équipe : délai avant l'envoi (10 minutes, D-112) ; seuil d'affichage par niveau et résultats en direct par paliers pour les petites urnes ; façon dont l'équipe fait avancer le statut d'une revendication de citoyen (son événement est signé par l'auteur).
+
+  - base locale : migration `12.sqm` (table des paquets et index courant).
+
+## D-115 (2026-11-07) « Une personne, une voix » : vote public des élus, seuils de soutiens, revendications portées
+
+- Décisions de la propriétaire du 7 novembre 2026, mots exacts relayés par le chef d'équipe :
+  - « Si c'est un vote, les organisations ne peuvent pas voter, mais les élus oui et eux leur vote est public » ;
+  - seuils : options A (planchers 25 et 100), A (le Pacte réunit les 5 à 10 mesures les plus soutenues qui ont plus de « pour » que de « contre ») et B (porter une revendication seulement si ses « pour » dépassent aussi ses « contre ») ;
+  - au second seuil : « un membre de l'équipe PPF ira déposer une pétition officielle sur le site de l'assemblée et on mettra le lien dans la card de la revendication. Les revendications ayant une pétition officielle en cours seront épinglées dans le fil des revendications » ;
+  - pas de condition de répartition (documents : `docs/integration/seuils-soutiens.md`).
+- Décisions techniques prises en autonomie :
+  - **vote public des élus** :
+    - un compte de niveau « élu » la semaine d'ouverture de l'urne ne reçoit **aucun jeton anonyme** pour cette urne ;
+    - il vote par un événement NIP-78 (type 30078, `d` = `ppf-vote:<urne>`, `ppf-urne`, `ppf-choice`, `a` vers l'objet voté), signé de sa propre clé, envoyé tout de suite (`POST /api/v1/urnes/public-votes`) ;
+    - le plus récent remplace l'ancien, `retire` le retire ;
+    - le serveur garde l'événement signé (table `public_vote`, migration `V13__urnes.sql`) et le publie tel quel (`GET /api/v1/urnes/{n}/public-votes`, puis à la clôture) ;
+    - la colonne des élus vient de ces votes : jamais cachée, jamais ajoutée au vote des citoyens ;
+    - le recomptage vérifie chaque signature et refuse un bulletin anonyme de niveau « élu » ;
+    - le nom et le mandat viendront de la certification (étape 5 : référence publique `rne1:` de l'annuaire, jamais une pièce d'identité) ;
+  - **organisations** : elles ne votent jamais ; leur participation publique reste à part (D-044, D-045).
+- À faire : seuils de soutiens dans le cœur commun, carte de la revendication (soutiens, seuils, lien de la pétition officielle), épinglage en tête du fil, action du back-office pour attacher le lien, refonte de la délibération DE-25 sur ce modèle.
+
+## D-116 (2026-11-07) « Une personne, une voix » : seule une personne physique vote
+
+- Décision de la propriétaire du 7 novembre 2026, mots exacts relayés par le chef d'équipe : « Un compte de type collectif ou association ou bref tout truc qui n'est pas personne physique ne peut pas voter ».
+- Décisions techniques prises en autonomie (`server/urne/PersonAccounts.kt`, `core/urne/AccountTypes.kt`) :
+  - le serveur refuse l'inscription et la délivrance de jetons, à tous les niveaux (`403 not_a_person`), à un compte connu comme n'étant pas une personne physique :
+    - une clé de l'équipe éditoriale (elle parle au nom de PPF ; ses membres votent avec leur compte personnel) ;
+    - une organisation de l'annuaire d'« Agir », vérifiée (clé nommée dans une fiche signée par l'équipe) ;
+    - un compte qui se déclare collectif dans son profil (étiquette `ppf-account-type` = `collective` d'un événement de type 0 ; types de compte tenus par le pôle « Communauté », `docs/integration/types-de-compte.md`) ;
+  - un compte inscrit avant de devenir l'un d'eux ne reçoit plus de jeton ;
+  - le second pseudonyme d'une même personne vote comme tout compte personnel ; les élus votent en public (D-115).
 
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
@@ -911,7 +1046,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - un rôle `validator` porte la clé de l'organisation vérifiée qui désigne la personne (obligatoire, vérifiée par `VerifiedOrganisations` d'« Agir ») ; `elected_certifier` n'a pas d'organisation ;
   - quand l'organisation perd sa vérification, ses validateurs sont suspendus et leurs séances révoquées, avec une ligne du journal par rôle. « Agir » n'offre pas de notification à ce moment-là et le socle ne modifie pas ses fichiers : le contrôle passe par la tâche périodique (5 minutes, comme le cache des organisations), et toute requête d'une séance dont l'organisation n'est plus vérifiée est **refusée aussitôt** entre-temps ;
   - séance : clé publique Nostr de séance créée par l'application (jamais réutilisable), plafond de 40 validations au plus (40 par défaut), 12 heures au plus (4 par défaut), semaine ISO à l'heure de Paris, une séance ouverte à la fois, compteur seulement (jamais le lieu, l'événement ni la personne validée) ; ouvrir une séance est une action sensible ;
-  - requêtes de l'application signées NIP-98 (type 27235, étiquettes `u` et `method`, `payload` quand il y a un corps, 60 secondes d'écart au plus, rejeu refusé) derrière l'interface `SessionRequestVerifier` ; l'implémentation du socle (`MinimalNip98Verifier`) est **provisoire** et sera remplacée à la fusion par `core/urne/Nip98.kt` de « Décider » (preuve de travail, garde contre le rejeu) ;
+  - requêtes de l'application signées NIP-98 (type 27235, étiquettes `u` et `method`, `payload` quand il y a un corps, 60 secondes d'écart au plus, rejeu refusé) derrière l'interface `SessionRequestVerifier` ; l'implémentation est `Nip98SessionVerifier` (8 novembre 2026, « Décider », à la place de la version provisoire du socle) : la vérification partagée des urnes, `core/urne/Nip98.kt` (exactement une étiquette `u` et une `method`, `payload` seulement avec un corps, en-tête de 16 Ko au plus, garde contre le rejeu en mémoire), avec les deux propriétés du socle : la séance est cherchée par sa clé **avant** la vérification de la signature (une clé inconnue ne coûte aucune vérification, `no_open_session`) et un événement daté d'avant le démarrage du processus est refusé (`before_start`), parce que la mémoire du rejeu ne survit pas à un redémarrage ; codes de refus : ceux de `Nip98.verify` (`missing_authorization`, `malformed_authorization`, `expired_authorization`, `wrong_url`, `wrong_method`, `wrong_payload`, `invalid_signature`) et `no_open_session`, `before_start`, `replayed` ;
   - chiffrement NIP-44 vers `PPF_AUDIT_PUBLIC_KEY` (`AuditSealer`) avec le code NIP-44 de la messagerie (`shared/core`), une paire de clés jetable par texte : le serveur écrit ces textes et ne peut plus les relire.
 - **Complété par D-127** : la séance est cherchée avant la vérification de la signature ; un événement daté d'avant le démarrage du serveur est refusé ; une liste d'organisations vérifiées vide ou réduite de plus de moitié ne suspend personne et lance une alerte.
 

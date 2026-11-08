@@ -32,6 +32,7 @@ object DeciderTags {
     fun measure(id: String) = "decider-measure-$id"
     fun row(candidate: String) = "decider-row-$candidate"
     fun cell(measure: String) = "decider-cell-$measure"
+    fun setAside(reason: String) = "decider-set-aside-$reason"
     fun platform(id: String) = "decider-platform-$id"
     fun threshold(index: Int) = "decider-threshold-$index"
     fun link(id: String) = "decider-link-$id"

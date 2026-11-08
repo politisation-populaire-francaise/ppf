@@ -1,5 +1,435 @@
 [
     {
+        "id": "3b0d6f2fbc1e703452e48da796d8192bcc6c52c889fae4c4bb4179dc00f283ba",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "comparateur-election-exemple"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Comparateur de l’élection d’exemple"
+            ],
+            [
+                "summary",
+                "Les mêmes thèmes, dans le même ordre, pour chaque candidat, avec ses propres mots et leur source."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "comparateur"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "élections"
+            ],
+            [
+                "ppf-election",
+                "election-exemple",
+                "Élection présidentielle d’exemple",
+                ""
+            ],
+            [
+                "ppf-theme",
+                "democratie"
+            ],
+            [
+                "ppf-theme",
+                "sante"
+            ],
+            [
+                "ppf-theme",
+                "logement"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "candidat"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:camille-exemple",
+                "",
+                "candidat"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dominique-fictif",
+                "",
+                "candidat"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:sacha-temoin",
+                "",
+                "candidat"
+            ]
+        ],
+        "content": "Contenu de démonstration : l’élection, les candidats et leurs positions sont fictifs. Chaque candidat a les mêmes thèmes, dans le même ordre ; les candidats sont rangés par ordre alphabétique ; une case vide dit qu’aucune position n’a été publiée.\n",
+        "sig": "09782af2c1d26e24792af6e385a89fb1dfb0ff6f970ce87da274c2dfc74f8881b50214b0333770d3aecd9222838fe9b2b6c7da1258d982f1821eef25dbdc03e8"
+    },
+    {
+        "id": "41631ad0db0b0b5e4f54158b57a0ed1405f9bea19a4aab59b29c7ce39449ef7a",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "position-alex-democratie"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Propose un référendum d’initiative citoyenne à partir de 700 000 signatures."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "position"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-election",
+                "election-exemple"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-theme",
+                "democratie"
+            ],
+            [
+                "ppf-quote",
+                "[EXEMPLE] Le peuple doit pouvoir proposer lui-même les lois qui le concernent.",
+                "https://example.org/exemple/programme-alex",
+                "2026-10-20"
+            ]
+        ],
+        "content": "Contenu de démonstration : la position et la citation sont fictives.\n",
+        "sig": "622308c90196ff1143c9fee4fb2f8b267313d1bbd9068333e4cb5e8f07478b10aceadc17bf432d0eb1dd7006e71253ca9e5da8aee438b1fc08359c9e5dd12a82"
+    },
+    {
+        "id": "15759cf64cab6001f5c087b46f738c1bd7d6281dd610b29189d83dc741b9441b",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "position-alex-sante"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Veut rouvrir les urgences de nuit fermées depuis 2020 dans les petites villes."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "position"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-election",
+                "election-exemple"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:alex-modele",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-theme",
+                "sante"
+            ],
+            [
+                "ppf-quote",
+                "[EXEMPLE] Aucune ville moyenne ne doit rester sans urgences la nuit.",
+                "https://example.org/exemple/programme-alex",
+                "2026-10-20"
+            ]
+        ],
+        "content": "Contenu de démonstration : la position et la citation sont fictives.\n",
+        "sig": "169debb488bd3015df43ef7e180b78b1153c0641c798435ec5dea267c1a911b8c5edfad6d446533617384c0e9263f496f2515d489d40f4e488a0b173baf99099"
+    },
+    {
+        "id": "6866df9a5bdcf57c843311b8c05cb66b682c0d4632464e149efc74632bccb7ca",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "position-camille-democratie"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Préfère des conventions citoyennes tirées au sort à un référendum d’initiative citoyenne."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "position"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-election",
+                "election-exemple"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:camille-exemple",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-theme",
+                "democratie"
+            ],
+            [
+                "ppf-quote",
+                "[EXEMPLE] Le tirage au sort donne la parole à ceux qu’on n’entend jamais.",
+                "https://example.org/exemple/programme-camille",
+                "2026-10-20"
+            ]
+        ],
+        "content": "Contenu de démonstration : la position et la citation sont fictives.\n",
+        "sig": "69849809c64544b8187906c29565ca98dbbc12093ee298125cbcde4c6675f35649f4dc291c3e7224b70976a5fb2946eb5c428e70897ea00b81036234d38e31a0"
+    },
+    {
+        "id": "69052a9430e5b3583d9185cf6350ab41532edfcc48c35b5b9b941753f695ff2c",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "position-camille-logement"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Veut encadrer les loyers dans toutes les villes de plus de 50 000 habitants."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "position"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-election",
+                "election-exemple"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:camille-exemple",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-theme",
+                "logement"
+            ],
+            [
+                "ppf-quote",
+                "[EXEMPLE] Le loyer ne doit plus dépasser un tiers du salaire.",
+                "https://example.org/exemple/programme-camille",
+                "2026-10-20"
+            ]
+        ],
+        "content": "Contenu de démonstration : la position et la citation sont fictives.\n",
+        "sig": "1a2dd15e2dd3307bd64c149a75239eecf766dad24ef2c745db98c9e852032619ffe80e6f5b4be1b309d29f41b76a48df50309cc3385dd3c160946efdc9eb5448"
+    },
+    {
+        "id": "8d277838fb65366488e043d05cfdb1171ee0125062b83f61bb890cb79b5ae3a6",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "position-dominique-logement"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Veut construire 150 000 logements sociaux par an pendant le mandat."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "position"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-election",
+                "election-exemple"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dominique-fictif",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-theme",
+                "logement"
+            ],
+            [
+                "ppf-quote",
+                "[EXEMPLE] Chaque année sans construire, ce sont des familles de plus à la rue.",
+                "https://example.org/exemple/programme-dominique",
+                "2026-10-20"
+            ]
+        ],
+        "content": "Contenu de démonstration : la position et la citation sont fictives.\n",
+        "sig": "ddf1d8688a22b152292cbc911a6c4eca0abc8cdb37b38298d57696cf50c201ecd97d9692ff6ec6fda53a83041c05dfa804f2652065990cb519ad940727cc748c"
+    },
+    {
+        "id": "54c6fa7a9ffcb9eb5d6f50a9b2c24906fd87f78f292cba67a14851d64902b4dc",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "position-dominique-sante"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Propose de supprimer les dépassements d’honoraires en cinq ans."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "position"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-election",
+                "election-exemple"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dominique-fictif",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-theme",
+                "sante"
+            ],
+            [
+                "ppf-quote",
+                "[EXEMPLE] Se soigner ne doit jamais dépendre de son compte en banque.",
+                "https://example.org/exemple/programme-dominique",
+                "2026-10-20"
+            ]
+        ],
+        "content": "Contenu de démonstration : la position et la citation sont fictives.\n",
+        "sig": "3bb8ad08e44a3547f1ef22faf245fbfd34b46025fc9c63e3ace9abeef6370246ca633e209b6c0e03dca30fc2fb128efdb9a4579dcf61f0cc4d4b703f726cc771"
+    },
+    {
+        "id": "518c36f1c4c3dda6087f4bb3421d94991b54077e243e62097315efd341700fe1",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794052800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "position-sacha-democratie"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Veut reconnaître le vote blanc comme un suffrage exprimé."
+            ],
+            [
+                "published_at",
+                "1794052800"
+            ],
+            [
+                "ppf-type",
+                "position"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-election",
+                "election-exemple"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:sacha-temoin",
+                "",
+                "candidat"
+            ],
+            [
+                "ppf-theme",
+                "democratie"
+            ],
+            [
+                "ppf-quote",
+                "[EXEMPLE] Voter blanc, c’est voter : il faut enfin le compter.",
+                "https://example.org/exemple/programme-sacha",
+                "2026-10-20"
+            ]
+        ],
+        "content": "Contenu de démonstration : la position et la citation sont fictives.\n",
+        "sig": "f44ee9b5170924c074695d155b1101c5a6118dc0f93b4529db08efcb11dd480d327d56991426fffd9e5048b10f7b4d58c6bbec254045ad3f1df02e07a0f3c2b0"
+    },
+    {
         "id": "9148be193f4afeeb32aaff9a39c2890545017ce7d4c0537208e0819a905ab9b5",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,

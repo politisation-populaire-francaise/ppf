@@ -92,6 +92,11 @@ data class Petition(
     val milestones: List<Milestone>,
     /** The bills of "Voir" the petition is about. */
     val texts: List<ContentAddress>,
+    /**
+     * The demands of the wall it carries (D-115): filed by a member of the team on the official site
+     * when a demand passed its second threshold; the card of the demand shows it, the wall pins it.
+     */
+    val demands: List<ContentAddress> = emptyList(),
     val sources: List<Source>,
     val corrections: List<Correction>,
     val nextSteps: List<NextStep>,
@@ -140,6 +145,7 @@ data class Petition(
                     Milestone(date, label)
                 }.sortedBy { it.date },
                 texts = event.links(VoirTags.ROLE_TEXT),
+                demands = event.links(DeciderTags.ROLE_DEMAND),
                 sources = event.sources(),
                 corrections = event.corrections(),
                 nextSteps = event.nextSteps(),

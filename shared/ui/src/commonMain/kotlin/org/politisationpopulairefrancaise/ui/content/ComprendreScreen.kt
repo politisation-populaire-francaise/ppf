@@ -552,7 +552,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE, ArticleType.PARTI -> Res.string.space_voir
         ArticleType.ORGANISATION -> Res.string.organisations_content_type
         ArticleType.APPEL -> Res.string.appels_title
-        ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT -> Res.string.space_decider
+        ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION -> Res.string.space_decider
         ArticleType.TEMOIGNAGE -> Res.string.temoignages_content_type
     },
 )

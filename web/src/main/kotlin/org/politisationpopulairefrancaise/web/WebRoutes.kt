@@ -11,6 +11,8 @@ import kotlinx.html.p
 import kotlinx.html.section
 import kotlinx.html.ul
 import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.web.decider.DeciderSource
+import org.politisationpopulairefrancaise.web.decider.deciderPages
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
 import org.politisationpopulairefrancaise.web.comprendre.comprendrePages
 import org.politisationpopulairefrancaise.web.voir.VoirSource
@@ -35,10 +37,12 @@ private val spaceDescriptions: Map<Space, String> = mapOf(
  * the pages of "Voir" replace the placeholder of the space; likewise the pages of "Comprendre"
  * with a [comprendre] source (D-091), which also serves the service worker of offline reading.
  */
-fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = null) {
+fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = null, decider: DeciderSource? = null) {
     staticResources("/static", "static")
     voir?.let { voirPages(it) }
     comprendre?.let { comprendrePages(it) }
+    // The petitions and the democratic pact (Décider), with the names of the candidates from "Voir".
+    decider?.let { deciderPages(it, voir) }
 
     get("/") {
         call.respondHtml {
@@ -59,7 +63,7 @@ fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = nu
         }
     }
 
-    Space.entries.filter { (voir == null || it != Space.VOIR) && (comprendre == null || it != Space.COMPRENDRE) }.forEach { space ->
+    Space.entries.filter { (voir == null || it != Space.VOIR) && (comprendre == null || it != Space.COMPRENDRE) && (decider == null || it != Space.DECIDER) }.forEach { space ->
         get("/${space.id}") {
             call.respondHtml {
                 siteLayout(pageTitle = spaceLabels.getValue(space), currentSpace = space) {

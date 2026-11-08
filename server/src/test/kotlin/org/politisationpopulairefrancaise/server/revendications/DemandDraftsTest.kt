@@ -73,6 +73,10 @@ class DemandDraftsTest {
         assertEquals("malformed_demand", error(citizen.demand(createdAt = now + 7_200)), "dated in the future")
         assertIs<DemandDrafts.Shape.Valid>(shape(citizen.demand(createdAt = now + 600)), "a clock a little ahead is fine")
         assertEquals("malformed_demand", error(citizen.alteredDemand { it.copy(tags = it.tags.filter { tag -> tag[0] != Article.TAG_ORIGIN }) }), "origin required")
+        // The official code of the territory (D-090): optional, once, in the shape of an official code.
+        assertIs<DemandDrafts.Shape.Valid>(shape(citizen.alteredDemand { it.copy(tags = it.tags + listOf(listOf(DemandDrafts.TAG_TERRITORY_CODE, "dep:59"))) }))
+        assertEquals("malformed_demand", error(citizen.alteredDemand { it.copy(tags = it.tags + listOf(listOf(DemandDrafts.TAG_TERRITORY_CODE, "Lille"))) }))
+        assertEquals("malformed_demand", error(citizen.alteredDemand { it.copy(tags = it.tags + listOf(listOf(DemandDrafts.TAG_TERRITORY_CODE, "fr"), listOf(DemandDrafts.TAG_TERRITORY_CODE, "dep:59"))) }), "one code only")
     }
 
     @Test

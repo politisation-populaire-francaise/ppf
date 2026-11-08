@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The common QR code component (components/qr): shown and read for the in-person validation, Agir and Communauté. -->
+<resources>
+    <string name="qr_unavailable">Ce code QR ne peut pas être affiché sur cet appareil.</string>
+    <string name="qr_scan_phone_only">La lecture d’un code QR se fait avec la caméra d’un téléphone Android.</string>
+    <string name="qr_camera_needed">Pour lire le code, autorisez la caméra. Elle sert seulement à lire ce code, sur votre téléphone : rien n’est enregistré ni envoyé.</string>
+    <string name="qr_camera_allow">Autoriser la caméra</string>
+</resources>

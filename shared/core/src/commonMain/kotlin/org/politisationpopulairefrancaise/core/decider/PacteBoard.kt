@@ -21,10 +21,8 @@ data class BoardCell(val measure: PacteMeasure, val status: CellStatus, val comm
 data class CandidateRow(
     val candidate: ContentAddress,
     val name: String,
-    /** The answer counted, null when none was received. */
+    /** The answer counted, null when none was received in time. */
     val engagement: Engagement?,
-    /** The answer arrived after the deadline (shown as such, the same rule for everyone). */
-    val late: Boolean,
     val cells: List<BoardCell>,
 ) {
     val signed: Int get() = cells.count { it.status == CellStatus.SIGNED }
@@ -41,6 +39,12 @@ enum class SetAsideReason {
     OTHER_TEXT,
     /** The answer comes from someone who is not among the candidates listed by the pact. */
     NOT_A_CANDIDATE,
+    /**
+     * The answer was received after the deadline: not counted, the same rule for everyone
+     * (owner's decision of 7 November 2026, D-062: « si le candidat est en retard c'est qu'il
+     * n'a pas pris les choses au sérieux »).
+     */
+    LATE,
 }
 
 data class SetAside(val engagement: Engagement, val reason: SetAsideReason)
@@ -53,7 +57,8 @@ data class SetAside(val engagement: Engagement, val reason: SetAsideReason)
  * - the lines are in alphabetical order of the names, never in the order of the answers;
  * - only an answer to the exact text sent ([Pacte.fingerprint]) counts; the others are listed apart;
  * - a measure left unanswered is « en attente » until the deadline, then « sans réponse »;
- * - an answer received after the deadline counts and says so.
+ * - an answer received after the deadline is not counted; it is listed apart, so that everyone
+ *   can see it arrived late (D-062).
  */
 class PacteBoard(
     val pacte: Pacte,
@@ -87,15 +92,17 @@ class PacteBoard(
             }
             val candidates = pacte.candidates.toSet()
             val mine = engagements.filter { it.pacte == pacte.address }
+            val late: (Engagement) -> Boolean = { deadline != null && it.receivedOn > deadline }
             val setAside = buildList {
                 mine.forEach { e ->
                     when {
                         e.candidate !in candidates -> add(SetAside(e, SetAsideReason.NOT_A_CANDIDATE))
                         e.textFingerprint != pacte.fingerprint -> add(SetAside(e, SetAsideReason.OTHER_TEXT))
+                        late(e) -> add(SetAside(e, SetAsideReason.LATE))
                     }
                 }
             }
-            val counted = mine.filter { it.candidate in candidates && it.textFingerprint == pacte.fingerprint }
+            val counted = mine.filter { it.candidate in candidates && it.textFingerprint == pacte.fingerprint && !late(it) }
                 .groupBy { it.candidate }
                 .mapValues { (_, list) -> list.maxWith(compareBy<Engagement>({ it.receivedOn }, { it.article.updatedAt })) }
             val follow = followUps.filter { it.pacte == pacte.address }
@@ -116,7 +123,6 @@ class PacteBoard(
                     candidate = candidate,
                     name = nameOf(candidate) ?: candidate.identifier,
                     engagement = engagement,
-                    late = engagement != null && deadline != null && engagement.receivedOn > deadline,
                     cells = cells,
                 )
             }.sortedWith(compareBy<CandidateRow>({ sortKey(it.name) }, { it.candidate.toString() }))
