@@ -4,6 +4,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.platform.DraftAuthor
+import org.politisationpopulairefrancaise.core.platform.DraftStatusResponse
 import org.politisationpopulairefrancaise.core.platform.SigningUse
 import org.politisationpopulairefrancaise.core.platform.UrnClosures
 import org.politisationpopulairefrancaise.core.signing.EventKinds
@@ -12,8 +14,6 @@ import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.revendications.MutableClock
-import org.politisationpopulairefrancaise.server.signing.DraftAuthor
-import org.politisationpopulairefrancaise.server.signing.DraftStatusResponse
 import org.politisationpopulairefrancaise.server.signing.DraftSubmission
 import org.politisationpopulairefrancaise.server.signing.FakePlatformSigner
 import org.politisationpopulairefrancaise.server.signing.PlatformSigner

@@ -50,15 +50,10 @@ class ProposeFromTheWallTest {
     private val phrase = RecoveryPhrase.parse("leader monkey parrot ring guide accident before fence cannon height naive bean")
     private val title = "Un médecin de garde joignable le soir dans chaque canton rural"
 
-    private companion object {
-        /** A wait that only matters when something is wrong: generous for a loaded machine. */
-        const val SLOW_MACHINE_MILLIS: Long = 30_000
-    }
-
     private fun ComposeUiTest.openForm(dependencies: AppDependencies) {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
         onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
-        waitUntil(timeoutMillis = SLOW_MACHINE_MILLIS) { onAllNodesWithTag(RevendicationTags.PROPOSE).fetchSemanticsNodes().isNotEmpty() }
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(RevendicationTags.PROPOSE).fetchSemanticsNodes().isNotEmpty() }
         onNode(hasTestTag(RevendicationTags.PROPOSE) and hasAnyAncestor(hasTestTag(RevendicationTags.PAGE + "tout"))).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(ProposalTags.SCREEN).assertExists()
@@ -72,9 +67,9 @@ class ProposeFromTheWallTest {
         onNodeWithTag(ProposalTags.CHARTER).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(ProposalTags.SEND).performScrollTo().performClick()
-        // Signing and the local database: well under a second alone, but beyond 10 seconds was seen during a
-        // full build on the owner's computer (one Gradle worker, every module's tests in a row).
-        waitUntil(timeoutMillis = SLOW_MACHINE_MILLIS) { onAllNodesWithTag(ProposalTags.RESULT).fetchSemanticsNodes().isNotEmpty() }
+        // Known flake (Décider, 8 November 2026): in a full run of every module, the variant without server
+        // sometimes never gets here (stuck, not slow: 30 seconds did not help; alone it passes in a second).
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ProposalTags.RESULT).fetchSemanticsNodes().isNotEmpty() }
     }
 
     private fun ComposeUiTest.showMine() {
