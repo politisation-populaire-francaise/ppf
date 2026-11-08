@@ -43,6 +43,12 @@ import org.politisationpopulairefrancaise.server.backoffice.PortSelector
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeHeaders
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
 import org.politisationpopulairefrancaise.server.backoffice.publicPort
+import org.politisationpopulairefrancaise.server.editorial.EditorialDrafts
+import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsPurge
+import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsSection
+import org.politisationpopulairefrancaise.server.editorial.PublishedContents
+import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
+import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.decider.EditorialDeciderSource
@@ -283,6 +289,13 @@ fun Application.module(
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
     // The demands proposed by citizens, reviewed by the team (Décider, contract of the back-office, section 7).
     proposals?.let { teamBackOffice?.queues?.register(ProposalsBackOfficeQueue(it.queue)) }
+    // The writing pages of the editorial circuit of Comprendre (step 3): a section of the back-office.
+    if (teamBackOffice != null && dataSource != null && repository != null) {
+        val drafts = EditorialDrafts(dataSource, teamBackOffice.clock)
+        teamBackOffice.sections.register(EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, PublishedContents(repository, policy::isEditor), teamBackOffice.clock))
+        // A draft never submitted and unchanged for 180 days is deleted (docs/REGISTRE_DONNEES.md).
+        EditorialDraftsPurge(drafts).start(this, 24.hours, log)
+    }
     val limits = PostLimits(relay)
     val groups = repository?.let { GroupDirectory(it, GroupIndex(it.dataSource, relay.groupLockWait)) }
     // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published; the
