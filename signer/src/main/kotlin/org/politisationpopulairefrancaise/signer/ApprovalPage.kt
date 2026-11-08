@@ -145,14 +145,16 @@ internal object ApprovalPage {
         p { +ApprovalTexts.UNKNOWN }
     }
 
-    private fun page(title: String, config: SignerConfig, content: FlowContent.() -> Unit): String {
+    private fun page(pageTitle: String, config: SignerConfig, content: FlowContent.() -> Unit): String {
         val html: HTML.() -> Unit = {
             lang = ApprovalTexts.LANGUAGE
             head {
-                meta { charset = "utf-8" }
+                meta(charset = "utf-8")
                 meta(name = "viewport", content = "width=device-width, initial-scale=1")
+                meta(name = "color-scheme", content = "light dark")
+                meta(name = "robots", content = "noindex, nofollow")
                 meta(name = "referrer", content = "no-referrer")
-                title { +title }
+                title { +pageTitle }
                 link(rel = "stylesheet", href = STYLE_PATH)
                 script(src = SCRIPT_PATH) { attributes["defer"] = "defer" }
             }

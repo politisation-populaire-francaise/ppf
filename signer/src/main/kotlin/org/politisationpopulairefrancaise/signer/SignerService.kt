@@ -345,8 +345,8 @@ class SignerService private constructor(
         eventRefusal(time, use, unsigned, eventId)?.let { return refuseDraft(time, fields, it) }
         if (request.doubleValidation && author == null) return refuseDraft(time, fields, Refusal(SigningRefusals.AUTHOR_REQUIRED))
         teamListRefusal(time)?.let { return refuseDraft(time, fields, it) }
-        val draftKey = draftKey(use, eventId)
-        memory.drafts[draftKey]?.let { existing ->
+        val slot = draftKey(use, eventId)
+        memory.drafts[slot]?.let { existing ->
             if (existing.doubleValidation != request.doubleValidation || existing.author != author) {
                 return refuseDraft(time, fields, Refusal(SigningRefusals.DRAFT_CONFLICT))
             }
@@ -354,7 +354,7 @@ class SignerService private constructor(
             return DraftOutcome.Submitted(eventId, config.approvalUrl(use, eventId), created = false)
         }
         if (memory.drafts.size >= MAX_DRAFTS) return refuseDraft(time, fields, Refusal(SigningRefusals.TOO_MANY_DRAFTS))
-        memory.drafts[draftKey] = Draft(use, eventId, request.doubleValidation, author, time, unsigned.createdAt, unsigned.pubkey, unsigned)
+        memory.drafts[slot] = Draft(use, eventId, request.doubleValidation, author, time, unsigned.createdAt, unsigned.pubkey, unsigned)
         journal.append(time, JournalActions.DRAFT_SUBMITTED, fields)
         return DraftOutcome.Submitted(eventId, config.approvalUrl(use, eventId), created = true)
     }
