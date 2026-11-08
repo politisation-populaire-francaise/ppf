@@ -402,6 +402,15 @@ Suivi après l'élection : un fait de « Voir » porte `a` rôle `pacte` et `ppf
 
 Règles de la grille (`ComparatorGrid`) : une ligne par candidat du comparateur, en ordre alphabétique ; chaque ligne a tous les thèmes, dans l'ordre ; une seule position par candidat et par thème (la plus récente) ; une case sans position reste vide (« pas de position publiée ») ; une position d'une autre élection, d'une personne absente du comparateur ou d'un thème absent est listée à part. Ni note, ni classement, ni questionnaire.
 
+### Délibération citoyenne (DE-25, conception : `docs/integration/deliberation.md`)
+
+Trois contenus longs (type 30023), lus par `core/decider/Deliberation.kt`, les mêmes règles sur l'appareil et sur le serveur :
+- **délibération** (`ppf-type` = `deliberation`, une clé de l'équipe éditoriale) : `title`, `ppf-subject` (objet), `["ppf-measures","<min>","<max>"]` (10 au plus), et exactement trois `["ppf-phase","propositions|amendements|vote","<début>","<fin>"]` (secondes, temps universel ; dans cet ordre, chaque phase finissant avant la suivante) ;
+- **proposition** (`ppf-type` = `proposition`) : un seul `a` vers la délibération, `title`, le texte en contenu (20 000 caractères au plus), `ppf-justification` ; `["ppf-origin","depart"]` pour la proposition de départ, retenue seulement si elle est signée par une clé de l'équipe ;
+- **amendement** (`ppf-type` = `amendement`) : un seul `a` vers la proposition, la **nouvelle rédaction complète** en contenu, `ppf-justification`.
+
+Règles : une proposition par compte et par délibération (la première créée) ; trois amendements par compte et dix par proposition (les premiers créés) ; au-delà de 60 propositions, les plus soutenues passent (et toujours celles de départ) ; un amendement l'emporte quand les citoyens lui donnent plus de `pour` que de `contre` (plusieurs : le plus de `pour`, puis le moins de `contre`, puis le plus ancien) ; mesures gardées : plus de `pour` que de `contre`, les plus soutenues, entre le minimum et le maximum de la délibération (moins que le minimum : dit, jamais complété). Urnes (ouvertes par le serveur à l'arrivée de leur phase, closes à sa fin, résultats après la clôture) : `decider:deliberation:soutien:<adresse de la proposition>` (choix unique `soutien`), `decider:deliberation:amendement:<adresse de l'amendement>` et `decider:deliberation:final:<adresse de la proposition>` (`pour`, `contre`, `blanc` ; objet : l'adresse de la rédaction retenue).
+
 ## 4 octies. Annuaire des élus (D-047)
 
 Données publiques du Répertoire national des élus (RNE), servies par le serveur en JSON (ce ne sont pas des événements signés). Détail des sources et des règles de construction : `docs/integration/elus-serveur.md` ; lecture sur l'appareil : `docs/integration/elus-app.md`.
