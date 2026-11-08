@@ -20,6 +20,9 @@ import kotlin.test.assertIs
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
+import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
 
 /** The composition of the ceremony of the root (D-141), without database nor service. */
 class RootCeremonyTest {
@@ -76,7 +79,7 @@ class RootCeremonyTest {
         val sharingB = candidate("Partage B", setOf(TeamRole.MODERATOR), cose = listOf(shared, Tokens.randomBytes(77)))
         // The editor is already in the signed list: their approvals keep counting from the same date.
         val current = TeamList.read(
-            LocalEventSigner(root).sign(TeamList.unsigned(rootHex, listOf(TeamMember(editor.account.id.toString(), now - 30 * day, nostr, setOf(SigningUse.EDITORIAL_VOIR), editor.keys.map { it.credential })), now - 40 * day, now + 50 * day)),
+            LocalEventSigner(root).signNow(TeamList.unsigned(rootHex, listOf(TeamMember(editor.account.id.toString(), now - 30 * day, nostr, setOf(SigningUse.EDITORIAL_VOIR), editor.keys.map { it.credential })), now - 40 * day, now + 50 * day)),
             rootHex,
         )
 
@@ -96,7 +99,7 @@ class RootCeremonyTest {
         assertEquals(replaced.notAfter, revocations.getValue(replaced.pubkey).notAfter)
 
         // The team list reads back with TeamList, as the service will read it once signed by the root.
-        val list = assertNotNull(TeamList.read(LocalEventSigner(root).sign(assertNotNull(plan.teamList)), rootHex))
+        val list = assertNotNull(TeamList.read(LocalEventSigner(root).signNow(assertNotNull(plan.teamList)), rootHex))
         assertEquals(now + 90 * day, list.notAfter)
         assertEquals(setOf(editor, moderator, owner, verifier).map { it.account.id.toString() }.toSet(), list.members.keys)
         val listedEditor = list.members.getValue(editor.account.id.toString())
@@ -135,3 +138,6 @@ class RootCeremonyTest {
         assertTrue(plan.events.isEmpty())
     }
 }
+
+/** The tests sign as the root outside any coroutine (the signer of the core suspends). */
+private fun LocalEventSigner.signNow(event: UnsignedEvent): SignedEvent = runBlocking { sign(event) }

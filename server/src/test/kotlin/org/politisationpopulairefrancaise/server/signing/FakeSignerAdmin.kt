@@ -9,6 +9,7 @@ import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
 import java.security.MessageDigest
+import kotlinx.coroutines.runBlocking
 
 /**
  * The administration routes of the signing service for the tests of the back-office (D-141), in memory, in
@@ -39,7 +40,7 @@ class FakeSignerAdmin(rootConfigured: Boolean = true, private val now: () -> Lon
 
     private var requestNumber = 0
 
-    fun signAsRoot(event: UnsignedEvent): SignedEvent = LocalEventSigner(root).sign(event)
+    fun signAsRoot(event: UnsignedEvent): SignedEvent = LocalEventSigner(root).signNow(event)
 
     fun key(
         use: SigningUse,
@@ -85,3 +86,6 @@ class FakeSignerAdmin(rootConfigured: Boolean = true, private val now: () -> Lon
 
     private fun sha256(text: String): String = MessageDigest.getInstance("SHA-256").digest(text.toByteArray()).toHexString()
 }
+
+/** The tests sign as the root outside any coroutine (the signer of the core suspends). */
+private fun LocalEventSigner.signNow(event: UnsignedEvent): SignedEvent = runBlocking { sign(event) }
