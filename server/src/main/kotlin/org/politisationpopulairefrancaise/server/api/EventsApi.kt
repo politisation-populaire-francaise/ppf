@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.accounts.AccountTypes
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
@@ -78,6 +79,8 @@ class PostLimits(
  *   allow are stored; nothing is logged about the sender. Encrypted envelopes (kind 1059) are
  *   stored as they are, never opened. A citizen demand goes to the review queue ([RevendicationProposals]);
  *   a content of the Agir space that its key may not publish directly goes to the queue of [AgirSpace].
+ *   Nothing more is accepted from a key declared compromised; recovery commitments (1776) and
+ *   compromise notices (1777) are checked by [CompromisedAccounts].
  * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
@@ -92,6 +95,8 @@ fun Route.eventsApi(
     onStored: (SignedEvent) -> Unit = {},
     /** Collective accounts (D-133): a collective cannot publish a profile that makes it a person again. */
     accountTypes: AccountTypes? = null,
+    /** Recovery keys and compromised accounts (S-146, D-134); by default on the same database. */
+    compromised: CompromisedAccounts? = null,
 ) {
     if (repository == null) {
         route("/api/v1/{...}") {
@@ -104,6 +109,8 @@ fun Route.eventsApi(
     val directory = groups ?: GroupDirectory(repository)
     // Without one, the rules of the Agir space still hold (only the cleanup of its queue is missing).
     val agirSpace = agir ?: AgirSpace.create(repository.dataSource, repository, policy)
+    // Without one, commitments and notices are still checked (only the stamping is missing).
+    val recovery = compromised ?: CompromisedAccounts(repository)
     route("/api/v1/events") {
         post {
             val declaredLength = call.request.contentLength() ?: 0
@@ -139,6 +146,8 @@ fun Route.eventsApi(
                 is RateLimiter.Outcome.Limited -> return@post call.rateLimited(budget, "Too many events from this key; try again later.")
                 RateLimiter.Outcome.Allowed -> Unit
             }
+            // A key declared compromised by its owner publishes nothing more, of any kind (D-134).
+            withContext(Dispatchers.IO) { recovery.refusal(event) }?.let { return@post call.refuse(it) }
             // A citizen demand is not published at once: it waits for the review of a person (202).
             if (proposals != null && policy.isCitizenDemand(event)) {
                 return@post proposals.receive(call, event, limits.perKey)
@@ -148,6 +157,22 @@ fun Route.eventsApi(
                 PublicationPolicy.Decision.Allowed -> Unit
             }
             accountTypes?.let { types -> withContext(Dispatchers.IO) { types.check(event) } }?.let { return@post call.refuse(it) }
+            // A recovery commitment (1776) or a compromise notice (1777): checked and stored together, under the lock of the account.
+            if (recovery.concerns(event)) {
+                return@post when (val admission = withContext(Dispatchers.IO) { recovery.admitAndStore(event) }) {
+                    is CompromisedAccounts.Admission.Refused -> call.refuse(admission.refusal)
+                    is CompromisedAccounts.Admission.Stored -> when (admission.outcome) {
+                        StoreOutcome.STORED -> {
+                            onStored(event)
+                            call.respond(HttpStatusCode.Created, PublishResponse(event.id, "stored"))
+                        }
+                        else -> {
+                            limits.perKey.refund(event.pubkey)
+                            call.respond(HttpStatusCode.OK, PublishResponse(event.id, "duplicate"))
+                        }
+                    }
+                }
+            }
             // Agir space (contract, section 5): a content the key may not publish directly waits for review (202) or is refused;
             // a cancellation by its author withdraws the version still waiting (200).
             if (agirSpace.concerns(event)) {
