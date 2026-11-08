@@ -15,6 +15,7 @@ import io.ktor.server.testing.testApplication
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.platform.SigningUse
 import org.politisationpopulairefrancaise.server.TEST_RELAY
 import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.agir.AgirFixtures.testAgir
@@ -55,14 +56,26 @@ class EditorialQueueTest {
     private val reviews = EditorialReviews(TestDatabase.dataSource, drafts, clock)
     private val data get() = BackOfficeTestData.backOffice(clock)
 
-    /** A fake of the signing seam of step 5: records each hand-over, answers an approval address. */
-    private class RecordingPublisher : EditorialPublisher {
-        val calls = mutableListOf<ReadyToSign>()
+    /** A fake of the signing seam of step 5: records each call, answers [answer] (an approval page by default). */
+    private class RecordingPublisher(
+        val answer: PublisherAnswer = PublisherAnswer.AwaitingApproval("draft-1", APPROVAL_URL, approvals = 0, required = 2),
+    ) : EditorialPublisher {
+        val handedOver = mutableListOf<ReadyToSign>()
+        val asked = mutableListOf<ReadyToSign>()
 
-        override fun readyToSign(version: ReadyToSign): PublisherAnswer {
-            calls += version
-            return PublisherAnswer.Submitted("https://signature.example/approbation/1")
+        override suspend fun handOver(version: ReadyToSign): PublisherAnswer {
+            handedOver += version
+            return answer
         }
+
+        override suspend fun state(version: ReadyToSign): PublisherAnswer {
+            asked += version
+            return answer
+        }
+    }
+
+    private companion object {
+        const val APPROVAL_URL = "https://signature.example/approbation/1"
     }
 
     @BeforeTest
@@ -247,7 +260,9 @@ class EditorialQueueTest {
         assertEquals(HttpStatusCode.OK, approved.status)
         val html = approved.bodyAsText()
         assertTrue(html.contains(EditorialTexts.DONE_READY_TO_SIGN))
-        assertTrue(html.contains("https://signature.example/approbation/1"), "the address answered by the seam")
+        assertTrue(html.contains("<a href=\"$APPROVAL_URL\">${EditorialTexts.SIGNER_LINK}</a>"), "a plain link to the signing service's page")
+        assertTrue(html.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 2)))
+        assertTrue(publisher.asked.isEmpty(), "the hand-over answer is shown, the state is not asked twice")
         val draft = drafts.find(id)!!
         assertEquals(DraftStatus.READY_TO_SIGN, draft.status)
         assertFalse(draft.status.editable)
@@ -255,8 +270,17 @@ class EditorialQueueTest {
         assertEquals(ReviewDecision.READY_TO_SIGN, record.decision)
         assertEquals(bruno.id, record.reviewer)
         assertNull(record.reason, "an approval stores no text, nothing secret")
-        val call = publisher.calls.single()
-        assertEquals(ReadyToSign(EditorialSpace.COMPRENDRE, id, 1, ArticleType.DECRYPTAGE, "exemple-decryptage", null, alice.id, bruno.id, correction = false), call)
+        val call = publisher.handedOver.single()
+        assertEquals(ReadyToSign(EditorialSpace.COMPRENDRE, id, 1, ArticleType.DECRYPTAGE, "exemple-decryptage", null, alice.id, null, bruno.id, correction = false), call)
+        assertEquals(SigningUse.EDITORIAL_COMPRENDRE, call.use)
+        assertTrue(call.doubleValidation)
+        // On reload the state is asked again (no background loop); the link is for who may approve, never a writer.
+        val reload = client.page("$section/relecture/$id", bruno).bodyAsText()
+        assertTrue(reload.contains(EditorialTexts.SIGNER_LINK))
+        assertEquals(1, publisher.asked.size)
+        val forAuthor = client.page("$section/relecture/$id", alice).bodyAsText()
+        assertTrue(forAuthor.contains(EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, 0, 2)))
+        assertFalse(forAuthor.contains(EditorialTexts.SIGNER_LINK), "the author never approves")
         assertEquals(
             listOf("section.editorial.comprendre.approve_requested", "section.editorial.comprendre.approve"),
             journalAfter(seq).map { it.action },
@@ -278,6 +302,24 @@ class EditorialQueueTest {
         assertEquals(HttpStatusCode.OK, approved.status)
         assertTrue(approved.bodyAsText().contains(EditorialTexts.SIGNER_NOT_PLUGGED))
         assertEquals(DraftStatus.READY_TO_SIGN, drafts.find(id)!!.status)
+        assertTrue(client.page("$section/relecture/$id", bruno).bodyAsText().contains(EditorialTexts.SIGNER_NOT_PLUGGED))
+    }
+
+    @Test
+    fun withoutACertifiedKeyNothingIsSentAndAnUnsafeLinkIsNeverShown() = testApplication {
+        val client = start(RecordingPublisher(PublisherAnswer.KeyUnavailable))
+        val alice = member(data, "Alice", listOf(TeamRole.EDITOR))
+        val bruno = member(data, "Bruno", listOf(TeamRole.EDITOR))
+        val id = client.submitted(alice)
+        val approved = client.form("$section/relecture/$id", bruno, decision(EditorialDraftsSection.ACTION_APPROVE, 1)).bodyAsText()
+        assertTrue(approved.contains(EditorialTexts.SIGNER_UNAVAILABLE))
+        assertFalse(approved.contains(EditorialTexts.SIGNER_LINK))
+        assertEquals(DraftStatus.READY_TO_SIGN, drafts.find(id)!!.status, "the approval stays, nothing is published unsigned")
+        listOf("javascript:alert(1)", "/relatif", "http://ailleurs.example/x", "https://a.example/\"><script>").forEach {
+            assertFalse(EditorialDraftsSection.isSignerLink(it), it)
+        }
+        assertTrue(EditorialDraftsSection.isSignerLink(APPROVAL_URL))
+        assertTrue(EditorialDraftsSection.isSignerLink("http://localhost:8090/approbation/1"))
     }
 
     @Test

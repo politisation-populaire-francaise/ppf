@@ -577,13 +577,16 @@ class EditorialDraftsSection(
     }
 
     /** The review page: the submitted version as the site would show it, its facts, the decisions, the forms. */
-    private suspend fun SectionContext.reviewPage(draft: EditorialDraft, schema: ContentSchema, notice: Notice?, status: HttpStatusCode = HttpStatusCode.OK) {
+    private suspend fun SectionContext.reviewPage(draft: EditorialDraft, schema: ContentSchema, notice: Notice?, status: HttpStatusCode = HttpStatusCode.OK, signer: PublisherAnswer? = null) {
         val submitted = draft.submittedVersion?.let { drafts.version(draft.id, it) }
         val history = reviews.decisions(draft.id)
         val names = (history.map { it.reviewer } + draft.author).distinct().associateWith { pseudonymOf(it) }
         val queued = reviews.queued(space).firstOrNull { it.draft.id == draft.id }
         val problems = if (submitted != null && draft.status == DraftStatus.IN_REVIEW) check(schema, submitted.content) else emptyList()
         val writer = reviews.isWriterOf(draft.id, actor.accountId)
+        // A version ready to sign: where it stands on the signing service, read now (no background loop).
+        val signing = if (draft.status == DraftStatus.READY_TO_SIGN && submitted != null) signer ?: signerAnswer(draft, submitted.version) { publisher.state(it) } else null
+        val mayApprove = !writer && actor.has(EditorialQueue.publishPermission(space))
         respondPage("${EditorialTexts.REVIEW_TITLE} : ${draft.title.ifBlank { EditorialTexts.UNTITLED }}", notice, status) {
             draftHeader(this@reviewPage, draft, schema, EditorialTexts.REVIEW_TITLE)
             dl(classes = "bo-facts") {
@@ -627,6 +630,7 @@ class EditorialDraftsSection(
                     }
                 }
             }
+            signing?.let { signerBlock(it, mayApprove) }
             section {
                 attributes["aria-labelledby"] = "decision"
                 h2 { id = "decision"; +EditorialTexts.REVIEW_ACTIONS }
@@ -740,30 +744,53 @@ class EditorialDraftsSection(
             decided == null && result == ReviewResult.NotFound -> notFound()
             decided == null -> reviewPage(drafts.find(draft.id) ?: draft, schema, Notice(refusalText(result), error = true), statusOf(result))
             decision == ReviewDecision.READY_TO_SIGN -> {
-                val answer = handOver(decided, version)
-                val text = when (answer) {
-                    is PublisherAnswer.Submitted -> EditorialTexts.format(EditorialTexts.SIGNER_SUBMITTED, answer.approvalUrl)
-                    is PublisherAnswer.NotConnected -> answer.message
-                }
-                reviewPage(decided, schema, Notice("${EditorialTexts.DONE_READY_TO_SIGN} $text"))
+                val answer = signerAnswer(decided, version) { publisher.handOver(it) }
+                reviewPage(decided, schema, Notice(EditorialTexts.DONE_READY_TO_SIGN), signer = answer)
             }
             else -> redirect("relecture/${draft.id}", "ok=${decision.db}")
         }
     }
 
-    /** Hands an approved version to the signing seam; a failure never undoes the approval (the version stays ready to sign). */
-    private fun handOver(draft: EditorialDraft, version: Int): PublisherAnswer {
+    /**
+     * Asks the signing seam about version [version] of an approved draft ([call]: hand over after the approval,
+     * or the state when the review page is opened). A failure never undoes the approval: the version stays
+     * ready to sign and the page says the service is unavailable.
+     */
+    private suspend fun signerAnswer(draft: EditorialDraft, version: Int, call: suspend (ReadyToSign) -> PublisherAnswer): PublisherAnswer {
+        val approval = reviews.decisions(draft.id).firstOrNull { it.version == version && it.decision == ReviewDecision.READY_TO_SIGN }
+            ?: return PublisherAnswer.Refused("not_approved")
         val content = drafts.version(draft.id, version)?.content
         val request = ReadyToSign(
             space = space, draftId = draft.id, version = version, type = draft.type, slug = draft.slug, baseEventId = draft.baseEventId,
-            author = draft.author, approvedBy = requireNotNull(reviews.decisions(draft.id).firstOrNull { it.version == version }).reviewer,
+            author = draft.author, authorPubkey = reviews.nostrKeyOf(draft.author), approvedBy = approval.reviewer,
             correction = draft.baseEventId != null && content?.changeKind == ChangeKind.CORRECTION,
         )
         return try {
-            publisher.readyToSign(request)
+            call(request)
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            throw e
         } catch (e: Exception) {
             log.error("Editorial review: the signing seam failed (${e::class.qualifiedName}).")
-            PublisherAnswer.NotConnected(EditorialTexts.SIGNER_NOT_PLUGGED)
+            PublisherAnswer.Refused("signer_unavailable")
+        }
+    }
+
+    /** What the review page says of the signature; the approval link only for who may approve (publish permission, not a writer). */
+    private fun FlowContent.signerBlock(answer: PublisherAnswer, mayApprove: Boolean) {
+        section {
+            attributes["aria-labelledby"] = "signature"
+            h2 { id = "signature"; +EditorialTexts.SIGNER_TITLE }
+            when (answer) {
+                PublisherAnswer.NotConnected -> p { +EditorialTexts.SIGNER_NOT_PLUGGED }
+                PublisherAnswer.KeyUnavailable -> p { +EditorialTexts.SIGNER_UNAVAILABLE }
+                is PublisherAnswer.Refused -> p(classes = "bo-notice bo-notice-error") { +EditorialTexts.format(EditorialTexts.SIGNER_REFUSED, answer.code) }
+                is PublisherAnswer.Published -> p { +EditorialTexts.SIGNER_PUBLISHED }
+                is PublisherAnswer.AwaitingApproval -> {
+                    p { +EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, answer.approvals, answer.required) }
+                    // A plain link to the signing service's own page: no ceremony on this server.
+                    if (mayApprove && isSignerLink(answer.approvalUrl)) p { a(href = answer.approvalUrl) { +EditorialTexts.SIGNER_LINK } }
+                }
+            }
         }
     }
 
@@ -879,6 +906,11 @@ class EditorialDraftsSection(
 
     companion object {
         private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
+
+        /** An approval page of the signing service: https, or a local address in development; never a script nor a relative path. */
+        fun isSignerLink(url: String): Boolean =
+            url.length <= 500 && url.none { it.isWhitespace() || it.isISOControl() || it == '"' || it == '<' || it == '>' } &&
+                (url.startsWith("https://") || Regex("^http://(localhost|127\\.0\\.0\\.1)(:[0-9]{1,5})?/").containsMatchIn(url))
 
         /** The actions of the review, as the forms post them and the journal names them (`section.editorial.<space>.<action>`). */
         const val ACTION_SUBMIT: String = "submit"

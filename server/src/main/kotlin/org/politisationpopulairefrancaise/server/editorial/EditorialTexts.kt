@@ -151,7 +151,12 @@ object EditorialTexts {
     const val DONE_REJECTED: String = "Brouillon refusé."
     const val DONE_READY_TO_SIGN: String = "Version approuvée : elle est prête à signer."
     const val SIGNER_NOT_PLUGGED: String = "Le service de signature n’est pas encore branché : la version reste prête à signer, rien n’est publié."
-    const val SIGNER_SUBMITTED: String = "Demande transmise au service de signature : la validation à deux s’y fait à l’adresse {0}."
+    const val SIGNER_TITLE: String = "Signature"
+    const val SIGNER_UNAVAILABLE: String = "La signature n’est pas encore disponible pour cet espace : rien n’est envoyé, et un contenu n’est jamais publié sans signature."
+    const val SIGNER_AWAITING: String = "En attente des approbations sur la page du service de signature : {0} sur {1}. Deux personnes qui n’ont pas écrit le brouillon y relisent et approuvent le contenu avec leur clé."
+    const val SIGNER_LINK: String = "Approuver sur la page de signature"
+    const val SIGNER_REFUSED: String = "Le service de signature a refusé cette version (code « {0} »)."
+    const val SIGNER_PUBLISHED: String = "Contenu signé et publié."
 
     const val SUBMIT_TITLE: String = "Envoyer en relecture"
     const val SUBMIT_INTRO: String = "La version {0} partira en relecture ; elle ne sera plus modifiable, sauf si des modifications sont demandées."

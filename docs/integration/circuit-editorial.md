@@ -15,8 +15,8 @@ Rédigé le 7 novembre 2026 par le pôle « Comprendre », sur le plan approuvé
 - Écarts avec les sections 2 et 4 : un seul brouillon ouvert **par identifiant**, quel que soit le type (l'adresse ne dépend pas du type) ; `slug` facultatif tant qu'il n'est pas valide (un brouillon s'enregistre toujours) et `title` gardé pour les listes ; `origin` tiré des champs de l'en-tête ; tables `editorial_review` et `editorial_signing` laissées aux étapes 4 et 5 ; les liens (`Link`, `Slug`) sont des champs texte avec la liste des identifiants connus (`datalist`, sans script) plutôt qu'une liste déroulante ; une liste sur une ligne (`InlineList`) est un seul champ ; les choix de moins de 8 valeurs sont des boutons radio ; « Prévisualiser » montre l'aperçu sous le formulaire sans enregistrer ; en cas de conflit, le formulaire revient avec le texte de l'éditeur, la différence avec la dernière version, et repart de cette version (enregistrer de nouveau garde le texte, en connaissance de cause). Clé éditoriale d'un espace en attendant l'étape 5 : celle qui a signé le plus de contenus publiés de l'espace (D-093).
 - Relecture du socle par le Directeur technique (8 novembre 2026), changements faits : la version est écrite, puis la ligne du journal, dans le même gestionnaire ; si le journal refuse la ligne, l'éditeur reçoit une page d'erreur (jamais une page de réussite ni une redirection), la version restant enregistrée ; limite en caractères vérifiée par le serveur avant tout enregistrement (texte 60 000, une valeur de l'en-tête 5 000, tout le formulaire 75 000), annoncée dans l'aide du texte et posée en `maxlength`, bien avant la limite de 256 Kio de la section, comptée en octets encodés (une lettre accentuée en prend jusqu'à 6) ; plus aucune coupure silencieuse ; détails d'une ligne du journal d'une section bornés par le socle (20 au plus, clés `^[a-z0-9_]{1,40}$`, valeurs de 200 caractères au plus) ; tests : section absente du port public, envoi sans jeton ou d'une autre origine refusé avant le gestionnaire.
 - **L'aperçu n'est jamais publiable** : l'événement non signé construit pour l'aperçu ne vit que le temps de la requête ; il est rendu en HTML (ni son identifiant, ni du JSON), jamais enregistré, exporté, transmis au port de publication ni au service de signature. Seule l'action de la file (étapes 4 et 5) construit l'événement à signer, de nouveau, à partir de la version relue.
-- **Pour les étapes 4 et 5, le service de signature a changé** (révision de D-129, pas encore dans `main`) : aucune cérémonie d'approbation dans notre section ; l'action de la file construira l'événement non signé avec `PlatformSigner.currentKey(use)`, appellera `submitDraft(unsigned, use, doubleValidation, author)`, qui renvoie l'adresse d'approbation sur les pages du service de signature lui-même, puis `request(unsigned, use)` donnera l'événement signé. L'interface définitive viendra du Directeur technique ; la section 6 ci-dessous est à réécrire à ce moment-là.
-- **Étape 4 faite** (8 novembre 2026, D-094) : migration `V12__editorial_queue.sql` (numéro provisoire) avec l'état `ready_to_sign` (à la place d'`approved`) et la table `editorial_review` (une décision par version, jamais modifiée, message ou motif libre ici seulement) ; magasin `EditorialReviews.kt` (soumission par une personne qui a écrit le brouillon, décisions, règle des deux personnes dans la transaction : ni l'auteur, ni une personne qui a écrit une version, ni un compte de même clé Nostr) ; file `EditorialQueue.kt` (`editorial.comprendre`, permission `queue.editorial.comprendre.review` : comptes, échéances et niveaux du tableau de bord, détail qui renvoie à la page de relecture ; pas d'action du socle) ; dans la section : bouton « Soumettre pour relecture » (seulement sans problème, vérifié de nouveau par le serveur), page `relecture/{id}` (contenu soumis rendu comme sur le site, échéance, décisions précédentes, formulaires « Demander des modifications », « Refuser », « Approuver pour publication »), état dans la liste des brouillons, message de la relecture sur la page du brouillon ; deux lignes du journal par action (`<action>_requested` puis `<action>` avec son résultat), identifiants et codes seulement ; point de branchement `EditorialPublisher.kt` (par défaut : « service de signature pas encore branché »). Écarts avec la section 5 : décisions sur une page de la section plutôt que par les actions du socle (le socle garde le motif d'une action de file dans le journal) ; pas de `withdraw` ni de `retry_signing` (étape 5) ; pas de demande de validation à deux du socle (révision de D-129) ; règle « pas l'auteur » étendue à toute personne qui a écrit une version. Un brouillon publié, refusé ou retiré s'efface après 2 ans.
+- **Service de signature** (révision de D-129, dans `main` depuis `e017998`) : aucune cérémonie d'approbation dans notre section ; circuit de `PlatformSigner` décrit à la section 6 (réécrite le 8 novembre 2026).
+- **Étape 4 faite** (8 novembre 2026, D-094) : migration `V12__editorial_queue.sql` (numéro provisoire) avec l'état `ready_to_sign` (à la place d'`approved`) et la table `editorial_review` (une décision par version, jamais modifiée, message ou motif libre ici seulement) ; magasin `EditorialReviews.kt` (soumission par une personne qui a écrit le brouillon, décisions, règle des deux personnes dans la transaction : ni l'auteur, ni une personne qui a écrit une version, ni un compte de même clé Nostr) ; file `EditorialQueue.kt` (`editorial.comprendre`, permission `queue.editorial.comprendre.review` : comptes, échéances et niveaux du tableau de bord, détail qui renvoie à la page de relecture ; pas d'action du socle) ; dans la section : bouton « Soumettre pour relecture » (seulement sans problème, vérifié de nouveau par le serveur), page `relecture/{id}` (contenu soumis rendu comme sur le site, échéance, décisions précédentes, formulaires « Demander des modifications », « Refuser », « Approuver pour publication »), état dans la liste des brouillons, message de la relecture sur la page du brouillon ; deux lignes du journal par action (`<action>_requested` puis `<action>` avec son résultat), identifiants et codes seulement ; point de branchement `EditorialPublisher.kt` (`handOver` après l'approbation, `state` à l'ouverture de la page, calqués sur `PlatformSigner`, section 6 ; lien « Approuver sur la page de signature » pour qui peut approuver ; par défaut : « service de signature pas encore branché »). Écarts avec la section 5 : décisions sur une page de la section plutôt que par les actions du socle (le socle garde le motif d'une action de file dans le journal) ; pas de `withdraw` ni de `retry_signing` (étape 5) ; pas de demande de validation à deux du socle (révision de D-129) ; règle « pas l'auteur » étendue à toute personne qui a écrit une version. Un brouillon publié, refusé ou retiré s'efface après 2 ans.
 - Étapes 5 et 6 : à faire. Aucun schéma de « Comprendre » ne répète une clé (`Occurs.MANY`) : les lignes répétées sont testées sur un schéma de test ; elles serviront à « Voir » (étape 6).
 
 ## 0. Vue d'ensemble
@@ -25,21 +25,21 @@ Rédigé le 7 novembre 2026 par le pôle « Comprendre », sur le plan approuvé
 éditeur A                    serveur principal                         service de signature        port de publication
 ---------                    -----------------                         --------------------        -------------------
 formulaire (sans JS) --POST--> brouillon v1, v2… (editorial_draft_version)
-« Soumettre »         -------> file editorial.<espace> (BackOfficeQueue)
-                               éditeur B : « Demander des modifications » / « Refuser » (motif)
-« Demander la publication » -> demande de validation à deux (socle)
-                               éditeur C (≠ A, ≠ demandeur) approuve -> perform("publish")
-                                 construit l'UnsignedEvent (clé éditoriale de la plateforme)
-                                 PlatformSigner.request(unsigned, purpose, proof) ----> vérifie la preuve, signe
-                                 status(ticket) toutes les 10 s  <------------------- Signed(event) / Refused
-                                 vérifie id, clé, signature
+« Soumettre »         -------> file editorial.<espace> (BackOfficeQueue, page « Relecture » de la section)
+                               éditeur B (≠ A) : « Demander des modifications » / « Refuser » (motif)
+                               éditeur B (≠ A) : « Approuver pour publication » -> prêt à signer
+                                 currentKey(use), construit l'UnsignedEvent
+                                 submitDraft(unsigned, use, double validation, auteur A) --> page d'approbation
+                               lien « Approuver sur la page de signature » ------------> deux éditeurs ≠ A approuvent
+                               à l'ouverture de la page : draftStatus(use, id) <--------- approbations
+                                 quand prêt : request(unsigned, use), status(ticket) <--- Signed(event) / Refused
                                  PublicationPort.publish(event) ------------------------------------------> événements du serveur
                                journal d'audit (socle), journal public des corrections (événements)
 ```
 
 Règles fixes :
 1. **Un seul moteur** : Comprendre et Voir décrivent chaque type de contenu par un schéma déclaratif (section 1) ; le même moteur produit le formulaire, lit les réponses, valide et construit l'événement, côté serveur comme dans `tools/content-signer`.
-2. **Deux personnes au moins** : l'auteur d'une version ne peut ni la relire ni approuver sa publication ; la publication passe par la validation à deux du socle.
+2. **Deux personnes au moins** : l'auteur d'une version ne peut ni la relire ni approuver sa publication ; la publication passe par la validation à deux du service de signature (révision de D-129).
 3. **La clé de la plateforme ne touche jamais le serveur principal** : il prépare l'événement non signé, le service de signature séparé le signe après avoir vérifié la preuve d'approbation.
 4. **Une mise à jour est une nouvelle version de même adresse** (`30023:<clé éditoriale>:<slug>`), jamais une modification en place ; une correction de fond entre au journal public des corrections.
 5. **Origine IA obligatoire** : le formulaire n'a pas de valeur par défaut pour « produit avec l'aide d'une IA » ; sans réponse explicite, la version n'est pas soumise.
@@ -529,35 +529,22 @@ Une classe, deux enregistrements : `EditorialQueue(EditorialSpace.COMPRENDRE)` (
 2. **Identité du demandeur** dans `perform` lors d'une validation à deux (facultatif : la règle « pas l'auteur » suffit sans elle, mais la preuve pour le service de signature en a besoin, section 6).
 3. Accès en lecture à la clé Nostr facultative des comptes (`team_account`), si la preuve d'approbation la retient.
 
-## 6. Branchement sur le service de signature (interface provisoire)
+## 6. Branchement sur le service de signature (interface définitive, D-129)
 
-```kotlin
-interface PlatformSigner {
-    suspend fun request(unsigned: UnsignedEvent, purpose: String, approval: ApprovalProof): SigningTicket
-    suspend fun status(ticket: SigningTicket): SigningStatus
-}
-@JvmInline value class SigningTicket(val value: String)
-sealed interface SigningStatus {
-    data object Pending : SigningStatus
-    data class Signed(val event: SignedEvent) : SigningStatus
-    data class Refused(val reason: String) : SigningStatus
-}
-/** What the signing service checks before signing (its exact content is the Directeur technique's decision). */
-data class ApprovalProof(
-    val approvalId: String,        // team_pending_approval.id
-    val unsignedId: String,        // the id of the event to sign: the proof is bound to these exact bytes
-    val draft: String,             // "<draft uuid>:v<version>"
-    val requestedBy: String,       // team account ids (pseudonymous)
-    val approvedBy: String,
-    val assertions: List<String>,  // proposal: WebAuthn assertions of both editors whose challenge is unsignedId
-)
-```
+L'interface est `PlatformSigner` (`server/.../signing/PlatformSigner.kt`, dans `main` depuis `e017998` ; `FakePlatformSigner` dans les sources de test du serveur), décrite par `docs/integration/service-signature.md`, section 5. Le serveur principal ne voit ni ne transporte jamais une approbation : deux éditeurs approuvent sur la page du service de signature lui-même, qui vérifie leurs clés d'accès. Le point de branchement côté file est `EditorialPublisher` (étape 4, `handOver` et `state`) ; l'étape 5 y branche ce circuit sans toucher au reste :
 
-- `purpose` = `editorial.<espace>.publish` ; le service n'accepte que les `kind` 30023 dont `pubkey` est la clé éditoriale de l'espace, et dont `ppf-type` appartient à cet espace (liste tirée de `EditorialSchemas`, partagée par le code commun).
-- **Proposition pour la preuve** : la confirmation de la clé d'accès demandée par le socle pour une action sensible porte, pour `publish`, un défi égal à `unsignedId` ; le service de signature vérifie les deux assertions WebAuthn (auteur ou demandeur, puis approbateur) avec les clés publiques des éditeurs qu'il connaît lui-même. Un serveur principal compromis ne peut alors rien faire signer sans deux éditeurs. À valider par le Directeur technique (le socle a déjà le script de cérémonie).
-- **Après l'approbation** (`perform("publish")`) : le serveur relit la version, la valide une dernière fois (`EditorialEngine.check`), construit l'événement (`EditorialEngine.build`, `created_at` de la section 3.4), l'écrit dans `editorial_signing`, appelle `request`, passe le brouillon en `signing` et répond `Done`.
-- **Suivi** : une tâche toutes les 10 secondes interroge `status` pour les demandes `pending` (au plus 24 heures, puis `refused` « délai dépassé ») ; sur `Signed`, le serveur vérifie que l'`id` est celui demandé, que `pubkey` est la clé éditoriale et que la signature est valide, puis publie par le **`PublicationPort` unique** (adaptateur serveur) ; brouillon `published`, `published_event_id` renseigné. Sur `Refused` : `signing_refused`, alerte sur le tableau de bord (`postAlert`, niveau 5), action `retry_signing`.
-- **Tant que le service n'existe pas** : un `PlatformSigner` de développement (clé d'exemple lue hors dépôt, comme l'outil) pour les tests et le serveur de développement uniquement ; refusé au démarrage si `PPF_ENVIRONMENT` vaut `production` ou `preproduction`.
+1. **Après l'approbation dans la file** (`handOver`) : `currentKey(use)` avec `use` = `SigningUse.EDITORIAL_COMPRENDRE` (ou `EDITORIAL_VOIR`) ; s'il répond `null`, la page dit « La signature n'est pas encore disponible » et rien n'est envoyé : un contenu n'est **jamais** publié sans signature. Sinon l'événement non signé est construit avec cette clé (`EditorialEngine.build`, `created_at` de la section 3.4, strictement après celui de la version publiée), puis `submitDraft(unsigned, use, doubleValidation = true, author = DraftAuthor(compte de l'auteur, clé Nostr de l'auteur))` répond `Submitted(draftId, approvalUrl)` ou `Refused(code, detail)`.
+2. **Lien d'approbation** : `approvalUrl` est montrée sur la page de relecture comme un simple lien « Approuver sur la page de signature », aux seuls membres qui peuvent approuver (`queue.editorial.<espace>.publish`, et jamais une personne qui a écrit le brouillon) ; aucune cérémonie de clé sur notre serveur ; le lien n'est affiché que s'il est en `https://` (ou sur `localhost` en développement).
+3. **Suivi, à l'ouverture de la page** (`state`, aucune boucle en arrière-plan) : `draftStatus(use, eventId)` donne les approbations enregistrées (`approvals`, `required`, `ready`) ; `null` si le service ne connaît pas le brouillon ou ne répond pas.
+4. **Signature** : quand `ready`, `request(unsigned, use)` donne un ticket ; `status(ticket)` répond `Pending`, `Signed(event)` ou `Refused(code, detail)` (codes stables : `approvals_missing`, `unknown_draft`, `key_revoked`, `signer_unavailable`, `bad_signature_from_signer`, `untrusted_key_from_signer`, `unknown_ticket`…).
+5. **Publication** : `Signed.event` est publié **tel quel** par le `PublicationPort` unique ; brouillon `published`, `published_event_id` renseigné ; une correction entre au journal public des corrections (section 3.4).
+6. **Expiration** : un brouillon expire après 7 jours sur le service de signature ; il faut alors un nouvel événement, avec un nouveau `created_at`, soumis de nouveau.
+
+À garder à l'étape 5 (sans rien de secret) : l'identifiant de l'événement soumis, l'adresse d'approbation et l'état de la demande (table `editorial_signing`), pour relire `draftStatus` à l'ouverture de la page.
+
+- Le service n'accepte, pour ces usages, que les `kind` 30023 dont `ppf-type` n'appartient pas à un autre usage (`SigningUse.matches`).
+- Sur `Refused` : état `signing_refused`, alerte sur le tableau de bord (`postAlert`, niveau 5), nouvelle soumission possible (étape 5).
+- Tant que le service n'est pas branché, `UnpluggedEditorialPublisher` répond « Le service de signature n'est pas encore branché » ; les tests de l'étape 5 utiliseront `FakePlatformSigner`.
 
 ## 7. Étapes livrables et tests
 

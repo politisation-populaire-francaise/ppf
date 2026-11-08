@@ -116,7 +116,8 @@ class EditorialReviews(
     private val dataSource: DataSource,
     private val drafts: EditorialDrafts,
     private val clock: Clock = Clock.systemUTC(),
-    private val nostrKeyOf: (UUID) -> String? = { null },
+    /** The optional Nostr key of a team account (`team_account.nostr_pubkey`). */
+    val nostrKeyOf: (UUID) -> String? = { null },
 ) {
     /** Sends version [version] of draft [id] to review; [actor] must be one of its writers. The caller checked it has no problem. */
     fun submit(id: UUID, version: Int, actor: UUID): ReviewResult = dataSource.transaction { connection ->
