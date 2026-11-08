@@ -120,7 +120,7 @@ class AgirHeldQueueTest {
         assertEquals(listOf("approve", "reject"), guarded.actions(before.id).map { it.id })
         assertTrue(createHTML().div { guarded.render(before.id, this) }.contains(AgirHeldQueue.COMPROMISED_BEFORE))
         assertEquals(ActionOutcome.Done, guarded.perform(before.id, "approve", null, actor))
-        assertNotNull(events.find(before.id))
+        assertTrue(events.find(before.id) != null, "the content signed before is published")
     }
 
     @Test
