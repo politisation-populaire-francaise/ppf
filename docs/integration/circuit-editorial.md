@@ -523,6 +523,7 @@ Une classe, deux enregistrements : `EditorialQueue(EditorialSpace.COMPRENDRE)` (
 
 - **Échéances et niveaux** (S-115) : une correction (`change_kind = correction`) a le niveau 4 et une échéance de 48 heures après la soumission ; un contenu nouveau ou une mise à jour, niveau 2, échéance de 7 jours ; un élément en `signing_refused`, niveau 5, sans échéance. La demande de validation à deux expire après 7 jours (socle).
 - `pendingCount` = éléments `in_review` et `signing_refused`.
+- **Compte compromis (S-146)** : rien à appliquer ici (examen du 9 novembre 2026, `docs/integration/compte-compromis.md`). Les brouillons sont écrits par des comptes d'équipe connectés par leurs clés d'accès, puis signés par la clé de la plateforme : aucune clé de citoyen ne les signe, et la clé Nostr facultative d'un compte d'équipe ne sert qu'à reconnaître la même personne entre auteur et relecteur.
 
 ### 5.4 Ce qu'il faut demander au socle (Directeur technique)
 
