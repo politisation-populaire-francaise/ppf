@@ -1,11 +1,19 @@
 package org.politisationpopulairefrancaise.server.db
 
+import kotlinx.coroutines.runBlocking
 import org.postgresql.ds.PGSimpleDataSource
+import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.signing.EventKinds
+import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
+import org.politisationpopulairefrancaise.core.signing.sign
 import org.politisationpopulairefrancaise.server.TestDatabase
 import org.politisationpopulairefrancaise.server.backoffice.AuditActor
 import org.politisationpopulairefrancaise.server.backoffice.AuditEntry
 import org.politisationpopulairefrancaise.server.backoffice.AuditFilter
 import org.politisationpopulairefrancaise.server.backoffice.AuditLog
+import org.politisationpopulairefrancaise.server.events.EventRepository
+import org.politisationpopulairefrancaise.server.events.StoreOutcome
+import org.politisationpopulairefrancaise.server.legal.LegalRegister
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
 import java.sql.SQLException
@@ -70,6 +78,70 @@ class DatabaseRolesTest {
         Database.checkMigrated(app)
         // The callback is idempotent.
         Database.runMigrations(TestDatabase.dataSource, ROLE)
+    }
+
+    @Test
+    fun theServerRoleOnlyAppendsToTheLegalRegister() {
+        superuser("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$ROLE') THEN CREATE ROLE $ROLE NOLOGIN; END IF; END $$")
+        superuser("ALTER ROLE $ROLE LOGIN")
+        Database.runMigrations(TestDatabase.dataSource, ROLE)
+        TestDatabase.reset()
+        val app = asRole(ROLE)
+        // Publishing a public content through the server's role writes its register row.
+        val note = runBlocking { LocalEventSigner(IdentityKeys.generate()).sign(kind = EventKinds.TEXT_NOTE, content = "[EXEMPLE] note", createdAt = 1_000) }
+        assertEquals(StoreOutcome.STORED, EventRepository(app).store(note))
+        TestDatabase.dataSource.connection.use { connection ->
+            val rows = connection.createStatement().executeQuery("SELECT event_id FROM legal_register.content_operation")
+            assertTrue(rows.next())
+            assertEquals(note.id, rows.getString(1))
+        }
+        app.connection.use { connection ->
+            listOf(
+                "SELECT * FROM legal_register.content_operation",
+                "SELECT count(*) FROM legal_register.account_pseudonym",
+                "SELECT * FROM legal_register.requisition_answer",
+                "UPDATE legal_register.content_operation SET kind = 2",
+                "DELETE FROM legal_register.content_operation",
+                "DELETE FROM legal_register.account_pseudonym",
+                "TRUNCATE legal_register.content_operation",
+                "TRUNCATE legal_register.account_pseudonym",
+                // The reception date is the database's: no row can be backdated, then purged early.
+                "INSERT INTO legal_register.content_operation (event_id, operation, received_at, created_at, kind, pubkey, protocol) " +
+                    "VALUES ('${"a".repeat(64)}', 'create', now() - interval '2 years', 1, 1, '${"b".repeat(64)}', 1)",
+                "INSERT INTO legal_register.account_pseudonym (pubkey, changed_at, event_id, event_created_at) " +
+                    "VALUES ('${"b".repeat(64)}', now() - interval '2 years', '${"a".repeat(64)}', 1)",
+                // The public counter grows only with a real answer.
+                "INSERT INTO legal_register.requisition_answer (approval_id, operation_rows, pseudonym_rows) VALUES (gen_random_uuid(), 0, 0)",
+                "INSERT INTO legal_register.content_operation (event_id, operation, created_at, kind, pubkey, protocol) " +
+                    "VALUES ('${"a".repeat(64)}', 'create', 1, 1, '${"b".repeat(64)}', 1) RETURNING id",
+                "ALTER FUNCTION legal_register.purge() SECURITY INVOKER",
+                "CREATE OR REPLACE FUNCTION legal_register.purge() RETURNS TABLE (deleted_operations BIGINT, deleted_pseudonyms BIGINT) LANGUAGE sql AS 'SELECT 0::bigint, 0::bigint'",
+                "CREATE TABLE legal_register.intrus (x INTEGER)",
+                "DROP TABLE legal_register.content_operation",
+            ).forEach { sql ->
+                val error = assertFailsWith<SQLException>(sql) { connection.createStatement().use { it.execute(sql) } }
+                // 42501: insufficient privilege (or not the owner): refused for lack of rights, not by chance.
+                assertEquals("42501", error.sqlState, sql)
+            }
+            connection.createStatement().use { statement ->
+                // Appending the columns it fills works; the purge and the public counter run through their functions.
+                statement.execute(
+                    "INSERT INTO legal_register.account_pseudonym (pubkey, name, display_name, event_id, event_created_at) " +
+                        "VALUES ('${"b".repeat(64)}', '[EXEMPLE] pseudo', NULL, '${"a".repeat(64)}', 1)",
+                )
+                val purged = statement.executeQuery("SELECT deleted_operations, deleted_pseudonyms FROM legal_register.purge()")
+                assertTrue(purged.next())
+                assertEquals(0, purged.getLong(1))
+                statement.executeQuery("SELECT * FROM legal_register.requisitions_by_month()").close()
+            }
+            // Reading the rows needs a requisition approved by two people.
+            val refused = assertFailsWith<SQLException> {
+                connection.createStatement().use { it.executeQuery("SELECT legal_register.answer_requisition(gen_random_uuid())") }
+            }
+            assertEquals("LR001", refused.sqlState)
+        }
+        assertEquals(LegalRegister.PurgeReport(0, 0), LegalRegister.purge(app))
+        TestDatabase.reset()
     }
 
     @Test

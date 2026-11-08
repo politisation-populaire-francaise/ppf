@@ -52,6 +52,11 @@ services:
       PPF_PUSH_ALLOWED_HOSTS: push.politisation-populaire-francaise.org
       PPF_PUSH_INTERNAL_URL: http://ntfy:8080
       PPF_VAPID_PRIVATE_KEY_FILE: /run/secrets/vapid_private_key
+      # Testimonies (Agir, M5): files encrypted on the device for the moderation and evidence keys,
+      # only stored here (4 GB at most by default); the public keys are set in .env.
+      PPF_TESTIMONY_DIR: /data/testimonies
+      PPF_MODERATION_KEY: ${PPF_MODERATION_KEY:-}
+      PPF_EVIDENCE_KEY: ${PPF_EVIDENCE_KEY:-}
       # No PPF_EXAMPLES_DIR here: the server refuses to start in production with it.
       # Parliamentary open data written by the importer below, read-only for the server.
       PPF_OPEN_DATA_DIR: /data/open-data
@@ -69,6 +74,7 @@ services:
     volumes:
       - /srv/ppf/production/open-data:/data/open-data:ro
       - /srv/ppf/production/vote_seeds:/run/ppf/vote_seeds:ro
+      - /srv/ppf/production/testimonies:/data/testimonies
     networks:
       - internal
       - edge

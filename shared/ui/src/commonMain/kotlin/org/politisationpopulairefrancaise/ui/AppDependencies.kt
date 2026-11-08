@@ -8,6 +8,8 @@ import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import org.politisationpopulairefrancaise.core.voir.ContentFollowStore
+import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
+import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataTrust
 
 /**
  * What each platform host (Android activity, desktop window, iOS view controller) provides to
@@ -21,6 +23,8 @@ class AppDependencies(
     val editorialTrust: EditorialTrust = EditorialTrust.bundledExamples(),
     /** The server, when one is configured; null keeps the application fully offline. */
     val remote: RemoteEvents? = null,
+    /** Which import keys sign the parliamentary open data this build trusts (D-064). */
+    val openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
     /**
      * The accounts the user follows, kept on the device (never sent to the server as a list).
      * Null keeps the list in memory for the life of the process only (tests, previews).
@@ -53,8 +57,10 @@ class AppDependencies(
             database: PpfDatabase,
             editorialTrust: EditorialTrust = EditorialTrust.bundledExamples(),
             remote: RemoteEvents? = null,
+            openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
+            openDataTrust = openDataTrust,
             contentStore = LocalEventStore(database),
             editorialTrust = editorialTrust,
             remote = remote,

@@ -155,6 +155,6 @@ fun rememberParliamentState(dependencies: AppDependencies): ParliamentState {
     val scope = rememberCoroutineScope()
     return remember(dependencies) {
         val storage = dependencies.database?.let(::ParliamentStore) ?: InMemoryParliamentStorage()
-        ParliamentState(ParliamentRepository(dependencies.remote, storage, bundled = ::bundledParliamentFile), scope)
+        ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope)
     }
 }

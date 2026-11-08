@@ -371,6 +371,36 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
         }
     }
 
+    // Judicial requisitions (legal register, D-077) ------------------------------------------------------------------
+    get("/requisitions") {
+        val auth = call.requireAuth(backOffice) ?: return@get
+        val requisitions = when (val outcome = io { backOffice.requisitions(auth.actor) }) {
+            is Outcome.Denied -> return@get call.forbidden(auth)
+            is Outcome.Ok -> outcome.value
+        }
+        val pseudonyms = io { backOffice.members().associate { it.id to it.pseudonym } }
+        call.respondHtml { requisitionsPage(auth, requisitions, pseudonyms, backOffice.clock.instant(), noticeOf(call.request.queryParameters)) }
+    }
+    formPost("/requisitions", backOffice) { auth, form ->
+        if (!auth.actor.has(Permissions.LEGAL_REQUISITION)) return@formPost call.forbidden(auth)
+        val search = when (val parsed = RequisitionSearch.parse(form["cle"], form["evenement"], form["du"], form["au"])) {
+            is Outcome.Denied -> return@formPost call.redirectWith("/requisitions", error = parsed.code)
+            is Outcome.Ok -> parsed.value
+        }
+        call.afterAction(auth, form, io { backOffice.requestRequisition(auth, form["reference"], search) }, "/requisitions", "requested")
+    }
+    // The answer is a file given once: a POST (it changes the state), after a new verification of the key.
+    formPost("/requisitions/{id}/reponse", backOffice) { auth, form ->
+        val id = call.uuidParameter("id") ?: return@formPost call.notFound(auth)
+        when (val outcome = io { backOffice.answerRequisition(auth, id) }) {
+            is Outcome.Ok -> {
+                call.response.header(HttpHeaders.ContentDisposition, "attachment; filename=\"${LegalRequisitions.fileName(outcome.value)}\"")
+                call.respondText(LegalRequisitions.json(outcome.value), ContentType.Application.Json)
+            }
+            is Outcome.Denied -> if (outcome.code == "confirmation_required") call.confirm(auth, form) else call.redirectWith("/requisitions", error = outcome.code)
+        }
+    }
+
     // Validation sessions -------------------------------------------------------------------------------------------
     get("/seances") {
         val auth = call.requireAuth(backOffice) ?: return@get

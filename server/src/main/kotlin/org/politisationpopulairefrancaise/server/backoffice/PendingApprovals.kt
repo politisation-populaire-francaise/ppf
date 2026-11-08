@@ -138,6 +138,48 @@ class PendingApprovals(private val dataSource: DataSource) {
             if (rows.next()) rows.toApproval() else null
         }
 
+    /** Locks the request [id] whatever its status, until the end of the transaction of [connection]. */
+    fun lock(connection: Connection, id: UUID): PendingApproval? =
+        connection.prepareStatement("$SELECT WHERE id = ? FOR UPDATE").use { statement ->
+            statement.setObject(1, id)
+            val rows = statement.executeQuery()
+            if (rows.next()) rows.toApproval() else null
+        }
+
+    /** The requests of [action] still pending or decided since [since], newest first. */
+    fun recentOf(action: String, since: Instant): List<PendingApproval> = dataSource.connection.use { connection ->
+        connection.prepareStatement("$SELECT WHERE action = ? AND (status = 'pending' OR decided_at >= ?) ORDER BY requested_at DESC, id").use { statement ->
+            statement.setString(1, action)
+            statement.setInstant(2, since)
+            val rows = statement.executeQuery()
+            buildList { while (rows.next()) add(rows.toApproval()) }
+        }
+    }
+
+    /**
+     * Removes [keys] from the payload of the decided requests of [action] that were not approved, or were
+     * approved before [approvedBefore]: what a request needed only until its moment passed (the search of a
+     * judicial requisition). Returns how many requests changed.
+     */
+    fun forget(action: String, keys: Set<String>, approvedBefore: Instant): Int = dataSource.transaction { connection ->
+        val stale = connection.prepareStatement(
+            "SELECT id, payload FROM team_pending_approval WHERE action = ? AND status <> 'pending' AND (status <> 'approved' OR decided_at < ?) FOR UPDATE",
+        ).use { statement ->
+            statement.setString(1, action)
+            statement.setInstant(2, approvedBefore)
+            val rows = statement.executeQuery()
+            buildList { while (rows.next()) add(rows.uuid("id")!! to AuditChain.decodeDetails(rows.getString("payload"))) }
+        }.filter { (_, payload) -> payload.keys.any { it in keys } }
+        connection.prepareStatement("UPDATE team_pending_approval SET payload = ? WHERE id = ?").use { update ->
+            stale.forEach { (id, payload) ->
+                update.setString(1, AuditChain.encodeDetails(payload - keys))
+                update.setObject(2, id)
+                update.executeUpdate()
+            }
+        }
+        stale.size
+    }
+
     fun decide(connection: Connection, id: UUID, status: ApprovalStatus, decidedBy: UUID?, now: Instant): Boolean {
         require(status != ApprovalStatus.PENDING)
         return connection.prepareStatement("UPDATE team_pending_approval SET status = ?, decided_by = ?, decided_at = ? WHERE id = ? AND status = 'pending'").use { update ->
