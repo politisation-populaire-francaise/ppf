@@ -47,8 +47,8 @@ class WorkingKey internal constructor(
  * The working keys at rest (D-129): one file per key in `<data>/keys`, the 32-byte secret encrypted with
  * AES-256-GCM under a key derived (HKDF-SHA-256) from the key-encryption key of `PPF_SIGNER_KEK_FILE`,
  * with a fresh 96-bit nonce, the use, the public key and the date as associated data (a file moved to
- * another use or key does not decrypt). Files are written to a temporary name, flushed to disk, then
- * renamed. Keys are generated here and their secret never leaves: no method returns it.
+ * another use or key does not decrypt). Files are written private to a temporary name, flushed to disk,
+ * then renamed ([DurableFiles]). Keys are generated here and their secret never leaves: no method returns it.
  */
 class KeyVault(dataDir: Path, kek: ByteArray) {
     private val dir: Path = dataDir.resolve("keys")
@@ -60,7 +60,7 @@ class KeyVault(dataDir: Path, kek: ByteArray) {
         key = SecretKeySpec(derived, "AES")
         derived.fill(0)
         kek.fill(0)
-        Files.createDirectories(dir)
+        DurableFiles.privateDirectory(dir)
     }
 
     /** Reads every key; a file that does not decrypt or does not match its public key stops the service. */
@@ -151,34 +151,6 @@ class KeyVault(dataDir: Path, kek: ByteArray) {
             Base64.getDecoder().decode(text)
         } catch (e: IllegalArgumentException) {
             throw SignerStartupException("Malformed key file")
-        }
-    }
-}
-
-/** Writes that survive a crash: a temporary file flushed to disk, then renamed over the target. */
-internal object DurableFiles {
-    fun writeAtomically(target: Path, bytes: ByteArray) {
-        val temporary = target.resolveSibling("${target.fileName}.tmp")
-        java.nio.channels.FileChannel.open(
-            temporary,
-            java.nio.file.StandardOpenOption.CREATE,
-            java.nio.file.StandardOpenOption.TRUNCATE_EXISTING,
-            java.nio.file.StandardOpenOption.WRITE,
-        ).use { channel ->
-            val buffer = java.nio.ByteBuffer.wrap(bytes)
-            while (buffer.hasRemaining()) channel.write(buffer)
-            channel.force(true)
-        }
-        restrictToOwner(temporary)
-        Files.move(temporary, target, java.nio.file.StandardCopyOption.ATOMIC_MOVE, java.nio.file.StandardCopyOption.REPLACE_EXISTING)
-    }
-
-    /** On POSIX systems (the container), only the service's own user may read the file. */
-    fun restrictToOwner(file: Path) {
-        try {
-            Files.setPosixFilePermissions(file, java.nio.file.attribute.PosixFilePermissions.fromString("rw-------"))
-        } catch (e: UnsupportedOperationException) {
-            // Windows (development): the permissions of the user's profile apply.
         }
     }
 }

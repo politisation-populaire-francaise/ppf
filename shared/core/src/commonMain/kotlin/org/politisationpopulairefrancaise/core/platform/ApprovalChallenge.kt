@@ -5,8 +5,9 @@ import fr.acinq.bitcoin.Crypto
 /**
  * The challenge a team member signs with their passkey to approve the platform signature of one event
  * (contract, section 5): SHA-256 of `"ppf-approval-v1\n" + use + "\n" + hex id of the unsigned event`.
- * The domain and the use make an approval worthless for another use or another event; the back-office
- * gives it to the browser as the WebAuthn challenge, the signing service recomputes it.
+ * The domain and the use make an approval worthless for another use or another event. The signing
+ * service gives it to the browser as the WebAuthn challenge on its own approval page (never the main
+ * server), and recomputes it to check the assertion.
  */
 object ApprovalChallenge {
     const val DOMAIN: String = "ppf-approval-v1"

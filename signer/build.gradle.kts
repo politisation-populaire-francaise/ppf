@@ -1,7 +1,8 @@
 // signer: the signing service of the platform (contract docs/integration/service-signature.md, D-129).
 // A separate jar, run in its own container with no Internet access, reachable only by the server on an
-// internal network. It holds the working keys (encrypted at rest, never exported) and signs only what
-// its rules allow, with the approvals of the team checked by itself.
+// internal network, and serving its own approval pages on a second port and origin. It holds the working
+// keys (encrypted at rest, never exported) and signs only what its rules allow, with the approvals of the
+// team collected and checked by itself.
 //   ./gradlew :signer:test
 //   ./gradlew :signer:buildFatJar   (build/libs/ppf-signer.jar)
 
@@ -52,6 +53,9 @@ dependencies {
     // Verification of the team's passkey approvals (WebAuthn), the same library and version as the
     // back-office of the server (D-120).
     implementation(libs.webauthn4j.core)
+    // The approval page, rendered by the service itself from the draft it holds (contract 1.2): the same
+    // HTML builder as the site and the back-office, escaping every text.
+    implementation(libs.kotlinx.html)
 
     testImplementation(libs.ktor.server.test.host)
     testImplementation(kotlin("test"))

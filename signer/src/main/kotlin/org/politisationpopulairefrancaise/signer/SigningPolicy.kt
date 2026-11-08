@@ -32,10 +32,16 @@ class UsePolicy(
     val maxAgeSeconds: Long,
     private val shape: (UnsignedEvent) -> Refusal?,
 ) {
-    /** The first rule [event] breaks, null when it has the shape of this use. */
+    /**
+     * The first rule [event] breaks, null when it has the shape of this use. The shape is always at least
+     * as strict as [SigningUse.matches], the form the applications check: an event that does not have the
+     * form of the use is refused here, before the more detailed rules.
+     */
     fun check(event: UnsignedEvent): Refusal? {
         if (event.kind !in use.kinds) return Refusal(SigningRefusals.KIND_NOT_ALLOWED)
-        return shape(event)
+        shape(event)?.let { return it }
+        if (!use.matches(event)) return Refusal(SigningRefusals.BAD_TAG)
+        return null
     }
 }
 
@@ -68,7 +74,19 @@ object SigningPolicies {
     )
 
     /** The `ppf-type` values that belong to another use and that an editorial key never signs. */
-    private val TYPES_OF_OTHER_USES = setOf("organisation", "pacte", "engagement")
+    private val TYPES_OF_OTHER_USES = SigningUse.TYPES_OF_OTHER_USES
+
+    /**
+     * An OpenTimestamps proof (`.ots` file): its magic header, the major version 1, the operation that
+     * hashed the file (SHA-256, tag 0x08) and the 32 bytes of the file digest, then the timestamp itself.
+     */
+    private val OTS_MAGIC: ByteArray = byteArrayOf(0x00) + "OpenTimestamps".toByteArray(Charsets.US_ASCII) + byteArrayOf(0x00, 0x00) +
+        "Proof".toByteArray(Charsets.US_ASCII) + byteArrayOf(0x00, 0xbf.toByte(), 0x89.toByte(), 0xe2.toByte(), 0xe8.toByte(), 0x84.toByte(), 0xe8.toByte(), 0x92.toByte(), 0x94.toByte())
+    private const val OTS_MAJOR_VERSION: Byte = 0x01
+    private const val OTS_OP_SHA256: Byte = 0x08
+
+    /** The largest proof accepted, decoded (a proof of one Bitcoin attestation is well under 1 KiB). */
+    const val MAX_PROOF_BYTES: Int = 8 * 1024
 
     private val ORIGINS = setOf("human", "ai-assisted")
     private val DEMAND_STATUSES = setOf("nouvelle", "en-debat", "tres-soutenue", "retenue", "campagne")
@@ -136,7 +154,12 @@ object SigningPolicies {
         return null
     }
 
-    /** An OpenTimestamps attestation (NIP-03): one `e` (the timestamped id), at most one `k`, the proof in base64. */
+    /**
+     * An OpenTimestamps attestation (NIP-03): one `e` (the timestamped id, which is the digest the proof
+     * stamps), at most one `k`, and the `.ots` proof in canonical base64, at most [MAX_PROOF_BYTES] decoded,
+     * whose header says it stamps exactly that digest with SHA-256. Other proof formats (RFC 3161 among
+     * them) are refused for now (docs/FORMATS.md, section 4 decies).
+     */
     private fun timestamp(event: UnsignedEvent): Refusal? {
         onlyTags(event, setOf("e", "k"))?.let { return it }
         val e = event.tags.filter { it[0] == "e" }
@@ -144,16 +167,25 @@ object SigningPolicies {
         val k = event.tags.filter { it[0] == "k" }
         if (k.size > 1 || k.any { it.size != 2 || it[1].toIntOrNull()?.takeIf { n -> n in 0..65535 && it[1] == n.toString() } == null }) return Refusal(SigningRefusals.BAD_TAG, "k")
         val content = event.content
+        if (content.length > (MAX_PROOF_BYTES + 2) / 3 * 4) return Refusal(SigningRefusals.TOO_LARGE)
         if (content.isEmpty() || content.length % 4 != 0 || !content.all { it.isLetterOrDigit() && it.code < 128 || it == '+' || it == '/' || it == '=' }) {
             return Refusal(SigningRefusals.BAD_CONTENT)
         }
-        if (runCatching { java.util.Base64.getDecoder().decode(content) }.isFailure) return Refusal(SigningRefusals.BAD_CONTENT)
+        val proof = runCatching { java.util.Base64.getDecoder().decode(content) }.getOrNull() ?: return Refusal(SigningRefusals.BAD_CONTENT)
+        if (java.util.Base64.getEncoder().encodeToString(proof) != content) return Refusal(SigningRefusals.BAD_CONTENT)
+        if (proof.size > MAX_PROOF_BYTES) return Refusal(SigningRefusals.TOO_LARGE)
+        val header = OTS_MAGIC.size
+        val digestStart = header + 2
+        if (proof.size <= digestStart + 32) return Refusal(SigningRefusals.BAD_CONTENT, "ots")
+        if (!proof.copyOfRange(0, header).contentEquals(OTS_MAGIC) || proof[header] != OTS_MAJOR_VERSION) return Refusal(SigningRefusals.BAD_CONTENT, "ots")
+        if (proof[header + 1] != OTS_OP_SHA256) return Refusal(SigningRefusals.BAD_CONTENT, "ots")
+        if (!proof.copyOfRange(digestStart, digestStart + 32).contentEquals(e[0][1].hexToByteArray())) return Refusal(SigningRefusals.BAD_CONTENT, "e")
         return null
     }
 
     /** The index of the parliamentary open data (FORMATS.md, section 4 octies): exactly its `d`, a JSON object. */
     private fun openDataIndex(event: UnsignedEvent): Refusal? {
-        if (event.tags != listOf(listOf("d", "ppf:parlement-index"))) return Refusal(SigningRefusals.BAD_TAG, "d")
+        if (event.tags != listOf(listOf("d", SigningUse.OPENDATA_INDEX_IDENTIFIER))) return Refusal(SigningRefusals.BAD_TAG, "d")
         return jsonObjectContent(event)
     }
 

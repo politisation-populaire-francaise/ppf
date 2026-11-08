@@ -10,6 +10,11 @@ import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
  * The JSON exchanged between the main server and the signing service (contract
  * docs/integration/service-signature.md, section 5; D-129), shared so that both sides read and write
  * exactly the same fields.
+ *
+ * Since version 1.2 of the contract the main server never carries an approval: it submits a draft
+ * ([DraftRequest]), the team members approve it on the signing service's own page, and the server then
+ * asks for the signature ([SignRequest]), which the service grants only if the approvals it recorded
+ * itself satisfy the rule fixed by the draft.
  */
 object SigningProtocol {
     val json: Json = Json {
@@ -37,51 +42,76 @@ data class EventDraft(
 }
 
 /**
- * One WebAuthn assertion of a team member over [ApprovalChallenge] (all binary fields in base64url
- * without padding, as the browser gives them): the back-office collects it, the signing service checks it
- * against the passkeys of the team list signed by the root.
+ * The author of the draft behind a content, by back-office account id or by Nostr key (either is enough
+ * to exclude them from a double validation).
  */
-@Serializable
-data class ApprovalAssertion(
-    /** The back-office account id, as in the team list. */
-    val account: String,
-    @SerialName("credential_id") val credentialId: String,
-    @SerialName("authenticator_data") val authenticatorData: String,
-    @SerialName("client_data") val clientData: String,
-    val signature: String,
-    @SerialName("user_handle") val userHandle: String? = null,
-)
-
-/** The author of the draft behind a content, by account id or by Nostr key (either is enough to exclude them). */
 @Serializable
 data class DraftAuthor(
     val account: String? = null,
     val pubkey: String? = null,
-)
+) {
+    /** Whether the author is named at all. */
+    val isNamed: Boolean get() = !account.isNullOrEmpty() || !pubkey.isNullOrEmpty()
+}
 
 /**
- * The proof that the team approved one signature: no assertion for an automatic use, one for an
- * ordinary publication, two of two different accounts for a content of M17 that implicates a person
- * ([doubleValidation], told by the queue), the [author] of the draft being neither of them.
+ * `POST /v1/drafts`: a content of a human use to be approved on the service's own page. [doubleValidation]
+ * (told by the queue, for a content of M17 that implicates a person) asks for two approvals of two
+ * different accounts, the [author] of the draft being neither of them. The rule is fixed by the first
+ * submission of an event: a submission of the same event with another rule is refused.
  */
 @Serializable
-data class ApprovalProof(
+data class DraftRequest(
+    val use: String,
+    val event: EventDraft,
     @SerialName("double_validation") val doubleValidation: Boolean = false,
     val author: DraftAuthor? = null,
-    val assertions: List<ApprovalAssertion> = emptyList(),
+)
+
+/** The answer of `POST /v1/drafts`: `submitted` with the id and the page to approve it, or `refused` with a code. */
+@Serializable
+data class DraftResponse(
+    val status: String,
+    /** The id of the unsigned event (64 hexadecimal characters). */
+    val draft: String? = null,
+    /** The approval page, on the signing service's own origin: `<origin>/approbation/<use>/<id>`. */
+    @SerialName("approval_url") val approvalUrl: String? = null,
+    val code: String? = null,
+    val detail: String? = null,
 ) {
     companion object {
-        /** The proof of an automatic use: nothing. */
-        val NONE: ApprovalProof = ApprovalProof()
+        const val SUBMITTED: String = "submitted"
+        const val REFUSED: String = "refused"
     }
 }
 
-/** `POST /v1/sign`. */
+/** One approval recorded by the signing service: the account of the member and when. */
+@Serializable
+data class DraftApproval(val account: String, val at: Long)
+
+/** `GET /v1/drafts/{use}/{id}`: where the approval of a draft stands, for the back-office. */
+@Serializable
+data class DraftStatusResponse(
+    val use: String,
+    val draft: String,
+    @SerialName("double_validation") val doubleValidation: Boolean,
+    /** How many approvals the rule asks for: 1, or 2 for a double validation. */
+    val required: Int,
+    val approvals: List<DraftApproval>,
+    /** Whether the approvals now satisfy the rule (the server may ask for the signature). */
+    val ready: Boolean,
+    /** Whether the service holds the content (after a restart, until the server submits the draft again). */
+    @SerialName("content_known") val contentKnown: Boolean,
+    @SerialName("submitted_at") val submittedAt: Long,
+    @SerialName("expires_at") val expiresAt: Long,
+    @SerialName("approval_url") val approvalUrl: String,
+)
+
+/** `POST /v1/sign`: the event of an automatic use, or of a human use whose draft the team approved. */
 @Serializable
 data class SignRequest(
     val use: String,
     val event: EventDraft,
-    val approval: ApprovalProof = ApprovalProof.NONE,
 )
 
 /** The answer of `POST /v1/sign`: `signed` with the event, or `refused` with a stable [code] of [SigningRefusals]. */
@@ -126,6 +156,12 @@ data class WorkingKeyInfo(
     @SerialName("not_before") val notBefore: Long? = null,
     @SerialName("not_after") val notAfter: Long? = null,
     @SerialName("revoked_from") val revokedFrom: Long? = null,
+    /**
+     * The latest date among the signatures of this key and the `created_at` of the events it signed (from
+     * the journal), null when it signed nothing: a closing revocation at `last_signed_at + 1` keeps every
+     * content it signed and covers nothing after (contract, section 6, step 4).
+     */
+    @SerialName("last_signed_at") val lastSignedAt: Long? = null,
 )
 
 /** `GET /v1/keys`. */
@@ -133,6 +169,8 @@ data class WorkingKeyInfo(
 data class KeysResponse(
     @SerialName("root_configured") val rootConfigured: Boolean,
     @SerialName("team_list") val teamList: String? = null,
+    /** The end of the team list held (`ppf-not-after`), null when there is none or it names no valid end. */
+    @SerialName("team_list_not_after") val teamListNotAfter: Long? = null,
     val keys: List<WorkingKeyInfo>,
 )
 
@@ -158,16 +196,40 @@ object SigningRefusals {
     const val KEY_EXPIRED: String = "key_expired"
     const val OUTSIDE_CERTIFICATE: String = "outside_certificate"
     const val NO_TEAM_LIST: String = "no_team_list"
+
+    /** The team list held names no valid end, or its end is past: no approval relies on it. */
+    const val TEAM_LIST_EXPIRED: String = "team_list_expired"
+
+    /** An approval was sent to `POST /v1/sign` (refused since version 1.2: approvals are collected by the service). */
     const val UNEXPECTED_APPROVAL: String = "unexpected_approval"
+
+    /** An automatic use is signed directly, never through a draft. */
+    const val AUTOMATIC_USE: String = "automatic_use"
+
+    /** No draft of this event is known for this use (never submitted, expired after 7 days, or already signed). */
+    const val UNKNOWN_DRAFT: String = "unknown_draft"
+
+    /** The same event was submitted before with another rule (double validation or author). */
+    const val DRAFT_CONFLICT: String = "draft_conflict"
+
+    /** The service holds as many drafts as it accepts; older ones must be signed or expire first. */
+    const val TOO_MANY_DRAFTS: String = "too_many_drafts"
+
     const val APPROVALS_MISSING: String = "approvals_missing"
     const val UNKNOWN_CREDENTIAL: String = "unknown_credential"
-    const val ACCOUNT_MISMATCH: String = "account_mismatch"
     const val NOT_ALLOWED_FOR_USE: String = "not_allowed_for_use"
     const val ASSERTION_REFUSED: String = "assertion_refused"
-    const val SAME_ACCOUNT_TWICE: String = "same_account_twice"
+
+    /** This account already approved this draft (two approvals must come from two different accounts). */
+    const val ALREADY_APPROVED: String = "already_approved"
+
     const val AUTHOR_REQUIRED: String = "author_required"
     const val AUTHOR_CANNOT_APPROVE: String = "author_cannot_approve"
     const val ALREADY_SIGNED: String = "already_signed"
+
+    /** A closing statement was already signed for this ballot box (`d`): never a second one. */
+    const val URN_ALREADY_CLOSED: String = "urn_already_closed"
+
     const val RATE_LIMITED: String = "rate_limited"
     const val UNAUTHORIZED: String = "unauthorized"
 }
