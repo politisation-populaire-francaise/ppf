@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.core.publication
 
 import org.politisationpopulairefrancaise.core.groups.Group
+import org.politisationpopulairefrancaise.core.identity.AccountStatusResult
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 
 /** What to fetch from a remote source of events. */
@@ -141,4 +142,11 @@ interface RemoteEvents : PublicationPort {
      */
     suspend fun fetchParliament(name: String? = null, etag: String? = null): OpenDataDownload =
         OpenDataDownload.Unavailable(UnsupportedOperationException("This source has no parliamentary open data"))
+
+    /**
+     * Where the recovery of the account [pubkey] (lowercase hex) stands (S-146, D-134):
+     * `GET /api/v1/accounts/<key>/status`. Sources without it answer [AccountStatusResult.Unavailable].
+     */
+    suspend fun fetchAccountStatus(pubkey: String): AccountStatusResult =
+        AccountStatusResult.Unavailable(UnsupportedOperationException("This source has no account status"))
 }

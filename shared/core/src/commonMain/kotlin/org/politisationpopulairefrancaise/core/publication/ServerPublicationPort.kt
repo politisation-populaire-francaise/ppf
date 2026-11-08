@@ -14,11 +14,17 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.elus.ElusReader
 import org.politisationpopulairefrancaise.core.groups.Group
+import org.politisationpopulairefrancaise.core.identity.AccountRecovery
+import org.politisationpopulairefrancaise.core.identity.AccountStatus
+import org.politisationpopulairefrancaise.core.identity.AccountStatusResult
+import org.politisationpopulairefrancaise.core.identity.NoticeCheck
 import org.politisationpopulairefrancaise.core.revendications.ProposalState
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSource
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatuses
@@ -37,7 +43,10 @@ class ServerPublicationPort(
     internal val client: HttpClient,
     /** Origin of the server, without trailing slash, e.g. "https://politisation-populaire-francaise.org". */
     internal val baseUrl: String,
-) : RemoteEvents, ProposalStatusSource, HeldStatusSource {
+) : RemoteEvents, ProposalStatusSource, HeldStatusSource, CompromisedRefusals {
+
+    private val refused = MutableStateFlow<Set<String>>(emptySet())
+    override val refusedAsCompromised: StateFlow<Set<String>> get() = refused
 
     override suspend fun publish(event: SignedEvent): PublicationResult {
         val response = try {
@@ -65,7 +74,28 @@ class ServerPublicationPort(
                 }
             }
             in 500..599 -> PublicationResult.Unavailable(ServerException(response.status.value))
-            else -> rejection(event.id, runCatching { response.bodyAsText() }.getOrNull())
+            else -> rejection(event.id, runCatching { response.bodyAsText() }.getOrNull()).also { refusal ->
+                if (refusal.reason == RejectionReason.ACCOUNT_COMPROMISED) refused.value = refused.value + event.pubkey
+            }
+        }
+    }
+
+    override suspend fun fetchAccountStatus(pubkey: String): AccountStatusResult {
+        require(pubkey.length == 64 && pubkey.all { it in '0'..'9' || it in 'a'..'f' }) { "A public key in lowercase hexadecimal" }
+        val response = try {
+            client.get("$baseUrl/api/v1/accounts/$pubkey/status")
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return AccountStatusResult.Unavailable(e)
+        }
+        if (response.status.value !in 200..299) return AccountStatusResult.Unavailable(ServerException(response.status.value))
+        return try {
+            AccountStatusResult.Known(accountStatus(response.bodyAsText()))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            AccountStatusResult.Unavailable(e)
         }
     }
 
@@ -327,6 +357,12 @@ class ServerPublicationPort(
             "banned" -> RejectionReason.BANNED
             "reason_required" -> RejectionReason.REASON_REQUIRED
             "edit_not_allowed" -> RejectionReason.EDIT_NOT_ALLOWED
+            "account_compromised" -> RejectionReason.ACCOUNT_COMPROMISED
+            "recovery_already_set" -> RejectionReason.RECOVERY_ALREADY_SET
+            "already_compromised" -> RejectionReason.ALREADY_COMPROMISED
+            "successor_taken" -> RejectionReason.SUCCESSOR_TAKEN
+            "invalid_commitment" -> RejectionReason.INVALID_COMMITMENT
+            "invalid_notice" -> RejectionReason.INVALID_NOTICE
             else -> RejectionReason.REFUSED
         }
 
@@ -341,6 +377,16 @@ class ServerPublicationPort(
             val existing = error?.existing?.takeIf { Group.isValidId(it) }
             val similar = error?.similar.orEmpty().filter { Group.isValidId(it.id) }
             return PublicationResult.Rejected(eventId, rejectionReason(error?.error), existing, similar)
+        }
+
+        /**
+         * The body of `GET /api/v1/accounts/<key>/status`. A notice that does not check out by itself
+         * is dropped (the date and successor of the status stay, as the server said them).
+         */
+        internal fun accountStatus(body: String): AccountStatus {
+            val status = json.decodeFromString(AccountStatus.serializer(), body)
+            val notice = status.notice?.takeIf { AccountRecovery.parseNotice(it) is NoticeCheck.Valid }
+            return status.copy(notice = notice)
         }
 
         /** The address of the index ([code] null) or of one package of the directory of elected officials. */
