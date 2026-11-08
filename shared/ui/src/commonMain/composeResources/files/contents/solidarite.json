@@ -1,0 +1,668 @@
+[
+    {
+        "id": "5dd068dee3a56a3a6ced57d0b1719683965381534dedc3bcd99550d5a5a46bab",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "caisse-entraide-familles-marseille"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Caisse fictive d'entraide des familles de grévistes de Marseille"
+            ],
+            [
+                "summary",
+                "Paniers de courses et aide pour la cantine des enfants des familles de grévistes, dans un exemple fictif."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "caisse"
+            ],
+            [
+                "ppf-fund-type",
+                "autre"
+            ],
+            [
+                "ppf-territory",
+                "Marseille (13)"
+            ],
+            [
+                "ppf-beneficiary",
+                "Familles de grévistes de Marseille, dans cet exemple fictif"
+            ],
+            [
+                "ppf-verified",
+                "2026-11-07"
+            ],
+            [
+                "ppf-no-party",
+                "oui"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-manager",
+                "Collectif fictif d'entraide des quartiers de Marseille"
+            ],
+            [
+                "r",
+                "https://example.org/caisse-entraide-marseille"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une caisse imaginaire, créée pour montrer l'annuaire des caisses. Son lien de dons ne mène nulle part.**\n\nCe collectif fictif n'est pas dans l'annuaire des organisations de PPF : l'application le dit sur la fiche. L'équipe a vérifié la caisse et sa page de dons, mais pas le collectif comme organisation.\n\n## À quoi sert la caisse\n\n- Des paniers de courses chaque semaine.\n- Le paiement de la cantine des enfants pendant la grève.\n",
+        "sig": "c9a7fbcd3dbe1a97d95c2a3275d9c1ddeaa00b28ec12360a9cb4dcfc12d12d9f6335b4f7264652c5c3522c6b18fc8e435a9eba78139c6d07212c657cfc848297"
+    },
+    {
+        "id": "d5c2c7a96f511afe6aee5136fd695f2a2df01e3f3447ac6510420ef6624cd1fd",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "caisse-greve-cantines-rennes"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Caisse fictive de la grève des cantines de Rennes"
+            ],
+            [
+                "summary",
+                "Caisse de la grève de démonstration des agents des cantines scolaires de Rennes, close après la fin de la grève."
+            ],
+            [
+                "published_at",
+                "1792584000"
+            ],
+            [
+                "ppf-type",
+                "caisse"
+            ],
+            [
+                "ppf-fund-type",
+                "greve"
+            ],
+            [
+                "ppf-territory",
+                "Rennes (35)"
+            ],
+            [
+                "ppf-beneficiary",
+                "Agents grévistes des cantines scolaires de Rennes, dans cet exemple fictif"
+            ],
+            [
+                "ppf-verified",
+                "2026-10-20"
+            ],
+            [
+                "ppf-no-party",
+                "oui"
+            ],
+            [
+                "ppf-fund-status",
+                "close"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-sector",
+                "Restauration scolaire"
+            ],
+            [
+                "ppf-manager",
+                "Intersyndicale fictive des cantines de Rennes"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une caisse imaginaire, créée pour montrer une caisse close.**\n\nLa grève de cet exemple s'est terminée : la caisse ne reçoit plus de dons. Sa fiche reste visible pour garder la trace de la solidarité.\n",
+        "sig": "b4ba7a17646fb1c7bde364d819ee0aad3620560016386fac1df9d05f2f8f264ad548ee15c402129759166bc4fdf1fd62e5a99025797b1dd18b6c0b72fa2a3168"
+    },
+    {
+        "id": "b91a782d476f3daeb91c0ecf901fa2d3cf8360668c7cff1920bce5fca8d993bd",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "caisse-greve-livreurs"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Caisse de grève fictive des livreurs à vélo"
+            ],
+            [
+                "summary",
+                "Soutenir les livreurs fictifs qui cessent le travail pour obtenir une rémunération minimale par course, partout en France."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "caisse"
+            ],
+            [
+                "ppf-fund-type",
+                "greve"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-beneficiary",
+                "Livreurs à vélo grévistes, partout en France, dans cet exemple fictif"
+            ],
+            [
+                "ppf-verified",
+                "2026-11-06"
+            ],
+            [
+                "ppf-no-party",
+                "oui"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-sector",
+                "Livraison"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:syndicat-livreurs-velo"
+            ],
+            [
+                "r",
+                "https://example.org/caisse-livreurs"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une caisse imaginaire, créée pour montrer l'annuaire des caisses. Son lien de dons ne mène nulle part.**\n\n## À quoi sert la caisse\n\nLes livreurs indépendants ne touchent rien les jours où ils ne roulent pas. La caisse verse une somme fixe par jour de grève déclaré au syndicat.\n\n## Transparence\n\nLe syndicat publie chaque mois le total reçu, le total versé et le nombre de livreurs aidés, sans aucun nom.\n",
+        "sig": "7b1eb093eee300290f5fcc0f92e57fdd54c37dd69586d6ea001da36ff6be7ac1c9773388ec198644d100ecf104f4cc0a74a11bf9c08e96f23900b6b2772a6e89"
+    },
+    {
+        "id": "b359896ef69fdf33237d0f6d29131bd0e0f130d833ac5b5f24912ade5712fc51",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "caisse-greve-transports-lille"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Caisse de grève fictive des transports urbains de Lille"
+            ],
+            [
+                "summary",
+                "Soutenir les grévistes fictifs des bus et du métro de Lille pendant la grève de démonstration de novembre 2026."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "caisse"
+            ],
+            [
+                "ppf-fund-type",
+                "greve"
+            ],
+            [
+                "ppf-territory",
+                "Lille (59)"
+            ],
+            [
+                "ppf-beneficiary",
+                "Grévistes fictifs des transports urbains de Lille"
+            ],
+            [
+                "ppf-verified",
+                "2026-11-05"
+            ],
+            [
+                "ppf-no-party",
+                "oui"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-sector",
+                "Transports"
+            ],
+            [
+                "ppf-strike",
+                "Grève fictive des transports urbains de novembre 2026"
+            ],
+            [
+                "ppf-manager",
+                "Union locale fictive de Lille"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:union-locale-lille"
+            ],
+            [
+                "r",
+                "https://example.org/caisse-greve-transports-lille"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une caisse imaginaire, créée pour montrer l'annuaire des caisses. Son lien de dons ne mène nulle part.**\n\n## À quoi sert la caisse\n\nCompenser une partie des journées de salaire retenues aux grévistes, en commençant par les salaires les plus bas et les temps partiels.\n\n## Comment l'argent est utilisé\n\n- Les dons sont reçus sur la page de la caisse, gérée par l'union locale, jamais par PPF.\n- L'union locale publie chaque semaine le montant reçu et le montant reversé.\n- Rien n'est reversé à un candidat ni à un parti.\n",
+        "sig": "d77abfbc6f9e6164f939ee97f5db69868da7206ace67a7079c2cf2843b3c841f64c07876ce0457ceef4d01b45a0a8f9ef7e6518917d1eeee0593ea2c6137e66b"
+    },
+    {
+        "id": "5ea2ed0813f8770cb7e59ff4bfb3b75c2f4c7de26a2dfe7697d5c46efa79404f",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "caisse-juridique-nord"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Caisse de solidarité juridique fictive du Nord"
+            ],
+            [
+                "summary",
+                "Aider à payer les frais d'avocat et les amendes des personnes poursuivies après des manifestations, dans un exemple fictif."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "caisse"
+            ],
+            [
+                "ppf-fund-type",
+                "juridique"
+            ],
+            [
+                "ppf-territory",
+                "Nord (59)"
+            ],
+            [
+                "ppf-beneficiary",
+                "Personnes poursuivies après des manifestations dans le Nord, dans cet exemple fictif"
+            ],
+            [
+                "ppf-verified",
+                "2026-11-04"
+            ],
+            [
+                "ppf-no-party",
+                "oui"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:legal-team-nord"
+            ],
+            [
+                "r",
+                "https://example.org/caisse-juridique-nord"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette fiche décrit une caisse imaginaire, créée pour montrer l'annuaire des caisses. Son lien de dons ne mène nulle part.**\n\n## À quoi sert la caisse\n\n- Payer une partie des honoraires d'avocat quand l'aide juridictionnelle ne suffit pas.\n- Aider à régler une amende ou des frais de justice.\n- Rembourser des frais de transport pour aller à une audience.\n\n## Ce que la caisse ne fait pas\n\nElle ne publie jamais le nom des personnes aidées. Les demandes passent par la legal team, qui garde leur confidentialité.\n",
+        "sig": "d7cb869b36cf04c6deb0c13dc7db6b270e223bab06c6d206650c3402d38713314b44f53640707f40a7b2192af2594fdff0970153d2f470ab83430901ca186796"
+    },
+    {
+        "id": "2515eab98659f98c9824634aaf6531494480423fcca66fb3fd591d7a5d171e78",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mission-accueil-stand-lyon"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Accueillir les nouveaux au stand de Lyon"
+            ],
+            [
+                "summary",
+                "Présenter PPF aux passants et aider à installer l'application, au stand de démonstration de Lyon."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "mission"
+            ],
+            [
+                "ppf-skill",
+                "accueil"
+            ],
+            [
+                "ppf-territory",
+                "Lyon (69)"
+            ],
+            [
+                "location",
+                "Stand fictif de démonstration, place imaginaire, Lyon"
+            ],
+            [
+                "ppf-commitment",
+                "Une demi-journée le samedi"
+            ],
+            [
+                "ppf-people",
+                "2"
+            ],
+            [
+                "ppf-deadline",
+                "1795906740"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette mission est imaginaire, créée pour montrer « Je veux aider ».**\n\n## Ce que l'équipe attend\n\n- Expliquer que tout se lit sans compte.\n- Aider à installer l'application, sans jamais toucher au téléphone de quelqu'un sans son accord.\n- Ne jamais noter le nom ni le numéro des personnes rencontrées.\n",
+        "sig": "3dcedfed08e1c7c22413e0e7c2e7697b7d246ccf524cc719b2d08f169ae46694fe0b52d8b62e6ad766109fbb87b6786e365d71a3004e566008f44148b1eaef94"
+    },
+    {
+        "id": "1dadb900c731dc6891218cca3e5f9b6741954b40c02baf0c22e504793d9ec036",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mission-application-libre"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Améliorer l'application et ses visuels"
+            ],
+            [
+                "summary",
+                "Corriger de petits défauts de l'application, ou dessiner des visuels accessibles pour les fiches."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "mission"
+            ],
+            [
+                "ppf-skill",
+                "developpement"
+            ],
+            [
+                "ppf-skill",
+                "graphisme"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-remote",
+                "oui"
+            ],
+            [
+                "ppf-commitment",
+                "À votre rythme"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette mission est imaginaire, créée pour montrer « Je veux aider ».**\n\n## Ce que l'équipe attend\n\n- Pour le développement : des corrections proposées sur le dépôt public du projet, relues avant d'entrer.\n- Pour le graphisme : des visuels lisibles, contrastés, sans aucune image de l'identité visuelle de l'État.\n",
+        "sig": "2c3373403e611fe2969d3e2ac3317ce8186003070a3060e71ee60073b8054e902886346c1734e93b8120ad859fe1390f20ec905b3ad57666b51e61fa2d559ede"
+    },
+    {
+        "id": "42a25929d8919c14cc3281569e63cf652d135841425a77663d41830fce512663",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mission-moderation-salons"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Aider à modérer les salons publics"
+            ],
+            [
+                "summary",
+                "Rejoindre l'équipe de modération des salons publics, formée à la charte de contenu."
+            ],
+            [
+                "published_at",
+                "1793534400"
+            ],
+            [
+                "ppf-type",
+                "mission"
+            ],
+            [
+                "ppf-skill",
+                "moderation"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-remote",
+                "oui"
+            ],
+            [
+                "ppf-commitment",
+                "Trois heures par semaine"
+            ],
+            [
+                "ppf-mission-status",
+                "pourvue"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette mission est imaginaire, créée pour montrer une mission pourvue.**\n\nAssez de personnes se sont proposées : la mission reste visible, mais l'équipe n'a plus besoin de bénévoles pour l'instant.\n",
+        "sig": "d6d69704a9d9cae5feb4b8ff0dab0bc9c07d94a7eb049db8a6062b37b812f1c7033423057bef4f45941c1e897ad13d07455d0733f7a14f57dda6a271e86b8da9"
+    },
+    {
+        "id": "fd842e9386129c560b0856e05a79f42a2367d8cd679d99850695f4d46e854c36",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mission-relecture-juridique"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Relire les guides juridiques avant publication"
+            ],
+            [
+                "summary",
+                "Relire les fiches sur la garde à vue et les droits en manifestation, et signaler ce qui n'est plus à jour."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "mission"
+            ],
+            [
+                "ppf-skill",
+                "juriste"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-remote",
+                "oui"
+            ],
+            [
+                "ppf-commitment",
+                "Une à deux heures par fiche"
+            ],
+            [
+                "ppf-people",
+                "3"
+            ],
+            [
+                "ppf-deadline",
+                "1796165940"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette mission est imaginaire, créée pour montrer « Je veux aider ».**\n\n## Ce que l'équipe attend\n\n- Vérifier chaque règle citée dans le texte en vigueur.\n- Proposer une correction sourcée quand une règle a changé.\n\nCette relecture bénévole ne remplace pas l'avis de l'avocat prévu avant le lancement public.\n",
+        "sig": "edf0070025a4abef6c42f7027e76f07f6249ede969e8bd718f7b7a467118035f11db0ea64dc7113e65d13d87d7333b823e9819081ec86eb01032aade2fbc4804"
+    },
+    {
+        "id": "4cc27b4f9f7bfd1ad0a559c532f623dd0986ba63b59454f7c32af9d6fd86b8bc",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mission-traduction-droits"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Traduire la fiche « Vos droits en manifestation »"
+            ],
+            [
+                "summary",
+                "Traduire une fiche pratique en anglais, en arabe ou en espagnol, pour les personnes qui lisent mal le français."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "mission"
+            ],
+            [
+                "ppf-skill",
+                "traduction"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-remote",
+                "oui"
+            ],
+            [
+                "ppf-commitment",
+                "Trois à quatre heures en tout"
+            ],
+            [
+                "ppf-people",
+                "6"
+            ],
+            [
+                "ppf-deadline",
+                "1797375540"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette mission est imaginaire, créée pour montrer « Je veux aider ».**\n\n## Ce que l'équipe attend\n\n- Traduire le texte de la fiche, sans rien ajouter.\n- Signaler les mots juridiques qui n'ont pas d'équivalent exact.\n- Relire la traduction d'une autre personne.\n\nChaque traduction est relue par une deuxième personne avant d'être publiée.\n",
+        "sig": "5812f7431e0ea985535c89d8e327963c910c58ff6a1934f5a0a703dc74afababf3b627ed74261c83d5e96acad012a1fd07c9fd12d7f4d4a2f73c9f306d1fc745"
+    },
+    {
+        "id": "996e011edfe5bb9301afb466fddb8f57a5194f6de3215f35c43abbe2f1197ff6",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mission-verification-chiffres"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Vérifier les chiffres de la mobilisation"
+            ],
+            [
+                "summary",
+                "Comparer les chiffres publiés par les organisateurs, la police et la presse, et noter chaque source avec sa date."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "mission"
+            ],
+            [
+                "ppf-skill",
+                "verification"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "ppf-remote",
+                "oui"
+            ],
+            [
+                "ppf-commitment",
+                "Deux heures par semaine"
+            ],
+            [
+                "ppf-people",
+                "4"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ]
+        ],
+        "content": "**[EXEMPLE] Cette mission est imaginaire, créée pour montrer « Je veux aider ».**\n\n## Ce que l'équipe attend\n\n- Relever les chiffres d'une journée de mobilisation dans les sources publiques.\n- Noter pour chacun sa source, sa date et l'heure du relevé.\n- Signaler les écarts sans jamais trancher seul : l'équipe éditoriale décide.\n",
+        "sig": "df6ce7ee27616acfa957474a141c576a725806e6295028ca861e1a0a091a0c519417dc6b5a95323cdf2ed009dcb9e8e72dc6402de324f6dda7bf10350e103b57"
+    }
+]
