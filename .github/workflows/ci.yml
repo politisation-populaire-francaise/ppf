@@ -221,6 +221,7 @@ jobs:
           sudo chmod 400 "$secrets"/*
           sed "s#^PPF_SECRETS_DIR=.*#PPF_SECRETS_DIR=$secrets#" infra/env/preproduction.env.example > "$RUNNER_TEMP/preprod.env"
           docker network create ppf-preprod-edge
+          docker network create --internal ppf-preprod-approval
           compose="docker compose -f infra/preproduction/compose.yml --env-file $RUNNER_TEMP/preprod.env"
           export PPF_SERVER_IMAGE=ppf-server:ci
           $compose up -d db

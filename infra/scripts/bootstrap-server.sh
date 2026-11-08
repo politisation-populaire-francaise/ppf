@@ -210,6 +210,11 @@ usermod -aG docker "$ADMIN_USER"
 for network in ppf-prod-edge ppf-preprod-edge; do
     docker network inspect "$network" >/dev/null 2>&1 || docker network create "$network" >/dev/null
 done
+# Between the proxy and the approval pages of the signing service only (D-129, revision of 8 November
+# 2026): internal, so that the signing service never gets a way out to the Internet.
+for network in ppf-prod-approval ppf-preprod-approval; do
+    docker network inspect "$network" >/dev/null 2>&1 || docker network create --internal "$network" >/dev/null
+done
 
 # --- 6. WireGuard -------------------------------------------------------------------------------
 log "WireGuard tunnel"
@@ -294,6 +299,11 @@ EOF
     chown "$server_uid:$server_uid" "$dir/secrets/server_signer_token"
     chmod 400 "$dir/secrets/signer_kek" "$dir/secrets/signer_client_token" "$dir/secrets/server_signer_token"
     grep -q '^PPF_SIGNER_ROOT_PUBKEY=' "$dir/.env" || echo "PPF_SIGNER_ROOT_PUBKEY=" >> "$dir/.env"
+    # The approval pages are served by the signing service itself, under a name of their own below the
+    # back-office's (same passkeys, a different origin the main server cannot speak for).
+    local backoffice_host="${backoffice_origin#https://}"
+    grep -q '^PPF_SIGNER_RP_ID=' "$dir/.env" || echo "PPF_SIGNER_RP_ID=$backoffice_host" >> "$dir/.env"
+    grep -q '^PPF_SIGNER_APPROVAL_ORIGIN=' "$dir/.env" || echo "PPF_SIGNER_APPROVAL_ORIGIN=https://signature.$backoffice_host" >> "$dir/.env"
     # Testimonies (Agir, M5): encrypted files written by the server only.
     install -d -m 0700 -o "$server_uid" -g "$server_uid" "$dir/testimonies"
     grep -q '^PPF_MODERATION_KEY=' "$dir/.env" || echo "PPF_MODERATION_KEY=" >> "$dir/.env"

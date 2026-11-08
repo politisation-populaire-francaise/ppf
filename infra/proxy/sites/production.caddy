@@ -40,6 +40,30 @@ equipe.{$PPF_DOMAIN} {
 	}
 }
 
+# Approval pages of the signing service (D-129, revision of 8 November 2026): served by the signing
+# service itself, on its approval port, never by the main server; the tunnel only. A member approves a
+# content there with the usual back-office passkey (same relying party, an origin of its own); the
+# owner's app also brings the certificates and the team list signed by the root here directly.
+signature.equipe.{$PPF_DOMAIN} {
+	import security_headers
+	header X-Robots-Tag "noindex, nofollow"
+
+	@outside not remote_ip 10.8.0.0/24
+
+	# An approval is a few kilobytes; a team list or a batch of certificates, a few hundred at most.
+	request_body {
+		max_size 1MB
+	}
+
+	route {
+		abort @outside
+		reverse_proxy ppf-prod-signer-1:8091 {
+			header_up -X-Forwarded-For
+			header_up -X-Real-IP
+		}
+	}
+}
+
 # Push wake-ups (ntfy, D-078), public: phones keep a connection open to receive constant encrypted
 # wake-ups; the client address never reaches ntfy. Streams are passed through at once.
 push.{$PPF_DOMAIN} {

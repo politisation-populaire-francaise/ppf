@@ -251,7 +251,13 @@ services:
       # Public key of the root of this environment (a root of its own for the preproduction); empty until
       # the owner has created it on her phone: then nothing is signed.
       PPF_SIGNER_ROOT_PUBKEY: ${PPF_SIGNER_ROOT_PUBKEY:-}
-      PPF_SIGNER_APPROVAL_ORIGIN: ${PPF_BACKOFFICE_ORIGIN:-}
+      # Approvals are given on the signing service's own pages (port 8091, through the proxy), never on the
+      # back-office: the main server can neither choose what is approved nor speak for that origin.
+      PPF_SIGNER_APPROVAL_PORT: "8091"
+      PPF_SIGNER_APPROVAL_ORIGIN: ${PPF_SIGNER_APPROVAL_ORIGIN:-}
+      PPF_SIGNER_RP_ID: ${PPF_SIGNER_RP_ID:-}
+      PPF_SIGNER_BACKOFFICE_ORIGIN: ${PPF_BACKOFFICE_ORIGIN:-}
+      PPF_ENVIRONMENT: preproduction
     secrets:
       - signer_kek
       - signer_client_token
@@ -259,6 +265,7 @@ services:
       - /srv/ppf/preproduction/signer:/data/signer
     networks:
       - signing
+      - approval
     healthcheck:
       test: ["CMD", "bash", "-c", "exec 3<>/dev/tcp/127.0.0.1/8090 && printf 'GET /health HTTP/1.0\\r\\n\\r\\n' >&3 && grep -q ' 200 ' <&3"]
       interval: 30s
@@ -372,6 +379,11 @@ networks:
   # Between the server and the signing service only, no way out.
   signing:
     internal: true
+  # Between the proxy and the approval pages of the signing service only, no way out; created once by
+  # infra/scripts/bootstrap-server.sh.
+  approval:
+    external: true
+    name: ppf-preprod-approval
   # Shared with the proxy only; created once by infra/scripts/bootstrap-server.sh.
   edge:
     external: true
