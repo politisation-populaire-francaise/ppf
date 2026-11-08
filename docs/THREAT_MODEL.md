@@ -333,3 +333,13 @@ Revu le 8 novembre 2026 après une relecture de sécurité indépendante (contra
 | Tableau modifié après téléchargement et présenté comme venant de PPF | Chaque ligne donne la version du contenu, à vérifier par sa signature dans `contenus.json` ; empreinte de chaque fichier dans le catalogue | « Vérifier un contenu PPF » (S-141) |
 | Saturation du serveur par des téléchargements répétés | Export recalculé au plus une fois par minute, en mémoire, borné à 20 000 contenus ; `ETag` et `304` | Mode sobre du Directeur technique en cas d'afflux |
 | Pistage des personnes qui téléchargent (journalistes, chercheurs) | Aucun compte, aucun cookie, aucun journal des requêtes | |
+
+## Ajout du 8 novembre 2026 : « Vérifier un contenu PPF » (M33, S-141)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Faux contenu attribué à PPF (capture retouchée, texte inventé) | Vérification de la signature et de la clé ; « Pas un contenu de PPF » ou « Modifié ou abîmé » ; le code de vérification sert seulement à retrouver l'original, qui se compare à ce qu'on a reçu | Code imprimé sur les images de partage |
+| Faux site qui se dit PPF (sosie de nom de domaine, sous-domaine d'un autre site, nom d'utilisateur avant `@`) | Seuls les six domaines de PPF sont reconnus ; un lien de vérification n'est suivi que sur eux ; la page cite les adresses officielles | Liste d'adresses de secours signée (Directeur technique) |
+| Ancienne version présentée comme actuelle | « Authentique, mais ancien » avec la version actuelle | |
+| Ce que vérifie une personne révèle ce qu'elle a reçu | Rien n'est enregistré ni journalisé ; le contenu collé n'est jamais réécrit dans la page ; dans l'application, la vérification se fait sur l'appareil, sans connexion | |
+| Requête démesurée | 96 Kio au plus pour un contenu collé, corps lu par un canal borné, `413` au-delà | |

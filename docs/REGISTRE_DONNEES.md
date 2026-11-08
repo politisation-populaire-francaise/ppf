@@ -269,3 +269,7 @@ Aucune donnée de citoyen n'entre dans le service : il voit les contenus de l'é
 ## Ajout du 8 novembre 2026 : export ouvert (M34, S-48, D-101)
 
 Aucune donnée nouvelle n'est collectée ni stockée : l'export et la page `/donnees` sont calculés en mémoire à partir des contenus publiés par l'équipe (table `events`), au plus une fois par minute ; aucune requête n'est journalisée, aucun compte ni cookie. Les contenus des comptes citoyens n'y sont pas rassemblés. Les clés publiques de l'équipe éditoriale y sont listées (elles signent déjà chaque contenu publié).
+
+## Ajout du 8 novembre 2026 : « Vérifier un contenu PPF » (S-141)
+
+Aucune donnée n'est collectée ni stockée : le code, le lien ou le contenu donnés sont vérifiés pendant la requête, en mémoire, puis oubliés ; aucune requête n'est journalisée. Le formulaire envoyé en GET met le code ou le lien dans l'adresse de la page (historique du navigateur de la personne) ; un contenu collé passe par POST et n'est jamais réécrit dans la page. Dans l'application, la vérification se fait sur l'appareil, sans aucune connexion.

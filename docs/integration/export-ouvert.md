@@ -69,10 +69,18 @@ Sous chaque contenu du site et de l'application, un bloc « Citer ce contenu » 
 |---|---|---|
 | A (**faite** le 8 novembre 2026, D-101, branche `feature/voir-export`) | `OpenDataset`, catalogue, `contenus.json`, trois tableaux de « Voir » en JSON et CSV, schémas, page `/donnees`, `FORMATS.md` section 5 bis | contenus des seules clés éditoriales ; dernière version par adresse ; CSV conforme (guillemets, retours à la ligne, virgules) ; chaque ligne avec sa source et sa version ; schémas valides et lignes conformes ; `ETag` et `304` ; page sans script |
 | B (**faite pour « Voir »** le 8 novembre 2026, branche `feature/voir-export` ; « Comprendre » à brancher par son pôle avec `Citation.of`) | `Citation` (`core/editorial/Citation.kt`), bloc `<details class="cite">` sous chaque page de « Voir » du site, bouton « Citer ce contenu » sous la ligne d'origine de chaque fiche de l'application (`ui/voir/CiteContent.kt`) | référence identique sur le site et l'application ; échappement ; CSL-JSON valide |
-| C | `ContentCheck`, `/verifier`, `/v/<code>`, écran de l'application | les cinq réponses ; hors ligne ; aucun journal ; JSON abîmé, trop gros |
+| C (**faite** le 8 novembre 2026, branche `feature/voir-verifier`) | `ContentCheck`, `CheckQuery`, `OfficialSite` et `DeviceContentLookup` dans `core/editorial` ; `/verifier` et `/v/<code>` (`web/VerifyPage.kt`, sur l'export du serveur) ; écran « Vérifier un contenu reçu » de « Voir » dans l'application, hors ligne | les réponses ; liens piégés (sosie, sous-domaine d'un autre site, nom d'utilisateur avant `@`) ; hors ligne ; contenu collé jamais réécrit dans la page ; texte trop long (413) |
 
 ## 8. Questions ouvertes
 
 1. **Propriétaire, par le chef d'équipe** : licence des contenus et des données publiés par PPF (cahier des charges 3.8). Options et recommandation envoyées au chef d'équipe le 8 novembre 2026.
 2. **Avocat, avant l'ouverture publique** : tableaux des personnes, des affaires et des peines (section 1, point 4).
 3. **Autres pôles** : leurs jeux de données, à enregistrer par `OpenDataset` après l'étape A.
+
+## 9. État de l'étape C (8 novembre 2026)
+
+- **Lecture de ce que la personne donne** (`CheckQuery.parse`) : un événement signé en JSON ; un identifiant de 64 caractères hexadécimaux ; un code de 16 caractères (espaces et tirets ignorés, majuscules acceptées : le code s'imprime par groupes de quatre) ; un lien. Un lien de vérification (`/v/<code>`) n'est suivi que sur l'un des six domaines de PPF (`OfficialSite.DOMAINS`) ; un sosie (`…-francaise.info`), un sous-domaine d'un autre site (`politisation-populaire-francaise.org.piege.example`) ou un nom d'utilisateur avant `@` donnent « Lien qui n'est pas de PPF ». 96 Kio au plus.
+- **Réponses** (`CheckOutcome`) : authentique et actuel ; authentique mais ancien (la version actuelle est montrée) ; signé par PPF mais absent de cette copie (retiré, ou pas encore reçu, ou plus récent que la copie) ; signé par une autre clé ; modifié ou abîmé ; inconnu ; lien officiel ; lien qui n'est pas de PPF ; rien à vérifier.
+- **Serveur** : la copie est l'export ouvert (`ExportBuild.lookup`, dernière version de chaque adresse des clés éditoriales ; le serveur ne garde aucune version plus ancienne).
+- **Application** : `ContentLibrary.checkLookup()` donne `DeviceContentLookup` (clés de confiance de l'application et copie locale, lues une fois, 5 000 contenus au plus), sans aucune connexion.
+- **Ce qui n'est pas fait** : envoi d'un fichier sur le site (on colle son contenu ; l'ouverture d'un fichier viendra dans l'application) ; impression du code sur les images de partage (avec CO-25 et les images de partage, quand elles existeront) ; vérification des clés de la plateforme (`PlatformTrust`) quand la bascule de la confiance sera faite.
