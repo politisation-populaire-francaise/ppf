@@ -24,16 +24,16 @@ Ce parcours raconte des faits historiques et décrit des règles de droit. Il ne
 
 Le mot « fascisme » vient de l'Italie. Le 23 mars 1919, à Milan, Benito Mussolini fonde les « Faisceaux de combat ». Le mouvement grandit grâce à la violence de ses groupes armés, les « squadre », qui attaquent syndicats, socialistes et journaux d'opposition. En novembre 1921, il devient le Parti national fasciste.
 
-Fin octobre 1922, après la chute du gouvernement, le roi d'Italie appelle Mussolini à former le gouvernement ; la « marche sur Rome » de ses partisans, les Chemises noires, sert surtout de démonstration de force. Mussolini arrive donc au pouvoir par une nomination légale, puis démonte la démocratie de l'intérieur.
+Le 28 octobre 1922, pendant la « marche sur Rome » de ses partisans, les Chemises noires, le roi Victor-Emmanuel III refuse de signer l'état de siège et le gouvernement démissionne. Le 29 octobre, le roi charge Mussolini de former le gouvernement ; Mussolini arrive à Rome le 30 au matin pour recevoir officiellement cette charge. La marche sert surtout de démonstration de force : Mussolini arrive au pouvoir par une nomination légale, puis démonte la démocratie de l'intérieur.
 
-En juin 1924, le député socialiste Giacomo Matteotti, qui dénonçait les violences et les fraudes fascistes, est enlevé et assassiné. Le 3 janvier 1925, Mussolini revendique publiquement la responsabilité politique de ce climat et engage la dictature : les partis d'opposition sont dissous, les journaux d'opposition disparaissent, les syndicats libres sont supprimés, de nombreux opposants sont emprisonnés ou exilés. Le régime dure jusqu'en 1943, puis survit dans le nord de l'Italie sous contrôle allemand jusqu'en 1945.
+Le 10 juin 1924, le député socialiste Giacomo Matteotti, qui dénonçait les violences et les fraudes fascistes, est enlevé et assassiné. Le 3 janvier 1925, devant la Chambre des députés, Mussolini revendique la responsabilité de ce qui s'est passé et engage la dictature. En 1925 et 1926, les partis d'opposition sont dissous, les journaux d'opposition disparaissent, les syndicats libres sont supprimés, de nombreux opposants sont emprisonnés ou exilés. Le régime dure jusqu'en 1943, puis survit dans le nord de l'Italie sous contrôle allemand jusqu'en 1945.
 
 ::: quiz
 ? Comment Mussolini est-il arrivé au pouvoir en 1922 ?
 - [ ] Par une victoire nette aux élections présidentielles
 - [x] Nommé par le roi pour former le gouvernement, après des années de violences de ses groupes armés
 - [ ] Par un référendum organisé par les fascistes
-> En octobre 1922, le roi invite Mussolini à former le gouvernement ; la « marche sur Rome » est surtout une démonstration de force, après la montée du mouvement par la violence des « squadre » (encyclopédie Larousse, « fascisme »).
+> Le 29 octobre 1922, le roi charge Mussolini de former le gouvernement, et Mussolini reçoit officiellement cette charge à Rome le 30 ; la « marche sur Rome » est surtout une démonstration de force, après la montée du mouvement par la violence des « squadre » (encyclopédie Larousse, « fascisme » ; encyclopédie Treccani, « Marcia su Roma »).
 :::
 
 ## L'Allemagne nazie : une démocratie détruite en quelques mois
@@ -44,14 +44,14 @@ Tout va ensuite très vite :
 
 - le 28 février 1933, au lendemain de l'incendie du Parlement (le Reichstag), un décret suspend les libertés fondamentales garanties par la Constitution ; communistes, sociaux-démocrates et Juifs sont persécutés ;
 - le 22 mars 1933, le premier camp de concentration géré par la SS ouvre à Dachau, pour y enfermer des opposants politiques ;
-- le 23 mars 1933, la loi dite « des pleins pouvoirs » permet au gouvernement de faire les lois sans le Parlement ; les députés communistes, emprisonnés ou en fuite, ne peuvent pas voter, et 94 députés sociaux-démocrates votent contre ;
+- le 23 mars 1933, le Parlement vote la loi dite « des pleins pouvoirs », datée et publiée le lendemain, 24 mars : elle permet au gouvernement de faire les lois sans le Parlement ; les 81 députés communistes, emprisonnés, cachés ou en exil, ne peuvent pas voter, et 94 députés sociaux-démocrates votent contre ;
 - au printemps 1933, les syndicats sont supprimés, des livres d'auteurs juifs et d'opposants sont brûlés en public le 10 mai ;
 - le 14 juillet 1933, le parti nazi devient le seul parti autorisé.
 
-Le régime nazi conduit ensuite à la Seconde Guerre mondiale et à la Shoah : la persécution et l'extermination systématiques, organisées par l'État, de six millions de Juifs d'Europe. Des millions d'autres personnes sont aussi persécutées et tuées : Roms et Sintés, personnes handicapées, opposants politiques, homosexuels, prisonniers de guerre soviétiques et bien d'autres.
+Le régime nazi conduit ensuite à la Seconde Guerre mondiale et à la Shoah : la persécution et l'extermination systématiques, organisées par l'État, de six millions de Juifs d'Europe. Des millions d'autres personnes sont aussi persécutées et tuées : Tsiganes (Roms et Sintés), personnes handicapées, Polonais, prisonniers de guerre soviétiques, opposants politiques, hommes accusés d'homosexualité, témoins de Jéhovah et bien d'autres.
 
 ::: quiz
-? Que permet en Allemagne la loi des pleins pouvoirs du 23 mars 1933 ?
+? Que permet en Allemagne la loi des pleins pouvoirs, votée le 23 mars 1933 ?
 - [ ] D'organiser de nouvelles élections libres
 - [x] Au gouvernement de faire les lois sans passer par le Parlement
 - [ ] Aux juges de contrôler le gouvernement
@@ -62,9 +62,9 @@ Le régime nazi conduit ensuite à la Seconde Guerre mondiale et à la Shoah : l
 
 En juin 1940, l'armée française est vaincue. Un armistice est signé avec l'Allemagne le 22 juin 1940, et une grande partie du pays est occupée. Le 10 juillet 1940, à Vichy, les députés et sénateurs réunis votent une loi constitutionnelle qui donne au maréchal Philippe Pétain le pouvoir d'écrire une nouvelle Constitution : 569 votent pour, 80 votent contre. Dès le 11 juillet, Pétain s'attribue tous les pouvoirs par des « actes constitutionnels », le Parlement est mis en sommeil et la République est remplacée par l'« État français ».
 
-Le régime de Vichy est autoritaire et collabore avec l'occupant nazi. Dès octobre 1940, puis en juin 1941, il adopte des « statuts des Juifs » qui les excluent de la vie publique et de nombreux métiers. Les 16 et 17 juillet 1942, lors de la rafle du Vélodrome d'Hiver, environ 13 000 Juifs sont arrêtés à Paris par la police française, sur ordre des autorités de Vichy. Au total, environ 76 000 Juifs, dont plus de 11 000 enfants, sont déportés depuis la France par les nazis avec l'aide du gouvernement de Vichy ; la plupart sont assassinés, surtout à Auschwitz.
+Le régime de Vichy est autoritaire et collabore avec l'occupant nazi. Dès octobre 1940, puis en juin 1941, il adopte des « statuts des Juifs » qui les excluent de la vie publique et de nombreux métiers. Les 16 et 17 juillet 1942, lors de la rafle du Vélodrome d'Hiver, environ 13 000 Juifs sont arrêtés à Paris par la police française, sous la direction du secrétaire général de la police du régime de Vichy. Au total, environ 76 000 Juifs, dont plus de 11 000 enfants, sont déportés depuis la France par les nazis avec l'aide du gouvernement de Vichy ; la plupart sont assassinés, surtout à Auschwitz.
 
-L'historien Michael Marrus, cité par l'Holocaust Encyclopedia, résume ainsi la situation : la « Solution finale » était un projet nazi, mais les Allemands n'auraient pas pu déporter autant de personnes sans l'aide de la France de Vichy.
+L'historien Michael Marrus, cité par l'Holocaust Encyclopedia, résume ainsi la situation : en France, la « Solution finale » a été un projet nazi du début à la fin, mais il est peu probable que les Allemands aient pu déporter autant de Juifs sans l'aide et la coopération de la police et de l'administration françaises.
 
 ::: quiz
 ? Combien de parlementaires ont voté contre les pleins pouvoirs au maréchal Pétain le 10 juillet 1940 ?
@@ -94,7 +94,7 @@ Un seul de ces traits ne suffit pas à faire un régime fasciste : c'est leur co
 - [ ] Le renforcement de l'indépendance des juges
 - [x] La suppression des partis d'opposition au profit d'un parti unique
 - [ ] La multiplication des journaux d'opinion
-> L'encyclopédie Larousse décrit le fascisme comme un régime fondé sur « la dictature du parti unique », l'exaltation nationaliste et le corporatisme ; en Italie, les autres partis sont dissous en 1925, en Allemagne le parti nazi devient le seul parti autorisé le 14 juillet 1933.
+> L'encyclopédie Larousse décrit le fascisme comme un régime fondé sur « la dictature du parti unique », l'exaltation nationaliste et le corporatisme ; en Italie, les autres partis sont dissous en 1925 et 1926, en Allemagne le parti nazi devient le seul parti autorisé le 14 juillet 1933.
 :::
 
 ## La Résistance et le programme du Conseil national de la Résistance
@@ -123,14 +123,14 @@ La France dispose aujourd'hui de protections contre le retour d'un tel régime :
 - **des juges indépendants**, dont le Président de la République est le garant (article 64) ;
 - **la liberté de la presse** : la loi du 29 juillet 1881 commence par « L'imprimerie et la librairie sont libres » ; elle punit aussi la provocation à la haine, à la discrimination ou à la violence en raison de l'origine ou de la religion (article 24) ;
 - **la dissolution des groupes dangereux** : le Gouvernement peut dissoudre, par décret en conseil des ministres, les associations ou groupements qui provoquent à des violences, forment des milices privées, veulent renverser la République par la force, exaltent la collaboration avec l'ennemi ou provoquent à la haine (code de la sécurité intérieure, article L212-1) ; la décision peut être contestée devant le Conseil d'État ;
-- **la lutte contre le négationnisme** : depuis la loi du 13 juillet 1990, dite loi Gayssot, contester l'existence des crimes contre l'humanité commis pendant la Seconde Guerre mondiale, comme la Shoah, est un délit (loi de 1881, article 24 bis). En 2016, le Conseil constitutionnel a jugé cette règle conforme à la Constitution, car elle n'empêche pas les débats historiques.
+- **la lutte contre le négationnisme** : depuis la loi du 13 juillet 1990, dite loi Gayssot, contester l'existence des crimes contre l'humanité commis pendant la Seconde Guerre mondiale et jugés comme tels, comme la Shoah, est un délit (loi de 1881, article 24 bis). En 2016, le Conseil constitutionnel a jugé cette règle conforme à la Constitution, car elle n'empêche pas les débats historiques.
 
 ::: quiz
 ? Selon le code de la sécurité intérieure, qui peut dissoudre un groupement qui forme une milice privée ?
 - [ ] N'importe quel maire, par arrêté
 - [x] Le Gouvernement, par décret en conseil des ministres, sous le contrôle du juge
 - [ ] Personne : c'est interdit par la liberté d'association
-> L'article L212-1 du code de la sécurité intérieure prévoit la dissolution « par décret en conseil des ministres » de ces associations ou groupements de fait ; le Conseil d'État contrôle ces décrets (par exemple, décision du 30 juillet 2014).
+> L'article L212-1 du code de la sécurité intérieure prévoit la dissolution « par décret en conseil des ministres » de ces associations ou groupements de fait ; le Conseil d'État contrôle ces décrets : le 30 juillet 2014, par exemple, il a confirmé la dissolution de deux groupements qui formaient une milice privée et annulé celle d'une association.
 :::
 
 ## Défendre la démocratie, pacifiquement et légalement
@@ -157,7 +157,7 @@ La démocratie se défend d'abord par ceux qui la font vivre. Chaque citoyen peu
 ? « Interdire la négation de la Shoah, c'est une atteinte à la liberté d'expression. »
 > Le Conseil constitutionnel a jugé en 2016 que cette interdiction est une limite nécessaire et proportionnée, parce que ces propos incitent au racisme et à l'antisémitisme, et qu'elle n'empêche pas les débats historiques (décision n° 2015-512 QPC du 8 janvier 2016).
 ? « On peut traiter de fasciste n'importe quel adversaire politique. »
-> Les historiens réservent ce mot à des régimes et mouvements précis, définis par un ensemble de traits (parti unique, culte du chef, violence contre les opposants, fin des libertés) ; employé à tort, il perd son sens et peut, selon les cas, être poursuivi comme une injure ou une diffamation (loi du 29 juillet 1881, article 29).
+> Pour les historiens, ce mot désigne des régimes et des mouvements précis, définis par un ensemble de traits (parti unique, culte du chef, violence contre les opposants, fin des libertés) ; employé à tort, il perd son sens et peut, selon les cas, être poursuivi comme une injure ou une diffamation (loi du 29 juillet 1881, article 29).
 :::
 
 ::: et-maintenant
@@ -169,12 +169,14 @@ La démocratie se défend d'abord par ceux qui la font vivre. Chaque citoyen peu
 ## Sources
 
 - Encyclopédie Larousse, « fascisme » (Faisceaux de combat, marche sur Rome, assassinat de Matteotti, dictature, régimes fascistes, travaux de Pierre Milza et d'Emilio Gentile) : https://www.larousse.fr/encyclopedie/divers/fascisme/51294
+- Encyclopédie Treccani, Dizionario di Storia, « Marcia su Roma » (refus de l'état de siège le 28 octobre 1922, charge confiée à Mussolini le 29, reçue officiellement à Rome le 30) : https://www.treccani.it/enciclopedia/marcia-su-roma_(Dizionario-di-Storia)/
 - Encyclopédie Larousse, « totalitarisme » (Hannah Arendt, « Les Origines du totalitarisme », 1951) : https://www.larousse.fr/encyclopedie/divers/totalitarisme/187119
 - United States Holocaust Memorial Museum, Holocaust Encyclopedia, « Fondations de l'État nazi » : https://encyclopedia.ushmm.org/content/fr/article/foundations-of-the-nazi-state
 - United States Holocaust Memorial Museum, Holocaust Encyclopedia, « 1933 : dates clés » (Dachau, autodafés, parti unique) : https://encyclopedia.ushmm.org/content/en/article/1933-key-dates
 - United States Holocaust Memorial Museum, Holocaust Encyclopedia, « Introduction à la Shoah » : https://encyclopedia.ushmm.org/content/fr/article/introduction-to-the-holocaust
 - United States Holocaust Memorial Museum, Holocaust Encyclopedia, « France » (armistice, statuts des Juifs, rafle du Vél d'Hiv, citation de Michael Marrus) : https://encyclopedia.ushmm.org/content/fr/article/france
-- Deutscher Bundestag, « Le Troisième Reich » (incendie du Reichstag, loi des pleins pouvoirs, vote des sociaux-démocrates) : https://www.bundestag.de/fr/parlement/histoire/troisieme_reich-200682
+- Deutscher Bundestag, « Le Troisième Reich » (incendie du Reichstag, loi des pleins pouvoirs, 81 députés communistes empêchés de voter, 94 voix sociales-démocrates contre) : https://www.bundestag.de/fr/parlement/histoire/troisieme_reich-200682
+- Archives fédérales allemandes (Bundesarchiv), « „Ermächtigungsgesetz“ vom 24. März 1933 » (loi votée le 23 mars, datée du 24 mars 1933) : https://www.bundesarchiv.de/im-archiv-recherchieren/archivgut-recherchieren/nach-themen/ermaechtigungsgesetz-vom-24-maerz-1933/
 - Assemblée nationale, « Des décrets-lois du Gouvernement Daladier au vote des pleins pouvoirs au maréchal Pétain » : https://www.assemblee-nationale.fr/dyn/histoire-et-patrimoine/deuxieme-guerre-mondiale/des-decrets-lois-du-gouvernement-daladier-au-vote-par-la-chambre-des-deputes-et-le-senat-des-pleins-pouvoirs-au-marechal-petain
 - Mémorial de la Shoah, « The Jews of France in the Holocaust » (76 000 Juifs déportés, dont plus de 11 000 enfants) : https://www.memorialdelashoah.org/en/archives-et-documentation/quest-ce-que-la-shoah/juifs-de-france-shoah.html
 - Assemblée nationale, « 27 mai 1943 et 15 mars 1944 : création du Conseil de la Résistance et programme du CNR » : https://www.assemblee-nationale.fr/dyn/histoire-et-patrimoine/deuxieme-guerre-mondiale/creation-du-conseil-de-la-resistance-et-programme-du-cnr
@@ -182,8 +184,8 @@ La démocratie se défend d'abord par ceux qui la font vivre. Chaque citoyen peu
 - Ministère des Armées, Chemins de mémoire, « 27 mai, Journée nationale de la Résistance » (loi n° 2013-642 du 19 juillet 2013, appel du 18 juin 1940) : https://www.defense.gouv.fr/chemins-memoire/histoire-memoires/journees-nationales-commemoratives/27-mai-journee-nationale-resistance
 - Déclaration des droits de l'homme et du citoyen de 1789 (article 16) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/declaration-des-droits-de-l-homme-et-du-citoyen-de-1789
 - Constitution du 4 octobre 1958, texte intégral en vigueur (articles 3, 4, 61, 61-1 et 64) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Loi du 29 juillet 1881 sur la liberté de la presse (articles 1er, 24 et 24 bis), version en vigueur au 8 novembre 2026 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000877119
+- Loi du 29 juillet 1881 sur la liberté de la presse (articles 1er, 24, 24 bis et 29), version en vigueur au 8 novembre 2026 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000877119
 - Loi n° 90-615 du 13 juillet 1990 tendant à réprimer tout acte raciste, antisémite ou xénophobe : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000532990
 - Code de la sécurité intérieure, article L212-1 (dissolution de certaines associations et groupements de fait) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043982161
-- Conseil d'État, 30 juillet 2014, Association « Envie de rêver » et autres (contrôle d'un décret de dissolution) : https://conseil-etat.fr/actualites/dissolution-d-une-association-et-de-groupements
+- Conseil d'État, 30 juillet 2014, Association « Envie de rêver » et autres, n° 370306 et 372180 (contrôle d'un décret de dissolution : deux dissolutions confirmées, une annulée) : https://conseil-etat.fr/actualites/dissolution-d-une-association-et-de-groupements
 - Conseil constitutionnel, décision n° 2015-512 QPC du 8 janvier 2016 (délit de contestation de crimes contre l'humanité) : https://www.conseil-constitutionnel.fr/decision/2016/2015512QPC.htm

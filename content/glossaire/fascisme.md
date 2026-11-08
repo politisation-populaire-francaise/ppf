@@ -1,7 +1,7 @@
 ---
 slug: glossaire-fascisme
 title: [EXEMPLE] Fascisme
-summary: Régime établi par Mussolini en Italie de 1922 à 1945, fondé sur un parti unique, le culte du chef et l'exaltation nationaliste. Le mot désigne aussi les régimes de ce type.
+summary: Régime établi par Mussolini en Italie de 1922 à 1943, puis dans le nord du pays jusqu'en 1945, fondé sur un parti unique, le culte du chef et l'exaltation nationaliste. Le mot désigne aussi les régimes de ce type.
 variants: fascisme, fascismes, fasciste, fascistes
 topics: histoire, democratie
 see_also: glossaire-totalitarisme, glossaire-resistance, glossaire-etat-de-droit
