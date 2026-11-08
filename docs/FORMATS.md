@@ -748,6 +748,85 @@ Seul le **premier** engagement reçu par le serveur pour une clé compte ; un au
 
 L'avis est irréversible : un seul par compte (`409 already_compromised`), une clé ne succède qu'à un seul compte (`409 successor_taken`). Le serveur ne garde que les avis qu'il a acceptés : un avis de type `1777` servi par `GET /api/v1/events` est donc valide. Un appareil peut le revérifier lui-même : signature, lien avec l'engagement (`e`), signataire égal à la clé `p` de l'engagement, borne de `ppf-compromised-since`. Les événements de la clé compromise publiés avant l'avis restent servis tels quels ; ceux datés d'après `ppf-compromised-since` sont à marquer « suspects » par l'appareil, qui lit la date dans l'avis ou par `GET /api/v1/accounts/<clé>/status` (section 5). Ni l'engagement ni l'avis ne sont envoyés à un salon (pas d'étiquette `h`).
 
+## 4 duodecies. Dossiers de contact, tickets et réclamations (M30, D-140)
+
+Contrat : `docs/integration/contact-reclamations.md`. Code commun (Android, ordinateur, iOS, serveur) : `shared/core/.../core/contact/`. Tout échange avec l'équipe est un **dossier** ; son texte part chiffré de bout en bout vers la **boîte de l'équipe** (une clé dédiée, distincte des clés qui signent les contenus) ; le serveur ne garde que des enveloppes illisibles et les métadonnées du suivi.
+
+### Numéro et code secret
+
+- **Numéro** : `PPF-XXXXX-XXXXX`, 10 symboles aléatoires de la base 32 de Crockford (alphabet `0123456789ABCDEFGHJKMNPQRSTVWXYZ`, sans I, L, O ni U ; 50 bits), tirés par l'appareil, jamais un compteur. Cette forme affichée est la forme canonique : identifiant du dossier sur le serveur et entrée des dérivations. Une saisie est lue avec tolérance : majuscules ou minuscules, espaces et tirets ignorés, `O` lu `0`, `I` et `L` lus `1`, préfixe `PPF` facultatif (13 symboles avec lui, 10 sans). L'API n'accepte que la forme canonique.
+- **Code secret** : 20 symboles de la même base (100 bits), montré une seule fois, en cinq groupes de quatre séparés par des tirets ; même lecture tolérante. Forme normalisée : les 20 symboles canoniques, en ASCII.
+
+### Dérivations (HKDF-SHA-256, RFC 5869)
+
+Sel `ppf-case-v1` (ASCII), matière : le code normalisé (ASCII).
+
+| Sortie | `info` | Ce qu'en garde le serveur |
+|---|---|---|
+| Jeton d'accès, 32 octets, envoyé en `Authorization: Bearer <base64url sans remplissage, 43 caractères>` | `access PPF-XXXXX-XXXXX` | `access_hash` : SHA-256 du jeton, hexadécimal minuscule |
+| Clé secrète du dossier, 32 octets | `key PPF-XXXXX-XXXXX <compteur>` : compteur décimal 0, puis 1, et ainsi de suite tant que les 32 octets ne sont pas une clé secrète secp256k1 valide (255 au plus) | `case_pubkey` : clé publique, x seule, hexadécimal minuscule |
+
+La clé du dossier signe le sceau des messages de la personne et reçoit les réponses de l'équipe ; elle n'est reliée à aucun compte. Quand la personne relie son compte (contestation de modération, droits sur les données, droit de réponse), le sceau est signé par la clé de son compte : seule la boîte de l'équipe le voit, après déchiffrement.
+
+### Messages `ppf-case`, version 1
+
+Chaque message est une rumeur NIP-17 (kind 14, une étiquette `["p", "<destinataire>"]`) scellée puis enveloppée comme en section 4 ter, en une seule enveloppe, adressée à la boîte de l'équipe (messages de la personne) ou à la clé du dossier (réponses de l'équipe, dont le sceau est signé par la clé de la boîte). Le texte de la rumeur est un objet JSON :
+
+| Champ | Type | Genre | Sens |
+|---|---|---|---|
+| `format` | texte | tous | toujours `ppf-case` |
+| `version` | entier | tous | `1` ; un lecteur refuse un autre format ou une version qu'il ne connaît pas |
+| `case` | texte | tous | numéro du dossier, forme canonique |
+| `kind` | texte | tous | `opening` (premier message), `message` (suivi de la personne), `reply` (réponse de l'équipe), `status` (changement de statut expliqué) |
+| `text` | texte | tous | 1 à 20 000 caractères |
+| `type` | texte | `opening` | `ticket`, `contact` ou `claim` |
+| `subtype` | texte | `opening` d'un ticket | `bug`, `suggestion`, `report`, `verification` (demande de vérification d'une rumeur pour l'équipe de « Comprendre », CO-18, D-143 : `subject` est l'affirmation telle qu'elle a été vue, `text` dit où, quand et ce qui la rend douteuse, `content` facultatif désigne une vérification proche ; jamais de compte relié) |
+| `category` | texte | `opening` d'un contact | `citizen`, `association`, `union`, `journalist`, `elected`, `institution`, `company`, `other` |
+| `motif` | texte | `opening` d'une réclamation | `moderation_decision`, `data_rights`, `right_of_reply`, `funds`, `team_member`, `other` |
+| `subject` | texte | `opening` | 1 à 200 caractères |
+| `technical` | texte, facultatif | `opening` | rapport technique joint avec l'accord de la personne (S-101), 16 000 caractères au plus |
+| `content` | texte, facultatif | `opening` | adresse stable du contenu concerné, 300 caractères au plus |
+| `decision` | objet, facultatif | `opening` d'une contestation de modération | `{"id": "<identifiant de la décision>", "at": <secondes depuis 1970>}` |
+| `declared_identity` | texte, facultatif | `opening` d'un droit de réponse ou de droits sur les données | ce que la personne veut bien dire d'elle, 2 000 caractères au plus |
+| `motives` | texte, facultatif | `reply` | motifs de la décision sur une contestation (DSA, article 17), 4 000 caractères au plus |
+| `automated` | booléen, facultatif | `reply` | un outil automatisé est-il intervenu dans la décision |
+| `status` | texte | `status` | nouveau statut : `received`, `in_progress`, `answered`, `awaiting_you`, `closed` |
+| `deadline_at` | entier, facultatif | `status` | nouvelle échéance (secondes), après une prolongation motivée |
+
+Un champ facultatif absent est omis (jamais `null`) ; un champ inconnu de la version 1 est ignoré ; un champ d'un autre genre rend le message invalide. Les réponses ne sont jamais modifiées : une correction est une nouvelle réponse. Exemple :
+
+```json
+{"format":"ppf-case","version":1,"case":"PPF-ABCDE-12345","kind":"opening","text":"[EXEMPLE] Mon commentaire a été masqué sans raison.","type":"claim","motif":"moderation_decision","subject":"[EXEMPLE] Contestation","decision":{"id":"decision-exemple","at":1780000000}}
+```
+
+L'application n'accepte une réponse que si l'auteur du sceau est la clé de la boîte **intégrée à l'application** pour son environnement (`ContactInbox`, jamais une clé reçue du serveur), si `case` est le numéro du dossier, et si le genre est `reply` ou `status`.
+
+### Enveloppes : contrôles du serveur
+
+Une enveloppe (kind 1059) est acceptée si : exactement une étiquette `p`, égale à la clé attendue (pour les messages de la personne, la boîte de l'équipe de l'environnement, `PPF_CONTACT_INBOX_KEY`), au plus une étiquette `nonce` et aucune autre ; 96 Kio de JSON au plus ; `created_at` entre 3 jours dans le passé et 10 minutes dans le futur ; identifiant et signature valides. Pour la **création** d'un dossier, une preuve de travail NIP-13 d'au moins `PPF_CASE_POW_BITS` bits (16 par défaut) : l'identifiant commence par autant de bits nuls, et l'étiquette `["nonce", "<compteur sur 16 chiffres>", "<cible>"]` annonce une cible au moins égale (un événement chanceux, miné pour une cible plus basse, ne compte pas). Le calcul repasse sur toute l'enveloppe à chaque essai (environ 65 000 essais en moyenne pour 16 bits) : l'application le fait hors du fil de l'interface.
+
+### Échéances
+
+Calculées à la réception, en heure de Paris, à la même heure (la lecture la plus stricte pour l'équipe), le jour borné à la fin d'un mois plus court :
+
+| Dossier | Échéance | Nature |
+|---|---|---|
+| Réclamation `data_rights` | 1 mois (RGPD, article 12, paragraphe 3) ; 3 mois après une prolongation, possible une fois et seulement pendant le premier mois, avec un motif | légale |
+| Réclamation `right_of_reply` | 3 jours (LCEN, article 1-1, III) | légale |
+| Réclamation `moderation_decision` | 15 jours ; la réclamation n'est acceptée que jusqu'à 6 mois après la décision (DSA, article 20, appliqué par choix) | objectif interne |
+| Contact | 15 jours | objectif interne |
+| Réclamation `funds`, `team_member` ou `other` | 30 jours | objectif interne |
+| Ticket `verification` (demande de vérification, CO-18, D-143) | 15 jours | objectif interne |
+| Ticket (bug, suggestion, signalement) | aucune | |
+
+Les objectifs internes se règlent dans la configuration privée du serveur (`PPF_CASE_GOAL_*_DAYS`) ; les délais légaux, jamais.
+
+### Sur le serveur : migration Flyway `V20__contact_cases.sql`
+
+- `contact_case` : numéro (clé), type, sous-type, catégorie ou motif, statut, priorité (`normal`, `high`), membre assigné, dates de réception, d'échéance (et sa nature), de prolongation (et son motif), de la décision contestée, auteur de la décision et membre mis en cause (comptes de l'équipe, remplis par l'équipe), clôture, archive juridique (motif, date de réexamen, date de l'alerte), anonymisation, `access_hash`, `case_pubkey`, dernière activité. Jamais d'adresse IP, d'e-mail, de téléphone, d'identifiant d'appareil ni de compte de la personne.
+- `contact_envelope` : identifiant de l'enveloppe (clé), ordre de réception, numéro du dossier, sens (`in` vers la boîte, `out` vers la clé du dossier), JSON de l'enveloppe, date de réception, membre auteur d'une réponse. Jamais modifiée (un déclencheur l'interdit, et le rôle restreint du serveur n'a pas le droit `UPDATE`).
+- `contact_legal_hold_request` : une demande d'archive juridique, ou de sa levée, qui attend une deuxième personne (7 jours au plus).
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.
@@ -778,6 +857,9 @@ Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est jo
 | `GET /api/v1/territoires` | Le niveau national du référentiel des territoires (section 4 nonies) : régions, départements, collectivités, outre-mer avec population et inscrits, et l'index des paquets. Sans compte ; `ETag`, `If-None-Match`, gzip | `200` ; `304` ; `503 territoires_unavailable` avec `Retry-After: 60` tant qu'aucun import n'a réussi |
 | `GET /api/v1/territoires/{code}` | Le paquet d'un département ou d'une collectivité d'outre-mer, ou `communes` (index des noms). Aucune commune, aucun code postal, aucune recherche n'est envoyé par l'appareil | `200` ; `304` ; `404 unknown_package` ; `503 territoires_unavailable` |
 | `GET /api/v1/transparence/requisitions` | Transparence du registre légal (D-077) : le nombre de réquisitions judiciaires auxquelles PPF a répondu, par mois (temps universel, `YYYY-MM`, les mois sans réquisition sont absents), jamais une référence, une clé, un contenu ni une date plus fine. Corps : `{"format":1,"months":[{"month":"2026-11","answered":1}],"total":1}` | `200` ; `503 database_unavailable` sans base |
+| `POST /api/v1/cases`, corps : `{"number","type","subtype"/"category"/"motif","decision_at"?,"access_hash","case_pubkey","envelope"}`, 128 Kio au plus | Ouvrir un dossier (section 4 duodecies) : l'enveloppe d'ouverture pour la boîte de l'équipe, avec sa preuve de travail ; `decision_at` (secondes) pour une contestation de modération seulement. Plafond de 30 créations par minute pour tout le serveur, sans aucune clé liée à la personne | `201` `{"number","status","deadline_at","deadline_kind"}` (échéance omise quand il n'y en a pas) ; `200` pour la même création envoyée de nouveau ; `409` `number_taken` (tirer un autre numéro) ou `envelope_taken` ; `422` `bad_number`, `bad_nature`, `bad_access_hash`, `bad_case_pubkey`, `decision_required`, `bad_decision`, `decision_out_of_time`, `bad_envelope`, `wrong_recipient`, `too_large`, `bad_date`, `not_enough_work`, `invalid_signature` ; `400` `malformed` ; `413` ; `429` `rate_limited` ; `503` `contact_not_open` sans clé de boîte |
+| `GET /api/v1/cases/{number}?after=<id>`, avec `Authorization: Bearer <jeton d'accès>` | Où en est le dossier, et les réponses de l'équipe (enveloppes `out`) après l'enveloppe `after`, 20 au plus par réponse ; `Cache-Control: no-store` | `200` `{"number","status","deadline_at","deadline_kind","extended","envelopes":[…],"more"}` ; `404` `not_found` pour un numéro inconnu **comme** pour un jeton faux (même réponse, même comparaison en temps constant) ; `429` `locked` (avec `Retry-After`) pendant 15 minutes après 5 essais faux pour un même numéro, qu'il existe ou non |
+| `POST /api/v1/cases/{number}/messages`, avec le jeton, corps : `{"envelope"}` | Un message de suivi de la personne pour la boîte (dossier non clos, sans preuve de travail) ; un dossier `answered` ou `awaiting_you` repasse `in_progress`. Plafond de 120 messages par minute pour tout le serveur | `201` `{"id","status"}` ; `200` pour une enveloppe déjà reçue ; `409` `case_closed` ou `envelope_taken` ; `422` pour l'enveloppe ; `404`, `429` comme ci-dessus |
 | `GET /api/v1/export` | Catalogue de l'export ouvert (section 5 bis) : licence, clés de l'équipe éditoriale, jeux de données et leurs fichiers avec empreinte, taille et nombre de lignes. Sans compte ; `ETag`, `If-None-Match` | `200` ; `304` |
 | `GET /api/v1/export/<fichier>` et `GET /api/v1/export/schemas/<jeu>-<version>.schema.json` | Un fichier de l'export : `contenus.json` (événements signés), `<jeu>.json`, `<jeu>.csv` (téléchargé sous le nom `ppf-<jeu>.csv`), schéma JSON d'un jeu | `200` ; `304` ; `404 unknown_file` |
 | `GET /health` | État du serveur | `200` `{"status":"ok","service":"ppf-server","version":"0.1.0","environment":"…"}` |
@@ -831,6 +913,15 @@ Variables d'environnement du serveur pour l'espace Agir :
 | `PPF_HELD_CLEANUP_INTERVAL_MINUTES` | Fréquence du ménage de la file : refus des mobilisations dont la date est passée, effacement des contenus décidés expirés (0 désactive la tâche, pour les tests) | 60 |
 
 Les valeurs invalides reprennent leur valeur par défaut. `PPF_EDITOR_KEYS` sert aussi à reconnaître les fiches d'organisation qui vérifient une clé. Aucune variable ne limite le nombre de contenus en attente (décision de la propriétaire du 7 novembre 2026) ; la limitation de débit de `POST /api/v1/events` reste réglée par `PPF_POST_RATE_PER_MINUTE` et `PPF_POST_GLOBAL_RATE_PER_MINUTE`.
+
+Variables d'environnement du serveur pour les dossiers de contact et les réclamations (M30) :
+
+| Variable | Rôle | Défaut |
+|---|---|---|
+| `PPF_CONTACT_INBOX_KEY` | Clé publique (hexadécimal ou npub) de la boîte de l'équipe, celle intégrée à l'application pour cet environnement ; sa clé secrète n'est jamais sur un serveur. Vide : les routes `/api/v1/cases` répondent `503 contact_not_open`, sauf en développement où sert la boîte d'exemple (sa clé secrète est publique) ; la boîte d'exemple est refusée en production | vide |
+| `PPF_CASE_POW_BITS` | Preuve de travail NIP-13 demandée pour ouvrir un dossier (0 à 32 bits), réglage privé | 16 |
+| `PPF_CASE_GOAL_CONTACT_DAYS`, `PPF_CASE_GOAL_BUG_DAYS`, `PPF_CASE_GOAL_SUGGESTION_DAYS`, `PPF_CASE_GOAL_REPORT_DAYS`, `PPF_CASE_GOAL_MODERATION_DAYS`, `PPF_CASE_GOAL_FUNDS_DAYS`, `PPF_CASE_GOAL_TEAM_MEMBER_DAYS`, `PPF_CASE_GOAL_OTHER_DAYS`, `PPF_CASE_GOAL_VERIFICATION_DAYS` | Objectifs internes, en jours (1 à 365 ; 0 pour aucun) ; les délais légaux ne se règlent pas. Le dernier est celui des demandes de vérification (CO-18, D-143) | 15, aucun, aucun, aucun, 15, 30, 30, 30, 15 |
+| `PPF_CONTACT_RETENTION_INTERVAL_MINUTES` | Fréquence des durées de conservation (clôture après 60 jours sans nouvelle de la personne, effacement, anonymisation, archives juridiques) ; 0 désactive la tâche, pour les tests | 1440 |
 
 Variables d'environnement du serveur pour l'archivage horodaté (D-111, `docs/integration/archivage-horodate.md`, section 7 ; hôtes contactés : `docs/integration/archivage-egress.md`) :
 

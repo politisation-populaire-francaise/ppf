@@ -6,7 +6,8 @@
 --
 -- The server may read and write the data, but on the team journal only read and append: no UPDATE,
 -- DELETE or TRUNCATE, and, not owning the table, it can neither disable its trigger nor change the
--- schema; it reads the history of the migrations without changing it.
+-- schema; it reads the history of the migrations without changing it. The envelopes of the cases
+-- (contact_envelope) are read, added and deleted, never updated.
 --
 -- The legal register (schema legal_register, D-077) is write-only for the server: INSERT of the columns it
 -- fills (never the reception date nor the identifier, set by the database), USAGE of the schema and of its
@@ -26,6 +27,10 @@ BEGIN
     EXECUTE format('GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA %I TO %I', current_schema(), app_role);
     IF to_regclass('team_audit_log') IS NOT NULL THEN
         EXECUTE format('REVOKE UPDATE, DELETE, TRUNCATE ON team_audit_log FROM %I', app_role);
+    END IF;
+    -- The envelopes of the cases (M30) are never rewritten: added, then deleted by the retention only.
+    IF to_regclass('contact_envelope') IS NOT NULL THEN
+        EXECUTE format('REVOKE UPDATE, TRUNCATE ON contact_envelope FROM %I', app_role);
     END IF;
     IF to_regclass('flyway_schema_history') IS NOT NULL THEN
         EXECUTE format('REVOKE ALL ON flyway_schema_history FROM %I', app_role);
