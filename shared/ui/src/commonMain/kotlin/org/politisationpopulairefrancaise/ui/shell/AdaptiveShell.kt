@@ -155,6 +155,7 @@ import org.politisationpopulairefrancaise.ui.resources.notif_bell_unread_many
 import org.politisationpopulairefrancaise.ui.resources.notif_bell_unread_one
 import org.politisationpopulairefrancaise.ui.urne.LocalVoting
 import org.politisationpopulairefrancaise.ui.urne.RunVoting
+import org.politisationpopulairefrancaise.ui.urne.VotingState
 import org.politisationpopulairefrancaise.ui.urne.rememberVotingState
 
 /** Test tags, also useful for accessibility tooling. */
@@ -237,6 +238,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     RegisterErasable(dependencies, "agir-rally-point") { help.clearRallyPoint() }
     // « Comprendre » (S-44): progress of the courses, chosen commune and directory packages, department packages of the territories.
     dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
+    // Décider: the voting tokens, pending requests and choices of the device (S-44).
+    RegisterErasable(dependencies, VotingState.ERASABLE_ID) { voting.eraseFromDevice() }
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.
@@ -445,6 +448,7 @@ private fun SpaceContent(
                 voirState.open(address)
                 onNavigate(Space.VOIR)
             },
+            dependencies = dependencies,
         )
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting, notifications = notificationsSettings)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)

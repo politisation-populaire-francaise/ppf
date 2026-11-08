@@ -54,7 +54,7 @@ class InPersonValidationsTest {
 
     private val backOffice = BackOfficeTestData.backOffice(clock, verified = setOf(organisation))
     private val store = UrneStore(TestDatabase.dataSource)
-    private val service = UrneService.create(store, UrneFixtures.CONFIG, clock, PersonAccounts(null, { it == editor.publicKey.hex }, { false }))
+    private val service = UrneService.create(store, UrneFixtures.CONFIG, clock, PersonAccounts({ it == editor.publicKey.hex }, { false }))
     private val validations = InPersonValidations(store, service, backOffice.validationGate, AuditSealer(audit.publicKey), clock)
 
     private fun <T> Outcome<T>.ok(): T = when (this) {

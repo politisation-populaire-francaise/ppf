@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.ui.revendications.propose
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
@@ -28,6 +29,8 @@ import org.politisationpopulairefrancaise.core.revendications.checks.DemandText
 import org.politisationpopulairefrancaise.core.revendications.checks.IssueKind
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PUBLISH_BLOCKED_TAG
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -63,20 +66,23 @@ class ProposalScreenTest {
         onOpenDemand: (String) -> Unit = {},
         onCreateAccount: () -> Unit = {},
         onClose: () -> Unit = {},
+        canPublish: Boolean = true,
     ) {
         setContent {
             PpfTheme(darkTheme = false) {
-                Box(Modifier.requiredSize(width.dp, height.dp)) {
-                    ProposalScreen(
-                        composer = composer,
-                        existing = existing,
-                        signer = if (withSigner) signer else null,
-                        windowClass = WindowClass.of(widthDp = width.toFloat(), heightDp = height.toFloat()),
-                        onClose = onClose,
-                        onOpenDemand = onOpenDemand,
-                        onCreateAccount = onCreateAccount,
-                        onSent = {},
-                    )
+                CompositionLocalProvider(LocalCanPublish provides canPublish) {
+                    Box(Modifier.requiredSize(width.dp, height.dp)) {
+                        ProposalScreen(
+                            composer = composer,
+                            existing = existing,
+                            signer = if (withSigner) signer else null,
+                            windowClass = WindowClass.of(widthDp = width.toFloat(), heightDp = height.toFloat()),
+                            onClose = onClose,
+                            onOpenDemand = onOpenDemand,
+                            onCreateAccount = onCreateAccount,
+                            onSent = {},
+                        )
+                    }
                 }
             }
         }
@@ -127,6 +133,15 @@ class ProposalScreenTest {
         onNodeWithTag(ProposalTags.WHY).performScrollTo().performTextReplacement("Appelez-moi au 06 12 34 56 78.")
         waitForIdle()
         onNodeWithTag(IssueTags.ISSUE + "personal_data").performScrollTo().assertExists()
+        onNodeWithTag(ProposalTags.SEND).performScrollTo().assertIsNotEnabled()
+    }
+
+    @Test
+    fun anAccountDeclaredCompromisedSendsNothingAndIsToldWhy() = runComposeUiTest {
+        // S-146: the server refuses it anyway (403 account_compromised); the form says so before.
+        show(ProposalComposer(LocalEventStore(JvmDatabase.inMemory()), remote = null), canPublish = false)
+        fillValidDraft()
+        onNodeWithTag(PUBLISH_BLOCKED_TAG).performScrollTo().assertExists()
         onNodeWithTag(ProposalTags.SEND).performScrollTo().assertIsNotEnabled()
     }
 

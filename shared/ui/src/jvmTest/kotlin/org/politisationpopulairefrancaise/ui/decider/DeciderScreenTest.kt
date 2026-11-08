@@ -15,6 +15,7 @@ import androidx.compose.ui.test.assertCountEquals
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
@@ -70,6 +71,7 @@ class DeciderScreenTest {
                     onNavigate = { seen.navigations += it },
                     onOpenVoir = { seen.opened += it },
                     now = { noon(today) },
+                    dependencies = dependencies,
                 )
             }
         }
@@ -115,7 +117,7 @@ class DeciderScreenTest {
     @Test
     fun theThresholdsSayWhatTheyDoNotGuarantee() = runComposeUiTest {
         show(width = 1000)
-        onNodeWithTag(DeciderTags.THRESHOLDS_OPEN).performClick()
+        onNodeWithTag(DeciderTags.THRESHOLDS_OPEN).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(DeciderTags.detail("seuils")).assertExists()
         for (platform in listOf("assemblee", "senat", "cese", "rip", "ice")) onNodeWithTag(DeciderTags.platform(platform)).performScrollTo().assertExists()
@@ -149,6 +151,11 @@ class DeciderScreenTest {
         onNodeWithTag(DeciderTags.card("comparateur-election-exemple")).performScrollTo().assert(has("4 candidats, 3 thèmes")).performClick()
         waitForIdle()
         onNodeWithTag(ComparatorTags.METHOD).assert(has("PPF ne dit pas pour qui voter"))
+        onNodeWithTag(ComparatorTags.METHOD).assert(has("figé de la veille du scrutin à zéro heure"))
+        // Who appears (Q1 option B): the same delay for everyone, each request visible with its dates.
+        onNodeWithTag(ComparatorTags.ENTRY).assert(has("dans un délai de 7 jours au plus"))
+        onNodeWithTag(ComparatorTags.request("dominique-fictif")).performScrollTo().assert(has("Demande le 10 oct. 2026, ajout le 14 oct. 2026"))
+        onNodeWithTag(ComparatorTags.FROZEN).assertDoesNotExist()
         // One theme at a time: every candidate under it, in alphabetical order.
         val rows = listOf("alex-modele", "camille-exemple", "dominique-fictif", "sacha-temoin")
         rows.forEach { onNodeWithTag(ComparatorTags.row(it)).performScrollTo().assertExists() }
@@ -171,6 +178,70 @@ class DeciderScreenTest {
         onAllNodesWithText("Sa fiche dans « Voir »").onFirst().performScrollTo().performClick()
         waitForIdle()
         assertEquals("alex-modele", seen.opened.single().identifier)
+    }
+
+    @Test
+    fun theDayBeforeTheVoteTheComparatorSaysItIsFrozenAndStaysReadable() = runComposeUiTest {
+        // Round 1 of the example election: Sunday 7 March 2027, frozen from 0 h on Saturday 6 March.
+        show(width = 400, today = CivilDate(2027, 3, 6))
+        onNodeWithTag(DeciderTags.card("comparateur-election-exemple")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ComparatorTags.FROZEN).assert(has("Tour 1"))
+        onNodeWithTag(ComparatorTags.FROZEN).assert(has("jusqu’au 7 mars 2027 à 20 h"))
+        onNodeWithTag(ComparatorTags.cell("alex-modele", "democratie")).performScrollTo().assert(has("référendum d’initiative citoyenne"))
+    }
+
+    @Test
+    fun thePastVotesOfThePartyAreAllThereSortedByThePublishedWordsWithoutAnyComputedPosition() = runComposeUiTest {
+        show(width = 400)
+        onNodeWithTag(DeciderTags.card("comparateur-election-exemple")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ComparatorTags.votes("alex-modele")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(PastVotesTags.PAGE).assertExists()
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(PastVotesTags.ballot("an:17:9002")).fetchSemanticsNodes().isNotEmpty() }
+        // Every vote of the party first, newest first, in numbers only.
+        onNodeWithTag(PastVotesTags.RULE).assert(has("sans aucun tri"))
+        onNodeWithTag(PastVotesTags.ballot("an:17:9002")).assert(has("pour")).assert(has("membres"))
+        // A theme: the rule, its words and their version are shown, with a way to report a wrong one.
+        onNodeWithTag(PastVotesTags.theme("democratie")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(PastVotesTags.RULE).assert(has("il peut contenir des erreurs")).assert(has("motion de censure")).assert(has("version 1"))
+        onNodeWithTag(PastVotesTags.ballot("an:17:9002")).assertExists()
+        onNodeWithTag(PastVotesTags.ballot("an:16:9001")).assertDoesNotExist()
+        onNodeWithTag(PastVotesTags.report("an:17:9002")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(PastVotesTags.REPORT_DIALOG).assert(has("jamais ce seul scrutin à la main"))
+        onNodeWithText("Fermer").performClick()
+        waitForIdle()
+        // Nothing is hidden: the ballots no theme takes are listed apart, and the free search reads every title.
+        onNodeWithTag(PastVotesTags.OTHERS).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(PastVotesTags.ballot("an:16:9001")).performScrollTo().assertExists()
+        onNodeWithTag(PastVotesTags.ALL).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(PastVotesTags.SEARCH).performScrollTo().performTextInput("écluses")
+        waitForIdle()
+        onNodeWithTag(PastVotesTags.ballot("an:17:9001")).performScrollTo().assertExists()
+        onNodeWithTag(PastVotesTags.ballot("an:17:9002")).assertDoesNotExist()
+    }
+
+    @Test
+    fun theNextElectionSaysItsDatesAreOnlyAnnouncedAndGivesEachDeadlineWithItsSource() = runComposeUiTest {
+        show(width = 400)
+        onNodeWithTag(DeciderTags.card("election-exemple")).performScrollTo().assert(has("Tour 1 : 7 mars 2027")).performClick()
+        waitForIdle()
+        onNodeWithTag(ElectionTags.page("election-exemple")).assertExists()
+        onNodeWithTag(ElectionTags.STATUS).assert(has("décret de convocation"))
+        onNodeWithTag(ElectionTags.round(2)).performScrollTo().assert(has("21 mars 2027")).assert(has("dès le 20 mars 2027"))
+        onNodeWithTag(ElectionTags.deadline("inscription-mairie")).performScrollTo().assert(has("29 janvier 2027")).assert(has("Voir la source officielle"))
+        onNodeWithTag(ElectionTags.PRIVACY).performScrollTo().assert(has("restent sur cet appareil"))
+    }
+
+    @Test
+    fun anElectionOverLeavesTheHome() = runComposeUiTest {
+        show(width = 1000, today = CivilDate(2027, 3, 22))
+        onNodeWithTag(DeciderTags.card("election-exemple")).assertDoesNotExist()
     }
 
     @Test

@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.decider
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,18 +11,24 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
@@ -30,6 +37,8 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.decider.ComparatorCell
 import org.politisationpopulairefrancaise.core.decider.ComparatorGrid
 import org.politisationpopulairefrancaise.core.decider.ComparatorRow
+import org.politisationpopulairefrancaise.core.decider.ComparatorSheet
+import org.politisationpopulairefrancaise.core.decider.ElectionRound
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -40,11 +49,27 @@ import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_aside
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_card_line
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_entry_official
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_entry_requests
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_entry_title
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_freeze_rule
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_frozen
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_frozen_title
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_method
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_method_title
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_none
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_official_source
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_photo
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_photo_credit
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_photo_source
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_photos_missing
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_photos_title
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_quote
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_request
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_request_missing
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_request_official
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_sheet
+import org.politisationpopulairefrancaise.ui.resources.decider_comparator_votes
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_source
 import org.politisationpopulairefrancaise.ui.resources.decider_comparator_themes
 import org.politisationpopulairefrancaise.ui.revendications.themeLabel
@@ -58,6 +83,13 @@ object ComparatorTags {
     const val PAGE = "decider-comparator"
     const val METHOD = "decider-comparator-method"
     const val ASIDE = "decider-comparator-aside"
+    const val ENTRY = "decider-comparator-entry"
+    const val FROZEN = "decider-comparator-frozen"
+    fun request(candidate: String) = "decider-comparator-request-$candidate"
+    fun votes(candidate: String) = "decider-comparator-votes-$candidate"
+    fun photo(candidate: String) = "decider-comparator-photo-$candidate"
+    const val PHOTO_CREDITS = "decider-comparator-photo-credits"
+    const val PHOTOS_MISSING = "decider-comparator-photos-missing"
     fun theme(id: String) = "decider-comparator-theme-$id"
     fun row(candidate: String) = "decider-comparator-row-$candidate"
     fun cell(candidate: String, theme: String) = "decider-comparator-cell-$candidate-$theme"
@@ -87,20 +119,39 @@ internal fun ComparatorCard(grid: ComparatorGrid, onOpen: () -> Unit, modifier: 
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, onOpenSheet: (ContentAddress) -> Unit) {
+internal fun ComparatorPage(
+    grid: ComparatorGrid,
+    wide: Boolean,
+    nowSeconds: Long,
+    onOpenSheet: (ContentAddress) -> Unit,
+    /** Opens the past votes of a candidate's party; null when the device cannot read them. */
+    onOpenVotes: ((ContentAddress) -> Unit)? = null,
+    /** The official photos (Q3), all or nothing; null in previews. */
+    photos: ComparatorPhotosState? = null,
+) {
     val palette = PpfTheme.palette
+    LaunchedEffect(photos, grid.sheet.article.event.id) { photos?.load(grid.sheet) }
+    val images = photos?.photos(grid.sheet)
     var theme by rememberSaveable(grid.sheet.address.toString()) { mutableStateOf(grid.themes.first()) }
     Column(Modifier.fillMaxWidth().testTag(ComparatorTags.PAGE)) {
         PageHeader(grid.sheet.article.title.withoutExample(), grid.sheet.election.label)
         Spacer(Modifier.height(12.dp))
+        grid.sheet.frozenRound(nowSeconds)?.let { round ->
+            FrozenNotice(round)
+            Spacer(Modifier.height(12.dp))
+        }
         InfoBox(Lucide.ListChecks, Modifier.testTag(ComparatorTags.METHOD)) {
             Text(stringResource(Res.string.decider_comparator_method_title), style = MaterialTheme.typography.titleSmall)
             Spacer(Modifier.height(4.dp))
             Text(stringResource(Res.string.decider_comparator_method), style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(stringResource(Res.string.decider_comparator_freeze_rule), style = MaterialTheme.typography.bodyMedium)
         }
+        Spacer(Modifier.height(12.dp))
+        EntryRule(grid.sheet)
         Spacer(Modifier.height(16.dp))
         if (wide) {
-            ComparatorTable(grid, onOpenSheet)
+            ComparatorTable(grid, onOpenSheet, onOpenVotes, images)
         } else {
             SectionHeader(stringResource(Res.string.decider_comparator_themes))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -118,13 +169,17 @@ internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, onOpenSheet: (C
             grid.column(theme).forEachIndexed { index, (row, cell) ->
                 if (index > 0) HorizontalDivider(color = palette.border)
                 Column(Modifier.fillMaxWidth().padding(vertical = 12.dp).testTag(ComparatorTags.row(row.candidate.identifier))) {
+                    CandidatePhotoImage(images, row)
                     Text(row.name.withoutExample(), style = MaterialTheme.typography.titleSmall)
+                    RequestLine(grid.sheet, row)
                     Spacer(Modifier.height(4.dp))
                     PositionText(row, cell)
                     PpfTextButton(onClick = { onOpenSheet(row.candidate) }, text = stringResource(Res.string.decider_comparator_sheet))
+                    VotesLink(grid.sheet, row, onOpenVotes)
                 }
             }
         }
+        PhotoCredits(grid, images)
         if (grid.aside.isNotEmpty()) {
             Spacer(Modifier.height(16.dp))
             Text(
@@ -139,11 +194,11 @@ internal fun ComparatorPage(grid: ComparatorGrid, wide: Boolean, onOpenSheet: (C
 
 /** One column per candidate, one line per theme: the same cells for all, sideways scrolling when needed. */
 @Composable
-private fun ComparatorTable(grid: ComparatorGrid, onOpenSheet: (ContentAddress) -> Unit) {
+private fun ComparatorTable(grid: ComparatorGrid, onOpenSheet: (ContentAddress) -> Unit, onOpenVotes: ((ContentAddress) -> Unit)?, images: Map<String, ImageBitmap>?) {
     val palette = PpfTheme.palette
     Row(Modifier.horizontalScroll(rememberScrollState())) {
         Column(Modifier.width(160.dp)) {
-            Spacer(Modifier.height(56.dp))
+            Spacer(Modifier.height(HEADER_HEIGHT + if (images != null) PHOTO_SIZE + 4.dp else 0.dp))
             grid.themes.forEach { id ->
                 HorizontalDivider(color = palette.border)
                 Text(themeLabel(id), style = MaterialTheme.typography.labelLarge, modifier = Modifier.height(CELL_HEIGHT).padding(vertical = 8.dp).semantics { heading() })
@@ -151,9 +206,12 @@ private fun ComparatorTable(grid: ComparatorGrid, onOpenSheet: (ContentAddress) 
         }
         grid.rows.forEach { row ->
             Column(Modifier.width(280.dp).padding(start = 12.dp).testTag(ComparatorTags.row(row.candidate.identifier))) {
-                Column(Modifier.height(56.dp)) {
+                CandidatePhotoImage(images, row)
+                Column(Modifier.height(HEADER_HEIGHT)) {
                     Text(row.name.withoutExample(), style = MaterialTheme.typography.titleSmall, maxLines = 2)
+                    RequestLine(grid.sheet, row)
                     PpfTextButton(onClick = { onOpenSheet(row.candidate) }, text = stringResource(Res.string.decider_comparator_sheet))
+                    VotesLink(grid.sheet, row, onOpenVotes)
                 }
                 row.cells.forEach { cell ->
                     HorizontalDivider(color = palette.border)
@@ -185,4 +243,107 @@ private fun PositionText(row: ComparatorRow, cell: ComparatorCell) {
     }
 }
 
+/**
+ * Who appears in the comparator (decision of the owner, Q1 option B): anyone who declared their candidacy and
+ * asks, within the same delay for everyone, until the official list, which the comparator then follows.
+ */
+@Composable
+private fun EntryRule(sheet: ComparatorSheet) {
+    val open = rememberOpenUrl()
+    InfoBox(Lucide.Users, Modifier.testTag(ComparatorTags.ENTRY)) {
+        Text(stringResource(Res.string.decider_comparator_entry_title), style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(4.dp))
+        val official = sheet.officialList
+        if (official != null) {
+            Text(stringResource(Res.string.decider_comparator_entry_official, official.date.toFrench()), style = MaterialTheme.typography.bodyMedium)
+            PpfTextButton(onClick = { open(official.url) }, text = stringResource(Res.string.decider_comparator_official_source))
+        } else {
+            sheet.additionDelayDays?.let { delay ->
+                Text(stringResource(Res.string.decider_comparator_entry_requests, delay), style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
+/** The request of a candidate and the day of the addition, the same line for everyone. */
+@Composable
+private fun RequestLine(sheet: ComparatorSheet, row: ComparatorRow) {
+    val request = sheet.requestOf(row.candidate)
+    val text = when {
+        request != null -> stringResource(Res.string.decider_comparator_request, request.requestedOn.toFrenchShort(), request.addedOn.toFrenchShort())
+        sheet.officialList != null -> stringResource(Res.string.decider_comparator_request_official)
+        else -> stringResource(Res.string.decider_comparator_request_missing)
+    }
+    Text(text, style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkMuted, modifier = Modifier.testTag(ComparatorTags.request(row.candidate.identifier)))
+}
+
+/** From 0 h the day before the first voting day until the polling stations close: nothing is published (Q4 option A). */
+@Composable
+private fun FrozenNotice(round: ElectionRound) {
+    InfoBox(Lucide.Lock, Modifier.testTag(ComparatorTags.FROZEN)) {
+        Text(stringResource(Res.string.decider_comparator_frozen_title), style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(4.dp))
+        Text(
+            stringResource(Res.string.decider_comparator_frozen, round.number, round.day.toFrench(), frenchClock(round.closingHour, round.closingMinute)),
+            style = MaterialTheme.typography.bodyMedium,
+        )
+    }
+}
+
+/** The way to the past votes of the candidate's party, the same for every candidate whose party is linked. */
+@Composable
+private fun VotesLink(sheet: ComparatorSheet, row: ComparatorRow, onOpenVotes: ((ContentAddress) -> Unit)?) {
+    if (onOpenVotes == null || sheet.parties.none { it.concerns(row.candidate) }) return
+    PpfTextButton(
+        onClick = { onOpenVotes(row.candidate) },
+        text = stringResource(Res.string.decider_comparator_votes),
+        modifier = Modifier.testTag(ComparatorTags.votes(row.candidate.identifier)),
+    )
+}
+
+/** The official photo of a candidate, the same size and place for everyone; nothing at all while one is missing. */
+@Composable
+private fun CandidatePhotoImage(images: Map<String, ImageBitmap>?, row: ComparatorRow) {
+    val image = images?.get(row.candidate.identifier) ?: return
+    Image(
+        bitmap = image,
+        contentDescription = stringResource(Res.string.decider_comparator_photo, row.name.withoutExample()),
+        contentScale = ContentScale.Crop,
+        modifier = Modifier.padding(bottom = 4.dp).size(PHOTO_SIZE).clip(RoundedCornerShape(8.dp)).testTag(ComparatorTags.photo(row.candidate.identifier)),
+    )
+}
+
+/** The rights of each photo under the grid (licence, author, source); or why none is shown. */
+@Composable
+private fun PhotoCredits(grid: ComparatorGrid, images: Map<String, ImageBitmap>?) {
+    val sheet = grid.sheet
+    val palette = PpfTheme.palette
+    val open = rememberOpenUrl()
+    if (images == null) {
+        if (sheet.photos.isNotEmpty() && !sheet.photosShown) {
+            Spacer(Modifier.height(12.dp))
+            Text(stringResource(Res.string.decider_comparator_photos_missing), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.testTag(ComparatorTags.PHOTOS_MISSING))
+        }
+        return
+    }
+    Spacer(Modifier.height(12.dp))
+    Column(Modifier.fillMaxWidth().testTag(ComparatorTags.PHOTO_CREDITS)) {
+        Text(stringResource(Res.string.decider_comparator_photos_title), style = MaterialTheme.typography.labelLarge)
+        grid.rows.forEach { row ->
+            val photo = sheet.photoOf(row.candidate) ?: return@forEach
+            Text(
+                stringResource(Res.string.decider_comparator_photo_credit, row.name.withoutExample(), photo.licence, photo.author),
+                style = MaterialTheme.typography.bodySmall,
+                color = palette.inkMuted,
+            )
+            PpfTextButton(onClick = { open(photo.source) }, text = stringResource(Res.string.decider_comparator_photo_source))
+        }
+    }
+}
+
+/** "20 h", "19 h 30". */
+internal fun frenchClock(hour: Int, minute: Int): String = if (minute == 0) "$hour h" else "$hour h ${minute.toString().padStart(2, '0')}"
+
 private val CELL_HEIGHT = 200.dp
+private val HEADER_HEIGHT = 112.dp
+private val PHOTO_SIZE = 72.dp
