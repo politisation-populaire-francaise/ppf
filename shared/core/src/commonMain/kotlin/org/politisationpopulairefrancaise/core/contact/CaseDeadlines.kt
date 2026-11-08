@@ -118,10 +118,10 @@ internal object ParisTime {
     fun plusMonths(epochSeconds: Long, months: Int): Long {
         val local = epochSeconds + offsetSeconds(epochSeconds)
         val date = CivilDate.fromEpochDays(local.floorDiv(DAY))
-        val secondOfDay = local.floorMod(DAY)
+        val secondOfDay = local.mod(DAY)
         val index = date.year * 12 + (date.month - 1) + months
         val year = index.floorDiv(12)
-        val month = index.floorMod(12) + 1
+        val month = index.mod(12) + 1
         val day = minOf(date.day, monthLength(year, month))
         return fromLocal(CivilDate(year, month, day).toEpochDays() * DAY + secondOfDay)
     }
@@ -150,7 +150,7 @@ internal object ParisTime {
     private fun lastSunday(year: Int, month: Int): Long {
         val last = CivilDate(year, month, 31).toEpochDays()
         // 1970-01-01 was a Thursday: (days + 4) mod 7 is 0 on Sundays.
-        return last - (last + 4).floorMod(7L)
+        return last - (last + 4).mod(7L)
     }
 
     private fun monthLength(year: Int, month: Int): Int {

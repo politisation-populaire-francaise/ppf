@@ -606,9 +606,9 @@ data class InboxFilters(
             else -> CaseStatus.fromWire(view)?.let { InboxView.Status(it) } ?: InboxView.OPEN
         },
         type = type,
-        subtype = qualifier?.removePrefix("subtype:")?.takeIf { qualifier.startsWith("subtype:") }?.let(TicketSubtype::fromWire),
-        category = qualifier?.removePrefix("category:")?.takeIf { qualifier.startsWith("category:") }?.let(ContactCategory::fromWire),
-        motif = qualifier?.removePrefix("motif:")?.takeIf { qualifier.startsWith("motif:") }?.let(ClaimMotif::fromWire),
+        subtype = qualifier?.takeIf { it.startsWith("subtype:") }?.removePrefix("subtype:")?.let(TicketSubtype::fromWire),
+        category = qualifier?.takeIf { it.startsWith("category:") }?.removePrefix("category:")?.let(ContactCategory::fromWire),
+        motif = qualifier?.takeIf { it.startsWith("motif:") }?.removePrefix("motif:")?.let(ClaimMotif::fromWire),
         assigned = when (assigned) {
             "moi" -> AssignedFilter.To(viewer)
             "personne" -> AssignedFilter.Nobody
