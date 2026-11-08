@@ -43,6 +43,7 @@ import org.politisationpopulairefrancaise.server.backoffice.BackOfficeConfig
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSetup
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSpace
 import org.politisationpopulairefrancaise.server.backoffice.GroupCreationsQueue
+import org.politisationpopulairefrancaise.server.backoffice.GroupOrphansQueue
 import org.politisationpopulairefrancaise.server.backoffice.PortSelector
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeHeaders
 import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
@@ -78,6 +79,7 @@ import org.politisationpopulairefrancaise.server.events.PublicationPolicy
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.groups.GroupGuardrails
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
+import org.politisationpopulairefrancaise.server.groups.GroupOrphans
 import org.politisationpopulairefrancaise.server.groups.OrganisationNames
 import org.politisationpopulairefrancaise.server.push.PushConfig
 import org.politisationpopulairefrancaise.server.push.PushService
@@ -411,6 +413,10 @@ fun Application.module(
     // The room creations held for the team (contract docs/integration/salons-roles.md, section 3 bis);
     // a creation signed after its key was declared compromised can only be refused (S-146).
     groups?.let { directory -> teamBackOffice?.queues?.register(GroupCreationsQueue(directory, compromised)) }
+    // The rooms left without administrator by a compromised account, for the team (docs/integration/salons-reprise.md).
+    if (groups != null && compromised != null && repository != null) {
+        teamBackOffice?.queues?.register(GroupOrphansQueue(GroupOrphans(repository.dataSource), groups, compromised))
+    }
     install(ErrorShield)
     install(ContentNegotiation) {
         json()

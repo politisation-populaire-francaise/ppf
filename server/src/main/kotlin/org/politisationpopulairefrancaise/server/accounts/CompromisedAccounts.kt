@@ -213,7 +213,8 @@ class CompromisedAccounts(
     /**
      * Records the compromise and cuts what the key could still do: its mailbox wake-ups (M31) and its
      * roles in the rooms (D-131). Nothing goes to the legal register: roles are not contents. The room
-     * keeps its journal; a room whose only administrator was this key has none left (the team can help).
+     * keeps its journal; a room whose only administrator was this key has none left: it enters the
+     * queue groups.orphans of the team (docs/integration/salons-reprise.md).
      */
     private fun compromise(connection: Connection, pubkey: String, noticeId: String, since: Long, successor: String?) {
         connection.prepareStatement(
@@ -228,6 +229,19 @@ class CompromisedAccounts(
         }
         connection.prepareStatement("DELETE FROM push_subscription WHERE scope = 'mailbox' AND pubkey = ?").use { statement ->
             statement.setString(1, pubkey)
+            statement.executeUpdate()
+        }
+        connection.prepareStatement(
+            "INSERT INTO group_orphan (group_id, compromised_pubkey, notice_id, orphaned_at) " +
+                "SELECT r.group_id, r.pubkey, ?, ? FROM group_role r WHERE r.pubkey = ? AND r.role = 'admin' " +
+                "AND NOT EXISTS (SELECT 1 FROM group_role o WHERE o.group_id = r.group_id AND o.role = 'admin' AND o.pubkey <> r.pubkey) " +
+                // Orphaned again after a takeover: a new item for the team.
+                "ON CONFLICT (group_id) DO UPDATE SET compromised_pubkey = EXCLUDED.compromised_pubkey, notice_id = EXCLUDED.notice_id, " +
+                "orphaned_at = EXCLUDED.orphaned_at, decision = NULL, decided_at = NULL",
+        ).use { statement ->
+            statement.setString(1, noticeId)
+            statement.setTimestamp(2, Timestamp.from(clock()))
+            statement.setString(3, pubkey)
             statement.executeUpdate()
         }
         connection.prepareStatement("DELETE FROM group_role WHERE pubkey = ?").use { statement ->

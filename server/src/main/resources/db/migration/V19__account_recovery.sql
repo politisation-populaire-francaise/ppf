@@ -24,3 +24,18 @@ CREATE TABLE compromised_account (
     successor   TEXT        UNIQUE CHECK (successor ~ '^[0-9a-f]{64}$' AND successor <> pubkey),
     received_at TIMESTAMPTZ NOT NULL
 );
+
+-- 3. The rooms left without administrator when their last one was declared compromised: the queue
+--    groups.orphans of the back-office (docs/integration/salons-reprise.md). Public identifiers only;
+--    the decision of the team is set once (who decided, and why, is in the audit journal).
+CREATE TABLE group_orphan (
+    group_id           TEXT        PRIMARY KEY,
+    compromised_pubkey TEXT        NOT NULL CHECK (compromised_pubkey ~ '^[0-9a-f]{64}$'),
+    notice_id          TEXT        NOT NULL CHECK (notice_id ~ '^[0-9a-f]{64}$'),
+    orphaned_at        TIMESTAMPTZ NOT NULL,
+    decision           TEXT        CHECK (decision IN ('leave', 'admin')),
+    decided_at         TIMESTAMPTZ,
+    CHECK ((decision IS NULL) = (decided_at IS NULL))
+);
+
+CREATE INDEX group_orphan_pending ON group_orphan (orphaned_at) WHERE decided_at IS NULL;
