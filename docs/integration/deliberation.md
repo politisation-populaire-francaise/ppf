@@ -59,7 +59,8 @@ Calendrier pour le Pacte : ouverture en décembre 2026 dès que le module est pr
 ## 6 bis. Réalisation (8 novembre 2026)
 
 - Fait : `core/decider/Deliberation.kt` (formats, phases, règles, tests `DeliberationTest`) et `server/urne/DeliberationUrnes.kt` (urnes ouvertes par la tâche des urnes, tests `DeliberationUrnesTest`). Précisions prises en codant : la proposition de départ n'est retenue que signée par une clé de l'équipe ; au-delà de dix amendements d'une proposition, les dix premiers créés sont mis au vote (la limite de trois par compte d'abord) ; une proposition va aux amendements et au vote final seulement si elle a eu son urne de soutien pendant la phase de propositions ; les résultats de toutes ces urnes sont montrés après leur clôture.
-- Reste : la relecture des propositions et amendements (file du back-office, comme les revendications), la publication par l'équipe du texte final signé et horodaté (avec le service de signature du Directeur technique), l'écran « Délibération » de l'application et la page du site.
+- Fait aussi : la relecture des propositions et amendements (`server/decider/DeliberationSubmissions.kt`, file `decider.deliberation` des modérateurs, tests `DeliberationSubmissionsTest`) : refus immédiats (forme, données personnelles, mauvaise phase, limites par compte), approbation seulement pendant la phase de la contribution. Les vérifications automatiques des revendications (doublons, IA) ne sont pas encore appliquées aux propositions.
+- Reste : la publication par l'équipe du texte final signé et horodaté (avec le service de signature du Directeur technique), l'écran « Délibération » de l'application et la page du site.
 
 ## 7. Ce qui reste hors de cette première version
 
