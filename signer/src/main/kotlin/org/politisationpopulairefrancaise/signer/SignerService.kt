@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.signer
 
 import org.politisationpopulairefrancaise.core.platform.ApprovalChallenge
 import org.politisationpopulairefrancaise.core.platform.CertificateOffer
+import org.politisationpopulairefrancaise.core.platform.DoubleValidation
 import org.politisationpopulairefrancaise.core.platform.DraftApproval
 import org.politisationpopulairefrancaise.core.platform.DraftAuthor
 import org.politisationpopulairefrancaise.core.platform.DraftRequest
@@ -110,7 +111,9 @@ internal class Draft(
  * each passkey assertion itself and records the approval; the server then asks for the signature ([sign]),
  * granted only if the recorded approvals satisfy the rule fixed by the draft (one approval, or two of two
  * different accounts other than the author for a double validation), still valid with the current team
- * list. Automatic uses are signed directly, without a draft.
+ * list. The service itself decides which contents need the double validation ([DoubleValidation], the
+ * contents of M17 that implicate a person): a draft of such a content that does not ask for it is
+ * refused, and so is its signature. Automatic uses are signed directly, without a draft.
  *
  * Every rule is checked again at signature: an enabled use; the shape of the use; a date neither in the
  * future nor too old; a key of this use with a valid certificate covering the date of the event; an event
@@ -343,6 +346,10 @@ class SignerService private constructor(
         )
         if (use.automatic) return refuseDraft(time, fields, Refusal(SigningRefusals.AUTOMATIC_USE))
         eventRefusal(time, use, unsigned, eventId)?.let { return refuseDraft(time, fields, it) }
+        // The service decides which contents need two approvals, never the queue of the main server alone.
+        if (!request.doubleValidation && DoubleValidation.requiredFor(use, unsigned)) {
+            return refuseDraft(time, fields, Refusal(SigningRefusals.DOUBLE_VALIDATION_REQUIRED))
+        }
         if (request.doubleValidation && author == null) return refuseDraft(time, fields, Refusal(SigningRefusals.AUTHOR_REQUIRED))
         teamListRefusal(time)?.let { return refuseDraft(time, fields, it) }
         val slot = draftKey(use, eventId)
@@ -523,6 +530,11 @@ class SignerService private constructor(
         val policy = policies.getValue(use)
         if (policy.approvals == Approvals.HUMAN) {
             if (draft == null) return refuse(time, JournalActions.REFUSED, fields, Refusal(SigningRefusals.UNKNOWN_DRAFT))
+            // Again at signature: a draft recorded with a single approval (by an older version, or a journal
+            // written by hand) never makes a content that needs two approvals signed with one.
+            if (!draft.doubleValidation && DoubleValidation.requiredFor(use, unsigned)) {
+                return refuse(time, JournalActions.REFUSED, fields, Refusal(SigningRefusals.DOUBLE_VALIDATION_REQUIRED))
+            }
             teamListRefusal(time)?.let { return refuse(time, JournalActions.REFUSED, fields, it) }
             if (approvers.size < draft.required) return refuse(time, JournalActions.REFUSED, fields, Refusal(SigningRefusals.APPROVALS_MISSING))
         }

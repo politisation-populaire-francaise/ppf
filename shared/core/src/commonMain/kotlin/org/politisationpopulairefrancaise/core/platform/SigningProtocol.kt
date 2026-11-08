@@ -56,9 +56,11 @@ data class DraftAuthor(
 
 /**
  * `POST /v1/drafts`: a content of a human use to be approved on the service's own page. [doubleValidation]
- * (told by the queue, for a content of M17 that implicates a person) asks for two approvals of two
- * different accounts, the [author] of the draft being neither of them. The rule is fixed by the first
- * submission of an event: a submission of the same event with another rule is refused.
+ * asks for two approvals of two different accounts, the [author] of the draft being neither of them. The
+ * service requires it by itself for the contents that need it ([DoubleValidation.requiredFor]: the
+ * contents of M17 that implicate a person) and refuses such a draft without it
+ * (`double_validation_required`). The rule is fixed by the first submission of an event: a submission of
+ * the same event with another rule is refused.
  */
 @Serializable
 data class DraftRequest(
@@ -224,6 +226,14 @@ object SigningRefusals {
     const val ALREADY_APPROVED: String = "already_approved"
 
     const val AUTHOR_REQUIRED: String = "author_required"
+
+    /**
+     * The content needs a double validation ([DoubleValidation.requiredFor]: a content of M17 that
+     * implicates a person) and the draft does not ask for it; also at signature, for a draft recorded
+     * with a single approval.
+     */
+    const val DOUBLE_VALIDATION_REQUIRED: String = "double_validation_required"
+
     const val AUTHOR_CANNOT_APPROVE: String = "author_cannot_approve"
     const val ALREADY_SIGNED: String = "already_signed"
 

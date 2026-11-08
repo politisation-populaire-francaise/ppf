@@ -28,7 +28,12 @@ enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolea
     /** Sheets of the verified organisations of « Agir » (NIP-23, `ppf-type` = `organisation`). */
     AGIR_ORGANISATIONS("agir.organisations", setOf(EventKinds.LONG_FORM_ARTICLE), automatic = false),
 
-    /** The public table of the democratic Pact and the candidates' answers (NIP-23, `pacte`, `engagement`). */
+    /**
+     * The contents of « Décider » signed by the platform (NIP-23, one `ppf-type` of [PACTE_TYPES]): the public
+     * table of the democratic Pact and the candidates' answers (`pacte`, `engagement`), the official
+     * petitions relayed by the team with the link to the official site (`petition`), and the final texts of
+     * a deliberation (`proposition-finale`).
+     */
     DECIDER_PACTE("decider.pacte", setOf(EventKinds.LONG_FORM_ARTICLE), automatic = false),
 
     /** Timestamp proofs of the archives (D-111): OpenTimestamps attestations (NIP-03, kind 1040). */
@@ -44,7 +49,7 @@ enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolea
     /**
      * Whether an event of [kind] with [tags] has the form of this use: one of its kinds and the tags that
      * tell the uses apart. Editorial contents never carry the `ppf-type` of another use; an organisation
-     * sheet has exactly `ppf-type` = `organisation`; the Pact exactly `pacte` or `engagement`; a status
+     * sheet has exactly `ppf-type` = `organisation`; a content of « Décider » exactly one of [PACTE_TYPES]; a status
      * label exactly the namespace `ppf-status`; the open data index exactly its `d`; a closing statement a
      * single `d` of the ballot boxes. An OpenTimestamps attestation is told apart by its kind alone.
      */
@@ -75,8 +80,11 @@ enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolea
         const val OPENDATA_INDEX_IDENTIFIER: String = "ppf:parlement-index"
         const val URN_CLOSURE_PREFIX: String = "ppf:urne-cloture:"
 
-        /** The `ppf-type` values of the Pact and of the candidates' answers. */
-        val PACTE_TYPES: Set<String> = setOf("pacte", "engagement")
+        /**
+         * The `ppf-type` values of [DECIDER_PACTE]: the Pact, the candidates' answers, the official petitions
+         * relayed by the team and the final texts of a deliberation.
+         */
+        val PACTE_TYPES: Set<String> = setOf("pacte", "engagement", "petition", "proposition-finale")
 
         /** The `ppf-type` values that belong to a use other than the editorial ones. */
         val TYPES_OF_OTHER_USES: Set<String> = setOf(TYPE_ORGANISATION) + PACTE_TYPES
