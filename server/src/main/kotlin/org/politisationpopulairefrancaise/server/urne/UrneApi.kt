@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.server.urne
 
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.contentLength
@@ -8,6 +9,7 @@ import io.ktor.server.request.receiveText
 import io.ktor.server.request.uri
 import io.ktor.server.response.header
 import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.RoutingCall
 import io.ktor.server.routing.get
@@ -140,7 +142,8 @@ fun Route.urneApi(
             if (service == null || !service.available) return@get call.unavailable()
             val number = call.parameters["number"]?.toLongOrNull() ?: return@get call.respond(HttpStatusCode.NotFound, ApiError("unknown_urne", "No such ballot box."))
             try {
-                call.respond(withContext(Dispatchers.IO) { service.closing(number) })
+                // The very bytes whose SHA-256 the platform-signed closing statement carries (ppf-closing-sha256).
+                call.respondText(withContext(Dispatchers.IO) { service.closingDocument(number) }, ContentType.Application.Json)
             } catch (r: UrneRefusal) {
                 call.refuse(r)
             }

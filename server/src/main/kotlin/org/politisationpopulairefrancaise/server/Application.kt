@@ -93,6 +93,9 @@ import org.politisationpopulairefrancaise.server.urne.ElectedCertificationsQueue
 import org.politisationpopulairefrancaise.server.urne.InPersonValidations
 import org.politisationpopulairefrancaise.server.urne.UrneService
 import org.politisationpopulairefrancaise.server.urne.UrneStore
+import org.politisationpopulairefrancaise.server.urne.UrneClosureStatements
+import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
 import org.politisationpopulairefrancaise.server.urne.urneApi
 import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
@@ -329,12 +332,18 @@ fun Application.module(
         val demands = RevendicationUrnes(dataSource, urnes, policy::isEditor)
         // The boxes of the citizen deliberations, opened as their published phases come (DE-25).
         val deliberations = repository?.let { DeliberationUrnes(it, urnes, policy::isEditor) }
+        // The closing statements signed by the platform (decider.urn_closure), when the signing service is configured.
+        val closures = if (urneStore != null && repository != null) {
+            PlatformSignerConfig.fromEnvironment()?.let { UrneClosureStatements(urneStore, urnes, HttpPlatformSigner(it), repository) }
+        } else {
+            null
+        }
         // Daily, a certified mandate absent from the updated directory ends its certification (DE-23).
         urnes.startClosing(
             this,
             UrneService.CLOSING_INTERVAL,
             log,
-            keepers = listOf({ demands.reconcile() }, { deliberations?.reconcile() }, { certifications?.checkMandatesDue() }, { deliberationSubmissions?.purgeDecided() }),
+            keepers = listOf({ demands.reconcile() }, { deliberations?.reconcile() }, { certifications?.checkMandatesDue() }, { deliberationSubmissions?.purgeDecided() }, { closures?.runDue() }),
         )
     }
     // Room descriptions stored before the directory table existed (V4) enter it, once.

@@ -156,6 +156,13 @@ class UrneService(
         )
     }
 
+    /**
+     * The closing document of [number] exactly as served by `GET /api/v1/urnes/{n}/closing` (D-110, 6.7), in
+     * one canonical serialization: its SHA-256 is the `ppf-closing-sha256` of the platform-signed closing
+     * statement, so that anyone can check the document against the signature.
+     */
+    fun closingDocument(number: Long): String = CLOSING_JSON.encodeToString(UrneClosing.serializer(), closing(number))
+
     /** The choices of the elected officials' public votes of a box, as (level, choice). */
     private fun publicChoices(number: Long): List<Pair<VoteLevel, String>> =
         store.publicVotes(number).mapNotNull { json ->
@@ -389,6 +396,9 @@ class UrneService(
 
         /** A public vote dated a little ahead (a device clock) is fine; far ahead, it is refused. */
         const val MAX_CLOCK_AHEAD_SECONDS: Long = 600
+
+        /** The one serialization of the closing documents (the hash of the signed statement is taken on it). */
+        val CLOSING_JSON: Json = Json { encodeDefaults = true }
 
         /** The certifications that make an account dedicated to its mandate (no anonymous token). */
         private val DEDICATED = setOf(CertificationAnswer.PENDING, CertificationAnswer.CERTIFIED)

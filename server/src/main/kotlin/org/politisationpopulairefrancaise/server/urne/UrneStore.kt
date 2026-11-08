@@ -277,6 +277,53 @@ class UrneStore(
         }
     }
 
+    // ------------------------------------------------------------------ closing statements (decider.urn_closure)
+
+    /** Closed boxes whose closing statement is neither signed nor refused for good, oldest first. */
+    fun closuresToSign(limit: Int): List<Long> = dataSource.connection.use { c ->
+        c.prepareStatement("SELECT number FROM urne WHERE closed AND closure_statement IS NULL AND closure_refused IS NULL ORDER BY number LIMIT ?").use { s ->
+            s.setInt(1, limit)
+            s.executeQuery().use { r -> generateSequence { if (r.next()) r.getLong(1) else null }.toList() }
+        }
+    }
+
+    /** Signed closing statements not yet published, as (number, signed event JSON). */
+    fun closuresToPublish(limit: Int): List<Pair<Long, String>> = dataSource.connection.use { c ->
+        c.prepareStatement("SELECT number, closure_statement FROM urne WHERE closure_statement IS NOT NULL AND NOT closure_published ORDER BY number LIMIT ?").use { s ->
+            s.setInt(1, limit)
+            s.executeQuery().use { r -> generateSequence { if (r.next()) r.getLong(1) to r.getString(2) else null }.toList() }
+        }
+    }
+
+    /** Keeps the signed closing statement of [number] (once: a statement is never replaced). */
+    fun recordClosureStatement(number: Long, signedJson: String): Boolean = update(
+        "UPDATE urne SET closure_statement = ? WHERE number = ? AND closed AND closure_statement IS NULL",
+    ) { s ->
+        s.setString(1, signedJson)
+        s.setLong(2, number)
+    }
+
+    fun markClosurePublished(number: Long): Boolean = update("UPDATE urne SET closure_published = true WHERE number = ? AND closure_statement IS NOT NULL") { s -> s.setLong(1, number) }
+
+    fun markClosureRefused(number: Long, code: String): Boolean = update("UPDATE urne SET closure_refused = ? WHERE number = ? AND closure_statement IS NULL") { s ->
+        s.setString(1, code.take(64))
+        s.setLong(2, number)
+    }
+
+    /** The boxes whose closing statement was refused for good (an alert for the team). */
+    fun refusedClosures(): List<Pair<Long, String>> = dataSource.connection.use { c ->
+        c.prepareStatement("SELECT number, closure_refused FROM urne WHERE closure_refused IS NOT NULL ORDER BY number").use { s ->
+            s.executeQuery().use { r -> generateSequence { if (r.next()) r.getLong(1) to r.getString(2) else null }.toList() }
+        }
+    }
+
+    private fun update(sql: String, bind: (java.sql.PreparedStatement) -> Unit): Boolean = dataSource.connection.use { c ->
+        c.prepareStatement(sql).use { s ->
+            bind(s)
+            s.executeUpdate() == 1
+        }
+    }
+
     /** Ballots of each box of [numbers], summed by (level, choice): the live results of a whole list at once. */
     fun countsByBox(numbers: List<Long>): Map<Long, Map<Pair<VoteLevel, String>, Long>> {
         if (numbers.isEmpty()) return emptyMap()

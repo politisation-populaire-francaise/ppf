@@ -50,7 +50,14 @@ CREATE TABLE urne (
     closed        BOOLEAN     NOT NULL DEFAULT false,
     -- 16 random bytes drawn at the opening, part of the derivation of the keys: the keys of a box are
     -- its own even if its identifier came back or a seed was shared by mistake. Never published.
-    salt          BYTEA       NOT NULL CHECK (octet_length(salt) = 16)
+    salt          BYTEA       NOT NULL CHECK (octet_length(salt) = 16),
+    -- The closing statement signed by the platform (decider.urn_closure, JSON of the signed event), kept here
+    -- first so that it is never lost between its signature and its publication; then published as it is.
+    closure_statement TEXT,
+    closure_published BOOLEAN NOT NULL DEFAULT false,
+    -- Why the signing service refused the closing statement for good (urn_already_closed: signed before and
+    -- lost here, an alert for the team), null otherwise.
+    closure_refused   TEXT CHECK (length(closure_refused) <= 64)
 );
 
 -- 3. urne_issued: how many tokens each ballot box gave to each level (public journal, R2).
