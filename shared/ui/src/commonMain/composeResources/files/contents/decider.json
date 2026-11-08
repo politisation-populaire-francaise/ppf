@@ -541,6 +541,93 @@
         "sig": "f44ee9b5170924c074695d155b1101c5a6118dc0f93b4529db08efcb11dd480d327d56991426fffd9e5048b10f7b4d58c6bbec254045ad3f1df02e07a0f3c2b0"
     },
     {
+        "id": "0407115bbb580a168f4ab6ebb8329304da40621db887e3546df4123cc458abf5",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "election-exemple"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Élection présidentielle d’exemple"
+            ],
+            [
+                "summary",
+                "Les tours, les dates limites et les liens officiels, pour se préparer à voter."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "election"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "élections"
+            ],
+            [
+                "ppf-election",
+                "election-exemple",
+                "Élection présidentielle d’exemple",
+                ""
+            ],
+            [
+                "ppf-election-status",
+                "annoncee"
+            ],
+            [
+                "ppf-round",
+                "1",
+                "2027-03-07",
+                "",
+                "20:00"
+            ],
+            [
+                "ppf-round",
+                "2",
+                "2027-03-21",
+                "2027-03-20",
+                "20:00"
+            ],
+            [
+                "ppf-deadline",
+                "inscription-en-ligne",
+                "2027-01-27",
+                "https://exemple.invalid/inscription-en-ligne"
+            ],
+            [
+                "ppf-deadline",
+                "inscription-mairie",
+                "2027-01-29",
+                "https://exemple.invalid/inscription-mairie"
+            ],
+            [
+                "ppf-deadline",
+                "procuration-conseillee",
+                "2027-02-25",
+                "https://exemple.invalid/procuration"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "[EXEMPLE] Calendrier annoncé de l’élection d’exemple",
+                "https://exemple.invalid/calendrier",
+                "2026-11-08"
+            ]
+        ],
+        "content": "Contenu de démonstration : l’élection et ses dates sont fictives. Les vraies dates viennent du décret de convocation publié au Journal officiel ; tant qu’il ne l’est pas, elles sont seulement annoncées.\n",
+        "sig": "173d96caca9c8bdfc5fec7ab086578245cac4d22ce59b272ae6f3a258870a8b7e3034aac634fc5d17f58cbe757871df0ff8c0dcf95e48605ee33f808dc5a9b2e"
+    },
+    {
         "id": "9148be193f4afeeb32aaff9a39c2890545017ce7d4c0537208e0819a905ab9b5",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
