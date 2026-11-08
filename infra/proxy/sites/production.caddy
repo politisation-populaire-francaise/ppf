@@ -26,9 +26,11 @@ equipe.{$PPF_DOMAIN} {
 
 	@outside not remote_ip 10.8.0.0/24
 
-	# No form or ceremony of the back-office needs more (the server refuses above it too).
+	# The largest form of the back-office: a section of a pole (a long text of the editorial circuit,
+	# docs/integration/back-office.md, section 14) reads 256 KiB at most; the server checks the exact limit
+	# of each page (64 KiB for the others).
 	request_body {
-		max_size 64KB
+		max_size 256KB
 	}
 
 	route {
