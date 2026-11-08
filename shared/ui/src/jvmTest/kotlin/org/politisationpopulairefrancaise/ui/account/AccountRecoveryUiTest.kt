@@ -186,6 +186,7 @@ class AccountRecoveryUiTest {
         onNodeWithTag(RecoveryTags.CHECK_ERROR).assertTextContains("autre compte", substring = true)
         click(RecoveryTags.KEEP_PHRASE)
         tap(RecoveryTags.KEEP_CONFIRM)
+        onNodeWithTag(RecoveryTags.CHECK_WHOLE).performTextClearance()
         onNodeWithTag(RecoveryTags.CHECK_WHOLE).performTextInput(nip06.uppercase())
         click(RecoveryTags.CHECK_SUBMIT)
         awaitTag(RecoveryTags.CHECK_DONE)
