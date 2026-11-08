@@ -24,6 +24,7 @@ import org.politisationpopulairefrancaise.core.comprendre.ComprendreLinks
 import org.politisationpopulairefrancaise.core.comprendre.ContentBlocks
 import org.politisationpopulairefrancaise.core.comprendre.DecisionLevel
 import org.politisationpopulairefrancaise.core.comprendre.GlossaryEntry
+import org.politisationpopulairefrancaise.core.comprendre.TeachingLevel
 import org.politisationpopulairefrancaise.core.comprendre.Verdict
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.voir.PublicRole
@@ -69,6 +70,31 @@ internal val PublicRole.comprendreLabel: String get() = when (this) {
     PublicRole.PRESIDENT -> "Président de la République"
     PublicRole.OTHER -> "Autres"
 }
+
+/** The level of a teaching sheet, as a heading: « Lycée ». */
+internal val TeachingLevel.label: String get() = when (this) {
+    TeachingLevel.LYCEE -> "Lycée"
+    TeachingLevel.CYCLE_4 -> "Cycle 4 (collège)"
+}
+
+/** The level of a teaching sheet, inside a sentence: « fiche pédagogique (lycée) ». */
+internal val TeachingLevel.inSentence: String get() = when (this) {
+    TeachingLevel.LYCEE -> "lycée"
+    TeachingLevel.CYCLE_4 -> "cycle 4"
+}
+
+/**
+ * The notice of every teaching sheet (D-096; docs/integration/comprendre-enseignants.md, section 1): a fixed
+ * text of the site and of the application, never left to the writer of the sheet.
+ */
+internal const val TEACHING_NEUTRALITY: String =
+    "L’enseignant reste libre de ses choix pédagogiques. Cette fiche respecte la neutralité de l’enseignement public : elle présente des faits et des débats, jamais une consigne de vote ni une position partisane."
+
+/**
+ * The licence of the texts of PPF (D-103: CC BY 4.0, attribution « Politisation Populaire Française »), written
+ * here until the common mechanism of "Voir" (`ContentLicenses.of(type)`) reaches main.
+ */
+internal const val TEACHING_LICENCE: String = "Texte sous licence CC BY 4.0, Politisation Populaire Française"
 
 /** One official directory to find one's elected officials (option C, as `OfficialDirectories` of the application). */
 internal class OfficialDirectory(val url: String, val title: String, val text: String)
