@@ -164,3 +164,14 @@ Demande de la propriétaire (Q2) : « Depuis aussi loin que possible sur le part
 - Pour un thème et un candidat : le nombre de scrutins, puis chacun (date, titre officiel, chambre, résultat, et la répartition des élus du parti : « 12 pour, 3 contre, 1 abstention, 2 non-votants sur 18 »), du plus récent au plus ancien, par pages de 20, avec un filtre par chambre ; jamais de position majoritaire calculée, jamais de note.
 - La règle de mots et sa date sont affichées sous chaque liste, avec le nombre de « autres scrutins ».
 - Hors ligne : tout est calculé sur l'appareil à partir des paquets déjà téléchargés ; le serveur ne sait pas quel candidat ou quel thème est regardé.
+
+## 11. Photos officielles (Q3) : conception
+
+Décision de la propriétaire : « Si, on inclue la photo. » La photo officielle de chacun, au même format et sur le même fond, servie par PPF (jamais par un site tiers), avec licence, auteur et source vérifiés et inscrits dans la liste des relectures par un avocat ; sans droit vérifié, pas de photo, pour personne.
+
+- **Format** : sur la fiche signée du comparateur, `ppf-photo` (répétée, une par candidat) : `candidat`, `sha256` du fichier, `licence`, `auteur`, `page de la source (https)`. L'empreinte relie la fiche signée au fichier exact : un fichier changé n'est plus montré.
+- **Règle « tout ou rien »** (`ComparatorSheet.photosShown`) : les photos ne s'affichent que si **chaque** candidat de la fiche a la sienne, avec ses trois mentions ; sinon aucune, pour personne, et la page le dit.
+- **Fichiers** : préparés par l'équipe au même cadrage (carré, 400 pixels, fond uni), métadonnées retirées ; servis par le serveur de PPF à `GET /api/v1/decider/photos/{sha256}` depuis un dossier (`PPF_DECIDER_PHOTOS_DIR`, comme les tuiles de la carte), seulement quand l'empreinte du fichier correspond à son nom ; mise en cache longue (le nom change avec le contenu).
+- **Application** : à l'ouverture du comparateur, toutes les photos de la fiche sont demandées ensemble (jamais une seule, qui dirait au serveur quel candidat intéresse), vérifiées par leur empreinte, gardées sur l'appareil pour le hors-ligne ; même taille et même place pour tous ; texte de remplacement « Photo officielle de … » ; mentions de licence, d'auteur et de source sous la grille.
+- **Exemple** : aucune photo dans le jeu [EXEMPLE] (aucun droit à vérifier pour des personnes fictives) ; les tests utilisent des images générées.
+- **Avant la mise en ligne** : droit à l'image et droit d'auteur de chaque photo dans la liste des relectures par un avocat (section 9.8 du cahier des charges).
