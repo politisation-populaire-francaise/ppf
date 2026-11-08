@@ -860,6 +860,19 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - **économie de données** : le paquet se télécharge sur un geste (taille affichée), ou à l'ouverture d'« En direct » et de la page quand une version est déjà sur l'appareil et que le mode économie de données est coupé ;
   - **formulation neutre** : on décrit l'ordre du jour, sans jugement ; bandeau « Données fictives [EXEMPLE] » sur le jeu d'exemple.
 
+## D-101 (2026-11-08) Export ouvert des contenus et des tableaux de « Voir » (M34, S-48)
+
+- Contexte : cahier fonctionnel 2.1, M34 (S-48, « Données ouvertes ») ; cahier des charges 2.2, section 3.8 (« Données ouvertes publiées par PPF ») ; conception : `docs/integration/export-ouvert.md`. Décisions techniques prises en autonomie (pôle « Voir », gratuites, sans dépendance nouvelle) ; la licence reste à la propriétaire.
+- Décisions :
+  - **un catalogue et des fichiers** sous `/api/v1/export` (format dans `docs/FORMATS.md`, section 5 bis), recalculés en mémoire au plus une fois par minute, `ETag` = empreinte du fichier ; page `/donnees` du site ;
+  - **seulement les contenus de l'équipe** : le fichier `contenus.json` rassemble la dernière version de chaque adresse des clés éditoriales, en événements signés intacts ; les contenus des comptes citoyens restent lisibles par l'API mais ne sont jamais rassemblés en un fichier, qui relierait des clés pseudonymes à des opinions politiques (RGPD, article 9 ; protéger par défaut) ;
+  - **tableaux dérivés**, en JSON et en CSV, avec un schéma JSON versionné par jeu ; chaque ligne garde l'adresse et la version de son contenu et sa source ; trois premiers jeux de « Voir » : valeurs des indicateurs, aides publiques et sièges des partis ;
+  - **pas de tableau des personnes, des affaires ni des peines** avant la relecture de l'avocat (RGPD, article 10 ; cahier des charges 9.8) ; pas non plus du journal des corrections, dont les titres nomment des personnes ;
+  - **CSV** RFC 4180, UTF-8, virgule (usage de data.gouv.fr), avec neutralisation des formules (OWASP) ;
+  - **registre des jeux** `OpenDataset` : chaque pôle enregistre les siens dans son propre fichier, sans toucher au moteur de l'export ;
+  - **licence** : `a-decider` tant que la propriétaire n'a pas choisi (options présentées au chef d'équipe le 8 novembre 2026 : Licence Ouverte 2.0 ; CC BY 4.0 pour les textes et Licence Ouverte 2.0 pour les données, recommandée ; CC BY-SA 4.0 et ODbL).
+- Reste : choix de la licence ; jeux des autres pôles ; « Citer ce contenu » (S-144) et « Vérifier un contenu PPF » (S-141), étapes B et C de la conception.
+
 ## D-110 (2026-11-07) « Une personne, une voix » : jetons anonymes VOPRF, conditions de la bibliothèque, exigences
 
 - Contexte : conception de `docs/integration/une-personne-une-voix.md` (méthode approuvée par la propriétaire, D-044 ; usages de D-062). Décision technique prise en autonomie (chef d'équipe), le 7 novembre 2026, après relecture complète du document.

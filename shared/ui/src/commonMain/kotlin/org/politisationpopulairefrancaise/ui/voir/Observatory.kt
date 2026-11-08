@@ -63,6 +63,7 @@ import org.politisationpopulairefrancaise.core.voir.NextTarget
 import org.politisationpopulairefrancaise.core.voir.Reading
 import org.politisationpopulairefrancaise.core.voir.Series
 import org.politisationpopulairefrancaise.core.voir.SourceKind
+import org.politisationpopulairefrancaise.core.voir.VoirItem
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.Inset
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
@@ -650,7 +651,7 @@ private fun IndicatorAside(indicator: Indicator, onNext: (NextTarget) -> Unit) {
         CorrectionsSection(indicator.corrections)
         SourcesSection(indicator.sources)
         Spacer(Modifier.height(4.dp))
-        OriginLine(indicator.article)
+        OriginLine(indicator.article, cite = VoirItem.OfIndicator(indicator))
     }
     if (indicator.nextSteps.isNotEmpty()) {
         Spacer(Modifier.height(16.dp))

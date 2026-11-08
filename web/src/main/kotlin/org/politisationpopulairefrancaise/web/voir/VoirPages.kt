@@ -36,6 +36,7 @@ import kotlinx.html.tr
 import kotlinx.html.ul
 import kotlinx.html.unsafe
 import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.voir.Fact
 import org.politisationpopulairefrancaise.core.voir.FactKind
 import org.politisationpopulairefrancaise.core.voir.FactStatus
@@ -99,18 +100,27 @@ fun Route.voirPages(source: VoirSource) {
 }
 
 /** The page of one content; separate from the route so that tests render it without a server. */
-fun HTML.voirItemDocument(item: VoirItem, catalog: VoirCatalog) {
+fun HTML.voirItemDocument(item: VoirItem, catalog: VoirCatalog, consultedOn: CivilDate = today()) {
     siteLayout(pageTitle = item.title, currentSpace = Space.VOIR) {
         breadcrumb(item.title)
-        when (item) {
-            is VoirItem.OfIndicator -> indicatorPage(item.indicator, catalog)
-            is VoirItem.OfFact -> factPage(item.fact, catalog)
-            is VoirItem.OfPerson -> personPage(item.person, catalog)
-            is VoirItem.OfParty -> partyPage(item.party, catalog)
-            is VoirItem.OfText -> textPage(item.text, catalog)
-            is VoirItem.OfMovement -> movementPage(item.movement, catalog)
-            is VoirItem.OfDossier -> dossierPage(item.dossier, catalog)
-        }
+        voirItemBody(item, catalog)
+        citeSection(item, consultedOn)
+    }
+}
+
+/** The day of the reader, in France, for « consulté le » of a reference. */
+private fun today(): CivilDate = java.time.LocalDate.now(java.time.ZoneId.of("Europe/Paris")).let { CivilDate(it.year, it.monthValue, it.dayOfMonth) }
+
+/** The content of the page of [item], without the layout of the site: shared by the site and the back-office preview. */
+internal fun FlowContent.voirItemBody(item: VoirItem, catalog: VoirCatalog) {
+    when (item) {
+        is VoirItem.OfIndicator -> indicatorPage(item.indicator, catalog)
+        is VoirItem.OfFact -> factPage(item.fact, catalog)
+        is VoirItem.OfPerson -> personPage(item.person, catalog)
+        is VoirItem.OfParty -> partyPage(item.party, catalog)
+        is VoirItem.OfText -> textPage(item.text, catalog)
+        is VoirItem.OfMovement -> movementPage(item.movement, catalog)
+        is VoirItem.OfDossier -> dossierPage(item.dossier, catalog)
     }
 }
 

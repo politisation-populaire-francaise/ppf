@@ -39,6 +39,7 @@ import org.politisationpopulairefrancaise.core.voir.FactKind
 import org.politisationpopulairefrancaise.core.voir.ImpactDirection
 import org.politisationpopulairefrancaise.core.voir.LegislativeText
 import org.politisationpopulairefrancaise.core.voir.NextTarget
+import org.politisationpopulairefrancaise.core.voir.VoirItem
 import org.politisationpopulairefrancaise.core.voir.parties
 import org.politisationpopulairefrancaise.core.voir.PublicPerson
 import org.politisationpopulairefrancaise.core.voir.TextStage
@@ -145,7 +146,7 @@ internal fun FactPage(fact: Fact, catalog: VoirCatalog, state: VoirState, action
             NextStepsSection(fact.nextSteps, actions.next)
         }
         Spacer(Modifier.height(12.dp))
-        OriginLine(fact.article)
+        OriginLine(fact.article, cite = VoirItem.OfFact(fact))
         FollowRow(state, fact.address, fact.title)
     }
 }
@@ -303,7 +304,7 @@ internal fun PersonPage(person: PublicPerson, catalog: VoirCatalog, state: VoirS
         SourcesSection(person.sources)
         CorrectionsSection(person.corrections)
         Spacer(Modifier.height(8.dp))
-        OriginLine(person.article)
+        OriginLine(person.article, cite = VoirItem.OfPerson(person))
     }
 }
 
@@ -443,7 +444,7 @@ internal fun BillPage(text: LegislativeText, catalog: VoirCatalog, state: VoirSt
                 NextStepsSection(text.nextSteps, actions.next)
             }
             Spacer(Modifier.height(12.dp))
-            OriginLine(text.article)
+            OriginLine(text.article, cite = VoirItem.OfText(text))
         }
         Spacer(Modifier.height(16.dp))
         if (wide) {
@@ -532,7 +533,7 @@ internal fun MovementPage(movement: WorldMovement) {
         MarkdownText(movement.article.body)
         SourcesSection(movement.sources)
         Spacer(Modifier.height(8.dp))
-        OriginLine(movement.article)
+        OriginLine(movement.article, cite = VoirItem.OfMovement(movement))
     }
 }
 
@@ -581,7 +582,7 @@ internal fun DossierPage(dossier: VoirDossier) {
         Spacer(Modifier.height(16.dp))
         MarkdownText(dossier.article.body)
         Spacer(Modifier.height(8.dp))
-        OriginLine(dossier.article)
+        OriginLine(dossier.article, cite = VoirItem.OfDossier(dossier))
     }
 }
 

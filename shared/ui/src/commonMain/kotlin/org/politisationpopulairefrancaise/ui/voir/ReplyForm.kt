@@ -38,7 +38,6 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
-import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.voir.ReplyCapacity
 import org.politisationpopulairefrancaise.core.voir.ReplyRequest
 import org.politisationpopulairefrancaise.core.voir.RequestProblem
@@ -90,17 +89,6 @@ internal class RequestCallbacks(
     val back: () -> Unit,
 )
 
-/** The article behind any content of "Voir". */
-internal fun articleOf(item: VoirItem): Article = when (item) {
-    is VoirItem.OfIndicator -> item.indicator.article
-    is VoirItem.OfFact -> item.fact.article
-    is VoirItem.OfPerson -> item.person.article
-    is VoirItem.OfParty -> item.party.article
-    is VoirItem.OfText -> item.text.article
-    is VoirItem.OfMovement -> item.movement.article
-    is VoirItem.OfDossier -> item.dossier.article
-}
-
 /** Who the reply is probably from: the person of a sheet, or the only person a fact concerns. */
 internal fun likelyRespondent(item: VoirItem, catalog: VoirCatalog): String? = when (item) {
     is VoirItem.OfPerson -> item.person.name
@@ -119,7 +107,7 @@ internal fun likelyRespondent(item: VoirItem, catalog: VoirCatalog): String? = w
 internal fun ReplyFormPage(item: VoirItem, catalog: VoirCatalog, session: VoirRequestSession, callbacks: RequestCallbacks) {
     val palette = PpfTheme.palette
     remember(item.address) { session.startReply(item.address, likelyRespondent(item, catalog)) }
-    val article = articleOf(item)
+    val article = item.article
     val contentWords = remember(article) { VoirRequests.contentWords(article) }
     val maxWords = VoirRequests.maxReplyWords(contentWords)
     var outcome by remember { mutableStateOf<RequestOutcome?>(null) }

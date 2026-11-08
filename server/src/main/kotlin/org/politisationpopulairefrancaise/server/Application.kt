@@ -71,6 +71,10 @@ import org.politisationpopulairefrancaise.server.territoires.TerritoiresSetup
 import org.politisationpopulairefrancaise.server.territoires.territoiresApi
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
+import org.politisationpopulairefrancaise.server.export.OpenDatasets
+import org.politisationpopulairefrancaise.server.export.OpenExport
+import org.politisationpopulairefrancaise.server.export.exportApi
+import org.politisationpopulairefrancaise.server.export.pageSource
 import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.server.groups.GroupIndex
 import org.politisationpopulairefrancaise.server.legal.LegalRegister
@@ -84,6 +88,7 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationsCo
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
 import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
+import org.politisationpopulairefrancaise.server.voir.VoirDatasets
 import org.politisationpopulairefrancaise.server.comprendre.EditorialComprendreSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
@@ -109,6 +114,7 @@ import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
+import org.politisationpopulairefrancaise.web.openDataPage
 import org.politisationpopulairefrancaise.web.securityPages
 import org.politisationpopulairefrancaise.web.voir.VoirSource
 import org.politisationpopulairefrancaise.web.webRoutes
@@ -272,6 +278,9 @@ fun Application.module(
 ) {
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
+    // The open export (M34, S-48): the contents of the editorial keys and the tables each pole registers.
+    val openDatasets = OpenDatasets().also(VoirDatasets::registerOn)
+    val openExport = repository?.let { OpenExport(it, policy, openDatasets) }
     // Timestamped archive (D-111): its batches, upgrades and checks live and die with the application.
     val archives = dataSource?.let { ArchiveService.start(this, it, archive) }
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
@@ -317,8 +326,13 @@ fun Application.module(
         teamBackOffice.sections.register(
             EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, reviews, PublishedContents(repository, policy::isEditor), teamBackOffice.clock, editorialPublisher),
         )
-        // The queue editorial.comprendre (counts, deadlines and levels of the dashboard); editorial.voir waits for the schemas of Voir.
+        // The queue editorial.comprendre (counts, deadlines and levels of the dashboard).
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.COMPRENDRE, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
+        // The same circuit for Voir (step 6), on the schemas of core/voir/VoirSchemas.kt; its preview is the page of the site.
+        teamBackOffice.sections.register(
+            EditorialDraftsSection(EditorialSpace.VOIR, drafts, reviews, PublishedContents(repository, policy::isEditor), teamBackOffice.clock, editorialPublisher),
+        )
+        teamBackOffice.queues.register(EditorialQueue(EditorialSpace.VOIR, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
         // A draft never submitted and unchanged for 180 days is deleted (docs/REGISTRE_DONNEES.md).
         EditorialDraftsPurge(drafts).start(this, 24.hours, log)
     }
@@ -424,6 +438,8 @@ fun Application.module(
             urneApi(urnes, urne, validations = inPerson, certifications = certifications)
             archivesApi(archives)
             transparencyApi(dataSource) // Requisitions answered per month only (D-077).
+            exportApi(openExport) // The open export and its datasets (M34, S-48).
+            openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
             agirSpace?.let { agendaPage(it.agendaSource()) }
             tilesRoutes(tiles)
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).

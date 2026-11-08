@@ -339,3 +339,14 @@ Détail : `docs/integration/agir-securite-appareil.md`. Ce qu'on protège : ce q
 | L'icône de PPF sur l'écran d'accueil révèle son usage à qui regarde le téléphone | « Application discrète » (Android) : nom « Outils » et icône neutre, sans indice de PPF, après une mise en garde | Le vrai nom reste dans les Paramètres et le magasin d'applications : ne protège que d'un regard, pas d'une fouille (dit à l'utilisateur) ; risque de règle du magasin à vérifier avant la publication (section 4 de la note) |
 | Effacement par erreur ou par un tiers | Confirmation obligatoire, avec le rappel de la phrase de récupération et ce qui reste sur le serveur ; bouton d'effacement en dernier dans la feuille AIDE | Aucun : un tiers qui tient le téléphone pourrait aussi désinstaller l'application |
 | Les réglages ou le code partent vers le serveur | Aucun appel réseau dans ce module ; testé : aucune requête ne contient le code ni l'empreinte | Aucun |
+
+## Ajout du 8 novembre 2026 : export ouvert (M34, S-48, D-101)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Fichier en vrac qui relie des pseudonymes de citoyens à leurs opinions (revendications, mobilisations, messages) | Seuls les contenus signés par les clés éditoriales sont exportés, vérifiés de nouveau à la lecture | |
+| Réutilisation en masse de données sur des personnes ou sur la justice (affaires, peines) | Aucun tableau des personnes, des affaires ni des peines ; ces contenus restent seulement sous forme d'événements, comme dans l'API | Avis de l'avocat avant tout tableau de ce genre |
+| Injection de formules dans un tableur (cellule qui commence par `=`, `+`, `-`, `@`) | Apostrophe ajoutée devant ces textes dans le CSV ; le JSON garde la valeur exacte | |
+| Tableau modifié après téléchargement et présenté comme venant de PPF | Chaque ligne donne la version du contenu, à vérifier par sa signature dans `contenus.json` ; empreinte de chaque fichier dans le catalogue | « Vérifier un contenu PPF » (S-141) |
+| Saturation du serveur par des téléchargements répétés | Export recalculé au plus une fois par minute, en mémoire, borné à 20 000 contenus ; `ETag` et `304` | Mode sobre du Directeur technique en cas d'afflux |
+| Pistage des personnes qui téléchargent (journalistes, chercheurs) | Aucun compte, aucun cookie, aucun journal des requêtes | |
