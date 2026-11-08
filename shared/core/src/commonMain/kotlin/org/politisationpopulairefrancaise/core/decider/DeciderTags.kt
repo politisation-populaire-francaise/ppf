@@ -82,4 +82,13 @@ object DeciderTags {
 
     /** The official list of the candidates: `page (https) | date of publication` ([OfficialList]). */
     const val OFFICIAL_LIST = "ppf-official-list"
+
+    /** The published words of one theme, for the past votes (D-117): `theme | word | word…` ([ThemeWords]). */
+    const val THEME_WORDS = "ppf-theme-words"
+
+    /** One version of the words, the public history of the rule: `version | date | reason` ([WordsVersion]). */
+    const val WORDS_VERSION = "ppf-words-version"
+
+    /** The party of a candidate in the history packages: `candidate | party | from | to (optional)` ([CandidateParty]). */
+    const val PARTY = "ppf-party"
 }

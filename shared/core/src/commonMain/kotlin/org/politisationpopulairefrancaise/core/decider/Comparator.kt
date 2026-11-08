@@ -35,7 +35,18 @@ data class ComparatorSheet(
     val additionDelayDays: Int? = null,
     /** Once published, the comparator follows the official list of the candidates. */
     val officialList: OfficialList? = null,
+    /** The published words of the themes, for the past votes (D-117), in the order of [themes]. */
+    val themeWords: List<ThemeWords> = emptyList(),
+    /** The public history of the words, oldest first; the last one is in force. */
+    val wordsVersions: List<WordsVersion> = emptyList(),
+    /** The party of each candidate in the history packages, by assembly and period. */
+    val parties: List<CandidateParty> = emptyList(),
 ) {
+    /** The version of the words in force, shown under every list. */
+    val currentWords: WordsVersion? get() = wordsVersions.lastOrNull()
+
+    fun wordsOf(theme: String): ThemeWords? = themeWords.firstOrNull { it.theme == theme }
+
     val address: ContentAddress get() = article.address
 
     fun requestOf(candidate: ContentAddress): CandidateRequest? = requests.firstOrNull { it.concerns(candidate) }
@@ -60,6 +71,13 @@ data class ComparatorSheet(
         }
         requests.filter { request -> candidates.none { request.concerns(it) } }.forEach { problems += "request of ${it.candidate}, who is not a candidate of the sheet" }
         if (rounds.isEmpty()) problems += "no round (${DeciderTags.ROUND}): the comparator could not be frozen"
+        // The words of the past votes (D-117): published with their history, fixed before the official list.
+        themeWords.filter { it.theme !in themes }.forEach { problems += "words for ${it.theme}, which is not a theme of the sheet" }
+        if (themeWords.isNotEmpty() && wordsVersions.isEmpty()) problems += "words without their history (${DeciderTags.WORDS_VERSION})"
+        if (wordsVersions.zipWithNext().any { (a, b) -> b.version <= a.version || b.date < a.date }) problems += "the versions of the words are not in order"
+        val first = wordsVersions.firstOrNull()
+        if (first != null && officialList != null && first.date > officialList.date) problems += "the words were first published after the official list"
+        parties.filter { party -> candidates.none { party.concerns(it) } }.forEach { problems += "party of ${it.candidate}, who is not a candidate of the sheet" }
         return problems
     }
 
@@ -92,6 +110,10 @@ data class ComparatorSheet(
                 val url = f.at(0)?.takeIf(::isWebAddress) ?: return null
                 OfficialList(url, CivilDate.parseIso(f.at(1)) ?: return null)
             }
+            val themeWords = event.fields(DeciderTags.THEME_WORDS).map { ThemeWords.parse(it) ?: return null }
+            if (themeWords.map { it.theme }.distinct().size != themeWords.size) return null
+            val wordsVersions = event.fields(DeciderTags.WORDS_VERSION).map { WordsVersion.parse(it) ?: return null }
+            val parties = event.fields(DeciderTags.PARTY).map { CandidateParty.parse(it) ?: return null }
             return ComparatorSheet(
                 article = article,
                 election = election,
@@ -103,6 +125,9 @@ data class ComparatorSheet(
                 requests = requests,
                 additionDelayDays = delay,
                 officialList = officialList,
+                themeWords = themes.mapNotNull { theme -> themeWords.firstOrNull { it.theme == theme } } + themeWords.filter { it.theme !in themes },
+                wordsVersions = wordsVersions.sortedWith(compareBy({ it.version }, { it.date })),
+                parties = parties,
             )
         }
     }
