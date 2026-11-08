@@ -49,7 +49,8 @@ Rédigé le 8 novembre 2026 par le pôle « Voir » (« [Voir] Team Dev 2 »), d
 - **Écran verrouillé** : le moteur de Communauté n'y montre jamais que « PPF : nouvelle activité », pour toutes les catégories ; c'est plus discret que « Nouveaux votes au Parlement » prévu par D-102, et c'est ce qui est gardé (protection par défaut).
 - **Application** : page « Mes élus ont voté » (`ParliamentPage.MyVotes`, `MyVotesPage.kt`, `MyVotesState.kt`) ouverte depuis une carte de la liste du Parlement : mes parlementaires, derniers scrutins où ils figurent (position en toutes lettres, délégation, mise au point), « seulement en Wi-Fi », eurodéputés (aucun par défaut, « Toute la liste … », « Tous (n) », un par un, avec une phrase sur le nombre de scrutins du Parlement européen sur l'appareil), mots suivis (50 au plus).
 - **Hôte Android** : `VoteAlertSource.on(database, remote, trust, network)` dans `PpfApplication` (`Notifications(extraSources = …)`), réseau lu par `AndroidNetwork` (économiseur de données d'Android, réseau non facturé ; permission `ACCESS_NETWORK_STATE`, accordée à l'installation, rien n'est envoyé). Une entrée du centre de notifications ouvre la page (`ParliamentState.openMyVotes`).
-- **Reste à faire** : ajouter `VoteAlertStore(database).forget()` à la partie « voir-data » de l'effacement rapide (S-44, `VoirDeviceData`, branche `feature/voir-verifier`) dès que les deux branches se rejoignent ; ouvrir la page depuis « Mes élus » de Comprendre (TE-01, une ligne à leur demander) ; l'ordinateur n'a pas encore de notifications système (rien à brancher).
+- **Effacement rapide (S-44)** : `VoirDeviceData` efface aussi les quatre tables (`VoteAlertStore.forget`).
+- **Reste à faire** : ouvrir la page depuis « Mes élus » de Comprendre (TE-01, une ligne à leur demander) ; l'ordinateur n'a pas encore de notifications système (rien à brancher).
 
 ## 6. Étapes et tests
 

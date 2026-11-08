@@ -252,6 +252,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         voirState.forgetFollows()
         revendicationViews.reset()
         voirRequests.forget()
+        parliamentState.myVotes.forgetOnScreen()
     }
     // "Décider": the open page and the follows survive a visit to another space.
     val deciderState = rememberDeciderState(dependencies)
