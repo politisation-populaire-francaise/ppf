@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.ui.messages
 
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import org.politisationpopulairefrancaise.core.identity.AccountStatusResult
 import org.politisationpopulairefrancaise.core.publication.FetchResult
 import org.politisationpopulairefrancaise.core.publication.InMemoryPublicationPort
 import org.politisationpopulairefrancaise.core.publication.PublicationResult
@@ -48,5 +49,10 @@ internal class FakeRelay : RemoteEvents {
         calls += "tags"
         tagRequests += tags to filter
         if (!online) FetchResult.Unavailable() else port.fetchByTags(tags, filter)
+    }
+
+    override suspend fun fetchAccountStatus(pubkey: String): AccountStatusResult = lock.withLock {
+        calls += "status"
+        if (!online) AccountStatusResult.Unavailable() else port.fetchAccountStatus(pubkey)
     }
 }

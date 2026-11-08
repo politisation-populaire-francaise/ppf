@@ -126,7 +126,7 @@ Les huit questions de la section 5 ont été tranchées par le chef d'équipe, p
 4. **Chiffrement de la base locale** : étape 2 avec le Directeur technique ; rien de codé.
 5. **Références juridiques** : vérifiées sur les sources officielles (section 8) ; le texte [EXEMPLE] `sec_phone_legal` précise les conditions de l'arrêt et la peine.
 6. **Chiffrement du disque sur ordinateur** : guide clic par clic dans `docs/GUIDE_PROPRIETAIRE.md` (section « Protéger l'ordinateur : chiffrer le disque »).
-7. **Feuille de route** : section « Avant le lancement public » (parties d'effacement des pôles, Communauté d'abord ; chiffrement de la base).
+7. **Feuille de route** : section « À livrer avant l'ouverture publique » (parties d'effacement des pôles, Communauté d'abord ; chiffrement de la base).
 8. **Mode discret** : « Outils » et l'icône grise confirmés. **Fait** :
    - `shared/ui/src/androidMain/.../ui/agir/security/DiscreetMode.kt` : `DiscreetMode.isOn(context)` (Android, sans Compose, n'importe quel fil) lit l'état que garde Android pour `.LauncherDiscreet` ; les entrées du lanceur sont retrouvées par leur nom court dans le paquet (les versions d'essai, suffixe `.test`, marchent aussi) ; faux si l'entrée n'a jamais été activée ou en cas d'erreur ;
    - `android/src/main/res/drawable/ic_notification_neutral.xml` : petite icône monochrome à quatre carrés pour les notifications ; nom neutre `app_name_neutral` (« Outils ») ;

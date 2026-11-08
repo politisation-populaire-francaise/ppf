@@ -15,6 +15,9 @@ import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.cancelAndJoin
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import org.politisationpopulairefrancaise.core.Space
@@ -127,12 +130,16 @@ class MailboxSettingTest {
         val server = Server().apply { online = false }
         val keys = IdentityKeys.generate()
         val signer = LocalEventSigner(keys)
-        val setting = MailboxSetting(store, server, this)
+        // The first run of the application, closed before the next start: its own reading of the
+        // server cannot send the waiting setting a second time once the network is back.
+        val firstRun = Job(coroutineContext[Job])
+        val setting = MailboxSetting(store, server, CoroutineScope(coroutineContext + firstRun))
         setting.showAccount(keys.publicKey.hex)
         setting.choose(signer, MailboxRetention.ONE_YEAR)
         assertEquals(MailboxStatus.PENDING, setting.status)
         assertEquals(MailboxRetention.ONE_YEAR, setting.retention)
         assertEquals(1, store.pending().size)
+        firstRun.cancelAndJoin()
 
         // Next start, network back: the waiting setting leaves first.
         server.online = true

@@ -85,6 +85,10 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.queueDecide("agir.held"),
             Permissions.queueDecide("agir.testimonies"),
             Permissions.queueDecide("revendications.proposals"),
+            // Room creations held because their name resembles an organisation's (D-132).
+            Permissions.queueDecide("groups.creations"),
+            // Rooms left without administrator by a compromised account (S-146, salons-reprise.md).
+            Permissions.queueDecide("groups.orphans"),
             // The propositions and amendments of the citizen deliberations (Décider, DE-25).
             Permissions.queueDecide("decider.deliberation"),
         ),
