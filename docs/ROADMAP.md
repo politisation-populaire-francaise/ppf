@@ -106,6 +106,10 @@ Reporté par la propriétaire (7 novembre 2026) : rien n'est bloqué en attendan
 
 - Taille de l'APK d'essai : 38 Mo, dont environ 21,5 Mo pour les bibliothèques natives du moteur de carte (MapLibre, trois architectures). Pour la publication : un APK par architecture (environ 26 Mo pour arm64) ou un paquet AAB pour les magasins ; l'APK universel reste celui de la propriétaire pendant le développement.
 
+## À livrer avant l'ouverture publique
+
+- Version web de « J'ai perdu le contrôle de mon compte » (S-146, D-134, décision du chef d'équipe du 8 novembre 2026) : les personnes qui ont un iPhone n'auront que le site tant que l'application iOS n'existe pas. L'avis de compromission doit être signé avec la clé de secours tirée de la phrase : JavaScript facultatif pour signer dans le navigateur, et sans JavaScript une explication claire (passer par l'application de bureau ou un téléphone Android). Prévue après S-150 dans la liste du pôle Communauté.
+
 ## À faire relire par un avocat avant l'ouverture publique
 
 Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture juridique à la fin.
