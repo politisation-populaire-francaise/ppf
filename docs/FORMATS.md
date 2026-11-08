@@ -716,7 +716,7 @@ Calculées à la réception, en heure de Paris, à la même heure (la lecture la
 
 Les objectifs internes se règlent dans la configuration privée du serveur (`PPF_CASE_GOAL_*_DAYS`) ; les délais légaux, jamais.
 
-### Sur le serveur : migration Flyway `V12__contact_cases.sql`
+### Sur le serveur : migration Flyway `V13__contact_cases.sql`
 
 - `contact_case` : numéro (clé), type, sous-type, catégorie ou motif, statut, priorité (`normal`, `high`), membre assigné, dates de réception, d'échéance (et sa nature), de prolongation (et son motif), de la décision contestée, auteur de la décision et membre mis en cause (comptes de l'équipe, remplis par l'équipe), clôture, archive juridique (motif, date de réexamen, date de l'alerte), anonymisation, `access_hash`, `case_pubkey`, dernière activité. Jamais d'adresse IP, d'e-mail, de téléphone, d'identifiant d'appareil ni de compte de la personne.
 - `contact_envelope` : identifiant de l'enveloppe (clé), ordre de réception, numéro du dossier, sens (`in` vers la boîte, `out` vers la clé du dossier), JSON de l'enveloppe, date de réception, membre auteur d'une réponse. Jamais modifiée (un déclencheur l'interdit, et le rôle restreint du serveur n'a pas le droit `UPDATE`).

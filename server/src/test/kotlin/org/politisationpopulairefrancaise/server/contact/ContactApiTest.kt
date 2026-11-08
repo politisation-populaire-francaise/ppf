@@ -72,6 +72,14 @@ class ContactApiTest {
         return client
     }
 
+    /** Only the routes of the cases, with ceilings of one creation and one message a minute. */
+    private fun ApplicationTestBuilder.limitedServer(space: ContactSpace) {
+        application {
+            install(ContentNegotiation) { json() }
+            routing { contactApi(space, ContactLimits(creations = RateLimiter(1, maxTrackedKeys = 1), messages = RateLimiter(1, maxTrackedKeys = 1))) }
+        }
+    }
+
     private fun draft(nature: CaseNature = CONTACT, decisionAt: Long? = null, work: Int = ContactFixtures.WORK) =
         ContactFixtures.Draft(nature, clock.instant(), decisionAt = decisionAt, work = work)
 
@@ -342,11 +350,7 @@ class ContactApiTest {
 
     @Test
     fun theGlobalCeilingsApplyWithoutAnyKeyOfThePerson() = testApplication {
-        val space = ContactFixtures.space(clock)
-        application {
-            install(ContentNegotiation) { json() }
-            routing { contactApi(space, ContactLimits(creations = RateLimiter(1, maxTrackedKeys = 1), messages = RateLimiter(1, maxTrackedKeys = 1))) }
-        }
+        limitedServer(ContactFixtures.space(clock))
         val first = draft()
         assertEquals(HttpStatusCode.Created, client.create(first.creation()).status)
         val second = client.create(draft().creation())
