@@ -16,6 +16,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.politisationpopulairefrancaise.core.urne.ValidationAnswer
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.decider.SupportThresholds
@@ -98,6 +101,16 @@ class VotingState internal constructor(
 
     /** The account's signer, for the public votes of an elected official (set by [RunVoting]). */
     internal var signerProvider: () -> EventSigner? = { null }
+
+    /**
+     * The key of this device's validation session, when the user validates people in person (D-112, 4.3):
+     * drawn here, kept in memory only (a new session after the application closes), registered by the
+     * validator in the team's back-office. Never the account's key.
+     */
+    internal var validatorKeys: IdentityKeys? = null
+
+    /** Sends a citizen's [proof] as the validator of the session [session]; null without server. */
+    internal suspend fun validate(session: EventSigner, proof: SignedEvent): UrneAnswer<ValidationAnswer>? = remote?.validate(session, proof)
 
     /** An account is open on this device: voting needs one (set by [RunVoting]). */
     var hasAccount: Boolean by mutableStateOf(false)

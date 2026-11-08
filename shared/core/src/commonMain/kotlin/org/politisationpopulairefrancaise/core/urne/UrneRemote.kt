@@ -45,6 +45,12 @@ interface UrneRemote {
 
     /** The signed public votes of the elected officials in one box. */
     suspend fun publicVotes(number: Long): UrneAnswer<PublicVotes> = UrneAnswer.Failure(null, "unsupported")
+
+    /**
+     * Sends, as a validator, the [proof] a citizen showed (D-112, 4.3), signed (NIP-98) with the key of the open
+     * validation session [session]: the account counts as verified from next Monday.
+     */
+    suspend fun validate(session: EventSigner, proof: SignedEvent): UrneAnswer<ValidationAnswer> = UrneAnswer.Failure(null, "unsupported")
 }
 
 /**
@@ -115,6 +121,17 @@ class HttpUrneRemote(
         authenticated.post("$baseUrl/api/v1/urnes/public-votes") {
             contentType(ContentType.Application.Json)
             setBody(json.encodeToString(SignedEvent.serializer(), event))
+        }
+    }
+
+    override suspend fun validate(session: EventSigner, proof: SignedEvent): UrneAnswer<ValidationAnswer> = call(ValidationAnswer.serializer()) {
+        val path = "/api/v1/urnes/validations"
+        // The body is the proof as the citizen's QR code holds it: the server reads these very bytes.
+        val body = proof.toJson()
+        authenticated.post("$baseUrl$path") {
+            header(HttpHeaders.Authorization, Nip98.authorization(session, "$baseUrl$path", "POST", body.encodeToByteArray(), now()))
+            contentType(ContentType.Application.Json)
+            setBody(body)
         }
     }
 

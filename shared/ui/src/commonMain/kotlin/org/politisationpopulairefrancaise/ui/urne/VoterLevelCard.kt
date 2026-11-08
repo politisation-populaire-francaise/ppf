@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
@@ -16,6 +20,10 @@ import org.politisationpopulairefrancaise.core.urne.CertificationAnswer
 import org.politisationpopulairefrancaise.core.urne.VoteLevel
 import org.politisationpopulairefrancaise.core.urne.VoterStatus
 import org.politisationpopulairefrancaise.ui.components.PpfCard
+import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
+import org.politisationpopulairefrancaise.ui.components.PpfTextButton
+import org.politisationpopulairefrancaise.ui.resources.validation_show_code
+import org.politisationpopulairefrancaise.ui.resources.validation_validator
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.voter_certification_ended
 import org.politisationpopulairefrancaise.ui.resources.voter_certification_pending
@@ -39,6 +47,8 @@ object VoterLevelTags {
     const val CARD: String = "voter-level"
     const val LEVEL: String = "voter-level-name"
     const val NOTE: String = "voter-level-note"
+    const val SHOW_CODE: String = "voter-level-show-code"
+    const val VALIDATE: String = "voter-level-validate"
 }
 
 /**
@@ -52,21 +62,34 @@ fun VoterLevelCard(modifier: Modifier = Modifier) {
     val voting = LocalVoting.current ?: return
     if (!voting.enabled) return
     val palette = PpfTheme.palette
+    var showingCode by remember { mutableStateOf(false) }
+    var validating by remember { mutableStateOf(false) }
     PpfCard(modifier.fillMaxWidth().testTag(VoterLevelTags.CARD)) {
         Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
             Text(stringResource(Res.string.voter_title), style = MaterialTheme.typography.titleMedium)
             val status = voting.status
             if (status == null) {
                 Text(stringResource(Res.string.voter_waiting), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
-                return@Column
+            } else {
+                val level = VoteLevel.of(status.level) ?: VoteLevel.NON_VERIFIE
+                Text(stringResource(levelName(level)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag(VoterLevelTags.LEVEL))
+                weekLine(status)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = palette.inkMuted) }
+                Text(stringResource(explanation(level)), style = MaterialTheme.typography.bodyMedium)
+                noteOf(status)?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.testTag(VoterLevelTags.NOTE)) }
+                // Only an account not verified, not waiting and not dedicated to a mandate has a code to show.
+                if (level == VoteLevel.NON_VERIFIE && !status.validationPending && status.certification == null) {
+                    PpfSecondaryButton(
+                        onClick = { showingCode = true },
+                        text = stringResource(Res.string.validation_show_code),
+                        modifier = Modifier.fillMaxWidth().testTag(VoterLevelTags.SHOW_CODE),
+                    )
+                }
             }
-            val level = VoteLevel.of(status.level) ?: VoteLevel.NON_VERIFIE
-            Text(stringResource(levelName(level)), style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag(VoterLevelTags.LEVEL))
-            weekLine(status)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = palette.inkMuted) }
-            Text(stringResource(explanation(level)), style = MaterialTheme.typography.bodyMedium)
-            noteOf(status)?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.testTag(VoterLevelTags.NOTE)) }
+            PpfTextButton(onClick = { validating = true }, text = stringResource(Res.string.validation_validator), modifier = Modifier.testTag(VoterLevelTags.VALIDATE))
         }
     }
+    if (showingCode) ShowMyCodeDialog(voting) { showingCode = false }
+    if (validating) ValidatorDialog(voting, onClose = { validating = false })
 }
 
 private fun levelName(level: VoteLevel): StringResource = when (level) {
