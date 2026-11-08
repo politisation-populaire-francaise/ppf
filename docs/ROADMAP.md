@@ -142,6 +142,7 @@ Contenus de « Comprendre » (vague 3, D-049) dont un fait daté peut changer d'
 - Présidentielle 2027 : premier tour le 18 avril, second tour le 2 mai, inscription sur les listes jusqu'au vendredi 12 mars 2027 (parcours « S'inscrire et voter », « Se présenter à une élection », fiche « Voter par procuration »). Source à surveiller : décret de convocation des électeurs au Journal officiel (Légifrance), au moins dix semaines avant le premier tour.
 - Encadrement des loyers (fiche « Qui décide de ça ? » logement et loyers) : fin prévue le 23 novembre 2026, proposition de loi de prolongation de deux ans en deuxième lecture à l'Assemblée. Source à surveiller : dossier législatif du Sénat (ppl25-217) et Journal officiel.
 - Montants qui changent chaque année : SMIC (fiche salaires et SMIC), plafonds de dépenses de la présidentielle (CNCCFP).
+- Fiche [EXEMPLE] « Après une blessure en manifestation » et numéros du mode manifestation (« Agir », D-053) : démarches et numéros vérifiés sur service-public.gouv.fr (F1435, F2546, F33954) et le site du Défenseur des droits ; contenu médical et juridique à revérifier sur les sources officielles (dont ameli.fr) avant publication.
 
 ## Phase de test et de débogage (reportée, décision de la propriétaire du 7 novembre 2026)
 
