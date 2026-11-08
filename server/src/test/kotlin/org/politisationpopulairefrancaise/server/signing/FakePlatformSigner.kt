@@ -101,7 +101,7 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
     override suspend fun request(unsigned: UnsignedEvent, use: SigningUse): SigningTicket {
         requests += unsigned to use
         val id = unsigned.idHex()
-        val status = synchronized(drafts) {
+        val refusal: SigningStatus.Refused? = synchronized(drafts) {
             val draft = drafts["${use.id}:$id"]
             when {
                 unsigned.pubkey != keys.getValue(use).publicKey.hex -> SigningStatus.Refused(SigningRefusals.WRONG_KEY)
@@ -113,10 +113,11 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
                 else -> {
                     signed += "${use.id}:$id"
                     drafts.remove("${use.id}:$id")
-                    SigningStatus.Signed(LocalEventSigner(keys.getValue(use)).sign(unsigned))
+                    null
                 }
             }
         }
+        val status = refusal ?: SigningStatus.Signed(LocalEventSigner(keys.getValue(use)).sign(unsigned))
         val ticket = SigningTicket("fake-${tickets.incrementAndGet()}")
         synchronized(outcomes) { outcomes[ticket.id] = status }
         return ticket
