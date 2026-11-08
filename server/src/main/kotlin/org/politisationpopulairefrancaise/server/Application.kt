@@ -45,6 +45,9 @@ import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
 import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
+import org.politisationpopulairefrancaise.server.decider.DeliberationQueue
+import org.politisationpopulairefrancaise.server.decider.DeliberationSubmissions
+import org.politisationpopulairefrancaise.server.decider.deliberationApi
 import org.politisationpopulairefrancaise.server.elus.ElusConfig
 import org.politisationpopulairefrancaise.server.elus.ElusLookup
 import org.politisationpopulairefrancaise.server.elus.ElusService
@@ -294,6 +297,9 @@ fun Application.module(
     } else {
         null
     }
+    // The propositions and amendments of citizens to a deliberation, reviewed by the team (DE-25).
+    val deliberationSubmissions = repository?.let { DeliberationSubmissions(it.dataSource, it, policy::isEditor) }
+    deliberationSubmissions?.let { teamBackOffice?.queues?.register(DeliberationQueue(it)) }
     // The sessions of the validators with an abnormal pace, for the administrators (D-112, design 8).
     if (urneStore != null && teamBackOffice != null) teamBackOffice.queues.register(ValidationSessionsQueue(urneStore.dataSource))
     if (urnes != null && dataSource != null) {
@@ -305,7 +311,7 @@ fun Application.module(
             this,
             UrneService.CLOSING_INTERVAL,
             log,
-            keepers = listOf({ demands.reconcile() }, { deliberations?.reconcile() }, { certifications?.checkMandatesDue() }),
+            keepers = listOf({ demands.reconcile() }, { deliberations?.reconcile() }, { certifications?.checkMandatesDue() }, { deliberationSubmissions?.purgeDecided() }),
         )
     }
     // Room descriptions stored before the directory table existed (V4) enter it, once.
@@ -346,7 +352,8 @@ fun Application.module(
                     ),
                 )
             }
-            eventsApi(repository, policy, limits, groups, proposals, agirSpace)
+            eventsApi(repository, policy, limits, groups, proposals, agirSpace, deliberationSubmissions)
+            deliberationApi(deliberationSubmissions)
             groupsApi(groups)
             revendicationsApi(proposals)
             agirApi(agirSpace)

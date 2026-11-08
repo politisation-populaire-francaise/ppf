@@ -145,3 +145,30 @@ CREATE TABLE vote_session_review (
     outcome        TEXT  NOT NULL CHECK (outcome IN ('normal', 'to_undo')),
     reviewed_week  DATE  NOT NULL
 );
+
+-- 9. Contributions of citizens to a deliberation (DE-25, docs/integration/deliberation.md, section 2):
+--    propositions and amendments held for the review of a person before publication, like the demands.
+--    Nothing about the request; the day of reception only; decided ones deleted after 30 days (longer than
+--    a phase, so that the limits per account hold during it).
+CREATE TABLE deliberation_submission (
+    id            TEXT  PRIMARY KEY CHECK (id ~ '^[0-9a-f]{64}$'),
+    pubkey        TEXT  NOT NULL CHECK (pubkey ~ '^[0-9a-f]{64}$'),
+    identifier    TEXT  NOT NULL CHECK (length(identifier) BETWEEN 1 AND 128),
+    type          TEXT  NOT NULL CHECK (type IN ('proposition', 'amendement')),
+    -- Address of the deliberation, and of what is amended (the deliberation itself for a proposition).
+    deliberation  TEXT  NOT NULL CHECK (length(deliberation) BETWEEN 1 AND 400),
+    parent        TEXT  NOT NULL CHECK (length(parent) BETWEEN 1 AND 400),
+    created_at    BIGINT NOT NULL CHECK (created_at >= 0),
+    -- The signed event, as received (JSON).
+    event         TEXT  NOT NULL,
+    status        TEXT  NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+    received_day  DATE  NOT NULL,
+    decided_day   DATE,
+    -- Shown to the author when refused.
+    reason        TEXT  CHECK (length(reason) <= 1000),
+    CHECK ((status = 'pending') = (decided_day IS NULL))
+);
+
+-- One pending version per address; the counts per account and deliberation.
+CREATE UNIQUE INDEX deliberation_submission_pending ON deliberation_submission (pubkey, identifier) WHERE status = 'pending';
+CREATE INDEX deliberation_submission_author ON deliberation_submission (deliberation, pubkey, type);

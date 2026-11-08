@@ -22,7 +22,7 @@ object UrneFixtures {
     /** The tables of V11__urnes.sql, emptied before each test (the shared reset does not know them). */
     fun reset() {
         TestDatabase.dataSource.connection.use { c ->
-            c.createStatement().use { it.executeUpdate("TRUNCATE vote_account, urne, urne_issued, ballot, vote_validation_pending, vote_validation, vote_validation_batch, elected_certification, vote_session_review CASCADE") }
+            c.createStatement().use { it.executeUpdate("TRUNCATE vote_account, urne, urne_issued, ballot, vote_validation_pending, vote_validation, vote_validation_batch, elected_certification, vote_session_review, deliberation_submission CASCADE") }
         }
     }
 }
