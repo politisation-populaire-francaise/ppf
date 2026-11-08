@@ -54,8 +54,8 @@ import org.politisationpopulairefrancaise.web.voir.badge
  * The pages of "Comprendre" on the web site (D-091), readable without script: the practical guides
  * first (kept for offline reading by the service worker, and all on one page to save or print), the
  * courses with their quizzes (the answer behind a `<details>`, nothing is ever sent to the server),
- * the fact-checks, the history of social movements, the « Qui décide de ça ? » sheets, the method and
- * the glossary. Each page sits at the stable address of [ComprendreLinks]; an unknown address answers a
+ * the fact-checks, the history of social movements, the « Qui décide de ça ? » sheets, the teaching
+ * sheets for the classroom (TeachingPages.kt), the method and the glossary. Each page sits at the stable address of [ComprendreLinks]; an unknown address answers a
  * 404 page.
  */
 fun Route.comprendrePages(source: ComprendreSource) {
@@ -74,6 +74,9 @@ fun Route.comprendrePages(source: ComprendreSource) {
         get("/${ComprendreLinks.HISTOIRE}/{slug}") { item(source, { catalog, slug -> catalog.story(slug) }) { value, catalog -> storyDocument(value, catalog) } }
         get("/${ComprendreLinks.QUI_DECIDE}") { page(source) { sheetsDocument(it) } }
         get("/${ComprendreLinks.QUI_DECIDE}/{slug}") { item(source, { catalog, slug -> catalog.sheet(slug) }) { value, catalog -> sheetDocument(value, catalog) } }
+        // The teaching sheets for the classroom (CO-13, D-096): TeachingPages.kt.
+        get("/${ComprendreLinks.ENSEIGNANTS}") { page(source) { teachingSheetsDocument(it) } }
+        get("/${ComprendreLinks.ENSEIGNANTS}/{slug}") { item(source, { catalog, slug -> catalog.teachingSheet(slug) }) { value, catalog -> teachingSheetDocument(value, catalog) } }
         get("/${ComprendreLinks.GLOSSAIRE}") {
             val query = call.request.queryParameters["q"]?.take(MAX_QUERY)?.trim().orEmpty()
             page(source) { glossaryDocument(it, query) }
@@ -126,6 +129,9 @@ fun HTML.comprendreHomeDocument(catalog: ComprendreCatalog) {
         }
         homeSection("histoire", "Histoire des luttes", "Ce que les mouvements sociaux et les révolutions ont obtenu, et pourquoi.", ComprendreLinks.HISTOIRE, "Toute l’histoire des luttes", catalog.stories.size) {
             catalog.stories.take(HOME_ITEMS).forEach { storyCard(it, 3) }
+        }
+        homeSection("pour-la-classe", "Pour la classe", "Des fiches pédagogiques pour faire vivre un parcours en 55 minutes avec un groupe, à projeter ou à imprimer.", ComprendreLinks.ENSEIGNANTS, "Toutes les fiches pédagogiques", catalog.teachingSheets.size) {
+            catalog.teachingSheets.take(HOME_ITEMS).forEach { teachingCard(it, catalog, 3) }
         }
         comprendreSection("glossaire", "Glossaire") {
             p { +"${catalog.glossary.size} mots de la vie politique, expliqués simplement. Dans les textes, ces mots mènent à leur définition." }
@@ -314,6 +320,13 @@ fun HTML.parcoursDocument(course: Parcours, catalog: ComprendreCatalog) {
         }
         course.steps.forEach { step -> stepSection(renderer, step, course.steps.size) }
         if (course.objections.isNotEmpty()) section(classes = "objections-card") { renderer.objections(this, course.objections) }
+        // CO-13: the teaching sheets that bring this course to the classroom, when there are some.
+        val teaching = catalog.teachingSheetsFor(course)
+        if (teaching.isNotEmpty()) {
+            comprendreSection("pour-la-classe", "Pour la classe", "teaching-link") {
+                ul(classes = "link-list") { teaching.forEach { sheet -> li { a(href = ComprendreLinks.pathOf(sheet.article)!!) { +teachingLinkLabel(sheet) } } } }
+            }
+        }
         glossaryTerms(renderer)
         nextSection(renderer, course.nextActions, listOf(SiteStep("Proposer ou soutenir une revendication", spacePath(Space.REVENDICATIONS))))
         sourcesSection(renderer, course.sources)
