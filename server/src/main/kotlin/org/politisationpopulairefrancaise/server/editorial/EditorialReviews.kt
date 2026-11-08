@@ -128,7 +128,7 @@ class EditorialReviews(
         if (decision(connection, id, version) != null) return@transaction ReviewResult.AlreadyReviewed
         val now = clock.nowSeconds()
         connection.prepareStatement(
-            "UPDATE editorial_draft SET status = ?, submitted_version = ?, submitted_at = ?, updated_at = ? WHERE id = ?",
+            "UPDATE editorial_draft SET status = ?, submitted_version = ?, submitted_at = ?, updated_at = ?, withdraw_reason = NULL, withdrawn_by = NULL, withdrawn_at = NULL WHERE id = ?",
         ).use { update ->
             update.setString(1, DraftStatus.IN_REVIEW.db)
             update.setInt(2, version)
@@ -166,6 +166,52 @@ class EditorialReviews(
                 update.setString(1, decision.status.db)
                 update.setInstant(2, now)
                 update.setUuid(3, id)
+                update.executeUpdate()
+            }
+            ReviewResult.Done(requireNotNull(drafts.find(connection, id)))
+        }
+    }
+
+    /**
+     * Whether [actor] may retry the signature of the approved version [version] of draft [id] (step 5,
+     * `retry_signing`): the draft is ready to sign or its signature was refused, and [actor] never wrote it.
+     * Nothing is changed here: the publisher closes the living submissions and builds a new event.
+     */
+    fun checkRetry(id: UUID, version: Int, actor: UUID): ReviewResult = dataSource.connection.use { connection ->
+        val draft = drafts.find(connection, id) ?: return@use ReviewResult.NotFound
+        if (draft.status !in SIGNABLE) return@use ReviewResult.WrongState(draft.status)
+        if (draft.submittedVersion != version) return@use ReviewResult.StaleVersion
+        if (isWriter(actor, writers(connection, draft))) return@use ReviewResult.Writer
+        ReviewResult.Done(draft)
+    }
+
+    /**
+     * Withdraws the approved version [version] of draft [id] (step 5, `withdraw`): back to an editable draft, the
+     * living submissions to the signing service closed (never signed nor published from here on). [reason] is
+     * required (at most [MAX_REASON] characters); it stays with the draft for its writers, never in the journal.
+     */
+    fun withdraw(id: UUID, version: Int, actor: UUID, reason: String?): ReviewResult {
+        val text = reason?.trim()?.takeIf { it.isNotEmpty() }
+        if (text == null || text.length > MAX_REASON) return ReviewResult.ReasonRequired
+        return dataSource.transaction { connection ->
+            val draft = drafts.find(connection, id, lock = true) ?: return@transaction ReviewResult.NotFound
+            if (draft.status !in SIGNABLE) return@transaction ReviewResult.WrongState(draft.status)
+            if (draft.submittedVersion != version) return@transaction ReviewResult.StaleVersion
+            if (isWriter(actor, writers(connection, draft))) return@transaction ReviewResult.Writer
+            val now = clock.nowSeconds()
+            connection.prepareStatement("UPDATE editorial_signing SET state = 'withdrawn', ticket = NULL WHERE draft_id = ? AND state IN ('submitted', 'signed')").use { update ->
+                update.setUuid(1, id)
+                update.executeUpdate()
+            }
+            connection.prepareStatement(
+                "UPDATE editorial_draft SET status = ?, withdraw_reason = ?, withdrawn_by = ?, withdrawn_at = ?, updated_at = ? WHERE id = ?",
+            ).use { update ->
+                update.setString(1, DraftStatus.DRAFT.db)
+                update.setString(2, text)
+                update.setUuid(3, actor)
+                update.setInstant(4, now)
+                update.setInstant(5, now)
+                update.setUuid(6, id)
                 update.executeUpdate()
             }
             ReviewResult.Done(requireNotNull(drafts.find(connection, id)))
@@ -252,6 +298,9 @@ class EditorialReviews(
         /** The longest message or reason a reviewer writes for the writers. */
         const val MAX_REASON: Int = 2_000
         private const val MAX_QUEUE = 500
+
+        /** The states of an approved version still on its way to the signature (retry and withdrawal). */
+        val SIGNABLE: Set<DraftStatus> = setOf(DraftStatus.READY_TO_SIGN, DraftStatus.SIGNING_REFUSED)
         private const val REVIEW_COLUMNS = "SELECT draft_id, version, reviewer, decision, reason, decided_at FROM editorial_review"
     }
 }

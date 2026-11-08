@@ -50,8 +50,16 @@ import org.politisationpopulairefrancaise.server.editorial.EditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.EditorialQueue
 import org.politisationpopulairefrancaise.server.editorial.EditorialReviews
 import org.politisationpopulairefrancaise.server.editorial.UnpluggedEditorialPublisher
+import org.politisationpopulairefrancaise.server.editorial.EditorialSigning
+import org.politisationpopulairefrancaise.server.editorial.EditorialTexts
+import org.politisationpopulairefrancaise.server.editorial.SignedEditorialPublisher
+import org.politisationpopulairefrancaise.server.editorial.StorePublicationPort
+import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.editorial.PublishedContents
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
+import org.politisationpopulairefrancaise.core.platform.SigningUse
 import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
@@ -105,9 +113,6 @@ import org.politisationpopulairefrancaise.server.urne.InPersonValidations
 import org.politisationpopulairefrancaise.server.urne.UrneService
 import org.politisationpopulairefrancaise.server.urne.UrneStore
 import org.politisationpopulairefrancaise.server.urne.UrneClosureStatements
-import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
-import org.politisationpopulairefrancaise.server.signing.PlatformSigner
-import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
 import org.politisationpopulairefrancaise.server.urne.urneApi
 import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
@@ -275,8 +280,11 @@ fun Application.module(
      * Passed to every pole that needs it; the tests give a FakePlatformSigner.
      */
     platformSigner: PlatformSigner? = null,
-    /** Where an approved editorial version goes (circuit éditorial, step 5); nothing is sent until the signing service is plugged. */
-    editorialPublisher: EditorialPublisher = UnpluggedEditorialPublisher,
+    /**
+     * Where an approved editorial version goes (circuit éditorial, step 5): given here (tests), else the platform
+     * signature when [platformSigner] is configured, else nothing is sent ([UnpluggedEditorialPublisher]).
+     */
+    editorialPublisher: EditorialPublisher? = null,
 ) {
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
@@ -325,14 +333,35 @@ fun Application.module(
         val drafts = EditorialDrafts(dataSource, teamBackOffice.clock)
         // The review (step 4): the reviewer never wrote the draft, nor shares a Nostr key with one who did.
         val reviews = EditorialReviews(dataSource, drafts, teamBackOffice.clock) { account -> teamBackOffice.member(account)?.nostrPubkey }
+        // The key of a space: the current key of its use once the signing service is configured (D-095).
+        val publishedContents = PublishedContents(
+            repository, policy::isEditor,
+            keyOf = platformSigner?.let { signer ->
+                { space: EditorialSpace -> signer.currentKey(if (space == EditorialSpace.VOIR) SigningUse.EDITORIAL_VOIR else SigningUse.EDITORIAL_COMPRENDRE) }
+            },
+        )
+        // The signature and the publication (step 5): on the platform signature when it is configured, never unsigned.
+        val publisher = editorialPublisher ?: platformSigner?.let { signer ->
+            SignedEditorialPublisher(
+                signer, drafts, EditorialSigning(dataSource, teamBackOffice.clock), repository, StorePublicationPort(repository, policy), teamBackOffice.clock,
+                onPublished = { publishedContents.refresh() },
+                onRefused = { space, draftId ->
+                    try {
+                        teamBackOffice.postAlert(EditorialQueue.idOf(space), EditorialTexts.ALERT_SIGNING_REFUSED, 5, EditorialQueue.publishPermission(space), EditorialQueue.reviewPath(space, draftId))
+                    } catch (e: Exception) {
+                        log.warn("Editorial signing: the dashboard alert could not be posted (${e::class.simpleName}).")
+                    }
+                },
+            )
+        } ?: UnpluggedEditorialPublisher
         teamBackOffice.sections.register(
-            EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, reviews, PublishedContents(repository, policy::isEditor), teamBackOffice.clock, editorialPublisher),
+            EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, reviews, publishedContents, teamBackOffice.clock, publisher),
         )
         // The queue editorial.comprendre (counts, deadlines and levels of the dashboard).
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.COMPRENDRE, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
         // The same circuit for Voir (step 6), on the schemas of core/voir/VoirSchemas.kt; its preview is the page of the site.
         teamBackOffice.sections.register(
-            EditorialDraftsSection(EditorialSpace.VOIR, drafts, reviews, PublishedContents(repository, policy::isEditor), teamBackOffice.clock, editorialPublisher),
+            EditorialDraftsSection(EditorialSpace.VOIR, drafts, reviews, publishedContents, teamBackOffice.clock, publisher),
         )
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.VOIR, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
         // A draft never submitted and unchanged for 180 days is deleted (docs/REGISTRE_DONNEES.md).
