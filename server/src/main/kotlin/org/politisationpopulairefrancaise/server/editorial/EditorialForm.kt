@@ -243,6 +243,8 @@ object EditorialForm {
             key == EditorialEngine.BODY -> "body"
             key == ContentSchema.ORIGIN -> "origin-${ContentOrigin.AI_ASSISTED.tagValue}"
             key == ContentSchema.TYPE -> null
+            key == UpdateChecks.KIND_FIELD -> "change-${ChangeKind.CORRECTION.db}"
+            key == UpdateChecks.NOTE_FIELD -> "change-note"
             key in ContentSchema.COMMON_KEYS -> if (key in commonKeys(schema)) "c-$key" else null
             else -> schema.field(key)?.let { controlId(it, problem.occurrence ?: 0, problem.position) }
         }
@@ -450,7 +452,8 @@ object EditorialForm {
     private fun FlowContent.changeFields(view: View) {
         val content = view.state.content
         fieldSet(classes = "bo-fieldset") {
-            legend { +EditorialTexts.CHANGE_LEGEND }
+            legend { +"${EditorialTexts.CHANGE_LEGEND} (${EditorialTexts.REQUIRED})" }
+            val kindErrors = errors(view, "change-${ChangeKind.CORRECTION.db}")
             listOf(ChangeKind.CORRECTION to EditorialTexts.CHANGE_CORRECTION, ChangeKind.UPDATE to EditorialTexts.CHANGE_UPDATE).forEach { (kind, text) ->
                 div(classes = "bo-check") {
                     val id = "change-${kind.db}"
@@ -458,6 +461,10 @@ object EditorialForm {
                         this.id = id
                         value = kind.db
                         if (content.changeKind == kind) checked = true
+                        if (kindErrors.isNotEmpty()) {
+                            attributes["aria-describedby"] = kindErrors.joinToString(" ")
+                            attributes["aria-invalid"] = "true"
+                        }
                     }
                     label {
                         htmlFor = id
@@ -470,10 +477,17 @@ object EditorialForm {
                     htmlFor = "change-note"
                     +EditorialTexts.CHANGE_NOTE
                 }
+                p(classes = "bo-hint") {
+                    id = "change-note-aide"
+                    +EditorialTexts.CHANGE_NOTE_HINT
+                }
+                val noteErrors = errors(view, "change-note")
                 textArea(rows = "3") {
                     id = "change-note"
                     name = "change_note"
                     maxLength = EditorialDrafts.MAX_CHANGE_NOTE.toString()
+                    attributes["aria-describedby"] = (listOf("change-note-aide") + noteErrors).joinToString(" ")
+                    if (noteErrors.isNotEmpty()) attributes["aria-invalid"] = "true"
                     +content.changeNote.orEmpty()
                 }
             }
