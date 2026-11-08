@@ -36,6 +36,8 @@ services:
     networks:
       - prod-edge
       - preprod-edge
+      - prod-approval
+      - preprod-approval
     logging:
       driver: local
       options:
@@ -60,3 +62,10 @@ networks:
   preprod-edge:
     external: true
     name: ppf-preprod-edge
+  # The approval pages of each signing service (internal networks, no way out; D-129).
+  prod-approval:
+    external: true
+    name: ppf-prod-approval
+  preprod-approval:
+    external: true
+    name: ppf-preprod-approval

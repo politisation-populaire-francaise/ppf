@@ -31,6 +31,8 @@ COPY shared/ui/src/commonMain/composeResources/files/contents/ /app/examples/
 # preproduction (no import key on the server there), and the one-shot importer of the production.
 COPY shared/ui/src/commonMain/composeResources/files/parlement/ /app/parlement-examples/
 COPY tools/open-data-importer/build/libs/ppf-open-data-importer.jar /app/ppf-open-data-importer.jar
+# The separate signing service (D-129), run as its own container from the same signed image.
+COPY signer/build/libs/ppf-signer.jar /app/ppf-signer.jar
 
 USER 10001
 ENV PORT=8080
