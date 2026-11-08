@@ -15,6 +15,8 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
+import org.politisationpopulairefrancaise.server.decider.DeliberationSubmissions
+import org.politisationpopulairefrancaise.server.decider.receive
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
@@ -75,7 +77,16 @@ class PostLimits(
  * - GET /api/v1/events?kind=&author=&identifier=&tag=<name>:<value>&since=&until=&limit=: newest first.
  * - GET /api/v1/events/{id}
  */
-fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, limits: PostLimits, groups: GroupDirectory? = null, proposals: RevendicationProposals? = null, agir: AgirSpace? = null) {
+fun Route.eventsApi(
+    repository: EventRepository?,
+    policy: PublicationPolicy,
+    limits: PostLimits,
+    groups: GroupDirectory? = null,
+    proposals: RevendicationProposals? = null,
+    agir: AgirSpace? = null,
+    /** The propositions and amendments of citizens to a deliberation, held for review (DE-25). */
+    deliberation: DeliberationSubmissions? = null,
+) {
     if (repository == null) {
         route("/api/v1/{...}") {
             handle {
@@ -125,6 +136,12 @@ fun Route.eventsApi(repository: EventRepository?, policy: PublicationPolicy, lim
             // A citizen demand is not published at once: it waits for the review of a person (202).
             if (proposals != null && policy.isCitizenDemand(event)) {
                 return@post proposals.receive(call, event, limits.perKey)
+            }
+            // A citizen's proposition or amendment of a deliberation waits for review too (202), or is refused.
+            if (deliberation != null && DeliberationSubmissions.isCitizenContribution(event, policy::isEditor)) {
+                val outcome = withContext(Dispatchers.IO) { deliberation.submit(event) }
+                if (outcome !is DeliberationSubmissions.Outcome.Queued) limits.perKey.refund(event.pubkey)
+                return@post deliberation.receive(call, event.id, outcome)
             }
             when (val decision = policy.check(event)) {
                 is PublicationPolicy.Decision.Refused -> return@post call.refuse(decision)

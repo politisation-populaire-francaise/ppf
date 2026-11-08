@@ -12,7 +12,7 @@ Version du 5 novembre 2026 (phase 0, complétée le soir même par les fondation
 ## 2. Qui peut attaquer
 
 - Des **acteurs étatiques ou judiciaires** : réquisitions, saisie, blocage, suspension du domaine.
-- Des **groupes politiques hostiles** : harcèlement, désinformation, manipulation des votes, tentative de faire passer la plateforme pour partisane.
+- Des **groupes politiques hostiles** : harcèlement, désinformation, manipulation des votes, tentative de faire passer la plateforme pour le soutien d'un candidat ou d'un parti (avantage en nature interdit à une association, cahier des charges 9.2).
 - Des **criminels et des spammeurs** : piratage, rançon, faux comptes, déni de service.
 - Des **personnes de l'intérieur** : membre de l'équipe malveillant ou compte compromis, contributeur de code malveillant.
 - La **chaîne d'approvisionnement** : dépendances logicielles compromises, actions d'intégration continue détournées.
@@ -91,7 +91,7 @@ Version du 5 novembre 2026 (phase 0, complétée le soir même par les fondation
 | Infiltration de l'équipe | Une seule personne (la propriétaire) | Permissions minimales, validation à deux, journal d'audit, coupure d'urgence (S-56 à S-63) |
 | Contribution de code malveillante | Dépôt public avec demandes de fusion obligatoires, tests, relecture, vérification des tiers et des secrets | Relecture ligne par ligne des contributions externes, signature obligatoire des commits, verrouillage des dépendances |
 | Dépendance compromise | Versions verrouillées (fichiers de verrouillage), catalogue de versions, Dependabot, vérification des groupes interdits | Vérification des empreintes des dépendances, surveillance des avis de sécurité |
-| Plateforme présentée comme partisane | Pacte démocratique : même texte pour tous vérifiable par son empreinte, une ligne pour chaque candidat même sans réponse, ordre alphabétique, réponses à un autre texte écartées et listées, règles de pétitions sourcées et datées (D-059, D-060) ; Charte de contenu, règles des outils électoraux (cahier des charges, section 9.2) | Traitement identique dans les outils électoraux (décision en attente), relecture juridique |
+| Plateforme présentée comme le soutien d'un candidat ou d'un parti | Pacte démocratique : même texte pour tous vérifiable par son empreinte, une ligne pour chaque candidat même sans réponse, ordre alphabétique, réponses à un autre texte écartées et listées, règles de pétitions sourcées et datées (D-059, D-060) ; Charte de contenu, règles des outils électoraux (cahier des charges, section 9.2) | Traitement identique dans les outils électoraux (décision en attente), relecture juridique |
 | Fuite de données personnelles de la propriétaire | Auteur des commits sous pseudonyme avec adresse « noreply » ; coordonnées masquées dans l'annuaire des domaines | Association titulaire des domaines et des comptes |
 | Image du serveur falsifiée ou remplacée sur le registre | Image construite seulement par l'intégration continue sur `main`, signée sans clé stockée (Sigstore) ; le serveur vérifie que la signature désigne ce workflow avant de lancer quoi que ce soit, et déploie une empreinte précise, jamais un nom de version (D-070) | Publication des empreintes déployées ; reconstruction reproductible vérifiée par un tiers |
 | Compromission du dépôt GitHub qui atteint le serveur | Aucune clé du serveur chez GitHub (le serveur va chercher, rien ne lui est poussé) ; script de déploiement installé localement, jamais exécuté depuis le dépôt ; production seulement par promotion manuelle d'une version validée en préproduction ; branche principale protégée | Signature des commits exigée sur `main` ; miroir Codeberg |
@@ -131,6 +131,73 @@ Version du 5 novembre 2026 (phase 0, complétée le soir même par les fondation
 | Erreur dans l'annuaire présentée comme un fait par PPF (mauvais élu pour une commune partagée, ancienne fonction) | Une commune partagée liste tous ses cantons et circonscriptions plutôt que d'en deviner un ; rien n'est inventé quand une table manque ; source, licence et dates affichées, avec les annuaires officiels en lien | Signalement d'une erreur (S-38) |
 | Glossaire : définition fausse ou orientée glissée dans tous les contenus | Entrées signées par une clé de l'équipe éditoriale et vérifiées par l'outil de signature (sources obligatoires) ; seules les entrées de confiance sont lues ; origine IA affichée dans l'infobulle | Relecture par l'équipe éditoriale, journal des corrections |
 | Glossaire : ce que la personne consulte révèle ses centres d'intérêt | Rien n'est enregistré ni envoyé : infobulles, pages et recherche se font sur la copie locale | Aucun |
+
+## Ajout du 7 novembre 2026 : votes anonymes (« une personne, une voix », D-110, D-112)
+
+Modèle de menaces détaillé : `docs/integration/une-personne-une-voix.md`, section 2. Ce qui est en place après l'étape 2 (serveur) :
+
+| Menace | Protection en place | Reste à faire |
+|---|---|---|
+| Le serveur, ou quelqu'un qui le contrôle, relie un vote à un compte | Jetons VOPRF aveuglés (RFC 9497) : le serveur calcule le jeton sans le voir ; bulletins envoyés sans compte, sans signature ni en-tête ; aucune adresse IP ; bulletins indexés par leur identifiant secret, heure arrondie à l'heure, délivrance datée au jour, curseur identique pour tous | Envoi différé automatique et client HTTP séparé dans l'application (étape 3) ; Tor et adresse .onion (phase 3) |
+| Le serveur donne une clé à part à un citoyen pour le reconnaître | Preuve DLEQ vérifiée par l'appareil contre la clé publique de l'urne, la même dans la liste publique pour tous | Publication des clés en événements signés et miroirs Nostr (phase 3) |
+| Bourrage par l'équipe ou un pirate qui a la graine | Journal public en continu : jetons délivrés par niveau et comptes par niveau ; clés et bulletins publiés à la clôture, recomptage par tous (`UrneRecount`) | Service de signature séparé pour les graines |
+| Fuite ou perte d'une graine | Fichier en lecture seule, hors dépôt et hors base, sauvegarde chiffrée hors site ; versions de graine et renouvellement | Copie hors ligne chez la propriétaire (guide du Directeur technique) |
+| Comptes multiples, robots | Preuve de travail à l'inscription, à chaque demande de jetons et sur chaque bulletin ; niveaux de votants, vérifiés montrés en premier ; niveau figé à l'ouverture | Validation en personne (étape 5) et détection des vagues |
+| Rejeu d'une autorisation ou d'un bulletin | Autorisation NIP-98 acceptée une fois, à 60 secondes près ; même `y` = remplacement, jamais un second vote | Aucun |
+
+### Relecture indépendante R5 du vote (7 novembre 2026)
+
+Un agent distinct a relu `core/urne` et le serveur contre la RFC 9497 (code et RFC seulement) : le VOPRF suit la RFC pas à pas, vecteurs compris ; les faiblesses tiennent à l'usage. Corrigé dans la foulée :
+
+| Constat | Correction |
+|---|---|
+| Une réponse de jetons perdue en route faisait perdre le vote (la requête n'était jamais renvoyée) | L'appareil renvoie d'abord, inchangée, la requête restée sans réponse ; le serveur y répond pareil pendant un jour ; test de bout en bout |
+| Une urne ouverte « pour plus tard » était sautée par les comptes servis entre-temps | Une urne s'ouvre au moment de son ouverture, jamais à l'avance |
+| Deux changements de niveau la même semaine faisaient oublier le niveau en vigueur | Le niveau précédent reste celui en vigueur tant que le changement n'a pas pris effet |
+| La preuve de travail du bulletin, donnée par le serveur, pouvait varier d'un appareil à l'autre et reconnaître ses bulletins | Nombre fixe dans le code commun (12 bits), le même pour tous |
+| Un niveau de jeton fait pour un appareil (par exemple `elu`) le reconnaîtrait | L'appareil calcule le niveau attendu (niveau, niveau précédent, semaines) et refuse tout autre |
+| La taille d'un bulletin chiffré trahissait le niveau ou le choix | Tous les bulletins font 640 octets |
+| La liste des urnes passait par la connexion du compte ; les bulletins partaient avec la synchronisation | Liste demandée par le client anonyme ; un bulletin par passage, jamais en même temps qu'une demande faite avec le compte ; un bulletin en retard (application fermée, réseau absent) repart à un nouveau moment tiré au hasard |
+| Clés d'une urne dépendant seulement de son identifiant | Sel aléatoire par urne dans la dérivation |
+| Heure de chaque bulletin publiée à la clôture | Seulement le jour |
+| Sans `PPF_PUBLIC_URL`, une autorisation faite pour un autre serveur passait | Adresse obligatoire hors développement, sinon le vote reste fermé |
+| Autotest seulement sur l'appareil | Rejoué aussi au démarrage du serveur ; échec = vote fermé |
+| Aléa des tests accessible au code de production ; I2OSP faux au-delà de 4 octets | Fonctions internes au module ; longueur bornée |
+
+Reste ouvert, à trancher ou à faire :
+
+| Risque | État |
+|---|---|
+| **Même adresse réseau** pour la synchronisation et le bulletin : un opérateur (ou l'hébergeur) qui observerait le réseau pourrait encore rapprocher un bulletin d'un compte par l'adresse et l'heure | Limite écrite dans le code ; parade complète avec Tor ou un relais HTTP oblivieux (RFC 9458) tenu par un tiers (phase 3). Délai avant envoi plus long que 10 minutes : question posée au chef d'équipe (décision D-112) |
+| Le serveur pourrait montrer à un seul appareil une urne à lui (clé, choix) dès le premier contact | Vérification de la clé à chaque synchronisation ; parade complète : urnes publiées en événements signés et miroirs Nostr (phase 3) ; recomptage sur l'appareil après la clôture (à brancher) |
+| Petites urnes : peu de bulletins d'un niveau (un seul élu) disent le choix d'une personne ; compteurs en direct observables sur un lien réseau | Question posée au chef d'équipe (seuil d'affichage par niveau, résultats en direct par paliers) |
+| Restauration d'une sauvegarde : curseurs revenus en arrière, jetons déjà délivrés toujours valables | Procédure à écrire avec le Directeur technique : après une restauration, clore les urnes ouvertes et les rouvrir sous un nouvel identifiant |
+| Ordre d'insertion visible dans une copie de la base (colonnes cachées de PostgreSQL) | Faible (les jetons sont délivrés bien avant le vote) ; insertion des bulletins par lots mélangés à étudier |
+| Inondation de faux bulletins jusqu'à la limite globale | Disponibilité seulement (l'appareil réessaie plus tard) ; à surveiller |
+| `y` sert de reçu (achat de vote, contrainte) | Contrepartie du recomptage par tous ; documenté |
+| Copie de la base pendant la semaine : traces techniques reliant une validation en personne à sa séance (identifiants de transaction, journal d'écriture, blocs libérés) | Validations appliquées en un seul lot le lundi, dans l'ordre des clés ; rien en clair (séance scellée pour la clé « audit », ni date ni numéro) ; PostgreSQL sans archivage du journal ni horodatage des transactions, sauvegardes logiques seulement (D-112, suite du 8 novembre 2026). Reste : la dernière validation de chaque séance ouverte, et l'ordre de la semaine dans des fragments du disque jusqu'à leur écrasement (pas de chiffrement du disque sur ce serveur) |
+## Ajout du 7 novembre 2026 : archivage horodaté, côté serveur (D-111)
+
+Hôtes contactés par le serveur, et lui seul, quand l'archivage est allumé (production par défaut ; préproduction seulement si réglée ; jamais en développement ni en test), tous en HTTPS sur le port 443 (détail pour le pare-feu : `docs/integration/archivage-egress.md`) :
+
+| Hôte | Rôle | Ce qui sort |
+|---|---|---|
+| `a.pool.opentimestamps.org`, `b.pool.opentimestamps.org`, `a.pool.eternitywall.com`, `ots.btc.catallaxy.com` | Agrégateurs OpenTimestamps | La racine d'un lot (32 octets), au plus une fois par heure |
+| `*.calendar.opentimestamps.org`, `*.calendar.eternitywall.com`, `*.calendar.catallaxy.com` (aujourd'hui `alice.btc`, `bob.btc`, `finney`, `btc`) | Calendriers, mise à niveau des preuves | Une valeur intermédiaire de la preuve, issue de la racine |
+| `mempool.space`, `blockstream.info` | En-têtes de blocs Bitcoin (API Esplora) | Une hauteur de bloc, un hachage de bloc |
+| `freetsa.org` | Autorité d'horodatage RFC 3161 | La racine d'un lot et un nombre aléatoire |
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Un service d'horodatage apprend ce que PPF archive (contenu, auteur, lecteur) | Seule la racine d'un lot sort ; chaque empreinte reçoit 16 octets aléatoires avant d'entrer dans l'arbre, si bien que même une empreinte de contenu public connu ne se reconnaît pas ; jamais un contenu, une clé, une adresse IP ni un en-tête de citoyen ; l'application ne contacte aucun de ces services | Aucun |
+| Une adresse de calendrier piégée dans une preuve (réponse d'un agrégateur, preuve retouchée) sert à faire contacter un hôte choisi par l'attaquant, ou à faire suivre une redirection | Liste blanche du client officiel : seulement `https://<hôte>` exact, hôte sous l'un des trois domaines des calendriers, sans port, chemin, nom d'utilisateur, paramètre ni fragment, jamais `http` ; aucune redirection suivie ; une réponse d'agrégateur qui ne mène à aucun calendrier de la liste ne compte pas | Pare-feu sortant limité à ces hôtes (Directeur technique) |
+| Un agrégateur ou un calendrier ment, disparaît ou ne répond plus | Au moins deux agrégateurs indépendants doivent répondre, sinon le lot repart plus tard ; quatre agrégateurs de trois opérateurs ; la preuve finale est vérifiée contre Bitcoin, pas contre le calendrier | Alerte à l'équipe pour les preuves en attente depuis plus de 48 heures |
+| Fausse attestation Bitcoin, ou explorateur menteur ou compromis | Le serveur demande la hauteur et l'en-tête aux deux explorateurs indépendants, qui doivent concorder ; double SHA-256 de l'en-tête égal au hachage annoncé, preuve de travail conforme à sa difficulté, racine de Merkle égale au résultat de la preuve ; tout autre résultat laisse la preuve « ancrée », jamais « vérifiée », et un avertissement est journalisé ; chacun peut revérifier le fichier `.ots` avec le client officiel et son propre nœud | Alerte dans le back-office ; troisième source (nœud Bitcoin à nous) si le budget le permet |
+| Jeton RFC 3161 falsifié ou rejoué | Statut, nombre aléatoire de la requête, empreinte et algorithme vérifiés, signature vérifiée avec le certificat joint, empreinte de ce certificat gardée, usage « horodatage » et validité à l'heure attestée contrôlés. Limite : la chaîne jusqu'au certificat racine de FreeTSA n'est pas encore vérifiée | Épingler le certificat racine de FreeTSA (téléchargement à faire accepter par la propriétaire) |
+| Réponse énorme ou malformée pour épuiser la mémoire ou planter le serveur | Corps lus jusqu'à une taille fixe (10 000 octets pour les calendriers, 1 000 pour les explorateurs, 32 Kio pour l'autorité) ; lecteur `.ots` strict (profondeur, longueurs, octets en trop) ; preuve gardée de 256 Kio au plus ; toute erreur est un code court, jamais une exception non rattrapée | Aucun |
+| Tempête de requêtes vers un service en difficulté (bannissement, abus) | Trois essais au plus par requête, après 2 puis 4 secondes ; un calendrier ou un explorateur en panne n'est plus interrogé avant le tour suivant ; un tour par heure ; premier tour 2 minutes après le démarrage ; une requête par seconde au plus vers FreeTSA | Aucun |
+| Fuite par les journaux (empreinte, preuve, adresse contenant une valeur de preuve, corps reçu) | Journaux limités à des nombres, des codes courts et des noms de classes ; vérifié par un test qui capture tous les journaux d'un horodatage complet | Aucun |
+| Mandataire HTTPS mal réglé (identifiants dans la variable, TLS cassé) | Mandataire `http://hôte:port` seulement, tunnel `CONNECT` qui garde le TLS de bout en bout ; identifiants refusés au démarrage sans répéter la valeur ; lu seulement quand l'archivage est allumé | Aucun |
 
 ## Ajout du 7 novembre 2026 : partis, site et demandes de « Voir » (D-054 à D-056)
 

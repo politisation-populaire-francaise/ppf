@@ -1,10 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <!-- The only permission: the network, towards the platform's own server and nothing else, in
-         HTTPS only (network_security_config.xml). A build without server address (BuildConfig.PPF_SERVER_URL
+    <!-- The network, towards the platform's own server and nothing else, in HTTPS only
+         (network_security_config.xml). A build without server address (BuildConfig.PPF_SERVER_URL
          empty) makes no network call at all. -->
     <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- The camera, asked only when a validator opens « Valider une personne » to read the QR code a citizen
+         shows (D-112, 4.3); never at install, never for anything else. Nothing is recorded or sent from it:
+         the code is read on the phone. Not required: a phone without camera installs the application. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <application
         android:allowBackup="false"

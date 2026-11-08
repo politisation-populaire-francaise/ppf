@@ -616,7 +616,7 @@ class BackOfficeServiceTest {
 
     private suspend fun signed(keys: IdentityKeys, url: String, method: String): SignedSessionRequest {
         clock.advance(1.seconds)
-        val event = LocalEventSigner(keys).sign(kind = MinimalNip98Verifier.KIND, createdAt = clock.instant().epochSecond, tags = listOf(listOf("u", url), listOf("method", method)))
+        val event = LocalEventSigner(keys).sign(kind = Nip98SessionVerifier.KIND, createdAt = clock.instant().epochSecond, tags = listOf(listOf("u", url), listOf("method", method)))
         return SignedSessionRequest("Nostr " + Base64.getEncoder().encodeToString(event.toJson().toByteArray()), url, method)
     }
 
