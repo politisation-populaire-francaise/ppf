@@ -87,3 +87,27 @@ Un compte PPF est une paire de clés gardée sur le téléphone. Si le télépho
 2. « Compromis depuis » jusqu'à 30 jours avant l'avis.
 3. Avis par l'équipe seulement pour un compte déjà vérifié en personne (séance retrouvée par le lien chiffré de l'audit, D-112, vérification en personne, action à deux du back-office, journalisée) ; sans vérification ni phrase, aucune reprise possible, dit clairement à l'inscription.
 4. Avec Décider : refus des jetons d'une clé compromise et délivrance au successeur sans double voix (à caler).
+
+## 10. État
+
+**Fait le 8 novembre 2026 (cœur et serveur, pôle Communauté)**
+- Cœur, `core/identity` : `RecoveryPhrase.deriveRecoveryKeys()` (chemin `m/44'/1237'/0'/1/0`, à côté de `deriveKeys`, qui reste NIP-06 compte 0) ; `AccountRecovery` (constructeurs `commitment`/`signCommitment` et `notice`/`signNotice`, lecture `parseCommitment` et `parseNotice`, vérification `checkNotice` commune à l'appareil et au serveur : signature, lien avec l'engagement, signataire = clé de secours de l'engagement, « compromis depuis » entre 30 jours avant l'avis et l'avis, avis daté au plus 10 minutes dans le futur quand l'heure est donnée). Vecteur fixe : la phrase d'exemple de NIP-06 donne la clé de secours publique `bfbb7b7f…c24e` (calculée aussi hors du projet).
+- Serveur, `server/accounts/CompromisedAccounts.kt`, migration provisoire `V14__account_recovery.sql` (tables `recovery_commitment` et `compromised_account`, clés publiques et identifiants seulement) : engagement et avis vérifiés puis stockés dans une même transaction, sous un verrou par compte ; refus `400 invalid_commitment`, `400 invalid_notice`, `409 recovery_already_set`, `409 already_compromised`, `409 successor_taken` ; après un avis, `403 account_compromised` pour tout événement de la clé (contrôle placé avant tout le reste du parcours de publication, revendications comprises) et pour une nouvelle inscription aux réveils de messagerie ; inscriptions de messagerie de la clé effacées, rôles de salon retirés (rien dans le registre légal : les rôles ne sont pas des contenus).
+- Points d'appel pour Décider : `isCompromised(pubkey)`, `successorOf(old)`, `predecessorOf(new)`, `noticeFor(pubkey)`, `commitmentOf(pubkey)`.
+- `GET /api/v1/accounts/<clé>/status` : `{compromised, since, successor, notice, commitment}` (format dans `docs/FORMATS.md`, section 5). Les événements de la clé datés d'après `since` restent servis tels quels ; l'appareil lit `since` (statut ou avis) pour les marquer.
+
+**Écarts avec la conception**
+- Section 5 : le serveur ne génère pas d'événements 9000 « sans rôle » pour retirer les rôles (il faudrait une clé de signature du serveur, jamais en clair sur le serveur principal) : il retire directement les lignes de `group_role`, et `GET /api/v1/groups/<id>/roles` ne montre plus la clé. Le motif « compte compromis » ne figure donc pas dans le journal du salon ; l'avis public en tient lieu. À revoir avec le service de signature.
+- Section 5 : le marqueur « suspect » n'est pas ajouté aux réponses (le format des événements ne change pas) ; l'appareil le calcule avec `since`.
+- `proof` reste facultative tant que l'horodatage n'existe pas.
+- Ajout : `commitment` dans le statut (identifiant du premier engagement, `null` s'il n'y en a pas), pour que Mon espace puisse dire « Votre compte n'a pas encore de clé de secours ».
+
+**En attente**
+- Horodatage OpenTimestamps de l'engagement : interface `CommitmentStamper` (sans effet par défaut, `CommitmentStamper.NONE`), appelée après l'enregistrement d'un engagement ; à brancher sur `ArchiveService.stamp` de Décider (server/archive) dès qu'il est dans `main`, puis publier l'événement 1040 et le nommer dans `proof`.
+- Branchement dans `PersonAccounts.refusal` et héritage du curseur `issued_up_to` : pôle Décider.
+- Avis par l'équipe (D-134, point 3) : après l'étape 5 de Décider.
+- Mon espace (engagement à la création, phrase effacée, « Vérifier ma phrase », « J'ai perdu le contrôle de mon compte », bandeaux chez les contacts) : tâche suivante, côté appareil.
+
+**Questions ouvertes**
+- Une création de salon ou un contenu d'Agir **mis en attente** avant l'avis, puis approuvé par l'équipe après : il est publié tel quel. Faut-il que les files du back-office refusent les contenus d'une clé devenue compromise ?
+- Un salon dont le seul administrateur était la clé compromise n'a plus d'administrateur : reprise par l'équipe à concevoir (back-office).

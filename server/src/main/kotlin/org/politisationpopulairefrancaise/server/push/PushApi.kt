@@ -82,9 +82,11 @@ class PushService(
  *   carries a NIP-98 authorization signed by the account key. `201 {id}`; the same endpoint keeps its id.
  * - DELETE /api/v1/push/subscriptions/{id}: `204`, or `404` for an unknown id.
  *
+ * A key declared compromised (S-146, D-134, [isCompromised]) gets no mailbox subscription: `403 account_compromised`.
+ *
  * Neither the client address nor the endpoint is ever logged.
  */
-fun Route.pushApi(service: PushService) {
+fun Route.pushApi(service: PushService, isCompromised: (String) -> Boolean = { false }) {
     val config = service.config
     route("/api/v1/push") {
         get("vapid") {
@@ -122,6 +124,12 @@ fun Route.pushApi(service: PushService) {
             val pubkey = if (scope == PushScope.MAILBOX) {
                 val key = Nip98.verify(call.request.headers[HttpHeaders.Authorization], config.subscriptionsUrl, "POST", body, now)
                     ?: return@post call.respond(HttpStatusCode.Unauthorized, ApiError("unauthorized", "A mailbox subscription needs a valid NIP-98 authorization."))
+                if (withContext(Dispatchers.IO) { isCompromised(key) }) {
+                    return@post call.respond(
+                        HttpStatusCode.Forbidden,
+                        ApiError("account_compromised", "This account was declared compromised by its owner: it gets no wake-ups."),
+                    )
+                }
                 when (val budget = service.perKey.tryAcquire(key)) {
                     is RateLimiter.Outcome.Limited -> return@post call.rateLimited(budget.retryAfterSeconds, "Too many subscriptions for this key; try again later.")
                     RateLimiter.Outcome.Allowed -> Unit

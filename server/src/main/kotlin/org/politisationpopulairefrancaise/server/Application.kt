@@ -20,6 +20,7 @@ import kotlinx.coroutines.CancellationException
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.HealthStatus
 import org.politisationpopulairefrancaise.server.accounts.AccountTypes
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirConfig
 import org.politisationpopulairefrancaise.server.agir.AgirSetup
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
@@ -31,6 +32,7 @@ import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySpace
 import org.politisationpopulairefrancaise.server.agir.testimonies.testimonyApi
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PostLimits
+import org.politisationpopulairefrancaise.server.api.accountsApi
 import org.politisationpopulairefrancaise.server.api.eventsApi
 import org.politisationpopulairefrancaise.server.api.groupsApi
 import org.politisationpopulairefrancaise.server.backoffice.BackOffice
@@ -276,6 +278,9 @@ fun Application.module(
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     // Push wake-ups (M31): a constant, encrypted "synchronize" only; the worker lives with the application.
     val pushService = PushService.start(this, dataSource, push)
+    // Recovery keys and compromised accounts (S-146, D-134); the OpenTimestamps stamping of the
+    // commitments waits for Décider's ArchiveService (CommitmentStamper.NONE until then).
+    val compromised = repository?.let { CompromisedAccounts(it) }
     install(ErrorShield)
     install(ContentNegotiation) {
         json()
@@ -321,8 +326,10 @@ fun Application.module(
                 agirSpace,
                 onStored = pushService::stored,
                 accountTypes = repository?.let { AccountTypes(it.dataSource) },
+                compromised = compromised,
             )
-            pushApi(pushService)
+            accountsApi(compromised)
+            pushApi(pushService, isCompromised = { key -> compromised?.isCompromised(key) == true })
             groupsApi(groups)
             revendicationsApi(proposals)
             agirApi(agirSpace)

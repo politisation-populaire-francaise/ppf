@@ -48,11 +48,22 @@ class RecoveryPhrase private constructor(val words: List<String>, val language: 
     val text: String get() = words.joinToString(" ")
 
     /** Derives the identity keys; account 0 is the identity, higher accounts are reserved. */
-    fun deriveKeys(account: Long = 0): IdentityKeys {
+    fun deriveKeys(account: Long = 0): IdentityKeys = derive(account, branch = 0)
+
+    /**
+     * Derives the recovery key of the account (S-146, D-134, docs/integration/compte-compromis.md):
+     * path m/44'/1237'/account'/1/0, the BIP-32 branch "1" that NIP-06 does not use, so that no
+     * Nostr client takes it for an account. It signs the compromise notice only ([AccountRecovery]):
+     * the device publishes the commitment naming its public key, then destroys it; it comes back only
+     * when the phrase is typed again.
+     */
+    fun deriveRecoveryKeys(account: Long = 0): IdentityKeys = derive(account, branch = 1)
+
+    private fun derive(account: Long, branch: Int): IdentityKeys {
         require(account >= 0) { "account must be positive" }
         val seed = MnemonicCode.toSeed(words, passphrase = "")
         val master = DeterministicWallet.generate(seed)
-        val child = master.derivePrivateKey("m/44'/1237'/$account'/0/0")
+        val child = master.derivePrivateKey("m/44'/1237'/$account'/$branch/0")
         return IdentityKeys.fromSecretKey(child.privateKey.value.toByteArray())
     }
 
