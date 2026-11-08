@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.core.publication
 
 import org.politisationpopulairefrancaise.core.groups.Group
+import org.politisationpopulairefrancaise.core.identity.AccountStatusResult
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 
 /** What to fetch from a remote source of events. */
@@ -106,6 +107,13 @@ interface RemoteEvents : PublicationPort {
         FetchResult.Unavailable(UnsupportedOperationException("This source cannot filter events by tag"))
 
     /**
+     * Where the room creations held for the team stand (`GET /api/v1/group-creations?id=…`, D-132),
+     * at most [HeldStatusSource.MAX_IDS] ids. Sources without them answer [HeldStatuses.Unavailable].
+     */
+    suspend fun fetchCreationStates(ids: List<String>): HeldStatuses =
+        HeldStatuses.Unavailable(UnsupportedOperationException("This source holds no room creation"))
+
+    /**
      * The directory of elected officials (contract of the third wave of "Comprendre", 1.4): the index
      * (`GET /api/v1/elus`) when [code] is null, otherwise the package of a department or `FR`
      * (`GET /api/v1/elus/{code}`). [etag], the sha256 of the version already on the device, lets the
@@ -141,4 +149,11 @@ interface RemoteEvents : PublicationPort {
      * never for one alone. Null when the source does not have it or cannot be reached.
      */
     suspend fun fetchComparatorPhoto(sha256: String): ByteArray? = null
+
+    /**
+     * Where the recovery of the account [pubkey] (lowercase hex) stands (S-146, D-134):
+     * `GET /api/v1/accounts/<key>/status`. Sources without it answer [AccountStatusResult.Unavailable].
+     */
+    suspend fun fetchAccountStatus(pubkey: String): AccountStatusResult =
+        AccountStatusResult.Unavailable(UnsupportedOperationException("This source has no account status"))
 }

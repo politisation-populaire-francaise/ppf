@@ -25,7 +25,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -57,6 +60,18 @@ import org.politisationpopulairefrancaise.ui.resources.groups_form_about_placeho
 import org.politisationpopulairefrancaise.ui.resources.groups_form_blocked_charter
 import org.politisationpopulairefrancaise.ui.resources.groups_form_blocked_fields
 import org.politisationpopulairefrancaise.ui.resources.groups_form_cancel
+import org.politisationpopulairefrancaise.ui.resources.groups_form_confirm_similar
+import org.politisationpopulairefrancaise.ui.resources.groups_form_difference_label
+import org.politisationpopulairefrancaise.ui.resources.groups_form_difference_missing
+import org.politisationpopulairefrancaise.ui.resources.groups_form_difference_placeholder
+import org.politisationpopulairefrancaise.ui.resources.groups_form_held
+import org.politisationpopulairefrancaise.ui.resources.groups_form_held_close
+import org.politisationpopulairefrancaise.ui.resources.groups_form_held_title
+import org.politisationpopulairefrancaise.ui.resources.groups_form_rejected_too_many
+import org.politisationpopulairefrancaise.ui.resources.groups_form_rejected_too_recent
+import org.politisationpopulairefrancaise.ui.resources.groups_form_similar_join
+import org.politisationpopulairefrancaise.ui.resources.groups_form_similar_server
+import org.politisationpopulairefrancaise.ui.resources.groups_form_similar_server_title
 import org.politisationpopulairefrancaise.ui.resources.groups_form_charter_accept
 import org.politisationpopulairefrancaise.ui.resources.groups_form_charter_rooms
 import org.politisationpopulairefrancaise.ui.resources.groups_form_charter_title
@@ -147,97 +162,103 @@ fun GroupCreationForm(
                     }
                 }
 
-                Field(
-                    label = stringResource(Res.string.groups_form_name),
-                    counter = stringResource(Res.string.groups_form_counter, draft.name.trim().length, Group.MAX_NAME_LENGTH),
-                    overLimit = draft.nameTooLong,
-                ) {
-                    PpfTextField(
-                        value = draft.name,
-                        onValueChange = { groups.updateDraft(draft.copy(name = it)) },
-                        placeholder = stringResource(Res.string.groups_form_name_placeholder),
-                        modifier = Modifier.fillMaxWidth().testTag(GroupsTags.FORM_NAME),
-                        singleLine = true,
-                    )
-                }
-                Field(
-                    label = stringResource(Res.string.groups_form_territory),
-                    help = stringResource(Res.string.groups_form_territory_help),
-                    overLimit = draft.territoryTooLong,
-                ) {
-                    PpfTextField(
-                        value = draft.territory,
-                        onValueChange = { groups.updateDraft(draft.copy(territory = it)) },
-                        placeholder = stringResource(Res.string.groups_form_territory_placeholder),
-                        modifier = Modifier.fillMaxWidth().testTag(GroupsTags.FORM_TERRITORY),
-                        singleLine = true,
-                    )
-                }
-                Field(
-                    label = stringResource(Res.string.groups_form_about),
-                    counter = stringResource(Res.string.groups_form_counter, draft.about.trim().length, Group.MAX_ABOUT_LENGTH),
-                    overLimit = draft.aboutTooLong,
-                ) {
-                    PpfTextField(
-                        value = draft.about,
-                        onValueChange = { groups.updateDraft(draft.copy(about = it)) },
-                        placeholder = stringResource(Res.string.groups_form_about_placeholder),
-                        modifier = Modifier.fillMaxWidth().testTag(GroupsTags.FORM_ABOUT),
-                        minLines = 3,
-                    )
-                }
-                if (draft.proposedId.isNotEmpty()) {
-                    Spacer(Modifier.height(8.dp))
-                    Text(
-                        stringResource(Res.string.groups_form_id, draft.proposedId),
-                        style = MaterialTheme.typography.bodySmall,
-                        color = palette.inkSubtle,
-                        modifier = Modifier.testTag(GroupsTags.FORM_ID),
-                    )
-                }
-
-                if (similar.isNotEmpty()) {
-                    Spacer(Modifier.height(20.dp))
-                    Column(Modifier.testTag(GroupsTags.FORM_SIMILAR), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        Text(stringResource(Res.string.groups_form_similar_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
-                        Text(stringResource(Res.string.groups_form_similar_text), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
-                        similar.forEach { room ->
-                            RoomCard(
-                                room = room,
-                                joined = groups.isMember(room.id),
-                                selected = false,
-                                onOpen = { groups.openInstead(room) },
-                                onJoin = { groups.joinExisting(room.id) },
-                            )
-                        }
-                    }
-                }
-
-                Spacer(Modifier.height(20.dp))
-                Charter(draft.charterAccepted, onToggle = { groups.updateDraft(draft.copy(charterAccepted = !draft.charterAccepted)) })
-
-                Spacer(Modifier.height(20.dp))
-                CreationErrorView(groups)
-
-                if (account == null) {
-                    InfoBox(Lucide.KeyRound, Modifier.testTag(GroupsTags.FORM_NEED_ACCOUNT)) {
-                        Text(stringResource(Res.string.groups_form_need_account), style = MaterialTheme.typography.bodyMedium)
-                        Spacer(Modifier.height(8.dp))
-                        PpfPrimaryButton(
-                            onClick = { onNavigate(Space.MON_ESPACE) },
-                            text = stringResource(Res.string.groups_create_account),
-                            modifier = Modifier.testTag(GroupsTags.FORM_CREATE_ACCOUNT),
+                val held = groups.heldCreation
+                if (held != null) {
+                    HeldView(held, onClose)
+                } else {
+                    Field(
+                        label = stringResource(Res.string.groups_form_name),
+                        counter = stringResource(Res.string.groups_form_counter, draft.name.trim().length, Group.MAX_NAME_LENGTH),
+                        overLimit = draft.nameTooLong,
+                    ) {
+                        PpfTextField(
+                            value = draft.name,
+                            onValueChange = { groups.updateDraft(draft.copy(name = it)) },
+                            placeholder = stringResource(Res.string.groups_form_name_placeholder),
+                            modifier = Modifier.fillMaxWidth().testTag(GroupsTags.FORM_NAME),
+                            singleLine = true,
                         )
                     }
-                    Spacer(Modifier.height(8.dp))
-                    PpfTextButton(onClick = onClose, text = stringResource(Res.string.groups_form_cancel), color = palette.inkMuted, modifier = Modifier.testTag(GroupsTags.FORM_CANCEL))
-                } else {
-                    // Creating publishes the creator's key next to a collective (GDPR, article 9): said before the button.
-                    Callout(CalloutType.ATTENTION, Modifier.testTag(GroupsTags.FORM_IDENTITY), title = stringResource(Res.string.groups_form_identity_title)) {
-                        Text(stringResource(Res.string.groups_form_identity_text), style = MaterialTheme.typography.bodyMedium)
+                    Field(
+                        label = stringResource(Res.string.groups_form_territory),
+                        help = stringResource(Res.string.groups_form_territory_help),
+                        overLimit = draft.territoryTooLong,
+                    ) {
+                        PpfTextField(
+                            value = draft.territory,
+                            onValueChange = { groups.updateDraft(draft.copy(territory = it)) },
+                            placeholder = stringResource(Res.string.groups_form_territory_placeholder),
+                            modifier = Modifier.fillMaxWidth().testTag(GroupsTags.FORM_TERRITORY),
+                            singleLine = true,
+                        )
                     }
-                    Spacer(Modifier.height(16.dp))
-                    Actions(groups, session, onClose, launch = { block -> scope.launch { block() } })
+                    Field(
+                        label = stringResource(Res.string.groups_form_about),
+                        counter = stringResource(Res.string.groups_form_counter, draft.about.trim().length, Group.MAX_ABOUT_LENGTH),
+                        overLimit = draft.aboutTooLong,
+                    ) {
+                        PpfTextField(
+                            value = draft.about,
+                            onValueChange = { groups.updateDraft(draft.copy(about = it)) },
+                            placeholder = stringResource(Res.string.groups_form_about_placeholder),
+                            modifier = Modifier.fillMaxWidth().testTag(GroupsTags.FORM_ABOUT),
+                            minLines = 3,
+                        )
+                    }
+                    if (draft.proposedId.isNotEmpty()) {
+                        Spacer(Modifier.height(8.dp))
+                        Text(
+                            stringResource(Res.string.groups_form_id, draft.proposedId),
+                            style = MaterialTheme.typography.bodySmall,
+                            color = palette.inkSubtle,
+                            modifier = Modifier.testTag(GroupsTags.FORM_ID),
+                        )
+                    }
+
+                    if (similar.isNotEmpty()) {
+                        Spacer(Modifier.height(20.dp))
+                        Column(Modifier.testTag(GroupsTags.FORM_SIMILAR), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            Text(stringResource(Res.string.groups_form_similar_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
+                            Text(stringResource(Res.string.groups_form_similar_text), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+                            similar.forEach { room ->
+                                RoomCard(
+                                    room = room,
+                                    joined = groups.isMember(room.id),
+                                    selected = false,
+                                    onOpen = { groups.openInstead(room) },
+                                    onJoin = { groups.joinExisting(room.id) },
+                                )
+                            }
+                        }
+                    }
+
+                    Spacer(Modifier.height(20.dp))
+                    Charter(draft.charterAccepted, onToggle = { groups.updateDraft(draft.copy(charterAccepted = !draft.charterAccepted)) })
+
+                    Spacer(Modifier.height(20.dp))
+                    // The work starts from the form's scope: the error box leaves the screen as soon as a new attempt begins.
+                    CreationErrorView(groups, session, launch = { block -> scope.launch { block() } })
+
+                    if (account == null) {
+                        InfoBox(Lucide.KeyRound, Modifier.testTag(GroupsTags.FORM_NEED_ACCOUNT)) {
+                            Text(stringResource(Res.string.groups_form_need_account), style = MaterialTheme.typography.bodyMedium)
+                            Spacer(Modifier.height(8.dp))
+                            PpfPrimaryButton(
+                                onClick = { onNavigate(Space.MON_ESPACE) },
+                                text = stringResource(Res.string.groups_create_account),
+                                modifier = Modifier.testTag(GroupsTags.FORM_CREATE_ACCOUNT),
+                            )
+                        }
+                        Spacer(Modifier.height(8.dp))
+                        PpfTextButton(onClick = onClose, text = stringResource(Res.string.groups_form_cancel), color = palette.inkMuted, modifier = Modifier.testTag(GroupsTags.FORM_CANCEL))
+                    } else {
+                        // Creating publishes the creator's key next to a collective (GDPR, article 9): said before the button.
+                        Callout(CalloutType.ATTENTION, Modifier.testTag(GroupsTags.FORM_IDENTITY), title = stringResource(Res.string.groups_form_identity_title)) {
+                            Text(stringResource(Res.string.groups_form_identity_text), style = MaterialTheme.typography.bodyMedium)
+                        }
+                        Spacer(Modifier.height(16.dp))
+                        Actions(groups, session, onClose, launch = { block -> scope.launch { block() } })
+                    }
                 }
                 Spacer(Modifier.height(24.dp))
             }
@@ -282,13 +303,87 @@ private fun Actions(groups: GroupsLibrary, session: AccountSession, onClose: () 
     }
 }
 
+/** The creation is held for the team's review (D-132): "En attente de vérification". */
+@Composable
+private fun HeldView(room: Group, onClose: () -> Unit) {
+    Spacer(Modifier.height(20.dp))
+    Callout(CalloutType.CONSEIL, Modifier.testTag(GroupsTags.FORM_HELD), title = stringResource(Res.string.groups_form_held_title)) {
+        Text(room.displayName, style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(Res.string.groups_form_held), style = MaterialTheme.typography.bodyMedium)
+    }
+    Spacer(Modifier.height(16.dp))
+    PpfPrimaryButton(onClick = onClose, text = stringResource(Res.string.groups_form_held_close), modifier = Modifier.testTag(GroupsTags.FORM_HELD_CLOSE))
+    Spacer(Modifier.height(24.dp))
+}
+
+/**
+ * Rooms of close name found by the server (D-132): join one of them (first and most visible), or
+ * create anyway after saying how the room differs, which is published with its description.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun SimilarView(groups: GroupsLibrary, session: AccountSession, error: CreationError.Similar, launch: (suspend () -> Unit) -> Unit) {
+    val palette = PpfTheme.palette
+    val draft = groups.creationDraft
+    var missing by remember(error) { mutableStateOf(false) }
+    Callout(CalloutType.ATTENTION, Modifier.testTag(GroupsTags.FORM_SIMILAR_SERVER), title = stringResource(Res.string.groups_form_similar_server_title)) {
+        Text(stringResource(Res.string.groups_form_similar_server), style = MaterialTheme.typography.bodyMedium)
+        Spacer(Modifier.height(12.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+            error.rooms.forEach { room ->
+                val name = room.name?.trimStart()?.removePrefix(Group.EXAMPLE_MARKER)?.trim()?.takeIf { it.isNotEmpty() } ?: room.id
+                PpfPrimaryButton(
+                    onClick = { launch { groups.joinSimilar(room.id) } },
+                    text = stringResource(Res.string.groups_form_similar_join, name, room.territory.orEmpty()),
+                    icon = Lucide.Users,
+                    modifier = Modifier.testTag(GroupsTags.FORM_SIMILAR_JOIN + room.id),
+                )
+            }
+        }
+        Spacer(Modifier.height(16.dp))
+        Text(stringResource(Res.string.groups_form_difference_label), style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(8.dp))
+        PpfTextField(
+            value = draft.difference,
+            onValueChange = {
+                groups.updateDifference(it.take(Group.MAX_DIFFERENCE_LENGTH))
+                missing = false
+            },
+            placeholder = stringResource(Res.string.groups_form_difference_placeholder),
+            modifier = Modifier.fillMaxWidth().testTag(GroupsTags.FORM_DIFFERENCE),
+            minLines = 2,
+        )
+        if (missing) {
+            Spacer(Modifier.height(4.dp))
+            Text(stringResource(Res.string.groups_form_difference_missing), style = MaterialTheme.typography.bodySmall, color = palette.accentInk, modifier = Modifier.testTag(GroupsTags.FORM_DIFFERENCE_MISSING))
+        }
+        Spacer(Modifier.height(12.dp))
+        PpfSecondaryButton(
+            onClick = {
+                val signer = session.signer
+                if (draft.difference.isBlank()) {
+                    missing = true
+                } else if (signer != null) {
+                    launch { groups.confirmSimilar(signer) }
+                }
+            },
+            text = stringResource(if (groups.creationBusy) Res.string.groups_form_submitting else Res.string.groups_form_confirm_similar),
+            enabled = !groups.creationBusy,
+            modifier = Modifier.testTag(GroupsTags.FORM_CONFIRM_SIMILAR),
+        )
+    }
+    Spacer(Modifier.height(16.dp))
+}
+
 /** What went wrong with the last attempt; for a duplicate, the offer to join the existing room. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CreationErrorView(groups: GroupsLibrary) {
+private fun CreationErrorView(groups: GroupsLibrary, session: AccountSession, launch: (suspend () -> Unit) -> Unit) {
     val palette = PpfTheme.palette
     when (val error = groups.creationError) {
         null -> Unit
+        is CreationError.Similar -> SimilarView(groups, session, error, launch)
         is CreationError.Exists -> {
             Callout(CalloutType.ATTENTION, Modifier.testTag(GroupsTags.FORM_EXISTS), title = stringResource(Res.string.groups_form_exists_title)) {
                 Text(stringResource(Res.string.groups_form_exists, error.existingName), style = MaterialTheme.typography.bodyMedium)
@@ -310,6 +405,9 @@ private fun CreationErrorView(groups: GroupsLibrary) {
                 CreationError.Taken -> Res.string.groups_form_taken
                 CreationError.InvalidName -> Res.string.groups_form_invalid
                 CreationError.Offline -> Res.string.groups_form_offline
+                CreationError.TooMany -> Res.string.groups_form_rejected_too_many
+                CreationError.TooRecent -> Res.string.groups_form_rejected_too_recent
+                is CreationError.Similar -> Res.string.groups_form_rejected // handled above
                 is CreationError.Refused -> when (error.reason) {
                     RejectionReason.MISSING_TERRITORY -> Res.string.groups_form_rejected_territory
                     RejectionReason.MISSING_CHARTER -> Res.string.groups_form_rejected_charter

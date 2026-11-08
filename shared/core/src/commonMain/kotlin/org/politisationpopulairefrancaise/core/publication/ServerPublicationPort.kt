@@ -14,12 +14,18 @@ import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.contentType
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.decider.ComparatorPhotos
 import org.politisationpopulairefrancaise.core.elus.ElusReader
 import org.politisationpopulairefrancaise.core.groups.Group
+import org.politisationpopulairefrancaise.core.identity.AccountRecovery
+import org.politisationpopulairefrancaise.core.identity.AccountStatus
+import org.politisationpopulairefrancaise.core.identity.AccountStatusResult
+import org.politisationpopulairefrancaise.core.identity.NoticeCheck
 import org.politisationpopulairefrancaise.core.revendications.ProposalState
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSource
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatuses
@@ -38,7 +44,10 @@ class ServerPublicationPort(
     internal val client: HttpClient,
     /** Origin of the server, without trailing slash, e.g. "https://politisation-populaire-francaise.org". */
     internal val baseUrl: String,
-) : RemoteEvents, ProposalStatusSource, HeldStatusSource {
+) : RemoteEvents, ProposalStatusSource, HeldStatusSource, CompromisedRefusals {
+
+    private val refused = MutableStateFlow<Set<String>>(emptySet())
+    override val refusedAsCompromised: StateFlow<Set<String>> get() = refused
 
     override suspend fun publish(event: SignedEvent): PublicationResult {
         val response = try {
@@ -55,10 +64,39 @@ class ServerPublicationPort(
             // 202: kept by the server for a review by the team before publication.
             202 -> PublicationResult.Accepted(event.id, heldForReview = true)
             in 200..299 -> PublicationResult.Accepted(event.id)
-            // Rate limited: not a refusal of this event, keep it and retry after the delay the server gives.
-            429 -> PublicationResult.Unavailable(ServerException(429, response.headers["Retry-After"]?.trim()?.toLongOrNull()))
+            // Rate limited: not a refusal of this event, keep it and retry after the delay the server gives;
+            // except the daily limit of room creations (D-132), a refusal for today.
+            429 -> {
+                val body = runCatching { response.bodyAsText() }.getOrNull()
+                if (body != null && body.contains("\"too_many_groups\"")) {
+                    rejection(event.id, body)
+                } else {
+                    PublicationResult.Unavailable(ServerException(429, response.headers["Retry-After"]?.trim()?.toLongOrNull()))
+                }
+            }
             in 500..599 -> PublicationResult.Unavailable(ServerException(response.status.value))
-            else -> rejection(event.id, runCatching { response.bodyAsText() }.getOrNull())
+            else -> rejection(event.id, runCatching { response.bodyAsText() }.getOrNull()).also { refusal ->
+                if (refusal.reason == RejectionReason.ACCOUNT_COMPROMISED) refused.value = refused.value + event.pubkey
+            }
+        }
+    }
+
+    override suspend fun fetchAccountStatus(pubkey: String): AccountStatusResult {
+        require(pubkey.length == 64 && pubkey.all { it in '0'..'9' || it in 'a'..'f' }) { "A public key in lowercase hexadecimal" }
+        val response = try {
+            client.get("$baseUrl/api/v1/accounts/$pubkey/status")
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return AccountStatusResult.Unavailable(e)
+        }
+        if (response.status.value !in 200..299) return AccountStatusResult.Unavailable(ServerException(response.status.value))
+        return try {
+            AccountStatusResult.Known(accountStatus(response.bodyAsText()))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            AccountStatusResult.Unavailable(e)
         }
     }
 
@@ -108,6 +146,27 @@ class ServerPublicationPort(
             throw e
         } catch (e: Exception) {
             ProposalStatuses.Unavailable(e)
+        }
+    }
+
+    /** `GET /api/v1/group-creations?id=…`: where the author's held room creations stand (D-132). */
+    override suspend fun fetchCreationStates(ids: List<String>): HeldStatuses {
+        require(ids.size <= HeldStatusSource.MAX_IDS) { "At most ${HeldStatusSource.MAX_IDS} ids per request" }
+        if (ids.isEmpty()) return HeldStatuses.Known(emptyList())
+        val response = try {
+            client.get("$baseUrl/api/v1/group-creations") { ids.forEach { parameter("id", it) } }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return HeldStatuses.Unavailable(e)
+        }
+        if (response.status.value !in 200..299) return HeldStatuses.Unavailable(ServerException(response.status.value))
+        return try {
+            HeldStatuses.Known(json.decodeFromString(ListSerializer(HeldState.serializer()), response.bodyAsText()))
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            HeldStatuses.Unavailable(e)
         }
     }
 
@@ -269,7 +328,7 @@ class ServerPublicationPort(
     class ServerException(val status: Int, val retryAfterSeconds: Long? = null) : RuntimeException("Server answered $status")
 
     @Serializable
-    private data class ApiErrorBody(val error: String, val message: String = "", val existing: String? = null)
+    private data class ApiErrorBody(val error: String, val message: String = "", val existing: String? = null, val similar: List<SimilarRoom> = emptyList())
 
     /** One entry of `GET /api/v1/groups`; a description without a name falls back to its id. */
     @Serializable
@@ -283,6 +342,8 @@ class ServerPublicationPort(
         val public: Boolean = true,
         val open: Boolean = true,
         val event: SignedEvent,
+        /** The latest edit of the name and presentation (D-131), already applied to `name` and `about`. */
+        val edit: SignedEvent? = null,
     )
 
     companion object {
@@ -299,6 +360,22 @@ class ServerPublicationPort(
             "missing_charter" -> RejectionReason.MISSING_CHARTER
             "missing_name" -> RejectionReason.MISSING_NAME
             "description_too_long" -> RejectionReason.DESCRIPTION_TOO_LONG
+            "group_similar" -> RejectionReason.GROUP_SIMILAR
+            "too_many_groups" -> RejectionReason.TOO_MANY_GROUPS
+            "account_too_recent" -> RejectionReason.ACCOUNT_TOO_RECENT
+            "organisation_name" -> RejectionReason.ORGANISATION_NAME
+            "territory_fixed" -> RejectionReason.TERRITORY_FIXED
+            "not_allowed" -> RejectionReason.NOT_ALLOWED
+            "last_admin" -> RejectionReason.LAST_ADMIN
+            "banned" -> RejectionReason.BANNED
+            "reason_required" -> RejectionReason.REASON_REQUIRED
+            "edit_not_allowed" -> RejectionReason.EDIT_NOT_ALLOWED
+            "account_compromised" -> RejectionReason.ACCOUNT_COMPROMISED
+            "recovery_already_set" -> RejectionReason.RECOVERY_ALREADY_SET
+            "already_compromised" -> RejectionReason.ALREADY_COMPROMISED
+            "successor_taken" -> RejectionReason.SUCCESSOR_TAKEN
+            "invalid_commitment" -> RejectionReason.INVALID_COMMITMENT
+            "invalid_notice" -> RejectionReason.INVALID_NOTICE
             else -> RejectionReason.REFUSED
         }
 
@@ -311,7 +388,18 @@ class ServerPublicationPort(
         internal fun rejection(eventId: String, body: String?): PublicationResult.Rejected {
             val error = body?.let { runCatching { json.decodeFromString(ApiErrorBody.serializer(), it) }.getOrNull() }
             val existing = error?.existing?.takeIf { Group.isValidId(it) }
-            return PublicationResult.Rejected(eventId, rejectionReason(error?.error), existing)
+            val similar = error?.similar.orEmpty().filter { Group.isValidId(it.id) }
+            return PublicationResult.Rejected(eventId, rejectionReason(error?.error), existing, similar)
+        }
+
+        /**
+         * The body of `GET /api/v1/accounts/<key>/status`. A notice that does not check out by itself
+         * is dropped (the date and successor of the status stay, as the server said them).
+         */
+        internal fun accountStatus(body: String): AccountStatus {
+            val status = json.decodeFromString(AccountStatus.serializer(), body)
+            val notice = status.notice?.takeIf { AccountRecovery.parseNotice(it) is NoticeCheck.Valid }
+            return status.copy(notice = notice)
         }
 
         /** The address of the index ([code] null) or of one package of the directory of elected officials. */
@@ -356,6 +444,7 @@ class ServerPublicationPort(
                     public = it.public,
                     open = it.open,
                     event = it.event,
+                    edit = it.edit,
                 )
             }
     }

@@ -5,6 +5,8 @@ import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.IdentityStore
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
+import org.politisationpopulairefrancaise.core.notifications.Notifications
+import org.politisationpopulairefrancaise.core.notifications.PushManager
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import org.politisationpopulairefrancaise.core.urne.UrneRemote
@@ -45,6 +47,23 @@ class AppDependencies(
      */
     val dataSaver: () -> Boolean = { false },
     /**
+     * The notifications of the device (settings, centre, wake-up round, D-130); null without a
+     * local database (tests, previews).
+     */
+    val notifications: Notifications? = null,
+    /** The push registrations; null without a server or a push system (desktop, iOS for now). */
+    val push: PushManager? = null,
+    /**
+     * The address of our own ntfy server, to type in the distributor application (production or
+     * preproduction, given by the host); null shows the production address.
+     */
+    val pushServer: String? = null,
+    /**
+     * Asks the system permission to show notifications (Android 13 and later) and tells whether it
+     * was granted; elsewhere there is nothing to ask.
+     */
+    val requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
+    /**
      * The ballot-box API of the server (D-110), with its two HTTP clients: the one of the account and
      * a separate anonymous one for the ballots. Null keeps voting unavailable (no server, tests).
      */
@@ -63,6 +82,10 @@ class AppDependencies(
             database: PpfDatabase,
             editorialTrust: EditorialTrust = EditorialTrust.bundledExamples(),
             remote: RemoteEvents? = null,
+            notifications: Notifications? = null,
+            push: PushManager? = null,
+            pushServer: String? = null,
+            requestNotificationPermission: ((granted: Boolean) -> Unit) -> Unit = { it(true) },
             urneRemote: UrneRemote? = null,
             openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
         ): AppDependencies = AppDependencies(
@@ -74,6 +97,10 @@ class AppDependencies(
             followStore = FollowStore(database),
             database = database,
             contentFollowStore = ContentFollowStore(database),
+            notifications = notifications ?: Notifications(database, identityStore, remote, notifier = null),
+            push = push,
+            pushServer = pushServer,
+            requestNotificationPermission = requestNotificationPermission,
             urneRemote = urneRemote,
         )
     }
