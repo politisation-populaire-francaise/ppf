@@ -335,7 +335,22 @@ class EditorialDraftsTest {
             assertFailsWith<SQLException> { connection.createStatement().use { it.executeUpdate("UPDATE editorial_draft_version SET body = 'x' WHERE draft_id = '${first.id}'") } }
         }
         assertEquals(listOf("Autre\n", "Texte\n"), drafts.versions(first.id).map { it.content.body })
+        // Nothing about the device of an editor: no address, no browser, no e-mail.
+        val columns = TestDatabase.dataSource.connection.use { connection ->
+            connection.prepareStatement("SELECT column_name FROM information_schema.columns WHERE table_name LIKE 'editorial_draft%'").use { statement ->
+                statement.executeQuery().use { rows -> generateSequence { if (rows.next()) rows.getString(1) else null }.toList() }
+            }
+        }
+        assertTrue(columns.contains("written_by"))
+        assertTrue(columns.none { Regex("(^|_)(ip|address|agent|browser|email|mail)(_|$)").containsMatchIn(it) }, columns.toString())
         assertEquals(mapOf("meme-adresse" to ArticleType.FICHE_PRATIQUE), drafts.openSlugs())
+
+        // A draft never submitted and unchanged for 180 days is deleted with its versions; the others stay.
+        val past = MutableClock(java.time.Instant.now().minus(java.time.Duration.ofDays(181)))
+        val old = assertIs<SaveResult.Saved>(EditorialDrafts(TestDatabase.dataSource, past).create(EditorialSpace.COMPRENDRE, ArticleType.FICHE_PRATIQUE, DraftContent(listOf("slug" to "ancien"), ""), 1, author)).draft
+        assertEquals(1, drafts.purgeStale())
+        assertNull(drafts.find(old.id))
+        assertNotNull(drafts.find(first.id))
     }
 
     companion object {

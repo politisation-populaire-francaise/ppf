@@ -1,5 +1,8 @@
 package org.politisationpopulairefrancaise.server.editorial
 
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonPrimitive
@@ -24,6 +27,27 @@ import java.time.Clock
 import java.time.Instant
 import java.util.UUID
 import javax.sql.DataSource
+
+/**
+ * The daily purge of the stale drafts ([EditorialDrafts.purgeStale]), living and dying with the application
+ * like LegalRegisterPurge. Only counts are logged, never a title or an identifier.
+ */
+class EditorialDraftsPurge(private val drafts: EditorialDrafts) {
+    fun start(scope: kotlinx.coroutines.CoroutineScope, interval: kotlin.time.Duration, log: org.slf4j.Logger): kotlinx.coroutines.Job =
+        scope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            while (isActive) {
+                try {
+                    val deleted = drafts.purgeStale()
+                    if (deleted > 0) log.info("Editorial drafts: $deleted draft(s) never submitted and unchanged for ${EditorialDrafts.STALE_DAYS} days deleted.")
+                } catch (e: kotlinx.coroutines.CancellationException) {
+                    throw e
+                } catch (e: Exception) {
+                    log.warn("Editorial drafts purge failed (${e::class.simpleName}); next attempt in $interval.")
+                }
+                delay(interval)
+            }
+        }
+}
 
 /** The states of a draft (docs/integration/circuit-editorial.md, section 4); only [DRAFT] is used before the queue. */
 enum class DraftStatus(val db: String, val editable: Boolean) {
@@ -77,7 +101,7 @@ data class DraftContent(
     val changeNote: String? = null,
 ) {
     /** The answer to « produced with the help of an AI? », read from the entries (null: not answered). */
-    val origin: ContentOrigin? get() = entries.lastOrNull { it.first == ContentSchema.ORIGIN }?.second?.trim()?.let(ContentOrigin::fromTag)
+    val origin: ContentOrigin? get() = entries.lastOrNull { it.first == ContentSchema.ORIGIN }?.second?.trim()?.let { ContentOrigin.fromTag(it) }
 
     fun draft(type: ArticleType): ContentDraft = ContentDraft(type, entries, body)
 
@@ -126,7 +150,7 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
         val now = clock.nowSeconds()
         val id = UUID.randomUUID()
         return withSlugGuard {
-            dataSource.transaction { connection ->
+            dataSource.transaction<SaveResult> { connection ->
                 connection.prepareStatement(
                     "INSERT INTO editorial_draft (id, space, type, slug, title, base_event_id, status, author_account, created_at, updated_at, latest_version) " +
                         "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 1)",
@@ -157,7 +181,7 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
         require(content.body.length <= MAX_BODY) { "The body has at most $MAX_BODY characters" }
         val now = clock.nowSeconds()
         return withSlugGuard {
-            dataSource.transaction { connection ->
+            dataSource.transaction<SaveResult> { connection ->
                 val draft = find(connection, id, lock = true) ?: return@transaction SaveResult.NotFound
                 if (!draft.status.editable) return@transaction SaveResult.NotEditable
                 val latest = requireNotNull(version(connection, id, draft.latestVersion))
@@ -178,6 +202,17 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
                 insertVersion(connection, id, next, content, writer, now, problems)
                 SaveResult.Saved(requireNotNull(find(connection, id)))
             }
+        }
+    }
+
+    /**
+     * Deletes the drafts never submitted and unchanged for [STALE_DAYS] days, with their versions (section 4
+     * of the design: a draft nobody sent to review is not kept). Returns how many were deleted.
+     */
+    fun purgeStale(): Int = dataSource.connection.use { connection ->
+        connection.prepareStatement("DELETE FROM editorial_draft WHERE status = 'draft' AND submitted_version IS NULL AND updated_at < ?").use { delete ->
+            delete.setInstant(1, clock.nowSeconds().minus(java.time.Duration.ofDays(STALE_DAYS)))
+            delete.executeUpdate()
         }
     }
 
@@ -280,6 +315,8 @@ class EditorialDrafts(private val dataSource: DataSource, private val clock: Clo
     )
 
     companion object {
+        /** A draft never submitted is deleted after this many days without a change. */
+        const val STALE_DAYS: Long = 180
         const val MAX_BODY: Int = 60_000
         const val MAX_CHANGE_NOTE: Int = 1_000
         private const val UNIQUE_VIOLATION = "23505"

@@ -13,6 +13,7 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.parameters
+import io.ktor.server.application.install
 import io.ktor.server.engine.connector
 import io.ktor.server.routing.routing
 import io.ktor.server.testing.ApplicationTestBuilder

@@ -9,6 +9,8 @@ import kotlinx.html.button
 import kotlinx.html.dataList
 import kotlinx.html.div
 import kotlinx.html.fieldSet
+import kotlinx.html.FormMethod
+import kotlinx.html.form
 import kotlinx.html.h2
 import kotlinx.html.id
 import kotlinx.html.input
@@ -121,7 +123,7 @@ object EditorialForm {
         for (key in ContentSchema.COMMON_KEYS) {
             when (key) {
                 ContentSchema.TYPE -> entries += key to schema.type.tagValue
-                ContentSchema.ORIGIN -> form["origin"]?.trim()?.let(ContentOrigin::fromTag)?.let { entries += key to it.tagValue }
+                ContentSchema.ORIGIN -> form["origin"]?.trim()?.let { ContentOrigin.fromTag(it) }?.let { entries += key to it.tagValue }
                 in commonKeys(schema) -> form["c.$key"]?.let(::clean)?.takeIf { it.isNotEmpty() }?.let { entries += key to it }
             }
         }
@@ -270,7 +272,7 @@ object EditorialForm {
                 }
             }
         }
-        kotlinx.html.form(action = view.action, method = kotlinx.html.FormMethod.post, classes = "bo-editorial-form") {
+        form(action = view.action, method = FormMethod.post, classes = "bo-editorial-form") {
             attributes["novalidate"] = "novalidate"
             view.csrf(this)
             view.version?.let { input(type = InputType.hidden, name = "version") { value = it.toString() } }
@@ -458,10 +460,10 @@ object EditorialForm {
                 id = "body-aide"
                 p { +EditorialTexts.BODY_HINT }
                 if (body.blocks.isNotEmpty()) {
-                    p { +"${EditorialTexts.BODY_BLOCKS} " + body.blocks.joinToString(", ") { block -> "::: ${block.name}" + bounds(block.min, block.max) } + "." }
+                    p { +("${EditorialTexts.BODY_BLOCKS} " + body.blocks.joinToString(", ") { block -> "::: ${block.name}" + bounds(block.min, block.max) } + ".") }
                 }
                 if (body.requiredSections.isNotEmpty()) {
-                    p { +"${EditorialTexts.BODY_SECTIONS} " + body.requiredSections.joinToString(", ") { "## $it" } + "." }
+                    p { +("${EditorialTexts.BODY_SECTIONS} " + body.requiredSections.joinToString(", ") { "## $it" } + ".") }
                 }
             }
             val errors = errors(view, "body")

@@ -130,8 +130,7 @@ object EditorialTexts {
     fun commonHelp(key: String): String? = commonHelps[key]
 
     /** The label of a field of [schema] (common or specific). */
-    fun fieldLabel(schema: ContentSchema, key: String?): String? = when (key) {
-        null -> null
+    fun fieldLabel(schema: ContentSchema, key: String?): String? = if (key == null) null else when (key) {
         EditorialEngine.BODY -> BODY_LABEL
         in ContentSchema.COMMON_KEYS -> common(key)
         else -> schema.field(key)?.let { label(it.labelKey, it.key) } ?: key

@@ -451,7 +451,7 @@ class EditorialDraftsSection(
     private suspend fun SectionContext.createUpdate(slug: String) {
         val snapshot = published.snapshot()
         val event = snapshot.ofSpace(space).firstOrNull { it.firstTagValue("d") == slug } ?: return redirect(query = "erreur=not_published")
-        val schema = ArticleType.entries.firstOrNull { it.tagValue == event.firstTagValue(Article.TAG_TYPE) }?.let(::schemaOf) ?: return redirect(query = "erreur=not_published")
+        val schema = ArticleType.entries.firstOrNull { it.tagValue == event.firstTagValue(Article.TAG_TYPE) }?.let { schemaOf(it) } ?: return redirect(query = "erreur=not_published")
         val read = EditorialEngine.draftOf(schema, event, snapshot.context(space, emptyMap()))
         val content = DraftContent(EditorialForm.ordered(schema, read.entries), read.body)
         val problems = check(schema, content)
