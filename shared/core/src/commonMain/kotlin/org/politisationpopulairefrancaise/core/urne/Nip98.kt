@@ -42,7 +42,8 @@ object Nip98 {
     }
 
     sealed interface Result {
-        data class Valid(val pubkey: String, val eventId: String) : Result
+        /** [createdAt] is the event's own date (a server refuses those older than its start, see [Nip98ReplayGuard]). */
+        data class Valid(val pubkey: String, val eventId: String, val createdAt: Long) : Result
 
         /** [reason] is a fixed code, safe to return to the client; never a value of the request. */
         data class Invalid(val reason: String) : Result
@@ -63,7 +64,12 @@ object Nip98 {
         maxSkewSeconds: Long = DEFAULT_MAX_SKEW_SECONDS,
     ): Result = verify(header, { it == url }, method, body, now, difficulty, maxSkewSeconds)
 
-    /** Same, with [urlMatches] deciding whether the `u` tag names this request (path only in development). */
+    /**
+     * Same, with [urlMatches] deciding whether the `u` tag names this request (path only in development).
+     * The cheap checks come first (kind, time, exactly one `u` and one `method`, body digest, proof of
+     * work), then [acceptsSigner] is asked whether the signing key may be used at all, and only then is the
+     * signature verified: a key the server does not know costs no signature check ([UNKNOWN_SIGNER]).
+     */
     @OptIn(ExperimentalEncodingApi::class)
     fun verify(
         header: String?,
@@ -73,31 +79,45 @@ object Nip98 {
         now: Long,
         difficulty: Int = 0,
         maxSkewSeconds: Long = DEFAULT_MAX_SKEW_SECONDS,
+        acceptsSigner: (String) -> Boolean = { true },
     ): Result {
         if (header == null || !header.startsWith("$SCHEME ")) return Result.Invalid("missing_authorization")
+        if (header.length > MAX_HEADER_LENGTH) return Result.Invalid("malformed_authorization")
         val event = runCatching {
             SignedEvent.fromJson(Base64.Default.decode(header.removePrefix("$SCHEME ").trim()).decodeToString())
         }.getOrNull() ?: return Result.Invalid("malformed_authorization")
-        if (event.kind != KIND || !event.verify()) return Result.Invalid("invalid_signature")
+        if (event.kind != KIND) return Result.Invalid("invalid_signature")
         if (kotlin.math.abs(now - event.createdAt) > maxSkewSeconds) return Result.Invalid("expired_authorization")
-        if (event.firstTagValue("u")?.let(urlMatches) != true) return Result.Invalid("wrong_url")
-        if (event.firstTagValue("method")?.uppercase() != method.uppercase()) return Result.Invalid("wrong_method")
-        val payload = event.firstTagValue("payload")
+        if (event.tagValues("u").singleOrNull()?.let(urlMatches) != true) return Result.Invalid("wrong_url")
+        if (event.tagValues("method").singleOrNull()?.uppercase() != method.uppercase()) return Result.Invalid("wrong_method")
+        val payloads = event.tagValues("payload")
         if (body != null && body.isNotEmpty()) {
-            if (payload == null || payload != Crypto.sha256(body).toHexString()) return Result.Invalid("wrong_payload")
-        } else if (payload != null) {
+            if (payloads.singleOrNull() != Crypto.sha256(body).toHexString()) return Result.Invalid("wrong_payload")
+        } else if (payloads.isNotEmpty()) {
             return Result.Invalid("wrong_payload")
         }
         if (!ProofOfWork.meets(event, difficulty)) return Result.Invalid("proof_of_work_too_low")
-        return Result.Valid(event.pubkey, event.id)
+        if (!isHexKey(event.pubkey)) return Result.Invalid("malformed_authorization")
+        if (!acceptsSigner(event.pubkey)) return Result.Invalid(UNKNOWN_SIGNER)
+        if (!event.verify()) return Result.Invalid("invalid_signature")
+        return Result.Valid(event.pubkey, event.id, event.createdAt)
     }
 
+    private fun isHexKey(value: String): Boolean = value.length == 64 && value.all { it in '0'..'9' || it in 'a'..'f' }
+
     const val DEFAULT_MAX_SKEW_SECONDS: Long = 60
+
+    /** The code when the caller's [verify] `acceptsSigner` does not know the key (checked before the signature). */
+    const val UNKNOWN_SIGNER: String = "unknown_signer"
+
+    /** A longer Authorization header is refused before any decoding. */
+    const val MAX_HEADER_LENGTH: Int = 16_384
 }
 
 /**
  * The ids of the NIP-98 events already accepted during their time window, in memory only: an
- * intercepted authorization cannot be used twice. Bounded; nothing about the client is kept.
+ * intercepted authorization cannot be used twice. Bounded; nothing about the client is kept. The memory
+ * does not survive a restart: a server also refuses the events dated before its start ([Nip98.Result.Valid.createdAt]).
  */
 class Nip98ReplayGuard(private val windowSeconds: Long = 2 * Nip98.DEFAULT_MAX_SKEW_SECONDS + 10, private val maxEntries: Int = 100_000) {
     private val seen = LinkedHashMap<String, Long>()

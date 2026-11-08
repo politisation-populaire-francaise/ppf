@@ -36,6 +36,9 @@ import java.time.Clock
  * Anonymous: POST /api/v1/ballots, with a proof of work and without any authentication.
  */
 fun Route.urneApi(service: UrneService?, config: UrneConfig, clock: Clock = Clock.systemUTC()) {
+    // In memory only: after a restart, an authorization of the last two minutes could be replayed once. Harmless here, unlike the
+    // back-office (which refuses those older than its start): every authenticated request of the urns is idempotent, and
+    // evaluated tokens are useless without the blinding factor that never leaves the device.
     val replay = Nip98ReplayGuard()
     val perKey = RateLimiter(TOKEN_REQUESTS_PER_MINUTE)
     val ballots = RateLimiter(BALLOTS_PER_MINUTE, maxTrackedKeys = 1)

@@ -3,13 +3,18 @@ package org.politisationpopulairefrancaise.core.urne
 import kotlinx.coroutines.test.runTest
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.signing.sign
+import kotlin.io.encoding.Base64
+import kotlin.io.encoding.ExperimentalEncodingApi
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 
-/** NIP-98 authorizations and NIP-13 proofs of work, as the ballot-box API uses them (D-110). */
+/** NIP-98 authorizations and NIP-13 proofs of work, as the ballot-box API and the back-office use them (D-110). */
+@OptIn(ExperimentalEncodingApi::class)
 class Nip98Test {
     private val signer = LocalEventSigner(IdentityKeys.generate())
     private val url = "https://politisation-populaire-francaise.org/api/v1/urnes/tokens"
@@ -37,6 +42,27 @@ class Nip98Test {
         assertEquals("wrong_payload", reason(Nip98.verify(header, url, "POST", null, now)))
         assertEquals("expired_authorization", reason(Nip98.verify(header, url, "POST", body, now + 61)))
         assertEquals("proof_of_work_too_low", reason(Nip98.verify(header, url, "POST", body, now, difficulty = 30)))
+    }
+
+    @Test
+    fun theKeyIsAskedForBeforeTheSignatureIsChecked() = runTest {
+        val header = Nip98.authorization(signer, url, "GET", null, now)
+        val event = SignedEvent.fromJson(Base64.Default.decode(header.removePrefix("Nostr ")).decodeToString())
+        val forged = "Nostr " + Base64.Default.encode(event.copy(sig = "0".repeat(128)).toJson().encodeToByteArray())
+        val asked = mutableListOf<String>()
+        // An unknown key: refused before any signature check, even a forged one.
+        assertEquals(Nip98.Result.Invalid(Nip98.UNKNOWN_SIGNER), Nip98.verify(forged, { it == url }, "GET", null, now) { asked += it; false })
+        assertEquals(listOf(signer.publicKey.hex), asked)
+        assertEquals(Nip98.Result.Invalid("invalid_signature"), Nip98.verify(forged, { it == url }, "GET", null, now) { true })
+        assertEquals(Nip98.Result.Valid(signer.publicKey.hex, event.id, now), Nip98.verify(header, { it == url }, "GET", null, now) { true })
+    }
+
+    @Test
+    fun aSecondAddressOrMethodIsNotIgnored() = runTest {
+        val twice = signer.sign(kind = Nip98.KIND, createdAt = now, tags = listOf(listOf("u", url), listOf("u", "$url/autre"), listOf("method", "GET")))
+        val header = "Nostr " + Base64.Default.encode(twice.toJson().encodeToByteArray())
+        assertEquals(Nip98.Result.Invalid("wrong_url"), Nip98.verify(header, url, "GET", null, now))
+        assertEquals(Nip98.Result.Invalid("malformed_authorization"), Nip98.verify("Nostr " + "A".repeat(Nip98.MAX_HEADER_LENGTH), url, "GET", null, now))
     }
 
     @Test

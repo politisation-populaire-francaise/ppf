@@ -95,7 +95,7 @@ class BackOffice(
     private val verifiedOrganisations: (() -> Set<String>)? = null,
     private val passkeys: PasskeyVerifier = WebAuthn4jPasskeys(config.origin, config.rpId),
     val clock: Clock = Clock.systemUTC(),
-    sessionRequestVerifier: SessionRequestVerifier = MinimalNip98Verifier(clock.instant()),
+    sessionRequestVerifier: SessionRequestVerifier = Nip98SessionVerifier(clock.instant()),
 ) {
     private val audit = AuditLog(dataSource, clock)
     private val accounts = TeamAccounts(dataSource)
