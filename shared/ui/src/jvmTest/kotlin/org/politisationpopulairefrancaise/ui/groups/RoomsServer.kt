@@ -30,6 +30,9 @@ internal class RoomsServer : RemoteEvents {
     var online = true
     val hiddenFromDirectory = mutableSetOf<String>()
     val published = mutableListOf<SignedEvent>()
+
+    /** When set, answers the room descriptions the application sends in place of the rules (group_similar, held...). */
+    var creationAnswer: ((SignedEvent) -> PublicationResult?)? = null
     val stored: List<SignedEvent> get() = port.events
 
     /** Puts an event on the server without counting it as sent by the application. */
@@ -38,6 +41,7 @@ internal class RoomsServer : RemoteEvents {
     override suspend fun publish(event: SignedEvent): PublicationResult {
         if (!online) return PublicationResult.Unavailable()
         published += event
+        if (event.kind == Group.KIND) creationAnswer?.invoke(event)?.let { return it }
         return port.publish(event)
     }
 

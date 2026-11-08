@@ -23,7 +23,9 @@ class ServerPublicationPortParsingTest {
         assertEquals(RejectionReason.MISSING_CHARTER, ServerPublicationPort.rejectionReason("missing_charter"))
         assertEquals(RejectionReason.MISSING_NAME, ServerPublicationPort.rejectionReason("missing_name"))
         assertEquals(RejectionReason.DESCRIPTION_TOO_LONG, ServerPublicationPort.rejectionReason("description_too_long"))
-        assertEquals(RejectionReason.REFUSED, ServerPublicationPort.rejectionReason("not_allowed"))
+        // A room action the account may not take (roles of the rooms, D-131).
+        assertEquals(RejectionReason.NOT_ALLOWED, ServerPublicationPort.rejectionReason("not_allowed"))
+        assertEquals(RejectionReason.REFUSED, ServerPublicationPort.rejectionReason("some_new_error"))
         assertEquals(RejectionReason.REFUSED, ServerPublicationPort.rejectionReason(null))
     }
 

@@ -133,7 +133,7 @@ class PublicationPolicyTest {
 
         val members = assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = GroupKinds.MEMBERS, tags = listOf(listOf("d", "demo")))))
         assertEquals("members_list_refused", members.error)
-        for (kind in listOf(9000, 9010, 9020, 9021, 9022)) {
+        for (kind in listOf(9003, 9007, 9008, 9009, 9010, 9020, 9021, 9022)) {
             assertEquals("unsupported_kind", assertIs<PublicationPolicy.Decision.Refused>(policy.check(LocalEventSigner(editor).sign(kind = kind))).error)
         }
 

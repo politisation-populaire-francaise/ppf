@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Roles and moderation of the public rooms by their collective (D-131) and guardrails of the
+     creation (D-132), docs/integration/salons-roles.md. French, the user is addressed with "vous",
+     typographic apostrophe (’), no em dash. -->
+<resources>
+    <!-- Menus of a message and of its author -->
+    <string name="groups_mod_message_menu">Actions sur ce message</string>
+    <string name="groups_mod_remove_message">Retirer ce message</string>
+    <string name="groups_mod_name_admin">Nommer administrateur</string>
+    <string name="groups_mod_name_moderator">Nommer modérateur</string>
+    <string name="groups_mod_remove_role">Retirer son rôle</string>
+    <string name="groups_mod_exclude">Exclure du salon</string>
+    <string name="groups_mod_readmit">Réadmettre dans le salon</string>
+    <string name="groups_mod_role_admin">Administrateur</string>
+    <string name="groups_mod_role_moderator">Modérateur</string>
+
+    <!-- Message removed -->
+    <string name="groups_mod_removed_by_moderator">Message retiré par un modérateur : %1$s</string>
+    <string name="groups_mod_removed_by_author">Message retiré par son auteur : %1$s</string>
+
+    <!-- Confirmation dialogs: public and signed, the safe choice first -->
+    <string name="groups_mod_public_signed">Cette action est publique : elle sera signée de votre pseudonyme (%1$s) et visible par tous dans le journal du salon.</string>
+    <string name="groups_mod_cancel">Annuler</string>
+    <string name="groups_mod_reason_label">Motif (obligatoire, public)</string>
+    <string name="groups_mod_reason_placeholder">Par exemple : propos contraires à la charte</string>
+    <string name="groups_mod_reason_missing">Indiquez un motif pour continuer.</string>
+    <string name="groups_mod_confirm_remove_title">Retirer ce message ?</string>
+    <string name="groups_mod_confirm_remove_text">Le message ne sera plus affiché dans le salon. Votre retrait et son motif resteront visibles à sa place.</string>
+    <string name="groups_mod_confirm_remove">Retirer le message</string>
+    <string name="groups_mod_confirm_admin_title">Nommer %1$s administrateur ?</string>
+    <string name="groups_mod_confirm_admin_text">Un administrateur peut nommer et retirer les rôles, exclure des comptes, retirer des messages et modifier la présentation du salon.</string>
+    <string name="groups_mod_confirm_moderator_title">Nommer %1$s modérateur ?</string>
+    <string name="groups_mod_confirm_moderator_text">Un modérateur peut retirer des messages, exclure et réadmettre des comptes sans rôle.</string>
+    <string name="groups_mod_confirm_name">Nommer</string>
+    <string name="groups_mod_confirm_remove_role_title">Retirer le rôle de %1$s ?</string>
+    <string name="groups_mod_confirm_remove_role_text">Ce compte redeviendra un simple participant du salon.</string>
+    <string name="groups_mod_confirm_remove_role">Retirer le rôle</string>
+    <string name="groups_mod_confirm_exclude_title">Exclure %1$s du salon ?</string>
+    <string name="groups_mod_confirm_exclude_text">Ce compte ne pourra plus écrire dans le salon. Ses messages déjà publiés restent, sauf si vous les retirez. Vous pourrez le réadmettre.</string>
+    <string name="groups_mod_confirm_exclude">Exclure</string>
+    <string name="groups_mod_confirm_readmit_title">Réadmettre %1$s ?</string>
+    <string name="groups_mod_confirm_readmit_text">Ce compte pourra de nouveau écrire dans le salon.</string>
+    <string name="groups_mod_confirm_readmit">Réadmettre</string>
+    <string name="groups_mod_sending">Envoi…</string>
+
+    <!-- Refusals of the server -->
+    <string name="groups_mod_error_not_allowed">Vous n’avez plus le rôle nécessaire pour cette action.</string>
+    <string name="groups_mod_error_last_admin">Vous êtes le dernier administrateur : nommez d’abord un autre administrateur.</string>
+    <string name="groups_mod_error_reason">Le serveur demande un motif pour cette action.</string>
+    <string name="groups_mod_error_offline">Le serveur ne répond pas : l’action n’a pas été faite. Réessayez quand le réseau sera revenu.</string>
+    <string name="groups_mod_error_other">Le serveur a refusé cette action.</string>
+    <string name="groups_mod_banned">Vous avez été exclu de ce salon : %1$s</string>
+    <string name="groups_send_failed_banned">Vous avez été exclu de ce salon : votre message n’a pas été publié.</string>
+
+    <!-- "À propos du salon" -->
+    <string name="groups_about_open">À propos du salon</string>
+    <string name="groups_about_title">À propos du salon</string>
+    <string name="groups_about_close">Revenir aux messages</string>
+    <string name="groups_about_description">Présentation</string>
+    <string name="groups_about_no_description">Ce salon n’a pas encore de présentation.</string>
+    <string name="groups_about_territory">Territoire</string>
+    <string name="groups_about_charter">Charte des valeurs</string>
+    <string name="groups_about_charter_text">Son créateur a accepté la charte des valeurs (version %1$s). Aucun appel ni incitation à la violence n’est permis.</string>
+    <string name="groups_about_roles">Rôles</string>
+    <string name="groups_about_admins">Administrateurs</string>
+    <string name="groups_about_moderators">Modérateurs</string>
+    <string name="groups_about_none">Aucun</string>
+    <string name="groups_about_banned_count">Comptes exclus : %1$d</string>
+    <string name="groups_about_journal">Journal de modération</string>
+    <string name="groups_about_journal_intro">Chaque action de modération est publique et signée de son auteur.</string>
+    <string name="groups_about_journal_empty">Aucune action de modération pour l’instant.</string>
+    <string name="groups_about_you">vous</string>
+    <string name="groups_journal_named_admin">%1$s a nommé %2$s administrateur</string>
+    <string name="groups_journal_named_moderator">%1$s a nommé %2$s modérateur</string>
+    <string name="groups_journal_role_removed">%1$s a retiré le rôle de %2$s</string>
+    <string name="groups_journal_excluded">%1$s a exclu %2$s : %3$s</string>
+    <string name="groups_journal_readmitted">%1$s a réadmis %2$s</string>
+    <string name="groups_journal_edited">%1$s a modifié la présentation du salon</string>
+    <string name="groups_journal_removed">%1$s a retiré un message : %2$s</string>
+
+    <!-- Creation: rooms of close name, held creation, other refusals -->
+    <string name="groups_form_similar_server_title">Des salons proches existent déjà</string>
+    <string name="groups_form_similar_server">Des salons au nom proche existent sur ce territoire ou sur un territoire qui le contient. Rejoignez-en un, ou créez quand même le vôtre en expliquant en quoi il est différent.</string>
+    <string name="groups_form_similar_join">Rejoindre « %1$s » (%2$s)</string>
+    <string name="groups_form_difference_label">En quoi votre salon est différent (public)</string>
+    <string name="groups_form_difference_placeholder">Par exemple : nous parlons des hôpitaux, pas des cabinets de ville</string>
+    <string name="groups_form_confirm_similar">Créer quand même</string>
+    <string name="groups_form_difference_missing">Expliquez en quoi votre salon est différent pour le créer quand même.</string>
+    <string name="groups_form_held_title">En attente de vérification</string>
+    <string name="groups_form_held">Le nom de votre salon ressemble à celui d’une organisation vérifiée ou d’un salon très actif ailleurs. L’équipe de PPF le vérifie avant de le publier, pour éviter qu’un nom soit usurpé. Une fois approuvé, il apparaîtra dans la liste des salons.</string>
+    <string name="groups_form_held_close">Fermer</string>
+    <string name="groups_form_rejected_too_many">Vous avez déjà créé 3 salons aujourd’hui : réessayez demain.</string>
+    <string name="groups_form_rejected_too_recent">Ce nom ressemble à celui d’une organisation vérifiée. Un compte de moins de 7 jours ne peut pas créer un tel salon : réessayez plus tard, ou choisissez un autre nom.</string>
+</resources>
