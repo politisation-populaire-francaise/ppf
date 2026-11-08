@@ -41,8 +41,17 @@ class NotificationCenterStore(
 ) {
     private val queries get() = database.notificationsQueries
 
-    /** Adds the candidates not already in the centre; returns those actually added. */
-    fun add(candidates: List<NotificationCandidate>): List<NotificationCandidate> = database.transactionWithResult {
+    /**
+     * Adds the candidates not already in the centre; returns those actually added. Nothing new, nothing
+     * written: the round of the open application runs every minute, even with every category off (the
+     * account's alerts), and must not open a transaction for nothing.
+     */
+    fun add(candidates: List<NotificationCandidate>): List<NotificationCandidate> {
+        if (candidates.isEmpty()) return emptyList()
+        return addNew(candidates)
+    }
+
+    private fun addNew(candidates: List<NotificationCandidate>): List<NotificationCandidate> = database.transactionWithResult {
         val added = candidates.filter { candidate ->
             val before = queries.hasEntry(candidate.id).executeAsOne() > 0
             if (before) {
