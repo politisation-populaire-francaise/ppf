@@ -58,8 +58,11 @@ interface PlatformSigner {
 
     /**
      * Submits [unsigned] of a human use for approval. [doubleValidation] asks for two approvals of two
-     * different accounts, [author] being neither of them (required then). The rule is fixed by the first
-     * submission; submitting the same event again (after a restart of the service) restores its content.
+     * different accounts, [author] being neither of them (required then). The service requires it by itself
+     * for the contents that need it (`DoubleValidation.requiredFor` of the core: the contents of M17 that
+     * implicate a person) and refuses them without it (`double_validation_required`). The rule is fixed by
+     * the first submission; submitting the same event again (after a restart of the service) restores its
+     * content.
      */
     suspend fun submitDraft(unsigned: UnsignedEvent, use: SigningUse, doubleValidation: Boolean = false, author: DraftAuthor? = null): DraftSubmission
 
