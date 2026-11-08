@@ -22,7 +22,7 @@ import java.util.concurrent.atomic.AtomicLong
  * approvals themselves are given by the tests with [approve] (the passkeys are covered by the tests of
  * the signing service). [trust] accepts what it signs.
  */
-class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMillis() / 1000 }) : PlatformSigner {
+class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMillis() / 1000 }) : PlatformSigner, PlatformKeys {
     private val root = IdentityKeys.generate()
     private val keys: Map<SigningUse, IdentityKeys> = SigningUse.entries.associateWith { IdentityKeys.generate() }
     private val tickets = AtomicLong()
@@ -48,6 +48,8 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
         }
         PlatformTrust.of(root.publicKey.hex, certificates)
     }
+
+    override fun trust(): PlatformTrust = trust
 
     override suspend fun currentKey(use: SigningUse): String = keys.getValue(use).publicKey.hex
 

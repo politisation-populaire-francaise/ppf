@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.server.events
 
+import org.politisationpopulairefrancaise.core.platform.SigningUse
+import org.politisationpopulairefrancaise.server.signing.PlatformKeys
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.identity.PublicKey
@@ -16,7 +18,9 @@ import org.politisationpopulairefrancaise.server.relay.RelayKinds
  *
  * - ephemeral events are never stored; events with more than [MAX_TAGS] tags are refused;
  * - editorial contents (kind 30023) are accepted only from the keys listed in the environment
- *   variable PPF_EDITOR_KEYS (hex or "npub1…" keys separated by commas); a demand from another key
+ *   variable PPF_EDITOR_KEYS (hex or "npub1…" keys separated by commas), or when signed by a working key
+ *   of the platform certified by the root for a use whose form the content has ([platformKeys], D-129,
+ *   revocations included, at the content's own date); a demand from another key
  *   ([isCitizenDemand]) is refused here too, and the API holds it for review by a person instead
  *   (server/revendications); a call of the Agir space (`ppf-type` = appel) is open to every key;
  * - mobilizations (kind 31923), calls and directory entries of the Agir space must have the shape of
@@ -42,7 +46,7 @@ import org.politisationpopulairefrancaise.server.relay.RelayKinds
  * Anti-spam: the rate limits are applied by the API before this policy; the proof of work is
  * still to come.
  */
-class PublicationPolicy(private val editors: Set<String>) {
+class PublicationPolicy(private val editors: Set<String>, private val platformKeys: PlatformKeys = PlatformKeys.NONE) {
 
     sealed interface Decision {
         data object Allowed : Decision
@@ -54,7 +58,21 @@ class PublicationPolicy(private val editors: Set<String>) {
         data class Refused(val status: Int, val error: String, val message: String, val existing: String? = null) : Decision
     }
 
-    fun isEditor(pubkeyHex: String): Boolean = pubkeyHex in editors
+    /**
+     * A key of the team: an editorial key (PPF_EDITOR_KEYS) or a working key of the platform certified by the
+     * root, whatever its use and even revoked since (its contents stay the association's own: out of the
+     * legal register, never a citizen's demand).
+     */
+    fun isEditor(pubkeyHex: String): Boolean = pubkeyHex in editors || platformKeys.trust().certificate(pubkeyHex) != null
+
+    /** Whether [event] is a content of the platform: signed by a key certified for a use whose form it has, valid at its date. */
+    fun isPlatformContent(event: SignedEvent): Boolean {
+        val trust = platformKeys.trust()
+        return trust.certificate(event.pubkey) != null && SigningUse.entries.any { trust.isPlatformContent(event, it) }
+    }
+
+    /** The same policy, with the working keys of the platform known by [keys]. */
+    fun withPlatformKeys(keys: PlatformKeys): PublicationPolicy = PublicationPolicy(editors, keys)
 
     /** A demand of the wall (kind 30023, `ppf-type` = revendication) signed by a key outside the editorial team. */
     fun isCitizenDemand(event: SignedEvent): Boolean =
@@ -66,7 +84,7 @@ class PublicationPolicy(private val editors: Set<String>) {
         event.tags.size > MAX_TAGS ->
             Decision.Refused(400, "too_many_tags", "An event carries at most $MAX_TAGS tags.")
         // Calls of the Agir space are open to every key (AgirSpace then publishes or holds them).
-        event.kind == Article.KIND && !isEditor(event.pubkey) && !AgirRules.isCall(event) ->
+        event.kind == Article.KIND && event.pubkey !in editors && !isPlatformContent(event) && !AgirRules.isCall(event) ->
             Decision.Refused(403, "not_allowed", "Only the editorial team publishes editorial contents.")
         // The shape of mobilizations, calls and directory entries (docs/integration/agir-contrat.md).
         AgirRules.check(event) != null -> AgirRules.check(event)!!

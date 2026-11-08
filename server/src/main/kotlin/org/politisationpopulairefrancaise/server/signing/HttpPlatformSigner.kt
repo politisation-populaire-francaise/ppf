@@ -94,7 +94,7 @@ class HttpPlatformSigner(
     private val config: PlatformSignerConfig,
     private val client: HttpClient = defaultClient(config),
     private val clock: Clock = Clock.systemUTC(),
-) : PlatformSigner, AutoCloseable {
+) : PlatformSigner, PlatformKeys, AutoCloseable {
     private val outcomes = object : LinkedHashMap<String, Pair<Instant, SigningStatus>>() {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Pair<Instant, SigningStatus>>?): Boolean = size > MAX_OUTCOMES
     }
@@ -102,6 +102,14 @@ class HttpPlatformSigner(
     /** The trust built from the certificates of the service (monotonic: what was seen is kept), and when it was refreshed. */
     @Volatile
     private var trust: Pair<Instant, PlatformTrust>? = null
+
+    private val rootTrust: PlatformTrust = PlatformTrust.of(config.rootPublicKey)
+
+    /**
+     * The trust of the certificates seen so far (for the publication policy and the legal register): before a
+     * signed event is handed over, its key is in it, since [status] refreshes it for an unknown key.
+     */
+    override fun trust(): PlatformTrust = trust?.second ?: rootTrust
 
     override suspend fun currentKey(use: SigningUse): String? =
         keys()?.keys?.firstOrNull { it.use == use.id && it.current }?.pubkey
