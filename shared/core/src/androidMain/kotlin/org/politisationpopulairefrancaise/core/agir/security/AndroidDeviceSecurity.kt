@@ -1,11 +1,8 @@
 package org.politisationpopulairefrancaise.core.agir.security
 
-import android.app.ActivityManager
 import android.content.Context
-import android.os.Process
 import android.security.keystore.KeyGenParameterSpec
 import android.security.keystore.KeyProperties
-import java.io.File
 import java.security.KeyStore
 import javax.crypto.KeyGenerator
 import javax.crypto.Mac
@@ -51,32 +48,5 @@ class AndroidDeviceSecurityStorage(context: Context) : DeviceSecurityStorage {
         const val KEY = "settings"
         const val PEPPER_ALIAS = "ppf-lock-pepper"
         const val ANDROID_KEYSTORE = "AndroidKeyStore"
-    }
-}
-
-/**
- * The quick erase on Android (S-44): the system's own « Effacer les données » of the application
- * (`ActivityManager.clearApplicationUserData`, Android 4.4 and later). It erases every private file
- * of the application (local database of every pole, preferences, identity, files, cache, media) and
- * its Android Keystore keys, then stops it. Nothing else to do afterwards.
- */
-class AndroidDeviceEraser(context: Context) : DeviceEraser {
-    private val context = context.applicationContext
-
-    override suspend fun eraseAll() {
-        val manager = context.getSystemService(ActivityManager::class.java)
-        if (manager?.clearApplicationUserData() == true) return
-        // The system refused (rare): the same by hand, then the process is stopped by closeApplication.
-        context.databaseList().forEach { context.deleteDatabase(it) }
-        val data = context.dataDir
-        listOf(context.filesDir, context.noBackupFilesDir, context.cacheDir, context.codeCacheDir, File(data, "shared_prefs"))
-            .forEach { it.deleteRecursively() }
-        runCatching { KeyStore.getInstance("AndroidKeyStore").apply { load(null) }.let { store -> store.aliases().toList().forEach(store::deleteEntry) } }
-        check(File(data, "shared_prefs").listFiles().isNullOrEmpty()) { "the preferences could not be erased" }
-    }
-
-    override fun closeApplication() {
-        // Normally the system has already stopped the application while it erased its data.
-        Process.killProcess(Process.myPid())
     }
 }

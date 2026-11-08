@@ -1,8 +1,9 @@
 package org.politisationpopulairefrancaise.ui
 
-import org.politisationpopulairefrancaise.core.agir.security.DeviceEraser
 import org.politisationpopulairefrancaise.core.agir.security.DeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
+import org.politisationpopulairefrancaise.core.device.DeviceErasable
+import org.politisationpopulairefrancaise.core.device.DeviceEraseRegistry
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.IdentityStore
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
@@ -47,8 +48,13 @@ class AppDependencies(
     val dataSaver: () -> Boolean = { false },
     /** Where the lock and the other security settings of the device are kept (S-43, S-45); null keeps them in memory (tests, previews). */
     val securityStorage: DeviceSecurityStorage? = null,
-    /** Erases every file of the application on the device (S-44); null erases only the identity and the settings (tests, previews). */
-    val deviceEraser: DeviceEraser? = null,
+    /**
+     * What the quick erase (S-44) goes through: each pole registers here what it keeps on the
+     * device ([DeviceErasable]); the shell adds the identity, the rally point and the settings.
+     */
+    val erasables: DeviceEraseRegistry = DeviceEraseRegistry(),
+    /** Closes the application after the quick erase; null where it cannot (tests, previews). */
+    val closeApplication: (() -> Unit)? = null,
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -65,7 +71,7 @@ class AppDependencies(
             remote: RemoteEvents? = null,
             openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
             securityStorage: DeviceSecurityStorage? = null,
-            deviceEraser: DeviceEraser? = null,
+            closeApplication: (() -> Unit)? = null,
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
             openDataTrust = openDataTrust,
@@ -76,7 +82,7 @@ class AppDependencies(
             database = database,
             contentFollowStore = ContentFollowStore(database),
             securityStorage = securityStorage,
-            deviceEraser = deviceEraser,
+            closeApplication = closeApplication,
         )
     }
 }

@@ -55,7 +55,16 @@ import org.politisationpopulairefrancaise.ui.resources.sec_card_text
 import org.politisationpopulairefrancaise.ui.resources.sec_card_title
 import org.politisationpopulairefrancaise.ui.resources.sec_change
 import org.politisationpopulairefrancaise.ui.resources.sec_code_only
-import org.politisationpopulairefrancaise.ui.resources.sec_discreet_study
+import org.politisationpopulairefrancaise.ui.resources.sec_discreet_confirm
+import org.politisationpopulairefrancaise.ui.resources.sec_discreet_off_text
+import org.politisationpopulairefrancaise.ui.resources.sec_discreet_off_title
+import org.politisationpopulairefrancaise.ui.resources.sec_discreet_on_text
+import org.politisationpopulairefrancaise.ui.resources.sec_discreet_on_title
+import org.politisationpopulairefrancaise.ui.resources.sec_discreet_text
+import org.politisationpopulairefrancaise.ui.resources.sec_discreet_toggle
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_discreet
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_discreet_off
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_discreet_on
 import org.politisationpopulairefrancaise.ui.resources.sec_help_text
 import org.politisationpopulairefrancaise.ui.resources.sec_hide_text
 import org.politisationpopulairefrancaise.ui.resources.sec_hide_toggle
@@ -98,7 +107,7 @@ private fun afterLabel(seconds: Int): StringResource = when (seconds) {
 }
 
 /** Which dialog of the security settings is open. */
-private enum class SecurityDialog { ENABLE, CHANGE, DISABLE, SHOW_CONTENT, WIPE }
+private enum class SecurityDialog { ENABLE, CHANGE, DISABLE, SHOW_CONTENT, WIPE, DISCREET_ON, DISCREET_OFF }
 
 /**
  * « Sécurité de cet appareil », in « Mon espace » (M33): the lock by a code (S-43, off until the
@@ -112,6 +121,8 @@ fun DeviceSecurityCard(modifier: Modifier = Modifier) {
     val palette = PpfTheme.palette
     val settings = security.settings
     var dialog by remember { mutableStateOf<SecurityDialog?>(null) }
+    val icons = rememberAppIconSwitcher()
+    var discreet by remember(icons) { mutableStateOf(icons?.isDiscreet == true) }
     PpfCard(modifier.fillMaxWidth().testTag(SecurityTags.CARD)) {
         Text(stringResource(Res.string.sec_card_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
         Spacer(Modifier.height(4.dp))
@@ -158,6 +169,17 @@ fun DeviceSecurityCard(modifier: Modifier = Modifier) {
             )
             HorizontalDivider(color = palette.border)
         }
+        if (icons != null) {
+            ToggleRow(
+                label = stringResource(Res.string.sec_discreet_toggle),
+                text = stringResource(Res.string.sec_discreet_text),
+                checked = discreet,
+                // Both ways warn first: the shortcut of the launcher may move, the application may close.
+                onChange = { on -> dialog = if (on) SecurityDialog.DISCREET_ON else SecurityDialog.DISCREET_OFF },
+                modifier = Modifier.testTag(SecurityTags.DISCREET_TOGGLE),
+            )
+            HorizontalDivider(color = palette.border)
+        }
         Spacer(Modifier.height(8.dp))
         WipeButton(onClick = { dialog = SecurityDialog.WIPE })
         Text(stringResource(Res.string.sec_wipe_hint), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted, modifier = Modifier.padding(top = 4.dp))
@@ -168,6 +190,12 @@ fun DeviceSecurityCard(modifier: Modifier = Modifier) {
         SecurityDialog.DISABLE -> PinDialog(security, PinDialogMode.DISABLE) { dialog = null }
         SecurityDialog.SHOW_CONTENT -> ShowContentDialog(security) { dialog = null }
         SecurityDialog.WIPE -> WipeDialog(security, onDone = { dialog = null })
+        SecurityDialog.DISCREET_ON, SecurityDialog.DISCREET_OFF -> icons?.let { switcher ->
+            DiscreetDialog(on = dialog == SecurityDialog.DISCREET_ON, onDone = { dialog = null }) { on ->
+                runCatching { switcher.setDiscreet(on) }
+                discreet = switcher.isDiscreet
+            }
+        }
         null -> Unit
     }
 }
@@ -208,6 +236,8 @@ fun PreparePhoneBlock(modifier: Modifier = Modifier): Boolean {
     val settings = security.settings
     var dialog by remember { mutableStateOf<SecurityDialog?>(null) }
     var phraseNoted by rememberSaveable { mutableStateOf(false) }
+    val icons = rememberAppIconSwitcher()
+    val discreet = remember(icons) { icons?.isDiscreet == true }
     Column(modifier.testTag(SecurityTags.PREPARE), verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Text(stringResource(Res.string.sec_prepare_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
         Text(stringResource(Res.string.sec_prepare_text), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
@@ -224,6 +254,9 @@ fun PreparePhoneBlock(modifier: Modifier = Modifier): Boolean {
                 }
             }
         }
+        if (icons != null) {
+            StatusItem("discreet", Lucide.EyeOff, stringResource(Res.string.sec_prepare_discreet), stringResource(if (discreet) Res.string.sec_prepare_discreet_on else Res.string.sec_prepare_discreet_off), done = true)
+        }
         PhraseItem(phraseNoted) { phraseNoted = it }
         StatusItem("wipe", Lucide.TriangleExclamationPoint, stringResource(Res.string.sec_prepare_wipe), stringResource(Res.string.sec_prepare_wipe_text), done = true) {
             WipeButton(onClick = { dialog = SecurityDialog.WIPE })
@@ -237,7 +270,6 @@ fun PreparePhoneBlock(modifier: Modifier = Modifier): Boolean {
         InfoBox(Lucide.Info) {
             Text(stringResource(Res.string.sec_phone_legal), style = MaterialTheme.typography.bodyMedium)
         }
-        Text(stringResource(Res.string.sec_discreet_study), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
     }
     when (dialog) {
         SecurityDialog.ENABLE -> PinDialog(security, PinDialogMode.ENABLE) { dialog = null }
@@ -283,5 +315,22 @@ private fun PhraseItem(noted: Boolean, onChange: (Boolean) -> Unit) {
             Text(stringResource(Res.string.sec_prepare_phrase), style = MaterialTheme.typography.bodyLarge)
             Text(stringResource(Res.string.sec_prepare_phrase_text), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
         }
+    }
+}
+
+/** Switching the icon of the launcher, either way: a warning first (the shortcut may move, the application may close). */
+@Composable
+private fun DiscreetDialog(on: Boolean, onDone: () -> Unit, apply: (Boolean) -> Unit) {
+    WarningDialog(
+        title = stringResource(if (on) Res.string.sec_discreet_on_title else Res.string.sec_discreet_off_title),
+        onDismiss = onDone,
+        confirmLabel = stringResource(Res.string.sec_discreet_confirm),
+        onConfirm = {
+            onDone()
+            apply(on)
+        },
+        icon = Lucide.EyeOff,
+    ) {
+        Text(stringResource(if (on) Res.string.sec_discreet_on_text else Res.string.sec_discreet_off_text), style = MaterialTheme.typography.bodyMedium)
     }
 }

@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.ui.agir.security
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -13,14 +14,16 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import org.politisationpopulairefrancaise.core.agir.security.AgirDeviceData
 import org.politisationpopulairefrancaise.core.agir.security.AppLock
 import org.politisationpopulairefrancaise.core.agir.security.ChangeResult
-import org.politisationpopulairefrancaise.core.agir.security.DeviceEraser
 import org.politisationpopulairefrancaise.core.agir.security.DeviceSecuritySettings
 import org.politisationpopulairefrancaise.core.agir.security.InMemoryDeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.agir.security.PinProblem
 import org.politisationpopulairefrancaise.core.agir.security.UnlockResult
-import org.politisationpopulairefrancaise.core.identity.IdentityStore
+import org.politisationpopulairefrancaise.core.device.DeviceErasable
+import org.politisationpopulairefrancaise.core.device.DeviceEraseRegistry
+import org.politisationpopulairefrancaise.core.device.deviceErasable
 import org.politisationpopulairefrancaise.ui.AppDependencies
 
 /** Where the quick erase stands. */
@@ -31,18 +34,15 @@ enum class WipeStatus { IDLE, ERASING, DONE, FAILED }
  * content hidden from the system (S-45, Android) and the quick erase (S-44). It drives [AppLock]
  * and runs its slow hash off the main thread. Nothing here ever talks to a server.
  *
- * [forgetInApp] is what the shell forgets in memory when the keys are erased (the existing path of
- * « Effacer mes clés » : followed accounts, conversations, rooms, answers, testimonies) and the
- * rally point; [eraser] then erases everything the device keeps and closes the application. With
- * no eraser (tests, iOS not built yet), the identity and the settings are erased and the
- * application says what it could not erase.
+ * The quick erase goes through [erasables], where every pole registers what it keeps on the
+ * device ([DeviceErasable]); the security settings are erased last, so that a failed erase leaves
+ * the lock as it was. [closeApplication] closes the application once the user has read the result.
  */
 class DeviceSecurityState(
     private val lock: AppLock,
-    private val identityStore: IdentityStore,
-    private val eraser: DeviceEraser?,
+    private val erasables: DeviceEraseRegistry,
     private val scope: CoroutineScope,
-    private val forgetInApp: () -> Unit = {},
+    private val closeApplication: (() -> Unit)? = null,
     private val worker: CoroutineDispatcher = Dispatchers.Default,
 ) {
     var settings: DeviceSecuritySettings by mutableStateOf(lock.settings)
@@ -58,8 +58,12 @@ class DeviceSecurityState(
     var wipeStatus: WipeStatus by mutableStateOf(WipeStatus.IDLE)
         private set
 
-    /** True when this platform can erase every file of the application (Android, computer). */
-    val canEraseEverything: Boolean get() = eraser != null
+    /** The parts that could not be erased by the last erase (ids of [DeviceErasable]). */
+    var failedParts: List<String> by mutableStateOf(emptyList())
+        private set
+
+    /** True when the application can close itself after the erase (Android, computer). */
+    val canClose: Boolean get() = closeApplication != null
 
     fun onBackground() = lock.onBackground()
 
@@ -95,28 +99,26 @@ class DeviceSecurityState(
     }
 
     /**
-     * The quick erase (S-44), after the user confirmed: first what the application holds in memory
-     * and the identity (the existing path of « Effacer mes clés »), then every file of the device.
+     * The quick erase (S-44), after the user confirmed: every registered part, each on its own,
+     * then the security settings. The user restores the account afterwards with the recovery phrase.
      */
     fun wipe() {
         if (wipeStatus == WipeStatus.ERASING) return
         wipeStatus = WipeStatus.ERASING
         scope.launch {
-            val ok = runCatching {
-                forgetInApp()
-                identityStore.clear()
+            val report = erasables.eraseAll()
+            failedParts = report.failed
+            if (report.complete) {
                 lock.forget()
                 sync()
-                eraser?.eraseAll()
-            }.isSuccess
-            wipeStatus = if (ok) WipeStatus.DONE else WipeStatus.FAILED
-            if (ok) eraser?.closeApplication()
+            }
+            wipeStatus = if (report.complete) WipeStatus.DONE else WipeStatus.FAILED
         }
     }
 
     /** Closes the application after the erase, where the platform can (not in tests nor on iOS yet). */
     fun close() {
-        eraser?.closeApplication()
+        closeApplication?.invoke()
     }
 
     /** Back from a failed erase to the application (the user may try again). */
@@ -149,18 +151,42 @@ fun ProvideDeviceSecurity(state: DeviceSecurityState, content: @Composable () ->
     CompositionLocalProvider(LocalDeviceSecurity provides state, content = content)
 }
 
-/** The security state for the whole run of the shell, on the storage and eraser of the platform host. */
+/**
+ * The security state for the whole run of the shell, on the storage of the platform host. It
+ * registers the data of "Agir" in the local database ([AgirDeviceData]) for the quick erase.
+ */
 @Composable
-fun rememberDeviceSecurity(dependencies: AppDependencies, forgetInApp: () -> Unit): DeviceSecurityState {
+fun rememberDeviceSecurity(dependencies: AppDependencies): DeviceSecurityState {
     val scope = rememberCoroutineScope()
-    val latestForget = remember { ForgetHolder() }
-    latestForget.action = forgetInApp
-    return remember(dependencies) {
+    val state = remember(dependencies) {
         val storage = dependencies.securityStorage ?: InMemoryDeviceSecurityStorage()
-        DeviceSecurityState(AppLock(storage), dependencies.identityStore, dependencies.deviceEraser, scope, forgetInApp = { latestForget.action() })
+        DeviceSecurityState(AppLock(storage), dependencies.erasables, scope, dependencies.closeApplication)
+    }
+    dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { AgirDeviceData(database) }) }
+    return state
+}
+
+/**
+ * Registers [erasable] for the quick erase for as long as its caller stays on screen (the shell:
+ * the whole run). The common way for a pole to hand its data to the quick erase from the interface.
+ */
+@Composable
+fun RegisterErasable(dependencies: AppDependencies, erasable: DeviceErasable) {
+    DisposableEffect(dependencies, erasable) {
+        val remove = dependencies.erasables.register(erasable)
+        onDispose { remove() }
     }
 }
 
-private class ForgetHolder {
-    var action: () -> Unit = {}
+/** [RegisterErasable] from a function; [erase] is read again at each erase (the latest one composed). */
+@Composable
+fun RegisterErasable(dependencies: AppDependencies, id: String, erase: suspend () -> Unit) {
+    val latest = remember(id) { LatestErase() }
+    latest.erase = erase
+    val erasable = remember(id) { deviceErasable(id) { latest.erase() } }
+    RegisterErasable(dependencies, erasable)
+}
+
+private class LatestErase {
+    var erase: suspend () -> Unit = {}
 }

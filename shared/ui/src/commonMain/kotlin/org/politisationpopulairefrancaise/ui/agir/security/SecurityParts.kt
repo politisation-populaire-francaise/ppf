@@ -85,6 +85,7 @@ import org.politisationpopulairefrancaise.ui.resources.sec_state_off
 import org.politisationpopulairefrancaise.ui.resources.sec_state_on
 import org.politisationpopulairefrancaise.ui.resources.sec_wait
 import org.politisationpopulairefrancaise.ui.resources.sec_wipe_confirm
+import org.politisationpopulairefrancaise.ui.resources.sec_wipe_not_yet
 import org.politisationpopulairefrancaise.ui.resources.sec_wipe_phrase
 import org.politisationpopulairefrancaise.ui.resources.sec_wipe_server
 import org.politisationpopulairefrancaise.ui.resources.sec_wipe_text
@@ -113,6 +114,8 @@ object SecurityTags {
     const val FORGOT = "security-forgot"
     const val WIPED = "security-wiped"
     const val WIPE_RETRY = "security-wipe-retry"
+    const val WIPE_CLOSE = "security-wipe-close"
+    const val DISCREET_TOGGLE = "security-discreet-toggle"
     const val PREPARE = "security-prepare"
     const val PREPARE_ITEM = "security-prepare-" // followed by lock, code-only, hide, phrase, wipe
     const val PREPARE_LOCK = "security-prepare-lock-action"
@@ -359,5 +362,6 @@ internal fun WipeDialog(security: DeviceSecurityState, onDone: () -> Unit, extra
             Text(stringResource(Res.string.sec_wipe_phrase), style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.ink)
         }
         Text(stringResource(Res.string.sec_wipe_server), style = MaterialTheme.typography.bodyMedium)
+        Text(stringResource(Res.string.sec_wipe_not_yet), style = MaterialTheme.typography.bodySmall)
     }
 }

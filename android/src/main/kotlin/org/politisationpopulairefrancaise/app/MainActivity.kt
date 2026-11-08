@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.app
 
 import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
 import android.os.Bundle
+import android.os.Process
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -9,7 +10,7 @@ import io.ktor.client.HttpClient
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.crash.CrashReportFile
 import org.politisationpopulairefrancaise.core.currentPlatform
-import org.politisationpopulairefrancaise.core.agir.security.AndroidDeviceEraser
+import org.politisationpopulairefrancaise.core.device.deviceErasable
 import org.politisationpopulairefrancaise.core.agir.security.AndroidDeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.identity.AndroidIdentityStore
 import org.politisationpopulairefrancaise.core.local.AndroidDatabase
@@ -51,8 +52,14 @@ class MainActivity : ComponentActivity() {
             openDataTrust = if (BuildConfig.BUILD_TYPE == "release") OpenDataKeys.release() else OpenDataKeys.testBuilds(),
             // The lock of the application and the quick erase (M33: S-43, S-44, S-45).
             securityStorage = AndroidDeviceSecurityStorage(applicationContext),
-            deviceEraser = AndroidDeviceEraser(applicationContext),
+            closeApplication = {
+                finishAndRemoveTask()
+                Process.killProcess(Process.myPid())
+            },
         )
+        // What the host itself keeps, for the quick erase: the crash report and the cache (shared files of the agenda).
+        dependencies.erasables.register(deviceErasable("host-crash-report") { crashes.delete() })
+        dependencies.erasables.register(deviceErasable("host-cache") { check(cacheDir.deleteRecursively()) { "cache not erased" } })
         setContent {
             PpfApp(dependencies, crashReport = pendingCrash)
         }

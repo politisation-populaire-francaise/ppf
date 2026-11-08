@@ -94,6 +94,7 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.ProvideHelp
 import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
 import org.politisationpopulairefrancaise.ui.agir.security.DeviceSecurityGate
 import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
+import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
 import org.politisationpopulairefrancaise.ui.agir.security.rememberDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
 import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
@@ -194,10 +195,13 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         testimonyLibrary.forgetAll()
     })
     // M33: the lock of the application, the content hidden from the system and the quick erase (S-43 to S-45).
-    val security = rememberDeviceSecurity(dependencies, forgetInApp = {
+    val security = rememberDeviceSecurity(dependencies)
+    // The quick erase (S-44): the keys, with what « Effacer mes clés » already forgets (D-032, D-039), and the rally point.
+    RegisterErasable(dependencies, "core-identity") {
+        dependencies.identityStore.clear()
         accountSession.signOut()
-        help.clearRallyPoint()
-    })
+    }
+    RegisterErasable(dependencies, "agir-rally-point") { help.clearRallyPoint() }
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.

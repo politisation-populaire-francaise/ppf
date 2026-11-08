@@ -93,18 +93,3 @@ class InMemoryDeviceSecurityStorage(initial: String? = null) : DeviceSecuritySto
         value = null
     }
 }
-
-/**
- * Erases everything this application keeps on the device (S-44): the local database (contents,
- * conversations, follows, answers, testimonies, every table of every pole), the identity, the
- * preferences and private files (rally point, security settings, crash report), the cache and the
- * media. On Android it is the system's own « effacer les données » of the application, which also
- * forgets its Android Keystore keys and stops it.
- */
-interface DeviceEraser {
-    /** Erases; throws when a part could not be erased (the caller says so to the user). */
-    suspend fun eraseAll()
-
-    /** Closes the application once erased (on Android the system has already stopped it). */
-    fun closeApplication()
-}

@@ -23,7 +23,8 @@ import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.agir.manifestation.InMemoryRallyPointStorage
 import org.politisationpopulairefrancaise.core.agir.manifestation.RallyPoint
 import org.politisationpopulairefrancaise.core.agir.security.AppLock
-import org.politisationpopulairefrancaise.core.agir.security.DeviceEraser
+import org.politisationpopulairefrancaise.core.agir.calls.CallResponseStore
+import org.politisationpopulairefrancaise.core.device.deviceErasable
 import org.politisationpopulairefrancaise.core.agir.security.DeviceSecuritySettings
 import org.politisationpopulairefrancaise.core.agir.security.InMemoryDeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
@@ -58,18 +59,24 @@ import kotlin.test.assertFalse
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/** Records the erase instead of erasing the computer of the person who runs the tests. */
-private class RecordingEraser(var fail: Boolean = false) : DeviceEraser {
+/** A part of the quick erase that records it (and may fail), and the closing of the application. */
+private class RecordingEraser(var fail: Boolean = false) {
     var erased = 0
     var closed = 0
 
-    override suspend fun eraseAll() {
+    val part = deviceErasable("test-probe") {
         if (fail) error("[EXEMPLE] erase refused")
         erased++
     }
+}
 
-    override fun closeApplication() {
-        closed++
+/** A launcher of the tests: the icon switched in memory. */
+private class FakeIcons : AppIconSwitcher {
+    override var isDiscreet: Boolean = false
+        private set
+
+    override fun setDiscreet(discreet: Boolean) {
+        isDiscreet = discreet
     }
 }
 
@@ -95,6 +102,11 @@ private class WatchingServer : RemoteEvents {
 
 private const val PIN = "471905"
 
+/** The parts the shell registers for the quick erase. */
+private object DeviceSecurityTestIds {
+    val shell = listOf("core-identity", "agir-rally-point", "agir-data", "test-probe")
+}
+
 /** The whole application with the security of the device, its storage and eraser kept by the test. */
 private class SecurityHarness(
     val storage: InMemoryDeviceSecurityStorage = InMemoryDeviceSecurityStorage(),
@@ -104,10 +116,12 @@ private class SecurityHarness(
     val rally: InMemoryRallyPointStorage = InMemoryRallyPointStorage(),
 ) {
     val uris = RecordingUriHandler()
+    val icons = FakeIcons()
+    val database = JvmDatabase.inMemory()
     val dependencies: AppDependencies = AppDependencies.withDatabase(
-        identity, JvmDatabase.inMemory(), editorialTrust = AgirFixtures.trust, remote = server,
-        securityStorage = storage, deviceEraser = eraser,
-    )
+        identity, database, editorialTrust = AgirFixtures.trust, remote = server,
+        securityStorage = storage, closeApplication = eraser?.let { recorder -> { recorder.closed += 1 } },
+    ).also { built -> eraser?.let { built.erasables.register(it.part) } }
 
     /** A lock already on, with few iterations so that the tests stay fast (the record keeps its own count). */
     fun lockOn(failedAttempts: Int = 0): SecurityHarness {
@@ -125,7 +139,7 @@ private class SecurityHarness(
 @OptIn(ExperimentalTestApi::class)
 private fun ComposeUiTest.showApp(harness: SecurityHarness, width: Int) {
     setContent {
-        CompositionLocalProvider(LocalUriHandler provides harness.uris, LocalRallyPointStorage provides harness.rally) {
+        CompositionLocalProvider(LocalUriHandler provides harness.uris, LocalRallyPointStorage provides harness.rally, LocalAppIconSwitcher provides harness.icons) {
             Box(Modifier.requiredSize(width.dp, 800.dp)) { PpfApp(harness.dependencies) }
         }
     }
@@ -248,6 +262,8 @@ class DeviceSecurityTest {
     fun theQuickEraseRemindsThePhraseCanBeCancelledAndThenErasesEverything() = runComposeUiTest {
         val harness = SecurityHarness().lockOn()
         harness.rally.save(RallyPoint.of("[EXEMPLE] Devant la poste", "")!!.encode())
+        val calls = CallResponseStore(harness.database)
+        calls.respond("31924:cle:appel-exemple")
         showApp(harness, 1000)
         awaitTag(SecurityTags.LOCK_SCREEN)
         typeCode(SecurityTags.UNLOCK_PIN, PIN)
@@ -274,8 +290,15 @@ class DeviceSecurityTest {
         assertNull(harness.identity.snapshot, "the keys are erased")
         assertNull(harness.storage.value, "the lock and its settings are erased")
         assertNull(harness.rally.load(), "the rally point is erased")
-        assertEquals(1, harness.eraser.closed, "the application closes")
+        assertEquals(0, calls.count(), "the data of Agir are erased")
+        assertTrue(DeviceSecurityTestIds.shell.all { it in harness.dependencies.erasables.ids }, harness.dependencies.erasables.ids.toString())
         assertEquals(0, count(ShellTags.CONTENT), "nothing of the interface is shown any more")
+        // How to come back: the recovery phrase; the application closes when the user has read it.
+        onNodeWithText("J’ai déjà un compte", substring = true).assertExists()
+        assertEquals(0, harness.eraser.closed)
+        onNodeWithTag(SecurityTags.WIPE_CLOSE).performClick()
+        waitForIdle()
+        assertEquals(1, harness.eraser.closed)
     }
 
     @Test
@@ -293,7 +316,7 @@ class DeviceSecurityTest {
     }
 
     @Test
-    fun withoutAnEraserTheApplicationSaysWhatItCouldNotErase() = runComposeUiTest {
+    fun whereTheApplicationCannotCloseItselfItSaysSo() = runComposeUiTest {
         val harness = SecurityHarness(eraser = null)
         showApp(harness, 360)
         openMySpace()
@@ -301,7 +324,7 @@ class DeviceSecurityTest {
         waitForIdle()
         onNodeWithTag(SecurityTags.DIALOG_CONFIRM).performClick()
         awaitTag(SecurityTags.WIPED)
-        awaitText("désinstallez l’application")
+        awaitText("Vous pouvez fermer l’application.")
         assertNull(harness.identity.snapshot)
     }
 
@@ -315,6 +338,9 @@ class DeviceSecurityTest {
         waitForIdle()
         onNodeWithTag(SecurityTags.DIALOG_CONFIRM).performClick()
         awaitText("L’effacement n’a pas pu se terminer")
+        onNodeWithText("Parties non effacées : 1.").assertExists()
+        // The other parts were erased all the same.
+        assertNull(harness.identity.snapshot)
         eraser.fail = false
         onNodeWithTag(SecurityTags.DIALOG_CONFIRM).performClick()
         waitUntil(timeoutMillis = 20_000) { eraser.erased == 1 }
@@ -353,7 +379,7 @@ class DeviceSecurityTest {
                                 val library = rememberContentLibrary(harness.dependencies)
                                 val organisations = rememberOrganisationsLibrary(harness.dependencies)
                                 val help = rememberHelpState(harness.dependencies, organisations, library)
-                                val security = rememberDeviceSecurity(harness.dependencies, forgetInApp = {})
+                                val security = rememberDeviceSecurity(harness.dependencies)
                                 ProvideHelp(help) {
                                     ProvideDeviceSecurity(security) {
                                         DeviceSecurityGate(security) {
@@ -389,13 +415,38 @@ class DeviceSecurityTest {
     }
 
     @Test
+    fun theDiscreetIconIsSwitchedAfterAWarningEitherWay() = runComposeUiTest {
+        val harness = SecurityHarness()
+        showApp(harness, 360)
+        openMySpace()
+        onNodeWithTag(SecurityTags.DISCREET_TOGGLE).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithText("le raccourci peut disparaître", substring = true).assertExists()
+        onNodeWithTag(SecurityTags.DIALOG_CANCEL).performClick()
+        waitForIdle()
+        assertFalse(harness.icons.isDiscreet, "« Annuler » changes nothing")
+        onNodeWithTag(SecurityTags.DISCREET_TOGGLE).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(SecurityTags.DIALOG_CONFIRM).performClick()
+        waitForIdle()
+        assertTrue(harness.icons.isDiscreet)
+        // Back to the icon of PPF: a warning too.
+        onNodeWithTag(SecurityTags.DISCREET_TOGGLE).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithText("Revenir à l’icône de PPF ?").assertExists()
+        onNodeWithTag(SecurityTags.DIALOG_CONFIRM).performClick()
+        waitForIdle()
+        assertFalse(harness.icons.isDiscreet)
+    }
+
+    @Test
     fun showingTheContentAgainAsksFirstAndCancelChangesNothing() = runComposeUiTest {
         val harness = SecurityHarness()
         lateinit var security: DeviceSecurityState
         var open = true
         setContent {
             PpfTheme {
-                security = rememberDeviceSecurity(harness.dependencies, forgetInApp = {})
+                security = rememberDeviceSecurity(harness.dependencies)
                 if (open) ShowContentDialog(security) { open = false }
             }
         }

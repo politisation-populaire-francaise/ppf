@@ -61,14 +61,17 @@
 
     <!-- Quick erase -->
     <string name="sec_wipe_title">Tout effacer de cet appareil ?</string>
-    <string name="sec_wipe_text">PPF efface tout ce qu’il garde sur cet appareil : votre clé, vos messages, ce que vous suivez, vos réponses, vos témoignages en attente, votre point de ralliement, ces réglages et les contenus téléchargés. L’application se ferme ensuite.</string>
-    <string name="sec_wipe_phrase">Votre phrase de récupération est le seul moyen de retrouver votre compte : vérifiez que vous l’avez notée sur papier avant d’effacer.</string>
+    <string name="sec_wipe_text">PPF efface de cet appareil votre clé et ce qui l’accompagne : ce que vous suivez, vos réponses aux appels et à l’agenda, vos témoignages en attente, vos conversations et salons rejoints, votre point de ralliement et ces réglages.</string>
+    <string name="sec_wipe_phrase">Votre phrase de récupération est le seul moyen de retrouver votre compte ensuite : vérifiez que vous l’avez notée sur papier avant d’effacer.</string>
     <string name="sec_wipe_server">Rien n’est effacé sur le serveur : ce que vous avez publié reste publié.</string>
+    <string name="sec_wipe_not_yet">Dans cette version, quelques données ne sont pas encore effacées par ce bouton (progression des parcours, contenus téléchargés, suivis de « Voir » et de « Décider ») : pour tout effacer, désinstallez aussi l’application.</string>
     <string name="sec_wipe_confirm">Tout effacer</string>
     <string name="sec_wipe_running">Effacement en cours…</string>
-    <string name="sec_wipe_done">Les données de PPF ont été effacées de cet appareil. Vous pouvez fermer l’application.</string>
-    <string name="sec_wipe_partial">Votre clé et ces réglages ont été effacés. Sur cet appareil, PPF ne peut pas effacer le reste lui-même : désinstallez l’application pour tout effacer.</string>
+    <string name="sec_wipe_done">Les données de PPF ont été effacées de cet appareil.</string>
+    <string name="sec_wipe_restore">Pour retrouver votre compte, rouvrez PPF, allez dans « Mon espace », touchez « J’ai déjà un compte » et tapez votre phrase de récupération.</string>
+    <string name="sec_wipe_close_yourself">Vous pouvez fermer l’application.</string>
     <string name="sec_wipe_failed">L’effacement n’a pas pu se terminer. Réessayez, ou désinstallez l’application pour tout effacer.</string>
+    <string name="sec_wipe_failed_parts">Parties non effacées : %1$d.</string>
     <string name="sec_wipe_retry">Réessayer</string>
     <string name="sec_close">Fermer</string>
 
@@ -99,5 +102,16 @@
     <string name="sec_phone_settings_3">[EXEMPLE] Masquez le contenu des notifications sur l’écran verrouillé.</string>
     <string name="sec_phone_settings_4">[EXEMPLE] Si vous filmez, désactivez la sauvegarde automatique des photos vers un service en ligne.</string>
     <string name="sec_phone_legal">[EXEMPLE, à vérifier par un avocat] La Cour de cassation (assemblée plénière, 7 novembre 2022, n° 21-83.146) a jugé que le code de déverrouillage d’un téléphone peut être une « convention secrète de déchiffrement » quand le téléphone est équipé d’un moyen de cryptologie : refuser de le remettre à l’autorité judiciaire qui le demande peut alors être puni (Code pénal, article 434-15-2). Ce texte n’est pas un conseil juridique : demandez à une legal team.</string>
-    <string name="sec_discreet_study">Nom et icône discrets pour PPF : à l’étude.</string>
+    <string name="sec_prepare_discreet">Nom et icône discrets</string>
+    <string name="sec_prepare_discreet_on">Activé : l’icône neutre « Outils » est sur l’écran d’accueil.</string>
+    <string name="sec_prepare_discreet_off">Désactivé (facultatif).</string>
+
+    <!-- S-45: discreet application -->
+    <string name="sec_discreet_toggle">Application discrète</string>
+    <string name="sec_discreet_text">Sur l’écran d’accueil, PPF prend un nom et une icône neutres : « Outils ».</string>
+    <string name="sec_discreet_on_title">Passer à l’icône discrète ?</string>
+    <string name="sec_discreet_on_text">L’icône de PPF sera remplacée par une icône neutre nommée « Outils ». L’application peut se fermer, et le raccourci peut disparaître ou changer de place sur l’écran d’accueil : retrouvez l’application dans la liste de toutes les applications. Le vrai nom reste visible dans les Paramètres du téléphone et dans le magasin d’applications.</string>
+    <string name="sec_discreet_off_title">Revenir à l’icône de PPF ?</string>
+    <string name="sec_discreet_off_text">Le nom et l’icône de PPF reviendront sur l’écran d’accueil : une personne qui regarde votre téléphone pourra voir que vous l’utilisez. L’application peut se fermer, et le raccourci peut disparaître ou changer de place. Vous pourrez repasser à l’icône discrète à tout moment.</string>
+    <string name="sec_discreet_confirm">Changer l’icône</string>
 </resources>

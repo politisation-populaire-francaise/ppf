@@ -64,7 +64,9 @@ import org.politisationpopulairefrancaise.ui.resources.sec_pin_label
 import org.politisationpopulairefrancaise.ui.resources.sec_unlock
 import org.politisationpopulairefrancaise.ui.resources.sec_wipe_done
 import org.politisationpopulairefrancaise.ui.resources.sec_wipe_failed
-import org.politisationpopulairefrancaise.ui.resources.sec_wipe_partial
+import org.politisationpopulairefrancaise.ui.resources.sec_wipe_close_yourself
+import org.politisationpopulairefrancaise.ui.resources.sec_wipe_failed_parts
+import org.politisationpopulairefrancaise.ui.resources.sec_wipe_restore
 import org.politisationpopulairefrancaise.ui.resources.sec_wipe_retry
 import org.politisationpopulairefrancaise.ui.resources.sec_wipe_running
 import org.politisationpopulairefrancaise.ui.resources.sec_wrong
@@ -109,7 +111,9 @@ fun DeviceSecurityGate(security: DeviceSecurityState, content: @Composable () ->
                 security.dismissWipe()
                 security.wipe()
             },
-        ) { }
+        ) {
+            Text(stringResource(Res.string.sec_wipe_failed_parts, security.failedParts.size), style = MaterialTheme.typography.bodyMedium)
+        }
     }
 }
 
@@ -203,19 +207,21 @@ private fun LockScreen(security: DeviceSecurityState) {
     if (forgot) WipeDialog(security, onDone = { forgot = false }, extra = stringResource(Res.string.sec_forgot_text))
 }
 
-/** While and after the quick erase: nothing of the interface is shown any more. */
+/** While and after the quick erase: nothing of the interface is shown any more; how to restore the account. */
 @Composable
 private fun WipedScreen(security: DeviceSecurityState) {
-    val text = when {
-        security.wipeStatus == WipeStatus.ERASING -> stringResource(Res.string.sec_wipe_running)
-        security.canEraseEverything -> stringResource(Res.string.sec_wipe_done)
-        else -> stringResource(Res.string.sec_wipe_partial)
-    }
+    val running = security.wipeStatus == WipeStatus.ERASING
+    val text = stringResource(if (running) Res.string.sec_wipe_running else Res.string.sec_wipe_done)
     FullScreen(text, SecurityTags.WIPED) {
         Wordmark()
         Text(text, style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
-        if (security.wipeStatus == WipeStatus.DONE && security.canEraseEverything) {
-            PpfSecondaryButton(onClick = security::close, text = stringResource(Res.string.sec_close), icon = Lucide.X)
+        if (!running) {
+            Text(stringResource(Res.string.sec_wipe_restore), style = MaterialTheme.typography.bodyLarge)
+            if (security.canClose) {
+                PpfSecondaryButton(onClick = security::close, text = stringResource(Res.string.sec_close), icon = Lucide.X, modifier = Modifier.testTag(SecurityTags.WIPE_CLOSE))
+            } else {
+                Text(stringResource(Res.string.sec_wipe_close_yourself), style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.inkMuted)
+            }
         }
     }
 }
