@@ -132,7 +132,7 @@ class ParliamentWeekTest {
         assertEquals(week, loader.held(snapshot)?.week?.pkg)
         assertEquals(PackageOutcome.Done, loader.download(snapshot))
         // A bundled package that does not match its fingerprint is ignored.
-        val tampered = ParliamentWeekLoader(null, InMemoryParliamentStorage()) { name -> if (name == ParliamentWeekFormat.PACKAGE) bytes(week.copy(items = emptyList())) else null }
+        val tampered = ParliamentWeekLoader(null, InMemoryParliamentStorage(), bundled = { name -> if (name == ParliamentWeekFormat.PACKAGE) bytes(week.copy(items = emptyList())) else null })
         assertNull(tampered.held(snapshot))
     }
 }

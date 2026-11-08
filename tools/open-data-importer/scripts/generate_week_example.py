@@ -30,7 +30,7 @@ def point(objet, typ, dossier=None):
 
 files = [
  ("RUANR5L17S2026IDS99001.json", lambda: reunion("RUANR5L17S2026IDS99001", "seance_type", "PO838901", "2026-11-10T15:00:00.000+01:00", "2026-11-10T20:00:00.000+01:00", "Confirmé",
-     [point("Questions au Gouvernement.", "Questions au Gouvernement"),
+     [point("[EXEMPLE] Questions au Gouvernement.", "Questions au Gouvernement"),
       point("[EXEMPLE] Suite de la discussion du projet de loi fictif sur les tilleuls (n° 9001).", "Suite de la discussion", "DLR5L17N90001")], participants=False)),
  ("RUANR5L17S2026IDS99002.json", lambda: reunion("RUANR5L17S2026IDS99002", "seance_type", "PO838901", "2026-11-12T09:00:00.000+01:00", "2026-11-12T13:00:00.000+01:00", "Éventuel",
      None, resume=["[EXEMPLE] Suite de l'ordre du jour de la veille.", "[EXEMPLE] Discussion de propositions de loi fictives."], participants=False)),
