@@ -243,4 +243,31 @@
     <string name="decider_votes_cancel">Fermer</string>
     <string name="decider_comparator_frozen_title">Contenu figé jusqu’à la fermeture des bureaux de vote</string>
     <string name="decider_comparator_frozen">Tour %1$d : depuis la veille du scrutin à zéro heure et jusqu’au %2$s à %3$s, plus rien n’est publié ni corrigé dans ce comparateur. Il reste lisible.</string>
+    <!-- DE-28, étape 3 : rappels des élections, demandés sur la page de l’élection, gardés sur l’appareil. -->
+    <string name="decider_reminders_title">Rappels</string>
+    <string name="decider_reminders_offer">Recevez un rappel sur cet appareil avant chaque date : l’inscription sur les listes électorales, la procuration, la veille de chaque tour. Les rappels sont désactivés tant que vous ne les demandez pas, et ils restent sur l’appareil : PPF ne sait pas que vous les avez demandés.</string>
+    <string name="decider_reminders_ask">Me rappeler ces dates</string>
+    <string name="decider_reminders_category_note">Les rappels arrivent dans les notifications « Votes et pétitions », qui seront activées. Vous pourrez les couper à tout moment dans Mon espace.</string>
+    <string name="decider_reminders_kind_registration">Inscription sur les listes</string>
+    <string name="decider_reminders_kind_registration_hint">Une semaine avant chaque date limite d’inscription</string>
+    <string name="decider_reminders_kind_proxy">Procuration</string>
+    <string name="decider_reminders_kind_proxy_hint">Dix jours avant chaque tour</string>
+    <string name="decider_reminders_kind_eve">Veille du scrutin</string>
+    <string name="decider_reminders_kind_eve_hint">La veille de chaque tour</string>
+    <string name="decider_reminders_upcoming">Prochains rappels</string>
+    <string name="decider_reminders_none">Aucun rappel à venir pour cette élection.</string>
+    <string name="decider_reminders_at">Le %1$s à %2$s</string>
+    <string name="decider_reminders_remove">Retirer ce rappel</string>
+    <string name="decider_reminders_stop">Ne plus me rappeler cette élection</string>
+    <string name="decider_reminders_category_off">Les notifications « Votes et pétitions » sont coupées : ces rappels ne s’afficheront pas.</string>
+    <string name="decider_reminders_category_on">Rallumer les notifications « Votes et pétitions »</string>
+    <string name="decider_reminders_permission_refused">Le système n’affiche pas les notifications de PPF : les rappels arriveront seulement dans le centre de notifications de l’application.</string>
+    <string name="decider_reminders_computer">Sur ordinateur, un rappel s’affiche quand l’application est ouverte.</string>
+    <!-- Textes des rappels eux-mêmes, écrits sur l’appareil au moment où ils sont programmés. -->
+    <string name="decider_reminder_registration_title">Inscription sur les listes électorales</string>
+    <string name="decider_reminder_registration_detail">%1$s. %2$s : jusqu’au %3$s.</string>
+    <string name="decider_reminder_proxy_title">Procuration</string>
+    <string name="decider_reminder_proxy_detail">%1$s, tour %2$d le %3$s : si vous ne pouvez pas voter vous-même, c’est le moment d’établir une procuration.</string>
+    <string name="decider_reminder_eve_title">Veille du scrutin</string>
+    <string name="decider_reminder_eve_detail">%1$s, tour %2$d le %3$s : bureaux de vote fermés à %4$s au plus tard.</string>
 </resources>

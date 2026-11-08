@@ -66,6 +66,12 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    /** Leaving the application: the reminders may have changed, the alarm of the next one is armed again (DE-28). */
+    override fun onStop() {
+        super.onStop()
+        ReminderAlarms.arm(this, (application as PpfApplication).database)
+    }
+
     private var permissionAnswer: ((Boolean) -> Unit)? = null
 
     private val notificationPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) { granted ->

@@ -10,6 +10,7 @@ import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.notifications.Notifications
 import org.politisationpopulairefrancaise.core.notifications.PushManager
+import org.politisationpopulairefrancaise.core.reminders.ReminderStore
 import org.politisationpopulairefrancaise.core.publication.RemoteEvents
 import org.politisationpopulairefrancaise.core.social.FollowStore
 import org.politisationpopulairefrancaise.core.urne.UrneRemote
@@ -111,7 +112,8 @@ class AppDependencies(
             followStore = FollowStore(database),
             database = database,
             contentFollowStore = ContentFollowStore(database),
-            notifications = notifications ?: Notifications(database, identityStore, remote, notifier = null),
+            // The personal reminders of the device (DE-28, S-98) reach the centre with the other novelties.
+            notifications = notifications ?: Notifications(database, identityStore, remote, notifier = null, extraSources = ReminderStore.notificationSources(database)),
             push = push,
             pushServer = pushServer,
             requestNotificationPermission = requestNotificationPermission,

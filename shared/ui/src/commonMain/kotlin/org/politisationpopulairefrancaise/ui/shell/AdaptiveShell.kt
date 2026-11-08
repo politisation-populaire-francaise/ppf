@@ -139,12 +139,16 @@ import org.politisationpopulairefrancaise.ui.resources.guides_title
 import org.politisationpopulairefrancaise.ui.resources.nav_disclaimer
 import org.politisationpopulairefrancaise.ui.resources.nav_search_soon
 import org.politisationpopulairefrancaise.ui.resources.space_mon_espace
+import org.politisationpopulairefrancaise.ui.decider.DeciderDestination
 import org.politisationpopulairefrancaise.ui.decider.DeciderScreen
 import org.politisationpopulairefrancaise.ui.decider.DeciderState
+import org.politisationpopulairefrancaise.ui.decider.ElectionRemindersState
+import org.politisationpopulairefrancaise.ui.decider.rememberElectionReminders
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
+import org.politisationpopulairefrancaise.core.reminders.ReminderStore
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.notifications.NotificationCenterScreen
 import org.politisationpopulairefrancaise.ui.notifications.NotificationsSettingsState
@@ -240,6 +244,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
     // Décider: the voting tokens, pending requests and choices of the device (S-44).
     RegisterErasable(dependencies, VotingState.ERASABLE_ID) { voting.eraseFromDevice() }
+    // The personal reminders of the device (DE-28, S-98): every reminder and what it was asked for.
+    dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { ReminderStore(database) }) }
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.
@@ -282,6 +288,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
     // The notification settings (Mon espace, M31); null without notifications.
     val notificationsSettings = rememberNotificationsSettings(dependencies, accountKey)
+    // The reminders of the elections (DE-28), planned again after each reading of the contents of "Décider".
+    val electionReminders = rememberElectionReminders(dependencies, notificationsSettings, contentLibrary.decider)
     // A change of settings (details shown, a category enabled) is reflected at once in the centre.
     LaunchedEffect(notificationsSettings?.settings) { notificationCenter?.reload() }
     // The glossary (D-048): read once the bundled contents are imported and after each synchronization,
@@ -316,6 +324,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     navigate(Space.MESSAGES)
                 } else if (entry.target == AccountAlerts.MY_SPACE_TARGET) {
                     navigate(Space.MON_ESPACE)
+                } else if (entry.target?.startsWith(ElectionRemindersState.TARGET_PREFIX) == true) {
+                    val id = entry.target.orEmpty().removePrefix(ElectionRemindersState.TARGET_PREFIX)
+                    contentLibrary.decider.elections.firstOrNull { it.election.id == id }?.let { deciderState.open(DeciderDestination.Election(it.address)) }
+                    navigate(Space.DECIDER)
                 }
             }
             val bell = notificationCenter?.let { center -> Bell(center.unreadCount) { centerOpen = true } }
@@ -348,6 +360,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     parliamentState = parliamentState,
                     voirRequests = voirRequests,
                     deciderState = deciderState,
+                    electionReminders = electionReminders,
                     groupsLibrary = groupsLibrary,
                     organisationsLibrary = organisationsLibrary,
                     agendaLibrary = agendaLibrary,
@@ -385,6 +398,7 @@ private fun SpaceContent(
     parliamentState: ParliamentState,
     voirRequests: VoirRequestSession,
     deciderState: DeciderState,
+    electionReminders: ElectionRemindersState?,
     groupsLibrary: GroupsLibrary,
     organisationsLibrary: OrganisationsLibrary,
     agendaLibrary: AgendaLibrary,
@@ -449,6 +463,7 @@ private fun SpaceContent(
                 onNavigate(Space.VOIR)
             },
             dependencies = dependencies,
+            reminders = electionReminders,
         )
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting, notifications = notificationsSettings)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)

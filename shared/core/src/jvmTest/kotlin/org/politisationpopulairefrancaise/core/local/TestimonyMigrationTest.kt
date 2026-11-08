@@ -35,6 +35,8 @@ class TestimonyMigrationTest {
             val url = "jdbc:sqlite:${old.toAbsolutePath()}"
             DriverManager.getConnection(url).use { connection ->
                 connection.createStatement().use { statement ->
+                    statement.executeUpdate("DROP TABLE reminder_plan")
+                    statement.executeUpdate("DROP TABLE reminder")
                     statement.executeUpdate("DROP TABLE contact_verification")
                     statement.executeUpdate("DROP TABLE push_registration")
                     statement.executeUpdate("DROP TABLE notification_mark")

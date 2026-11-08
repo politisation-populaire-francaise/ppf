@@ -15,6 +15,7 @@ import org.politisationpopulairefrancaise.core.notifications.Notifications
 import org.politisationpopulairefrancaise.core.notifications.PushClient
 import org.politisationpopulairefrancaise.core.notifications.PushManager
 import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
+import org.politisationpopulairefrancaise.core.reminders.ReminderStore
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.urne.HttpUrneRemote
 
@@ -77,7 +78,9 @@ class PpfApplication : Application() {
         database = AndroidDatabase.open(applicationContext)
         identityStore = AndroidIdentityStore(applicationContext)
         val notifier = AndroidSystemNotifier(applicationContext).also { it.createChannels() }
-        notifications = Notifications(database, identityStore, remote, notifier)
+        // The personal reminders of the device (DE-28, S-98) reach the centre with the other novelties.
+        notifications = Notifications(database, identityStore, remote, notifier, extraSources = ReminderStore.notificationSources(database))
+        ReminderAlarms.arm(this, database)
         val url = serverUrl
         val client = httpClient
         if (url != null && client != null) {

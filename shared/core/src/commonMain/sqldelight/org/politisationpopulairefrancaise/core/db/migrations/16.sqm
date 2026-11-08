@@ -1,0 +1,25 @@
+-- Schema version 16 to 17 (2026-11-09, provisional number, after the notifications of Communauté in 15.sqm): personal
+-- reminders on the device (see Reminders.sq, the reference for fresh installations; this file must stay identical to its
+-- CREATE statements).
+
+CREATE TABLE reminder (
+    id TEXT NOT NULL PRIMARY KEY,
+    owner TEXT NOT NULL,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    detail TEXT,
+    target TEXT,
+    due_at INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
+CREATE INDEX reminder_due_at ON reminder(due_at, id);
+
+CREATE INDEX reminder_owner ON reminder(owner, due_at);
+
+CREATE TABLE reminder_plan (
+    owner TEXT NOT NULL PRIMARY KEY,
+    kinds TEXT NOT NULL,
+    removed TEXT NOT NULL DEFAULT '',
+    created_at INTEGER NOT NULL
+);

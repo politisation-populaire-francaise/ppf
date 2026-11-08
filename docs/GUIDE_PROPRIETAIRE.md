@@ -236,6 +236,18 @@ Tout est inventé et marqué [EXEMPLE] : l'élection, les quatre candidats et le
 5. **Sa fiche dans « Voir »** ouvre la fiche du candidat.
 6. Sur l'ordinateur, la même page est un tableau : une colonne par candidat, une ligne par thème.
 
+### Tester les rappels d'une élection (ajouté le 9 novembre 2026)
+
+L'élection est inventée et marquée [EXEMPLE] (premier tour le 7 mars 2027). Aucun compte n'est nécessaire, et rien ne part sur Internet : les rappels restent sur l'appareil.
+
+1. Ouvrez **Décider**. Dans **Prochaines élections**, touchez la carte de l'élection d'exemple.
+2. Descendez jusqu'à **Rappels** : rien n'est programmé tant que vous ne le demandez pas. Touchez **Me rappeler ces dates**. Sur le téléphone, Android vous demande d'autoriser les notifications de PPF : touchez **Autoriser** (si vous refusez, les rappels arriveront seulement dans la cloche de l'application).
+3. La liste **Prochains rappels** apparaît, avec la date et l'heure de chacun (par exemple « Veille du scrutin, le 6 mars 2027 à 10 h »).
+4. Coupez l'interrupteur **Veille du scrutin** : ces rappels disparaissent de la liste. Touchez la croix d'un rappel : il disparaît, et ne reviendra pas.
+5. Dans **Mon espace**, notifications : la ligne **Votes et pétitions** est allumée. Éteignez-la puis revenez sur l'élection : un encadré dit que les rappels ne s'afficheront pas, avec un bouton pour la rallumer.
+6. Touchez **Ne plus me rappeler cette élection** : tout est effacé, le bouton du début revient.
+7. Les vrais rappels arrivent à leur date ; pour en voir un tout de suite, il faudra une élection d'essai plus proche, préparée pour la phase de test.
+
 ### Essayer le vote anonyme sur l'ordinateur (ajouté le 7 novembre 2026, au soir)
 
 Le vote marche maintenant de bout en bout, mais seulement avec un serveur. Sur votre ordinateur, un serveur de développement suffit ; il ne contient que des exemples. Il faut deux fenêtres de commande, ouvertes dans le dossier du projet.

@@ -94,7 +94,7 @@ private fun statusText(election: ElectionCalendar): String = when (election.stat
  * closing of the polling stations, each deadline with its official source. Nothing personal leaves the device.
  */
 @Composable
-internal fun ElectionPage(election: ElectionCalendar, today: CivilDate) {
+internal fun ElectionPage(election: ElectionCalendar, today: CivilDate, reminders: ElectionRemindersState? = null) {
     val palette = PpfTheme.palette
     val open = rememberOpenUrl()
     Column(Modifier.fillMaxWidth().testTag(ElectionTags.page(election.article.slug))) {
@@ -132,6 +132,11 @@ internal fun ElectionPage(election: ElectionCalendar, today: CivilDate) {
                     PpfTextButton(onClick = { open(deadline.source) }, text = stringResource(Res.string.decider_election_source))
                 }
             }
+        }
+        // The reminders (DE-28, step 3): only for an election still to come, and only where the device keeps them.
+        if (reminders != null && election.isUpcoming(today)) {
+            Spacer(Modifier.height(16.dp))
+            ElectionRemindersSection(election, reminders)
         }
         Spacer(Modifier.height(16.dp))
         Text(stringResource(Res.string.decider_election_privacy), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted, modifier = Modifier.testTag(ElectionTags.PRIVACY))

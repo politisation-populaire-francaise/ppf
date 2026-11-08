@@ -84,6 +84,8 @@ fun DeciderScreen(
     now: () -> Long = ::currentEpochSeconds,
     /** For the past votes of the comparator (history packages of "Voir") and their reports; null in previews. */
     dependencies: AppDependencies? = null,
+    /** The reminders of the elections (DE-28), kept on the device; null where there is none (previews). */
+    reminders: ElectionRemindersState? = null,
 ) {
     val pastVotes = dependencies?.let { rememberPastVotesState(it) }
     val reports = dependencies?.let { rememberVoirRequestSession(it, messaging = null) }
@@ -124,7 +126,7 @@ fun DeciderScreen(
             if (current == null) {
                 DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate)
             } else {
-                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos) }
+                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos, reminders = reminders) }
             }
         }
     }
@@ -273,6 +275,7 @@ private fun DeciderDetail(
     pastVotes: PastVotesState?,
     reports: VoirRequestSession?,
     photos: ComparatorPhotosState?,
+    reminders: ElectionRemindersState?,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -311,7 +314,7 @@ private fun DeciderDetail(
                         )
                     } ?: Missing()
                     is DeciderDestination.Election -> catalog.elections.firstOrNull { it.address == current.address }?.let { election ->
-                        ElectionPage(election, today)
+                        ElectionPage(election, today, reminders)
                     } ?: Missing()
                     is DeciderDestination.PastVotes -> {
                         val sheet = catalog.comparators.firstOrNull { it.address == current.sheet }

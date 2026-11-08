@@ -7,6 +7,9 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Notifications (D-130), asked only when the user enables them in Mon espace (Android 13+). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Personal reminders (DE-28, S-98): the alarm of the next reminder is armed again after a restart of the
+         phone, which forgets the alarms. An inexact alarm needs no other permission. -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
     <!-- The camera, asked only when a validator opens « Valider une personne » to read the QR code a citizen
          shows (D-112, 4.3); never at install, never for anything else. Nothing is recorded or sent from it:
@@ -69,6 +72,19 @@
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/agenda_files" />
         </provider>
+
+        <!-- Personal reminders kept on the phone (DE-28, S-98): the alarm of a reminder whose time has come
+             (explicit intent of the application only) and the restart of the phone (sent by the system only). -->
+        <receiver
+            android:name=".ReminderAlarmReceiver"
+            android:exported="false" />
+        <receiver
+            android:name=".ReminderBootReceiver"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
 
         <!-- Empty wake-ups forwarded by the UnifiedPush distributor (ntfy set to our own server, D-130). -->
         <service

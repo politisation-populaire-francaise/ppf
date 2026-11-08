@@ -1050,6 +1050,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raisons : aucun choix scrutin par scrutin, donc aucun reproche de sélection ; la même règle pour tous les partis, lisible et vérifiable par n'importe qui ; calcul sur l'appareil, le serveur ne sait pas quel candidat ou quel thème est regardé (RGPD, article 9) ; le code électoral (L52-8) interdit tout avantage à un candidat, d'où les règles identiques et le gel.
 - Conséquences : étiquettes à ajouter à la fiche du comparateur (`ppf-theme-words`, `ppf-party`, version et historique des mots) ; recherche et liste complète sur l'appareil ; relecture par un avocat avant la mise en ligne (L52-8, section 9.8 du cahier des charges) ; dates de l'outre-mer et heure de fermeture à prendre dans le décret de convocation de 2027.
 
+## D-118 (2026-11-09) Rappels personnels sur l'appareil : une table commune, le centre de notifications, une alarme du système
+
+- Contexte : DE-28, étape 3 (rappels des élections), et S-98 / TE-09 (rappels personnels regroupés dans Mon espace), qui demandent tous des rappels « programmés uniquement sur l'appareil ». Rien de commun n'existait ; le centre de notifications de « Communauté » (M31, D-130) est dans `main`.
+- Décisions techniques prises en autonomie (gratuites, aucun tiers, aucune nouvelle bibliothèque) :
+  - une table commune sur l'appareil (`reminder`, et `reminder_plan` pour les rappels qu'un espace recalcule quand son contenu change), code commun `core/reminders/ReminderStore.kt`, contrat `docs/integration/rappels.md` repris par « Agir », « Comprendre » et « Communauté » ;
+  - les rappels passent par le centre de notifications (une source par catégorie, `Notifications(extraSources = ...)`), avec toutes ses protections (écran verrouillé neutre, détails cachés par défaut, « silence total ») ; demander un rappel allume sa catégorie, après la permission du système, et l'écran le dit avant ;
+  - sur Android, une alarme **inexacte** du système (`AlarmManager.setAndAllowWhileIdle`) plutôt que WorkManager (une bibliothèque de plus) ou une alarme exacte (une permission que Google restreint) ; permission `RECEIVE_BOOT_COMPLETED` pour réarmer après un redémarrage ; sur ordinateur, à l'ouverture de l'application ;
+  - élections : trois sortes de rappels, les mêmes délais pour tous (7 jours avant chaque date limite d'inscription, 10 jours avant chaque tour pour la procuration, la veille de chaque tour), à 10 h, heure de Paris, recalculés à chaque synchronisation des contenus.
+- Options écartées : un fichier de calendrier (.ics) exporté vers l'agenda du téléphone (le rappel sortirait de PPF vers une application tierce, souvent synchronisée avec un compte en ligne : possible plus tard, au choix de la personne, comme le fait déjà l'agenda d'« Agir ») ; des rappels envoyés par le serveur (il saurait qui suit quelle élection).
+- Conséquences : migration locale provisoire `16.sqm` (schéma de l'appareil en version 17) ; partie `core-reminders` de l'effacement rapide (S-44) ; registre des données et modèle de menaces complétés.
+
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
 - Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.

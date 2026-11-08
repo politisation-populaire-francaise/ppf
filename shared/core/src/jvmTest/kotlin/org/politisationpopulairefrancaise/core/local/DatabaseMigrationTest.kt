@@ -108,15 +108,42 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion16() {
+    fun theSchemaIsAtVersion17() {
         // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
         // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm);
         // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm);
         // 10: answered calls (9.sqm); 11: directory of elected officials (10.sqm);
         // 12: parliamentary open data (11.sqm), 13: referential of territories (12.sqm);
         // 14: testimonies of Agir (13.sqm), 15: anonymous voting (14.sqm);
-        // 16: notifications and verified contacts (15.sqm, provisional number of Communauté).
-        assertEquals(16L, PpfDatabase.Schema.version)
+        // 16: notifications and verified contacts (15.sqm, provisional number of Communauté);
+        // 17: personal reminders (16.sqm, provisional number of Décider).
+        assertEquals(17L, PpfDatabase.Schema.version)
+    }
+
+    @Test
+    fun aVersion16DatabaseGainsTheRemindersAndKeepsItsCommune() {
+        val file = tempDatabaseFile()
+        writeVersion1Database(file)
+        val driver = JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}")
+        try {
+            PpfDatabase.Schema.migrate(driver, 1, 16)
+            driver.execute(null, "INSERT INTO elus_commune(id, commune_code, department_code) VALUES (0, '69123', '69')", 0)
+            driver.execute(null, "PRAGMA user_version = 16", 0)
+        } finally {
+            driver.close()
+        }
+        val database = JvmDatabase.open(file)
+        assertEquals(PpfDatabase.Schema.version, userVersion(file))
+        assertEquals(ChosenCommune("69123", "69"), ElusStore(database).commune())
+        val reminders = org.politisationpopulairefrancaise.core.reminders.ReminderStore(database) { 1_800_000_000 }
+        assertEquals(null, reminders.nextDueAfter())
+        reminders.setPlan("decider:election:exemple", setOf("veille"))
+        assertEquals(setOf("veille"), reminders.plan("decider:election:exemple")?.kinds)
+        // The migration creates exactly the tables of Reminders.sq, the reference for fresh installations.
+        val fresh = tempDatabaseFile()
+        JvmDatabase.open(fresh)
+        assertEquals(tableDefinitions(fresh, "reminder"), tableDefinitions(file, "reminder"))
+        assertEquals(2, tableDefinitions(file, "reminder").size)
     }
 
     @Test

@@ -409,3 +409,12 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Ancienne version présentée comme actuelle | « Authentique, mais ancien » avec la version actuelle | |
 | Ce que vérifie une personne révèle ce qu'elle a reçu | Rien n'est enregistré ni journalisé ; le contenu collé n'est jamais réécrit dans la page ; dans l'application, la vérification se fait sur l'appareil, sans connexion | |
 | Requête démesurée | 96 Kio au plus pour un contenu collé, corps lu par un canal borné, `413` au-delà | |
+
+## Ajout du 9 novembre 2026 : rappels personnels sur l'appareil (DE-28, S-98, D-118)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Le serveur apprend qui suit quelle élection, quel événement, quelle commune (intérêt politique, RGPD article 9) | Les rappels sont programmés, gardés et affichés sur l'appareil seulement ; aucune requête n'est faite pour eux, l'alarme d'Android ne lance que le tour du centre sur l'appareil | |
+| Quelqu'un voit l'écran verrouillé, ou prend le téléphone | Écran verrouillé : « PPF : nouvelle activité », jamais le texte ; titre et détail cachés par défaut même déverrouillé ; verrouillage de l'application (S-43) ; effacement rapide (S-44, partie `core-reminders`) | |
+| Une autre application déclenche les rappels ou les fait taire | Récepteur de l'alarme non exporté (intention explicite de l'application) ; récepteur du redémarrage qui n'accepte que l'action envoyée par le système, et qui ne fait que relire l'appareil | |
+| Un rappel arrive trop tard (alarme retardée par Android, téléphone éteint, application de bureau fermée) | Rappels 7 à 10 jours avant les dates limites ; la page de l'élection montre toujours toutes les dates ; l'écran dit que sur ordinateur un rappel s'affiche à l'ouverture | Notifications locales programmées sur iPhone avec l'application iOS |
