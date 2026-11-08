@@ -27,6 +27,7 @@ Copier, partager, citer, adapter, traduire, réutiliser dans un article, une ét
 - Les **droits de réponse**, les **réponses des candidats**, les **revendications** et les **témoignages** restent à leurs auteurs, même publiés par PPF ; le code les reconnaît par leur type (`ContentLicenses.AUTHORS_OWN`).
 - Les **contenus des comptes citoyens** (messages, salons, publications du fil) restent à leurs auteurs et ne sont pas dans l'export ouvert.
 - Les **données publiques** que nous réutilisons (Parlement, annuaire des élus, Insee…) gardent leur propre licence, citée à côté de chaque source.
+- Les **photos et images reprises d'autres sources** (par exemple les photos officielles des candidats dans le comparateur) gardent chacune leur propre licence, affichée à côté d'elles : elles ne passent jamais sous CC BY 4.0, même dans un contenu de PPF qui l'est.
 
 ## Avant le lancement
 
