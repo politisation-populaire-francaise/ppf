@@ -19,6 +19,8 @@ import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.urne.CertificationAnswer
 import org.politisationpopulairefrancaise.core.urne.VoteLevel
 import org.politisationpopulairefrancaise.core.urne.VoterStatus
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
@@ -78,9 +80,12 @@ fun VoterLevelCard(modifier: Modifier = Modifier) {
                 noteOf(status)?.let { Text(it, style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.testTag(VoterLevelTags.NOTE)) }
                 // Only an account not verified, not waiting and not dedicated to a mandate has a code to show.
                 if (level == VoteLevel.NON_VERIFIE && !status.validationPending && status.certification == null) {
+                    // A compromised account is no longer the person's: it is not validated (S-146, 403 on the server).
+                    PublishBlockedNotice()
                     PpfSecondaryButton(
                         onClick = { showingCode = true },
                         text = stringResource(Res.string.validation_show_code),
+                        enabled = LocalCanPublish.current,
                         modifier = Modifier.fillMaxWidth().testTag(VoterLevelTags.SHOW_CODE),
                     )
                 }

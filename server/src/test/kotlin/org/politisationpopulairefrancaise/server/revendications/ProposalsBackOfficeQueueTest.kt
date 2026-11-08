@@ -7,9 +7,12 @@ import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.TestDatabase
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.backoffice.ActionOutcome
 import org.politisationpopulairefrancaise.server.backoffice.TeamActor
 import org.politisationpopulairefrancaise.server.backoffice.TeamRole
+import org.politisationpopulairefrancaise.server.decider.CompromiseFixtures
+import org.politisationpopulairefrancaise.server.decider.CompromisedAuthors
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.revendications.DemandFixtures.demand
 import org.politisationpopulairefrancaise.server.revendications.DemandFixtures.draft
@@ -71,5 +74,30 @@ class ProposalsBackOfficeQueueTest {
         assertEquals("Hors charte", proposals.find(second.id)!!.reason)
         assertNull(events.find(second.id))
         assertEquals(ActionOutcome.NotFound, queue.perform("0".repeat(64), "approve", null, actor))
+    }
+
+    @Test
+    fun aDemandSignedAfterItsAuthorWasDeclaredCompromisedCanOnlyBeRefused() {
+        val compromised = CompromisedAccounts(events, clock = { clock.instant })
+        val guarded = ProposalsBackOfficeQueue(proposals, CompromisedAuthors(compromised))
+        val other = LocalEventSigner(IdentityKeys.generate())
+        val before = demand("avant-1111")
+        val after = runBlocking { other.demand(draft(), "apres-2222", start.epochSecond - 60) }
+        submit(before)
+        submit(after)
+        // Two days later: the citizen's key is compromised since after their demand, the other's since before.
+        clock.instant = start.plusSeconds(2 * 86_400)
+        CompromiseFixtures.declare(compromised, citizen, since = start.epochSecond, at = clock.instant.epochSecond)
+        CompromiseFixtures.declare(compromised, other, since = start.epochSecond - 3_600, at = clock.instant.epochSecond)
+
+        assertTrue(guarded.page(null, 10).items.all { CompromisedAuthors.SHORT in it.summary.orEmpty() }, "both carry the mention")
+        assertTrue(createHTML().div { guarded.render(before.id, this) }.contains("signée avant"))
+        assertTrue(createHTML().div { guarded.render(after.id, this) }.contains("refusée. Compromis depuis le"))
+        assertEquals(listOf("reject"), guarded.actions(after.id).map { it.id })
+        assertEquals(ActionOutcome.Refused(CompromisedAuthors.REFUSED), guarded.perform(after.id, "approve", null, actor))
+        assertNull(events.find(after.id))
+        assertEquals(listOf("approve", "reject"), guarded.actions(before.id).map { it.id })
+        assertEquals(ActionOutcome.Done, guarded.perform(before.id, "approve", null, actor))
+        assertNotNull(events.find(before.id))
     }
 }

@@ -122,3 +122,58 @@ Rédaction :
 - **Q4. Gel la veille du scrutin.**
   - A (recommandée) : contenu figé de la veille à zéro heure jusqu'à la fermeture des bureaux, l'application restant lisible.
   - B : aucun gel, le comparateur n'étant pas de la propagande.
+
+## 9. Réalisation
+
+- **7 novembre 2026** : grille identique pour tous (`ComparatorGrid`), page dans « Décider » (un thème à la fois sur téléphone, tableau sur grand écran), contenus [EXEMPLE].
+- **8 novembre 2026, Q1 et Q4** :
+  - tours de l'élection (`ppf-round`) et **gel** : de 0 h, heure de Paris, la veille du premier jour de vote (l'outre-mer qui vote la veille compte) jusqu'à la fermeture des derniers bureaux (20 h par défaut), le serveur refuse toute publication, mise à jour ou suppression du comparateur et de ses positions (`server/decider/ComparatorFreeze.kt`, branché dans `POST /api/v1/events`, refus 409 `comparator_frozen`) ; les tours qui comptent sont ceux des comparateurs déjà enregistrés ; l'application affiche « Contenu figé jusqu'à la fermeture des bureaux de vote » et reste lisible ;
+  - **demandes des candidats** (`ppf-request`, `ppf-addition-delay`) : chaque demande reste visible avec sa date et la date de l'ajout, dans un délai publié, le même pour tous ; avant la liste officielle, un candidat sans demande, ou ajouté après le délai, fait refuser la fiche par l'outil de signature ;
+  - **liste officielle** (`ppf-official-list`) : dès qu'elle est publiée, le comparateur la suit et le dit, avec le lien vers la source.
+- **8 novembre 2026, Q2 (D-117)** : `ppf-theme-words`, `ppf-words-version`, `ppf-party` ; `core/decider/ComparatorVotes.kt` (`ThemeWords`, `WordsVersion`, `CandidateParty`, `CandidateVotes` : les paquets lus un à un, seuls les scrutins du parti gardés) ; page « Votes passés du parti de … » (`ui/decider/PastVotesPage.kt`, `PastVotesState.kt`) : « Tous les votes de ce parti » par défaut, chaque thème, « Autres scrutins », recherche libre dans les titres, la règle, ses mots et sa version sous la liste, téléchargement de tout l'historique en une fois pour tous les partis, signalement sans compte d'un scrutin mal rangé (envoyé comme les signalements d'erreur de « Voir », D-056) ; l'outil de signature refuse des mots sans historique ou publiés pour la première fois après la liste officielle.
+- **8 novembre 2026, Q3** : `ppf-photo`, `CandidatePhoto`, `ComparatorSheet.photosShown` (tout ou rien), route `GET /api/v1/decider/photos/{sha256}` (`server/decider/ComparatorPhotosRoutes.kt`, dossier `PPF_DECIDER_PHOTOS_DIR`, octets vérifiés contre leur nom), `RemoteEvents.fetchComparatorPhoto`, `ui/decider/ComparatorPhotosState.kt` (toutes les photos d'une fiche demandées ensemble, vérifiées par leur empreinte, aucune montrée si une manque), photo de 72 dp au même endroit pour tous, mentions sous la grille.
+- **8 novembre 2026, votes de la personne** : vue « Ses propres votes » des votes passés, quand la fiche du candidat dans « Voir » porte son identifiant officiel de parlementaire (`ppf-official-id`) : ses votes nominatifs du mandat en cours, tels qu'enregistrés (délégation, mise au point à côté, jamais à la place), d'après les fichiers mensuels déjà sur l'appareil (`ParliamentCatalog.votesOf` de « Voir »).
+- **Reste** : photos gardées sur l'appareil pour le hors-ligne (en mémoire seulement pour l'instant) ; votes nominatifs des mandats passés (absents des paquets historiques, sans nom par construction) ; filtre par commission saisie au fond quand « Voir » la donnera (D-117, point 5) ; comparateur sur le site sans JavaScript ; relecture par un avocat (L52-8) ; vrais candidats.
+- **À vérifier avant la mise en ligne** (Légifrance, décret de convocation de 2027) : les jours de vote de l'outre-mer et l'heure de fermeture des derniers bureaux de chaque tour, à reporter dans `ppf-round`.
+
+## 10. Votes passés rangés par thème (Q2) : option A validée par le chef d'équipe (D-117)
+
+Demande de la propriétaire (Q2) : « Depuis aussi loin que possible sur le parti portant le candidat à la présidentielle, tant que les données officielles existent, tous les votes en France et à l'Union européenne. » Données : les paquets historiques de « Voir » (D-066, `docs/integration/voir-historique-import.md`), téléchargés en entier sur l'appareil pour tous les partis, avec pour chaque scrutin public la répartition par parti (pour, contre, abstention, non-votants, membres), sans nom ni position majoritaire.
+
+### 10.1 Quel parti pour quel candidat
+
+- Sur la fiche du comparateur, une étiquette répétée `ppf-party` : `candidat | identifiant du parti dans les paquets (an:PO…, senat-grp:…, pe-org:…) | du (AAAA-MM-JJ) | au (facultatif)`, avec ses sources (`ppf-source`). C'est un fait public (le parti qui porte la candidature, puis ses identifiants officiels par chambre et par période), relu comme le reste.
+- Sénat : le paquet ne donne que le groupe ; la mention « groupe, rattachement au parti non publié » reste affichée, pour tous les candidats.
+- Les votes nominatifs de la personne (si elle a eu un mandat) ne sont pas dans ces paquets : ils viendront des paquets mensuels de la législature en cours, dans une étape suivante.
+
+### 10.2 Comment ranger les scrutins par thème : options
+
+| Option | Comment | Pour | Contre |
+|---|---|---|---|
+| **A (recommandée)** | Une règle de mots publiée dans la fiche signée du comparateur, `ppf-theme-words` (le thème, puis ses mots) ; un scrutin entre dans un thème si son titre officiel contient l'un des mots (sans accents ni majuscules, mot entier ou début de mot) ; un scrutin peut entrer dans plusieurs thèmes ; ceux qui n'entrent dans aucun sont comptés et listés à part (« autres scrutins ») | Aucun choix scrutin par scrutin : la même règle pour tous les partis, lisible et vérifiable par n'importe qui, calculée sur l'appareil ; corrigeable par une nouvelle version, journalisée | Les mots eux-mêmes sont un choix de l'équipe : à relire à deux et à publier sous la liste ; des titres d'amendements peu parlants tombent dans « autres scrutins » |
+| B | La commission saisie au fond, rapprochée des thèmes | Officiel | Champ vide aujourd'hui dans les paquets ; absent pour le Sénat et le Parlement européen ; trop grossier (huit commissions) |
+| C | Classement à la main par l'équipe, relu à deux | Précis | Sélection éditoriale, contraire à la demande (« tous les votes », sans choix) ; des milliers de scrutins |
+
+**Décision du chef d'équipe (8 novembre 2026, D-117) : A**, avec cinq garde-fous :
+1. noms de thèmes neutres, repris des intitulés officiels (commissions permanentes, domaines des ministères) ;
+2. mots fixés et publiés avant la liste officielle des candidats ; ensuite, toute modification datée, motivée et visible dans un historique public de la fiche signée ; aucune pendant le gel ; chaque fiche montre la version des mots ;
+3. partout, « Tous les votes de ce parti » sans thème et une recherche libre par mot dans les titres officiels, sur l'appareil : les thèmes aident à lire, ils ne filtrent jamais ;
+4. sous chaque liste : « classement automatique par mots du titre officiel, il peut contenir des erreurs », les mots affichés et un moyen de signaler un scrutin mal rangé (correction par la règle de mots, jamais à la main) ;
+5. B plus tard, en filtre de plus, quand la commission sera dans les paquets ; C refusée.
+
+### 10.3 Affichage
+
+- Pour un thème et un candidat : le nombre de scrutins, puis chacun (date, titre officiel, chambre, résultat, et la répartition des élus du parti : « 12 pour, 3 contre, 1 abstention, 2 non-votants sur 18 »), du plus récent au plus ancien, par pages de 20, avec un filtre par chambre ; jamais de position majoritaire calculée, jamais de note.
+- La règle de mots et sa date sont affichées sous chaque liste, avec le nombre de « autres scrutins ».
+- Hors ligne : tout est calculé sur l'appareil à partir des paquets déjà téléchargés ; le serveur ne sait pas quel candidat ou quel thème est regardé.
+
+## 11. Photos officielles (Q3) : conception
+
+Décision de la propriétaire : « Si, on inclue la photo. » La photo officielle de chacun, au même format et sur le même fond, servie par PPF (jamais par un site tiers), avec licence, auteur et source vérifiés et inscrits dans la liste des relectures par un avocat ; sans droit vérifié, pas de photo, pour personne.
+
+- **Format** : sur la fiche signée du comparateur, `ppf-photo` (répétée, une par candidat) : `candidat`, `sha256` du fichier, `licence`, `auteur`, `page de la source (https)`. L'empreinte relie la fiche signée au fichier exact : un fichier changé n'est plus montré.
+- **Règle « tout ou rien »** (`ComparatorSheet.photosShown`) : les photos ne s'affichent que si **chaque** candidat de la fiche a la sienne, avec ses trois mentions ; sinon aucune, pour personne, et la page le dit.
+- **Fichiers** : préparés par l'équipe au même cadrage (carré, 400 pixels, fond uni), métadonnées retirées ; servis par le serveur de PPF à `GET /api/v1/decider/photos/{sha256}` depuis un dossier (`PPF_DECIDER_PHOTOS_DIR`, comme les tuiles de la carte), seulement quand l'empreinte du fichier correspond à son nom ; mise en cache longue (le nom change avec le contenu).
+- **Application** : à l'ouverture du comparateur, toutes les photos de la fiche sont demandées ensemble (jamais une seule, qui dirait au serveur quel candidat intéresse), vérifiées par leur empreinte, gardées sur l'appareil pour le hors-ligne ; même taille et même place pour tous ; texte de remplacement « Photo officielle de … » ; mentions de licence, d'auteur et de source sous la grille.
+- **Exemple** : aucune photo dans le jeu [EXEMPLE] (aucun droit à vérifier pour des personnes fictives) ; les tests utilisent des images générées.
+- **Avant la mise en ligne** : droit à l'image et droit d'auteur de chaque photo dans la liste des relectures par un avocat (section 9.8 du cahier des charges).

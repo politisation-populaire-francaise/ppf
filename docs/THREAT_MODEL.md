@@ -145,6 +145,7 @@ Modèle de menaces détaillé : `docs/integration/une-personne-une-voix.md`, sec
 | Fuite ou perte d'une graine | Fichier en lecture seule, hors dépôt et hors base, sauvegarde chiffrée hors site ; versions de graine et renouvellement | Copie hors ligne chez la propriétaire (guide du Directeur technique) |
 | Comptes multiples, robots | Preuve de travail à l'inscription, à chaque demande de jetons et sur chaque bulletin ; niveaux de votants, vérifiés montrés en premier ; niveau figé à l'ouverture | Validation en personne (étape 5) et détection des vagues |
 | Rejeu d'une autorisation ou d'un bulletin | Autorisation NIP-98 acceptée une fois, à 60 secondes près ; même `y` = remplacement, jamais un second vote | Aucun |
+| Une clé volée vote à la place de la personne, ou la personne vote deux fois avec l'ancienne et la nouvelle clé (S-146, 8 novembre 2026) | Une clé déclarée compromise est refusée à l'inscription, aux jetons, à la validation, à la certification et au vote public (`403 account_compromised`) ; le successeur nommé par l'avis reprend le curseur de jetons de l'ancienne clé : une urne déjà servie ne l'est jamais une seconde fois | **Risque restant, accepté (chef d'équipe, 8 novembre 2026)** : les jetons déjà reçus restent utilisables, car ils sont aveuglés, le serveur ne peut pas les relier au compte, et les révoquer casserait l'anonymat du vote ; un **téléphone volé** avec des jetons déjà reçus peut donc voter dans les urnes ouvertes, à hauteur de ces jetons seulement. Parade côté appareil : le verrouillage de l'application (S-43, Agir) et l'effacement rapide (S-44, Agir ; tables des jetons et des choix de Décider, `decider-urne`) les rendent inutilisables. Autre limite : se déclarer compromis sans successeur puis créer un compte neuf redonne un curseur vierge parmi les « non vérifiés », comme un second compte |
 
 ### Relecture indépendante R5 du vote (7 novembre 2026)
 
@@ -388,6 +389,16 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Tableau modifié après téléchargement et présenté comme venant de PPF | Chaque ligne donne la version du contenu, à vérifier par sa signature dans `contenus.json` ; empreinte de chaque fichier dans le catalogue | « Vérifier un contenu PPF » (S-141) |
 | Saturation du serveur par des téléchargements répétés | Export recalculé au plus une fois par minute, en mémoire, borné à 20 000 contenus ; `ETag` et `304` | Mode sobre du Directeur technique en cas d'afflux |
 | Pistage des personnes qui téléchargent (journalistes, chercheurs) | Aucun compte, aucun cookie, aucun journal des requêtes | |
+
+## Ajout du 8 novembre 2026 : comparateur de la présidentielle 2027 (DE-16, D-117)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Mise à jour du comparateur pendant le scrutin (avantage de dernière minute, propagande la veille, code électoral L49) | Le serveur refuse toute publication, mise à jour ou suppression d'un comparateur ou d'une position de 0 h la veille du premier jour de vote jusqu'à la fermeture des derniers bureaux (409 `comparator_frozen`), d'après les tours des fiches déjà enregistrées : une nouvelle version ne peut pas déplacer les dates d'un gel en cours ; un tour illisible fait refuser toute la fiche | Dates de l'outre-mer et heure de fermeture prises dans le décret de convocation de 2027 |
+| Traitement inégal des candidats (L52-8 : avantage en nature d'une personne morale) | Mêmes thèmes, même ordre, ordre alphabétique ; demandes visibles avec leurs dates et délai d'ajout identique ; photos affichées pour tous ou pour personne ; l'outil de signature refuse une fiche qui viole ces règles | Relecture par un avocat avant la mise en ligne |
+| Sélection orientée des votes passés | Aucun choix scrutin par scrutin : règle de mots publiée dans la fiche signée, fixée avant la liste officielle, versionnée avec un motif ; « Tous les votes de ce parti », « Autres scrutins » et la recherche libre toujours disponibles ; aucune position calculée | Filtre par commission saisie au fond (officiel) quand « Voir » le donnera |
+| Le serveur apprend quel candidat ou quel parti intéresse une personne (opinion politique, RGPD article 9) | Historique des votes téléchargé en entier pour tous les partis ; calcul et recherche sur l'appareil ; photos d'une fiche demandées toutes ensemble ; aucun journal des requêtes de photos | |
+| Photo remplacée sur le serveur (montage, mauvaise personne) | L'empreinte de chaque photo est dans la fiche signée ; le serveur ne sert un fichier que si ses octets correspondent à son nom, l'application revérifie l'empreinte et n'affiche rien si une seule photo manque ou diffère | |
 
 ## Ajout du 8 novembre 2026 : « Vérifier un contenu PPF » (M33, S-141)
 

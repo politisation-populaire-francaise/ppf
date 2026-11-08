@@ -66,6 +66,9 @@ enum class ArticleType(val tagValue: String) {
 
     /** A testimony published by the team after review (M5, AG-07; core.agir.testimonies.PublishedTestimony), shown by VO-08 in "Le mouvement". */
     TEMOIGNAGE("temoignage"),
+
+    /** An election of the personal electoral calendar (DE-28; core.decider.ElectionCalendar): rounds, deadlines, decree. */
+    ELECTION("election"),
     ;
 
     companion object {
