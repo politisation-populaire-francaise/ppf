@@ -47,6 +47,13 @@ import org.politisationpopulairefrancaise.server.editorial.EditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.EditorialQueue
 import org.politisationpopulairefrancaise.server.editorial.EditorialReviews
 import org.politisationpopulairefrancaise.server.editorial.UnpluggedEditorialPublisher
+import org.politisationpopulairefrancaise.server.editorial.EditorialSigning
+import org.politisationpopulairefrancaise.server.editorial.EditorialTexts
+import org.politisationpopulairefrancaise.server.editorial.SignedEditorialPublisher
+import org.politisationpopulairefrancaise.server.editorial.StorePublicationPort
+import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.editorial.PublishedContents
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
 import kotlin.time.Duration.Companion.hours
@@ -171,7 +178,9 @@ fun main() {
             }
         },
     ) {
-        module(dataSource, backOffice = backOffice, securityContact = securityContact)
+        // The platform signature (D-129): off unless PPF_SIGNER_URL is set; the editorial circuit then signs through it.
+        val platformSigner = PlatformSignerConfig.fromEnvironment()?.let { HttpPlatformSigner(it) }
+        module(dataSource, backOffice = backOffice, securityContact = securityContact, platformSigner = platformSigner)
     }.start(wait = true)
 }
 
@@ -227,8 +236,13 @@ fun Application.module(
     backOffice: BackOfficeSetup? = BackOfficeSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
     /** How researchers report a vulnerability (S-92): security.txt and the page /securite. */
     securityContact: SecurityContact = SecurityContactSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port),
-    /** Where an approved editorial version goes (circuit éditorial, step 5); nothing is sent until the signing service is plugged. */
-    editorialPublisher: EditorialPublisher = UnpluggedEditorialPublisher,
+    /**
+     * Where an approved editorial version goes (circuit éditorial, step 5): given here (tests), else the platform
+     * signature when [platformSigner] is configured, else nothing is sent ([UnpluggedEditorialPublisher]).
+     */
+    editorialPublisher: EditorialPublisher? = null,
+    /** The separate signing service (D-129, PPF_SIGNER_URL), null when none is configured. */
+    platformSigner: PlatformSigner? = null,
 ) {
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
@@ -270,8 +284,23 @@ fun Application.module(
         val drafts = EditorialDrafts(dataSource, teamBackOffice.clock)
         // The review (step 4): the reviewer never wrote the draft, nor shares a Nostr key with one who did.
         val reviews = EditorialReviews(dataSource, drafts, teamBackOffice.clock) { account -> teamBackOffice.member(account)?.nostrPubkey }
+        val publishedContents = PublishedContents(repository, policy::isEditor)
+        // The signature and the publication (step 5): on the platform signature when it is configured, never unsigned.
+        val publisher = editorialPublisher ?: platformSigner?.let { signer ->
+            SignedEditorialPublisher(
+                signer, drafts, EditorialSigning(dataSource, teamBackOffice.clock), repository, StorePublicationPort(repository, policy), teamBackOffice.clock,
+                onPublished = { publishedContents.refresh() },
+                onRefused = { space, draftId ->
+                    try {
+                        teamBackOffice.postAlert(EditorialQueue.idOf(space), EditorialTexts.ALERT_SIGNING_REFUSED, 5, EditorialQueue.publishPermission(space), EditorialQueue.reviewPath(space, draftId))
+                    } catch (e: Exception) {
+                        log.warn("Editorial signing: the dashboard alert could not be posted (${e::class.simpleName}).")
+                    }
+                },
+            )
+        } ?: UnpluggedEditorialPublisher
         teamBackOffice.sections.register(
-            EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, reviews, PublishedContents(repository, policy::isEditor), teamBackOffice.clock, editorialPublisher),
+            EditorialDraftsSection(EditorialSpace.COMPRENDRE, drafts, reviews, publishedContents, teamBackOffice.clock, publisher),
         )
         // The queue editorial.comprendre (counts, deadlines and levels of the dashboard); editorial.voir waits for the schemas of Voir.
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.COMPRENDRE, reviews) { account -> teamBackOffice.member(account)?.pseudonym })

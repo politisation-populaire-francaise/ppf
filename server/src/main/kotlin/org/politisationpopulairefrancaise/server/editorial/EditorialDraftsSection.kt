@@ -118,7 +118,7 @@ class EditorialDraftsSection(
                 else -> null
             }
             if (!draft.status.editable) return@get readOnlyPage(draft, schema, latest, notice)
-            formPage(schema, draft, FormState(latest.content), draft.latestVersion, check(schema, latest.content), notice = notice, offerSubmit = true)
+            formPage(schema, draft, FormState(latest.content), draft.latestVersion, check(schema, latest.content, draft.baseEventId != null), notice = notice, offerSubmit = true)
         }
         routes.post("brouillons/{id}") { form ->
             val (draft, schema) = draftOf(pathParameter("id")) ?: return@post notFound()
@@ -133,6 +133,7 @@ class EditorialDraftsSection(
             val notice = when (query["ok"]) {
                 "changes_requested" -> Notice(EditorialTexts.DONE_CHANGES_REQUESTED)
                 "rejected" -> Notice(EditorialTexts.DONE_REJECTED)
+                "withdrawn" -> Notice(EditorialTexts.DONE_WITHDRAWN)
                 else -> null
             }
             reviewPage(draft, schema, notice)
@@ -242,7 +243,7 @@ class EditorialDraftsSection(
                                     td { +draft.latestVersion.toString() }
                                     td {
                                         +EditorialTexts.status(draft.status)
-                                        if (draft.status == DraftStatus.IN_REVIEW) {
+                                        if (draft.status == DraftStatus.IN_REVIEW || draft.status in EditorialReviews.SIGNABLE) {
                                             +" ("
                                             a(href = path("relecture/${draft.id}")) { +EditorialTexts.REVIEW_LINK.lowercase() }
                                             +")"
@@ -495,7 +496,7 @@ class EditorialDraftsSection(
     private suspend fun SectionContext.postEdit(draft: EditorialDraft, schema: ContentSchema, form: Parameters) {
         val posted = EditorialForm.read(schema, form, isUpdate = draft.baseEventId != null)
         val content = posted.state.content
-        val problems = check(schema, content)
+        val problems = check(schema, content, draft.baseEventId != null)
         val version = posted.version ?: 0
         if (!draft.status.editable) {
             return formPage(schema, draft, posted.state, draft.latestVersion, problems, Notice(EditorialTexts.NOT_EDITABLE, error = true), HttpStatusCode.Conflict)
@@ -528,7 +529,7 @@ class EditorialDraftsSection(
         val schema = ArticleType.entries.firstOrNull { it.tagValue == event.firstTagValue(Article.TAG_TYPE) }?.let { schemaOf(it) } ?: return redirect(query = "erreur=not_published")
         val read = EditorialEngine.draftOf(schema, event, snapshot.context(space, emptyMap()))
         val content = DraftContent(EditorialForm.ordered(schema, read.entries), read.body)
-        val problems = check(schema, content)
+        val problems = check(schema, content, isUpdate = true)
         when (val result = drafts.create(space, schema.type, content, problems.size, actor.accountId, baseEventId = event.id)) {
             is SaveResult.Saved -> {
                 if (!journal("draft_created", result.draft, 1, details(result.draft, 1, problems) + ("base_event" to event.id))) return
@@ -562,11 +563,22 @@ class EditorialDraftsSection(
         DraftStatus.IN_REVIEW -> EditorialTexts.STATE_IN_REVIEW
         DraftStatus.READY_TO_SIGN -> EditorialTexts.STATE_READY_TO_SIGN
         DraftStatus.REJECTED -> EditorialTexts.STATE_REJECTED
+        DraftStatus.SIGNING_REFUSED -> EditorialTexts.STATE_SIGNING_REFUSED
+        DraftStatus.PUBLISHED -> EditorialTexts.STATE_PUBLISHED
         else -> EditorialTexts.STATE_FINISHED
     }
 
     /** The message of the last request for changes, or the reason of the refusal, for the writers. */
     private fun FlowContent.lastMessage(draft: EditorialDraft) {
+        val withdrawal = draft.withdrawReason
+        if (withdrawal != null && draft.status.editable) {
+            section(classes = "bo-notice bo-notice-warning") {
+                attributes["aria-labelledby"] = "dernier-retrait"
+                h2 { id = "dernier-retrait"; +"${EditorialTexts.LAST_WITHDRAWAL} (${EditorialTexts.VERSION.lowercase()} ${draft.submittedVersion ?: draft.latestVersion})" }
+                withdrawal.lines().forEach { line -> p { +line } }
+            }
+            return
+        }
         if (draft.status != DraftStatus.CHANGES_REQUESTED && draft.status != DraftStatus.REJECTED) return
         val last = reviews.decisions(draft.id).firstOrNull { it.reason != null } ?: return
         section(classes = "bo-notice bo-notice-warning") {
@@ -577,15 +589,17 @@ class EditorialDraftsSection(
     }
 
     /** The review page: the submitted version as the site would show it, its facts, the decisions, the forms. */
-    private suspend fun SectionContext.reviewPage(draft: EditorialDraft, schema: ContentSchema, notice: Notice?, status: HttpStatusCode = HttpStatusCode.OK, signer: PublisherAnswer? = null) {
-        val submitted = draft.submittedVersion?.let { drafts.version(draft.id, it) }
+    private suspend fun SectionContext.reviewPage(given: EditorialDraft, schema: ContentSchema, notice: Notice?, status: HttpStatusCode = HttpStatusCode.OK, signer: PublisherAnswer? = null) {
+        val submitted = given.submittedVersion?.let { drafts.version(given.id, it) }
+        // A version approved for publication: where it stands on the signing service, read now (no background loop).
+        val signing = if (given.status in SIGNING_STATES && submitted != null) signer ?: signerAnswer(given, submitted.version) { publisher.state(it) } else null
+        // The signing seam may have published or refused it just now: the page shows the new state.
+        val draft = if (signing != null) drafts.find(given.id) ?: given else given
         val history = reviews.decisions(draft.id)
         val names = (history.map { it.reviewer } + draft.author).distinct().associateWith { pseudonymOf(it) }
         val queued = reviews.queued(space).firstOrNull { it.draft.id == draft.id }
-        val problems = if (submitted != null && draft.status == DraftStatus.IN_REVIEW) check(schema, submitted.content) else emptyList()
+        val problems = if (submitted != null && draft.status == DraftStatus.IN_REVIEW) check(schema, submitted.content, draft.baseEventId != null) else emptyList()
         val writer = reviews.isWriterOf(draft.id, actor.accountId)
-        // A version ready to sign: where it stands on the signing service, read now (no background loop).
-        val signing = if (draft.status == DraftStatus.READY_TO_SIGN && submitted != null) signer ?: signerAnswer(draft, submitted.version) { publisher.state(it) } else null
         val mayApprove = !writer && actor.has(EditorialQueue.publishPermission(space))
         respondPage("${EditorialTexts.REVIEW_TITLE} : ${draft.title.ifBlank { EditorialTexts.UNTITLED }}", notice, status) {
             draftHeader(this@reviewPage, draft, schema, EditorialTexts.REVIEW_TITLE)
@@ -602,6 +616,9 @@ class EditorialDraftsSection(
                     dt { +EditorialTexts.REVIEW_LEVEL }
                     dd { +("${item.level} / 5" + if (item.correction) " (${EditorialTexts.QUEUE_CORRECTION})" else "") }
                 }
+            }
+            submitted?.content?.changeKind?.takeIf { draft.baseEventId != null }?.let { kind ->
+                p { +"${EditorialTexts.CHANGE_LEGEND} : ${if (kind == ChangeKind.CORRECTION) EditorialTexts.CHANGE_CORRECTION else EditorialTexts.CHANGE_UPDATE}" }
             }
             submitted?.content?.changeNote?.let { note -> p { +"${EditorialTexts.CHANGE_NOTE} : $note" } }
             if (problems.isNotEmpty()) {
@@ -631,6 +648,7 @@ class EditorialDraftsSection(
                 }
             }
             signing?.let { signerBlock(it, mayApprove) }
+            if (draft.status in EditorialReviews.SIGNABLE && submitted != null && signing !is PublisherAnswer.Published) signingActions(this@reviewPage, draft, submitted.version, signing, writer)
             section {
                 attributes["aria-labelledby"] = "decision"
                 h2 { id = "decision"; +EditorialTexts.REVIEW_ACTIONS }
@@ -698,7 +716,7 @@ class EditorialDraftsSection(
             return readOnlyPage(draft, schema, latest, Notice(EditorialTexts.format(EditorialTexts.WRONG_STATE, EditorialTexts.status(draft.status).lowercase()), error = true), HttpStatusCode.Conflict)
         }
         // The rules of the engine, again, on the version saved: a version with problems never leaves for review.
-        val problems = check(schema, latest.content)
+        val problems = check(schema, latest.content, draft.baseEventId != null)
         if (problems.isNotEmpty()) {
             return formPage(
                 schema, draft, FormState(latest.content), draft.latestVersion, problems,
@@ -715,6 +733,7 @@ class EditorialDraftsSection(
 
     private suspend fun SectionContext.postDecision(draft: EditorialDraft, schema: ContentSchema, form: Parameters) {
         val action = form["decision"] ?: return notFound()
+        if (action == ACTION_RETRY || action == ACTION_WITHDRAW) return postSigningAction(draft, schema, action, form)
         val decision = when (action) {
             ACTION_REQUEST_CHANGES -> ReviewDecision.CHANGES_REQUESTED
             ACTION_REJECT -> ReviewDecision.REJECTED
@@ -733,7 +752,7 @@ class EditorialDraftsSection(
         if (decision == ReviewDecision.READY_TO_SIGN) {
             // The rules may have changed since the submission: a version with problems is never approved.
             val submitted = draft.submittedVersion?.takeIf { it == version }?.let { drafts.version(draft.id, it) }
-            val problems = submitted?.let { check(schema, it.content) }.orEmpty()
+            val problems = submitted?.let { check(schema, it.content, draft.baseEventId != null) }.orEmpty()
             if (problems.isNotEmpty()) {
                 return reviewPage(draft, schema, Notice(EditorialTexts.format(EditorialTexts.REVIEW_PROBLEMS, problems.size), error = true), HttpStatusCode.UnprocessableEntity)
             }
@@ -748,6 +767,35 @@ class EditorialDraftsSection(
                 reviewPage(decided, schema, Notice(EditorialTexts.DONE_READY_TO_SIGN), signer = answer)
             }
             else -> redirect("relecture/${draft.id}", "ok=${decision.db}")
+        }
+    }
+
+    /** `retry_signing` and `withdraw` (step 5): sensitive, publish permission, never a writer of the draft. */
+    private suspend fun SectionContext.postSigningAction(draft: EditorialDraft, schema: ContentSchema, action: String, form: Parameters) {
+        if (!actor.has(EditorialQueue.publishPermission(space))) return forbidden()
+        if (!requireFresh()) return
+        val version = form["version"]?.toIntOrNull() ?: 0
+        if (action == ACTION_WITHDRAW) {
+            val reason = form["motif"]?.trim()?.takeIf { it.isNotEmpty() }
+            if (reason == null || reason.length > EditorialReviews.MAX_REASON) {
+                return reviewPage(draft, schema, Notice(EditorialTexts.format(EditorialTexts.REASON_REQUIRED, EditorialTexts.number(EditorialReviews.MAX_REASON)), error = true), HttpStatusCode.UnprocessableEntity)
+            }
+            val result = tracked(action, draft, version) { reviews.withdraw(draft.id, version, actor.accountId, reason) } ?: return
+            return when (result) {
+                is ReviewResult.Done -> redirect("relecture/${draft.id}", "ok=withdrawn")
+                ReviewResult.NotFound -> notFound()
+                else -> reviewPage(drafts.find(draft.id) ?: draft, schema, Notice(refusalText(result), error = true), statusOf(result))
+            }
+        }
+        val result = tracked(action, draft, version) { reviews.checkRetry(draft.id, version, actor.accountId) } ?: return
+        val allowed = (result as? ReviewResult.Done)?.draft
+        when {
+            allowed == null && result == ReviewResult.NotFound -> notFound()
+            allowed == null -> reviewPage(drafts.find(draft.id) ?: draft, schema, Notice(refusalText(result), error = true), statusOf(result))
+            else -> {
+                val answer = signerAnswer(allowed, version) { publisher.retry(it) }
+                reviewPage(drafts.find(draft.id) ?: allowed, schema, Notice(EditorialTexts.DONE_RETRIED), signer = answer)
+            }
         }
     }
 
@@ -783,13 +831,72 @@ class EditorialDraftsSection(
             when (answer) {
                 PublisherAnswer.NotConnected -> p { +EditorialTexts.SIGNER_NOT_PLUGGED }
                 PublisherAnswer.KeyUnavailable -> p { +EditorialTexts.SIGNER_UNAVAILABLE }
-                is PublisherAnswer.Refused -> p(classes = "bo-notice bo-notice-error") { +EditorialTexts.format(EditorialTexts.SIGNER_REFUSED, answer.code) }
-                is PublisherAnswer.Published -> p { +EditorialTexts.SIGNER_PUBLISHED }
+                is PublisherAnswer.Refused -> div(classes = "bo-notice bo-notice-error") {
+                    p { +EditorialTexts.format(EditorialTexts.SIGNER_REFUSED, answer.code) }
+                    p { +EditorialTexts.SIGNER_REFUSED_HINT }
+                }
+                is PublisherAnswer.Published -> p(classes = "bo-notice") {
+                    attributes["role"] = "status"
+                    +EditorialTexts.SIGNER_PUBLISHED
+                }
+                PublisherAnswer.SignaturePending -> p { +EditorialTexts.SIGNER_PENDING }
+                PublisherAnswer.Unavailable -> p(classes = "bo-notice bo-notice-warning") { +EditorialTexts.SIGNER_DOWN }
+                PublisherAnswer.Expired -> p(classes = "bo-notice bo-notice-warning") { +EditorialTexts.SIGNER_EXPIRED }
                 is PublisherAnswer.AwaitingApproval -> {
                     p { +EditorialTexts.format(EditorialTexts.SIGNER_AWAITING, answer.approvals, answer.required) }
                     // A plain link to the signing service's own page: no ceremony on this server.
                     if (mayApprove && isSignerLink(answer.approvalUrl)) p { a(href = answer.approvalUrl) { +EditorialTexts.SIGNER_LINK } }
                 }
+            }
+        }
+    }
+
+    /**
+     * The actions of an approved version on its way to the signature (step 5), for the members who may approve
+     * it (publish permission, never a writer): retry after an expiry or a refusal (a new event), and withdraw
+     * (back to draft, with a reason kept for the writers).
+     */
+    private fun FlowContent.signingActions(context: SectionContext, draft: EditorialDraft, version: Int, answer: PublisherAnswer?, writer: Boolean) {
+        if (!context.actor.has(EditorialQueue.publishPermission(space))) return
+        section {
+            attributes["aria-labelledby"] = "signature-actions"
+            h2 { id = "signature-actions"; +EditorialTexts.SIGNING_ACTIONS }
+            if (writer) {
+                p(classes = "bo-notice") { +EditorialTexts.SIGNING_YOU_WROTE }
+                return@section
+            }
+            val retryable = draft.status == DraftStatus.SIGNING_REFUSED || answer == PublisherAnswer.Expired || answer is PublisherAnswer.Refused
+            if (retryable) {
+                form(action = context.path("relecture/${draft.id}"), method = FormMethod.post, classes = "bo-action") {
+                    context.csrfInput(this)
+                    input(type = InputType.hidden, name = "decision") { value = ACTION_RETRY }
+                    input(type = InputType.hidden, name = "version") { value = version.toString() }
+                    p(classes = "bo-hint") { +EditorialTexts.RETRY_HINT }
+                    p(classes = "bo-hint") { +EditorialTexts.SENSITIVE_HINT }
+                    button(type = ButtonType.submit, classes = "bo-button") { +EditorialTexts.RETRY }
+                }
+            }
+            form(action = context.path("relecture/${draft.id}"), method = FormMethod.post, classes = "bo-action") {
+                context.csrfInput(this)
+                input(type = InputType.hidden, name = "decision") { value = ACTION_WITHDRAW }
+                input(type = InputType.hidden, name = "version") { value = version.toString() }
+                label {
+                    htmlFor = "motif-withdraw"
+                    +EditorialTexts.WITHDRAW_REASON_LABEL
+                }
+                textArea(rows = "3") {
+                    id = "motif-withdraw"
+                    name = "motif"
+                    required = true
+                    maxLength = EditorialReviews.MAX_REASON.toString()
+                    attributes["aria-describedby"] = "motif-withdraw-aide"
+                }
+                p(classes = "bo-hint") {
+                    id = "motif-withdraw-aide"
+                    +EditorialTexts.WITHDRAW_HINT
+                }
+                p(classes = "bo-hint") { +EditorialTexts.SENSITIVE_HINT }
+                button(type = ButtonType.submit, classes = "bo-button") { +EditorialTexts.WITHDRAW }
             }
         }
     }
@@ -857,10 +964,13 @@ class EditorialDraftsSection(
         return draft to (schemaOf(draft.type) ?: return null)
     }
 
-    /** Every problem of [content], against the published contents and the other open drafts. */
-    fun check(schema: ContentSchema, content: DraftContent): List<Problem> {
+    /**
+     * Every problem of [content], against the published contents and the other open drafts; for an update of a
+     * published content ([isUpdate]), the nature of the change and its public summary too ([UpdateChecks]).
+     */
+    fun check(schema: ContentSchema, content: DraftContent, isUpdate: Boolean = false): List<Problem> {
         val context = published.snapshot().context(space, drafts.openSlugs())
-        return EditorialEngine.check(schema, content.draft(schema.type), context)
+        return EditorialEngine.check(schema, content.draft(schema.type), context) + UpdateChecks.problems(content, isUpdate)
     }
 
     /**
@@ -917,6 +1027,11 @@ class EditorialDraftsSection(
         const val ACTION_REQUEST_CHANGES: String = "request_changes"
         const val ACTION_REJECT: String = "reject"
         const val ACTION_APPROVE: String = "approve"
+        const val ACTION_RETRY: String = "retry_signing"
+        const val ACTION_WITHDRAW: String = "withdraw"
+
+        /** The states whose review page asks the signing seam where the version stands. */
+        private val SIGNING_STATES: Set<DraftStatus> = setOf(DraftStatus.READY_TO_SIGN, DraftStatus.SIGNING_REFUSED, DraftStatus.PUBLISHED)
         private val log = org.slf4j.LoggerFactory.getLogger(EditorialDraftsSection::class.java)
     }
 }

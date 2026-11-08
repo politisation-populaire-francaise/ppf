@@ -49,6 +49,15 @@ sealed interface PublisherAnswer {
     /** Refused by the signing service or by this server, with the stable code of `SigningStatus.Refused` / `DraftSubmission.Refused`. */
     data class Refused(val code: String, val detail: String? = null) : PublisherAnswer
 
+    /** Approved on the signing service, the signature requested and not given yet (`SigningStatus.Pending`): asked again on reload. */
+    data object SignaturePending : PublisherAnswer
+
+    /** The signing service (or the publication port) does not answer now: nothing lost, asked again on the next reload. */
+    data object Unavailable : PublisherAnswer
+
+    /** The submission expired after 7 days on the signing service: a retry builds a new event (new `created_at`). */
+    data object Expired : PublisherAnswer
+
     /** Signed and published, unchanged, through the single publication port: [eventId] of the signed event. */
     data class Published(val eventId: String) : PublisherAnswer
 }
@@ -74,6 +83,12 @@ interface EditorialPublisher {
     suspend fun handOver(version: ReadyToSign): PublisherAnswer
 
     suspend fun state(version: ReadyToSign): PublisherAnswer
+
+    /**
+     * The action `retry_signing` (step 5): after an expiry or a refusal, the living submissions of the version are
+     * closed and a new event is built, with a `created_at` strictly after every earlier one, then submitted.
+     */
+    suspend fun retry(version: ReadyToSign): PublisherAnswer = handOver(version)
 }
 
 /** The default until step 5: nothing is sent, the review page says that the signing service is not plugged yet. */

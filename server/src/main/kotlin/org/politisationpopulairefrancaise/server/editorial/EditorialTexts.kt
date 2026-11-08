@@ -56,7 +56,10 @@ object EditorialTexts {
     const val CHANGE_LEGEND: String = "Nature du changement"
     const val CHANGE_CORRECTION: String = "Correction (une erreur de fond : un fait, un chiffre, un statut)"
     const val CHANGE_UPDATE: String = "Mise à jour (complément, nouvelle source, forme)"
-    const val CHANGE_NOTE: String = "Note de correction (publique, au journal des corrections)"
+    const val CHANGE_NOTE: String = "Résumé du changement (public, au journal des corrections, obligatoire)"
+    const val CHANGE_NOTE_HINT: String = "Une ou deux phrases sur ce qui change et pourquoi : elles sont publiées avec le contenu et dans le journal public des corrections, à côté de la date."
+    const val CHANGE_KIND_REQUIRED: String = "Nature du changement : choisissez « Correction » ou « Mise à jour » (obligatoire pour la mise à jour d’un contenu publié)."
+    const val CHANGE_NOTE_REQUIRED: String = "Résumé du changement : ce champ est obligatoire pour la mise à jour d’un contenu publié (il entre au journal public des corrections)."
     const val BODY_LABEL: String = "Texte (Markdown)"
     const val BODY_HINT: String = "Titres « ## », listes « - », gras « **…** », liens « [texte](https://…) ». Aucun HTML : il serait affiché tel quel."
     const val BODY_BLOCKS: String = "Blocs attendus :"
@@ -157,6 +160,23 @@ object EditorialTexts {
     const val SIGNER_LINK: String = "Approuver sur la page de signature"
     const val SIGNER_REFUSED: String = "Le service de signature a refusé cette version (code « {0} »)."
     const val SIGNER_PUBLISHED: String = "Contenu signé et publié."
+    const val ALERT_SIGNING_REFUSED: String = "Rédaction : la signature d’un contenu approuvé a été refusée"
+    const val SIGNER_PENDING: String = "Les approbations sont réunies ; la signature est demandée et pas encore donnée. Rechargez la page dans un moment."
+    const val SIGNER_DOWN: String = "Le service de signature ne répond pas pour l’instant : rien n’est perdu, la demande sera reprise au prochain chargement de cette page."
+    const val SIGNER_EXPIRED: String = "La demande de signature a expiré (7 jours sans les deux approbations) : relancez-la, un nouvel événement sera préparé avec une nouvelle date."
+    const val SIGNER_REFUSED_HINT: String = "Rien n’est publié. Après avoir réglé la cause, relancez la signature ou retirez la version."
+    const val RETRY: String = "Relancer la signature"
+    const val RETRY_HINT: String = "Un nouvel événement est préparé à partir de la version approuvée, avec une nouvelle date, et soumis de nouveau au service de signature."
+    const val WITHDRAW: String = "Retirer la version approuvée"
+    const val WITHDRAW_REASON_LABEL: String = "Motif du retrait (obligatoire)"
+    const val WITHDRAW_HINT: String = "La version ne sera ni signée ni publiée ; le brouillon redevient modifiable par ses auteurs, qui enregistrent une nouvelle version avant de le soumettre de nouveau."
+    const val SIGNING_ACTIONS: String = "Signature : actions"
+    const val SIGNING_YOU_WROTE: String = "Vous avez écrit ce brouillon : la relance et le retrait reviennent à un autre éditeur ou une autre éditrice."
+    const val DONE_WITHDRAWN: String = "Version retirée : le brouillon est de nouveau modifiable par ses auteurs."
+    const val DONE_RETRIED: String = "Signature relancée avec un nouvel événement."
+    const val LAST_WITHDRAWAL: String = "Motif du retrait de la version approuvée"
+    const val STATE_SIGNING_REFUSED: String = "La signature de cette version a été refusée : rien n’est publié. Voir la page de relecture."
+    const val STATE_PUBLISHED: String = "Ce contenu est signé et publié : une nouvelle modification passe par « Mettre à jour un contenu publié »."
 
     const val SUBMIT_TITLE: String = "Envoyer en relecture"
     const val SUBMIT_INTRO: String = "La version {0} partira en relecture ; elle ne sera plus modifiable, sauf si des modifications sont demandées."
@@ -216,6 +236,7 @@ object EditorialTexts {
      * « Période, ligne 1, Début : … ». The templates are those of [EditorialMessages].
      */
     fun problem(schema: ContentSchema, problem: Problem): String {
+        serverProblems[problem.code]?.let { return it }
         var text = EditorialMessages.template(problem.code) ?: problem.code
         problem.args.forEachIndexed { i, arg -> text = text.replace("{$i}", arg) }
         val field = problem.field?.let(schema::field)
@@ -235,6 +256,12 @@ object EditorialTexts {
         args.forEachIndexed { i, arg -> text = text.replace("{$i}", arg.toString()) }
         return text
     }
+
+    /** The problems found by the server around the engine (an update of a published content), already in French. */
+    private val serverProblems: Map<String, String> = mapOf(
+        UpdateChecks.CHANGE_KIND_REQUIRED to CHANGE_KIND_REQUIRED,
+        UpdateChecks.CHANGE_NOTE_REQUIRED to CHANGE_NOTE_REQUIRED,
+    )
 
     private val commonLabels: Map<String, String> = mapOf(
         ContentSchema.SLUG to "Identifiant (adresse du contenu)",

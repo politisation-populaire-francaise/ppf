@@ -86,6 +86,7 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `ppf-territory-code` | Code du référentiel des territoires (section 4 nonies) à côté du libellé ; pas encore accepté par le serveur pour les revendications | Non |
 | `ppf-duration` | Parcours seulement : durée de lecture annoncée, en minutes (1 à 240) | Non |
 | `ppf-origin` | `human` (rédigé par un humain) ou `ai-assisted` (produit avec l'aide d'une IA) | Oui |
+| `ppf-correction` | Journal public des corrections (circuit éditorial, D-095) : date `AAAA-MM-JJ` (heure de Paris), résumé public du changement, nature `correction` (erreur de fond) ou `mise-a-jour` ; une étiquette par mise à jour d'un contenu publié, celles des versions précédentes reprises à l'identique et jamais retirées ; mêmes deux premières positions que dans « Voir » (section 4 quinquies) | Non (obligatoire sur une mise à jour publiée par le circuit éditorial) |
 
 La date de dernière mise à jour est `created_at`. Une nouvelle version porte le même `d` et une date plus récente : elle remplace la précédente partout (section 4). L'application n'affiche que les contenus dont l'auteur figure dans sa liste d'auteurs de confiance.
 
@@ -212,7 +213,7 @@ Chaque brique est un contenu éditorial NIP-23 (type `30023`) : étiquettes comm
 |---|---|
 | `ppf-source` | type de source, nom, adresse web, date |
 | `ppf-archive` | empreinte SHA-256 de l'original, preuve d'horodatage (`opentimestamps`, `rfc3161`), adresse de la copie archivée, date |
-| `ppf-correction` | date, motif (journal public des corrections) |
+| `ppf-correction` | date, motif (journal public des corrections) ; une troisième position facultative donne la nature, `correction` ou `mise-a-jour` (D-095) |
 | `ppf-next` | libellé, cible : adresse d'un contenu `30023:<clé>:<identifiant>` ou `space:<espace>` (« Et maintenant ? ») |
 | `a` | `30023:<clé>:<identifiant>`, champ vide, rôle : `personne`, `texte`, `indicateur` ou `cible` (contenu auquel répond un droit de réponse) |
 | `ppf-axis` | `mouvement`, `pouvoir` ou `libertes` |
