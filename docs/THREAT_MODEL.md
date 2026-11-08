@@ -390,6 +390,12 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Saturation du serveur par des téléchargements répétés | Export recalculé au plus une fois par minute, en mémoire, borné à 20 000 contenus ; `ETag` et `304` | Mode sobre du Directeur technique en cas d'afflux |
 | Pistage des personnes qui téléchargent (journalistes, chercheurs) | Aucun compte, aucun cookie, aucun journal des requêtes | |
 
+## Ajout du 8 novembre 2026 : reprise d'un salon signée par la plateforme (D-144)
+
+- Menace : une équipe, ou un serveur principal compromis, qui s'empare de salons en y nommant ses propres administrateurs « par l'équipe de PPF ».
+- Parades : seuls les salons sans administrateur entrent dans la file `groups.orphans`, et le serveur refuse de publier une reprise dans un salon qui a de nouveau un administrateur (`409 room_has_admin`) ; l'usage de signature `groups.takeover` est humain, jamais automatique, et le service de signature impose lui-même deux personnes : l'auteur, toujours nommé, n'approuve jamais, et l'approbation se fait avec une clé d'accès de la liste de l'équipe signée par la racine, sur la page du service ; la clé de la plateforme ne reçoit jamais de rôle ; 10 reprises par heure au plus ; la trace est publique et signée (un 9000 vérifiable par tous dans le journal du salon, avec son motif), et chaque brouillon, approbation et signature entre dans le journal chaîné du service.
+- Limite : l'auteur est déclaré par la file (comme pour D-142) ; un serveur compromis qui nomme un faux auteur a toujours besoin de l'approbation d'un membre autorisé, qui lit le salon, la clé nommée et le motif sur la page du service.
+
 ## Ajout du 8 novembre 2026 : pas de code natif inutile dans les conteneurs qui gardent une clé (D-145)
 
 - Menace : une faille dans une bibliothèque native chargée à l'exécution (libsodium, JNA) donnerait une prise dans le service de signature ou l'importeur, qui gardent une clé, alors qu'ils n'en ont aucun usage.

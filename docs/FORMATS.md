@@ -665,7 +665,7 @@ Signé par la racine, `content` vide.
 | Étiquette | Contenu | Nombre |
 |---|---|---|
 | `d` | Clé publique de la clé de travail, hexadécimal minuscule (jamais la racine) | Une |
-| `ppf-key-use` | Un usage : `editorial.comprendre`, `editorial.voir`, `revendications.status`, `agir.organisations`, `decider.pacte`, `archives.timestamps`, `opendata.index`, `decider.urn_closure` | Une par usage ; un usage inconnu est ignoré par les applications ; le service de signature n'accepte un certificat `active` que s'il nomme exactement l'usage de la clé, une seule fois |
+| `ppf-key-use` | Un usage : `editorial.comprendre`, `editorial.voir`, `revendications.status`, `agir.organisations`, `decider.pacte`, `archives.timestamps`, `opendata.index`, `decider.urn_closure`, `groups.takeover` | Une par usage ; un usage inconnu est ignoré par les applications ; le service de signature n'accepte un certificat `active` que s'il nomme exactement l'usage de la clé, une seule fois |
 | `ppf-not-before` | Début de la validité, secondes depuis 1970, en chiffres | Une |
 | `ppf-not-after` | Fin de la validité (exclue), 90 jours au plus après le début | Une |
 | `ppf-key-status` | `["ppf-key-status","active"]`, ou `["ppf-key-status","revoquee","<date d'effet en secondes>"]` | Une |
@@ -688,12 +688,27 @@ Un événement est un **contenu valide de la plateforme pour un usage** (`Platfo
 | `archives.timestamps` | 1040 | Le type suffit | Aucun | Exactement un `e` (64 caractères hexadécimaux : l'empreinte horodatée) et au plus un `k` (type, en chiffres) ; `content` = la preuve `.ots` en base64 canonique, 8 Kio au plus une fois décodée, qui commence par l'en-tête OpenTimestamps (`\x00OpenTimestamps\x00\x00Proof\x00` puis `bf89e2e884e89294`), la version majeure 1, l'opération SHA-256 du fichier (`0x08`) et les 32 octets de l'empreinte, égaux à la valeur de `e`. **Aucun autre format de preuve n'est accepté pour l'instant** (RFC 3161 compris : un jeton RFC 3161 n'entre pas dans un événement 1040 de NIP-03 ; s'il en faut un, ce sera un autre type et une modification du contrat) |
 | `opendata.index` | 30078 | Exactement `d` = `ppf:parlement-index` | Aucun | Exactement `["d","ppf:parlement-index"]` (section 4 octies) ; `content` = un objet JSON |
 | `decider.urn_closure` | 30078 | Exactement un `d` qui commence par `ppf:urne-cloture:` | Aucun | Exactement `d` = `ppf:urne-cloture:<n>`, `ppf-urne` = `<n>` et `ppf-closing-sha256` = l'empreinte SHA-256 du document de clôture (`GET /api/v1/urnes/{n}/closing`) ; `content` = un objet JSON ; **jamais une seconde clôture pour le même `d`** |
+| `groups.takeover` (D-144) | 9000 | Toute la forme : exactement un `h` (identifiant de salon valide), exactement un `p` = `["p","<clé>","admin"]`, aucune autre étiquette, `content` = le motif, non vide, 500 caractères au plus | Un, d'un autre membre que l'auteur, toujours nommé (D-142, D-144) | La même forme (codes `kind_not_allowed`, `tag_not_allowed`, `missing_tag`, `bad_tag`, `bad_content`) ; la clé nommée n'est jamais une clé de la plateforme (clé de travail du service ou racine) |
 
 Les formes des trois usages automatiques sont celles de la version 1 du contrat : « Décider » les confirme avant de brancher l'archivage horodaté et la clôture des urnes, et toute modification est une modification du contrat (section 4). Pour tous les usages : 64 Kio au plus (forme canonique), 1000 étiquettes au plus, `created_at` au plus 5 minutes dans le futur et au plus 8 jours dans le passé (1 jour pour un usage automatique). **La signature prouve que la plateforme a dit le contenu, pas qu'il est vrai** : l'index des données ouvertes et les clôtures d'urnes portent un JSON choisi par le serveur sans relecture humaine, et les applications vérifient tout ce qui peut l'être (empreintes des paquets, empreinte du document de clôture, recomptage quand la méthode le permet).
 
 ### Clôture d'une urne : la première l'emporte (pour « Décider »)
 
 Exception à la règle des événements adressables : pour un même `d` = `ppf:urne-cloture:<n>`, l'application garde la **première** clôture signée par la plateforme (le plus petit `created_at`, à égalité le plus petit `id`), jamais la plus récente, et montre toute autre clôture signée par la plateforme pour le même `d` comme un **conflit** (« Deux clôtures signées existent pour cette urne : la première est retenue »). Une clôture plus récente ne remplace jamais la première, qu'elle vienne de la même clé ou de la clé suivante (autre adresse). Code commun : `UrnClosures.choose(événements, confiance)` rend, pour chaque `d`, la clôture retenue et la liste des conflits ; seuls comptent les événements que `PlatformTrust` accepte pour `decider.urn_closure`. Le service de signature, de son côté, refuse définitivement une seconde clôture pour le même `d` (`urn_already_closed`). Le stockage local et le serveur gardent donc **toutes** les clôtures reçues pour un `d` (pas de remplacement par `EventReplacement` pour ce type et ce préfixe), à brancher par « Décider ».
+
+### Reprise d'un salon resté sans administrateur (usage `groups.takeover`, D-144)
+
+Quand le seul administrateur d'un salon public a été déclaré compromis, l'équipe peut nommer un administrateur, par une action à deux (conception `docs/integration/salons-reprise.md`). La trace est publique et vérifiable : un **put-user de NIP-29 (type 9000)** signé par la clé de travail certifiée pour `groups.takeover`, de la forme exacte du put-user des salons (`RoomModeration.putUser`), le motif en plus :
+
+```json
+{"kind":9000,"pubkey":"<clé de travail groups.takeover>","tags":[["h","collectif-exemple"],["p","<clé nommée>","admin"]],"content":"[EXEMPLE] Le seul administrateur a été déclaré compromis ; le modérateur en place reprend le salon."}
+```
+
+- Étiquettes : exactement un `h` (l'identifiant du salon, 1 à 64 caractères `a-z0-9._~-`) et exactement un `p` à trois éléments, la clé nommée en 64 caractères hexadécimaux minuscules et le rôle `admin` (jamais `moderator`, jamais sans rôle) ; aucune autre étiquette (le put-user des salons n'en ajoute aucune).
+- `content` : le motif, montré publiquement dans le journal du salon, non vide, 500 caractères au plus, sans donnée personnelle (règle de la file `groups.orphans`).
+- La clé nommée n'est jamais une clé de la plateforme : la clé de la plateforme ne reçoit jamais de rôle.
+- Les applications reconnaissent la nomination comme celle de l'équipe quand `PlatformTrust.check(événement, SigningUse.GROUPS_TAKEOVER)` l'accepte, et l'affichent avec la mention « par l'équipe de PPF » et son motif. Le serveur ne la publie que si le salon n'a toujours aucun administrateur (`409 room_has_admin`).
+- Code commun : `GroupTakeover.breach` (la forme et ses codes de refus, la même dans les applications, le serveur et le service de signature), `GroupTakeover.unsigned` (construit l'événement non signé), `GroupTakeover.target` (la clé nommée).
 
 ### Liste de l'équipe (type 37241, adressable)
 
