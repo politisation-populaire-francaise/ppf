@@ -247,6 +247,10 @@ jobs:
           for _ in $(seq 1 20); do [ "$(docker inspect --format '{{.State.Health.Status}}' ppf-preprod-signer-1)" = healthy ] && break; sleep 3; done
           sip=$(docker inspect --format '{{range .NetworkSettings.Networks}}{{.IPAddress}} {{end}}' ppf-preprod-signer-1 | awk '{print $1}')
           [ "$(curl -s -o /dev/null -w '%{http_code}' "http://$sip:8090/v1/keys")" = 401 ]
+          # Approval pages on their own port (contract 1.2): the script is served there, the internal API is not.
+          [ "$(curl -s -o /dev/null -w '%{http_code}' "http://$sip:8091/approbation/static/approbation.js")" = 200 ]
+          [ "$(curl -s -o /dev/null -w '%{http_code}' "http://$sip:8091/v1/keys")" = 404 ]
+          [ "$(curl -s -o /dev/null -w '%{http_code}' "http://$sip:8090/approbation/static/approbation.js")" = 404 ]
           # Push wake-ups: ntfy healthy, nothing open but the UnifiedPush topics.
           for _ in $(seq 1 20); do [ "$(docker inspect --format '{{.State.Health.Status}}' ppf-preprod-ntfy-1)" = healthy ] && break; sleep 3; done
           docker exec ppf-preprod-ntfy-1 ntfy access everyone 'up*' read-write >/dev/null

@@ -62,6 +62,8 @@ services:
       # The separate signing service (D-129), reached on the internal network "signing" only.
       PPF_SIGNER_URL: http://signer:8090
       PPF_SIGNER_CLIENT_TOKEN_FILE: /run/secrets/server_signer_token
+      # Root of this environment (D-079), the same as the signing service's: what the server accepts back from it.
+      PPF_SIGNER_ROOT_PUBKEY: ${PPF_SIGNER_ROOT_PUBKEY:-}
       PPF_TESTIMONY_DIR: /data/testimonies
       PPF_MODERATION_KEY: ${PPF_MODERATION_KEY:-}
       PPF_EVIDENCE_KEY: ${PPF_EVIDENCE_KEY:-}
