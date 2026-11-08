@@ -459,6 +459,14 @@ Le site est la version de PPF pour les iPhone tant que l'application iOS n'exist
 7. Mode sombre : réglez Windows en mode sombre (Paramètres, Personnalisation, Couleurs) ; les pages suivent. Réduisez la fenêtre à la largeur d'un téléphone : tout reste lisible.
 8. À la fin, arrêtez le serveur (Ctrl+C).
 
+### Voir « Décider » sur le site, sur votre ordinateur (ajouté le 8 novembre 2026)
+
+1. Lancez le serveur de développement comme ci-dessus (`gradlew :server:runDev`) et attendez la ligne qui commence par « Décider: ».
+2. Ouvrez http://localhost:8080/decider : le Pacte démocratique d'exemple, les pétitions officielles ouvertes, puis à part les pétitions closes.
+3. Ouvrez une pétition, par exemple http://localhost:8080/decider/petitions/petition-senat-indexation : le bouton « Signer sur le site officiel » mène au site du Sénat (marqué « site extérieur ») ; PPF ne recueille aucune signature. Plus bas : les relevés du compteur officiel, les étapes et les sources.
+4. Ouvrez le Pacte : http://localhost:8080/decider/pacte/pacte-election-exemple : les mesures, la méthode (même texte, même jour, même délai pour tous) et le tableau des réponses des candidats.
+5. Réduisez la fenêtre à la largeur d'un téléphone et passez Windows en mode sombre : tout reste lisible. Arrêtez le serveur à la fin (Ctrl+C).
+
 ## 3. Lancer l'application de bureau sur votre ordinateur
 
 ### Depuis GitHub (installateur Windows)
