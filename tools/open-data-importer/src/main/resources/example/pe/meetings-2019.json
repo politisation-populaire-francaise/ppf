@@ -1,0 +1,14 @@
+{
+ "data": [
+  {
+   "id": "eli/dl/event/MTG-PL-2019-07-03",
+   "type": "Activity",
+   "activity_id": "MTG-PL-2019-07-03",
+   "had_activity_type": "def/ep-activities/PLENARY_SITTING",
+   "activity_date": "2019-07-03"
+  }
+ ],
+ "@context": [
+  "https://data.europarl.europa.eu/api/v2/context.jsonld"
+ ]
+}

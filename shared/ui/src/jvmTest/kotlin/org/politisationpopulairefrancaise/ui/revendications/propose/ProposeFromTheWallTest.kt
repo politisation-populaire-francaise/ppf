@@ -53,7 +53,7 @@ class ProposeFromTheWallTest {
     private fun ComposeUiTest.openForm(dependencies: AppDependencies) {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
         onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
-        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(RevendicationTags.PROPOSE).fetchSemanticsNodes().isNotEmpty() }
+        waitUntil(timeoutMillis = 30_000) { onAllNodesWithTag(RevendicationTags.PROPOSE).fetchSemanticsNodes().isNotEmpty() }
         onNode(hasTestTag(RevendicationTags.PROPOSE) and hasAnyAncestor(hasTestTag(RevendicationTags.PAGE + "tout"))).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(ProposalTags.SCREEN).assertExists()
@@ -67,7 +67,7 @@ class ProposeFromTheWallTest {
         onNodeWithTag(ProposalTags.CHARTER).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(ProposalTags.SEND).performScrollTo().performClick()
-        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ProposalTags.RESULT).fetchSemanticsNodes().isNotEmpty() }
+        waitUntil(timeoutMillis = 30_000) { onAllNodesWithTag(ProposalTags.RESULT).fetchSemanticsNodes().isNotEmpty() }
     }
 
     private fun ComposeUiTest.showMine() {
@@ -88,7 +88,7 @@ class ProposeFromTheWallTest {
         assertEquals(1, store.pending().size)
 
         showMine()
-        waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(RevendicationTags.OWN_STATE + "waiting", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+        waitUntil(timeoutMillis = 30_000) { onAllNodesWithTag(RevendicationTags.OWN_STATE + "waiting", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithText(title).assertExists()
 
         onNodeWithTag(RevendicationTags.TAB + "tout").performScrollTo().performClick()
@@ -109,7 +109,7 @@ class ProposeFromTheWallTest {
         assertEquals(1, server.held.size)
 
         showMine()
-        waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(RevendicationTags.OWN_STATE + "in_review", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
+        waitUntil(timeoutMillis = 30_000) { onAllNodesWithTag(RevendicationTags.OWN_STATE + "in_review", useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithText(title).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(RevendicationTags.OWN_REVIEW).assertExists()

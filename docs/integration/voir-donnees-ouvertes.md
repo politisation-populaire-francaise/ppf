@@ -6,7 +6,7 @@ But : que « Voir » couvre **tous les parlementaires** (députés, sénateurs, 
 
 ## 0. Numéros, branches, règles
 
-- Décisions : D-064 (import et intégrité), D-065 (affichage dans « Voir »), D-066 en réserve.
+- Décisions : D-064 (import et intégrité), D-065 (affichage dans « Voir »), D-066 (historique des votes pour le comparateur de « Décider »).
 - Branche `feature/voir-donnees` (depuis `feature/voir`), worktree `.claude/worktrees/voir-donnees`. La session « Voir » fusionne et avance `main`.
 - Base locale : `migrations/12.sqm` (table des paquets), accordée par le chef d'équipe et annoncée à toutes les sessions le 7 novembre 2026 (Comprendre a `10.sqm`, Agir `11.sqm`). Aucune migration Flyway : le serveur sert des fichiers.
 - Infrastructure : la session « Directeur Technique PPF » intègre le conteneur d'import dans `infra/` (besoins envoyés le 7 novembre 2026) ; on ne touche ni `infra/`, ni `.github/`, et on la prévient avant de modifier `tools/check-no-trackers.sh`.

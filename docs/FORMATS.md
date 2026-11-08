@@ -577,6 +577,24 @@ Migration `migrations/12.sqm` (schéma 12 vers 13), identique à `Territoires.sq
 
 Index : événement NIP-01, kind 30078, `d` = `ppf:parlement-index`, signé par une clé d'import (`OpenDataKeys`) ; `content` = l'index JSON (`example`, `importedOn`, `sources` avec nom, adresse, licence et date, `packages` avec nom, sha256 et taille). Paquets : `membres` (membres et groupes), `scrutins-an-AAAA-MM`, `votes-pe-AAAA-MM` (scrutins avec décomptes, décompte par groupe, positions `pour`, `contre`, `abstention`, `nonVotant`, `delegated`, `corrections` de type `mise-au-point` ou `dysfonctionnement`, `notVotingCauses`). Identifiants préfixés : `an:PA…`, `senat:…`, `pe:…`, scrutins `an:17:<numéro>`, dossiers `an-dossier:DLR5L17N…`. Code de circonscription : département puis numéro sur deux chiffres (`0101`, `2A01`, `97101`), commun avec l'annuaire des élus. Une brique de « Voir » peut porter `ppf-official-id` (personne ou texte). Modèles Kotlin : `core/voir/parlement/ParliamentFormat.kt` ; détail dans `docs/integration/voir-donnees-ouvertes.md`, section 3.
 
+### Historique des votes, pour le comparateur de « Décider » (D-066)
+
+Paquets `historique-an-<législature>` (14 à 17), `historique-senat-<année de session>` (octobre à septembre, depuis 2006), `historique-pe-<législature européenne>` (9 et 10), cités dans le même index signé, avec trois sources de plus (`an-history`, `senat-history`, `pe-history`). Même JSON que les autres paquets (champs inconnus ignorés, valeurs par défaut non écrites). Modèles Kotlin : `core/voir/parlement/ParliamentHistory.kt` (`HistoryPackage`, `HistoryBallot`, `PartyDistribution`, `PartyRef`, `PartyBasis`, `HistoryCoverage`) ; lecture vérifiée : `ParliamentHistory.read(name, json)`, et dans l'application `ParliamentRepository.history(name)` et `downloadHistory()`.
+
+| Champ | Contenu |
+|---|---|
+| `format`, `example`, `chamber`, `period` | version (1), données fictives, `an`, `senat` ou `pe`, législature ou année de session ; doivent correspondre au nom du paquet |
+| `coverage` | `first` et `last` (AAAA-MM-JJ) : premier et dernier jour des scrutins du paquet ; absent pour un paquet vide |
+| `parties[]` | `id` (`an:PO…`, `senat-grp:<code>`, `pe-org:<identifiant>`, lignes spéciales `senat-grp:aucun` et `pe-org:aucun`), `label` tel que la source l'écrit, `abbreviation`, `basis` (`parti` ou `groupe`), `basisLabel` pour un groupe (« groupe, rattachement au parti non publié ») ; trié par `id` |
+| `ballots[]` | `id` (`an:<lég.>:<numéro>`, `senat:<session>:<numéro>`, `pe:<date>:<numéro du vote>`), `date`, `title` officiel, `kind` (`SPO`, `SPS`, `MOC`, `appel-nominal`), `text`, `dossier` (`an-dossier:…`), `committee` (prévu, vide pour l'instant), `adopted` (absent sans résultat), `counts` (totaux de toute l'assemblée), `parties[]`, `url` ; trié par date puis identifiant |
+| `ballots[].parties[]` | `party`, `basis` (toujours écrit), `pour`, `contre`, `abstention`, `nonVotant`, `members` (membres du parti à la date du scrutin) ; trié par `party` |
+
+Parti à la date du vote : Assemblée, parti de rattachement (`PARPOL`, publié depuis décembre 2012) sinon le groupe ; Sénat, toujours le groupe ; Parlement européen, parti national des élus en France. **Aucun nom de personne, aucun vote nominatif, aucune position majoritaire calculée.** Détail : `docs/integration/voir-historique-import.md`.
+
+### Paquet `semaine` : « Cette semaine au Parlement » (D-100)
+
+Cité par le même index signé, réécrit à chaque import (deux imports identiques donnent les mêmes octets). JSON : `format` (1), `example`, `from` et `to` (AAAA-MM-JJ : le jour de l'import, heure de Paris, et le quatorzième jour suivant), `items` triés par heure, assemblée puis identifiant. Chaque point : `id` stable (`an:<uid de la réunion>:<rang du point>` ou `an:<uid>`, `senat:<UID>:<AAAAMMJJHHMM>`, `pe:<séance>:<ordre>`), `chamber` (`an`, `senat`, `pe`), `start` et `end` (heure de Paris, `AAAA-MM-JJTHH:MM`), `kind` (`seance-publique`, `commission`, `autre`), `body` (commission), `title`, `pointKind`, `detail` (2 000 caractères au plus), `dossier` (`an-dossier:DLR5L17N…`) et `dossierUrl`, `status` (`confirme`, `previsionnel`, `annule`, absent quand la source ne dit rien), `url` (page officielle de l'ordre du jour). Jamais de participant, d'organisateur, de contact ni de lieu. Lecture stricte sur le format, tolérante sur les champs inconnus ; un paquet illisible est ignoré. Modèles Kotlin : `core/voir/parlement/ParliamentWeek.kt` ; détail dans `docs/integration/voir-semaine.md`.
+
 ## 4 decies. Signature de la plateforme : certificats, révocations, liste de l'équipe (D-129)
 
 Contrat : `docs/integration/service-signature.md` (version 1.2 du 8 novembre 2026). Modèles Kotlin communs aux applications, au serveur et au service de signature : `core/platform/` (`KeyCertificate`, `TeamList`, `PasskeyFingerprint`, `PlatformTrust`, `SigningUse`, `UrnClosures`, `ApprovalChallenge`, `SigningProtocol`).
