@@ -83,6 +83,8 @@ class ComprendreCoursesTest {
                 "l-union-europeenne-qui-decide-quoi", "commune-departement-region", "se-presenter-a-une-election", "les-petitions-officielles",
                 // Laicite and fascism (CO-21, CO-22).
                 "la-laicite", "comprendre-le-fascisme",
+                // One lesson a day for newcomers (CO-19).
+                "je-decouvre",
             ),
             bundled.map { it.article.slug }.toSet(),
         )
@@ -92,6 +94,34 @@ class ComprendreCoursesTest {
             assertNotNull(course.nextActions, course.article.slug)
             assertNotNull(course.sources, course.article.slug)
         }
+    }
+
+    @Test
+    fun jeDecouvreProposesTheLessonOfTheDayWithoutEverLocking() = runComposeUiTest {
+        val discover = bundled.first { it.article.slug == "je-decouvre" }
+        assertTrue(discover.daily, "« Je découvre » is read one lesson a day (CO-19)")
+        val database = JvmDatabase.inMemory()
+        openComprendre(database, width = 400, height = 800)
+        // « Nouveau ici ? » on the home, at day 1 for a newcomer.
+        onNodeWithTag(ComprendreTags.DISCOVER).performScrollTo().assert(hasAnyDescendant(hasText("Jour 1 sur ${discover.steps.size}")))
+        onNodeWithTag(ComprendreTags.DISCOVER).performClick()
+        waitForIdle()
+        // The card opens the lesson itself, not the introduction.
+        onNodeWithTag(CourseTags.STEP_TITLE).assert(hasText(discover.steps[0].title))
+        onNodeWithTag(CourseTags.DAILY_NOTE).assertDoesNotExist()
+        val quiz = assertNotNull(discover.steps[0].quiz)
+        onNodeWithTag(CourseTags.option(quiz.correctIndex)).performScrollTo().performClick()
+        onNodeWithTag(CourseTags.VALIDATE).performScrollTo().performClick()
+        waitForIdle()
+        // Once read: a suggestion to come back tomorrow, and the next lesson stays open.
+        onNodeWithTag(CourseTags.DAILY_NOTE).performScrollTo().assert(hasText("Revenez demain pour le jour 2", substring = true))
+        onNodeWithTag(CourseTags.NEXT).performScrollTo().assertIsEnabled().performClick()
+        waitForIdle()
+        onNodeWithTag(CourseTags.STEP_TITLE).assert(hasText(discover.steps[1].title))
+        // Back home, the card points at day 2: the progress stayed on the device.
+        onNodeWithTag(CourseTags.BACK).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ComprendreTags.DISCOVER).performScrollTo().assert(hasAnyDescendant(hasText("Jour 2 sur ${discover.steps.size}")))
     }
 
     @Test

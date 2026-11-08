@@ -124,11 +124,11 @@ L'**hameçonnage** (« phishing ») est un faux message, SMS ou appel qui se fai
 - Si vous avez donné un mot de passe, changez-le tout de suite, ainsi que sur les sites où vous l'utilisiez. Signalez les SMS frauduleux au 33700. Info Escroqueries vous conseille au 0 805 805 817, appel gratuit.
 :::
 
-::: et-maintenant
-- [Préparer votre départ avec le « Mode manifestation », dans l'espace « Agir »](ppf:agir)
-- Lire la fiche pratique [EXEMPLE] « Garde à vue : vos droits » et la fiche [EXEMPLE] « Filmer les forces de l'ordre ».
-- [Écrire à un proche dans « Messages », chiffré de bout en bout](ppf:messages)
-:::
+## Et maintenant ?
+
+- Préparez votre départ avec le « Mode manifestation », dans l'espace « Agir ».
+- Lisez les fiches pratiques [EXEMPLE] « Garde à vue : vos droits » et « Filmer les forces de l'ordre ».
+- Écrivez à vos proches dans « Messages », chiffré de bout en bout.
 
 ## Sources
 

@@ -6,6 +6,7 @@ topics: institutions, democratie, elections, droits
 type: parcours
 origin: ai-assisted
 duration: 14
+rhythm: quotidien
 published_at: 2026-11-08
 updated_at: 2026-11-08
 ---
