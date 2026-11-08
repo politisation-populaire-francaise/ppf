@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Vérifier un contenu PPF » (cahier fonctionnel 2.1, M33, S-141). French, the user is addressed with
+     "vous", typographic apostrophe (’), no em dash. The same answers as the page /verifier of the site. -->
+<resources>
+    <string name="voir_verify_open">Vérifier un contenu reçu</string>
+    <string name="voir_verify_title">Vérifier un contenu</string>
+    <string name="voir_verify_intro">Vous avez reçu une image, un lien ou un texte présenté comme venant de PPF ? Vérifiez qu’il a bien été publié par son équipe et qu’il n’a pas été modifié. La vérification se fait sur votre appareil, même sans connexion : rien n’est envoyé.</string>
+    <string name="voir_verify_field">Code de vérification, identifiant, lien ou contenu signé</string>
+    <string name="voir_verify_button">Vérifier</string>
+    <string name="voir_verify_how">Le code de vérification, imprimé sur les images partagées par PPF, est le début de l’identifiant d’une version : il sert à retrouver l’original, que vous comparez avec ce que vous avez reçu. Les seules adresses de PPF finissent par politisation-populaire-francaise suivi de .org, .fr, .com, .eu, .net ou .app.</string>
+    <string name="voir_verify_unavailable">La copie des contenus de l’appareil n’est pas disponible pour l’instant.</string>
+    <string name="voir_verify_authentic_current_title">Authentique</string>
+    <string name="voir_verify_authentic_current">Ce contenu a bien été publié par Politisation Populaire Française, et c’est sa version actuelle sur votre appareil.</string>
+    <string name="voir_verify_authentic_outdated_title">Authentique, mais ancien</string>
+    <string name="voir_verify_authentic_outdated">Ce contenu a bien été publié par PPF, mais il a été mis à jour depuis : lisez la version actuelle avant de le citer.</string>
+    <string name="voir_verify_authentic_unlisted_title">Signé par PPF, mais absent de l’appareil</string>
+    <string name="voir_verify_authentic_unlisted">La signature est celle d’une clé de PPF, mais votre appareil n’a pas ce contenu : il a pu être retiré, ou l’appareil ne l’a pas encore reçu.</string>
+    <string name="voir_verify_not_ppf_title">Pas un contenu de PPF</string>
+    <string name="voir_verify_not_ppf">Ce contenu est signé par une autre clé que celles de PPF : ne le présentez pas comme venant de PPF.</string>
+    <string name="voir_verify_altered_title">Modifié ou abîmé</string>
+    <string name="voir_verify_altered">Le texte ne correspond plus à sa signature : il a été changé après sa publication.</string>
+    <string name="voir_verify_unknown_title">Inconnu de PPF</string>
+    <string name="voir_verify_unknown">Aucun contenu de PPF présent sur votre appareil n’a ce code ou cet identifiant. Vérifiez que vous l’avez recopié sans erreur, ou mettez l’application à jour avec une connexion.</string>
+    <string name="voir_verify_official_title">Lien officiel</string>
+    <string name="voir_verify_official">Ce lien mène bien à un site de PPF (%1$s).</string>
+    <string name="voir_verify_unofficial_title">Lien qui n’est pas de PPF</string>
+    <string name="voir_verify_unofficial">Attention : ce lien mène à %1$s, qui n’est pas un site de PPF, même si la page l’affirme.</string>
+    <string name="voir_verify_unreadable_title">Rien à vérifier</string>
+    <string name="voir_verify_unreadable">Donnez un code de vérification (16 caractères), un identifiant (64 caractères), un lien, ou collez le contenu signé.</string>
+    <string name="voir_verify_checked">Version vérifiée</string>
+    <string name="voir_verify_current">Version actuelle</string>
+    <string name="voir_verify_version_of">Version du %1$s</string>
+    <string name="voir_verify_code">Code de vérification : %1$s</string>
+    <string name="voir_verify_fingerprint">Empreinte SHA-256 : %1$s</string>
+    <string name="voir_verify_open_content">Lire ce contenu</string>
+</resources>

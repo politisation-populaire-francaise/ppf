@@ -399,3 +399,13 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Sélection orientée des votes passés | Aucun choix scrutin par scrutin : règle de mots publiée dans la fiche signée, fixée avant la liste officielle, versionnée avec un motif ; « Tous les votes de ce parti », « Autres scrutins » et la recherche libre toujours disponibles ; aucune position calculée | Filtre par commission saisie au fond (officiel) quand « Voir » le donnera |
 | Le serveur apprend quel candidat ou quel parti intéresse une personne (opinion politique, RGPD article 9) | Historique des votes téléchargé en entier pour tous les partis ; calcul et recherche sur l'appareil ; photos d'une fiche demandées toutes ensemble ; aucun journal des requêtes de photos | |
 | Photo remplacée sur le serveur (montage, mauvaise personne) | L'empreinte de chaque photo est dans la fiche signée ; le serveur ne sert un fichier que si ses octets correspondent à son nom, l'application revérifie l'empreinte et n'affiche rien si une seule photo manque ou diffère | |
+
+## Ajout du 8 novembre 2026 : « Vérifier un contenu PPF » (M33, S-141)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Faux contenu attribué à PPF (capture retouchée, texte inventé) | Vérification de la signature et de la clé ; « Pas un contenu de PPF » ou « Modifié ou abîmé » ; le code de vérification sert seulement à retrouver l'original, qui se compare à ce qu'on a reçu | Code imprimé sur les images de partage |
+| Faux site qui se dit PPF (sosie de nom de domaine, sous-domaine d'un autre site, nom d'utilisateur avant `@`) | Seuls les six domaines de PPF sont reconnus ; un lien de vérification n'est suivi que sur eux ; la page cite les adresses officielles | Liste d'adresses de secours signée (Directeur technique) |
+| Ancienne version présentée comme actuelle | « Authentique, mais ancien » avec la version actuelle | |
+| Ce que vérifie une personne révèle ce qu'elle a reçu | Rien n'est enregistré ni journalisé ; le contenu collé n'est jamais réécrit dans la page ; dans l'application, la vérification se fait sur l'appareil, sans connexion | |
+| Requête démesurée | 96 Kio au plus pour un contenu collé, corps lu par un canal borné, `413` au-delà | |

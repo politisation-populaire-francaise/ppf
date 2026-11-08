@@ -74,6 +74,8 @@ fun OpenExport.pageSource(): OpenDataSource = OpenDataSource {
             OpenDataSetView(
                 dataset.id, dataset.title, dataset.description, dataset.files.firstOrNull()?.rows ?: 0, dataset.schema,
                 dataset.files.map { OpenDataFileView(it.format, it.url, it.bytes) },
+                licenseName = dataset.license?.name,
+                licenseUrl = dataset.license?.url,
             )
         },
     )
