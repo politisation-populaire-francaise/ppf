@@ -150,8 +150,8 @@ sealed interface PhraseCheckFailure {
 class AccountSession(
     private val store: IdentityStore,
     private val scope: CoroutineScope,
-    /** Called once the keys are erased: what else the device must forget (the followed accounts). */
-    private val onSignOut: () -> Unit = {},
+    /** Called once the keys are erased, and awaited: what else the device must forget (the followed accounts). */
+    private val onSignOut: suspend () -> Unit = {},
     private val pickPositions: () -> List<Int> = { (0 until RecoveryPhrase.DEFAULT_WORD_COUNT).shuffled().take(3).sorted() },
     /** The server, through the single publication port; null keeps everything on the device. */
     private val remote: RemoteEvents? = null,
@@ -581,7 +581,7 @@ class AccountSession(
 }
 
 @Composable
-fun rememberAccountSession(store: IdentityStore, onSignOut: () -> Unit = {}, remote: RemoteEvents? = null): AccountSession {
+fun rememberAccountSession(store: IdentityStore, onSignOut: suspend () -> Unit = {}, remote: RemoteEvents? = null): AccountSession {
     val scope = rememberCoroutineScope()
     return remember(store) { AccountSession(store, scope, onSignOut, remote = remote).also { it.start() } }
 }

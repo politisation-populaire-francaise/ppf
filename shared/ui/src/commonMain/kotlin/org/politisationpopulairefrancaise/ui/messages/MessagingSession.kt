@@ -240,6 +240,12 @@ class MessagingSession(
         }
     }
 
+    /** [forgetAll], then waits until the device has really erased the conversations (the keys are being erased). */
+    suspend fun forgetAllAndWait() {
+        forgetAll()
+        clearing?.join()
+    }
+
     /** Sends the pending deliveries, then fetches the wraps addressed to the user. Without a server, reads the device again. */
     fun refresh() {
         val current = account ?: return
