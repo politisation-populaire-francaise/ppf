@@ -15,6 +15,7 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
+import org.politisationpopulairefrancaise.server.decider.ComparatorFreeze
 import org.politisationpopulairefrancaise.server.decider.DeliberationSubmissions
 import org.politisationpopulairefrancaise.server.decider.receive
 import org.politisationpopulairefrancaise.server.events.EventFilter
@@ -86,6 +87,8 @@ fun Route.eventsApi(
     agir: AgirSpace? = null,
     /** The propositions and amendments of citizens to a deliberation, held for review (DE-25). */
     deliberation: DeliberationSubmissions? = null,
+    /** Refuses the comparators and positions of an election while it is frozen (DE-16, Q4 option A). */
+    comparatorFreeze: ComparatorFreeze? = null,
 ) {
     if (repository == null) {
         route("/api/v1/{...}") {
@@ -147,6 +150,7 @@ fun Route.eventsApi(
                 is PublicationPolicy.Decision.Refused -> return@post call.refuse(decision)
                 PublicationPolicy.Decision.Allowed -> Unit
             }
+            comparatorFreeze?.refusal(event)?.let { return@post call.refuse(it) }
             // Agir space (contract, section 5): a content the key may not publish directly waits for review (202) or is refused;
             // a cancellation by its author withdraws the version still waiting (200).
             if (agirSpace.concerns(event)) {

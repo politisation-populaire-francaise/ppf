@@ -149,6 +149,11 @@ class DeciderScreenTest {
         onNodeWithTag(DeciderTags.card("comparateur-election-exemple")).performScrollTo().assert(has("4 candidats, 3 thèmes")).performClick()
         waitForIdle()
         onNodeWithTag(ComparatorTags.METHOD).assert(has("PPF ne dit pas pour qui voter"))
+        onNodeWithTag(ComparatorTags.METHOD).assert(has("figé de la veille du scrutin à zéro heure"))
+        // Who appears (Q1 option B): the same delay for everyone, each request visible with its dates.
+        onNodeWithTag(ComparatorTags.ENTRY).assert(has("dans un délai de 7 jours au plus"))
+        onNodeWithTag(ComparatorTags.request("dominique-fictif")).performScrollTo().assert(has("Demande le 10 oct. 2026, ajout le 14 oct. 2026"))
+        onNodeWithTag(ComparatorTags.FROZEN).assertDoesNotExist()
         // One theme at a time: every candidate under it, in alphabetical order.
         val rows = listOf("alex-modele", "camille-exemple", "dominique-fictif", "sacha-temoin")
         rows.forEach { onNodeWithTag(ComparatorTags.row(it)).performScrollTo().assertExists() }
@@ -171,6 +176,17 @@ class DeciderScreenTest {
         onAllNodesWithText("Sa fiche dans « Voir »").onFirst().performScrollTo().performClick()
         waitForIdle()
         assertEquals("alex-modele", seen.opened.single().identifier)
+    }
+
+    @Test
+    fun theDayBeforeTheVoteTheComparatorSaysItIsFrozenAndStaysReadable() = runComposeUiTest {
+        // Round 1 of the example election: Sunday 7 March 2027, frozen from 0 h on Saturday 6 March.
+        show(width = 400, today = CivilDate(2027, 3, 6))
+        onNodeWithTag(DeciderTags.card("comparateur-election-exemple")).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ComparatorTags.FROZEN).assert(has("Tour 1"))
+        onNodeWithTag(ComparatorTags.FROZEN).assert(has("jusqu’au 7 mars 2027 à 20 h"))
+        onNodeWithTag(ComparatorTags.cell("alex-modele", "democratie")).performScrollTo().assert(has("référendum d’initiative citoyenne"))
     }
 
     @Test

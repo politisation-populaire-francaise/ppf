@@ -55,6 +55,7 @@ import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
 import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
+import org.politisationpopulairefrancaise.server.decider.ComparatorFreeze
 import org.politisationpopulairefrancaise.server.decider.EditorialDeciderSource
 import org.politisationpopulairefrancaise.server.decider.PetitionLinks
 import org.politisationpopulairefrancaise.server.decider.PetitionLinksQueue
@@ -348,6 +349,9 @@ fun Application.module(
     }
     // The propositions and amendments of citizens to a deliberation, reviewed by the team (DE-25).
     val deliberationSubmissions = repository?.let { DeliberationSubmissions(it.dataSource, it, policy::isEditor) }
+    // One reading of the contents of "Décider" for the site and for the freeze of the comparators (DE-16).
+    val deciderSource = repository?.let { EditorialDeciderSource(it, policy) }
+    val comparatorFreeze = deciderSource?.let { source -> ComparatorFreeze(source::catalog) }
     deliberationSubmissions?.let { teamBackOffice?.queues?.register(DeliberationQueue(it)) }
     // The sessions of the validators with an abnormal pace, for the administrators (D-112, design 8).
     if (urneStore != null && teamBackOffice != null) teamBackOffice.queues.register(ValidationSessionsQueue(urneStore.dataSource))
@@ -413,7 +417,7 @@ fun Application.module(
                     ),
                 )
             }
-            eventsApi(repository, policy, limits, groups, proposals, agirSpace, deliberationSubmissions)
+            eventsApi(repository, policy, limits, groups, proposals, agirSpace, deliberationSubmissions, comparatorFreeze)
             deliberationApi(deliberationSubmissions)
             groupsApi(groups)
             revendicationsApi(proposals)
@@ -432,7 +436,7 @@ fun Application.module(
             webRoutes(
                 voir = voir ?: repository?.let { EditorialVoirSource(it, policy) },
                 comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
-                decider = repository?.let { EditorialDeciderSource(it, policy) },
+                decider = deciderSource,
             )
         }
         if (backOffice != null && teamBackOffice != null) {
