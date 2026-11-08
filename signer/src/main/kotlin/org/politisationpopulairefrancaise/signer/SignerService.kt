@@ -414,7 +414,11 @@ class SignerService private constructor(
         if (!request.doubleValidation && DoubleValidation.requiredFor(use, unsigned)) {
             return refuseDraft(time, fields, Refusal(SigningRefusals.DOUBLE_VALIDATION_REQUIRED))
         }
-        if (request.doubleValidation && author == null) return refuseDraft(time, fields, Refusal(SigningRefusals.AUTHOR_REQUIRED))
+        // D-142: the author is named for a double validation, and always for the editorial uses (the reviewer is
+        // never the author, « règle des deux personnes » of the editorial circuit).
+        if (author == null && (request.doubleValidation || use in SigningUse.AUTHOR_REQUIRED_USES)) {
+            return refuseDraft(time, fields, Refusal(SigningRefusals.AUTHOR_REQUIRED))
+        }
         teamListRefusal(time)?.let { return refuseDraft(time, fields, it) }
         val slot = draftKey(use, eventId)
         memory.drafts[slot]?.let { existing ->
@@ -481,7 +485,7 @@ class SignerService private constructor(
         teamListRefusal(time)?.let { return OptionsOutcome.Refused(it) }
         val list = teamList ?: return OptionsOutcome.Refused(Refusal(SigningRefusals.NO_TEAM_LIST))
         val ids = list.members.values
-            .filter { it.mayApprove(use, time) && !(draft.doubleValidation && isAuthor(it, draft.author)) && draft.approvals.none { a -> a.account == it.account } }
+            .filter { it.mayApprove(use, time) && !isAuthor(it, draft.author) && draft.approvals.none { a -> a.account == it.account } }
             .flatMap { member -> member.credentials.map { it.id } }
             .sorted()
         if (ids.isEmpty()) return OptionsOutcome.Refused(Refusal(SigningRefusals.NOT_ALLOWED_FOR_USE))
@@ -491,8 +495,8 @@ class SignerService private constructor(
     /**
      * Records the approval of [eventId] for [useId] by the member whose passkey made [assertion]: a passkey
      * of the team list signed by the root, an assertion over the challenge of this use and this event made
-     * on the approval origin with user verification, a member allowed for the use, never the author of a
-     * double validation, once per account.
+     * on the approval origin with user verification, a member allowed for the use, never the author of the
+     * draft (D-142: in a single validation too), once per account.
      */
     @Synchronized
     fun approve(useId: String, eventId: String, assertion: PasskeyAssertion): ApprovalOutcome {
@@ -512,7 +516,7 @@ class SignerService private constructor(
         }
         val named = fields.copy(approvers = listOf(member.account), credential = credential.id)
         if (!member.mayApprove(use, time)) return refuseApproval(time, named, Refusal(SigningRefusals.NOT_ALLOWED_FOR_USE))
-        if (draft.doubleValidation && isAuthor(member, draft.author)) return refuseApproval(time, named, Refusal(SigningRefusals.AUTHOR_CANNOT_APPROVE))
+        if (isAuthor(member, draft.author)) return refuseApproval(time, named, Refusal(SigningRefusals.AUTHOR_CANNOT_APPROVE))
         if (draft.approvals.any { it.account == member.account }) return refuseApproval(time, named, Refusal(SigningRefusals.ALREADY_APPROVED))
         draft.approvals += RecordedApproval(member.account, credential.id, time)
         journal.append(time, JournalActions.APPROVAL_RECORDED, named)
@@ -539,8 +543,8 @@ class SignerService private constructor(
 
     /**
      * The approvals of [draft] that still count: by a member of the current team list, with a passkey still
-     * listed for that account, allowed for the use at the time of the approval, not the author of a double
-     * validation; one per account.
+     * listed for that account, allowed for the use at the time of the approval, never the author of the draft
+     * (D-142, whatever the rule: this recount also sets aside an approval an older version recorded); one per account.
      */
     private fun validApprovals(draft: Draft): List<RecordedApproval> {
         val list = teamList ?: return emptyList()
@@ -548,7 +552,7 @@ class SignerService private constructor(
             val member = list.members[approval.account] ?: return@filter false
             member.credentials.any { it.id == approval.credentialId } &&
                 member.mayApprove(draft.use, approval.at) &&
-                !(draft.doubleValidation && isAuthor(member, draft.author))
+                !isAuthor(member, draft.author)
         }.distinctBy { it.account }
     }
 

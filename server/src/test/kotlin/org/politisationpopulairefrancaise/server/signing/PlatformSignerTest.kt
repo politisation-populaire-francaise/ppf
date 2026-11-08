@@ -274,9 +274,12 @@ class PlatformSignerTest {
         val frame = listOf(listOf("d", "x"), listOf("title", "[EXEMPLE]"))
         val event = UnsignedEvent(key, System.currentTimeMillis() / 1000, EventKinds.LONG_FORM_ARTICLE, frame + listOf(listOf("ppf-type", "texte")), "[EXEMPLE]")
         assertEquals(SigningStatus.Refused(SigningRefusals.UNKNOWN_DRAFT), fake.status(fake.request(event, SigningUse.EDITORIAL_VOIR)))
-        val submitted = assertIs<DraftSubmission.Submitted>(fake.submitDraft(event, SigningUse.EDITORIAL_VOIR))
+        // D-142: an editorial draft names its author, who never approves it, even alone.
+        assertEquals(DraftSubmission.Refused(SigningRefusals.AUTHOR_REQUIRED), fake.submitDraft(event, SigningUse.EDITORIAL_VOIR))
+        val submitted = assertIs<DraftSubmission.Submitted>(fake.submitDraft(event, SigningUse.EDITORIAL_VOIR, author = DraftAuthor(account = "erin")))
         assertTrue(submitted.approvalUrl.startsWith(FakePlatformSigner.APPROVAL_ORIGIN))
         assertEquals(SigningStatus.Refused(SigningRefusals.APPROVALS_MISSING), fake.status(fake.request(event, SigningUse.EDITORIAL_VOIR)))
+        assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, fake.approve(SigningUse.EDITORIAL_VOIR, event.idHex(), "erin"))
         assertNull(fake.approve(SigningUse.EDITORIAL_VOIR, event.idHex(), "alice"))
         assertTrue(fake.draftStatus(SigningUse.EDITORIAL_VOIR, event.idHex())!!.ready)
         val signed = assertIs<SigningStatus.Signed>(fake.status(fake.request(event, SigningUse.EDITORIAL_VOIR)))
@@ -285,7 +288,7 @@ class PlatformSignerTest {
         val other = event.copy(content = "[EXEMPLE] autre")
         assertEquals(DraftSubmission.Refused(SigningRefusals.AUTHOR_REQUIRED), fake.submitDraft(other, SigningUse.EDITORIAL_VOIR, doubleValidation = true))
         fake.submitDraft(other, SigningUse.EDITORIAL_VOIR, doubleValidation = true, author = DraftAuthor(account = "alice"))
-        assertEquals(DraftSubmission.Refused(SigningRefusals.DRAFT_CONFLICT), fake.submitDraft(other, SigningUse.EDITORIAL_VOIR))
+        assertEquals(DraftSubmission.Refused(SigningRefusals.DRAFT_CONFLICT), fake.submitDraft(other, SigningUse.EDITORIAL_VOIR, author = DraftAuthor(account = "alice")))
         assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, fake.approve(SigningUse.EDITORIAL_VOIR, other.idHex(), "alice"))
         assertNull(fake.approve(SigningUse.EDITORIAL_VOIR, other.idHex(), "bob"))
         assertEquals(SigningRefusals.ALREADY_APPROVED, fake.approve(SigningUse.EDITORIAL_VOIR, other.idHex(), "bob"))
@@ -312,5 +315,13 @@ class PlatformSignerTest {
             assertIs<SigningStatus.Signed>(fake.status(fake.request(content, SigningUse.DECIDER_PACTE)), type)
         }
         assertEquals(DraftSubmission.Refused(SigningRefusals.BAD_TAG), fake.submitDraft(decider("inconnu"), SigningUse.DECIDER_PACTE))
+        // An author named by Nostr key never approves either; the other human uses may go without author in a single validation.
+        val nostr = IdentityKeys.generate().publicKey.hex
+        val pacte = decider("pacte")
+        assertIs<DraftSubmission.Submitted>(fake.submitDraft(pacte, SigningUse.DECIDER_PACTE, author = DraftAuthor(pubkey = nostr)))
+        assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, fake.approve(SigningUse.DECIDER_PACTE, pacte.idHex(), "dora", pubkey = nostr))
+        assertNull(fake.approve(SigningUse.DECIDER_PACTE, pacte.idHex(), "alice"))
+        val comprendre = UnsignedEvent(fake.currentKey(SigningUse.EDITORIAL_COMPRENDRE), event.createdAt, EventKinds.LONG_FORM_ARTICLE, frame + listOf(listOf("ppf-type", "fiche")), "[EXEMPLE]")
+        assertEquals(DraftSubmission.Refused(SigningRefusals.AUTHOR_REQUIRED), fake.submitDraft(comprendre, SigningUse.EDITORIAL_COMPRENDRE))
     }
 }

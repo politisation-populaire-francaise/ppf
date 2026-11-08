@@ -18,7 +18,8 @@ import java.util.concurrent.atomic.AtomicLong
  * The platform signer of the tests and of development (contract, section 5): a root and one working key
  * per use generated at each start, in memory. It checks what the poles must get right (the key and the
  * form of the use, a draft for a human use, the double validation the service requires for the contents
- * of M17 ([DoubleValidation]), the number of approvals and the author of a double validation); the
+ * of M17 ([DoubleValidation]), the number of approvals, the author named for an editorial use or a double
+ * validation and never approving (D-142)); the
  * approvals themselves are given by the tests with [approve] (the passkeys are covered by the tests of
  * the signing service). [trust] accepts what it signs.
  */
@@ -63,7 +64,7 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
             !use.matches(unsigned) -> SigningRefusals.BAD_TAG
             "${use.id}:$id" in signed -> SigningRefusals.ALREADY_SIGNED
             !doubleValidation && DoubleValidation.requiredFor(use, unsigned) -> SigningRefusals.DOUBLE_VALIDATION_REQUIRED
-            doubleValidation && named == null -> SigningRefusals.AUTHOR_REQUIRED
+            named == null && (doubleValidation || use in SigningUse.AUTHOR_REQUIRED_USES) -> SigningRefusals.AUTHOR_REQUIRED
             else -> null
         }
         if (refusal != null) return DraftSubmission.Refused(refusal)
@@ -76,12 +77,14 @@ class FakePlatformSigner(private val now: () -> Long = { System.currentTimeMilli
     }
 
     /**
-     * The approval of the draft [eventId] by [account], as the signing service records it after checking a
-     * passkey on its own page; the refusal code, or null when recorded.
+     * The approval of the draft [eventId] by [account] (whose Nostr key is [pubkey], if the account has one), as
+     * the signing service records it after checking a passkey on its own page; the refusal code, or null when
+     * recorded. The author never approves (D-142), in a single validation too.
      */
-    fun approve(use: SigningUse, eventId: String, account: String): String? = synchronized(drafts) {
+    fun approve(use: SigningUse, eventId: String, account: String, pubkey: String? = null): String? = synchronized(drafts) {
         val draft = drafts["${use.id}:$eventId"] ?: return SigningRefusals.UNKNOWN_DRAFT
-        if (draft.doubleValidation && draft.author?.account == account) return SigningRefusals.AUTHOR_CANNOT_APPROVE
+        val author = draft.author
+        if (author != null && (author.account == account || (author.pubkey != null && author.pubkey == pubkey))) return SigningRefusals.AUTHOR_CANNOT_APPROVE
         if (draft.approvals.any { it.account == account }) return SigningRefusals.ALREADY_APPROVED
         draft.approvals += DraftApproval(account, now())
         null

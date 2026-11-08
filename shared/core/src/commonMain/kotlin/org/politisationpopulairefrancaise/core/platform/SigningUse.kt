@@ -89,6 +89,14 @@ enum class SigningUse(val id: String, val kinds: Set<Int>, val automatic: Boolea
         /** The `ppf-type` values that belong to a use other than the editorial ones. */
         val TYPES_OF_OTHER_USES: Set<String> = setOf(TYPE_ORGANISATION) + PACTE_TYPES
 
+        /**
+         * The uses whose drafts always name their author, in a single validation too (D-142): the editorial
+         * spaces, where the reviewer who approves is never the author (« règle des deux personnes » of the
+         * editorial circuit). For the other human uses the author is named for a double validation only. In
+         * every case a named author never approves their own draft.
+         */
+        val AUTHOR_REQUIRED_USES: Set<SigningUse> = setOf(EDITORIAL_COMPRENDRE, EDITORIAL_VOIR)
+
         fun fromId(id: String): SigningUse? = entries.firstOrNull { it.id == id }
     }
 }
