@@ -40,6 +40,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.ContentLicenses
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.voir.ArchivedCopy
 import org.politisationpopulairefrancaise.core.voir.Correction
@@ -344,7 +345,9 @@ internal fun CorrectionsSection(corrections: List<Correction>, modifier: Modifie
 internal fun OriginLine(article: Article, modifier: Modifier = Modifier, cite: VoirItem? = null) {
     val origin = stringResource(if (article.origin == ContentOrigin.AI_ASSISTED) Res.string.voir_origin_ai else Res.string.voir_origin_human)
     val updated = stringResource(Res.string.voir_updated_on, org.politisationpopulairefrancaise.core.time.CivilDate.fromEpochSeconds(article.updatedAt).toFrench())
-    Text("$updated · $origin", style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkSubtle, modifier = modifier)
+    // The licence of PPF's own texts (D-103); none for a text whose rights stay with its author.
+    val license = ContentLicenses.of(article.type)?.let { stringResource(Res.string.voir_license, it.shortName) }
+    Text(listOfNotNull(updated, origin, license).joinToString(" · "), style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkSubtle, modifier = modifier)
     // « Citer ce contenu » (S-144) under the origin of every published block.
     cite?.let { CiteContent(it) }
 }

@@ -29,7 +29,7 @@ Ce qui manque : un point d'entrée qui dit ce qui est publié et sous quelle lic
 | `GET /api/v1/export/schemas/<jeu>-<version>.schema.json` | Le schéma de chaque fichier. |
 
 - Le catalogue et les fichiers sont recalculés au plus une fois par minute (comme `EditorialVoirSource`), en mémoire ; l'`ETag` est l'empreinte du fichier.
-- **Licence** : tant que la propriétaire ne l'a pas choisie (question posée au chef d'équipe le 8 novembre 2026), `license` vaut `{"status":"a-decider","text":"Licence en cours de choix : réutilisation à demander à PPF."}` et la page `/donnees` le dit ; aucune donnée réelle n'est publiée avant ce choix.
+- **Licence** (choisie par la propriétaire le 8 novembre 2026, D-103) : CC BY 4.0 pour les textes et images, Licence Ouverte 2.0 pour les jeux de données ; `license` du catalogue vaut `choisie`, chaque jeu porte sa licence (identifiant SPDX) ; mécanisme commun `ContentLicenses` (une licence par type de contenu).
 - **Registre des jeux** : interface `OpenDataset` (identifiant, titre, espace, schéma, `rows(catalogue)`), sur le modèle des files du back-office ; chaque pôle enregistre les siens dans son propre fichier. « Voir » fournit les premiers ; les autres pôles ajoutent les leurs (pétitions et compteurs de « Décider », fiches de « Comprendre », mobilisations d'« Agir » publiées par l'équipe…).
 
 ## 3. Premiers tableaux de « Voir »

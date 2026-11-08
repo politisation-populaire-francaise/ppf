@@ -17,6 +17,8 @@ import kotlinx.serialization.json.JsonUnquotedLiteral
 import org.politisationpopulairefrancaise.core.editorial.CheckQuery
 import org.politisationpopulairefrancaise.core.editorial.CheckResult
 import org.politisationpopulairefrancaise.core.editorial.ContentCheck
+import org.politisationpopulairefrancaise.core.editorial.ContentLicense
+import org.politisationpopulairefrancaise.core.editorial.ContentLicenses
 import org.politisationpopulairefrancaise.core.editorial.ContentLookup
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -29,12 +31,29 @@ import java.time.Clock
 import kotlin.time.Duration
 import kotlin.time.Duration.Companion.minutes
 
-/** The licence of what PPF publishes (cahier des charges 3.8), chosen by the owner. */
+/** The licences of what PPF publishes (cahier des charges 3.8), chosen by the owner on 8 November 2026 (D-103). */
 @Serializable
 data class ExportLicense(val status: String, val text: String, val url: String? = null) {
     companion object {
-        /** Until the owner chooses (question of 8 November 2026): no reuse without asking. */
-        val PENDING = ExportLicense("a-decider", "Licence en cours de choix par Politisation Populaire Française : pour réutiliser ces données, demandez-le nous en attendant.")
+        /** Before the choice of the owner: no reuse without asking. Kept for the format; no longer served. */
+        val PENDING = ExportLicense("a-decider", "Licence en cours de choix par Politisation Populaire Française : pour réutiliser ces données, demandez-le-nous en attendant.")
+
+        /** « Ok licence option b » (the owner, 8 November 2026): CC BY 4.0 for the texts, Licence Ouverte 2.0 for the data. */
+        val CHOSEN = ExportLicense(
+            "choisie",
+            "Textes et images publiés par PPF : licence Creative Commons Attribution 4.0 (CC BY 4.0). Jeux de données : Licence Ouverte 2.0 (Etalab). " +
+                "Créditez « ${ContentLicenses.ATTRIBUTION} » avec le titre, la date et le lien. Les citations et titres d’articles de presse, les droits de réponse, " +
+                "les réponses des candidats, les revendications et les témoignages restent à leurs auteurs.",
+            "/donnees#licence",
+        )
+    }
+}
+
+/** The licence of one dataset of the export: SPDX identifier, name, official text. */
+@Serializable
+data class DatasetLicense(val id: String, val name: String, val url: String) {
+    companion object {
+        fun of(license: ContentLicense): DatasetLicense = DatasetLicense(license.spdx, license.name, license.url)
     }
 }
 
@@ -50,6 +69,8 @@ data class ExportDataset(
     val version: Int,
     val schema: String?,
     val files: List<ExportFile>,
+    /** The licence of the dataset (D-103); in `contenus`, a content whose rights stay with its author keeps them. */
+    val license: DatasetLicense? = null,
 )
 
 /** The catalog `GET /api/v1/export` (format 1, docs/FORMATS.md section 5 bis). */
@@ -105,7 +126,7 @@ class OpenExport(
     private val events: EventRepository,
     private val policy: PublicationPolicy,
     private val datasets: OpenDatasets,
-    private val license: ExportLicense = ExportLicense.PENDING,
+    private val license: ExportLicense = ExportLicense.CHOSEN,
     private val ttl: Duration = 1.minutes,
     private val clock: Clock = Clock.systemUTC(),
 ) {
@@ -164,9 +185,10 @@ class OpenExport(
         files["$CONTENTS_ID.json"] = contentsFile
         described += ExportDataset(
             CONTENTS_ID, "Contenus publiés par PPF",
-            "Tous les contenus publiés par l’équipe de PPF, dans leur dernière version : les événements signés eux-mêmes (docs/FORMATS.md, section 2), à vérifier avec les clés editorial_keys.",
+            "Tous les contenus publiés par l’équipe de PPF, dans leur dernière version : les événements signés eux-mêmes (docs/FORMATS.md, section 2), à vérifier avec les clés editorial_keys. Licence CC BY 4.0, sauf les droits de réponse, les réponses des candidats, les revendications et les témoignages, qui restent à leurs auteurs.",
             space = "tous", version = 1, schema = null,
             files = listOf(ExportFile("json", "$PATH/$CONTENTS_ID.json", contentsFile.sha256, contentsFile.bytes.size, events.size)),
+            license = DatasetLicense.of(ContentLicenses.TEXTS),
         )
 
         datasets.all().forEach { dataset ->
@@ -184,6 +206,7 @@ class OpenExport(
                     ExportFile("json", "$PATH/${dataset.id}.json", json.sha256, json.bytes.size, rows.size),
                     ExportFile("csv", "$PATH/${dataset.id}.csv", csv.sha256, csv.bytes.size, rows.size),
                 ),
+                license = DatasetLicense.of(ContentLicenses.DATA),
             )
         }
 
