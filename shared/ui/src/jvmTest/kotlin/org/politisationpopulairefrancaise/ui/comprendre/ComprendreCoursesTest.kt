@@ -103,7 +103,8 @@ class ComprendreCoursesTest {
         val database = JvmDatabase.inMemory()
         openComprendre(database, width = 400, height = 800)
         // « Nouveau ici ? » on the home, at day 1 for a newcomer.
-        onNodeWithTag(ComprendreTags.DISCOVER).performScrollTo().assert(hasAnyDescendant(hasText("Jour 1 sur ${discover.steps.size}")))
+        // The card is one clickable element: its texts are merged into it.
+        onNodeWithTag(ComprendreTags.DISCOVER).performScrollTo().assert(hasText("Jour 1 sur ${discover.steps.size}", substring = true))
         onNodeWithTag(ComprendreTags.DISCOVER).performClick()
         waitForIdle()
         // The card opens the lesson itself, not the introduction.
@@ -121,7 +122,7 @@ class ComprendreCoursesTest {
         // Back home, the card points at day 2: the progress stayed on the device.
         onNodeWithTag(CourseTags.BACK).performScrollTo().performClick()
         waitForIdle()
-        onNodeWithTag(ComprendreTags.DISCOVER).performScrollTo().assert(hasAnyDescendant(hasText("Jour 2 sur ${discover.steps.size}")))
+        onNodeWithTag(ComprendreTags.DISCOVER).performScrollTo().assert(hasText("Jour 2 sur ${discover.steps.size}", substring = true))
     }
 
     @Test
