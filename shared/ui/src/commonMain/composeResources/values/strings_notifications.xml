@@ -18,6 +18,8 @@
     <string name="notif_category_followed_hint">Les personnes, les textes et les fiches que vous suivez.</string>
     <string name="notif_category_team">Équipe PPF</string>
     <string name="notif_category_team_hint">Les réponses à vos demandes et l’état du service.</string>
+    <string name="notif_category_account">Mon compte</string>
+    <string name="notif_category_account_hint">Le rappel de vérifier votre phrase de récupération, et une alerte si votre compte ou celui d’un contact est déclaré compromis. Même désactivées, ces alertes restent visibles dans Mon espace et dans le centre de notifications.</string>
     <string name="notif_on">activé</string>
     <string name="notif_off">désactivé</string>
     <string name="notif_permission_refused">Votre appareil n’autorise pas PPF à afficher des notifications. Elles restent visibles dans le centre de notifications de l’application : la cloche en haut de l’écran. Vous pourrez les autoriser plus tard dans les réglages de votre appareil.</string>
@@ -76,4 +78,11 @@
     <string name="notif_center_read">Lu</string>
     <string name="notif_center_message_generic">Nouveau message privé</string>
     <string name="notif_center_message_from">Message de %1$s</string>
+    <!-- The account's alerts (S-146), always kept in the centre. -->
+    <string name="notif_center_account_phrase">Vérifiez votre phrase de récupération</string>
+    <string name="notif_center_account_phrase_detail">Retapez-la dans Mon espace pour être sûr que votre copie est juste.</string>
+    <string name="notif_center_account_own">Votre compte a été déclaré compromis</string>
+    <string name="notif_center_account_own_detail">Il ne peut plus publier. Mon espace explique la suite.</string>
+    <string name="notif_center_account_contact">Un contact a déclaré son compte compromis</string>
+    <string name="notif_center_account_contact_detail">Compte %1$s. Ses messages récents peuvent venir d’une autre personne : prudence.</string>
 </resources>

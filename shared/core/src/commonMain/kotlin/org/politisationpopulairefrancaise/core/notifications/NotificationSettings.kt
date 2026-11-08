@@ -6,7 +6,15 @@ import org.politisationpopulairefrancaise.core.db.PpfDatabase
  * The kinds of notifications the user can enable one by one (M31, S-23). Each is also a channel of
  * the system's notifications, so it can be silenced there too. [key] is stored and must not change.
  */
-enum class NotificationCategory(val key: String) {
+enum class NotificationCategory(
+    val key: String,
+    /**
+     * The entries of this category always reach the notification centre, even while it is switched
+     * off; the switch only decides whether the system shows a notification. Their titles are fixed
+     * codes the interface translates ([AccountAlerts]), never personal content.
+     */
+    val alwaysInCentre: Boolean = false,
+) {
     /** Private messages and rooms (M14). */
     MESSAGES("messages"),
 
@@ -21,6 +29,13 @@ enum class NotificationCategory(val key: String) {
 
     /** Messages of the PPF team (replies to the user's requests, service status). */
     TEAM("equipe"),
+
+    /**
+     * The user's account (S-146, decision of the team lead of 8 November 2026): the reminder to
+     * check the recovery phrase, the account of the device or of a contact declared compromised.
+     * Off by default like every category, but always kept in the centre and in Mon espace.
+     */
+    ACCOUNT("compte", alwaysInCentre = true),
     ;
 
     companion object {

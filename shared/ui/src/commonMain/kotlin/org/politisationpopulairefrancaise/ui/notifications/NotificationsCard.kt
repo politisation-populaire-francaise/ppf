@@ -47,6 +47,8 @@ import org.politisationpopulairefrancaise.ui.resources.notif_category_messages_h
 import org.politisationpopulairefrancaise.ui.resources.notif_category_messages_no_account
 import org.politisationpopulairefrancaise.ui.resources.notif_category_mobilisations
 import org.politisationpopulairefrancaise.ui.resources.notif_category_mobilisations_hint
+import org.politisationpopulairefrancaise.ui.resources.notif_category_account
+import org.politisationpopulairefrancaise.ui.resources.notif_category_account_hint
 import org.politisationpopulairefrancaise.ui.resources.notif_category_team
 import org.politisationpopulairefrancaise.ui.resources.notif_category_team_hint
 import org.politisationpopulairefrancaise.ui.resources.notif_category_votes
@@ -109,6 +111,7 @@ internal fun NotificationCategory.label(): StringResource = when (this) {
     NotificationCategory.VOTES -> Res.string.notif_category_votes
     NotificationCategory.FOLLOWED -> Res.string.notif_category_followed
     NotificationCategory.TEAM -> Res.string.notif_category_team
+    NotificationCategory.ACCOUNT -> Res.string.notif_category_account
 }
 
 private fun NotificationCategory.hint(): StringResource = when (this) {
@@ -117,6 +120,7 @@ private fun NotificationCategory.hint(): StringResource = when (this) {
     NotificationCategory.VOTES -> Res.string.notif_category_votes_hint
     NotificationCategory.FOLLOWED -> Res.string.notif_category_followed_hint
     NotificationCategory.TEAM -> Res.string.notif_category_team_hint
+    NotificationCategory.ACCOUNT -> Res.string.notif_category_account_hint
 }
 
 /** How often the card reads again where the wake-ups stand while one of them is on. */

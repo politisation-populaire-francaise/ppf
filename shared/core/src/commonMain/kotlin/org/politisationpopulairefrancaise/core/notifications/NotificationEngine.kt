@@ -45,7 +45,9 @@ data class NotificationReport(val added: Int = 0, val posted: List<SystemNotific
  *
  * A source is read only if its category is enabled; on the first reading of a source, only what is
  * newer than [firstLookBackSeconds] is notified, so enabling notifications does not flood the user
- * with old novelties.
+ * with old novelties. A category [NotificationCategory.alwaysInCentre] is read even while it is off,
+ * from the start the first time (its entries are current matters of the account, not a stream),
+ * and reaches the system only while it is on.
  */
 class NotificationEngine(
     private val settings: () -> NotificationSettings,
@@ -60,24 +62,43 @@ class NotificationEngine(
         val found = mutableListOf<NotificationCandidate>()
         val now = clock()
         for ((category, source) in sources) {
-            if (!current.isEnabled(category)) continue
+            if (!current.isEnabled(category) && !category.alwaysInCentre) continue
             val mark = center.mark(source.name)
-            val after = mark ?: (now - firstLookBackSeconds)
-            val candidates = source.collect(after).filter { it.category == category && it.createdAt > after }
+            val after = mark ?: if (category.alwaysInCentre) null else now - firstLookBackSeconds
+            val candidates = source.collect(after).filter { it.category == category && (after == null || it.createdAt > after) }
             found += candidates
-            val newest = candidates.maxOfOrNull { it.createdAt }
-            center.setMark(source.name, maxOf(after, minOf(newest ?: after, now)))
+            val seen = candidates.maxOfOrNull { minOf(it.createdAt, now) }
+            when {
+                after == null -> seen?.let { center.setMark(source.name, it) }
+                else -> center.setMark(source.name, maxOf(after, seen ?: after))
+            }
         }
-        val added = center.add(found)
-        val posted = group(added, current)
-        posted.forEach { notifier?.post(it) }
-        return NotificationReport(added.size, posted)
+        return deliverFound(found, current)
+    }
+
+    /**
+     * Delivers novelties found outside the sources, by a screen that learnt them from the server
+     * (the account of the device declared compromised): the same rules as [check], and an id already
+     * in the centre is never notified twice.
+     */
+    fun deliver(candidates: List<NotificationCandidate>): NotificationReport {
+        val current = settings()
+        return deliverFound(candidates.filter { current.isEnabled(it.category) || it.category.alwaysInCentre }, current)
     }
 
     /** Marks every source as read up to now, without notifying (used when a category is enabled). */
     fun skipToNow(category: NotificationCategory) {
+        // Read even while off: nothing piled up that could flood the user.
+        if (category.alwaysInCentre) return
         val now = clock()
         sources.filter { it.first == category }.forEach { center.setMark(it.second.name, now) }
+    }
+
+    private fun deliverFound(found: List<NotificationCandidate>, current: NotificationSettings): NotificationReport {
+        val added = center.add(found)
+        val posted = group(added.filter { current.isEnabled(it.category) }, current)
+        posted.forEach { notifier?.post(it) }
+        return NotificationReport(added.size, posted)
     }
 
     private fun group(added: List<NotificationCandidate>, current: NotificationSettings): List<SystemNotification> =
@@ -86,7 +107,8 @@ class NotificationEngine(
             SystemNotification(
                 category = category,
                 count = items.size,
-                title = if (current.showDetails) single?.title else null,
+                // The titles of the account's alerts are fixed codes, never personal content.
+                title = if (current.showDetails || category.alwaysInCentre) single?.title else null,
                 detail = if (current.showDetails) single?.detail else null,
                 target = single?.target ?: items.mapNotNull { it.target }.distinct().singleOrNull(),
                 silent = current.totalSilence,

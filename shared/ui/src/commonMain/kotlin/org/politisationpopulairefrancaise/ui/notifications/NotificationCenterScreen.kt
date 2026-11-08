@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
 import org.politisationpopulairefrancaise.core.notifications.NotificationCategory
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
@@ -60,6 +61,12 @@ import org.politisationpopulairefrancaise.ui.resources.notif_center_clear_title
 import org.politisationpopulairefrancaise.ui.resources.notif_center_description
 import org.politisationpopulairefrancaise.ui.resources.notif_center_empty
 import org.politisationpopulairefrancaise.ui.resources.notif_center_mark_all
+import org.politisationpopulairefrancaise.ui.resources.notif_center_account_contact
+import org.politisationpopulairefrancaise.ui.resources.notif_center_account_contact_detail
+import org.politisationpopulairefrancaise.ui.resources.notif_center_account_own
+import org.politisationpopulairefrancaise.ui.resources.notif_center_account_own_detail
+import org.politisationpopulairefrancaise.ui.resources.notif_center_account_phrase
+import org.politisationpopulairefrancaise.ui.resources.notif_center_account_phrase_detail
 import org.politisationpopulairefrancaise.ui.resources.notif_center_message_from
 import org.politisationpopulairefrancaise.ui.resources.notif_center_message_generic
 import org.politisationpopulairefrancaise.ui.resources.notif_center_settings
@@ -87,6 +94,7 @@ private fun NotificationCategory.icon(): ImageVector = when (this) {
     NotificationCategory.VOTES -> Lucide.Vote
     NotificationCategory.FOLLOWED -> Lucide.Bookmark
     NotificationCategory.TEAM -> Lucide.ShieldCheck
+    NotificationCategory.ACCOUNT -> Lucide.KeyRound
 }
 
 /**
@@ -186,11 +194,22 @@ fun NotificationCenterScreen(
 private fun EntryCard(entry: NotificationEntry, showDetails: Boolean, now: Long, onClick: () -> Unit) {
     val palette = PpfTheme.palette
     // A private message names its sender and shows an excerpt only if the user allowed details.
-    val (title, detail) = if (entry.category == NotificationCategory.MESSAGES) {
-        if (showDetails) stringResource(Res.string.notif_center_message_from, shortNpub(entry.title)) to entry.detail
-        else stringResource(Res.string.notif_center_message_generic) to null
-    } else {
-        entry.title to entry.detail
+    val (title, detail) = when (entry.category) {
+        NotificationCategory.MESSAGES ->
+            if (showDetails) stringResource(Res.string.notif_center_message_from, shortNpub(entry.title)) to entry.detail
+            else stringResource(Res.string.notif_center_message_generic) to null
+        // The account's alerts (S-146) carry a fixed code, translated here; the detail is at most a key.
+        NotificationCategory.ACCOUNT -> when (entry.title) {
+            AccountAlerts.PHRASE_CHECK ->
+                stringResource(Res.string.notif_center_account_phrase) to stringResource(Res.string.notif_center_account_phrase_detail)
+            AccountAlerts.OWN_COMPROMISED ->
+                stringResource(Res.string.notif_center_account_own) to stringResource(Res.string.notif_center_account_own_detail)
+            AccountAlerts.CONTACT_COMPROMISED ->
+                stringResource(Res.string.notif_center_account_contact) to
+                    stringResource(Res.string.notif_center_account_contact_detail, shortNpub(entry.detail.orEmpty()))
+            else -> entry.title to entry.detail
+        }
+        else -> entry.title to entry.detail
     }
     PpfCard(
         modifier = Modifier.fillMaxWidth().testTag(NotificationCenterTags.ENTRY + entry.id),

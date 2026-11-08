@@ -86,6 +86,15 @@ INSERT OR REPLACE INTO notification_mark(source, seen_until) VALUES (?, ?);
 deleteAllMarks:
 DELETE FROM notification_mark;
 
+-- Public events of a kind in the order the device received them: the alerts of the account (S-146)
+-- read the compromise notices (kind 1777) kept with the other public events.
+selectEventIdsReceivedAfter:
+SELECT id, received_at FROM event WHERE kind = ? AND received_at > ? ORDER BY received_at ASC, id ASC LIMIT ?;
+
+-- The latest private conversation where a contact wrote, opened by the alert about that contact.
+latestConversationOf:
+SELECT conversation_id FROM message WHERE author = ? ORDER BY received_at DESC, id ASC LIMIT 1;
+
 getRegistration:
 SELECT * FROM push_registration WHERE scope = ?;
 

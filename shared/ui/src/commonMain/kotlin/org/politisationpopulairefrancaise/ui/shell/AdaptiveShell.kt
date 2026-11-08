@@ -136,7 +136,9 @@ import org.politisationpopulairefrancaise.ui.decider.DeciderScreen
 import org.politisationpopulairefrancaise.ui.decider.DeciderState
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.notifications.NotificationCenterScreen
 import org.politisationpopulairefrancaise.ui.notifications.NotificationsSettingsState
 import org.politisationpopulairefrancaise.ui.notifications.rememberNotificationCenter
@@ -232,8 +234,14 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         callsLibrary.setAccount(accountKey)
         messaging.setAccount(accountSession.messagingSigner)
     }
-    // A compromised account no longer writes (S-146): the conversations say why.
-    LaunchedEffect(accountSession.compromise) { messaging.markOwnCompromised(accountSession.compromise != null) }
+    // A compromised account no longer writes (S-146): the conversations say why, and the alert joins
+    // the notification centre even while the category « Mon compte » is off.
+    LaunchedEffect(accountSession.compromise) {
+        val compromised = accountSession.compromise
+        messaging.markOwnCompromised(compromised != null)
+        val key = accountSession.accountKey
+        if (compromised != null && key != null) notificationCenter?.accountCompromised(key, currentEpochSeconds())
+    }
     // How long the server keeps the account's private messages (Mon espace, D-028).
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
     // The notification settings (Mon espace, M31); null without notifications.
@@ -270,6 +278,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 if (conversation != null) {
                     messaging.conversations.firstOrNull { it.id == conversation }?.conversation?.let(messaging::open)
                     navigate(Space.MESSAGES)
+                } else if (entry.target == AccountAlerts.MY_SPACE_TARGET) {
+                    navigate(Space.MON_ESPACE)
                 }
             }
             val bell = notificationCenter?.let { center -> Bell(center.unreadCount) { centerOpen = true } }

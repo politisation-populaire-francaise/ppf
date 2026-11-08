@@ -56,11 +56,19 @@ class NotificationCenterState(private val notifications: Notifications) {
         reload()
     }
 
-    /** One round while the application is open, only when at least one category is enabled. */
+    /**
+     * One round while the application is open. It asks the server something only when a category is
+     * enabled; otherwise it reads the device alone, for the account's alerts kept in the centre even
+     * while their category is off (S-146).
+     */
     suspend fun tick() {
-        if (notifications.settings.load().enabled.isNotEmpty()) {
-            runCatching { withContext(Dispatchers.Default) { notifications.onWake() } }
-        }
+        runCatching { withContext(Dispatchers.Default) { notifications.onWake() } }
+        reload()
+    }
+
+    /** The account of this device was found compromised: the alert joins the centre at once. */
+    suspend fun accountCompromised(account: String, detectedAt: Long) {
+        runCatching { withContext(Dispatchers.Default) { notifications.accountCompromised(account, detectedAt) } }
         reload()
     }
 

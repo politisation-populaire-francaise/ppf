@@ -34,14 +34,23 @@ class Notifications(
     val engine = NotificationEngine(
         settings = settings::load,
         center = center,
-        sources = listOf(NotificationCategory.MESSAGES to MessagesNotificationSource(database, me = { accountKey })) + extraSources,
+        sources = listOf(
+            NotificationCategory.MESSAGES to MessagesNotificationSource(database, me = { accountKey }),
+            NotificationCategory.ACCOUNT to PhraseReminderSource(identityStore),
+            NotificationCategory.ACCOUNT to CompromiseNoticesSource(database, me = { accountKey }),
+        ) + extraSources,
         notifier = notifier,
     )
+
+    /** The account of this device was found compromised by a screen (S-146): always in the centre. */
+    fun accountCompromised(account: String, detectedAt: Long): NotificationReport =
+        engine.deliver(listOf(AccountAlerts.ownCompromised(account, detectedAt)))
 
     /**
      * One round: fetches what is new (public contents, then the user's private messages when an
      * account exists and messages are enabled) and notifies. Rounds never overlap; a wake-up that
-     * arrives during a round is simply absorbed by it.
+     * arrives during a round is simply absorbed by it. With every category off, nothing is asked
+     * from the server: the round only reads the device (the account's alerts, always in the centre).
      */
     suspend fun onWake() {
         if (round.isLocked) return
@@ -50,7 +59,7 @@ class Notifications(
             val keys = identityStore.load()?.keys()
             accountKey = keys?.publicKey?.hex
             val remote = remote
-            if (remote != null && current.enabled.isNotEmpty()) {
+            if (remote != null && current.enabled.any { !it.alwaysInCentre }) {
                 runCatching { SyncService(LocalEventStore(database), remote).pull(kinds = listOf(Article.KIND, EventKinds.TEXT_NOTE)) }
                 if (keys != null && current.isEnabled(NotificationCategory.MESSAGES)) {
                     runCatching { MessagingService(LocalMessagingSigner(keys), MessageStore(database), remote).pull() }
