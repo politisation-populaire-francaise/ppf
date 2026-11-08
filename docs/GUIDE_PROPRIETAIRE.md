@@ -67,7 +67,7 @@ Si une étape ne se passe pas comme décrit, notez l'étape et le message affich
 4. Chaque publication montre l'avatar et le nom de l'auteur (« Politisation Populaire Française » avec la coche bleue de compte vérifié pour les publications de l'équipe), l'heure, « Public », et le badge jaune [EXEMPLE] pour les contenus de démonstration. Les thèmes apparaissent en bleu (#manifestation).
 5. Touchez **J'aime** : il passe en rouge carmin ; il ne compte que sur votre appareil pour l'instant. **Commenter** et **Relayer** sont grisés en attendant le cadrage de la vie privée.
 6. Tournez le téléphone : la barre du bas devient une colonne d'icônes à gauche ; l'avatar reste en haut à droite.
-7. Comparez avec vos maquettes, en clair puis en sombre : couleurs, police (Atkinson Hyperlegible), arrondis, ombres, badges. Deux écarts volontaires, à trancher : la barre du bas (vos maquettes ont à la place un bouton rond « Carte » et un bouton « AIDE »), et l'absence du bouton AIDE tant qu'il n'est pas spécifié.
+7. Comparez avec vos maquettes, en clair puis en sombre : couleurs, police (Atkinson Hyperlegible), arrondis, ombres, badges. La barre du bas a remplacé le bouton rond « Carte » de vos maquettes (D-044). Le bouton rouge « AIDE » est présent dans tous les espaces (D-053) : touchez-le pour voir les numéros d'urgence, les avocats de votre territoire et votre point de ralliement ; le mode manifestation se trouve dans l'accueil d'« Agir ».
 
 ### Tester le suivi de comptes (ajouté le 7 novembre 2026)
 
