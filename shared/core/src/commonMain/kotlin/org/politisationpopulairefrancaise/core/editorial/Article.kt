@@ -69,6 +69,12 @@ enum class ArticleType(val tagValue: String) {
 
     /** An election of the personal electoral calendar (DE-28; core.decider.ElectionCalendar): rounds, deadlines, decree. */
     ELECTION("election"),
+
+    /**
+     * A teaching sheet for the classroom (CO-13, D-096): how to bring one course of "Comprendre" to life in
+     * 55 minutes with a group, linked to its course and to a level, read by `core.comprendre.TeachingSheet`.
+     */
+    FICHE_PEDAGOGIQUE("fiche-pedagogique"),
     ;
 
     companion object {

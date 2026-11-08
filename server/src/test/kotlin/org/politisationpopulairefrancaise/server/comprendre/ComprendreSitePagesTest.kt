@@ -74,7 +74,7 @@ class ComprendreSitePagesTest {
             "/comprendre/fiches", "/comprendre/fiches/garde-a-vue", "/comprendre/parcours", "/comprendre/parcours/le-49-3-et-la-motion-de-censure",
             "/comprendre/decryptages", "/comprendre/decryptages/49-3-loi-sans-vote", "/comprendre/histoire", "/comprendre/histoire/front-populaire-1936",
             "/comprendre/qui-decide", "/comprendre/qui-decide/eau-du-robinet", "/comprendre/glossaire", "/comprendre/glossaire?q=censure",
-            "/comprendre/glossaire/49-3", "/comprendre/methode", "/comprendre/hors-ligne",
+            "/comprendre/glossaire/49-3", "/comprendre/methode", "/comprendre/hors-ligne", "/comprendre/enseignants",
         ).forEach { client.page(it) }
     }
 

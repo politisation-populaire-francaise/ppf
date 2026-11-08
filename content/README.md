@@ -71,6 +71,10 @@ Même en-tête qu'une fiche (sans `type`, donné par le dossier), avec en plus :
 
 Blocs propres à ces contenus : `::: objections` (paires `? objection` puis `> réponse sourcée`, obligatoire dans les décryptages et l'histoire), `::: chronologie` (lignes `- AAAA-MM-JJ : texte`), et pour « Qui décide de ça ? » un bloc `::: decideurs` en tête du corps (lignes `- niveau | rôles | ce que ce niveau décide (référence)`). L'outil de signature refuse un contenu dont un bloc est mal formé ou dont les sources manquent. Tous les contenus actuels sont des brouillons **[EXEMPLE]** rédigés avec l'aide d'une IA et vérifiés sur les textes officiels, à faire relire.
 
+## Fiches pédagogiques pour la classe (`enseignants/`, CO-13, D-096)
+
+Une fiche fait vivre un parcours en 55 minutes avec un groupe (conception : `docs/integration/comprendre-enseignants.md`). Identifiant `classe-<identifiant du parcours>-<niveau>`, `type: fiche-pedagogique`, `duration: 55`, et en plus : `course` (identifiant du parcours lié), `level` (`lycee` ou `cycle-4`), `programme` (le programme officiel servi, en une phrase, avec le numéro et la date du Bulletin officiel et « vérifié le AAAA-MM-JJ » ; l'adresse du texte va dans les sources). Corps, dans cet ordre : `## Objectifs`, `## Prérequis`, `## Déroulé` (lignes `- 10 min : ce que fait la classe`, dont la somme fait la durée), `## Débat guidé` (un bloc `::: objections` d'au moins deux objections, une de chaque côté), `## Pour aller plus loin` (facultative), `## Sources`. Pas de bloc `::: quiz` : les questions à main levée sont celles du parcours. Le rappel de neutralité et la licence sont ajoutés par le site et l'application, jamais écrits dans la fiche.
+
 ## Format d'une entrée du glossaire (`glossaire/*.md`)
 
 Une entrée par fichier (décision D-048). Le terme est repéré tout seul dans **tous** les contenus de l'application (Comprendre, Voir, Agir, revendications, fiches) : sa première occurrence dans un contenu est soulignée en pointillés, suivie d'un petit « ? » ; un geste ouvre une infobulle avec la définition rapide, puis « En savoir plus » ouvre la page de l'entrée. Les rédacteurs n'ont rien à baliser dans les autres contenus.

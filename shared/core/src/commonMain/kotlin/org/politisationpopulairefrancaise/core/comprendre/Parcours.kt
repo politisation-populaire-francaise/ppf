@@ -47,6 +47,25 @@ data class Parcours(
 
     val quizCount: Int get() = steps.count { it.quiz != null }
 
+    /** How the course is meant to be read (`ppf-rhythm`); null for a course read at once. */
+    val rhythm: CourseRhythm? get() = CourseRhythm.from(article.event.firstTagValue(ComprendreTags.RHYTHM))
+
+    /** One lesson (one step) a day, as « Je découvre » (CO-19): a suggestion, never a lock. */
+    val daily: Boolean get() = rhythm == CourseRhythm.DAILY
+
+    /**
+     * The lesson to read next, from 0, given [progress] kept on the device: the step after the furthest one
+     * reached once it is answered (or has no quiz), else that step; null once the course is completed.
+     */
+    fun nextLesson(progress: ParcoursProgress?): Int? {
+        if (progress == null) return 0
+        if (progress.completed) return null
+        val furthest = progress.furthestStep.coerceIn(0, steps.lastIndex)
+        val step = steps[furthest]
+        val done = step.quiz == null || progress.answers.containsKey(step.index)
+        return if (done && furthest < steps.lastIndex) furthest + 1 else furthest
+    }
+
     companion object {
         /** Reads a course; null if the content is not a course or has no step. */
         fun from(article: Article): Parcours? {
