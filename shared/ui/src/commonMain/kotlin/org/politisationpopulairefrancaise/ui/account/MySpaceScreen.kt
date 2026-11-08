@@ -426,7 +426,7 @@ private fun ReadyCards(
     }
 
     // The phrase, its check and the recovery key (S-146, D-134).
-    RecoveryCard(session, state, onShowPhrase = { pending = PendingDialog.REVEAL_PHRASE })
+    RecoveryCard(session, state, onShowPhrase = { pending = PendingDialog.REVEAL_PHRASE }, notifications = notifications)
 
     PpfCard(Modifier.fillMaxWidth(), contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp)) {
         Text(stringResource(Res.string.account_visibility_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 12.dp, bottom = 4.dp))

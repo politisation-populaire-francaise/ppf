@@ -66,10 +66,10 @@ class NotificationsUiTest {
         override suspend fun unsubscribe(subscriptionId: String): PushResult<Unit> = PushResult.Done(Unit)
     }
 
-    private class Device(withAccount: Boolean, withPush: Boolean, var granted: Boolean = true) {
+    private class Device(withAccount: Boolean, withPush: Boolean, var granted: Boolean = true, phraseDueAt: Long? = null) {
         val database = JvmDatabase.inMemory()
         val identityStore = if (withAccount) {
-            InMemoryIdentityStore(StoredIdentity.of(RoomsFixtures.phrase.deriveKeys(), RoomsFixtures.phrase))
+            InMemoryIdentityStore(StoredIdentity.of(RoomsFixtures.phrase.deriveKeys(), RoomsFixtures.phrase, checkDueAt = phraseDueAt))
         } else {
             InMemoryIdentityStore()
         }
@@ -262,6 +262,34 @@ class NotificationsUiTest {
         assertEquals(0L, device.notifications.center.unreadCount())
         assertEquals(0, onAllNodesWithTag(NotificationCenterTags.SCREEN).fetchSemanticsNodes().size)
         onNodeWithTag(ShellTags.navItem(Space.MESSAGES)).assertIsSelected()
+    }
+
+    @Test
+    fun theAccountAlertsReachTheCentreWhileEverythingIsOff() = runComposeUiTest {
+        // A check of the phrase postponed at signup, due a minute ago (S-146).
+        val device = Device(withAccount = true, withPush = false, phraseDueAt = currentEpochSeconds() - 60)
+        show(device)
+        waitUntil(timeoutMillis = 30_000) { device.notifications.center.unreadCount() == 1L }
+        assertEquals(NotificationSettings.MOST_PROTECTIVE, device.saved(), "nothing was switched on for it")
+        onNodeWithTag(ShellTags.NOTIFICATIONS).performClick()
+        waitForIdle()
+        onNodeWithText("Vérifiez votre phrase de récupération").assertExists()
+        assertTrue(onAllNodesWithText("Mon compte ·", substring = true).fetchSemanticsNodes().isNotEmpty())
+
+        // It leads to Mon espace, where the phrase is checked.
+        val entry = device.notifications.center.entries().single()
+        onNodeWithTag(NotificationCenterTags.ENTRY + entry.id).performClick()
+        waitForIdle()
+        assertEquals(0, onAllNodesWithTag(NotificationCenterTags.SCREEN).fetchSemanticsNodes().size)
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(NotificationsTags.CARD).fetchSemanticsNodes().isNotEmpty() }
+        assertEquals(0L, device.notifications.center.unreadCount())
+
+        // The category is a switch like the others, off by default, explained.
+        switch(NotificationsTags.CATEGORY + NotificationCategory.ACCOUNT.key).assertIsOff()
+        onNodeWithText("Même désactivées, ces alertes restent visibles", substring = true).assertExists()
+        switch(NotificationsTags.CATEGORY + NotificationCategory.ACCOUNT.key).performClick()
+        waitForIdle()
+        assertEquals(setOf(NotificationCategory.ACCOUNT), device.saved().enabled)
     }
 
     @Test

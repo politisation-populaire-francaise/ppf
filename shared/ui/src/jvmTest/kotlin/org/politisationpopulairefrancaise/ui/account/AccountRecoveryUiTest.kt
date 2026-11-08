@@ -26,6 +26,9 @@ import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.identity.RecoveryPhrase
 import org.politisationpopulairefrancaise.core.identity.StoredIdentity
+import org.politisationpopulairefrancaise.core.local.JvmDatabase
+import org.politisationpopulairefrancaise.core.notifications.NotificationCategory
+import org.politisationpopulairefrancaise.core.notifications.NotificationSettings
 import org.politisationpopulairefrancaise.core.publication.InMemoryPublicationPort
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
@@ -172,6 +175,28 @@ class AccountRecoveryUiTest {
         click(RecoveryTags.CHECK_SUBMIT)
         awaitTag(RecoveryTags.CHECK_ERROR)
         assertNotNull(store.snapshot?.recoveryWords)
+    }
+
+    @Test
+    fun typingThePhraseBackOffersTheAlertsOfTheAccount() = runComposeUiTest {
+        val store = InMemoryIdentityStore(StoredIdentity.of(account, null, verified = true))
+        // With a database, so that the device has its notifications.
+        val dependencies = AppDependencies.withDatabase(store, JvmDatabase.inMemory())
+        val notifications = assertNotNull(dependencies.notifications)
+        setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
+        onNodeWithTag(ShellTags.navItem(Space.MON_ESPACE)).performClick()
+        waitForIdle()
+        click(RecoveryTags.CHECK_PHRASE)
+        onNodeWithTag(RecoveryTags.CHECK_WHOLE).performTextInput(nip06)
+        click(RecoveryTags.CHECK_SUBMIT)
+        awaitTag(RecoveryTags.CHECK_DONE)
+
+        // A proposal only (decision of the team lead of 8 November 2026): nothing changes before the answer.
+        awaitTag(AccountAlertsOfferTags.OFFER)
+        assertEquals(NotificationSettings.MOST_PROTECTIVE, notifications.settings.load())
+        click(AccountAlertsOfferTags.ACCEPT)
+        awaitTag(AccountAlertsOfferTags.DONE)
+        assertEquals(setOf(NotificationCategory.ACCOUNT), notifications.settings.load().enabled)
     }
 
     @Test

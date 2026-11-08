@@ -42,6 +42,11 @@
     <string name="account_check_other_account">Cette phrase est valide, mais c’est celle d’un autre compte.</string>
     <string name="account_check_done_erased">Votre copie est juste. La phrase a été effacée de ce téléphone.</string>
     <string name="account_check_done_kept">Votre copie est juste. La phrase reste sur ce téléphone, comme vous l’avez choisi.</string>
+    <!-- Proposition, après la phrase retapée, d’activer la catégorie « Mon compte » (jamais imposée). -->
+    <string name="account_alerts_offer">Voulez-vous aussi être prévenu par une notification de ce téléphone, par exemple si votre compte ou celui d’un contact est un jour déclaré compromis ? Ces alertes restent de toute façon visibles dans Mon espace.</string>
+    <string name="account_alerts_offer_accept">Activer les alertes du compte</string>
+    <string name="account_alerts_offer_decline">Non merci</string>
+    <string name="account_alerts_offer_done">Alertes du compte activées. Vous pouvez les couper à tout moment dans Notifications, plus bas.</string>
     <string name="account_close">Fermer</string>
 
     <!-- Mon compte est déclaré compromis -->

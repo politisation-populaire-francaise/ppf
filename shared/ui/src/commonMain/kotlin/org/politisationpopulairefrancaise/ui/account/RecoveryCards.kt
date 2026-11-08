@@ -39,6 +39,7 @@ import org.politisationpopulairefrancaise.ui.components.SettingRow
 import org.politisationpopulairefrancaise.ui.components.shortNpub
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.messages.LocalMoment
+import org.politisationpopulairefrancaise.ui.notifications.NotificationsSettingsState
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.account_cancel
 import org.politisationpopulairefrancaise.ui.resources.account_check_done_erased
@@ -162,7 +163,13 @@ internal fun PhraseReminderCard(session: AccountSession) {
  * whether the server holds the account's recovery key.
  */
 @Composable
-internal fun RecoveryCard(session: AccountSession, state: AccountUiState.Ready, onShowPhrase: () -> Unit) {
+internal fun RecoveryCard(
+    session: AccountSession,
+    state: AccountUiState.Ready,
+    onShowPhrase: () -> Unit,
+    /** The notification settings, to offer the alerts of the account once the phrase is typed back. */
+    notifications: NotificationsSettingsState? = null,
+) {
     val palette = PpfTheme.palette
     var warning by remember { mutableStateOf<(() -> Unit)?>(null) }
     PpfCard(Modifier.fillMaxWidth().testTag(RecoveryTags.RECOVERY_CARD)) {
@@ -179,7 +186,7 @@ internal fun RecoveryCard(session: AccountSession, state: AccountUiState.Ready, 
 
         val check = session.phraseCheck
         if (check != null) {
-            PhraseCheckForm(session, check, onKeep = { warning = { session.setCheckKeep(true) } })
+            PhraseCheckForm(session, check, notifications, onKeep = { warning = { session.setCheckKeep(true) } })
         } else {
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 PpfSecondaryButton(
@@ -234,7 +241,7 @@ internal fun RecoveryCard(session: AccountSession, state: AccountUiState.Ready, 
 
 /** "Vérifier ma phrase": three words when the phrase is on the device, the whole phrase otherwise. */
 @Composable
-private fun PhraseCheckForm(session: AccountSession, check: PhraseCheckState, onKeep: () -> Unit) {
+private fun PhraseCheckForm(session: AccountSession, check: PhraseCheckState, notifications: NotificationsSettingsState?, onKeep: () -> Unit) {
     val palette = PpfTheme.palette
     if (check.done) {
         Text(
@@ -243,6 +250,11 @@ private fun PhraseCheckForm(session: AccountSession, check: PhraseCheckState, on
             color = palette.success,
             modifier = Modifier.testTag(RecoveryTags.CHECK_DONE).semantics { liveRegion = LiveRegionMode.Polite },
         )
+        // The phrase was just typed back: the moment to offer the alerts of the account, never to impose them.
+        notifications?.let {
+            Spacer(Modifier.height(8.dp))
+            AccountAlertsOffer(it)
+        }
         PpfTextButton(onClick = session::closePhraseCheck, text = stringResource(Res.string.account_close), modifier = Modifier.testTag(RecoveryTags.CHECK_CLOSE))
         return
     }
