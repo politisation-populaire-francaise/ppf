@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui
 
+import org.politisationpopulairefrancaise.core.agir.security.DeviceEraser
+import org.politisationpopulairefrancaise.core.agir.security.DeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.identity.IdentityStore
@@ -43,6 +45,10 @@ class AppDependencies(
      * hosts do not report it yet, so it answers false by default.
      */
     val dataSaver: () -> Boolean = { false },
+    /** Where the lock and the other security settings of the device are kept (S-43, S-45); null keeps them in memory (tests, previews). */
+    val securityStorage: DeviceSecurityStorage? = null,
+    /** Erases every file of the application on the device (S-44); null erases only the identity and the settings (tests, previews). */
+    val deviceEraser: DeviceEraser? = null,
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -58,6 +64,8 @@ class AppDependencies(
             editorialTrust: EditorialTrust = EditorialTrust.bundledExamples(),
             remote: RemoteEvents? = null,
             openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
+            securityStorage: DeviceSecurityStorage? = null,
+            deviceEraser: DeviceEraser? = null,
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
             openDataTrust = openDataTrust,
@@ -67,6 +75,8 @@ class AppDependencies(
             followStore = FollowStore(database),
             database = database,
             contentFollowStore = ContentFollowStore(database),
+            securityStorage = securityStorage,
+            deviceEraser = deviceEraser,
         )
     }
 }

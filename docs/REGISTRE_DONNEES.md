@@ -249,3 +249,15 @@ Aucune donnée de citoyen n'entre dans le service : il voit les contenus de l'é
 | Aucune pour `security.txt` et la page `/securite` | Pages publiques, servies à l'identique à tous, sans formulaire ni journal | Rien n'est stocké |
 | Message d'un chercheur à la clé de l'équipe sécurité (NIP-17) | Recevoir le signalement en privé | Chiffré de bout en bout sur l'appareil de l'expéditeur : le serveur, quand il sert de relais, ne garde qu'une enveloppe illisible, pour la durée de conservation des messages (D-028) ; le texte n'est lisible que sur les appareils de l'équipe sécurité, qui le gardent le temps du traitement et de la publication conjointe |
 | Signalement privé sur GitHub (après la liaison) | Autre canal privé | Chez GitHub (hors Union européenne), visible de l'équipe seulement ; le chercheur choisit ce canal en connaissance de cause |
+
+## Ajout du 8 novembre 2026 : sécurité de l'appareil (M33 : S-43, S-44, S-45 ; AG-56)
+
+Détail : `docs/integration/agir-securite-appareil.md`. Rien n'est envoyé au serveur : le code est vérifié sur l'appareil, l'effacement se fait sur l'appareil.
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Réglages de sécurité : verrouillage activé ou non, délai avant le verrouillage, « masquer le contenu » ; **empreinte lente et salée du code** (PBKDF2-HMAC-SHA-256, 600 000 itérations, sel aléatoire de 16 octets), jamais le code ni sa longueur | Verrouiller l'application (S-43), masquer son contenu (S-45) | Appareil seulement : préférence privée `ppf-securite` sur Android (sauvegardes du système interdites), l'empreinte mélangée à une clé HMAC de l'Android Keystore (`ppf-lock-pepper`) qui ne quitte pas le téléphone ; fichier `securite-appareil.json` du dossier privé de l'application sur ordinateur ; mémoire seulement sur iOS pour l'instant | Jusqu'à la désactivation, l'effacement rapide, la désinstallation ou l'effacement des données de l'application | L'utilisateur |
+| Nombre de codes faux depuis le dernier bon code et heure du dernier code faux | Faire attendre de plus en plus longtemps entre les essais, même après un redémarrage | Même endroit que les réglages | Remis à zéro au bon code | L'utilisateur |
+| Case « phrase de récupération notée » de « Préparer mon téléphone » | Se préparer avant une manifestation (AG-56) | Mémoire seulement | Fermeture de l'écran ou de l'application | L'utilisateur |
+
+**Effacement rapide (S-44)** : un geste et une confirmation effacent tout ce que PPF garde sur l'appareil. Sur Android, c'est l'« effacement des données » du système (`clearApplicationUserData`) : base locale de tous les pôles, préférences (point de ralliement, réglages), identité, fichiers, cache, médias et clés de l'Android Keystore, puis l'application s'arrête. Sur ordinateur : toutes les lignes de toutes les tables de la base locale sont supprimées (`secure_delete`, puis `VACUUM`), tous les autres fichiers du dossier privé sont supprimés, puis l'application se ferme. Rien n'est effacé sur le serveur (ce qui a été publié reste publié, comme l'écran le dit) ; les messages en attente sur le serveur s'effacent à la fin de leur durée de conservation (D-028).

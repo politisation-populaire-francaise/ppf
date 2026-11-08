@@ -8,6 +8,8 @@ import io.ktor.client.HttpClient
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.crash.CrashReportFile
 import org.politisationpopulairefrancaise.core.currentPlatform
+import org.politisationpopulairefrancaise.core.agir.security.DesktopDeviceEraser
+import org.politisationpopulairefrancaise.core.agir.security.FileDeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.identity.FileIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
@@ -28,10 +30,14 @@ fun main() {
         ServerPublicationPort(HttpClient(), url.trimEnd('/'))
     }
     // One local database, opened once, shared by every store (contents, followed accounts).
+    val databaseFile = dataDirectory.resolve("ppf.db")
     val dependencies = AppDependencies.withDatabase(
         identityStore = FileIdentityStore.default(),
-        database = JvmDatabase.open(dataDirectory.resolve("ppf.db")),
+        database = JvmDatabase.open(databaseFile),
         remote = remote,
+        // The lock of the application and the quick erase (M33: S-43, S-44).
+        securityStorage = FileDeviceSecurityStorage(dataDirectory.resolve(FileDeviceSecurityStorage.FILE_NAME)),
+        deviceEraser = DesktopDeviceEraser(dataDirectory, databaseFile),
     )
     application {
         Window(

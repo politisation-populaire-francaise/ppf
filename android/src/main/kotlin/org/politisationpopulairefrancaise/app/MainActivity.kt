@@ -9,6 +9,8 @@ import io.ktor.client.HttpClient
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.crash.CrashReportFile
 import org.politisationpopulairefrancaise.core.currentPlatform
+import org.politisationpopulairefrancaise.core.agir.security.AndroidDeviceEraser
+import org.politisationpopulairefrancaise.core.agir.security.AndroidDeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.identity.AndroidIdentityStore
 import org.politisationpopulairefrancaise.core.local.AndroidDatabase
 import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
@@ -47,6 +49,9 @@ class MainActivity : ComponentActivity() {
             remote = remote,
             // The published build trusts the production import key only; test builds the preproduction and the examples.
             openDataTrust = if (BuildConfig.BUILD_TYPE == "release") OpenDataKeys.release() else OpenDataKeys.testBuilds(),
+            // The lock of the application and the quick erase (M33: S-43, S-44, S-45).
+            securityStorage = AndroidDeviceSecurityStorage(applicationContext),
+            deviceEraser = AndroidDeviceEraser(applicationContext),
         )
         setContent {
             PpfApp(dependencies, crashReport = pendingCrash)

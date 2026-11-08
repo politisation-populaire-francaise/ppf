@@ -39,6 +39,7 @@ import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.identity.PhraseLanguage
 import org.politisationpopulairefrancaise.core.identity.RecoveryPhrase
+import org.politisationpopulairefrancaise.ui.agir.security.DeviceSecurityCard
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -155,6 +156,8 @@ fun MySpaceScreen(
                 is AccountUiState.Restoring -> RestoringCard(session, state)
                 is AccountUiState.Ready -> ReadyCards(session, state, windowClass, mailbox)
             }
+            // The lock, the hidden content and the quick erase of this device (M33), with or without an account.
+            DeviceSecurityCard()
             // Which version is installed, on which system: what a tester reports with a problem.
             val platform = currentPlatform()
             Text(

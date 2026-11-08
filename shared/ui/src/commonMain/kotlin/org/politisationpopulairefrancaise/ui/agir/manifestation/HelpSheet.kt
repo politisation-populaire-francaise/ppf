@@ -41,6 +41,8 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.agir.manifestation.EmergencyNumbers
+import org.politisationpopulairefrancaise.ui.agir.security.HelpWipeBlock
+import org.politisationpopulairefrancaise.ui.agir.security.LocalDeviceSecurity
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
@@ -60,6 +62,7 @@ import org.politisationpopulairefrancaise.ui.resources.help_rally_title
 import org.politisationpopulairefrancaise.ui.resources.help_title
 import org.politisationpopulairefrancaise.ui.resources.help_vital_text
 import org.politisationpopulairefrancaise.ui.resources.help_vital_title
+import org.politisationpopulairefrancaise.ui.resources.sec_help_title
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** Ids of the functions the sheet announces for later (tests, [ManifestationTags.SOON]). */
@@ -188,6 +191,14 @@ private fun HelpSheetContent(help: HelpState, title: String) {
     SectionHeading(stringResource(Res.string.help_rally_title), Lucide.MapPin)
     Spacer(Modifier.height(4.dp))
     RallyPointBlock(help)
+
+    // The quick erase (S-44), last: never pressed by mistake on the way to the numbers.
+    if (LocalDeviceSecurity.current != null) {
+        SheetDivider()
+        SectionHeading(stringResource(Res.string.sec_help_title), Lucide.TriangleExclamationPoint)
+        Spacer(Modifier.height(4.dp))
+        HelpWipeBlock()
+    }
 }
 
 @Composable
