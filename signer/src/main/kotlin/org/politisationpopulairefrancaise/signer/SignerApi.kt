@@ -175,6 +175,7 @@ private const val MAX_CERTIFICATES = 100
 internal fun statusOf(code: String): HttpStatusCode = when (code) {
     SigningRefusals.RATE_LIMITED, SigningRefusals.TOO_MANY_DRAFTS -> HttpStatusCode.TooManyRequests
     SigningRefusals.ALREADY_SIGNED, SigningRefusals.DRAFT_CONFLICT, SigningRefusals.ALREADY_APPROVED, SigningRefusals.URN_ALREADY_CLOSED -> HttpStatusCode.Conflict
+    SigningRefusals.DOUBLE_VALIDATION_REQUIRED -> HttpStatusCode.UnprocessableEntity
     else -> HttpStatusCode.UnprocessableEntity
 }
 

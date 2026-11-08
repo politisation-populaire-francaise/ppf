@@ -175,8 +175,9 @@ class SignerServiceTest {
         assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(use, event, double = true, author = DraftAuthor("", "")))
         assertEquals(SigningRefusals.MALFORMED_REQUEST, service.draftRefusal(use, event, double = true, author = DraftAuthor(pubkey = "pas une clé")))
         f.submit(service, use, event, double = true, author = DraftAuthor(account = "dan"))
-        // The rule is fixed by the first submission: the same event with another rule is refused.
-        assertEquals(SigningRefusals.DRAFT_CONFLICT, service.draftRefusal(use, event))
+        // The rule is fixed by the first submission: the same event with another rule is refused (and a single
+        // approval for a content that names a person, before anything else).
+        assertEquals(SigningRefusals.DOUBLE_VALIDATION_REQUIRED, service.draftRefusal(use, event))
         assertEquals(SigningRefusals.DRAFT_CONFLICT, service.draftRefusal(use, event, double = true, author = DraftAuthor(account = "erin")))
         assertFalse(f.submit(service, use, event, double = true, author = DraftAuthor(account = "dan")).created)
         val first = f.approve(service, f.alice, use, event)
@@ -198,13 +199,84 @@ class SignerServiceTest {
         val second = f.editorial(key, title = "[EXEMPLE] Deuxième", extra = listOf(listOf("a", "30023:${"b".repeat(64)}:personne-exemple")))
         f.submit(service, use, second, double = true, author = DraftAuthor(pubkey = f.bob.nostr.publicKey.hex))
         assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, f.approvalRefusal(service, use, second, f.bob.approve(use, second)))
+        // An ordinary content may ask for more than its rule; it is then fixed like any other.
         val third = f.editorial(key, title = "[EXEMPLE] Troisième")
         f.submit(service, use, third, double = true, author = DraftAuthor(account = "alice"))
+        assertEquals(SigningRefusals.DRAFT_CONFLICT, service.draftRefusal(use, third))
         assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, f.approvalRefusal(service, use, third, f.alice.approve(use, third)))
         // The options offer only the passkeys of members who may still approve.
         val options = assertIs<OptionsOutcome.Options>(service.approvalOptions(use.id, third.idHex()))
         assertEquals(listOf(f.bob.passkey.credential.id), options.credentialIds)
         assertEquals(TEST_RP_ID, options.rpId)
+    }
+
+    @Test
+    fun theServiceItselfRequiresTheDoubleValidationOfTheContentsOfM17() {
+        val service = f.ready()
+        val use = SigningUse.EDITORIAL_VOIR
+        val key = f.currentKey(service, use)!!
+        val person = "30023:${"b".repeat(64)}:personne-exemple"
+        val implicating = listOf(
+            f.editorial(key, title = "[EXEMPLE] Une personne", type = "personne"),
+            f.editorial(key, title = "[EXEMPLE] Un fait", type = "fait"),
+            f.editorial(key, title = "[EXEMPLE] Un type inconnu", type = "inconnu"),
+            f.editorial(key, title = "[EXEMPLE] Un responsable", extra = listOf(listOf("a", person, "", "responsable"))),
+            f.editorial(key, title = "[EXEMPLE] Une citation", extra = listOf(listOf("ppf-quote", "exemple"))),
+            UnsignedEvent(key, f.now(), EventKinds.LONG_FORM_ARTICLE, listOf(listOf("d", "sans-type"), listOf("title", "[EXEMPLE] Sans type"), listOf("ppf-origin", "human")), "[EXEMPLE]"),
+        )
+        for (event in implicating) {
+            // Whatever the queue of the main server says, a single approval is refused, at once and in the journal.
+            assertEquals(SigningRefusals.DOUBLE_VALIDATION_REQUIRED, service.draftRefusal(use, event), event.tags.toString())
+            val line = service.journal(0, 10_000).last()
+            assertEquals(JournalActions.DRAFT_REFUSED, line.action)
+            assertEquals(SigningRefusals.DOUBLE_VALIDATION_REQUIRED, line.code)
+            assertEquals(false, line.doubleValidation)
+            assertEquals(DraftState.Unknown, service.draftState(use.id, event.idHex()))
+            // The double validation still needs the author.
+            assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(use, event, double = true))
+        }
+        // Asked with its author, it goes through the two approvals.
+        val event = implicating.first()
+        f.submit(service, use, event, double = true, author = DraftAuthor(account = "dan"))
+        assertEquals(2, f.approve(service, f.alice, use, event).required)
+        assertEquals(SigningRefusals.APPROVALS_MISSING, service.refusal(f.request(use, event)))
+        f.approve(service, f.bob, use, event)
+        service.signed(f.request(use, event))
+        // An ordinary brick of « Voir » needs one approval; the rule of M17 is not applied to the other uses.
+        val ordinary = f.editorial(key, title = "[EXEMPLE] Un indicateur", type = "indicateur", extra = listOf(listOf("a", person, "", "source")))
+        f.submit(service, use, ordinary)
+        f.approve(service, f.alice, use, ordinary)
+        service.signed(f.request(use, ordinary))
+        val comprendre = f.editorial(f.currentKey(service, SigningUse.EDITORIAL_COMPRENDRE)!!, type = "fait", extra = listOf(listOf("a", person, "", "personne")))
+        f.submit(service, SigningUse.EDITORIAL_COMPRENDRE, comprendre)
+        f.approve(service, f.alice, SigningUse.EDITORIAL_COMPRENDRE, comprendre)
+        service.signed(f.request(SigningUse.EDITORIAL_COMPRENDRE, comprendre))
+    }
+
+    @Test
+    fun aDraftRecordedWithASingleApprovalForAContentOfM17IsNeverSigned() {
+        val service = f.ready()
+        val use = SigningUse.EDITORIAL_VOIR
+        val key = f.currentKey(service, use)!!
+        val event = f.editorial(key, type = "personne")
+        assertEquals(SigningRefusals.DOUBLE_VALIDATION_REQUIRED, service.draftRefusal(use, event))
+        // A journal that records this draft with a single approval, and that approval (an older version of the
+        // service, or lines written by hand with a valid chain).
+        val journal = SignerJournal.open(f.dir, f.now())
+        val fields = JournalFields(use = use.id, event = event.idHex(), eventCreatedAt = event.createdAt, key = key, doubleValidation = false)
+        journal.append(f.now(), JournalActions.DRAFT_SUBMITTED, fields)
+        journal.append(f.now(), JournalActions.APPROVAL_RECORDED, fields.copy(approvers = listOf("alice"), credential = f.alice.passkey.credential.id))
+        journal.close()
+        val reopened = f.open()
+        val state = assertIs<DraftState.Pending>(reopened.draftState(use.id, event.idHex())).status
+        assertFalse(state.doubleValidation)
+        assertEquals(listOf("alice"), state.approvals.map { it.account })
+        // The signature is refused all the same, and submitting the draft again never brings its content back.
+        assertEquals(SigningRefusals.DOUBLE_VALIDATION_REQUIRED, reopened.refusal(f.request(use, event)))
+        assertEquals(SigningRefusals.DOUBLE_VALIDATION_REQUIRED, reopened.draftRefusal(use, event))
+        assertEquals(SigningRefusals.DRAFT_CONFLICT, reopened.draftRefusal(use, event, double = true, author = DraftAuthor(account = "dan")))
+        assertFalse(assertIs<DraftState.Pending>(reopened.draftState(use.id, event.idHex())).status.contentKnown)
+        assertEquals(SigningRefusals.UNKNOWN_DRAFT, f.approvalRefusal(reopened, use, event, f.bob.approve(use, event)))
     }
 
     @Test
@@ -417,6 +489,36 @@ class SignerServiceTest {
     }
 
     @Test
+    fun theUseOfDeciderSignsEachOfItsTypesAndRefusesAnyOther() {
+        val service = f.open()
+        f.certifyAll(service)
+        val dora = TestMember("dora", setOf(SigningUse.DECIDER_PACTE))
+        f.loadTeam(service, dora.member())
+        val use = SigningUse.DECIDER_PACTE
+        val key = f.currentKey(service, use)!!
+        fun content(d: String, tags: List<List<String>>) = UnsignedEvent(
+            key, f.now(), EventKinds.LONG_FORM_ARTICLE,
+            listOf(listOf("d", d), listOf("title", "[EXEMPLE] $d"), listOf("ppf-origin", "human")) + tags,
+            "[EXEMPLE]",
+        )
+        // The Pact, the answers, the official petitions and the final texts of a deliberation: one approval each.
+        for (type in listOf("pacte", "engagement", "petition", "proposition-finale")) {
+            val event = content("exemple-$type", listOf(listOf("ppf-type", type)))
+            f.submit(service, use, event)
+            assertEquals(1, f.approve(service, dora, use, event).required, type)
+            val signed = service.signed(f.request(use, event))
+            assertTrue(PlatformTrust.of(f.rootHex, service.certificates()).isPlatformContent(signed, use), type)
+        }
+        // An unknown type, no type or two types are refused.
+        for (tags in listOf(listOf(listOf("ppf-type", "inconnu")), emptyList(), listOf(listOf("ppf-type", "petition"), listOf("ppf-type", "pacte")))) {
+            assertEquals(SigningRefusals.BAD_TAG, service.draftRefusal(use, content("exemple-refuse", tags)), tags.toString())
+        }
+        // A type of « Décider » is never signed as an editorial content.
+        assertEquals(SigningRefusals.BAD_TAG, service.draftRefusal(SigningUse.EDITORIAL_COMPRENDRE, f.editorial(f.currentKey(service, SigningUse.EDITORIAL_COMPRENDRE)!!, type = "petition")))
+        assertEquals(SigningRefusals.BAD_TAG, service.draftRefusal(SigningUse.EDITORIAL_VOIR, f.editorial(f.currentKey(service, SigningUse.EDITORIAL_VOIR)!!, type = "proposition-finale")))
+    }
+
+    @Test
     fun theHourlyCeilingHolds() {
         val service = f.ready(f.config(maxPerHour = mapOf(SigningUse.OPENDATA_INDEX to 1)))
         val key = f.currentKey(service, SigningUse.OPENDATA_INDEX)!!
@@ -511,7 +613,7 @@ class SignerServiceTest {
         assertEquals(SigningRefusals.ALREADY_SIGNED, lines.last().code)
         val text = String(Files.readAllBytes(f.dir.resolve("journal.jsonl")))
         assertFalse("Texte confidentiel" in text)
-        assertFalse("Un fait sourcé" in text)
+        assertFalse("Un texte sourcé" in text)
         assertTrue(service.journal(lines.size - 1L, 10).size == 1)
         // The new fields are inside the hash: changing one stops the service.
         val file = f.dir.resolve("journal.jsonl")
