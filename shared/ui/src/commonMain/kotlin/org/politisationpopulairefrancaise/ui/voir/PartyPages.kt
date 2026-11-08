@@ -36,6 +36,7 @@ import org.politisationpopulairefrancaise.core.voir.NextStep
 import org.politisationpopulairefrancaise.core.voir.NextTarget
 import org.politisationpopulairefrancaise.core.voir.PoliticalParty
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
+import org.politisationpopulairefrancaise.core.voir.VoirItem
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
@@ -266,7 +267,7 @@ internal fun PartyPage(party: PoliticalParty, catalog: VoirCatalog, state: VoirS
         val next = party.nextSteps.ifEmpty { listOf(NextStep(stringResource(Res.string.voir_party_next_default), NextTarget.ToSpace(Space.REVENDICATIONS))) }
         NextStepsSection(next, actions.next)
         Spacer(Modifier.height(12.dp))
-        OriginLine(party.article)
+        OriginLine(party.article, cite = VoirItem.OfParty(party))
     }
 }
 

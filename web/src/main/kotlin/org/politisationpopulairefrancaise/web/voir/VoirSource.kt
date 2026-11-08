@@ -22,6 +22,7 @@ class VoirIndex(val catalog: VoirCatalog) {
         catalog.indicators.forEach { add(VoirItem.OfIndicator(it)) }
         catalog.facts.forEach { add(VoirItem.OfFact(it)) }
         catalog.persons.forEach { add(VoirItem.OfPerson(it)) }
+        catalog.parties.forEach { add(VoirItem.OfParty(it)) }
         catalog.texts.forEach { add(VoirItem.OfText(it)) }
         catalog.movements.forEach { add(VoirItem.OfMovement(it)) }
         catalog.dossiers.forEach { add(VoirItem.OfDossier(it)) }
@@ -30,13 +31,5 @@ class VoirIndex(val catalog: VoirCatalog) {
 
     fun find(segment: String, identifier: String): VoirItem? = bySlug[segment to identifier]
 
-    private fun updatedAt(item: VoirItem): Long = when (item) {
-        is VoirItem.OfIndicator -> item.indicator.article.updatedAt
-        is VoirItem.OfFact -> item.fact.article.updatedAt
-        is VoirItem.OfPerson -> item.person.article.updatedAt
-        is VoirItem.OfParty -> item.party.article.updatedAt
-        is VoirItem.OfText -> item.text.article.updatedAt
-        is VoirItem.OfMovement -> item.movement.article.updatedAt
-        is VoirItem.OfDossier -> item.dossier.article.updatedAt
-    }
+    private fun updatedAt(item: VoirItem): Long = item.article.updatedAt
 }

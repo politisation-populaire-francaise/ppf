@@ -24,47 +24,56 @@ data class VoirDossier(val article: Article, val axis: VoirAxis) {
 /** Anything "Voir" can open: what the search returns, what the user follows. */
 sealed interface VoirItem {
     val address: ContentAddress
+    /** The signed editorial content of the block (its version, its dates, its origin). */
+    val article: Article
     val title: String
     val axis: VoirAxis
 
     data class OfIndicator(val indicator: Indicator) : VoirItem {
         override val address get() = indicator.address
+        override val article get() = indicator.article
         override val title get() = indicator.title
         override val axis get() = indicator.axis
     }
 
     data class OfFact(val fact: Fact) : VoirItem {
         override val address get() = fact.address
+        override val article get() = fact.article
         override val title get() = fact.title
         override val axis get() = fact.axis
     }
 
     data class OfPerson(val person: PublicPerson) : VoirItem {
         override val address get() = person.address
+        override val article get() = person.article
         override val title get() = person.name
         override val axis get() = VoirAxis.POUVOIR
     }
 
     data class OfParty(val party: PoliticalParty) : VoirItem {
         override val address get() = party.address
+        override val article get() = party.article
         override val title get() = party.name
         override val axis get() = VoirAxis.POUVOIR
     }
 
     data class OfText(val text: LegislativeText) : VoirItem {
         override val address get() = text.address
+        override val article get() = text.article
         override val title get() = text.title
         override val axis get() = VoirAxis.POUVOIR
     }
 
     data class OfMovement(val movement: WorldMovement) : VoirItem {
         override val address get() = movement.address
+        override val article get() = movement.article
         override val title get() = movement.title
         override val axis get() = VoirAxis.MOUVEMENT
     }
 
     data class OfDossier(val dossier: VoirDossier) : VoirItem {
         override val address get() = dossier.address
+        override val article get() = dossier.article
         override val title get() = dossier.title
         override val axis get() = dossier.axis
     }
