@@ -202,7 +202,8 @@ class Importer(
             }
         }
         histories.values.forEach { (packages, _) -> files.putAll(packages) }
-        files[ParliamentWeekFormat.PACKAGE] = WeekImport(sources, only, out, log).bytes() // « Cette semaine au Parlement » (Week.kt)
+        // « Cette semaine au Parlement » (Week.kt) comes with the daily sources; `--history` alone keeps the previous one.
+        if (only.isNotEmpty()) files[ParliamentWeekFormat.PACKAGE] = WeekImport(sources, only, out, log).bytes()
         val refreshedChambers = ballots.keys
         val keptRefs = previous.index?.packages.orEmpty().filter { ref ->
             ref.name !in files &&
