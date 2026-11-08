@@ -117,6 +117,7 @@ fun ParliamentScreen(
                         is ParliamentPage.OfBallot -> key(page) { BallotPage(state, snapshot, page.id, padding) }
                         ParliamentPage.Week -> key(page) { ParliamentWeekPage(state, padding) }
                         ParliamentPage.MyVotes -> key(page) { MyVotesPage(state, snapshot, padding) }
+                        ParliamentPage.Presence -> key(page) { PresencePage(snapshot, padding) }
                     }
                 }
             }
@@ -155,6 +156,7 @@ private fun ListPage(state: ParliamentState, snapshot: ParliamentSnapshot, colum
         }
         state.week?.let { week -> item(key = "week") { ParliamentWeekEntry(week, Modifier.padding(horizontal = padding, vertical = 12.dp).widthIn(max = 720.dp)) } }
         item(key = "my-votes") { MyVotesEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
+        item(key = "presence") { PresenceEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
         if (!membersHeld || membersRef != null && membersRef.name in snapshot.outdated) {
             item(key = "members-download") {
                 Column(Modifier.padding(horizontal = padding, vertical = 12.dp).widthIn(max = 720.dp)) {
@@ -251,7 +253,7 @@ private fun MemberCard(member: Member, catalog: ParliamentCatalog, onOpen: () ->
     }
 }
 
-private fun groupName(label: String, abbreviation: String?): String {
+internal fun groupName(label: String, abbreviation: String?): String {
     val clean = label.removePrefix(ParliamentCatalog.EXAMPLE_MARKER).trim()
     return if (abbreviation.isNullOrBlank()) clean else "$clean ($abbreviation)"
 }

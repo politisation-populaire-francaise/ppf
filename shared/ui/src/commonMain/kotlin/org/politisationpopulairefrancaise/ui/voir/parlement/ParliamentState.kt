@@ -34,6 +34,7 @@ sealed interface ParliamentPage {
     data class OfBallot(val id: String) : ParliamentPage
     data object Week : ParliamentPage // « Cette semaine au Parlement » (ParliamentWeekScreen.kt)
     data object MyVotes : ParliamentPage // « Mes élus ont voté » (MyVotesPage.kt, VO-34)
+    data object Presence : ParliamentPage // « Présence et délégations » (PresencePage.kt, VO-35)
 }
 
 /**
