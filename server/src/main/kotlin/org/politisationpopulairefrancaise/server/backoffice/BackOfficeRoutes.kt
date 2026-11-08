@@ -428,6 +428,9 @@ fun Route.backOfficeRoutes(backOffice: BackOffice) {
         val id = call.uuidParameter("id") ?: return@formPost call.notFound(auth)
         call.afterAction(auth, form, io { backOffice.revokeValidationSession(auth, id, form["motif"]) }, "/seances", "done")
     }
+
+    // Sections of the poles (contract, section 14): under /equipe/sections/<id>, with the same guards ---------------
+    mountSections(backOffice)
 }
 
 private const val QUEUE_PAGE = 50
@@ -439,14 +442,14 @@ private suspend fun <T> io(block: () -> T): T = withContext(Dispatchers.IO) { bl
 private fun renderToString(page: HTML.() -> Unit): String = "<!DOCTYPE html>\n" + createHTML().html(block = page)
 
 /**
- * The body of the request, read through a bounded channel: at most [MAX_BODY_BYTES], whatever the
+ * The body of the request, read through a bounded channel: at most [limit] ([MAX_BODY_BYTES] by default), whatever the
  * `Content-Length` says or whether the body is chunked; null when it is larger (answered 413).
  */
-private suspend fun ApplicationCall.boundedBody(): ByteArray? {
+internal suspend fun ApplicationCall.boundedBody(limit: Int = MAX_BODY_BYTES): ByteArray? {
     val declared = request.contentLength()
-    if (declared != null && declared > MAX_BODY_BYTES) return null
-    val bytes = receiveChannel().readBuffer(MAX_BODY_BYTES + 1L).readByteArray()
-    return bytes.takeIf { it.size <= MAX_BODY_BYTES }
+    if (declared != null && declared > limit) return null
+    val bytes = receiveChannel().readBuffer(limit + 1L).readByteArray()
+    return bytes.takeIf { it.size <= limit }
 }
 
 private fun <T> decode(strategy: DeserializationStrategy<T>, body: ByteArray): T? = try {
@@ -460,7 +463,7 @@ private fun <T> decode(strategy: DeserializationStrategy<T>, body: ByteArray): T
  * browser) must say same-origin, and an `Origin` header, when the browser gives a real one, must be ours.
  * The anti-forgery token and the SameSite=Strict cookie remain the main protections.
  */
-private fun ApplicationCall.isSameOrigin(config: BackOfficeConfig): Boolean {
+internal fun ApplicationCall.isSameOrigin(config: BackOfficeConfig): Boolean {
     val site = request.headers["Sec-Fetch-Site"]
     if (site != null && site != "same-origin" && site != "none") return false
     val origin = request.headers[HttpHeaders.Origin]
@@ -494,7 +497,7 @@ private fun Route.formPost(path: String, backOffice: BackOffice, body: suspend R
     }
 }
 
-private suspend fun ApplicationCall.authenticated(backOffice: BackOffice): Authenticated? {
+internal suspend fun ApplicationCall.authenticated(backOffice: BackOffice): Authenticated? {
     val token = request.cookies[SESSION_COOKIE] ?: return null
     return io { backOffice.authenticate(token) }
 }
@@ -537,10 +540,10 @@ private fun ApplicationCall.clearSessionCookie() {
 
 private fun ApplicationCall.uuidParameter(name: String): UUID? = parameters[name]?.let { runCatching { UUID.fromString(it) }.getOrNull() }
 
-private suspend fun ApplicationCall.notFound(auth: Authenticated?) =
+internal suspend fun ApplicationCall.notFound(auth: Authenticated?) =
     respondHtml(HttpStatusCode.NotFound) { messagePage(BackOfficeTexts.NOT_FOUND_TITLE, BackOfficeTexts.NOT_FOUND_TEXT, auth) }
 
-private suspend fun ApplicationCall.forbidden(auth: Authenticated?) =
+internal suspend fun ApplicationCall.forbidden(auth: Authenticated?) =
     respondHtml(HttpStatusCode.Forbidden) { messagePage(BackOfficeTexts.FORBIDDEN_TITLE, BackOfficeTexts.error("forbidden"), auth) }
 
 /** The confirmation page of a sensitive action: the same form, sent again once the key is verified. */

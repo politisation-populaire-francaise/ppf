@@ -1,5 +1,5 @@
 -- "Déclarer mon compte compromis" (S-146, D-134, docs/integration/compte-compromis.md).
--- Provisional number (Communauté branch, after V13 account types), renumbered at the entry into main.
+-- Provisional number (Communauté branch, after V14 account types), renumbered at the entry into main.
 --
 -- Public keys and event ids only: the commitments (kind 1776) and the notices (kind 1777) are public
 -- signed events, stored in `events` and served to everyone; these tables only say which ones count.
