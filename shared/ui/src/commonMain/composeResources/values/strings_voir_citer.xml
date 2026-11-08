@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Citer ce contenu » (cahier fonctionnel 2.1, M34, S-144). French, the user is addressed with "vous",
+     typographic apostrophe (’), no em dash. -->
+<resources>
+    <string name="voir_cite">Citer ce contenu</string>
+    <string name="voir_cite_copied">Référence copiée : titre, dates, version, adresse et empreinte.</string>
+</resources>

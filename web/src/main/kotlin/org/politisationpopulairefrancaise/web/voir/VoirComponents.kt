@@ -381,23 +381,12 @@ internal fun periodText(movement: WorldMovement): String {
     }
 }
 
-/** The editorial content of [item], whatever its kind. */
-internal fun articleOf(item: VoirItem): Article = when (item) {
-    is VoirItem.OfIndicator -> item.indicator.article
-    is VoirItem.OfFact -> item.fact.article
-    is VoirItem.OfPerson -> item.person.article
-    is VoirItem.OfParty -> item.party.article
-    is VoirItem.OfText -> item.text.article
-    is VoirItem.OfMovement -> item.movement.article
-    is VoirItem.OfDossier -> item.dossier.article
-}
-
 /**
  * « Citer ce contenu » (S-144): the reference of the published page, ready to select and copy without script,
  * and the same in CSL-JSON for bibliography software. Never on a preview: a draft has no published version.
  */
 internal fun FlowContent.citeSection(item: VoirItem, consultedOn: CivilDate) {
-    val citation = Citation.of(articleOf(item), VoirLinks.urlOf(item), consultedOn)
+    val citation = Citation.of(item.article, VoirLinks.urlOf(item), consultedOn)
     details(classes = "cite") {
         summary { +"Citer ce contenu" }
         p { +citation.text }

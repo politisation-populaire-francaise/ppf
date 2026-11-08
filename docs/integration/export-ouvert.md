@@ -68,7 +68,7 @@ Sous chaque contenu du site et de l'application, un bloc « Citer ce contenu » 
 | Étape | Contenu | Tests |
 |---|---|---|
 | A (**faite** le 8 novembre 2026, D-101, branche `feature/voir-export`) | `OpenDataset`, catalogue, `contenus.json`, trois tableaux de « Voir » en JSON et CSV, schémas, page `/donnees`, `FORMATS.md` section 5 bis | contenus des seules clés éditoriales ; dernière version par adresse ; CSV conforme (guillemets, retours à la ligne, virgules) ; chaque ligne avec sa source et sa version ; schémas valides et lignes conformes ; `ETag` et `304` ; page sans script |
-| B | `Citation`, bloc du site (Voir et Comprendre), bouton de l'application | référence identique sur le site et l'application ; échappement ; CSL-JSON valide |
+| B (**faite pour « Voir »** le 8 novembre 2026, branche `feature/voir-export` ; « Comprendre » à brancher par son pôle avec `Citation.of`) | `Citation` (`core/editorial/Citation.kt`), bloc `<details class="cite">` sous chaque page de « Voir » du site, bouton « Citer ce contenu » sous la ligne d'origine de chaque fiche de l'application (`ui/voir/CiteContent.kt`) | référence identique sur le site et l'application ; échappement ; CSL-JSON valide |
 | C | `ContentCheck`, `/verifier`, `/v/<code>`, écran de l'application | les cinq réponses ; hors ligne ; aucun journal ; JSON abîmé, trop gros |
 
 ## 8. Questions ouvertes
