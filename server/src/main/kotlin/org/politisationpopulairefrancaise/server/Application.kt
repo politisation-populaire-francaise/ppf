@@ -45,6 +45,7 @@ import org.politisationpopulairefrancaise.server.backoffice.backOfficeRoutes
 import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
+import org.politisationpopulairefrancaise.server.decider.EditorialDeciderSource
 import org.politisationpopulairefrancaise.server.decider.DeliberationQueue
 import org.politisationpopulairefrancaise.server.decider.DeliberationSubmissions
 import org.politisationpopulairefrancaise.server.decider.deliberationApi
@@ -380,6 +381,7 @@ fun Application.module(
             webRoutes(
                 voir = voir ?: repository?.let { EditorialVoirSource(it, policy) },
                 comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
+                decider = repository?.let { EditorialDeciderSource(it, policy) },
             )
         }
         if (backOffice != null && teamBackOffice != null) {
