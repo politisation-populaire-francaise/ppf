@@ -228,6 +228,19 @@ Détail : `docs/integration/agir-manifestation.md`. Rien n'est envoyé au serveu
 
 Appeler le 15, le 112, le 17, le 18, envoyer un SMS au 114 ou appeler une legal team ouvre l'application de téléphone ou de messages du système (`tel:`, `sms:`), sans permission : l'utilisateur confirme l'appel dans cette application. PPF ne garde aucune trace de ces appels. Le seul échange réseau possible à l'ouverture de la feuille AIDE est la synchronisation générale de l'annuaire des organisations (la même requête que la rubrique « Organisations », sans aucune donnée de l'utilisateur).
 
+## Ajout du 7 novembre 2026 : service de signature de la plateforme (D-129)
+
+Données des membres de l'équipe seulement (pseudonymes), jamais des citoyens. Base légale : intérêt légitime de l'association (authenticité des contenus publiés, traçabilité des signatures).
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Liste de l'équipe signée par la racine : identifiant du compte du back-office, date de début, clé publique Nostr reliée au compte (facultative), usages que le membre peut approuver, identifiant et clé publique de ses clés d'accès | Vérifier les accords avant une signature de la plateforme | Service de signature (`team-list.json`) ; préparée par le back-office, signée sur le téléphone de la propriétaire | Remplacée par chaque nouvelle version ; un membre retiré disparaît de la version suivante | Service de signature, serveur (lecture), propriétaire |
+| Journal du service : numéro, date, action, usage, identifiant et date de l'événement, clé de travail, code de refus, **identifiants des comptes qui ont approuvé**, identifiant de la clé d'accès d'une approbation, double validation demandée ou non, **auteur du brouillon** (identifiant du compte ou clé Nostr, tels que la file les donne), `d` d'une clôture d'urne, empreintes de chaînage ; jamais le contenu d'un événement, jamais une adresse | Traçabilité de chaque brouillon, approbation, signature et refus (contrat, sections 4 et 5, version 1.2) ; preuve que l'auteur n'a pas approuvé sa propre double validation | Service de signature (`journal.jsonl`), recopié dans le journal d'audit du back-office (étape 4) | Sans limite, comme le journal d'audit (à faire relire par un avocat) | Équipe ayant `audit.read`, propriétaire |
+| Brouillons en attente d'approbation (8 novembre 2026) : l'événement non signé à approuver (contenu d'un texte de l'équipe, jamais d'un citoyen), la règle (double validation, auteur) et les approbations recueillies (compte, clé d'accès, date) | Montrer aux membres, sur la page du service, exactement ce qui sera signé, et ne signer qu'avec leurs approbations | Mémoire du service de signature seulement (le contenu n'est jamais écrit sur le disque ; la règle et les approbations sont dans le journal) | 7 jours au plus, oubliés dès la signature ; au plus 1000 ; le contenu disparaît au redémarrage | Service de signature ; la page d'approbation, derrière le tunnel de l'équipe |
+| Clés de travail de la plateforme (clés secrètes chiffrées) et certificats publics | Signer les contenus de la plateforme | Service de signature (`keys/`, `certificates/`) | Clé secrète détruite à sa révocation ou à son échéance ; certificats publics gardés | Service de signature seul (clés secrètes) ; public (certificats) |
+
+Aucune donnée de citoyen n'entre dans le service : il voit les contenus de l'équipe à signer, garde en mémoire seulement ceux qui attendent une approbation (7 jours au plus), et n'écrit jamais un contenu sur le disque. Les pages d'approbation ne gardent ni adresse IP, ni cookie, ni journal des requêtes.
+
 ## Ajout du 8 novembre 2026 : signalement des failles de sécurité (S-92)
 
 | Donnée | Pourquoi | Où, combien de temps |
