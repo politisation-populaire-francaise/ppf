@@ -389,3 +389,8 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Tableau modifié après téléchargement et présenté comme venant de PPF | Chaque ligne donne la version du contenu, à vérifier par sa signature dans `contenus.json` ; empreinte de chaque fichier dans le catalogue | « Vérifier un contenu PPF » (S-141) |
 | Saturation du serveur par des téléchargements répétés | Export recalculé au plus une fois par minute, en mémoire, borné à 20 000 contenus ; `ETag` et `304` | Mode sobre du Directeur technique en cas d'afflux |
 | Pistage des personnes qui téléchargent (journalistes, chercheurs) | Aucun compte, aucun cookie, aucun journal des requêtes | |
+
+## Ajout du 8 novembre 2026 : pas de code natif inutile dans les conteneurs qui gardent une clé (D-145)
+
+- Menace : une faille dans une bibliothèque native chargée à l'exécution (libsodium, JNA) donnerait une prise dans le service de signature ou l'importeur, qui gardent une clé, alors qu'ils n'en ont aucun usage.
+- Parade : libsodium, son chargeur et JNA sont exclus de leurs jars, et la compilation échoue s'ils y reviennent (`verifySignerJar`, `verifyImporterJar`). Seul le serveur principal, qui délivre les jetons de vote, les emporte.
