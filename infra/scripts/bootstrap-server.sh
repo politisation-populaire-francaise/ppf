@@ -240,7 +240,7 @@ new_password() { openssl rand -hex 32; }
 
 # One environment: .env, and the database password in two files (one per container user).
 prepare_environment() {
-    local env="$1" db="$2" server_uid="$3" editor_keys="$4" backoffice_origin="$5" public_url="$6" importer_uid="$7" ntfy_uid="$8"
+    local env="$1" db="$2" server_uid="$3" editor_keys="$4" backoffice_origin="$5" public_url="$6" importer_uid="$7" ntfy_uid="$8" signer_uid="$9"
     local dir="$DATA_DIR/$env"
     install -d -m 0700 "$dir" "$dir/secrets"
     # Owner role (migrations only) and restricted role ppf_app (the running server), D-127.
@@ -280,6 +280,20 @@ EOF
     fi
     chown "$server_uid:$server_uid" "$dir/vote_seeds"/*
     chmod 400 "$dir/vote_seeds"/*
+    # Signing service (D-129): its data, its key-encryption key, and the token shared with the server.
+    install -d -m 0700 -o "$signer_uid" -g "$signer_uid" "$dir/signer"
+    if [ ! -f "$dir/secrets/signer_kek" ]; then
+        (umask 077; openssl rand -hex 32 | tr -d '\n' > "$dir/secrets/signer_kek")
+    fi
+    if [ ! -f "$dir/secrets/signer_client_token" ]; then
+        local token
+        token="$(openssl rand -hex 32)"
+        (umask 077; printf '%s' "$token" > "$dir/secrets/signer_client_token"; printf '%s' "$token" > "$dir/secrets/server_signer_token")
+    fi
+    chown "$signer_uid:$signer_uid" "$dir/secrets/signer_kek" "$dir/secrets/signer_client_token"
+    chown "$server_uid:$server_uid" "$dir/secrets/server_signer_token"
+    chmod 400 "$dir/secrets/signer_kek" "$dir/secrets/signer_client_token" "$dir/secrets/server_signer_token"
+    grep -q '^PPF_SIGNER_ROOT_PUBKEY=' "$dir/.env" || echo "PPF_SIGNER_ROOT_PUBKEY=" >> "$dir/.env"
     # Testimonies (Agir, M5): encrypted files written by the server only.
     install -d -m 0700 -o "$server_uid" -g "$server_uid" "$dir/testimonies"
     grep -q '^PPF_MODERATION_KEY=' "$dir/.env" || echo "PPF_MODERATION_KEY=" >> "$dir/.env"
@@ -302,8 +316,8 @@ EOF
 }
 # The example content signer (EditorialTrust.EXAMPLE_EDITOR) publishes the [EXEMPLE] contents of the
 # preproduction only. The production starts with no editor key.
-prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f" "https://equipe.preprod.$domain" "https://preprod.$domain" 10004 10006
-prepare_environment production ppf 10001 "" "https://equipe.$domain" "https://$domain" 10003 10005
+prepare_environment preproduction ppf_preprod 10002 "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f" "https://equipe.preprod.$domain" "https://preprod.$domain" 10004 10006 10008
+prepare_environment production ppf 10001 "" "https://equipe.$domain" "https://$domain" 10003 10005 10007
 
 if [ ! -f "$DATA_DIR/proxy/.env" ]; then
     # Password of the preproduction web pages (D-072). Chosen and typed by the owner herself at this
