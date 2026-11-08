@@ -1,0 +1,361 @@
+{
+ "scrutins": {
+  "scrutin": [
+   {
+    "uid": "VTANR5L14V9001",
+    "numero": "9001",
+    "organeRef": "PO910000",
+    "legislature": "14",
+    "dateScrutin": "2012-07-10",
+    "typeVote": {
+     "codeTypeVote": "SPO",
+     "libelleTypeVote": "[EXEMPLE]"
+    },
+    "sort": {
+     "code": "adopté",
+     "libelle": "[EXEMPLE]"
+    },
+    "titre": "[EXEMPLE] l'ensemble du projet de loi relatif aux sentiers côtiers (première lecture).",
+    "demandeur": {
+     "texte": "[EXEMPLE] Président du groupe fictif"
+    },
+    "objet": {
+     "libelle": "[EXEMPLE] l'ensemble du projet de loi relatif aux sentiers côtiers (première lecture).",
+     "dossierLegislatif": {
+      "dossierRef": "DLR5L14N91001",
+      "libelle": "[EXEMPLE]"
+     }
+    },
+    "modePublicationDesVotes": "DecompteNominatif",
+    "syntheseVote": {
+     "nombreVotants": "4",
+     "suffragesExprimes": "3",
+     "nbrSuffragesRequis": "1",
+     "annonce": "[EXEMPLE]",
+     "decompte": {
+      "nonVotants": "1",
+      "pour": "2",
+      "contre": "1",
+      "abstentions": "1",
+      "nonVotantsVolontaires": "0"
+     }
+    },
+    "ventilationVotes": {
+     "organe": {
+      "organeRef": "PO910000",
+      "groupes": {
+       "groupe": [
+        {
+         "organeRef": "PO910101",
+         "nombreMembresGroupe": "3",
+         "vote": {
+          "positionMajoritaire": "pour",
+          "decompteVoix": {
+           "nonVotants": "0",
+           "pour": "2",
+           "contre": "0",
+           "abstentions": "0",
+           "nonVotantsVolontaires": "0"
+          },
+          "decompteNominatif": {
+           "pours": {
+            "votant": [
+             {
+              "acteurRef": "PA910001",
+              "mandatRef": "PM90001",
+              "numPlace": "301",
+              "parDelegation": "false"
+             },
+             {
+              "acteurRef": "PA910002",
+              "mandatRef": "PM90002",
+              "numPlace": "302",
+              "parDelegation": "false"
+             }
+            ]
+           },
+           "contres": null,
+           "abstentions": null,
+           "nonVotants": null
+          }
+         }
+        },
+        {
+         "organeRef": "PO910102",
+         "nombreMembresGroupe": "3",
+         "vote": {
+          "positionMajoritaire": "pour",
+          "decompteVoix": {
+           "nonVotants": "1",
+           "pour": "0",
+           "contre": "1",
+           "abstentions": "1",
+           "nonVotantsVolontaires": "0"
+          },
+          "decompteNominatif": {
+           "pours": null,
+           "contres": {
+            "votant": {
+             "acteurRef": "PA910003",
+             "mandatRef": "PM90003",
+             "numPlace": "303",
+             "parDelegation": "false"
+            }
+           },
+           "abstentions": {
+            "votant": {
+             "acteurRef": "PA910004",
+             "mandatRef": "PM90004",
+             "numPlace": "304",
+             "parDelegation": "false"
+            }
+           },
+           "nonVotants": {
+            "votant": {
+             "acteurRef": "PA910006",
+             "mandatRef": "PM90006",
+             "numPlace": "306",
+             "parDelegation": "false"
+            }
+           }
+          }
+         }
+        }
+       ]
+      }
+     }
+    }
+   },
+   {
+    "uid": "VTANR5L14V9002",
+    "numero": "9002",
+    "organeRef": "PO910000",
+    "legislature": "14",
+    "dateScrutin": "2014-03-12",
+    "typeVote": {
+     "codeTypeVote": "SPS",
+     "libelleTypeVote": "[EXEMPLE]"
+    },
+    "sort": {
+     "code": "rejeté",
+     "libelle": "[EXEMPLE]"
+    },
+    "titre": "[EXEMPLE] l'amendement n° 12 à l'article 3 du projet de loi relatif aux phares.",
+    "demandeur": {
+     "texte": "[EXEMPLE] Président du groupe fictif"
+    },
+    "objet": {
+     "libelle": "[EXEMPLE] l'amendement n° 12 à l'article 3 du projet de loi relatif aux phares.",
+     "dossierLegislatif": null
+    },
+    "modePublicationDesVotes": "DecompteNominatif",
+    "syntheseVote": {
+     "nombreVotants": "5",
+     "suffragesExprimes": "4",
+     "nbrSuffragesRequis": "1",
+     "annonce": "[EXEMPLE]",
+     "decompte": {
+      "nonVotants": "0",
+      "pour": "1",
+      "contre": "3",
+      "abstentions": "1",
+      "nonVotantsVolontaires": "0"
+     }
+    },
+    "ventilationVotes": {
+     "organe": {
+      "organeRef": "PO910000",
+      "groupes": {
+       "groupe": [
+        {
+         "organeRef": "PO910101",
+         "nombreMembresGroupe": "3",
+         "vote": {
+          "positionMajoritaire": "pour",
+          "decompteVoix": {
+           "nonVotants": "0",
+           "pour": "1",
+           "contre": "1",
+           "abstentions": "0",
+           "nonVotantsVolontaires": "0"
+          },
+          "decompteNominatif": {
+           "pours": {
+            "votant": {
+             "acteurRef": "PA910001",
+             "mandatRef": "PM90001",
+             "numPlace": "301",
+             "parDelegation": "false"
+            }
+           },
+           "contres": {
+            "votant": {
+             "acteurRef": "PA910002",
+             "mandatRef": "PM90002",
+             "numPlace": "302",
+             "parDelegation": "false"
+            }
+           },
+           "abstentions": null,
+           "nonVotants": null
+          }
+         }
+        },
+        {
+         "organeRef": "PO910102",
+         "nombreMembresGroupe": "3",
+         "vote": {
+          "positionMajoritaire": "pour",
+          "decompteVoix": {
+           "nonVotants": "0",
+           "pour": "0",
+           "contre": "2",
+           "abstentions": "1",
+           "nonVotantsVolontaires": "0"
+          },
+          "decompteNominatif": {
+           "pours": null,
+           "contres": {
+            "votant": [
+             {
+              "acteurRef": "PA910003",
+              "mandatRef": "PM90003",
+              "numPlace": "303",
+              "parDelegation": "false"
+             },
+             {
+              "acteurRef": "PA910006",
+              "mandatRef": "PM90006",
+              "numPlace": "306",
+              "parDelegation": "false"
+             }
+            ]
+           },
+           "abstentions": {
+            "votant": {
+             "acteurRef": "PA910004",
+             "mandatRef": "PM90004",
+             "numPlace": "304",
+             "parDelegation": "false"
+            }
+           },
+           "nonVotants": null
+          }
+         }
+        }
+       ]
+      }
+     }
+    }
+   },
+   {
+    "uid": "VTANR5L14V9003",
+    "numero": "9003",
+    "organeRef": "PO910000",
+    "legislature": "14",
+    "dateScrutin": "2016-11-24",
+    "typeVote": {
+     "codeTypeVote": "SPO",
+     "libelleTypeVote": "[EXEMPLE]"
+    },
+    "sort": {
+     "code": "adopté",
+     "libelle": "[EXEMPLE]"
+    },
+    "titre": "[EXEMPLE] l'ensemble de la proposition de loi relative aux moulins.",
+    "demandeur": {
+     "texte": "[EXEMPLE] Président du groupe fictif"
+    },
+    "objet": {
+     "libelle": "[EXEMPLE] l'ensemble de la proposition de loi relative aux moulins.",
+     "dossierLegislatif": null
+    },
+    "modePublicationDesVotes": "DecompteNominatif",
+    "syntheseVote": {
+     "nombreVotants": "3",
+     "suffragesExprimes": "3",
+     "nbrSuffragesRequis": "1",
+     "annonce": "[EXEMPLE]",
+     "decompte": {
+      "nonVotants": "0",
+      "pour": "3",
+      "contre": "0",
+      "abstentions": "0",
+      "nonVotantsVolontaires": "0"
+     }
+    },
+    "ventilationVotes": {
+     "organe": {
+      "organeRef": "PO910000",
+      "groupes": {
+       "groupe": [
+        {
+         "organeRef": "PO910101",
+         "nombreMembresGroupe": "3",
+         "vote": {
+          "positionMajoritaire": "pour",
+          "decompteVoix": {
+           "nonVotants": "0",
+           "pour": "2",
+           "contre": "0",
+           "abstentions": "0",
+           "nonVotantsVolontaires": "0"
+          },
+          "decompteNominatif": {
+           "pours": {
+            "votant": [
+             {
+              "acteurRef": "PA910001",
+              "mandatRef": "PM90001",
+              "numPlace": "301",
+              "parDelegation": "false"
+             },
+             {
+              "acteurRef": "PA910002",
+              "mandatRef": "PM90002",
+              "numPlace": "302",
+              "parDelegation": "false"
+             }
+            ]
+           },
+           "contres": null,
+           "abstentions": null,
+           "nonVotants": null
+          }
+         }
+        },
+        {
+         "organeRef": "PO910102",
+         "nombreMembresGroupe": "3",
+         "vote": {
+          "positionMajoritaire": "pour",
+          "decompteVoix": {
+           "nonVotants": "0",
+           "pour": "1",
+           "contre": "0",
+           "abstentions": "0",
+           "nonVotantsVolontaires": "0"
+          },
+          "decompteNominatif": {
+           "pours": {
+            "votant": {
+             "acteurRef": "PA910004",
+             "mandatRef": "PM90004",
+             "numPlace": "304",
+             "parDelegation": "false"
+            }
+           },
+           "contres": null,
+           "abstentions": null,
+           "nonVotants": null
+          }
+         }
+        }
+       ]
+      }
+     }
+    }
+   }
+  ]
+ }
+}

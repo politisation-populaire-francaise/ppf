@@ -46,6 +46,18 @@ data class ParliamentSnapshot(
     fun months(chamber: Chamber): List<BallotMonth> = ParliamentCatalog.months(index, chamber)
 
     val membersRef: PackageRef? get() = index.packageRef(ParliamentFormat.MEMBERS_PACKAGE)
+
+    /** The history packages announced by the index (`historique-*`, comparator of « Décider »), sorted by name. */
+    val history: List<PackageRef> get() = index.packages.filter { ParliamentHistory.isHistoryPackage(it.name) }
+
+    /** The history packages of [chamber] announced by the index. */
+    fun history(chamber: Chamber): List<PackageRef> = history.filter { ParliamentHistory.parse(it.name)?.first == chamber }
+
+    /** History packages absent from the device or held in an older version: what [ParliamentRepository.downloadHistory] fetches. */
+    val historyToDownload: List<PackageRef> get() = history.filter { it.name !in held || it.name in outdated }
+
+    /** The size to show before [ParliamentRepository.downloadHistory], in bytes. */
+    val historyBytesToDownload: Long get() = historyToDownload.sumOf { it.bytes }
 }
 
 /** What [ParliamentRepository.open] found. */
@@ -171,9 +183,44 @@ class ParliamentRepository(
         val text = utf8(bytes) ?: return PackageOutcome.Refused(name)
         val pkg = readPackage(name, text) ?: return PackageOutcome.Refused(name)
         storage.savePackage(StoredParliamentPackage(name, ref.sha256, text, sourceDate(current.index, name), clock()))
-        parsed[name] = ref.sha256 to pkg
+        // A history package is read again on demand ([history]), never kept parsed in memory.
+        if (pkg !is HistoryPackage) parsed[name] = ref.sha256 to pkg
         snapshot = build(current.event, current.index, current.origin, current.refused)
         return PackageOutcome.Done
+    }
+
+    /**
+     * Downloads every history package missing or outdated on the device, all at once and for every
+     * party (a gesture of the user, after [ParliamentSnapshot.historyBytesToDownload] was shown):
+     * never one request per party, which would tell the server which party interests the person.
+     * Stops at the first package the server cannot give; returns the outcome of each package tried.
+     */
+    suspend fun downloadHistory(): Map<String, PackageOutcome> {
+        val current = snapshot ?: return emptyMap()
+        val outcomes = LinkedHashMap<String, PackageOutcome>()
+        for (ref in current.historyToDownload) {
+            val outcome = download(ref.name)
+            outcomes[ref.name] = outcome
+            if (outcome is PackageOutcome.Unavailable) break
+        }
+        return outcomes
+    }
+
+    /**
+     * Reads the history package [name] held on the device (or bundled), checked again against the
+     * sha256 of the current index; null when the index does not list it, it is not held, or its
+     * bytes no longer match. Read on demand and never kept in memory (a legislature weighs a few Mo).
+     */
+    fun history(name: String): HistoryPackage? {
+        val current = snapshot ?: return null
+        val ref = current.index.packageRef(name)?.takeIf { ParliamentHistory.isHistoryPackage(name) } ?: return null
+        val json = if (current.origin == DataOrigin.BUNDLED) {
+            bundledPackages[name]
+        } else {
+            storage.storedPackage(name)?.takeIf { it.sha256 == ref.sha256 }?.json
+        } ?: return null
+        if (!ParliamentIndexReader.matches(ref, json.encodeToByteArray())) return null
+        return ParliamentHistory.read(name, json)
     }
 
     /** Erases the index and every package of the device (the bundled examples stay in the application). */
@@ -209,6 +256,17 @@ class ParliamentRepository(
         var members: MembersPackage? = null
         val ballots = ArrayList<BallotsPackage>()
         for (ref in index.packages) {
+            if (ParliamentHistory.isHistoryPackage(ref.name)) {
+                // Checked when kept and again when read ([history]); never parsed here.
+                if (origin == DataOrigin.BUNDLED) {
+                    if (ref.name in bundledPackages) held += ref.name
+                } else {
+                    val sha = storage.storedPackage(ref.name)?.sha256 ?: continue
+                    held += ref.name
+                    if (sha != ref.sha256) outdated += ref.name
+                }
+                continue
+            }
             val pkg: Any = if (origin == DataOrigin.BUNDLED) {
                 bundledPackages[ref.name]?.let { readPackage(ref.name, it) }
             } else {
@@ -255,6 +313,7 @@ class ParliamentRepository(
     }
 
     private fun sourceDate(index: ParliamentIndex, name: String): String? {
+        ParliamentHistory.parse(name)?.let { (chamber, _) -> return index.source(ParliamentHistory.chamberCode(chamber) + "-history")?.updatedOn ?: index.importedOn }
         val chamber = Chamber.entries.firstOrNull { name.startsWith(it.ballotsPrefix + "-") }
         return chamber?.let { index.source(ParliamentCatalog.sourceId(it))?.updatedOn } ?: index.importedOn
     }
@@ -267,7 +326,8 @@ class ParliamentRepository(
 
         /**
          * Reads a package as the one its name announces: `membres` as the members, a ballots name as
-         * the ballots of that assembly and month. Strict on these, tolerant on unknown fields; an
+         * the ballots of that assembly and month, a history name as the [HistoryPackage] of that
+         * assembly and period ([ParliamentHistory.read]). Strict on these, tolerant on unknown fields; an
          * unreadable package gives null and is ignored.
          */
         fun readPackage(name: String, json: String): Any? {
@@ -275,6 +335,7 @@ class ParliamentRepository(
             if (name == ParliamentFormat.MEMBERS_PACKAGE) {
                 return runCatching { format.decodeFromString(MembersPackage.serializer(), json) }.getOrNull()?.takeIf { it.format == ParliamentFormat.FORMAT }
             }
+            if (ParliamentHistory.isHistoryPackage(name)) return ParliamentHistory.read(name, json)
             val chamber = Chamber.entries.firstOrNull { name.startsWith(it.ballotsPrefix + "-") } ?: return null
             val month = name.removePrefix(chamber.ballotsPrefix + "-")
             return runCatching { format.decodeFromString(BallotsPackage.serializer(), json) }.getOrNull()

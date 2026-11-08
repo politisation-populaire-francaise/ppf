@@ -1,0 +1,8 @@
+# [EXEMPLE] Réunions fictives au format de json/reunion/ d'Agenda.json.zip (Assemblée nationale), produites par generate_week_example.py.
+RUANR5L17S2026IDS99001.json
+RUANR5L17S2026IDS99002.json
+RUANR5L17S2026IDC99003.json
+RUANR5L17S2026IDC99004.json
+RUANR5L17S2026IDS99005.json
+RUANR5L17S2026IDS99006.json
+RUANR5L17S2026IDI99007.json

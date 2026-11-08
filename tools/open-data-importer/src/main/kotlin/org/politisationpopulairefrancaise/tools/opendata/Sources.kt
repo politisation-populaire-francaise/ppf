@@ -27,6 +27,14 @@ interface ImportSources : AutoCloseable {
     fun anDossiers(): EntrySource
     fun senators(): InputStream
     fun europarl(): EuroparlApi
+    /** History: AMO30, every deputy since 1997 with dated mandates (groups and parties). */
+    fun anHistoryActors(): EntrySource
+    /** History: the ballots of one legislature of [AssembleeHistory.LEGISLATURES]. */
+    fun anHistoryBallots(legislature: Int): EntrySource
+    /** History: `dosleg.zip`, the copy of the Dosleg database of the Sénat (one `.sql` entry, read as text). */
+    fun senatDosleg(): EntrySource
+    /** History: `ODSEN_HISTOGROUPES.csv`, the groups of the senators over time. */
+    fun senatHistoGroups(): InputStream
     override fun close() {}
 }
 
@@ -47,6 +55,10 @@ class ExampleSources(private val accept: (String) -> Boolean = { true }) : Impor
     override fun anBallots(): EntrySource = entries("an/scrutins")
     override fun anDossiers(): EntrySource = entries("an/dossiers")
     override fun senators(): InputStream = if (accept("senat/senateurs.json")) ExampleFiles.open("senat/senateurs.json") else "[]".byteInputStream()
+    override fun anHistoryActors(): EntrySource = entries("an-historique/amo30")
+    override fun anHistoryBallots(legislature: Int): EntrySource = entries("an-historique/scrutins-$legislature")
+    override fun senatDosleg(): EntrySource = entries("senat-historique/dosleg")
+    override fun senatHistoGroups(): InputStream = if (accept("senat-historique/ODSEN_HISTOGROUPES.csv")) ExampleFiles.open("senat-historique/ODSEN_HISTOGROUPES.csv") else ByteArray(0).inputStream()
     override fun europarl(): EuroparlApi = JsonEuroparlApi { path, offset, _ ->
         if (offset > 0) return@JsonEuroparlApi null
         val file = "pe/" + examplePath(path)
@@ -57,12 +69,17 @@ class ExampleSources(private val accept: (String) -> Boolean = { true }) : Impor
     private fun examplePath(path: String): String {
         val base = path.substringBefore('?')
         val year = Regex("year=(\\d{4})").find(path)?.groupValues?.get(1)
-        return if (year != null) "$base-$year.json" else "$base.json"
+        val term = Regex("parliamentary-term=(\\d{1,2})").find(path)?.groupValues?.get(1)
+        return when {
+            year != null -> "$base-$year.json"
+            term != null -> "$base-term-$term.json"
+            else -> "$base.json"
+        }
     }
 }
 
 /**
- * The files of the institutions, downloaded over HTTPS into a private temporary folder, from three
+ * The files of the institutions, downloaded over HTTPS into a private temporary folder, from four
  * hosts only ([ALLOWED_HOSTS]); redirections are not followed (a redirection elsewhere would leave
  * the list). Nothing is sent but the request itself: no cookie, no identifier.
  */
@@ -76,6 +93,13 @@ class OfficialSources(private val http: Downloader = Downloader()) : ImportSourc
     override fun anBallots(): EntrySource = ZipEntries(http.download(SCRUTINS, folder.resolve("scrutins.zip")))
     override fun anDossiers(): EntrySource = ZipEntries(http.download(DOSSIERS, folder.resolve("dossiers.zip")))
     override fun senators(): InputStream = Files.newInputStream(http.download(SENATEURS, folder.resolve("senateurs.json")))
+    override fun anHistoryActors(): EntrySource = ZipEntries(http.download(AMO30, folder.resolve("amo30.zip")))
+    override fun anHistoryBallots(legislature: Int): EntrySource {
+        val url = AN_HISTORY_BALLOTS[legislature] ?: throw UnreadableSourceException("no ballots file for legislature $legislature")
+        return ZipEntries(http.download(url, folder.resolve("scrutins-$legislature.zip")))
+    }
+    override fun senatDosleg(): EntrySource = ZipEntries(http.download(DOSLEG, folder.resolve("dosleg.zip")))
+    override fun senatHistoGroups(): InputStream = Files.newInputStream(http.download(HISTOGROUPES, folder.resolve("histogroupes.csv")))
     override fun europarl(): EuroparlApi = JsonEuroparlApi { path, offset, limit ->
         val separator = if ('?' in path) '&' else '?'
         http.get("$EUROPARL_API$path${separator}format=application%2Fld%2Bjson&offset=$offset&limit=$limit", throttle = true)
@@ -91,12 +115,26 @@ class OfficialSources(private val http: Downloader = Downloader()) : ImportSourc
         const val DOSSIERS = "https://data.assemblee-nationale.fr/static/openData/repository/17/loi/dossiers_legislatifs/Dossiers_Legislatifs.json.zip"
         const val SENATEURS = "https://www.senat.fr/api-senat/senateurs.json"
         const val EUROPARL_API = "https://data.europarl.europa.eu/api/v2/"
+
+        // History (voir-historique-sources.md); the address of AMO30 follows the repository of the
+        // 17th legislature, to be confirmed at the first real import.
+        const val AMO30 = "https://data.assemblee-nationale.fr/static/openData/repository/17/amo/tous_acteurs_mandats_organes_xi_legislature/AMO30_tous_acteurs_tous_mandats_tous_organes_historique.json.zip"
+        val AN_HISTORY_BALLOTS: Map<Int, String> = mapOf(
+            14 to "https://data.assemblee-nationale.fr/static/openData/repository/14/loi/scrutins/Scrutins_XIV.json.zip",
+            15 to "https://data.assemblee-nationale.fr/static/openData/repository/15/loi/scrutins/Scrutins_XV.json.zip",
+            16 to "https://data.assemblee-nationale.fr/static/openData/repository/16/loi/scrutins/Scrutins.json.zip",
+            17 to SCRUTINS,
+        )
+        const val DOSLEG = "https://data.senat.fr/data/dosleg/dosleg.zip"
+        const val HISTOGROUPES = "https://data.senat.fr/data/senateurs/ODSEN_HISTOGROUPES.csv"
     }
 }
 
 /**
  * Official files already on disk, read as they are (never executed): `amo10/`, `scrutins/` and
- * `dossiers/` hold the zip of the Assemblée nationale, `senat/` the file of the senators. The
+ * `dossiers/` hold the zip of the Assemblée nationale, `senat/` the file of the senators; for the
+ * history, `amo30/` and `scrutins-14/` to `scrutins-17/` (zips of the Assemblée), `dosleg/` (zip)
+ * and `histogroupes/` (CSV) of the Sénat. The
  * European Parliament is an API, not a file: it is left out (its previous packages are kept).
  * Used to measure the memory of an import, or to import where the server has no outbound access.
  */
@@ -116,10 +154,14 @@ class LocalOfficialSources(private val folder: Path) : ImportSources {
     override fun anDossiers(): EntrySource = ZipEntries(single("dossiers", ".zip"))
     override fun senators(): InputStream = Files.newInputStream(single("senat", ".json"))
     override fun europarl(): EuroparlApi = JsonEuroparlApi { _, _, _ -> null }
+    override fun anHistoryActors(): EntrySource = ZipEntries(single("amo30", ".zip"))
+    override fun anHistoryBallots(legislature: Int): EntrySource = ZipEntries(single("scrutins-$legislature", ".zip"))
+    override fun senatDosleg(): EntrySource = ZipEntries(single("dosleg", ".zip"))
+    override fun senatHistoGroups(): InputStream = Files.newInputStream(single("histogroupes", ".csv"))
 }
 
 /** The only hosts the importer ever contacts, in `official` mode only. */
-val ALLOWED_HOSTS: Set<String> = setOf("data.assemblee-nationale.fr", "www.senat.fr", "data.europarl.europa.eu")
+val ALLOWED_HOSTS: Set<String> = setOf("data.assemblee-nationale.fr", "www.senat.fr", "data.senat.fr", "data.europarl.europa.eu")
 
 /** HTTPS downloads from [ALLOWED_HOSTS], size-capped, without redirection. */
 class Downloader(

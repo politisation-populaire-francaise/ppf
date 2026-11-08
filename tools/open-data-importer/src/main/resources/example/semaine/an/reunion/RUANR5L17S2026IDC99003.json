@@ -1,0 +1,105 @@
+{
+ "reunion": {
+  "@xmlns": "http://schemas.assemblee-nationale.fr/referentiel",
+  "@xmlns:xsi": "http://www.w3.org/2001/XMLSchema-instance",
+  "@xsi:type": "reunionCommission_type",
+  "uid": "RUANR5L17S2026IDC99003",
+  "timeStampDebut": "2026-11-11T09:30:00.000+01:00",
+  "timeStampFin": "2026-11-11T12:30:00.000+01:00",
+  "lieu": {
+   "code": "AN",
+   "libelleCourt": "AN",
+   "libelleLong": "[EXEMPLE] Salle fictive"
+  },
+  "cycleDeVie": {
+   "etat": "Confirmé",
+   "chrono": {
+    "creation": "2026-10-30T10:00:00.000+01:00",
+    "cloture": null
+   }
+  },
+  "demandeurs": {
+   "acteur": {
+    "acteurRef": "PA900001",
+    "nom": "[EXEMPLE] Élise Arnaud"
+   }
+  },
+  "organeReuniRef": "PO900010",
+  "sessionRef": "SCR5A2027O1",
+  "ouverturePresse": "false",
+  "ODJ": {
+   "convocationODJ": null,
+   "resumeODJ": null,
+   "pointsODJ": {
+    "pointODJ": [
+     {
+      "@xsi:type": "podjSeanceConfPres_type",
+      "uid": "PODJEXEMPLE0003",
+      "cycleDeVie": {
+       "etat": "Confirmé"
+      },
+      "objet": "[EXEMPLE] Audition fictive.",
+      "procedure": null,
+      "typePointODJ": "Audition",
+      "comiteSecret": "false",
+      "natureTravauxODJ": "ODJPR",
+      "textesAssocies": null,
+      "dossiersLegislatifsRefs": null
+     },
+     {
+      "@xsi:type": "podjSeanceConfPres_type",
+      "uid": "PODJEXEMPLE0004",
+      "cycleDeVie": {
+       "etat": "Confirmé"
+      },
+      "objet": "[EXEMPLE] Examen de la proposition de loi fictive sur les acacias (n° 9002).",
+      "procedure": null,
+      "typePointODJ": "Examen du texte",
+      "comiteSecret": "false",
+      "natureTravauxODJ": "ODJPR",
+      "textesAssocies": null,
+      "dossiersLegislatifsRefs": {
+       "dossierRef": [
+        "DLRINVALIDE",
+        "DLR5L17N90002"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "identifiants": {
+   "numSeanceJO": "99",
+   "idJO": "EXEMPLE",
+   "quantieme": "Première",
+   "DateSeance": "2026-11-11+01:00"
+  },
+  "participants": {
+   "participantsInternes": {
+    "participantInterne": [
+     {
+      "acteurRef": "PA900002",
+      "presence": "présent",
+      "nom": "[EXEMPLE] Zoé Vasseur"
+     },
+     {
+      "acteurRef": "PA900003",
+      "presence": "excusé",
+      "nom": "[EXEMPLE] Bruno Côté"
+     }
+    ]
+   },
+   "personnesAuditionnees": {
+    "personneAuditionnee": {
+     "uid": "PE900001",
+     "ident": {
+      "civ": "Mme",
+      "prenom": "[EXEMPLE] Prénom",
+      "nom": "Nom"
+     },
+     "dateNais": "1970-01-01"
+    }
+   }
+  }
+ }
+}
