@@ -156,7 +156,7 @@ class ComprendreSchemasTest {
         val long = entries.map { if (it.first == "summary") it.first to "x".repeat(201) else it }
         assertEquals(listOf("comprendre.rule.glossary_definition"), check(ComprendreSchemas.GLOSSAIRE, long, body).map { it.code })
         val noTerm = entries.map { if (it.first == "title") it.first to "[EXEMPLE]" else it }
-        assertEquals(listOf("comprendre.rule.glossary_title"), check(ComprendreSchemas.GLOSSAIRE, noTerm, body).map { it.code })
+        assertEquals(listOf("comprendre.rule.glossary_title", "comprendre.rule.glossary_readable"), check(ComprendreSchemas.GLOSSAIRE, noTerm, body).map { it.code })
         assertEquals(listOf(Codes.FIELD_MISSING), check(ComprendreSchemas.GLOSSAIRE, entries.filter { it.first != "variants" }, body).map { it.code })
         assertEquals(listOf(Codes.LINK_UNKNOWN), check(ComprendreSchemas.GLOSSAIRE, entries.map { if (it.first == "see_also") it.first to "glossaire-inconnu" else it }, body).map { it.code })
     }
