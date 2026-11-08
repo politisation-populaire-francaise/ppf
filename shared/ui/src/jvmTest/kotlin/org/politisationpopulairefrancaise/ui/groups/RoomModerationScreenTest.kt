@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
@@ -189,7 +190,8 @@ class RoomModerationScreenTest {
         waitForIdle()
         awaitTag(ModerationTags.ABOUT)
         onNodeWithTag(ModerationTags.ABOUT_DESCRIPTION).assertExists()
-        onNodeWithText("[EXEMPLE] Pour des loyers justes.").assertExists()
+        // The description also shows in the room card of the list beside it: look in the page only.
+        onNodeWithTag(ModerationTags.ABOUT_DESCRIPTION).assertTextContains("[EXEMPLE] Pour des loyers justes.")
         onNodeWithTag(ModerationTags.ABOUT_TERRITORY).assertExists()
         onNodeWithTag(ModerationTags.ABOUT_ADMIN + RoomsFixtures.ownKey).performScrollTo().assertExists()
         onNodeWithTag(ModerationTags.ABOUT_MODERATOR + RoomsFixtures.other.publicKey.hex).performScrollTo().assertExists()

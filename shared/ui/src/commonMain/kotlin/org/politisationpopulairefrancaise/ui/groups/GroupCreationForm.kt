@@ -236,7 +236,8 @@ fun GroupCreationForm(
                     Charter(draft.charterAccepted, onToggle = { groups.updateDraft(draft.copy(charterAccepted = !draft.charterAccepted)) })
 
                     Spacer(Modifier.height(20.dp))
-                    CreationErrorView(groups, session)
+                    // The work starts from the form's scope: the error box leaves the screen as soon as a new attempt begins.
+                    CreationErrorView(groups, session, launch = { block -> scope.launch { block() } })
 
                     if (account == null) {
                         InfoBox(Lucide.KeyRound, Modifier.testTag(GroupsTags.FORM_NEED_ACCOUNT)) {
@@ -322,9 +323,8 @@ private fun HeldView(room: Group, onClose: () -> Unit) {
  */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun SimilarView(groups: GroupsLibrary, session: AccountSession, error: CreationError.Similar) {
+private fun SimilarView(groups: GroupsLibrary, session: AccountSession, error: CreationError.Similar, launch: (suspend () -> Unit) -> Unit) {
     val palette = PpfTheme.palette
-    val scope = rememberCoroutineScope()
     val draft = groups.creationDraft
     var missing by remember(error) { mutableStateOf(false) }
     Callout(CalloutType.ATTENTION, Modifier.testTag(GroupsTags.FORM_SIMILAR_SERVER), title = stringResource(Res.string.groups_form_similar_server_title)) {
@@ -334,7 +334,7 @@ private fun SimilarView(groups: GroupsLibrary, session: AccountSession, error: C
             error.rooms.forEach { room ->
                 val name = room.name?.trimStart()?.removePrefix(Group.EXAMPLE_MARKER)?.trim()?.takeIf { it.isNotEmpty() } ?: room.id
                 PpfPrimaryButton(
-                    onClick = { scope.launch { groups.joinSimilar(room.id) } },
+                    onClick = { launch { groups.joinSimilar(room.id) } },
                     text = stringResource(Res.string.groups_form_similar_join, name, room.territory.orEmpty()),
                     icon = Lucide.Users,
                     modifier = Modifier.testTag(GroupsTags.FORM_SIMILAR_JOIN + room.id),
@@ -365,7 +365,7 @@ private fun SimilarView(groups: GroupsLibrary, session: AccountSession, error: C
                 if (draft.difference.isBlank()) {
                     missing = true
                 } else if (signer != null) {
-                    scope.launch { groups.confirmSimilar(signer) }
+                    launch { groups.confirmSimilar(signer) }
                 }
             },
             text = stringResource(if (groups.creationBusy) Res.string.groups_form_submitting else Res.string.groups_form_confirm_similar),
@@ -379,11 +379,11 @@ private fun SimilarView(groups: GroupsLibrary, session: AccountSession, error: C
 /** What went wrong with the last attempt; for a duplicate, the offer to join the existing room. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CreationErrorView(groups: GroupsLibrary, session: AccountSession) {
+private fun CreationErrorView(groups: GroupsLibrary, session: AccountSession, launch: (suspend () -> Unit) -> Unit) {
     val palette = PpfTheme.palette
     when (val error = groups.creationError) {
         null -> Unit
-        is CreationError.Similar -> SimilarView(groups, session, error)
+        is CreationError.Similar -> SimilarView(groups, session, error, launch)
         is CreationError.Exists -> {
             Callout(CalloutType.ATTENTION, Modifier.testTag(GroupsTags.FORM_EXISTS), title = stringResource(Res.string.groups_form_exists_title)) {
                 Text(stringResource(Res.string.groups_form_exists, error.existingName), style = MaterialTheme.typography.bodyMedium)
