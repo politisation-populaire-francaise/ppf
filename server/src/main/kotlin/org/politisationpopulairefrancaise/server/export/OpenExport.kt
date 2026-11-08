@@ -140,7 +140,7 @@ class OpenExport(
         files["$CONTENTS_ID.json"] = contentsFile
         described += ExportDataset(
             CONTENTS_ID, "Contenus publiés par PPF",
-            "Tous les contenus publiés par l'équipe de PPF, dans leur dernière version : les événements signés eux-mêmes (docs/FORMATS.md, section 2), à vérifier avec les clés editorial_keys.",
+            "Tous les contenus publiés par l’équipe de PPF, dans leur dernière version : les événements signés eux-mêmes (docs/FORMATS.md, section 2), à vérifier avec les clés editorial_keys.",
             space = "tous", version = 1, schema = null,
             files = listOf(ExportFile("json", "$PATH/$CONTENTS_ID.json", contentsFile.sha256, contentsFile.bytes.size, events.size)),
         )

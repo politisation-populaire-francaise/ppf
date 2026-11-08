@@ -255,3 +255,14 @@ Revu le 8 novembre 2026 après une relecture de sécurité indépendante (contra
 | Menace | Parade en place | Prévu |
 |---|---|---|
 | Copie de la base lors d'une saisie qui relie un compte à la séance de validation où il a été vu (ordre des écritures, dates de validation) | PostgreSQL ne garde aucune date de validation des transactions (`track_commit_timestamp=off`), aucun archivage des journaux de transactions ni restauration à un instant donné (`archive_mode=off`), le plus petit journal possible (`wal_level=minimal`, `max_wal_senders=0`, `wal_keep_size=0`), dans les deux projets Compose ; sauvegardes par exports logiques seulement (`infra/scripts/backup.md`). Côté « Décider » (option B, D-112) : les validations attendent dans une table sans séance, sans date et sans numéro, puis passent chaque lundi à 0 h UTC, en une seule transaction et dans l'ordre des clés, vers les comptes et une ligne scellée par semaine, suivie d'un `VACUUM` | Limite : les segments de journal recyclés et les blocs libérés du disque peuvent garder des fragments jusqu'à leur réécriture (pas de chiffrement du disque sur ce serveur) ; une copie judiciaire prise en cours de semaine pourrait encore ordonner les validations de cette semaine. Chiffrement du disque à étudier au passage sur un serveur dédié |
+
+## Ajout du 8 novembre 2026 : export ouvert (M34, S-48, D-101)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Fichier en vrac qui relie des pseudonymes de citoyens à leurs opinions (revendications, mobilisations, messages) | Seuls les contenus signés par les clés éditoriales sont exportés, vérifiés de nouveau à la lecture | |
+| Réutilisation en masse de données sur des personnes ou sur la justice (affaires, peines) | Aucun tableau des personnes, des affaires ni des peines ; ces contenus restent seulement sous forme d'événements, comme dans l'API | Avis de l'avocat avant tout tableau de ce genre |
+| Injection de formules dans un tableur (cellule qui commence par `=`, `+`, `-`, `@`) | Apostrophe ajoutée devant ces textes dans le CSV ; le JSON garde la valeur exacte | |
+| Tableau modifié après téléchargement et présenté comme venant de PPF | Chaque ligne donne la version du contenu, à vérifier par sa signature dans `contenus.json` ; empreinte de chaque fichier dans le catalogue | « Vérifier un contenu PPF » (S-141) |
+| Saturation du serveur par des téléchargements répétés | Export recalculé au plus une fois par minute, en mémoire, borné à 20 000 contenus ; `ETag` et `304` | Mode sobre du Directeur technique en cas d'afflux |
+| Pistage des personnes qui téléchargent (journalistes, chercheurs) | Aucun compte, aucun cookie, aucun journal des requêtes | |

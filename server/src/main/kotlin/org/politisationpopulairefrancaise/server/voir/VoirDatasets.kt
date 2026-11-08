@@ -21,8 +21,8 @@ object VoirDatasets {
 
     private fun address(address: ContentAddress): String = "${address.kind}:${address.pubkey}:${address.identifier}"
 
-    private val CONTENT = Column("content", ColumnType.STRING, "Adresse stable du contenu de PPF d'où vient la ligne (kind:pubkey:d).")
-    private val VERSION = Column("version", ColumnType.STRING, "Identifiant de la version de ce contenu (SHA-256 de l'événement signé), à retrouver dans contenus.json.")
+    private val CONTENT = Column("content", ColumnType.STRING, "Adresse stable du contenu de PPF d’où vient la ligne (kind:pubkey:d).")
+    private val VERSION = Column("version", ColumnType.STRING, "Identifiant de la version de ce contenu (SHA-256 de l’événement signé), à retrouver dans contenus.json.")
     private val SOURCE_KIND = Column("source_kind", ColumnType.STRING, "Type de source : autorites, organisateurs, comptage-independant, medias, signalements, texte-officiel, justice, parlement, rapport, declaration ou enquete-presse.")
     private val SOURCE_NAME = Column("source_name", ColumnType.STRING, "Nom de la source.")
     private val SOURCE_URL = Column("source_url", ColumnType.URL, "Adresse de la source, quand elle est publiée.", nullable = true)
@@ -30,23 +30,23 @@ object VoirDatasets {
 
     val MEASURES: OpenDataset = object : OpenDataset {
         override val id = "voir-mesures"
-        override val title = "Chiffres de l'observatoire"
-        override val description = "Chaque valeur des indicateurs de « Voir » (M2), source par source : jamais fusionnées, les sources différentes d'une même occasion sont des lignes séparées."
+        override val title = "Chiffres de l’observatoire"
+        override val description = "Chaque valeur des indicateurs de « Voir » (M2), source par source : jamais fusionnées, les sources différentes d’une même occasion sont des lignes séparées."
         override val space = "voir"
         override val version = 1
         override val columns = listOf(
             CONTENT,
-            Column("indicator_title", ColumnType.STRING, "Titre de l'indicateur."),
+            Column("indicator_title", ColumnType.STRING, "Titre de l’indicateur."),
             Column("unit", ColumnType.STRING, "Unité des valeurs."),
             Column("measure_id", ColumnType.STRING, "Identifiant de la valeur, stable dans son indicateur."),
             Column("date", ColumnType.DATE, "Date de la valeur."),
             Column("value", ColumnType.NUMBER, "La valeur."),
-            Column("part", ColumnType.NUMBER, "La part nommée par l'indicateur (par exemple « dont mineurs »), quand elle est connue.", nullable = true),
+            Column("part", ColumnType.NUMBER, "La part nommée par l’indicateur (par exemple « dont mineurs »), quand elle est connue.", nullable = true),
             Column("part_label", ColumnType.STRING, "Ce que compte la part.", nullable = true),
             Column("occasion", ColumnType.STRING, "Ce que compte la valeur (par exemple « Journée du 18 septembre »).", nullable = true),
             Column("place", ColumnType.STRING, "Lieu de la valeur.", nullable = true),
             Column("reliability", ColumnType.STRING, "Fiabilité : elevee, moyenne ou faible."),
-            Column("declarative", ColumnType.STRING, "oui si l'indicateur repose sur des déclarations, non sinon."),
+            Column("declarative", ColumnType.STRING, "oui si l’indicateur repose sur des déclarations, non sinon."),
             SOURCE_KIND, SOURCE_NAME, SOURCE_URL, SOURCE_DATE,
             VERSION,
         )
@@ -69,13 +69,13 @@ object VoirDatasets {
     val PARTY_FUNDING: OpenDataset = object : OpenDataset {
         override val id = "voir-partis-aides"
         override val title = "Aide publique aux partis"
-        override val description = "L'aide publique de l'État versée à chaque parti présent dans « Voir », année par année, avec son décret de répartition (loi n° 88-227, articles 8 et 9)."
+        override val description = "L’aide publique de l’État versée à chaque parti présent dans « Voir », année par année, avec son décret de répartition (loi n° 88-227, articles 8 et 9)."
         override val space = "voir"
         override val version = 1
         override val columns = listOf(
             CONTENT,
             Column("party_name", ColumnType.STRING, "Nom du parti."),
-            Column("year", ColumnType.INTEGER, "Année de l'aide."),
+            Column("year", ColumnType.INTEGER, "Année de l’aide."),
             Column("amount_eur", ColumnType.NUMBER, "Montant en euros, au centime."),
             Column("decree", ColumnType.STRING, "Décret de répartition.", nullable = true),
             SOURCE_URL,

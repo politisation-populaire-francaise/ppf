@@ -249,3 +249,7 @@ Aucune donnée de citoyen n'entre dans le service : il voit les contenus de l'é
 | Aucune pour `security.txt` et la page `/securite` | Pages publiques, servies à l'identique à tous, sans formulaire ni journal | Rien n'est stocké |
 | Message d'un chercheur à la clé de l'équipe sécurité (NIP-17) | Recevoir le signalement en privé | Chiffré de bout en bout sur l'appareil de l'expéditeur : le serveur, quand il sert de relais, ne garde qu'une enveloppe illisible, pour la durée de conservation des messages (D-028) ; le texte n'est lisible que sur les appareils de l'équipe sécurité, qui le gardent le temps du traitement et de la publication conjointe |
 | Signalement privé sur GitHub (après la liaison) | Autre canal privé | Chez GitHub (hors Union européenne), visible de l'équipe seulement ; le chercheur choisit ce canal en connaissance de cause |
+
+## Ajout du 8 novembre 2026 : export ouvert (M34, S-48, D-101)
+
+Aucune donnée nouvelle n'est collectée ni stockée : l'export et la page `/donnees` sont calculés en mémoire à partir des contenus publiés par l'équipe (table `events`), au plus une fois par minute ; aucune requête n'est journalisée, aucun compte ni cookie. Les contenus des comptes citoyens n'y sont pas rassemblés. Les clés publiques de l'équipe éditoriale y sont listées (elles signent déjà chaque contenu publié).
