@@ -10,7 +10,8 @@ import kotlin.time.Duration.Companion.minutes
  * The wrong tries of the access token, per case number, in memory only (never in the database, never in a
  * log): [maxFailures] wrong tries lock the number for [lockFor], whether the number exists or not, so that the
  * lock tells nothing about the existence of a case. A try older than [lockFor] is forgotten. The table holds
- * [maxTracked] numbers at most: beyond, the entries that lock nothing are dropped first. The token has 256
+ * [maxTracked] numbers at most: beyond, the entries that lock nothing are dropped first, and a new number
+ * is not tracked while the table is still full of locks. The token has 256
  * bits: the lock only slows down a client gone wrong, it is not what protects the case.
  */
 class CaseLocks(
@@ -40,7 +41,12 @@ class CaseLocks(
     /** One more wrong try for [number]. */
     fun failed(number: String) {
         val now = clock.instant()
-        if (entries.size >= maxTracked && !entries.containsKey(number)) sweep(now)
+        if (entries.size >= maxTracked && !entries.containsKey(number)) {
+            sweep(now)
+            // Still full of locks (a flood of wrong tries): a new number is not tracked, so that memory stays
+            // bounded. The lock only slows down a client gone wrong; the 256-bit token protects the case.
+            if (entries.size >= maxTracked) return
+        }
         val entry = entries.computeIfAbsent(number) { Entry(0, now, null) }
         synchronized(entry) {
             if (entry.lockedUntil != null) return
