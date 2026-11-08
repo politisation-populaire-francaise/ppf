@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.voir.application.ApplicationFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.Ballot
 import org.politisationpopulairefrancaise.core.voir.parlement.BallotsPackage
 import org.politisationpopulairefrancaise.core.voir.parlement.Chamber
@@ -66,6 +67,8 @@ class Importer(
     private val log: (String) -> Unit = ::println,
     /** The presentations of the presidential election (VO-37, Sponsorships.kt); otherwise the previous package is kept. */
     private val sponsorships: Boolean = false,
+    /** The application of the laws (VO-36, Application.kt), one package per legislature; otherwise the previous ones are kept. */
+    private val application: Boolean = false,
 ) {
     private val json = ParliamentFormat.json
 
@@ -211,6 +214,16 @@ class Importer(
             val before = previous.index?.packageRef(SponsorshipsFormat.PACKAGE_2027)?.let { ref -> readPackage(ref)?.let { SponsorshipsFormat.read(it.decodeToString())?.sponsorships?.size } }
             SponsorshipsImport(sources, log).bytes(before)?.let { files[SponsorshipsFormat.PACKAGE_2027] = it }
         }
+        var applicationImported = false
+        if (application) {
+            val before = { legislature: Int ->
+                previous.index?.packageRef(ApplicationFormat.packageName(legislature))?.let { ref -> readPackage(ref)?.let { ApplicationFormat.read(it.decodeToString())?.laws?.size } }
+            }
+            ApplicationImport(sources, log).files(before)?.let {
+                files.putAll(it)
+                applicationImported = true
+            }
+        }
         val refreshedChambers = ballots.keys
         val keptRefs = previous.index?.packages.orEmpty().filter { ref ->
             ref.name !in files &&
@@ -225,6 +238,7 @@ class Importer(
             if (source in history) DataSource(source.id, source.sourceName, source.url, source.licence, sources.today) else previous.index?.source(source.id)
         } + listOfNotNull(
             if (SponsorshipsFormat.PACKAGE_2027 in files) SponsorshipsImport.dataSource(sources.today) else previous.index?.source(SponsorshipsFormat.SOURCE_ID),
+            if (applicationImported) ApplicationImport.dataSource(sources.today) else previous.index?.source(ApplicationFormat.SOURCE_ID),
         )
         val index = ParliamentIndex(example = example, importedOn = sources.today, sources = sourcesOfIndex, packages = refs)
         val unsigned = ParliamentFormat.indexEvent(keys.publicKey, index, sources.createdAt)

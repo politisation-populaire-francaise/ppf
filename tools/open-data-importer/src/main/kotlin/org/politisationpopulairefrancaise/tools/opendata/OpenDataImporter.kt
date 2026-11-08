@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.tools.opendata
 
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.voir.application.ApplicationFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
 import java.nio.file.Files
 import java.nio.file.Path
@@ -17,6 +18,9 @@ import kotlin.system.exitProcess
  * - `--only`: the sources to refresh, among `an,senat,pe` (daily) and `an-history,senat-history,pe-history`
  *   (history of the ballots); the others are kept from the previous set. Default: every daily
  *   source, plus the history in `example` mode only.
+ * - `--only cc` adds the presentations of the presidential election (VO-37), `--only an-barometre` the
+ *   application of the laws (VO-36); neither is asked by default, except `cc` in `official` mode once
+ *   `PPF_SPONSORSHIPS_DATASET` is set.
  * - `--history` (no value): the three history sources (with the daily sources listed by `--only`, if any).
  * - `--out` (or `PPF_OPEN_DATA_DIR`): the folder of the packages, served read-only by the server.
  * - `--key` (or `PPF_IMPORT_KEY_FILE`): the file holding the import key (`nsec1…`), out of the repository.
@@ -41,9 +45,11 @@ data class Options(
     /** The presentations of the presidential election (VO-37): `cc` in `--only`, or a dataset given in `PPF_SPONSORSHIPS_DATASET`. */
     val sponsorships: Boolean = false,
     val sponsorshipsDataset: String? = null,
+    /** The application of the laws (VO-36): `an-barometre` in `--only` only. */
+    val application: Boolean = false,
 )
 
-const val USAGE: String = "usage: ppf-open-data-importer [--source example|official] [--only an,senat,pe,an-history,senat-history,pe-history] [--history] [--from <dir>] --out <dir> --key <nsec file>\n" +
+const val USAGE: String = "usage: ppf-open-data-importer [--source example|official] [--only an,senat,pe,cc,an-barometre,an-history,senat-history,pe-history] [--history] [--from <dir>] --out <dir> --key <nsec file>\n" +
     "  environment: PPF_OPEN_DATA_SOURCE, PPF_OPEN_DATA_DIR, PPF_IMPORT_KEY_FILE, PPF_SPONSORSHIPS_DATASET"
 
 /** The options, or the reason they are wrong. */
@@ -70,7 +76,7 @@ fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> 
         else -> throw IllegalArgumentException("unknown source $source")
     }
     val listed = values["--only"]?.split(',')?.map { it.trim() }?.filter { it.isNotEmpty() }?.onEach {
-        require(SourceId.of(it) != null || HistorySourceId.of(it) != null || it == SPONSORSHIPS_ID) { "unknown source id $it" }
+        require(SourceId.of(it) != null || HistorySourceId.of(it) != null || it == SPONSORSHIPS_ID || it == APPLICATION_ID) { "unknown source id $it" }
     }
     require(listed == null || listed.isNotEmpty()) { "--only names no source" }
     val only = when {
@@ -92,11 +98,16 @@ fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> 
     val dataset = env("PPF_SPONSORSHIPS_DATASET")?.trim()?.takeIf { it.isNotEmpty() }
     // Asked by name in `--only`, or by default in production once the dataset of the Conseil constitutionnel is known.
     val sponsorships = listed?.contains(SPONSORSHIPS_ID) ?: (mode == SourceMode.OFFICIAL && dataset != null && !historyFlag)
-    Options(mode, only, Path.of(out.trim()), Path.of(key.trim()), from, history, sponsorships, dataset)
+    // Asked by name only, until the host of the baromètre is in the list of the exits (infra/EGRESS.md).
+    val application = listed?.contains(APPLICATION_ID) ?: false
+    Options(mode, only, Path.of(out.trim()), Path.of(key.trim()), from, history, sponsorships, dataset, application)
 }
 
 /** The identifier of the presentations of the presidential election in `--only` (and of their source in the index). */
 const val SPONSORSHIPS_ID: String = "cc"
+
+/** The identifier of the application of the laws in `--only` (and of its source in the index). */
+const val APPLICATION_ID: String = ApplicationFormat.SOURCE_ID
 
 /** Reads the import key; refuses the example key for official data (it would make real data look fictional, and the reverse). */
 fun loadKey(file: Path, mode: SourceMode): Result<IdentityKeys> = runCatching {
@@ -127,7 +138,7 @@ fun runCommandLine(args: List<String>, env: (String) -> String?, sources: ((Sour
             SourceMode.EXAMPLE -> ExampleSources()
             SourceMode.OFFICIAL -> options.from?.let(::LocalOfficialSources) ?: OfficialSources(sponsorshipsDataset = options.sponsorshipsDataset)
         }
-        Importer(chosen, keys, options.out, options.only, options.history, sponsorships = options.sponsorships).run()
+        Importer(chosen, keys, options.out, options.only, options.history, sponsorships = options.sponsorships, application = options.application).run()
     } catch (e: UnreadableSourceException) {
         System.err.println("unreadable source data: ${e.message}")
         ExitCodes.UNREADABLE_SOURCE

@@ -37,6 +37,10 @@ interface ImportSources : AutoCloseable {
     fun senatHistoGroups(): InputStream
     /** The presentations of the presidential election published by the Conseil constitutionnel (VO-37); null when there is none to read this time. */
     fun sponsorships(): InputStream? = null
+    /** The application of the laws (VO-36): the file of the laws of the baromètre of the Assemblée nationale; null when there is none to read this time. */
+    fun applicationLaws(): InputStream? = null
+    /** The application of the laws (VO-36): the file of the measures of the same baromètre. */
+    fun applicationMeasures(): InputStream? = null
     override fun close() {}
 }
 
@@ -62,6 +66,8 @@ class ExampleSources(private val accept: (String) -> Boolean = { true }) : Impor
     override fun senatDosleg(): EntrySource = entries("senat-historique/dosleg")
     override fun senatHistoGroups(): InputStream = if (accept("senat-historique/ODSEN_HISTOGROUPES.csv")) ExampleFiles.open("senat-historique/ODSEN_HISTOGROUPES.csv") else ByteArray(0).inputStream()
     override fun sponsorships(): InputStream? = if (accept("cc/parrainages.json")) ExampleFiles.open("cc/parrainages.json") else null
+    override fun applicationLaws(): InputStream? = if (accept("an-barometre/lois.csv")) ExampleFiles.open("an-barometre/lois.csv") else null
+    override fun applicationMeasures(): InputStream? = if (accept("an-barometre/mesures.csv")) ExampleFiles.open("an-barometre/mesures.csv") else null
     override fun europarl(): EuroparlApi = JsonEuroparlApi { path, offset, _ ->
         if (offset > 0) return@JsonEuroparlApi null
         val file = "pe/" + examplePath(path)
@@ -187,6 +193,9 @@ class LocalOfficialSources(private val folder: Path) : ImportSources {
     override fun senatDosleg(): EntrySource = ZipEntries(single("dosleg", ".zip"))
     override fun senatHistoGroups(): InputStream = Files.newInputStream(single("histogroupes", ".csv"))
     override fun sponsorships(): InputStream? = folder.resolve("cc").takeIf { Files.isDirectory(it) }?.let { Files.newInputStream(single("cc", ".json")) }
+    // `an-barometre/` holds the two files under their official names.
+    override fun applicationLaws(): InputStream? = folder.resolve("an-barometre/barometre_application_lois_assemblee.csv").takeIf { Files.isRegularFile(it) }?.let { Files.newInputStream(it) }
+    override fun applicationMeasures(): InputStream? = folder.resolve("an-barometre/barometre_application_mesures_assemblee.csv").takeIf { Files.isRegularFile(it) }?.let { Files.newInputStream(it) }
 }
 
 /** The only hosts the importer ever contacts, in `official` mode only. */
