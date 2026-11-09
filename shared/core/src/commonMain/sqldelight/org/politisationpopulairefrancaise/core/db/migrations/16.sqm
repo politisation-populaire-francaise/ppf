@@ -1,6 +1,6 @@
 -- Schema version 16 to 17 (2026-11-09, provisional number, after the notifications of Communauté in 15.sqm): personal
--- reminders on the device (see Reminders.sq, the reference for fresh installations; this file must stay identical to its
--- CREATE statements).
+-- reminders and the private notes of the letters to one's elected officials, on the device (see Reminders.sq and
+-- LetterNotes.sq, the reference for fresh installations; this file must stay identical to their CREATE statements).
 
 CREATE TABLE reminder (
     id TEXT NOT NULL PRIMARY KEY,
@@ -23,3 +23,15 @@ CREATE TABLE reminder_plan (
     removed TEXT NOT NULL DEFAULT '',
     created_at INTEGER NOT NULL
 );
+
+CREATE TABLE letter_note (
+    id TEXT NOT NULL PRIMARY KEY,
+    template TEXT NOT NULL,
+    mandate TEXT,
+    territory TEXT,
+    official TEXT,
+    sent_on INTEGER NOT NULL,
+    answered_on INTEGER
+);
+
+CREATE INDEX letter_note_template ON letter_note(template, sent_on);

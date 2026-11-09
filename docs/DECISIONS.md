@@ -1061,6 +1061,15 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Options écartées : un fichier de calendrier (.ics) exporté vers l'agenda du téléphone (le rappel sortirait de PPF vers une application tierce, souvent synchronisée avec un compte en ligne : possible plus tard, au choix de la personne, comme le fait déjà l'agenda d'« Agir ») ; des rappels envoyés par le serveur (il saurait qui suit quelle élection).
 - Conséquences : migration locale provisoire `16.sqm` (schéma de l'appareil en version 17) ; partie `core-reminders` de l'effacement rapide (S-44) ; registre des données et modèle de menaces complétés.
 
+## D-119 (2026-11-09) Interpeller ses élus (DE-09) : notes privées d'abord, compteurs anonymes avec DE-23
+
+- Contexte : DE-09 demande un « suivi public des réponses reçues ou non, sans données personnelles au-delà du mandat public ». Options présentées le 9 novembre 2026 (brainstorming du cahier fonctionnel) : A pas de suivi public, notes privées sur l'appareil ; B compteurs anonymes et réponses signées des élus (DE-23) ; C publication des réponses par les citoyens.
+- Décision du chef d'équipe, par délégation de la propriétaire (9 novembre 2026, 1 h 35) : **B comme cible, A tout de suite**, C écartée.
+  - A, fait le 9 novembre 2026 : « J'ai envoyé ce courrier » et « Réponse reçue » notés sur l'appareil seulement, effaçables, partie `decider-courriers` de l'effacement rapide.
+  - B, avec DE-23 : deux compteurs publics par élu (« N citoyens disent lui avoir écrit », « N disent avoir reçu une réponse ») ; chaque déclaration passe par un jeton anonyme (VOPRF, D-110), jamais reliée à un compte ; mention « déclaré par des citoyens, non vérifié » ; même règle pour tous, aucun classement ; affichage à partir de 5 déclarations ; réponses publiées par l'élu certifié lui-même, avec son droit de réponse.
+- Raisons : transparence d'abord et ce qu'un citoyen peut faire poussé au maximum, sans jamais exposer une personne (RGPD, article 9) ; une seule source pour la réponse, l'élu lui-même ; C ne permet pas de garantir l'authenticité.
+- Conséquences : relecture par un avocat avant l'ouverture publique (cahier des charges, section 9.8) ; B réutilise les urnes (`server/urne`) pour les jetons.
+
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
 - Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.

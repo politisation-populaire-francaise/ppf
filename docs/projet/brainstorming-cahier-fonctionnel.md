@@ -7,7 +7,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 ---
 
 ### [2026-11-09] DE-09 « Interpeller ses élus » : le suivi public des réponses
-- Statut : À valider
+- Statut : Décidé par le chef d'équipe (délégation) le 2026-11-09, à intégrer au cahier fonctionnel
 - Concerne : cahier-fonctionnel.md (M13.1, DE-09 ; DE-23) ; conception `docs/integration/interpeller-ses-elus.md`
 - Contexte : DE-09 demande des « modèles de courrier à personnaliser » et un « suivi public des réponses reçues ou non, sans données personnelles au-delà du mandat public ». La première partie est faite le 9 novembre 2026 (modèles remplis sur l'appareil et envoyés par la personne elle-même ; PPF n'envoie rien et ne garde rien). La seconde dit publiquement, d'un élu nommé, s'il a répondu : elle demande une décision.
 - Options :
@@ -15,7 +15,10 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **B. Un compteur anonyme et les réponses signées des élus (DE-23).** Après l'envoi, « J'ai envoyé ce courrier » ajoute 1 à un compteur public par élu et par modèle, sans compte ni lien avec la personne (preuve de travail auto-hébergée, limites de débit) ; la réponse n'est comptée que si l'élu la publie lui-même, signée, depuis un compte d'élu certifié (DE-23), avec le même affichage pour tous : « N citoyens disent lui avoir écrit ; réponse publique : oui (date) ou pas encore ». Avantages : rend visible la demande des citoyens sans exposer personne ; une seule source pour la réponse, l'élu lui-même. Inconvénients : un compteur déclaratif peut être gonflé (parade : preuve de travail, plafond par appareil et par jour, mention « déclaratif ») ; dire qu'un élu nommé n'a « pas encore » répondu relève de la méthode M17 et du droit de réponse ; relecture par un avocat avant la mise en ligne. Coût : gratuit (serveur existant).
   - **C. Les citoyens publient la réponse reçue** (copie ou capture), relue par l'équipe. Avantages : montre les vraies réponses. Inconvénients : authenticité impossible à garantir, courrier privé de l'élu publié sans son accord, risque de diffamation, charge de relecture. Coût : temps de l'équipe.
 - Recommandation : **A maintenant, B avec DE-23** (après l'avis de l'avocat, en même temps que les réponses signées des élus) ; C écartée.
-- Décision : en attente (chef d'équipe, par délégation de la propriétaire).
+- Décision du chef d'équipe, par délégation de la propriétaire (9 novembre 2026, 1 h 35 ; « transparence d'abord, pousser au maximum ce qu'un citoyen peut faire, avocats à la fin ») : **B comme cible, A tout de suite comme première étape, C écartée.**
+  - Maintenant (A) : chacun note en privé, sur son appareil, qu'il a écrit et s'il a reçu une réponse.
+  - Avec DE-23 (B, au même moment) : deux compteurs publics, « N citoyens disent lui avoir écrit » et « N disent avoir reçu une réponse » ; chaque déclaration passe par un jeton anonyme (une personne, une voix, comme les urnes), jamais reliée à un compte ; mention visible « déclaré par des citoyens, non vérifié » (méthode établi, allégué) ; même règle pour tous les élus, aucun classement ; affichage seulement à partir de 5 déclarations ; les réponses que l'élu publie lui-même depuis son compte certifié, avec son droit de réponse.
+  - Avocat : relecture avant l'ouverture publique, comme pour tout le reste (cahier des charges, section 9.8).
 
 ### [2026-11-08] Brainstorming de la nuit : fonctionnalités indispensables, innovantes et pertinentes
 - Statut : Intégré le 2026-11-08 (cahier fonctionnel 2.1, cahier des charges 2.2)

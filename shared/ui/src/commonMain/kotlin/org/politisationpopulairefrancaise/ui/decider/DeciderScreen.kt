@@ -25,6 +25,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -37,6 +38,7 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.decider.DeciderCatalog
+import org.politisationpopulairefrancaise.core.decider.LetterNoteStore
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
@@ -350,7 +352,7 @@ private fun DeciderDetail(
                         ConsultationPage(consultation, today, actions, reminders)
                     } ?: Missing()
                     is DeciderDestination.Letter -> catalog.letter(current.address)?.let { letter ->
-                        LetterPage(letter, rememberDeviceElus(dependencies), today, actions)
+                        LetterPage(letter, rememberDeviceElus(dependencies), today, actions, notes = dependencies?.database?.let { remember(it) { LetterNoteStore(it) } })
                     } ?: Missing()
                     is DeciderDestination.PastVotes -> {
                         val sheet = catalog.comparators.firstOrNull { it.address == current.sheet }

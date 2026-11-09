@@ -1,9 +1,12 @@
 package org.politisationpopulairefrancaise.ui.decider
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -12,6 +15,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.testTag
@@ -24,6 +28,7 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.core.decider.LetterNoteStore
 import org.politisationpopulairefrancaise.core.decider.LetterRecipient
 import org.politisationpopulairefrancaise.core.decider.LetterTemplate
 import org.politisationpopulairefrancaise.core.elus.ElectedOfficial
@@ -35,6 +40,7 @@ import org.politisationpopulairefrancaise.core.voir.NextTarget
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfCard
+import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.PpfPrimaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfRadioRow
 import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
@@ -48,7 +54,17 @@ import org.politisationpopulairefrancaise.ui.resources.decider_letter_contacts
 import org.politisationpopulairefrancaise.ui.resources.decider_letter_copied
 import org.politisationpopulairefrancaise.ui.resources.decider_letter_copy
 import org.politisationpopulairefrancaise.ui.resources.decider_letter_for
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_mark_sent
 import org.politisationpopulairefrancaise.ui.resources.decider_letter_no_commune
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_note_answered
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_note_mark_answered
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_note_no_answer
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_note_remove
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_note_sent
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_note_unknown
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_note_unmark
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_notes
+import org.politisationpopulairefrancaise.ui.resources.decider_letter_notes_private
 import org.politisationpopulairefrancaise.ui.resources.decider_letter_privacy
 import org.politisationpopulairefrancaise.ui.resources.decider_letter_recipient_departemental
 import org.politisationpopulairefrancaise.ui.resources.decider_letter_recipient_depute
@@ -73,6 +89,11 @@ object LetterTags {
     const val COPIED = "decider-letter-copied"
     const val NO_COMMUNE = "decider-letter-no-commune"
     const val PRIVACY = "decider-letter-privacy"
+    const val NOTES = "decider-letter-notes"
+    const val MARK_SENT = "decider-letter-mark-sent"
+    fun note(index: Int) = "decider-letter-note-$index"
+    fun answered(index: Int) = "decider-letter-note-answered-$index"
+    fun removeNote(index: Int) = "decider-letter-note-remove-$index"
     fun page(slug: String) = "decider-letter-$slug"
     fun recipient(index: Int) = "decider-letter-recipient-$index"
     fun contact(recipient: LetterRecipient) = "decider-letter-contact-${recipient.key}"
@@ -123,7 +144,7 @@ internal fun LetterCard(letter: LetterTemplate, onOpen: () -> Unit, modifier: Mo
  * « Vous quittez PPF »). Nothing is sent nor kept: the text lives in this screen only.
  */
 @Composable
-internal fun LetterPage(letter: LetterTemplate, mine: MyElus?, today: CivilDate, actions: DeciderActions) {
+internal fun LetterPage(letter: LetterTemplate, mine: MyElus?, today: CivilDate, actions: DeciderActions, notes: LetterNoteStore? = null) {
     val palette = PpfTheme.palette
     val openUrl = rememberOpenUrl()
     val clipboard = LocalClipboardManager.current
@@ -184,6 +205,10 @@ internal fun LetterPage(letter: LetterTemplate, mine: MyElus?, today: CivilDate,
         if (copied) {
             Text(stringResource(Res.string.decider_letter_copied), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted, modifier = Modifier.testTag(LetterTags.COPIED))
         }
+        if (notes != null) {
+            Spacer(Modifier.height(16.dp))
+            LetterNotesSection(letter, notes, chosen, today)
+        }
         val contacts = chosen?.let { official -> letter.contacts.filter { it.recipient.matches(official) } }?.takeIf { it.isNotEmpty() } ?: letter.contacts
         if (contacts.isNotEmpty()) {
             Spacer(Modifier.height(16.dp))
@@ -207,6 +232,62 @@ internal fun LetterPage(letter: LetterTemplate, mine: MyElus?, today: CivilDate,
         NextStepsSection(letter.nextSteps, onNext = actions.next)
         Spacer(Modifier.height(8.dp))
         OriginLine(letter.article)
+    }
+}
+
+/**
+ * « Vos envois » (DE-09, option A of D-119): « J'ai envoyé ce courrier » to the official chosen, then each note with its
+ * day and « J'ai reçu une réponse ». On the device only; each note is erased with one gesture.
+ */
+@Composable
+private fun LetterNotesSection(letter: LetterTemplate, store: LetterNoteStore, chosen: ElectedOfficial?, today: CivilDate) {
+    val palette = PpfTheme.palette
+    var version by remember(letter) { mutableStateOf(0) }
+    val notes = remember(letter, version) { store.notesOf(letter.address) }
+    Column(Modifier.fillMaxWidth().testTag(LetterTags.NOTES)) {
+        Text(stringResource(Res.string.decider_letter_notes), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+        Text(stringResource(Res.string.decider_letter_notes_private), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+        Spacer(Modifier.height(8.dp))
+        PpfSecondaryButton(
+            onClick = {
+                store.markSent(letter.address, chosen, today)
+                version++
+            },
+            text = stringResource(Res.string.decider_letter_mark_sent),
+            icon = Lucide.Check,
+            modifier = Modifier.fillMaxWidth().testTag(LetterTags.MARK_SENT),
+        )
+        notes.forEachIndexed { index, note ->
+            if (index > 0) HorizontalDivider(color = palette.border)
+            Row(Modifier.fillMaxWidth().padding(vertical = 6.dp).testTag(LetterTags.note(index)), verticalAlignment = Alignment.CenterVertically) {
+                Column(Modifier.weight(1f)) {
+                    Text(note.official ?: stringResource(Res.string.decider_letter_note_unknown), style = MaterialTheme.typography.titleSmall)
+                    Text(stringResource(Res.string.decider_letter_note_sent, note.sentOn.toFrench()), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+                    Text(
+                        note.answeredOn?.let { stringResource(Res.string.decider_letter_note_answered, it.toFrench()) } ?: stringResource(Res.string.decider_letter_note_no_answer),
+                        style = MaterialTheme.typography.bodySmall,
+                        color = palette.inkMuted,
+                    )
+                    PpfTextButton(
+                        onClick = {
+                            store.setAnswered(note.id, if (note.answeredOn == null) today else null)
+                            version++
+                        },
+                        text = stringResource(if (note.answeredOn == null) Res.string.decider_letter_note_mark_answered else Res.string.decider_letter_note_unmark),
+                        modifier = Modifier.testTag(LetterTags.answered(index)),
+                    )
+                }
+                PpfIconButton(
+                    Lucide.X,
+                    stringResource(Res.string.decider_letter_note_remove),
+                    onClick = {
+                        store.remove(note.id)
+                        version++
+                    },
+                    modifier = Modifier.testTag(LetterTags.removeNote(index)),
+                )
+            }
+        }
     }
 }
 

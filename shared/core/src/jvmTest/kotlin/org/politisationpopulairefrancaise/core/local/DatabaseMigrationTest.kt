@@ -116,7 +116,7 @@ class DatabaseMigrationTest {
         // 12: parliamentary open data (11.sqm), 13: referential of territories (12.sqm);
         // 14: testimonies of Agir (13.sqm), 15: anonymous voting (14.sqm);
         // 16: notifications and verified contacts (15.sqm, provisional number of Communauté);
-        // 17: personal reminders (16.sqm, provisional number of Décider).
+        // 17: personal reminders and private notes of the letters (16.sqm, provisional number of Décider).
         assertEquals(17L, PpfDatabase.Schema.version)
     }
 
@@ -144,6 +144,8 @@ class DatabaseMigrationTest {
         JvmDatabase.open(fresh)
         assertEquals(tableDefinitions(fresh, "reminder"), tableDefinitions(file, "reminder"))
         assertEquals(2, tableDefinitions(file, "reminder").size)
+        assertEquals(tableDefinitions(fresh, "letter_"), tableDefinitions(file, "letter_"))
+        assertEquals(1, tableDefinitions(file, "letter_").size)
     }
 
     @Test

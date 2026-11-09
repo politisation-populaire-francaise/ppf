@@ -282,6 +282,16 @@
     <string name="decider_letter_copied">Courrier copié : collez-le dans la page de contact, un courriel ou un traitement de texte.</string>
     <string name="decider_letter_contacts">Où l’envoyer</string>
     <string name="decider_letter_advice">Un courrier court, poli et précis a plus de chances de recevoir une réponse. N’y écrivez que ce que vous acceptez de voir lu par l’équipe de l’élu.</string>
+    <string name="decider_letter_notes">Vos envois</string>
+    <string name="decider_letter_mark_sent">J’ai envoyé ce courrier</string>
+    <string name="decider_letter_notes_private">Noté sur cet appareil seulement : PPF ne sait pas à qui vous avez écrit. Chaque note s’efface d’un geste.</string>
+    <string name="decider_letter_note_sent">Envoyé le %1$s</string>
+    <string name="decider_letter_note_answered">Réponse reçue le %1$s</string>
+    <string name="decider_letter_note_no_answer">Pas encore de réponse</string>
+    <string name="decider_letter_note_mark_answered">J’ai reçu une réponse</string>
+    <string name="decider_letter_note_unmark">Annuler « réponse reçue »</string>
+    <string name="decider_letter_note_remove">Effacer cette note</string>
+    <string name="decider_letter_note_unknown">Élu non précisé</string>
     <string name="decider_letter_privacy">PPF n’envoie rien et ne garde rien : ce courrier reste sur cet écran tant que vous ne l’envoyez pas vous-même. PPF ne sait pas à qui vous écrivez.</string>
     <!-- DE-27 : consultations publiques officielles. -->
     <string name="decider_consultations_section">Consultations publiques</string>

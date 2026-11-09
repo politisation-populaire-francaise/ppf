@@ -149,6 +149,7 @@ import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
 import org.politisationpopulairefrancaise.core.reminders.ReminderStore
+import org.politisationpopulairefrancaise.core.decider.LetterNoteStore
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.notifications.NotificationCenterScreen
 import org.politisationpopulairefrancaise.ui.notifications.NotificationsSettingsState
@@ -246,6 +247,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     RegisterErasable(dependencies, VotingState.ERASABLE_ID) { voting.eraseFromDevice() }
     // The personal reminders of the device (DE-28, S-98): every reminder and what it was asked for.
     dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { ReminderStore(database) }) }
+    // Décider: the private notes of the letters sent to one's elected officials (DE-09, D-119).
+    dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { LetterNoteStore(database) }) }
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.

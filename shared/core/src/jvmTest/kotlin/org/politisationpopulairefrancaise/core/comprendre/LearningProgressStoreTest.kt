@@ -91,6 +91,7 @@ class LearningProgressStoreTest {
             JvmDatabase.open(file)
             DriverManager.getConnection("jdbc:sqlite:${file.toAbsolutePath()}").use { connection ->
                 connection.createStatement().use { statement ->
+                    statement.executeUpdate("DROP TABLE letter_note")
                     statement.executeUpdate("DROP TABLE reminder_plan")
                     statement.executeUpdate("DROP TABLE reminder")
                     statement.executeUpdate("DROP TABLE contact_verification")

@@ -423,6 +423,7 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 
 | Menace | Parade en place | Prévu |
 |---|---|---|
-| Le serveur, ou quelqu'un qui le contrôle, apprend à qui une personne écrit et ce qu'elle écrit (opinion politique, RGPD article 9) | Le modèle est rempli et modifié sur l'appareil ; rien n'est envoyé ni gardé, ni sur le serveur ni sur l'appareil ; la personne envoie elle-même le courrier | Suivi public des réponses : seulement selon l'option décidée (brainstorming du 9 novembre 2026), jamais un lien entre une personne et un courrier |
+| Le serveur, ou quelqu'un qui le contrôle, apprend à qui une personne écrit et ce qu'elle écrit (opinion politique, RGPD article 9) | Le modèle est rempli et modifié sur l'appareil, le texte n'est gardé nulle part ; la personne envoie elle-même le courrier ; « J'ai envoyé ce courrier » et « J'ai reçu une réponse » restent sur l'appareil (D-119, option A) | Compteurs publics avec DE-23 (D-119, option B) : chaque déclaration par un jeton anonyme des urnes, jamais reliée à un compte, affichée à partir de 5 |
 | Une autre application lit le presse-papiers après « Copier le courrier » | Conseil affiché sur la page (n'écrire que ce qu'on accepte de voir lu par l'équipe de l'élu) ; Android 13 et plus signale la lecture du presse-papiers | |
+| Quelqu'un prend le téléphone et voit à quels élus la personne a écrit | Verrouillage de l'application (S-43), effacement rapide (S-44, partie `decider-courriers`), chaque note effaçable | |
 | Un modèle pousse à l'injure ou à la menace envers un élu | Modèles écrits et relus par l'équipe (charte de contenu, section 9.3), formule neutre, demande de position ou d'explication seulement | |

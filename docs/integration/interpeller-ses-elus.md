@@ -1,7 +1,7 @@
 # Interpeller ses élus (DE-09) : conception
 
 - Pôle « Décider », 9 novembre 2026. Cahier fonctionnel 2.1, M13.1 : « Modèles de courrier à personnaliser ; suivi public des réponses reçues ou non, sans données personnelles au-delà du mandat public ; accessible depuis le législomètre et « Qui décide de ça ? ». » Dépendances : annuaire des élus (D-047), réponses signées (DE-23).
-- Étape 1 : décisions techniques prises en autonomie (gratuites, aucun tiers). Le suivi public des réponses attend une décision : options A, B et C dans `docs/projet/brainstorming-cahier-fonctionnel.md` (entrée du 9 novembre 2026), recommandation A maintenant, B avec DE-23.
+- Étape 1 : décisions techniques prises en autonomie (gratuites, aucun tiers). Suivi des réponses : **décision D-119** du chef d'équipe, par délégation de la propriétaire (9 novembre 2026) : B comme cible, A tout de suite, C écartée (brainstorming du cahier fonctionnel, entrée du 9 novembre 2026).
 
 ## 1. Principes
 
@@ -18,11 +18,12 @@ Un contenu `modele-courrier` ; détail dans `docs/FORMATS.md` (« Modèle de cou
 
 - **« Interpeller ses élus »** sur l'accueil de « Décider » : les modèles, avec à qui ils s'adressent.
 - **Page d'un modèle** : « À qui l'adresser ? » liste les élus concernés de la commune choisie dans « Mes élus » (lus sur l'appareil seulement, sans réseau) ; sans commune, la page le dit et mène à « Mes élus », et le courrier garde « [Nom de l'élu] » et « [Votre commune] » à remplacer. Le courrier rempli (élu, commune, date) se modifie librement dans l'écran, « Copier le courrier » le met dans le presse-papiers, puis « Où l'envoyer » ouvre les contacts officiels du mandat choisi.
-- **Rien n'est gardé** : le texte vit dans l'écran ; il est perdu en quittant la page (c'est voulu : aucune trace d'un engagement politique sur l'appareil ni ailleurs). Le presse-papiers du système peut être lu par d'autres applications : la page conseille de n'y mettre que ce qu'on accepte de voir lu par l'équipe de l'élu.
+- **Le texte n'est gardé nulle part** : il vit dans l'écran et se perd en quittant la page.
+- **« Vos envois » (D-119, option A)** : « J'ai envoyé ce courrier » note sur l'appareil seulement le modèle, l'élu choisi (tel que l'annuaire le nomme ; rien quand la personne a écrit le nom elle-même) et le jour ; « J'ai reçu une réponse » ajoute le jour de la réponse. Une note par modèle et par élu ; chaque note s'efface d'un geste ; partie `decider-courriers` de l'effacement rapide. Rien n'est envoyé. Le presse-papiers du système peut être lu par d'autres applications : la page conseille de n'y mettre que ce qu'on accepte de voir lu par l'équipe de l'élu.
 
 ## 4. Étapes suivantes
 
-1. Suivi public des réponses, selon la décision (option B : compteur anonyme déclaratif et réponses signées des élus certifiés, DE-23, après l'avis d'un avocat).
+1. Suivi public des réponses, avec DE-23 (D-119, option B) : deux compteurs publics par élu, « N citoyens disent lui avoir écrit » et « N disent avoir reçu une réponse », chaque déclaration par un jeton anonyme des urnes (D-110), jamais reliée à un compte ; mention « déclaré par des citoyens, non vérifié » ; même règle pour tous, aucun classement ; affichage à partir de 5 déclarations ; réponses publiées par l'élu certifié lui-même, avec son droit de réponse ; relecture par un avocat avant l'ouverture publique. La note privée de l'appareil (option A) pourra proposer, au choix de la personne, de faire sa déclaration anonyme.
 2. Bouton « Interpeller mes élus avant le vote » sur une page de texte du législomètre (« Voir ») et sur « Qui décide de ça ? » (« Comprendre ») : ils ouvriront `DeciderDestination.Letter` (modèle lié au texte par le rôle `texte`). À convenir avec ces deux pôles.
 3. Vrais modèles et contacts officiels, vérifiés sur les sites des assemblées et des collectivités.
 4. Site sans JavaScript : les modèles en lecture, à copier.
