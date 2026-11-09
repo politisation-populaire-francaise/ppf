@@ -87,6 +87,12 @@ enum class ArticleType(val tagValue: String) {
      * fill in on the device, the official contacts. PPF sends nothing.
      */
     MODELE_COURRIER("modele-courrier"),
+
+    /**
+     * A local petition asking a collectivity for a consultation (DE-26; core.decider.LocalPetition, CGCT L1112-16): the
+     * collectivity, its registered voters, where to sign, the counts and what became of it. PPF collects no signature.
+     */
+    PETITION_LOCALE("petition-locale"),
     ;
 
     companion object {

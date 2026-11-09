@@ -270,6 +270,15 @@ Le modèle de courrier est inventé et marqué [EXEMPLE]. Rien n'est envoyé : c
 5. Dans **Vos envois**, touchez **J'ai envoyé ce courrier** : une note apparaît avec la date du jour, gardée sur ce téléphone seulement. Touchez **J'ai reçu une réponse**, puis la croix pour effacer la note.
 6. Quittez la page : le texte du courrier n'est gardé nulle part.
 
+### Tester les pétitions locales (ajouté le 9 novembre 2026)
+
+La pétition locale est inventée et marquée [EXEMPLE] ; elle est rattachée au code de commune 69123, et n'apparaît que si cette commune est choisie sur l'appareil.
+
+1. Dans **Comprendre**, rubrique **Mes élus**, choisissez la commune 69123 (code postal 69001). Rien n'est envoyé : le code postal ne quitte pas l'appareil.
+2. Ouvrez **Décider** : la section **Pétitions locales** apparaît, avec « 640 signatures sur 1 200 demandées ».
+3. Touchez la carte : la page dit à quelle collectivité la demande s'adresse, comment signer (ici sur papier), et ce que dit la loi (un dixième des électeurs d'une commune, une seule demande par trimestre, le conseil décide librement).
+4. Sans commune choisie, la section n'apparaît pas.
+
 ### Essayer le vote anonyme sur l'ordinateur (ajouté le 7 novembre 2026, au soir)
 
 Le vote marche maintenant de bout en bout, mais seulement avec un serveur. Sur votre ordinateur, un serveur de développement suffit ; il ne contient que des exemples. Il faut deux fenêtres de commande, ouvertes dans le dossier du projet.

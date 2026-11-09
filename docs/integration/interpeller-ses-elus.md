@@ -5,7 +5,7 @@
 
 ## 1. Principes
 
-- **La personne écrit et envoie elle-même.** PPF prépare un modèle et le remplit sur l'appareil ; il n'envoie rien, ne garde rien, ne sait pas à qui l'on écrit ni ce qu'on écrit. Le courrier part par la page de contact officielle de l'élu, un courriel ou la poste, au choix de la personne.
+- **La personne écrit et envoie elle-même.** PPF prépare un modèle et le remplit sur l'appareil ; il n’envoie rien, ne garde pas le texte, ne sait pas à qui l’on écrit ni ce qu’on écrit. Le courrier part par la page de contact officielle de l'élu, un courriel ou la poste, au choix de la personne.
 - **Aucune civilité devinée.** Le nom vient de l'annuaire des élus (D-047) tel quel ; la formule d'appel du modèle reste neutre (« Madame, Monsieur »). On ne déduit jamais le genre d'un prénom.
 - **Les mêmes modèles pour tous les élus d'un même mandat**, écrits par l'équipe, relus comme les autres contenus éditoriaux, marqués [EXEMPLE] tant qu'ils sont fictifs. Un modèle demande une position ou une explication ; il n'insulte ni ne menace (charte de contenu, section 9.3 du cahier des charges).
 - **Les contacts officiels** (pages de contact des assemblées, de la mairie…) sont écrits et vérifiés par l'équipe dans le modèle (`ppf-contact`), jamais devinés par le code ; ils s'ouvrent après « Vous quittez PPF ».

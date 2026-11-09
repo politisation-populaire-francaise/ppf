@@ -57,6 +57,8 @@ import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
 import org.politisationpopulairefrancaise.ui.resources.decider_consultations_section
 import org.politisationpopulairefrancaise.ui.resources.decider_letters_section
+import org.politisationpopulairefrancaise.ui.resources.decider_local_section
+import org.politisationpopulairefrancaise.ui.resources.decider_local_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_letters_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_consultations_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_elections_section
@@ -130,7 +132,7 @@ fun DeciderScreen(
         Box(Modifier.fillMaxSize().testTag(DeciderTags.SCREEN)) {
             val current = state.current
             if (current == null) {
-                DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate)
+                DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate, territories = rememberDeviceTerritories(dependencies))
             } else {
                 key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos, reminders = reminders, dependencies = dependencies) }
             }
@@ -148,6 +150,8 @@ private fun DeciderHome(
     compact: Boolean,
     columns: Int,
     onNavigate: (Space) -> Unit,
+    /** The commune chosen on the device and its department: the local elections, consultations and petitions. */
+    territories: Set<String> = emptySet(),
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -160,7 +164,7 @@ private fun DeciderHome(
             Spacer(Modifier.height(16.dp))
             Text(stringResource(Res.string.decider_empty), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted)
         }
-        val elections = catalog.upcomingElections(today)
+        val elections = catalog.upcomingElections(today, territories)
         if (elections.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
             Column(Modifier.testTag(DeciderTags.section("elections"))) {
@@ -218,7 +222,7 @@ private fun DeciderHome(
             }
         }
         // The official consultations (DE-27): open ones first, then those to come; the local ones later, by the commune.
-        val consultations = catalog.currentConsultations(today)
+        val consultations = catalog.currentConsultations(today, territories)
         if (consultations.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
             Column(Modifier.testTag(DeciderTags.section("consultations"))) {
@@ -227,6 +231,19 @@ private fun DeciderHome(
                 consultations.forEach { consultation ->
                     Spacer(Modifier.height(12.dp))
                     ConsultationCard(consultation, today, onOpen = { state.open(DeciderDestination.Consultation(consultation.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+                }
+            }
+        }
+        // The local petitions (DE-26), for the commune chosen on the device and its department only.
+        val localPetitions = catalog.localPetitionsFor(territories)
+        if (localPetitions.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.testTag(DeciderTags.section("petitions-locales"))) {
+                SectionHeader(stringResource(Res.string.decider_local_section))
+                Text(stringResource(Res.string.decider_local_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+                localPetitions.forEach { petition ->
+                    Spacer(Modifier.height(12.dp))
+                    LocalPetitionCard(petition, onOpen = { state.open(DeciderDestination.LocalPetition(petition.address)) }, modifier = Modifier.widthIn(max = 760.dp))
                 }
             }
         }
@@ -350,6 +367,9 @@ private fun DeciderDetail(
                     } ?: Missing()
                     is DeciderDestination.Consultation -> catalog.consultation(current.address)?.let { consultation ->
                         ConsultationPage(consultation, today, actions, reminders)
+                    } ?: Missing()
+                    is DeciderDestination.LocalPetition -> catalog.localPetition(current.address)?.let { petition ->
+                        LocalPetitionPage(petition, actions)
                     } ?: Missing()
                     is DeciderDestination.Letter -> catalog.letter(current.address)?.let { letter ->
                         LetterPage(letter, rememberDeviceElus(dependencies), today, actions, notes = dependencies?.database?.let { remember(it) { LetterNoteStore(it) } })

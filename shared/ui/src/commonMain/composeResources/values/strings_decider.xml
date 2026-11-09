@@ -263,9 +263,28 @@
     <string name="decider_reminders_category_on">Rallumer les notifications « Votes et pétitions »</string>
     <string name="decider_reminders_permission_refused">Le système n’affiche pas les notifications de PPF : les rappels arriveront seulement dans le centre de notifications de l’application.</string>
     <string name="decider_reminders_computer">Sur ordinateur, un rappel s’affiche quand l’application est ouverte.</string>
+    <!-- DE-26 : pétitions locales (CGCT, article L1112-16). -->
+    <string name="decider_local_section">Pétitions locales</string>
+    <string name="decider_local_section_intro">Les électeurs de votre commune ou de votre département demandent qu’une consultation soit inscrite à l’ordre du jour. Elles apparaissent ici pour la commune choisie dans « Mes élus », sans que rien soit envoyé.</string>
+    <string name="decider_local_status_collecting">En collecte</string>
+    <string name="decider_local_status_filed">Déposée</string>
+    <string name="decider_local_status_on_agenda">Inscrite à l’ordre du jour</string>
+    <string name="decider_local_status_decided">Consultation décidée</string>
+    <string name="decider_local_status_refused">Refusée</string>
+    <string name="decider_local_collectivity">Adressée à : %1$s</string>
+    <string name="decider_local_count">%1$s signatures sur %2$s demandées</string>
+    <string name="decider_local_no_count">Pas encore de décompte publié par les organisateurs.</string>
+    <string name="decider_local_read_on">Décompte des organisateurs, relevé le %1$s.</string>
+    <string name="decider_local_required_commune">Un dixième des %1$s électeurs inscrits de la commune (relevé le %2$s, %3$s).</string>
+    <string name="decider_local_required_other">Un vingtième des %1$s électeurs inscrits de la collectivité (relevé le %2$s, %3$s).</string>
+    <string name="decider_local_sign">Signer sur le site de la collectivité (%1$s)</string>
+    <string name="decider_local_how_to_sign">Comment signer</string>
+    <string name="decider_local_law">Dans une commune, un dixième des électeurs inscrits, et un vingtième dans les autres collectivités, peuvent demander qu’une consultation sur une affaire de leur compétence soit inscrite à l’ordre du jour de l’assemblée, qui décide librement de l’organiser. Chaque trimestre, un électeur ne peut signer qu’une seule demande auprès d’une même collectivité (Constitution, article 72-1 ; code général des collectivités territoriales, article L1112-16).</string>
+    <string name="decider_local_privacy">PPF ne recueille aucune signature et ne sait pas si vous avez signé : on signe sur le site de la collectivité ou auprès des organisateurs.</string>
+    <string name="decider_local_milestones">Ce qui s’est passé</string>
     <!-- DE-09 : interpeller ses élus, modèles de courrier remplis et envoyés par la personne elle-même. -->
     <string name="decider_letters_section">Interpeller ses élus</string>
-    <string name="decider_letters_section_intro">Des modèles de courrier à compléter, adressés à vos élus. Vous l’envoyez vous-même : PPF n’envoie rien et ne garde rien.</string>
+    <string name="decider_letters_section_intro">Des modèles de courrier à compléter, adressés à vos élus. Vous l’envoyez vous-même : PPF n’envoie rien et ne garde pas votre courrier.</string>
     <string name="decider_letter_for">Pour : %1$s</string>
     <string name="decider_letter_recipient_maire">Maire</string>
     <string name="decider_letter_recipient_depute">Député</string>

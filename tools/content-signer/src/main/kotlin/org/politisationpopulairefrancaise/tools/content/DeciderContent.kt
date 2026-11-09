@@ -72,7 +72,7 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
             catalog.engagements.any { it.address == article.address } ||
             catalog.comparators.any { it.address == article.address } || catalog.positions.any { it.article.address == article.address } ||
             catalog.elections.any { it.address == article.address } || catalog.consultation(article.address) != null ||
-            catalog.letter(article.address) != null
+            catalog.letter(article.address) != null || catalog.localPetition(article.address) != null
         check(readable) { "${document.name}: the application would not read this block (check its fields; a petition needs its official site)" }
         article.event.tags.filter { it.size >= 4 && it[0] == VoirTags.LINK }.forEach { tag ->
             check(tag[1] in known) { "${document.name}: link to an unknown slug: ${tag[1].substringAfterLast(':')}" }
@@ -113,6 +113,10 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     catalog.letters.forEach { letter ->
         letter.warnings().forEach { println("decider: ${letter.article.slug}: $it") }
     }
+    // The local petitions (DE-26): the counts come from the organizers; the tool only says what looks odd.
+    catalog.localPetitions.forEach { petition ->
+        petition.warnings().forEach { println("decider: ${petition.article.slug}: $it") }
+    }
     catalog.engagements.forEach { engagement ->
         val pacte = catalog.pacte(engagement.pacte) ?: error("${engagement.article.slug}: unknown pact")
         check(engagement.candidate in pacte.candidates) { "${engagement.article.slug}: ${engagement.candidate.identifier} is not a candidate of ${pacte.article.slug}" }
@@ -127,7 +131,7 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     println(
         "decider: ${catalog.petitions.size} petition(s), ${catalog.pactes.size} pact(s), ${catalog.engagements.size} answer(s), " +
             "${catalog.comparators.size} comparator(s), ${catalog.positions.size} position(s), ${catalog.elections.size} election(s), " +
-            "${catalog.consultations.size} consultation(s), ${catalog.letters.size} letter(s)",
+            "${catalog.consultations.size} consultation(s), ${catalog.letters.size} letter(s), ${catalog.localPetitions.size} local petition(s)",
     )
 }
 

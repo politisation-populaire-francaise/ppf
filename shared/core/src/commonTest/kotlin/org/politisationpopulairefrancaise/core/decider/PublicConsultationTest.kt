@@ -45,12 +45,12 @@ class PublicConsultationTest {
         assertEquals(ConsultationKind.OPEN_ONLINE, c.kind)
         assertEquals("Ministère d’exemple", c.organizer)
         assertEquals("www.exemple.gouv.fr", c.officialHost)
-        assertEquals(29, c.durationDays)
+        assertEquals(29L, c.durationDays)
         assertTrue(c.isUpcoming(CivilDate(2026, 11, 1)))
         assertTrue(c.isOpen(CivilDate(2026, 11, 2)) && c.isOpen(CivilDate(2026, 11, 30)), "the first and the last day included")
         assertTrue(c.isOver(CivilDate(2026, 12, 1)))
-        assertEquals(23, c.daysLeft(CivilDate(2026, 11, 7)))
-        assertEquals(0, c.daysLeft(CivilDate(2026, 12, 5)))
+        assertEquals(23L, c.daysLeft(CivilDate(2026, 11, 7)))
+        assertEquals(0L, c.daysLeft(CivilDate(2026, 12, 5)))
         assertEquals(emptyList(), c.warnings())
     }
 

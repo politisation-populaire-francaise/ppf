@@ -30,6 +30,8 @@ sealed interface DeciderDestination {
     data class Consultation(val address: ContentAddress) : DeciderDestination
     /** A model letter to one's elected officials (DE-09). */
     data class Letter(val address: ContentAddress) : DeciderDestination
+    /** A local petition asking a collectivity for a consultation (DE-26). */
+    data class LocalPetition(val address: ContentAddress) : DeciderDestination
     /** The past votes of the party of one candidate of a comparator (DE-16, D-117). */
     data class PastVotes(val sheet: ContentAddress, val candidate: ContentAddress) : DeciderDestination
     /** The rules of the official petitions; [platform] opens one of them first. */

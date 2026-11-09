@@ -443,6 +443,20 @@ Contrôles de l'outil de signature (avertissements, jamais un refus du droit par
 
 Le nom de l'élu vient de l'annuaire des élus de la commune choisie sur l'appareil (D-047), tel quel, sans civilité devinée ; la formule d'appel reste neutre (« Madame, Monsieur »). Contrôles de l'outil de signature (avertissements) : une marque entre accolades que l'application ne remplit pas, un destinataire sans contact officiel. PPF n'envoie rien et ne garde rien du courrier.
 
+### Pétition locale (`ppf-type` = `petition-locale`, DE-26, conception : `docs/integration/petitions-locales.md`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-territory-code` | La collectivité (référentiel des territoires : code INSEE d'une commune, code d'un département…) ; obligatoire |
+| `ppf-collectivity` | `nom`, `commune` (un dixième des électeurs) ou `autre` (un vingtième), CGCT L1112-16 |
+| `ppf-voters` | Les électeurs inscrits relevés par l'équipe : `nombre`, `date`, `source` ; le seuil est calculé sur l'appareil, arrondi à l'unité supérieure |
+| `ppf-local-status` | `en-collecte`, `deposee`, `inscrite`, `consultation-decidee`, `refusee` |
+| `ppf-official-url` | La page de signature de la collectivité, s'il y en a une (`https`, sans nom d'utilisateur ni port) |
+| `ppf-how-to-sign` | Comment signer sinon (sur papier, auprès des organisateurs) |
+| `ppf-count`, `ppf-milestone`, `ppf-opened` | Comme pour une pétition officielle : décomptes des organisateurs datés, étapes, début de la collecte |
+
+Contrôles de l'outil de signature (avertissements) : une collecte sans page ni façon de signer, plus de signatures que d'électeurs inscrits. PPF ne recueille aucune signature. L'application ne montre une pétition locale que pour la commune choisie sur l'appareil dans « Mes élus » et son département.
+
 ### Position d'un candidat (`ppf-type` = `position`)
 
 | Étiquette | Contenu |

@@ -20,7 +20,7 @@ Un contenu `consultation` signé par l'équipe et relu comme les autres contenus
 
 ## 3. Dans l'application
 
-- **« Consultations publiques »** sur l'accueil de « Décider » : les consultations ouvertes (la plus proche de sa clôture d'abord), puis celles à venir ; chaque carte dit son type, qui l'organise et le temps qui reste. Les consultations locales viendront avec la commune choisie dans « Mon territoire », comme les scrutins locaux (calcul sur l'appareil, rien n'est envoyé).
+- **« Consultations publiques »** sur l’accueil de « Décider » : les consultations ouvertes (la plus proche de sa clôture d’abord), puis celles à venir ; chaque carte dit son type, qui l’organise et le temps qui reste. Les consultations locales ne paraissent que pour la commune choisie sur l’appareil dans « Mes élus » et son département, comme les scrutins locaux (calcul sur l’appareil, rien n’est envoyé).
 - **Page d'une consultation** : type, organisateur, dates (premier et dernier jour inclus), temps restant, bouton « Répondre sur le site officiel » (après « Vous quittez PPF », avec le nom du site), une phrase fixe par type qui dit ce que prévoit la loi et cite ses articles, « PPF ne recueille aucune réponse », le guide pour répondre, les sources, les suites possibles.
 - **Rappels** (contrat commun `docs/integration/rappels.md`) : désactivés par défaut, « Me rappeler cette consultation » programme sur l'appareil un rappel à l'ouverture (si elle est à venir) et trois jours avant le dernier jour, à 10 h, heure de Paris ; recalculés à chaque synchronisation (une enquête prolongée déplace le rappel) ; chacun se retire ; catégorie « Votes et pétitions ».
 - Le serveur ne sait jamais quelle consultation une personne regarde ni à laquelle elle répond.

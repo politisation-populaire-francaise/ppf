@@ -126,4 +126,18 @@ object DeciderTags {
 
     /** Where the official contacts of one kind of elected officials are: `recipient | label | page (https)` ([OfficialContact]). */
     const val CONTACT = "ppf-contact"
+
+    // Local petitions (cahier fonctionnel, M10; DE-26). They reuse [TERRITORY_CODE], [OFFICIAL_URL] (the signing page of the
+    // collectivity, when there is one), [COUNT], [MILESTONE] and [OPENED].
+    /** The collectivity asked: `name | commune` or `name | autre` (a tenth or a twentieth of its voters, CGCT L1112-16). */
+    const val COLLECTIVITY = "ppf-collectivity"
+
+    /** Its registered voters, read by the team: `count | date | source`. */
+    const val VOTERS = "ppf-voters"
+
+    /** `en-collecte`, `deposee`, `inscrite`, `consultation-decidee`, `refusee` ([LocalPetitionStatus]). */
+    const val LOCAL_STATUS = "ppf-local-status"
+
+    /** How to sign when the collectivity offers no page (on paper, at a stand), written by the team. */
+    const val HOW_TO_SIGN = "ppf-how-to-sign"
 }
