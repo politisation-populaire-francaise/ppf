@@ -138,8 +138,8 @@ class TimerService(
     suspend fun arm(request: ArmRequest, transport: TimerTransport): ArmResult {
         val now = clock()
         validate(request, now)?.let { return it }
-        if (store.read().armed != null) return ArmResult.Refused(ArmProblem.ALREADY_ARMED)
         val author = transport.author.hex
+        if (ownTimer(store.read(), author) != null) return ArmResult.Refused(ArmProblem.ALREADY_ARMED)
         val recipientKeys = try {
             request.recipients.map { PublicKey.fromHex(it.key) }
         } catch (e: IllegalArgumentException) {
@@ -181,10 +181,12 @@ class TimerService(
                 duress = duress,
             )
             val stored = store.update { data ->
-                if (data.armed != null) {
+                // What a former account left on the device is never kept next to this one's timer.
+                val base = if (data.owner != null && data.owner != author) TimerDeviceData(owner = author) else data
+                if (base.armed != null) {
                     Pair(data, false)
                 } else {
-                    Pair(data.copy(owner = author, armed = timer, pending = data.pending + deliveries), true)
+                    Pair(base.copy(owner = author, armed = timer, pending = base.pending + deliveries), true)
                 }
             }
             if (!stored) return ArmResult.Refused(ArmProblem.ALREADY_ARMED)
@@ -205,7 +207,7 @@ class TimerService(
      * [CheckInResult.Cancelled].
      */
     suspend fun checkIn(code: String, transport: TimerTransport): CheckInResult {
-        val timer = store.read().armed ?: return CheckInResult.NoTimer
+        val timer = ownTimer(store.read(), transport.author.hex) ?: return CheckInResult.NoTimer
         val wait = waitSeconds(timer)
         if (wait > 0) return CheckInResult.TooEarly(wait)
         return when (val match = codes.match(timer, code)) {
@@ -241,7 +243,7 @@ class TimerService(
      * screen moves: nothing is sent, the alert still goes at the deadline the recipients know.
      */
     suspend fun report(code: String, newDeadline: Long, transport: TimerTransport): ReportResult {
-        val timer = store.read().armed ?: return ReportResult.NoTimer
+        val timer = ownTimer(store.read(), transport.author.hex) ?: return ReportResult.NoTimer
         val now = clock()
         if (newDeadline - now < TimerFormats.MIN_DURATION_SECONDS || newDeadline - now > TimerFormats.MAX_DURATION_SECONDS) {
             return ReportResult.InvalidDeadline
@@ -358,6 +360,9 @@ class TimerService(
                 ?.let { ArmResult.Refused(ArmProblem.CODES, it) }
         }
     }
+
+    /** The timer armed by [author] on this device, if any (never one a former account left behind). */
+    private fun ownTimer(data: TimerDeviceData, author: String): ArmedTimer? = data.armed?.takeIf { data.owner == author }
 
     private suspend fun sealOrNull(transport: TimerTransport, rumor: Rumor, recipient: String): String? = try {
         transport.seal(rumor, PublicKey.fromHex(recipient)).toJson()

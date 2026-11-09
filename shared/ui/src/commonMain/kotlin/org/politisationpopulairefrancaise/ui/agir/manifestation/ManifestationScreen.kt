@@ -38,7 +38,10 @@ import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.agir.manifestation.EmergencyNumbers
 import org.politisationpopulairefrancaise.ui.agir.security.PreparePhoneBlock
+import org.politisationpopulairefrancaise.ui.agir.timer.TimerEntry
+import org.politisationpopulairefrancaise.ui.agir.timer.TimerScreen
 import org.politisationpopulairefrancaise.ui.components.InfoBox
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.ui.components.PageHeader
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
@@ -86,6 +89,7 @@ import org.politisationpopulairefrancaise.ui.resources.manif_territory_hint
 import org.politisationpopulairefrancaise.ui.resources.manif_territory_label
 import org.politisationpopulairefrancaise.ui.resources.manif_testify
 import org.politisationpopulairefrancaise.ui.resources.manif_title
+import org.politisationpopulairefrancaise.ui.resources.timer_entry_title
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** The items of « Avant de partir », in order ([EXEMPLE], to be read again with the organisations). */
@@ -106,6 +110,20 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
     val compact = windowClass.width == WindowWidthClass.COMPACT
     LaunchedEffect(help) { help.prepare() }
     var guide by rememberSaveable { mutableStateOf<String?>(null) }
+    // « Sans nouvelles de moi » (AG-55): its screen opens over the protest mode, with a way back.
+    val timer = help.timer
+    var timerOpen by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(timer?.screenRequested) {
+        if (timer != null && timer.screenRequested) {
+            timerOpen = true
+            timer.screenShown()
+        }
+    }
+    if (timer != null && timerOpen) {
+        SystemBack(enabled = true) { timerOpen = false }
+        TimerScreen(timer, windowClass, onBack = { timerOpen = false }, modifier = modifier)
+        return
+    }
     val scroll = rememberScrollState()
     val open = guide
     if (open != null) {
@@ -175,6 +193,12 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
 
             Section(stringResource(Res.string.help_rally_title), Lucide.MapPin) {
                 RallyPointBlock(help)
+            }
+
+            if (timer != null) {
+                Section(stringResource(Res.string.timer_entry_title), Lucide.Clock) {
+                    TimerEntry(timer, onOpen = { timerOpen = true })
+                }
             }
 
             Section(stringResource(Res.string.manif_phone_title), Lucide.Lock) {
