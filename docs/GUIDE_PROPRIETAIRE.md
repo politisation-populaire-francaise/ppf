@@ -252,7 +252,7 @@ L'élection est réelle : la présidentielle de 2027, dont les dates sont annonc
 
 ### Tester les consultations publiques (ajouté le 9 novembre 2026)
 
-Les deux consultations sont inventées et marquées [EXEMPLE]. Aucun compte n'est nécessaire.
+Depuis le 9 novembre 2026, la consultation est réelle : le débat public sur le projet de train Réunion Express, ouvert jusqu'au 26 novembre 2026. Comme il concerne La Réunion, il n'apparaît que si une commune de La Réunion est choisie sur l'appareil. Pour l'essayer : dans **Comprendre**, rubrique **Mes élus**, choisissez par exemple Saint-Denis (code postal 97400) ; rien n'est envoyé. Après le 26 novembre, la section disparaît jusqu'à la prochaine consultation. Aucun compte n'est nécessaire. Les étapes ci-dessous décrivent les consultations d'essai des tests automatiques ; sur le téléphone, vous verrez le débat de La Réunion à la place.
 
 1. Ouvrez **Décider** et descendez jusqu'à **Consultations publiques** : la consultation en ligne d'un ministère d'exemple (ouverte, avec le nombre de jours qui restent pour répondre), puis l'enquête publique d'exemple (« À venir », avec sa date d'ouverture).
 2. Touchez la consultation en ligne : la page dit qui l'organise, ses dates, ce que prévoit la loi (avec les articles), et que PPF ne recueille aucune réponse.

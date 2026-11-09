@@ -101,6 +101,6 @@ class DeciderPagesTest {
         const val TESTS_FILE = "decider-tests.json"
 
         /** The types whose bundled contents are real: the tests read their fictional ones instead. */
-        val FIXTURE_TYPES = setOf(ArticleType.PETITION, ArticleType.ELECTION, ArticleType.MODELE_COURRIER)
+        val FIXTURE_TYPES = setOf(ArticleType.PETITION, ArticleType.ELECTION, ArticleType.MODELE_COURRIER, ArticleType.CONSULTATION)
     }
 }

@@ -34,7 +34,8 @@ import kotlin.test.assertNull
 /** DE-27: the official consultations of the bundled examples ([EXEMPLE]), on 7 November 2026. */
 @OptIn(ExperimentalTestApi::class)
 class ConsultationViewsTest {
-    private val database = JvmDatabase.inMemory()
+    // The fictional consultations of the tests (the application bundles real ones).
+    private val database = JvmDatabase.inMemory().also { DeciderTestContents.seed(LocalEventStore(it)) }
     private val now = CivilDate(2026, 11, 7).toEpochDays() * 86_400 + 43_200
     private val store = ReminderStore(database) { now }
 

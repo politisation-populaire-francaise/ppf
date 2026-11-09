@@ -6,7 +6,7 @@ import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 
 /**
- * The fictional contents of « Décider » the tests read (petitions, election, model letter, all marked [EXEMPLE]):
+ * The fictional contents of « Décider » the tests read (petitions, election, model letter, consultations, all marked [EXEMPLE]):
  * written in `content/tests/decider`, signed by `:tools:content-signer:run` into `contents/decider-tests.json` of the
  * resources of the tests, never bundled with the application, which carries real contents (owner's decision of
  * 9 November 2026). Signed with the key of the bundled examples, so `EditorialTrust.bundledExamples()` trusts them.
