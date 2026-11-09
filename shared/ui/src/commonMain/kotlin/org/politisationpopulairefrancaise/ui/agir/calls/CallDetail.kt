@@ -60,6 +60,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextField
 import org.politisationpopulairefrancaise.ui.components.shortNpub
 import org.politisationpopulairefrancaise.ui.content.OwnDemandState
+import org.politisationpopulairefrancaise.ui.agir.poster.PosterTags
 import org.politisationpopulairefrancaise.ui.agir.testimonies.LocalTestify
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
@@ -88,6 +89,7 @@ internal fun CallDetail(
     onClose: (Call) -> Unit,
     closeOutcome: CallSendOutcome?,
     modifier: Modifier = Modifier,
+    onMakePoster: ((Call) -> Unit)? = null,
 ) {
     val palette = PpfTheme.palette
     val now = library.now()
@@ -153,7 +155,8 @@ internal fun CallDetail(
                 }
             }
 
-            Grow(call, onCreateEvent, onCreateDemand)
+            // AG-61: a poster of a published, open call; it publishes nothing.
+            Grow(call, onCreateEvent, onCreateDemand, onMakePoster?.takeIf { call.isOpen && (own == null || own.state == OwnDemandState.PUBLISHED) })
 
             // The discussion room of a call (AP-06) waits for its specification.
             PpfCard(Modifier.fillMaxWidth()) {
@@ -285,7 +288,7 @@ private fun PracticalInformation(call: Call, onOpenLink: (String, Boolean) -> Un
 /** AP-07: the share kit, and the ways to turn the call into an event or a demand when offered. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun Grow(call: Call, onCreateEvent: ((Call) -> Unit)?, onCreateDemand: ((Call) -> Unit)?) {
+private fun Grow(call: Call, onCreateEvent: ((Call) -> Unit)?, onCreateDemand: ((Call) -> Unit)?, onMakePoster: ((Call) -> Unit)? = null) {
     val palette = PpfTheme.palette
     // The suspending LocalClipboard needs a ClipEntry built by platform code; plain text is enough here.
     @Suppress("DEPRECATION")
@@ -310,6 +313,10 @@ private fun Grow(call: Call, onCreateEvent: ((Call) -> Unit)?, onCreateDemand: (
             icon = if (copied) Lucide.Check else Lucide.Copy,
             modifier = Modifier.testTag(CallTags.SHARE_COPY),
         )
+        if (onMakePoster != null) {
+            Spacer(Modifier.height(8.dp))
+            PpfSecondaryButton({ onMakePoster(call) }, stringResource(Res.string.affiche_make), icon = Lucide.Printer, modifier = Modifier.testTag(PosterTags.MAKE))
+        }
         if (onCreateEvent != null || onCreateDemand != null) {
             Spacer(Modifier.height(8.dp))
             FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

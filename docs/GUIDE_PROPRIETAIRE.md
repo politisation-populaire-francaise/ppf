@@ -258,6 +258,24 @@ Le simulateur estime ce qu'une grève retire de la paie, selon le statut (salari
 9. Quittez « Agir » (touchez un autre espace en bas), puis revenez au simulateur : tous les champs sont vides, la preuve que rien n'a été gardé. Essayez aussi le mode sombre et, sur l'ordinateur, une fenêtre large : les questions et l'estimation sont côte à côte.
 
 Ce qui n'est pas encore là : les gardes de 24 heures, le forfait en jours, les entreprises privées chargées d'un service public hors transports (règles à confirmer) ; la relecture des règles par un avocat avant l'ouverture publique.
+
+### Tester l'affiche à code QR (ajouté le 9 novembre 2026, pas encore compilée)
+
+Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre appareil. Son code QR contient l'événement signé lui-même : un téléphone l'ajoute à son agenda **sans réseau**, après avoir vérifié qu'il n'a pas été modifié. **L'affiche n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée. Il faut votre **ordinateur** (pour faire l'affiche) et votre **téléphone Android** (pour la scanner). Les événements de l'agenda sont tous fictifs ([EXEMPLE]).
+
+1. **Sur l'ordinateur**, ouvrez « Carte » (ou « Agir », puis « Agenda des mobilisations ») et touchez la mobilisation « Rassemblement pour les services publics » (Paris). Dans son détail, cliquez sur **Faire une affiche**.
+2. L'écran « Faire une affiche » montre un aperçu. Choisissez **A4**, puis **A3** : la ligne sous l'aperçu indique le format choisi (« 29,7 × 42 cm » pour l'A3). Revenez en A4.
+3. Lisez l'encadré : « Le code QR contient l'événement signé lui-même… » et « Le code ne contient rien sur vous ».
+4. Si vous le souhaitez, tapez une mention de l'imprimeur, par exemple « [EXEMPLE] Imprimé par nos soins » : elle s'ajoute en bas de l'aperçu. Elle n'est gardée nulle part.
+5. Cliquez sur **Enregistrer en image PNG**, choisissez un dossier (par exemple votre Bureau) et validez : « Affiche enregistrée ». Ouvrez l'image : titre, date en toutes lettres, lieu, organisateur, code QR en bas à gauche et la phrase « Scannez pour ajouter à votre agenda, même sans réseau ».
+6. **Sur le téléphone**, coupez le Wi-Fi et les données mobiles (mode avion). Ouvrez PPF, « Carte », puis **Scanner une affiche** en haut de la liste. La première fois, Android demande l'accès à la caméra : touchez **Pendant l'utilisation de l'application**.
+7. Visez le code QR de l'image, à l'écran de l'ordinateur (ou sur la feuille imprimée) : « Signature vérifiée », puis « Signé par l'équipe de PPF », et l'événement. Touchez **Ajouter à mon agenda** : comme cet exemple est déjà dans l'agenda du téléphone, il répond « Cet événement est déjà dans votre agenda » (c'est normal ; un événement que le téléphone ne connaît pas encore donnerait « Ajouté à votre agenda »). **Voir dans l'agenda** ouvre son détail.
+8. Touchez **Scanner un autre code** et visez un autre code QR (celui d'un emballage, d'un ticket) : « Ce code n'est pas celui d'une affiche PPF : rien n'est ouvert ».
+9. Sur l'ordinateur, le bouton « Scanner une affiche » n'apparaît pas : la lecture se fait avec un téléphone. Sur le téléphone, **Faire une affiche** enregistre un PDF : choisissez l'endroit dans la fenêtre qui s'ouvre (par exemple « Téléchargements »), puis ouvrez-le pour vérifier.
+10. En bas de l'écran de l'affiche, **Lire la fiche « Coller des affiches et distribuer des tracts »** ouvre la fiche pratique : où l'on peut afficher, ce que la loi demande, ce qui change pendant la campagne présidentielle.
+
+Pour imprimer : choisissez **taille réelle** (ou « 100 % ») dans la fenêtre d'impression, sinon le code QR rétrécit. Ce qui n'est pas encore là : l'iPhone, le PDF sur ordinateur, les affiches d'une fiche ou d'une revendication, les pages du site pour les affiches d'événements très longs.
+
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).
