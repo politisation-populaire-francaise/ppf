@@ -104,6 +104,9 @@ object EditorialMessages {
         "comprendre.rule.teaching_no_step" to "le déroulé n'a aucune étape minutée (« - 10 min : ce que fait la classe »)",
         "comprendre.rule.teaching_duration" to "les étapes du déroulé font {1} minutes en tout, la durée annoncée est de {0} minutes",
         "comprendre.rule.teaching_readable" to "l'application ne lirait pas cette fiche pédagogique (vérifiez le parcours lié, le niveau et le programme)",
+        "comprendre.rule.teaching_programme_required" to "une fiche pour la classe (niveau {0}) cite le programme officiel qu'elle sert",
+        "comprendre.rule.teaching_programme_workshop" to "une fiche d'atelier ne sert aucun programme officiel : laissez ce champ vide",
+        "comprendre.rule.teaching_workshop_duration" to "un atelier dure de {0} à {1} minutes, pas {2}",
         // Rules of the schemas of Voir.
         "voir.rule.unreadable" to "l'application ne lirait pas cette brique de « Voir » (vérifiez ses champs)",
         "voir.rule.line_ignored" to "l'application ignorerait {0} ligne(s) de ce champ",

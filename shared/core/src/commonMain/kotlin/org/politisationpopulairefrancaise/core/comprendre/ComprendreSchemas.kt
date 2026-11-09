@@ -197,7 +197,8 @@ object ComprendreSchemas {
     /**
      * A teaching sheet for the classroom (CO-13, D-096, docs/integration/comprendre-enseignants.md): one course,
      * one level, the official programme it serves, and the sections of [TeachingSheetFormat]. The quiz is the
-     * one of the linked course, never rewritten in the sheet.
+     * one of the linked course, never rewritten in the sheet. The same format, with the level `atelier`, is the
+     * animation sheet of a workshop of popular education (CO-24): no programme, 45 minutes to 2 hours.
      */
     val FICHE_PEDAGOGIQUE: ContentSchema = ContentSchema(
         type = ArticleType.FICHE_PEDAGOGIQUE,
@@ -210,7 +211,8 @@ object ComprendreSchemas {
             // « course: le-referendum »: one ["a", "30023:<key>:le-referendum", "", "parcours"], a published course.
             FieldSpec("course", "editorial.field.course", "editorial.help.course", value = ValueSpec.Link(ComprendreTags.COURSE_LINK_ROLE, TargetType.COURSE)),
             FieldSpec("level", "editorial.field.level", "editorial.help.level", value = ValueSpec.Single(FieldType.Choice(TeachingLevel.entries.map { it.tagValue }, "comprendre.level.")), tag = ComprendreTags.LEVEL),
-            FieldSpec("programme", "editorial.field.programme", "editorial.help.programme", value = ValueSpec.Single(FieldType.Text(TeachingSheetFormat.PROGRAMME_MAX)), tag = ComprendreTags.PROGRAMME),
+            // Required for a level of school, absent for a workshop (CO-24): checked below with the level.
+            FieldSpec("programme", "editorial.field.programme", "editorial.help.programme", occurs = Occurs.OPTIONAL, value = ValueSpec.Single(FieldType.Text(TeachingSheetFormat.PROGRAMME_MAX)), tag = ComprendreTags.PROGRAMME),
         ),
         body = BodySpec(
             blocks = listOf(
@@ -228,7 +230,12 @@ object ComprendreSchemas {
                 val duration = draft.entries.lastOrNull { it.first == ContentSchema.DURATION }?.second?.trim()?.toIntOrNull()
                 TeachingSheetFormat.problems(draft.body, duration)
             },
-            SchemaCheck { _, event, _ ->
+            // A programme for a level of school, none for a workshop, which lasts 45 minutes to 2 hours (CO-24);
+            // then, as a last safety net, the sheet must read as the applications read it.
+            SchemaCheck { draft, event, _ ->
+                fun value(key: String) = draft.entries.lastOrNull { it.first == key }?.second?.trim()
+                val level = TeachingSheetFormat.levelProblems(value(TeachingSheetFormat.LEVEL_KEY), value(TeachingSheetFormat.PROGRAMME_KEY), value(ContentSchema.DURATION)?.toIntOrNull())
+                if (level.isNotEmpty()) return@SchemaCheck level
                 val unchecked = SignedEvent(event.idHex(), event.pubkey, event.createdAt, event.kind, event.tags, event.content, "0".repeat(128))
                 if (Article.from(unchecked)?.let(TeachingSheet::from) == null) listOf(Problem(TeachingSheetFormat.RULE_READABLE)) else emptyList()
             },

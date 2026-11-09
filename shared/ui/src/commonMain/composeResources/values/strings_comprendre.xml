@@ -100,6 +100,11 @@
     <string name="comprendre_teaching_hide_answers">Masquer les réponses</string>
     <string name="comprendre_teaching_answer">Réponse : %1$s</string>
     <string name="comprendre_teaching_link">Pour la classe : fiche pédagogique (%1$s)</string>
+    <!-- CO-24 : fiche d'animation d'un atelier d'éducation populaire. Le rappel de neutralité est un texte fixe, identique à celui du site. -->
+    <string name="comprendre_teaching_level_atelier">Atelier d’éducation populaire</string>
+    <string name="comprendre_kind_workshop">Fiche d’animation</string>
+    <string name="comprendre_workshop_neutrality">L’animatrice ou l’animateur reste libre de ses choix. Cette fiche présente des faits et des débats, jamais une consigne de vote ni une position partisane.</string>
+    <string name="comprendre_workshop_link">Pour un atelier : fiche d’animation (%1$d minutes)</string>
     <!-- The end of every content: licence (D-103), verification code (S-141), « Citer ce contenu » (S-144). -->
     <string name="comprendre_license">Texte sous licence %1$s, %2$s.</string>
     <string name="comprendre_verify_code">Code de vérification : %1$s. Pour vérifier une copie reçue : « Vérifier un contenu reçu » dans « Voir », ou la page « Vérifier un contenu » du site.</string>

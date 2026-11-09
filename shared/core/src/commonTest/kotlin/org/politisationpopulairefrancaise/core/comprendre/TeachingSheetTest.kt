@@ -16,7 +16,7 @@ import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-/** The teaching sheets for the classroom (CO-13, D-096): the schema, its rules and the reader. */
+/** The teaching sheets for the classroom (CO-13, D-096) and the workshops (CO-24): the schema, its rules and the reader. */
 class TeachingSheetTest {
     private val author = IdentityKeys.generate().publicKey
     private val context = CheckContext.of(
@@ -160,12 +160,68 @@ class TeachingSheetTest {
 
     @Test
     fun aSheetWithoutProgrammeOrLevelOrDurationIsRefused() {
-        assertEquals(listOf(Codes.FIELD_MISSING), codes(entries("programme" to null), body()))
+        // A sheet of school cites its programme (one problem, on the field: the reader check stays quiet).
+        val missing = check(entries("programme" to null), body())
+        assertEquals(listOf(TeachingSheetFormat.RULE_PROGRAMME_REQUIRED), missing.map { it.code })
+        assertEquals("programme", missing.single().field)
+        assertEquals("Champ « programme » : une fiche pour la classe (niveau lycee) cite le programme officiel qu'elle sert", EditorialMessages.french(missing.single()))
         assertEquals(listOf(Codes.VALUE_TOO_LONG), codes(entries("programme" to "x".repeat(501)), body()))
         assertEquals(listOf(Codes.FIELD_MISSING), codes(entries("level" to null), body()))
         assertEquals(listOf(Codes.VALUE_CHOICE), codes(entries("level" to "college"), body()))
         assertEquals(emptyList(), codes(entries("level" to "cycle-4"), body()))
         assertEquals(listOf(Codes.FIELD_MISSING), codes(entries("duration" to null), body()))
+    }
+
+    /** A workshop of popular education (CO-24): 90 minutes, no programme. */
+    private fun workshop(vararg replaced: Pair<String, String?>): List<Pair<String, String>> {
+        val base = arrayOf<Pair<String, String?>>(
+            "slug" to "atelier-le-referendum",
+            "title" to "[EXEMPLE] Pour un atelier : le référendum",
+            "duration" to "90",
+            "level" to "atelier",
+            "programme" to null,
+        )
+        return entries(*base, *replaced)
+    }
+
+    private val workshopOutline = listOf(
+        "- 10 min : Accueil.",
+        "- 20 min : Lecture du parcours par petits groupes.",
+        "- 15 min : Questions à main levée, avec les cartes.",
+        "- 30 min : Débat guidé.",
+        "- 15 min : Bilan.",
+    )
+
+    @Test
+    fun aWorkshopHasNoProgrammeAndLastsFortyFiveMinutesToTwoHours() {
+        assertEquals(emptyList(), check(workshop(), body(steps = workshopOutline)))
+        val event = signed(workshop(), body(steps = workshopOutline))
+        assertTrue(listOf("ppf-level", "atelier") in event.tags)
+        assertTrue(event.tags.none { it.firstOrNull() == "ppf-programme" }, "no programme tag")
+        val sheet = assertNotNull(Article.from(event)?.let(TeachingSheet::from))
+        assertEquals(TeachingLevel.ATELIER, sheet.level)
+        assertTrue(sheet.isWorkshop)
+        assertTrue(!sheet.level.isSchool)
+        assertNull(sheet.programme)
+        assertEquals(90, sheet.totalMinutes)
+        // A workshop serves no official programme.
+        assertEquals(listOf(TeachingSheetFormat.RULE_PROGRAMME_WORKSHOP), codes(workshop("programme" to programme), body(steps = workshopOutline)))
+        // 45 minutes to 2 hours, the timed steps adding up to the duration as for the classroom.
+        val short = listOf("- 10 min : Accueil.", "- 20 min : Débat.")
+        val tooShort = check(workshop("duration" to "30"), body(steps = short)).single()
+        assertEquals(TeachingSheetFormat.RULE_WORKSHOP_DURATION, tooShort.code)
+        assertEquals(listOf("45", "120", "30"), tooShort.args)
+        assertEquals("Champ « duration » : un atelier dure de 45 à 120 minutes, pas 30", EditorialMessages.french(tooShort))
+        val long = workshopOutline + "- 60 min : Deuxième débat."
+        assertEquals(listOf(TeachingSheetFormat.RULE_WORKSHOP_DURATION), codes(workshop("duration" to "150"), body(steps = long)))
+        val exactlyTwoHours = workshopOutline + "- 30 min : Mise en pratique."
+        assertEquals(emptyList(), codes(workshop("duration" to "120"), body(steps = exactlyTwoHours)))
+        // A stray programme tag on a workshop is never shown.
+        val stray = signed(workshop("programme" to programme), body(steps = workshopOutline))
+        assertNull(assertNotNull(Article.from(stray)?.let(TeachingSheet::from)).programme)
+        // The level of school keeps its rules: no limit of duration but the sum of its steps.
+        assertEquals(TeachingLevel.entries.last(), TeachingLevel.ATELIER, "new levels go at the end")
+        assertTrue(TeachingLevel.LYCEE.isSchool && TeachingLevel.CYCLE_4.isSchool)
     }
 
     @Test
@@ -229,6 +285,7 @@ class TeachingSheetTest {
             TeachingSheetFormat.RULE_SECTION_UNKNOWN, TeachingSheetFormat.RULE_SECTION_REPEATED, TeachingSheetFormat.RULE_SECTION_ORDER,
             TeachingSheetFormat.RULE_SECTION_EMPTY, TeachingSheetFormat.RULE_OBJECTIONS, TeachingSheetFormat.RULE_STEP,
             TeachingSheetFormat.RULE_NO_STEP, TeachingSheetFormat.RULE_DURATION, TeachingSheetFormat.RULE_READABLE,
+            TeachingSheetFormat.RULE_PROGRAMME_REQUIRED, TeachingSheetFormat.RULE_PROGRAMME_WORKSHOP, TeachingSheetFormat.RULE_WORKSHOP_DURATION,
         ).forEach { code ->
             val template = assertNotNull(EditorialMessages.template(code), code)
             assertTrue('—' !in template, "$code: no em dash")

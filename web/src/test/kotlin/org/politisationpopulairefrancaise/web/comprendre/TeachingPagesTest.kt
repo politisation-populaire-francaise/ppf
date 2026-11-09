@@ -92,8 +92,9 @@ class TeachingPagesTest {
         assertEquals(55, sheet.article.durationMinutes)
         assertEquals(55, sheet.totalMinutes, "the timed steps add up to the duration")
         assertTrue(sheet.objections.size >= 2, "objections from both sides")
-        assertTrue(sheet.programme.contains("Bulletin officiel n° 24 du 13 juin 2024"))
-        assertTrue(sheet.programme.contains("vérifié le 2026-11-08"))
+        val programme = assertNotNull(sheet.programme)
+        assertTrue(programme.contains("Bulletin officiel n° 24 du 13 juin 2024"))
+        assertTrue(programme.contains("vérifié le 2026-11-08"))
         assertTrue(sheet.sources.orEmpty().contains("consulté le 2026-11-08"))
         val course = assertNotNull(catalog.courseOf(sheet))
         assertEquals("comment-une-loi-est-votee", course.article.slug)
@@ -106,7 +107,9 @@ class TeachingPagesTest {
         checkPage(html)
         // The fixed notice of neutrality, word for word (docs/integration/comprendre-enseignants.md, section 1).
         assertTrue(html.contains("L’enseignant reste libre de ses choix pédagogiques. Cette fiche respecte la neutralité de l’enseignement public : elle présente des faits et des débats, jamais une consigne de vote ni une position partisane."))
-        assertTrue(text(html).contains(sheet.programme))
+        assertTrue(text(html).contains(assertNotNull(sheet.programme)))
+        assertTrue(html.contains("id=\"programme\""))
+        assertFalse(html.contains("id=\"cartes\""), "the cards are for the workshops")
         assertTrue(html.contains("href=\"/comprendre/parcours/comment-une-loi-est-votee\""))
         // The licence of the texts of PPF (D-103), from the common mechanism of "Voir".
         assertTrue(html.contains("Texte sous licence <a href=\"https://creativecommons.org/licenses/by/4.0/deed.fr\""))
@@ -190,15 +193,81 @@ class TeachingPagesTest {
     @Test
     fun everySheetOfTheRepositoryPassesItsSchemaAndKeepsItsLevel() {
         val sheets = Files.list(file("content", "enseignants")).use { files -> files.map { it.fileName.toString() }.filter { it.endsWith(".md") }.sorted().toList() }
-        assertEquals((CYCLE_4_SHEETS + SHEET_SLUG).sorted().map { "$it.md" }, sheets)
+        assertEquals((CYCLE_4_SHEETS + SHEET_SLUG + WORKSHOP_SLUG).sorted().map { "$it.md" }, sheets)
         sheets.forEach { name ->
             val sheet = assertNotNull(TeachingSheet.from(checked(name)), name)
-            val expected = if (name.endsWith("-cycle-4.md")) TeachingLevel.CYCLE_4 else TeachingLevel.LYCEE
+            val expected = when {
+                name.startsWith("atelier-") -> TeachingLevel.ATELIER
+                name.endsWith("-cycle-4.md") -> TeachingLevel.CYCLE_4
+                else -> TeachingLevel.LYCEE
+            }
             assertEquals(expected, sheet.level, name)
             assertTrue(sheet.article.title.startsWith("[EXEMPLE]"), name)
-            assertTrue(sheet.programme.contains("Bulletin officiel"), name)
+            if (sheet.isWorkshop) {
+                assertEquals(null, sheet.programme, "$name: a workshop serves no programme")
+                assertTrue(sheet.totalMinutes in 45..120, "$name: 45 minutes to 2 hours")
+            } else {
+                assertTrue(assertNotNull(sheet.programme, name).contains("Bulletin officiel"), name)
+            }
             assertNotNull(catalog.courseOf(sheet), "$name: its course is bundled")
         }
+    }
+
+    /** The example workshop of content/enseignants (CO-24), with the bundled contents. */
+    private val workshopCatalog: ComprendreCatalog by lazy {
+        val all = catalog.teachingSheets.map { it.article }
+        val bundled = trusted.any { it.type == ArticleType.FICHE_PEDAGOGIQUE && it.slug == WORKSHOP_SLUG }
+        ComprendreCatalog.from(if (bundled) trusted else (trusted + all + checked(WORKSHOP_FILE)).distinctBy { it.address })
+    }
+
+    private val workshop: TeachingSheet get() = assertNotNull(workshopCatalog.teachingSheet(WORKSHOP_SLUG))
+
+    @Test
+    fun theWorkshopSheetHasItsOwnNoticeNoProgrammeAndItsCardsToPrint() {
+        assertEquals(TeachingLevel.ATELIER, workshop.level)
+        assertTrue(workshop.isWorkshop)
+        assertEquals(90, workshop.article.durationMinutes)
+        assertEquals(90, workshop.totalMinutes)
+        val course = assertNotNull(workshopCatalog.courseOf(workshop))
+        assertEquals("les-petitions-officielles", course.article.slug)
+        val html = render { teachingSheetDocument(workshop, workshopCatalog) }
+        checkPage(html)
+        assertTrue(html.contains("L’animatrice ou l’animateur reste libre de ses choix. Cette fiche présente des faits et des débats, jamais une consigne de vote ni une position partisane."))
+        assertFalse(html.contains("neutralité de l’enseignement public"), "not the notice of the school")
+        assertFalse(html.contains("id=\"programme\""), "no official programme")
+        assertTrue(html.contains("Fiche d’animation · Atelier d’éducation populaire · 90 min"))
+        assertTrue(html.contains("<a href=\"/comprendre/enseignants#niveau-atelier\">Pour un atelier</a>"), "breadcrumb to the workshops")
+        // The cards: one per question of the course, without its answer, then one per objection, with its answer.
+        val quizzes = course.steps.mapNotNull { it.quiz }
+        val cardsAt = html.indexOf("id=\"cartes\"")
+        val answersAt = html.indexOf("id=\"reponses\"")
+        assertTrue(cardsAt > 0, "a section « Cartes à imprimer »")
+        assertTrue(answersAt > cardsAt, "the answers come after the cards")
+        assertTrue(html.contains("<section class=\"workshop-cards\""), "the section the print stylesheet starts on a new page")
+        val cards = text(html.substring(cardsAt, answersAt))
+        assertEquals(quizzes.size + workshop.objections.size, Regex("<li class=\"workshop-card").findAll(cards).count())
+        quizzes.forEach { quiz -> assertTrue(cards.contains(quiz.question), quiz.question) }
+        assertFalse(cards.contains("La bonne réponse"), "no answer of the quiz on the cards")
+        workshop.objections.forEach { assertTrue(cards.contains(it.answer.take(60)), it.objection) }
+        assertTrue(html.contains(">Réponses pour l’animation</h2>"))
+        assertEquals(quizzes.size, Regex("La bonne réponse : [A-E]\\. ").findAll(text(html.substring(answersAt))).count())
+    }
+
+    @Test
+    fun theWorkshopIsListedApartAndLinkedFromItsCourse() {
+        val list = render { teachingSheetsDocument(workshopCatalog) }
+        checkPage(list)
+        assertTrue(list.contains("id=\"niveau-atelier\""))
+        assertTrue(list.contains(">Atelier d’éducation populaire</h2>"))
+        assertTrue(list.contains("href=\"/comprendre/enseignants/$WORKSHOP_SLUG\""))
+        assertTrue(list.contains("L’animatrice ou l’animateur reste libre de ses choix."))
+        val course = render { parcoursDocument(workshopCatalog.course("les-petitions-officielles")!!, workshopCatalog) }
+        assertTrue(course.contains("<a href=\"/comprendre/enseignants/$WORKSHOP_SLUG\">Pour un atelier : fiche d’animation (90 min)</a>"))
+        assertTrue(course.contains(">Pour un atelier</h2>"))
+        // The print stylesheet starts the cards on a new page and never cuts a card.
+        val css = assertNotNull(javaClass.getResource("/static/site.css")).readText()
+        val print = css.substring(css.lastIndexOf("@media print"))
+        listOf(".workshop-cards", ".workshop-card", "break-inside: avoid").forEach { assertTrue(print.contains(it), it) }
     }
 
     private companion object {
@@ -208,5 +277,7 @@ class TeachingPagesTest {
         const val SHEET_SLUG = "classe-comment-une-loi-est-votee-lycee"
         const val SHEET_FILE = "$SHEET_SLUG.md"
         val CYCLE_4_SHEETS = listOf("classe-la-separation-des-pouvoirs-cycle-4", "classe-s-inscrire-et-voter-cycle-4")
+        const val WORKSHOP_SLUG = "atelier-les-petitions-officielles"
+        const val WORKSHOP_FILE = "$WORKSHOP_SLUG.md"
     }
 }

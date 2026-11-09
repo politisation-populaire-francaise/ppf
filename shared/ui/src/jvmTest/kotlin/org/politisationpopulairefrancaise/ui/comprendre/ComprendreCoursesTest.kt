@@ -11,6 +11,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -152,6 +153,30 @@ class ComprendreCoursesTest {
         // The sheet ends with its licence and its reference too, from the common mechanism of "Voir".
         assertTrue(onAllNodesWithTag(ComprendreCiteTags.LICENSE).fetchSemanticsNodes().isNotEmpty())
         assertTrue(onAllNodesWithTag(ComprendreCiteTags.CITE).fetchSemanticsNodes().isNotEmpty())
+    }
+
+    @Test
+    fun aCourseLeadsToItsWorkshopSheetWithItsOwnNoticeAndNoProgramme() = runComposeUiTest {
+        val petitions = bundled.first { it.article.slug == "les-petitions-officielles" }
+        val database = JvmDatabase.inMemory()
+        openComprendre(database, width = 1000, height = 800)
+        onNodeWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).performScrollTo().performClick()
+        waitForIdle()
+        // « Pour un atelier » (CO-24): the animation sheet of the course, with its duration.
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(CourseTags.WORKSHOP).fetchSemanticsNodes().isNotEmpty() }
+        assertTrue(onAllNodesWithTag(CourseTags.TEACHING).fetchSemanticsNodes().isEmpty(), "no sheet for the classroom on this course")
+        onNodeWithTag(CourseTags.WORKSHOP).performScrollTo().assert(hasText("Pour un atelier : fiche d’animation (90 minutes)")).performClick()
+        waitForIdle()
+        onNodeWithTag(ComprendreDetailTags.TEACHING).assertExists()
+        assertTrue(onAllNodesWithText("Fiche d’animation", substring = true).fetchSemanticsNodes().isNotEmpty(), "the kind of the sheet")
+        // Its own fixed notice, and no official programme.
+        onNodeWithTag(ComprendreDetailTags.TEACHING_NEUTRALITY).performScrollTo().assert(hasText("L’animatrice ou l’animateur reste libre de ses choix.", substring = true))
+        assertTrue(onAllNodesWithText("Programme officiel").fetchSemanticsNodes().isEmpty(), "a workshop serves no programme")
+        // The questions of the course, the answers folded as for the classroom.
+        onNodeWithTag(ComprendreDetailTags.TEACHING_QUESTIONS).performScrollTo().assertExists()
+        onNodeWithText("Afficher les réponses").performScrollTo().performClick()
+        waitForIdle()
+        assertEquals(petitions.quizCount, onAllNodesWithTag(ComprendreDetailTags.TEACHING_ANSWERS).fetchSemanticsNodes().size)
     }
 
     @Test

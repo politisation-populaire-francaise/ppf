@@ -84,12 +84,14 @@ internal val PublicRole.comprendreLabel: String get() = when (this) {
 internal val TeachingLevel.label: String get() = when (this) {
     TeachingLevel.LYCEE -> "Lycée"
     TeachingLevel.CYCLE_4 -> "Cycle 4 (collège)"
+    TeachingLevel.ATELIER -> "Atelier d’éducation populaire"
 }
 
 /** The level of a teaching sheet, inside a sentence: « fiche pédagogique (lycée) ». */
 internal val TeachingLevel.inSentence: String get() = when (this) {
     TeachingLevel.LYCEE -> "lycée"
     TeachingLevel.CYCLE_4 -> "cycle 4"
+    TeachingLevel.ATELIER -> "atelier"
 }
 
 /**
@@ -98,6 +100,13 @@ internal val TeachingLevel.inSentence: String get() = when (this) {
  */
 internal const val TEACHING_NEUTRALITY: String =
     "L’enseignant reste libre de ses choix pédagogiques. Cette fiche respecte la neutralité de l’enseignement public : elle présente des faits et des débats, jamais une consigne de vote ni une position partisane."
+
+/**
+ * The notice of every animation sheet of a workshop of popular education (CO-24; docs/integration/comprendre-enseignants.md,
+ * section 6): a fixed text, like [TEACHING_NEUTRALITY], for the associations, unions, social centres and libraries.
+ */
+internal const val WORKSHOP_NEUTRALITY: String =
+    "L’animatrice ou l’animateur reste libre de ses choix. Cette fiche présente des faits et des débats, jamais une consigne de vote ni une position partisane."
 
 /** One official directory to find one's elected officials (option C, as `OfficialDirectories` of the application). */
 internal class OfficialDirectory(val url: String, val title: String, val text: String)

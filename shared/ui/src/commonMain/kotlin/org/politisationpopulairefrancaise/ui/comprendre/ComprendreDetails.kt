@@ -86,12 +86,15 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_role_president
 import org.politisationpopulairefrancaise.ui.resources.comprendre_role_senateur
 import org.politisationpopulairefrancaise.ui.resources.comprendre_sources
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_teaching
+import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_workshop
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_answer
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_hide_answers
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_atelier
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_cycle_4
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_lycee
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_meta
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_neutrality
+import org.politisationpopulairefrancaise.ui.resources.comprendre_workshop_neutrality
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_programme
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_questions
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_questions_intro
@@ -366,13 +369,14 @@ private fun PersonLine(person: PublicPerson) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Teaching sheets for the classroom (CO-13, D-096)
+// Teaching sheets for the classroom (CO-13, D-096), and animation sheets of the workshops (CO-24)
 
 @Composable
 fun teachingLevelLabel(level: TeachingLevel): String = stringResource(
     when (level) {
         TeachingLevel.LYCEE -> Res.string.comprendre_teaching_level_lycee
         TeachingLevel.CYCLE_4 -> Res.string.comprendre_teaching_level_cycle_4
+        TeachingLevel.ATELIER -> Res.string.comprendre_teaching_level_atelier
     },
 )
 
@@ -380,24 +384,28 @@ fun teachingLevelLabel(level: TeachingLevel): String = stringResource(
  * A teaching sheet: the fixed neutrality notice (never the writer's text), the official programme it serves,
  * its text (objectives, prerequisites, timed outline, guided debate with its objections), the questions of
  * the linked [course] for a show of hands with the answers folded apart, the sources and the licence.
- * Nothing is asked, counted or sent from the classroom.
+ * Nothing is asked, counted or sent from the classroom. The animation sheet of a workshop (CO-24) has its own
+ * fixed notice and no programme; its cards to print are on its page of the site.
  */
 @Composable
 fun TeachingSheetDetail(sheet: TeachingSheet, course: Parcours?, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier = Modifier) {
     val palette = PpfTheme.palette
     val subtitle = stringResource(Res.string.comprendre_teaching_meta, teachingLevelLabel(sheet.level), sheet.article.durationMinutes ?: sheet.totalMinutes)
-    DetailColumn(sheet.article, stringResource(Res.string.comprendre_kind_teaching), onBack, compact, modifier.testTag(ComprendreDetailTags.TEACHING), subtitle = subtitle) {
+    val kind = stringResource(if (sheet.isWorkshop) Res.string.comprendre_kind_workshop else Res.string.comprendre_kind_teaching)
+    DetailColumn(sheet.article, kind, onBack, compact, modifier.testTag(ComprendreDetailTags.TEACHING), subtitle = subtitle) {
         Surface(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.medium, color = palette.surface2, border = BorderStroke(1.dp, palette.border)) {
             Column(Modifier.padding(16.dp)) {
                 Text(
-                    stringResource(Res.string.comprendre_teaching_neutrality),
+                    stringResource(if (sheet.isWorkshop) Res.string.comprendre_workshop_neutrality else Res.string.comprendre_teaching_neutrality),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.testTag(ComprendreDetailTags.TEACHING_NEUTRALITY),
                 )
-                Spacer(Modifier.height(12.dp))
-                Text(stringResource(Res.string.comprendre_teaching_programme), style = MaterialTheme.typography.labelLarge, color = palette.inkMuted)
-                Spacer(Modifier.height(4.dp))
-                Text(sheet.programme, style = MaterialTheme.typography.bodyMedium)
+                sheet.programme?.let { programme ->
+                    Spacer(Modifier.height(12.dp))
+                    Text(stringResource(Res.string.comprendre_teaching_programme), style = MaterialTheme.typography.labelLarge, color = palette.inkMuted)
+                    Spacer(Modifier.height(4.dp))
+                    Text(programme, style = MaterialTheme.typography.bodyMedium)
+                }
             }
         }
         Spacer(Modifier.height(16.dp))

@@ -130,7 +130,7 @@ fun HTML.comprendreHomeDocument(catalog: ComprendreCatalog) {
         homeSection("histoire", "Histoire des luttes", "Ce que les mouvements sociaux et les révolutions ont obtenu, et pourquoi.", ComprendreLinks.HISTOIRE, "Toute l’histoire des luttes", catalog.stories.size) {
             catalog.stories.take(HOME_ITEMS).forEach { storyCard(it, 3) }
         }
-        homeSection("pour-la-classe", "Pour la classe", "Des fiches pédagogiques pour faire vivre un parcours en 55 minutes avec un groupe, à projeter ou à imprimer.", ComprendreLinks.ENSEIGNANTS, "Toutes les fiches pédagogiques", catalog.teachingSheets.size) {
+        homeSection("pour-la-classe", "Pour la classe", "Des fiches pédagogiques pour faire vivre un parcours en 55 minutes avec une classe, et des fiches d’animation pour les ateliers d’éducation populaire, à projeter ou à imprimer.", ComprendreLinks.ENSEIGNANTS, "Toutes les fiches pédagogiques", catalog.teachingSheets.size) {
             catalog.teachingSheets.take(HOME_ITEMS).forEach { teachingCard(it, catalog, 3) }
         }
         comprendreSection("glossaire", "Glossaire") {
@@ -320,10 +320,15 @@ fun HTML.parcoursDocument(course: Parcours, catalog: ComprendreCatalog) {
         }
         course.steps.forEach { step -> stepSection(renderer, step, course.steps.size) }
         if (course.objections.isNotEmpty()) section(classes = "objections-card") { renderer.objections(this, course.objections) }
-        // CO-13: the teaching sheets that bring this course to the classroom, when there are some.
+        // CO-13 and CO-24: the sheets that bring this course to the classroom or to a workshop, when there are some.
         val teaching = catalog.teachingSheetsFor(course)
         if (teaching.isNotEmpty()) {
-            comprendreSection("pour-la-classe", "Pour la classe", "teaching-link") {
+            val title = when {
+                teaching.none { it.isWorkshop } -> "Pour la classe"
+                teaching.all { it.isWorkshop } -> "Pour un atelier"
+                else -> "Pour la classe et les ateliers"
+            }
+            comprendreSection("pour-la-classe", title, "teaching-link") {
                 ul(classes = "link-list") { teaching.forEach { sheet -> li { a(href = ComprendreLinks.pathOf(sheet.article)!!) { +teachingLinkLabel(sheet) } } } }
             }
         }

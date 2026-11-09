@@ -344,9 +344,9 @@ object EditorialTexts {
         "editorial.field.course" to "Parcours lié",
         "editorial.help.course" to "Identifiant du parcours « Comprendre en 5 minutes » que la fiche fait vivre en classe. Ses questions servent de quiz à main levée, avec les réponses à part pour l’enseignant.",
         "editorial.field.level" to "Niveau",
-        "editorial.help.level" to "Le lycée d’abord, puis le cycle 4. L’identifiant de la fiche s’écrit classe-<identifiant du parcours>-<niveau>.",
+        "editorial.help.level" to "Lycée ou cycle 4 pour la classe : l’identifiant de la fiche s’écrit classe-<identifiant du parcours>-<niveau>. Atelier d’éducation populaire (45 minutes à 2 heures, sans programme) : atelier-<identifiant du parcours>.",
         "editorial.field.programme" to "Programme officiel servi",
-        "editorial.help.programme" to "En une phrase, 500 caractères au plus : l’intitulé du programme, le numéro et la date du Bulletin officiel, puis « vérifié le AAAA-MM-JJ ». L’adresse du texte va dans les sources.",
+        "editorial.help.programme" to "Pour la classe seulement, en une phrase, 500 caractères au plus : l’intitulé du programme, le numéro et la date du Bulletin officiel, puis « vérifié le AAAA-MM-JJ ». L’adresse du texte va dans les sources. Vide pour un atelier.",
         // Values.
         "comprendre.verdict.exact" to "Exact",
         "comprendre.verdict.plutot-exact" to "Plutôt exact",
@@ -356,6 +356,7 @@ object EditorialTexts {
         "comprendre.rhythm.quotidien" to "Une leçon par jour",
         "comprendre.level.lycee" to "Lycée",
         "comprendre.level.cycle-4" to "Cycle 4 (collège)",
+        "comprendre.level.atelier" to "Atelier d’éducation populaire",
         // Templates of an empty draft (the blocks already written).
         "editorial.template.fiche_pratique" to """
             ::: en-bref
