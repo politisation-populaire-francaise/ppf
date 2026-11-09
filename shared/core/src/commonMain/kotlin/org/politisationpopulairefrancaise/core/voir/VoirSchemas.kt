@@ -466,6 +466,94 @@ object VoirSchemas {
         ),
     )
 
+    /**
+     * « Transparence de PPF » (PP-01, D-104): an instance, a decision, the accounts of a year or a report of
+     * moderation and claims. What each rubric cannot do without (the instance, the day of a decision, the year
+     * of the accounts, the start of a report) is checked by the reader.
+     */
+    val TRANSPARENCE: ContentSchema = ContentSchema(
+        type = ArticleType.TRANSPARENCE,
+        space = EditorialSpace.VOIR,
+        labelKey = "editorial.type.transparence",
+        sourceDirectory = "voir/transparence",
+        bundle = BUNDLE,
+        summary = Presence.OPTIONAL,
+        fields = listOf(
+            FieldSpec("rubric", "voir.field.rubric", value = ValueSpec.Single(choice(TransparencyRubric.entries.map { it.tagValue }, "rubric"))),
+            FieldSpec("instance", "voir.field.instance", occurs = Occurs.OPTIONAL, value = ValueSpec.Single(choice(PpfInstance.entries.map { it.tagValue }, "instance"))),
+            // « Trésorière | | 2027-03-01 | élue par l'assemblée générale »: the name stays empty unless the person agreed in writing.
+            FieldSpec(
+                "seat", "voir.field.seat", "voir.help.seat", occurs = Occurs.MANY(),
+                value = ValueSpec.Positional(
+                    listOf(
+                        Position("function", "voir.seat.function", FieldType.Text(120)),
+                        Position("name", "voir.seat.name", FieldType.Text(120), required = false),
+                        Position("since", "voir.seat.since", FieldType.Date(), required = false),
+                        Position("designation", "voir.seat.designation", FieldType.Text(200), required = false),
+                    ),
+                ),
+            ),
+            FieldSpec("date", "voir.field.decision_date", occurs = Occurs.OPTIONAL, value = ValueSpec.Single(FieldType.Date())),
+            FieldSpec(
+                "tally", "voir.field.tally", occurs = Occurs.OPTIONAL,
+                value = ValueSpec.Positional(
+                    listOf(
+                        Position("for", "voir.tally.for", FieldType.Number(min = 0.0)),
+                        Position("against", "voir.tally.against", FieldType.Number(min = 0.0)),
+                        Position("abstention", "voir.tally.abstention", FieldType.Number(min = 0.0)),
+                    ),
+                ),
+            ),
+            FieldSpec("year", "voir.field.year", occurs = Occurs.OPTIONAL, value = ValueSpec.Single(FieldType.Number(min = 2026.0, max = 2100.0))),
+            // « produit | Cotisations | 12 340,00 »: the result is computed, never typed.
+            FieldSpec(
+                "account-line", "voir.field.account_line", "voir.help.account_line", occurs = Occurs.MANY(),
+                value = ValueSpec.Positional(
+                    listOf(
+                        Position("side", "voir.account_line.side", choice(AccountSide.entries.map { it.tagValue }, "account_side")),
+                        Position("category", "voir.account_line.category", FieldType.Text(200)),
+                        Position("amount", "voir.account_line.amount", FieldType.Number(decimals = true, min = 0.0)),
+                    ),
+                ),
+            ),
+            FieldSpec("approved", "voir.field.approved", occurs = Occurs.OPTIONAL, value = ValueSpec.Single(FieldType.Date())),
+            FieldSpec(
+                "period", "voir.field.report_period", occurs = Occurs.OPTIONAL,
+                value = ValueSpec.Positional(
+                    listOf(
+                        Position("start", "voir.period.start", FieldType.Date()),
+                        Position("end", "voir.period.end", FieldType.Date(), required = false),
+                    ),
+                ),
+            ),
+            // « signalements-recus | 120 »: a fixed list of codes (ReportFigure), a code absent is « not measured ».
+            FieldSpec(
+                "figure", "voir.field.figure", "voir.help.figure", occurs = Occurs.MANY(),
+                value = ValueSpec.Positional(
+                    listOf(
+                        Position("code", "voir.figure.code", choice(ReportFigure.entries.map { it.tagValue }, "figure")),
+                        Position("value", "voir.figure.value", FieldType.Number(decimals = true, min = 0.0)),
+                    ),
+                ),
+            ),
+            archive,
+            source(min = 0),
+            correction,
+        ),
+        body = body,
+        rules = listOf(
+            CrossRule.UniquePosition("figure", position = "code", messageKey = Rules.DUPLICATE),
+        ),
+        checks = listOf(
+            readable(TransparencyEntry::from) {
+                counts(
+                    "seat" to it.seats.size, "account-line" to it.lines.size, "figure" to it.figures.size,
+                    "archive" to it.archives.size, "source" to it.sources.size, "correction" to it.corrections.size,
+                )
+            },
+        ),
+    )
+
     /** Every type of [VoirCatalog.TYPES], in its order. */
-    val all: List<ContentSchema> = listOf(INDICATEUR, FAIT, PERSONNE, TEXTE, MOUVEMENT, DOSSIER, REPONSE, PARTI)
+    val all: List<ContentSchema> = listOf(INDICATEUR, FAIT, PERSONNE, TEXTE, MOUVEMENT, DOSSIER, REPONSE, PARTI, TRANSPARENCE)
 }

@@ -66,6 +66,12 @@ enum class ArticleType(val tagValue: String) {
 
     /** A testimony published by the team after review (M5, AG-07; core.agir.testimonies.PublishedTestimony), shown by VO-08 in "Le mouvement". */
     TEMOIGNAGE("temoignage"),
+
+    /**
+     * A page of « Transparence de PPF » (M34, PP-01, D-104): an instance, an important decision, the annual
+     * accounts or a report of moderation and claims, read by core.voir.TransparencyEntry.
+     */
+    TRANSPARENCE("transparence"),
     ;
 
     companion object {
