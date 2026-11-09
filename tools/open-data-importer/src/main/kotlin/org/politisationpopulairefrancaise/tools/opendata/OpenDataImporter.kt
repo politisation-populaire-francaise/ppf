@@ -98,7 +98,7 @@ fun parseOptions(args: List<String>, env: (String) -> String?): Result<Options> 
     val dataset = env("PPF_SPONSORSHIPS_DATASET")?.trim()?.takeIf { it.isNotEmpty() }
     // Asked by name in `--only`, or by default in production once the dataset of the Conseil constitutionnel is known.
     val sponsorships = listed?.contains(SPONSORSHIPS_ID) ?: (mode == SourceMode.OFFICIAL && dataset != null && !historyFlag)
-    // Asked by name only, until the host of the baromètre is in the list of the exits (infra/EGRESS.md).
+    // Asked by name only (the daily timer lists it, infra/systemd/ppf-open-data-daily@.service).
     val application = listed?.contains(APPLICATION_ID) ?: false
     Options(mode, only, Path.of(out.trim()), Path.of(key.trim()), from, history, sponsorships, dataset, application)
 }

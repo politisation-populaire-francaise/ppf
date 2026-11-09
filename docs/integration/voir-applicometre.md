@@ -59,9 +59,9 @@ Dans l'index signé des données ouvertes (même clé d'import, même route `/ap
 ## 3. Import
 
 - `tools/open-data-importer/.../Application.kt` : `BarometerCsv` lit chaque ligne à partir de l'identifiant Légifrance (un point-virgule dans un texte ne décale pas les colonnes) ; `ApplicationImport` produit un paquet par législature et la source de l'index.
-- Option `--only an-barometre` (seulement par son nom, ni par défaut ni en production tant que l'hôte n'est pas dans la liste des sorties) ; `--from <dossier>` lit `an-barometre/barometre_application_lois_assemblee.csv` et `an-barometre/barometre_application_mesures_assemblee.csv`.
+- Option `--only an-barometre` (seulement par son nom ; le minuteur quotidien des deux environnements la donne : `--only an,senat,cc,an-barometre`) ; `--from <dossier>` lit `an-barometre/barometre_application_lois_assemblee.csv` et `an-barometre/barometre_application_mesures_assemblee.csv`.
 - Fichiers fictifs au format officiel : `src/main/resources/example/an-barometre/lois.csv` et `mesures.csv` (lois de la 14e, de la 16e et de la 17e législature, dont le dossier d'exemple `DLR5L17N90001` des scrutins fictifs, un point-virgule dans un texte, une loi d'application directe).
-- **Pas encore de téléchargement officiel** : `OfficialSources` ne lit rien pour cette source tant que l'hôte `barometre.assemblee-nationale.fr` n'est pas inscrit dans `infra/EGRESS.md` et dans `ALLOWED_HOSTS` (cahier des charges, section 3.8 : l'hôte est inscrit avant tout code qui le contacte). Voir la section 5 bis.
+- **Téléchargement officiel** (accord du Directeur technique du 9 novembre 2026) : `OfficialSources.applicationLaws()` et `applicationMeasures()` prennent les deux adresses fixes du jeu (`BAROMETER_LAWS`, `BAROMETER_MEASURES`), vérifiées le 9 novembre 2026 sur l'API de data.gouv.fr (licence `lov2`, « Licence Ouverte / Open Licence version 2.0 ») et sur le site lui-même (réponse 200 en HTTPS, sans redirection ; seul l'accès en HTTP redirige vers HTTPS, jamais utilisé) ; hôte `barometre.assemblee-nationale.fr` inscrit dans `infra/EGRESS.md` puis dans `ALLOWED_HOSTS` ; taille plafonnée par fichier (16 Mo pour les lois, 64 Mo pour les mesures) ; le minuteur quotidien lance `--only an,senat,cc,an-barometre`.
 
 ## 4. Application
 
@@ -75,10 +75,9 @@ Dans l'index signé des données ouvertes (même clé d'import, même route `/ap
 - Compiler à l'entrée de « Voir » dans `main` (règle 5 bis), régénérer les paquets d'exemple embarqués avec `--only an,senat,pe,an-barometre`, et ajouter une brique « texte » [EXEMPLE] promulguée avec `official-id: an-dossier:DLR5L17N90001`, signée avec les autres contenus.
 - Site : page de l'Applicomètre (plus tard, avec les autres pages du Parlement).
 
-### 5 bis. Demandé au Directeur technique (infra/)
+### 5 bis. Infrastructure (accord du Directeur technique du 9 novembre 2026)
 
-- Une ligne dans `infra/EGRESS.md` : outil d'import, `barometre.assemblee-nationale.fr`, HTTPS, deux fichiers par jour (8,5 Mo), seulement avec `an-barometre` dans `--only`.
-- Puis, dans ma branche avec son accord : l'hôte dans `ALLOWED_HOSTS`, le téléchargement dans `OfficialSources` (deux fichiers, taille plafonnée, sans redirection), et `--only an,senat,cc,an-barometre` dans le minuteur quotidien des deux environnements (sources officielles en préproduction, D-076).
+- Fait dans la branche de « Voir », à relire par le Directeur technique : ligne de `infra/EGRESS.md` (outil d'import seulement), `ALLOWED_HOSTS`, téléchargement dans `OfficialSources` avec une taille plafonnée par fichier, `--only an,senat,cc,an-barometre` dans le minuteur quotidien et l'en-tête de `open-data-import.sh`, modèle de menaces et registre des données. Une erreur de cette source n'arrête pas l'import de l'Assemblée et du Sénat (`Importer.apart`). Aucune variable d'environnement : rien à faire pour la propriétaire.
 
 ## 6. Tests
 

@@ -103,6 +103,9 @@ class ApplicationImportTest {
         val base = listOf("--out", "x", "--key", "k")
         assertTrue(parseOptions(listOf("--only", "an,an-barometre") + base) { null }.getOrThrow().application)
         assertFalse(parseOptions(base) { null }.getOrThrow().application)
-        assertFalse(parseOptions(base + listOf("--source", "official")) { null }.getOrThrow().application, "not by default in production before the host is in the list of the exits")
+        assertFalse(parseOptions(base + listOf("--source", "official")) { null }.getOrThrow().application, "asked by name only: the daily timer lists it")
+        assertTrue("barometre.assemblee-nationale.fr" in ALLOWED_HOSTS)
+        assertTrue(OfficialSources.BAROMETER_LAWS.startsWith("https://barometre.assemblee-nationale.fr/") && OfficialSources.BAROMETER_MEASURES.startsWith("https://barometre.assemblee-nationale.fr/"))
+        assertTrue(OfficialSources.BAROMETER_LAWS_MAX_BYTES < Downloader.MAX_FILE_BYTES && OfficialSources.BAROMETER_MEASURES_MAX_BYTES < Downloader.MAX_FILE_BYTES, "a cap of its own per file")
     }
 }

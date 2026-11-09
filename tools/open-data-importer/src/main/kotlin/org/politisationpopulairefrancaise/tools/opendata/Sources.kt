@@ -130,6 +130,14 @@ class OfficialSources(
         return Files.newInputStream(http.download(newest["url"].text()!!, folder.resolve("parrainages.json")))
     }
 
+    /**
+     * The application of the laws (VO-36): the two files of the baromètre of the Assemblée nationale, at their
+     * stable addresses (those of the dataset on data.gouv.fr, checked on 9 November 2026: HTTPS, no redirection),
+     * each with its own size cap.
+     */
+    override fun applicationLaws(): InputStream = Files.newInputStream(http.download(BAROMETER_LAWS, folder.resolve("barometre-lois.csv"), BAROMETER_LAWS_MAX_BYTES))
+    override fun applicationMeasures(): InputStream = Files.newInputStream(http.download(BAROMETER_MEASURES, folder.resolve("barometre-mesures.csv"), BAROMETER_MEASURES_MAX_BYTES))
+
     override fun europarl(): EuroparlApi = JsonEuroparlApi { path, offset, limit ->
         val separator = if ('?' in path) '&' else '?'
         http.get("$EUROPARL_API$path${separator}format=application%2Fld%2Bjson&offset=$offset&limit=$limit", throttle = true)
@@ -161,6 +169,13 @@ class OfficialSources(
         // The presentations of the presidential election (VO-37): the dataset of the Conseil constitutionnel on data.gouv.fr.
         const val DATA_GOUV_API = "https://www.data.gouv.fr/api/1/datasets/"
         val DATASET_ID = Regex("^[a-z0-9][a-z0-9-]{0,99}$")
+
+        // The application of the laws (VO-36): dataset « Données du baromètre de l'application des lois » (LexImpact,
+        // Licence Ouverte 2.0); 1.4 MB and 7.1 MB on 8 November 2026, capped well above their growth.
+        const val BAROMETER_LAWS = "https://barometre.assemblee-nationale.fr/barometre_application_lois_assemblee.csv"
+        const val BAROMETER_MEASURES = "https://barometre.assemblee-nationale.fr/barometre_application_mesures_assemblee.csv"
+        const val BAROMETER_LAWS_MAX_BYTES: Long = 16L * 1024 * 1024
+        const val BAROMETER_MEASURES_MAX_BYTES: Long = 64L * 1024 * 1024
     }
 }
 
@@ -199,7 +214,13 @@ class LocalOfficialSources(private val folder: Path) : ImportSources {
 }
 
 /** The only hosts the importer ever contacts, in `official` mode only. */
-val ALLOWED_HOSTS: Set<String> = setOf("data.assemblee-nationale.fr", "www.senat.fr", "data.senat.fr", "data.europarl.europa.eu", "www.data.gouv.fr", "static.data.gouv.fr")
+val ALLOWED_HOSTS: Set<String> = setOf(
+    "data.assemblee-nationale.fr", "www.senat.fr", "data.senat.fr", "data.europarl.europa.eu",
+    // The presentations of the presidential election (VO-37).
+    "www.data.gouv.fr", "static.data.gouv.fr",
+    // The application of the laws (VO-36), entry of infra/EGRESS.md agreed by the technical director on 9 November 2026.
+    "barometre.assemblee-nationale.fr",
+)
 
 /** HTTPS downloads from [ALLOWED_HOSTS], size-capped, without redirection. */
 class Downloader(
@@ -223,8 +244,8 @@ class Downloader(
             .build()
     }
 
-    /** Downloads [url] to [file] (at most [MAX_FILE_BYTES]). */
-    fun download(url: String, file: Path): Path {
+    /** Downloads [url] to [file] (at most [maxBytes], [MAX_FILE_BYTES] by default). */
+    fun download(url: String, file: Path, maxBytes: Long = MAX_FILE_BYTES): Path {
         val response = try {
             client.send(request(url), HttpResponse.BodyHandlers.ofInputStream())
         } catch (e: java.io.IOException) {
@@ -241,7 +262,7 @@ class Downloader(
                         val read = body.read(buffer)
                         if (read < 0) break
                         total += read
-                        if (total > MAX_FILE_BYTES) throw DownloadException("${URI.create(url).host}: file larger than $MAX_FILE_BYTES bytes")
+                        if (total > maxBytes) throw DownloadException("${URI.create(url).host}: file larger than $maxBytes bytes")
                         out.write(buffer, 0, read)
                     }
                 }
