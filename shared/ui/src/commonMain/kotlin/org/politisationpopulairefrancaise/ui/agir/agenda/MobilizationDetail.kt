@@ -48,6 +48,7 @@ import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
+import org.politisationpopulairefrancaise.ui.agir.followups.MobilizationFollowUps
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.Inset
 import org.politisationpopulairefrancaise.ui.components.PpfCard
@@ -264,6 +265,8 @@ internal fun MobilizationDetail(
                     Text(mobilization.description, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.testTag(AgendaTags.DESCRIPTION))
                 }
             }
+
+            MobilizationFollowUps(mobilization, agenda, openLink) // AG-62 « Et après ? », past mobilizations only (FollowUpsSection.kt)
 
             Spacer(Modifier.height(20.dp))
             Text(
