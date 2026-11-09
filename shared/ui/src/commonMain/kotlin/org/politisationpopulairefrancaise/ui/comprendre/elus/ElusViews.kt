@@ -16,6 +16,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -193,6 +194,15 @@ fun OfficialLine(official: ElectedOfficial, modifier: Modifier = Modifier, withD
     }
 }
 
+/**
+ * The optional slot under each elected official of the page « Mes élus » (team lead, 9 November 2026, on a
+ * proposal of « Voir »): nothing by default. « Voir » provides it once both spaces are in main, with the
+ * sponsorships of the presidential election read on the device only (« mon maire, mon député a parrainé ») and a
+ * link to its page; the same slot will carry the link « Leurs votes au Parlement » (VO-34). Its rules: never a
+ * mention « n'a pas parrainé », never a button to call on the official. Not shown in the boxes of the sheets.
+ */
+val LocalElectedOfficialExtra = staticCompositionLocalOf<(@Composable (ElectedOfficial) -> Unit)?> { null }
+
 /** A group on the page « Mes élus »: its title, then its officials (the first twelve, the others on request). */
 @Composable
 fun OfficialGroupBlock(group: OfficialGroup, officials: CommuneOfficials, notes: List<LevelNote>, showMoreTag: String, modifier: Modifier = Modifier) {
@@ -203,7 +213,11 @@ fun OfficialGroupBlock(group: OfficialGroup, officials: CommuneOfficials, notes:
         groupCaption(group, officials, notes)?.let { Text(it, style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle) }
         Spacer(Modifier.height(4.dp))
         val shown = if (expanded || group.officials.size <= PAGE_LIMIT + 2) group.officials else group.officials.take(PAGE_LIMIT)
-        shown.forEach { OfficialLine(it) }
+        val extra = LocalElectedOfficialExtra.current
+        shown.forEach { official ->
+            OfficialLine(official)
+            extra?.invoke(official)
+        }
         if (group.officials.size > PAGE_LIMIT + 2) {
             PpfTextButton(
                 onClick = { expanded = !expanded },
