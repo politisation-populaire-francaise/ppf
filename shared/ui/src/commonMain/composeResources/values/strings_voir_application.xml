@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Applicomètre » (VO-36): the measures of application of each law, from the baromètre of the Assemblée nationale. -->
+<resources>
+    <string name="appl_entry_title">Applicomètre</string>
+    <string name="appl_entry_text">Pour chaque loi, les décrets d’application attendus, publiés et en retard.</string>
+    <string name="appl_title">Applicomètre : l’application des lois</string>
+    <string name="appl_intro">Une loi votée ne s’applique souvent qu’une fois ses décrets publiés par le gouvernement. Pour chaque loi, voici les mesures d’application attendues, celles qui sont prises et celles qui manquent encore, d’après les échéanciers publiés par Légifrance.</string>
+    <string name="appl_method">Les chiffres sont ceux de la source, calculés de la même façon pour chaque loi. Les lois ne sont ni classées ni comparées entre elles. Une date « annoncée » est celle que le gouvernement a lui-même indiquée dans l’échéancier.</string>
+    <string name="appl_source">Source : Assemblée nationale (LexImpact), baromètre de l’application des lois, d’après les échéanciers de Légifrance. Licence Ouverte 2.0.</string>
+    <string name="appl_updated">Données du %1$s.</string>
+    <string name="appl_none_yet">Les données de l’application des lois ne sont pas encore disponibles sur ce serveur.</string>
+    <string name="appl_download">Télécharger la %1$de législature (%2$s)</string>
+    <string name="appl_update">Mettre à jour la %1$de législature (%2$s)</string>
+    <string name="appl_downloading">Téléchargement…</string>
+    <string name="appl_download_note">Le téléchargement est le même pour tout le monde : personne ne sait quelles lois vous consultez.</string>
+    <string name="appl_failed">Le téléchargement n’a pas abouti. Réessayez plus tard.</string>
+    <string name="appl_search">Chercher une loi par un mot de son titre</string>
+    <string name="appl_pending_only">Seulement les lois qui attendent encore une mesure</string>
+    <string name="appl_all_legislatures">Toutes</string>
+    <string name="appl_legislature">%1$de législature</string>
+    <string name="appl_count">Lois affichées : %1$d</string>
+    <string name="appl_nothing_found">Aucune loi ne correspond à votre recherche.</string>
+    <string name="appl_law_published">Publiée le %1$s · %2$de législature</string>
+    <string name="appl_figures">Mesures prises : %1$d sur %2$d (%3$d %)</string>
+    <string name="appl_figures_pending">En attente : %1$d · date annoncée dépassée : %2$d</string>
+    <string name="appl_figures_none">Aucune mesure d’application attendue</string>
+    <string name="appl_not_needed">Devenues sans objet : %1$d</string>
+    <string name="appl_direct">Loi d’application directe</string>
+    <string name="appl_ratification">Loi autorisant la ratification d’un accord international</string>
+    <string name="appl_enabling">Loi d’habilitation : le gouvernement légifère ensuite par ordonnances</string>
+    <string name="appl_ordinance_ratification">Loi de ratification d’ordonnances</string>
+    <string name="appl_without_schedule">Légifrance ne publie pas d’échéancier pour cette loi.</string>
+    <string name="appl_committee">Commission saisie au fond : %1$s</string>
+    <string name="appl_legifrance">La loi sur Légifrance</string>
+    <string name="appl_dossier">Le dossier législatif à l’Assemblée nationale</string>
+    <string name="appl_voir_sheet">La fiche de ce texte dans Voir</string>
+    <string name="appl_ballots">Les scrutins publics de ce texte</string>
+    <string name="appl_section_pending">Mesures en attente</string>
+    <string name="appl_section_applied">Mesures prises</string>
+    <string name="appl_section_not_needed">Mesures devenues sans objet</string>
+    <string name="appl_measure_title">Mesure %1$d · %2$s</string>
+    <string name="appl_measure_title_alone">Mesure %1$d</string>
+    <string name="appl_measure_basis">Disposition visée : %1$s</string>
+    <string name="appl_measure_recent">En attente, loi publiée il y a moins d’un mois</string>
+    <plurals name="appl_measure_waiting">
+        <item quantity="one">En attente depuis %1$d mois après la publication de la loi</item>
+        <item quantity="other">En attente depuis %1$d mois après la publication de la loi</item>
+    </plurals>
+    <string name="appl_measure_announced">Publication annoncée pour %1$s</string>
+    <string name="appl_measure_announced_passed">Publication annoncée pour %1$s : cette date est passée</string>
+    <plurals name="appl_measure_delay">
+        <item quantity="one">Texte publié %1$d jour après la loi (délai calculé par LexImpact)</item>
+        <item quantity="other">Texte publié %1$d jours après la loi (délai calculé par LexImpact)</item>
+    </plurals>
+    <string name="appl_measure_decree">Le texte publié sur Légifrance</string>
+    <string name="appl_bill_title">Application de la loi</string>
+    <string name="appl_bill_open">Voir l’application de cette loi</string>
+    <string name="appl_bill_open_meter">Ouvrir l’Applicomètre</string>
+    <string name="appl_bill_not_held">Téléchargez les données de l’Applicomètre pour voir où en sont ses mesures d’application.</string>
+</resources>

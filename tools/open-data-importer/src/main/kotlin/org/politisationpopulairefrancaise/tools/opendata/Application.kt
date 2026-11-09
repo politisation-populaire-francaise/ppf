@@ -94,9 +94,9 @@ object BarometerCsv {
     }
 
     /** One package per legislature of [ApplicationFormat.LEGISLATURES], newest law first. */
-    fun packages(laws: InputStream, measures: InputStream, example: Boolean, today: String): Map<Int, ApplicationPackage> {
-        val byLaw = measures(measures)
-        val read = laws(laws).filter { it.legislature in ApplicationFormat.LEGISLATURES }.distinctBy { it.id }
+    fun packages(lawsFile: InputStream, measuresFile: InputStream, example: Boolean, today: String): Map<Int, ApplicationPackage> {
+        val byLaw = measures(measuresFile)
+        val read = laws(lawsFile).filter { it.legislature in ApplicationFormat.LEGISLATURES }.distinctBy { it.id }
         if (read.isEmpty()) throw UnreadableSourceException("laws: no law of the legislatures ${ApplicationFormat.LEGISLATURES}")
         return read.map { law -> law.copy(measures = byLaw[law.id].orEmpty().sortedBy { it.order }) }
             .groupBy { it.legislature }

@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.voir
 
+import org.politisationpopulairefrancaise.ui.voir.parlement.BillApplication
 import org.politisationpopulairefrancaise.ui.voir.parlement.BillOfficialVotes
 import org.politisationpopulairefrancaise.ui.voir.parlement.PersonOfficialVotesLink
 
@@ -54,6 +55,7 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.editorial.ContentLookup
+import org.politisationpopulairefrancaise.core.voir.FactKind
 import org.politisationpopulairefrancaise.core.voir.NextTarget
 import org.politisationpopulairefrancaise.core.voir.VoirAxis
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
@@ -140,10 +142,13 @@ fun VoirScreen(
             if (parliament != null && parliament.isOpen) {
                 // The parliamentary open data (D-065), with their own stack of pages.
                 ParliamentScreen(parliament, voirSheetFor = { id ->
-                    catalog.persons(null).firstOrNull { ParliamentLinks.memberId(it.article.event) == id }?.let { person ->
+                    // A member (`an:PA…`) or a legislative file (`an-dossier:…`, from the « Applicomètre »).
+                    val address = catalog.persons(null).firstOrNull { ParliamentLinks.memberId(it.article.event) == id }?.address
+                        ?: catalog.bills().firstOrNull { ParliamentLinks.dossierId(it.article.event) == id }?.address
+                    address?.let {
                         {
                             parliament.close()
-                            state.open(person.address)
+                            state.open(it)
                         }
                     }
                 })
@@ -441,7 +446,13 @@ private fun VoirDetail(
                     val item = catalog.item(current.address)
                     when (item) {
                         is VoirItem.OfIndicator -> IndicatorPage(item.indicator, state, wide, actions.next, actions.explain)
-                        is VoirItem.OfFact -> FactPage(item.fact, catalog, state, actions)
+                        is VoirItem.OfFact -> {
+                            FactPage(item.fact, catalog, state, actions)
+                            // A promise that goes through a law: where its measures of application stand (VO-36).
+                            if (item.fact.kind == FactKind.PROMISE) {
+                                parliament?.let { p -> catalog.textsOf(item.fact).forEach { BillApplication(it, p, Modifier.padding(top = 16.dp), showTitle = true) } }
+                            }
+                        }
                         is VoirItem.OfPerson -> {
                             // Their votes in the parliamentary open data, when the sheet carries an official identifier (D-065).
                             parliament?.let { PersonOfficialVotesLink(item.person, it, Modifier.padding(bottom = 12.dp)) }
@@ -452,6 +463,8 @@ private fun VoirDetail(
                             BillPage(item.text, catalog, state, actions, wide)
                             // Its public ballots, when the bill carries the identifier of its legislative file (D-065).
                             parliament?.let { BillOfficialVotes(item.text, it, Modifier.padding(top = 16.dp)) }
+                            // Its measures of application, once promulgated (VO-36).
+                            parliament?.let { BillApplication(item.text, it, Modifier.padding(top = 16.dp)) }
                         }
                         is VoirItem.OfMovement -> MovementPage(item.movement)
                         is VoirItem.OfDossier -> DossierPage(item.dossier)

@@ -120,6 +120,8 @@ fun ParliamentScreen(
                         ParliamentPage.Presence -> key(page) { PresencePage(snapshot, padding) }
                         ParliamentPage.Sponsorships -> key(page) { SponsorshipsPage(state, snapshot, padding) }
                         is ParliamentPage.SponsorshipsOf -> key(page) { SponsorshipsOfCandidatePage(state, page.candidate, padding) }
+                        ParliamentPage.Application -> key(page) { ApplicationPage(state, snapshot, padding) }
+                        is ParliamentPage.ApplicationOf -> key(page) { LawApplicationPage(state, snapshot, page.id, padding, voirSheetFor) }
                     }
                 }
             }
@@ -160,6 +162,7 @@ private fun ListPage(state: ParliamentState, snapshot: ParliamentSnapshot, colum
         item(key = "my-votes") { MyVotesEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
         item(key = "presence") { PresenceEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
         item(key = "sponsorships") { SponsorshipsEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
+        item(key = "application") { ApplicationEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
         if (!membersHeld || membersRef != null && membersRef.name in snapshot.outdated) {
             item(key = "members-download") {
                 Column(Modifier.padding(horizontal = padding, vertical = 12.dp).widthIn(max = 720.dp)) {

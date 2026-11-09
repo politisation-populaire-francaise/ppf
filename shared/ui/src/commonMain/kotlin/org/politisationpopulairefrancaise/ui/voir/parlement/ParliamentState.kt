@@ -23,6 +23,7 @@ import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentStore
 import org.politisationpopulairefrancaise.core.voir.parlement.InMemoryVoteAlertStorage
 import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertStore
 import org.politisationpopulairefrancaise.core.voir.parrainages.SponsorshipsLoader
+import org.politisationpopulairefrancaise.core.voir.application.ApplicationLoader
 import org.politisationpopulairefrancaise.core.elus.ElusDirectory
 import org.politisationpopulairefrancaise.core.elus.ElusStore
 import org.politisationpopulairefrancaise.core.elus.InMemoryElusStorage
@@ -38,6 +39,8 @@ sealed interface ParliamentPage {
     data object Presence : ParliamentPage // « Présence et délégations » (PresencePage.kt, VO-35)
     data object Sponsorships : ParliamentPage // « Parrainages de la présidentielle 2027 » (SponsorshipsPage.kt, VO-37)
     data class SponsorshipsOf(val candidate: String) : ParliamentPage
+    data object Application : ParliamentPage // « Applicomètre » (ApplicationPage.kt, VO-36)
+    data class ApplicationOf(val id: String) : ParliamentPage
 }
 
 /**
@@ -53,6 +56,8 @@ class ParliamentState(
     val myVotes: MyVotesState = MyVotesState(InMemoryVoteAlertStorage(), ElusDirectory(null, InMemoryElusStorage()), scope),
     /** « Parrainages de la présidentielle 2027 » (VO-37). */
     val sponsorships: SponsorshipsState = SponsorshipsState(SponsorshipsLoader(null, InMemoryParliamentStorage()), scope),
+    /** « Applicomètre » (VO-36). */
+    val application: LawApplicationState = LawApplicationState(ApplicationLoader(null, InMemoryParliamentStorage()), scope),
 ) {
     private val lock = Mutex()
 
@@ -183,6 +188,7 @@ fun rememberParliamentState(dependencies: AppDependencies): ParliamentState {
         // The same table as the notification source of the platform host (VO-34).
         val myVotes = MyVotesState(dependencies.database?.let(::VoteAlertStore) ?: InMemoryVoteAlertStorage(), elus, scope)
         val sponsorships = SponsorshipsState(SponsorshipsLoader(dependencies.remote, storage, bundled = ::bundledParliamentFile), scope)
-        ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope, myVotes, sponsorships)
+        val application = LawApplicationState(ApplicationLoader(dependencies.remote, storage, bundled = ::bundledParliamentFile), scope)
+        ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope, myVotes, sponsorships, application)
     }
 }
