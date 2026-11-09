@@ -187,7 +187,8 @@ fun ProchesScreen(
     val clipboard = LocalClipboardManager.current
     val recorder = LocalProchesClipboard.current
     val sharer = rememberTextSharer(stringResource(Res.string.proches_share_title))
-    val share = ProchesShare(copy = recorder ?: { text -> clipboard.setText(AnnotatedString(text)) }, share = sharer)
+    val systemCopy: (String) -> Unit = { text -> clipboard.setText(AnnotatedString(text)) }
+    val share = ProchesShare(copy = recorder ?: systemCopy, share = sharer)
     Column(
         modifier.fillMaxSize().background(palette.surface1).verticalScroll(scroll)
             .padding(if (compact) 16.dp else 24.dp).testTag(ProchesTags.SCREEN),
