@@ -397,7 +397,7 @@ class DeviceSecurityTest {
                 assertEquals(0, onAllNodesWithText("Bientôt dans l’application", substring = true).fetchSemanticsNodes().size)
                 onNodeWithText("Toujours : PPF n’utilise ni l’empreinte ni le visage.").assertExists()
                 onNodeWithText("21-83.146", substring = true).assertExists()
-                onNodeWithText("[EXEMPLE, à vérifier par un avocat]", substring = true).assertExists()
+                onNodeWithText("article 434-15-2 du Code pénal, consultés le 9 novembre 2026", substring = true).assertExists()
                 // AG-56: without notifications on this device, the line says so; the map line appears only where the map is drawn (Android).
                 onNodeWithTag(SecurityTags.PREPARE_ITEM + "notifications").performScrollTo()
                 onNodeWithText("PPF n’affiche aucune notification sur cet appareil.").assertExists()
