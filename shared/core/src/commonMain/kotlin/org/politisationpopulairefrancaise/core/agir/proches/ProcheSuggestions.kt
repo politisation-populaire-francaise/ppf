@@ -46,7 +46,13 @@ data class ProcheSuggestion(
     val summary: String? = null,
     /** Mobilizations: the start; calls: the deadline, else the start; seconds since 1970. */
     val at: Long? = null,
-)
+) {
+    /**
+     * What « Partager » and « Copier le lien » give: the title (with its [EXEMPLE] marker for an
+     * example) and the stable address. Never who shares it, never for whom, never a parameter.
+     */
+    fun shareText(): String = (if (example) "[EXEMPLE] " else "") + title + "\n" + url
+}
 
 /**
  * Picks, among the contents of the device, those that match the subjects of a relative, in an order
