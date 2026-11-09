@@ -226,6 +226,22 @@ Ce minuteur prévient vos proches si vous ne confirmez pas que vous allez bien �
 9. À la fin, sur un compte d'essai seulement, l'**effacement rapide** efface aussi le minuteur et les alertes reçues ; il n'annule jamais une alerte déjà déposée chez un proche (c'est le but si le téléphone est saisi).
 
 Ce qui n'est pas encore là : le réveil du téléphone du proche à l'heure exacte quand PPF est fermé (il viendra avec les rappels de « Décider ») ; les cercles de « Communauté » à la place des contacts ; l'iPhone.
+
+### Tester la caméra protégée (ajouté le 9 novembre 2026, pas encore compilée)
+
+La caméra protégée prend des photos qui restent chiffrées dans PPF : elles ne vont jamais dans la galerie du téléphone ni dans une sauvegarde en ligne, et la position, le modèle du téléphone et la date sont retirés. **Elle n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée et sera entrée dans une version de test. Il faut votre **téléphone Android** (sur l'ordinateur, l'écran dit seulement que la caméra protégée est sur l'application Android). Photographiez seulement des objets ou un paysage, jamais une personne réelle.
+
+1. Ouvrez « Agir », **Mode manifestation**, rubrique **Caméra protégée**, puis **Ouvrir la caméra protégée**. La première fois, Android demande l'accès à la caméra : touchez **Pendant l'utilisation de l'application** (ou **Autoriser**). Si vous refusez, l'écran explique pourquoi et propose **Autoriser la caméra**.
+2. Visez un objet et touchez **Prendre une photo protégée** : « Photo protégée. Elle est chiffrée dans PPF, hors de la galerie du téléphone. » La vignette apparaît dans **Mes photos protégées**.
+3. **Vérifiez qu'elle n'est pas dans la galerie** : quittez PPF, ouvrez l'application Galerie (ou Photos) du téléphone : la photo n'y est pas.
+4. **Vérifiez qu'elle est cachée** : revenez dans PPF, sur la caméra protégée, puis ouvrez la liste des applications récentes (le carré ou le geste du bas de l'écran) : l'aperçu de PPF est vide. Essayez une capture d'écran : Android la refuse. C'est voulu, même si « Masquer le contenu » est désactivé dans « Mon espace ».
+5. Touchez la vignette : la photo s'ouvre. Touchez **Supprimer**, puis d'abord **Annuler** : elle reste. Prenez une deuxième photo, ouvrez-la, **Supprimer**, puis **Supprimer la photo** : elle disparaît.
+6. Ouvrez une photo et touchez **Enregistrer dans la galerie du téléphone** : une mise en garde explique que la copie sortira de la protection. Touchez d'abord **Annuler** : rien ne se passe. Recommencez et touchez **Enregistrer quand même** : « Une copie est dans la galerie du téléphone ». Dans la Galerie, elle porte un nom neutre (IMG_ puis la date) ; la photo reste aussi dans PPF. Pensez à supprimer cette copie de la Galerie après l'essai. Sur Android 8 et 9, le téléphone vous demande d'abord où l'enregistrer.
+7. Ouvrez une photo et touchez **Témoigner avec cette photo** : le formulaire « Témoigner » s'ouvre avec la photo, comme une photo choisie dans la galerie (floutage, mention des informations retirées). Le retour ramène au mode manifestation. Depuis « Témoigner », le bouton **Prendre une photo avec la caméra protégée** mène au même écran.
+8. Si le verrouillage de PPF est activé (« Mon espace », « Sécurité de cet appareil ») : quittez PPF, revenez : l'écran de verrouillage protège aussi les photos.
+9. À la fin, sur un compte d'essai seulement, l'**effacement rapide** efface aussi toutes les photos protégées : il détruit d'abord la clé qui les protège, puis les fichiers. Rouvrez la caméra protégée : « Aucune photo protégée sur ce téléphone ».
+
+Ce qui n'est pas encore là : la vidéo (étape suivante), l'envoi automatique vers des avocats partenaires (son coût de stockage vous sera présenté avant toute décision), l'iPhone.
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).
