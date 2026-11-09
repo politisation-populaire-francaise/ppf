@@ -68,6 +68,11 @@ fun Route.voirPages(source: VoirSource) {
         val catalog = source.catalog()
         call.respondHtml { transparencyDocument(catalog.transparency) }
     }
+    // « Nos victoires » (PP-03).
+    get(VICTORIES_PATH) {
+        val catalog = source.catalog()
+        call.respondHtml { victoriesDocument(catalog) }
+    }
     route(VoirLinks.HOME) {
         get {
             val catalog = source.catalog()

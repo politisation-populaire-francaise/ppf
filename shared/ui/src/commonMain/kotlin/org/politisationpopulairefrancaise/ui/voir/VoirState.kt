@@ -45,6 +45,9 @@ sealed interface VoirDestination {
 
     /** « Transparence de PPF » (M34, PP-01): the instances, decisions, accounts and reports of the association. */
     data object Transparency : VoirDestination
+
+    /** « Nos victoires » (M34, PP-03): what the movement obtained, with its sources. */
+    data object Victories : VoirDestination
 }
 
 /**

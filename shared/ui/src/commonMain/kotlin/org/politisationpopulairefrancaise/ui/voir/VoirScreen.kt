@@ -229,6 +229,9 @@ private fun MovementAxis(catalog: VoirCatalog, state: VoirState, actions: VoirAc
         Grid(catalog.movements.take(if (compact) 2 else columns), columns) { movement, modifier -> MovementCard(movement, onOpen = { actions.open(movement.address) }, modifier = modifier) }
     }
     Spacer(Modifier.height(24.dp))
+    // What the movement obtained (PP-03).
+    LinkRow(stringResource(Res.string.victories_open), Lucide.Flag, onClick = { state.open(VoirDestination.Victories) }, modifier = Modifier.testTag(VictoriesTags.OPEN))
+    Spacer(Modifier.height(12.dp))
     MethodCard(actions)
 }
 
@@ -494,6 +497,7 @@ private fun VoirDetail(
                 is VoirDestination.KeyFigures -> KeyFiguresPage(catalog, current.axis, actions, columns)
                 VoirDestination.Verify -> VerifyPage(verify, catalog, onOpen = { state.open(it) })
                 VoirDestination.Transparency -> TransparencyPage(catalog.transparency)
+                VoirDestination.Victories -> VictoriesPage(catalog, onOpen = { actions.open(it) }, onNext = actions.next)
             }
         }
         }
@@ -511,4 +515,5 @@ private fun axisOf(destination: VoirDestination, catalog: VoirCatalog, state: Vo
     is VoirDestination.Report -> catalog.item(destination.address)?.axis ?: state.axis
     VoirDestination.Verify -> state.axis
     VoirDestination.Transparency -> VoirAxis.POUVOIR
+    VoirDestination.Victories -> VoirAxis.MOUVEMENT
 }

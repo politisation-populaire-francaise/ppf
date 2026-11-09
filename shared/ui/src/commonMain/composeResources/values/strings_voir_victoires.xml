@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Nos victoires » (M34, PP-03). -->
+<resources>
+    <string name="victories_open">Nos victoires : ce que le mouvement a obtenu</string>
+    <string name="victories_title">Nos victoires</string>
+    <string name="victories_intro">Ce que le mouvement a obtenu : des engagements tenus, des revendications satisfaites, des lois modifiées. Chaque victoire a sa date et ses sources ; elle appartient à tous ceux qui l’ont portée.</string>
+    <string name="victories_example">Contenus de démonstration [EXEMPLE] : ces victoires sont fictives.</string>
+    <string name="victories_empty">Aucune victoire n’est encore publiée.</string>
+    <string name="victories_all">Toutes</string>
+    <string name="victories_meta">%1$s · %2$s</string>
+    <string name="victories_kind_commitment">Engagement tenu</string>
+    <string name="victories_kind_demand">Revendication satisfaite</string>
+    <string name="victories_kind_law">Loi modifiée</string>
+    <string name="victories_kind_other">Autre victoire</string>
+</resources>

@@ -923,6 +923,14 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : la même chaîne de confiance que le reste (signature, relecture, journal des corrections, archives horodatées), le même formulaire du back-office, l'export ouvert sans travail en plus.
 - Conséquences : type `transparence` (`ArticleType.TRANSPARENCE`, schéma `VoirSchemas.TRANSPARENCE`, lecteur `core/voir/Transparency.kt`), rubriques `instance`, `decision`, `comptes`, `rapport`, toujours dans cet ordre ; liste fixe des chiffres du rapport (`ReportFigure`), un chiffre absent est « non mesuré », jamais zéro ; résultat des comptes calculé ; un nom de membre d'une instance n'est écrit qu'avec l'accord de la personne (champ vide par défaut), question posée à la propriétaire (`docs/integration/transparence-ppf.md`, section 6) ; page de l'application (bas de l'axe « Le pouvoir ») et page du site `/transparence`, lien dans le pied de page.
 
+## D-105 (2026-11-09) « Nos victoires » : un type de contenu signé, pas de victoire sans source
+
+- Contexte : cahier fonctionnel, M34, PP-03 (engagements tenus, revendications satisfaites, lois modifiées, avec les sources) ; tâche donnée au pôle « Voir » par le chef d'équipe le 8 novembre 2026.
+- Options (coût nul) : A. une rubrique de plus dans « Transparence de PPF » (D-104) ; B. un type de contenu à part, `victoire`, relié aux briques de « Voir » (**retenue**) ; C. une liste calculée à partir des promesses tenues (VO-12) et des statuts des revendications.
+- Choix : **B**, décision technique du pôle « Voir ». La liste calculée (C) laisserait de côté ce qui n'est ni une promesse ni une revendication (une loi modifiée), et elle compterait comme victoire une promesse tenue sans lien avec le mouvement.
+- Raison : une victoire est un fait sourcé, écrit et relu à deux, qui renvoie vers ses preuves ; la même chaîne de confiance que le reste.
+- Conséquences : type `victoire` (`ArticleType.VICTOIRE`, `VoirSchemas.VICTOIRE`, `core/voir/Victories.kt`), genres `engagement-tenu`, `revendication-satisfaite`, `loi-modifiee`, `autre`, date et au moins une source obligatoires, liens `a` de rôle `lie` vers les briques de « Voir » ; jamais attribuée à PPF seule ; page de l'application (axe « Le mouvement ») et page du site `/victoires` (`docs/integration/victoires.md`).
+
 ## D-110 (2026-11-07) « Une personne, une voix » : jetons anonymes VOPRF, conditions de la bibliothèque, exigences
 
 - Contexte : conception de `docs/integration/une-personne-une-voix.md` (méthode approuvée par la propriétaire, D-044 ; usages de D-062). Décision technique prise en autonomie (chef d'équipe), le 7 novembre 2026, après relecture complète du document.

@@ -88,6 +88,7 @@ fun HTML.siteLayout(pageTitle: String, currentSpace: Space? = null, content: MAI
             p { a(href = "/verifier") { +"Vérifier un contenu" } }
             p { a(href = "/donnees") { +"Données ouvertes" } }
             p { a(href = "/transparence") { +"Transparence de PPF" } }
+            p { a(href = "/victoires") { +"Nos victoires" } }
             p { a(href = "/securite") { +"Signaler une faille de sécurité" } }
         }
     }

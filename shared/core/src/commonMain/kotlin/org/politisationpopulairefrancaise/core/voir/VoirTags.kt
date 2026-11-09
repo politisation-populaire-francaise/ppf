@@ -92,6 +92,11 @@ object VoirTags {
     const val APPROVED = "ppf-approved"
     const val FIGURE = "ppf-figure"
 
+    // « Nos victoires » (PP-03).
+    const val VICTORY = "ppf-victory"
+    /** From a victory to the blocks of Voir it concerns (a promise kept, a law changed). */
+    const val ROLE_RELATED = "lie"
+
     /** Every tag named [name], as its fields after the name, blank fields read as null. */
     fun SignedEvent.fields(name: String): List<List<String?>> =
         tags.filter { it.size >= 2 && it[0] == name }.map { tag -> tag.drop(1).map { field -> field.trim().takeIf { it.isNotEmpty() } } }

@@ -72,6 +72,12 @@ enum class ArticleType(val tagValue: String) {
      * accounts or a report of moderation and claims, read by core.voir.TransparencyEntry.
      */
     TRANSPARENCE("transparence"),
+
+    /**
+     * A victory of the movement (M34, PP-03): a commitment kept, a demand met, a law changed, with its sources,
+     * read by core.voir.Victory.
+     */
+    VICTOIRE("victoire"),
     ;
 
     companion object {

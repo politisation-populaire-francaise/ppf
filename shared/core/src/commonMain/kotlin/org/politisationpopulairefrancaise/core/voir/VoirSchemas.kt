@@ -554,6 +554,37 @@ object VoirSchemas {
         ),
     )
 
+    /**
+     * « Nos victoires » (PP-03): what was obtained, the day, at least one source, and the blocks of Voir it concerns
+     * (a promise kept, a law changed).
+     */
+    val VICTOIRE: ContentSchema = ContentSchema(
+        type = ArticleType.VICTOIRE,
+        space = EditorialSpace.VOIR,
+        labelKey = "editorial.type.victoire",
+        sourceDirectory = "voir/victoires",
+        bundle = BUNDLE,
+        fields = listOf(
+            FieldSpec("victory", "voir.field.victory", value = ValueSpec.Single(choice(VictoryKind.entries.map { it.tagValue }, "victory"))),
+            FieldSpec("date", "voir.field.victory_date", value = ValueSpec.Single(FieldType.Date())),
+            FieldSpec("related", "voir.field.related", "voir.help.related", occurs = Occurs.MANY(), value = ValueSpec.Link(VoirTags.ROLE_RELATED, TargetType.VOIR_BLOCK)),
+            archive,
+            source(min = 1),
+            correction,
+            next,
+        ),
+        body = body,
+        checks = listOf(
+            nextSpaces,
+            readable(Victory::from) {
+                counts(
+                    "related" to it.related.size, "archive" to it.archives.size, "source" to it.sources.size,
+                    "correction" to it.corrections.size, "next" to it.nextSteps.size,
+                )
+            },
+        ),
+    )
+
     /** Every type of [VoirCatalog.TYPES], in its order. */
-    val all: List<ContentSchema> = listOf(INDICATEUR, FAIT, PERSONNE, TEXTE, MOUVEMENT, DOSSIER, REPONSE, PARTI, TRANSPARENCE)
+    val all: List<ContentSchema> = listOf(INDICATEUR, FAIT, PERSONNE, TEXTE, MOUVEMENT, DOSSIER, REPONSE, PARTI, TRANSPARENCE, VICTOIRE)
 }
