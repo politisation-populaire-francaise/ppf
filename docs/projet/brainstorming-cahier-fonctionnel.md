@@ -6,6 +6,18 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-09] DE-30 Questions citoyennes aux candidats : qui propose, quelle sélection, quand, comment répondre
+- Statut : À valider
+- Concerne : cahier-fonctionnel.md (M13.7, DE-30 ; DE-16, DE-25) ; cahier-des-charges.md (section 9.2) ; conception `docs/integration/questions-aux-candidats.md`
+- Contexte : DE-30 ouvre en janvier 2027. Les règles de traitement identique sont fixées (mêmes questions, même jour, même délai, absence de réponse affichée, ordre alphabétique). Quatre choix restent avant de coder.
+- Options, avec la recommandation :
+  1. **Qui propose** : A, toute personne avec un compte, relecture par l'équipe sur la forme seulement (une question pour tous, qui ne vise aucun candidat), motif des refus publié (recommandé) ; B, questions issues d'une délibération (DE-25), plus lent ; C, présélection par l'équipe (écarté : ce serait l'équipe qui choisit).
+  2. **Sélection** : A, les dix questions les plus soutenues par les citoyens, deux au plus par thème, à égalité la plus ancienne (recommandé) ; B, la même règle avec les seuls bulletins vérifiés (plus robuste aux faux comptes, mais exclut les non vérifiés) ; C, sans limite par thème.
+  3. **Envoi et délai** : A, envoi le lundi 1er mars 2027, 21 jours pour répondre, le même délai pour un candidat ajouté plus tard (recommandé) ; B, envoi le jour de la liste officielle des candidats (délai très court avant le premier tour). Propositions du 4 au 24 janvier, vote du 25 janvier au 14 février 2027 ; calendrier recalé sur le décret de convocation.
+  4. **Réponse** : A, par écrit depuis l'adresse officielle de la campagne, 1 500 caractères au plus par question, publiée telle quelle avec sa date et la mention « réponse transmise par l'équipe de campagne », original archivé et horodaté (recommandé) ; B, signée depuis un compte certifié du candidat (demande une certification des candidats, comme DE-23) ; C, A puis B.
+- Coût : gratuit (serveur et urnes existants). Avocat avant l'ouverture des propositions (section 9.8), déjà prévu.
+- Décision : en attente (chef d'équipe, par délégation de la propriétaire).
+
 ### [2026-11-09] Délégué à la protection des données avant l'ouverture publique
 - Statut : À valider (par la propriétaire elle-même : budget et juridique)
 - Concerne : cahier-des-charges.md (sections 5, 9.8 et 12) ; toute la plateforme (votes, soutiens, engagements, questionnaire M26) ; analyse `docs/integration/questionnaire-aipd.md` (section 7, point 4)
