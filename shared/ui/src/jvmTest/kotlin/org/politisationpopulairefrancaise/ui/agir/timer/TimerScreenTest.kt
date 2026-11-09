@@ -138,6 +138,8 @@ private fun ComposeUiTest.show(harness: TimerHarness, width: Int, dark: Boolean 
 
 @OptIn(ExperimentalTestApi::class)
 private fun ComposeUiTest.type(tag: String, text: String) {
+    // Inside the scrolled screen or the dialog; a field without a scrolled parent stays where it is.
+    runCatching { onNodeWithTag(tag).performScrollTo() }
     onNodeWithTag(tag).performClick()
     onNodeWithTag(tag).performTextInput(text)
     waitForIdle()
@@ -148,7 +150,6 @@ private fun ComposeUiTest.type(tag: String, text: String) {
 private fun ComposeUiTest.fillSetup(harness: TimerHarness, duress: String?) {
     awaitTag(TimerTags.SETUP)
     onNodeWithTag(TimerTags.RECIPIENT + harness.bob.publicKey.hex).performScrollTo().performClick()
-    onNodeWithTag(TimerTags.CODE).performScrollTo()
     type(TimerTags.CODE, CODE)
     type(TimerTags.CODE_CONFIRM, CODE)
     if (duress != null) type(TimerTags.DURESS, duress)
