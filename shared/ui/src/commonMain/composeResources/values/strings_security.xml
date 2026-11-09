@@ -106,6 +106,13 @@
     <string name="sec_prepare_discreet">Nom et icône discrets</string>
     <string name="sec_prepare_discreet_on">Activé : l’icône neutre « Outils » est sur l’écran d’accueil.</string>
     <string name="sec_prepare_discreet_off">Désactivé (facultatif).</string>
+    <string name="sec_prepare_notifications">Notifications discrètes</string>
+    <string name="sec_prepare_notifications_none">PPF n’affiche aucune notification sur cet appareil.</string>
+    <string name="sec_prepare_notifications_discreet">Oui : sur l’écran verrouillé, seulement « PPF : nouvelle activité », sans expéditeur ni extrait.</string>
+    <string name="sec_prepare_notifications_details">Non : l’expéditeur et un extrait s’affichent une fois le téléphone déverrouillé.</string>
+    <string name="sec_prepare_notifications_action">Masquer les détails</string>
+    <string name="sec_prepare_map">Carte sans réseau</string>
+    <string name="sec_prepare_map_text">Prête : le fond de carte de la France est intégré à l’application, la carte des mobilisations reste lisible sans réseau avec celles déjà reçues. Le détail des rues demande le réseau.</string>
 
     <!-- S-45: discreet application -->
     <string name="sec_discreet_toggle">Application discrète</string>

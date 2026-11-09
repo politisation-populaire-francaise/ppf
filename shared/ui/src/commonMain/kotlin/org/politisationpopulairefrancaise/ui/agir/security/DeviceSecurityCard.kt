@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.agir.security.DeviceSecuritySettings
+import org.politisationpopulairefrancaise.ui.agir.map.platformAgendaMapRenderer
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
@@ -86,6 +87,13 @@ import org.politisationpopulairefrancaise.ui.resources.sec_prepare_lock
 import org.politisationpopulairefrancaise.ui.resources.sec_prepare_lock_action
 import org.politisationpopulairefrancaise.ui.resources.sec_prepare_lock_off
 import org.politisationpopulairefrancaise.ui.resources.sec_prepare_lock_on
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_map
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_map_text
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_notifications
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_notifications_action
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_notifications_details
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_notifications_discreet
+import org.politisationpopulairefrancaise.ui.resources.sec_prepare_notifications_none
 import org.politisationpopulairefrancaise.ui.resources.sec_prepare_phrase
 import org.politisationpopulairefrancaise.ui.resources.sec_prepare_phrase_text
 import org.politisationpopulairefrancaise.ui.resources.sec_prepare_text
@@ -258,6 +266,23 @@ fun PreparePhoneBlock(modifier: Modifier = Modifier): Boolean {
         if (icons != null) {
             StatusItem("discreet", Lucide.EyeOff, stringResource(Res.string.sec_prepare_discreet), stringResource(if (discreet) Res.string.sec_prepare_discreet_on else Res.string.sec_prepare_discreet_off), done = true)
         }
+        // AG-56: the notifications of PPF (M31) show nothing on the lock screen; their details, once unlocked, are off by default.
+        val notifications = LocalPreparePhoneNotifications.current
+        val showDetails = notifications?.settings?.showDetails == true
+        val notificationsState = when {
+            notifications == null -> Res.string.sec_prepare_notifications_none
+            showDetails -> Res.string.sec_prepare_notifications_details
+            else -> Res.string.sec_prepare_notifications_discreet
+        }
+        StatusItem("notifications", Lucide.Bell, stringResource(Res.string.sec_prepare_notifications), stringResource(notificationsState), done = !showDetails) {
+            if (notifications != null && showDetails) {
+                PpfSecondaryButton(onClick = { notifications.setShowDetails(false) }, text = stringResource(Res.string.sec_prepare_notifications_action), icon = Lucide.EyeOff, small = true, modifier = Modifier.testTag(SecurityTags.PREPARE_DETAILS))
+            }
+        }
+        // AG-56: the background of the map is bundled, so the map of the mobilisations works without network (Android only today).
+        if (hasOfflineMap) {
+            StatusItem("map", Lucide.Map, stringResource(Res.string.sec_prepare_map), stringResource(Res.string.sec_prepare_map_text), done = true)
+        }
         PhraseItem(phraseNoted) { phraseNoted = it }
         StatusItem("wipe", Lucide.TriangleExclamationPoint, stringResource(Res.string.sec_prepare_wipe), stringResource(Res.string.sec_prepare_wipe_text), done = true) {
             WipeButton(onClick = { dialog = SecurityDialog.WIPE })
@@ -279,6 +304,9 @@ fun PreparePhoneBlock(modifier: Modifier = Modifier): Boolean {
     }
     return true
 }
+
+/** True where the map of the mobilisations is drawn (with its bundled background of France): Android today. */
+private val hasOfflineMap: Boolean get() = platformAgendaMapRenderer() != null
 
 /** One line of « Préparer mon téléphone »: its state in words (never by colour alone) and, if needed, the gesture that fixes it. */
 @Composable

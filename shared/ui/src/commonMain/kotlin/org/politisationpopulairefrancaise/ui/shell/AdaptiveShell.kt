@@ -98,6 +98,7 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpSheetHost
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ProvideHelp
 import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
 import org.politisationpopulairefrancaise.ui.agir.security.DeviceSecurityGate
+import org.politisationpopulairefrancaise.ui.agir.security.LocalPreparePhoneNotifications
 import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
 import org.politisationpopulairefrancaise.core.voir.VoirDeviceData
@@ -299,7 +300,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The system's back leads from any space to the feed; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
+    ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting, LocalPreparePhoneNotifications provides notificationsSettings) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
             val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
             val account = accountSession.state as? AccountUiState.Ready
