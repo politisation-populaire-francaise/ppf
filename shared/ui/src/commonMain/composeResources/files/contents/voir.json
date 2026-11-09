@@ -1,5 +1,43 @@
 [
     {
+        "id": "7ff22970158ccee439c65318a1b1de9a7a90a88624284d81e5d36777e3d33f82",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "communique-ouverture-plateforme"
+            ],
+            [
+                "title",
+                "[EXEMPLE] La plateforme ouvre sa version d'essai"
+            ],
+            [
+                "summary",
+                "Communiqué de démonstration : les citoyens peuvent tester la plateforme et nous dire ce qui manque."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "communique"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-date",
+                "2026-11-09"
+            ]
+        ],
+        "content": "Contenu de démonstration : ce communiqué est fictif.\n\nLa version d'essai de la plateforme est ouverte aux tests. Elle ne contient que des contenus marqués [EXEMPLE].\n\n## Contact presse\n\nPar le formulaire de contact de PPF, en choisissant « Journaliste ».\n",
+        "sig": "07556cce1ceee96d4837b3f5ef674a36c190dbbeecdf52a94bdf5b01c43a94be3462ffe3a64daa9cf34f58fb3a19eb78b55dcbd833aafa2c9fe5782febcd3f48"
+    },
+    {
         "id": "3ad6cb8635d0857b039334f18e9f7413a7bc7d6e2f0401b05bd63ebc3d3401ce",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1792497600,
@@ -43,7 +81,7 @@
             ]
         ],
         "content": "::: en-bref\n- Les juges du siège et les magistrats du parquet (les procureurs) forment ensemble l'autorité judiciaire.\n- Les procureurs sont nommés sur proposition du ministre de la Justice, après un avis simple du Conseil supérieur de la magistrature : le ministre n'est pas obligé de le suivre.\n- Une réforme pour rendre cet avis obligatoire est discutée depuis des années sans avoir abouti.\n:::\n\n**[EXEMPLE] Brouillon de démonstration, à faire relire avant toute publication.**\n\n## Ce que dit la Constitution\n\nLe président de la République est garant de l'indépendance de l'autorité judiciaire, assisté par le Conseil supérieur de la magistrature (Constitution, articles 64 et 65). Pour les magistrats du parquet, le Conseil donne un avis sur les nominations proposées par le ministre ; pour la plupart des juges du siège, son avis s'impose.\n\n## Pourquoi c'est débattu\n\nEn 2010, la Cour européenne des droits de l'homme a jugé que les procureurs français ne remplissaient pas les conditions d'indépendance à l'égard de l'exécutif pour être qualifiés d'« autorité judiciaire » au sens de la Convention (arrêt Moulin contre France).\n\n## Et maintenant ?\n\nLes réformes proposées et leur sort seront suivis dans le législomètre.\n",
-        "sig": "e54a0ae09288ccf4a70e9c5a7274f11ed7aec8912ff7c5510f4b6c6856eeaa9bd20299a9f1400f5df7e3a3250f54ed351de7b2b52366e59a5272cf10dae13d7d"
+        "sig": "b97a193e8e659d0dbe61171db843cefa14705638500bd7624131595561dad77924d88733ad15f8e36349256b46084373b579c4c4acacb0780e9d5bdfa7bbe4a3"
     },
     {
         "id": "ed41e222a6fb8486cb2f3c5604a0e27481796d6a6c4f9cf613436370e42e3a98",
@@ -89,7 +127,7 @@
             ]
         ],
         "content": "::: en-bref\n- Une poignée de groupes possède la plupart des médias nationaux.\n- Leurs propriétaires ont souvent d'autres activités (industrie, banque, télécommunications) qui dépendent de décisions publiques.\n- PPF analyse les lignes éditoriales selon une méthode publique et chiffrée, jamais par simple appréciation.\n:::\n\n**[EXEMPLE] Brouillon de démonstration : les groupes cités sont fictifs.**\n\n## Les groupes (exemple)\n\n- **Groupe Exemple Médias** : un quotidien national, deux radios, une chaîne d'information ; son actionnaire principal est aussi présent dans la construction.\n- **Modèle Presse** : une vingtaine de titres régionaux ; il appartient à une banque.\n\n## La méthode\n\nPour chaque média : temps de parole par sujet, choix des sujets, invités. Les relevés sont publiés avec leurs données, pour que chacun puisse les refaire.\n",
-        "sig": "024ba0301c2174bd0189d50d8a057743a54f0abf3bfeb3a7e474dd56efbc97a0a1a4252504ddd2bdf707b9aac97b5ba83a460af2eca6e6b8394c354825fc61a9"
+        "sig": "bcac1e793157911ae20adb864cf2f9b0f4b20def53cc2d5a514c01c16119008d11768bf4eb2d42f5c30a6307c5e00266dec43316b7b11bac65f15afca137cceb"
     },
     {
         "id": "76e6d1dcefa309144b03815ca5a090e8d26046509cab6e597fdc82871649b229",
@@ -156,7 +194,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe tribunal a jugé que l'élément intentionnel n'était pas établi. La relaxe est définitive.\n",
-        "sig": "6c697496a0d4b8e37f6baf28fd1ed943fbc5998b1b18f776950d1a1fc7e510112467365fbe0b7783b16eb2b40b17c5287eb66dbc0fcb9c179f7ffb1b5b648aaa"
+        "sig": "05fc3760a4f65d4a10e84dbfdbe1bd8e592f1459bf880ccc90d11a8cb1abc243b3ca14d838c3466a52ab6ca2194dbafc78cd3ea85f4f757c8bed2d9a7a2f0544"
     },
     {
         "id": "44adbfd0af99355a5ab7a45f1a08afaf0d2c8ac0df2f32576eff4b22d1ce15e7",
@@ -235,7 +273,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nAucune poursuite n'a été engagée à ce stade. Dominique Fictif conteste les faits ; sa réponse est publiée ci-dessous.\n",
-        "sig": "90e3b4c76d5f2edb93646e2760a2421f669d58bf227ee9c4816d3286e32b00430741acf99366219252af5224408c3522051223ae93a82c6ee887c288c3b13586"
+        "sig": "40ff99067e973c82904a1e8e888cb185bc7b4e1fe6bed3aaa235702dfddc256a6b5e6b7493438553b09476383cb4d62f4c77da689367dd84e588f22b23a19357"
     },
     {
         "id": "90f2aad72aaf880959cd00c9767467cbd672db3445fd1957b7c614cdf95b45b4",
@@ -305,7 +343,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nL'enquête porte sur le parti lui-même et non sur une personne. Aucune poursuite n'a été engagée à ce stade ; le parti conteste les faits.\n",
-        "sig": "5974e6d91215716503e39b8735c789d5c5870922049c3b4ae554573572266bccc5b4cafb626a995c02930deb32891ab9db6a6319ee7ccc76e93892361f523afd"
+        "sig": "4b1558e4ef48f0089a35ff5132fea0553137d0edf9196ea8c49942ebacc8c1b1ef201e04ed4e557ac5d436762abe76640e8a716233731ced948d77b6219106c7"
     },
     {
         "id": "afb061719e810393c8fee9d18e8df86330a6d41567336bd8d2b5a24840924e5d",
@@ -368,7 +406,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Suites données** : la commune indique avoir signé des conventions depuis 2023.\n",
-        "sig": "0c4681cf887f5f2e2e0d5762200954aec2f5e76fa42c66bf615a22fc75dee385fb628fdfadd9299b10d2571b8f3ec8a271cb3dd23cd062285d0a7ccc379e8d97"
+        "sig": "baa81d964f79756804fd82c4ff641e1f272f2d46ff7e5461510c56c247468475a3464f67797ff010ca5abc9dd25f0ce718665ff2ed6da379a1ead81cedd5d1d6"
     },
     {
         "id": "1f1dc7e7fc84e9d9fbcc7d45876c057bb23245839ef83ef6cebd70422227fb15",
@@ -436,7 +474,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLa motion de censure a obtenu 241 voix, il en fallait 289.\n",
-        "sig": "664cffba818cc01d70b50dcca3f11a1da57fdb3e7686ec0b3204200ba04dc039e626a9d782079abdc305c654e070f5ff6753d3c77ce0f6c63081ef38d254b8c8"
+        "sig": "5a0aa461d1a31fe246d3d4d8820194987fb6aee862ad63ada841232770ff7ced4e4c3fb4c9efdeec23e084c610073c5361a9104f90323d12ff5bdb6481adde47"
     },
     {
         "id": "79080b83ea192a8e133ac5b476453212e63d266685a5ffe0d0145d5aece03303",
@@ -508,7 +546,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nL'arrêté est contesté devant le tribunal administratif ; l'audience n'a pas encore eu lieu.\n",
-        "sig": "bf0fda9761509790fd1344047a2d15e1c7e52673a9b4bbd15c5527301a28ddbd8555477ea3a218623c1feca10a5026a57f4b0d4f34a344f747b109c1bbbea43c"
+        "sig": "48262b252186708c4154d024c927fdb2ad635799c529385290ed397643713d115ffcc39511611f463545e4e263054fb37fe8c859e501fce783422ad940dca7b5"
     },
     {
         "id": "34875d7525e8f6a9036e50c8842b417783424c3b87437fca9cec44c4aa91aca3",
@@ -592,7 +630,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nSaisi en référé-liberté par deux associations, le tribunal a jugé l'interdiction disproportionnée et l'a suspendue.\n",
-        "sig": "451d67c6532fefd9af055fc12cfdff34722e09ad35e28bea2da27a9e14687da87de40a36e8b773cfc0781b863ca1714f34389ee6bb3618ec8a0f4af7a71e7939"
+        "sig": "e07736909db6a9ddad8e3edb6857e3e68144e5c6adcd3c62479121d16e5d81ebbc9f3cf7153e2258a514a0634a0f6f8c883c01dffcb5ab1431ae157c8c10a275"
     },
     {
         "id": "1630d8ff16c2d5a190fe210f044f5233ab0f080de11689f4360d099d5b1ab77d",
@@ -656,7 +694,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLes deux communiqués sont publiés côte à côte.\n",
-        "sig": "69d862564eed990df04fc148d66adce59524faa42e3a7d894cdcfbe96e778a8192712952ab41fbadf4682d29d50929e26f3869973da2f24d680fe42f3a3ce334"
+        "sig": "b2b74a26b36bc6435cceae3c5c31c4cc2fc316f8712187f85967c19b3b9c4c5e2b804ec5e7d1a9e1bce7cf876b7e3a5ebde77c294978dd13135e7e2b7933d0d4"
     },
     {
         "id": "17e863aa9a99a346b4026df5477bc7aa8df03f06cf26215328e3927cfaec8a7d",
@@ -724,7 +762,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLa déclaration est archivée avec son empreinte et son horodatage.\n",
-        "sig": "9fdc2081652ef85788565c733a2184c4f1185d1efddc109d65b791f4f8da9e673570f5ac9a46e643a2336c2ae264ac511462491c17a391d83e7c40a79517dd91"
+        "sig": "d0644aa15d27317cced32a727ba45ea39201740525e70269559151280af077b8288dbb5f632bcbb45ee6749421d27649b6c8dccccea7184c8b4219f1b2510ad2"
     },
     {
         "id": "d6f1dc03119964101e3da3a63fefc59b2bd2e32159b5415ce230efe7a93120a8",
@@ -793,7 +831,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLes chiffres de participation de chaque source sont dans l'observatoire.\n",
-        "sig": "e81838628a1ad203cca07510ef0eecf0e34029ec0b91c9890799cda2d6db1149864a190c23989cbaddb464d7f037047b10b770d630f8a886c4e6b6af16fdb327"
+        "sig": "b0d800d3c8924bc8b5e9c3174c9c8e992b7b353b4191d7a4ca44ff262b580c8caf17eb06863c42869d0bf099481cc6cedb2e922ca368ea84b3c1adb08dd2bd79"
     },
     {
         "id": "90807a88d4bcf35dd93994902833b207ee3af8d4c5ea1cd0b1d4cb778f5fdd01",
@@ -855,7 +893,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nProchaine journée annoncée par l'intersyndicale : le 19 novembre.\n",
-        "sig": "a9cc50e035f446e2f28b8537a15ec09f12bb5d7b1a64d2763a4b57530d6fb4d2ee3ff73ff2f2d3e0bd2f2c5db7ddc62963a60eb7fb28360cdf6e1c26ad1e2849"
+        "sig": "bb4eb6065c07ac8cce617359f547b0c295883758839342fe347aa621647148de0c0fdad495c244fb09351baea3d657f81bb288a9657d47b6b10e94542f247b41"
     },
     {
         "id": "464fa36f83da24451105bb105d0df3704c252312cf5b887e52aca3a857c4e579",
@@ -925,7 +963,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Ce que disent les chiffres** : 18,2 % au deuxième trimestre 2025, 17,1 % au deuxième trimestre 2026 (exemple).\n",
-        "sig": "42d54a9d77ab8576f6af10f9a08da31cd6d9d029de17f05ea88558bcc118710ba68dc61f0181cc4a5f3a3c3c93282703fe438f16f72b23cf510db09c604d9e5c"
+        "sig": "fc2463a3872fbf7e6a9213aa511f415a7d6430559639d006f659e22473eff2b407b841b47c1ab27ae4cd1fa2dbcacf08fca82696bb2b5dcc176c267b2c2ec5ef"
     },
     {
         "id": "413844b488df10c7e1a05cae8a2cee337581542d74fbdfab139d5b65f817fc93",
@@ -999,7 +1037,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe sénateur a expliqué son vote par le coût de la mesure, évalué à 2 milliards d'euros par an.\n",
-        "sig": "9472896d0d8e712e05008d38af115b964aa4ffcd9f76092d815a2d95b6efa0fc82b80e8b3bcf80037924487fbcf7766a4139e6e3fa772da1a1b93294217eca2f"
+        "sig": "ca6e22d92b3ed77afcbad5705209ac2b5456a27da0be023ecacd84db1dfd943ae4960748513fe16fe637e3de60c655faf3e0da24caac87ae4418e7d29b935613"
     },
     {
         "id": "2e2f1eb57104387ff1c35e319f86c7f93c423b8fe1153e6bad720ef2ad0b5a32",
@@ -1064,7 +1102,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLa fédération déclare avoir demandé l'extension des périmètres de sécurité, reprise à l'article 3.\n",
-        "sig": "7992a419a9a0ca01346181256e328cd8a141eb110f5e3a790f475cb3038f992ba0aa71906b10be837add1d4703180e6eaa0a1b67ad5ada4bb5aed768eefc28e3"
+        "sig": "f0d4a310a1d6eaa961e89641d4b0af0070bc4e0bece79ae84624c7aa6d971272b48a1e28de78ee2b6850f559f8346f5e75350d0cb1c18cd654dbf9313bb8d536"
     },
     {
         "id": "90be8fb22798778fcc1b0e3b17a427ea4a67623a4c797fd5edb7d1dfd0f30f11",
@@ -1123,7 +1161,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLa déclaration est publique ; elle ne constitue en elle-même aucune infraction.\n",
-        "sig": "a2e656cecc1d5304885d873de1aac9c90828b0902b75ee1553f77012891bfe797e81d97c3da2ee7f8962b41965f7e401ae33cfd73ba0a16bf82402049fe42bf3"
+        "sig": "a8da9c91c520414abe01c08114f1951fd909f6870d2e233618cd0eabf1bec772a886f750ce61baf5abf6e5257eec698c6cfd2a39530e764980c8d16f8245a44c"
     },
     {
         "id": "9d0168a7c2cada5dcd01ebd0ced0d9927eb7aed07891ecb3f3c225b2ca9f9f73",
@@ -1202,7 +1240,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe collectif conteste les faits retenus par le décret ; le Conseil d'État a estimé la dissolution justifiée.\n",
-        "sig": "abe99e3161b4e2276c56dcf2e02dfda8f68ad2c687292c1d8a6214badc06b6de9a4ea2c4bbc6c3bb30952f27c421019e03b94019662c3a0eb03dab66825256aa"
+        "sig": "c1612f31b3a61e3e1fe484a2084c9d3e0bf7e1609da15c82a512647d4716cee134c0d079be811a2ae5ea32acd15f9f479f2ac96eef13137ccbb463965f1c358c"
     },
     {
         "id": "2420625bcda58ea4b035d45b5416b65cd6ce70da98c7705b890cc5c4a5bc3c33",
@@ -1273,7 +1311,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nUn recours devant le Conseil constitutionnel sera possible après l'adoption définitive.\n",
-        "sig": "c8ed46794c1c6a25bd2470a6f343acaf103c99f4abac417a0ba5325e54d7b96c8ffef2424cebb4c5fb76db3314f4ecbc1695a92fe46a07d2bf09d9659ad59cb1"
+        "sig": "aa6bf3e2a01a25bf8bb3cd34762d35e2d0e8c9755e23563240df2a7cf43bf45792533debc00765e28e4cb0fb1d5f85d951a246c6319ec6d72d7b07007393d509"
     },
     {
         "id": "b30006e44554f3b33afa4346c94b9d8604eeeeb056eb540b527875a6259e1d9c",
@@ -1347,7 +1385,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Où en est-on** : l'agence régionale de santé étudie une fermeture la nuit ; la décision est attendue en 2027.\n",
-        "sig": "6ad520829610ed2922396b76ddbc8fce956d9cacd805bcce75c8d3a5d58775758e06d22c3bf1f4f177fe1b4b4f530e106f310e2e6e9de65c52b8ee195197d097"
+        "sig": "82773d67f3acc4de56252fb86d2f2b1bfd3bc52c85a66859cece595b737e5b60c3c82ac57e22f4ca0377b5aadfaef6a8c53a2a893b24dc1d368ba73b9db9101c"
     },
     {
         "id": "492d3248905f6d7427660e874a7abc9547b6e2c01a742cb5eaf72fb26bbc19fa",
@@ -1427,7 +1465,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Acte correspondant** : vote pour l'amendement n° 112 qui supprimait les périmètres de sécurité autour des cortèges.\n",
-        "sig": "415f22e59f7f416fe623ed9d22fd2459ac340176448bd02fe8976925a421a7c010eadfe8dd0e6ec57726847eb4a47e05919c0593c09e02b23abcfd3adb9e0fe8"
+        "sig": "51996655d8d8e657508607d84fb7ff9d5e657192efe2c96398929fb92a7e02ea43ba6e7f56c668a715969dbfaf2c90c41b00e9de2aea5696ebfc42491c7c3fdd"
     },
     {
         "id": "1fb0765f2d6926c1eae5e9efce71665a2ad13cd6c577023410fe9cbd378cbc25",
@@ -1507,7 +1545,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Acte correspondant** : le projet de loi a été déposé le 29 septembre 2026 sans réunion préalable avec les syndicats, selon la lettre de l'intersyndicale ; le ministère n'a pas contesté ce point.\n",
-        "sig": "4d2c141523943682f69154c4679c63b55e76991ea04bc94454acab07e4641bac66114c04501619c4f59302f74f8dc3c77201d7577949dde8ea4e28b169ce6d90"
+        "sig": "80c6721be1c6a7e022eddc70f31c62ec5d1e85b46953cd0515942779cd80b2cf1c95f16d8668f8fa2d41e936accc2e8702f2fac5c434ce964bd4075a0382b3f8"
     },
     {
         "id": "087e83aa146fe1677c0814039927281f277a1015a1d7d0d5c931b8c975ad712c",
@@ -1587,7 +1625,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Où en est-on** : une proposition de loi a été déposée ; elle n'a pas encore été examinée en séance.\n",
-        "sig": "024afe00c35f2e722fec9782ebcd8e67a968c40e39743c404732b96bee75ed6c53cff2c5792cb4268cf4db47749910a0ae8486d0536c91fa957447086e42a460"
+        "sig": "2ab32ac7f94af7ffacd5c7c8de16120a95d9b609aa1fecefb56517a453a3940195c678104901171c7f365356f83cd1b0dc4ea2a8dd2bcd1e15bfd2aa77882082"
     },
     {
         "id": "996731a2fb4d9ddfbca600fa0ca92af3152ce83eb89e47d27e51eadd278c964b",
@@ -1661,7 +1699,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n**Où en est-on** : en février 2026, la direction du parti a déclaré renoncer à cette proposition.\n",
-        "sig": "cddd31a1879bf386b0d96a11fffc2520cc5e2352cfee03ce452c749bceae7e77b6b2dc061bf8cd1a9fa25ff19abb7b07fd014458cb53f395e6b5dd5536123c80"
+        "sig": "2071d2d42eb99ab392f44af8450002aaee884244a50a1ee8e104f9b2fd725b82399885545d13bdb03e88ef0dcd3ea704896e814b7fd9504a03bfe9892896b3ef"
     },
     {
         "id": "1351d1eb73566a1ab483020512ac4eaa5981c5059582590228ec1d1f2552fa12",
@@ -1728,7 +1766,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nRésultat du scrutin : 104 pour, 221 contre.\n",
-        "sig": "580d73ef8e34ff2c03d4e0a866377b2b1232627305b9ddcfce41c8baa0a2d147c15d41bbbd3a59e925765c99f3b016473bcb54f4194ff3b742b27785edf35875"
+        "sig": "2febe4657db49fac70a5bfbef0e4101a2c9566953ce6e23cedf78555d20e5662ccb8436bee4592277659fa660da4ed2dd45b35764d0dc66f2e6ca84e8a944d21"
     },
     {
         "id": "1ca45110aeb63dba568cee433ace2f843ece65b48ab913249dd02ee86cede7a8",
@@ -1801,7 +1839,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nRésultat du scrutin : 198 pour, 251 contre, 12 abstentions.\n",
-        "sig": "8b78013157f124d846bd9520a512df28a82e7a16336389a42036f3133adf96513d40cf6dbbf4618343d5fd433cba48ae77238ac10f96732f241a1581902e440b"
+        "sig": "4918a4963c31db66a0de69bd007455a3ecde3f13cda1b0e7b0ae43bd36a0a049954ff9410dd976558b579d15ecf1f821b80ea278786852825f200b4478cf9209"
     },
     {
         "id": "15d5291f89b5d9e50ec73d8a2fefb20affa794af0bf100a015d4c3fefe83fbf5",
@@ -1868,7 +1906,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nRésultat du vote : 374 pour, 235 contre, 19 abstentions.\n",
-        "sig": "bd384654b55251acb7ea415dbf01eb3896ce378139bdd0e12e2db591b45edc03afe6a5fb975560e2de28ac3c7b10c36ffe0aafb4f17e12a2e61c2fa24114305b"
+        "sig": "ae147c5af76517ef47ea0226158cbaf6780fa8ff19a4aca1cb6a8c7563403610aa88d22f84d5532c15421a558a31e5e0f3051413336a44645fb9854839e3a2db"
     },
     {
         "id": "36f083e44a7dc8c9fc799e1b7cde3d425356ccae4355bd139101b1e3edf03e61",
@@ -1938,7 +1976,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe chiffre est cumulé depuis le 1er janvier. Chaque décret est lié à sa fiche dans l'observatoire des libertés publiques, avec les recours engagés.\n",
-        "sig": "c12ced59ed2624702162b2dce246382862873c1555cf4cd52db5dcd1091a216fe0c634522d2e78a86ca0eb9f281e78006cf66cf5be952fdab46ce72ed7ecc5e8"
+        "sig": "8c179dc6dc8c4c95615e1ec1b2e0eb7fa9e7ad21c5bfadc3d8305d127bf2b60d4acebb111c76f1af7ff4e02a7881cb1456ba8852dbdabf6675ad1c600144c952"
     },
     {
         "id": "98cd6485da257d54fc8546ff043683c40cc6ffcc399cfa2b13030cc80fe95095",
@@ -2053,7 +2091,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nLes manifestants pris en charge par des secours (pompiers, Samu, street medics) pour une blessure survenue pendant la manifestation. Les blessés parmi les forces de l'ordre font l'objet d'un indicateur distinct.\n\n## Gravité\n\nL'indice de gravité des violences policières prévu par le cahier fonctionnel attend la validation de sa grille : il n'est pas encore affiché.\n",
-        "sig": "4413cd0a45e6a0f024bbde808b4d629f1c3790bc05c3995b998207863a1cf085fed2b0345f95c8ef9162f87ff051bb0228008bfa63cdc49772d6ea907653a88a"
+        "sig": "ff93eb9fe4df899a5306656a12af1f759de243df3514efbb8e2834227ebf28c11d313dd30c9c4a9140d67cf76df31faa859de7fbae932d6526de87c7db7c89b7"
     },
     {
         "id": "4998cfbea94d7fec09e03c312136303037edab58aab826a397413d7483c2fdfa",
@@ -2155,7 +2193,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nCet indicateur est publié comme les autres : PPF montre tous les faits, y compris ceux qui ne servent pas le mouvement.\n",
-        "sig": "9fae20ae419d140b03888ac620da5076f4220ef5330294761d280fd791a8123d18d4792168b16588d0b8afc6015d01d6ab46dbdb0f8454dad88f25d41d2accba"
+        "sig": "3d4f3ccbefa8766f4f1b5f6736639864e54b805155c0a82c4d10c4a98e44f7a3922fddbeb8e9c71d9c3c9a27162027ccaf5984e5ff86e352ff69beb71078ba35"
     },
     {
         "id": "18a14f811a54b0276d571d23fd1556e0ad58b775de1cc4cf9ae2129acf564193",
@@ -2322,7 +2360,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nUn lycée ou une université est compté lorsqu'au moins une entrée principale est bloquée ou que l'établissement est fermé par sa direction à cause de la mobilisation, pendant au moins une demi-journée.\n\n## Comment\n\n- Les **rectorats** publient un relevé quotidien.\n- Les **signalements des utilisateurs** ne comptent qu'après vérification par l'équipe (photo datée, deux signalements concordants ou confirmation par un média) ; un compte ne peut signaler un établissement qu'une fois par jour.\n",
-        "sig": "6fc5a7adf3a81abc16b53006b26a4b7deca23f0504baab9c77a024a1dd5ae78004570d68451c969de1c46e17e8193d63f0eb61827b675123354d4f2886cfbdb2"
+        "sig": "b9a02aa33ceba45eb8724c6d7f999c44070668060563c34e986bab685cf57b9b9b62815f99a10f5d39c005a297879b1bc0025aa480efd6ccedd8da3eb88e5926"
     },
     {
         "id": "87defb99142cb1c28cd00e414d223d8fdd9996aa54f547d0521195c863075b2c",
@@ -2413,7 +2451,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nChaque arrêté est archivé avec son empreinte et sa date de publication ; ceux qui font l'objet d'un recours apparaissent aussi dans l'observatoire des libertés publiques.\n",
-        "sig": "0c7afb11db10de2a6acc24b0493d241d2e3771e301312946b03dca315babe618219ce2a2e0dc761803b4a74b8c16cbc014339618e3fa67440657e19447359a69"
+        "sig": "132aee0d10c2d616cedc91fd6da8527c55355e7d8e28003c8169cf746d0a27b6704f49c5ce28647d389b45015111406d982a57b6e5f44e17697e2f157bfdae0b"
     },
     {
         "id": "c9f7161821f6f78df77f86439e5139b9b65fbc8a21ffa1299873792712fde662",
@@ -2580,7 +2618,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nToute personne conduite au poste par les forces de l'ordre pendant la journée de mobilisation ou dans la soirée qui suit, qu'elle soit ensuite placée en garde à vue, verbalisée ou relâchée.\n\n## Pourquoi les chiffres diffèrent\n\nLa legal team compte les appels reçus et les personnes suivies par ses avocats, y compris les retenues pour vérification d'identité, que les chiffres officiels ne comptent pas toujours comme des interpellations.\n",
-        "sig": "4aa64577a45d3e84808189db128a70d2cb71635f705ce0e299a0d4d28407d97c0e27ea5af9f46c3afd4334c2284e464b0dd47da2ff6e233ed7c5e4d37700e505"
+        "sig": "96135b7d37b60d6846848c4b5f706d9018cdb748fa6dbcbcd592d928729fb9abc933cce111ce8a5648f10fabfd8ba3b31e5fe7b2b393ad98eeb9c90a3cef560d"
     },
     {
         "id": "d6f406142df2051a27aa0b8e9b2991f6fddb0e30eae221998965cbe777919b5f",
@@ -2797,7 +2835,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nLe nombre de personnes présentes dans les cortèges et les rassemblements déclarés, sur toute la France, pendant une journée nationale de mobilisation.\n\n## Pourquoi les chiffres diffèrent\n\n- **Les autorités** comptent à des points de passage fixes, à un moment donné : les personnes arrivées plus tard ou parties plus tôt ne sont pas toujours comptées.\n- **Les organisateurs** additionnent les estimations de chaque ville, souvent sur toute la durée de la journée.\n- **Le comptage indépendant** applique une méthode publique (comptage par images et par capteurs dans plusieurs villes, puis extrapolation) et publie sa marge d'erreur.\n\nLes trois chiffres sont toujours affichés côte à côte, jamais fusionnés en un seul.\n\n## Niveau de fiabilité\n\n- **Élevée** : la méthode est publique et vérifiable.\n- **Moyenne** : la source est connue, sa méthode n'est que partiellement publiée.\n",
-        "sig": "9345de049317867a8d0ae16e5585dee464650573596ec75a404a4ac2d9fa52c4eca892345a13894d0c776a507f42f172be52078c12c51d66314828fae162054e"
+        "sig": "b48b90f132ef905d09e9d5a0ce0dcb6b4ef5bd172dcc7494b5bfd70418e3fc24ad1e0bb1e92f159fc26b0a9fd8beccc91d8d003c995f010a0f3ae97ff7eab038"
     },
     {
         "id": "22462eb7865bb0c21be209d93e24c17c4c8a3b3cf7399a0b6b58a0e8eaabcb3a",
@@ -2904,7 +2942,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que l'on compte\n\nUne nasse est comptée lorsqu'un groupe de manifestants est encerclé pendant au moins quinze minutes sans possibilité de sortie, et que l'encerclement est documenté par au moins deux sources (photo ou vidéo datée et localisée, signalement concordant, article de presse).\n",
-        "sig": "c31409bfb90a73256041cedd6d39b65e7befa0f5b1d521522397853730eccec858caf91a509a771461a5d909d3def6d99af3e63757d5e9c6b80c9a672ff7fd08"
+        "sig": "9672f410e8863941631536645a942d7125244f440b0ca7e931f94d46bed9fc63017b6a5e20545eeb2ed89ba81d6d1d286a295f5cde83eb38f76cf9966d3505ca"
     },
     {
         "id": "e6018295038aef5889d452eec70bd19e7c16663609756b50d4f4bdfd6991bee0",
@@ -2984,7 +3022,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nChaque organisation est comptée une fois, à la date de sa signature. La liste complète des signataires est publiée par les organisateurs.\n",
-        "sig": "ab669abfc59e5e099c467d4c84c3981e2ba3dfd2a0ea0bd5a7123b8987f470eeb31f77b2145a7711fa46978b5b8576e77f4e8b683d3309688739fc3e043e3836"
+        "sig": "6f1fb8ac7f5925234847bbde5bb38724479e1f7e7ab9f6076d02bbe0e0a0ba6afe4bbcba9c676e832c80a66b9cbe01c5e0fd494d7b332a53df9bcdb75065058b"
     },
     {
         "id": "5de75c761f09d72ffdedb46928f787b8b6b1eaa491dcf23551efbd05a0e51934",
@@ -3056,7 +3094,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe calcul reprend, autorité par autorité, les suites que chacune déclare dans son rapport annuel.\n",
-        "sig": "336be1e89a0532fff6ddc74af2ed1a6c1969b91d90344b7f68cb2b775f0bb6b8b94b88f94548c203b79bfe34c7264bd7ffb6fbb209beb60ba47388e4b6e8e7da"
+        "sig": "a35c4ce25ce8e4ada20fd1f0d803a5ffff812638e581cf4fb772d49663b233829965c4c3a27902685e845074180d446439a2beecbe69e0db433f53e13394bc8b"
     },
     {
         "id": "ccdb227d669beeadd9f2d862abc3c30a89cb5732c48bf6a3ce5ee36fe2a4ab1b",
@@ -3156,7 +3194,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que dit la Constitution\n\nL'article 49, alinéa 3, de la Constitution permet au Premier ministre d'engager la responsabilité du gouvernement sur le vote d'un projet de loi de finances ou de financement de la sécurité sociale, et sur un autre texte par session. Le texte est considéré comme adopté, sauf si une motion de censure est déposée dans les vingt-quatre heures et votée.\n\nLe chiffre compte chaque engagement de responsabilité, texte par texte et lecture par lecture.\n",
-        "sig": "fd88abf37c280bf66fcf18f25b08e0e34f056007547f933e0507e2a2385ff2e66cb711ce45480cc843371d384feafc567b4c66a1915a244e9694a8226963f2a3"
+        "sig": "4712cb97fa3b849bd0b4567b4e4f0820bdc17e42c93b4371f48a21e56e8634e369d0d2217e33addde2dc30df83bbabb11b103eda80b5d2ca4c550b7dfa1b84d8"
     },
     {
         "id": "ebf7ca203256bac265e03b1752967461f40e8b11bdf2d763820657b283926223",
@@ -3230,7 +3268,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Un indicateur déclaratif\n\nCe chiffre additionne des déclarations : PPF ne peut pas vérifier ce que font les algorithmes des réseaux sociaux. Il est publié comme tel, avec une fiabilité faible, pour mesurer un ressenti largement partagé, pas pour prouver une censure.\n",
-        "sig": "e7caa6d73ce1bc2d23f8e78bac41a1501fe17436d3a3ac86ce05cc35653fc3061f977599d07cfefe59490cdf8ef7baa991225540232b3c7d8ee6b6b99124147b"
+        "sig": "fd53fe3575c3c1f61ca06bb91cba6525b455a01ad01a11388a82f6767154405b5a907afbef4545cfd3efb78b98debaa22e9b2ee9fc205303d0af35f17169c46b"
     },
     {
         "id": "a81f851ab92afedfc447ebe61bec83aec5ea2e71050e795333df6274132db738",
@@ -3300,7 +3338,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nParti de grèves dans les transports, le mouvement s'est étendu aux enseignants puis aux agriculteurs. Les assemblées locales ont rédigé une liste commune de revendications.\n",
-        "sig": "cd8e1848c9b5268d7112e69717b8d810cfbe4a16989fc3653348a2dac9e34a7ba4ea15873aa77c8153c858d97a6dea4a34b2e050412d16aa7cbcd68026fb63d5"
+        "sig": "ff89fb28109eba4624739bfd7105397bd9508fc8c4d9e1b48b912bfe75b3e306baa6a619e62aeba277f697da8ffbd797e358ac884281df46317f5d969a27860f"
     },
     {
         "id": "8300e940c8ff79286e67ec9eca1f61546b3dab36556ced5452b8d63b6aeaab33",
@@ -3366,7 +3404,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe mouvement a combiné une pétition nationale, des rassemblements hebdomadaires et une campagne auprès des élus locaux.\n",
-        "sig": "012fe740e8e589c89c67687db0f27a98dc0855acab7ca3121dc59d2b4fe6d676dd097cca86db89b310e38ea1657d7b020896754fbc50c000a82675be8dd3672d"
+        "sig": "26f37cb805685ce5972bdff644a0c4317a7474010f0a0e5ebd19a6782437816acfc17ed8c58ebf3b73e331cdfd82d9fb3b4511999984f577e8164bce2672c601"
     },
     {
         "id": "e799b6ae93e820571af07bcc2f7d59b56e7abac8b3282e0fecf079409fd1fd5b",
@@ -3428,7 +3466,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLes caisses de grève, alimentées par des dons, ont permis de tenir plusieurs semaines.\n",
-        "sig": "0532eaae8b73666336aa9c6008d4f6044b9b0e808db9a1691ecd2ac7a82b98d055bb02eb285b9be19f97929871f8c846d44016ad743d949a67717866a196fec4"
+        "sig": "048010011700530aa992243e91a38d84810bf93e8b22dd75d30b80f96a19cbe916b161b7b1555dbe257b0d7ab0285fab8ec9301d6e4ca04e5120524edab9553f"
     },
     {
         "id": "9076425e7acc511f1dba02202db9e5ace50973a2b3e9c748af7b076ea595e726",
@@ -3560,7 +3598,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe Parti d'exemple A a été fondé en 2009. Ses statuts prévoient un congrès tous les trois ans, qui élit la direction et adopte le programme.\n",
-        "sig": "9844e8cd55d169472ed45aa356bc4d95406a67c8e812a231154d91fa915337ed4e45fcfc65a71e301f74c84b101a4d905d1b4f25884a8d2588194ef74b4dae91"
+        "sig": "f5f5a4cd44c85d5db346138bd55fcfb563f5b0385d31f5412867cbb02d9601ba0126343fdfc9c1b308d65676347103914cafb7e6f499170170608e6511775be9"
     },
     {
         "id": "f55b31fc0c63f226324a1919ca971b5bf448b903af476344b0c9e68d2bcaa1dd",
@@ -3675,7 +3713,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe Parti d'exemple B a été fondé en 2016. Plusieurs de ses membres font partie du gouvernement d'exemple.\n",
-        "sig": "e9e8e96517b1ba16f953128ae419e16620ae36e329cd8320b69e298dcaab38f29a8a63e6b95f8d29e9f12d1c08c36ed4d0d382dd7e3cdf6807a47006a31843ab"
+        "sig": "35d125efe260dc2160191251a1b25f314b83945dad364789dfbadbcb55976daa8155be0f421800c09adaac3ce4a108a41415bb5b9fa98f9f18ab9524fe474efd"
     },
     {
         "id": "2b3fca511bcc181c7a60cf9eba61c239a568a125272e0dfa093da33f50f3a5ec",
@@ -3783,7 +3821,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe Parti d'exemple C a été fondé en 1998. Il compte de nombreux maires et conseillers départementaux.\n",
-        "sig": "f21f9351f55ceceb82c270ef525492bc06e66b9ecfc0e9130f5b08fc76c8db4acb92c66c7996098adb0c7d98b8154a2bd67e4f6af3176935c7f12289b05a539f"
+        "sig": "441d48e7dfb0ea7c3657b9ebc475af898e83ba8b0f8c89cf39f49c7df21da37a36acf4770fb63f647ce80f0a9b79e55c49ddaef27a389661fbf388e898b5d792"
     },
     {
         "id": "119af711298b4a781cb25205568ef83700cdf4cbdd5bc2d7b51836cb377b6f49",
@@ -3878,7 +3916,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe Parti d'exemple D a été fondé en 2019, quelques mois avant des élections européennes.\n",
-        "sig": "739e8e696edc794f4473d05fc85f0a209b8917264cbeb4ab13434741a29881c1bfe849f6442edd63c0ebe93ec00acf6525103a447f1711f949542c748c01d9eb"
+        "sig": "0f8509a9ff9a2ffa6cd1f5103b98c62e2272f082704f739dfb9194cff3319a7af8960f6b38ab44c82f63003e34f62f248d4fe10800189c81d6ee031879b1921a"
     },
     {
         "id": "9313ed77ba3e291e9698f9e0f8d256f62a1904619f65a43f677e26b75351249c",
@@ -3955,7 +3993,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nAlex Modèle a été maire d'Exempleville pendant neuf ans avant d'être élu au Sénat.\n",
-        "sig": "8237e6f320d5781f1250827ec07715af1aca598987b6a66a5a340ce7fbbfbf1f77a79e188b0c8897cdfd574e784ac6431acb34e5d9b676bd4feab9c2944d4518"
+        "sig": "018ab2d1ab84a127cb1bc9eaa8d3695c68eff9a3fd0f7cbbab36a4fe00135d8e918e2f0ab424d63b707da6174637e8ac209a76cea7a7f299a702552465938187"
     },
     {
         "id": "1de4883ccf7e5c49312149b499e8e29d6a9c6857fdfc8a3d48049ad26e86f8e0",
@@ -4028,7 +4066,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nCamille Exemple siège à la commission des affaires sociales. Avant son élection, elle était infirmière à l'hôpital d'Exempleville.\n",
-        "sig": "0705ec3b4043f138fa925abf7d13c4792d133afcfdaefd0772c1781e907a5ea7422f4391828d09a36647f3dc352b7d15aa849a1fca338543680bd0f87a99906f"
+        "sig": "bc473033c24187c163990f9e74993424d8cc89dcce3816bd12d7d671519adac2ff0445988f486b251f95e26af6290eefc95d7363eb3c7c8f418a130d86a19d06"
     },
     {
         "id": "1cd47c6c32deebb8ec5fcbc7c4fcb7a931c213cd27a0e67dec49d5743163ba8c",
@@ -4097,7 +4135,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nDominique Fictif porte le projet de loi relatif à l'ordre public lors des manifestations.\n",
-        "sig": "eef39e993287d90e69587693ec5b81ed0420e98659ee4717d9e6a002e0a313d65c12d4cfcc7bdb55f34a67e088611412a416d73dd4696ce45be14683a313685d"
+        "sig": "41b3d9c12c56f9cc6dcbef77f8a188287c7964a1561b48e7d4bb32fcdde4d7b84a6431f30ea26f73b4f92ad24a35875caac3b72db76b3fd14d9da9427d2a03e9"
     },
     {
         "id": "d075b0d32bae1578e85959b6124f46e0666e22b079bad9cc63a595a9b9b611d4",
@@ -4163,7 +4201,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nSacha Témoin siège à la commission de l'emploi et des affaires sociales du Parlement européen.\n",
-        "sig": "3a9d5491ed1338033f2ffe4d73327de5c15d07150115a61d42f7f6b1b4a8490b3062e8fac0c72fc910501aa0a4cd051bfe5f8b2d58d2235d06f23fea0b4595d2"
+        "sig": "e8fefe2e3ae8abc6d8dcabc10bfcbfe18778c7f7d7722a89840a9a0fc5a7df7f4b91d114cb4262e02728ea37dd0a25af4c56f6b82d2643d5f2ebe8b6cb62e66a"
     },
     {
         "id": "93916a6415595e595fd4ac129df31dc948800680fdbf838685bccd7fc2b20cb4",
@@ -4203,7 +4241,87 @@
             ]
         ],
         "content": "[EXEMPLE] Je conteste fermement avoir favorisé quiconque dans l'attribution de ce marché, passé selon les règles en vigueur et contrôlé à l'époque par la préfecture. Je me tiens à la disposition de la justice.\n",
-        "sig": "99409f3351b8f1fb32b80a7bf0ccd1f9d41410b28d93cbbf3b37ce52dc08d8050910c93f5c81eb5b36b6c07fa759ef9fea6dc263a2d3ed5f990b93c99ab242a1"
+        "sig": "190fc523844073d493445641e981d1bb42b57366faf9d6a60d68f2ed5e07cfcdaf2eab4988eb55bf456fdf84b51b368d32dfda121f9274c91721abd4c4c61c47"
+    },
+    {
+        "id": "68c6422f054401709136ae24e8cb5644ca071cf823dc57895de2d903a24e95b6",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "loi-logement-abordable"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Loi relative au logement abordable"
+            ],
+            [
+                "summary",
+                "Plafonne les loyers des logements dits abordables et confie aux communes volontaires leur contrôle."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "texte"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-text-kind",
+                "projet"
+            ],
+            [
+                "ppf-stage",
+                "promulgue"
+            ],
+            [
+                "ppf-stage-history",
+                "depot",
+                "2026-06-02"
+            ],
+            [
+                "ppf-stage-history",
+                "assemblee",
+                "2026-09-29"
+            ],
+            [
+                "ppf-stage-history",
+                "senat",
+                "2026-10-08"
+            ],
+            [
+                "ppf-stage-history",
+                "promulgue",
+                "2026-10-20"
+            ],
+            [
+                "ppf-official-id",
+                "an-dossier:DLR5L17N90001"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Dossier législatif à l'Assemblée nationale (exemple)",
+                "https://example.org/exemple/dossier-logement-abordable",
+                ""
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Loi publiée au Journal officiel (exemple)",
+                "https://example.org/exemple/jo-logement-abordable",
+                "2026-10-20"
+            ]
+        ],
+        "content": "Contenu de démonstration : le texte, les dates et les chiffres sont fictifs.\n\n## Ce que prévoit la loi\n\n- Article 1er : un plafond de loyer pour les logements abordables.\n- Article 5 : les communes volontaires contrôlent les loyers.\n\n## Son application\n\nPlusieurs décrets d'application sont attendus : l'Applicomètre de « Voir » montre lesquels sont publiés.\n",
+        "sig": "bd2c0457f07ac1c239a67fedbacac42baaea779842e2fa5dd69bfb707fb590072fd9c8706e038643c127e050de07b07a0036febcc12cec2f9b5544aed56e48ee"
     },
     {
         "id": "c9dd495245b5fee58dcafd0e462cb15243d75cbaf83e5a0b167834e53af81f9f",
@@ -4315,7 +4433,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\n## Ce que prévoit le texte\n\n- Article 1 : les interdictions de paraître dans une manifestation peuvent durer jusqu'à trente jours.\n- Article 3 : le préfet peut créer un périmètre de sécurité autour d'un cortège, avec fouille à l'entrée.\n- Article 5 : les drones peuvent filmer les manifestations sur simple autorisation du préfet.\n\n## Où il en est\n\nAdopté par l'Assemblée nationale après le recours à l'article 49.3, il est examiné par le Sénat.\n",
-        "sig": "ac25bd8046a7c73aebb8ee62249b0def541ea19781bf4c30c4b02257772954fe28221a24d9152324f1b9032e17ab80de1892b8d0289a1967edc7987a9314976a"
+        "sig": "4068a2242098d57dbf7cf6d4764309fa5e8f0c27a4c849e2a0a0bf673e775f836e1c8133b41ac7611878baa35f0a026c93614437c699571deb91fd8ff9a29af7"
     },
     {
         "id": "1b064f7311d09f3d260f891635a6aaa955181a6e691cc1c2ad9f62a8625b8bb9",
@@ -4421,7 +4539,7 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nLe gouvernement a engagé deux fois sa responsabilité sur ce texte. Une motion de censure sera votée le 12 novembre.\n",
-        "sig": "149011757baee40a3502b1405af6630ce9f1e3ae6f0e089ff8f6ba180413efb1dce837dd5ec789b45641e02b855598528d75f9dc7c410384c726fca7d57eebbf"
+        "sig": "a1c9f45ac20fea06f4782716a38900a9fd612c9daa1d32a95f060ceba5d19ca7508b96758db00ab8a7499611922ca476d77f6f7b7c5e59d26c9282dbe3c139b0"
     },
     {
         "id": "efc31beafb82c7eead6504fb1ccb5a174db3779601a27e4b8616a7aad12ba9e6",
@@ -4506,6 +4624,476 @@
             ]
         ],
         "content": "Contenu de démonstration : les personnes, les organisations et les chiffres sont fictifs.\n\nDéposée par des députés de plusieurs groupes, la proposition est examinée en commission.\n",
-        "sig": "c78d7d027ae6af800eef31a0c95cc89d2b2db4b8bd0e85595ec9d836333c53508b7c84d140c1df4731be06c2943466f2af8677d4c7699cb0e03fcaafdd2761db"
+        "sig": "66b75dfd2ce5fe2df6a12547b8762a24d33fe2187f91efab2b22f218693b89d4c2543dd4495b82c09b3287f34650fb6827023262034fddcabd13b592a76226f9"
+    },
+    {
+        "id": "c359ca5abe12086c905001bc3d320163f5936203cf76e2cf52ba8517325c90c2",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "transparence-comptes-2026"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Comptes de l'exercice 2026"
+            ],
+            [
+                "summary",
+                "Le premier exercice : les dépenses de mise en route."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "transparence"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-rubric",
+                "comptes"
+            ],
+            [
+                "ppf-year",
+                "2026"
+            ],
+            [
+                "ppf-account-line",
+                "produit",
+                "Dons de mise en route",
+                "300,00"
+            ],
+            [
+                "ppf-account-line",
+                "charge",
+                "Noms de domaine",
+                "72,40"
+            ],
+            [
+                "ppf-account-line",
+                "charge",
+                "Serveur payé pour 24 mois",
+                "150,00"
+            ],
+            [
+                "ppf-account-line",
+                "charge",
+                "Sauvegardes hors site",
+                "40,00"
+            ],
+            [
+                "ppf-archive",
+                "0000000000000000000000000000000000000000000000000000000000000002",
+                "opentimestamps",
+                "https://example.org/exemple/comptes-2026",
+                "2027-01-16"
+            ]
+        ],
+        "content": "Contenu de démonstration : les montants sont fictifs.\n\nLes comptes ne sont pas encore approuvés par l'assemblée générale. Le résultat est calculé à partir des lignes ci-dessus.\n",
+        "sig": "a261c0fa6a9f1c245d3f7bedd5a608cf523e5c623b841b3109fbf8a3b8984d0a60b999b791c755a581d8e832350fd57c63b92e5ee9868cc89a59d4227e7d01b2"
+    },
+    {
+        "id": "f8a22f917c82504d50490ce2e6754da097f61a6829391529add0ba313fddc901",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "transparence-decision-charte"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Adoption de la charte de contenu"
+            ],
+            [
+                "summary",
+                "L'assemblée générale adopte la charte de contenu de la plateforme."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "transparence"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-rubric",
+                "decision"
+            ],
+            [
+                "ppf-instance",
+                "assemblee-generale"
+            ],
+            [
+                "ppf-date",
+                "2027-01-15"
+            ],
+            [
+                "ppf-tally",
+                "41",
+                "3",
+                "2"
+            ],
+            [
+                "ppf-archive",
+                "0000000000000000000000000000000000000000000000000000000000000001",
+                "opentimestamps",
+                "https://example.org/exemple/pv-ag-2027-01-15",
+                "2027-01-16"
+            ]
+        ],
+        "content": "Contenu de démonstration : la décision, le vote et le procès-verbal sont fictifs.\n\n## Ce qui a été décidé\n\nLa charte de contenu s'applique à tout ce qui est publié sur la plateforme. Elle peut être modifiée par une nouvelle assemblée générale.\n",
+        "sig": "15fd661161dc8f95f451a7fbee7c2328146cd05d0a3f52a800afd80e8b5310938be912f5910a9d83d094eb7e5b572f973f1d15fa260b32dc79f561efcad670f3"
+    },
+    {
+        "id": "365a75b85c3e231b59f40d62458a875d33cc99f5a480cc9fd30df41f98948a1e",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "transparence-assemblee-generale"
+            ],
+            [
+                "title",
+                "[EXEMPLE] L'assemblée générale"
+            ],
+            [
+                "summary",
+                "Tous les adhérents, une voix chacun ; elle vote les comptes, les statuts et la charte."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "transparence"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-rubric",
+                "instance"
+            ],
+            [
+                "ppf-instance",
+                "assemblee-generale"
+            ],
+            [
+                "ppf-seat",
+                "Adhérents à jour de cotisation",
+                "",
+                "",
+                "une voix chacun"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Statuts de l'association, article 8 (exemple)",
+                "https://example.org/exemple/statuts",
+                "2027-01-15"
+            ]
+        ],
+        "content": "Contenu de démonstration : l'association n'existe pas encore, les règles ci-dessous sont fictives.\n\n## Fonctionnement\n\n- Elle se réunit au moins une fois par an, en présentiel et en ligne.\n- Elle approuve les comptes de l'exercice, élit le conseil d'administration et vote les changements de statuts et de charte.\n- Le procès-verbal de chaque réunion est publié dans « Les décisions importantes ».\n",
+        "sig": "eceb136fd5bd514553df4bfa64d9c20607d1e2f917289d4570adcd13eee7f2d106a111115246a6f80fe98b60251b15d091d5af4381c37ae83d7e3519871e4491"
+    },
+    {
+        "id": "fc0910b3630a805c33338a73a9056253f343242df386d1baa17215cde7368ca1",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "transparence-bureau"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Le bureau"
+            ],
+            [
+                "summary",
+                "Trois fonctions, élues par le conseil d'administration pour un an."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "transparence"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-rubric",
+                "instance"
+            ],
+            [
+                "ppf-instance",
+                "bureau"
+            ],
+            [
+                "ppf-seat",
+                "Présidence",
+                "[EXEMPLE] Camille Exemple",
+                "2027-01-15",
+                "élue par le conseil d'administration"
+            ],
+            [
+                "ppf-seat",
+                "Trésorerie",
+                "[EXEMPLE] Dominique Exemple",
+                "2027-01-15",
+                "élue par le conseil d'administration"
+            ],
+            [
+                "ppf-seat",
+                "Secrétariat",
+                "[EXEMPLE] Alex Exemple",
+                "2027-01-15",
+                "élue par le conseil d'administration"
+            ]
+        ],
+        "content": "Contenu de démonstration : l'association n'existe pas encore, les noms sont fictifs.\n\nLes membres du bureau sont nommés, avec leur fonction seulement, comme dans la déclaration de l'association en préfecture ; chacun en est informé avant la publication. Le bureau prépare les réunions du conseil d'administration et tient la trésorerie ; chaque mouvement d'argent est validé par deux personnes.\n",
+        "sig": "a89513e36ce89eb345cf9fafb007e1e3266683524bd8dd0cb61080ab101cf0ebd7fefe50c11ee642bc96d2fb66fef40ae2810044a535ae9de8060c72d65004e9"
+    },
+    {
+        "id": "f64896901ed35fe9052e6bf899957a93f645f146d726f69fb470614400be36ce",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "transparence-rapport-2026"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Rapport de modération et de réclamations 2026"
+            ],
+            [
+                "summary",
+                "Les nombres de la première période, sans aucun contenu ni aucun compte."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "transparence"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-rubric",
+                "rapport"
+            ],
+            [
+                "ppf-period",
+                "2026-11-01",
+                "2026-12-31"
+            ],
+            [
+                "ppf-figure",
+                "signalements-recus",
+                "120"
+            ],
+            [
+                "ppf-figure",
+                "decisions-sur-signalement",
+                "87"
+            ],
+            [
+                "ppf-figure",
+                "decisions-initiative",
+                "12"
+            ],
+            [
+                "ppf-figure",
+                "delai-median-heures",
+                "36"
+            ],
+            [
+                "ppf-figure",
+                "recours-internes",
+                "9"
+            ],
+            [
+                "ppf-figure",
+                "decisions-modifiees",
+                "2"
+            ],
+            [
+                "ppf-figure",
+                "transmissions-autorites",
+                "1"
+            ],
+            [
+                "ppf-figure",
+                "reclamations-recues",
+                "14"
+            ],
+            [
+                "ppf-figure",
+                "reclamations-hors-delai",
+                "0"
+            ],
+            [
+                "ppf-figure",
+                "droits-donnees",
+                "3"
+            ]
+        ],
+        "content": "Contenu de démonstration : les nombres sont fictifs.\n\n## Méthode\n\nLes nombres viennent du journal du back-office. Un nombre absent n'a pas été mesuré pendant la période ; il n'est jamais remplacé par zéro.\n",
+        "sig": "13601e2f9fe1126a40c3ac89eed441eedfafb78c7d12e18e0740abe78198220e3423c43791d1aa40cafb284582ce49408e1e0ab621730f67159ec5d40aa6c042"
+    },
+    {
+        "id": "b99739185e9d410eba88dfa6fe3855ed848a1c70375cadef0d92f60aedd3d34d",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "victoire-droit-manifester"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Une promesse tenue sur le droit de manifester"
+            ],
+            [
+                "summary",
+                "La députée a voté contre l'extension des interdictions de paraître, comme elle s'y était engagée."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "victoire"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-victory",
+                "engagement-tenu"
+            ],
+            [
+                "ppf-date",
+                "2026-10-14"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:promesse-camille-droit-manifester",
+                "",
+                "lie"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
+                "",
+                "lie"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Scrutin public de l'Assemblée nationale (exemple)",
+                "https://example.org/exemple/scrutin-ordre-public",
+                "2026-10-14"
+            ],
+            [
+                "ppf-next",
+                "Vos droits en manifestation",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+            ]
+        ],
+        "content": "Contenu de démonstration : la victoire, les personnes et les dates sont fictives.\n\n## Ce qui a été obtenu\n\nL'engagement pris pendant la campagne a été tenu au moment du vote. Le texte poursuit son chemin au Sénat. Cette victoire est celle de toutes les personnes qui ont demandé cet engagement : PPF n'en revendique aucune part à elle seule.\n",
+        "sig": "e4ac0a47d37765fc56bcc7140de7003c0834c70fd100be11926184aeea89e974b96abd1bedfe5d320f0273a63e5b50c3b99f8575b632879c8245c9b678244d10"
+    },
+    {
+        "id": "137598349f1ac31e034527a332c26585805aac09e4de2834dcaf3c78420688d0",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "victoire-indexation-salaires"
+            ],
+            [
+                "title",
+                "[EXEMPLE] L'indexation des salaires examinée par l'Assemblée"
+            ],
+            [
+                "summary",
+                "Une étape franchie : la proposition de loi portée par la revendication est inscrite à l'ordre du jour."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "victoire"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "ppf-victory",
+                "autre"
+            ],
+            [
+                "ppf-date",
+                "2026-10-30"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:ppl-indexation-salaires",
+                "",
+                "lie"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Ordre du jour de l'Assemblée nationale (exemple)",
+                "https://example.org/exemple/ordre-du-jour",
+                "2026-10-30"
+            ],
+            [
+                "ppf-next",
+                "Soutenir une revendication sur les salaires",
+                "space:revendications"
+            ]
+        ],
+        "content": "Contenu de démonstration : la victoire et les dates sont fictives.\n\n## Ce qui a été obtenu\n\nLa proposition de loi sera examinée en séance. Ce n'est pas encore une revendication satisfaite : la page le dira quand la loi sera publiée.\n",
+        "sig": "72880e1cf4b1408cf2de365d5cdf9e3fe43795cf2555567fd648ec7bbaa50c7ad98bf564f9ac7fb709bd4006edcc7ff362b6936f8f59bbd782c9c97c867368e6"
     }
 ]
