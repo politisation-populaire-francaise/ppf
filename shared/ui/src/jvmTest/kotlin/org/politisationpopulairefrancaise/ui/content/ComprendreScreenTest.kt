@@ -63,7 +63,7 @@ class ComprendreScreenTest {
         val dependencies = dependencies()
         openComprendre(dependencies, width = 1000, height = 740)
         waitForGuides()
-        assertEquals(7, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "fiche-pratique").size)
+        assertEquals(15, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "fiche-pratique").size)
         onNodeWithTag(ContentTags.GUIDE_CARD + "droits-en-manifestation").assertExists()
         onNodeWithTag(ContentTags.GUIDE_CARD + "filmer-les-forces-de-l-ordre").assertExists()
         onNodeWithText("Hors ligne", substring = true).assertExists()
@@ -76,7 +76,7 @@ class ComprendreScreenTest {
         onNodeWithTag(ContentTags.GUIDE_LIST).assertExists()
         onNodeWithTag(ContentTags.BACK).assertDoesNotExist()
         onNodeWithText("Durée").assertExists()
-        onNodeWithTag(ContentTags.GUIDE_DETAIL).assert(hasAnyDescendant(hasText("Fiche pratique · Mis à jour le 6 novembre 2026 · Rédigé par un humain")))
+        onNodeWithTag(ContentTags.GUIDE_DETAIL).assert(hasAnyDescendant(hasText("Fiche pratique · Mis à jour le 9 novembre 2026 · Produit avec l’aide d’une IA")))
         onNodeWithTag(ContentTags.GUIDE_DETAIL).assert(hasAnyDescendant(hasText("Garde à vue : vos droits")))
     }
 

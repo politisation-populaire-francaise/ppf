@@ -4,6 +4,8 @@ Ce dossier contient les contenus signés et livrés avec l'application, pour que
 
 Tout ce qui s'y trouve aujourd'hui est marqué **[EXEMPLE]** : des brouillons de démonstration, à faire relire par un avocat avant toute publication réelle. Les contenus réels seront rédigés par l'équipe éditoriale (jamais par l'IA sans relecture) et publiés par le circuit prévu (relecture, validation, publication).
 
+**Décision de la propriétaire du 9 novembre 2026** : autant que possible, de vrais contenus plutôt que des exemples, avec la mention « Rédigé par l'IA ». Un contenu réel a un titre sans [EXEMPLE] et `origin: ai-assisted`, et chaque affirmation y est vérifiée sur une source officielle citée avec sa date de consultation (premiers concernés : les fiches pratiques d'« Agir » dans `fiches/`) ; l'agenda, les appels, les organisations, la solidarité et les données de test restent des exemples marqués [EXEMPLE].
+
 ## Format d'une fiche (`fiches/*.md`)
 
 Un en-tête entre deux lignes `---`, puis le texte en Markdown (titres `##`, listes `-`, gras `**`).
