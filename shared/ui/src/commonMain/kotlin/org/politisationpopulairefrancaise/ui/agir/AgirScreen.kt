@@ -34,6 +34,12 @@ import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
+import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaLibrary
+import org.politisationpopulairefrancaise.ui.agir.agenda.rememberAgendaLibrary
+import org.politisationpopulairefrancaise.ui.agir.calls.CallsLibrary
+import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
+import org.politisationpopulairefrancaise.ui.agir.collectives.CollectivesScreen
+import org.politisationpopulairefrancaise.ui.agir.collectives.rememberCollectivesLibrary
 import org.politisationpopulairefrancaise.ui.agir.manifestation.LocalHelpState
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ManifestationScreen
 import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
@@ -63,7 +69,7 @@ import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.agir_agenda_title
 import org.politisationpopulairefrancaise.ui.resources.agir_back
 import org.politisationpopulairefrancaise.ui.resources.agir_calls_title
-import org.politisationpopulairefrancaise.ui.resources.agir_collectives_title
+import org.politisationpopulairefrancaise.ui.resources.collectifs_rooms_title
 import org.politisationpopulairefrancaise.ui.resources.agir_pending_text
 import org.politisationpopulairefrancaise.ui.resources.agir_pending_title
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
@@ -75,6 +81,9 @@ enum class AgirRoute(val id: String) {
     CALLS("appels"),
     ORGANISATIONS("organisations"),
     COLLECTIVES("collectifs"),
+
+    /** The plain rooms of "Messages" (salons), open to all, reached from the directory of the collectifs (M24). */
+    ROOMS("salons"),
     TESTIFY("temoigner"),
     MANIFESTATION("mode-manifestation"),
 
@@ -89,8 +98,10 @@ typealias AgirSlot = @Composable (modifier: Modifier, onBack: () -> Unit) -> Uni
  * The space "Agir" (vision, pillar 3): its home, then each rubric with a way back to it. The
  * agenda and the calls are developed by other blocks and plugged in through [agenda] and [calls];
  * while they are null, their rubric shows "En préparation". The directory of organisations lives
- * here ([OrganisationsScreen]); the collectives are the rooms of "Messages", shown here with the
- * same state ([groups], the shell's). "Guides pour s'organiser" leads to "Comprendre".
+ * here ([OrganisationsScreen]); the collectifs (M24, D-087) are rooms of "Messages" carrying a
+ * marker, with their own directory, page and creation ([CollectivesScreen]) on the same rooms
+ * ([groups], the shell's); the plain rooms stay one tap away ([AgirRoute.ROOMS]). "Guides pour
+ * s'organiser" leads to "Comprendre".
  *
  * [organisations] is the directory shared with the other blocks (its [OrganisationsLibrary.verified]
  * keys mark the organisations' publications); null builds one for as long as "Agir" is shown.
@@ -115,6 +126,9 @@ fun AgirScreen(
     testimonies: TestimonyLibrary? = null,
     /** Solidarity and "Je veux aider" (M35); null builds one for as long as "Agir" is shown. */
     solidarity: SolidarityLibrary? = null,
+    /** The agenda and the calls of the shell, whose events and calls may be a collectif's (M24); null builds them. */
+    agendaLibrary: AgendaLibrary? = null,
+    callsLibrary: CallsLibrary? = null,
 ) {
     var route by rememberSaveable { mutableStateOf(AgirRoute.HOME) }
     // Where the back button of the directory leads when a plugged screen opened an organisation's page.
@@ -129,6 +143,11 @@ fun AgirScreen(
     }
     val home: () -> Unit = { route = AgirRoute.HOME }
     val testimonyLibrary = testimonies ?: rememberTestimonyLibrary(dependencies, start = false)
+    // The collectifs (M24) live on the rooms of the shell; their events and calls on its agenda and its calls.
+    val rooms = groups ?: rememberGroupsLibrary(dependencies)
+    val collectives = rememberCollectivesLibrary(dependencies, rooms)
+    val agendaOfCollectives = agendaLibrary ?: rememberAgendaLibrary(dependencies, start = false)
+    val callsOfCollectives = callsLibrary ?: rememberCallsLibrary(dependencies, start = false)
     val solidarityLibrary = solidarity ?: rememberSolidarityLibrary(dependencies)
     // The protest mode shares the AIDE button's state (rally point, legal teams); alone (tests), its own.
     val help = LocalHelpState.current ?: rememberHelpState(dependencies, directory, library)
@@ -147,6 +166,9 @@ fun AgirScreen(
         } else if (route == AgirRoute.TESTIFY && returnTo != null) {
             route = returnTo ?: AgirRoute.HOME
             returnTo = null
+        } else if (route == AgirRoute.ROOMS) {
+            // The plain rooms were opened from the directory of the collectifs: back to it.
+            route = AgirRoute.COLLECTIVES
         } else if (route == AgirRoute.SOLIDARITY && solidarityLibrary.hasSelection) {
             // The page of a fund or a mission closes first, back to the list.
             solidarityLibrary.closeSelection()
@@ -197,7 +219,30 @@ fun AgirScreen(
                     notesKey = library.posts,
                     organisationAgenda = organisationAgenda,
                 )
-                AgirRoute.COLLECTIVES -> Collectives(dependencies, groups, session, windowClass, onNavigate, onBack = home)
+                AgirRoute.COLLECTIVES -> CollectivesScreen(
+                    library = collectives,
+                    session = session,
+                    windowClass = windowClass,
+                    agenda = agendaOfCollectives,
+                    calls = callsOfCollectives,
+                    onBack = home,
+                    onNavigate = onNavigate,
+                    onOpenRooms = { route = AgirRoute.ROOMS },
+                    onCreateRoom = {
+                        rooms.beginCreation("")
+                        route = AgirRoute.ROOMS
+                    },
+                    onOpenMobilization = { mobilization ->
+                        agendaOfCollectives.open(mobilization)
+                        route = AgirRoute.AGENDA
+                    },
+                    onOpenCall = { call ->
+                        callsOfCollectives.open(call)
+                        route = AgirRoute.CALLS
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+                AgirRoute.ROOMS -> Collectives(dependencies, rooms, session, windowClass, onNavigate, onBack = { route = AgirRoute.COLLECTIVES })
                 AgirRoute.MANIFESTATION -> ManifestationScreen(help, windowClass, onBack = home)
                 AgirRoute.SOLIDARITY -> SolidarityScreen(
                     library = solidarityLibrary,
@@ -226,7 +271,7 @@ fun AgirScreen(
     }
 }
 
-/** The rooms of collectives, as in "Messages", with a way back to "Agir" above the list. */
+/** The plain rooms (salons), as in "Messages", with a way back to the directory of the collectifs above the list. */
 @Composable
 private fun Collectives(
     dependencies: AppDependencies,
@@ -243,8 +288,8 @@ private fun Collectives(
         return
     }
     val compact = windowClass.width == WindowWidthClass.COMPACT
-    Column(Modifier.fillMaxSize().testTag(AgirTags.COLLECTIVES)) {
-        BackTitle(stringResource(Res.string.agir_collectives_title), onBack, Modifier.padding(start = if (compact) 8.dp else 16.dp, top = 8.dp, end = 16.dp))
+    Column(Modifier.fillMaxSize().testTag(AgirTags.ROOMS)) {
+        BackTitle(stringResource(Res.string.collectifs_rooms_title), onBack, Modifier.padding(start = if (compact) 8.dp else 16.dp, top = 8.dp, end = 16.dp))
         Box(Modifier.weight(1f).fillMaxWidth()) {
             CollectivesPage(rooms, session, windowClass, onNavigate)
         }

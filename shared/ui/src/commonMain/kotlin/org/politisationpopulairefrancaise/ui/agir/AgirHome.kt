@@ -118,6 +118,9 @@ object AgirTags {
     const val BACK = "agir-back"
     const val PENDING = "agir-pending"
     const val COLLECTIVES = "agir-collectives"
+
+    /** The plain rooms (salons) reached from the directory of the collectifs. */
+    const val ROOMS = "agir-rooms"
 }
 
 /** How many cards a row of the home holds for a given width: 1 on phones, 2 on tablets, 3 on wide windows. */
