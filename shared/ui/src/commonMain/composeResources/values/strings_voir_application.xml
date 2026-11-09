@@ -7,7 +7,7 @@
     <string name="appl_intro">Une loi votée ne s’applique souvent qu’une fois ses décrets publiés par le gouvernement. Pour chaque loi, voici les mesures d’application attendues, celles qui sont prises et celles qui manquent encore, d’après les échéanciers publiés par Légifrance.</string>
     <string name="appl_method">Les chiffres sont ceux de la source, calculés de la même façon pour chaque loi. Les lois ne sont ni classées ni comparées entre elles. Une date « annoncée » est celle que le gouvernement a lui-même indiquée dans l’échéancier.</string>
     <string name="appl_source">Source : Assemblée nationale (LexImpact), baromètre de l’application des lois, d’après les échéanciers de Légifrance. Licence Ouverte 2.0.</string>
-    <string name="appl_updated">Données du %1$s.</string>
+    <string name="appl_updated">Données importées le %1$s depuis le baromètre de l’Assemblée nationale.</string>
     <string name="appl_none_yet">Les données de l’application des lois ne sont pas encore disponibles sur ce serveur.</string>
     <string name="appl_download">Télécharger la %1$de législature (%2$s)</string>
     <string name="appl_update">Mettre à jour la %1$de législature (%2$s)</string>
