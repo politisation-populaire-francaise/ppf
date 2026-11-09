@@ -439,7 +439,6 @@ private fun DayRow(state: StrikeSimulatorState, index: Int, entry: StrikeDayEntr
                 value = entry.hoursText,
                 onValueChange = { state.setHours(index, it) },
                 tag = StrikeTags.HOURS + index,
-                showLabel = false,
             )
             if (state.hoursError(entry)) ErrorLine(stringResource(Res.string.greve_hours_error), StrikeTags.HOURS + index + "-error")
         }
@@ -805,8 +804,8 @@ private fun SourcesLine(sources: List<StrikeSource>) {
 }
 
 /**
- * A field with its label always visible above it (the label is also the field's name for screen
- * readers, so the visible copy is not read twice). [showLabel] false when the row already says it.
+ * A field with its label always visible above it, even once filled in (the label is also the
+ * field's name for screen readers, so the visible copy is not read twice).
  */
 @Composable
 private fun NumberField(
@@ -814,17 +813,14 @@ private fun NumberField(
     value: String,
     onValueChange: (String) -> Unit,
     tag: String,
-    showLabel: Boolean = true,
     keyboardType: KeyboardType = KeyboardType.Decimal,
 ) {
-    if (showLabel) {
-        Text(
-            label,
-            style = MaterialTheme.typography.labelLarge,
-            color = PpfTheme.palette.ink,
-            modifier = Modifier.padding(bottom = 4.dp).clearAndSetSemantics { },
-        )
-    }
+    Text(
+        label,
+        style = MaterialTheme.typography.labelLarge,
+        color = PpfTheme.palette.ink,
+        modifier = Modifier.padding(bottom = 4.dp).clearAndSetSemantics { },
+    )
     PpfTextField(
         value = value,
         onValueChange = onValueChange,
