@@ -7,7 +7,7 @@ package org.politisationpopulairefrancaise.core.agir.strike
  */
 object StrikeNumbers {
     /** The no-break space of French typography, between thousands and before a unit. */
-    const val NBSP: Char = ' '
+    const val NBSP: Char = '\u00A0'
 
     /**
      * An amount in euros ("2400", "2 400,50", "2400.5 €") as cents; null when it is empty, not a
@@ -15,7 +15,7 @@ object StrikeNumbers {
      * Both the comma and the point are read as the decimal separator; spaces are ignored.
      */
     fun parseEuros(text: String): Long? {
-        val cleaned = text.filterNot { it == ' ' || it == NBSP || it == ' ' }.removeSuffix("€").replace(',', '.')
+        val cleaned = text.filterNot { it == ' ' || it == NBSP || it == '\u202F' }.removeSuffix("€").replace(',', '.')
         if (cleaned.isEmpty() || cleaned.count { it == '.' } > 1) return null
         val whole = cleaned.substringBefore('.')
         val decimals = if ('.' in cleaned) cleaned.substringAfter('.') else ""
@@ -37,7 +37,7 @@ object StrikeNumbers {
 
     /** A duration in decimal hours or with an "h", as minutes (up to 99 h 59); null when unreadable. */
     private fun parseDuration(text: String): Int? {
-        val cleaned = text.filterNot { it == ' ' || it == NBSP || it == ' ' }.lowercase()
+        val cleaned = text.filterNot { it == ' ' || it == NBSP || it == '\u202F' }.lowercase()
         if (cleaned.isEmpty()) return null
         val minutes = if ('h' in cleaned) {
             val hours = cleaned.substringBefore('h')

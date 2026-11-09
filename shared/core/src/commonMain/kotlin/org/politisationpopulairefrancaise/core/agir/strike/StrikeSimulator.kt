@@ -263,9 +263,12 @@ object StrikeSimulator {
         return Computed(
             shares = shares,
             raw = Fraction.of(halfMinutes * 12, 2L * simulation.weeklyMinutes * 52),
-            monthlyHoursHundredths = roundHalfUp(simulation.weeklyMinutes.toLong() * 52 * 100, 12L * 60),
+            monthlyHoursHundredths = monthlyHoursHundredths(simulation.weeklyMinutes),
         )
     }
+
+    /** The monthly hours of [weeklyMinutes] a week (× 52 ÷ 12, code du travail, L3242-1), in hundredths of an hour: 15167 for 35 hours. */
+    fun monthlyHoursHundredths(weeklyMinutes: Int): Long = roundHalfUp(weeklyMinutes.toLong() * 52 * 100, 12L * 60)
 
     /** Territorial and hospital: the share of one day of strike, and whether hours were held to one thirtieth. */
     private fun publicShare(day: StrikeDay): Pair<Fraction, Boolean> = when (day) {
