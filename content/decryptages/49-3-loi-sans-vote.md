@@ -1,23 +1,21 @@
 ---
 slug: 49-3-loi-sans-vote
-title: [EXEMPLE] « Avec le 49.3, une loi est adoptée sans aucun vote »
+title: « Avec le 49.3, une loi est adoptée sans aucun vote »
 summary: En partie seulement : avec le 49.3, les députés ne votent pas sur le texte lors de cette lecture, mais ils peuvent voter une motion de censure et le texte passe aussi par le Sénat.
 topics: institutions, parlement, 49-3
 type: decryptage
 origin: ai-assisted
 verdict: trompeur
 claim: Avec le 49.3, une loi est adoptée sans aucun vote.
-claim_context: Affirmation qui circule sur les réseaux sociaux, novembre 2026
+claim_context: Idée répandue, formulée ici par la rédaction
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Avec le 49.3, le texte est **considéré comme adopté** par l'Assemblée nationale **sans vote sur le texte lui-même**.
 - Les députés peuvent toutefois **voter une motion de censure** : si elle est adoptée, le Gouvernement démissionne et le texte est **rejeté**.
 - Le 49.3 ne vaut que **pour une lecture** à l'Assemblée : le texte est aussi **examiné par le Sénat**, où cette procédure n'existe pas.
 :::
-
-**[EXEMPLE] Ce décryptage est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Ce que dit l'affirmation
 
@@ -44,13 +42,13 @@ L'expression « adopté sans vote » décrit correctement ce qui se passe à l'A
 
 ::: et-maintenant
 - [Voir les revendications des citoyens](ppf:revendications)
-- Suivre le parcours [EXEMPLE] « Le 49.3 et la motion de censure » dans l'espace Comprendre.
+- Suivre le parcours « Le 49.3 et la motion de censure » dans l'espace Comprendre.
 - Lire l'article 49 de la Constitution sur Légifrance (https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062).
 :::
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 49, version en vigueur depuis le 1er mars 2009 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062
-- Constitution du 4 octobre 1958, article 45 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241040
-- Constitution du 4 octobre 1958, article 50 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527530
-- Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025), partie sur l'engagement de responsabilité : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
+- Constitution du 4 octobre 1958, article 49, version en vigueur depuis le 1er mars 2009, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062
+- Constitution du 4 octobre 1958, article 45, version en vigueur depuis le 1er mars 2009, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241040
+- Constitution du 4 octobre 1958, article 50, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527530
+- Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025), partie sur l'engagement de responsabilité, consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
