@@ -9,6 +9,7 @@ import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.editorial.Article
@@ -43,13 +44,13 @@ class VictoriesScreenTest {
         val catalog = VoirCatalog.from(listOf(victory("loi", "loi-modifiee", "2026-10-01"), victory("promesse", "engagement-tenu", "2026-12-01")))
         setContent {
             PpfTheme(darkTheme = false) {
-                Box(Modifier.requiredSize(900.dp, 3000.dp)) { VictoriesPage(catalog, onOpen = {}, onNext = {}, modifier = Modifier.verticalScroll(rememberScrollState())) }
+                Box(Modifier.requiredSize(900.dp, 760.dp)) { VictoriesPage(catalog, onOpen = {}, onNext = {}, modifier = Modifier.verticalScroll(rememberScrollState())) }
             }
         }
         waitForIdle()
         onNodeWithTag(VictoriesTags.victory("loi")).assertExists()
         onNodeWithTag(VictoriesTags.victory("promesse")).assertExists()
-        onNodeWithTag(VictoriesTags.kind("loi-modifiee")).performClick()
+        onNodeWithTag(VictoriesTags.kind("loi-modifiee")).performScrollTo().performClick()
         waitForIdle()
         assertEquals(0, onAllNodesWithTag(VictoriesTags.victory("promesse")).fetchSemanticsNodes().size)
         onNodeWithTag(VictoriesTags.victory("loi")).assertExists()

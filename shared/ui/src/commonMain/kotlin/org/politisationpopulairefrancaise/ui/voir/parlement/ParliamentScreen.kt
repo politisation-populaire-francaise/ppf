@@ -159,10 +159,7 @@ private fun ListPage(state: ParliamentState, snapshot: ParliamentSnapshot, colum
             }
         }
         state.week?.let { week -> item(key = "week") { ParliamentWeekEntry(week, Modifier.padding(horizontal = padding, vertical = 12.dp).widthIn(max = 720.dp)) } }
-        item(key = "my-votes") { MyVotesEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
-        item(key = "presence") { PresenceEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
-        item(key = "sponsorships") { SponsorshipsEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
-        item(key = "application") { ApplicationEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
+        // The list of the members first: most pages need it (a gesture, its size shown).
         if (!membersHeld || membersRef != null && membersRef.name in snapshot.outdated) {
             item(key = "members-download") {
                 Column(Modifier.padding(horizontal = padding, vertical = 12.dp).widthIn(max = 720.dp)) {
@@ -187,6 +184,10 @@ private fun ListPage(state: ParliamentState, snapshot: ParliamentSnapshot, colum
                 }
             }
         }
+        item(key = "my-votes") { MyVotesEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
+        item(key = "presence") { PresenceEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
+        item(key = "sponsorships") { SponsorshipsEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
+        item(key = "application") { ApplicationEntry(state, Modifier.padding(horizontal = padding).padding(bottom = 12.dp).widthIn(max = 720.dp)) }
         if (membersHeld) {
             item(key = "filters") {
                 Column(Modifier.padding(horizontal = padding, vertical = 12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
