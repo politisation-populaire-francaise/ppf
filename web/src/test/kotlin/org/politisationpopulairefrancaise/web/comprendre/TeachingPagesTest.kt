@@ -41,9 +41,12 @@ class TeachingPagesTest {
         .mapNotNull(Article::from)
 
     /** The example sheet of content/enseignants, checked by its schema against the bundled contents, then built. */
-    private val example: Article = run {
-        val path = file("content", "enseignants", SHEET_FILE)
-        val document = ContentDocument.parse(SHEET_FILE, Files.readString(path))
+    private val example: Article = checked(SHEET_FILE)
+
+    /** A sheet of content/enseignants named [fileName], checked by its schema against the bundled contents, then built. */
+    private fun checked(fileName: String): Article {
+        val path = file("content", "enseignants", fileName)
+        val document = ContentDocument.parse(fileName, Files.readString(path))
         val schema = ComprendreSchemas.FICHE_PEDAGOGIQUE
         val draft = document.toDraft(schema.type)
         val context = CheckContext.of(EditorialTrust.EXAMPLE_EDITOR, trusted.associate { it.slug to it.type })
@@ -51,7 +54,7 @@ class TeachingPagesTest {
         assertTrue(problems.isEmpty(), problems.joinToString("\n") { EditorialMessages.french(it) })
         val unsigned = EditorialEngine.build(schema, draft, PublicKey.fromHex(EditorialTrust.EXAMPLE_EDITOR))
         // Not signed: the catalog is built from articles already read from trusted events.
-        Article.from(SignedEvent(unsigned.idHex(), unsigned.pubkey, unsigned.createdAt, unsigned.kind, unsigned.tags, unsigned.content, "0".repeat(128)))!!
+        return Article.from(SignedEvent(unsigned.idHex(), unsigned.pubkey, unsigned.createdAt, unsigned.kind, unsigned.tags, unsigned.content, "0".repeat(128)))!!
     }
 
     private val catalog = ComprendreCatalog.from(
@@ -170,7 +173,12 @@ class TeachingPagesTest {
         assertTrue(html.contains(">Lycée</h2>"))
         assertTrue(html.contains("href=\"/comprendre/enseignants/$SHEET_SLUG\""))
         assertTrue(html.contains("L’enseignant reste libre de ses choix pédagogiques."))
-        assertFalse(html.contains("id=\"niveau-cycle-4\""), "no empty level")
+        // The sheets of collège (cycle 4) under their own level.
+        assertTrue(html.contains("id=\"niveau-cycle-4\""))
+        CYCLE_4_SHEETS.forEach { assertTrue(html.contains("href=\"/comprendre/enseignants/$it\""), it) }
+        // A level without any sheet is not shown.
+        val lyceeOnly = render { teachingSheetsDocument(ComprendreCatalog.from(trusted.filterNot { it.slug in CYCLE_4_SHEETS } + example)) }
+        assertFalse(lyceeOnly.contains("id=\"niveau-cycle-4\""), "no empty level")
         val empty = render { teachingSheetsDocument(ComprendreCatalog.EMPTY) }
         checkPage(empty)
         assertTrue(empty.contains("Rien de publié pour l’instant."))
@@ -179,11 +187,26 @@ class TeachingPagesTest {
         assertTrue(home.contains("Pour la classe"))
     }
 
+    @Test
+    fun everySheetOfTheRepositoryPassesItsSchemaAndKeepsItsLevel() {
+        val sheets = Files.list(file("content", "enseignants")).use { files -> files.map { it.fileName.toString() }.filter { it.endsWith(".md") }.sorted().toList() }
+        assertEquals((CYCLE_4_SHEETS + SHEET_SLUG).sorted().map { "$it.md" }, sheets)
+        sheets.forEach { name ->
+            val sheet = assertNotNull(TeachingSheet.from(checked(name)), name)
+            val expected = if (name.endsWith("-cycle-4.md")) TeachingLevel.CYCLE_4 else TeachingLevel.LYCEE
+            assertEquals(expected, sheet.level, name)
+            assertTrue(sheet.article.title.startsWith("[EXEMPLE]"), name)
+            assertTrue(sheet.programme.contains("Bulletin officiel"), name)
+            assertNotNull(catalog.courseOf(sheet), "$name: its course is bundled")
+        }
+    }
+
     private companion object {
         const val DIRECTORY_ROOT = "shared"
         val DIRECTORY = arrayOf("ui", "src", "commonMain", "composeResources", "files", "contents")
         val FILES = listOf("fiches.json", "parcours.json", "comprendre.json", "glossaire.json")
         const val SHEET_SLUG = "classe-comment-une-loi-est-votee-lycee"
         const val SHEET_FILE = "$SHEET_SLUG.md"
+        val CYCLE_4_SHEETS = listOf("classe-la-separation-des-pouvoirs-cycle-4", "classe-s-inscrire-et-voter-cycle-4")
     }
 }

@@ -10,7 +10,7 @@ course: comment-une-loi-est-votee
 level: lycee
 programme: Enseignement moral et civique, classe terminale des voies générale et technologique, thème « La vie démocratique : débat, délibération et prise de décision », axe « La délibération dans les institutions (nationales, européennes, internationales) » ; programme fixé par l'arrêté du 29 mai 2024, Bulletin officiel n° 24 du 13 juin 2024, appliqué en terminale depuis la rentrée 2026 ; vérifié le 2026-11-08.
 published_at: 2026-11-08
-updated_at: 2026-11-08
+updated_at: 2026-11-09
 ---
 **[EXEMPLE] Cette fiche pédagogique est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
 
@@ -25,7 +25,7 @@ Cette séance fait vivre en classe le parcours « Comment une loi est votée ».
 
 ## Prérequis
 
-- Avoir vu en troisième « Les règles du jeu démocratique » : la Constitution, la séparation des pouvoirs, le contrôle du Gouvernement par le Parlement.
+- Connaître les institutions de la Ve République vues au collège : la Constitution, la séparation des pouvoirs, le contrôle du Gouvernement par le Parlement. Les élèves de terminale de 2026-2027 étaient en troisième en 2023-2024 et ont suivi l'ancien programme du collège (le nouveau ne s'applique en troisième que depuis la rentrée 2026) : un rappel de ces notions en entrée de séance peut être utile.
 - Avoir vu en seconde « L'État de droit garantit les droits et libertés et un pluralisme démocratique » : la hiérarchie des normes, la Constitution au sommet.
 - Aucun appareil n'est nécessaire pour les élèves : le parcours se projette ou s'imprime.
 
@@ -64,7 +64,7 @@ Règles du débat : chacun parle à son tour, on répond à un argument et jamai
 
 - Ministère de l'Éducation nationale, Bulletin officiel n° 24 du 13 juin 2024, « Programme du cours préparatoire à la classe terminale des voies générale, technologique et professionnelle et des classes préparant au certificat d'aptitude professionnelle » (arrêté du 29 mai 2024, JO du 12 juin 2024, NOR MENE2413934A ; article 3 : application en terminale à la rentrée 2026-2027), numéro complet en PDF consulté le 2026-11-08 : https://education.gouv.fr/sites/default/files/Bulletin_officiel_MENJS_2024_06_13_BO24-1718196134.pdf
 - Le même texte sur la page du Bulletin officiel : https://www.education.gouv.fr/bo/2024/Hebdo24/MENE2413934A
-- Arrêté du 19 juin 2024 modifiant l'arrêté du 29 mai 2024 (il ne touche qu'aux anciens programmes de l'école, pas au lycée), consulté le 2026-11-08 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049790727
+- Arrêté du 19 juin 2024 modifiant l'arrêté du 29 mai 2024 (il précise quelles parties d'enseignement moral et civique des anciens programmes de l'école et du collège de 2015 sont supprimées ; il ne change ni le programme du lycée ni ses dates d'application), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049790727
 - Constitution du 4 octobre 1958, texte intégral en vigueur (articles 20, 24, 45, 46, 49 et 89) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
 - Constitution du 4 octobre 1958, article 45 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241040
 - Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025) : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
