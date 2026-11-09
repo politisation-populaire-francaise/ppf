@@ -960,6 +960,34 @@ Messages privés entre le compte de la personne qui arme un minuteur et chacun d
 
 **Sur l'appareil de la personne** (préférence privée sur Android, fichier `minuteur.json` du dossier privé sur ordinateur ; aucune table, aucune migration) : document JSON `TimerDeviceData` (version 1) : le compte propriétaire, le minuteur armé (identifiant, échéances réelle et affichée, destinataires, texte, lieu, `h`, secret courant caché, sel et nombre d'itérations du code « je vais bien », empreinte lente du code de détresse, essais faux), les envois en attente (sceaux déjà chiffrés, réemballés à chaque essai) et les minuteurs reçus. Le secret courant n'y est jamais en clair : il est caché par un XOR avec 32 octets tirés par HKDF-SHA-256 (sel : un nonce aléatoire de 16 octets ; info : `ppf-minuteur-secret-v1`) de la clé que donne le code « je vais bien » (PBKDF2-HMAC-SHA-256, sel aléatoire de 16 octets, 600 000 itérations, puis poivre HMAC de l'Android Keystore quand il existe). Vérifier un code, c'est ouvrir cette boîte et comparer SHA-256 du résultat avec `h`.
 
+## 4 sexdecies. Code QR des affiches d'« Agir » (AG-61, étape 1, décision à numéroter)
+
+Le code QR d'une affiche ou d'un tract fabriqué sur l'appareil porte soit l'événement signé lui-même, soit l'adresse stable du contenu. Règles communes : `shared/core/.../core/agir/poster/PosterQr.kt` et `AgirLinks.kt` ; détail et raisons : `docs/integration/agir-affiche-qr.md`. Rien dans le code ne concerne la personne qui a fait ou imprimé l'affiche.
+
+**Forme « événement »** (le cas normal) :
+
+```
+PPF:EVENT:1:<Base45 du gzip du JSON de l'événement signé>
+```
+
+| Partie | Contenu |
+|---|---|
+| `PPF:EVENT:1:` | marqueur et version du format, en capitales (mode alphanumérique des codes QR) ; une autre version prendra un autre chiffre |
+| charge | Base45 (RFC 9285) des octets gzip (RFC 1952) du JSON exact de l'événement signé (section 2), en UTF-8, tel que `SignedEvent.toJson()` l'écrit ; tous les caractères appartiennent à l'alphabet Base45 (`0-9`, `A-Z`, espace, `$%*+-./:`) |
+
+- **Taille** : 1 451 caractères au plus, préfixe compris : capacité d'un code de version 25 au niveau de correction M en mode alphanumérique (ISO/IEC 18004). Un événement plus long prend la forme « adresse ».
+- **Lecture** : Base45 décodé (longueur de reste 1 refusée, valeur trop grande refusée, caractère hors alphabet refusé), gzip décompressé (64 Ko au plus), JSON lu, puis identifiant et signature vérifiés (`SignedEvent.verify()`). Un événement dont l'identifiant ou la signature ne correspond pas est **refusé** ; un code illisible n'est jamais lu comme un événement. Un événement valide est exactement celui que son auteur a signé ; l'application dit qui l'a signé (équipe de PPF, organisation vérifiée, ou compte inconnu) avant de l'ajouter à l'agenda.
+- **Types acceptés à l'étape 1** : mobilisation de l'agenda (31923), ajoutée à l'agenda de l'appareil ; appel (30023, `ppf-type` = `appel`), lu sur place. Tout autre événement valide est montré comme « ni un événement de l'agenda ni un appel ».
+
+**Forme « adresse »** (événement trop long) :
+
+| Contenu | Adresse |
+|---|---|
+| Mobilisation (31923) | `https://politisation-populaire-francaise.org/agir/agenda/<clé de l'auteur>/<identifiant d>` |
+| Appel (30023, `ppf-type` = `appel`) | `https://politisation-populaire-francaise.org/agir/appels/<clé de l'auteur>/<identifiant d>` |
+
+Clé en hexadécimal minuscule (64 caractères) ; identifiant écrit tel quel s'il ne contient que des caractères non réservés (RFC 3986), sinon codé en pourcentage comme les adresses de « Voir ». **Jamais de paramètre ni de fragment.** À la lecture, seules ces adresses exactes sont suivies : `https`, l'un des six domaines de PPF (`www.` admis), ni nom d'utilisateur, ni port, ni paramètre, ni fragment, ni autre chemin. Les pages du site à ces adresses sont à écrire (question 1 de la note) ; l'application ouvre la mobilisation qu'elle connaît, après la synchronisation habituelle de tout l'agenda si besoin.
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.

@@ -356,3 +356,17 @@ Détail : `docs/integration/agir-camera-protegee.md`. Finalité : garder sur le 
 | Clé maîtresse AES-256 qui emballe les clés des photos | Android Keystore (non exportable, ne quitte jamais le téléphone) | Protéger les clés des photos | Détruite par l'effacement rapide ; recréée à la photo suivante |
 | Vignettes et photo ouverte, déchiffrées | Mémoire de l'application seulement, jamais sur le disque | Afficher la galerie | Tant que l'écran est ouvert et PPF déverrouillé |
 | Copie enregistrée dans la galerie du téléphone (si la personne le confirme après la mise en garde) | Galerie du téléphone (« Pictures », nom `IMG_AAAAMMJJ_HHMM.jpg`), hors de PPF | Choix de la personne pour ses propres données (principe 10) | Hors du contrôle de PPF : la personne la supprime elle-même ; elle peut être sauvegardée en ligne par le téléphone |
+
+## Ajout du 9 novembre 2026 : affiche et tract à code QR (AG-61, étape 1, pas encore compilée)
+
+Détail : `docs/integration/agir-affiche-qr.md`. Finalité : fabriquer sur l'appareil l'affiche d'une mobilisation ou d'un appel déjà publics, et ajouter à son agenda une mobilisation lue sur une affiche. Base : le choix de la personne (elle demande l'affiche, elle choisit où l'enregistrer, elle touche « Ajouter à mon agenda »). **Rien sur le serveur, rien de nouveau dans la base locale.**
+
+| Donnée | Où | Pourquoi | Combien de temps |
+|---|---|---|---|
+| Fichier de l'affiche (PDF sur Android, PNG sur ordinateur) : l'événement public et son code, les noms des organisateurs tels que l'application les affiche, la mention de l'imprimeur si la personne en tape une | Seulement à l'endroit choisi par la personne (boîte de dialogue des documents ou d'enregistrement) | L'imprimer | Hors du contrôle de PPF : la personne le supprime elle-même |
+| Format choisi, mention de l'imprimeur tapée, aperçu | Mémoire seulement | Fabriquer l'affiche | Tant que l'écran est ouvert ; jamais enregistrés ni envoyés |
+| Copie des deux polices de l'application (Atkinson Hyperlegible, fichiers publics) | Android : `cache/affiche/` de l'application | Le système ne fait une police que depuis un fichier | Remplacée à chaque affiche ; effacée avec le cache |
+| Mobilisation lue sur une affiche et ajoutée à l'agenda (événement signé public) | Table `event` de la base locale, comme un événement reçu du serveur | La retrouver dans l'agenda sans réseau | Jusqu'à une version plus récente ou la désinstallation, comme les autres mobilisations ; la réponse « J'y serai » reste celle de l'agenda (déjà au registre, effacée un jour après l'événement) |
+| Image de la caméra pendant le scan | Mémoire seulement (lecteur commun, `docs/integration/qr-codes.md`) | Lire le code | Abandonnée aussitôt lue ; rien n'est enregistré ni envoyé |
+
+Le fait d'avoir scanné une affiche n'est enregistré nulle part et n'est jamais envoyé : pour une adresse, l'application synchronise tout l'agenda comme d'habitude, sans désigner l'événement.
