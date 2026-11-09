@@ -15,7 +15,7 @@
     <string name="agir_collectives_title">Collectifs</string>
     <string name="agir_collectives_text">Trouver un collectif près de chez vous, voir ses événements et ses appels, ou en fonder un avec un compte validé en personne. Les salons de discussion restent ouverts à tous.</string>
     <string name="agir_guides_title">Guides pour s’organiser</string>
-    <string name="agir_guides_text">Vos droits et les fiches pratiques sont dans l’espace « Comprendre ». Les guides pour créer une association ou déclarer une manifestation y sont en préparation.</string>
+    <string name="agir_guides_text">Vos droits, les guides pour s’organiser (déclarer une manifestation, créer une association, organiser une réunion publique, afficher et distribuer des tracts, collecter de l’argent) et les démarches de solidarité (aide juridictionnelle, trêve hivernale, Défenseur des droits) sont dans l’espace « Comprendre ».</string>
 
     <!-- In preparation: honest, without a date -->
     <string name="agir_soon_title">En préparation</string>
