@@ -419,6 +419,13 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Une autre application déclenche les rappels ou les fait taire | Récepteur de l'alarme non exporté (intention explicite de l'application) ; récepteur du redémarrage qui n'accepte que l'action envoyée par le système, et qui ne fait que relire l'appareil | |
 | Un rappel arrive trop tard (alarme retardée par Android, téléphone éteint, application de bureau fermée) | Rappels 7 à 10 jours avant les dates limites ; la page de l'élection montre toujours toutes les dates ; l'écran dit que sur ordinateur un rappel s'affiche à l'ouverture | Notifications locales programmées sur iPhone avec l'application iOS |
 
+## Ajout du 9 novembre 2026 : questionnaire citoyen anonyme (M26, prévu, analyse d'impact)
+
+| Menace | Parade prévue (rien n'est codé) | Statut |
+|---|---|---|
+| Réidentification d'un votant en croisant ses réponses (département, âge, sexe, bord) et son vote dans la liste publiée des bulletins | Réponses jamais dans la liste publiée, répartitions signées puis effacement des réponses bulletin par bulletin, seuil par case, une catégorie à la fois, région pour une question nationale | À valider (`docs/integration/questionnaire-aipd.md`, section 7) |
+| Accès au serveur pendant le vote | Table à part, aucun écran du back-office, journal d'audit, envoi différé des bulletins (D-112), aucune IP | À valider |
+
 ## Ajout du 9 novembre 2026 : interpeller ses élus (DE-09, étape 1)
 
 | Menace | Parade en place | Prévu |

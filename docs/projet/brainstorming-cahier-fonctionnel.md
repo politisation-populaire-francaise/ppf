@@ -6,6 +6,18 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-09] M26 : analyse d'impact du questionnaire citoyen, choix avant de coder
+- Statut : À valider
+- Concerne : cahier-fonctionnel.md (M26, PR-01 à PR-07 ; DE-21) ; cahier-des-charges.md (sections 5 et 9.8) ; analyse `docs/integration/questionnaire-aipd.md`
+- Contexte : le cahier demande une analyse d'impact avant le lancement de M26. Première version écrite le 9 novembre 2026. Elle relève que la liste anonyme des bulletins, publiée à la clôture pour le recomptage (D-110), réidentifierait des votants si les réponses du questionnaire y figuraient (département peu peuplé, âge, sexe, bord politique, vote).
+- Choix à valider, avec la recommandation :
+  1. **Réponses hors de la liste publiée, effacées après agrégation** (mesures M1 et M2). Option A (recommandée) : la liste publiée garde le vote et le recomptage, le serveur publie des répartitions signées puis efface les réponses bulletin par bulletin ; on recompte les votes, pas les réponses. Option B : réponses dans un bulletin séparé, sans lien avec le vote ; mais on perd ce que M26 veut montrer (qui soutient quoi). Option C : tout publier ; écartée (réidentification).
+  2. **Seuil *k* par case** (PR-04) : recommandé 20 ; une seule catégorie à la fois face au vote, jamais deux croisées.
+  3. **Département ou région** : recommandé, la région pour une question nationale, le département seulement pour une question départementale ou plus large si chaque case dépasse le seuil.
+  4. **Délégué à la protection des données** (RGPD, article 37, 1, c) : la désignation semble obligatoire avant l'ouverture publique (opinions politiques à grande échelle : votes, soutiens, questionnaire) ; à faire confirmer par l'avocat ; délégué bénévole, mutualisé ou externe (coût à chiffrer, aucune dépense engagée).
+  5. Libellés neutres des hauteurs du baromètre (point d'attention n° 9) et durée de la session (30 minutes proposées).
+- Décision : en attente (chef d'équipe, par délégation de la propriétaire ; le point 4 touche le budget et le juridique).
+
 ### [2026-11-09] DE-09 « Interpeller ses élus » : le suivi public des réponses
 - Statut : Décidé par le chef d'équipe (délégation) le 2026-11-09, à intégrer au cahier fonctionnel
 - Concerne : cahier-fonctionnel.md (M13.1, DE-09 ; DE-23) ; conception `docs/integration/interpeller-ses-elus.md`
