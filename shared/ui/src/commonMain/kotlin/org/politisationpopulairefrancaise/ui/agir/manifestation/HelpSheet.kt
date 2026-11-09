@@ -41,12 +41,17 @@ import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.agir.manifestation.EmergencyNumbers
+import org.politisationpopulairefrancaise.ui.agir.harassment.HarassmentTags
 import org.politisationpopulairefrancaise.ui.agir.security.HelpWipeBlock
 import org.politisationpopulairefrancaise.ui.agir.security.LocalDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.timer.TimerAlerts
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
+import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
+import org.politisationpopulairefrancaise.ui.resources.harcelement_help_open
+import org.politisationpopulairefrancaise.ui.resources.harcelement_help_text
+import org.politisationpopulairefrancaise.ui.resources.harcelement_help_title
 import org.politisationpopulairefrancaise.ui.resources.help_button
 import org.politisationpopulairefrancaise.ui.resources.help_button_description
 import org.politisationpopulairefrancaise.ui.resources.help_close
@@ -206,6 +211,18 @@ private fun HelpSheetContent(help: HelpState, title: String) {
         Text(stringResource(Res.string.help_talk_associations), style = MaterialTheme.typography.titleSmall)
         Spacer(Modifier.height(8.dp))
         EmergencyNumbersBlock(EmergencyNumbers.talkAssociations, source = Res.string.help_talk_associations_source)
+    }
+
+    // AG-59 « Kit contre le harcèlement »: offered where the shell draws the kit (HarassmentKitLayer).
+    if (help.harassment != null) {
+        SheetDivider()
+        Column(Modifier.testTag(HarassmentTags.ENTRY)) {
+            SectionHeading(stringResource(Res.string.harcelement_help_title), Lucide.ShieldCheck)
+            Spacer(Modifier.height(4.dp))
+            Text(stringResource(Res.string.harcelement_help_text), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+            Spacer(Modifier.height(8.dp))
+            PpfSecondaryButton(help::openHarassmentKit, stringResource(Res.string.harcelement_help_open), Modifier.testTag(HarassmentTags.ENTRY_OPEN), icon = Lucide.Flag)
+        }
     }
 
     SheetDivider()

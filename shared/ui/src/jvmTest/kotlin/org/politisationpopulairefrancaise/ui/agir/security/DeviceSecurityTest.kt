@@ -104,7 +104,7 @@ private const val PIN = "471905"
 
 /** The parts the shell registers for the quick erase. */
 private object DeviceSecurityTestIds {
-    val shell = listOf("core-identity", "agir-rally-point", "agir-minuteur", "agir-camera", "agir-data", "test-probe")
+    val shell = listOf("core-identity", "agir-rally-point", "agir-minuteur", "agir-camera", "agir-harcelement", "agir-data", "test-probe")
 }
 
 /** The whole application with the security of the device, its storage and eraser kept by the test. */

@@ -103,6 +103,8 @@ import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
 import org.politisationpopulairefrancaise.ui.agir.timer.rememberTimerState
 import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.harassment.HarassmentKitLayer
+import org.politisationpopulairefrancaise.ui.agir.harassment.rememberHarassmentKitState
 import org.politisationpopulairefrancaise.core.voir.VoirDeviceData
 import org.politisationpopulairefrancaise.ui.agir.security.rememberDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
@@ -246,6 +248,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val protectedCamera = rememberProtectedCameraState()
     help.camera = protectedCamera
     RegisterErasable(dependencies, "agir-camera") { protectedCamera.eraseFromDevice() }
+    // AG-59 « Kit contre le harcèlement »: the evidence of its own vault (own directory, own Keystore key); erasing destroys that key, then the files.
+    val harassmentKit = rememberHarassmentKitState()
+    help.harassment = harassmentKit
+    RegisterErasable(dependencies, "agir-harcelement") { harassmentKit.eraseFromDevice() }
     // « Comprendre » (S-44): progress of the courses, chosen commune and directory packages, department packages of the territories.
     dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
     // Décider: the voting tokens, pending requests and choices of the device (S-44).
@@ -369,12 +375,15 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     modifier = modifier.testTag(ShellTags.CONTENT),
                 )
             }
-            when {
-                // On phones the centre takes the whole screen, with its back button.
-                windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier)
-                windowClass.width == WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, bell, content)
-                windowClass.width == WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, bell, centerScreen ?: content)
-                else -> ExpandedShell(selected, navigate, account, bell, centerScreen ?: content)
+            // AG-59: the kit against harassment, opened from the AIDE sheet, is drawn over the shell.
+            HarassmentKitLayer(help, windowClass) {
+                when {
+                    // On phones the centre takes the whole screen, with its back button.
+                    windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier)
+                    windowClass.width == WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, bell, content)
+                    windowClass.width == WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, bell, centerScreen ?: content)
+                    else -> ExpandedShell(selected, navigate, account, bell, centerScreen ?: content)
+                }
             }
             HelpSheetHost(help)
         }
