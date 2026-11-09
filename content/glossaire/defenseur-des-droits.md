@@ -1,6 +1,6 @@
 ---
 slug: glossaire-defenseur-des-droits
-title: [EXEMPLE] Défenseur des droits
+title: Défenseur des droits
 summary: Autorité indépendante que chacun peut saisir gratuitement face à un service public, une discrimination ou un manquement des forces de sécurité, ou pour défendre les droits d'un enfant.
 variants: Défenseur des droits, Défenseure des droits
 topics: droits, libertes, institutions
@@ -8,7 +8,7 @@ see_also: glossaire-garde-a-vue, glossaire-conseil-d-etat
 related: fiche:filmer-les-forces-de-l-ordre, fiche:droits-en-manifestation, decryptage:filmer-policiers-interdit
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le Défenseur des droits est une autorité administrative indépendante, créée en 2011 et inscrite dans la Constitution (article 71-1). Il est nommé par le Président de la République pour six ans ; son mandat n'est pas renouvelable.
 
@@ -27,6 +27,6 @@ Exemple : une personne estime qu'un contrôle de police, lors d'une manifestatio
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (article 71-1)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Loi organique n° 2011-333 du 29 mars 2011 relative au Défenseur des droits, version en vigueur (articles 4, 6 et 33)](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000023781167)
-- [Défenseur des droits, « Découvrir le Défenseur des droits »](https://www.defenseurdesdroits.fr/decouvrir-le-defenseur-des-droits-197)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (article 71-1)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Loi organique n° 2011-333 du 29 mars 2011 relative au Défenseur des droits, version en vigueur (articles 4, 6 et 33)](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000023781167), consulté le 2026-11-09
+- [Défenseur des droits, « Découvrir le Défenseur des droits »](https://www.defenseurdesdroits.fr/decouvrir-le-defenseur-des-droits-197), consulté le 2026-11-09

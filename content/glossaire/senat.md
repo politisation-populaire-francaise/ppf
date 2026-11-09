@@ -1,6 +1,6 @@
 ---
 slug: glossaire-senat
-title: [EXEMPLE] Sénat
+title: Sénat
 summary: Assemblée de 348 sénateurs, élus pour six ans par des élus. Il vote la loi avec l'Assemblée nationale et représente les collectivités territoriales, mais ne peut pas renverser le Gouvernement.
 variants: Sénat
 topics: institutions, parlement
@@ -8,7 +8,7 @@ see_also: glossaire-parlement, glossaire-assemblee-nationale, glossaire-senateur
 related: parcours:comment-une-loi-est-votee, parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le Sénat est la seconde assemblée du Parlement. Il assure la représentation des collectivités territoriales de la République (Constitution, article 24). Ses membres, les sénateurs, sont au plus 348.
 
@@ -24,5 +24,5 @@ Si la présidence de la République devient vacante, c'est le président du Sén
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 7, 24, 39, 45 et 46)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Sénat, « Mode d'élection des sénateurs »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 7, 24, 39, 45 et 46)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Sénat, « Mode d'élection des sénateurs »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html), consulté le 2026-11-09

@@ -1,6 +1,6 @@
 ---
 slug: glossaire-scrutin-proportionnel
-title: [EXEMPLE] Scrutin proportionnel
+title: Scrutin proportionnel
 summary: Mode d'élection où les sièges sont répartis entre les listes selon leur part des voix. Une liste qui obtient 20 % des voix reçoit environ 20 % des sièges.
 variants: scrutin proportionnel, scrutins proportionnels, représentation proportionnelle, la proportionnelle, à la proportionnelle, plus forte moyenne
 topics: elections
@@ -8,7 +8,7 @@ see_also: glossaire-scrutin-majoritaire, glossaire-suffrages-exprimes, glossaire
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Avec un scrutin proportionnel, chaque liste obtient un nombre de sièges qui correspond à peu près à sa part des voix. Les électeurs votent pour une liste, pas pour une seule personne.
 
@@ -26,7 +26,7 @@ Exemple : aux européennes, une liste qui obtient 10 % des suffrages exprimés r
 
 ## Sources
 
-- [Loi n° 77-729 du 7 juillet 1977 relative à l'élection des représentants au Parlement européen, version en vigueur](https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006068600/)
-- [Code électoral, articles L260 à L262 (communes de 1 000 habitants et plus)](https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006164073/)
-- [Code électoral, articles L338 et L338-1 (conseillers régionaux)](https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006148519/)
-- [Sénat, « Mode d'élection des sénateurs »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html)
+- [Loi n° 77-729 du 7 juillet 1977 relative à l'élection des représentants au Parlement européen, version en vigueur](https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006068600/), consulté le 2026-11-09
+- [Code électoral, articles L260 à L262 (communes de 1 000 habitants et plus)](https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006164073/), consulté le 2026-11-09
+- [Code électoral, articles L338 et L338-1 (conseillers régionaux)](https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006148519/), consulté le 2026-11-09
+- [Sénat, « Mode d'élection des sénateurs »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html), consulté le 2026-11-09

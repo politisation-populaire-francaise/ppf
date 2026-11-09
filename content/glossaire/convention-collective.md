@@ -1,13 +1,13 @@
 ---
 slug: glossaire-convention-collective
-title: [EXEMPLE] Convention collective
+title: Convention collective
 summary: Texte négocié entre des représentants des employeurs et des syndicats de salariés, qui fixe les conditions de travail d'un secteur : salaires, congés, primes, droits et obligations.
 variants: convention collective, conventions collectives, convention collective de branche, conventions collectives de branche
 topics: travail, droits
 see_also: glossaire-syndicat, glossaire-greve, glossaire-cotisations-sociales
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Une convention collective est un texte négocié entre les représentants des employeurs et ceux des salariés. Elle peut traiter de l'ensemble des conditions d'emploi, de formation professionnelle et de travail des salariés, et de leurs garanties sociales (Code du travail, articles L2221-1 et L2221-2).
 
@@ -23,5 +23,5 @@ Exemple : pour savoir quelle convention collective s'applique à vous, regardez 
 
 ## Sources
 
-- [Code du travail, article L2221-2](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006901660)
-- [Service-public.gouv.fr, « Convention collective »](https://www.service-public.gouv.fr/particuliers/vosdroits/F78)
+- [Code du travail, article L2221-2](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006901660), consulté le 2026-11-09
+- [Service-public.gouv.fr, « Convention collective »](https://www.service-public.gouv.fr/particuliers/vosdroits/F78), consulté le 2026-11-09

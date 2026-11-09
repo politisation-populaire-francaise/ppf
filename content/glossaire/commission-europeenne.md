@@ -1,6 +1,6 @@
 ---
 slug: glossaire-commission-europeenne
-title: [EXEMPLE] Commission européenne
+title: Commission européenne
 summary: Institution de l'Union européenne qui propose les lois européennes, met en œuvre le budget et veille à l'application du droit de l'Union. Elle compte un membre par pays.
 variants: Commission européenne, commissaire européen, commissaires européens, commissaire européenne, commissaires européennes
 topics: europe, institutions
@@ -8,7 +8,7 @@ see_also: glossaire-union-europeenne, glossaire-parlement-europeen, glossaire-co
 related: qui-decide:prix-des-carburants
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 La Commission européenne est la branche exécutive de l'Union européenne. Elle siège à Bruxelles.
 
@@ -26,6 +26,7 @@ Exemple : la Commission propose un texte sur la sécurité des jouets. Il ne dev
 
 ## Sources
 
-- [Union européenne, « Commission européenne »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-commission_fr)
-- [Union européenne, « Parlement européen : rôles et pouvoirs »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-parliament_fr)
+- [Union européenne, « Commission européenne »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-commission_fr), consulté le 2026-11-09
+- [Union européenne, « Parlement européen : rôles et pouvoirs »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-parliament_fr), consulté le 2026-11-09
 - [EUR-Lex, glossaire, « Transposition »](https://eur-lex.europa.eu/FR/legal-content/glossary/transposition.html)
+- [Commission européenne, « Procédure d'infraction »](https://commission.europa.eu/law/application-eu-law/implementing-eu-law/infringement-procedure_fr), consulté le 2026-11-09

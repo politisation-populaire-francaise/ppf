@@ -1,6 +1,6 @@
 ---
 slug: glossaire-collectivite-territoriale
-title: [EXEMPLE] Collectivité territoriale
+title: Collectivité territoriale
 summary: Partie du territoire, comme la commune, le département ou la région, qui s'administre librement par un conseil élu, dans les domaines que la loi lui confie.
 variants: collectivité territoriale, collectivités territoriales, collectivité locale, collectivités locales, collectivité à statut particulier, collectivités à statut particulier, collectivité d'outre-mer, collectivités d'outre-mer
 topics: collectivites, institutions
@@ -8,7 +8,7 @@ see_also: glossaire-commune, glossaire-departement, glossaire-region, glossaire-
 related: parcours:le-role-de-chaque-elu, qui-decide:ecole, qui-decide:transports-du-quotidien
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Selon l'article 72 de la Constitution, les collectivités territoriales de la République sont :
 - les communes ;
@@ -29,5 +29,5 @@ Exemple : la commune a la charge des écoles publiques, le département celle de
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 72, 72-1 et 72-2)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Code de l'éducation, répartition des compétences entre l'État et les collectivités territoriales (articles L212-4, L213-2 et L214-6)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006071191/LEGISCTA000006151333/)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 72, 72-1 et 72-2)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Code de l'éducation, répartition des compétences entre l'État et les collectivités territoriales (articles L212-4, L213-2 et L214-6)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006071191/LEGISCTA000006151333/), consulté le 2026-11-09

@@ -1,6 +1,6 @@
 ---
 slug: glossaire-parlement-europeen
-title: [EXEMPLE] Parlement européen
+title: Parlement européen
 summary: Assemblée de l'Union européenne élue pour cinq ans au suffrage universel direct. Ses 720 députés adoptent les lois et le budget de l'Union avec le Conseil. La France en élit 81.
 variants: Parlement européen, député européen, députés européens, députée européenne, députées européennes, eurodéputé, eurodéputés, eurodéputée, eurodéputées, élections européennes
 topics: europe, institutions, elections
@@ -8,7 +8,7 @@ see_also: glossaire-union-europeenne, glossaire-commission-europeenne, glossaire
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le Parlement européen représente les citoyens de l'Union européenne. Ses 720 membres sont élus au suffrage universel direct pour cinq ans ; les dernières élections ont eu lieu du 6 au 9 juin 2024. Il siège à Strasbourg, à Bruxelles et à Luxembourg.
 
@@ -27,7 +27,7 @@ Exemple : la Commission propose un texte sur les droits des passagers. Les dépu
 
 ## Sources
 
-- [Union européenne, « Parlement européen : rôles et pouvoirs »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-parliament_fr)
-- [Parlement européen, fiche thématique « Le Parlement européen : modalités d'élection » (avril 2026)](https://www.europarl.europa.eu/factsheets/fr/sheet/21/le-parlement-europeen-modalites-d-election)
-- [Bureau du Parlement européen en France, « Trombinoscope » (9 janvier 2025)](https://paris.europarl.europa.eu/home/pagecontent/grid/main/actualites/trombinoscope.html)
-- [Loi n° 77-729 du 7 juillet 1977 relative à l'élection des représentants au Parlement européen (articles 3 et 4)](https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006068600/)
+- [Union européenne, « Parlement européen : rôles et pouvoirs »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-parliament_fr), consulté le 2026-11-09
+- [Parlement européen, fiche thématique « Le Parlement européen : modalités d'élection » (avril 2026)](https://www.europarl.europa.eu/factsheets/fr/sheet/21/le-parlement-europeen-modalites-d-election), consulté le 2026-11-09
+- [Bureau du Parlement européen en France, « Trombinoscope » (9 janvier 2025)](https://paris.europarl.europa.eu/home/pagecontent/grid/main/actualites/trombinoscope.html), consulté le 2026-11-09
+- [Loi n° 77-729 du 7 juillet 1977 relative à l'élection des représentants au Parlement européen (articles 3 et 4)](https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006068600/), consulté le 2026-11-09

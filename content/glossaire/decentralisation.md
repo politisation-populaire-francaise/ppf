@@ -1,6 +1,6 @@
 ---
 slug: glossaire-decentralisation
-title: [EXEMPLE] Décentralisation
+title: Décentralisation
 summary: Transfert de compétences et de moyens de l'État vers les collectivités territoriales, qui décident par leurs conseils élus. La Constitution dit que l'organisation de la République est décentralisée.
 variants: décentralisation, lois de décentralisation
 topics: collectivites, institutions
@@ -8,7 +8,7 @@ see_also: glossaire-collectivite-territoriale, glossaire-prefet, glossaire-regio
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 La décentralisation consiste à confier des compétences et des moyens à des collectivités territoriales dirigées par des élus, au lieu de tout décider depuis l'État. Depuis la révision constitutionnelle de 2003, l'article 1er de la Constitution précise que l'organisation de la République est décentralisée.
 
@@ -25,6 +25,6 @@ Exemple : les bâtiments des collèges relèvent du département et ceux des lyc
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 1er et 72)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Conseil constitutionnel, « 1982-2022 : quarante ans de décentralisation en France » (Titre VII, octobre 2022)](https://www.conseil-constitutionnel.fr/publications/titre-vii/1982-2022-quarante-ans-de-decentralisation-en-france)
-- [Collectivites-locales.gouv.fr, « Procédure préfectorale » (contrôle de légalité)](https://www.collectivites-locales.gouv.fr/connaitre-les-acteurs-et-les-institutions/controle-de-legalite/procedure-prefectorale)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 1er et 72)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Conseil constitutionnel, « 1982-2022 : quarante ans de décentralisation en France » (Titre VII, octobre 2022)](https://www.conseil-constitutionnel.fr/publications/titre-vii/1982-2022-quarante-ans-de-decentralisation-en-france), consulté le 2026-11-09
+- [Collectivites-locales.gouv.fr, « Procédure préfectorale » (contrôle de légalité)](https://www.collectivites-locales.gouv.fr/connaitre-les-acteurs-et-les-institutions/controle-de-legalite/procedure-prefectorale), consulté le 2026-11-09
