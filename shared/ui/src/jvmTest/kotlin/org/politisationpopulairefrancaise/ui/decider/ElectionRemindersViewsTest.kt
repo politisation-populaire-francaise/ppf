@@ -36,7 +36,8 @@ import kotlin.test.assertTrue
 /** DE-28, step 3: the reminders of the example election, asked on its page, kept on the device, each one removable. */
 @OptIn(ExperimentalTestApi::class)
 class ElectionRemindersViewsTest {
-    private val database = JvmDatabase.inMemory()
+    // The fictional petitions, election and letter of the tests (the application bundles real ones).
+    private val database = JvmDatabase.inMemory().also { DeciderTestContents.seed(LocalEventStore(it)) }
     private val now = CivilDate(2026, 11, 7).toEpochDays() * 86_400 + 43_200
     private val store = ReminderStore(database) { now }
 

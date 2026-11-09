@@ -7,6 +7,7 @@ import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.decider.DeciderCatalog
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.time.CivilDate
@@ -18,13 +19,20 @@ import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
-/** The pages of "Décider" rendered from the example contents bundled with the applications. */
+/**
+ * The pages of "Décider" rendered from fictional contents: the pact of the examples bundled with the applications, and
+ * the fictional petitions of the tests (`content/tests/decider`); the real petitions the applications bundle are left out.
+ */
 class DeciderPagesTest {
-    private val events: List<SignedEvent> = run {
-        val path = listOf(Path.of("..", DIRECTORY, FILE), Path.of(DIRECTORY, FILE)).first(Files::exists)
-        Json.decodeFromString(ListSerializer(SignedEvent.serializer()), Files.readString(path))
+    private fun read(directory: String, file: String): List<SignedEvent> {
+        val path = listOf(Path.of("..", directory, file), Path.of(directory, file)).first(Files::exists)
+        return Json.decodeFromString(ListSerializer(SignedEvent.serializer()), Files.readString(path))
     }
-    private val catalog = DeciderCatalog.from(events.filter { it.pubkey == EditorialTrust.EXAMPLE_EDITOR }.mapNotNull(Article::from))
+    private val catalog = run {
+        val bundled = read(DIRECTORY, FILE).mapNotNull(Article::from).filter { it.type !in FIXTURE_TYPES }
+        val fixtures = read(TESTS_DIRECTORY, TESTS_FILE).mapNotNull(Article::from)
+        DeciderCatalog.from((bundled + fixtures).filter { it.event.pubkey == EditorialTrust.EXAMPLE_EDITOR })
+    }
     private val today = CivilDate(2026, 11, 8)
 
     private fun render(document: HTML.() -> Unit): String = createHTML().html { document() }
@@ -89,5 +97,10 @@ class DeciderPagesTest {
     private companion object {
         const val DIRECTORY = "shared/ui/src/commonMain/composeResources/files/contents"
         const val FILE = "decider.json"
+        const val TESTS_DIRECTORY = "shared/ui/src/jvmTest/resources/contents"
+        const val TESTS_FILE = "decider-tests.json"
+
+        /** The types whose bundled contents are real: the tests read their fictional ones instead. */
+        val FIXTURE_TYPES = setOf(ArticleType.PETITION, ArticleType.ELECTION, ArticleType.MODELE_COURRIER)
     }
 }

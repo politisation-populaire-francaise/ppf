@@ -28,7 +28,8 @@ import kotlin.test.Test
 /** DE-09: the example model letter ([EXEMPLE]), without a commune chosen on the device, on 7 November 2026. */
 @OptIn(ExperimentalTestApi::class)
 class LetterViewsTest {
-    private val database = JvmDatabase.inMemory()
+    // The fictional petitions, election and letter of the tests (the application bundles real ones).
+    private val database = JvmDatabase.inMemory().also { DeciderTestContents.seed(LocalEventStore(it)) }
     private val now = CivilDate(2026, 11, 7).toEpochDays() * 86_400 + 43_200
 
     private fun has(text: String) = hasText(text, substring = true) or hasAnyDescendant(hasText(text, substring = true))

@@ -1083,6 +1083,17 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Options écartées : un bulletin séparé pour les réponses, sans lien avec le vote (M26 ne pourrait plus montrer qui soutient quoi) ; publier les réponses dans la liste des bulletins (réidentification).
 - Conséquences : **rien de M26 n'est codé avant la relecture juridique de l'analyse** ; le seuil reste une valeur de configuration privée, hors dépôt (PR-04), avec 20 au minimum ; l'analyse, la feuille de route et le modèle de menaces sont mis à jour.
 
+## D-151 (2026-11-09) « Décider » : vrais contenus dans l'application, contenus fictifs à part pour les tests
+
+- Numéro provisoire, comme D-150 (bloc D-150 à D-159 demandé au chef d'équipe).
+- Contexte : décision de la propriétaire, relayée par le chef d'équipe le 9 novembre 2026 à 9 h, mot pour mot : « Pour les contenus, autant que possible, il faut mettre de vrais contenus et non pas des contenus d'exemple, avec mention "rédigé par l'ia" ». Règles du chef : contenus factuels vérifiés le jour même sur les sources officielles, chaque affirmation sourcée avec sa date de consultation, `origin: ai-assisted` ; restent [EXEMPLE] les revendications, le Pacte, les réponses des candidats et le comparateur jusqu'à la liste officielle ; tests et jeux d'essai toujours fictifs.
+- Décisions techniques prises en autonomie (gratuites) :
+  - **pétitions** : les deux pétitions ouvertes les plus signées sur le site de l'Assemblée nationale et sur celui du Sénat le jour du relevé (règle objective, écrite dans chaque contenu : un relais n'est pas une prise de position) ; titres tels qu'écrits sur le site officiel, aucun nom de particulier ; une pétition qui vise une personne privée identifiable n'est pas relayée (ainsi la pétition la plus signée du CESE ce jour-là) ; aucune initiative citoyenne européenne ni aucun référendum d'initiative partagée tant que leur site n'a pas pu être lu ;
+  - **élection** : la présidentielle de 2027, au statut « annoncée » (dates de service-public.gouv.fr, décret de convocation pas encore cité) ; date limite d'inscription calculée par la règle générale de l'article L17 du code électoral, à confirmer par le décret ;
+  - **courrier** : un modèle générique et utilisable tel quel (le texte visé est choisi par la personne), avec les pages officielles pour trouver son député et son sénateur ;
+  - **tests** : les contenus fictifs que lisent les tests passent dans `content/tests/decider`, signés à part dans `shared/ui/src/jvmTest/resources/contents/decider-tests.json` (jamais embarqué dans l'application), chargés par `DeciderTestContents` dans la base locale des tests de l'interface et lus par le test des pages du site.
+- Conséquences : à resigner à mon entrée (`decider.json` et `decider-tests.json`) ; les pétitions doivent être relevées à nouveau régulièrement (le compteur affiché porte toujours sa date) ; les consultations et la pétition locale restent [EXEMPLE] jusqu'à leur remplacement.
+
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
 - Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.

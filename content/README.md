@@ -160,6 +160,8 @@ Même principe que « Voir » : chaque champ de l'en-tête devient une étiquett
 
 La liste complète est dans `docs/FORMATS.md`, section 4 septies. L'outil refuse une pétition hors d'un site officiel, un Pacte sans date limite, une réponse d'une personne qui n'est pas candidate ou à une mesure inconnue.
 
+**Vrais contenus et contenus des tests** (décision de la propriétaire du 9 novembre 2026, D-151) : les pétitions, le calendrier électoral et les modèles de courrier de `decider/` sont réels, vérifiés le jour même sur les sources officielles, chaque source avec sa date de consultation, et marqués `origin: ai-assisted` (« Rédigé par l'IA »). Restent [EXEMPLE] dans `decider/` : le Pacte, les réponses des candidats, le comparateur et ses positions (jusqu'à la liste officielle du Conseil constitutionnel), les consultations et la pétition locale (à remplacer à leur tour). Les contenus fictifs que lisent les tests sont dans `tests/decider/` : l'outil les signe à part dans `shared/ui/src/jvmTest/resources/contents/decider-tests.json`, jamais embarqué dans l'application.
+
 ## Espace « Agir » : mobilisations, appels, organisations
 
 Formats complets dans `docs/FORMATS.md`, section 4 sexies. Tous les exemples sont fictifs et marqués **[EXEMPLE]** : aucune organisation, personne ni élu réels ; lieux fictifs ou génériques ; sites et courriels en `example.org` ou `exemple.invalid` (noms réservés aux exemples) ; téléphones pris seulement dans les blocs que l'Arcep réserve aux œuvres audiovisuelles (racines 01 99 00, 02 61 91, 03 53 01, 04 65 71, 05 36 49 et 06 39 98 ; décision n° 2018-0881 modifiée, version du 1er janvier 2026, section 2.5).

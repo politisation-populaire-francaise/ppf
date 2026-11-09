@@ -40,7 +40,8 @@ import kotlin.test.assertEquals
 @OptIn(ExperimentalTestApi::class)
 class DeciderScreenTest {
 
-    private val database = JvmDatabase.inMemory()
+    // The fictional petitions, election and letter of the tests (the application bundles real ones).
+    private val database = JvmDatabase.inMemory().also { DeciderTestContents.seed(LocalEventStore(it)) }
 
     /** The text, on the node itself (merged cards) or on one of its children. */
     private fun has(text: String) = hasText(text, substring = true) or hasAnyDescendant(hasText(text, substring = true))

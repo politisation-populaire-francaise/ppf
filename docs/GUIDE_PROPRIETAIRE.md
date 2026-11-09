@@ -200,7 +200,7 @@ Sur l'ordinateur, l'écran se présente en deux colonnes.
 
 ### Tester l'espace « Décider » (ajouté le 7 novembre 2026)
 
-Tout est inventé et marqué [EXEMPLE] : pétitions, chiffres, élection, candidats et réponses. Seules les règles des pétitions sont réelles (vérifiées le 7 novembre 2026). Aucun compte n'est nécessaire, et tout marche sans réseau.
+Les pétitions sont réelles depuis le 9 novembre 2026 : les deux pétitions ouvertes les plus signées sur le site de l'Assemblée nationale et sur celui du Sénat ce jour-là, avec le nombre de signatures relevé sur le site officiel et la mention « Rédigé par l'IA ». Le Pacte, les candidats et leurs réponses restent inventés et marqués [EXEMPLE]. Aucun compte n'est nécessaire, et tout marche sans réseau.
 
 1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Décider**. En haut, le **Pacte démocratique**, puis les **pétitions officielles ouvertes**, puis « Et aussi ».
 2. Touchez la carte du **Pacte**. Lisez l'encart « Les mêmes règles pour tous les candidats » (il dit maintenant qu'une réponse reçue après la date limite n'est pas comptée, votre décision du 7 novembre ; aucune réponse d'exemple n'est en retard), puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
@@ -238,11 +238,11 @@ Tout est inventé et marqué [EXEMPLE] : l'élection, les quatre candidats et le
 
 ### Tester les rappels d'une élection (ajouté le 9 novembre 2026)
 
-L'élection est inventée et marquée [EXEMPLE] (premier tour le 7 mars 2027). Aucun compte n'est nécessaire, et rien ne part sur Internet : les rappels restent sur l'appareil.
+L'élection est réelle : la présidentielle de 2027, dont les dates sont annoncées (premier tour le 18 avril 2027, second tour le 2 mai 2027) mais pas encore fixées par le décret de convocation. Aucun compte n'est nécessaire, et rien ne part sur Internet : les rappels restent sur l'appareil.
 
-1. Ouvrez **Décider**. Dans **Prochaines élections**, touchez la carte de l'élection d'exemple.
+1. Ouvrez **Décider**. Dans **Prochaines élections**, touchez la carte « Élection présidentielle de 2027 ».
 2. Descendez jusqu'à **Rappels** : rien n'est programmé tant que vous ne le demandez pas. Touchez **Me rappeler ces dates**. Sur le téléphone, Android vous demande d'autoriser les notifications de PPF : touchez **Autoriser** (si vous refusez, les rappels arriveront seulement dans la cloche de l'application).
-3. La liste **Prochains rappels** apparaît, avec la date et l'heure de chacun (par exemple « Veille du scrutin, le 6 mars 2027 à 10 h »).
+3. La liste **Prochains rappels** apparaît, avec la date et l'heure de chacun (par exemple « Veille du scrutin, le 17 avril 2027 à 10 h »).
 4. Coupez l'interrupteur **Veille du scrutin** : ces rappels disparaissent de la liste. Touchez la croix d'un rappel : il disparaît, et ne reviendra pas.
 5. Dans **Mon espace**, notifications : la ligne **Votes et pétitions** est allumée. Éteignez-la puis revenez sur l'élection : un encadré dit que les rappels ne s'afficheront pas, avec un bouton pour la rallumer.
 6. Touchez **Ne plus me rappeler cette élection** : tout est effacé, le bouton du début revient.
@@ -261,7 +261,7 @@ Les deux consultations sont inventées et marquées [EXEMPLE]. Aucun compte n'es
 
 ### Tester « Interpeller ses élus » (ajouté le 9 novembre 2026)
 
-Le modèle de courrier est inventé et marqué [EXEMPLE]. Rien n'est envoyé : c'est vous qui envoyez le courrier, si vous le voulez.
+Le modèle de courrier est réel et utilisable tel quel : il demande à un député ou à un sénateur comment il votera un texte, à choisir vous-même. Rien n'est envoyé : c'est vous qui envoyez le courrier, si vous le voulez.
 
 1. Ouvrez **Décider** et descendez jusqu'à **Interpeller ses élus**. Touchez le modèle « Avant un vote ».
 2. Sans commune choisie, la page vous le dit : le courrier garde « [Nom de l'élu] » et « [Votre commune] ». Pour voir le nom de vos élus s'inscrire, choisissez d'abord votre commune dans **Comprendre**, rubrique **Mes élus**, puis revenez sur le modèle.
@@ -538,7 +538,7 @@ Le site est la version de PPF pour les iPhone tant que l'application iOS n'exist
 
 1. Lancez le serveur de développement comme ci-dessus (`gradlew :server:runDev`) et attendez la ligne qui commence par « Décider: ».
 2. Ouvrez http://localhost:8080/decider : le Pacte démocratique d'exemple, les pétitions officielles ouvertes, puis à part les pétitions closes.
-3. Ouvrez une pétition, par exemple http://localhost:8080/decider/petitions/petition-senat-indexation : le bouton « Signer sur le site officiel » mène au site du Sénat (marqué « site extérieur ») ; PPF ne recueille aucune signature. Plus bas : les relevés du compteur officiel, les étapes et les sources.
+3. Ouvrez une pétition, par exemple http://localhost:8080/decider/petitions/petition-senat-2456 : le bouton « Signer sur le site officiel » mène au site du Sénat (marqué « site extérieur ») ; PPF ne recueille aucune signature. Plus bas : les relevés du compteur officiel, les étapes et les sources.
 4. Ouvrez le Pacte : http://localhost:8080/decider/pacte/pacte-election-exemple : les mesures, la méthode (même texte, même jour, même délai pour tous) et le tableau des réponses des candidats.
 5. Réduisez la fenêtre à la largeur d'un téléphone et passez Windows en mode sombre : tout reste lisible. Arrêtez le serveur à la fin (Ctrl+C).
 

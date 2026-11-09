@@ -34,14 +34,31 @@ import kotlin.io.path.readText
  * deadline), on a link to an unknown slug, or on a candidate without a sheet in "Voir".
  */
 internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEvents: List<UnsignedEvent>) {
-    val directory = content.resolve("decider")
+    signDeciderDirectory(content.resolve("decider"), output.resolve("decider.json"), keys, voirEvents, "decider")
+    // The fictional contents the tests read (owner's decision of 9 November 2026: real contents in the application,
+    // fictional ones in the tests): signed apart, into the resources of the tests, never bundled with the application.
+    val tests = content.resolve(DECIDER_TESTS_DIRECTORY)
+    if (tests.isDirectory()) signDeciderDirectory(tests, deciderTestsOutput(content).resolve(DECIDER_TESTS_FILE), keys, voirEvents, "decider (tests)")
+}
+
+/** The fictional contents of « Décider » for the tests, under the content directory. */
+internal const val DECIDER_TESTS_DIRECTORY: String = "tests/decider"
+
+/** Their signed file, read by the tests of the interface and of the site. */
+internal const val DECIDER_TESTS_FILE: String = "decider-tests.json"
+
+/** `shared/ui/src/jvmTest/resources/contents` of the repository that holds [content]. */
+internal fun deciderTestsOutput(content: Path): Path =
+    content.toAbsolutePath().normalize().parent.resolve("shared/ui/src/jvmTest/resources/contents")
+
+private fun signDeciderDirectory(directory: Path, outputFile: Path, keys: IdentityKeys, voirEvents: List<UnsignedEvent>, label: String) {
     val documents = if (!directory.isDirectory()) emptyList() else Files.walk(directory).use { paths ->
         paths.filter { it.name.endsWith(".md") && !it.name.equals("README.md", ignoreCase = true) }.toList()
     }.sortedBy { directory.relativize(it).toString().replace('\\', '/') }
         .map { file -> parseDocument(directory.relativize(file).toString().replace('\\', '/'), file.readText()) }
     val author = keys.publicKey
     val bySlug = documents.associateBy { it.require("slug") }
-    check(bySlug.size == documents.size) { "decider: the same slug is used twice" }
+    check(bySlug.size == documents.size) { "$label: the same slug is used twice" }
 
     // The pacts first: the answers need the fingerprint of their text.
     val pacts = documents.filter { it.require("type") == ArticleType.PACTE.tagValue }.associate { document ->
@@ -58,7 +75,7 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
                 deciderEvent(document, author, listOf(listOf(DeciderTags.PACTE_TEXT, pacte.fingerprint)))
             }
             else -> deciderEvent(document, author, emptyList())
-        }.also { println("prepared decider/${document.name}") }
+        }.also { println("prepared $label/${document.name}") }
     }
 
     val articles = events.zip(documents).map { (event, document) -> readBack(event, document) }
@@ -127,9 +144,10 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     }
 
     val signer = LocalEventSigner(keys)
-    write(output.resolve("decider.json"), events.map { signer.signChecked(it) })
+    Files.createDirectories(outputFile.parent)
+    write(outputFile, events.map { signer.signChecked(it) })
     println(
-        "decider: ${catalog.petitions.size} petition(s), ${catalog.pactes.size} pact(s), ${catalog.engagements.size} answer(s), " +
+        "$label: ${catalog.petitions.size} petition(s), ${catalog.pactes.size} pact(s), ${catalog.engagements.size} answer(s), " +
             "${catalog.comparators.size} comparator(s), ${catalog.positions.size} position(s), ${catalog.elections.size} election(s), " +
             "${catalog.consultations.size} consultation(s), ${catalog.letters.size} letter(s), ${catalog.localPetitions.size} local petition(s)",
     )
