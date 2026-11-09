@@ -103,3 +103,7 @@ INSERT OR REPLACE INTO push_registration(scope, subscription_id, endpoint, renew
 
 deleteRegistration:
 DELETE FROM push_registration WHERE scope = ?;
+
+-- The quick erase (S-44): the device forgets every registration at once, without the network.
+deleteAllRegistrations:
+DELETE FROM push_registration;

@@ -411,6 +411,30 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Ce que vérifie une personne révèle ce qu'elle a reçu | Rien n'est enregistré ni journalisé ; le contenu collé n'est jamais réécrit dans la page ; dans l'application, la vérification se fait sur l'appareil, sans connexion | |
 | Requête démesurée | 96 Kio au plus pour un contenu collé, corps lu par un canal borné, `413` au-delà | |
 
+## Ajout du 8 novembre 2026 : solidarité et bénévolat (M35 : AG-10, AG-12)
+
+Détail : `docs/integration/agir-solidarite.md`, section 4.
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Fausse caisse, cagnotte frauduleuse, hameçonnage par une page de dons | Seule une clé éditoriale publie une caisse (le serveur refuse tout autre contenu de type 30023 qui n'est pas un appel ; l'appareil n'affiche que les clés de confiance) ; date de vérification affichée ; lien `https` à hôte ASCII seulement, sans « utilisateur@ » ; « Vous quittez PPF » nomme l'hôte, rappelle que les fausses cagnottes existent, le choix sûr en premier ; caisse close ou retirée : plus aucun lien | Procédure écrite de vérification et de revérification des caisses (question 6) |
+| Caisse détournée au profit d'un candidat ou d'un parti (financement interdit à une personne morale) | Étiquette `ppf-no-party` = `oui` obligatoire, sans laquelle l'outil de signature refuse la fiche et l'appareil l'ignore ; partis et candidats exclus de l'annuaire des organisations | Cas limites soumis à l'avocat (question 7) |
+| Profilage par la recherche ou les compétences (qui cherche une caisse de grève, qui est juriste) | Deux requêtes générales, les mêmes pour tous ; recherche, territoire et compétences jamais envoyés ni enregistrés, oubliés par l'effacement rapide | |
+| Exposition des personnes par l'entraide (adresse, trajet, présence à une manifestation) ou par une offre d'aide (engagement) | Rien n'est codé : entraide et « Proposer mon aide » annoncés « bientôt » | Questions 1 à 3 de la note |
+
+## Ajout du 9 novembre 2026 : signaler un message chiffré (S-127, conception validée, pas encore codée)
+
+Conception : `docs/integration/signalement-message-chiffre.md` (version 0.4, validée par le chef d'équipe). Les parades ci-dessous sont prévues ; rien n'est codé avant l'étape 2 du socle du back-office et de M30.
+
+| Menace | Parade prévue | Risque restant |
+|---|---|---|
+| Faux signalement d'un message inventé « de » quelqu'un | Le message est prouvé par son sceau signé par l'auteur (NIP-17) et les clés de ce seul message ; le client de l'équipe vérifie signature, code d'authentification, rumor cohérent (identifiant recalculé, auteur égal à celui du sceau) et destinataire (`ReportProof.verify`) ; au-delà de la conservation des enveloppes, « copie non prouvée » affichée à l'équipe | Une copie non prouvée reste possible, mais elle est dite telle |
+| Clés de message inventées pour faire dire autre chose à un sceau authentique (NIP-44 n'engage pas la clé de chiffrement) | Le texte déchiffré doit être un rumor JSON dont l'empreinte SHA-256 est son propre identifiant et dont l'auteur est celui du sceau : hors de portée sans inverser ChaCha20 et SHA-256 | Aucun connu |
+| Fuite d'autres messages de la conversation | Seules les clés des messages choisis sortent, jamais la clé de conversation ; contexte de 5 messages avant et 5 après au plus, aucun coché par défaut, de la personne signalée ou du signaleur seulement ; les messages des autres participants ne sont jamais proposés | Les pseudonymes des destinataires d'un message prouvé sont visibles de l'équipe (signés avec lui) ; l'écran le dit avant l'envoi |
+| Le serveur apprend quel message est signalé, ou qui signale qui | Pas d'événement 1984 en clair ; l'appareil relit sa boîte par une synchronisation ordinaire sur une fenêtre de dates, jamais une enveloppe par son identifiant ; dossier de M30 à auteur à usage unique, contenu chiffré pour `PPF_MODERATION_KEY` | **Accepté (chef d'équipe, 9 novembre 2026)** : un serveur compromis qui rapprocherait la relecture d'une fenêtre passée de l'arrivée d'un dossier peu après saurait que cette clé a probablement signalé quelqu'un, sans savoir qui ni quel message |
+| Téléphone saisi : preuves de qui a écrit quoi | Aucun sceau gardé sur l'appareil (déni plausible de NIP-17 intact) ; les sceaux relus restent en mémoire le temps de l'écran | La relecture des enveloppes encore gardées par le serveur (90 jours par défaut) était déjà possible avec la clé du compte, sans S-127 |
+| IA qui lirait un échange chiffré | Le signalement va à des personnes de l'équipe seulement, jamais à la modération assistée par IA | |
+
 ## Ajout du 8 novembre 2026 : reprise d'un salon signée par la plateforme (D-144)
 
 - Menace : une équipe, ou un serveur principal compromis, qui s'empare de salons en y nommant ses propres administrateurs « par l'équipe de PPF ».

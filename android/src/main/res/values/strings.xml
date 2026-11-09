@@ -12,6 +12,10 @@
     <string name="notification_channel_team">Équipe PPF</string>
     <string name="notification_channel_silent">Silence total</string>
     <string name="notification_channel_account">Mon compte</string>
+    <!-- Discreet mode (S-45, the launcher shows Outils): neutral names and text, nothing that says PPF or politics. -->
+    <string name="notification_channel_neutral">Notifications</string>
+    <string name="notification_channel_neutral_silent">Notifications sans son</string>
+    <string name="notification_neutral_text">Nouvelle activité</string>
     <!-- The account's alerts (S-146): fixed texts, never a name nor an excerpt. -->
     <string name="notification_account_phrase">Vérifiez votre phrase de récupération</string>
     <string name="notification_account_own">Votre compte a été déclaré compromis</string>

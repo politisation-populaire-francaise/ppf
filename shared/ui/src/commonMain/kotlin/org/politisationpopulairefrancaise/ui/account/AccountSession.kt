@@ -150,8 +150,8 @@ sealed interface PhraseCheckFailure {
 class AccountSession(
     private val store: IdentityStore,
     private val scope: CoroutineScope,
-    /** Called once the keys are erased: what else the device must forget (the followed accounts). */
-    private val onSignOut: () -> Unit = {},
+    /** Called once the keys are erased, and awaited: what else the device must forget (the followed accounts). */
+    private val onSignOut: suspend () -> Unit = {},
     private val pickPositions: () -> List<Int> = { (0 until RecoveryPhrase.DEFAULT_WORD_COUNT).shuffled().take(3).sorted() },
     /** The server, through the single publication port; null keeps everything on the device. */
     private val remote: RemoteEvents? = null,
@@ -171,6 +171,19 @@ class AccountSession(
     /** The check of the phrase in progress ("Vérifier ma phrase"), or null. */
     var phraseCheck: PhraseCheckState? by mutableStateOf(null)
         private set
+
+    /**
+     * True once an account arrives on this device (created or restored) until the step « Protéger PPF
+     * sur cet appareil » (M33, Agir's AppLockSetupStep, D-082) is passed: a code chosen, or « Continuer
+     * sans code » confirmed after its warning. Not kept: a restart shows Mon espace directly.
+     */
+    var lockStepPending: Boolean by mutableStateOf(false)
+        private set
+
+    /** The step « Protéger PPF sur cet appareil » is passed (either way: it can be changed in Mon espace). */
+    fun lockStepDone() {
+        lockStepPending = false
+    }
 
     /** "J'ai perdu le contrôle de mon compte". */
     val lostControl: LostControlFlow = LostControlFlow(this, remote, clock)
@@ -245,6 +258,7 @@ class AccountSession(
         }
         val phrase = creating.phrase
         val created = phrase.deriveKeys()
+        lockStepPending = true
         persist(created, StoredIdentity.of(created, if (creating.keepPhrase) phrase else null, verified = true, pendingRecoveryKey = StoredIdentity.recoveryKeyOf(phrase)))
     }
 
@@ -256,6 +270,7 @@ class AccountSession(
         val creating = state as? AccountUiState.Creating ?: return
         val phrase = creating.phrase
         val keysOfPhrase = phrase.deriveKeys()
+        lockStepPending = true
         persist(keysOfPhrase, StoredIdentity.of(keysOfPhrase, phrase, verified = false, checkDueAt = clock() + REMINDER_DELAY_SECONDS))
     }
 
@@ -280,6 +295,7 @@ class AccountSession(
             if (restored == null) {
                 state = AccountUiState.Restoring(RestoreError.InvalidSecretKey)
             } else {
+                lockStepPending = true
                 persist(restored, StoredIdentity.of(restored, null))
             }
             return
@@ -292,6 +308,7 @@ class AccountSession(
             }
         }
         val restored = phrase.deriveKeys()
+        lockStepPending = true
         persist(restored, StoredIdentity.of(restored, null, verified = true, pendingRecoveryKey = StoredIdentity.recoveryKeyOf(phrase)))
     }
 
@@ -386,6 +403,7 @@ class AccountSession(
             stored = null
             compromise = null
             phraseCheck = null
+            lockStepPending = false
             recoveryKey = RecoveryKeyState.UNKNOWN
             state = AccountUiState.NoAccount
             onSignOut()
@@ -581,7 +599,7 @@ class AccountSession(
 }
 
 @Composable
-fun rememberAccountSession(store: IdentityStore, onSignOut: () -> Unit = {}, remote: RemoteEvents? = null): AccountSession {
+fun rememberAccountSession(store: IdentityStore, onSignOut: suspend () -> Unit = {}, remote: RemoteEvents? = null): AccountSession {
     val scope = rememberCoroutineScope()
     return remember(store) { AccountSession(store, scope, onSignOut, remote = remote).also { it.start() } }
 }

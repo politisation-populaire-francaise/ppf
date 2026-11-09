@@ -46,6 +46,8 @@ import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationStatus
 import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationType
 import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
 import org.politisationpopulairefrancaise.core.signing.EventSigner
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.Inset
 import org.politisationpopulairefrancaise.ui.components.PpfCard
@@ -220,12 +222,15 @@ internal fun MobilizationDetail(
             // The author cancels without review (decision of the owner of 2026-11-07), after a confirmation.
             if (signer != null && agenda.canCancel(mobilization)) {
                 Spacer(Modifier.height(8.dp))
+                // A cancellation is a publication too: a compromised account no longer cancels (S-146).
                 PpfTextButton(
                     onClick = { cancelling = true },
                     text = stringResource(Res.string.agenda_cancel_event),
+                    enabled = LocalCanPublish.current,
                     color = palette.accentInk,
                     modifier = Modifier.testTag(AgendaTags.CANCEL_EVENT),
                 )
+                PublishBlockedNotice()
             }
             cancelResult?.let { result ->
                 val text = stringResource(

@@ -42,6 +42,8 @@ import org.politisationpopulairefrancaise.core.agir.testimonies.MyTestimony
 import org.politisationpopulairefrancaise.core.agir.testimonies.TestimonyProblem
 import org.politisationpopulairefrancaise.core.agir.testimonies.TestimonyProgress
 import org.politisationpopulairefrancaise.ui.account.AccountSession
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -300,13 +302,15 @@ private fun Form(library: TestimonyLibrary, session: AccountSession, picker: Ima
             }
         } else {
             val sending = state == SendState.Sending || library.preparingPhoto
+            // The server cannot tell the witness's account (S-146): the device itself stops a compromised account.
             PpfPrimaryButton(
                 { library.send(account) },
                 stringResource(if (sending) Res.string.temoignages_sending else Res.string.temoignages_send),
                 Modifier.testTag(TestimonyTags.SEND),
-                enabled = !sending,
+                enabled = LocalCanPublish.current && !sending,
                 icon = Lucide.Send,
             )
+            PublishBlockedNotice()
         }
         when (state) {
             is SendState.Refused -> Text(stringResource(Res.string.temoignages_refused, state.code), color = palette.accentInk, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag(TestimonyTags.STATE))

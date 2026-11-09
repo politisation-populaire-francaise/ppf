@@ -144,6 +144,7 @@ import org.politisationpopulairefrancaise.ui.decider.DeciderState
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
+import org.politisationpopulairefrancaise.core.social.CommunauteDeviceData
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.notifications.NotificationCenterScreen
@@ -218,8 +219,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val accountSession = rememberAccountSession(dependencies.identityStore, remote = dependencies.remote, onSignOut = {
         voting.forget()
         contentLibrary.clearFollowed()
-        messaging.forgetAll()
-        groupsLibrary.clearMemberships()
+        // Awaited to the end: the conversations and the joined rooms are really gone when the keys are.
+        messaging.forgetAllAndWait()
+        groupsLibrary.clearMembershipsAndWait()
         agendaLibrary.forgetUser()
         callsLibrary.clearResponses()
         // The notifications go back to the most protective settings and the server forgets the wake-ups.
@@ -236,6 +238,13 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         accountSession.signOut()
     }
     RegisterErasable(dependencies, "agir-rally-point") { help.clearRallyPoint() }
+    // Communauté (S-44): the messages and checked contacts, the joined rooms, the notifications and push registrations.
+    dependencies.database?.let { database ->
+        val communaute = remember(database) { CommunauteDeviceData(database) }
+        RegisterErasable(dependencies, communaute.messaging)
+        RegisterErasable(dependencies, communaute.groups)
+        RegisterErasable(dependencies, communaute.notifications)
+    }
     // « Comprendre » (S-44): progress of the courses, chosen commune and directory packages, department packages of the territories.
     dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
     // Décider: the voting tokens, pending requests and choices of the device (S-44).

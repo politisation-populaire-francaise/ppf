@@ -40,6 +40,10 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpStat
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsScreen
 import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisationsLibrary
+import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityLibrary
+import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityScreen
+import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityTab
+import org.politisationpopulairefrancaise.ui.agir.solidarity.rememberSolidarityLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.ProvideTestify
 import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyScreen
@@ -73,6 +77,9 @@ enum class AgirRoute(val id: String) {
     COLLECTIVES("collectifs"),
     TESTIFY("temoigner"),
     MANIFESTATION("mode-manifestation"),
+
+    /** M35: the solidarity funds (AG-10) and the volunteer missions (AG-12), one rubric with tabs. */
+    SOLIDARITY("solidarite"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -106,6 +113,8 @@ fun AgirScreen(
     organisationAgenda: (@Composable (pubkeyHex: String, modifier: Modifier) -> Unit)? = null,
     /** "Témoigner" (AG-07); null builds one for as long as "Agir" is shown. */
     testimonies: TestimonyLibrary? = null,
+    /** Solidarity and "Je veux aider" (M35); null builds one for as long as "Agir" is shown. */
+    solidarity: SolidarityLibrary? = null,
 ) {
     var route by rememberSaveable { mutableStateOf(AgirRoute.HOME) }
     // Where the back button of the directory leads when a plugged screen opened an organisation's page.
@@ -120,6 +129,7 @@ fun AgirScreen(
     }
     val home: () -> Unit = { route = AgirRoute.HOME }
     val testimonyLibrary = testimonies ?: rememberTestimonyLibrary(dependencies, start = false)
+    val solidarityLibrary = solidarity ?: rememberSolidarityLibrary(dependencies)
     // The protest mode shares the AIDE button's state (rally point, legal teams); alone (tests), its own.
     val help = LocalHelpState.current ?: rememberHelpState(dependencies, directory, library)
     // "Je témoigne" of a call for witnesses opens the form linked to the call; back returns to the calls.
@@ -137,6 +147,9 @@ fun AgirScreen(
         } else if (route == AgirRoute.TESTIFY && returnTo != null) {
             route = returnTo ?: AgirRoute.HOME
             returnTo = null
+        } else if (route == AgirRoute.SOLIDARITY && solidarityLibrary.hasSelection) {
+            // The page of a fund or a mission closes first, back to the list.
+            solidarityLibrary.closeSelection()
         } else {
             route = AgirRoute.HOME
             returnTo = null
@@ -157,6 +170,14 @@ fun AgirScreen(
                             AgirRubrics.COLLECTIVES.id -> route = AgirRoute.COLLECTIVES
                             AgirRubrics.TESTIFY.id -> route = AgirRoute.TESTIFY
                             AgirRubrics.MANIFESTATION.id -> route = AgirRoute.MANIFESTATION
+                            AgirRubrics.SOLIDARITY.id -> {
+                                solidarityLibrary.selectTab(SolidarityTab.FUNDS)
+                                route = AgirRoute.SOLIDARITY
+                            }
+                            AgirRubrics.HELP.id -> {
+                                solidarityLibrary.selectTab(SolidarityTab.MISSIONS)
+                                route = AgirRoute.SOLIDARITY
+                            }
                             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
                         }
                     },
@@ -178,6 +199,18 @@ fun AgirScreen(
                 )
                 AgirRoute.COLLECTIVES -> Collectives(dependencies, groups, session, windowClass, onNavigate, onBack = home)
                 AgirRoute.MANIFESTATION -> ManifestationScreen(help, windowClass, onBack = home)
+                AgirRoute.SOLIDARITY -> SolidarityScreen(
+                    library = solidarityLibrary,
+                    directory = directory,
+                    windowClass = windowClass,
+                    onBack = {
+                        solidarityLibrary.closeSelection()
+                        route = AgirRoute.HOME
+                    },
+                    // The page of the organisation opens in the directory; its way back returns here.
+                    onOpenOrganisation = directory::open,
+                    onOpenCalls = { route = AgirRoute.CALLS },
+                )
                 AgirRoute.TESTIFY -> TestimonyScreen(
                     library = testimonyLibrary,
                     session = session,

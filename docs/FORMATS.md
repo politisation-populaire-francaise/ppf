@@ -877,6 +877,56 @@ Les objectifs internes se règlent dans la configuration privée du serveur (`PP
 - `contact_envelope` : identifiant de l'enveloppe (clé), ordre de réception, numéro du dossier, sens (`in` vers la boîte, `out` vers la clé du dossier), JSON de l'enveloppe, date de réception, membre auteur d'une réponse. Jamais modifiée (un déclencheur l'interdit, et le rôle restreint du serveur n'a pas le droit `UPDATE`).
 - `contact_legal_hold_request` : une demande d'archive juridique, ou de sa levée, qui attend une deuxième personne (7 jours au plus).
 
+## 4 terdecies. Solidarité d'« Agir » : caisses et missions (M35, D-085)
+
+Contenus éditoriaux publics (type 30023), publiés seulement par une clé éditoriale et lus seulement s'ils sont signés par une clé de confiance. Détail et raisons : `docs/integration/agir-solidarite.md`. Le serveur les accepte comme tout 30023 éditorial (il refuse tout 30023 non éditorial qui n'est pas un appel). Paquet de l'application : `solidarite.json`.
+
+### Caisse de solidarité (`ppf-type` = `caisse`)
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `d` | oui | identifiant stable, 1 à 64 caractères `a-z0-9._~-` |
+| `title` | oui | nom de la caisse, 1 à 140 caractères ([EXEMPLE] pour un exemple) |
+| `summary` | oui | résumé |
+| `published_at` | oui | première publication, secondes depuis 1970 |
+| `ppf-type` | oui | `caisse` |
+| `ppf-fund-type` | oui | `greve` (caisse de grève), `juridique` (solidarité juridique : frais d'avocat, amendes, soutien aux personnes poursuivies), `autre` ; une valeur inconnue est lue `autre` |
+| `ppf-territory` | oui | commune, département ou `France`, écrit « Commune (dd) » comme l'annuaire |
+| `ppf-beneficiary` | oui | à qui elle sert, en clair (« Grévistes des transports urbains de Lille ») ; même nom d'étiquette que la collecte des appels (AP-10) |
+| `ppf-verified` | oui | date `AAAA-MM-JJ` à laquelle l'équipe a vérifié la caisse (la page de dons appartient bien à celui qui la gère) |
+| `ppf-no-party` | oui | `oui` : l'équipe a vérifié que la caisse ne sert ni un candidat ni un parti (point d'attention n° 12, D-039) ; sans cette valeur, la fiche est écartée |
+| `ppf-manager` | l'un des deux | nom de celui qui gère la caisse, en clair |
+| `a` | l'un des deux | adresse (`30023:<clé>:<d>`) de la fiche de l'annuaire de l'organisation qui gère la caisse |
+| `r` | pour une caisse ouverte | la page de dons de la caisse : seulement `https://`, nom d'hôte ASCII, sans partie « utilisateur@ » ; la première adresse valable est la seule retenue |
+| `ppf-sector` | non | secteur (« Transports », « Éducation ») |
+| `ppf-strike` | non | la grève ou le mouvement soutenu |
+| `ppf-fund-status` | non | `ouverte` (défaut, absente), `close` (la caisse ne reçoit plus de dons), `retiree` (l'équipe a retiré la fiche) ; une valeur inconnue est lue `retiree` : elle n'étend jamais la confiance |
+| `ppf-origin` | non | `human` ou `ai-assisted`, affichée |
+| `g` | non | géohash placé par l'équipe elle-même |
+
+`content` : présentation en Markdown simple (8 000 caractères au plus), sans lien cliquable (le rendu Markdown commun n'ouvre aucun lien).
+
+**Pourquoi un type à part plutôt qu'une fiche d'organisation de type « caisse »** : une caisse n'est pas une organisation, elle est gérée par une organisation ; elle a ses propres champs (bénéficiaires, grève, page de dons, engagement « ni candidat ni parti »). Surtout, une fiche d'organisation qui porte une clé `p` **vérifie** cette clé (`VerifiedOrganisations`) : réutiliser ce format pour les caisses mélangerait deux règles de confiance, et une caisse risquerait d'apparaître dans l'annuaire ou de rendre « vérifiée » la clé de son gestionnaire. Avec un type à part, rien ne change pour l'annuaire, l'agenda ni les appels.
+
+**Qui la gère** : le gestionnaire est désigné par l'adresse de sa fiche dans l'annuaire (`a`), retrouvée sur l'appareil parmi les fiches de confiance (à défaut de l'adresse exacte, par son identifiant `d`, par exemple après une rotation de la clé éditoriale). L'écran dit en mots l'un des trois états : « organisation vérifiée par PPF », « vérification retirée par PPF », ou « n'est pas dans l'annuaire de PPF » (nom seul, `ppf-manager`).
+
+### Mission de bénévolat (`ppf-type` = `mission`)
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `d`, `title`, `summary`, `published_at`, `ppf-type` | oui | comme ci-dessus, `ppf-type` = `mission` |
+| `ppf-skill` | oui, une ou plusieurs | `juriste`, `traduction`, `developpement`, `graphisme`, `verification`, `moderation`, `accueil`, `autre` ; une valeur inconnue est lue `autre` |
+| `ppf-territory` | oui | territoire, `France` pour une mission à distance |
+| `ppf-remote` | l'un des deux | `oui` : la mission se fait à distance (même valeur que les appels « Chercher des bénévoles ») |
+| `location` | l'un des deux | lieu en clair, jamais l'adresse d'une personne |
+| `ppf-commitment` | non | temps demandé, en clair (« Deux heures par semaine ») |
+| `ppf-people` | non | nombre de personnes recherchées, entier positif |
+| `ppf-deadline` | non | date limite, secondes depuis 1970 |
+| `ppf-mission-status` | non | `ouverte` (défaut, absente), `pourvue`, `close` ; une valeur inconnue est lue `close` |
+| `ppf-origin` | non | comme ci-dessus |
+
+`content` : description de la mission en Markdown simple.
+
 ## 5. API du serveur (version 1)
 
 Toutes les réponses sont en JSON. Aucune information sur l'expéditeur n'est journalisée.
