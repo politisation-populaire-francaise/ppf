@@ -49,10 +49,11 @@ Dans l'index signé des données ouvertes (même clé d'import, même route `/ap
 }
 ```
 
-- `state` : `applique`, `sans-objet`, `en-attente` ; un état inconnu fait échouer l'import (jamais deviné).
+- `state` : `applique`, `sans-objet`, `en-attente` ; un état inconnu fait refuser le fichier (jamais deviné).
 - Drapeaux facultatifs (écrits seulement quand ils sont vrais) : `directApplication`, `ratification`, `enabling` (loi d'habilitation), `ordinanceRatification`, `withoutSchedule` (pas d'échéancier sur Légifrance).
 - Lois triées de la plus récente à la plus ancienne, mesures par numéro d'ordre : deux imports identiques donnent les mêmes octets.
 - **Garde-fou** : un paquet qui compte plus de 20 % de lois de moins que le précédent est refusé (fichier tronqué) et les paquets précédents restent servis.
+- **Source à part** : une erreur de l'Applicomètre (téléchargement, garde-fou, fichier illisible) n'arrête jamais l'import du Parlement ; le journal dit pourquoi (`Importer.apart`, comme pour les parrainages).
 - Modèles : `shared/core/.../core/voir/application/` (`LawApplication.kt`, `ApplicationCatalog.kt`, `ApplicationLoader.kt`) ; chargeur commun aux paquets à part (`core/voir/parlement/OpenDataPackageLoader.kt`, repris aussi par les parrainages de VO-37).
 
 ## 3. Import

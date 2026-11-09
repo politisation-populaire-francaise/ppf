@@ -307,8 +307,6 @@ EOF
     # Testimonies (Agir, M5): encrypted files written by the server only.
     install -d -m 0700 -o "$server_uid" -g "$server_uid" "$dir/testimonies"
     grep -q '^PPF_MODERATION_KEY=' "$dir/.env" || echo "PPF_MODERATION_KEY=" >> "$dir/.env"
-    # Parrainages de la présidentielle (Voir, VO-37): the data.gouv.fr dataset of 2027, empty until the decree of convocation.
-    grep -q '^PPF_SPONSORSHIPS_DATASET=' "$dir/.env" || echo "PPF_SPONSORSHIPS_DATASET=" >> "$dir/.env"
     grep -q '^PPF_EVIDENCE_KEY=' "$dir/.env" || echo "PPF_EVIDENCE_KEY=" >> "$dir/.env"
     # Contact and claims (M30): the public key of the inbox of the team, empty until it is created (cases closed).
     grep -q '^PPF_CONTACT_INBOX_KEY=' "$dir/.env" || echo "PPF_CONTACT_INBOX_KEY=" >> "$dir/.env"
@@ -327,6 +325,9 @@ EOF
     [ -f "$dir/secrets/import_key" ] || (umask 077; : > "$dir/secrets/import_key")
     chown "$importer_uid:$importer_uid" "$dir/secrets/import_key"
     chmod 400 "$dir/secrets/import_key"
+    # Presentations of the presidential election (Voir, VO-37): the data.gouv.fr dataset of 2027, read by the
+    # importer, empty until the decree of convocation (nothing is asked while it is empty).
+    grep -q '^PPF_SPONSORSHIPS_DATASET=' "$dir/.env" || echo "PPF_SPONSORSHIPS_DATASET=" >> "$dir/.env"
 }
 # The example content signer (EditorialTrust.EXAMPLE_EDITOR) publishes the [EXEMPLE] contents of the
 # preproduction only. The production starts with no editor key.

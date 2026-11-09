@@ -56,7 +56,7 @@ class SponsorshipsImportTest {
     }
 
     @Test
-    fun theImportAddsThePackageAndItsSourceThenKeepsItAndRefusesATruncatedFile() {
+    fun theImportAddsThePackageAndItsSourceThenKeepsItAndRefusesATruncatedFileWithoutStoppingTheParliament() {
         val out = folder()
         assertEquals(ExitCodes.OK, Importer(ExampleSources(), keys, out, log = {}, sponsorships = true).run())
         val first = index(out)
@@ -70,12 +70,38 @@ class SponsorshipsImportTest {
         assertTrue(index(out).packages.any { it.name == SponsorshipsFormat.PACKAGE_2027 })
         assertEquals("cc", index(out).sources.last().id)
 
-        // A file with far fewer presentations (truncated) is refused and changes nothing.
+        // A file with far fewer presentations (truncated) is refused and changes nothing, but the Parliament is imported.
         val truncated = object : ImportSources by ExampleSources() {
             override fun sponsorships(): InputStream = """[{"Civilite":"M.","Nom":"[EXEMPLE] SEUL","Prenom":"Un","Mandat":"Maire","Circonscription":"Lyon","Departement":"Rhône","Candidat":"[EXEMPLE] CANDIDATE Alice","DatePublication":"2027-02-23T00:00:00"}]""".byteInputStream()
         }
-        assertEquals(ExitCodes.REFUSED_BY_GUARD, Importer(truncated, keys, out, log = {}, sponsorships = true).run())
+        val lines = ArrayList<String>()
+        assertEquals(ExitCodes.OK, Importer(truncated, keys, out, log = { lines += it }, sponsorships = true).run())
         assertTrue(bytes.contentEquals(Files.readAllBytes(out.resolve(SponsorshipsFormat.PACKAGE_2027 + ".json"))))
+        assertTrue(lines.any { it.startsWith("sponsorships refused:") })
+        assertEquals("cc", index(out).sources.last().id)
+    }
+
+    @Test
+    fun aFailureOfThePresentationsNeverStopsTheImportOfTheParliament() {
+        val out = folder()
+        val unreachable = object : ImportSources by ExampleSources() {
+            override fun sponsorships(): InputStream = throw DownloadException("www.data.gouv.fr: HTTP 503")
+        }
+        val lines = ArrayList<String>()
+        assertEquals(ExitCodes.OK, Importer(unreachable, keys, out, log = { lines += it }, sponsorships = true).run())
+        val index = index(out)
+        assertTrue(index.packages.any { it.name == "membres" }, "the Parliament is imported")
+        assertTrue(index.packages.none { it.name == SponsorshipsFormat.PACKAGE_2027 })
+        assertTrue(index.sources.none { it.id == "cc" })
+        assertTrue(lines.any { it.startsWith("sponsorships download failed:") })
+
+        // An unexpected error says its kind only, never a value of the data.
+        val broken = object : ImportSources by ExampleSources() {
+            override fun sponsorships(): InputStream = "[{\"Nom\": \"[EXEMPLE] Secret\"".byteInputStream()
+        }
+        lines.clear()
+        assertEquals(ExitCodes.OK, Importer(broken, keys, out, log = { lines += it }, sponsorships = true).run())
+        assertTrue(lines.none { "Secret" in it })
     }
 
     @Test

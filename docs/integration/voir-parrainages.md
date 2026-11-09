@@ -37,6 +37,7 @@ Dans l'index signé des données ouvertes (même clé d'import, même route `/ap
 - `departmentCode` : code du département ou de la collectivité quand le nom est reconnu (table fixe de l'outil d'import), absent sinon (« Parlement européen », « Français établis hors de France »).
 - Trié par candidat, département, nom, prénom : deux imports identiques donnent les mêmes octets.
 - **Garde-fou** : un import qui fait baisser le nombre de parrainages de plus de 20 % est refusé (fichier tronqué), comme pour le Parlement.
+- **Source à part** (relecture du Directeur technique, 9 novembre 2026) : une erreur des parrainages (téléchargement, garde-fou, fichier illisible) n'arrête jamais l'import quotidien de l'Assemblée et du Sénat ; le paquet précédent reste servi et le journal dit pourquoi, avec des nombres et des codes seulement (`Importer.apart`).
 
 ## 3. Import (`tools/open-data-importer`)
 

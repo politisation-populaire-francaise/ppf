@@ -63,7 +63,7 @@ class ApplicationImportTest {
     }
 
     @Test
-    fun theImportAddsThePackagesAndTheirSourceThenKeepsThemAndRefusesATruncatedFile() {
+    fun theImportAddsThePackagesAndTheirSourceThenKeepsThemAndRefusesATruncatedFileWithoutStoppingTheParliament() {
         val out = folder()
         assertEquals(ExitCodes.OK, Importer(ExampleSources(), keys, out, log = {}, application = true).run())
         val first = index(out)
@@ -84,8 +84,10 @@ class ApplicationImportTest {
                 input.readBytes().decodeToString().lines().filterNot { "JORFTEXT000099000002" in it }.joinToString("\n").byteInputStream()
             }
         }
-        assertEquals(ExitCodes.REFUSED_BY_GUARD, Importer(truncated, keys, out, log = {}, application = true).run())
+        val lines = ArrayList<String>()
+        assertEquals(ExitCodes.OK, Importer(truncated, keys, out, log = { lines += it }, application = true).run(), "never a reason to stop the import of the Parliament")
         assertTrue(bytes.contentEquals(Files.readAllBytes(out.resolve("application-lois-17.json"))))
+        assertTrue(lines.any { it.startsWith("application of the laws refused:") })
     }
 
     @Test
