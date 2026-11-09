@@ -383,7 +383,7 @@ Avec le serveur de développement lancé (étape 2 ci-dessus) et un compte d'ess
 
 ### Tester les parcours « Comprendre en 5 minutes » (ajouté le 6 novembre 2026)
 
-1. Ouvrez le menu (bouton en haut à gauche) et touchez **« Comprendre »**. L'écran commence par **« Comprendre en 5 minutes »** : quatre parcours de démonstration marqués [EXEMPLE] (l'élection présidentielle, comment une loi est votée, la dissolution, le 49.3 et la motion de censure). Chaque carte indique la durée, le nombre d'étapes et de questions, « Produit avec l'aide d'une IA », et « Pas encore commencé ». Les fiches pratiques suivent, sous « Connaître ses droits ».
+1. Ouvrez le menu (bouton en haut à gauche) et touchez **« Comprendre »**. L'écran commence par **« Comprendre en 5 minutes »** : les parcours (l'élection présidentielle, comment une loi est votée, la dissolution, le 49.3 et la motion de censure, et les autres). Depuis le 9 novembre 2026, ce sont de vrais contenus, vérifiés sur les sources officielles et rédigés avec l'aide d'une IA. Chaque carte indique la durée, le nombre d'étapes et de questions, « Produit avec l'aide d'une IA », et « Pas encore commencé ». Les fiches pratiques suivent, sous « Connaître ses droits ».
 2. Touchez **« Comment une loi est votée »** : la première page présente le parcours avec son encart « En bref ». Touchez **« Commencer »**.
 3. Chaque étape affiche « Étape 1 sur 5 », une barre de progression, un texte court, puis une **question**. Choisissez une réponse et touchez **« Valider ma réponse »** : l'application dit si c'est juste, montre la bonne réponse et l'explication avec l'article de loi. Après une mauvaise réponse, **« Réessayer »** permet de recommencer la question.
 4. Passez d'une étape à l'autre avec **« Étape suivante »** et **« Étape précédente »**. Revenez à l'accueil par la flèche en haut à gauche : la carte indique « En cours : étape 2 sur 5 ». Rouvrez le parcours : le bouton propose **« Reprendre à l'étape 2 »**.
@@ -396,7 +396,7 @@ Ces quatre parcours sont des brouillons rédigés avec l'aide d'une IA, vérifi�
 
 ### Tester les décryptages, l'histoire des luttes et « Qui décide de ça ? » (ajouté le 7 novembre 2026)
 
-1. Dans **« Comprendre »**, faites défiler l'accueil : après les parcours viennent **« Qui décide de ça ? »**, **« Le vrai du faux »** (les décryptages), **« Connaître ses droits »** (les fiches) puis **« Histoire des luttes »**. Tous les contenus sont des exemples marqués [EXEMPLE].
+1. Dans **« Comprendre »**, faites défiler l'accueil : après les parcours viennent **« Qui décide de ça ? »**, **« Le vrai du faux »** (les décryptages), **« Connaître ses droits »** (les fiches) puis **« Histoire des luttes »**. Depuis votre décision du 9 novembre 2026, ce sont de vrais contenus, sans la mention [EXEMPLE], vérifiés sur les sources officielles ; chacun indique qu'il a été rédigé avec l'aide d'une IA.
 2. Touchez un décryptage : l'affirmation est citée entre guillemets, avec l'endroit où elle circule, puis le **verdict** écrit en toutes lettres (par exemple « Contredit par les faits »). Le lien **« Comment nous choisissons un verdict »** ouvre la page « Notre méthode » qui définit les cinq verdicts. Plus bas, l'encart **« Objections et réponses »** présente les arguments contraires et y répond avec des sources.
 3. Touchez un récit de l'histoire des luttes (par exemple le Front populaire) : sous le titre, la période et le pays ; un encart dit **ce qui était demandé** et les **résultats obtenus** ; une **frise** donne les dates ; les objections et réponses présentent les débats des historiens.
 4. Touchez **« Manifester : qui autorise, qui peut interdire ? »** (ou une autre fiche « Qui décide de ça ? ») : la fiche commence par l'encart **« Qui décide ? Les élus concernés »** : chaque niveau (commune, État...) avec ce qu'il décide et les élus concernés. Sous « État », le nom d'une personne d'exemple (« Dominique Fictif ») apparaît, liée par l'équipe. Une phrase indique que les noms de vos élus locaux apparaîtront quand l'annuaire officiel des élus sera intégré.
@@ -405,7 +405,7 @@ Ces quatre parcours sont des brouillons rédigés avec l'aide d'une IA, vérifi�
 
 ### Tester la vague 3 de « Comprendre » : vos élus, le glossaire, les nouveaux contenus (ajouté le 7 novembre 2026)
 
-Trois nouveautés, que vous avez demandées le 7 novembre : l'annuaire des élus, le glossaire (les mots compliqués expliqués partout) et davantage de contenus. Tout est marqué [EXEMPLE] et rédigé avec l'aide d'une IA, à relire par l'équipe éditoriale.
+Trois nouveautés, que vous avez demandées le 7 novembre : l'annuaire des élus, le glossaire (les mots compliqués expliqués partout) et davantage de contenus. Depuis le 9 novembre 2026, ces contenus sont de vrais contenus rédigés avec l'aide d'une IA (votre décision : de vrais contenus plutôt que des exemples), à relire par l'équipe éditoriale avant l'ouverture publique.
 
 #### Sur le téléphone (version d'essai `android-preview.apk`, sans serveur)
 
@@ -458,12 +458,12 @@ Le serveur de développement sert un annuaire **fictif** : les noms sont invent�
 ### Tester les fiches pratiques (ajouté le 5 novembre 2026, encarts le 6)
 
 1. Ouvrez le menu (bouton en haut à gauche) et touchez **« Comprendre »**. Chaque fiche commence par un encart bleu « En bref », puis des encarts verts « Légal » et rouges « Illégal » avec des listes à puces, et des encarts « Attention » (jaune) et « Conseils » (gris). Les titres des fiches sont en bleu de marque, le texte en Atkinson Hyperlegible, 16 points.
-2. La rubrique **« Connaître ses droits »** liste trois fiches de démonstration marquées [EXEMPLE] : droits en manifestation, filmer les forces de l'ordre, garde à vue. La ligne d'état indique « Hors ligne : contenus intégrés à l'application ».
+2. La rubrique **« Connaître ses droits »** liste les fiches pratiques, dont droits en manifestation, filmer les forces de l'ordre et garde à vue. Ce sont de vrais contenus depuis le 9 novembre 2026. La ligne d'état indique « Hors ligne : contenus intégrés à l'application ».
 3. Touchez une fiche : son texte s'affiche avec les titres, les listes et les sources ; la ligne sous le titre indique le type, la date de mise à jour et l'origine (« Rédigé par un humain »). La flèche en haut à gauche revient à la liste.
 4. Coupez le réseau (mode avion) et refaites les étapes 1 à 3 : tout doit fonctionner à l'identique, puisque les fiches sont dans l'application.
 5. Sur l'ordinateur, la liste et la fiche s'affichent côte à côte quand la fenêtre est large.
 
-Les textes de ces fiches sont des brouillons écrits par moi pour la démonstration, avec les sources de droit citées en bas de chaque fiche ; ils doivent être relus par un avocat avant toute publication réelle. Pour modifier une fiche ou en ajouter une, dites-le-moi : je modifie les fichiers de `content/fiches`, je les signe et je vous livre une nouvelle version.
+Les textes de ces fiches sont rédigés avec l'aide d'une IA et vérifiés le 9 novembre 2026 sur les textes en vigueur, avec les sources de droit citées en bas de chaque fiche ; ils restent à faire relire par un avocat avant l'ouverture publique. Pour modifier une fiche ou en ajouter une, dites-le-moi : je modifie les fichiers de `content/fiches`, je les signe et je vous livre une nouvelle version.
 
 ### Voir « Comprendre » sur le site, sur votre ordinateur (ajouté le 7 novembre 2026)
 
