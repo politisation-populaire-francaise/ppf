@@ -1,6 +1,6 @@
 ---
 slug: classe-la-separation-des-pouvoirs-cycle-4
-title: [EXEMPLE] Pour la classe : la séparation des pouvoirs (troisième)
+title: Pour la classe : la séparation des pouvoirs (troisième)
 summary: Une séance de 55 minutes en troisième pour comprendre qui fait la loi, qui gouverne et qui juge en France, avec les questions du parcours et un débat guidé sur les moyens d'action de chaque pouvoir sur les autres.
 topics: institutions, constitution, justice, enseignement
 type: fiche-pedagogique
@@ -12,8 +12,6 @@ programme: Enseignement moral et civique, classe de troisième, « Faire vivre l
 published_at: 2026-11-09
 updated_at: 2026-11-09
 ---
-**[EXEMPLE] Cette fiche pédagogique est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
-
 Cette séance fait vivre en classe le parcours « Qui fait quoi : la séparation des pouvoirs ». Elle ne demande ni compte ni appareil aux élèves : le parcours se projette ou s'imprime depuis le site, et rien n'est enregistré.
 
 ## Objectifs

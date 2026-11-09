@@ -1,6 +1,6 @@
 ---
 slug: atelier-les-petitions-officielles
-title: [EXEMPLE] Pour un atelier : les pétitions officielles
+title: Pour un atelier : les pétitions officielles
 summary: Un atelier d'éducation populaire de 90 minutes pour découvrir où déposer une pétition qui sera vraiment examinée, avec les questions du parcours, des cartes à imprimer pour animer sans écran et un débat guidé sur le seuil des pétitions locales.
 topics: democratie, petitions, education-populaire
 type: fiche-pedagogique
@@ -11,8 +11,6 @@ level: atelier
 published_at: 2026-11-09
 updated_at: 2026-11-09
 ---
-**[EXEMPLE] Cette fiche d'animation est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
-
 Cet atelier fait vivre le parcours « Les pétitions officielles » avec un groupe d'adultes ou de jeunes : association, syndicat, centre social, médiathèque. Il ne demande ni compte ni appareil aux participants, et aucune liste de présence : le parcours se projette ou s'imprime depuis le site, et les cartes de cette fiche s'impriment pour animer sans écran. Rien n'est enregistré.
 
 ## Objectifs

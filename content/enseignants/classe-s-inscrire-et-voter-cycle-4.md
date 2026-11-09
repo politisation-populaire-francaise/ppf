@@ -1,6 +1,6 @@
 ---
 slug: classe-s-inscrire-et-voter-cycle-4
-title: [EXEMPLE] Pour la classe : s'inscrire sur les listes électorales et voter (troisième)
+title: Pour la classe : s'inscrire sur les listes électorales et voter (troisième)
 summary: Une séance de 55 minutes en troisième pour suivre le chemin d'un électeur, du recensement à 16 ans jusqu'à l'urne, avec les questions du parcours et un débat guidé sur le vote obligatoire.
 topics: elections, vote, enseignement
 type: fiche-pedagogique
@@ -12,8 +12,6 @@ programme: Enseignement moral et civique, classe de troisième, « Faire vivre l
 published_at: 2026-11-09
 updated_at: 2026-11-09
 ---
-**[EXEMPLE] Cette fiche pédagogique est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
-
 Cette séance fait vivre en classe le parcours « S'inscrire sur les listes électorales et voter ». Les élèves n'ont pas encore l'âge de voter : la séance leur montre le chemin d'un électeur, de l'inscription jusqu'à l'urne. Elle ne demande ni compte ni appareil aux élèves : le parcours se projette ou s'imprime depuis le site, et rien n'est enregistré.
 
 ## Objectifs

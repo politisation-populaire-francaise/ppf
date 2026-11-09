@@ -1,6 +1,6 @@
 ---
 slug: classe-comment-une-loi-est-votee-lycee
-title: [EXEMPLE] Pour la classe : comment une loi est votée (terminale)
+title: Pour la classe : comment une loi est votée (terminale)
 summary: Une séance de 55 minutes en terminale pour suivre le trajet d'une loi, de son dépôt à sa publication, avec les questions du parcours et un débat guidé sur le dernier mot de l'Assemblée nationale.
 topics: institutions, parlement, loi, enseignement
 type: fiche-pedagogique
@@ -12,8 +12,6 @@ programme: Enseignement moral et civique, classe terminale des voies générale 
 published_at: 2026-11-08
 updated_at: 2026-11-09
 ---
-**[EXEMPLE] Cette fiche pédagogique est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
-
 Cette séance fait vivre en classe le parcours « Comment une loi est votée ». Elle ne demande ni compte ni appareil aux élèves : le parcours se projette ou s'imprime depuis le site, et rien n'est enregistré.
 
 ## Objectifs
@@ -51,7 +49,7 @@ Règles du débat : chacun parle à son tour, on répond à un argument et jamai
 ? « Laisser le Gouvernement décider quand l'Assemblée a le dernier mot lui donne trop de pouvoir. »
 > C'est bien le Gouvernement qui peut demander à l'Assemblée nationale de statuer définitivement (article 45). En contrepartie, il est responsable devant le Parlement, et l'Assemblée nationale peut le renverser par une motion de censure (articles 20 et 49).
 ? « Sans ce dernier mot, une loi pourrait rester bloquée indéfiniment entre les deux assemblées. »
-> La Constitution organise la sortie d'un désaccord en plusieurs étapes : la navette, la commission mixte paritaire de sept députés et sept sénateurs, puis, si le Gouvernement le demande, le dernier mot de l'Assemblée nationale (article 45). Sans cette demande, le texte peut continuer la navette entre les deux assemblées.
+> La Constitution organise la sortie d'un désaccord en plusieurs étapes : la navette, la commission mixte paritaire, puis, si le Gouvernement le demande, le dernier mot de l'Assemblée nationale (article 45). La commission mixte paritaire réunit sept députés et sept sénateurs (Règlement de l'Assemblée nationale, article 111). Sans cette demande, le texte peut continuer la navette entre les deux assemblées.
 :::
 
 ## Pour aller plus loin
@@ -63,8 +61,9 @@ Règles du débat : chacun parle à son tour, on répond à un argument et jamai
 ## Sources
 
 - Ministère de l'Éducation nationale, Bulletin officiel n° 24 du 13 juin 2024, « Programme du cours préparatoire à la classe terminale des voies générale, technologique et professionnelle et des classes préparant au certificat d'aptitude professionnelle » (arrêté du 29 mai 2024, JO du 12 juin 2024, NOR MENE2413934A ; article 3 : application en terminale à la rentrée 2026-2027), numéro complet en PDF consulté le 2026-11-08 : https://education.gouv.fr/sites/default/files/Bulletin_officiel_MENJS_2024_06_13_BO24-1718196134.pdf
-- Le même texte sur la page du Bulletin officiel : https://www.education.gouv.fr/bo/2024/Hebdo24/MENE2413934A
+- Le même texte sur la page du Bulletin officiel (article 3 : application en seconde à la rentrée 2024 et en terminale à la rentrée 2026), consulté le 2026-11-09 : https://www.education.gouv.fr/bo/2024/Hebdo24/MENE2413934A
 - Arrêté du 19 juin 2024 modifiant l'arrêté du 29 mai 2024 (il précise quelles parties d'enseignement moral et civique des anciens programmes de l'école et du collège de 2015 sont supprimées ; il ne change ni le programme du lycée ni ses dates d'application), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049790727
-- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 20, 24, 45, 46, 49 et 89) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 20, 24, 45, 46, 49 et 89), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
 - Constitution du 4 octobre 1958, article 45 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241040
+- Règlement de l'Assemblée nationale, article 111 (sept représentants de chaque assemblée en commission mixte paritaire), consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/17/divers/texte_reference/02_reglement_assemblee_nationale.html
 - Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025) : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
