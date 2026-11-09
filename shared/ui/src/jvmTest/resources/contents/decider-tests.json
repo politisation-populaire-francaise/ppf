@@ -1,0 +1,781 @@
+[
+    {
+        "id": "c29e9567df8a1f8e7a9fca516e06809f9f06a3eacc5ede26f16f1e5b0901cc8f",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "consultation-ouverte-exemple"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Consultation en ligne sur un projet de décret d’exemple"
+            ],
+            [
+                "summary",
+                "Un ministère recueille les observations du public sur un projet de décret avant de le publier."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "consultation"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "démocratie"
+            ],
+            [
+                "ppf-consultation-kind",
+                "consultation-ouverte"
+            ],
+            [
+                "ppf-organizer",
+                "Ministère d’exemple"
+            ],
+            [
+                "ppf-official-url",
+                "https://exemple.invalid/consultation-ouverte"
+            ],
+            [
+                "ppf-opened",
+                "2026-11-02"
+            ],
+            [
+                "ppf-closes",
+                "2026-11-30"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Code des relations entre le public et l’administration, articles L132-1 à L132-3",
+                "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000031366350/LEGISCTA000031367441/",
+                "2026-11-09"
+            ],
+            [
+                "ppf-next",
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
+            ]
+        ],
+        "content": "Contenu de démonstration : la consultation, son ministère et ses dates sont fictifs.\n\n## Ce que c’est\n\nAvant de publier certains textes, l’administration peut ouvrir une consultation sur internet au lieu de consulter une commission. Elle dure au moins quinze jours, et l’administration publie ensuite une synthèse des observations reçues.\n\n## Comment répondre\n\n1. Lisez le projet de texte sur la page officielle, et la note qui l’accompagne.\n2. Écrivez vos observations en quelques phrases : ce que vous approuvez, ce que vous demandez de changer, et pourquoi.\n3. Restez sur le texte proposé : une observation précise pèse plus qu’un avis général.\n4. Envoyez-les sur la page officielle avant la date de clôture. PPF ne recueille rien : votre réponse va directement à l’administration.\n",
+        "sig": "e11dabf01f3b79efa55d8450d29cba05673820ce0a8461db7319274f1902af9e3c60d1d145abb89fd2a9e5dce902abc459a9f3650bee25ddafffd6d713507662"
+    },
+    {
+        "id": "ca600513dd355f912bebd2277873d0a0d3ea226007147f913731de34c5b3c88a",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "enquete-publique-exemple"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Enquête publique sur un projet d’aménagement d’exemple"
+            ],
+            [
+                "summary",
+                "Une préfecture ouvre une enquête publique sur un projet qui a une incidence sur l’environnement."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "consultation"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "environnement"
+            ],
+            [
+                "ppf-consultation-kind",
+                "enquete-publique"
+            ],
+            [
+                "ppf-organizer",
+                "Préfecture d’exemple"
+            ],
+            [
+                "ppf-official-url",
+                "https://exemple.invalid/enquete-publique"
+            ],
+            [
+                "ppf-opened",
+                "2026-12-01"
+            ],
+            [
+                "ppf-closes",
+                "2027-01-08"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Code de l’environnement, articles L123-1 à L123-18 (enquête publique)",
+                "https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006074220/LEGISCTA000006176443/",
+                "2026-11-09"
+            ],
+            [
+                "ppf-next",
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
+            ]
+        ],
+        "content": "Contenu de démonstration : le projet, la préfecture et les dates sont fictifs.\n\n## Ce que c’est\n\nUne enquête publique permet à chacun de donner son avis sur un projet qui touche l’environnement avant qu’il soit autorisé. Elle est conduite par un commissaire enquêteur indépendant, qui rend un rapport et des conclusions publics. Elle dure au moins trente jours pour un projet soumis à évaluation environnementale.\n\n## Comment répondre\n\n1. Consultez le dossier : en ligne sur la page officielle, ou en mairie aux heures indiquées dans l’avis.\n2. Déposez vos observations sur le registre en ligne, par courrier au commissaire enquêteur, ou lors d’une de ses permanences.\n3. Appuyez-vous sur le dossier : une remarque précise et argumentée est reprise dans le rapport.\n4. Après la clôture, le rapport et les conclusions sont publiés : vous pourrez les lire sur la même page.\n",
+        "sig": "438adfb928a32397c4efab8826f7ed326264abf03d2974e7e6b03a02d8a20ae162f187274f0caf74c1043e1df4e983eb92f88b7235c702a9b8190c70c99082eb"
+    },
+    {
+        "id": "2fddcaf17bb379663dbdc88d2a863736e3ae159c55a9e1bf4391b196e56a3bb0",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "courrier-avant-un-vote-exemple"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Avant un vote : demander sa position à son député ou à son sénateur"
+            ],
+            [
+                "summary",
+                "Un courrier court et poli pour demander à un parlementaire comment il votera un texte, et pourquoi."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "modele-courrier"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "démocratie"
+            ],
+            [
+                "ppf-recipient",
+                "depute"
+            ],
+            [
+                "ppf-recipient",
+                "senateur"
+            ],
+            [
+                "ppf-subject",
+                "Votre vote sur le projet de loi d’exemple"
+            ],
+            [
+                "ppf-contact",
+                "depute",
+                "Trouver la page de contact de son député (exemple)",
+                "https://exemple.invalid/contacter-son-depute"
+            ],
+            [
+                "ppf-contact",
+                "senateur",
+                "Trouver la page de contact de son sénateur (exemple)",
+                "https://exemple.invalid/contacter-son-senateur"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "[EXEMPLE] Calendrier d’examen du projet de loi d’exemple",
+                "https://exemple.invalid/calendrier",
+                "2026-11-09"
+            ],
+            [
+                "ppf-next",
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
+            ]
+        ],
+        "content": "{commune}, le {date}\n\nÀ l’attention de {elu}\n\nObjet : votre vote sur le projet de loi d’exemple\n\nMadame, Monsieur,\n\nJ’habite {commune} et je vous écris au sujet du projet de loi d’exemple, qui sera bientôt soumis à votre vote.\n\n[Dites en deux ou trois phrases pourquoi ce texte vous concerne.]\n\nPourriez-vous me dire comment vous comptez voter, et pour quelles raisons ? Votre réponse m’aidera à comprendre les choix faits en mon nom.\n\nJe vous remercie de votre attention et vous prie d’agréer, Madame, Monsieur, l’expression de mes salutations respectueuses.\n\n[Votre nom]\n",
+        "sig": "be9dc4fcbfcbef903d89d37d8cccdb176e9fd028dc0ba0d64adaaafc4c90737663fde09ffec6ea489a833c697834abb57333d5c8d150911d0b992d3247e31bf0"
+    },
+    {
+        "id": "0407115bbb580a168f4ab6ebb8329304da40621db887e3546df4123cc458abf5",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794139200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "election-exemple"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Élection présidentielle d’exemple"
+            ],
+            [
+                "summary",
+                "Les tours, les dates limites et les liens officiels, pour se préparer à voter."
+            ],
+            [
+                "published_at",
+                "1794139200"
+            ],
+            [
+                "ppf-type",
+                "election"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "élections"
+            ],
+            [
+                "ppf-election",
+                "election-exemple",
+                "Élection présidentielle d’exemple",
+                ""
+            ],
+            [
+                "ppf-election-status",
+                "annoncee"
+            ],
+            [
+                "ppf-round",
+                "1",
+                "2027-03-07",
+                "",
+                "20:00"
+            ],
+            [
+                "ppf-round",
+                "2",
+                "2027-03-21",
+                "2027-03-20",
+                "20:00"
+            ],
+            [
+                "ppf-deadline",
+                "inscription-en-ligne",
+                "2027-01-27",
+                "https://exemple.invalid/inscription-en-ligne"
+            ],
+            [
+                "ppf-deadline",
+                "inscription-mairie",
+                "2027-01-29",
+                "https://exemple.invalid/inscription-mairie"
+            ],
+            [
+                "ppf-deadline",
+                "procuration-conseillee",
+                "2027-02-25",
+                "https://exemple.invalid/procuration"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "[EXEMPLE] Calendrier annoncé de l’élection d’exemple",
+                "https://exemple.invalid/calendrier",
+                "2026-11-08"
+            ]
+        ],
+        "content": "Contenu de démonstration : l’élection et ses dates sont fictives. Les vraies dates viennent du décret de convocation publié au Journal officiel ; tant qu’il ne l’est pas, elles sont seulement annoncées.\n",
+        "sig": "df10001815c7b3624e1b7dd40a7b16fe68ad9728f7666a030aad42fb661a33968959489257affa01f16eec7544edfcce5b324d2be5e865e6b325fb6909b4b5a0"
+    },
+    {
+        "id": "665d250bdc7d4006dbcfd87d24a55f6956987d9b9a5ad3ae2daf88d9fb073e28",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-an-ordre-public"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Retirer le projet de loi relatif à l’ordre public lors des manifestations"
+            ],
+            [
+                "summary",
+                "Pétition déposée sur le site de l’Assemblée nationale, qui demande le retrait du texte avant son vote définitif."
+            ],
+            [
+                "published_at",
+                "1790856000"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "manifestations"
+            ],
+            [
+                "t",
+                "libertés"
+            ],
+            [
+                "ppf-platform",
+                "assemblee"
+            ],
+            [
+                "ppf-official-url",
+                "https://petitions.assemblee-nationale.fr/"
+            ],
+            [
+                "ppf-reference",
+                "n° 0000 (exemple)"
+            ],
+            [
+                "ppf-opened",
+                "2026-09-30"
+            ],
+            [
+                "ppf-closes",
+                "2027-10-14"
+            ],
+            [
+                "ppf-petition-status",
+                "ouverte"
+            ],
+            [
+                "ppf-count",
+                "45210",
+                "2026-10-05",
+                "site des pétitions de l’Assemblée nationale"
+            ],
+            [
+                "ppf-count",
+                "103900",
+                "2026-10-15",
+                "site des pétitions de l’Assemblée nationale"
+            ],
+            [
+                "ppf-count",
+                "412950",
+                "2026-11-06",
+                "site des pétitions de l’Assemblée nationale"
+            ],
+            [
+                "ppf-milestone",
+                "2026-10-14",
+                "Plus de 100 000 signatures : la pétition est mise en ligne sur le site de l’Assemblée et reste ouverte jusqu’au 14 octobre 2027."
+            ],
+            [
+                "ppf-milestone",
+                "2026-10-22",
+                "Renvoyée à la commission des lois, qui désigne une rapporteure (exemple)."
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Règlement de l’Assemblée nationale, articles 147 à 151",
+                "https://www.assemblee-nationale.fr/dyn/17/divers/texte_reference/02_reglement_assemblee_nationale.html",
+                "2026-11-07"
+            ],
+            [
+                "ppf-next",
+                "Vos droits en manifestation",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+            ],
+            [
+                "ppf-next",
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
+            ]
+        ],
+        "content": "Contenu de démonstration : la pétition, son numéro et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site des pétitions de l’Assemblée nationale.\n\n## Ce que demande la pétition\n\nLe retrait du projet de loi, au motif qu’il restreint le droit de manifester sans étude de ses effets sur les libertés publiques.\n\n## Ce que peut obtenir une pétition à l’Assemblée\n\nAu-delà de 500 000 signatures venant d’au moins 30 départements, la Conférence des présidents peut décider d’un débat en séance. Ce débat se termine sans vote.\n",
+        "sig": "f98ace9b533166ba4a56809459b3068289661f023c0e0578b16ceeb5937a3c0e8771f9157dc1264bed4fa686392a52a8452555462a8762338236b4d49cbef367"
+    },
+    {
+        "id": "3900b9775888a663cf8fc5ce09068f02927013ba314323388ab8e96224334f72",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793620800,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-cese-vie-chere"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Un plan d’urgence contre la vie chère"
+            ],
+            [
+                "summary",
+                "Pétition au Conseil économique, social et environnemental, ouverte aux personnes de 16 ans et plus."
+            ],
+            [
+                "published_at",
+                "1780488000"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "vie chère"
+            ],
+            [
+                "ppf-platform",
+                "cese"
+            ],
+            [
+                "ppf-official-url",
+                "https://petitions.lecese.fr/"
+            ],
+            [
+                "ppf-reference",
+                "exemple"
+            ],
+            [
+                "ppf-opened",
+                "2026-06-02"
+            ],
+            [
+                "ppf-closes",
+                "2027-06-02"
+            ],
+            [
+                "ppf-petition-status",
+                "ouverte"
+            ],
+            [
+                "ppf-count",
+                "98000",
+                "2026-09-01",
+                "site des pétitions du CESE"
+            ],
+            [
+                "ppf-count",
+                "152480",
+                "2026-11-02",
+                "site des pétitions du CESE"
+            ],
+            [
+                "ppf-milestone",
+                "2026-10-28",
+                "150 000 signataires atteints : le Bureau du CESE examine la recevabilité (exemple)."
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Ordonnance n° 58-1360 du 29 décembre 1958, article 4-1",
+                "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042999544",
+                "2026-11-07"
+            ]
+        ],
+        "content": "Contenu de démonstration : la pétition et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site des pétitions du CESE.\n\nSi la pétition est recevable, le CESE rend un avis dans les six mois, publié au Journal officiel.\n",
+        "sig": "566332c4e495a714ac40cb47a72aab4eaab32fa86f6d127683981eac9fd7f7b45b7eb692b9193b8e7ff8f94c4fc3162ae636b8bc150dd63bb7b6104cb8142807"
+    },
+    {
+        "id": "a0d90130f45fce49aa3490e67a32ea044c45a26cb4e0e77a58eeaca3fee387f3",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793534400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-ice-energie"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Plafonner le prix de l’énergie pour les ménages en Europe"
+            ],
+            [
+                "summary",
+                "Initiative citoyenne européenne qui demande à la Commission une proposition de loi sur le prix de l’énergie."
+            ],
+            [
+                "published_at",
+                "1777982400"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "énergie"
+            ],
+            [
+                "t",
+                "vie chère"
+            ],
+            [
+                "t",
+                "Europe"
+            ],
+            [
+                "ppf-platform",
+                "ice"
+            ],
+            [
+                "ppf-official-url",
+                "https://citizens-initiative.europa.eu/"
+            ],
+            [
+                "ppf-reference",
+                "exemple"
+            ],
+            [
+                "ppf-opened",
+                "2026-05-04"
+            ],
+            [
+                "ppf-closes",
+                "2027-05-04"
+            ],
+            [
+                "ppf-petition-status",
+                "ouverte"
+            ],
+            [
+                "ppf-count",
+                "640200",
+                "2026-11-01",
+                "site de l’initiative citoyenne européenne"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Règlement (UE) 2019/788 relatif à l’initiative citoyenne européenne",
+                "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:32019R0788",
+                "2026-11-07"
+            ]
+        ],
+        "content": "Contenu de démonstration : l’initiative et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site de l’initiative citoyenne européenne.\n\nIl faut un million de signatures, avec le seuil national atteint dans au moins sept États. En France, ce seuil est de 58 320 signatures.\n",
+        "sig": "68d98ab0ea6b44c20359693b6ddc59001c8b0cae43566dc85dbc5abef4f24cdd10c6ff4fab07d1c748fce1d1e1b05785b77d508f8a9e6d2dedaca16d57c62aa5"
+    },
+    {
+        "id": "858909256b17886399b916dd3e23eeb06f6bb5a1ec458340c6424e6a1193b107",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1793966400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-senat-indexation"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Indexer les salaires sur les prix"
+            ],
+            [
+                "summary",
+                "Pétition au Sénat pour l’inscription à l’ordre du jour de la proposition de loi d’indexation des salaires."
+            ],
+            [
+                "published_at",
+                "1789992000"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "salaires"
+            ],
+            [
+                "t",
+                "vie chère"
+            ],
+            [
+                "ppf-platform",
+                "senat"
+            ],
+            [
+                "ppf-official-url",
+                "https://petitions.senat.fr/"
+            ],
+            [
+                "ppf-reference",
+                "exemple"
+            ],
+            [
+                "ppf-opened",
+                "2026-09-20"
+            ],
+            [
+                "ppf-closes",
+                "2027-03-20"
+            ],
+            [
+                "ppf-petition-status",
+                "ouverte"
+            ],
+            [
+                "ppf-count",
+                "18400",
+                "2026-10-01",
+                "site des pétitions du Sénat"
+            ],
+            [
+                "ppf-count",
+                "61300",
+                "2026-11-06",
+                "site des pétitions du Sénat"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:ppl-indexation-salaires",
+                "",
+                "texte"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Règlement du Sénat, articles 87 et 88",
+                "https://www.senat.fr/reglement/reglement_mono.html",
+                "2026-11-07"
+            ],
+            [
+                "ppf-next",
+                "Voir la proposition de loi",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:ppl-indexation-salaires"
+            ]
+        ],
+        "content": "Contenu de démonstration : la pétition et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site des pétitions du Sénat.\n\nÀ 100 000 signatures en six mois, la Conférence des présidents du Sénat doit examiner la pétition.\n",
+        "sig": "f517bb89784c630bdf7200918595792521ab379909e3e0cdcce05aac972450c3c77e8a155324dc44b57852b6241a9583faa779e4be23148f428b8706ead8eef2"
+    },
+    {
+        "id": "6a1f91ceeb42c432819f1cf7da03907149d5bc81c6ec0799923b47a5aeb1e471",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1788955200,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-senat-retraites"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Revaloriser les petites retraites au niveau des prix"
+            ],
+            [
+                "summary",
+                "Pétition au Sénat close après six mois, au-delà de 100 000 signatures."
+            ],
+            [
+                "published_at",
+                "1770811200"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "human"
+            ],
+            [
+                "t",
+                "retraites"
+            ],
+            [
+                "ppf-platform",
+                "senat"
+            ],
+            [
+                "ppf-official-url",
+                "https://petitions.senat.fr/"
+            ],
+            [
+                "ppf-reference",
+                "exemple"
+            ],
+            [
+                "ppf-opened",
+                "2026-02-10"
+            ],
+            [
+                "ppf-closes",
+                "2026-08-10"
+            ],
+            [
+                "ppf-petition-status",
+                "close"
+            ],
+            [
+                "ppf-count",
+                "64000",
+                "2026-04-01",
+                "site des pétitions du Sénat"
+            ],
+            [
+                "ppf-count",
+                "118400",
+                "2026-08-10",
+                "site des pétitions du Sénat"
+            ],
+            [
+                "ppf-milestone",
+                "2026-05-28",
+                "100 000 signatures en moins de quatre mois."
+            ],
+            [
+                "ppf-milestone",
+                "2026-09-09",
+                "La Conférence des présidents décide de créer une mission d’information (exemple)."
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Règlement du Sénat, articles 87 et 88",
+                "https://www.senat.fr/reglement/reglement_mono.html",
+                "2026-11-07"
+            ],
+            [
+                "ppf-next",
+                "Voir le vote du Sénat sur la revalorisation",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:vote-alex-revalorisation"
+            ]
+        ],
+        "content": "Contenu de démonstration : la pétition et ses chiffres sont fictifs.\n\nLa pétition a dépassé le seuil de 100 000 signatures dans les six mois. La Conférence des présidents l’a examinée et a choisi de créer une mission d’information plutôt que d’inscrire un débat.\n",
+        "sig": "99816234a1a182b50bdaa1f0ef24118257bb9237d15f2a67ebc22e03c047b3e94f5583cb03d962af43cb61a0fa4467250a391caaff53b4d80b1ea83d73f4319e"
+    }
+]
