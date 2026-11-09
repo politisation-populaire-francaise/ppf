@@ -54,7 +54,7 @@ Code : `server/.../agir/collectives/CollectiveRules.kt` (`CollectiveRules` pour 
 | Nouvelle version (même clé) qui change `ppf-collective`, `ppf-scope`, `ppf-territory-code`, `ppf-territory`, `ppf-charter`, `ppf-visibility` ou `ppf-join` | `409 collective_immutable` (vaut aussi pour un salon ordinaire qui voudrait devenir un collectif, et l'inverse) |
 | Nouvelle version d'un collectif, étiquettes modifiables mal formées | `400` comme ci-dessus |
 
-Le niveau lu est `vote_account.level`, celui que `GET /api/v1/urnes/me` montre à l'appareil (un compte validé cette semaine compte déjà, même si son niveau ne vaut pour les urnes qu'à partir du lundi suivant). Les garde-fous de D-132 (3 salons par jour, noms proches, noms d'organisations) s'appliquent ensuite comme à tout salon. Une création retenue pour l'équipe (`202 held`) a déjà passé la règle du collectif ; elle n'est pas revérifiée à l'approbation.
+Le niveau lu est `vote_account.level`, celui que `GET /api/v1/urnes/me` montre à l'appareil (un compte validé cette semaine compte déjà, même si son niveau ne vaut pour les urnes qu'à partir du lundi suivant). Les garde-fous de D-132 (3 salons par jour, noms proches, noms d'organisations) s'appliquent ensuite comme à tout salon. Une création retenue pour l'équipe (`202 held`) a déjà passé la règle du collectif ; elle n'est pas revérifiée à l'approbation. La description entière reste bornée à 8 Kio, comme celle de tout salon (`400 description_too_long`) : une présentation de 1000 caractères et une charte interne de 3000 caractères en français y tiennent largement, pas des milliers d'émojis.
 
 **Mobilisation ou appel portant `ppf-collective`** (`AgirRules` vérifie la forme, `AgirSpace.route` appelle `CollectiveRoles`) :
 
