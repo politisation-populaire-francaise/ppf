@@ -79,11 +79,12 @@ internal fun FlowContent.transparencyEntryBody(entry: TransparencyEntry) {
 
 private fun FlowContent.entryTitle(entry: TransparencyEntry) {
     h3 { +entry.title }
+    entry.article.summary?.let { p { +it } }
 }
 
 /** What every page ends with, under small headings: no id, so that several pages fit in one document. */
 private fun FlowContent.entryFooter(entry: TransparencyEntry) {
-    if (entry.article.body.isNotBlank()) markdown(entry.article.body)
+    if (entry.article.body.isNotBlank()) markdownBelow(entry.article.body, levels = 2)
     if (entry.archives.isNotEmpty()) {
         h4 { +"Documents archivés" }
         ul {
@@ -157,7 +158,6 @@ private fun FlowContent.decision(entry: TransparencyEntry) {
         entry.instance?.let { +" · ${it.webLabel}" }
     }
     entry.tally?.let { p { +"Pour : ${it.inFavour} · Contre : ${it.against} · Abstention : ${it.abstention}" } }
-    entry.article.summary?.let { p { +it } }
     entryFooter(entry)
 }
 

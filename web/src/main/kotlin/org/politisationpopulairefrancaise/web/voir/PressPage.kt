@@ -56,7 +56,7 @@ fun HTML.pressDocument(catalog: VoirCatalog) {
                 dt { +"Icônes" }
                 dd { +MediaKit.ICONS }
                 dt { +"Icône de l’application" }
-                dd { a(href = "/icon.svg") { +"icon.svg" } }
+                dd { a(href = "/static/icon.svg") { +"icon.svg" } }
             }
             p { +"Textes et images de PPF : licence CC BY 4.0 ; données : Licence Ouverte 2.0. Citez la source et la date." }
             p(classes = "muted") { +"PPF n’utilise jamais l’identité visuelle de l’État (logo officiel, bloc-marque) : merci de ne pas l’associer à nos contenus." }
@@ -81,7 +81,7 @@ internal fun FlowContent.pressReleaseBody(release: PressRelease) {
     p(classes = "muted") { date(release.date) }
     h3 { +release.title }
     release.article.summary?.let { p { +it } }
-    if (release.article.body.isNotBlank()) markdown(release.article.body)
+    if (release.article.body.isNotBlank()) markdownBelow(release.article.body, levels = 2)
     if (release.sources.isNotEmpty()) {
         h4 { +"Sources" }
         ul(classes = "source-list") {

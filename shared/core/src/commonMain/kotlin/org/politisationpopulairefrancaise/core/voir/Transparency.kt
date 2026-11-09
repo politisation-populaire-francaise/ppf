@@ -148,7 +148,9 @@ data class TransparencyEntry(
                 },
                 date = CivilDate.parseIso(event.value(VoirTags.DATE)),
                 tally = event.fields(VoirTags.TALLY).firstOrNull()?.let { f ->
-                    val counts = (0..2).map { f.at(it)?.trim()?.toIntOrNull()?.takeIf { n -> n >= 0 } ?: return@let null }
+                    val counts = (0..2).map { i ->
+                        f.at(i)?.let(Indicator::parseNumber)?.takeIf { n -> n >= 0 && n == kotlin.math.floor(n) && n <= Int.MAX_VALUE }?.toInt() ?: return@let null
+                    }
                     Tally(counts[0], counts[1], counts[2])
                 },
                 year = event.value(VoirTags.YEAR)?.toIntOrNull()?.takeIf { it in 2026..2100 },

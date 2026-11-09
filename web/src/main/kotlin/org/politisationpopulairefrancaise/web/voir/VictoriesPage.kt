@@ -33,10 +33,12 @@ fun HTML.victoriesDocument(catalog: VoirCatalog) {
         if (catalog.victories.any { it.title.startsWith(VoirCatalog.EXAMPLE_MARKER) }) {
             p(classes = "callout callout-attention") { +"Contenus de démonstration [EXEMPLE] : ces victoires sont fictives." }
         }
-        if (catalog.victories.isEmpty()) {
-            p(classes = "muted") { +"Aucune victoire n’est encore publiée." }
+        pageSection("victoires", "Les victoires, de la plus récente à la plus ancienne") {
+            if (catalog.victories.isEmpty()) {
+                p(classes = "muted") { +"Aucune victoire n’est encore publiée." }
+            }
+            catalog.victories.forEach { victory -> article(classes = "victory") { victoryBody(victory, catalog) } }
         }
-        catalog.victories.forEach { victory -> article(classes = "victory") { victoryBody(victory, catalog) } }
         p { a(href = TRANSPARENCY_PATH) { +"Transparence de PPF" } }
     }
 }
@@ -49,7 +51,7 @@ internal fun FlowContent.victoryBody(victory: Victory, catalog: VoirCatalog) {
     }
     h3 { +victory.title }
     victory.article.summary?.let { p { +it } }
-    if (victory.article.body.isNotBlank()) markdown(victory.article.body)
+    if (victory.article.body.isNotBlank()) markdownBelow(victory.article.body, levels = 2)
     val related = victory.related.mapNotNull(catalog::item)
     if (related.isNotEmpty()) {
         h4 { +"Dans « Voir »" }

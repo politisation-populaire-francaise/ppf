@@ -353,10 +353,3 @@ fun BillApplication(text: LegislativeText, parliament: ParliamentState, modifier
 }
 
 private fun day(iso: String): String = CivilDate.parseIso(iso)?.toFrench() ?: iso
-
-/** `2027-03` to « mars 2027 ». */
-private fun monthLabel(month: String): String {
-    val year = month.take(4).toIntOrNull() ?: return month
-    val number = month.drop(5).toIntOrNull()?.takeIf { it in 1..12 } ?: return month
-    return CivilDate(year, number, 1).monthYearFrench()
-}

@@ -87,15 +87,22 @@ class DashboardService(
             if (last == until) break
             until = last
         }
+        // An unreadable date gives no month (DashboardFormat.of keeps the months AAAA-MM only).
         first.values.groupingBy { monthOf(it) }.eachCount().mapValues { it.value.toLong() }
     }
 
-    private fun publishedAt(event: SignedEvent): Long = event.firstTagValue(Article.TAG_PUBLISHED_AT)?.toLongOrNull()?.takeIf { it > 0 } ?: event.createdAt
+    /** The first publication written by the author, kept only between the opening of PPF and the event itself. */
+    private fun publishedAt(event: SignedEvent): Long =
+        event.firstTagValue(Article.TAG_PUBLISHED_AT)?.toLongOrNull()?.takeIf { it in EARLIEST..event.createdAt } ?: event.createdAt
 
-    private fun monthOf(seconds: Long): String = Instant.ofEpochSecond(seconds).atZone(PARIS).toLocalDate().toString().take(7)
+    private fun monthOf(seconds: Long): String =
+        runCatching { Instant.ofEpochSecond(seconds).atZone(PARIS).toLocalDate().toString().take(7) }.getOrDefault("")
 
     companion object {
         private val PARIS: ZoneId = ZoneId.of("Europe/Paris")
+
+        /** 1 January 2026, 00:00 UTC: nothing of PPF was published before. */
+        private const val EARLIEST: Long = 1_767_225_600
 
         /** A bound on what one computation reads per figure. */
         const val MAX_EVENTS: Int = 100_000

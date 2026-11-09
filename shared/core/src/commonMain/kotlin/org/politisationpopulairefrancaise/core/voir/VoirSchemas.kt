@@ -547,7 +547,7 @@ object VoirSchemas {
         checks = listOf(
             readable(TransparencyEntry::from) {
                 counts(
-                    "seat" to it.seats.size, "account-line" to it.lines.size, "figure" to it.figures.size,
+                    "seat" to it.seats.size, "tally" to listOfNotNull(it.tally).size, "account-line" to it.lines.size, "figure" to it.figures.size,
                     "archive" to it.archives.size, "source" to it.sources.size, "correction" to it.corrections.size,
                 )
             },

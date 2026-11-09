@@ -59,6 +59,14 @@ fun FlowContent.voirBlockPreview(draft: UnsignedEvent, published: List<SignedEve
 
 private val NO_SIGNATURE: String = "0".repeat(128)
 
+/**
+ * A body of Markdown whose headings move down [levels] levels (« ## » becomes h4 with 2), under the title of an
+ * entry of a page that lists several contents (transparency, victories, press releases).
+ */
+internal fun FlowContent.markdownBelow(source: String, levels: Int) {
+    DIV(attributesMapOf("class", "entry-body"), HeadingShift(consumer, levels)).visit { markdown(source) }
+}
+
 /** The content of [catalog] at [address], whatever its kind. */
 private fun itemAt(catalog: VoirCatalog, address: ContentAddress): VoirItem? = sequence {
     catalog.indicators.forEach { yield(VoirItem.OfIndicator(it)) }

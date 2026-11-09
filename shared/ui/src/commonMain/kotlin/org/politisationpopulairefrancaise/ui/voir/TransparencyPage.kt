@@ -88,6 +88,7 @@ private fun InstanceCard(entry: TransparencyEntry) {
     PpfCard(modifier = Modifier.fillMaxWidth().testTag(TransparencyTags.entry(entry.article.slug))) {
         VoirTitle(entry.title, style = MaterialTheme.typography.titleMedium)
         entry.instance?.let { Text(stringResource(it.label), style = MaterialTheme.typography.labelLarge, color = palette.inkMuted) }
+        entry.article.summary?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
         entry.seats.forEach { seat ->
             val who = seat.name?.let { stringResource(Res.string.transp_seat_named, seat.function, it.withoutExample()) } ?: stringResource(Res.string.transp_seat, seat.function)
             val details = listOfNotNull(seat.since?.let { stringResource(Res.string.transp_seat_since, it.toFrench()) }, seat.designation).joinToString(" · ")
@@ -123,6 +124,7 @@ private fun AccountsCard(entry: TransparencyEntry) {
     PpfCard(modifier = Modifier.fillMaxWidth().testTag(TransparencyTags.entry(entry.article.slug))) {
         VoirTitle(entry.title, style = MaterialTheme.typography.titleMedium)
         entry.year?.let { Text(stringResource(Res.string.transp_accounts_year, it), style = MaterialTheme.typography.labelLarge, color = palette.inkMuted) }
+        entry.article.summary?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
         Text(
             entry.approvedOn?.let { stringResource(Res.string.transp_accounts_approved, it.toFrench()) } ?: stringResource(Res.string.transp_accounts_not_approved),
             style = MaterialTheme.typography.bodySmall,
@@ -152,6 +154,7 @@ private fun ReportCard(entry: TransparencyEntry) {
             style = MaterialTheme.typography.labelLarge,
             color = palette.inkMuted,
         )
+        entry.article.summary?.let { Text(it, style = MaterialTheme.typography.bodyMedium) }
         listOf(true to Res.string.transp_moderation, false to Res.string.transp_claims).forEach { (moderation, title) ->
             Text(stringResource(title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.padding(top = 8.dp).semantics { heading() })
             // Every figure of the list, always in this order: one absent is « not measured », never zero.
