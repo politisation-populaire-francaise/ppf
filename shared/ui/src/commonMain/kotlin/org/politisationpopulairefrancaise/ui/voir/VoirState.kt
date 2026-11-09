@@ -42,6 +42,9 @@ sealed interface VoirDestination {
 
     /** « Vérifier un contenu PPF » (S-141): a code, a link or a signed content, checked on the device. */
     data object Verify : VoirDestination
+
+    /** « Transparence de PPF » (M34, PP-01): the instances, decisions, accounts and reports of the association. */
+    data object Transparency : VoirDestination
 }
 
 /**

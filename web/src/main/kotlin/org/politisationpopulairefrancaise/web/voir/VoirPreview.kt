@@ -13,6 +13,7 @@ import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
+import org.politisationpopulairefrancaise.core.voir.TransparencyEntry
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
 import org.politisationpopulairefrancaise.core.voir.VoirItem
 import java.util.IdentityHashMap
@@ -35,9 +36,15 @@ fun FlowContent.voirBlockPreview(draft: UnsignedEvent, published: List<SignedEve
     val catalog = VoirCatalog.from(others + article)
     val reply = catalog.replies.firstOrNull { it.article.address == article.address }
     val item = itemAt(catalog, reply?.target ?: article.address)
-    if (item == null && reply == null) return false
+    // A page of « Transparence de PPF » (PP-01) is not a block of the axes: it is shown as on /transparence.
+    val transparency = TransparencyEntry.from(article)
+    if (item == null && reply == null && transparency == null) return false
     DIV(attributesMapOf("class", "voir-preview"), HeadingShift(consumer, headingOffset)).visit {
-        if (item != null) voirItemBody(item, catalog) else repliesSection(listOfNotNull(reply), offerReply = false)
+        when {
+            item != null -> voirItemBody(item, catalog)
+            reply != null -> repliesSection(listOf(reply), offerReply = false)
+            transparency != null -> transparencyEntryBody(transparency)
+        }
     }
     return true
 }

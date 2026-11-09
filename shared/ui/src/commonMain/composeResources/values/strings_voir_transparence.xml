@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Transparence de PPF » (M34, PP-01, D-104). -->
+<resources>
+    <string name="transp_open">Transparence de PPF : instances, décisions, comptes, rapports</string>
+    <string name="transp_title">Transparence de PPF</string>
+    <string name="transp_intro">Une plateforme qui demande des comptes au pouvoir doit rendre les siens. Voici les instances de l’association, ses décisions importantes, ses comptes et ses rapports de modération et de réclamations, avec les mêmes rubriques chaque année.</string>
+    <string name="transp_example">Contenus de démonstration [EXEMPLE] : l’association n’existe pas encore. Aucun nom, aucun chiffre réel.</string>
+    <string name="transp_empty">Rien n’est encore publié dans cette rubrique.</string>
+    <string name="transp_instances">Les instances</string>
+    <string name="transp_decisions">Les décisions importantes</string>
+    <string name="transp_accounts">Les comptes</string>
+    <string name="transp_reports">Rapports de modération et de réclamations</string>
+    <string name="transp_seat">%1$s</string>
+    <string name="transp_seat_named">%1$s : %2$s</string>
+    <string name="transp_seat_since">depuis le %1$s</string>
+    <string name="transp_names_note">Les noms ne sont publiés qu’avec l’accord de chaque personne.</string>
+    <string name="transp_decision_meta">%1$s · %2$s</string>
+    <string name="transp_tally">Pour : %1$d · Contre : %2$d · Abstention : %3$d</string>
+    <string name="transp_accounts_year">Exercice %1$d</string>
+    <string name="transp_accounts_approved">Approuvés par l’assemblée générale le %1$s</string>
+    <string name="transp_accounts_not_approved">Pas encore approuvés par l’assemblée générale</string>
+    <string name="transp_income">Produits : %1$s</string>
+    <string name="transp_expense">Charges : %1$s</string>
+    <string name="transp_result">Résultat (produits moins charges) : %1$s</string>
+    <string name="transp_line">%1$s : %2$s</string>
+    <string name="transp_report_period">Du %1$s au %2$s</string>
+    <string name="transp_report_running">Depuis le %1$s</string>
+    <string name="transp_moderation">Modération</string>
+    <string name="transp_claims">Réclamations</string>
+    <string name="transp_not_measured">non mesuré</string>
+    <string name="transp_figure_line">%1$s : %2$s</string>
+    <string name="transp_hours">%1$s heures</string>
+    <string name="transp_percent">%1$s %</string>
+    <string name="transp_instance_assemblee_generale">Assemblée générale</string>
+    <string name="transp_instance_conseil_administration">Conseil d’administration</string>
+    <string name="transp_instance_bureau">Bureau</string>
+    <string name="transp_instance_equipe_editoriale">Équipe éditoriale</string>
+    <string name="transp_instance_equipe_moderation">Équipe de modération</string>
+    <string name="transp_instance_autre">Autre instance</string>
+    <string name="transp_fig_injonctions_autorites">Injonctions et demandes d’information des autorités</string>
+    <string name="transp_fig_signalements_recus">Signalements reçus</string>
+    <string name="transp_fig_decisions_sur_signalement">Décisions prises sur signalement</string>
+    <string name="transp_fig_decisions_initiative">Décisions prises à l’initiative de l’équipe</string>
+    <string name="transp_fig_masquages_automatiques">Contenus masqués provisoirement par la modération automatique</string>
+    <string name="transp_fig_alertes_automatiques">Contenus signalés sans masquage par la modération automatique</string>
+    <string name="transp_fig_delai_median_heures">Délai médian de décision</string>
+    <string name="transp_fig_recours_internes">Réclamations contre une décision de modération</string>
+    <string name="transp_fig_decisions_modifiees">Décisions annulées ou modifiées après réclamation</string>
+    <string name="transp_fig_transmissions_autorites">Transmissions aux autorités</string>
+    <string name="transp_fig_precision_automatique_pourcent">Précision de la modération automatique</string>
+    <string name="transp_fig_erreur_automatique_pourcent">Taux d’erreur de la modération automatique</string>
+    <string name="transp_fig_reclamations_recues">Réclamations reçues</string>
+    <string name="transp_fig_reclamations_hors_delai">Réclamations traitées hors délai</string>
+    <string name="transp_fig_droits_donnees">Demandes d’exercice des droits sur les données</string>
+    <string name="transp_fig_requisitions">Réquisitions judiciaires reçues</string>
+</resources>

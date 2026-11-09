@@ -256,6 +256,9 @@ private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActio
     Spacer(Modifier.height(24.dp))
     CorrectionsLink(state)
     VerifyLink(state)
+    // The association shows its own accounts beside those it asks of the power (PP-01).
+    Spacer(Modifier.height(8.dp))
+    LinkRow(stringResource(Res.string.transp_open), Lucide.Landmark, onClick = { state.open(VoirDestination.Transparency) }, modifier = Modifier.testTag(TransparencyTags.OPEN))
     Spacer(Modifier.height(12.dp))
     MethodCard(actions)
 }
@@ -490,6 +493,7 @@ private fun VoirDetail(
                 VoirDestination.Corrections -> CorrectionsPage(catalog, actions)
                 is VoirDestination.KeyFigures -> KeyFiguresPage(catalog, current.axis, actions, columns)
                 VoirDestination.Verify -> VerifyPage(verify, catalog, onOpen = { state.open(it) })
+                VoirDestination.Transparency -> TransparencyPage(catalog.transparency)
             }
         }
         }
@@ -506,4 +510,5 @@ private fun axisOf(destination: VoirDestination, catalog: VoirCatalog, state: Vo
     is VoirDestination.Reply -> catalog.item(destination.address)?.axis ?: state.axis
     is VoirDestination.Report -> catalog.item(destination.address)?.axis ?: state.axis
     VoirDestination.Verify -> state.axis
+    VoirDestination.Transparency -> VoirAxis.POUVOIR
 }

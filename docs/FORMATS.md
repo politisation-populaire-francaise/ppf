@@ -233,6 +233,7 @@ Types de source : `autorites`, `organisateurs`, `comptage-independant`, `medias`
 | `mouvement` | `ppf-country` (obligatoire), `ppf-period` : début, fin ; `ppf-claim` (une par revendication), `ppf-result` (une par résultat obtenu). |
 | `dossier` | `ppf-axis` (un dossier sans axe n'est pas affiché dans « Voir »). |
 | `reponse` | `ppf-respondent` (nom de la personne qui répond, obligatoire) et un lien `a` de rôle `cible`. Le corps est la réponse. |
+| `transparence` | « Transparence de PPF » (PP-01, D-104) : `ppf-rubric` (obligatoire) : `instance`, `decision`, `comptes`, `rapport` ; `ppf-instance` : `assemblee-generale`, `conseil-administration`, `bureau`, `equipe-editoriale`, `equipe-moderation`, `autre` (obligatoire pour une instance) ; `ppf-seat` : fonction, nom (seulement avec l'accord de la personne), depuis, mode de désignation ; `ppf-date` (obligatoire pour une décision) ; `ppf-tally` : pour, contre, abstention ; `ppf-year` (obligatoire pour des comptes) ; `ppf-account-line` : `produit` ou `charge`, catégorie, montant en euros ; `ppf-approved` : date d'approbation ; `ppf-period` : début, fin (début obligatoire pour un rapport) ; `ppf-figure` : code de la liste fixe de `docs/integration/transparence-ppf.md`, section 2, valeur ; `ppf-archive`, `ppf-source`, `ppf-correction` comme ci-dessus. Jamais parmi les briques des axes. |
 
 ## 4 sexies. Espace « Agir » : mobilisations, appels, organisations (D-039 à D-044)
 

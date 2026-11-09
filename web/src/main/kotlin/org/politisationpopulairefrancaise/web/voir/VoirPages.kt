@@ -63,6 +63,11 @@ import org.politisationpopulairefrancaise.web.siteLayout
  * page ends with its sources and "Et maintenant ?". An unknown address answers a 404 page.
  */
 fun Route.voirPages(source: VoirSource) {
+    // « Transparence de PPF » (PP-01): the pages of the association itself, at the root of the site.
+    get(TRANSPARENCY_PATH) {
+        val catalog = source.catalog()
+        call.respondHtml { transparencyDocument(catalog.transparency) }
+    }
     route(VoirLinks.HOME) {
         get {
             val catalog = source.catalog()
