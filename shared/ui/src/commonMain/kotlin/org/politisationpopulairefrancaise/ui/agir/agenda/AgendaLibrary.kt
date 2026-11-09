@@ -42,6 +42,7 @@ import org.politisationpopulairefrancaise.core.sync.SyncReport
 import org.politisationpopulairefrancaise.core.sync.SyncService
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.agir.followups.FollowUpLibrary
 import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.resources.Res
 
@@ -196,6 +197,9 @@ class AgendaLibrary(
 
     /** The "Proposer un événement" form; its draft survives a visit to another tab. */
     val composer: MobilizationComposer = MobilizationComposer(store, state, remote, clock)
+
+    /** AG-62 « Et après ? »: the sourced follow-ups of the past mobilizations, read on the device (FollowUpLibrary.kt). */
+    val followUps: FollowUpLibrary = FollowUpLibrary(store, trust)
 
     private var accountKey: String? by mutableStateOf(null)
 

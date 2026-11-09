@@ -82,7 +82,7 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `summary` | Résumé | Non |
 | `published_at` | Première publication, secondes depuis 1970, en texte | Non |
 | `t` | Un thème par étiquette (`droits`, `manifestation`, …) | Non |
-| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide`, `fiche-pedagogique` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
+| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide`, `fiche-pedagogique` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `suite` pour les suites d'une mobilisation (section 4 septdecies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-territory-code` | Code du référentiel des territoires (section 4 nonies) à côté du libellé ; pas encore accepté par le serveur pour les revendications | Non |
@@ -987,6 +987,31 @@ PPF:EVENT:1:<Base45 du gzip du JSON de l'événement signé>
 | Appel (30023, `ppf-type` = `appel`) | `https://politisation-populaire-francaise.org/agir/appels/<clé de l'auteur>/<identifiant d>` |
 
 Clé en hexadécimal minuscule (64 caractères) ; identifiant écrit tel quel s'il ne contient que des caractères non réservés (RFC 3986), sinon codé en pourcentage comme les adresses de « Voir ». **Jamais de paramètre ni de fragment.** À la lecture, seules ces adresses exactes sont suivies : `https`, l'un des six domaines de PPF (`www.` admis), ni nom d'utilisateur, ni port, ni paramètre, ni fragment, ni autre chemin. Les pages du site à ces adresses sont à écrire (question 1 de la note) ; l'application ouvre la mobilisation qu'elle connaît, après la synchronisation habituelle de tout l'agenda si besoin.
+
+## 4 septdecies. Suites d'une mobilisation d'« Agir » (AG-62, décision à numéroter)
+
+> Numéro pris le 9 novembre 2026 ; l'agent d'AG-61 (affiche avec code QR) ajoute peut-être une section au même moment : la session qui fusionne garde l'ordre d'entrée dans `main` et renumérote la seconde. Conception, règles et questions : `docs/integration/agir-et-apres.md`. **Pas encore compilé ni signé** (`suites.json` n'existe pas encore).
+
+Une suite (« Et après ? ») dit ce qui a suivi une mobilisation passée de l'agenda : réponse d'un élu, annonce, recul, texte déposé, décision de justice. C'est un contenu éditorial NIP-23 (type `30023`, `ppf-type` = `suite`) signé par une clé éditoriale : étiquettes communes de la section 4 bis (`summary` obligatoire), puis, dans l'ordre de l'en-tête. Lecture : `shared/core/.../core/agir/followups/FollowUp.kt` ; schéma du moteur éditorial : `FollowUpSchema.kt`.
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `a` de rôle `mobilisation` | Oui, 1 à 20 | `["a", "31923:<clé>:<d>", "", "mobilisation"]` : adresse complète de la mobilisation suivie (section 4 sexies), quel que soit son auteur |
+| `ppf-suite-kind` | Oui | `reponse-elu`, `annonce`, `recul`, `texte-depose`, `decision-justice` ou `autre` |
+| `ppf-date` | Oui | Date de la suite, `AAAA-MM-JJ` (comme un fait de « Voir ») |
+| `ppf-fact-status` | Oui | `etabli`, `allegue` ou `enquete` : le vocabulaire des faits de « Voir » (section 4 quinquies) |
+| `ppf-source` | Oui, une ou plus | type de source de « Voir », nom, adresse `https://` **obligatoire**, date facultative |
+| `a` de rôle `personne` | Non, 20 au plus ; obligatoire pour `reponse-elu` | `30023:<clé>:<d>` d'une personne publique de « Voir » : le droit de réponse s'applique |
+| `a` de rôle `revendication` | Non, 20 au plus | `30023:<clé>:<d>` d'une revendication (section 4 quater) |
+| `a` de rôle `appel` | Non, 20 au plus | `30023:<clé>:<d>` d'un appel (section 4 sexies) |
+| `a` de rôle `chronologie` | Non, 20 au plus | `30023:<clé>:<d>` d'un fait de la chronologie de « Voir » (VO-06) |
+| `ppf-correction` | Non | date, résumé public, nature (`correction` ou `mise-a-jour`), comme la section 4 bis |
+
+Les liens portent l'adresse complète, et non un identifiant sous la clé de l'espace, parce que leurs cibles sont signées par d'autres clés (l'auteur d'une mobilisation, d'une revendication ou d'un appel ; la clé de « Voir »). Le même lien n'est donné qu'une fois. `content` : texte simple, 4 000 caractères au plus.
+
+**Lecture sur l'appareil** : une suite sans type connu, sans date, sans statut connu, sans mobilisation de type 31923 ou sans source qui ait son adresse est ignorée ; une source sans adresse est écartée ; seules les suites d'une clé éditoriale de confiance sont montrées. Pour une même adresse, la version la plus récente l'emporte. Les suites d'une mobilisation sont cherchées sur l'appareil, par l'étiquette `a` de son adresse, jamais demandées au serveur pour une mobilisation donnée ; quand elles viendront du serveur, elles seront tirées par type, toutes. Un droit de réponse de « Voir » (`ppf-type` = `reponse`) dont la cible est une suite s'affiche sous elle (le schéma de `reponse` n'accepte pas encore cette cible : question 3 de la note).
+
+**Paquet intégré** : `suites.json`, écrit par `tools/content-signer` à partir de `content/suites` (format dans `content/README.md`), absent tant que l'outil n'a pas été lancé ; l'application le tolère.
 
 ## 5. API du serveur (version 1)
 

@@ -111,6 +111,14 @@ object EditorialMessages {
         "voir.rule.measure_part" to "la part ({1}) dépasse la valeur ({0})",
         "voir.rule.duplicate" to "« {0} » est déjà donné",
         "voir.rule.next_space" to "« {0} » n'est pas un espace de l'application",
+        // Rules of the schemas of Agir (AG-62, the follow-ups of a mobilization).
+        "agir.rule.suite_unreadable" to "l'application ne lirait pas cette suite (vérifiez le type de suite, la date, le statut, la mobilisation et les sources)",
+        "agir.rule.suite_line_ignored" to "l'application ignorerait {0} ligne(s) de ce champ",
+        "agir.rule.suite_reply_needs_person" to "la réponse d'un élu nomme sa fiche dans « Voir » (champ person), pour que le droit de réponse s'applique",
+        "agir.rule.suite_mobilization_address" to "« {0} » n'est pas l'adresse d'une mobilisation de l'agenda (31923:<clé>:<identifiant>)",
+        "agir.rule.suite_content_address" to "« {0} » n'est pas l'adresse d'un contenu (30023:<clé>:<identifiant>)",
+        "agir.rule.suite_link_wrong_type" to "« {0} » doit être un contenu de type {1}, c'est un contenu de type {2}",
+        "agir.rule.suite_duplicate" to "« {0} » est déjà donné",
     )
 
     /** The French template of [code], or null when it is unknown. */

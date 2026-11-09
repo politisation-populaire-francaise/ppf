@@ -229,10 +229,30 @@ M35 (AG-10, AG-12), décision D-085 ; formats signés dans `docs/FORMATS.md`, se
 - `solidarite/missions/*.md` : `slug`, `title`, `summary`, `skills` (séparées par des virgules, dans la liste fermée de `docs/FORMATS.md`), `territory`, `remote` (`oui` pour une mission à distance), `location`, `commitment`, `people`, `deadline` (`AAAA-MM-JJ`, fin de journée à l'heure de Paris), `status` (`ouverte`, `pourvue`, `close`), `origin`, `published_at`, `updated_at`.
 - Aucun champ `type` dans ces en-têtes. Résultat : `solidarite.json`, à côté de `organisations.json`. Le corps est la présentation (Markdown simple, sans lien cliquable).
 
+### Format d'une suite de mobilisation (`suites/*.md`)
+
+AG-62 « Et après ? » (conception : `docs/integration/agir-et-apres.md` ; format signé : `docs/FORMATS.md`, section 4 septdecies). Une suite dit ce qui a suivi une mobilisation passée de l'agenda ; elle s'affiche sous la description de cette mobilisation, dans l'onglet « Passés ». **Les suites actuelles sont des exemples [EXEMPLE]** : elles suivent la projection-débat de Rennes de `agenda/`, et l'agenda reste fait d'exemples (décision de la propriétaire du 9 novembre 2026), donc ses suites aussi ; l'outil refuse un titre sans [EXEMPLE] et une source hors des domaines réservés aux exemples (`example.org`, `example.com`, `example.net`, `.invalid`).
+
+| Champ | Rôle |
+|---|---|
+| `slug`, `title`, `summary` | Identifiant stable (préfixe `suite-` conseillé), titre avec [EXEMPLE], résumé obligatoire (la phrase montrée sous le titre) |
+| `type` | `suite` |
+| `mobilization` | La mobilisation suivie : `agenda:<slug d'un fichier de agenda/>` ; une ligne par mobilisation si la suite en suit plusieurs |
+| `suite-kind` | `reponse-elu`, `annonce`, `recul`, `texte-depose`, `decision-justice` ou `autre` |
+| `date` | Date de la suite, `AAAA-MM-JJ`, jamais avant la mobilisation |
+| `fact-status` | `etabli`, `allegue` ou `enquete`, comme un fait de « Voir » |
+| `source` | Au moins une : `type \| nom \| adresse https \| date`, comme dans « Voir » ; **l'adresse est obligatoire** |
+| `person` | Facultatif, obligatoire pour une réponse d'élu : `voir:<slug d'une personne de voir/personnes>` (le droit de réponse s'applique) |
+| `demand`, `call`, `chronology` | Facultatifs : `revendication:<slug>`, `appel:<slug>`, `voir:<slug d'un fait de la chronologie>` |
+| `correction` | Facultatif : `date \| résumé public \| correction ou mise-a-jour` |
+| `origin`, `published_at`, `updated_at` | Comme pour une fiche |
+
+Le corps est un texte simple (pas de Markdown), 4 000 caractères au plus. L'outil écrit chaque lien sous la forme d'une adresse complète (`31923:<clé>:<slug>` pour une mobilisation, `30023:<clé>:<slug>` pour le reste) ; n'écrivez jamais l'adresse vous-même. Il refuse un champ inconnu, une suite sans source ou dont une source n'a pas d'adresse, un type ou un statut inconnus, un lien vers un identifiant qui n'existe pas ou du mauvais genre, une réponse d'élu sans `person`. Résultat : `suites.json`.
+
 ## Signer et intégrer les contenus
 
 ```bash
 ./gradlew :tools:content-signer:run
 ```
 
-L'outil lit `content/fiches`, `content/parcours`, `content/decryptages`, `content/histoire`, `content/qui-decide`, `content/methode`, `content/glossaire`, `content/revendications`, `content/fil`, `content/voir`, `content/agenda`, `content/appels`, `content/organisations` et `content/solidarite`, signe chaque fichier en événement (fiches, parcours, contenus de « Comprendre », glossaire, revendications, appels, organisations, caisses et missions : NIP-23, type 30023 ; fil : type 1 ; agenda : type 31923 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `comprendre.json`, `glossaire.json`, `revendications.json`, `fil.json`, `voir.json`, `agenda.json`, `appels.json`, `organisations.json` et `solidarite.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La signature BIP-340 utilise un aléa : relancer l'outil change les signatures de tous les fichiers (les identifiants restent les mêmes), ce qui crée des différences inutiles entre branches ; ne garder que les fichiers réellement modifiés. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.
+L'outil lit `content/fiches`, `content/parcours`, `content/decryptages`, `content/histoire`, `content/qui-decide`, `content/methode`, `content/glossaire`, `content/revendications`, `content/fil`, `content/voir`, `content/agenda`, `content/appels`, `content/organisations`, `content/solidarite` et `content/suites`, signe chaque fichier en événement (fiches, parcours, contenus de « Comprendre », glossaire, revendications, appels, organisations, caisses et missions, suites : NIP-23, type 30023 ; fil : type 1 ; agenda : type 31923 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `comprendre.json`, `glossaire.json`, `revendications.json`, `fil.json`, `voir.json`, `agenda.json`, `appels.json`, `organisations.json`, `solidarite.json` et `suites.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La signature BIP-340 utilise un aléa : relancer l'outil change les signatures de tous les fichiers (les identifiants restent les mêmes), ce qui crée des différences inutiles entre branches ; ne garder que les fichiers réellement modifiés. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.
