@@ -221,6 +221,10 @@ fun CollectivesScreen(
             }
             CollectivesView.Create -> CollectiveCreationWizard(library, session, compact, onNavigate, onCreateRoom)
             is CollectivesView.Room -> {
+                // Back from another space: the salon is opened again, with its messages.
+                LaunchedEffect(view.id) {
+                    if (library.groups.selected?.id != view.id) library.groups.groups.firstOrNull { it.id == view.id }?.let { library.groups.open(it) }
+                }
                 val room = library.groups.selected ?: library.groups.groups.firstOrNull { it.id == view.id }
                 if (room == null) {
                     MissingCollective(compact, library::toDirectory)
@@ -499,7 +503,7 @@ internal fun typeLabel(type: CollectiveType): StringResource = when (type) {
 }
 
 /** The languages offered by the wizard (ISO 639-1); a collectif may carry another code, shown as it is. */
-internal val LANGUAGES: List<Pair<String, StringResource>> = listOf(
+internal val LANGUAGES: List<Pair<String, StringResource>> get() = listOf(
     "fr" to Res.string.collectifs_language_fr,
     "en" to Res.string.collectifs_language_en,
     "es" to Res.string.collectifs_language_es,
