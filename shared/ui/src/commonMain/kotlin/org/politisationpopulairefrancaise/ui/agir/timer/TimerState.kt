@@ -80,10 +80,10 @@ data class OwnTimer(
  * storage of the platform ([TimerStore]). The slow steps (two derivations of a code) run on
  * [worker]. Nothing here tells the server anything but envelopes.
  *
- * [tick] moves the clock of the screens (countdowns, deadlines reached), announces the alerts
- * newly due ([onAlertsDue]: the shell asks the messages again, a cancellation may be on its way),
- * notifies those still due one tick later ([onNotify]) and retries the deliveries waiting for the
- * network.
+ * [tick] moves the clock of the screens (countdowns, deadlines reached), asks the messages again
+ * ([refreshMessages]) when alerts become due (a cancellation may be on its way) and every
+ * [REFRESH_EVERY_TICKS] beats while a timer of a relative runs, notifies the alerts still due one
+ * tick later ([onNotify]) and retries the deliveries waiting for the network.
  */
 class TimerState(
     private val service: TimerService,
@@ -134,8 +134,8 @@ class TimerState(
     var screenRequested: Boolean by mutableStateOf(false)
         private set
 
-    /** Called once when alerts become due: the shell asks the server for the messages again. */
-    var onAlertsDue: () -> Unit = {}
+    /** Asks the server for the private messages again (the shell: [MessagingSession.refresh]). */
+    var refreshMessages: () -> Unit = {}
 
     /** Called one tick later with the alerts still due: the notification centre. */
     var onNotify: (List<RelativeTimer>) -> Unit = {}
@@ -182,7 +182,8 @@ class TimerState(
         this.transport = transport
         account = key
         canSend = key != null && transport != null
-        if (forget) eraseFromDevice()
+        // A failure here must not stop the application; the quick erase reports its own failures.
+        if (forget) safely { eraseFromDevice() }
         reload()
         if (transport != null && data.pending.isNotEmpty()) flushSoon()
     }
@@ -256,11 +257,15 @@ class TimerState(
             onNotify(again)
         }
         val fresh = due.filter { keyOf(it) !in announced }
+        ticks++
+        val running = relatives.any { it.phase == RelativeTimerPhase.WAITING }
         if (fresh.isNotEmpty()) {
             announced += fresh.map(::keyOf)
-            onAlertsDue()
+            refreshMessages()
+        } else if (running && ticks % REFRESH_EVERY_TICKS == 0) {
+            // A cancellation or a report may be waiting on the server: fetched before the deadline rather than after.
+            refreshMessages()
         }
-        ticks++
         if (ticks % FLUSH_EVERY_TICKS == 0 && data.pending.isNotEmpty()) flushSoon()
     }
 
@@ -331,6 +336,9 @@ class TimerState(
         const val TICK_MILLIS: Long = 15_000
         const val FLUSH_EVERY_TICKS: Int = 4
 
+        /** While a timer of a relative runs, the messages are asked again every 2 minutes. */
+        const val REFRESH_EVERY_TICKS: Int = 8
+
         /** A confirmation of a relative stays as a discreet line this long. */
         const val CONFIRMED_SHOWN_SECONDS: Long = 12 * 3_600L
 
@@ -392,7 +400,7 @@ fun rememberTimerState(dependencies: AppDependencies, help: HelpState, session: 
         )
     }
     help.timer = state
-    state.onAlertsDue = { messaging.refresh() }
+    state.refreshMessages = { messaging.refresh() }
     state.onNotify = { due ->
         val notifications = dependencies.notifications
         if (notifications != null) {

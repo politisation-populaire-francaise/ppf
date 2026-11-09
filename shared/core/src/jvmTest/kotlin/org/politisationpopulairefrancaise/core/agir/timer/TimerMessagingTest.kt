@@ -68,7 +68,7 @@ class TimerMessagingTest {
         assertNotNull(bobStore.lastPullAt())
         assertEquals(EventKinds.TIMER, received.single().kind)
         // Still only the chat message in the conversations.
-        assertEquals(1, bobStore.count())
+        assertEquals(1L, bobStore.count())
         remove()
     }
 
