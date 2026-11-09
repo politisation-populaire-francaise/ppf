@@ -76,7 +76,7 @@ class ComprendreScreenTest {
         onNodeWithTag(ContentTags.GUIDE_LIST).assertExists()
         onNodeWithTag(ContentTags.BACK).assertDoesNotExist()
         onNodeWithText("Durée").assertExists()
-        onNodeWithTag(ContentTags.GUIDE_DETAIL).assert(hasAnyDescendant(hasText("Fiche pratique · Mis à jour le 6 novembre 2026 · Rédigé par un humain")))
+        onNodeWithTag(ContentTags.GUIDE_DETAIL).assert(hasAnyDescendant(hasText("Fiche pratique · Mis à jour le 9 novembre 2026 · Produit avec l’aide d’une IA")))
         onNodeWithTag(ContentTags.GUIDE_DETAIL).assert(hasAnyDescendant(hasText("Garde à vue : vos droits")))
     }
 

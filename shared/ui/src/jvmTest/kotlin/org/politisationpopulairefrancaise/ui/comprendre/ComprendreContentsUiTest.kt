@@ -140,13 +140,14 @@ class ComprendreContentsUiTest {
     @Test
     fun aWhoDecidesSheetStartsWithTheElectedOfficialsConcerned() = runComposeUiTest {
         openComprendre(width = 400, height = 800)
-        val sheet = sheets.first { it.persons.isNotEmpty() }
+        // A sheet with a level of the State. The real sheets link no person yet (decision of the owner of 9 November
+        // 2026: real contents; a person of « Voir » is linked only with the method M17): the reading of `persons`
+        // stays covered by ComprendreContentsTest.
+        val sheet = sheets.first { s -> s.steps.any { it.level == DecisionLevel.ETAT } }
         open(sheet.article.slug)
         onNodeWithTag(ComprendreDetailTags.WHO).assertExistsOnce()
         onNodeWithTag(ComprendreDetailTags.ELUS).assertExistsOnce()
         sheet.steps.forEach { step -> onNodeWithTag(ComprendreDetailTags.level(step.level)).performScrollTo() }
-        // The person linked by the editorial team is named under the level of the State.
-        onNodeWithTag(ComprendreDetailTags.level(DecisionLevel.ETAT)).assert(hasAnyDescendant(hasText("Dominique Fictif")))
         if (sheet.steps.any { it.level != DecisionLevel.ETAT && it.level != DecisionLevel.UNION_EUROPEENNE }) {
             onNodeWithText("annuaire officiel des élus", substring = true).performScrollTo()
         }
