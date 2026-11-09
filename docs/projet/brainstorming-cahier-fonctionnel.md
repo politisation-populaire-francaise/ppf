@@ -6,8 +6,19 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-09] Délégué à la protection des données avant l'ouverture publique
+- Statut : À valider (par la propriétaire elle-même : budget et juridique)
+- Concerne : cahier-des-charges.md (sections 5, 9.8 et 12) ; toute la plateforme (votes, soutiens, engagements, questionnaire M26) ; analyse `docs/integration/questionnaire-aipd.md` (section 7, point 4)
+- Contexte : le RGPD (article 37, paragraphe 1, c) impose de désigner un délégué à la protection des données quand l'activité de base consiste à traiter à grande échelle des catégories particulières de données (article 9 : les opinions politiques en font partie). PPF recueillera des votes, des soutiens, des engagements et, avec M26, des réponses sur le bord politique. L'analyse d'impact de M26 (9 novembre 2026) conclut que la désignation semble obligatoire avant l'ouverture publique.
+- Options à présenter à la propriétaire (aucune n'est engagée) :
+  - **A. Un délégué bénévole**, membre de l'association, formé (la CNIL propose une formation en ligne gratuite). Avantages : gratuit. Inconvénients : il doit être compétent et ses autres missions ne doivent pas entraîner de conflit d'intérêts (article 38, paragraphe 6) : ni la présidence ni la responsabilité technique, par exemple.
+  - **B. Un délégué partagé** avec d'autres associations, qui exerce ses missions sur la base d'un contrat de service (article 37, paragraphe 6). Coût : à chiffrer.
+  - **C. Un délégué externe** (cabinet ou avocat), lui aussi sous contrat de service. Coût : à chiffrer, probablement hors du budget de mise en route de 300 €.
+- Recommandation : faire confirmer l'obligation par l'avocat (déjà prévu avant l'ouverture, cahier des charges, section 9.8), puis A si un membre compétent et indépendant se présente, sinon chiffrer B et C.
+- Décision : en attente. Le chef d'équipe (9 novembre 2026, 8 h 45) : « question pour la propriétaire avant l'ouverture publique, à confirmer par l'avocat, aucune dépense ». Rien ne bloque le développement : la question doit être tranchée avant l'ouverture publique.
+
 ### [2026-11-09] M26 : analyse d'impact du questionnaire citoyen, choix avant de coder
-- Statut : À valider
+- Statut : Décidé par le chef d'équipe (délégation) le 2026-11-09 pour les points 1, 2, 3 et 5 ; point 4 ouvert (entrée « Délégué à la protection des données » ci-dessus) ; rien à coder avant la relecture juridique de l'analyse
 - Concerne : cahier-fonctionnel.md (M26, PR-01 à PR-07 ; DE-21) ; cahier-des-charges.md (sections 5 et 9.8) ; analyse `docs/integration/questionnaire-aipd.md`
 - Contexte : le cahier demande une analyse d'impact avant le lancement de M26. Première version écrite le 9 novembre 2026. Elle relève que la liste anonyme des bulletins, publiée à la clôture pour le recomptage (D-110), réidentifierait des votants si les réponses du questionnaire y figuraient (département peu peuplé, âge, sexe, bord politique, vote).
 - Choix à valider, avec la recommandation :
@@ -16,7 +27,13 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   3. **Département ou région** : recommandé, la région pour une question nationale, le département seulement pour une question départementale ou plus large si chaque case dépasse le seuil.
   4. **Délégué à la protection des données** (RGPD, article 37, 1, c) : la désignation semble obligatoire avant l'ouverture publique (opinions politiques à grande échelle : votes, soutiens, questionnaire) ; à faire confirmer par l'avocat ; délégué bénévole, mutualisé ou externe (coût à chiffrer, aucune dépense engagée).
   5. Libellés neutres des hauteurs du baromètre (point d'attention n° 9) et durée de la session (30 minutes proposées).
-- Décision : en attente (chef d'équipe, par délégation de la propriétaire ; le point 4 touche le budget et le juridique).
+- Décision du chef d'équipe, par délégation de la propriétaire (9 novembre 2026, 8 h 45), consignée sous D-150 :
+  1. oui : les réponses n'apparaissent jamais dans la liste publiée ; répartitions signées, puis effacement bulletin par bulletin ;
+  2. oui : une case n'est affichée qu'à partir de 20 personnes, une seule catégorie à la fois ;
+  3. oui : la région pour une question nationale ;
+  4. délégué à la protection des données : question pour la propriétaire avant l'ouverture publique, à confirmer par l'avocat, aucune dépense (entrée ci-dessus) ;
+  5. oui : mots neutres ; 30 minutes en mémoire au plus.
+  - « Rien à coder de M26 avant la relecture juridique de l'analyse. »
 
 ### [2026-11-09] DE-09 « Interpeller ses élus » : le suivi public des réponses
 - Statut : Décidé par le chef d'équipe (délégation) le 2026-11-09, à intégrer au cahier fonctionnel

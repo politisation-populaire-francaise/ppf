@@ -423,8 +423,8 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 
 | Menace | Parade prévue (rien n'est codé) | Statut |
 |---|---|---|
-| Réidentification d'un votant en croisant ses réponses (département, âge, sexe, bord) et son vote dans la liste publiée des bulletins | Réponses jamais dans la liste publiée, répartitions signées puis effacement des réponses bulletin par bulletin, seuil par case, une catégorie à la fois, région pour une question nationale | À valider (`docs/integration/questionnaire-aipd.md`, section 7) |
-| Accès au serveur pendant le vote | Table à part, aucun écran du back-office, journal d'audit, envoi différé des bulletins (D-112), aucune IP | À valider |
+| Réidentification d'un votant en croisant ses réponses (département, âge, sexe, bord) et son vote dans la liste publiée des bulletins | Réponses jamais dans la liste publiée, répartitions signées puis effacement des réponses bulletin par bulletin, seuil par case, une catégorie à la fois, région pour une question nationale | Décidé (D-150, seuil de 20) ; à coder après la relecture juridique de l'analyse |
+| Accès au serveur pendant le vote | Table à part, aucun écran du back-office, journal d'audit, envoi différé des bulletins (D-112), aucune IP | Décidé (D-150) ; à coder après la relecture juridique |
 
 ## Ajout du 9 novembre 2026 : interpeller ses élus (DE-09, étape 1)
 

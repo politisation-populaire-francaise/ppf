@@ -1,6 +1,6 @@
 # Questionnaire citoyen anonyme et baromètre politique (M26) : analyse d'impact sur la protection des données
 
-- Pôle « Décider », 9 novembre 2026, **première version, à relire par un juriste** (cahier des charges, section 9.8). Méthode : celle de la CNIL (description, nécessité et proportionnalité, risques, mesures), appliquée à M26 (cahier fonctionnel 2.1 : PR-01 à PR-07). Rien de M26 n'est codé : le cahier demande cette analyse **avant** le lancement, et elle fait apparaître des choix à valider (section 7).
+- Pôle « Décider », 9 novembre 2026, **première version, à relire par un juriste** (cahier des charges, section 9.8). Méthode : celle de la CNIL (description, nécessité et proportionnalité, risques, mesures), appliquée à M26 (cahier fonctionnel 2.1 : PR-01 à PR-07). Rien de M26 n'est codé : le cahier demande cette analyse **avant** le lancement, et elle a fait apparaître des choix, tranchés le 9 novembre 2026 (D-150, section 7) ; elle doit encore être relue par un juriste avant tout code.
 - Références vérifiées le 9 novembre 2026 : RGPD, [article 35](https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre4) (analyse d'impact obligatoire pour un traitement à grande échelle de catégories particulières de données, paragraphe 3, b) et article 37, paragraphe 1, c (délégué à la protection des données dans le même cas) ; article 9 (opinions politiques), paragraphe 2, a (consentement explicite) ; [loi Informatique et Libertés, article 45](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000037823135) (seul, un mineur consent à partir de 15 ans) ; lignes directrices du groupe de l'article 29 sur l'analyse d'impact ([WP248](https://www.cnil.fr/sites/default/files/atoms/files/wp248_rev.01_fr.pdf)).
 
 ## 1. Le traitement
@@ -11,7 +11,7 @@
 | Données | Facultatives, chacune avec « Je préfère ne pas répondre » : tranche d'âge (la réponse « moins de 15 ans » clôt le questionnaire), sexe (femme, homme, non binaire), département, position sur le baromètre politique (PR-07) ; jamais religion, orientation sexuelle ni identité de genre |
 | Personnes | Les votants qui choisissent de répondre, à partir de 15 ans déclarés |
 | Flux | Appareil (réponses gardées en mémoire pendant la session seulement, PR-06) → **dans le bulletin anonyme** (PR-03 ; jeton VOPRF, D-110 ; envoi différé, D-112 ; aucun compte, aucune signature) → serveur des urnes (D-113) → **agrégats publics** au-dessus d'un seuil (PR-04) |
-| Durées | Sur l'appareil : la session (par exemple 30 minutes d'inactivité, PR-06). Sur le serveur : réponses bulletin par bulletin seulement jusqu'au calcul des agrégats (section 5, mesure M2) |
+| Durées | Sur l'appareil : la session, 30 minutes au plus (PR-06, D-150). Sur le serveur : réponses bulletin par bulletin seulement jusqu'au calcul des agrégats (section 5, mesure M2) |
 | Destinataires | Personne : le public ne voit que des agrégats ; l'équipe n'a aucun accès bulletin par bulletin |
 | Base légale | Consentement explicite (article 9, 2, a) recueilli par un geste clair après un écran d'explication (PR-02) ; voter ne l'exige jamais |
 
@@ -44,7 +44,7 @@ Aujourd'hui, la **liste anonyme des bulletins est publiée à la clôture** pour
 
 - **M1. Réponses hors de la liste publiée** : la liste des bulletins publiée à la clôture garde le vote et ce qui sert au recomptage, jamais les réponses du questionnaire.
 - **M2. Agrégation puis effacement** : à la clôture, le serveur calcule les répartitions, les publie signées (avec le nombre de bulletins qui ont répondu), puis **efface les réponses bulletin par bulletin** ; pendant le vote, il ne publie que des agrégats au-dessus du seuil.
-- **M3. Seuil par case** : une case n'est montrée que si elle compte au moins *k* personnes (valeur privée, PR-04) ; sinon « pas assez de votes ». Pas de croisement de deux catégories à la fois (âge par département, par exemple), seulement une catégorie à la fois face au vote.
+- **M3. Seuil par case** : une case n'est montrée que si elle compte au moins *k* personnes (valeur privée, PR-04, jamais moins de 20 : D-150) ; sinon « pas assez de votes ». Pas de croisement de deux catégories à la fois (âge par département, par exemple), seulement une catégorie à la fois face au vote.
 - **M4. Accès** : aucun écran du back-office ne montre une réponse ; les réponses sont dans une table à part, accessible au seul rôle du service des urnes.
 - **M5. Journal** : chaque calcul d'agrégats est inscrit au journal d'audit ; les répartitions publiées sont signées et archivées (D-111).
 - **M6. Sur l'appareil** : réponses en mémoire seulement pendant la session, effacées à la fermeture, après l'inactivité, et par l'effacement rapide (S-44) ; jamais sur le disque.
@@ -56,13 +56,15 @@ Conséquence sur la vérifiabilité : chacun peut recompter les votes, pas les r
 
 Avec M1 à M7, le risque résiduel est **limité**. Il resterait élevé sans M1 et M3 : dans ce cas, la consultation préalable de la CNIL (article 36) serait nécessaire.
 
-## 7. À valider avant de coder
+## 7. Choix tranchés et points ouverts
 
-1. **Mesures M1 et M2** (retirer les réponses de la liste publiée, les effacer après agrégation) : elles changent ce que la liste publiée permet de vérifier ; recommandé.
-2. **Seuil *k*** des cases (PR-04) : recommandé 20, et la tranche d'âge et le sexe seulement à l'échelle nationale ou régionale quand la question est locale.
-3. **Département ou région** : recommandé, la région pour toute question nationale (moins de croisements possibles), le département seulement quand la question est départementale ou plus large et que chaque case dépasse *k*.
-4. **Délégué à la protection des données** (article 37, 1, c) : la plateforme traite des opinions politiques à grande échelle (votes, soutiens, questionnaire) ; la désignation d'un délégué semble obligatoire avant l'ouverture publique, à faire confirmer par l'avocat ; un délégué peut être bénévole, mutualisé ou externe (coût à chiffrer).
-5. **Libellés neutres des hauteurs** du baromètre (point d'attention n° 9) et **durée de la session** (30 minutes proposées).
-6. Relecture de cette analyse par un juriste, puis signature par le responsable du traitement (l'association, une fois déclarée).
+Décision du chef d'équipe, par délégation de la propriétaire, le 9 novembre 2026 à 8 h 45 (D-150) :
 
-Ces points sont inscrits dans le brainstorming du cahier fonctionnel (entrée du 9 novembre 2026, « M26 : analyse d'impact »).
+1. **Mesures M1 et M2 retenues** : les réponses ne figurent jamais dans la liste publiée ; à la clôture, répartitions signées, puis effacement des réponses bulletin par bulletin.
+2. **Seuil *k*** des cases (PR-04) : une case n'est affichée qu'à partir de 20 personnes (la valeur appliquée reste une configuration privée, jamais inférieure) ; une seule catégorie à la fois face au vote.
+3. **La région pour une question nationale** ; le département seulement quand la question est départementale ou plus large et que chaque case dépasse *k*.
+4. **Délégué à la protection des données** (article 37, 1, c), **point ouvert** : question pour la propriétaire avant l'ouverture publique, à confirmer par l'avocat, aucune dépense. Un délégué peut être un membre de l'association ou exercer sur la base d'un contrat de service (article 37, 6), sans conflit d'intérêts (article 38, 6). Entrée « Délégué à la protection des données avant l'ouverture publique » du brainstorming du cahier fonctionnel.
+5. **Libellés neutres des hauteurs** du baromètre (point d'attention n° 9, mots à proposer avec l'écran) ; **réponses en mémoire 30 minutes au plus**.
+6. Reste à faire **avant tout code** : relecture de cette analyse par un juriste, puis signature par le responsable du traitement (l'association, une fois déclarée).
+
+Ces points sont inscrits dans le brainstorming du cahier fonctionnel (entrées du 9 novembre 2026, « M26 : analyse d'impact » et « Délégué à la protection des données »).

@@ -1070,6 +1070,19 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raisons : transparence d'abord et ce qu'un citoyen peut faire poussé au maximum, sans jamais exposer une personne (RGPD, article 9) ; une seule source pour la réponse, l'élu lui-même ; C ne permet pas de garantir l'authenticité.
 - Conséquences : relecture par un avocat avant l'ouverture publique (cahier des charges, section 9.8) ; B réutilise les urnes (`server/urne`) pour les jetons.
 
+## D-150 (2026-11-09) Questionnaire citoyen anonyme (M26) : réponses jamais publiées bulletin par bulletin, seuil de 20, région
+
+- Numéro provisoire : le bloc D-110 à D-119 de « Décider » est épuisé ; D-150 est le premier numéro libre noté au registre des sessions, bloc à confirmer par le chef d'équipe.
+- Contexte : analyse d'impact de M26, première version du 9 novembre 2026 (`docs/integration/questionnaire-aipd.md`). Risque principal : la liste anonyme des bulletins, publiée à la clôture pour le recomptage (D-110), permettrait de reconnaître des votants si les réponses du questionnaire y figuraient (département peu peuplé, âge, sexe, bord politique, vote). Choix présentés dans le brainstorming du cahier fonctionnel (entrée du 9 novembre 2026).
+- Décision du chef d'équipe, par délégation de la propriétaire (9 novembre 2026, 8 h 45) :
+  - les réponses ne figurent jamais dans la liste publiée des bulletins ; à la clôture, le serveur publie des répartitions signées, puis efface les réponses bulletin par bulletin (mesures M1 et M2) ; chacun recompte les votes, pas les réponses ;
+  - une case n'est affichée qu'à partir de 20 personnes (seuil *k* de PR-04 : 20 au moins, la valeur appliquée restant privée), une seule catégorie à la fois face au vote, jamais deux croisées (M3) ;
+  - la région pour une question nationale ; le département seulement pour une question départementale ou plus large, si chaque case dépasse le seuil ;
+  - mots neutres pour les hauteurs du baromètre (point d'attention n° 9) ; réponses gardées en mémoire sur l'appareil 30 minutes au plus (M6) ;
+  - délégué à la protection des données (RGPD, article 37, paragraphe 1, c) : question ouverte pour la propriétaire avant l'ouverture publique, à confirmer par l'avocat, aucune dépense (brainstorming du cahier fonctionnel, entrée du 9 novembre 2026).
+- Options écartées : un bulletin séparé pour les réponses, sans lien avec le vote (M26 ne pourrait plus montrer qui soutient quoi) ; publier les réponses dans la liste des bulletins (réidentification).
+- Conséquences : **rien de M26 n'est codé avant la relecture juridique de l'analyse** ; le seuil reste une valeur de configuration privée, hors dépôt (PR-04), avec 20 au minimum ; l'analyse, la feuille de route et le modèle de menaces sont mis à jour.
+
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
 - Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.
