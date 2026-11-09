@@ -7,6 +7,7 @@ type: fiche-pratique
 origin: ai-assisted
 published_at: 2026-11-08
 updated_at: 2026-11-08
+review_by: 2028-10-01
 ---
 ::: en-bref
 - Verrouillez votre téléphone par un **code** plutôt que par l'empreinte ou le visage, et emportez **le moins de données possible**.
