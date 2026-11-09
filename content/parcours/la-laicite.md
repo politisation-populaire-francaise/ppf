@@ -1,13 +1,13 @@
 ---
 slug: la-laicite
-title: [EXEMPLE] La laïcité : ce qu'elle garantit, ce qu'elle interdit
+title: La laïcité : ce qu'elle garantit, ce qu'elle interdit
 summary: La loi de 1905, la Constitution, la liberté de conscience, la neutralité de l'État et des services publics, la liberté des usagers, la loi de 2004 à l'école, et ce que la laïcité n'est pas.
 topics: laicite, libertes, ecole, institutions
 type: parcours
 origin: ai-assisted
 duration: 7
 published_at: 2026-11-08
-updated_at: 2026-11-08
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - La laïcité, c'est d'abord une **liberté** : chacun peut croire, ne pas croire ou changer de religion (loi du 9 décembre 1905, article 1er).
@@ -15,8 +15,6 @@ updated_at: 2026-11-08
 - Ceux qui sont **neutres**, ce sont l'État et ses agents dans leur travail. Les **usagers** des services publics, eux, peuvent exprimer leurs convictions, dans certaines limites.
 - À l'**école publique**, depuis 2004, les élèves ne peuvent pas porter de signes religieux ostensibles.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Ce que dit la loi du 9 décembre 1905
 
@@ -121,16 +119,17 @@ La laïcité n'est **pas appliquée partout de la même façon**. En Alsace et e
 
 ## Sources
 
-- Loi du 9 décembre 1905 concernant la séparation des Églises et de l'État (articles 1er, 2 et 31), version en vigueur au 8 novembre 2026 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000508749
-- Constitution du 4 octobre 1958, texte intégral en vigueur (article 1er) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Déclaration des droits de l'homme et du citoyen de 1789 (article 10) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/declaration-des-droits-de-l-homme-et-du-citoyen-de-1789
-- Conseil constitutionnel, décision n° 2012-297 QPC du 21 février 2013 (laïcité et régime de l'Alsace-Moselle) : https://www.conseil-constitutionnel.fr/decision/2013/2012297QPC.htm
-- Code général de la fonction publique, article L121-2, version en vigueur au 8 novembre 2026 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044427911
-- Ministère de la Fonction publique, « Laïcité et neutralité de la fonction publique » (agents concernés, convictions religieuses, philosophiques ou politiques) : https://www.fonction-publique.gouv.fr/etre-agent-public/mes-droits-et-obligations/laicite-et-neutralite-de-la-fonction-publique
+- Loi du 9 décembre 1905 concernant la séparation des Églises et de l'État (articles 1er, 2 et 31), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000508749
+- Constitution du 4 octobre 1958, texte intégral en vigueur (article 1er), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Déclaration des droits de l'homme et du citoyen de 1789 (article 10), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/declaration-des-droits-de-l-homme-et-du-citoyen-de-1789
+- Conseil constitutionnel, décision n° 2012-297 QPC du 21 février 2013 (laïcité et régime de l'Alsace-Moselle), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2013/2012297QPC.htm
+- Code général de la fonction publique, article L121-2, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044427911
+- Ministère de la Fonction publique, « Laïcité et neutralité de la fonction publique » (agents concernés, convictions religieuses, philosophiques ou politiques), consulté le 2026-11-09 : https://www.fonction-publique.gouv.fr/etre-agent-public/mes-droits-et-obligations/laicite-et-neutralite-de-la-fonction-publique
 - Charte de la laïcité dans les services publics, version adoptée par le comité interministériel de la laïcité du 9 décembre 2021 (texte publié par le Gouvernement) : https://www.info.gouv.fr/upload/media/organization/0001/01/sites_default_files_contenu_piece-jointe_2022_12_charte_de_la_laicite-.pdf
-- Préfecture de la Loire, « La Charte de la laïcité dans les services publics » (date d'adoption : comité interministériel de la laïcité du 9 décembre 2021) : https://www.loire.gouv.fr/Actions-de-l-Etat/Elections-citoyennete-et-ceremonies/Laicite/La-Charte-de-la-laicite-dans-les-services-publics
-- Loi n° 2004-228 du 15 mars 2004 encadrant le port de signes ou de tenues manifestant une appartenance religieuse dans les écoles, collèges et lycées publics : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000417977
-- Code de l'éducation, article L141-5-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524456
-- Loi n° 2010-1192 du 11 octobre 2010 interdisant la dissimulation du visage dans l'espace public : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000022911670
-- Conseil constitutionnel, décision n° 2010-613 DC du 7 octobre 2010 (loi interdisant la dissimulation du visage dans l'espace public) : https://www.conseil-constitutionnel.fr/decision/2010/2010613DC.htm
-- Conseil constitutionnel, décision n° 2017-633 QPC du 2 juin 2017 (rémunération des ministres du culte en Guyane) : https://www.conseil-constitutionnel.fr/decision/2017/2017633QPC.htm
+- Préfecture de la Loire, « La Charte de la laïcité dans les services publics » (date d'adoption : comité interministériel de la laïcité du 9 décembre 2021), consulté le 2026-11-09 : https://www.loire.gouv.fr/Actions-de-l-Etat/Elections-citoyennete-et-ceremonies/Laicite/La-Charte-de-la-laicite-dans-les-services-publics
+- Préfecture du Nord, « Charte de la laïcité (services publics) » (texte de 2021 : droits et devoirs des agents et des usagers), consulté le 2026-11-09 : https://www.nord.gouv.fr/Vous-etes/Particulier/Droits-des-usagers/Charte-de-la-laicite-services-publics
+- Loi n° 2004-228 du 15 mars 2004 encadrant le port de signes ou de tenues manifestant une appartenance religieuse dans les écoles, collèges et lycées publics, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000417977
+- Code de l'éducation, article L141-5-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524456
+- Loi n° 2010-1192 du 11 octobre 2010 interdisant la dissimulation du visage dans l'espace public, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000022911670
+- Conseil constitutionnel, décision n° 2010-613 DC du 7 octobre 2010 (loi interdisant la dissimulation du visage dans l'espace public), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2010/2010613DC.htm
+- Conseil constitutionnel, décision n° 2017-633 QPC du 2 juin 2017 (rémunération des ministres du culte en Guyane), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2017/2017633QPC.htm

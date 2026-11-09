@@ -1,22 +1,20 @@
 ---
 slug: s-inscrire-et-voter
-title: [EXEMPLE] S'inscrire sur les listes électorales et voter
+title: S'inscrire sur les listes électorales et voter
 summary: Vérifier son inscription, s'inscrire à temps pour la présidentielle d'avril 2027, savoir quoi apporter au bureau de vote et donner une procuration si l'on ne peut pas se déplacer.
 topics: elections, vote, presidentielle
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Pour voter, il faut être **inscrit sur une liste électorale**. Vérifiez-le en ligne en quelques minutes.
-- Les tours de la présidentielle sont annoncés pour le **dimanche 18 avril** et le **dimanche 2 mai 2027**. Pour voter au premier tour, la demande d'inscription doit être faite au plus tard le **vendredi 12 mars 2027**, en ligne comme en mairie.
+- La présidentielle est annoncée pour **avril 2027** ; ses dates seront fixées par le **décret de convocation des électeurs**. Pour voter, la demande d'inscription doit être faite au plus tard le **sixième vendredi avant le scrutin**, en ligne comme en mairie.
 - Dans une commune de **1 000 habitants ou plus**, il faut présenter une **pièce d'identité** pour voter. La carte électorale n'est pas obligatoire.
 - Si vous ne pouvez pas vous déplacer, un autre électeur peut voter pour vous : c'est la **procuration**. Faites-la **le plus tôt possible**.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## D'abord, vérifier son inscription
 
@@ -24,7 +22,7 @@ On ne peut voter que si l'on est inscrit sur une liste électorale. Le plus simp
 
 Certaines personnes sont inscrites sans rien faire. Un jeune qui a fait son recensement citoyen à 16 ans est inscrit automatiquement à 18 ans. Une personne devenue française récemment l'est aussi (service-public.gouv.fr).
 
-Attention en cas de déménagement. Si vous changez de commune, vous devez demander votre inscription dans la nouvelle. Si vous restez dans la même commune, vous devez donner votre nouvelle adresse à la mairie : votre bureau de vote peut changer (service-public.gouv.fr).
+Attention en cas de déménagement. Si vous changez de commune, vous devez demander votre inscription dans la nouvelle. Si vous restez dans la même commune, vous devez donner votre nouvelle adresse à la mairie, puis vérifier votre bureau de vote (service-public.gouv.fr).
 
 ::: quiz
 ? Vous avez déménagé dans une autre commune il y a un an. Que devez-vous faire pour voter près de chez vous ?
@@ -56,18 +54,18 @@ Le justificatif de domicile doit dater de moins de trois mois. On peut s'inscrir
 
 ## Les dates à retenir pour avril 2027
 
-Le Conseil des ministres du 1er juillet 2026 a annoncé les dates de l'élection présidentielle : le premier tour le dimanche 18 avril 2027 et le second tour le dimanche 2 mai 2027. En Guadeloupe, en Martinique, en Guyane, à Saint-Pierre-et-Miquelon, à Saint-Barthélemy, à Saint-Martin et en Polynésie française, on votera la veille, les samedis 17 avril et 1er mai, à cause du décalage horaire (service-public.gouv.fr). Ces dates seront fixées officiellement par le décret de convocation des électeurs, qui doit paraître au moins dix semaines avant le premier tour (loi du 6 novembre 1962, article 1 bis).
+Le Conseil des ministres du 1er juillet 2026 a annoncé les dates de l'élection présidentielle, avec un premier tour en avril 2027. En Guadeloupe, en Martinique, en Guyane, à Saint-Pierre-et-Miquelon, à Saint-Barthélemy, à Saint-Martin et en Polynésie française, on votera la veille, le samedi, à cause du décalage horaire (service-public.gouv.fr). Les dates ne seront fixées officiellement que par le décret de convocation des électeurs, qui doit paraître au moins dix semaines avant le premier tour (loi du 6 novembre 1962, article 1 bis) : vérifiez-les à ce moment-là.
 
-La règle de la date limite est simple : la demande d'inscription doit être faite au plus tard le **sixième vendredi avant le scrutin** (Code électoral, article L17). Depuis le 1er juillet 2026, c'est la même date en ligne et en mairie ; avant, la demande en ligne devait être faite deux jours plus tôt (décret du 12 juin 2026, service-public.gouv.fr). Pour le premier tour du 18 avril 2027, le sixième vendredi avant tombe le **vendredi 12 mars 2027**.
+La règle de la date limite est simple : la demande d'inscription doit être faite au plus tard le **sixième vendredi avant le scrutin** (Code électoral, article L17). Depuis le 1er juillet 2026, c'est la même date en ligne et en mairie ; avant, la demande en ligne devait être faite deux jours plus tôt (décret du 12 juin 2026, service-public.gouv.fr). Pour le premier tour de la présidentielle, il suffira de compter six vendredis en arrière à partir de la date fixée par le décret. Le plus sûr reste de s'inscrire dès maintenant : c'est possible toute l'année.
 
-Certaines personnes peuvent encore s'inscrire après cette date, jusqu'au dixième jour avant le scrutin, soit le jeudi 8 avril 2027 pour le premier tour. C'est le cas, notamment, après un déménagement pour raison professionnelle ou une mutation, après l'acquisition de la nationalité française, ou pour une personne devenue majeure après la date limite (Code électoral, article L30). En cas de doute, demandez à votre mairie.
+Certaines personnes peuvent encore s'inscrire après cette date, jusqu'au dixième jour avant le scrutin. C'est le cas, notamment, après un déménagement pour raison professionnelle ou une mutation, après l'acquisition de la nationalité française, ou pour une personne devenue majeure après la date limite (Code électoral, article L30). En cas de doute, demandez à votre mairie.
 
 ::: quiz
-? Vous n'êtes pas inscrit et vous voulez voter au premier tour du 18 avril 2027. Quelle est la date limite habituelle pour faire la demande ?
-- [ ] Le samedi 17 avril 2027, la veille du vote
-- [x] Le vendredi 12 mars 2027, en ligne comme en mairie
-- [ ] Le 31 décembre 2026
-> La demande doit être faite au plus tard le sixième vendredi avant le scrutin (Code électoral, article L17), la même date en ligne et en mairie depuis le 1er juillet 2026. Pour le 18 avril 2027, c'est le vendredi 12 mars 2027.
+? Vous n'êtes pas inscrit et vous voulez voter au premier tour de la présidentielle. Quelle est la date limite habituelle pour faire la demande ?
+- [ ] La veille du vote, au bureau de vote
+- [x] Le sixième vendredi avant le scrutin, en ligne comme en mairie
+- [ ] Le 31 décembre de l'année précédente
+> La demande doit être faite au plus tard le sixième vendredi avant le scrutin (Code électoral, article L17), la même date en ligne et en mairie depuis le 1er juillet 2026.
 :::
 
 ## Le jour du vote
@@ -114,25 +112,25 @@ La procuration vaut pour un tour, pour les deux tours, ou pour une durée choisi
 ::: et-maintenant
 - [Voir les revendications des citoyens](ppf:revendications)
 - Vérifier votre inscription et votre bureau de vote (https://www.service-public.gouv.fr/particuliers/vosdroits/R51788).
-- Si vous n'êtes pas inscrit, faire votre demande en ligne avant le vendredi 12 mars 2027 (https://www.service-public.gouv.fr/particuliers/vosdroits/R16396).
+- Si vous n'êtes pas inscrit, faire votre demande en ligne dès maintenant, sans attendre la date limite (https://www.service-public.gouv.fr/particuliers/vosdroits/R16396).
 - Si vous serez absent un jour de vote, préparer votre procuration dès maintenant (https://www.service-public.gouv.fr/particuliers/vosdroits/R58939).
 - Lire aussi le parcours « Comment fonctionne l'élection présidentielle ».
 :::
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 3 (qui est électeur) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240995
-- Code électoral, article L17 (date limite d'inscription) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964790
-- Code électoral, article L30 (inscriptions après la date limite) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964883
-- Code électoral, article L62 (enveloppe, isoloir) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039280718
-- Code électoral, article L62-1 (liste d'émargement) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964963
-- Loi n° 62-1292 du 6 novembre 1962, article 1 bis (décret de convocation) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000043303712
-- Service-public.gouv.fr, « Les dates de l'élection présidentielle de 2027 sont annoncées » (2 juillet 2026) : https://www.service-public.gouv.fr/particuliers/actualites/A15053
-- Service-public.gouv.fr, « Inscription sur les listes électorales : des changements à partir de juillet 2026 » (18 juin 2026, décret n° 2026-493 du 12 juin 2026) : https://www.service-public.gouv.fr/particuliers/actualites/A18967
-- Service-public.gouv.fr, « Listes électorales : en cas de première inscription » (vérifié le 3 mars 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1367
-- Service-public.gouv.fr, « Inscription sur la liste électorale : en cas de déménagement » (vérifié le 10 avril 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1372
-- Service-public.gouv.fr, « Pièces d'identité à présenter pour voter » (vérifié le 21 septembre 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1361
-- Service-public.gouv.fr, « Vote par procuration » (vérifié le 2 février 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1604
-- Service-public.gouv.fr, « Vérifier votre inscription électorale et votre bureau de vote » : https://www.service-public.gouv.fr/particuliers/vosdroits/R51788
-- Service-public.gouv.fr, « Demande d'inscription en ligne sur les listes électorales » : https://www.service-public.gouv.fr/particuliers/vosdroits/R16396
-- Service-public.gouv.fr, « Maprocuration » (demande de procuration en ligne) : https://www.service-public.gouv.fr/particuliers/vosdroits/R58939
+- Constitution du 4 octobre 1958, article 3 (qui est électeur), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240995
+- Code électoral, article L17 (date limite d'inscription), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964790
+- Code électoral, article L30 (inscriptions après la date limite), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964883
+- Code électoral, article L62 (enveloppe, isoloir), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039280718
+- Code électoral, article L62-1 (liste d'émargement), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964963
+- Loi n° 62-1292 du 6 novembre 1962, article 1 bis (décret de convocation), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000043303712
+- Service-public.gouv.fr, « Les dates de l'élection présidentielle de 2027 sont annoncées » (2 juillet 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/actualites/A15053
+- Service-public.gouv.fr, « Inscription sur les listes électorales : des changements à partir de juillet 2026 » (18 juin 2026, décret n° 2026-493 du 12 juin 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/actualites/A18967
+- Service-public.gouv.fr, « Listes électorales : en cas de première inscription » (vérifié le 3 mars 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1367
+- Service-public.gouv.fr, « Inscription sur la liste électorale : en cas de déménagement » (vérifié le 10 avril 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1372
+- Service-public.gouv.fr, « Pièces d'identité à présenter pour voter » (vérifié le 21 septembre 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1361
+- Service-public.gouv.fr, « Vote par procuration » (vérifié le 2 février 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1604
+- Service-public.gouv.fr, « Vérifier votre inscription électorale et votre bureau de vote », consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/R51788
+- Service-public.gouv.fr, « Demande d'inscription en ligne sur les listes électorales », consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/R16396
+- Service-public.gouv.fr, « Maprocuration » (demande de procuration en ligne), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/R58939

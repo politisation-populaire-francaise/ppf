@@ -1,13 +1,13 @@
 ---
 slug: le-droit-de-greve
-title: [EXEMPLE] Le droit de grève
+title: Le droit de grève
 summary: Ce qu'est une grève au sens du droit, les règles dans le privé et dans les services publics, le « service minimum » qui existe et celui qui est débattu, et ce qui reste interdit.
 topics: droits, travail, greve
 type: parcours
 origin: ai-assisted
 duration: 6
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Le droit de grève est garanti par la **Constitution**, « dans le cadre des lois qui le réglementent ».
@@ -16,7 +16,7 @@ updated_at: 2026-11-07
 - Empêcher les non-grévistes de travailler, la violence et les dégradations sont **interdits**.
 :::
 
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
+**C'est une information juridique générale, pas un conseil juridique : pour votre situation, consultez un avocat.**
 
 ## Un droit garanti par la Constitution
 
@@ -76,10 +76,10 @@ Il n'existe pas un service minimum général, mais plusieurs règles selon les s
 
 - **Transports terrestres réguliers de voyageurs** (loi du 21 août 2007) : avant tout préavis, une négociation préalable est obligatoire. Les salariés indispensables au service déclarent leur intention de faire grève au plus tard **48 heures** avant, et peuvent y renoncer jusqu'à 24 heures avant. L'entreprise prépare un plan de transport adapté et informe les voyageurs au plus tard 24 heures avant la perturbation (Sénat, rapport n° 492, 2024).
 - **Transport aérien** (loi du 19 mars 2012) : les salariés dont l'absence touche directement les vols déclarent aussi leur intention 48 heures avant (Sénat, même rapport).
-- **Écoles maternelles et élémentaires publiques** : les enseignants déclarent leur intention au moins 48 heures avant, et un service d'accueil gratuit des enfants peut être organisé par la commune (Code de l'éducation, articles L133-1 et suivants ; service-public.gouv.fr).
-- **Hôpitaux** : le directeur peut désigner des agents qui doivent rester au travail pour assurer les soins. Dans certains cas graves, l'administration ou le préfet peut aussi **réquisitionner** des grévistes, par une décision motivée qui peut être contestée devant le juge (service-public.gouv.fr).
+- **Écoles maternelles et élémentaires publiques** : les enseignants déclarent leur intention au moins 48 heures avant ; quand au moins 25 % des enseignants sont grévistes, la commune organise un service d'accueil gratuit des enfants (Code de l'éducation, articles L133-1 et suivants ; service-public.gouv.fr).
+- **Hôpitaux** : le directeur peut désigner des agents qui doivent rester au travail pour assurer les soins. Dans certains cas graves, le préfet peut aussi **réquisitionner** des grévistes, par une décision motivée qui peut être contestée devant le juge (service-public.gouv.fr).
 
-Le sujet est débattu. Une proposition de loi adoptée par le Sénat le 9 avril 2024 veut permettre de suspendre le droit de grève de certains agents indispensables des transports pendant des périodes fixées à l'avance. Dans la version adoptée par la commission du développement durable de l'Assemblée nationale le 14 janvier 2026, cette suspension vise les heures de pointe et ne peut pas dépasser trente jours par an. Au 7 novembre 2026, le dossier de l'Assemblée n'indique aucun vote en séance publique : ce texte n'est pas une loi.
+Le sujet est débattu. Une proposition de loi adoptée par le Sénat le 9 avril 2024 veut permettre de suspendre le droit de grève de certains agents indispensables des transports pendant des périodes fixées à l'avance. Dans la version adoptée par la commission du développement durable de l'Assemblée nationale le 14 janvier 2026, cette suspension vise les heures de pointe et ne peut pas dépasser trente jours par an. Au 9 novembre 2026, le dossier de l'Assemblée n'indique aucun vote en séance publique : ce texte n'est pas une loi.
 
 Lors de l'examen en commission, ses défenseurs ont mis en avant la continuité du service public et les salariés sans autre moyen de transport pour aller travailler. Ses opposants ont dénoncé une « atteinte disproportionnée au droit de grève » et estimé que les perturbations viennent surtout du manque d'investissement et de personnel (Assemblée nationale, compte rendu n° 22 du 14 janvier 2026).
 
@@ -131,11 +131,11 @@ Certaines actions ne sont pas des grèves : travailler au ralenti (« grève per
 
 ## Sources
 
-- Préambule de la Constitution du 27 octobre 1946, alinéas 6 et 7 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946
-- Conseil constitutionnel, décision n° 79-105 DC du 25 juillet 1979 (valeur constitutionnelle du droit de grève et de la continuité du service public) : https://www.conseil-constitutionnel.fr/decision/1979/79105DC.htm
-- Service-public.gouv.fr, « Droit de grève d'un salarié du secteur privé » (vérifié le 10 août 2026 ; Code du travail, articles L1132-1 à L1132-4, L2511-1, L2512-1 à L2512-5, L3121-50, R3243-4) : https://www.service-public.gouv.fr/particuliers/vosdroits/F117
-- Service-public.gouv.fr, « Droit de grève dans la fonction publique » (vérifié le 3 mars 2026 ; code général de la fonction publique, Code du travail, articles L2512-1 à L2512-5, Code de l'éducation, articles L133-2 à L133-10) : https://www.service-public.gouv.fr/particuliers/vosdroits/F499
-- Sénat, rapport n° 492 (2023-2024) sur la proposition de loi visant à concilier la continuité du service public de transports avec l'exercice du droit de grève (droit en vigueur : lois du 21 août 2007 et du 19 mars 2012) : https://www.senat.fr/rap/l23-492/l23-492_mono.html
-- Assemblée nationale, dossier législatif de cette proposition de loi : https://www.assemblee-nationale.fr/dyn/16/dossiers/DLR5L16N49452
-- Assemblée nationale, commission du développement durable, examen du 14 janvier 2026 : https://www.assemblee-nationale.fr/dyn/17/organes/commissions-permanentes/developpement-durable/actualites/examen-de-la-proposition-de-loi-visant-a-concilier-la-continuite-du-service-public-de-transports-avec-l-exercice-du-droit-de-greve
-- Assemblée nationale, compte rendu n° 22 de la commission du développement durable (14 janvier 2026) : https://questions.assemblee-nationale.fr/dyn/opendata/CRCANR5L17S2026PO419865N022.html
+- Préambule de la Constitution du 27 octobre 1946, alinéas 6 et 7, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946
+- Conseil constitutionnel, décision n° 79-105 DC du 25 juillet 1979 (valeur constitutionnelle du droit de grève et de la continuité du service public), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/1979/79105DC.htm
+- Service-public.gouv.fr, « Droit de grève d'un salarié du secteur privé » (vérifié le 10 août 2026 ; Code du travail, articles L1132-1 à L1132-4, L2511-1, L2512-1 à L2512-5, L3121-50, R3243-4), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F117
+- Service-public.gouv.fr, « Droit de grève dans la fonction publique » (vérifié le 3 mars 2026 ; code général de la fonction publique, Code du travail, articles L2512-1 à L2512-5, Code de l'éducation, articles L133-2 à L133-10), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F499
+- Sénat, rapport n° 492 (2023-2024) sur la proposition de loi visant à concilier la continuité du service public de transports avec l'exercice du droit de grève (droit en vigueur : lois du 21 août 2007 et du 19 mars 2012), consulté le 2026-11-09 : https://www.senat.fr/rap/l23-492/l23-492_mono.html
+- Assemblée nationale, dossier législatif de cette proposition de loi, consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/16/dossiers/DLR5L16N49452
+- Assemblée nationale, commission du développement durable, examen du 14 janvier 2026, consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/17/organes/commissions-permanentes/developpement-durable/actualites/examen-de-la-proposition-de-loi-visant-a-concilier-la-continuite-du-service-public-de-transports-avec-l-exercice-du-droit-de-greve
+- Assemblée nationale, compte rendu n° 22 de la commission du développement durable (14 janvier 2026), consulté le 2026-11-09 : https://questions.assemblee-nationale.fr/dyn/opendata/CRCANR5L17S2026PO419865N022.html

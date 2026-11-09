@@ -1,13 +1,13 @@
 ---
 slug: comment-une-loi-est-votee
-title: [EXEMPLE] Comment une loi est votée
+title: Comment une loi est votée
 summary: Qui peut proposer une loi, comment les députés et les sénateurs l'examinent, et ce qui se passe avant qu'elle s'applique.
 topics: institutions, parlement, loi
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-06
-updated_at: 2026-11-06
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Une loi peut venir du **Gouvernement** (projet de loi) ou des **parlementaires** (proposition de loi).
@@ -15,8 +15,6 @@ updated_at: 2026-11-06
 - En cas de désaccord persistant, le Gouvernement peut donner le **dernier mot à l'Assemblée nationale**.
 - La loi peut être contrôlée par le **Conseil constitutionnel**, puis elle est **promulguée** et **publiée au Journal officiel**.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Qui peut proposer une loi ?
 
@@ -108,11 +106,11 @@ Enfin, la loi est publiée au Journal officiel. Elle entre en vigueur à la date
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 10 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527469
-- Constitution du 4 octobre 1958, article 39 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241026
-- Constitution du 4 octobre 1958, article 42 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241032
-- Constitution du 4 octobre 1958, article 45 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241040
-- Constitution du 4 octobre 1958, article 61 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241074
-- Constitution du 4 octobre 1958, texte intégral en vigueur (article 89) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Code civil, article 1er : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006419280
-- Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025) : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
+- Constitution du 4 octobre 1958, article 10, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527469
+- Constitution du 4 octobre 1958, article 39, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241026
+- Constitution du 4 octobre 1958, article 42, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241032
+- Constitution du 4 octobre 1958, article 45, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241040
+- Constitution du 4 octobre 1958, article 61, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241074
+- Constitution du 4 octobre 1958, texte intégral en vigueur (article 89), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Code civil, article 1er, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006419280
+- Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025 ; composition de la commission mixte paritaire), consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
