@@ -37,6 +37,9 @@ object Codes {
     const val BODY_BLOCK_TOO_MANY: String = "editorial.problem.body_block_too_many"
     const val BODY_INVALID: String = "editorial.problem.body_invalid"
     const val UNBUILDABLE: String = "editorial.problem.unbuildable"
+    /** The date of review is not after the date of update (args = [review_by, updated_at]). */
+    const val REVIEW_NOT_AFTER_UPDATE: String = "editorial.problem.review_not_after_update"
+
     /** A problem of a [SchemaCheck] that wraps an existing reader: args = [message of the reader]. */
     const val CHECK: String = "editorial.problem.check"
 }
@@ -60,6 +63,7 @@ object EditorialMessages {
         Codes.VALUE_MULTILINE to "le texte doit tenir sur une ligne",
         Codes.VALUE_CHOICE to "« {0} » n'est pas une valeur possible ({1})",
         Codes.VALUE_DATE to "« {0} » n'est pas une date AAAA-MM-JJ valide",
+        Codes.REVIEW_NOT_AFTER_UPDATE to "la date de revue ({0}) doit tomber après la date de mise à jour ({1}) : choisissez la prochaine date de revue",
         Codes.VALUE_DATE_OR_YEAR to "« {0} » n'est ni une date AAAA-MM-JJ, ni un mois AAAA-MM, ni une année AAAA",
         Codes.VALUE_NUMBER to "« {0} » n'est pas un nombre écrit à la française (par exemple 4 210 345,60)",
         Codes.VALUE_NUMBER_DECIMALS to "« {0} » : un nombre entier est attendu, sans virgule",

@@ -92,6 +92,9 @@ object EditorialForm {
 
     private const val CHOICE_RADIOS_BELOW = 8
 
+    /** The common fields entered as a date (`AAAA-MM-JJ`). */
+    private val DATE_KEYS = setOf(ContentSchema.PUBLISHED_AT, ContentSchema.UPDATED_AT, ContentSchema.REVIEW_BY)
+
     // Reading ---------------------------------------------------------------------------------------
 
     /** The common fields of [schema] shown in the form, in the order of the entries. */
@@ -103,6 +106,7 @@ object EditorialForm {
         if (schema.duration != Presence.ABSENT) add(ContentSchema.DURATION)
         add(ContentSchema.PUBLISHED_AT)
         add(ContentSchema.UPDATED_AT)
+        if (schema.reviewBy != Presence.ABSENT) add(ContentSchema.REVIEW_BY)
     }
 
     /** An empty draft of [schema]: today's dates, the body template, no origin (never a default). */
@@ -383,6 +387,7 @@ object EditorialForm {
                     ContentSchema.SUMMARY -> view.schema.summary == Presence.REQUIRED
                     ContentSchema.TOPICS -> view.schema.topics == Presence.REQUIRED
                     ContentSchema.DURATION -> view.schema.duration == Presence.REQUIRED
+                    ContentSchema.REVIEW_BY -> view.schema.reviewBy == Presence.REQUIRED
                     else -> true
                 }
                 div(classes = "bo-field") {
@@ -402,7 +407,7 @@ object EditorialForm {
                             describe(helpId, errors)
                             +value
                         }
-                        else -> input(type = if (key == ContentSchema.PUBLISHED_AT || key == ContentSchema.UPDATED_AT) InputType.date else InputType.text, name = "c.$key") {
+                        else -> input(type = if (key in DATE_KEYS) InputType.date else InputType.text, name = "c.$key") {
                             this.id = id
                             this.value = value
                             when (key) {

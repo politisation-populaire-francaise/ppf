@@ -123,6 +123,21 @@ object EditorialTexts {
     const val QUEUE_DECIDE_ON_PAGE: String = "Les décisions se prennent sur la page de relecture du brouillon, dans la rédaction de l’espace : le message aux auteurs y reste, hors du journal de l’équipe."
     const val QUEUE_OPEN_REVIEW: String = "Ouvrir la page de relecture"
     const val QUEUE_CORRECTION: String = "correction"
+
+    // « À revoir » (the review date ppf-review-by, decision of the team lead of 9 November 2026) -----------
+    const val REVIEW_DUE_COMPRENDRE: String = "À revoir Comprendre"
+    const val REVIEW_DUE_VOIR: String = "À revoir Voir"
+    const val REVIEW_DUE_GONE: String = "Ce contenu n’est plus à revoir : sa date de revue a changé, ou il n’est plus publié."
+    const val REVIEW_DUE_DATE: String = "Date de revue"
+    const val REVIEW_DUE_STATE: String = "Échéance"
+    const val REVIEW_DUE_LATE: String = "date passée depuis {0} jour(s)"
+    const val REVIEW_DUE_TODAY: String = "aujourd’hui"
+    const val REVIEW_DUE_SOON: String = "dans {0} jour(s)"
+    const val REVIEW_DUE_UPDATED: String = "Dernière mise à jour"
+    const val REVIEW_DUE_HOW: String = "Relisez le contenu et ses sources. Même si rien ne change, publiez une nouvelle version avec une nouvelle date de revue : le journal public des corrections l’indiquera comme « mise à jour ». La date ne masque jamais le contenu et n’est pas montrée au public."
+    const val REVIEW_DUE_OPEN: String = "Ouvrir un brouillon de mise à jour"
+    const val REVIEW_DUE_ON_PAGE: String = "Le brouillon de mise à jour s’ouvre depuis la page du contenu à revoir, dans la rédaction de l’espace."
+    const val REVIEW_DUE_PAGE_TITLE: String = "Revoir un contenu publié"
     const val COLUMN_STATUS: String = "État"
     const val SLUG_LABEL: String = "Identifiant"
     const val REVIEW_LINK: String = "Relire"
@@ -275,6 +290,7 @@ object EditorialTexts {
         ContentSchema.DURATION to "Durée de lecture (minutes)",
         ContentSchema.PUBLISHED_AT to "Date de première publication",
         ContentSchema.UPDATED_AT to "Date de mise à jour",
+        ContentSchema.REVIEW_BY to "Date de revue",
     )
 
     private val commonHelps: Map<String, String> = mapOf(
@@ -283,6 +299,7 @@ object EditorialTexts {
         ContentSchema.SUMMARY to "Une ou deux phrases, 500 caractères au plus.",
         ContentSchema.TOPICS to "Séparés par des virgules : institutions, parlement.",
         ContentSchema.DURATION to "De 1 à 240 minutes.",
+        ContentSchema.REVIEW_BY to "Date à laquelle l’équipe revérifie ce contenu (loi qui change, chiffre à actualiser), après la date de mise à jour. Elle n’est pas montrée au public et ne masque jamais le contenu : 60 jours avant, il entre dans la file « À revoir ». Une revue sans changement publie quand même une nouvelle version, avec une nouvelle date.",
     )
 
     private val labels: Map<String, String> = mapOf(

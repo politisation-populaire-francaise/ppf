@@ -3,6 +3,7 @@ package org.politisationpopulairefrancaise.core.editorial.schema
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
+import org.politisationpopulairefrancaise.core.editorial.ReviewDates
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -42,6 +43,8 @@ object EditorialEngine {
         fun require(key: String): String = requireNotNull(common[key]) { "missing front matter field: $key" }
         val extra = draft.entries.mapNotNull { (key, value) -> schema.field(key)?.let { it to value } }
             .flatMap { (field, value) -> tagsOf(field, value, author.hex) }
+        // The common date of review, after the specific tags: absent, the event is the same as before it existed.
+        val review = if (schema.reviewBy == Presence.ABSENT) null else common[ContentSchema.REVIEW_BY]?.trim()?.takeIf { it.isNotEmpty() }
         return Article.build(
             author = author,
             slug = require(ContentSchema.SLUG),
@@ -58,7 +61,7 @@ object EditorialEngine {
             } else {
                 common[ContentSchema.DURATION]?.takeIf { it.isNotBlank() }?.let { requireNotNull(it.trim().toIntOrNull()) { "duration must be a number of minutes" } }
             },
-            extraTags = extra,
+            extraTags = extra + listOfNotNull(review?.let { listOf(ReviewDates.TAG, it) }),
         )
     }
 
@@ -79,8 +82,9 @@ object EditorialEngine {
         event.firstTagValue(Article.TAG_DURATION)?.let { entries += ContentSchema.DURATION to it }
         event.firstTagValue(Article.TAG_PUBLISHED_AT)?.toLongOrNull()?.let { entries += ContentSchema.PUBLISHED_AT to CivilDate.fromEpochSeconds(it).toIso() }
         entries += ContentSchema.UPDATED_AT to CivilDate.fromEpochSeconds(event.createdAt).toIso()
+        event.firstTagValue(ReviewDates.TAG)?.let { entries += ContentSchema.REVIEW_BY to it }
 
-        val commonTags = setOf("d", Article.TAG_TITLE, Article.TAG_SUMMARY, Article.TAG_PUBLISHED_AT, Article.TAG_TYPE, Article.TAG_ORIGIN, Article.TAG_DURATION, Article.TAG_TOPIC)
+        val commonTags = setOf("d", Article.TAG_TITLE, Article.TAG_SUMMARY, Article.TAG_PUBLISHED_AT, Article.TAG_TYPE, Article.TAG_ORIGIN, Article.TAG_DURATION, Article.TAG_TOPIC, ReviewDates.TAG)
         val lists = LinkedHashMap<String, MutableList<String>>() // inline lists: one entry, items gathered
         val listSlots = HashMap<String, Int>()
         for (tag in event.tags) {
@@ -253,6 +257,14 @@ object EditorialEngine {
         presence(ContentSchema.DURATION, schema.duration, FieldType.Minutes)
         required(ContentSchema.PUBLISHED_AT, FieldType.Date())
         required(ContentSchema.UPDATED_AT, FieldType.Date())
+        val reviewProblems = problems.size
+        presence(ContentSchema.REVIEW_BY, schema.reviewBy, FieldType.Date())
+        // A review date at or before the update would put the content back in « À revoir » at once.
+        val review = CivilDate.parseIso(value(ContentSchema.REVIEW_BY))
+        val updated = CivilDate.parseIso(value(ContentSchema.UPDATED_AT))
+        if (problems.size == reviewProblems && schema.reviewBy != Presence.ABSENT && review != null && updated != null && review <= updated) {
+            problems += Problem(Codes.REVIEW_NOT_AFTER_UPDATE, ContentSchema.REVIEW_BY, args = listOf(review.toIso(), updated.toIso()))
+        }
         return problems
     }
 

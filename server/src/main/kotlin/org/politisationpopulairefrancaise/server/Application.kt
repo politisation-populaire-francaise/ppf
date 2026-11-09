@@ -62,6 +62,7 @@ import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsPurge
 import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsSection
 import org.politisationpopulairefrancaise.server.editorial.EditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.EditorialQueue
+import org.politisationpopulairefrancaise.server.editorial.EditorialReviewDueQueue
 import org.politisationpopulairefrancaise.server.editorial.EditorialReviews
 import org.politisationpopulairefrancaise.server.editorial.UnpluggedEditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.EditorialSigning
@@ -411,11 +412,14 @@ fun Application.module(
         )
         // The queue editorial.comprendre (counts, deadlines and levels of the dashboard).
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.COMPRENDRE, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
+        // « À revoir »: the published contents whose review date (ppf-review-by) is past or within 60 days.
+        teamBackOffice.queues.register(EditorialReviewDueQueue(EditorialSpace.COMPRENDRE, publishedContents, teamBackOffice.clock))
         // The same circuit for Voir (step 6), on the schemas of core/voir/VoirSchemas.kt; its preview is the page of the site.
         teamBackOffice.sections.register(
             EditorialDraftsSection(EditorialSpace.VOIR, drafts, reviews, publishedContents, teamBackOffice.clock, publisher),
         )
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.VOIR, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
+        teamBackOffice.queues.register(EditorialReviewDueQueue(EditorialSpace.VOIR, publishedContents, teamBackOffice.clock))
         // A draft never submitted and unchanged for 180 days is deleted (docs/REGISTRE_DONNEES.md).
         EditorialDraftsPurge(drafts).start(this, 24.hours, log)
     }
