@@ -276,6 +276,24 @@ Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre 
 
 Pour imprimer : choisissez **taille réelle** (ou « 100 % ») dans la fenêtre d'impression, sinon le code QR rétrécit. Ce qui n'est pas encore là : l'iPhone, le PDF sur ordinateur, les affiches d'une fiche ou d'une revendication, les pages du site pour les affiches d'événements très longs.
 
+### Tester « Mes proches à mobiliser » (ajouté le 9 novembre 2026, pas encore compilé)
+
+Une liste rien qu'à vous, sur votre appareil, de quelques proches que vous aimeriez entraîner avec vous : pour chacun, un surnom, des sujets qui pourraient l'intéresser, la prochaine étape et, si vous voulez, un rappel. **Elle n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée et sera entrée dans une version de test. Elle marche de la même façon sur le téléphone et sur l'ordinateur, sans serveur. Pour vos essais, prenez des surnoms inventés (par exemple « [EXEMPLE] Tante M. »), jamais le nom d'une vraie personne.
+
+1. Ouvrez « Agir » et touchez la carte **Mes proches à mobiliser**. L'écran explique la liste et, en bas, l'encadré au cadenas « Ce que garde cette liste ».
+2. Touchez **Ajouter un proche** : la mise en garde « Avant de commencer » s'affiche d'abord (ce qui est gardé, que rien n'est envoyé, qu'un surnom suffit). Touchez **Annuler** : rien n'est gardé, vous revenez à l'écran de départ.
+3. Touchez de nouveau **Ajouter un proche**, puis **Commencer ma liste** : le formulaire s'ouvre. Touchez **Enregistrer** sans rien écrire : « Écrivez un surnom pour enregistrer ».
+4. Tapez « [EXEMPLE] Tante M. ». Choisissez les sujets **Santé**, **Logement** et **Travail** : les autres sujets se grisent (trois au plus). Touchez de nouveau **Santé** pour le retirer.
+5. Dans « Prochaine étape », choisissez **Partager un contenu** ; dans « Me le rappeler », choisissez **Demain** (la date s'affiche sous chaque choix). Touchez **Enregistrer**.
+6. La carte de « [EXEMPLE] Tante M. » apparaît dans « Ma liste », avec « Prochaine étape : Partager un contenu », ses sujets et la date du rappel. Plus bas, « Des contenus sur ses sujets » propose des fiches et des parcours déjà sur votre appareil (par exemple « Faire grève : vos droits »). Touchez **Copier le lien** : « Lien copié ». Collez-le dans une note : seuls le titre et l'adresse publique du contenu apparaissent, jamais le surnom.
+7. Sur le téléphone, touchez **Partager** sur un contenu : Android propose vos applications ; touchez la flèche retour pour ne rien envoyer.
+8. Touchez **Passer à : L'inviter à une mobilisation** : l'étape change. Si vous avez ouvert l'agenda auparavant, des mobilisations à venir sur ces sujets passent en tête des contenus proposés.
+9. Touchez **Modifier**, choisissez **Pas de rappel** puis **Enregistrer**. Touchez **Retirer** : la question « Retirer ce proche de votre liste ? » s'affiche ; **Annuler** le garde, **Retirer** l'efface de l'appareil.
+10. Ajoutez deux proches, puis fermez et rouvrez PPF : la liste est toujours là. Dans « Mon espace », lancez l'**effacement rapide** (ou « Effacer mes clés » si vous avez un compte de test) : en revenant dans la rubrique, la liste est vide.
+11. Essayez aussi le mode sombre et, sur l'ordinateur, une fenêtre large : les cartes se rangent par deux.
+
+Ce qui n'est pas encore là : la notification le jour du rappel (elle viendra avec les rappels de l'appareil de « Décider » ; en attendant, le proche passe en tête de la liste avec « À faire aujourd'hui »), l'iPhone, le chiffrement de la liste par une clé du téléphone (question posée au chef d'équipe).
+
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).

@@ -48,6 +48,9 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpStat
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsScreen
 import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisationsLibrary
+import org.politisationpopulairefrancaise.ui.agir.proches.ProchesScreen
+import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
+import org.politisationpopulairefrancaise.ui.agir.proches.rememberProchesState
 import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityLibrary
 import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityScreen
 import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityTab
@@ -97,6 +100,9 @@ enum class AgirRoute(val id: String) {
 
     /** AG-60: the strike simulator, opened from the funds of the solidarity rubric. */
     STRIKE_SIMULATOR("simulateur-greve"),
+
+    /** AG-63: « Mes proches à mobiliser », the private list of a few relatives. */
+    PROCHES("proches"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -139,6 +145,11 @@ fun AgirScreen(
     callsLibrary: CallsLibrary? = null,
     /** The strike simulator (AG-60), in memory only; null builds one for as long as "Agir" is shown. */
     strikeSimulator: StrikeSimulatorState? = null,
+    /**
+     * « Mes proches à mobiliser » (AG-63): the shell's, whose part `agir-proches` the quick erase knows;
+     * null builds one for as long as "Agir" is shown (tests).
+     */
+    proches: ProchesState? = null,
 ) {
     var route by rememberSaveable { mutableStateOf(AgirRoute.HOME) }
     // Where the back button of the directory leads when a plugged screen opened an organisation's page.
@@ -161,6 +172,8 @@ fun AgirScreen(
     val solidarityLibrary = solidarity ?: rememberSolidarityLibrary(dependencies)
     // AG-60: what is typed in the simulator (the pay among it) stays in memory, handed to the quick erase.
     val strike = strikeSimulator ?: rememberStrikeSimulatorState(dependencies)
+    // AG-63: the list of relatives stays on the device; the shell hands its own (erased by the quick erase).
+    val relatives = proches ?: rememberProchesState(dependencies, session)
     // The protest mode shares the AIDE button's state (rally point, legal teams); alone (tests), its own.
     val help = LocalHelpState.current ?: rememberHelpState(dependencies, directory, library)
     // « Caméra protégée » (AG-58): the shell's, attached to its help state (the quick erase knows it); alone (tests), its own.
@@ -217,6 +230,7 @@ fun AgirScreen(
                                 solidarityLibrary.selectTab(SolidarityTab.MISSIONS)
                                 route = AgirRoute.SOLIDARITY
                             }
+                            AgirRubrics.PROCHES.id -> route = AgirRoute.PROCHES
                             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
                         }
                     },
@@ -302,6 +316,12 @@ fun AgirScreen(
                         route = AgirRoute.SOLIDARITY
                     },
                     modifier = Modifier.fillMaxSize(),
+                )
+                AgirRoute.PROCHES -> ProchesScreen(
+                    state = relatives,
+                    windowClass = windowClass,
+                    modifier = Modifier.fillMaxSize(),
+                    onBack = home,
                 )
                 AgirRoute.TESTIFY -> TestimonyScreen(
                     library = testimonyLibrary,

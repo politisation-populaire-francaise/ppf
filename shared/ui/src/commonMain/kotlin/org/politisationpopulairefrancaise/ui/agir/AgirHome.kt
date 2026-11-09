@@ -75,6 +75,8 @@ import org.politisationpopulairefrancaise.ui.resources.agir_soon_text
 import org.politisationpopulairefrancaise.ui.resources.agir_soon_title
 import org.politisationpopulairefrancaise.ui.resources.agir_testify_text
 import org.politisationpopulairefrancaise.ui.resources.agir_testify_title
+import org.politisationpopulairefrancaise.ui.resources.proches_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.proches_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.space_agir
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
@@ -99,8 +101,11 @@ object AgirRubrics {
     /** "Je veux aider" (M35, AG-12): opens the solidarity rubric on the volunteer missions. */
     val HELP = AgirRubric("aider", Res.string.agir_help_title, Res.string.agir_help_text, Lucide.Heart)
 
+    /** « Mes proches à mobiliser » (AG-63): the private list of a few relatives, on the device only. */
+    val PROCHES = AgirRubric("proches", Res.string.proches_rubric_title, Res.string.proches_rubric_text, Lucide.UsersRound)
+
     /** What can be opened today. */
-    val available: List<AgirRubric> = listOf(AGENDA, CALLS, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, COLLECTIVES, GUIDES)
+    val available: List<AgirRubric> = listOf(AGENDA, CALLS, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, PROCHES, COLLECTIVES, GUIDES)
 
     /** Planned but not ready: shown honestly, disabled, without any date. */
     val inPreparation: List<AgirRubric> = listOf(

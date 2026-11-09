@@ -103,6 +103,8 @@ import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
 import org.politisationpopulairefrancaise.ui.agir.timer.rememberTimerState
 import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
+import org.politisationpopulairefrancaise.ui.agir.proches.rememberProchesState
 import org.politisationpopulairefrancaise.core.voir.VoirDeviceData
 import org.politisationpopulairefrancaise.ui.agir.security.rememberDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
@@ -246,6 +248,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val protectedCamera = rememberProtectedCameraState()
     help.camera = protectedCamera
     RegisterErasable(dependencies, "agir-camera") { protectedCamera.eraseFromDevice() }
+    // AG-63 « Mes proches à mobiliser »: the private list of relatives, on the device only; « Effacer mes clés » erases it too.
+    val proches = rememberProchesState(dependencies, accountSession)
+    RegisterErasable(dependencies, ProchesState.ERASABLE_ID) { proches.eraseFromDevice() }
     // « Comprendre » (S-44): progress of the courses, chosen commune and directory packages, department packages of the territories.
     dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
     // Décider: the voting tokens, pending requests and choices of the device (S-44).
@@ -363,6 +368,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     agendaLibrary = agendaLibrary,
                     callsLibrary = callsLibrary,
                     testimonyLibrary = testimonyLibrary,
+                    proches = proches,
                     mailboxSetting = mailboxSetting,
                     notificationsSettings = notificationsSettings,
                     windowClass = windowClass,
@@ -400,6 +406,7 @@ private fun SpaceContent(
     agendaLibrary: AgendaLibrary,
     callsLibrary: CallsLibrary,
     testimonyLibrary: TestimonyLibrary,
+    proches: ProchesState,
     mailboxSetting: MailboxSetting,
     notificationsSettings: NotificationsSettingsState?,
     windowClass: WindowClass,
@@ -443,6 +450,7 @@ private fun SpaceContent(
                     )
                 },
                 testimonies = testimonyLibrary,
+                proches = proches,
                 // The events and calls of the collectifs (M24) are those of the agenda and of the calls.
                 agendaLibrary = agendaLibrary,
                 callsLibrary = callsLibrary,
