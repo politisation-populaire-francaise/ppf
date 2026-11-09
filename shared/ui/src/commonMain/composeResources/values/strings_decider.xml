@@ -263,6 +263,26 @@
     <string name="decider_reminders_category_on">Rallumer les notifications « Votes et pétitions »</string>
     <string name="decider_reminders_permission_refused">Le système n’affiche pas les notifications de PPF : les rappels arriveront seulement dans le centre de notifications de l’application.</string>
     <string name="decider_reminders_computer">Sur ordinateur, un rappel s’affiche quand l’application est ouverte.</string>
+    <!-- DE-09 : interpeller ses élus, modèles de courrier remplis et envoyés par la personne elle-même. -->
+    <string name="decider_letters_section">Interpeller ses élus</string>
+    <string name="decider_letters_section_intro">Des modèles de courrier à compléter, adressés à vos élus. Vous l’envoyez vous-même : PPF n’envoie rien et ne garde rien.</string>
+    <string name="decider_letter_for">Pour : %1$s</string>
+    <string name="decider_letter_recipient_maire">Maire</string>
+    <string name="decider_letter_recipient_depute">Député</string>
+    <string name="decider_letter_recipient_senateur">Sénateur</string>
+    <string name="decider_letter_recipient_departemental">Conseillers départementaux</string>
+    <string name="decider_letter_recipient_regional">Conseillers régionaux</string>
+    <string name="decider_letter_recipient_europeen">Députés européens</string>
+    <string name="decider_letter_to">À qui l’adresser ?</string>
+    <string name="decider_letter_no_commune">Choisissez votre commune dans « Mes élus » pour que le nom de vos élus s’inscrive dans le courrier, ou écrivez-le vous-même à la place de « [Nom de l’élu] ».</string>
+    <string name="decider_letter_choose_commune">Choisir ma commune dans « Mes élus »</string>
+    <string name="decider_letter_subject">Objet : %1$s</string>
+    <string name="decider_letter_text">Votre courrier, à compléter</string>
+    <string name="decider_letter_copy">Copier le courrier</string>
+    <string name="decider_letter_copied">Courrier copié : collez-le dans la page de contact, un courriel ou un traitement de texte.</string>
+    <string name="decider_letter_contacts">Où l’envoyer</string>
+    <string name="decider_letter_advice">Un courrier court, poli et précis a plus de chances de recevoir une réponse. N’y écrivez que ce que vous acceptez de voir lu par l’équipe de l’élu.</string>
+    <string name="decider_letter_privacy">PPF n’envoie rien et ne garde rien : ce courrier reste sur cet écran tant que vous ne l’envoyez pas vous-même. PPF ne sait pas à qui vous écrivez.</string>
     <!-- DE-27 : consultations publiques officielles. -->
     <string name="decider_consultations_section">Consultations publiques</string>
     <string name="decider_consultations_section_intro">L’État, la Commission nationale du débat public et les collectivités demandent l’avis du public. On répond sur leur site officiel, avant la date limite.</string>

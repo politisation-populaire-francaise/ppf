@@ -431,6 +431,18 @@ Contrôles de l'outil de signature (avertissements, jamais un refus du droit par
 
 Contrôles de l'outil de signature (avertissements, jamais un refus du droit par le code) : une durée plus courte que le minimum légal (15 jours pour une consultation ouverte, une participation du public ou une enquête publique ; 30 jours pour une enquête publique d'un projet soumis à évaluation environnementale, code de l'environnement L123-9), une page officielle hors de `.gouv.fr` (beaucoup d'enquêtes ont lieu sur le registre d'un prestataire ou le site d'une commune : à vérifier dans l'avis). L'application montre les consultations ouvertes puis à venir ; une consultation locale seulement pour les territoires gardés sur l'appareil.
 
+### Modèle de courrier à ses élus (`ppf-type` = `modele-courrier`, DE-09, conception : `docs/integration/interpeller-ses-elus.md`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-recipient` | À qui il s'adresse (au moins un, répété) : `maire`, `depute`, `senateur`, `departemental`, `regional`, `europeen` |
+| `ppf-subject` | L'objet du courrier |
+| `ppf-contact` | Où trouver les contacts officiels : `destinataire`, `libellé`, `page (https)` ; écrit et vérifié par l'équipe |
+| `a` rôle `texte` | Le texte de « Voir » dont il parle, s'il y en a un (le législomètre l'ouvrira avant un vote) |
+| corps | Le courrier, avec `{elu}`, `{commune}` et `{date}`, que l'application remplit sur l'appareil ; des crochets pour ce que la personne écrit elle-même |
+
+Le nom de l'élu vient de l'annuaire des élus de la commune choisie sur l'appareil (D-047), tel quel, sans civilité devinée ; la formule d'appel reste neutre (« Madame, Monsieur »). Contrôles de l'outil de signature (avertissements) : une marque entre accolades que l'application ne remplit pas, un destinataire sans contact officiel. PPF n'envoie rien et ne garde rien du courrier.
+
 ### Position d'un candidat (`ppf-type` = `position`)
 
 | Étiquette | Contenu |

@@ -116,4 +116,14 @@ object DeciderTags {
 
     /** Who organizes a consultation, as its official notice names it. */
     const val ORGANIZER = "ppf-organizer"
+
+    // Model letters to one's elected officials (cahier fonctionnel, M13.1; DE-09).
+    /** Who a letter is for: `maire`, `depute`, `senateur`, `departemental`, `regional`, `europeen` ([LetterRecipient]); repeated. */
+    const val RECIPIENT = "ppf-recipient"
+
+    /** The subject line of a letter. */
+    const val SUBJECT = "ppf-subject"
+
+    /** Where the official contacts of one kind of elected officials are: `recipient | label | page (https)` ([OfficialContact]). */
+    const val CONTACT = "ppf-contact"
 }

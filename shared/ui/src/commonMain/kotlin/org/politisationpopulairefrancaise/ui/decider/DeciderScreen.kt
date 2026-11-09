@@ -54,6 +54,8 @@ import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
 import org.politisationpopulairefrancaise.ui.resources.decider_consultations_section
+import org.politisationpopulairefrancaise.ui.resources.decider_letters_section
+import org.politisationpopulairefrancaise.ui.resources.decider_letters_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_consultations_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_elections_section
 import org.politisationpopulairefrancaise.ui.resources.decider_elections_section_intro
@@ -128,7 +130,7 @@ fun DeciderScreen(
             if (current == null) {
                 DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate)
             } else {
-                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos, reminders = reminders) }
+                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos, reminders = reminders, dependencies = dependencies) }
             }
         }
     }
@@ -226,6 +228,18 @@ private fun DeciderHome(
                 }
             }
         }
+        // The model letters to one's elected officials (DE-09): filled in on the device, sent by the person.
+        if (catalog.letters.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.testTag(DeciderTags.section("courriers"))) {
+                SectionHeader(stringResource(Res.string.decider_letters_section))
+                Text(stringResource(Res.string.decider_letters_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+                catalog.letters.forEach { letter ->
+                    Spacer(Modifier.height(12.dp))
+                    LetterCard(letter, onOpen = { state.open(DeciderDestination.Letter(letter.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+                }
+            }
+        }
         Spacer(Modifier.height(24.dp))
         Column(Modifier.widthIn(max = 760.dp).testTag(DeciderTags.section("more"))) {
             SectionHeader(stringResource(Res.string.decider_more_section))
@@ -291,6 +305,7 @@ private fun DeciderDetail(
     reports: VoirRequestSession?,
     photos: ComparatorPhotosState?,
     reminders: DeciderRemindersState?,
+    dependencies: AppDependencies?,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -333,6 +348,9 @@ private fun DeciderDetail(
                     } ?: Missing()
                     is DeciderDestination.Consultation -> catalog.consultation(current.address)?.let { consultation ->
                         ConsultationPage(consultation, today, actions, reminders)
+                    } ?: Missing()
+                    is DeciderDestination.Letter -> catalog.letter(current.address)?.let { letter ->
+                        LetterPage(letter, rememberDeviceElus(dependencies), today, actions)
                     } ?: Missing()
                     is DeciderDestination.PastVotes -> {
                         val sheet = catalog.comparators.firstOrNull { it.address == current.sheet }

@@ -81,6 +81,12 @@ enum class ArticleType(val tagValue: String) {
      * kind, its dates and the official page where one answers; the body is the guide to answer it.
      */
     CONSULTATION("consultation"),
+
+    /**
+     * A model letter to one's elected officials (DE-09; core.decider.LetterTemplate): recipients, subject, the letter to
+     * fill in on the device, the official contacts. PPF sends nothing.
+     */
+    MODELE_COURRIER("modele-courrier"),
     ;
 
     companion object {

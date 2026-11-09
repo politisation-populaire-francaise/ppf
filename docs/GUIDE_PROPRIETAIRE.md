@@ -259,6 +259,16 @@ Les deux consultations sont inventées et marquées [EXEMPLE]. Aucun compte n'es
 3. Touchez **Répondre sur le site officiel** : l'application demande d'abord si vous voulez quitter PPF. Touchez **Rester ici** (l'adresse d'exemple ne mène nulle part).
 4. Revenez en arrière et ouvrez l'enquête publique. Dans **Rappels**, touchez **Me rappeler cette consultation** : deux rappels apparaissent, à l'ouverture et trois jours avant la clôture, à 10 h. Touchez **Ne plus me rappeler cette consultation** : tout est effacé.
 
+### Tester « Interpeller ses élus » (ajouté le 9 novembre 2026)
+
+Le modèle de courrier est inventé et marqué [EXEMPLE]. Rien n'est envoyé : c'est vous qui envoyez le courrier, si vous le voulez.
+
+1. Ouvrez **Décider** et descendez jusqu'à **Interpeller ses élus**. Touchez le modèle « Avant un vote ».
+2. Sans commune choisie, la page vous le dit : le courrier garde « [Nom de l'élu] » et « [Votre commune] ». Pour voir le nom de vos élus s'inscrire, choisissez d'abord votre commune dans **Comprendre**, rubrique **Mes élus**, puis revenez sur le modèle.
+3. Modifiez le courrier directement dans la zone de texte, puis touchez **Copier le courrier** : un message confirme la copie. Collez-le dans une note pour vérifier.
+4. Les boutons de **Où l'envoyer** ouvrent, après « Vous quittez PPF », la page de contact officielle (des adresses d'exemple pour l'instant).
+5. Quittez la page : le courrier n'est gardé nulle part.
+
 ### Essayer le vote anonyme sur l'ordinateur (ajouté le 7 novembre 2026, au soir)
 
 Le vote marche maintenant de bout en bout, mais seulement avec un serveur. Sur votre ordinateur, un serveur de développement suffit ; il ne contient que des exemples. Il faut deux fenêtres de commande, ouvertes dans le dossier du projet.

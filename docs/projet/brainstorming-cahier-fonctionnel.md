@@ -6,6 +6,17 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-09] DE-09 « Interpeller ses élus » : le suivi public des réponses
+- Statut : À valider
+- Concerne : cahier-fonctionnel.md (M13.1, DE-09 ; DE-23) ; conception `docs/integration/interpeller-ses-elus.md`
+- Contexte : DE-09 demande des « modèles de courrier à personnaliser » et un « suivi public des réponses reçues ou non, sans données personnelles au-delà du mandat public ». La première partie est faite le 9 novembre 2026 (modèles remplis sur l'appareil et envoyés par la personne elle-même ; PPF n'envoie rien et ne garde rien). La seconde dit publiquement, d'un élu nommé, s'il a répondu : elle demande une décision.
+- Options :
+  - **A. Pas de suivi public pour l'instant.** Chacun peut noter sur son appareil s'il a reçu une réponse (privé, effaçable). Avantages : aucun risque juridique, rien sur le serveur. Inconvénients : la pression collective sur les élus reste invisible. Coût : nul.
+  - **B. Un compteur anonyme et les réponses signées des élus (DE-23).** Après l'envoi, « J'ai envoyé ce courrier » ajoute 1 à un compteur public par élu et par modèle, sans compte ni lien avec la personne (preuve de travail auto-hébergée, limites de débit) ; la réponse n'est comptée que si l'élu la publie lui-même, signée, depuis un compte d'élu certifié (DE-23), avec le même affichage pour tous : « N citoyens disent lui avoir écrit ; réponse publique : oui (date) ou pas encore ». Avantages : rend visible la demande des citoyens sans exposer personne ; une seule source pour la réponse, l'élu lui-même. Inconvénients : un compteur déclaratif peut être gonflé (parade : preuve de travail, plafond par appareil et par jour, mention « déclaratif ») ; dire qu'un élu nommé n'a « pas encore » répondu relève de la méthode M17 et du droit de réponse ; relecture par un avocat avant la mise en ligne. Coût : gratuit (serveur existant).
+  - **C. Les citoyens publient la réponse reçue** (copie ou capture), relue par l'équipe. Avantages : montre les vraies réponses. Inconvénients : authenticité impossible à garantir, courrier privé de l'élu publié sans son accord, risque de diffamation, charge de relecture. Coût : temps de l'équipe.
+- Recommandation : **A maintenant, B avec DE-23** (après l'avis de l'avocat, en même temps que les réponses signées des élus) ; C écartée.
+- Décision : en attente (chef d'équipe, par délégation de la propriétaire).
+
 ### [2026-11-08] Brainstorming de la nuit : fonctionnalités indispensables, innovantes et pertinentes
 - Statut : Intégré le 2026-11-08 (cahier fonctionnel 2.1, cahier des charges 2.2)
 - Concerne : cahier-fonctionnel.md (M1, M2, M4, M5, M6, M12, M13.1, M13.5 à M13.7, M14, M16 à M18, M20 à M25, M27, M29, M32 à M35, annexes B à D) ; cahier-des-charges.md (sections 3.2, 3.3, 3.4.2, 3.5, 3.8, 4.1, 5.1, 5.2, 5.7, 5.8, 5.11 à 5.13, 6 à 10, 12)
