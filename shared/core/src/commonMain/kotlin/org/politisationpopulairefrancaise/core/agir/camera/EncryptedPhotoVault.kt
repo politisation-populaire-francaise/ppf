@@ -65,12 +65,24 @@ class VaultException(message: String) : Exception(message)
  *
  * The quick erase ([eraseAll]) destroys the master key first: whatever the flash memory keeps of
  * the deleted files (wear-levelling) cannot be read any more; then it deletes the files.
+ *
+ * [domain] separates the associated data of two vaults built on this format: the protected camera
+ * keeps [CAMERA_DOMAIN] (its files are byte for byte what they were before the parameter existed);
+ * the evidence of the harassment kit (AG-59) uses [EVIDENCE_DOMAIN], in its own directory and under
+ * its own master key, so that a file moved from one vault to the other is refused twice.
  */
 class EncryptedPhotoVault(
     private val files: VaultFiles,
     private val crypto: VaultCrypto,
     private val newId: () -> String = ProtectedIds::next,
+    private val domain: String = CAMERA_DOMAIN,
 ) : ProtectedVault {
+    init {
+        require(DOMAIN.matches(domain)) { "a domain of lowercase letters" }
+    }
+
+    private val indexAad = "ppf-$domain-index-v1".encodeToByteArray()
+
     private val mutex = Mutex()
     private val json = Json { ignoreUnknownKeys = true }
 
@@ -145,7 +157,7 @@ class EncryptedPhotoVault(
 
     private fun readIndex(): List<ProtectedPhoto> {
         val blob = files.read(INDEX) ?: return emptyList()
-        val plain = open(blob, keyAad(INDEX_ID), INDEX_AAD)
+        val plain = open(blob, keyAad(INDEX_ID), indexAad)
         try {
             val document = json.decodeFromString(IndexDocument.serializer(), plain.decodeToString())
             if (document.version != INDEX_VERSION) throw VaultException("unknown version of the listing")
@@ -158,7 +170,7 @@ class EncryptedPhotoVault(
     private fun writeIndex(photos: List<ProtectedPhoto>) {
         val plain = json.encodeToString(IndexDocument.serializer(), IndexDocument(INDEX_VERSION, photos)).encodeToByteArray()
         try {
-            files.write(INDEX, seal(plain, keyAad(INDEX_ID), INDEX_AAD))
+            files.write(INDEX, seal(plain, keyAad(INDEX_ID), indexAad))
         } finally {
             plain.fill(0)
         }
@@ -190,6 +202,12 @@ class EncryptedPhotoVault(
         }
     }
 
+    /** Binds a wrapped key to its identifier (and to the vault's [domain]). */
+    private fun keyAad(id: String): ByteArray = "ppf-$domain-key-v1:$id".encodeToByteArray()
+
+    /** Binds a sealed content to its identifier (and to the vault's [domain]). */
+    private fun photoAad(id: String): ByteArray = "ppf-$domain-photo-v1:$id".encodeToByteArray()
+
     @Serializable
     private data class IndexDocument(val version: Int, val photos: List<ProtectedPhoto>)
 
@@ -200,17 +218,19 @@ class EncryptedPhotoVault(
         /** Largest photo kept, in bytes (the chain of media accepts originals up to 25 MiB). */
         const val MAX_PHOTO_BYTES: Int = 40 * 1024 * 1024
 
+        /** The associated data of the protected camera (AG-58, D-089), unchanged since its first version. */
+        const val CAMERA_DOMAIN: String = "camera"
+
+        /** The associated data of the evidence of the harassment kit (AG-59). */
+        const val EVIDENCE_DOMAIN: String = "evidence"
+
         private const val INDEX_ID = "index"
         private const val INDEX_VERSION = 1
         private const val VERSION: Byte = 1
         private val MAGIC = "PPFC".encodeToByteArray()
-        private val INDEX_AAD = "ppf-camera-index-v1".encodeToByteArray()
+        private val DOMAIN = Regex("[a-z]{1,32}")
 
         /** The file of the photo [id]. */
         fun photoFile(id: String): String = "$id.photo"
-
-        private fun keyAad(id: String): ByteArray = "ppf-camera-key-v1:$id".encodeToByteArray()
-
-        private fun photoAad(id: String): ByteArray = "ppf-camera-photo-v1:$id".encodeToByteArray()
     }
 }
