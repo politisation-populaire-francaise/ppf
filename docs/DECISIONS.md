@@ -875,6 +875,21 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - **Licence** : celle de tous les contenus de PPF, choisie par la propriétaire le 8 novembre 2026 (« Ok licence option b ») : CC BY 4.0 pour les textes et les images, Licence Ouverte 2.0 pour les données. Pas de licence propre aux enseignants ; les fiches se branchent sur le mécanisme commun d'identifiant de licence par type de contenu que met en place « Voir ».
 - Les fiches restent marquées [EXEMPLE], avec la mention « rédigé avec l'aide d'une IA », jusqu'à leur relecture par l'équipe éditoriale. Ordre : après CO-19, CO-12 et CO-18 (CO-18 attend l'étape 2 de M30 du Directeur technique, D-143).
 
+## D-097 (2026-11-09) Date de revue commune `ppf-review-by` et file « À revoir »
+
+- Décision du chef d'équipe le 9 novembre 2026, sur la proposition de « Comprendre » (date de revue de CO-12), avec l'accord de « Voir » et la proposition du Directeur technique pour le back-office.
+- **Une seule définition pour tous** : champ commun facultatif `review_by` du moteur à schéma (`ContentSchema.reviewBy`, facultatif pour chaque type de « Comprendre » et de « Voir »), date `AAAA-MM-JJ`, étiquette `ppf-review-by` écrite après les étiquettes propres au type (absente, l'événement ne change pas d'un octet), lue par `core.editorial.ReviewDates`. Le moteur refuse une date qui ne tombe pas après la date de mise à jour ; le serveur, une date qui ne tombe pas après le jour même (la version publiée est datée au moment de la signature).
+- **Une date passée ne masque ni ne bloque aucun contenu** et rien n'est montré au public : elle alimente seulement le suivi de la rédaction.
+- **File « À revoir »** dans chaque section éditoriale (`editorial.comprendre.a_revoir`, `editorial.voir.a_revoir`, vues par les éditeurs de l'espace) : les contenus publiés dont la date est passée ou tombe dans les 60 jours, avec cette date pour échéance (niveau 3 si elle est passée, 2 sinon) ; le tableau de bord les trie, retards en tête, sans rien ajouter au socle. La seule action ouvre un brouillon de mise à jour (page de la section, puis le formulaire habituel), avec une nouvelle date.
+- **Une revue sans changement publie quand même une nouvelle version**, avec la mention « mise à jour » dans le journal public des corrections (D-095).
+- Dans « Voir », la date reste facultative pour commencer. Première utilisation : la fiche CO-12 « Sécurité numérique des militants », à revoir au plus tard le 1er octobre 2028.
+
+## D-098 (2026-11-09) « Mes élus » : un emplacement facultatif sous chaque élu
+
+- Décision du chef d'équipe le 9 novembre 2026, sur la proposition de « Voir » (« mon maire, mon député a parrainé »).
+- « Comprendre » fournit sous chaque élu de la page « Mes élus » un emplacement (`LocalElectedOfficialExtra`) qui n'affiche rien par défaut. « Voir » le remplira après les entrées des deux pôles dans `main`, avec les parrainages lus sur l'appareil seulement et un lien vers sa page ; le même emplacement portera le lien « Leurs votes au Parlement » (VO-34).
+- Jamais de mention « n'a pas parrainé », jamais de bouton pour interpeller l'élu. L'emplacement n'apparaît pas dans les encadrés des fiches « Qui décide de ça ? ».
+
 ## D-100 (2026-11-07) « Cette semaine au Parlement »
 
 - Contexte : cahier fonctionnel 2.0, M20 (VO-31), repris dans « En direct » (M19) ; sources vérifiées : `docs/integration/voir-historique-sources.md` ; détail : `docs/integration/voir-semaine.md`.
