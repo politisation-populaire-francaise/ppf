@@ -225,6 +225,53 @@ class TeachingSheetTest {
     }
 
     @Test
+    fun theAnimationShowsTheQuestionsThenTheDebateOneSlideAtATime() {
+        val sheet = assertNotNull(Article.from(signed(workshop(), body(steps = workshopOutline)))?.let(TeachingSheet::from))
+        val quiz = QuizQuestion("Combien ?", listOf("Un", "Deux", "Trois"), 1, "Parce que.")
+        val course = Parcours(
+            article = sheet.article,
+            introduction = "",
+            steps = listOf(ParcoursStep(0, "Une", "Texte.", quiz), ParcoursStep(1, "Deux", "Texte.", null), ParcoursStep(2, "Trois", "Texte.", quiz.copy(question = "Et ensuite ?"))),
+            nextActions = null,
+            sources = null,
+        )
+        val slides = TeachingAnimation.slidesOf(sheet, course, "Le référendum")
+        // Opening, the two questions of the course (a step without quiz gives none), the debate, its two objections, closing.
+        assertEquals(7, slides.size)
+        assertEquals(AnimationSlide.Opening(sheet.article.title, "Le référendum", 2, 2), slides.first())
+        assertEquals(listOf(1, 2), slides.filterIsInstance<AnimationSlide.Question>().map { it.number })
+        assertEquals(AnimationSlide.Debate("Question posée à la classe : faut-il plus de référendums ?"), slides[3])
+        assertEquals("« Un argument de l'autre côté »", (slides[5] as AnimationSlide.DebateObjection).objection.objection)
+        assertEquals(AnimationSlide.Closing, slides.last())
+        // Without a published course: no question, the debate stays.
+        assertEquals(5, TeachingAnimation.slidesOf(sheet, null).size)
+
+        // « Next » reveals a hidden answer before moving on; « previous » hides it again.
+        var state = AnimationState(slides)
+        assertTrue(state.isFirst && !state.answerHidden)
+        state = state.next()
+        assertEquals(2, state.position)
+        assertTrue(state.answerHidden)
+        state = state.next()
+        assertEquals(2, state.position, "the first gesture shows the answer")
+        assertTrue(state.revealed && !state.answerHidden)
+        state = state.next()
+        assertEquals(3, state.position)
+        assertTrue(state.answerHidden, "the next question starts hidden")
+        state = state.previous()
+        assertEquals(2, state.position)
+        assertTrue(state.answerHidden, "going back hides the answer again")
+        // The debate slide has no answer: one gesture moves on.
+        state = AnimationState(slides, 3).next()
+        assertEquals(5, state.position)
+        // The last slide stays the last one.
+        val end = AnimationState(slides, slides.lastIndex)
+        assertEquals(end, end.next())
+        assertTrue(end.isLast)
+        assertEquals(AnimationState(slides, 0), AnimationState(slides, 0).previous())
+    }
+
+    @Test
     fun everyRequiredSectionIsChecked() {
         for (missing in TeachingSheetFormat.REQUIRED_SECTIONS) {
             val problems = check(entries(), body(order = TeachingSheetFormat.SECTIONS - missing))

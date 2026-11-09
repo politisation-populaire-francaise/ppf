@@ -57,6 +57,7 @@ import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
+import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.content.FeedPost
 import org.politisationpopulairefrancaise.ui.content.MarkdownText
@@ -87,6 +88,8 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_role_senateur
 import org.politisationpopulairefrancaise.ui.resources.comprendre_sources
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_teaching
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_workshop
+import org.politisationpopulairefrancaise.ui.resources.comprendre_animation_hint
+import org.politisationpopulairefrancaise.ui.resources.comprendre_animation_start
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_answer
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_hide_answers
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_atelier
@@ -392,6 +395,12 @@ fun TeachingSheetDetail(sheet: TeachingSheet, course: Parcours?, onBack: (() -> 
     val palette = PpfTheme.palette
     val subtitle = stringResource(Res.string.comprendre_teaching_meta, teachingLevelLabel(sheet.level), sheet.article.durationMinutes ?: sheet.totalMinutes)
     val kind = stringResource(if (sheet.isWorkshop) Res.string.comprendre_kind_workshop else Res.string.comprendre_kind_teaching)
+    // CO-24, step 2: the animation mode takes the place of the sheet until it is left; nothing is recorded.
+    var animating by remember(sheet.article.event.id) { mutableStateOf(false) }
+    if (animating) {
+        TeachingAnimationView(sheet, course, onClose = { animating = false }, modifier = modifier)
+        return
+    }
     DetailColumn(sheet.article, kind, onBack, compact, modifier.testTag(ComprendreDetailTags.TEACHING), subtitle = subtitle) {
         Surface(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.medium, color = palette.surface2, border = BorderStroke(1.dp, palette.border)) {
             Column(Modifier.padding(16.dp)) {
@@ -406,6 +415,15 @@ fun TeachingSheetDetail(sheet: TeachingSheet, course: Parcours?, onBack: (() -> 
                     Spacer(Modifier.height(4.dp))
                     Text(programme, style = MaterialTheme.typography.bodyMedium)
                 }
+                Spacer(Modifier.height(12.dp))
+                Text(stringResource(Res.string.comprendre_animation_hint), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+                Spacer(Modifier.height(8.dp))
+                PpfSecondaryButton(
+                    onClick = { animating = true },
+                    text = stringResource(Res.string.comprendre_animation_start),
+                    small = true,
+                    modifier = Modifier.testTag(AnimationTags.START),
+                )
             }
         }
         Spacer(Modifier.height(16.dp))

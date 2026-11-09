@@ -11,6 +11,10 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.test.pressKey
+import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
@@ -181,6 +185,46 @@ class ComprendreCoursesTest {
         onNodeWithText("Afficher les réponses").performScrollTo().performClick()
         waitForIdle()
         assertEquals(petitions.quizCount, onAllNodesWithTag(ComprendreDetailTags.TEACHING_ANSWERS).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun theAnimationModeShowsOneSlideAtATimeAndTheAnswerOnDemand() = runComposeUiTest {
+        val petitions = bundled.first { it.article.slug == "les-petitions-officielles" }
+        openComprendre(JvmDatabase.inMemory(), width = 1000, height = 800)
+        onNodeWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).performScrollTo().performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(CourseTags.WORKSHOP).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithTag(CourseTags.WORKSHOP).performScrollTo().performClick()
+        waitForIdle()
+        // CO-24, step 2: the animation mode takes the place of the sheet.
+        onNodeWithTag(AnimationTags.START).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.ROOT).assertExists()
+        onNodeWithTag(ComprendreDetailTags.TEACHING).assertDoesNotExist()
+        onNodeWithTag(AnimationTags.POSITION).assertTextContains("1 sur ", substring = true)
+        // A presentation clicker (page down) moves to the first question; its answer stays hidden.
+        onNodeWithTag(AnimationTags.ROOT).performKeyInput { pressKey(Key.PageDown) }
+        waitForIdle()
+        onNodeWithTag(AnimationTags.POSITION).assertTextContains("2 sur ", substring = true)
+        onNodeWithTag(AnimationTags.SLIDE).assert(hasAnyDescendant(hasText(petitions.steps.first { it.quiz != null }.quiz!!.question)))
+        onAllNodesWithTag(AnimationTags.ANSWER).fetchSemanticsNodes().let { assertTrue(it.isEmpty(), "answer hidden") }
+        // The leader shows the answer, then moves on: the next question starts hidden.
+        onNodeWithTag(AnimationTags.REVEAL).performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.ANSWER).assertExists()
+        onNodeWithTag(AnimationTags.NEXT).performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.POSITION).assertTextContains("3 sur ", substring = true)
+        onAllNodesWithTag(AnimationTags.ANSWER).fetchSemanticsNodes().let { assertTrue(it.isEmpty(), "next question hidden") }
+        onNodeWithTag(AnimationTags.PREVIOUS).performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.POSITION).assertTextContains("2 sur ", substring = true)
+        onAllNodesWithTag(AnimationTags.ANSWER).fetchSemanticsNodes().let { assertTrue(it.isEmpty(), "hidden again when going back") }
+        // Leaving brings the sheet back.
+        onNodeWithTag(AnimationTags.CLOSE).performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.ROOT).assertDoesNotExist()
+        onNodeWithTag(ComprendreDetailTags.TEACHING).assertExists()
     }
 
     @Test

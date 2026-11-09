@@ -105,6 +105,23 @@
     <string name="comprendre_kind_workshop">Fiche d’animation</string>
     <string name="comprendre_workshop_neutrality">L’animatrice ou l’animateur reste libre de ses choix. Cette fiche présente des faits et des débats, jamais une consigne de vote ni une position partisane.</string>
     <string name="comprendre_workshop_link">Pour un atelier : fiche d’animation (%1$d minutes)</string>
+    <!-- CO-24, étape 2 : mode animation (une diapositive à la fois, à projeter ; rien n'est enregistré). -->
+    <string name="comprendre_animation_start">Lancer le mode animation</string>
+    <string name="comprendre_animation_hint">Une question à la fois, en grand, pour projeter. La réponse s’affiche quand vous le décidez. Rien n’est enregistré.</string>
+    <string name="comprendre_animation_position">%1$d sur %2$d</string>
+    <string name="comprendre_animation_opening">Questions du parcours : %1$d. Objections du débat : %2$d.</string>
+    <string name="comprendre_animation_question">Question %1$d sur %2$d</string>
+    <string name="comprendre_animation_answer">Réponse : %1$s</string>
+    <string name="comprendre_animation_debate">Débat guidé</string>
+    <string name="comprendre_animation_objection">Objection %1$d sur %2$d</string>
+    <string name="comprendre_animation_reply">Réponse, avec sa source</string>
+    <string name="comprendre_animation_reveal">Montrer la réponse</string>
+    <string name="comprendre_animation_next">Suivant</string>
+    <string name="comprendre_animation_previous">Précédent</string>
+    <string name="comprendre_animation_close">Quitter l’animation</string>
+    <string name="comprendre_animation_end">Fin de l’animation</string>
+    <string name="comprendre_animation_end_text">Revenez à la fiche pour le bilan avec le groupe.</string>
+    <string name="comprendre_animation_keys">Au clavier ou avec une télécommande de présentation : flèche droite ou page suivante pour avancer, flèche gauche ou page précédente pour revenir, Échap pour quitter.</string>
     <!-- The end of every content: licence (D-103), verification code (S-141), « Citer ce contenu » (S-144). -->
     <string name="comprendre_license">Texte sous licence %1$s, %2$s.</string>
     <string name="comprendre_verify_code">Code de vérification : %1$s. Pour vérifier une copie reçue : « Vérifier un contenu reçu » dans « Voir », ou la page « Vérifier un contenu » du site.</string>
