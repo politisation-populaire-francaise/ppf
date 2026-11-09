@@ -145,12 +145,17 @@ class PlatformKeysTest {
         val events = signer.rootRequests.single()
         assertEquals(listOf(EventKinds.PLATFORM_KEY_CERTIFICATE, EventKinds.PLATFORM_TEAM_LIST), events.map { it.kind })
         val team = assertIs<RootRequestItem.Team>(RootRequests.read(events[1], signer.root.publicKey.hex))
-        assertEquals(listOf(editor.id.toString()), team.members.map { it.account }, "the administrator approves nothing, the single-key editor is left out")
+        // The administrator approves `decider.pacte` (permission of the queue of the petitions, D-115); the single-key editor is left out.
+        assertEquals(
+            listOf(admin.id.toString(), editor.id.toString()).sorted(),
+            team.members.map { it.account },
+            "the administrator and the editor are listed, the single-key editor is left out",
+        )
         val line = journalAfter(seq).single { it.action == "platform.ceremony_prepared" }
         assertEquals(id, line.details["request"])
         assertEquals(RootRequests.sha256(events), line.details["sha256"])
         assertEquals("1", line.details["certificates"])
-        assertEquals("1", line.details["members"])
+        assertEquals("2", line.details["members"])
         assertEquals(admin.id.toString(), line.actorId)
 
         val page = client.page(location, admin.token)
