@@ -154,7 +154,8 @@ object EditorialEngine {
         val value = raw.trim()
         if (value.isEmpty() || value in field.silentValues) return emptyList()
         return when (val spec = field.value) {
-            is ValueSpec.Single, is ValueSpec.OfficialId -> listOf(listOf(field.tagName, value))
+            // A full address with its role (FieldSpec.addressRole): ["a", "<kind>:<pubkey>:<d>", "", <role>].
+            is ValueSpec.Single, is ValueSpec.OfficialId -> listOf(listOf(field.tagName, value) + field.addressRole?.let { listOf("", it) }.orEmpty())
             is ValueSpec.Positional -> {
                 val parts = positions(value)
                 listOf(listOf(field.tagName) + if (spec.keepEmpty) parts else parts.filter { it.isNotEmpty() })
@@ -195,7 +196,8 @@ object EditorialEngine {
             val role = tag.getOrNull(3) ?: return null
             return schema.fields.firstOrNull { field ->
                 val value = field.value
-                (value is ValueSpec.Link && value.role == role) || (value is ValueSpec.InlineList && (value.item as? ValueSpec.Link)?.role == role)
+                (value is ValueSpec.Link && value.role == role) || (value is ValueSpec.InlineList && (value.item as? ValueSpec.Link)?.role == role) ||
+                    (field.addressRole == role && field.tagName == FieldSpec.ADDRESS_TAG)
             }
         }
         return schema.fields.firstOrNull { field ->

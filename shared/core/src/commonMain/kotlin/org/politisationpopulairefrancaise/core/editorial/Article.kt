@@ -75,6 +75,13 @@ enum class ArticleType(val tagValue: String) {
      * 55 minutes with a group, linked to its course and to a level, read by `core.comprendre.TeachingSheet`.
      */
     FICHE_PEDAGOGIQUE("fiche-pedagogique"),
+
+    /**
+     * A sourced follow-up of a past mobilization (AG-62 « Et après ? »): an answer of an elected official, an
+     * announcement, a retreat, a bill filed, a court decision, linked to the mobilizations it follows and to the
+     * demands, calls and chronology it concerns; read by `core.agir.followups.FollowUp`.
+     */
+    SUITE("suite"),
     ;
 
     companion object {
