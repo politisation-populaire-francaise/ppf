@@ -77,6 +77,21 @@ enum class ArticleType(val tagValue: String) {
     FICHE_PEDAGOGIQUE("fiche-pedagogique"),
 
     /**
+     * A page of « Transparence de PPF » (M34, PP-01, D-104): an instance, an important decision, the annual
+     * accounts or a report of moderation and claims, read by core.voir.TransparencyEntry.
+     */
+    TRANSPARENCE("transparence"),
+
+    /**
+     * A victory of the movement (M34, PP-03): a commitment kept, a demand met, a law changed, with its sources,
+     * read by core.voir.Victory.
+     */
+    VICTOIRE("victoire"),
+
+    /** A press release of PPF (M34, PP-04), read by core.voir.PressRelease. */
+    COMMUNIQUE("communique"),
+
+    /**
      * An official public consultation relayed by "Décider" (DE-27; core.decider.PublicConsultation): its organizer, its
      * kind, its dates and the official page where one answers; the body is the guide to answer it.
      */

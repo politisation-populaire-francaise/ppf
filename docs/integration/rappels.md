@@ -12,7 +12,7 @@
 
 ## 2. Le code commun
 
-`shared/core/.../core/reminders/ReminderStore.kt` (tables `reminder` et `reminder_plan`, fichier `Reminders.sq`, migration locale provisoire `16.sqm`) :
+`shared/core/.../core/reminders/ReminderStore.kt` (tables `reminder` et `reminder_plan`, fichier `Reminders.sq`, migration locale `17.sqm`) :
 
 | Élément | Rôle |
 |---|---|

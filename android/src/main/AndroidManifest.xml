@@ -5,6 +5,9 @@
          (network_security_config.xml). A build without server address (BuildConfig.PPF_SERVER_URL
          empty) makes no network call at all. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Whether the network is Wi-Fi and whether the data saver is on, read before any download in the background
+         (« Mes élus ont voté », D-102: « seulement en Wi-Fi » by default). Granted at install, sends nothing. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <!-- Notifications (D-130), asked only when the user enables them in Mon espace (Android 13+). -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Personal reminders (DE-28, S-98): the alarm of the next reminder is armed again after a restart of the

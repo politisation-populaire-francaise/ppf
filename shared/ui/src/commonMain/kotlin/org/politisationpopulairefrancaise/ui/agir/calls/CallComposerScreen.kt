@@ -56,6 +56,8 @@ import org.politisationpopulairefrancaise.core.agir.calls.CallSimilarity
 import org.politisationpopulairefrancaise.core.agir.calls.CallType
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
@@ -297,13 +299,15 @@ private fun ColumnScope.Form(
             }
         }
     } else {
+        // A compromised account no longer publishes (S-146): the button is greyed out and says why.
         PpfPrimaryButton(
             onClick = onSend,
             text = stringResource(if (composer.sending) Res.string.appels_sending else Res.string.appels_send),
-            enabled = composer.ready(issues),
+            enabled = LocalCanPublish.current && composer.ready(issues),
             icon = Lucide.Send,
             modifier = Modifier.testTag(CallComposerTags.SEND),
         )
+        PublishBlockedNotice(Modifier.padding(top = 8.dp))
         val reason = when {
             !CallRules.canSubmit(issues) -> Res.string.appels_blocked_issues
             !composer.charterAccepted -> Res.string.appels_blocked_charter

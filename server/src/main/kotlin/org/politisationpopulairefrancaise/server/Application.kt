@@ -17,6 +17,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.HealthStatus
 import org.politisationpopulairefrancaise.server.accounts.AccountTypes
@@ -69,6 +70,7 @@ import org.politisationpopulairefrancaise.server.editorial.EditorialTexts
 import org.politisationpopulairefrancaise.server.editorial.SignedEditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.StorePublicationPort
 import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformKeys
 import org.politisationpopulairefrancaise.server.signing.PlatformSigner
 import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.editorial.PublishedContents
@@ -78,6 +80,7 @@ import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.decider.ComparatorFreeze
+import org.politisationpopulairefrancaise.server.decider.DeciderDashboardFigures
 import org.politisationpopulairefrancaise.server.decider.ComparatorPhotosConfig
 import org.politisationpopulairefrancaise.server.decider.CompromisedAuthors
 import org.politisationpopulairefrancaise.server.decider.comparatorPhotosRoutes
@@ -119,8 +122,12 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.server.voir.DashboardService
 import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
 import org.politisationpopulairefrancaise.server.voir.VoirDatasets
+import org.politisationpopulairefrancaise.server.voir.dashboardRoutes
+import org.politisationpopulairefrancaise.server.voir.DashboardProvider
+import org.politisationpopulairefrancaise.core.voir.DashboardMetric
 import org.politisationpopulairefrancaise.server.comprendre.EditorialComprendreSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
@@ -140,6 +147,7 @@ import org.politisationpopulairefrancaise.server.urne.UrneClosureStatements
 import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
 import org.politisationpopulairefrancaise.server.urne.urneApi
 import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
+import org.politisationpopulairefrancaise.server.signing.SignerAdmin
 import org.politisationpopulairefrancaise.web.ContentVerifier
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
@@ -196,6 +204,9 @@ import javax.sql.DataSource
  *   the team back-office, off unless PPF_BACKOFFICE_ORIGIN is set (for example
  *   `https://equipe.preprod.politisation-populaire-francaise.org`; `http://localhost:8081` in development
  *   only). Its routes answer only on PPF_BACKOFFICE_PORT (default 8081), never on PORT; see [BackOfficeConfig].
+ * - PPF_SIGNER_URL, PPF_SIGNER_CLIENT_TOKEN_FILE, PPF_SIGNER_ROOT_PUBKEY: the signing service of the platform,
+ *   off unless PPF_SIGNER_URL is set; with the back-office, the page « Clés de la plateforme » and the copy of
+ *   the journal of the service (D-141); see [PlatformSignerConfig].
  * - PPF_VAPID_PRIVATE_KEY_FILE, PPF_PUSH_ALLOWED_HOSTS, PPF_PUSH_INTERNAL_URL, PPF_PUBLIC_URL: the push
  *   wake-ups (M31), off unless PPF_VAPID_PRIVATE_KEY_FILE is set, see [PushConfig].
  *
@@ -322,6 +333,10 @@ fun Application.module(
      */
     editorialPublisher: EditorialPublisher? = null,
 ) {
+    // The contents signed by a working key certified by the root for their use are platform contents (D-129,
+    // step 6, server side): accepted by the policy, and kept out of the legal register like the editorial ones.
+    @Suppress("NAME_SHADOWING")
+    val policy = policy.withPlatformKeys(platformSigner as? PlatformKeys ?: PlatformKeys.NONE)
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
     // The open export (M34, S-48): the contents of the editorial keys and the tables each pole registers.
@@ -365,7 +380,7 @@ fun Application.module(
     val teamBackOffice: BackOffice? = when {
         backOffice == null -> null
         dataSource == null -> null.also { log.warn("Back-office: ${BackOfficeConfig.ORIGIN_VARIABLE} is set but no database is configured, back-office off.") }
-        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace)
+        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace, compromised, platformSigner as? SignerAdmin)
     }
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
@@ -470,6 +485,16 @@ fun Application.module(
     // One reading of the contents of "Décider" for the site and for the freeze of the comparators (DE-16).
     val deciderSource = repository?.let { EditorialDeciderSource(it, policy) }
     val comparatorFreeze = deciderSource?.let { source -> ComparatorFreeze(source::catalog) }
+    // The figures of « Décider » in the « Tableau de bord fédérateur » (PP-07): the ballots and the public votes of the
+    // elected officials, the official readings of the relayed petitions, the candidates who signed a pact; never a person.
+    val deciderFigures = buildMap<DashboardMetric, DashboardProvider> {
+        urneStore?.let { store -> put(DashboardMetric.VOTES, DashboardProvider { store.votesByMonth() }) }
+        deciderSource?.let { source ->
+            // A provider does not suspend: the catalog (kept 30 seconds by its source) is read here, on the dispatcher of the dashboard.
+            put(DashboardMetric.SIGNATURES, DashboardProvider { runBlocking { DeciderDashboardFigures.signatures(source.catalog()) } })
+            put(DashboardMetric.COMMITMENTS, DashboardProvider { runBlocking { DeciderDashboardFigures.engagements(source.catalog()) } })
+        }
+    }
     deliberationSubmissions?.let { teamBackOffice?.queues?.register(DeliberationQueue(it)) }
     // The sessions of the validators with an abnormal pace, for the administrators (D-112, design 8).
     if (urneStore != null && teamBackOffice != null) teamBackOffice.queues.register(ValidationSessionsQueue(urneStore.dataSource))
@@ -571,6 +596,7 @@ fun Application.module(
             archivesApi(archives)
             transparencyApi(dataSource) // Requisitions answered per month only (D-077).
             exportApi(openExport) // The open export and its datasets (M34, S-48).
+            dashboardRoutes(repository?.let { DashboardService(it, extra = deciderFigures) }) // « Tableau de bord » (M34, PP-07): /api/v1/tableau-de-bord and /tableau-de-bord.
             openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
             openExport?.let { export -> verifyPages(ContentVerifier { export.check(it) }) } // « Vérifier un contenu PPF » (S-141).
             agirSpace?.let { agendaPage(it.agendaSource()) }

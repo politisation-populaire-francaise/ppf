@@ -1,0 +1,49 @@
+-- Schema version 17 to 18 (2026-11-09, after the alerts of Voir in 16.sqm): personal
+-- reminders, the private notes of the letters to one's elected officials and the requests for administrative documents,
+-- on the device (see Reminders.sq, LetterNotes.sq and DocumentRequests.sq, the reference for fresh installations; this
+-- file must stay identical to their CREATE statements).
+
+CREATE TABLE reminder (
+    id TEXT NOT NULL PRIMARY KEY,
+    owner TEXT NOT NULL,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    detail TEXT,
+    target TEXT,
+    due_at INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
+CREATE INDEX reminder_due_at ON reminder(due_at, id);
+
+CREATE INDEX reminder_owner ON reminder(owner, due_at);
+
+CREATE TABLE reminder_plan (
+    owner TEXT NOT NULL PRIMARY KEY,
+    kinds TEXT NOT NULL,
+    removed TEXT NOT NULL DEFAULT '',
+    created_at INTEGER NOT NULL
+);
+
+CREATE TABLE letter_note (
+    id TEXT NOT NULL PRIMARY KEY,
+    template TEXT NOT NULL,
+    mandate TEXT,
+    territory TEXT,
+    official TEXT,
+    sent_on INTEGER NOT NULL,
+    answered_on INTEGER
+);
+
+CREATE INDEX letter_note_template ON letter_note(template, sent_on);
+
+CREATE TABLE document_request (
+    id TEXT NOT NULL PRIMARY KEY,
+    administration TEXT NOT NULL,
+    document TEXT NOT NULL,
+    mode TEXT NOT NULL,
+    received_on INTEGER NOT NULL,
+    answered_on INTEGER,
+    refused_on INTEGER,
+    cada_on INTEGER
+);

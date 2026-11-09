@@ -51,6 +51,7 @@ import kotlin.system.exitProcess
  * those of `appels` become calls of the Agir space (appels.json), and those of `glossaire` become
  * the entries of the glossary (glossaire.json, refused if a definition, a form or the sources are
  * missing, if a form belongs to two entries or if a link names an unknown entry or content).
+ * The solidarity funds and volunteer missions of `solidarite` go to solidarite.json (SolidarityContent.kt).
  * See content/README.md for the front matter of each kind.
  * The signing key is read from the file named by PPF_CONTENT_KEY_FILE (default
  * ~/.ppf/content-example.nsec); it is created if missing. Dates come from the front matter, so
@@ -71,6 +72,7 @@ fun main(args: Array<String>) {
     bundles.forEach { bundle -> write(output.resolve(bundle.file), bundle.events.map { signer.signChecked(it) }) }
     signAgenda(content, output, keys) // content/agenda -> agenda.json (AgendaContent.kt)
     signDecider(content, output, keys, bundles.single { it.file == VOIR_BUNDLE }.events) // content/decider -> decider.json (DeciderContent.kt)
+    signSolidarity(content, output, keys) // content/solidarite -> solidarite.json (SolidarityContent.kt)
 
     checkUniqueAddresses(output)
     println("author public key (hex): ${keys.publicKey.hex}")

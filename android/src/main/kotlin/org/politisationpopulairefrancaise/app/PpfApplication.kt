@@ -11,6 +11,7 @@ import org.politisationpopulairefrancaise.core.identity.AndroidIdentityStore
 import org.politisationpopulairefrancaise.core.identity.IdentityStore
 import org.politisationpopulairefrancaise.core.local.AndroidDatabase
 import org.politisationpopulairefrancaise.core.messaging.LocalMessagingSigner
+import org.politisationpopulairefrancaise.core.notifications.NotificationCategory
 import org.politisationpopulairefrancaise.core.notifications.Notifications
 import org.politisationpopulairefrancaise.core.notifications.PushClient
 import org.politisationpopulairefrancaise.core.notifications.PushManager
@@ -18,6 +19,8 @@ import org.politisationpopulairefrancaise.core.publication.ServerPublicationPort
 import org.politisationpopulairefrancaise.core.reminders.ReminderStore
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.core.urne.HttpUrneRemote
+import org.politisationpopulairefrancaise.core.voir.parlement.OpenDataKeys
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertSource
 
 /**
  * What lives as long as the application process, not only its screen: the local database, the
@@ -78,8 +81,17 @@ class PpfApplication : Application() {
         database = AndroidDatabase.open(applicationContext)
         identityStore = AndroidIdentityStore(applicationContext)
         val notifier = AndroidSystemNotifier(applicationContext).also { it.createChannels() }
+        // « Mes élus ont voté » (VO-34): read only while « Votes et pétitions » is on; the trust of MainActivity.
+        val openDataTrust = if (BuildConfig.BUILD_TYPE == "release") OpenDataKeys.release() else OpenDataKeys.testBuilds()
+        val voteAlerts = VoteAlertSource.on(database, remote, openDataTrust) { AndroidNetwork.conditions(applicationContext) }
         // The personal reminders of the device (DE-28, S-98) reach the centre with the other novelties.
-        notifications = Notifications(database, identityStore, remote, notifier, extraSources = ReminderStore.notificationSources(database))
+        notifications = Notifications(
+            database,
+            identityStore,
+            remote,
+            notifier,
+            extraSources = listOf(NotificationCategory.VOTES to voteAlerts) + ReminderStore.notificationSources(database),
+        )
         ReminderAlarms.arm(this, database)
         val url = serverUrl
         val client = httpClient

@@ -28,6 +28,14 @@ object Permissions {
     const val LEGAL_REQUISITION: String = "legal.requisition"
 
     /**
+     * The section « Clés de la plateforme » (D-141): the working keys of the signing service, the preparation
+     * of the ceremony of the root (certificates, closing revocations, team list) and of a revocation after a
+     * compromise, the copy of the journal of the service. `super_admin` and `admin`; the root itself only
+     * signs on the owner's phone.
+     */
+    const val PLATFORM_KEYS: String = "platform.keys"
+
+    /**
      * Contact, claims and case follow-up (M30, docs/integration/contact-reclamations.md): the inbox of the team
      * (section `contact`, metadata only), assigning, priority, status, closing.
      */
@@ -91,6 +99,7 @@ enum class TeamRole(val id: String, val label: String, val permissions: Set<Stri
             Permissions.AUDIT_READ,
             Permissions.SETTINGS_MANAGE,
             Permissions.LEGAL_REQUISITION,
+            Permissions.PLATFORM_KEYS,
             Permissions.CONTACT_TRIAGE,
             Permissions.CONTACT_DATA_RIGHTS,
             Permissions.CONTACT_LEGAL_HOLD,

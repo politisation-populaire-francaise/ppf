@@ -76,3 +76,7 @@ Ne touchez à rien d'autre dans hPanel (pare-feu de hPanel, « Docker Manager »
 - Dans hPanel, page du VPS, activez les **alertes d'utilisation** (mémoire, disque) si elles sont proposées.
 - Les sauvegardes hebdomadaires gratuites de Hostinger peuvent rester actives : elles ne remplacent pas les sauvegardes chiffrées chez un autre prestataire, prévues avant la production.
 - Ne redémarrez pas, ne réinstallez pas et ne changez pas le système du serveur depuis hPanel sans m'en parler : une réinstallation efface tout.
+
+## 8. Début 2027 : les parrainages de la présidentielle
+
+Quand le décret de convocation des électeurs paraît au Journal officiel (début 2027), le Conseil constitutionnel ouvre sur data.gouv.fr le jeu de données des parrainages. Je vous donnerai alors son identifiant ; il faudra le renseigner dans la ligne `PPF_SPONSORSHIPS_DATASET=` du fichier `.env` de la préproduction puis de la production (je le fais avec vous, pas à pas). D'ici là, la ligne reste vide : rien n'est demandé à data.gouv.fr.

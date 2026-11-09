@@ -186,6 +186,16 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 5. Le **contenu masqué** est activé : dans la liste des applications ouvertes, PPF apparaît vide, et les captures d'écran sont bloquées (c'est voulu).
 6. **Effacement rapide** (à essayer en dernier, sur un compte d'essai) : il rappelle de noter la phrase de récupération, puis efface ce que PPF garde sur le téléphone ; pour retrouver le compte : Mon espace, « J'ai déjà un compte », puis la phrase.
 
+### Tester la solidarité dans « Agir » (ajouté le 8 novembre 2026)
+
+1. Ouvrez « Agir » : les cartes « Solidarité et caisses de grève » et « Je veux aider » sont maintenant ouvertes ; « En préparation » n'en garde que trois.
+2. Touchez « Solidarité et caisses de grève » : des caisses fictives marquées [EXEMPLE], chacune avec son type, son territoire, à qui elle sert et qui la gère (« organisation vérifiée par PPF » ou « n'est pas dans l'annuaire de PPF »).
+3. Dans « Près de chez moi », tapez 59000 : d'abord les caisses du Nord, puis celles qui servent partout en France. Ce que vous tapez reste sur votre appareil.
+4. Ouvrez une caisse ouverte, touchez « Donner sur la page de la caisse » : « Vous quittez PPF » nomme le site et rappelle que les fausses cagnottes existent ; « Rester sur PPF » est en premier et referme simplement la fenêtre. PPF n'affiche jamais de montant : il viendrait d'un autre site et ne peut pas être vérifié.
+5. Touchez « Voir la page de l'organisation » : la fiche de l'annuaire s'ouvre ; le retour ramène à la caisse.
+6. Onglet « Je veux aider » : cochez « Traduction » : seules les missions de traduction restent ; la phrase dessous rappelle que vos compétences restent sur votre appareil. Sur une mission, « Proposer mon aide » est grisé avec l'explication (il arrivera avec la messagerie de l'équipe, M30).
+7. Onglet « Entraide » : l'explication de ce qui se prépare (covoiturage, hébergement) et pourquoi ce n'est pas encore là.
+8. Tournez le téléphone ou élargissez la fenêtre : sur ordinateur, la liste et la page sont côte à côte.
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).
@@ -629,7 +639,7 @@ La branche principale refuse toute modification directe, toute suppression et to
 La **préproduction** est la version d'essai de PPF sur Internet, sur le vrai serveur, mais fermée au public : seuls vos appareils, reliés par un tunnel WireGuard, peuvent l'ouvrir, et elle ne contient que des données fictives [EXEMPLE]. C'est là que vous validez chaque nouveauté avant qu'elle parte en production.
 
 - **Adresse** : https://preprod.politisation-populaire-francaise.org (tunnel actif, puis identifiant `equipe` et le mot de passe ci-dessus).
-- **Mise en place**, dans l'ordre : `docs/guides/liaison-github.md` (GitHub), `docs/guides/serveur-hostinger-kvm1.md` (achat et configuration du serveur, après votre accord sur le prix), `docs/guides/wireguard-preproduction.md` (vos deux appareils).
+- **Mise en place**, dans l'ordre : `docs/guides/liaison-github.md` (GitHub), `docs/guides/serveur-hostinger-kvm1.md` (achat et configuration du serveur, après votre accord sur le prix), `docs/guides/wireguard-preproduction.md` (vos deux appareils). Avant l'ouverture au public : `docs/guides/creer-cles-equipe.md` (clé de la boîte de l'équipe et clé de l'équipe de sécurité, douze mots sur papier, avec moi dans la discussion).
 - **Mises à jour** : dès qu'un changement est accepté dans la branche principale, GitHub fabrique une nouvelle version du serveur, la signe, et la préproduction l'installe d'elle-même dans les 10 minutes. Si la nouvelle version ne démarre pas correctement, le serveur revient seul à la précédente.
 - **L'APK d'essai** se connecte tout seul à la préproduction quand le tunnel est actif sur le téléphone : fil, messages, salons et propositions passent alors par le vrai serveur, et deux téléphones peuvent échanger.
 - **La production** (le site public) ne reçoit une version qu'avec votre accord écrit, et seulement une version que vous avez vue tourner en préproduction.

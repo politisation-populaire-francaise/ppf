@@ -30,7 +30,7 @@ class SignerServiceTest {
     private fun SignerService.signed(request: SignRequest) =
         assertIs<SignOutcome.Signed>(sign(request), "expected a signature").event
 
-    private fun SignerService.draftRefusal(use: SigningUse, event: UnsignedEvent, double: Boolean = false, author: DraftAuthor? = null): String? =
+    private fun SignerService.draftRefusal(use: SigningUse, event: UnsignedEvent, double: Boolean = false, author: DraftAuthor? = f.defaultAuthor(use)): String? =
         (submitDraft(f.draft(use, event, double, author)) as? DraftOutcome.Refused)?.refusal?.code
 
     @Test
@@ -53,10 +53,12 @@ class SignerServiceTest {
         val trust = PlatformTrust.of(f.rootHex, service.certificates())
         assertTrue(trust.isPlatformContent(signed, SigningUse.EDITORIAL_VOIR))
         assertFalse(trust.isPlatformContent(signed, SigningUse.EDITORIAL_COMPRENDRE))
-        // The author of an ordinary publication may approve it alone.
+        // D-142: the author of an ordinary publication never approves it, even alone: another member reads it.
         val own = f.editorial(key, title = "[EXEMPLE] Autre")
         f.submit(service, SigningUse.EDITORIAL_VOIR, own, author = DraftAuthor(account = "alice"))
-        f.approve(service, f.alice, SigningUse.EDITORIAL_VOIR, own)
+        assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, f.approvalRefusal(service, SigningUse.EDITORIAL_VOIR, own, f.alice.approve(SigningUse.EDITORIAL_VOIR, own)))
+        assertEquals(SigningRefusals.APPROVALS_MISSING, service.refusal(f.request(SigningUse.EDITORIAL_VOIR, own)))
+        f.approve(service, f.bob, SigningUse.EDITORIAL_VOIR, own)
         service.signed(f.request(SigningUse.EDITORIAL_VOIR, own))
         assertEquals(DraftState.Signed, service.draftState(SigningUse.EDITORIAL_VOIR.id, own.idHex()))
     }
@@ -171,7 +173,7 @@ class SignerServiceTest {
         val key = f.currentKey(service, SigningUse.EDITORIAL_VOIR)!!
         val event = f.editorial(key, extra = listOf(listOf("a", "30023:${"b".repeat(64)}:personne-exemple", "", "personne")))
         val use = SigningUse.EDITORIAL_VOIR
-        assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(use, event, double = true))
+        assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(use, event, double = true, author = null))
         assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(use, event, double = true, author = DraftAuthor("", "")))
         assertEquals(SigningRefusals.MALFORMED_REQUEST, service.draftRefusal(use, event, double = true, author = DraftAuthor(pubkey = "pas une clé")))
         f.submit(service, use, event, double = true, author = DraftAuthor(account = "dan"))
@@ -202,12 +204,77 @@ class SignerServiceTest {
         // An ordinary content may ask for more than its rule; it is then fixed like any other.
         val third = f.editorial(key, title = "[EXEMPLE] Troisième")
         f.submit(service, use, third, double = true, author = DraftAuthor(account = "alice"))
-        assertEquals(SigningRefusals.DRAFT_CONFLICT, service.draftRefusal(use, third))
+        assertEquals(SigningRefusals.DRAFT_CONFLICT, service.draftRefusal(use, third, author = DraftAuthor(account = "alice")))
         assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, f.approvalRefusal(service, use, third, f.alice.approve(use, third)))
         // The options offer only the passkeys of members who may still approve.
         val options = assertIs<OptionsOutcome.Options>(service.approvalOptions(use.id, third.idHex()))
         assertEquals(listOf(f.bob.passkey.credential.id), options.credentialIds)
         assertEquals(TEST_RP_ID, options.rpId)
+    }
+
+    @Test
+    fun theAuthorNeverApprovesTheirOwnDraftEvenInASingleValidation() {
+        val service = f.ready()
+        val use = SigningUse.EDITORIAL_VOIR
+        val key = f.currentKey(service, use)!!
+        // An editorial draft names its author, in a single validation too (D-142).
+        val anonymous = f.editorial(key, title = "[EXEMPLE] Sans auteur")
+        assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(use, anonymous, author = null))
+        assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(SigningUse.EDITORIAL_COMPRENDRE, f.editorial(f.currentKey(service, SigningUse.EDITORIAL_COMPRENDRE)!!), author = null))
+        assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(use, anonymous, author = DraftAuthor("", "")))
+        assertEquals(JournalActions.DRAFT_REFUSED, service.journal(0, 10_000).last().action)
+        // Named by account: excluded from the options, refused, the others may approve.
+        val byAlice = f.editorial(key, title = "[EXEMPLE] Par alice")
+        f.submit(service, use, byAlice, author = DraftAuthor(account = "alice"))
+        assertEquals(listOf(f.bob.passkey.credential.id), assertIs<OptionsOutcome.Options>(service.approvalOptions(use.id, byAlice.idHex())).credentialIds)
+        assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, f.approvalRefusal(service, use, byAlice, f.alice.approve(use, byAlice)))
+        assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, service.journal(0, 10_000).last().code)
+        assertFalse(assertIs<DraftState.Pending>(service.draftState(use.id, byAlice.idHex())).status.ready)
+        f.approve(service, f.bob, use, byAlice)
+        service.signed(f.request(use, byAlice))
+        // Named by Nostr key: the same.
+        val byBob = f.editorial(key, title = "[EXEMPLE] Par bob")
+        f.submit(service, use, byBob, author = DraftAuthor(pubkey = f.bob.nostr.publicKey.hex))
+        assertEquals(SigningRefusals.AUTHOR_CANNOT_APPROVE, f.approvalRefusal(service, use, byBob, f.bob.approve(use, byBob)))
+        // The only member allowed is the author: nobody may approve.
+        val lonely = SignerFixture()
+        val alone = lonely.open()
+        lonely.certifyAll(alone)
+        lonely.loadTeam(alone, lonely.alice.member())
+        val own = lonely.editorial(lonely.currentKey(alone, use)!!)
+        lonely.submit(alone, use, own, author = DraftAuthor(account = "alice"))
+        assertEquals(SigningRefusals.NOT_ALLOWED_FOR_USE, (alone.approvalOptions(use.id, own.idHex()) as OptionsOutcome.Refused).refusal.code)
+        // The other human uses may still go without author in a single validation: the deciding member approves.
+        val sheet = UnsignedEvent(
+            f.currentKey(service, SigningUse.AGIR_ORGANISATIONS)!!, f.now(), EventKinds.LONG_FORM_ARTICLE,
+            listOf(listOf("d", "organisation-sans-auteur"), listOf("title", "[EXEMPLE] Organisation"), listOf("ppf-type", "organisation")), "[EXEMPLE]",
+        )
+        f.submit(service, SigningUse.AGIR_ORGANISATIONS, sheet, author = null)
+        f.approve(service, f.carole, SigningUse.AGIR_ORGANISATIONS, sheet)
+        service.signed(f.request(SigningUse.AGIR_ORGANISATIONS, sheet))
+    }
+
+    @Test
+    fun anApprovalOfTheAuthorRecordedBeforeIsNeverCountedAtSignature() {
+        val service = f.ready()
+        val use = SigningUse.EDITORIAL_VOIR
+        val key = f.currentKey(service, use)!!
+        val event = f.editorial(key, title = "[EXEMPLE] Approuvé par son auteur")
+        // A journal written by an older version: the author recorded as the approval of a single validation.
+        val journal = SignerJournal.open(f.dir, f.now())
+        val fields = JournalFields(use = use.id, event = event.idHex(), eventCreatedAt = event.createdAt, key = key, doubleValidation = false, authorAccount = "alice")
+        journal.append(f.now(), JournalActions.DRAFT_SUBMITTED, fields)
+        journal.append(f.now(), JournalActions.APPROVAL_RECORDED, fields.copy(approvers = listOf("alice"), credential = f.alice.passkey.credential.id))
+        journal.close()
+        val reopened = f.open()
+        f.submit(reopened, use, event, author = DraftAuthor(account = "alice"))
+        val state = assertIs<DraftState.Pending>(reopened.draftState(use.id, event.idHex())).status
+        assertTrue(state.approvals.isEmpty())
+        assertFalse(state.ready)
+        assertEquals(SigningRefusals.APPROVALS_MISSING, reopened.refusal(f.request(use, event)))
+        f.approve(reopened, f.bob, use, event)
+        reopened.signed(f.request(use, event))
+        assertEquals(listOf("bob"), reopened.journal(0, 10_000).last().approvers)
     }
 
     @Test
@@ -233,7 +300,7 @@ class SignerServiceTest {
             assertEquals(false, line.doubleValidation)
             assertEquals(DraftState.Unknown, service.draftState(use.id, event.idHex()))
             // The double validation still needs the author.
-            assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(use, event, double = true))
+            assertEquals(SigningRefusals.AUTHOR_REQUIRED, service.draftRefusal(use, event, double = true, author = null))
         }
         // Asked with its author, it goes through the two approvals.
         val event = implicating.first()
@@ -296,7 +363,7 @@ class SignerServiceTest {
         assertNull(reopened.approvalView(use.id, event.idHex())?.event)
         assertEquals(SigningRefusals.UNKNOWN_DRAFT, f.approvalRefusal(reopened, use, event, f.bob.approve(use, event)))
         // The rule survives: the server cannot lower it by submitting the draft again.
-        assertEquals(SigningRefusals.DRAFT_CONFLICT, reopened.draftRefusal(use, event))
+        assertEquals(SigningRefusals.DRAFT_CONFLICT, reopened.draftRefusal(use, event, author = DraftAuthor(account = "dan")))
         f.submit(reopened, use, event, double = true, author = DraftAuthor(account = "dan"))
         assertTrue(assertIs<DraftState.Pending>(reopened.draftState(use.id, event.idHex())).status.contentKnown)
         f.approve(reopened, f.bob, use, event)

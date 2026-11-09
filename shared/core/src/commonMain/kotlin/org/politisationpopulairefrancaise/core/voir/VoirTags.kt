@@ -82,6 +82,21 @@ object VoirTags {
     // Rights of reply.
     const val RESPONDENT = "ppf-respondent"
 
+    // « Transparence de PPF » (PP-01, D-104).
+    const val RUBRIC = "ppf-rubric"
+    const val INSTANCE = "ppf-instance"
+    const val SEAT = "ppf-seat"
+    const val TALLY = "ppf-tally"
+    const val YEAR = "ppf-year"
+    const val ACCOUNT_LINE = "ppf-account-line"
+    const val APPROVED = "ppf-approved"
+    const val FIGURE = "ppf-figure"
+
+    // « Nos victoires » (PP-03).
+    const val VICTORY = "ppf-victory"
+    /** From a victory to the blocks of Voir it concerns (a promise kept, a law changed). */
+    const val ROLE_RELATED = "lie"
+
     /** Every tag named [name], as its fields after the name, blank fields read as null. */
     fun SignedEvent.fields(name: String): List<List<String?>> =
         tags.filter { it.size >= 2 && it[0] == name }.map { tag -> tag.drop(1).map { field -> field.trim().takeIf { it.isNotEmpty() } } }

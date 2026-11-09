@@ -2,7 +2,7 @@
 -- docs/integration/rappels.md). Programmed and kept on the device only: the server never knows
 -- that a reminder exists, for which election or which commune. The notification centre (M31)
 -- shows each reminder once its time has come, like any other novelty of the device.
--- Added in schema version 17: existing databases get it through migrations/16.sqm.
+-- Added in schema version 18: existing databases get it through migrations/17.sqm.
 
 -- One reminder: when it is due, what it says (texts written by the space that planned it, in the
 -- language of the interface) and where it leads. [owner] names what planned it, such as

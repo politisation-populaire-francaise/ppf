@@ -9,7 +9,9 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
+import org.politisationpopulairefrancaise.server.signing.SignerAdmin
 import org.slf4j.Logger
 import javax.sql.DataSource
 import kotlin.time.Duration
@@ -46,17 +48,28 @@ object BackOfficeSpace {
      * runs (and the verified organisations it knows, for the validators), and the periodic task. The poles
      * register their own queues on [BackOffice.queues] right after, in `Application.module`.
      */
-    fun start(application: Application, dataSource: DataSource, setup: BackOfficeSetup, agir: AgirSpace?): BackOffice {
+    fun start(
+        application: Application,
+        dataSource: DataSource,
+        setup: BackOfficeSetup,
+        agir: AgirSpace?,
+        compromised: CompromisedAccounts? = null,
+        signer: SignerAdmin? = null,
+    ): BackOffice {
         val backOffice = BackOffice(
             config = setup.config,
             dataSource = dataSource,
             isVerifiedOrganisation = agir?.verified?.let { verified -> verified::isVerified },
             verifiedOrganisations = agir?.verified?.let { verified -> verified::keys },
             clock = setup.clock,
+            signer = signer,
         )
-        agir?.let { backOffice.queues.register(AgirHeldQueue(it)) }
+        // A content signed after its key was declared compromised can only be refused (S-146).
+        agir?.let { backOffice.queues.register(AgirHeldQueue(it, compromised)) }
         val interval = setup.config.maintenanceInterval
         if (interval.isPositive()) BackOfficeMaintenance(backOffice).start(application, interval, application.log)
+        // The journal of the signing service is copied into the journal of the team, at start then every 10 minutes (D-141).
+        if (signer != null && interval.isPositive()) SignerJournalCopy(backOffice, signer).start(application, SignerJournalCopy.INTERVAL, application.log)
         application.log.info("Back-office: served on port ${setup.config.port} only, for ${setup.config.origin}.")
         return backOffice
     }

@@ -13,6 +13,8 @@ import org.politisationpopulairefrancaise.core.agir.AgirFormats
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.core.publication.HeldStatus
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts.HeldVerdict
 import org.politisationpopulairefrancaise.server.agir.AgirCategory
 import org.politisationpopulairefrancaise.server.agir.AgirRules
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
@@ -34,8 +36,14 @@ import org.politisationpopulairefrancaise.web.mobilizationTypeLabels
  * - no edit: the author publishes a new version.
  *
  * Shown to the team: the content in question and the pseudonymous key of its author, nothing else.
+ * When that key has since been declared compromised (S-146, decision of the team lead of 8 November 2026),
+ * a content signed on or after "compromised since" can only be refused; one signed before stays, with a
+ * visible mention.
  */
-class AgirHeldQueue(private val space: AgirSpace) : BackOfficeQueue {
+class AgirHeldQueue(
+    private val space: AgirSpace,
+    private val compromised: CompromisedAccounts? = null,
+) : BackOfficeQueue {
     override val id: String = ID
     override val title: String = BackOfficeTexts.AGIR_HELD_TITLE
     override val viewPermission: String = Permissions.queueDecide(ID)
@@ -58,6 +66,21 @@ class AgirHeldQueue(private val space: AgirSpace) : BackOfficeQueue {
         }
         val event = held.event
         html.h1 { +(event.firstTagValue(AgirFormats.TAG_TITLE) ?: BackOfficeTexts.AGIR_UNTITLED) }
+        when (val verdict = verdictOf(event)) {
+            is HeldVerdict.CreatedAfter -> html.div(classes = "bo-notice") {
+                attributes["role"] = "alert"
+                +COMPROMISED_AFTER
+                +" "
+                dateTime(verdict.since)
+            }
+            is HeldVerdict.CreatedBefore -> html.div(classes = "bo-notice") {
+                attributes["role"] = "status"
+                +COMPROMISED_BEFORE
+                +" "
+                dateTime(verdict.since)
+            }
+            HeldVerdict.Clear -> Unit
+        }
         if (AgirRules.callTypeOf(event) == AgirFormats.CALL_TYPE_WITNESSES) {
             html.div(classes = "bo-notice bo-notice-warning") { +BackOfficeTexts.AGIR_WITNESSES_ALWAYS_REVIEWED }
         }
@@ -102,14 +125,15 @@ class AgirHeldQueue(private val space: AgirSpace) : BackOfficeQueue {
     override fun actions(itemId: String): List<QueueAction> {
         val held = space.queue.find(itemId) ?: return emptyList()
         if (held.status != HeldStatus.PENDING) return emptyList()
-        return listOf(
-            QueueAction(APPROVE, BackOfficeTexts.AGIR_APPROVE, viewPermission, sensitive = true),
-            QueueAction(REJECT, BackOfficeTexts.AGIR_REJECT, viewPermission, reasonRequired = true, sensitive = true),
-        )
+        val reject = QueueAction(REJECT, BackOfficeTexts.AGIR_REJECT, viewPermission, reasonRequired = true, sensitive = true)
+        if (verdictOf(held.event) is HeldVerdict.CreatedAfter) return listOf(reject)
+        return listOf(QueueAction(APPROVE, BackOfficeTexts.AGIR_APPROVE, viewPermission, sensitive = true), reject)
     }
 
     override fun perform(itemId: String, action: String, reason: String?, actor: TeamActor): ActionOutcome = when (action) {
-        APPROVE -> when (val decision = space.approve(itemId)) {
+        APPROVE -> if (space.queue.find(itemId)?.event?.let(::verdictOf) is HeldVerdict.CreatedAfter) {
+            ActionOutcome.Refused(REFUSED_COMPROMISED)
+        } else when (val decision = space.approve(itemId)) {
             is HeldDecision.Approved -> ActionOutcome.Done
             HeldDecision.NotFound -> ActionOutcome.NotFound
             is HeldDecision.AlreadyDecided -> {
@@ -143,7 +167,7 @@ class AgirHeldQueue(private val space: AgirSpace) : BackOfficeQueue {
             title = event.firstTagValue(AgirFormats.TAG_TITLE) ?: BackOfficeTexts.AGIR_UNTITLED,
             receivedAt = held.receivedAt,
             deadline = deadline,
-            summary = listOfNotNull(kindLabel(event), event.firstTagValue(AgirFormats.TAG_TERRITORY)).joinToString(", "),
+            summary = listOfNotNull(kindLabel(event), event.firstTagValue(AgirFormats.TAG_TERRITORY), COMPROMISED_SHORT.takeIf { verdictOf(event) != HeldVerdict.Clear }).joinToString(", "),
         )
     }
 
@@ -153,11 +177,19 @@ class AgirHeldQueue(private val space: AgirSpace) : BackOfficeQueue {
         else -> BackOfficeTexts.AGIR_OTHER
     }
 
+    private fun verdictOf(event: SignedEvent): HeldVerdict = compromised?.heldVerdict(event.pubkey, event.createdAt) ?: HeldVerdict.Clear
+
     private fun npubOf(hex: String): String = runCatching { PublicKey.fromHex(hex).npub }.getOrDefault(hex)
 
     companion object {
         const val ID: String = "agir.held"
         const val APPROVE: String = "approve"
         const val REJECT: String = "reject"
+
+        // French texts of the compromised accounts (S-146), shown to the team.
+        const val COMPROMISED_SHORT: String = "compte de l’auteur déclaré compromis"
+        const val COMPROMISED_AFTER: String = "Signé après que le compte de son auteur a été déclaré compromis : ce contenu ne peut qu’être refusé. Compromis depuis le"
+        const val COMPROMISED_BEFORE: String = "Le compte de son auteur a été déclaré compromis, mais ce contenu a été signé avant. Compromis depuis le"
+        const val REFUSED_COMPROMISED: String = "Ce contenu a été signé après la compromission du compte de son auteur : refusez-le avec un motif."
     }
 }

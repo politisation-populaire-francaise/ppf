@@ -187,8 +187,19 @@ class ImporterTest {
         assertFailsWith<DownloadException> { downloader.download("https://example.org/data.zip", file) }
         assertFailsWith<DownloadException> { downloader.download("http://data.assemblee-nationale.fr/x.zip", file) }
         assertFailsWith<DownloadException> { downloader.get("https://data.europarl.europa.eu.example.org/api", throttle = false) }
-        assertEquals(setOf("data.assemblee-nationale.fr", "www.senat.fr", "data.senat.fr", "data.europarl.europa.eu"), ALLOWED_HOSTS)
-        listOf(OfficialSources.AMO10, OfficialSources.SCRUTINS, OfficialSources.DOSSIERS, OfficialSources.SENATEURS, OfficialSources.EUROPARL_API).forEach {
+        assertEquals(
+            setOf(
+                "data.assemblee-nationale.fr", "www.senat.fr", "data.senat.fr", "data.europarl.europa.eu",
+                "www.data.gouv.fr", "static.data.gouv.fr", // VO-37
+                "barometre.assemblee-nationale.fr", // VO-36
+            ),
+            ALLOWED_HOSTS,
+            "every host is in infra/EGRESS.md",
+        )
+        listOf(
+            OfficialSources.AMO10, OfficialSources.SCRUTINS, OfficialSources.DOSSIERS, OfficialSources.SENATEURS, OfficialSources.EUROPARL_API,
+            OfficialSources.DATA_GOUV_API, OfficialSources.BAROMETER_LAWS, OfficialSources.BAROMETER_MEASURES,
+        ).forEach {
             assertTrue(java.net.URI.create(it).host in ALLOWED_HOSTS && it.startsWith("https://"))
         }
     }

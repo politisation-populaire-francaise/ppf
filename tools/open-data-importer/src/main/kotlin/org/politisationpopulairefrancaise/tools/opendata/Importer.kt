@@ -4,6 +4,7 @@ import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.voir.application.ApplicationFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.Ballot
 import org.politisationpopulairefrancaise.core.voir.parlement.BallotsPackage
 import org.politisationpopulairefrancaise.core.voir.parlement.Chamber
@@ -16,6 +17,7 @@ import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentIndex
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentWeekFormat
 import org.politisationpopulairefrancaise.core.voir.parlement.historyPackage
+import org.politisationpopulairefrancaise.core.voir.parrainages.SponsorshipsFormat
 import java.nio.file.AtomicMoveNotSupportedException
 import java.nio.file.Files
 import java.nio.file.Path
@@ -52,7 +54,8 @@ class GuardException(message: String) : Exception(message)
 /**
  * One import: reads the sources of [only] and the history sources of [history], keeps the members,
  * ballots and history of the other sources from the previous set in [out], checks the new set against the previous one ([ImportGuard]), writes the
- * packages then the signed index. Nothing in [out] changes unless everything succeeded; the logs give
+ * packages then the signed index. Nothing in [out] changes unless everything succeeded (a source apart from the
+ * Parliament that fails keeps its previous packages without stopping the rest, see [apart]); the logs give
  * numbers and package names only.
  */
 class Importer(
@@ -63,6 +66,10 @@ class Importer(
     /** The history sources to rebuild (none by default: the history is imported apart, `--history`). */
     private val history: Set<HistorySourceId> = emptySet(),
     private val log: (String) -> Unit = ::println,
+    /** The presentations of the presidential election (VO-37, Sponsorships.kt); otherwise the previous package is kept. */
+    private val sponsorships: Boolean = false,
+    /** The application of the laws (VO-36, Application.kt), one package per legislature; otherwise the previous ones are kept. */
+    private val application: Boolean = false,
 ) {
     private val json = ParliamentFormat.json
 
@@ -83,6 +90,30 @@ class Importer(
     }
 
     private class Previous(val event: SignedEvent?, val index: ParliamentIndex?, val members: MembersPackage?)
+
+    /**
+     * A source apart from the Parliament: the presentations of the presidential election (VO-37) and the application
+     * of the laws (VO-36). Whatever goes wrong with it (download, guard, unreadable file) never stops the import of
+     * the Assemblée, the Sénat and the European Parliament: its previous packages stay served as they were, and the
+     * log says why (numbers and codes only, never a value of the data for an unexpected error).
+     */
+    private fun <T> apart(name: String, block: () -> T?): T? = try {
+        block()
+    } catch (e: GuardException) {
+        log("$name refused: ${e.message}; its previous package is kept")
+        null
+    } catch (e: DownloadException) {
+        log("$name download failed: ${e.message}; its previous package is kept")
+        null
+    } catch (e: UnreadableSourceException) {
+        log("$name unreadable: ${e.message}; its previous package is kept")
+        null
+    } catch (e: Exception) {
+        log("$name failed (${e::class.simpleName}); its previous package is kept")
+        null
+    }
+
+    private fun isApart(name: String): Boolean = name == SponsorshipsFormat.PACKAGE_2027 || name.startsWith(ApplicationFormat.PACKAGE_PREFIX)
 
     private fun previous(): Previous {
         val indexFile = out.resolve(INDEX_FILE)
@@ -204,19 +235,51 @@ class Importer(
         histories.values.forEach { (packages, _) -> files.putAll(packages) }
         // « Cette semaine au Parlement » (Week.kt) comes with the daily sources; `--history` alone keeps the previous one.
         if (only.isNotEmpty()) files[ParliamentWeekFormat.PACKAGE] = WeekImport(sources, only, out, log).bytes()
+        // The sources apart from the Parliament never stop the import of the Parliament (see [apart]).
+        if (sponsorships) {
+            apart("sponsorships") {
+                val before = previous.index?.packageRef(SponsorshipsFormat.PACKAGE_2027)?.let { ref -> readPackage(ref)?.let { SponsorshipsFormat.read(it.decodeToString())?.sponsorships?.size } }
+                SponsorshipsImport(sources, log).bytes(before)
+            }?.let { files[SponsorshipsFormat.PACKAGE_2027] = it }
+        }
+        var applicationImported = false
+        if (application) {
+            apart("application of the laws") {
+                val before = { legislature: Int ->
+                    previous.index?.packageRef(ApplicationFormat.packageName(legislature))?.let { ref -> readPackage(ref)?.let { ApplicationFormat.read(it.decodeToString())?.laws?.size } }
+                }
+                ApplicationImport(sources, log).files(before)
+            }?.let {
+                files.putAll(it)
+                applicationImported = true
+            }
+        }
         val refreshedChambers = ballots.keys
         val keptRefs = previous.index?.packages.orEmpty().filter { ref ->
             ref.name !in files &&
                 Chamber.entries.none { it in refreshedChambers && ref.name.startsWith(it.ballotsPrefix + "-") } &&
                 histories.keys.none { ref.name.startsWith(it.packagePrefix) }
-        }.onEach { ref -> readPackage(ref) ?: throw UnreadableSourceException("previous package ${ref.name} is damaged; import every source") }
+        }.filter { ref ->
+            when {
+                readPackage(ref) != null -> true
+                // A damaged package apart from the Parliament is left out, never a reason to stop the import.
+                isApart(ref.name) -> {
+                    log("previous package ${ref.name} is damaged; left out")
+                    false
+                }
+                else -> throw UnreadableSourceException("previous package ${ref.name} is damaged; import every source")
+            }
+        }
 
         val refs = (files.map { (name, bytes) -> PackageRef(name, ParliamentFormat.sha256Hex(bytes), bytes.size.toLong()) } + keptRefs).sortedBy { it.name }
         val sourcesOfIndex = SourceId.entries.mapNotNull { source ->
             if (source in only) DataSource(source.id, source.sourceName, source.url, source.licence, sources.today) else previous.index?.source(source.id)
         } + HistorySourceId.entries.mapNotNull { source ->
             if (source in history) DataSource(source.id, source.sourceName, source.url, source.licence, sources.today) else previous.index?.source(source.id)
-        }
+        } + listOfNotNull(
+            if (SponsorshipsFormat.PACKAGE_2027 in files) SponsorshipsImport.dataSource(sources.today) else previous.index?.source(SponsorshipsFormat.SOURCE_ID),
+            if (applicationImported) ApplicationImport.dataSource(sources.today) else previous.index?.source(ApplicationFormat.SOURCE_ID),
+        )
         val index = ParliamentIndex(example = example, importedOn = sources.today, sources = sourcesOfIndex, packages = refs)
         val unsigned = ParliamentFormat.indexEvent(keys.publicKey, index, sources.createdAt)
         // The same index as before keeps its event (and signature): two identical imports give the same bytes.

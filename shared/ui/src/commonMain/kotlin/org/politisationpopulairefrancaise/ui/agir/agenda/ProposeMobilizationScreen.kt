@@ -51,6 +51,8 @@ import org.politisationpopulairefrancaise.core.agir.agenda.DraftProblem
 import org.politisationpopulairefrancaise.core.agir.agenda.Mobilization
 import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationType
 import org.politisationpopulairefrancaise.core.signing.EventSigner
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
@@ -356,6 +358,7 @@ internal fun ProposeMobilizationScreen(
                         PpfPrimaryButton(onCreateAccount, stringResource(Res.string.agenda_create_account), Modifier.testTag(ProposeTags.CREATE_ACCOUNT))
                     }
                 } else {
+                    // A compromised account no longer publishes (S-146): the button is greyed out and says why.
                     PpfPrimaryButton(
                         onClick = {
                             scope.launch {
@@ -364,10 +367,11 @@ internal fun ProposeMobilizationScreen(
                             }
                         },
                         text = stringResource(if (composer.sending) Res.string.agenda_sending else Res.string.agenda_send),
-                        enabled = composer.ready(problems),
+                        enabled = LocalCanPublish.current && composer.ready(problems),
                         icon = Lucide.Send,
                         modifier = Modifier.testTag(ProposeTags.SEND),
                     )
+                    PublishBlockedNotice(Modifier.padding(top = 8.dp))
                 }
                 Blockers(problems, composer.charterAccepted, started = !draft.isBlank)
                 Spacer(Modifier.height(24.dp))

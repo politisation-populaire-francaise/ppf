@@ -6,6 +6,7 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonArray
 import kotlinx.serialization.json.JsonNull
 import kotlinx.serialization.json.JsonPrimitive
+import org.politisationpopulairefrancaise.core.platform.RootRequests
 import java.io.ByteArrayOutputStream
 import java.nio.ByteBuffer
 import java.nio.channels.FileChannel
@@ -234,4 +235,13 @@ object JournalActions {
     const val KEY_RETIRED: String = "key.retired"
     const val CERTIFICATE_STORED: String = "certificate.stored"
     const val TEAM_LIST_STORED: String = "team_list.stored"
+
+    /**
+     * A root request kept for the owner's phone (D-141): `event` holds its hash ([RootRequests.sha256]), `d`
+     * its id and `code` the number of its events; never the events themselves.
+     */
+    const val ROOT_REQUEST_CREATED: String = "root_request.created"
+
+    /** A root request refused (the code says why). */
+    const val ROOT_REQUEST_REFUSED: String = "root_request.refused"
 }

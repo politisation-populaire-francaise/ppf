@@ -13,6 +13,9 @@ import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
+import org.politisationpopulairefrancaise.core.voir.PressRelease
+import org.politisationpopulairefrancaise.core.voir.TransparencyEntry
+import org.politisationpopulairefrancaise.core.voir.Victory
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
 import org.politisationpopulairefrancaise.core.voir.VoirItem
 import java.util.IdentityHashMap
@@ -35,14 +38,34 @@ fun FlowContent.voirBlockPreview(draft: UnsignedEvent, published: List<SignedEve
     val catalog = VoirCatalog.from(others + article)
     val reply = catalog.replies.firstOrNull { it.article.address == article.address }
     val item = itemAt(catalog, reply?.target ?: article.address)
-    if (item == null && reply == null) return false
+    // A page of « Transparence de PPF » (PP-01) is not a block of the axes: it is shown as on /transparence.
+    val transparency = TransparencyEntry.from(article)
+    // « Nos victoires » (PP-03): shown as on /victoires.
+    val victory = Victory.from(article)
+    // « Espace presse » (PP-04): a press release as on /presse.
+    val release = PressRelease.from(article)
+    if (item == null && reply == null && transparency == null && victory == null && release == null) return false
     DIV(attributesMapOf("class", "voir-preview"), HeadingShift(consumer, headingOffset)).visit {
-        if (item != null) voirItemBody(item, catalog) else repliesSection(listOfNotNull(reply), offerReply = false)
+        when {
+            item != null -> voirItemBody(item, catalog)
+            reply != null -> repliesSection(listOf(reply), offerReply = false)
+            transparency != null -> transparencyEntryBody(transparency)
+            victory != null -> victoryBody(victory, catalog)
+            release != null -> pressReleaseBody(release)
+        }
     }
     return true
 }
 
 private val NO_SIGNATURE: String = "0".repeat(128)
+
+/**
+ * A body of Markdown whose headings move down [levels] levels (« ## » becomes h4 with 2), under the title of an
+ * entry of a page that lists several contents (transparency, victories, press releases).
+ */
+internal fun FlowContent.markdownBelow(source: String, levels: Int) {
+    DIV(attributesMapOf("class", "entry-body"), HeadingShift(consumer, levels)).visit { markdown(source) }
+}
 
 /** The content of [catalog] at [address], whatever its kind. */
 private fun itemAt(catalog: VoirCatalog, address: ContentAddress): VoirItem? = sequence {

@@ -1,7 +1,7 @@
 -- Demander un document administratif (DE-31): the requests the person sent herself or himself, noted on the device only
 -- so that it counts the deadlines (one month for the administration, two months to ask the CADA). Never sent, never
 -- published from here; erased by the quick erase (S-44).
--- Added in schema version 17: existing databases get it through migrations/16.sqm.
+-- Added in schema version 18: existing databases get it through migrations/17.sqm.
 
 -- One request: to whom, which document, how (courriel, copie, consultation), and the days, in days since 1970.
 CREATE TABLE document_request (

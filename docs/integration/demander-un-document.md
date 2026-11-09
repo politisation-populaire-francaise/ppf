@@ -34,7 +34,7 @@ Ma Dada (madada.fr), projet de l'association OpenKnowledge France, n'est pas une
 
 ## 3. Données et protections
 
-- Table `document_request` sur l'appareil (migration locale provisoire `16.sqm`, avec les rappels et les notes des courriers) : l'administration, le document, la façon, et quatre jours (réception, document reçu, refus écrit, saisine de la CADA). Le texte de la demande n'est jamais gardé.
+- Table `document_request` sur l'appareil (migration locale `17.sqm`, avec les rappels et les notes des courriers) : l'administration, le document, la façon, et quatre jours (réception, document reçu, refus écrit, saisine de la CADA). Le texte de la demande n'est jamais gardé.
 - Partie `decider-documents` de l'effacement rapide (S-44). Registre des données : une ligne.
 - Une demande peut révéler un engagement (un permis contesté, une enquête) : rien n'est envoyé, ni à PPF ni à personne ; le serveur ignore qu'une demande existe.
 

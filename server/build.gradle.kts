@@ -73,6 +73,9 @@ dependencies {
     implementation(libs.bouncycastle.bcprov)
     // Verification of the passkeys and security keys of the team back-office (WebAuthn, D-120).
     implementation(libs.webauthn4j.core)
+    // The QR code of the ceremony of the root, drawn as an inline SVG by the back-office (D-141): ZXing core,
+    // Apache 2.0, pure Java, no network, no transitive dependency (the same entry as the Décider pole).
+    implementation(libs.zxing.core)
 
     // The development server and the tests of /api/v1/parlement run the example import (fictional data).
     testImplementation(project(":tools:open-data-importer"))

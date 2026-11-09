@@ -69,6 +69,7 @@ import org.politisationpopulairefrancaise.ui.endirect.EnDirectScreen
 import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.VoirScreen
 import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentState
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertCodes
 import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentWeekSlot
 import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentState
 import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentWeekState
@@ -147,6 +148,7 @@ import org.politisationpopulairefrancaise.ui.decider.rememberDeciderReminders
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
+import org.politisationpopulairefrancaise.core.social.CommunauteDeviceData
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
 import org.politisationpopulairefrancaise.core.reminders.ReminderStore
 import org.politisationpopulairefrancaise.core.decider.DocumentRequestStore
@@ -224,8 +226,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val accountSession = rememberAccountSession(dependencies.identityStore, remote = dependencies.remote, onSignOut = {
         voting.forget()
         contentLibrary.clearFollowed()
-        messaging.forgetAll()
-        groupsLibrary.clearMemberships()
+        // Awaited to the end: the conversations and the joined rooms are really gone when the keys are.
+        messaging.forgetAllAndWait()
+        groupsLibrary.clearMembershipsAndWait()
         agendaLibrary.forgetUser()
         callsLibrary.clearResponses()
         // The notifications go back to the most protective settings and the server forgets the wake-ups.
@@ -242,6 +245,13 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         accountSession.signOut()
     }
     RegisterErasable(dependencies, "agir-rally-point") { help.clearRallyPoint() }
+    // Communauté (S-44): the messages and checked contacts, the joined rooms, the notifications and push registrations.
+    dependencies.database?.let { database ->
+        val communaute = remember(database) { CommunauteDeviceData(database) }
+        RegisterErasable(dependencies, communaute.messaging)
+        RegisterErasable(dependencies, communaute.groups)
+        RegisterErasable(dependencies, communaute.notifications)
+    }
     // « Comprendre » (S-44): progress of the courses, chosen commune and directory packages, department packages of the territories.
     dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
     // Décider: the voting tokens, pending requests and choices of the device (S-44).
@@ -268,6 +278,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         voirState.forgetFollows()
         revendicationViews.reset()
         voirRequests.forget()
+        parliamentState.myVotes.forgetOnScreen()
+        parliamentState.sponsorships.forgetOnScreen()
+        parliamentState.application.forgetOnScreen()
     }
     // "Décider": the open page and the follows survive a visit to another space.
     val deciderState = rememberDeciderState(dependencies)
@@ -329,6 +342,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     navigate(Space.MESSAGES)
                 } else if (entry.target == AccountAlerts.MY_SPACE_TARGET) {
                     navigate(Space.MON_ESPACE)
+                } else if (entry.target == VoteAlertCodes.TARGET) {
+                    // « Mes élus ont voté » (VO-34), in the Parliament of « Voir ».
+                    parliamentState.openMyVotes()
+                    navigate(Space.VOIR)
                 } else if (entry.target?.startsWith(DeciderRemindersState.ELECTION_TARGET) == true) {
                     val id = entry.target.orEmpty().removePrefix(DeciderRemindersState.ELECTION_TARGET)
                     contentLibrary.decider.elections.firstOrNull { it.election.id == id }?.let { deciderState.open(DeciderDestination.Election(it.address)) }
