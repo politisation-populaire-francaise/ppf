@@ -373,7 +373,7 @@
     <string name="decider_document_advice">Envoyez-la vous-même, par courriel ou par lettre recommandée avec accusé de réception : les délais partent du jour où l’administration la reçoit. PPF n’envoie rien et ne garde pas ce texte.</string>
     <string name="decider_document_copy">Copier la demande</string>
     <string name="decider_document_copied">Demande copiée : collez-la dans votre courriel ou votre lettre.</string>
-    <string name="decider_document_madada_text">Autre possibilité : Ma Dada, un site associatif, envoie la demande à votre place et publie la demande et la réponse.</string>
+    <string name="decider_document_madada_text">Autre possibilité : Ma Dada, un site associatif, vous aide à formuler la demande et publie tous les échanges (demande, réponse, documents). Pas pour un document personnel.</string>
     <string name="decider_document_madada">Passer par Ma Dada</string>
     <string name="decider_documents_mine">Mes demandes</string>
     <string name="decider_documents_mine_private">Notées sur cet appareil seulement, pour compter les délais. Rien n’est envoyé, et l’effacement rapide les efface.</string>

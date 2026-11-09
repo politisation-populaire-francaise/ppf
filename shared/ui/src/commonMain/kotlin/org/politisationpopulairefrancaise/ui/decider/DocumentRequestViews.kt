@@ -123,7 +123,7 @@ object DocumentRequestTags {
 /** The CADA's site, where a referral is made online (opened after « Vous quittez PPF »). */
 internal const val CADA_URL: String = "https://www.cada.fr"
 
-/** Ma Dada, an associative site that sends requests for documents and publishes them with their answers. */
+/** Ma Dada (OpenKnowledge France), an associative site that helps to word requests and publishes every exchange. */
 internal const val MADADA_URL: String = "https://madada.fr"
 
 private val DocumentAccessMode.label: StringResource get() = when (this) {
