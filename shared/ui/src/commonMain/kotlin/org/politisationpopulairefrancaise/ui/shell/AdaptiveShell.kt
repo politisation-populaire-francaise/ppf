@@ -149,6 +149,7 @@ import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
 import org.politisationpopulairefrancaise.core.reminders.ReminderStore
+import org.politisationpopulairefrancaise.core.decider.DocumentRequestStore
 import org.politisationpopulairefrancaise.core.decider.LetterNoteStore
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.notifications.NotificationCenterScreen
@@ -249,6 +250,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { ReminderStore(database) }) }
     // Décider: the private notes of the letters sent to one's elected officials (DE-09, D-119).
     dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { LetterNoteStore(database) }) }
+    dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { DocumentRequestStore(database) }) }
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.
@@ -330,6 +332,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 } else if (entry.target?.startsWith(DeciderRemindersState.ELECTION_TARGET) == true) {
                     val id = entry.target.orEmpty().removePrefix(DeciderRemindersState.ELECTION_TARGET)
                     contentLibrary.decider.elections.firstOrNull { it.election.id == id }?.let { deciderState.open(DeciderDestination.Election(it.address)) }
+                    navigate(Space.DECIDER)
+                } else if (entry.target == DeciderRemindersState.DOCUMENT_TARGET) {
+                    deciderState.open(DeciderDestination.Documents)
                     navigate(Space.DECIDER)
                 } else if (entry.target?.startsWith(DeciderRemindersState.CONSULTATION_TARGET) == true) {
                     val slug = entry.target.orEmpty().removePrefix(DeciderRemindersState.CONSULTATION_TARGET)

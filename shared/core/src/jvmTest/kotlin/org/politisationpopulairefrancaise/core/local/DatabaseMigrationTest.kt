@@ -146,6 +146,8 @@ class DatabaseMigrationTest {
         assertEquals(2, tableDefinitions(file, "reminder").size)
         assertEquals(tableDefinitions(fresh, "letter_"), tableDefinitions(file, "letter_"))
         assertEquals(1, tableDefinitions(file, "letter_").size)
+        assertEquals(tableDefinitions(fresh, "document_"), tableDefinitions(file, "document_"))
+        assertEquals(1, tableDefinitions(file, "document_").size)
     }
 
     @Test

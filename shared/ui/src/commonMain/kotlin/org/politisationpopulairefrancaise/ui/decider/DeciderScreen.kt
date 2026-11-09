@@ -38,6 +38,7 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.decider.DeciderCatalog
+import org.politisationpopulairefrancaise.core.decider.DocumentRequestStore
 import org.politisationpopulairefrancaise.core.decider.LetterNoteStore
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.time.CivilDate
@@ -60,6 +61,9 @@ import org.politisationpopulairefrancaise.ui.resources.decider_letters_section
 import org.politisationpopulairefrancaise.ui.resources.decider_local_section
 import org.politisationpopulairefrancaise.ui.resources.decider_local_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_letters_section_intro
+import org.politisationpopulairefrancaise.ui.resources.decider_documents_open
+import org.politisationpopulairefrancaise.ui.resources.decider_documents_section
+import org.politisationpopulairefrancaise.ui.resources.decider_documents_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_consultations_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_elections_section
 import org.politisationpopulairefrancaise.ui.resources.decider_elections_section_intro
@@ -259,6 +263,14 @@ private fun DeciderHome(
                 }
             }
         }
+        // Asking for an administrative document (DE-31): written on the device, sent by the person, deadlines counted here.
+        Spacer(Modifier.height(24.dp))
+        Column(Modifier.widthIn(max = 760.dp).testTag(DeciderTags.section("documents"))) {
+            SectionHeader(stringResource(Res.string.decider_documents_section))
+            Text(stringResource(Res.string.decider_documents_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+            Spacer(Modifier.height(8.dp))
+            LinkRow(stringResource(Res.string.decider_documents_open), Lucide.ScrollText, onClick = { state.open(DeciderDestination.Documents) }, modifier = Modifier.testTag(DeciderTags.link("documents")))
+        }
         Spacer(Modifier.height(24.dp))
         Column(Modifier.widthIn(max = 760.dp).testTag(DeciderTags.section("more"))) {
             SectionHeader(stringResource(Res.string.decider_more_section))
@@ -374,6 +386,11 @@ private fun DeciderDetail(
                     is DeciderDestination.Letter -> catalog.letter(current.address)?.let { letter ->
                         LetterPage(letter, rememberDeviceElus(dependencies), today, actions, notes = dependencies?.database?.let { remember(it) { LetterNoteStore(it) } })
                     } ?: Missing()
+                    DeciderDestination.Documents -> DocumentRequestPage(
+                        store = dependencies?.database?.let { remember(it) { DocumentRequestStore(it) } },
+                        reminders = reminders,
+                        today = today,
+                    )
                     is DeciderDestination.PastVotes -> {
                         val sheet = catalog.comparators.firstOrNull { it.address == current.sheet }
                         if (sheet == null || pastVotes == null) {

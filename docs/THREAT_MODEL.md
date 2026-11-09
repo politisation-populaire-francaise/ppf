@@ -419,6 +419,15 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Une autre application déclenche les rappels ou les fait taire | Récepteur de l'alarme non exporté (intention explicite de l'application) ; récepteur du redémarrage qui n'accepte que l'action envoyée par le système, et qui ne fait que relire l'appareil | |
 | Un rappel arrive trop tard (alarme retardée par Android, téléphone éteint, application de bureau fermée) | Rappels 7 à 10 jours avant les dates limites ; la page de l'élection montre toujours toutes les dates ; l'écran dit que sur ordinateur un rappel s'affiche à l'ouverture | Notifications locales programmées sur iPhone avec l'application iOS |
 
+## Ajout du 9 novembre 2026 : demander un document administratif (DE-31)
+
+| Menace | Parade | Statut |
+|---|---|---|
+| Une demande révèle un engagement (permis contesté, enquête, conflit avec une mairie) | Rien n'est envoyé : la demande part du courriel ou de la lettre de la personne ; seules les notes restent sur l'appareil, effaçables une à une et par l'effacement rapide (`decider-documents`) ; le texte de la demande n'est jamais gardé | Fait (non compilé) |
+| Téléphone saisi : la liste des demandes lue | Verrouillage de l'application et effacement rapide (S-43, S-44) ; détails des rappels cachés par défaut dans le centre | Fait (non compilé) |
+| Délai mal compté, recours perdu | Délais vérifiés sur Légifrance et cités ; dates dites indicatives, de date à date ; l'accusé de réception fait foi | Fait ; deux articles à relire (R*311-12, L311-1) |
+| Ma Dada publie la demande | L'écran le dit avant le départ (« Vous quittez PPF ») | Fait (non compilé) |
+
 ## Ajout du 9 novembre 2026 : « Mon bulletin a été compté » (DE-29)
 
 | Menace | Parade | Statut |

@@ -36,6 +36,7 @@ class TestimonyMigrationTest {
             DriverManager.getConnection(url).use { connection ->
                 connection.createStatement().use { statement ->
                     statement.executeUpdate("DROP TABLE letter_note")
+                    statement.executeUpdate("DROP TABLE document_request")
                     statement.executeUpdate("DROP TABLE reminder_plan")
                     statement.executeUpdate("DROP TABLE reminder")
                     statement.executeUpdate("DROP TABLE contact_verification")

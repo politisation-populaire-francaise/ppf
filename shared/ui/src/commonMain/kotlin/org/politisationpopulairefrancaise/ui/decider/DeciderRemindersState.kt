@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.getString
 import org.politisationpopulairefrancaise.core.decider.ConsultationReminders
 import org.politisationpopulairefrancaise.core.decider.DeciderCatalog
+import org.politisationpopulairefrancaise.core.decider.DocumentRequestNote
+import org.politisationpopulairefrancaise.core.decider.DocumentRequestReminders
 import org.politisationpopulairefrancaise.core.decider.ElectionCalendar
 import org.politisationpopulairefrancaise.core.decider.ElectionReminderKind
 import org.politisationpopulairefrancaise.core.decider.ElectionReminders
@@ -26,6 +28,10 @@ import org.politisationpopulairefrancaise.ui.notifications.NotificationsSettings
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.decider_reminder_closing_detail
 import org.politisationpopulairefrancaise.ui.resources.decider_reminder_closing_title
+import org.politisationpopulairefrancaise.ui.resources.decider_reminder_document_cada_detail
+import org.politisationpopulairefrancaise.ui.resources.decider_reminder_document_cada_title
+import org.politisationpopulairefrancaise.ui.resources.decider_reminder_document_no_answer_detail
+import org.politisationpopulairefrancaise.ui.resources.decider_reminder_document_no_answer_title
 import org.politisationpopulairefrancaise.ui.resources.decider_reminder_eve_detail
 import org.politisationpopulairefrancaise.ui.resources.decider_reminder_eve_title
 import org.politisationpopulairefrancaise.ui.resources.decider_reminder_opening_detail
@@ -53,6 +59,7 @@ class DeciderRemindersState(
     private val clock: () -> Long = ::currentEpochSeconds,
     private val electionTexts: suspend (ElectionCalendar, PlannedElectionReminder) -> ReminderText = ::electionReminderText,
     private val consultationTexts: suspend (PublicConsultation, String) -> ReminderText = ::consultationReminderText,
+    private val documentTexts: suspend (DocumentRequestNote, String) -> ReminderText = ::documentReminderText,
 ) {
     /** Bumped at each change of the store, so the pages read it again. */
     var version: Int by mutableStateOf(0)
@@ -125,6 +132,27 @@ class DeciderRemindersState(
 
     fun stop(consultation: PublicConsultation) = stop(ConsultationReminders.owner(consultation))
 
+    // The requests for administrative documents (DE-31): planned from the days the person noted, not from the contents.
+
+    /** Whether the user asked for the reminders of the deadlines of [note]. */
+    fun isAsked(note: DocumentRequestNote): Boolean = store.plan(DocumentRequestReminders.owner(note)) != null
+
+    fun upcoming(note: DocumentRequestNote): List<Reminder> = upcomingOf(DocumentRequestReminders.owner(note))
+
+    /** « Me rappeler les délais »: the day after a month of silence, and seven days before the last day for the CADA. */
+    fun ask(note: DocumentRequestNote) {
+        store.setPlan(DocumentRequestReminders.owner(note), setOf(DocumentRequestReminders.NO_ANSWER, DocumentRequestReminders.CADA))
+        turnCategoryOn()
+        replanNow { replan(note) }
+    }
+
+    fun stop(note: DocumentRequestNote) = stop(DocumentRequestReminders.owner(note))
+
+    /** The days of [note] changed (document received, written refusal, CADA asked): its reminders follow, when asked. */
+    fun changed(note: DocumentRequestNote) {
+        if (isAsked(note)) replanNow { replan(note) }
+    }
+
     /** Plans again the reminders of every election and consultation the user asked for, from the contents just read. */
     suspend fun replanAll(catalog: DeciderCatalog) {
         val elections = store.plans(ElectionReminders.OWNER_PREFIX)
@@ -166,6 +194,16 @@ class DeciderRemindersState(
         store.replaceFuture(owner, planned, now)
     }
 
+    private suspend fun replan(note: DocumentRequestNote) {
+        val owner = DocumentRequestReminders.owner(note)
+        val kinds = store.plan(owner)?.kinds ?: return
+        val now = clock()
+        val planned = DocumentRequestReminders.plan(note, now).filter { (key, _) -> key in kinds }.map { (key, dueAt) ->
+            reminder(DocumentRequestReminders.reminderId(note, key), owner, documentTexts(note, key), DOCUMENT_TARGET, dueAt, now)
+        }
+        store.replaceFuture(owner, planned, now)
+    }
+
     private fun reminder(id: String, owner: String, text: ReminderText, target: String, dueAt: Long, now: Long) =
         Reminder(id = id, owner = owner, category = CATEGORY, title = text.title, detail = text.detail, target = target, dueAt = dueAt, createdAt = now)
 
@@ -178,6 +216,24 @@ class DeciderRemindersState(
 
         /** Where a reminder of a consultation leads: `ppf:decider/consultation/<slug>`. */
         const val CONSULTATION_TARGET: String = "ppf:decider/consultation/"
+
+        /** Where a reminder of a request for a document leads: the page of the requests (DE-31). */
+        const val DOCUMENT_TARGET: String = "ppf:decider/documents"
+    }
+}
+
+/** The texts of a reminder of a request for a document: the administration and the last day to ask the CADA. */
+suspend fun documentReminderText(note: DocumentRequestNote, key: String): ReminderText {
+    val cadaBy = DocumentRequestReminders.cadaBy(note).toFrench()
+    return when (key) {
+        DocumentRequestReminders.NO_ANSWER -> ReminderText(
+            getString(Res.string.decider_reminder_document_no_answer_title),
+            getString(Res.string.decider_reminder_document_no_answer_detail, note.administration, cadaBy),
+        )
+        else -> ReminderText(
+            getString(Res.string.decider_reminder_document_cada_title),
+            getString(Res.string.decider_reminder_document_cada_detail, note.administration, cadaBy),
+        )
     }
 }
 

@@ -279,6 +279,13 @@ La pétition locale est inventée et marquée [EXEMPLE] ; elle est rattachée au
 3. Touchez la carte : la page dit à quelle collectivité la demande s'adresse, comment signer (ici sur papier), et ce que dit la loi (un dixième des électeurs d'une commune, une seule demande par trimestre, le conseil décide librement).
 4. Sans commune choisie, la section n'apparaît pas.
 
+### Demander un document administratif (ajouté le 9 novembre 2026)
+
+1. Ouvrez **Décider**, section **Demander un document administratif**, puis **Rédiger une demande et suivre ses délais**.
+2. Écrivez une administration et un document, tous deux inventés et marqués [EXEMPLE] (par exemple « [EXEMPLE] Mairie de Lyon » et « [EXEMPLE] Délibération du 3 octobre 2026 »), choisissez **Copie papier** : la demande se remplit, avec les articles de loi. Touchez **Copier la demande**.
+3. Dans **Mes demandes**, laissez la date du jour ou écrivez une date passée (par exemple 09/10/2026), puis **Noter cette demande** : la demande apparaît avec la date limite de réponse. Avec une date de plus d'un mois, elle est dite refusée et la date limite pour saisir la CADA s'affiche ; **Préparer la saisine de la CADA** montre le texte à copier.
+4. **Effacer cette demande** la retire de l'appareil. Rien n'est envoyé à aucun moment.
+
 ### « Mon bulletin a été compté » (ajouté le 9 novembre 2026)
 
 Quand une urne est close (par exemple une revendication que l'équipe a retenue), sa page propose **Recompter et vérifier mon bulletin**. Votre appareil télécharge la liste anonyme des bulletins, la même pour tout le monde, refait tout le compte et y cherche votre bulletin. Il vous dit si votre bulletin est compté avec votre choix, sans jamais afficher ce choix ni garder la réponse : elle ne peut servir de preuve à personne, et c'est voulu (personne ne peut vous obliger à prouver votre vote). En cas de problème, une alerte s'affiche.

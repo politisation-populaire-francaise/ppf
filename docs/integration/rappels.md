@@ -50,6 +50,12 @@
 - Recalculés comme ceux des élections : une enquête publique prolongée déplace le rappel de sa clôture.
 - L'état commun de l'interface est `ui/decider/DeciderRemindersState.kt` (élections et consultations), créé une fois par la coquille (`rememberDeciderReminders`).
 
+## 4 ter. Les rappels des demandes de documents administratifs (DE-31)
+
+- Proposés pour chaque demande notée dans « Mes demandes » (« Me rappeler les délais »), tant que le document n'est pas reçu et que la CADA n'est pas saisie : le lendemain du mois sans réponse (silence qui vaut refus) et sept jours avant le dernier jour pour saisir la CADA, à 10 h, heure de Paris (`DocumentRequestReminders` dans `core/decider/DocumentRequest.kt`).
+- Catégorie « Votes et pétitions » ; `owner` = `decider:document:<identifiant de la demande>` ; lien `ppf:decider/documents`, ouvert par la coquille.
+- Calculés depuis les jours notés par la personne, pas depuis les contenus : recalculés quand elle note un refus écrit ; plus rien quand elle note le document reçu ou la saisine ; supprimés avec la demande. Le détail nomme l'administration (texte écrit par la personne) et la date limite ; le centre cache les détails par défaut.
+
 ## 5. Pour les autres pôles
 
 - **Communauté (TE-09, « Mes rappels »)** : lister `upcoming()`, retirer par `remove(id)` ; ouvrir `target`. Les liens `ppf:decider/election/<id>` et `ppf:decider/consultation/<slug>` sont déjà ouverts par la coquille (`AdaptiveShell`).
