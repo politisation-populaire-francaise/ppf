@@ -179,7 +179,7 @@ private fun AlertsSection(myVotes: MyVotesState) {
             modifier = Modifier
                 .fillMaxWidth()
                 .clip(MaterialTheme.shapes.small)
-                .toggleable(value = myVotes.wifiOnly, role = Role.Switch, onValueChange = { myVotes.setWifiOnly(it) })
+                .toggleable(value = myVotes.wifiOnly, role = Role.Switch, onValueChange = { myVotes.chooseWifiOnly(it) })
                 .heightIn(min = 56.dp)
                 .padding(horizontal = 8.dp, vertical = 6.dp)
                 .testTag(MyVotesTags.WIFI_ONLY),
@@ -221,21 +221,21 @@ private fun EuropeansSection(myVotes: MyVotesState, snapshot: ParliamentSnapshot
         }
         val chosen = myVotes.europeans
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-            PpfSelectableChip(stringResource(Res.string.my_votes_europeans_none), selected = chosen.isEmpty(), onClick = { myVotes.setEuropeans(emptySet()) }, modifier = Modifier.testTag(MyVotesTags.EUROPEANS_NONE))
+            PpfSelectableChip(stringResource(Res.string.my_votes_europeans_none), selected = chosen.isEmpty(), onClick = { myVotes.chooseEuropeans(emptySet()) }, modifier = Modifier.testTag(MyVotesTags.EUROPEANS_NONE))
             lists.forEachIndexed { index, (party, members) ->
                 val ids = members.map { it.id }.toSet()
                 val name = party?.withoutExample() ?: stringResource(Res.string.my_votes_europeans_other_list)
                 PpfSelectableChip(
                     stringResource(Res.string.my_votes_europeans_list, name, members.size),
                     selected = chosen.isNotEmpty() && chosen == ids,
-                    onClick = { myVotes.setEuropeans(chosen + ids) },
+                    onClick = { myVotes.chooseEuropeans(chosen + ids) },
                     modifier = Modifier.testTag(MyVotesTags.list(index)),
                 )
             }
             PpfSelectableChip(
                 stringResource(Res.string.my_votes_europeans_all, all.size),
                 selected = chosen.isNotEmpty() && chosen.containsAll(all.map { it.id }),
-                onClick = { myVotes.setEuropeans(all.map { it.id }.toSet()) },
+                onClick = { myVotes.chooseEuropeans(all.map { it.id }.toSet()) },
                 modifier = Modifier.testTag(MyVotesTags.EUROPEANS_ALL),
             )
         }

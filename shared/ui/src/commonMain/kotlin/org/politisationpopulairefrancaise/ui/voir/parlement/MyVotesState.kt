@@ -107,17 +107,17 @@ class MyVotesState(
         wordProblem = null
     }
 
-    fun setWifiOnly(on: Boolean) {
+    fun chooseWifiOnly(on: Boolean) {
         storage.setWifiOnly(on)
         wifiOnly = on
     }
 
-    fun setEuropeans(ids: Set<String>) {
+    fun chooseEuropeans(ids: Set<String>) {
         storage.setEuropeans(ids)
         europeans = ids
     }
 
-    fun toggleEuropean(id: String) = setEuropeans(if (id in europeans) europeans - id else europeans + id)
+    fun toggleEuropean(id: String) = chooseEuropeans(if (id in europeans) europeans - id else europeans + id)
 
     /** The quick erase (S-44): what is on screen; the storage is erased by its own part. */
     fun forgetOnScreen() {

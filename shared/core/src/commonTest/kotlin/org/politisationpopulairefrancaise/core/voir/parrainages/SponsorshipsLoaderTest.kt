@@ -23,7 +23,7 @@ class SponsorshipsLoaderTest {
             example = true,
             election = SponsorshipsFormat.ELECTION_2027,
             publishedOn = "2027-02-16",
-            sponsorships = (1..count).map { Sponsorship("[EXEMPLE] NOM$it", "Prénom", SponsorMandate.MAIRE, "Commune $it", "Rhône", "69", "[EXEMPLE] CANDIDATE Alice", "2027-02-16") },
+            sponsorships = (1..count).map { Sponsorship(lastName = "[EXEMPLE] NOM$it", firstName = "Prénom", mandate = SponsorMandate.MAIRE, territory = "Commune $it", department = "Rhône", departmentCode = "69", candidate = "[EXEMPLE] CANDIDATE Alice", publishedOn = "2027-02-16") },
         ),
     ).encodeToByteArray()
 
