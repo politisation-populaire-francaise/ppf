@@ -114,8 +114,10 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.server.voir.DashboardService
 import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
 import org.politisationpopulairefrancaise.server.voir.VoirDatasets
+import org.politisationpopulairefrancaise.server.voir.dashboardRoutes
 import org.politisationpopulairefrancaise.server.comprendre.EditorialComprendreSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
@@ -548,6 +550,7 @@ fun Application.module(
             archivesApi(archives)
             transparencyApi(dataSource) // Requisitions answered per month only (D-077).
             exportApi(openExport) // The open export and its datasets (M34, S-48).
+            dashboardRoutes(repository?.let { DashboardService(it) }) // « Tableau de bord » (M34, PP-07): /api/v1/tableau-de-bord and /tableau-de-bord.
             openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
             openExport?.let { export -> verifyPages(ContentVerifier { export.check(it) }) } // « Vérifier un contenu PPF » (S-141).
             agirSpace?.let { agendaPage(it.agendaSource()) }

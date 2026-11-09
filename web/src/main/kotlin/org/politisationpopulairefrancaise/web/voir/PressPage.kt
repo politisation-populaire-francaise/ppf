@@ -67,6 +67,7 @@ fun HTML.pressDocument(catalog: VoirCatalog) {
                 li { a(href = "/donnees") { +"Données ouvertes" } }
                 li { a(href = TRANSPARENCY_PATH) { +"Transparence de PPF" } }
                 li { a(href = VICTORIES_PATH) { +"Nos victoires" } }
+                li { a(href = DASHBOARD_PATH) { +"Tableau de bord du mouvement" } }
             }
         }
         pageSection("contact-presse", "Contact presse") {

@@ -938,6 +938,14 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Choix : **B**, décision technique du pôle « Voir ». A demanderait une adresse de courriel, que la version 1 de M30 exclut (D-140) ; C doublerait un canal déjà chiffré, avec ses délais et ses durées de conservation.
 - Conséquences : `ArticleType.COMMUNIQUE`, `VoirSchemas.COMMUNIQUE`, `core/voir/PressReleases.kt` (`PressRelease`, `MediaKit`) ; page de l'application (axe « Le pouvoir ») et page du site `/presse` ; demande au Directeur technique : catégorie choisie d'avance dans les formulaires de contact (`docs/integration/espace-presse.md`, section 3).
 
+## D-107 (2026-11-09) « Tableau de bord fédérateur » : compté par le serveur sur ce qu'il publie, « non mesuré » plutôt que zéro
+
+- Contexte : cahier fonctionnel, M34, PP-07 (adhérents, comptes actifs, revendications, votes, appels, organisations, collectifs, signatures, engagements de candidats, argent collecté et redistribué, sur toute période ; dépendance S-76) ; tâche donnée au pôle « Voir » par le chef d'équipe le 8 novembre 2026.
+- Options (coût nul) : A. des chiffres saisis à la main par l'équipe ; B. un calcul du serveur sur ce qu'il publie déjà, mois par mois, chaque pôle branchant ses chiffres, les autres « non mesurés » (**retenue**) ; C. une mesure d'audience des comptes, qui demanderait un traceur (exclu).
+- Choix : **B**, décision technique du pôle « Voir ».
+- Raison : des nombres vérifiables, jamais une personne, sans traceur ; un chiffre sans source honnête n'est pas inventé.
+- Conséquences : `core/voir/Dashboard.kt` (format JSON 1, liste fixe `DashboardMetric`), `server/.../voir/DashboardService.kt` (revendications, appels et organisations publiés comptés par « Voir », point de branchement `DashboardProvider` pour les autres pôles, cache de 10 minutes), `GET /api/v1/tableau-de-bord`, page du site `/tableau-de-bord` avec une période au choix sans JavaScript, lien depuis l'espace presse de l'application (`docs/integration/tableau-de-bord.md`).
+
 ## D-110 (2026-11-07) « Une personne, une voix » : jetons anonymes VOPRF, conditions de la bibliothèque, exigences
 
 - Contexte : conception de `docs/integration/une-personne-une-voix.md` (méthode approuvée par la propriétaire, D-044 ; usages de D-062). Décision technique prise en autonomie (chef d'équipe), le 7 novembre 2026, après relecture complète du document.

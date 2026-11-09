@@ -17,6 +17,7 @@
     <string name="press_kit_state">PPF n’utilise jamais l’identité visuelle de l’État (logo officiel, bloc-marque) : merci de ne pas l’associer à nos contenus.</string>
     <string name="press_figures">Chiffres réutilisables</string>
     <string name="press_figures_text">Les jeux de données de PPF sont téléchargeables sur la page « Données ouvertes » du site, chacun avec sa source et sa licence. Chaque contenu se cite avec « Citer ce contenu ».</string>
+    <string name="press_dashboard">Tableau de bord du mouvement (sur le site)</string>
     <string name="press_contact_title">Contact presse</string>
     <string name="press_contact_text">Écrivez à l’équipe par le formulaire de contact de PPF, en choisissant « Journaliste ». Réponse visée sous %1$d jours. Aucun e-mail n’est demandé : vous suivez l’échange avec votre numéro et votre code.</string>
 </resources>
