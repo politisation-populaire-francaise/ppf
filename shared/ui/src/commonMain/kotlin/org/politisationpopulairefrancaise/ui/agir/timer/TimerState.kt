@@ -370,7 +370,8 @@ fun rememberTimerState(dependencies: AppDependencies, help: HelpState, session: 
     val state = remember(dependencies, platformStorage) {
         val store = TimerStore(platformStorage ?: InMemoryTimerStorage())
         val security = dependencies.securityStorage
-        val pepper: (ByteArray) -> ByteArray = if (security != null) { bytes -> security.pepper(bytes) } else { bytes -> bytes }
+        // The Keystore key of the lock (D-082) also peppers the codes of the timer; none on a computer.
+        val pepper: (ByteArray) -> ByteArray = { bytes -> security?.pepper(bytes) ?: bytes }
         val messages = dependencies.database?.let(::MessageStore)
         TimerState(
             service = TimerService(store, pepper),
