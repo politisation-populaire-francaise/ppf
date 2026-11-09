@@ -163,6 +163,7 @@ class FollowUpsTest {
         onNodeWithTag(FollowUpTags.LEAVE_DIALOG).assertExists()
         assertEquals(emptyList(), opened, "nothing opens before the choice")
         onNodeWithTag(FollowUpTags.LEAVE_OPEN).performClick()
+        mainClock.advanceTimeBy(500)
         waitForIdle()
         assertEquals(listOf("https://example.org/exemple/suite-sourcee"), opened)
     }
