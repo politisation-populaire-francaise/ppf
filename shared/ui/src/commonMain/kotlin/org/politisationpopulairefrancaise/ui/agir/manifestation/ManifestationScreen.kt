@@ -110,6 +110,8 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
     val compact = windowClass.width == WindowWidthClass.COMPACT
     LaunchedEffect(help) { help.prepare() }
     var guide by rememberSaveable { mutableStateOf<String?>(null) }
+    // Kept above the screen of the timer, so that coming back from it keeps the place in the page.
+    val scroll = rememberScrollState()
     // « Sans nouvelles de moi » (AG-55): its screen opens over the protest mode, with a way back.
     val timer = help.timer
     var timerOpen by rememberSaveable { mutableStateOf(false) }
@@ -124,7 +126,6 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
         TimerScreen(timer, windowClass, onBack = { timerOpen = false }, modifier = modifier)
         return
     }
-    val scroll = rememberScrollState()
     val open = guide
     if (open != null) {
         Column(modifier.fillMaxSize().background(palette.surface1).verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp)) {
