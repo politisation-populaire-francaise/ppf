@@ -19,6 +19,7 @@ import org.politisationpopulairefrancaise.core.agir.calls.CallType
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
 import org.politisationpopulairefrancaise.core.publication.HeldState
 import org.politisationpopulairefrancaise.core.publication.HeldStatus
+import org.politisationpopulairefrancaise.ui.account.PUBLISH_BLOCKED_TAG
 import org.politisationpopulairefrancaise.ui.content.OwnDemandState
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -89,6 +90,18 @@ class CallComposerTest {
         onNodeWithTag(CallComposerTags.CLOSE).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(CallTags.WALL).assertExists()
+    }
+
+    @Test
+    fun aCompromisedAccountCanWriteButNotSendAndIsToldWhy() = runComposeUiTest {
+        val server = CallServer(held = true)
+        showCalls(keys = keys, remote = server, canPublish = false)
+        fillDemonstration()
+        // Everything is filled in, but a compromised account no longer publishes (S-146).
+        onNodeWithTag(CallComposerTags.SEND).performScrollTo().assertIsNotEnabled()
+        onNodeWithTag(PUBLISH_BLOCKED_TAG).performScrollTo().assertExists()
+        onNodeWithText("compromis", substring = true).assertExists()
+        assertTrue(server.received.isEmpty())
     }
 
     @Test

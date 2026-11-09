@@ -29,9 +29,9 @@
     <string name="agir_safety_title">Secours et sécurité en manifestation</string>
     <string name="agir_safety_text">Coordonner les secours et la défense juridique, sans jamais remplacer le 15 ou le 112.</string>
     <string name="agir_solidarity_title">Solidarité et caisses de grève</string>
-    <string name="agir_solidarity_text">Caisses de grève, solidarité juridique, entraide pour le covoiturage ou l’hébergement.</string>
+    <string name="agir_solidarity_text">Caisses de grève et de solidarité juridique vérifiées par l’équipe, avec des liens vers leurs propres pages de dons.</string>
     <string name="agir_help_title">Je veux aider</string>
-    <string name="agir_help_text">Proposer ses compétences aux missions de bénévolat publiées par l’équipe.</string>
+    <string name="agir_help_text">Les missions de bénévolat publiées par l’équipe, à trier selon vos compétences.</string>
     <string name="agir_material_title">Matériel militant</string>
     <string name="agir_material_text">Tracts, affiches et visuels à imprimer, avec le territoire et la date d’une mobilisation.</string>
     <string name="agir_offline_title">Messagerie sans Internet</string>

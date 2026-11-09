@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Solidarity rubric of "Agir" (M35: AG-10 solidarity funds, AG-12 volunteer missions, mutual aid
+     in preparation). French, the user is addressed with "vous", typographic apostrophe (’), no em dash. -->
+<resources>
+    <!-- Rubric -->
+    <string name="solidarite_title">Solidarité</string>
+    <string name="solidarite_description">Caisses de grève, solidarité juridique et bénévolat. PPF ne reçoit ni ne fait transiter aucun argent : chaque caisse renvoie vers sa propre page de dons.</string>
+    <string name="solidarite_tab_funds">Caisses</string>
+    <string name="solidarite_tab_missions">Je veux aider</string>
+    <string name="solidarite_tab_mutual_aid">Entraide</string>
+    <string name="solidarite_status_loading">Mise à jour…</string>
+    <string name="solidarite_status_unavailable">Cette rubrique n’est pas disponible sur cet appareil.</string>
+    <string name="solidarite_status_offline">Enregistré sur cet appareil, lisible sans connexion.</string>
+    <string name="solidarite_status_synced">À jour.</string>
+    <string name="solidarite_status_unreachable">Serveur injoignable : voici ce qui est enregistré sur cet appareil.</string>
+    <string name="solidarite_refresh">Actualiser la rubrique Solidarité</string>
+    <string name="solidarite_select_hint">Choisissez une caisse ou une mission pour voir sa page.</string>
+    <string name="solidarite_soon_state">Pas encore disponible</string>
+    <string name="solidarite_clear_filters">Effacer la recherche et les filtres</string>
+    <string name="solidarite_national">Partout en France</string>
+    <string name="solidarite_updated">Fiche mise à jour le %1$s</string>
+    <string name="solidarite_origin_human">rédigée par l’équipe de PPF</string>
+    <string name="solidarite_origin_ai">rédigée avec l’aide d’une IA</string>
+
+    <!-- Funds (AG-10) -->
+    <string name="solidarite_funds_search_hint">Rechercher une caisse, un secteur, une grève</string>
+    <string name="solidarite_near_label">Près de chez moi</string>
+    <string name="solidarite_near_hint">Votre commune, département ou code postal</string>
+    <string name="solidarite_near_private">Ce territoire reste sur votre appareil : il n’est jamais envoyé, ni enregistré.</string>
+    <string name="solidarite_fund_types_label">Type de caisse</string>
+    <string name="solidarite_fund_type_all">Toutes</string>
+    <string name="solidarite_fund_filter_greve">Caisses de grève</string>
+    <string name="solidarite_fund_filter_juridique">Solidarité juridique</string>
+    <string name="solidarite_fund_filter_autre">Autres caisses</string>
+    <string name="solidarite_fund_type_greve">Caisse de grève</string>
+    <string name="solidarite_fund_type_juridique">Solidarité juridique</string>
+    <string name="solidarite_fund_type_autre">Caisse de solidarité</string>
+    <string name="solidarite_territories_label">Territoire</string>
+    <string name="solidarite_territory_all">Tous les territoires</string>
+    <string name="solidarite_include_closed_funds">Inclure les caisses closes ou retirées</string>
+    <plurals name="solidarite_funds_count">
+        <item quantity="one">%1$d caisse</item>
+        <item quantity="other">%1$d caisses</item>
+    </plurals>
+    <string name="solidarite_near_section">Près de chez vous</string>
+    <string name="solidarite_national_section">Partout en France</string>
+    <string name="solidarite_funds_none">Aucune caisse ne correspond à votre recherche.</string>
+    <string name="solidarite_funds_empty">Aucune caisse dans l’annuaire pour l’instant.</string>
+    <string name="solidarite_funds_about">Chaque caisse est vérifiée par l’équipe de PPF avant d’être publiée, et jamais au profit d’un candidat ou d’un parti. PPF ne reçoit ni ne fait transiter aucun argent : vous donnez directement sur la page de la caisse.</string>
+    <string name="solidarite_fund_status_open">Ouverte</string>
+    <string name="solidarite_fund_status_closed">Close</string>
+    <string name="solidarite_fund_status_withdrawn">Retirée par PPF</string>
+    <string name="solidarite_fund_for">Pour : %1$s</string>
+    <string name="solidarite_manager_verified">Gérée par %1$s, organisation vérifiée par PPF</string>
+    <string name="solidarite_manager_revoked">Gérée par %1$s : vérification retirée par PPF</string>
+    <string name="solidarite_manager_unlisted">Gérée par %1$s, qui n’est pas dans l’annuaire de PPF</string>
+    <string name="solidarite_manager_unknown">Gérée par une organisation que cet appareil ne connaît pas encore</string>
+
+    <!-- Page of a fund -->
+    <string name="solidarite_fund_back">Retour aux caisses</string>
+    <string name="solidarite_fund_verified_on">Caisse vérifiée par PPF le %1$s</string>
+    <string name="solidarite_fund_withdrawn_on">Fiche retirée par PPF le %1$s</string>
+    <string name="solidarite_fund_withdrawn_explain">Ne donnez pas par un lien qui dirait venir de cette fiche. Elle reste visible par transparence.</string>
+    <string name="solidarite_fund_beneficiary_title">À qui elle sert</string>
+    <string name="solidarite_fund_sector">Secteur : %1$s</string>
+    <string name="solidarite_fund_strike">Mouvement soutenu : %1$s</string>
+    <string name="solidarite_fund_manager_title">Qui la gère</string>
+    <string name="solidarite_fund_open_organisation">Voir la page de l’organisation</string>
+    <string name="solidarite_fund_donate_title">Faire un don</string>
+    <string name="solidarite_fund_donate">Donner sur la page de la caisse</string>
+    <string name="solidarite_fund_donate_where">Vous serez dirigé vers %1$s, hors de PPF. PPF ne reçoit ni ne fait transiter aucun argent, et ne sait pas si vous donnez.</string>
+    <string name="solidarite_fund_closed">Cette caisse est close : elle ne reçoit plus de dons.</string>
+    <string name="solidarite_fund_withdrawn_no_link">Cette fiche a été retirée par PPF : aucun lien de dons n’est proposé.</string>
+    <string name="solidarite_fund_no_link">Le lien de dons de cette caisse n’est pas disponible pour l’instant.</string>
+    <string name="solidarite_fund_presentation">Présentation</string>
+
+    <!-- Leaving PPF for a donation page: the safe choice first -->
+    <string name="solidarite_leave_title">Vous quittez PPF</string>
+    <string name="solidarite_leave_text">Ce lien ouvre la page de dons %1$s, hors de PPF. PPF ne la contrôle pas : elle peut utiliser des traceurs et savoir que vous l’avez visitée.</string>
+    <string name="solidarite_leave_fundraising">Avant de donner, vérifiez que la page appartient bien à qui gère la caisse : les fausses cagnottes existent. PPF ne vous demandera jamais de donner par message.</string>
+    <string name="solidarite_leave_stay">Rester sur PPF</string>
+    <string name="solidarite_leave_open">Ouvrir la page de dons</string>
+
+    <!-- Volunteer missions (AG-12) -->
+    <string name="solidarite_missions_intro">L’équipe de PPF publie ici les missions où elle a besoin de bénévoles. Choisissez vos compétences pour trier les missions.</string>
+    <string name="solidarite_skills_label">Mes compétences</string>
+    <string name="solidarite_skills_private">Vos compétences restent sur votre appareil : elles servent seulement à trier les missions, et ne sont jamais envoyées ni enregistrées.</string>
+    <string name="solidarite_skill_all">Toutes</string>
+    <string name="solidarite_skill_juriste">Juriste</string>
+    <string name="solidarite_skill_traduction">Traduction</string>
+    <string name="solidarite_skill_developpement">Développement</string>
+    <string name="solidarite_skill_graphisme">Graphisme</string>
+    <string name="solidarite_skill_verification">Vérification des faits</string>
+    <string name="solidarite_skill_moderation">Modération</string>
+    <string name="solidarite_skill_accueil">Accueil des nouveaux</string>
+    <string name="solidarite_skill_autre">Autres compétences</string>
+    <string name="solidarite_missions_search_hint">Rechercher une mission</string>
+    <string name="solidarite_remote_only">À distance seulement</string>
+    <string name="solidarite_include_closed_missions">Inclure les missions pourvues ou closes</string>
+    <plurals name="solidarite_missions_count">
+        <item quantity="one">%1$d mission</item>
+        <item quantity="other">%1$d missions</item>
+    </plurals>
+    <string name="solidarite_missions_none">Aucune mission ne correspond à vos choix.</string>
+    <string name="solidarite_missions_empty">Aucune mission publiée pour l’instant.</string>
+    <string name="solidarite_missions_calls">Les organisations et les citoyens cherchent aussi des bénévoles dans les appels.</string>
+    <string name="solidarite_missions_open_calls">Voir les appels</string>
+    <string name="solidarite_mission_status_open">Ouverte</string>
+    <string name="solidarite_mission_status_filled">Pourvue</string>
+    <string name="solidarite_mission_status_closed">Close</string>
+    <string name="solidarite_mission_remote">À distance</string>
+
+    <!-- Page of a mission -->
+    <string name="solidarite_mission_back">Retour aux missions</string>
+    <string name="solidarite_mission_skills_title">Compétences recherchées</string>
+    <string name="solidarite_mission_where_title">Où et quand</string>
+    <string name="solidarite_mission_commitment">Temps demandé : %1$s</string>
+    <plurals name="solidarite_mission_people">
+        <item quantity="one">%1$d personne recherchée</item>
+        <item quantity="other">%1$d personnes recherchées</item>
+    </plurals>
+    <string name="solidarite_mission_deadline">Jusqu’au %1$s</string>
+    <string name="solidarite_mission_description">La mission</string>
+    <string name="solidarite_mission_offer">Proposer mon aide</string>
+    <string name="solidarite_mission_offer_soon_title">Bientôt</string>
+    <string name="solidarite_mission_offer_soon">Proposer votre aide depuis l’application arrive bientôt. Nous préparons un envoi chiffré à l’équipe, qui ne transmettra que votre pseudonyme et les compétences que vous choisirez, après votre confirmation. Pour l’instant, rien n’est envoyé.</string>
+
+    <!-- Mutual aid (AG-10), in preparation -->
+    <string name="solidarite_mutual_aid_title">Entraide : bientôt</string>
+    <string name="solidarite_mutual_aid_text">Le covoiturage vers les manifestations et l’hébergement solidaire arrivent bientôt. Proposer une place dit où l’on habite, quand on part et que l’on va manifester : nous préparons une entraide qui ne publie rien de vous par défaut, avec seulement votre ville et des échanges chiffrés.</string>
+    <string name="solidarite_mutual_aid_now">En attendant, les salons des collectifs permettent de s’organiser entre membres.</string>
+</resources>

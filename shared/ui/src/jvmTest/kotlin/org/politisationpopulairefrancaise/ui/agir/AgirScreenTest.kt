@@ -52,9 +52,11 @@ class AgirScreenTest {
         inPreparation.forEach { id ->
             onNodeWithTag(AgirTags.SOON + id).performScrollTo().assertIsNotEnabled().assert(hasClickAction().not())
         }
-        // "Témoigner" (AG-07) and the protest mode (AG-13) left the rubrics in preparation.
-        assertEquals(5, inPreparation.size)
+        // "Témoigner" (AG-07), the protest mode (AG-13), the solidarity funds (AG-10) and "Je veux aider" (AG-12) left the rubrics in preparation.
+        assertEquals(3, inPreparation.size)
         assertEquals("temoigner", available[2])
+        assertTrue("solidarite" in available && "aider" in available)
+        assertTrue("solidarite" !in inPreparation && "aider" !in inPreparation)
         onNodeWithText("Messagerie sans Internet").assertExists()
     }
 

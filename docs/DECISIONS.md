@@ -782,6 +782,30 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - écartés : le 39 39 (renseignement administratif, pas une ligne d'écoute), le Défenseur des droits (saisine, déjà dans la fiche « Après une blessure »), SOS homophobie, Fil Santé Jeunes et Suicide Écoute (horaires ou sources à confirmer ; à reconsidérer avec les organisations).
 - Sources, consultées le 8 novembre 2026 : service-public.gouv.fr F33954 (vérifiée par la DILA le 25 août 2026) et F12544, 3114.fr, allo119.gouv.fr, justice.gouv.fr (« Prise en charge des victimes d'infractions pénales », 9 mars 2026), sante.fr et Psycom (« Les lignes d'écoute », 4 novembre 2026). Points contradictoires entre sources, à revérifier avant la publication (feuille de route) : application des personnes sourdes au 3919 (Roger Voice ou ACCEO), horaires et âge du tchat du 119, horaires du 116 006 (9 h à 19 h ou 9 h à 20 h ; 20 h retenu, source du ministère de la Justice de 2026).
 
+## D-085 (2026-11-08) Solidarité (M35) : caisses de solidarité et missions de bénévolat
+
+- Contexte : cahier fonctionnel, M35 (AG-10, AG-12), M12 (AP-08), point d'attention n° 12 (PPF ne détient ni ne fait transiter d'argent). Détail : `docs/integration/agir-solidarite.md`. Écrit le 8 novembre 2026 sur `feature/agir-solidarite`, compilé après l'entrée de `feature/agir` dans main.
+- Décisions techniques prises en autonomie :
+  - **caisses** : contenu éditorial 30023, `ppf-type` = `caisse`, publié seulement par une clé éditoriale et lu seulement s'il est signé par une clé de confiance ; engagement `ppf-no-party` = `oui` obligatoire (ni candidat ni parti) ; statuts `ouverte`, `close`, `retiree` (une valeur inconnue vaut `retiree`) ; un type à part plutôt qu'une fiche d'organisation, dont l'étiquette `p` sert à vérifier une clé ;
+  - **lien de dons** : une seule page de dons par caisse, `https` à hôte ASCII seulement, ouverte uniquement après « Vous quittez PPF » (« Rester sur PPF » en premier, hôte nommé en clair, mise en garde contre les fausses cagnottes), seulement pour une caisse ouverte ; PPF n'interroge jamais la page de dons ;
+  - **gestionnaire d'une caisse** : désigné par l'adresse de sa fiche dans l'annuaire, ou par son nom ; trois états dits en mots (organisation vérifiée, vérification retirée, absente de l'annuaire de PPF) ;
+  - **missions** (« Je veux aider ») : contenu éditorial 30023, `ppf-type` = `mission`, publié seulement par une clé éditoriale ; compétences dans une liste fermée, à distance ou avec un lieu ; statuts `ouverte`, `pourvue`, `close` ;
+  - **sur l'appareil** : recherche, filtres, « près de chez moi » et compétences en mémoire seulement, jamais envoyés ni enregistrés, oubliés par l'effacement rapide (partie `agir-solidarity`) ; aucune migration, rien de nouveau côté serveur.
+
+## D-086 (2026-11-08) Solidarité : réponses du chef d'équipe (entraide, « Proposer mon aide », caisses)
+
+- Contexte : les neuf questions de `docs/integration/agir-solidarite.md` (section 5), tranchées le 8 novembre 2026 par le chef d'équipe, par délégation de la propriétaire (« Pour les decisions a prendre, je suis tes recommandations ») : recommandations approuvées, avec des précisions.
+- Décisions :
+  1. **Entraide** (covoiturage, hébergement) : dans les salons de la mobilisation ou du collectif, avec des modèles de message (la ville seulement, jamais l'adresse) et le contact en message privé ; des offres publiques seulement en option, sur le choix de la personne après une mise en garde (principe 10).
+  2. **Hébergement** : seulement entre membres d'un collectif ou par une organisation vérifiée, avis de l'avocat ; une phrase simple de sécurité accompagne chaque proposition (se retrouver d'abord dans un lieu public, prévenir un proche).
+  3. **« Proposer mon aide »** : un message chiffré, avec un écran qui montre exactement ce qui part ; il arrive dans un type de dossier « bénévolat » de M30 (comme la vérification de CO-18, D-143), lisible seulement par un rôle « coordination des bénévoles » du back-office, avec une clé à part si l'architecture de M30 le permet (finalité distincte, RGPD) ; effacé six mois après le dernier échange, ou tout de suite à la demande de la personne ; une ligne dans `REGISTRE_DONNEES.md` ; à voir avec le Directeur technique.
+  4. **Compétences** : en mémoire seulement.
+  5. **Caisses admises** : seulement celles dont l'équipe a identifié le gestionnaire.
+  6. **Vérification d'une caisse** : procédure écrite dans `docs/guides`, revue à chaque grève et au moins tous les trois mois.
+  7. **Cas limites du financement politique** : à l'avocat (feuille de route).
+  8. **Plateformes de cagnotte tierces** : acceptées, hôte affiché en clair, passage par « Vous quittez PPF » ; aucun contenu de ces plateformes n'est chargé dans l'application ni sur le site.
+  9. **Montant collecté** : jamais affiché par PPF : il viendrait d'un tiers et ne peut pas être vérifié ; la page de la cagnotte l'affiche elle-même.
+
 ## D-090 (2026-11-07) Référentiel des territoires : codes officiels, population, inscrits, règle des 30
 
 - Contexte : demande du pôle « Décider » (objectifs de signatures proportionnels à la population, seuils des pétitions locales) ; les salons, l'agenda, les appels et les revendications écrivent le territoire en texte libre (`ppf-territory`). Conception et sources vérifiées le 7 novembre 2026 : `docs/integration/territoires.md` ; conception validée par le chef d'équipe (« Décider » accepte l'API sans correction).
