@@ -65,7 +65,7 @@ Le numéro détermine le comportement :
 | 20000 à 29999 | Éphémères : non conservés. |
 | 30000 à 39999 | Adressables : remplaçables par identifiant (`d`), voir section 4. |
 
-Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies), `9` (message d'un salon, NIP-29), `9000`, `9001`, `9002` et `9005` (rôles et modération d'un salon, NIP-29, D-131 : section 5, partie rôles et modération), `39000` (description d'un salon, NIP-29), `1776` (engagement envers une clé de secours) et `1777` (avis de compromission), du brouillon NIP-41 : section 4 undecies, `1985` (étiquette NIP-32 : statut d'une revendication), `1040` (attestation OpenTimestamps, NIP-03 : preuve d'horodatage d'une archive). Types propres à PPF : `37240` (certificat d'une clé de travail de la plateforme) et `37241` (liste de l'équipe pour les accords de signature), section 4 decies. Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
+Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies), `9` (message d'un salon, NIP-29), `9000`, `9001`, `9002` et `9005` (rôles et modération d'un salon, NIP-29, D-131 : section 5, partie rôles et modération), `39000` (description d'un salon, NIP-29), `1776` (engagement envers une clé de secours) et `1777` (avis de compromission), du brouillon NIP-41 : section 4 undecies, `1985` (étiquette NIP-32 : statut d'une revendication), `1040` (attestation OpenTimestamps, NIP-03 : preuve d'horodatage d'une archive). Types propres à PPF : `37240` (certificat d'une clé de travail de la plateforme) et `37241` (liste de l'équipe pour les accords de signature), section 4 decies ; types privés, qui ne voyagent que chiffrés dans une enveloppe : `8590` à `8592` (témoignages, `docs/integration/agir-temoignages.md`) et `8593` (minuteur « Sans nouvelles de moi », section 4 quattuordecies). Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
 
 ## 4. Identifiant stable d'un contenu modifiable
 
@@ -899,6 +899,39 @@ Contenus éditoriaux publics (type 30023), publiés seulement par une clé édit
 | `ppf-origin` | non | comme ci-dessus |
 
 `content` : description de la mission en Markdown simple.
+
+## 4 quattuordecies. Minuteur « Sans nouvelles de moi » d'« Agir » (AG-55, D-088)
+
+Messages privés entre le compte de la personne qui arme un minuteur et chacun des destinataires qu'elle a choisis. Ils ne voyagent jamais en clair : chaque message est une **rumeur** (NIP-59) de type **8593**, scellée (type 13) par le compte de la personne pour **un** destinataire, puis emballée (type 1059) par une clé jetable, exactement comme un message privé (section 4 ter). Le serveur ne reçoit que l'enveloppe : il ne voit ni le type 8593, ni l'auteur, ni l'échéance, ni le contenu, et rien ne change pour lui. Détail et raisons : `docs/integration/agir-minuteur.md`. Le type 8593 est privé (il ne voyage que chiffré) ; aucun NIP connu ne l'utilise en novembre 2026, à vérifier dans la liste des NIP avant la phase 3 (Nostr), comme les types 8590 à 8592 des témoignages.
+
+Étiquettes communes à toutes les rumeurs du minuteur :
+
+| Étiquette | Contenu |
+|---|---|
+| `p` | la clé du destinataire de cette rumeur, seule : un destinataire ne sait jamais qui d'autre est prévenu |
+| `ppf-type` | `minuteur` |
+| `ppf-action` | `depot`, `annulation` ou `report` |
+| `ppf-timer` | identifiant du minuteur : 32 octets aléatoires en hexadécimal minuscule (64 caractères), tirés à l'armement |
+
+`created_at` est la vraie date du message (celle de l'enveloppe et du sceau est aléatoire). L'auteur est vérifié par le sceau (section 4 ter).
+
+**Dépôt** (`ppf-action` = `depot`), une rumeur par destinataire à l'armement :
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `ppf-deadline` | oui | échéance, secondes depuis 1970 ; plus tard que `created_at`, de 48 heures au plus (sinon la rumeur est ignorée) |
+| `ppf-hash` | oui | `h` = SHA-256 du secret aléatoire de 32 octets gardé par l'appareil de la personne, hexadécimal minuscule |
+| `location` | non | le lieu prévu, **écrit par la personne** (200 caractères au plus) ; jamais une position lue sur l'appareil |
+
+`content` : le texte de l'alerte préparé par la personne, texte brut, 1 000 caractères au plus, non vide.
+
+**Annulation** (`ppf-action` = `annulation`) : `["ppf-secret","<s>"]`, le secret courant en hexadécimal. Acceptée seulement si SHA-256(`s`) est le `h` courant du même minuteur (même `ppf-timer`, même auteur). `content` vide.
+
+**Report** (`ppf-action` = `report`) : `["ppf-secret","<s>"]` (secret courant), `["ppf-deadline","<nouvelle échéance>"]`, `["ppf-hash","<h'>"]` (empreinte du nouveau secret, gardé par l'appareil de la personne). Accepté seulement si SHA-256(`s`) est le `h` courant ; `h'` devient alors le `h` courant. `content` vide.
+
+**Lecture chez le destinataire** : les enveloppes arrivent dans n'importe quel ordre (leurs dates sont aléatoires). L'appareil garde tout ce qui arrive pour un minuteur (auteur, `ppf-timer`) et suit la chaîne : partant du `h` du dépôt, une révélation compte si son secret donne le `h` courant ; un report change l'échéance et `h` ; une annulation clôt la chaîne. Sans annulation valide, l'alerte s'affiche à l'échéance, sans réseau. Un dépôt en double est ignoré ; un dépôt dont l'échéance est passée depuis plus de 7 jours n'est pas une alerte ; un minuteur est oublié 7 jours après son échéance ou son annulation (plus longtemps que la fenêtre où ses enveloppes peuvent être relues) ; 50 minuteurs au plus par appareil, 50 révélations au plus par minuteur.
+
+**Sur l'appareil de la personne** (préférence privée sur Android, fichier `minuteur.json` du dossier privé sur ordinateur ; aucune table, aucune migration) : document JSON `TimerDeviceData` (version 1) : le compte propriétaire, le minuteur armé (identifiant, échéances réelle et affichée, destinataires, texte, lieu, `h`, secret courant caché, sel et nombre d'itérations du code « je vais bien », empreinte lente du code de détresse, essais faux), les envois en attente (sceaux déjà chiffrés, réemballés à chaque essai) et les minuteurs reçus. Le secret courant n'y est jamais en clair : il est caché par un XOR avec 32 octets tirés par HKDF-SHA-256 (sel : un nonce aléatoire de 16 octets ; info : `ppf-minuteur-secret-v1`) de la clé que donne le code « je vais bien » (PBKDF2-HMAC-SHA-256, sel aléatoire de 16 octets, 600 000 itérations, puis poivre HMAC de l'Android Keystore quand il existe). Vérifier un code, c'est ouvrir cette boîte et comparer SHA-256 du résultat avec `h`.
 
 ## 5. API du serveur (version 1)
 
