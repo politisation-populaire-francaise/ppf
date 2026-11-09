@@ -196,6 +196,24 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 6. Onglet « Je veux aider » : cochez « Traduction » : seules les missions de traduction restent ; la phrase dessous rappelle que vos compétences restent sur votre appareil. Sur une mission, « Proposer mon aide » est grisé avec l'explication (il arrivera avec la messagerie de l'équipe, M30).
 7. Onglet « Entraide » : l'explication de ce qui se prépare (covoiturage, hébergement) et pourquoi ce n'est pas encore là.
 8. Tournez le téléphone ou élargissez la fenêtre : sur ordinateur, la liste et la page sont côte à côte.
+
+### Tester le minuteur « Sans nouvelles de moi » (ajouté le 9 novembre 2026, pas encore compilé)
+
+Ce minuteur prévient vos proches si vous ne confirmez pas que vous allez bien à l'heure que vous avez choisie. **Il n'est pas encore dans une version installable** : ce guide servira dès qu'il aura été compilé et sera entré dans une version de test.
+
+**Avant de commencer** : il faut **deux comptes** (la personne qui arme le minuteur et un proche qui reçoit l'alerte), et que les deux se soient déjà écrit au moins un message privé (le minuteur propose les contacts de vos conversations). L'idéal est **deux téléphones Android** avec la version de test reliée à la préproduction ; sinon, deux fenêtres de l'application sur l'ordinateur avec le serveur de développement, comme pour la messagerie (section « Échanger un message entre deux comptes sur l'ordinateur », étapes 1 à 8). Gardez toujours le même ordinateur ou les mêmes téléphones pendant l'essai.
+
+1. Sur l'appareil de la personne (compte 1) : « Agir », **Mode manifestation**, rubrique **Sans nouvelles de moi**, **Préparer un minuteur**. Lisez « Comment ça marche ».
+2. Cochez le compte 2. Laissez « Dans 2 h » ou touchez **Heure précise** et tapez une heure dans 20 minutes (pour ne pas attendre trop longtemps). Gardez le message proposé ou écrivez le vôtre, en commençant par [EXEMPLE]. Facultatif : un lieu prévu, par exemple « [EXEMPLE] Place de la République ».
+3. Choisissez un code « je vais bien » (par exemple 7391 ; 1234 ou 0000 sont refusés), tapez-le deux fois, puis un **code de détresse** différent (par exemple 2580). Touchez **Continuer** : une fenêtre explique qui recevra l'alerte et quand. Touchez d'abord **Annuler** : rien n'est armé. Recommencez et touchez **Armer le minuteur** : « Minuteur armé, dépôts partis : 1 sur 1 ».
+4. Sur l'appareil du proche (compte 2) : ouvrez « Agir » (et, si besoin, Messages pour actualiser) : en haut, le bloc **Minuteurs de vos proches** dit « … vous a désigné(e) pour un minuteur jusqu'à HH:MM ». Le message n'est pas encore visible : c'est voulu.
+5. **Vrai code** : sur l'appareil de la personne, **Je vais bien**, tapez 7391, **Valider** : « Minuteur annulé ». Chez le proche, après une actualisation des messages, la ligne devient « … a confirmé aller bien ».
+6. **Code de détresse** : armez un nouveau minuteur (étapes 2 et 3) avec une heure dans 20 minutes, puis **Je vais bien** avec 2580 : l'écran affiche exactement le même « Minuteur annulé », et plus aucun minuteur n'apparaît. Chez le proche, la ligne reste ; à l'heure prévue, **l'alerte s'affiche d'elle-même** en haut d'« Agir » et dans la feuille AIDE (après le 15 et le 112), avec le message, le lieu, l'heure de la dernière synchronisation et la phrase « une annulation a pu ne pas encore arriver ». Touchez **Masquer cette alerte**, puis **Masquer**.
+7. **Repousser** : avec un minuteur en cours, touchez **Repousser**, choisissez « Dans 1 h », tapez le vrai code : « Minuteur repoussé », et l'heure change aussi chez le proche (après actualisation).
+8. **Téléphone éteint** (deux téléphones seulement) : armez un minuteur dans 20 minutes, puis éteignez le téléphone de la personne. À l'heure, sur le téléphone du proche (PPF ouvert), l'alerte s'affiche quand même.
+9. À la fin, sur un compte d'essai seulement, l'**effacement rapide** efface aussi le minuteur et les alertes reçues ; il n'annule jamais une alerte déjà déposée chez un proche (c'est le but si le téléphone est saisi).
+
+Ce qui n'est pas encore là : le réveil du téléphone du proche à l'heure exacte quand PPF est fermé (il viendra avec les rappels de « Décider ») ; les cercles de « Communauté » à la place des contacts ; l'iPhone.
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).
