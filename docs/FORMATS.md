@@ -262,6 +262,7 @@ Le vocabulaire commun est dans `shared/core/.../core/agir/AgirFormats.kt` ; le c
 | `a` | Non | Adresse de l'appel dont l'événement est issu (AP-07) |
 | `r` | Non | Lien `http` ou `https`, sans espace |
 | `summary` | Non | Résumé court |
+| `ppf-collective` | Non | Identifiant du salon du collectif au nom duquel l'événement est publié (M24, section 4 quaterdecies) ; accepté seulement de son fondateur, de ses administrateurs et de ses modérateurs |
 
 **Codes d'erreur**, communs à l'application et au serveur : `missing_field` (message `d`), `missing_title`, `missing_start`, `bad_end`, `missing_location`, `bad_event_type`, `missing_territory`, `missing_charter`, `missing_field` avec le nom de l'étiquette pour une valeur facultative illisible, `too_long` avec le nom de l'étiquette. L'application est plus stricte que le serveur sur certaines longueurs (lieu 200 caractères, résumé 280) ; le serveur borne toute étiquette sans limite propre à 1000 caractères.
 
@@ -298,7 +299,7 @@ Réponse NIP-52 à un événement de calendrier (« Calendar Event RSVP »), adr
 Contenu adressable `30023:<clé>:<d>`, comme les revendications. `content` : le texte de l'appel en texte brut (pas de Markdown, donc aucun lien cliquable caché), 8000 caractères au plus ; pour un appel à témoins, la description factuelle, sans accuser nommément personne.
 
 - **Étiquettes communes** : `d` (l'application prend les premiers mots du titre repliés et quatre caractères hexadécimaux, 64 caractères `a-z0-9-` au plus ; le serveur accepte jusqu'à 128), `title`, `ppf-type` = `appel`, `ppf-call-type`, `ppf-territory`, `ppf-charter` = `1.0`, `published_at`, `ppf-origin` = `human`.
-- **Facultatives** : `summary`, `ppf-goal` (entier positif), `ppf-deadline` (secondes), `start`, `end`, `start_tzid` (`Europe/Paris`), `location`, `g`, `r` (liens), `ppf-call-status` (`ouvert`, écrit à la création, ou `clos` ; absente, elle se lit `ouvert`), `ppf-report` (bilan à la clôture, 2000 caractères au plus).
+- **Facultatives** : `summary`, `ppf-goal` (entier positif), `ppf-deadline` (secondes), `start`, `end`, `start_tzid` (`Europe/Paris`), `location`, `g`, `r` (liens), `ppf-call-status` (`ouvert`, écrit à la création, ou `clos` ; absente, elle se lit `ouvert`), `ppf-report` (bilan à la clôture, 2000 caractères au plus), `ppf-collective` (salon du collectif au nom duquel l'appel est lancé, M24, section 4 quaterdecies ; fondateur, administrateurs et modérateurs seulement).
 - **Valeurs libres** des champs propres aux types : texte (l'application limite à 300 caractères, 1000 pour `ppf-action`, `ppf-request`, `ppf-use`, `ppf-mission`, `ppf-alternatives` et `ppf-accessibility`, comme le serveur, qui borne toute étiquette sans limite propre à 1000 caractères, `AgirFormats.MAX_TAG_VALUE`) ; aucune coordonnée personnelle (adresse électronique, téléphone, IBAN, numéro de sécurité sociale) dans le texte ni dans les champs libres, vérifié par l'application puis par le serveur (`400 personal_data`) ; `ppf-people` et `ppf-goal` sont des entiers positifs ; `ppf-remote` vaut `oui` pour une mission à distance ; le parcours d'une manifestation va dans le texte.
 - **Clôture par l'auteur** : nouvelle version à la même adresse où seuls `ppf-call-status` (`clos`) et `ppf-report` changent (pour un appel à témoins, seul le statut peut changer sans relecture).
 
@@ -899,6 +900,32 @@ Contenus éditoriaux publics (type 30023), publiés seulement par une clé édit
 | `ppf-origin` | non | comme ci-dessus |
 
 `content` : description de la mission en Markdown simple.
+
+## 4 quaterdecies. Collectifs d'« Agir » (M24, étape 1, D-087)
+
+Un collectif **est** un salon (NIP-29, section 5 et `docs/integration/salons-roles.md`) dont la description (type 39000, signée par son fondateur) porte un marqueur et quelques étiquettes en plus. Tout le reste vient du salon : identifiant `d`, `name`, `about`, `ppf-territory`, `ppf-charter` = `1.0`, refus des doublons et garde-fous de la création (D-028, D-132), rôles et modération (D-131), fil de messages (le salon général du collectif), annuaire `GET /api/v1/groups`. Règles communes à l'application et au serveur : `shared/core/.../core/agir/collectives/Collective.kt` (`CollectiveFormat`) ; détail et raisons : `docs/integration/agir-collectifs.md`.
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `ppf-collective` | oui | `1` : marqueur et version du format ; une seule |
+| `ppf-scope` | oui | portée : `national`, `regional`, `departemental`, `local`, `quartier` ou `etablissement` ; une seule |
+| `ppf-collective-type` | oui | `collectif`, `club`, `comite`, `assemblee`, `reseau` ou `autre` ; une seule ; une valeur inconnue est lue `autre` |
+| `t` | non, 5 au plus | un thème : minuscules, espaces intérieurs réduits à un seul, sans `#` en tête, 1 à 40 caractères, jamais deux fois le même |
+| `l` | non | langue, code ISO 639-1 de deux lettres minuscules ; absente, `fr` |
+| `ppf-territory-code` | non | code du référentiel des territoires (section 4 nonies), écrit exactement comme le référentiel l'écrit (`com:69123`, `dep:2A`) ; seulement quand le fondateur a choisi un territoire proposé, jamais deviné ; sert à « près de chez moi », calculé sur l'appareil |
+| `ppf-internal-charter` | non | charte interne du collectif, publique, 3000 caractères au plus ; une seule, jamais vide |
+| `ppf-visibility` | non | `public` (absente, de même) ; seule valeur acceptée à l'étape 1. Réservées pour plus tard, refusées aujourd'hui : `prive`, `secret` (salons chiffrés de bout en bout) |
+| `ppf-join` | non | `open` (absente, de même) ; seule valeur acceptée à l'étape 1. Réservées pour plus tard, refusées aujourd'hui : `request`, `invitation` (liste des membres, point d'attention n° 26) |
+
+**Fondateur** : l'auteur de la description, premier administrateur (D-131), publiquement relié au collectif. Seul lui republie la description (`409 group_taken` pour une autre clé, `403 not_allowed` s'il a rendu son rôle d'administrateur). **Ne changent jamais** une fois le collectif créé : `ppf-collective`, `ppf-scope`, `ppf-territory-code`, `ppf-territory`, `ppf-charter`, `ppf-visibility`, `ppf-join` (`409 collective_immutable`). Un salon ordinaire ne devient pas un collectif par une nouvelle version, ni un collectif un salon ordinaire (la reprise d'un salon existant viendra avec `docs/integration/salons-reprise.md`). Les autres administrateurs changent le nom et la présentation par `edit-metadata` (9002), comme pour tout salon.
+
+**Création** : réservée à un compte de personne (pas un compte de collectif, D-133), non déclaré compromis pour cet événement (S-146) et **validé en personne** (D-112 : niveau `verifie`, ou `elu` pour un élu certifié, rencontré lui aussi) ; sinon `403 collective_needs_verified` (ou `403 account_compromised`). Sans le stockage des urnes sur le serveur, aucun collectif n'est créé. Aucune limite au nombre de collectifs par personne (les garde-fous de D-132 sur la création de salons s'appliquent).
+
+**Codes d'erreur** (`400`) : `collective_bad_marker`, `collective_bad_scope`, `collective_bad_type`, `collective_too_many_themes`, `collective_bad_theme`, `collective_bad_language`, `collective_bad_territory_code`, `collective_bad_internal_charter`, `collective_charter_too_long`, `collective_visibility_unsupported`, `collective_join_unsupported`.
+
+**Au nom d'un collectif** : une mobilisation (31923) ou un appel (30023, `ppf-type` = `appel`) peut porter `["ppf-collective", "<identifiant du salon>"]` (une seule, identifiant de salon valide, sinon `400 missing_field` avec le message `ppf-collective`). Le serveur l'accepte seulement de son fondateur ou d'une clé qui détient `admin` ou `moderator` dans le salon au moment où il le reçoit (`403 collective_role_required`) ; une étiquette qui ne désigne aucun collectif répond `404 collective_not_found`. Les règles habituelles d'« Agir » s'appliquent ensuite (relecture, contenus retenus). Un auteur qui a perdu son rôle peut encore annuler ou clore ce qu'il a publié. Les événements et appels publics rejoignent l'agenda, la carte et le mur communs. Ceux réservés aux membres attendent les salons chiffrés.
+
+**Sur l'appareil seulement** : rejoindre un collectif, c'est rejoindre son salon (table locale `group_membership`, rien n'est publié, le serveur ne connaît aucun membre) ; le nombre de membres n'est donc pas affiché. La recherche, les filtres et « près de chez moi » (commune choisie dans « Mes élus », puis les territoires qui la contiennent) ne quittent jamais l'appareil.
 
 ## 5. API du serveur (version 1)
 
