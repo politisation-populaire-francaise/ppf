@@ -1,6 +1,6 @@
 ---
 slug: glossaire-constitution
-title: [EXEMPLE] Constitution
+title: Constitution
 summary: Texte qui fixe les règles les plus importantes du pays : qui exerce le pouvoir, comment on fait les lois, quels droits sont garantis. La Constitution actuelle date du 4 octobre 1958.
 variants: Constitution, Constitution de 1958, Constitution du 4 octobre 1958, Constitution de la Ve République
 topics: institutions
@@ -8,7 +8,7 @@ see_also: glossaire-conseil-constitutionnel, glossaire-president-de-la-republiqu
 related: parcours:la-revision-de-la-constitution, parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 La Constitution est la règle du jeu de la vie politique. Elle dit qui fait quoi : le Président de la République, le Gouvernement, le Parlement, les juges, les collectivités territoriales. Toutes les lois doivent la respecter.
 
@@ -22,5 +22,5 @@ Exemple de révision : pour modifier la Constitution, le texte doit être voté 
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (préambule, articles 1er, 3 et 89)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Préambule de la Constitution du 27 octobre 1946](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (préambule, articles 1er, 3 et 89)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Préambule de la Constitution du 27 octobre 1946](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946), consulté le 2026-11-09

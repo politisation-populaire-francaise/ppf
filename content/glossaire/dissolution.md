@@ -1,6 +1,6 @@
 ---
 slug: glossaire-dissolution
-title: [EXEMPLE] Dissolution
+title: Dissolution
 summary: Décision du Président de la République de mettre fin avant terme au mandat de tous les députés. De nouvelles élections législatives ont lieu dans les vingt à quarante jours.
 variants: dissolution de l'Assemblée nationale, dissolution de l'Assemblée, dissolutions de l'Assemblée nationale, dissoudre l'Assemblée nationale
 topics: institutions, parlement, elections
@@ -8,7 +8,7 @@ see_also: glossaire-assemblee-nationale, glossaire-president-de-la-republique, g
 related: parcours:la-dissolution
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 La dissolution met fin au mandat de tous les députés avant la date prévue. C'est le Président de la République qui la décide, après avoir consulté le Premier ministre et les présidents des deux assemblées (Constitution, article 12). Il n'a pas besoin de la signature du Premier ministre (article 19).
 
@@ -27,4 +27,4 @@ Exemple : après une dissolution, chaque électeur vote de nouveau dans sa circo
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 7, 12, 16 et 19)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 7, 12, 16 et 19)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09

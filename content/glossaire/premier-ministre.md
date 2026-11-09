@@ -1,6 +1,6 @@
 ---
 slug: glossaire-premier-ministre
-title: [EXEMPLE] Premier ministre
+title: Premier ministre
 summary: Chef du Gouvernement, nommé par le Président de la République. Il dirige l'action du Gouvernement, fait appliquer les lois et signe la plupart des décrets. Les députés peuvent le renverser.
 variants: Premier ministre, Première ministre, Premiers ministres
 topics: institutions, gouvernement
@@ -8,7 +8,7 @@ see_also: glossaire-gouvernement, glossaire-president-de-la-republique, glossair
 related: parcours:le-49-3-et-la-motion-de-censure
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le Premier ministre est le chef du Gouvernement. Le Président de la République le nomme. Il met fin à ses fonctions quand le Premier ministre lui présente la démission du Gouvernement (Constitution, article 8). Les autres ministres sont nommés sur proposition du Premier ministre.
 
@@ -22,4 +22,4 @@ Exemple : une loi nouvelle renvoie souvent à un décret pour fixer un détail, 
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 8, 13, 21, 49 et 50)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 8, 13, 21, 49 et 50)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09

@@ -1,6 +1,6 @@
 ---
 slug: glossaire-motion-de-censure
-title: [EXEMPLE] Motion de censure
+title: Motion de censure
 summary: Vote par lequel les députés peuvent renverser le Gouvernement. Elle n'est adoptée qu'avec les voix de la majorité absolue des membres de l'Assemblée nationale.
 variants: motion de censure, motions de censure, censure du Gouvernement
 topics: institutions, parlement, gouvernement
@@ -8,7 +8,7 @@ see_also: glossaire-49-3, glossaire-gouvernement, glossaire-assemblee-nationale,
 related: parcours:le-49-3-et-la-motion-de-censure, decryptage:49-3-loi-sans-vote
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Une motion de censure est un texte par lequel des députés mettent en cause la responsabilité du Gouvernement. Si elle est adoptée, le Gouvernement est renversé : le Premier ministre doit remettre sa démission au Président de la République (Constitution, article 50).
 
@@ -28,4 +28,4 @@ Seule l'Assemblée nationale peut voter une motion de censure ; le Sénat ne le 
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 24, 49 et 50)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 24, 49 et 50)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
