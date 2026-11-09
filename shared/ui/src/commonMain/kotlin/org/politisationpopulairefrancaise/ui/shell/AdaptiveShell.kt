@@ -102,6 +102,7 @@ import org.politisationpopulairefrancaise.ui.agir.security.LocalPreparePhoneNoti
 import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
 import org.politisationpopulairefrancaise.ui.agir.timer.rememberTimerState
+import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
 import org.politisationpopulairefrancaise.core.voir.VoirDeviceData
 import org.politisationpopulairefrancaise.ui.agir.security.rememberDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
@@ -241,6 +242,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // AG-55 « Sans nouvelles de moi » (D-088): the timer armed here and the deposits received; erasing never cancels a deposit.
     val timer = rememberTimerState(dependencies, help, accountSession, messaging)
     RegisterErasable(dependencies, "agir-minuteur") { timer.eraseFromDevice() }
+    // AG-58 « Caméra protégée » (D-089): the photos of the vault; erasing destroys the Keystore key, then the files.
+    val protectedCamera = rememberProtectedCameraState()
+    help.camera = protectedCamera
+    RegisterErasable(dependencies, "agir-camera") { protectedCamera.eraseFromDevice() }
     // « Comprendre » (S-44): progress of the courses, chosen commune and directory packages, department packages of the territories.
     dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
     // Décider: the voting tokens, pending requests and choices of the device (S-44).

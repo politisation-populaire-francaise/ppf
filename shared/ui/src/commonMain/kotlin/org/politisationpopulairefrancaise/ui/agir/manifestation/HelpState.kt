@@ -15,6 +15,8 @@ import org.politisationpopulairefrancaise.core.agir.timer.TimerCandidate
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.elus.ElusStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.agir.camera.ProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.timer.TimerState
 import org.politisationpopulairefrancaise.ui.agir.timer.rememberTimerState
@@ -128,6 +130,13 @@ class HelpState(
      * outside it (the protest mode and the sheet alone, in tests), where its blocks show nothing.
      */
     var timer: TimerState? = null
+
+    /**
+     * « Caméra protégée » (AG-58, D-089), attached by the shell ([rememberProtectedCameraState]) so that
+     * the protest mode and the testimony form use the one whose part `agir-camera` the quick erase
+     * knows; null outside it (tests), where the screens build their own.
+     */
+    var camera: ProtectedCameraState? = null
 
     /**
      * The verified legal teams of the directory that have an account (their verified key, `p`): they
