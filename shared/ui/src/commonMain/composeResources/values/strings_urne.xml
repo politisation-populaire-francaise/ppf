@@ -77,4 +77,25 @@
     <string name="urne_results_too_few">Citoyens : moins de %1$d bulletins pour l’instant.</string>
     <string name="urne_elected_too_few">Élus, comptés à part : moins de %1$d bulletins pour l’instant.</string>
     <string name="urne_alert">Alerte : le serveur n’a pas montré à cet appareil la même clé de vote qu’à tout le monde. Rien n’a été gardé et le vote est suspendu ici. Merci de le signaler à l’équipe.</string>
+    <!-- « Mon bulletin a été compté » (DE-29) -->
+    <string name="urne_mine_explain">Ce vote est clos et la liste anonyme des bulletins est publiée. Votre appareil peut la télécharger, la même pour tous, refaire le compte et y chercher votre bulletin. Rien n’est envoyé sur vous. La liste peut être longue : préférez le Wi-Fi.</string>
+    <string name="urne_mine_button">Recompter et vérifier mon bulletin</string>
+    <string name="urne_mine_running">Recomptage en cours sur votre appareil…</string>
+    <string name="urne_mine_unavailable">La liste des bulletins n’est pas disponible pour l’instant. Réessayez plus tard.</string>
+    <string name="urne_mine_counted">Votre bulletin est dans la liste publiée, avec le choix que vous avez fait.</string>
+    <string name="urne_mine_withdrawn">Votre retrait est dans la liste publiée : votre vote n’est pas compté, comme vous l’avez demandé.</string>
+    <string name="urne_mine_earlier">Votre bulletin est dans la liste publiée avec votre choix précédent : le dernier n’est pas parti avant la clôture.</string>
+    <string name="urne_mine_not_sent">Votre choix n’est pas parti avant la clôture : il n’est pas compté.</string>
+    <string name="urne_mine_not_voted">Aucun bulletin de cet appareil dans ce vote.</string>
+    <string name="urne_mine_missing">Alerte : le serveur avait accepté votre bulletin, et il manque dans la liste publiée.</string>
+    <string name="urne_mine_altered">Alerte : votre bulletin est dans la liste publiée, mais avec un autre choix ou un autre niveau que ceux de votre appareil.</string>
+    <string name="urne_mine_recount_correct">Recomptage : les résultats publiés correspondent exactement aux bulletins de la liste.</string>
+    <string name="urne_mine_recount_wrong">Alerte, recomptage : %1$s. Chacun peut refaire ce recomptage, la liste est la même pour tous.</string>
+    <string name="urne_mine_no_receipt">Cette vérification n’est gardée nulle part et ne montre ni votre choix ni votre bulletin : elle ne peut servir de preuve à personne, et personne ne peut vous obliger à prouver votre vote.</string>
+    <string name="urne_recount_totals">les totaux publiés ne correspondent pas aux bulletins</string>
+    <string name="urne_recount_key">une clé publiée ne correspond pas à celle annoncée à l’ouverture</string>
+    <string name="urne_recount_invalid_token">un bulletin porte un jeton non valable</string>
+    <string name="urne_recount_duplicate">deux bulletins portent le même identifiant</string>
+    <string name="urne_recount_too_many">il y a plus de bulletins que de jetons distribués</string>
+    <string name="urne_recount_unknown">un bulletin porte un choix ou un niveau inconnu</string>
 </resources>

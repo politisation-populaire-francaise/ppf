@@ -419,6 +419,15 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Une autre application déclenche les rappels ou les fait taire | Récepteur de l'alarme non exporté (intention explicite de l'application) ; récepteur du redémarrage qui n'accepte que l'action envoyée par le système, et qui ne fait que relire l'appareil | |
 | Un rappel arrive trop tard (alarme retardée par Android, téléphone éteint, application de bureau fermée) | Rappels 7 à 10 jours avant les dates limites ; la page de l'élection montre toujours toutes les dates ; l'écran dit que sur ordinateur un rappel s'affiche à l'ouverture | Notifications locales programmées sur iPhone avec l'application iOS |
 
+## Ajout du 9 novembre 2026 : « Mon bulletin a été compté » (DE-29)
+
+| Menace | Parade | Statut |
+|---|---|---|
+| Serveur qui retire ou change un bulletin accepté, ou publie de faux totaux | Chaque appareil cherche son bulletin par son identifiant secret dans la liste publiée et rejoue le recomptage ; alerte affichée, et chacun peut refaire le recomptage avec la même liste | Fait (non compilé) |
+| Serveur qui annonce une autre clé à la clôture | La clé du niveau de l'appareil est celle épinglée à la réception du jeton ; limite : les autres niveaux sont vérifiés avec les clés de la clôture | Fait, limite écrite (`docs/integration/mon-bulletin-compte.md`) |
+| Apprendre qui a voté en voyant qui télécharge la liste d'une urne | Même bouton pour tous, aucune vérification automatique, client anonyme sans compte ni connexion partagée ; reste l'adresse réseau commune (limite R5, jusqu'à Tor en phase 3), et aucune adresse IP n'est journalisée | Fait (non compilé) |
+| Contrainte ou achat de vote : prouver son choix à un tiers | Aucun reçu : réponse jamais gardée, sans le choix, sans `y` ni jeton, sans copie ni partage ; l'identifiant `y` ne quitte l'appareil que dans le bulletin anonyme | Fait (non compilé) |
+
 ## Ajout du 9 novembre 2026 : questionnaire citoyen anonyme (M26, prévu, analyse d'impact)
 
 | Menace | Parade prévue (rien n'est codé) | Statut |

@@ -279,6 +279,12 @@ La pétition locale est inventée et marquée [EXEMPLE] ; elle est rattachée au
 3. Touchez la carte : la page dit à quelle collectivité la demande s'adresse, comment signer (ici sur papier), et ce que dit la loi (un dixième des électeurs d'une commune, une seule demande par trimestre, le conseil décide librement).
 4. Sans commune choisie, la section n'apparaît pas.
 
+### « Mon bulletin a été compté » (ajouté le 9 novembre 2026)
+
+Quand une urne est close (par exemple une revendication que l'équipe a retenue), sa page propose **Recompter et vérifier mon bulletin**. Votre appareil télécharge la liste anonyme des bulletins, la même pour tout le monde, refait tout le compte et y cherche votre bulletin. Il vous dit si votre bulletin est compté avec votre choix, sans jamais afficher ce choix ni garder la réponse : elle ne peut servir de preuve à personne, et c'est voulu (personne ne peut vous obliger à prouver votre vote). En cas de problème, une alerte s'affiche.
+
+Pas encore essayable à la main : il faut qu'une urne soit close, ce que fait l'équipe depuis le back-office. Les tests automatiques vérifient la recherche du bulletin et le recomptage.
+
 ### Essayer le vote anonyme sur l'ordinateur (ajouté le 7 novembre 2026, au soir)
 
 Le vote marche maintenant de bout en bout, mais seulement avec un serveur. Sur votre ordinateur, un serveur de développement suffit ; il ne contient que des exemples. Il faut deux fenêtres de commande, ouvertes dans le dossier du projet.
