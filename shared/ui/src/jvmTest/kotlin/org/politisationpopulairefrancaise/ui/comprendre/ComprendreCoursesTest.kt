@@ -25,6 +25,7 @@ import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.editorial.ContentCheck
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -36,6 +37,7 @@ import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -91,7 +93,9 @@ class ComprendreCoursesTest {
             bundled.map { it.article.slug }.toSet(),
         )
         bundled.forEach { course ->
-            assertTrue(course.article.title.startsWith("[EXEMPLE]"), course.article.slug)
+            // Real contents written with an AI (decision of the owner, 9 November 2026): no marker, origin shown.
+            assertFalse(course.article.title.startsWith("[EXEMPLE]"), course.article.slug)
+            assertEquals(ContentOrigin.AI_ASSISTED, course.article.origin, course.article.slug)
             assertTrue(course.steps.isNotEmpty() && course.steps.all { it.quiz != null }, course.article.slug)
             assertNotNull(course.nextActions, course.article.slug)
             assertNotNull(course.sources, course.article.slug)

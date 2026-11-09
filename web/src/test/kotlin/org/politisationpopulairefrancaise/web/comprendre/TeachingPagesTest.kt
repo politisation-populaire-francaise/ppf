@@ -85,9 +85,10 @@ class TeachingPagesTest {
 
     @Test
     fun theExampleSheetIsAnExampleOfTheLyceeLinkedToItsCourse() {
-        assertTrue(sheet.article.title.startsWith("[EXEMPLE]"))
+        // A real content written with an AI (decision of the owner, 9 November 2026): no marker, no banner.
+        assertFalse(sheet.article.title.startsWith("[EXEMPLE]"))
         assertEquals(ContentOrigin.AI_ASSISTED, sheet.article.origin)
-        assertTrue(sheet.article.body.contains("rédigé avec l'aide d'une IA"))
+        assertFalse(sheet.article.body.contains("brouillon de démonstration"))
         assertEquals(TeachingLevel.LYCEE, sheet.level)
         assertEquals(55, sheet.article.durationMinutes)
         assertEquals(55, sheet.totalMinutes, "the timed steps add up to the duration")
@@ -116,7 +117,7 @@ class TeachingPagesTest {
         assertTrue(html.contains(">CC BY 4.0<span class=\"external-mark\"> (site extérieur)</span></a>, Politisation Populaire Française."))
         // The verification code of this version is printed with the sheet (S-141).
         assertTrue(html.contains("href=\"/v/${sheet.article.event.id.take(16)}\""))
-        assertTrue(html.contains("Contenu d’exemple"))
+        assertFalse(html.contains("Contenu d’exemple"))
         assertTrue(html.contains("Rédigé avec l’aide d’une IA"))
         listOf("Objectifs", "Prérequis", "Déroulé", "Débat guidé", "Objections et réponses").forEach { assertTrue(html.contains(it), it) }
         assertTrue(html.contains("id=\"sources\""))
@@ -202,7 +203,8 @@ class TeachingPagesTest {
                 else -> TeachingLevel.LYCEE
             }
             assertEquals(expected, sheet.level, name)
-            assertTrue(sheet.article.title.startsWith("[EXEMPLE]"), name)
+            assertFalse(sheet.article.title.startsWith("[EXEMPLE]"), name)
+            assertEquals(ContentOrigin.AI_ASSISTED, sheet.article.origin, name)
             if (sheet.isWorkshop) {
                 assertEquals(null, sheet.programme, "$name: a workshop serves no programme")
                 assertTrue(sheet.totalMinutes in 45..120, "$name: 45 minutes to 2 hours")

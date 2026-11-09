@@ -1,6 +1,6 @@
 ---
 slug: lancer-une-petition-locale
-title: [EXEMPLE] Lancer une pétition locale
+title: Lancer une pétition locale
 summary: Demander à votre commune, votre département, votre région ou votre intercommunalité d'organiser une consultation des électeurs : combien de signatures il faut, comment les recueillir, à qui remettre la demande et ce qui se passe ensuite.
 topics: democratie, petitions, collectivites
 type: fiche-pratique
@@ -17,7 +17,7 @@ review_by: 2027-11-01
 - **PPF ne recueille aucune signature** : on signe auprès des organisateurs, ou sur la page officielle de la collectivité quand elle en propose une.
 :::
 
-**[EXEMPLE] Cette fiche est un brouillon de démonstration, préparé avec l'aide d'une IA à partir des textes officiels cités en bas, lus sur Légifrance le 9 novembre 2026. Elle doit être relue par l'équipe éditoriale avant toute publication. C'est une information juridique générale, pas un conseil juridique.**
+**C'est une information juridique générale, pas un conseil juridique : pour votre situation, consultez un avocat.**
 
 ## Ce que permet une pétition locale
 
@@ -104,10 +104,10 @@ Pour une collectivité autre que la commune, les organisateurs doivent aussi rem
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 72-1 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527593
-- Code général des collectivités territoriales, article L1112-16, rédaction de la loi n° 2022-217 du 21 février 2022 (article 14), en vigueur depuis le 23 février 2022 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045210334
-- Code général des collectivités territoriales, articles L1112-15 à L1112-23 (consultation des électeurs) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006180929/
-- Code général des collectivités territoriales, article LO1112-6 (périodes sans référendum local ni consultation) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006389049
-- Code général des collectivités territoriales, article L5211-49 (intercommunalités), rédaction de la même loi (article 15) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045210340
-- Code électoral, article L37 (communication et copie des listes électorales) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049715085
-- Règlement (UE) 2016/679 (RGPD), article 9 (catégories particulières de données) : https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:32016R0679
+- Constitution du 4 octobre 1958, article 72-1, consultée le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527593
+- Code général des collectivités territoriales, article L1112-16, rédaction de la loi n° 2022-217 du 21 février 2022 (article 14), en vigueur depuis le 23 février 2022, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045210334
+- Code général des collectivités territoriales, articles L1112-15 à L1112-23 (consultation des électeurs), consultés le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006180929/
+- Code général des collectivités territoriales, article LO1112-6 (périodes sans référendum local ni consultation), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006389049
+- Code général des collectivités territoriales, article L5211-49 (intercommunalités), rédaction de la même loi (article 15), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045210340
+- Code électoral, article L37 (communication et copie des listes électorales), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049715085
+- Règlement (UE) 2016/679 (RGPD), article 9 (catégories particulières de données, dont les opinions politiques), texte publié par la CNIL, consulté le 2026-11-09 : https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre2

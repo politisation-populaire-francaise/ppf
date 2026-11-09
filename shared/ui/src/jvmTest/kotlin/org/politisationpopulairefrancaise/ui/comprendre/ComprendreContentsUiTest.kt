@@ -24,6 +24,7 @@ import org.politisationpopulairefrancaise.core.comprendre.HistoryStory
 import org.politisationpopulairefrancaise.core.comprendre.QuiDecide
 import org.politisationpopulairefrancaise.core.comprendre.Verdict
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -36,6 +37,7 @@ import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -89,7 +91,9 @@ class ComprendreContentsUiTest {
             assertTrue(ContentBlocks.hasObjections(article.body), "${article.slug} presents objections and answers")
         }
         (checks.map { it.article } + stories.map { it.article } + sheets.map { it.article }).forEach { article ->
-            assertTrue(article.title.startsWith("[EXEMPLE]"), article.slug)
+            // Real contents written with an AI (decision of the owner, 9 November 2026): no marker, origin shown.
+            assertFalse(article.title.startsWith("[EXEMPLE]"), article.slug)
+            assertEquals(ContentOrigin.AI_ASSISTED, article.origin, article.slug)
             assertEquals(emptyList(), ContentBlocks.problems(article.body), article.slug)
         }
         assertNotNull(articles.firstOrNull { it.slug == METHOD_SLUG }, "the method page explains the verdicts")
