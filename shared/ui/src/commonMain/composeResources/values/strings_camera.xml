@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AG-58 « Caméra protégée » (Agir, decision D-089), step 1: photos taken in PPF, encrypted outside the
+     phone's gallery, never in a backup. French, "vous", typographic apostrophe (’), no em dash. -->
+<resources>
+    <!-- Entry (protest mode, testimony) -->
+    <string name="camera_entry_title">Caméra protégée</string>
+    <string name="camera_entry_text">Les photos prises ici restent chiffrées dans PPF : elles ne vont jamais dans la galerie du téléphone ni dans une sauvegarde en ligne. La position, le modèle du téléphone et la date sont retirés sur votre téléphone.</string>
+    <string name="camera_entry_open">Ouvrir la caméra protégée</string>
+    <string name="camera_entry_count">Photos protégées sur ce téléphone : %1$d</string>
+    <string name="camera_android_only">La caméra protégée est disponible dans l’application Android. Sur cet appareil, aucune photo n’est prise ni gardée par PPF.</string>
+    <string name="camera_testimony_open">Prendre une photo avec la caméra protégée</string>
+
+    <!-- Screen -->
+    <string name="camera_title">Caméra protégée</string>
+    <string name="camera_intro">Prenez des photos qui restent protégées dans PPF, hors de la galerie du téléphone.</string>
+    <string name="camera_back">Retour</string>
+    <string name="camera_how_title">Ce que fait la caméra protégée</string>
+    <string name="camera_how_1">La photo ne passe jamais par la galerie du téléphone : elle va de la caméra à la mémoire de PPF, puis elle est chiffrée avant d’être écrite.</string>
+    <string name="camera_how_2">La position, le modèle du téléphone, la date et les autres métadonnées sont retirés sur votre téléphone. L’image elle-même n’est pas modifiée.</string>
+    <string name="camera_how_3">Chaque photo a sa propre clé, elle-même protégée par une clé qui ne quitte jamais votre téléphone. Aucune copie ne part vers une sauvegarde en ligne ni vers le serveur de PPF.</string>
+    <string name="camera_how_4">L’effacement rapide de PPF détruit cette clé et les photos d’un coup.</string>
+    <string name="camera_limits">Une capture d’écran faite par le téléphone, une photo prise avec l’application photo habituelle ou un téléphone déjà espionné échappent à cette protection.</string>
+
+    <!-- Capture -->
+    <string name="camera_take_title">Prendre une photo</string>
+    <string name="camera_permission_needed">Pour prendre des photos protégées, autorisez la caméra. Elle ne sert qu’aux photos que vous prenez ici, sur votre téléphone : rien n’est envoyé.</string>
+    <string name="camera_permission_allow">Autoriser la caméra</string>
+    <string name="camera_preview_description">Image de la caméra</string>
+    <string name="camera_shutter">Prendre une photo protégée</string>
+    <string name="camera_saving">Protection de la photo en cours…</string>
+    <string name="camera_saved">Photo protégée. Elle est chiffrée dans PPF, hors de la galerie du téléphone.</string>
+    <string name="camera_capture_failed">La photo n’a pas pu être prise. Réessayez.</string>
+    <string name="camera_not_protected">La photo n’a pas pu être protégée : elle n’a pas été gardée.</string>
+
+    <!-- Gallery -->
+    <string name="camera_gallery_title">Mes photos protégées</string>
+    <string name="camera_gallery_private">Visibles seulement dans PPF, sur ce téléphone.</string>
+    <string name="camera_gallery_empty">Aucune photo protégée sur ce téléphone.</string>
+    <string name="camera_gallery_loading">Ouverture des photos…</string>
+    <string name="camera_photo_label">Photo du %1$s à %2$s</string>
+    <string name="camera_open_failed">Cette photo n’a pas pu être ouverte.</string>
+
+    <!-- One photo -->
+    <string name="camera_view_close">Fermer la photo</string>
+    <string name="camera_view_loading">Ouverture de la photo…</string>
+    <string name="camera_testify">Témoigner avec cette photo</string>
+    <string name="camera_save_gallery">Enregistrer dans la galerie du téléphone</string>
+    <string name="camera_delete">Supprimer</string>
+    <string name="camera_cancel">Annuler</string>
+
+    <!-- Delete -->
+    <string name="camera_delete_title">Supprimer cette photo ?</string>
+    <string name="camera_delete_text">La photo sera effacée de ce téléphone. Cette action ne peut pas être annulée.</string>
+    <string name="camera_delete_confirm">Supprimer la photo</string>
+    <string name="camera_deleted">Photo supprimée.</string>
+    <string name="camera_delete_failed">La photo n’a pas pu être supprimée. Réessayez.</string>
+
+    <!-- Save to the phone's gallery (principle 10: a warning first) -->
+    <string name="camera_save_title">Sortir une copie de la protection ?</string>
+    <string name="camera_save_text">La copie enregistrée dans la galerie du téléphone ne sera plus protégée par PPF : elle pourra être sauvegardée en ligne par le service photo du téléphone et vue par toute personne qui ouvre la galerie. Les métadonnées restent retirées, et la photo reste aussi protégée dans PPF.</string>
+    <string name="camera_save_confirm">Enregistrer quand même</string>
+    <string name="camera_saved_gallery">Une copie est dans la galerie du téléphone, hors de la protection de PPF.</string>
+    <string name="camera_save_failed">La copie n’a pas pu être enregistrée dans la galerie.</string>
+</resources>

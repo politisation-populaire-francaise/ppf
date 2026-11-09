@@ -38,6 +38,7 @@ import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaLibrary
 import org.politisationpopulairefrancaise.ui.agir.agenda.rememberAgendaLibrary
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsLibrary
 import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
+import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
 import org.politisationpopulairefrancaise.ui.agir.collectives.CollectivesScreen
 import org.politisationpopulairefrancaise.ui.agir.collectives.rememberCollectivesLibrary
 import org.politisationpopulairefrancaise.ui.agir.manifestation.LocalHelpState
@@ -151,6 +152,8 @@ fun AgirScreen(
     val solidarityLibrary = solidarity ?: rememberSolidarityLibrary(dependencies)
     // The protest mode shares the AIDE button's state (rally point, legal teams); alone (tests), its own.
     val help = LocalHelpState.current ?: rememberHelpState(dependencies, directory, library)
+    // « Caméra protégée » (AG-58): the shell's, attached to its help state (the quick erase knows it); alone (tests), its own.
+    val camera = help.camera ?: rememberProtectedCameraState()
     // "Je témoigne" of a call for witnesses opens the form linked to the call; back returns to the calls.
     val testify: (String, String) -> Unit = { address, title ->
         testimonyLibrary.answer(address, title)
@@ -243,7 +246,15 @@ fun AgirScreen(
                     modifier = Modifier.fillMaxSize(),
                 )
                 AgirRoute.ROOMS -> Collectives(dependencies, rooms, session, windowClass, onNavigate, onBack = { route = AgirRoute.COLLECTIVES })
-                AgirRoute.MANIFESTATION -> ManifestationScreen(help, windowClass, onBack = home)
+                AgirRoute.MANIFESTATION -> ManifestationScreen(
+                    help, windowClass, onBack = home, camera = camera,
+                    // « Témoigner avec cette photo » of the protected camera: the form opens with the photo; back returns here.
+                    onTestifyWithPhoto = { bytes, takenAt ->
+                        testimonyLibrary.attachFromCamera(bytes, takenAt)
+                        returnTo = AgirRoute.MANIFESTATION
+                        route = AgirRoute.TESTIFY
+                    },
+                )
                 AgirRoute.SOLIDARITY -> SolidarityScreen(
                     library = solidarityLibrary,
                     directory = directory,
@@ -265,6 +276,7 @@ fun AgirScreen(
                         returnTo = null
                     },
                     onCreateAccount = { onNavigate(Space.MON_ESPACE) },
+                    camera = camera,
                 )
             }
         }
