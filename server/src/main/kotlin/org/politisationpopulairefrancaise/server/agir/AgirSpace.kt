@@ -11,6 +11,7 @@ import org.politisationpopulairefrancaise.core.agir.AgirFormats
 import org.politisationpopulairefrancaise.core.publication.HeldState
 import org.politisationpopulairefrancaise.core.signing.EventReplacement
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.server.agir.collectives.CollectiveRoles
 import org.politisationpopulairefrancaise.server.api.ApiError
 import org.politisationpopulairefrancaise.server.api.PublishResponse
 import org.politisationpopulairefrancaise.server.events.EventFilter
@@ -49,6 +50,8 @@ class AgirSpace(
     private val events: EventRepository,
     private val policy: PublicationPolicy,
     val clock: Clock = Clock.systemUTC(),
+    /** Who publishes in the name of a collectif (M24, D-087): its founder, administrators and moderators. */
+    private val collectives: CollectiveRoles = CollectiveRoles(events),
 ) {
     /** What POST /api/v1/events does with an event the policy allowed. */
     sealed interface Route {
@@ -67,6 +70,8 @@ class AgirSpace(
 
     /** Reads the verified organisations (cached), and the known versions for a cancellation or a closure. */
     fun route(event: SignedEvent): Route {
+        // In the name of a collectif: only its founder, administrators and moderators; an author still ends what they published.
+        collectives.refusal(event)?.let { refusal -> return authorsEnding(event) ?: Route.Refuse(refusal) }
         val normal = normalRoute(event)
         if (normal == Route.Publish) return normal
         return authorsEnding(event) ?: normal
