@@ -40,7 +40,7 @@ Dès le début, un officier ou un agent de police judiciaire doit vous informer,
 - **Garder le silence** : après avoir donné votre identité, vous pouvez faire des déclarations, répondre aux questions ou vous taire (article 63-1).
 - **Faire prévenir un proche** par téléphone : une personne avec qui vous vivez, un parent, un frère ou une sœur, ou toute autre personne de votre choix, ainsi que votre employeur et, si vous êtes étranger, votre consulat. L’appel doit être passé dans les **trois heures** suivant votre demande (article 63-2).
 - **Communiquer avec ce proche** : l’officier de police judiciaire peut vous y autoriser, par écrit, par téléphone ou lors d’un entretien, pendant **trente minutes** au plus (article 63-2).
-- **Être examiné par un médecin**, dans les trois heures suivant la demande ; un membre de votre famille peut aussi le demander. En cas de prolongation, vous pouvez demander un second examen (article 63-3).
+- **Être examiné par un médecin** : les démarches pour le faire venir doivent être faites dans les trois heures suivant la demande ; un membre de votre famille peut aussi le demander. En cas de prolongation, vous pouvez demander un second examen (article 63-3).
 - **Être assisté par un avocat**, choisi par vous ou commis d’office, dès le début et à tout moment (article 63-3-1).
 - **Avoir un interprète** si vous ne comprenez pas le français ; une personne sourde qui ne sait ni lire ni écrire a droit à un interprète en langue des signes ou à une personne qualifiée (article 63-1).
 - **Consulter certaines pièces** : le procès-verbal de notification de vos droits, le certificat médical et les procès-verbaux de vos auditions (articles 63-1 et 63-4-1).
@@ -76,7 +76,7 @@ L’avocat commis d’office **n’est pas gratuit pour tout le monde**. L’Ét
 
 ## Les mineurs
 
-- Avant 13 ans, un mineur ne peut pas être placé en garde à vue. De 10 à 13 ans, il peut seulement être **retenu**, à titre exceptionnel, douze heures au plus, renouvelables une fois (code de la justice pénale des mineurs, articles L413-1 à L413-6).
+- Avant 13 ans, un mineur ne peut pas être placé en garde à vue. De 10 à 13 ans, il peut seulement être **retenu**, à titre exceptionnel et pour un crime ou un délit puni d’au moins cinq ans de prison, douze heures au plus, renouvelables une fois (code de la justice pénale des mineurs, articles L413-1 à L413-6).
 - Les parents sont informés. L’**avocat est obligatoire** dès le début ; un médecin examine d’office le mineur de moins de 16 ans (articles L413-7 à L413-9).
 
 ::: conseil
