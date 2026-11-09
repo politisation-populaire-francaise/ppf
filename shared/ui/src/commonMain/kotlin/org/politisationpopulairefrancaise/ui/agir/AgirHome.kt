@@ -38,6 +38,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.ui.agir.timer.TimerHomeBlock
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.PageHeader
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
@@ -138,6 +139,8 @@ internal fun AgirHome(windowClass: WindowClass, onOpen: (AgirRubric) -> Unit, mo
     Column(modifier.fillMaxSize().background(palette.surface1).verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp)) {
         Column(Modifier.widthIn(max = 1100.dp).testTag(AgirTags.HOME)) {
             PageHeader(stringResource(Res.string.space_agir), stringResource(Res.string.agir_intro))
+            // AG-55 « Sans nouvelles de moi »: the alerts of relatives first, then the person's own timer and the discreet lines.
+            TimerHomeBlock(onOpenOwn = { onOpen(AgirRubrics.MANIFESTATION) }, modifier = Modifier.padding(top = 16.dp))
             Spacer(Modifier.height(24.dp))
             SectionTitle(stringResource(Res.string.agir_rubrics_title))
             Spacer(Modifier.height(12.dp))

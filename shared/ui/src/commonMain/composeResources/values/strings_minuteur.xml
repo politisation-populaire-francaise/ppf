@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AG-55 « Sans nouvelles de moi » (Agir, decision D-088): the timer of the protest mode and the
+     timers of relatives received on this device. French, "vous", typographic apostrophe (’), no em
+     dash. Times are written HH:MM, Paris time, like the agenda. -->
+<resources>
+    <!-- Entry in the protest mode -->
+    <string name="timer_entry_title">Sans nouvelles de moi</string>
+    <string name="timer_entry_text">Si vous ne confirmez pas que vous allez bien à l’heure choisie, l’alerte que vous avez préparée s’affiche chez les proches que vous avez choisis. Elle est déposée chiffrée à l’avance sur leurs appareils : elle part même si votre téléphone est éteint ou saisi.</string>
+    <string name="timer_entry_open">Préparer un minuteur</string>
+    <string name="timer_entry_armed">Votre minuteur est en cours jusqu’à %1$s.</string>
+    <string name="timer_entry_show">Voir mon minuteur</string>
+
+    <!-- Screen -->
+    <string name="timer_title">Sans nouvelles de moi</string>
+    <string name="timer_intro">Vous choisissez une heure. Avant cette heure, vous tapez votre code « je vais bien ». Sans ce code, l’alerte que vous avez préparée s’affiche d’elle-même chez les proches choisis.</string>
+    <string name="timer_back">Retour</string>
+    <string name="timer_how_title">Comment ça marche</string>
+    <string name="timer_how_1">L’alerte est déposée à l’avance, chiffrée, sur l’appareil de chaque proche choisi. Le serveur de PPF ne voit que des enveloppes fermées : ni le contenu, ni l’heure, ni qui les envoie.</string>
+    <string name="timer_how_2">À l’heure choisie, sans annulation de votre part, l’alerte s’affiche chez eux, même si votre téléphone est éteint, perdu ou saisi.</string>
+    <string name="timer_how_3">Le code de détresse, si vous en choisissez un, affiche exactement « Minuteur annulé » mais n’envoie rien : l’alerte part quand même à l’heure prévue.</string>
+    <string name="timer_how_4">PPF ne lit jamais votre position. Le lieu prévu, si vous en donnez un, est écrit par vous.</string>
+    <string name="timer_how_5">Rien n’est armé tant que vous ne l’avez pas décidé.</string>
+
+    <!-- Unavailable -->
+    <string name="timer_no_account">Il faut un compte pour préparer un minuteur : l’alerte est déposée chez vos proches par votre messagerie privée. Créez votre compte ou retrouvez-le dans « Mon espace ».</string>
+    <string name="timer_no_server">Cette version de PPF n’est reliée à aucun serveur : l’alerte ne peut pas être déposée à l’avance chez vos proches.</string>
+    <string name="timer_no_storage">Le minuteur n’est pas encore disponible sur cet appareil.</string>
+
+    <!-- Setup -->
+    <string name="timer_setup_title">Préparer le minuteur</string>
+    <string name="timer_recipients_title">Qui prévenir</string>
+    <string name="timer_recipients_text">Choisissez parmi les personnes avec qui vous avez une conversation privée. Chacune ignore qui d’autre est prévenu.</string>
+    <string name="timer_recipients_none">Aucun contact pour l’instant. Commencez d’abord une conversation privée avec les personnes à prévenir, dans « Messages ».</string>
+    <string name="timer_legal_title">Une legal team (facultatif)</string>
+    <string name="timer_legal_text">Les legal teams vérifiées de l’annuaire qui ont un compte PPF peuvent aussi recevoir l’alerte.</string>
+    <string name="timer_legal_none">Aucune legal team de l’annuaire n’a de compte PPF pour l’instant.</string>
+    <string name="timer_recipient_selected">Choisi</string>
+    <string name="timer_recipient_not_selected">Non choisi</string>
+    <string name="timer_deadline_title">Jusqu’à quelle heure</string>
+    <string name="timer_preset_hours">Dans %1$d h</string>
+    <string name="timer_preset_evening">Ce soir, 23:59</string>
+    <string name="timer_preset_custom">Heure précise</string>
+    <string name="timer_custom_hour">Heure (0 à 23)</string>
+    <string name="timer_custom_minute">Minutes (0 à 59)</string>
+    <string name="timer_deadline_preview">Sans nouvelles de vous à %1$s, l’alerte partira.</string>
+    <string name="timer_deadline_invalid">Choisissez une heure entre 15 minutes et 48 heures à partir de maintenant.</string>
+    <string name="timer_text_title">Le message de l’alerte</string>
+    <string name="timer_text_label">Message de l’alerte</string>
+    <string name="timer_text_template">Je n’ai pas confirmé que tout allait bien à l’heure prévue. Essayez de me joindre. Si vous n’y arrivez pas, prévenez mes proches ou une legal team.</string>
+    <string name="timer_place_title">Lieu prévu (facultatif)</string>
+    <string name="timer_place_label">Lieu prévu, écrit par vous</string>
+    <string name="timer_place_hint">Par exemple : cortège, place de la République. PPF ne lit jamais votre position.</string>
+    <string name="timer_codes_title">Vos codes</string>
+    <string name="timer_codes_text">Ces codes ne servent qu’à ce minuteur. Ils ne sont jamais enregistrés : seule une empreinte lente reste sur cet appareil.</string>
+    <string name="timer_code_checkin">Code « je vais bien » (4 à 8 chiffres)</string>
+    <string name="timer_code_confirm">Confirmer le code « je vais bien »</string>
+    <string name="timer_code_duress">Code de détresse (facultatif, conseillé)</string>
+    <string name="timer_code_duress_text">Si quelqu’un vous force à annuler, tapez ce code : l’écran affiche « Minuteur annulé » comme avec le vrai code, mais rien n’est envoyé et l’alerte part à l’heure prévue.</string>
+    <string name="timer_problem_checkin_format">Le code « je vais bien » doit avoir 4 à 8 chiffres.</string>
+    <string name="timer_problem_checkin_simple">Ce code est trop facile à deviner (1234, 0000, 1212…). Choisissez-en un autre.</string>
+    <string name="timer_problem_checkin_mismatch">Les deux codes « je vais bien » ne sont pas identiques.</string>
+    <string name="timer_problem_duress_format">Le code de détresse doit avoir 4 à 8 chiffres.</string>
+    <string name="timer_problem_duress_same">Le code de détresse doit être différent du code « je vais bien ».</string>
+    <string name="timer_problem_no_recipient">Choisissez au moins une personne à prévenir.</string>
+    <string name="timer_problem_too_many">Vingt personnes au plus.</string>
+    <string name="timer_problem_invalid_recipient">Un des contacts choisis ne peut pas recevoir de message chiffré. Retirez-le.</string>
+    <string name="timer_problem_text">Écrivez le message de l’alerte.</string>
+    <string name="timer_problem_already">Un minuteur est déjà en cours.</string>
+    <string name="timer_problem_failed">Le minuteur n’a pas pu être armé. Réessayez.</string>
+    <string name="timer_continue">Continuer</string>
+    <string name="timer_cancel">Annuler</string>
+
+    <!-- Explanation before arming (principle 10) -->
+    <string name="timer_confirm_title">Avant d’armer le minuteur</string>
+    <plurals name="timer_confirm_who">
+        <item quantity="one">%1$d personne recevra dès maintenant l’alerte préparée, déposée chiffrée sur son appareil.</item>
+        <item quantity="other">%1$d personnes recevront dès maintenant l’alerte préparée, déposée chiffrée sur leur appareil.</item>
+    </plurals>
+    <string name="timer_confirm_when">Sans « je vais bien » de votre part avant %1$s, elle s’affichera chez elles d’elle-même.</string>
+    <string name="timer_confirm_seized">Elle partira même si votre téléphone est éteint, perdu ou saisi : c’est le but.</string>
+    <string name="timer_confirm_forget">Si vous oubliez de confirmer, vos proches seront alertés. Gardez votre code en tête.</string>
+    <string name="timer_confirm_arm">Armer le minuteur</string>
+    <string name="timer_arming">Préparation des dépôts…</string>
+
+    <!-- Armed -->
+    <string name="timer_armed_title">Minuteur en cours</string>
+    <string name="timer_armed_until">Jusqu’à %1$s</string>
+    <string name="timer_armed_left">Il reste %1$s.</string>
+    <string name="timer_duration_hm">%1$d h %2$d min</string>
+    <string name="timer_duration_m">%1$d min</string>
+    <string name="timer_armed_past">L’heure est passée : l’alerte s’affiche chez vos proches. « Je vais bien » leur envoie quand même l’annulation.</string>
+    <plurals name="timer_armed_recipients">
+        <item quantity="one">Prévu pour %1$d personne.</item>
+        <item quantity="other">Prévu pour %1$d personnes.</item>
+    </plurals>
+    <plurals name="timer_armed_waiting">
+        <item quantity="one">Pas encore déposé chez %1$d personne : le dépôt partira dès que le réseau revient. Tant qu’il n’est pas parti, l’alerte ne peut pas s’afficher chez elle.</item>
+        <item quantity="other">Pas encore déposé chez %1$d personnes : les dépôts partiront dès que le réseau revient. Tant qu’ils ne sont pas partis, l’alerte ne peut pas s’afficher chez elles.</item>
+    </plurals>
+    <string name="timer_armed_warning">Si vous ne confirmez pas avant cette heure, vos proches seront alertés.</string>
+    <string name="timer_ok">Je vais bien</string>
+    <string name="timer_postpone">Repousser</string>
+
+    <!-- Code dialog -->
+    <string name="timer_code_title_ok">Je vais bien</string>
+    <string name="timer_code_title_postpone">Repousser le minuteur</string>
+    <string name="timer_code_text_ok">Tapez votre code pour annuler le minuteur.</string>
+    <string name="timer_code_text_postpone">Choisissez la nouvelle heure, puis tapez votre code.</string>
+    <string name="timer_code_label">Votre code</string>
+    <string name="timer_checking">Vérification du code…</string>
+    <string name="timer_code_wrong">Code incorrect.</string>
+    <string name="timer_validate">Valider</string>
+
+    <!-- After a code -->
+    <string name="timer_cancelled_title">Minuteur annulé</string>
+    <string name="timer_cancelled_text">Vos proches recevront l’annulation. Si le téléphone est hors ligne, elle partira dès le retour du réseau : PPF réessaie tout seul.</string>
+    <string name="timer_reported_title">Minuteur repoussé</string>
+    <string name="timer_reported_text">Nouvelle heure : %1$s.</string>
+    <string name="timer_done_title">Minuteur armé</string>
+    <string name="timer_done_text">Dépôts partis : %1$d sur %2$d.</string>
+    <string name="timer_done_waiting">Les autres partiront dès que le réseau revient. Tant qu’ils ne sont pas partis, l’alerte ne peut pas s’afficher chez ces personnes.</string>
+    <string name="timer_close">Fermer</string>
+
+    <!-- Timers of relatives, on this device -->
+    <string name="timer_relatives_title">Minuteurs de vos proches</string>
+    <string name="timer_relative_waiting">%1$s vous a désigné(e) pour un minuteur jusqu’à %2$s.</string>
+    <string name="timer_relative_cancelled">%1$s a confirmé aller bien (%2$s).</string>
+    <string name="timer_alert_badge">Alerte</string>
+    <string name="timer_alert_title">Sans nouvelles de %1$s</string>
+    <string name="timer_alert_text">%1$s n’a pas confirmé aller bien avant %2$s.</string>
+    <string name="timer_alert_message">Son message :</string>
+    <string name="timer_alert_place">Lieu prévu : %1$s</string>
+    <string name="timer_alert_sync">Dernière synchronisation de vos messages : %1$s.</string>
+    <string name="timer_alert_sync_never">Vos messages n’ont pas encore été synchronisés sur cet appareil.</string>
+    <string name="timer_alert_offline">Si votre téléphone était hors ligne, une annulation a pu ne pas encore arriver : essayez d’abord de joindre cette personne.</string>
+    <string name="timer_alert_danger">En cas de danger immédiat, appelez le 112.</string>
+    <string name="timer_alert_dismiss">Masquer cette alerte</string>
+    <string name="timer_dismiss_title">Masquer l’alerte ?</string>
+    <string name="timer_dismiss_text">À faire seulement si vous avez eu des nouvelles par un autre moyen. Cette alerte ne reviendra pas.</string>
+    <string name="timer_dismiss_confirm">Masquer</string>
+
+    <!-- Times -->
+    <string name="timer_time_tomorrow">demain à %1$s</string>
+    <string name="timer_time_yesterday">hier à %1$s</string>
+    <string name="timer_time_other">le %1$s à %2$s</string>
+
+    <!-- Notification centre (no name, no text: it may be read over a shoulder) -->
+    <string name="timer_notif_title">Un proche n’a pas donné de nouvelles</string>
+    <string name="timer_notif_text">Ouvrez « Agir » : l’alerte qu’il a préparée s’affiche.</string>
+</resources>
