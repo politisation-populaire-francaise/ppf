@@ -94,7 +94,7 @@ private fun statusText(election: ElectionCalendar): String = when (election.stat
  * closing of the polling stations, each deadline with its official source. Nothing personal leaves the device.
  */
 @Composable
-internal fun ElectionPage(election: ElectionCalendar, today: CivilDate, reminders: ElectionRemindersState? = null) {
+internal fun ElectionPage(election: ElectionCalendar, today: CivilDate, reminders: DeciderRemindersState? = null) {
     val palette = PpfTheme.palette
     val open = rememberOpenUrl()
     Column(Modifier.fillMaxWidth().testTag(ElectionTags.page(election.article.slug))) {

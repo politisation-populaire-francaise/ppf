@@ -248,6 +248,17 @@ L'élection est inventée et marquée [EXEMPLE] (premier tour le 7 mars 2027). A
 6. Touchez **Ne plus me rappeler cette élection** : tout est effacé, le bouton du début revient.
 7. Les vrais rappels arrivent à leur date ; pour en voir un tout de suite, il faudra une élection d'essai plus proche, préparée pour la phase de test.
 
+À l'installation, Android indique que PPF peut « se lancer au démarrage » (permission `RECEIVE_BOOT_COMPLETED`) : elle sert seulement à remettre l'alarme du prochain rappel après un redémarrage du téléphone, ne lit aucune donnée et n'envoie rien.
+
+### Tester les consultations publiques (ajouté le 9 novembre 2026)
+
+Les deux consultations sont inventées et marquées [EXEMPLE]. Aucun compte n'est nécessaire.
+
+1. Ouvrez **Décider** et descendez jusqu'à **Consultations publiques** : la consultation en ligne d'un ministère d'exemple (ouverte, avec le nombre de jours qui restent pour répondre), puis l'enquête publique d'exemple (« À venir », avec sa date d'ouverture).
+2. Touchez la consultation en ligne : la page dit qui l'organise, ses dates, ce que prévoit la loi (avec les articles), et que PPF ne recueille aucune réponse.
+3. Touchez **Répondre sur le site officiel** : l'application demande d'abord si vous voulez quitter PPF. Touchez **Rester ici** (l'adresse d'exemple ne mène nulle part).
+4. Revenez en arrière et ouvrez l'enquête publique. Dans **Rappels**, touchez **Me rappeler cette consultation** : deux rappels apparaissent, à l'ouverture et trois jours avant la clôture, à 10 h. Touchez **Ne plus me rappeler cette consultation** : tout est effacé.
+
 ### Essayer le vote anonyme sur l'ordinateur (ajouté le 7 novembre 2026, au soir)
 
 Le vote marche maintenant de bout en bout, mais seulement avec un serveur. Sur votre ordinateur, un serveur de développement suffit ; il ne contient que des exemples. Il faut deux fenêtres de commande, ouvertes dans le dossier du projet.

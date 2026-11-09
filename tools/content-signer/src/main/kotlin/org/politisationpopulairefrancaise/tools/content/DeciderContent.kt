@@ -71,7 +71,7 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
         val readable = catalog.petition(article.address) != null || catalog.pacte(article.address) != null ||
             catalog.engagements.any { it.address == article.address } ||
             catalog.comparators.any { it.address == article.address } || catalog.positions.any { it.article.address == article.address } ||
-            catalog.elections.any { it.address == article.address }
+            catalog.elections.any { it.address == article.address } || catalog.consultation(article.address) != null
         check(readable) { "${document.name}: the application would not read this block (check its fields; a petition needs its official site)" }
         article.event.tags.filter { it.size >= 4 && it[0] == VoirTags.LINK }.forEach { tag ->
             check(tag[1] in known) { "${document.name}: link to an unknown slug: ${tag[1].substringAfterLast(':')}" }
@@ -104,6 +104,10 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     catalog.elections.forEach { election ->
         election.warnings().forEach { println("decider: ${election.article.slug}: $it") }
     }
+    // The official consultations (DE-27): the dates come from the official notice; the tool only says what looks odd.
+    catalog.consultations.forEach { consultation ->
+        consultation.warnings().forEach { println("decider: ${consultation.article.slug}: $it") }
+    }
     catalog.engagements.forEach { engagement ->
         val pacte = catalog.pacte(engagement.pacte) ?: error("${engagement.article.slug}: unknown pact")
         check(engagement.candidate in pacte.candidates) { "${engagement.article.slug}: ${engagement.candidate.identifier} is not a candidate of ${pacte.article.slug}" }
@@ -117,7 +121,8 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     write(output.resolve("decider.json"), events.map { signer.signChecked(it) })
     println(
         "decider: ${catalog.petitions.size} petition(s), ${catalog.pactes.size} pact(s), ${catalog.engagements.size} answer(s), " +
-            "${catalog.comparators.size} comparator(s), ${catalog.positions.size} position(s), ${catalog.elections.size} election(s)",
+            "${catalog.comparators.size} comparator(s), ${catalog.positions.size} position(s), ${catalog.elections.size} election(s), " +
+            "${catalog.consultations.size} consultation(s)",
     )
 }
 

@@ -43,9 +43,16 @@
 - Recalculés après chaque lecture des contenus de « Décider » (synchronisation) : un décret de convocation qui déplace une date déplace les rappels avec elle. Une élection absente des contenus lus garde ses rappels tels quels.
 - Le texte nomme l'élection par le titre de son contenu (un exemple garde sa mention [EXEMPLE]) et la date ; il ne dit jamais rien de la personne.
 
+## 4 bis. Les rappels des consultations publiques (DE-27)
+
+- Proposés sur la page de chaque consultation ouverte ou à venir (« Me rappeler cette consultation ») : à l'ouverture (si elle est à venir) et trois jours avant le dernier jour (pour une consultation d'un jour, le jour même), à 10 h, heure de Paris (`ConsultationReminders` dans `core/decider/PublicConsultation.kt`).
+- Catégorie « Votes et pétitions » ; `owner` = `decider:consultation:<slug>` ; lien `ppf:decider/consultation/<slug>`, ouvert par la coquille.
+- Recalculés comme ceux des élections : une enquête publique prolongée déplace le rappel de sa clôture.
+- L'état commun de l'interface est `ui/decider/DeciderRemindersState.kt` (élections et consultations), créé une fois par la coquille (`rememberDeciderReminders`).
+
 ## 5. Pour les autres pôles
 
-- **Communauté (TE-09, « Mes rappels »)** : lister `upcoming()`, retirer par `remove(id)` ; ouvrir `target`. Le lien `ppf:decider/election/<id>` est déjà ouvert par la coquille (`AdaptiveShell`).
+- **Communauté (TE-09, « Mes rappels »)** : lister `upcoming()`, retirer par `remove(id)` ; ouvrir `target`. Les liens `ppf:decider/election/<id>` et `ppf:decider/consultation/<slug>` sont déjà ouverts par la coquille (`AdaptiveShell`).
 - **Agir (S-98)** : `schedule(Reminder(owner = "agir:…", category = MOBILISATIONS, …))` pour un rappel simple, ou un plan s'il doit suivre le contenu.
 - **Comprendre (CO-19)** : un rappel quotidien facultatif peut être un plan recalculé chaque jour (`replaceFuture`).
 - Une nouvelle sorte de cible (`ppf:agir/...`) se branche dans `openEntry` de `AdaptiveShell`.

@@ -53,6 +53,8 @@ import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
+import org.politisationpopulairefrancaise.ui.resources.decider_consultations_section
+import org.politisationpopulairefrancaise.ui.resources.decider_consultations_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_elections_section
 import org.politisationpopulairefrancaise.ui.resources.decider_elections_section_intro
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
@@ -85,7 +87,7 @@ fun DeciderScreen(
     /** For the past votes of the comparator (history packages of "Voir") and their reports; null in previews. */
     dependencies: AppDependencies? = null,
     /** The reminders of the elections (DE-28), kept on the device; null where there is none (previews). */
-    reminders: ElectionRemindersState? = null,
+    reminders: DeciderRemindersState? = null,
 ) {
     val pastVotes = dependencies?.let { rememberPastVotesState(it) }
     val reports = dependencies?.let { rememberVoirRequestSession(it, messaging = null) }
@@ -211,6 +213,19 @@ private fun DeciderHome(
                 )
             }
         }
+        // The official consultations (DE-27): open ones first, then those to come; the local ones later, by the commune.
+        val consultations = catalog.currentConsultations(today)
+        if (consultations.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.testTag(DeciderTags.section("consultations"))) {
+                SectionHeader(stringResource(Res.string.decider_consultations_section))
+                Text(stringResource(Res.string.decider_consultations_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+                consultations.forEach { consultation ->
+                    Spacer(Modifier.height(12.dp))
+                    ConsultationCard(consultation, today, onOpen = { state.open(DeciderDestination.Consultation(consultation.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+                }
+            }
+        }
         Spacer(Modifier.height(24.dp))
         Column(Modifier.widthIn(max = 760.dp).testTag(DeciderTags.section("more"))) {
             SectionHeader(stringResource(Res.string.decider_more_section))
@@ -275,7 +290,7 @@ private fun DeciderDetail(
     pastVotes: PastVotesState?,
     reports: VoirRequestSession?,
     photos: ComparatorPhotosState?,
-    reminders: ElectionRemindersState?,
+    reminders: DeciderRemindersState?,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -315,6 +330,9 @@ private fun DeciderDetail(
                     } ?: Missing()
                     is DeciderDestination.Election -> catalog.elections.firstOrNull { it.address == current.address }?.let { election ->
                         ElectionPage(election, today, reminders)
+                    } ?: Missing()
+                    is DeciderDestination.Consultation -> catalog.consultation(current.address)?.let { consultation ->
+                        ConsultationPage(consultation, today, actions, reminders)
                     } ?: Missing()
                     is DeciderDestination.PastVotes -> {
                         val sheet = catalog.comparators.firstOrNull { it.address == current.sheet }

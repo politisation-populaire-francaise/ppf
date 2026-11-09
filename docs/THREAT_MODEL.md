@@ -414,7 +414,7 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 
 | Menace | Parade en place | Prévu |
 |---|---|---|
-| Le serveur apprend qui suit quelle élection, quel événement, quelle commune (intérêt politique, RGPD article 9) | Les rappels sont programmés, gardés et affichés sur l'appareil seulement ; aucune requête n'est faite pour eux, l'alarme d'Android ne lance que le tour du centre sur l'appareil | |
+| Le serveur apprend qui suit quelle élection, quelle consultation, quel événement, quelle commune (intérêt politique, RGPD article 9) | Les rappels sont programmés, gardés et affichés sur l'appareil seulement ; aucune requête n'est faite pour eux, l'alarme d'Android ne lance que le tour du centre sur l'appareil | |
 | Quelqu'un voit l'écran verrouillé, ou prend le téléphone | Écran verrouillé : « PPF : nouvelle activité », jamais le texte ; titre et détail cachés par défaut même déverrouillé ; verrouillage de l'application (S-43) ; effacement rapide (S-44, partie `core-reminders`) | |
 | Une autre application déclenche les rappels ou les fait taire | Récepteur de l'alarme non exporté (intention explicite de l'application) ; récepteur du redémarrage qui n'accepte que l'action envoyée par le système, et qui ne fait que relire l'appareil | |
 | Un rappel arrive trop tard (alarme retardée par Android, téléphone éteint, application de bureau fermée) | Rappels 7 à 10 jours avant les dates limites ; la page de l'élection montre toujours toutes les dates ; l'écran dit que sur ordinateur un rappel s'affiche à l'ouverture | Notifications locales programmées sur iPhone avec l'application iOS |

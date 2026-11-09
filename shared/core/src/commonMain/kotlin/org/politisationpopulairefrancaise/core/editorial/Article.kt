@@ -75,6 +75,12 @@ enum class ArticleType(val tagValue: String) {
      * 55 minutes with a group, linked to its course and to a level, read by `core.comprendre.TeachingSheet`.
      */
     FICHE_PEDAGOGIQUE("fiche-pedagogique"),
+
+    /**
+     * An official public consultation relayed by "Décider" (DE-27; core.decider.PublicConsultation): its organizer, its
+     * kind, its dates and the official page where one answers; the body is the guide to answer it.
+     */
+    CONSULTATION("consultation"),
     ;
 
     companion object {

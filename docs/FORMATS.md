@@ -418,6 +418,19 @@ Règle d'entrée (décision de la propriétaire, Q1 option B ; `ComparatorSheet.
 
 Contrôles de l'outil de signature (avertissements, jamais un refus du droit par le code) : une inscription en mairie qui ne tombe pas le sixième vendredi avant le premier tour (code électoral, article L17), une échéance après le premier tour. L'application montre les élections à venir ; un scrutin local seulement pour les territoires gardés sur l'appareil.
 
+### Consultation publique officielle (`ppf-type` = `consultation`, DE-27, conception : `docs/integration/consultations-publiques.md`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-consultation-kind` | `consultation-ouverte` (consultation ouverte sur internet, CRPA L132-1 à L132-3), `participation-environnement` (participation du public par voie électronique, code de l'environnement L123-19 à L123-19-2), `enquete-publique` (code de l'environnement L123-1 et suivants), `debat-public` (débat public ou concertation préalable de la CNDP, code de l'environnement L121-1 et suivants), `consultation-locale` (consultation des électeurs ou référendum local, CGCT LO1112-1 et L1112-15 et suivants) |
+| `ppf-organizer` | Qui l'organise, comme son avis officiel le nomme (ministère, préfecture, CNDP, commune) |
+| `ppf-official-url` | La page officielle où l'on répond : `https`, sans nom d'utilisateur ni port ; PPF ne recueille aucune réponse |
+| `ppf-opened`, `ppf-closes` | Premier et dernier jour (inclus), écrits d'après l'avis officiel ; un dernier jour avant le premier rend la consultation illisible |
+| `ppf-territory-code` | Le territoire d'une consultation locale (référentiel des territoires) ; absent pour une consultation nationale |
+| corps | Le guide pour y répondre |
+
+Contrôles de l'outil de signature (avertissements, jamais un refus du droit par le code) : une durée plus courte que le minimum légal (15 jours pour une consultation ouverte, une participation du public ou une enquête publique ; 30 jours pour une enquête publique d'un projet soumis à évaluation environnementale, code de l'environnement L123-9), une page officielle hors de `.gouv.fr` (beaucoup d'enquêtes ont lieu sur le registre d'un prestataire ou le site d'une commune : à vérifier dans l'avis). L'application montre les consultations ouvertes puis à venir ; une consultation locale seulement pour les territoires gardés sur l'appareil.
+
 ### Position d'un candidat (`ppf-type` = `position`)
 
 | Étiquette | Contenu |

@@ -58,7 +58,7 @@ class ElectionRemindersViewsTest {
                 val library = rememberContentLibrary(dependencies)
                 val state = rememberDeciderState(dependencies)
                 val scope = rememberCoroutineScope()
-                val reminders = remember { ElectionRemindersState(store, settings = null, scope = scope, clock = { now }) }
+                val reminders = remember { DeciderRemindersState(store, settings = null, scope = scope, clock = { now }) }
                 DeciderScreen(library, state, WindowClass.of(420f, 900f), now = { now }, dependencies = dependencies, reminders = reminders)
             }
         }

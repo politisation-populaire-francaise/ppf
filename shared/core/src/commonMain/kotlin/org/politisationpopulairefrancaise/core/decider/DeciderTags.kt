@@ -106,6 +106,14 @@ object DeciderTags {
     const val DECREE = "ppf-decree"
 
 
-    /** The territory of a local election (référentiel des territoires). */
+    /** The territory of a local election or consultation (référentiel des territoires). */
     const val TERRITORY_CODE = "ppf-territory-code"
+
+    // Official public consultations (cahier fonctionnel, M13.1; DE-27). Their dates reuse [OPENED] and [CLOSES], their
+    // official page [OFFICIAL_URL].
+    /** `consultation-ouverte`, `participation-environnement`, `enquete-publique`, `debat-public`, `consultation-locale` ([ConsultationKind]). */
+    const val CONSULTATION_KIND = "ppf-consultation-kind"
+
+    /** Who organizes a consultation, as its official notice names it. */
+    const val ORGANIZER = "ppf-organizer"
 }
