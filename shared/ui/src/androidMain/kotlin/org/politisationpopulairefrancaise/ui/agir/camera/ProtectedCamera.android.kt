@@ -109,6 +109,8 @@ actual fun ProtectedCameraCapture(onShot: (jpeg: ByteArray, rotationDegrees: Int
             modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth().aspectRatio(3f / 4f).semantics { contentDescription = description }.testTag(ProtectedCameraTags.PREVIEW),
             factory = { viewContext ->
                 PreviewView(viewContext).also { view ->
+                    // Drawn in the window (TextureView) rather than over it: right inside a scrolling page, and covered by FLAG_SECURE.
+                    view.implementationMode = PreviewView.ImplementationMode.COMPATIBLE
                     provider.addListener({
                         try {
                             val cameras = provider.get()

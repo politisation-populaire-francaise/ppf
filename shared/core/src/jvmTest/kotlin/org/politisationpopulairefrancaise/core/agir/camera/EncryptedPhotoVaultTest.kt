@@ -53,7 +53,7 @@ private class JdkVaultCrypto : VaultCrypto {
     }
 
     override fun wrap(key: ByteArray, aad: ByteArray): ByteArray {
-        val current = master ?: KeyGenerator.getInstance("AES").apply { init(256) }.generateKey().also {
+        val current = master ?: KeyGenerator.getInstance("AES").also { it.init(256) }.generateKey().also {
             master = it
             masterKeysCreated++
         }
