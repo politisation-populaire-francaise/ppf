@@ -111,6 +111,7 @@ object EditorialMessages {
         "voir.rule.measure_part" to "la part ({1}) dépasse la valeur ({0})",
         "voir.rule.duplicate" to "« {0} » est déjà donné",
         "voir.rule.next_space" to "« {0} » n'est pas un espace de l'application",
+        "voir.rule.seat_name" to "chaque membre du bureau et du conseil d'administration est nommé (nom et fonction seulement, membre informé avant la publication)",
     )
 
     /** The French template of [code], or null when it is unknown. */

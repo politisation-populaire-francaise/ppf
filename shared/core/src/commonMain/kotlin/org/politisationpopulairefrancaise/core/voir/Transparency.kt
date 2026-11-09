@@ -15,8 +15,10 @@ import org.politisationpopulairefrancaise.core.voir.VoirTags.value
 /*
  * « Transparence de PPF » (M34, PP-01, D-104; docs/integration/transparence-ppf.md): the instances of the
  * association, its important decisions, its annual accounts and its reports of moderation and claims, published
- * as signed contents of the team, with the same rubrics every year. Functions before names: a name is written
- * only with the consent of the person (principle 10), the field is empty by default.
+ * as signed contents of the team, with the same rubrics every year. Names (decision of the owner, 9 November 2026,
+ * option B): the members of the bureau and of the board are always named, name and function only, each informed
+ * before publication (the declaration at the prefecture is public anyway); in the other instances a name is written
+ * only when the person asks for it (principle 10), the field is empty by default.
  */
 
 /** The rubric of a page of transparency (`ppf-rubric`), in the order of the page. */
@@ -44,10 +46,16 @@ enum class PpfInstance(val tagValue: String) {
 
     companion object {
         fun fromTag(value: String?): PpfInstance? = entries.firstOrNull { it.tagValue == value }
+
+        /** The instances whose members are always named (option B of the owner): the board and the bureau. */
+        val NAMED: Set<PpfInstance> = setOf(BOARD, BUREAU)
     }
 }
 
-/** One seat of an instance: its function, the name only when the person agreed, since when, how it is designated. */
+/**
+ * One seat of an instance: its function, the name (always for the board and the bureau, otherwise only when the
+ * person asked), since when, how it is designated. Nothing else about the person: no photo, no contact.
+ */
 data class InstanceSeat(val function: String, val name: String?, val since: CivilDate?, val designation: String?)
 
 /** The votes of a decision (`ppf-tally`: for, against, abstention). */

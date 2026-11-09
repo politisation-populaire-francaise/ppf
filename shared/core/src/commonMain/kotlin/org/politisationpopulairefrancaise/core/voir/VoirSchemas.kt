@@ -101,6 +101,7 @@ object VoirSchemas {
         const val MEASURE_PART: String = "voir.rule.measure_part"
         const val DUPLICATE: String = "voir.rule.duplicate"
         const val NEXT_SPACE: String = "voir.rule.next_space"
+        const val SEAT_NAME: String = "voir.rule.seat_name"
     }
 
     private fun article(event: UnsignedEvent): Article? =
@@ -481,7 +482,9 @@ object VoirSchemas {
         fields = listOf(
             FieldSpec("rubric", "voir.field.rubric", value = ValueSpec.Single(choice(TransparencyRubric.entries.map { it.tagValue }, "rubric"))),
             FieldSpec("instance", "voir.field.instance", occurs = Occurs.OPTIONAL, value = ValueSpec.Single(choice(PpfInstance.entries.map { it.tagValue }, "instance"))),
-            // « Trésorière | | 2027-03-01 | élue par l'assemblée générale »: the name stays empty unless the person agreed in writing.
+            // « Trésorerie | [EXEMPLE] Camille Exemple | 2027-03-01 | élue par le conseil d'administration »: the name is
+            // required for the board and the bureau (option B of the owner), empty elsewhere unless the person asked for it.
+            // Nothing else about the person: no photo, no contact.
             FieldSpec(
                 "seat", "voir.field.seat", "voir.help.seat", occurs = Occurs.MANY(),
                 value = ValueSpec.Positional(
@@ -543,6 +546,7 @@ object VoirSchemas {
         body = body,
         rules = listOf(
             CrossRule.UniquePosition("figure", position = "code", messageKey = Rules.DUPLICATE),
+            CrossRule.RequiredWhen("seat", "instance", PpfInstance.NAMED.map { it.tagValue }.toSet(), Rules.SEAT_NAME, position = "name"),
         ),
         checks = listOf(
             readable(TransparencyEntry::from) {

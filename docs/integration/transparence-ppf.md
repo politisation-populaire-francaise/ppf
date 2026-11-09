@@ -1,6 +1,6 @@
-# Transparence de PPF (PP-01) : conception, version 0.1
+# Transparence de PPF (PP-01) : conception, version 0.2
 
-Rédigé le 9 novembre 2026 par le pôle « Voir » (« [Voir] Team Dev 2 »), à la demande du chef d'équipe, d'après le cahier fonctionnel (M34, PP-01 : « Comptes annuels, décisions importantes, composition et fonctionnement des instances, rapport de modération, bilan annuel des réclamations »), le principe 11 du cahier des charges (« la transparence d'abord ») et ses sections 9.4 (rapport de transparence, articles 15 et 24 du règlement sur les services numériques) et S-110 (bilan annuel des réclamations). Décision D-104. Branche `feature/voir-presence`, pas encore compilée.
+Rédigé le 9 novembre 2026 par le pôle « Voir » (« [Voir] Team Dev 2 »), à la demande du chef d'équipe, d'après le cahier fonctionnel (M34, PP-01 : « Comptes annuels, décisions importantes, composition et fonctionnement des instances, rapport de modération, bilan annuel des réclamations »), le principe 11 du cahier des charges (« la transparence d'abord ») et ses sections 9.4 (rapport de transparence, articles 15 et 24 du règlement sur les services numériques) et S-110 (bilan annuel des réclamations). Décision D-104. Version 0.2 du 9 novembre 2026 : décision de la propriétaire sur les noms (option B, section 6).
 
 Tout est **[EXEMPLE]** tant que l'association n'existe pas : aucun contenu réel, aucun nom réel.
 
@@ -8,7 +8,7 @@ Tout est **[EXEMPLE]** tant que l'association n'existe pas : aucun contenu réel
 
 1. **Les mêmes rubriques chaque année**, dans le même ordre, publiées comme des contenus signés de l'équipe, avec leurs sources, leurs archives horodatées et le journal public de leurs corrections (comme les briques de « Voir »).
 2. **Des chiffres, jamais un contenu ni un compte** : le rapport de modération et le bilan des réclamations ne donnent que des nombres agrégés (cahier des charges, section 9.4).
-3. **Les fonctions avant les noms** : la composition d'une instance donne les fonctions, la date d'entrée et le mode de désignation. Un nom n'est écrit qu'avec l'accord de la personne (principe 10 : protéger par défaut). Le champ est vide par défaut. Publier ou non les noms des membres du bureau oppose la transparence et la protection des personnes : la question est posée à la propriétaire (section 6), jamais tranchée seule (principe 11).
+3. **Les noms du bureau et du conseil d'administration, et rien d'autre** (décision de la propriétaire, option B, section 6) : chaque membre de ces deux instances est nommé, avec sa fonction, sa date d'entrée et son mode de désignation. Rien d'autre sur la personne : ni photo, ni contact personnel, ni adresse, ni profession. Chaque membre est informé avant la publication (RGPD), et la page le dit. Dans les autres instances (équipe éditoriale, équipe de modération, autre), les fonctions seules par défaut ; un nom seulement si la personne le demande (principe 10). Le formulaire du back-office refuse un membre du bureau ou du conseil d'administration sans nom (`voir.rule.seat_name`).
 4. **Les comptes en entier** : le document approuvé est archivé (empreinte SHA-256, preuve d'horodatage, adresse) et ses grandes lignes sont saisies, produits et charges. Le résultat est calculé par l'application, jamais saisi.
 
 ## 2. Type de contenu `transparence` (D-104)
@@ -65,19 +65,19 @@ Le corps (Markdown) explique : le fonctionnement de l'instance, les raisons de l
 
 ## 5. Données et menaces
 
-- Aucune donnée d'utilisateur : des contenus publiés par l'équipe. Un nom de membre d'une instance n'est publié qu'avec l'accord de la personne (à consigner hors de la plateforme, par l'association).
-- Risque : une personne nommée devient une cible. Défense : les fonctions seulement par défaut ; le nom sur accord écrit ; retrait possible à tout moment par une nouvelle version, avec une ligne au journal des corrections.
+- Aucune donnée d'utilisateur : des contenus publiés par l'équipe. Données personnelles publiées : le nom et la fonction des membres du bureau et du conseil d'administration (base légale à faire confirmer par l'avocat : l'intérêt légitime de transparence d'une association politique, ces noms étant déjà déclarés en préfecture), et, dans les autres équipes, le nom d'une personne qui le demande. Chaque membre est informé avant la publication, par l'association, hors de la plateforme.
+- Risque : une personne nommée devient une cible, dans le climat du mouvement social. Défenses : rien d'autre que le nom et la fonction (ni photo, ni contact, ni ville) ; les équipes éditoriale et de modération sans nom par défaut ; correction ou retrait par une nouvelle version, avec une ligne au journal des corrections, quand la personne quitte sa fonction ; un contact de l'association, jamais un contact personnel.
 
-## 6. Question pour la propriétaire (par le chef d'équipe)
+## 6. Décision de la propriétaire : option B (9 novembre 2026)
 
-Faut-il publier les noms des membres du bureau et du conseil d'administration ?
-- **Option A (recommandée)** : les fonctions seulement par défaut ; un nom seulement si la personne le demande par écrit.
-- **Option B** : les noms toujours publiés, comme exemplarité.
-- **Option C** : aucun nom, jamais.
+Question posée par le chef d'équipe : faut-il publier les noms des membres du bureau et du conseil d'administration ? Options : A, les fonctions seulement et un nom sur demande écrite (recommandée par le pôle « Voir ») ; B, les noms toujours publiés ; C, aucun nom.
 
-Ma recommandation est l'option A, pour trois raisons :
-- elle protège les personnes dans le climat du mouvement social ;
-- elle laisse chacun libre de se nommer ;
-- les noms des dirigeants restent déclarés à la préfecture. L'article 5 de la loi du 1er juillet 1901 impose de déclarer « les noms et professions, domiciles et nationalités » de ceux qui sont chargés de l'administration, et de signaler tout changement dans les trois mois. Je l'ai lu dans le formulaire Cerfa 13971 de l'administration (préfecture de la Gironde) et dans des questions écrites de l'Assemblée nationale, pas encore sur Légifrance.
+**Décision de la propriétaire, le 9 novembre 2026 au matin, transmise par le chef d'équipe : option B**, au motif que « ces infos sont publiques de toute façon » (déclaration en préfecture : l'article 5 de la loi du 1er juillet 1901 impose de déclarer les noms, professions, domiciles et nationalités de ceux qui sont chargés de l'administration ; lu dans le formulaire Cerfa 13971 et des questions écrites de l'Assemblée nationale, pas encore sur Légifrance).
 
-Point à faire relire par l'avocat, avec les statuts.
+Ce que le code applique :
+- nom et fonction seulement, rien d'autre (ni photo, ni contact personnel) ; la profession, le domicile et la nationalité déclarés en préfecture ne sont jamais repris ;
+- une ligne de la page indique que chaque membre est informé avant la publication (RGPD) ;
+- un membre du bureau ou du conseil d'administration sans nom est refusé par le formulaire du back-office ;
+- les autres équipes gardent la règle protectrice : les fonctions seules, un nom à la demande de la personne.
+
+Point à faire relire par l'avocat, avec les statuts : la base légale de la publication et l'information des membres.

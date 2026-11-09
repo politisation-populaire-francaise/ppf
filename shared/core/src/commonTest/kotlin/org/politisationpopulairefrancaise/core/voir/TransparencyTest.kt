@@ -141,4 +141,32 @@ class TransparencyTest {
         val twice = ContentDraft(ArticleType.TRANSPARENCE, entries.map { if (it.first == "rubric") "rubric" to "rapport" else it } + listOf("period" to "2027-01-01 | 2027-12-31", "figure" to "signalements-recus | 1", "figure" to "signalements-recus | 2"), "[EXEMPLE] Corps.\n")
         assertTrue(VoirSchemas.Rules.DUPLICATE in EditorialEngine.check(VoirSchemas.TRANSPARENCE, twice, context).map { it.code })
     }
+
+    @Test
+    fun theBoardAndTheBureauAreAlwaysNamedTheOtherTeamsOnlyOnRequest() {
+        val instance = listOf(
+            "slug" to "bureau",
+            "title" to "[EXEMPLE] Le bureau",
+            "type" to "transparence",
+            "origin" to "human",
+            "published_at" to "2027-01-16",
+            "updated_at" to "2027-01-16",
+            "rubric" to "instance",
+            "instance" to "bureau",
+            "seat" to "Présidence | [EXEMPLE] Camille Exemple | 2027-01-15 | élue par le conseil d'administration",
+            "seat" to "Trésorerie | | 2027-01-15 | élue par le conseil d'administration",
+        )
+        fun codes(entries: List<Pair<String, String>>) =
+            EditorialEngine.check(VoirSchemas.TRANSPARENCE, ContentDraft(ArticleType.TRANSPARENCE, entries, "[EXEMPLE] Corps.\n"), context)
+
+        val unnamed = codes(instance)
+        assertEquals(listOf(VoirSchemas.Rules.SEAT_NAME), unnamed.map { it.code }, "a member of the bureau without a name is refused")
+        assertEquals(1, unnamed.single().occurrence, "the problem points at the seat without a name")
+        val board = instance.map { if (it.first == "instance") "instance" to "conseil-administration" else it }
+        assertEquals(listOf(VoirSchemas.Rules.SEAT_NAME), codes(board).map { it.code }, "the same for the board")
+        val moderation = instance.map { if (it.first == "instance") "instance" to "equipe-moderation" else it }
+        assertEquals(emptyList(), codes(moderation).map { it.code }, "the other teams: functions only by default")
+        assertEquals(emptyList(), codes(instance.filterNot { it.first == "seat" && it.second.startsWith("Trésorerie") }).map { it.code })
+        assertEquals(setOf(PpfInstance.BOARD, PpfInstance.BUREAU), PpfInstance.NAMED)
+    }
 }

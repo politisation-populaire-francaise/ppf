@@ -13,7 +13,7 @@
     <string name="transp_seat">%1$s</string>
     <string name="transp_seat_named">%1$s : %2$s</string>
     <string name="transp_seat_since">depuis le %1$s</string>
-    <string name="transp_names_note">Les noms ne sont publiés qu’avec l’accord de chaque personne.</string>
+    <string name="transp_names_note">Le bureau et le conseil d’administration sont publiés avec le nom et la fonction de chaque membre, rien d’autre ; chaque membre en est informé avant la publication (RGPD). Dans les autres équipes, un nom n’est publié qu’à la demande de la personne.</string>
     <string name="transp_decision_meta">%1$s · %2$s</string>
     <string name="transp_tally">Pour : %1$d · Contre : %2$d · Abstention : %3$d</string>
     <string name="transp_accounts_year">Exercice %1$d</string>

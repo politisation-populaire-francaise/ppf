@@ -43,7 +43,7 @@ fun HTML.transparencyDocument(pages: TransparencyPages) {
             p(classes = "callout callout-attention") { +"Contenus de démonstration [EXEMPLE] : l’association n’existe pas encore. Aucun nom, aucun chiffre réel." }
         }
         rubric("instances", "Les instances", pages.instances)
-        if (pages.instances.isNotEmpty()) p(classes = "muted") { +"Les noms ne sont publiés qu’avec l’accord de chaque personne." }
+        if (pages.instances.isNotEmpty()) p(classes = "muted") { +"Le bureau et le conseil d’administration sont publiés avec le nom et la fonction de chaque membre, rien d’autre ; chaque membre en est informé avant la publication (RGPD). Dans les autres équipes, un nom n’est publié qu’à la demande de la personne." }
         rubric("decisions", "Les décisions importantes", pages.decisions)
         rubric("comptes", "Les comptes", pages.accounts)
         rubric("rapports", "Rapports de modération et de réclamations", pages.reports)
