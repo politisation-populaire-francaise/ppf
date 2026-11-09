@@ -22,10 +22,13 @@ data class SendReport(
     val rejected: Int = 0,
 )
 
-/** What a batch of received wraps produced. */
-data class ReceiveReport(val stored: Int = 0, val duplicates: Int = 0, val ignored: Int = 0) {
+/**
+ * What a batch of received wraps produced. [others] are the authentic rumors of another kind than a
+ * chat message that a space takes ([IncomingRumors], D-088), handed over by [MessagingService.pull].
+ */
+data class ReceiveReport(val stored: Int = 0, val duplicates: Int = 0, val ignored: Int = 0, val others: List<Rumor> = emptyList()) {
     operator fun plus(other: ReceiveReport): ReceiveReport =
-        ReceiveReport(stored + other.stored, duplicates + other.duplicates, ignored + other.ignored)
+        ReceiveReport(stored + other.stored, duplicates + other.duplicates, ignored + other.ignored, others + other.others)
 }
 
 /**
@@ -54,6 +57,8 @@ class MessagingService(
     private val store: MessageStore,
     private val remote: RemoteEvents,
     private val clock: () -> Long = ::currentEpochSeconds,
+    /** Where the rumors that are not chat messages go (D-088): the registry of the process by default. */
+    private val others: IncomingRumors = IncomingRumors.Process,
 ) {
     val publicKey: PublicKey get() = signer.publicKey
 
@@ -136,22 +141,33 @@ class MessagingService(
      * not an authentic wrap for this key, carrying a well-formed chat message that names the user,
      * is counted as ignored and dropped without an exception. The user's own messages (the copies
      * wrapped for themselves) are stored as read. A date in the future is brought back to now, so
-     * that no sender can pin a conversation at the top of the list.
+     * that no sender can pin a conversation at the top of the list. An authentic rumor of another
+     * kind that a space takes ([IncomingRumors.takes], D-088) is returned in [ReceiveReport.others]
+     * for [pull] to hand over; nothing of it is stored here.
      */
     fun receive(wraps: List<SignedEvent>): ReceiveReport {
         var report = ReceiveReport()
         val me = signer.publicKey.hex
         val latestAcceptable = clock() + FUTURE_TOLERANCE_SECONDS
         for (wrap in wraps) {
+            var other: Rumor? = null
             val message = try {
                 val rumor = GiftWrap.unwrap(wrap, signer)
-                ChatMessage.fromRumor(rumor).takeIf { me in it.participants }
+                if (rumor.kind != EventKinds.CHAT_MESSAGE && others.takes(rumor.kind)) {
+                    // D-088: another kind a space takes (an AG-55 timer), set aside for [pull], never stored here.
+                    other = rumor
+                    null
+                } else {
+                    ChatMessage.fromRumor(rumor).takeIf { me in it.participants }
+                }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
                 null
             }?.let { if (it.createdAt > latestAcceptable) it.copy(createdAt = latestAcceptable) else it }
+            val taken = other
             report = when {
+                taken != null -> report.copy(others = report.others + taken)
                 message == null -> report.copy(ignored = report.ignored + 1)
                 store.store(message, read = message.author == me) == MessageStoreOutcome.STORED -> report.copy(stored = report.stored + 1)
                 else -> report.copy(duplicates = report.duplicates + 1)
@@ -175,6 +191,7 @@ class MessagingService(
         var until: Long? = null
         var fetched = 0
         var received = ReceiveReport()
+        var held = 0
         repeat(maxPages) {
             val filter = RemoteFilter(kinds = listOf(EventKinds.GIFT_WRAP), since = since, until = until, limit = size)
             val page = when (val result = remote.fetchByTags(tags, filter)) {
@@ -182,9 +199,13 @@ class MessagingService(
                 is FetchResult.Events -> result.events
             }
             fetched += page.size
-            received += receive(page)
+            val pageReport = receive(page)
+            received += pageReport
+            // D-088: the rumors of other kinds go to the handlers of their spaces.
+            held += others.dispatch(pageReport.others, signer.publicKey.hex)
             if (page.size < size) {
-                store.setLastPullAt(startedAt)
+                // A rumor nobody could take keeps the cursor where it was: the next pull fetches it again.
+                if (held == 0) store.setLastPullAt(startedAt)
                 return PullReport(fetched, received)
             }
             // Newest first, inclusive bounds: the next page starts at the oldest date seen. When that
