@@ -497,8 +497,8 @@ private fun Answers(
     val status = state.status
     val sector = state.sector
     val estimate = state.estimate
-    Result(state, estimate)
-    Rule(state, StrikeSimulator.ruleFor(status, sector))
+    EstimateBlock(state, estimate)
+    RuleBlock(state, StrikeSimulator.ruleFor(status, sector))
     Obligations(StrikeSimulator.obligationsFor(status, sector))
     Notes(StrikeSimulator.notesFor(status, sector))
     StrikeFunds(state, solidarity, onOpenFund, onOpenFunds)
@@ -506,7 +506,7 @@ private fun Answers(
 }
 
 @Composable
-private fun Result(state: StrikeSimulatorState, estimate: StrikeEstimate?) {
+private fun EstimateBlock(state: StrikeSimulatorState, estimate: StrikeEstimate?) {
     val palette = PpfTheme.palette
     SectionTitle(stringResource(Res.string.greve_result_title))
     InfoBox(Lucide.TriangleExclamationPoint, Modifier.testTag(StrikeTags.DISCLAIMER)) {
@@ -596,7 +596,7 @@ private fun Detail(estimate: StrikeEstimate) {
 }
 
 @Composable
-private fun Rule(state: StrikeSimulatorState, rule: StrikeRule) {
+private fun RuleBlock(state: StrikeSimulatorState, rule: StrikeRule) {
     val palette = PpfTheme.palette
     SectionTitle(stringResource(Res.string.greve_rule_title))
     val text = when (rule) {

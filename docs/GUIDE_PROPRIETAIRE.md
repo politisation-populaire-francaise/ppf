@@ -242,6 +242,22 @@ La caméra protégée prend des photos qui restent chiffrées dans PPF : elles n
 9. À la fin, sur un compte d'essai seulement, l'**effacement rapide** efface aussi toutes les photos protégées : il détruit d'abord la clé qui les protège, puis les fichiers. Rouvrez la caméra protégée : « Aucune photo protégée sur ce téléphone ».
 
 Ce qui n'est pas encore là : la vidéo (étape suivante), l'envoi automatique vers des avocats partenaires (son coût de stockage vous sera présenté avant toute décision), l'iPhone.
+
+### Tester le simulateur du gréviste (ajouté le 9 novembre 2026, pas encore compilé)
+
+Le simulateur estime ce qu'une grève retire de la paie, selon le statut (salarié du privé, fonction publique de l'État, territoriale ou hospitalière), et rappelle le préavis et la déclaration à faire avant la grève dans certains secteurs. **Il n'est pas encore dans une version installable** : ce guide servira dès qu'il aura été compilé et sera entré dans une version de test. Il marche de la même façon sur le téléphone et sur l'ordinateur, sans serveur. Tapez des montants fictifs, jamais votre vrai salaire si quelqu'un regarde l'écran : rien n'est enregistré, mais l'écran l'affiche.
+
+1. Ouvrez « Agir », touchez **Solidarité et caisses de grève**, descendez tout en bas de la liste des caisses : l'encadré **Simulateur du gréviste**, puis **Ouvrir le simulateur**.
+2. En haut, la phrase au cadenas rappelle que rien n'est enregistré ni envoyé. Le statut **Salarié d'une entreprise** est choisi. Tapez **2400** dans « Rémunération mensuelle brute » (laissez 35 heures par semaine et 7 heures par jour). Plus bas, l'estimation affiche **Retenue estimée : 110,77 €** (une journée de 7 heures sur 151,67 heures par mois), avec le détail, la règle, ses sources et la ligne « Rédigé par l'IA, règles vérifiées le 9 novembre 2026 ».
+3. Choisissez **Fonction publique de l'État** : **80,00 €** (un trentième). Pour le jour 1, touchez **Heures** et tapez **2** : toujours **80,00 €**, car dans l'État une heure de grève coûte un trentième entier. Choisissez **Fonction publique territoriale** : **31,65 €** (2 heures divisées par 151,67).
+4. Revenez à **Fonction publique de l'État**, touchez **Ajouter un jour de grève** (jour 2, journée entière), puis deux fois **+** sous « Jours sans service entre deux jours de grève » (un week-end) : **320,00 €**, soit quatre trentièmes, comme une grève le vendredi et le lundi suivant.
+5. Dans « Votre secteur », choisissez **École maternelle ou élémentaire publique** : sous « Avant de faire grève », la négociation préalable, le préavis de cinq jours francs et la déclaration 48 heures avant apparaissent.
+6. Revenez à **Salarié d'une entreprise** et choisissez le secteur **Autre service public géré par une entreprise** : le simulateur dit qu'il ne calcule pas encore ce cas (règle à faire confirmer par un avocat) et garde le rappel du préavis.
+7. Sous « Caisses de grève proches », les caisses de grève fictives [EXEMPLE] de l'annuaire apparaissent ; tapez **35000** (Rennes) : seule reste celle qui sert partout en France. Touchez-la : sa page s'ouvre dans la rubrique Solidarité.
+8. Tout en bas, touchez une source, par exemple « Service-public.gouv.fr … (fiche F117) » : « Vous quittez PPF » s'affiche ; **Rester sur PPF** referme la fenêtre, **Ouvrir la source** ouvre la page officielle dans le navigateur.
+9. Quittez « Agir » (touchez un autre espace en bas), puis revenez au simulateur : tous les champs sont vides, la preuve que rien n'a été gardé. Essayez aussi le mode sombre et, sur l'ordinateur, une fenêtre large : les questions et l'estimation sont côte à côte.
+
+Ce qui n'est pas encore là : les gardes de 24 heures, le forfait en jours, les entreprises privées chargées d'un service public hors transports (règles à confirmer) ; la relecture des règles par un avocat avant l'ouverture publique.
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).

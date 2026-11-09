@@ -127,3 +127,94 @@ Montants arrondis au centime le plus proche, une seule fois, à la fin du calcul
 | 11 | FPE, 2 000,25 €, un jour | 200 025 centimes ÷ 30 = 6 667,5 : arrondi au centime supérieur | **66,68 €** |
 | 12 | Privé, entreprise chargée d'un service public hors transports terrestres | règle de L2512-5 à confirmer | **pas de montant**, préavis de 5 jours francs affiché |
 | 13 | Privé, demi-journée, 2 000,00 €, 35 h, journée de 7 h | 3,5 h : 2 000 × 3,5 × 12 ÷ 1 820 = 46,1538 | **46,15 €** |
+
+Autres vérifications des tests : FPT, 2 100,00 € et 5 heures = 69,23 € (sous le trentième, non plafonné) ; FPH, 1 516,70 € et 1 heure = 10,00 € (1 516,70 ÷ 151,67), 1 h 30 = 15,00 € ; FPT, 3 000,00 €, deux journées et deux jours sans service = 400,00 € (4/30) ; le même 2 heures de grève sur 3 000,00 € coûte 100,00 € dans l'État et 39,56 € dans le privé, la territoriale et l'hospitalière ; privé, deux journées avec deux jours sans service entre elles = 184,62 € (les jours sans travail prévu ne comptent pas). Écran (`StrikeSimulatorScreenTest`) : 2 400,00 € donne 110,77 € (privé, une journée), 80,00 € (État), 31,65 € pour 2 heures (territoriale et privé) ; 2 471,93 € donne 114,09 €.
+
+## 4. Conception
+
+### 4.1 Cœur (`shared/core/.../core/agir/strike/`)
+
+- `StrikeRules.kt` : le vocabulaire. `StrikeStatus` (privé, État, territoriale, hospitalière), `StrikeSector` (avec les statuts auxquels chaque secteur s'applique), `StrikeDay` (journée, demi-journée, heures en minutes), `StrikeRule`, `StrikeObligation` et `StrikeNote`, chacun avec ses `StrikeSource` ; `StrikeSource` porte l'adresse officielle (Légifrance, service-public.gouv.fr, senat.fr), le libellé est dans les textes de l'interface. `STRIKE_RULES_VERIFIED_ON` = 9 novembre 2026.
+- `StrikeSimulator.kt` : le calculateur pur. Entrée `StrikeSimulation` (statut, secteur, rémunération en centimes, jours, jours sans service, heures par semaine et par jour) ; sortie `StrikeEstimate` (règle, retenue en centimes ou rien si non simulée, part en centièmes de pour cent, détail par jour, trentièmes comptés, heures du mois, plafond atteint, obligations, rappels, sources). Calcul exact en fractions d'entiers (`Fraction`, réduite à chaque étape), arrondi **une seule fois** au centime le plus proche (demi-centime vers le haut). Un secteur qui ne correspond pas au statut est lu comme « autre secteur ». `ruleFor`, `obligationsFor`, `notesFor` et `sourcesFor` servent aussi avant toute saisie de montant.
+- `StrikeNumbers.kt` : lecture des montants (« 2 400,50 », « 2400.5 € » ; deux décimales au plus ; 1 000 000 € au plus) et des heures (« 7 », « 7,5 », « 7h30 », « 7 h 30 » ; 24 heures au plus par jour, 60 heures au plus par semaine) ; écriture à la française avec espaces insécables (« 2 400,00 € », « 13,33 % », « 7 h 30 », « 151,67 »).
+
+### 4.2 Interface (`shared/ui/.../ui/agir/strike/`)
+
+- `StrikeSimulatorState.kt` : ce que la personne tape, **en mémoire seulement** (`mutableStateOf` et `mutableStateListOf`, jamais `rememberSaveable`, que le système peut écrire sur le disque). `rememberStrikeSimulatorState(dependencies)` le garde le temps de l'affichage d'« Agir » et l'inscrit à l'effacement rapide (partie `agir-strike-simulator`, qui remet tout à zéro). Une journée entière au départ, statut « Salarié d'une entreprise », 35 heures par semaine et 7 heures par jour.
+- `StrikeSimulatorScreen.kt` : une colonne sur téléphone et tablette (questions puis estimation), deux colonnes côte à côte sur grand écran (840 dp et plus). Questions : statut et secteur en boutons radio (`PpfRadioRow`, groupes `selectableGroup`), rémunération et heures en champs étiquetés (le libellé reste visible au-dessus et sert de nom au lecteur d'écran), jours en puces (journée, demi-journée, heures), bouton « Ajouter un jour de grève », boutons « moins » et « plus » pour les jours sans service (zone tactile de 48 dp). Réponses : mention « Estimation, pas un conseil juridique ni un bulletin de paie » toujours visible, montant annoncé poliment au lecteur d'écran quand il change (`liveRegion`), part, détail, règle avec ses sources et la ligne « Rédigé par l'IA, règles vérifiées le 9 novembre 2026 », « Avant de faire grève » (préavis, déclaration), « À savoir aussi », « Caisses de grève proches », « Sources officielles » (chaque source s'ouvre après « Vous quittez PPF »). Titres de section en `heading()`, erreurs de saisie écrites en toutes lettres (pas seulement en couleur), composants communs seulement, couleurs de `PpfTheme`, icônes de `Lucide.kt` existantes (aucune icône ajoutée).
+- `StrikeLabels.kt` : libellés des statuts, secteurs, règles, obligations, rappels et sources ; textes dans `composeResources/values/strings_greve.xml` (français, vouvoiement, apostrophe typographique, sans tiret cadratin).
+
+### 4.3 Entrée et retour
+
+- Entrée la moins intrusive : un encadré « Simulateur du gréviste » **à la fin** de l'onglet « Caisses » de la rubrique Solidarité (`SolidarityScreen`, paramètre facultatif `onOpenStrikeSimulator` : sans lui, l'écran est inchangé). L'accueil d'« Agir » n'a pas changé (pas de nouvelle carte).
+- `AgirRoute.STRIKE_SIMULATOR` (« simulateur-greve ») : le retour de l'écran et le retour du système ramènent à la rubrique Solidarité.
+- « Caisses de grève proches » réutilise l'annuaire de M35 (`SolidarityLibrary.funds`, chargé une fois par `ensureStarted`) avec le même filtre que la rubrique : `FundQuery(types = {greve}, near = territoire tapé)` (caisses ouvertes seulement, celles du territoire avant celles qui servent partout en France). Le territoire du simulateur ne touche pas à la recherche de la rubrique ; il ne la rejoint que si la personne touche « Voir toutes les caisses de grève » (la rubrique s'ouvre alors sur les caisses de grève de ce territoire). Toucher une caisse ouvre sa page dans la rubrique. Les caisses sont des [EXEMPLE] pour l'instant, avec leur badge.
+
+## 5. Ce qui reste sur l'appareil, ce qui part au serveur
+
+- **Rien n'est enregistré** : ni base de données, ni préférence, ni fichier, ni journal, ni `rememberSaveable`. Quitter « Agir » oublie tout (test `thePayStaysInMemoryAndIsNeverSentNorStored`).
+- **Rien n'est envoyé** : le simulateur ne fait aucune requête ; l'annuaire des caisses est celui que la rubrique Solidarité a déjà (ses deux requêtes générales, les mêmes pour tout le monde). Le test vérifie qu'aucune requête ne contient le montant ni le territoire tapés.
+- Ouvrir une source mène hors de PPF, après la mise en garde : le site officiel reçoit alors l'adresse IP de la personne, comme pour tout lien extérieur.
+- `docs/REGISTRE_DONNEES.md` : ajout du 9 novembre 2026.
+
+## 6. Limites (dites honnêtement)
+
+- **Rien n'est compilé ni lancé** (section 11).
+- Une estimation : l'employeur peut arrondir autrement (par ligne de paie), prendre les heures réelles du mois plutôt que 52/12 de la semaine, prélever la retenue plus tard (fiche F499) ; le résultat est un montant brut.
+- Un mois à la fois : une grève sur deux mois se simule mois par mois (le simulateur le dit au-delà de 31 jours).
+- Non simulés : entreprises privées chargées d'un service public hors transports (L2512-5), forfait en jours, gardes de 24 heures, temps partiel (la rémunération tapée doit être celle du temps partiel), primes annuelles et treizième mois du privé, quotité saisissable, jours fériés compris dans une grève dans le privé, effets sociaux (maladie, chômage, congés, ancienneté) faute de source officielle relue.
+- Les salariés de droit privé d'une administration ne sont pas couverts.
+- Les caisses de grève sont des exemples fictifs tant que l'équipe n'a pas publié de vraies caisses.
+
+## 7. Fichiers
+
+Créés :
+- `shared/core/src/commonMain/kotlin/org/politisationpopulairefrancaise/core/agir/strike/StrikeRules.kt`, `StrikeSimulator.kt`, `StrikeNumbers.kt`
+- `shared/core/src/commonTest/kotlin/org/politisationpopulairefrancaise/core/agir/strike/StrikeSimulatorTest.kt`, `StrikeNumbersTest.kt`
+- `shared/ui/src/commonMain/kotlin/org/politisationpopulairefrancaise/ui/agir/strike/StrikeSimulatorState.kt`, `StrikeSimulatorScreen.kt`, `StrikeLabels.kt`
+- `shared/ui/src/commonMain/composeResources/values/strings_greve.xml`
+- `shared/ui/src/jvmTest/kotlin/org/politisationpopulairefrancaise/ui/agir/strike/StrikeSimulatorScreenTest.kt` (avec son harnais `StrikeHarness`)
+- cette note.
+
+Modifiés (tous du pôle Agir, aucun fichier d'un autre pôle) :
+- `shared/ui/src/commonMain/kotlin/org/politisationpopulairefrancaise/ui/agir/AgirScreen.kt` : route `STRIKE_SIMULATOR`, paramètre facultatif `strikeSimulator`, état créé par `rememberStrikeSimulatorState`, branche du retour du système, branche de l'écran, `onOpenStrikeSimulator` passé à la rubrique Solidarité.
+- `shared/ui/src/commonMain/kotlin/org/politisationpopulairefrancaise/ui/agir/solidarity/SolidarityScreen.kt` : paramètre facultatif `onOpenStrikeSimulator`, encadré à la fin de l'onglet « Caisses », étiquettes `STRIKE_SIMULATOR` et `OPEN_STRIKE_SIMULATOR`.
+- Documents communs : `docs/REGISTRE_DONNEES.md`, `docs/GUIDE_PROPRIETAIRE.md`, `docs/CHANGELOG.md`, `docs/ROADMAP.md`.
+
+Non touchés : `content/` (la fiche `faire-greve-vos-droits.md` est réécrite par un autre agent ; les textes du simulateur suivent la loi, pas la fiche), `docs/DECISIONS.md`, le serveur, les migrations.
+
+## 8. Décision à numéroter
+
+**Simulateur du gréviste (AG-60), règles et conception.** Contexte : la spécification du cahier fonctionnel (AG-60) demande la retenue selon le statut, le préavis et la déclaration selon le secteur, et les caisses de grève proches, avec des règles vérifiées sur Légifrance et relues. Options étudiées pour l'entrée : (A) une nouvelle carte sur l'accueil d'« Agir » ; (B) un encadré à la fin des caisses de la rubrique Solidarité ; (C) un quatrième onglet de la rubrique. Choix : **B** (l'accueil et les onglets restent tels quels, l'encadré est à côté des caisses de grève, dont il réutilise l'annuaire). Règles retenues : section 2 de cette note (privé : 52/12 de la durée hebdomadaire ; État : trentième indivisible et jours sans service compris ; territoriale et hospitalière : 1/30, 1/60, 1/151,67, au plus un trentième par jour). Points laissés hors du simulateur, à confirmer : section 2.8. Données : tout en mémoire, rien d'enregistré ni d'envoyé, partie `agir-strike-simulator` de l'effacement rapide. Raison : livrer un outil utile pendant le mouvement sans jamais garder ni transmettre le salaire, et ne rien affirmer qu'une source officielle ne dit pas.
+
+## 9. Questions pour le chef d'équipe (avec recommandations)
+
+1. **Entreprises privées chargées d'un service public hors transports** (L2512-5, article 2 abrogé de la loi n° 82-889, mais appliqué par la Cour de cassation en 2010 et 2020) : faut-il coder les tranches 1/160, 1/50 et 1/30 ? **Recommandation** : non avant l'avis de l'avocat (la « demi-journée » n'est pas définie) ; garder « pas de montant, préavis affiché ».
+2. **Plafond d'un trentième par jour pour les heures** (territoriale, hospitalière) : la fiche F499 donne 1/151,67 par heure sans plafond, la réponse ministérielle de 1999 dit que la retenue proportionnelle ne doit pas être plus sévère que le trentième. **Recommandation** : garder le plafond (il évite qu'une grève de 6 heures coûte plus qu'une journée entière) et le faire valider par l'avocat.
+3. **Contractuels de la territoriale et de l'hospitalière** : même règle que les fonctionnaires, par le même raisonnement (absence de texte). **Recommandation** : garder, à faire confirmer par l'avocat (liste de relecture de `ROADMAP.md`).
+4. **Entrée sur l'accueil d'« Agir »** : ajouter aussi une carte « Simulateur du gréviste » ? **Recommandation** : pas tout de suite ; mesurer d'abord dans la phase de test si l'encadré des caisses suffit, puis ajouter la carte si la propriétaire le souhaite (pendant le mouvement, la carte serait plus visible).
+5. **Lien avec la fiche « Faire grève : vos droits »** (réécrite par un autre agent) : ajouter un lien croisé dans les deux sens une fois la fiche publiée. **Recommandation** : oui, à la fusion, en vérifiant que la fiche et le simulateur disent la même chose (le simulateur suit la loi, section 2).
+6. **Date de revue** : les règles bougent (loi de finances, jurisprudence). **Recommandation** : revue des sources tous les six mois et à chaque loi de finances, inscrite dans « À vérifier avant publication ».
+
+## 10. Comment tester
+
+Reporté dans `docs/GUIDE_PROPRIETAIRE.md` (« Tester le simulateur du gréviste », 9 novembre 2026), une fois compilé. Tests automatiques : `gradlew :shared:core:jvmTest --tests "*StrikeSimulatorTest*" --tests "*StrikeNumbersTest*"` et `gradlew :shared:ui:jvmTest --tests "*StrikeSimulatorScreenTest*"`, puis les tests de la rubrique Solidarité (`SolidarityScreenTest`) et d'« Agir » (`AgirScreenTest`), qui doivent rester verts.
+
+## 11. À faire au moment de compiler
+
+- Compiler `:shared:core` et `:shared:ui` (Android, ordinateur et klib iOS), lancer les tests de la section 10, puis le build complet selon la règle de l'équipe.
+- Vérifier que `Res.plurals.greve_between_value`, `greve_detail_between` et `greve_detail_thirtieths` sont bien générés (pluriels français « one » et « other »).
+- Vérifier la résolution de `FundQuery(...).apply(funds)` (fonction membre, pas la fonction de portée `apply` de Kotlin) et le rendu des espaces insécables (`StrikeNumbers.NBSP`) dans les montants.
+- Si le test de mise en page (`theSimulatorWorksOnAPhoneATabletAndADesktopInLightAndDark`) échoue sur les bornes des colonnes coupées par le défilement, comparer plutôt les positions horizontales (grand écran) et l'ordre des nœuds (téléphone).
+- `tools/check-apk.sh` : rien de nouveau à exiger (aucun fichier embarqué ajouté).
+
+## 12. API lues pour écrire sans compiler
+
+- `SolidarityLibrary` (`ui/agir/solidarity/SolidarityLibrary.kt`) : `funds`, `status`, `ensureStarted()`, `selectTab`, `openFund`, `clearFundTypes`, `toggleFundType`, `setNear`, `fundQuery`.
+- `FundQuery` (`core/agir/solidarity/SolidarityQuery.kt`) : `FundQuery(text, types, territory, near, includeClosed)` et `fun apply(funds: List<SolidarityFund>): List<SolidarityFund>` ; `SolidarityFormats.FUND_STRIKE = "greve"`.
+- `SolidarityFund` : `slug`, `displayName`, `example`, `isNational`, `territory`, `summary`.
+- Composants (`ui/components`) : `PpfCard(modifier, onClick, selected, contentPadding, content)`, `InfoBox(icon, modifier, content)`, `PpfRadioRow(label, selected, onClick, modifier, supporting, enabled)`, `PpfSelectableChip(label, selected, onClick, modifier, enabled, leadingIcon)`, `PpfTextField(value, onValueChange, placeholder, modifier, minLines, singleLine, keyboardOptions, keyboardActions)` (son `contentDescription` est le `placeholder`), `PpfIconButton(icon, contentDescription, onClick, modifier, enabled, tint, badge)`, `PpfSecondaryButton(onClick, text, modifier, enabled, small, icon)`, `PageHeader(title, description)`, `ExampleBadge()`, `LeavePpfDialog(url, title, text, stayLabel, openLabel, onStay, onDone, tags, note)`, `leavingHost(url)`.
+- `PrivateLine(text, modifier)` (interne au module, `SolidarityScreen.kt`).
+- `deviceErasable(id) { … }` et `AppDependencies.erasables.register(…)` (`core/device/DeviceErasable.kt`).
+- `CivilDate.toFrench()` (« 9 novembre 2026 »), `WindowClass.width` et `WindowWidthClass` (840 dp pour `EXPANDED`).
+- Tests : `AgirFixtures.dependencies(remote)`, `DirectoryServer` (`tagRequests`, `fetches`), `RecordingUriHandler`, `awaitTag`, `count`, `showInList`, `SolidarityExamples`, `SolidarityPageTags.FUND_PAGE` et `FUND_NAME`.
