@@ -438,6 +438,9 @@ private fun SpaceContent(
                     )
                 },
                 testimonies = testimonyLibrary,
+                // The events and calls of the collectifs (M24) are those of the agenda and of the calls.
+                agendaLibrary = agendaLibrary,
+                callsLibrary = callsLibrary,
                 organisationAgenda = { key, slotModifier ->
                     OrganisationAgenda(agendaLibrary, key, slotModifier) { mobilization ->
                         agendaLibrary.open(mobilization)

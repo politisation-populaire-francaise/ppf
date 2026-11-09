@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.server.agir
 
 import org.politisationpopulairefrancaise.core.agir.AgirFormats
+import org.politisationpopulairefrancaise.core.agir.collectives.CollectiveFormat
 import org.politisationpopulairefrancaise.core.revendications.checks.DraftRules
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
@@ -88,8 +89,8 @@ object AgirRules {
 
     /** The first shape error of an Agir content; null when it is well-formed or not an Agir content. */
     fun check(event: SignedEvent): Decision.Refused? = when (categoryOf(event)) {
-        AgirCategory.MOBILIZATION -> checkMobilization(event)
-        AgirCategory.CALL -> checkCall(event)
+        AgirCategory.MOBILIZATION -> checkMobilization(event) ?: collectiveReference(event)
+        AgirCategory.CALL -> checkCall(event) ?: collectiveReference(event)
         AgirCategory.ORGANISATION -> checkOrganisation(event)
         AgirCategory.PARTICIPATION -> checkParticipation(event)
         null -> null
@@ -183,6 +184,13 @@ object AgirRules {
         return null
     }
 
+    /**
+     * A mobilization or a call in the name of a collectif (M24, D-087) names it in exactly one
+     * `ppf-collective` tag holding a valid room id; who may do so is checked by `CollectiveRoles`.
+     */
+    private fun collectiveReference(event: SignedEvent): Decision.Refused? =
+        if (CollectiveFormat.badReference(event.tags)) missing(CollectiveFormat.TAG_COLLECTIVE) else null
+
     private fun checkOrganisation(event: SignedEvent): Decision.Refused? {
         common(event, MAX_ARTICLE_ID)?.let { return it }
         if (!hasText(event, AgirFormats.TAG_SUMMARY)) return missing(AgirFormats.TAG_SUMMARY)
@@ -227,7 +235,7 @@ object AgirRules {
         "d", AgirFormats.TAG_LINK, AgirFormats.TAG_PUBKEY, AgirFormats.TAG_ADDRESS, AgirFormats.TAG_GEOHASH,
         AgirFormats.TAG_START, AgirFormats.TAG_END, AgirFormats.TAG_START_TZID, AgirFormats.TAG_PUBLISHED_AT,
         AgirFormats.TAG_DEADLINE, AgirFormats.TAG_GOAL, AgirFormats.TAG_TYPE, AgirFormats.TAG_CALL_TYPE,
-        AgirFormats.TAG_CALL_STATUS, AgirFormats.TAG_CHARTER,
+        AgirFormats.TAG_CALL_STATUS, AgirFormats.TAG_CHARTER, CollectiveFormat.TAG_COLLECTIVE,
     )
 
     /**

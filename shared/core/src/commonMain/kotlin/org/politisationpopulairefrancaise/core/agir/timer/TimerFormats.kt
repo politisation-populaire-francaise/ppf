@@ -8,7 +8,7 @@ import org.politisationpopulairefrancaise.core.signing.isLowercaseHex
 
 /**
  * Formats of AG-55 « Sans nouvelles de moi » (decision D-088; docs/integration/agir-minuteur.md,
- * docs/FORMATS.md section 4 quattuordecies).
+ * docs/FORMATS.md section 4 quindecies).
  *
  * Every message of a timer is a rumor of kind [KIND], written by the account of the person who arms
  * it, sealed for one recipient and gift wrapped like a private message (NIP-59 over NIP-44): the

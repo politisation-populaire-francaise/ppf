@@ -197,6 +197,18 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 7. Onglet « Entraide » : l'explication de ce qui se prépare (covoiturage, hébergement) et pourquoi ce n'est pas encore là.
 8. Tournez le téléphone ou élargissez la fenêtre : sur ordinateur, la liste et la page sont côte à côte.
 
+### Tester les collectifs dans « Agir » (ajouté le 9 novembre 2026, pas encore compilé)
+
+Ce qui suit sera possible une fois le travail compilé et fusionné (il a été écrit sans pouvoir compiler, la machine étant réservée à une autre équipe). Un collectif est un groupe de citoyens avec une page, des rôles, un calendrier et des appels ; un salon reste un simple espace de discussion, ouvert à tous.
+
+1. Lancez le serveur de développement (`gradlew :server:runDev`), puis l'application de bureau reliée à lui (variable `PPF_SERVER_URL=http://localhost:8080`, puis `gradlew :desktop:run`).
+2. Ouvrez « Agir », puis la carte « Collectifs » : deux collectifs fictifs marqués [EXEMPLE] apparaissent (des cyclistes à Lyon, des parents d'élèves à Paris), avec leur type, leur portée et leur territoire. Les salons ordinaires n'y sont pas : le lien « Voir les salons de discussion » les ouvre, et le retour ramène aux collectifs.
+3. Touchez un thème (« vélo »), un type ou une portée : la liste se resserre ; « Effacer les filtres » la remet. Si vous avez choisi votre commune dans « Mes élus » (espace « Comprendre »), le filtre « Près de chez moi » apparaît. Tout cela reste sur votre appareil.
+4. Ouvrez « Collectif des cyclistes » : sa présentation, ses thèmes, sa charte interne (touchez « Lire la charte interne »), ses rôles publics, et dans « Prochains événements » une balade [EXEMPLE]. Touchez « Rejoindre le collectif » : la phrase rappelle que rien n'est publié. « Ouvrir le salon du collectif » ouvre son salon de discussion.
+5. Touchez « Créer un collectif » avec un compte d'essai : comme ce compte n'est pas validé en personne, l'écran l'explique, renvoie vers « Mon espace » (carte « Mon niveau de votant ») et propose de créer un salon à la place. C'est voulu : seul un compte validé en personne peut fonder un collectif.
+6. La création elle-même (quatre étapes, charte décochée au départ, mise en garde « Votre pseudonyme sera publiquement relié à ce collectif », « Annuler » avant « Créer le collectif ») est vérifiée par les tests automatiques. Pour l'essayer à la main, il faudra un compte validé en personne par une séance de validation du back-office ; je vous guiderai pas à pas quand ce sera prêt sur le serveur de développement.
+7. Élargissez la fenêtre, puis réduisez-la à la taille d'un téléphone : la page reste lisible, centrée, sans débordement ; essayez aussi le mode sombre.
+
 ### Tester le minuteur « Sans nouvelles de moi » (ajouté le 9 novembre 2026, pas encore compilé)
 
 Ce minuteur prévient vos proches si vous ne confirmez pas que vous allez bien à l'heure que vous avez choisie. **Il n'est pas encore dans une version installable** : ce guide servira dès qu'il aura été compilé et sera entré dans une version de test.

@@ -15,11 +15,13 @@ import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationDuplicate
 import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
 import org.politisationpopulairefrancaise.core.agir.agenda.ProposalRecord
 import org.politisationpopulairefrancaise.core.agir.agenda.ProposalReview
+import org.politisationpopulairefrancaise.core.agir.collectives.CollectiveFormat
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.publication.PublicationPort
 import org.politisationpopulairefrancaise.core.publication.PublicationResult
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.ui.agir.collectives.CollectiveLink
 import kotlin.random.Random
 
 /** How the sending of a proposed event ended. */
@@ -62,6 +64,13 @@ class MobilizationComposer(
     var draft: MobilizationDraft by mutableStateOf(MobilizationDraft())
     var charterAccepted: Boolean by mutableStateOf(false)
 
+    /**
+     * The collectif the event is proposed in the name of (AG-49, D-087), set by its page; null for an
+     * event of the author alone. It adds the tag `ppf-collective`, which the server accepts from its
+     * founder, administrators and moderators only.
+     */
+    var collective: CollectiveLink? by mutableStateOf(null)
+
     var sending: Boolean by mutableStateOf(false)
         private set
     var outcome: MobilizationSendOutcome? by mutableStateOf(null)
@@ -97,7 +106,7 @@ class MobilizationComposer(
             val now = clock()
             val unsigned = draft.toUnsignedEvent(signer.publicKey, now, Mobilization.newIdentifier(draft.title, random))
                 ?: return finish(MobilizationSendOutcome.FAILED)
-            val event = signer.sign(unsigned)
+            val event = signer.sign(collective?.let { CollectiveFormat.withCollective(unsigned, it.id) } ?: unsigned)
             withContext(Dispatchers.Default) { store.store(event, pending = true) }
             sent = event
             val result = remote?.publish(event) ?: PublicationResult.Unavailable()

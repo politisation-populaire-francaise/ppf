@@ -421,6 +421,19 @@ Détail : `docs/integration/agir-solidarite.md`, section 4.
 | Profilage par la recherche ou les compétences (qui cherche une caisse de grève, qui est juriste) | Deux requêtes générales, les mêmes pour tous ; recherche, territoire et compétences jamais envoyés ni enregistrés, oubliés par l'effacement rapide | |
 | Exposition des personnes par l'entraide (adresse, trajet, présence à une manifestation) ou par une offre d'aide (engagement) | Rien n'est codé : entraide et « Proposer mon aide » annoncés « bientôt » | Questions 1 à 3 de la note |
 
+## Ajout du 9 novembre 2026 : collectifs d'« Agir » (M24, étape 1, D-087)
+
+Détail : `docs/integration/agir-collectifs.md`, section 7. Écrit sans compiler : à vérifier à la compilation.
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Faux collectifs créés en série (occuper des noms, usurper un mouvement, gonfler une cause) | Création réservée aux comptes **validés en personne** (niveau `verifie` ou `elu`, D-112), vérifiée par le serveur à la réception (`403 collective_needs_verified`), jamais acceptée sans le stockage des urnes ; comptes de collectif (D-133) et clés compromises (S-146) refusés ; les garde-fous des salons s'appliquent aussi (3 créations par clé et par jour, noms proches, noms d'organisations retenus pour l'équipe, D-132) | Détection des manipulations (S-90) ; suspension d'un collectif par PPF (S-135) |
+| Fondateur exposé : la description signée relie publiquement son pseudonyme au collectif, ce qui peut révéler un engagement politique, syndical ou associatif (RGPD, article 9) | Mise en garde avant le bouton « Créer le collectif », « Annuler » en premier, charte décochée par défaut ; la description ne porte aucune donnée d'identité, seulement le pseudonyme | Transfert du rôle de fondateur (S-136) |
+| Appartenance révélée (qui est membre de quel collectif) | Jamais publiée ni envoyée : rejoindre un collectif, c'est rejoindre son salon sur l'appareil (`group_membership`) ; aucun nombre de membres affiché, le serveur n'en connaît aucun ; effacée avec les clés | Liste chiffrée lisible des seuls administrateurs (S-133, question 1 de la note) |
+| Événements ou appels publiés au nom d'un collectif par un inconnu | Étiquette `ppf-collective` acceptée seulement du fondateur, d'un administrateur ou d'un modérateur du salon au moment de la réception (`403 collective_role_required`), l'équipe éditoriale comprise ; puis relecture habituelle d'« Agir » | Vérification des rôles aussi sur l'appareil, à partir du journal public du salon |
+| Détournement d'un collectif existant (changer sa portée, son territoire, sa visibilité ; transformer un salon en collectif sans validation) | Ces étiquettes ne changent jamais (`409 collective_immutable`) ; seule la clé du fondateur republie la description ; un salon ordinaire ne devient jamais un collectif par une nouvelle version | Reprise encadrée d'un salon par un collectif (`docs/integration/salons-reprise.md`) |
+| Profilage par la recherche ou « près de chez moi » | Recherche, filtres et commune de « près de chez moi » calculés sur l'appareil, jamais envoyés ; les événements et appels d'un collectif sont lus parmi ceux que l'agenda et le mur ont déjà reçus (aucune requête par page) | |
+
 ## Ajout du 9 novembre 2026 : minuteur « Sans nouvelles de moi » (AG-55, D-088, étape 1, pas encore compilée)
 
 Détail : `docs/integration/agir-minuteur.md`, sections 3 et 6. Ce qu'on protège : la personne qui risque d'être interpellée, blessée ou retenue (l'alerte doit partir même si on lui prend son téléphone), le contenu de l'alerte et le lien entre la personne et ses proches.

@@ -1,6 +1,6 @@
 # Note d'intégration : minuteur « Sans nouvelles de moi » (AG-55), étape 1
 
-Rédigée le 9 novembre 2026 par un agent de la session « Agir » (branche `worktree-agent-a3d74e88d479cf770`, partie de `feature/agir` 75d234e). Décision : **D-088** (`docs/DECISIONS.md`). Format : `docs/FORMATS.md`, section 4 quattuordecies.
+Rédigée le 9 novembre 2026 par un agent de la session « Agir » (branche `worktree-agent-a3d74e88d479cf770`, partie de `feature/agir` 75d234e). Décision : **D-088** (`docs/DECISIONS.md`). Format : `docs/FORMATS.md`, section 4 quindecies.
 
 > **Rien n'est compilé ni testé.** Les compilations de branches étaient interdites ce jour-là (machine fragile, autre équipe en cours de compilation). Le code et les tests ont été écrits en lisant les sources réelles de chaque API appelée ; ils doivent être compilés et lancés (`gradle-safe.ps1`, section 9) avant toute entrée dans main.
 
