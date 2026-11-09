@@ -298,6 +298,25 @@ class VotingState internal constructor(
         }
     }
 
+    /**
+     * The part [ERASABLE_ID] of the quick erase (S-44, docs/integration/agir-securite-appareil.md, 2 bis): every
+     * token, pending request and choice of this device erased for good, and awaited; then what the screens show
+     * of them, and the key of a validation session (memory only). The proof shown to a validator is never kept.
+     * No network call (the server never links a vote to an account: nothing to erase there); idempotent; throws
+     * when the local database could not be emptied, so that the user is told.
+     */
+    suspend fun eraseFromDevice() {
+        // Under the session's own lock when it exists, so that a synchronisation cannot write a token back.
+        val current = sessionLock.withLock { session }
+        withContext(Dispatchers.Default) { current?.forget() ?: store?.clear() }
+        validatorKeys = null
+        tokens = emptySet()
+        choices = emptyMap()
+        publicChoices = emptyMap()
+        alert = false
+        status = null
+    }
+
     /** At the start: the ballots whose moment passed while the application was closed get a new one. */
     suspend fun redrawOverdue() {
         val current = session() ?: return
@@ -345,6 +364,9 @@ class VotingState internal constructor(
 
         /** No ballot this close to a request made with the account, and no such request this close to a ballot. */
         const val QUIET_SECONDS: Long = 120
+
+        /** The name of the voting data of this device in the quick erase (S-44). */
+        const val ERASABLE_ID: String = "decider-urne"
 
         fun of(dependencies: AppDependencies, scope: CoroutineScope): VotingState =
             VotingState(dependencies.urneRemote, dependencies.database?.let(::UrneTokenStore), scope).also {

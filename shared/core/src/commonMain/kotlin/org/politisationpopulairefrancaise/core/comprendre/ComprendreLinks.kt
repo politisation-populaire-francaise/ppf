@@ -17,6 +17,7 @@ import org.politisationpopulairefrancaise.core.voir.VoirLinks
  * | Story of the history of social movements | `/comprendre/histoire/<identifier>` |
  * | « Qui décide de ça ? » sheet | `/comprendre/qui-decide/<identifier>` |
  * | Entry of the glossary | `/comprendre/glossaire/<identifier without its "glossaire-" prefix>` |
+ * | Teaching sheet for the classroom (CO-13) | `/comprendre/enseignants/<identifier>` |
  *
  * The identifier is percent-encoded like the ones of [VoirLinks] (RFC 3986).
  */
@@ -31,6 +32,7 @@ object ComprendreLinks {
     const val HISTOIRE: String = "histoire"
     const val QUI_DECIDE: String = "qui-decide"
     const val GLOSSAIRE: String = "glossaire"
+    const val ENSEIGNANTS: String = "enseignants"
 
     /** The slugs of the glossary all start with this prefix (contents of the third wave); the address leaves it out. */
     const val GLOSSARY_PREFIX: String = "glossaire-"
@@ -43,6 +45,7 @@ object ComprendreLinks {
         ArticleType.HISTOIRE -> HISTOIRE
         ArticleType.QUI_DECIDE -> QUI_DECIDE
         ArticleType.GLOSSAIRE -> GLOSSAIRE
+        ArticleType.FICHE_PEDAGOGIQUE -> ENSEIGNANTS
         else -> null
     }
 

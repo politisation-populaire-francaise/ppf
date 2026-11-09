@@ -67,6 +67,15 @@ enum class ArticleType(val tagValue: String) {
     /** A testimony published by the team after review (M5, AG-07; core.agir.testimonies.PublishedTestimony), shown by VO-08 in "Le mouvement". */
     TEMOIGNAGE("temoignage"),
 
+    /** An election of the personal electoral calendar (DE-28; core.decider.ElectionCalendar): rounds, deadlines, decree. */
+    ELECTION("election"),
+
+    /**
+     * A teaching sheet for the classroom (CO-13, D-096): how to bring one course of "Comprendre" to life in
+     * 55 minutes with a group, linked to its course and to a level, read by `core.comprendre.TeachingSheet`.
+     */
+    FICHE_PEDAGOGIQUE("fiche-pedagogique"),
+
     /**
      * A page of « Transparence de PPF » (M34, PP-01, D-104): an instance, an important decision, the annual
      * accounts or a report of moderation and claims, read by core.voir.TransparencyEntry.

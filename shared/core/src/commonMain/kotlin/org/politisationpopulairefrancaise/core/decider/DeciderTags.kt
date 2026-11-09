@@ -42,7 +42,10 @@ object DeciderTags {
     const val MEASURE = "ppf-measure"
     /** The day the same text was sent to every candidate. */
     const val SENT = "ppf-sent"
-    /** The same deadline for every candidate. */
+    /**
+     * A deadline. In a Pact: the same one for every candidate. In an election (DE-28): one deadline,
+     * `kind | date | source (https)` ([ElectionDeadline]), several per election.
+     */
     const val DEADLINE = "ppf-deadline"
     /** `proposee` (starting list, to be voted), `envoye`, `clos` ([PacteStatus]). */
     const val PACTE_STATUS = "ppf-pacte-status"
@@ -67,4 +70,42 @@ object DeciderTags {
     const val THEME = "ppf-theme"
     /** A short quotation of the candidate: `text | page (https) | date (AAAA-MM-JJ)`. */
     const val QUOTE = "ppf-quote"
+
+    /**
+     * One round of the election of a comparator: `number | voting day | first voting day (overseas, optional) |
+     * closing of the last polling stations (HH:MM, Paris time, optional: 20:00)`. Sets the freeze ([ElectionRound]).
+     */
+    const val ROUND = "ppf-round"
+
+    /** The request of a declared candidate: `candidate (identifier of the sheet) | requested on | added on` ([CandidateRequest]). */
+    const val REQUEST = "ppf-request"
+
+    /** The same delay for everyone between a request and the addition, in days. */
+    const val ADDITION_DELAY = "ppf-addition-delay"
+
+    /** The official list of the candidates: `page (https) | date of publication` ([OfficialList]). */
+    const val OFFICIAL_LIST = "ppf-official-list"
+
+    /** The published words of one theme, for the past votes (D-117): `theme | word | word…` ([ThemeWords]). */
+    const val THEME_WORDS = "ppf-theme-words"
+
+    /** One version of the words, the public history of the rule: `version | date | reason` ([WordsVersion]). */
+    const val WORDS_VERSION = "ppf-words-version"
+
+    /** The party of a candidate in the history packages: `candidate | party | from | to (optional)` ([CandidateParty]). */
+    const val PARTY = "ppf-party"
+
+    /** The official photo of a candidate: `candidate | sha256 | licence | author | source page (https)` ([CandidatePhoto]). */
+    const val PHOTO = "ppf-photo"
+
+    // The personal electoral calendar (cahier fonctionnel, M13.7; DE-28).
+    /** `annoncee` or `convoquee` ([ElectionStatus]). */
+    const val ELECTION_STATUS = "ppf-election-status"
+
+    /** The decree of convocation: `number | day of the Journal officiel | page on Légifrance (https)` ([Decree]). */
+    const val DECREE = "ppf-decree"
+
+
+    /** The territory of a local election (référentiel des territoires). */
+    const val TERRITORY_CODE = "ppf-territory-code"
 }

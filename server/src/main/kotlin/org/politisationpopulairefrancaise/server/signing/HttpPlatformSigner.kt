@@ -23,6 +23,10 @@ import org.politisationpopulairefrancaise.core.platform.EventDraft
 import org.politisationpopulairefrancaise.core.platform.KeysResponse
 import org.politisationpopulairefrancaise.core.platform.PlatformRoot
 import org.politisationpopulairefrancaise.core.platform.PlatformTrust
+import org.politisationpopulairefrancaise.core.platform.RootRequestBody
+import org.politisationpopulairefrancaise.core.platform.RootRequestQr
+import org.politisationpopulairefrancaise.core.platform.RootRequestResponse
+import org.politisationpopulairefrancaise.core.platform.RootRequests
 import org.politisationpopulairefrancaise.core.platform.SignRequest
 import org.politisationpopulairefrancaise.core.platform.SignResponse
 import org.politisationpopulairefrancaise.core.platform.SigningProtocol
@@ -94,7 +98,7 @@ class HttpPlatformSigner(
     private val config: PlatformSignerConfig,
     private val client: HttpClient = defaultClient(config),
     private val clock: Clock = Clock.systemUTC(),
-) : PlatformSigner, AutoCloseable {
+) : PlatformSigner, PlatformKeys, SignerAdmin, AutoCloseable {
     private val outcomes = object : LinkedHashMap<String, Pair<Instant, SigningStatus>>() {
         override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Pair<Instant, SigningStatus>>?): Boolean = size > MAX_OUTCOMES
     }
@@ -103,11 +107,21 @@ class HttpPlatformSigner(
     @Volatile
     private var trust: Pair<Instant, PlatformTrust>? = null
 
+    private val rootTrust: PlatformTrust = PlatformTrust.of(config.rootPublicKey)
+
+    /**
+     * The trust of the certificates seen so far (for the publication policy and the legal register): before a
+     * signed event is handed over, its key is in it, since [status] refreshes it for an unknown key.
+     */
+    override fun trust(): PlatformTrust = trust?.second ?: rootTrust
+
     override suspend fun currentKey(use: SigningUse): String? =
         keys()?.keys?.firstOrNull { it.use == use.id && it.current }?.pubkey
 
+    override val rootPublicKey: String? get() = config.rootPublicKey
+
     /** The keys of the service and their states (for the back-office), null when it does not answer. */
-    suspend fun keys(): KeysResponse? = call {
+    override suspend fun keys(): KeysResponse? = call {
         val response = client.get("${config.url}/v1/keys") { authorize() }
         if (response.status != HttpStatusCode.OK) null else SigningProtocol.json.decodeFromString(KeysResponse.serializer(), response.bodyAsText())
     }
@@ -185,9 +199,52 @@ class HttpPlatformSigner(
     }
 
     /** The certificates and revocations the service holds (public), to hand them to the applications. */
-    suspend fun certificates(): List<SignedEvent>? = call {
+    override suspend fun certificates(): List<SignedEvent>? = call {
         val response = client.get("${config.url}/v1/certificates") { authorize() }
         if (response.status != HttpStatusCode.OK) null else SigningProtocol.json.decodeFromString(ListSerializer(SignedEvent.serializer()), response.bodyAsText())
+    }
+
+    /**
+     * Deposits a root request (D-141). The answer is checked: an id of 128 bits in hexadecimal and the hash of
+     * exactly the events sent ([RootRequests.sha256]), so that the QR code never names other events.
+     */
+    override suspend fun rootRequest(events: List<UnsignedEvent>): RootRequestResult {
+        val body = SigningProtocol.json.encodeToString(RootRequestBody.serializer(), RootRequestBody(events.map(EventDraft::of)))
+        return call {
+            val response = client.post("${config.url}/v1/root-requests") {
+                authorize()
+                contentType(ContentType.Application.Json)
+                setBody(body)
+            }
+            if (response.status == HttpStatusCode.Unauthorized) return@call RootRequestResult.Refused(SIGNER_UNAUTHORIZED)
+            val answer = runCatching { SigningProtocol.json.decodeFromString(RootRequestResponse.serializer(), response.bodyAsText()) }.getOrNull()
+                ?: return@call RootRequestResult.Refused(SIGNER_UNAVAILABLE)
+            if (response.status != HttpStatusCode.Created) return@call RootRequestResult.Refused(answer.code ?: SIGNER_UNAVAILABLE, answer.detail)
+            val id = answer.id
+            val sha256 = answer.sha256?.takeIf { it == RootRequests.sha256(events) }
+            val expiresAt = answer.expiresAt
+            if (id == null || !RootRequestQr.isRequestId(id) || sha256 == null || expiresAt == null) {
+                return@call RootRequestResult.Refused(BAD_ANSWER_FROM_SIGNER)
+            }
+            RootRequestResult.Created(id, sha256, expiresAt)
+        } ?: RootRequestResult.Refused(SIGNER_UNAVAILABLE)
+    }
+
+    /** The team list the service holds, null when there is none (404) or the service does not answer. */
+    override suspend fun teamList(): SignedEvent? = call {
+        val response = client.get("${config.url}/v1/team-list") { authorize() }
+        if (response.status != HttpStatusCode.OK) null else SignedEvent.fromJson(response.bodyAsText())
+    }
+
+    override suspend fun journal(after: Long, limit: Int): List<SignerJournalLine>? = call {
+        require(after >= 0 && limit in 1..1_000) { "after >= 0, limit from 1 to 1000" }
+        val response = client.get("${config.url}/v1/journal?after=$after&limit=$limit") { authorize() }
+        if (response.status != HttpStatusCode.OK) null else SigningProtocol.json.decodeFromString(ListSerializer(SignerJournalLine.serializer()), response.bodyAsText())
+    }
+
+    override suspend fun journalHead(): SignerJournalHead? = call {
+        val response = client.get("${config.url}/v1/journal/head") { authorize() }
+        if (response.status != HttpStatusCode.OK) null else SigningProtocol.json.decodeFromString(SignerJournalHead.serializer(), response.bodyAsText())
     }
 
     override fun close() = client.close()

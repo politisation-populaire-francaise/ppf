@@ -20,6 +20,7 @@ import kotlinx.coroutines.CancellationException
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.HealthStatus
 import org.politisationpopulairefrancaise.server.accounts.AccountTypes
+import org.politisationpopulairefrancaise.server.accounts.CommitmentStamper
 import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.agir.AgirConfig
 import org.politisationpopulairefrancaise.server.agir.AgirSetup
@@ -68,6 +69,7 @@ import org.politisationpopulairefrancaise.server.editorial.EditorialTexts
 import org.politisationpopulairefrancaise.server.editorial.SignedEditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.StorePublicationPort
 import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformKeys
 import org.politisationpopulairefrancaise.server.signing.PlatformSigner
 import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.editorial.PublishedContents
@@ -76,6 +78,10 @@ import org.politisationpopulairefrancaise.core.platform.SigningUse
 import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
+import org.politisationpopulairefrancaise.server.decider.ComparatorFreeze
+import org.politisationpopulairefrancaise.server.decider.ComparatorPhotosConfig
+import org.politisationpopulairefrancaise.server.decider.CompromisedAuthors
+import org.politisationpopulairefrancaise.server.decider.comparatorPhotosRoutes
 import org.politisationpopulairefrancaise.server.decider.EditorialDeciderSource
 import org.politisationpopulairefrancaise.server.decider.PetitionLinks
 import org.politisationpopulairefrancaise.server.decider.PetitionLinksQueue
@@ -137,6 +143,7 @@ import org.politisationpopulairefrancaise.server.urne.UrneClosureStatements
 import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
 import org.politisationpopulairefrancaise.server.urne.urneApi
 import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
+import org.politisationpopulairefrancaise.server.signing.SignerAdmin
 import org.politisationpopulairefrancaise.web.ContentVerifier
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
@@ -170,6 +177,8 @@ import javax.sql.DataSource
  *   verified organisation (7 days by default, D-132), see [GroupGuardrails].
  * - PPF_HELD_RETENTION_DAYS, PPF_HELD_CLEANUP_INTERVAL_MINUTES: the review queue of the Agir space,
  *   see [AgirConfig].
+ * - PPF_DECIDER_PHOTOS_DIR: the folder of the official photos of the comparators (DE-16), files named by their
+ *   SHA-256, served at `/api/v1/decider/photos/`; without it, no photo is served and none is shown.
  * - PPF_TILES_DIR: the folder of the PMTiles files of the map backgrounds, served at `/tiles/` by
  *   range (development and preproduction; in production Caddy serves them), see [TilesConfig].
  * - PPF_RNE_SOURCE, PPF_RNE_REFRESH_DAYS: the directory of elected officials (fictitious example set
@@ -191,6 +200,9 @@ import javax.sql.DataSource
  *   the team back-office, off unless PPF_BACKOFFICE_ORIGIN is set (for example
  *   `https://equipe.preprod.politisation-populaire-francaise.org`; `http://localhost:8081` in development
  *   only). Its routes answer only on PPF_BACKOFFICE_PORT (default 8081), never on PORT; see [BackOfficeConfig].
+ * - PPF_SIGNER_URL, PPF_SIGNER_CLIENT_TOKEN_FILE, PPF_SIGNER_ROOT_PUBKEY: the signing service of the platform,
+ *   off unless PPF_SIGNER_URL is set; with the back-office, the page « Clés de la plateforme » and the copy of
+ *   the journal of the service (D-141); see [PlatformSignerConfig].
  * - PPF_VAPID_PRIVATE_KEY_FILE, PPF_PUSH_ALLOWED_HOSTS, PPF_PUSH_INTERNAL_URL, PPF_PUBLIC_URL: the push
  *   wake-ups (M31), off unless PPF_VAPID_PRIVATE_KEY_FILE is set, see [PushConfig].
  *
@@ -317,6 +329,10 @@ fun Application.module(
      */
     editorialPublisher: EditorialPublisher? = null,
 ) {
+    // The contents signed by a working key certified by the root for their use are platform contents (D-129,
+    // step 6, server side): accepted by the policy, and kept out of the legal register like the editorial ones.
+    @Suppress("NAME_SHADOWING")
+    val policy = policy.withPlatformKeys(platformSigner as? PlatformKeys ?: PlatformKeys.NONE)
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
     // The open export (M34, S-48): the contents of the editorial keys and the tables each pole registers.
@@ -324,6 +340,11 @@ fun Application.module(
     val openExport = repository?.let { OpenExport(it, policy, openDatasets) }
     // Timestamped archive (D-111): its batches, upgrades and checks live and die with the application.
     val archives = dataSource?.let { ArchiveService.start(this, it, archive) }
+    // Recovery keys and compromised accounts (S-146, D-134): a compromised key publishes and votes no more,
+    // its successor takes over its issuance cursor, and each first commitment (kind 1776) is stamped by the archive.
+    val compromised = repository?.let { CompromisedAccounts(it, archives?.commitmentStamper() ?: CommitmentStamper.NONE) }
+    // The accounts that declared themselves collectives (D-133): they never vote.
+    val accountTypes = repository?.let { AccountTypes(it.dataSource) }
     // The directory of elected officials: the last import served at once, the next ones on schedule (D-047).
     val elusService = dataSource?.let { ElusService.start(this, it, elus, log) }
     // The referential of territories (D-090): the last import served at once, the next ones on schedule.
@@ -355,7 +376,7 @@ fun Application.module(
     val teamBackOffice: BackOffice? = when {
         backOffice == null -> null
         dataSource == null -> null.also { log.warn("Back-office: ${BackOfficeConfig.ORIGIN_VARIABLE} is set but no database is configured, back-office off.") }
-        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace)
+        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace, compromised, platformSigner as? SignerAdmin)
     }
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
@@ -369,7 +390,7 @@ fun Application.module(
         }
     }
     // The demands proposed by citizens, reviewed by the team (Décider, contract of the back-office, section 7).
-    proposals?.let { teamBackOffice?.queues?.register(ProposalsBackOfficeQueue(it.queue)) }
+    proposals?.let { teamBackOffice?.queues?.register(ProposalsBackOfficeQueue(it.queue, CompromisedAuthors(compromised))) }
     // The writing pages of the editorial circuit of Comprendre (step 3): a section of the back-office.
     if (teamBackOffice != null && dataSource != null && repository != null) {
         val drafts = EditorialDrafts(dataSource, teamBackOffice.clock)
@@ -429,7 +450,17 @@ fun Application.module(
     val urneStore = dataSource?.takeIf { urne.seeds != null }?.let { UrneStore(it, LegalRegister(policy::isEditor)) }
     val urnes = urneStore?.let { store ->
         val organisations = VerifiedOrganisations(store.dataSource, policy::isEditor)
-        UrneService.create(store, urne, persons = PersonAccounts(store.dataSource, policy::isEditor, organisations::isVerified))
+        UrneService.create(
+            store,
+            urne,
+            persons = PersonAccounts(
+                isEditor = policy::isEditor,
+                isOrganisation = organisations::isVerified,
+                isCollective = { key -> accountTypes?.isCollective(key) == true },
+                isCompromised = { key -> compromised?.isCompromised(key) == true },
+                predecessorOf = { key -> compromised?.predecessorOf(key) },
+            ),
+        )
     }
     // In-person validation (D-112, 4.3): only with the back-office (sessions of the validators) and the audit key,
     // which seals the link « account, session » (never kept in clear).
@@ -446,7 +477,10 @@ fun Application.module(
         null
     }
     // The propositions and amendments of citizens to a deliberation, reviewed by the team (DE-25).
-    val deliberationSubmissions = repository?.let { DeliberationSubmissions(it.dataSource, it, policy::isEditor) }
+    val deliberationSubmissions = repository?.let { DeliberationSubmissions(it.dataSource, it, policy::isEditor, authors = CompromisedAuthors(compromised)) }
+    // One reading of the contents of "Décider" for the site and for the freeze of the comparators (DE-16).
+    val deciderSource = repository?.let { EditorialDeciderSource(it, policy) }
+    val comparatorFreeze = deciderSource?.let { source -> ComparatorFreeze(source::catalog) }
     deliberationSubmissions?.let { teamBackOffice?.queues?.register(DeliberationQueue(it)) }
     // The sessions of the validators with an abnormal pace, for the administrators (D-112, design 8).
     if (urneStore != null && teamBackOffice != null) teamBackOffice.queues.register(ValidationSessionsQueue(urneStore.dataSource))
@@ -478,9 +512,6 @@ fun Application.module(
     groups?.indexMissing()?.takeIf { it > 0 }?.let { log.info("Group directory: $it description(s) indexed.") }
     // Push wake-ups (M31): a constant, encrypted "synchronize" only; the worker lives with the application.
     val pushService = PushService.start(this, dataSource, push)
-    // Recovery keys and compromised accounts (S-146, D-134); the OpenTimestamps stamping of the
-    // commitments waits for Décider's ArchiveService (CommitmentStamper.NONE until then).
-    val compromised = repository?.let { CompromisedAccounts(it) }
     // The room creations held for the team (contract docs/integration/salons-roles.md, section 3 bis);
     // a creation signed after its key was declared compromised can only be refused (S-146).
     groups?.let { directory -> teamBackOffice?.queues?.register(GroupCreationsQueue(directory, compromised)) }
@@ -532,9 +563,10 @@ fun Application.module(
                 proposals,
                 agirSpace,
                 onStored = pushService::stored,
-                accountTypes = repository?.let { AccountTypes(it.dataSource) },
+                accountTypes = accountTypes,
                 compromised = compromised,
                 deliberation = deliberationSubmissions,
+                comparatorFreeze = comparatorFreeze,
             )
             accountsApi(compromised)
             pushApi(pushService, isCompromised = { key -> compromised?.isCompromised(key) == true })
@@ -555,13 +587,14 @@ fun Application.module(
             openExport?.let { export -> verifyPages(ContentVerifier { export.check(it) }) } // « Vérifier un contenu PPF » (S-141).
             agirSpace?.let { agendaPage(it.agendaSource()) }
             tilesRoutes(tiles)
+            comparatorPhotosRoutes(ComparatorPhotosConfig.fromEnvironment()) // Official photos of the comparators (DE-16, Q3).
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
             securityPages(securityContact) // security.txt (RFC 9116) and the disclosure policy (S-92).
             // The pages of "Voir" and "Comprendre": contents of the editorial keys only (D-034, D-091).
             webRoutes(
                 voir = voir ?: repository?.let { EditorialVoirSource(it, policy) },
                 comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
-                decider = repository?.let { EditorialDeciderSource(it, policy) },
+                decider = deciderSource,
             )
         }
         if (backOffice != null && teamBackOffice != null) {

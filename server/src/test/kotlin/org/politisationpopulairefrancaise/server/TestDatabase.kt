@@ -26,7 +26,12 @@ object TestDatabase {
                         "testimony_submission, testimony_evidence, testimony_file, published_media, push_subscription, group_role, group_ban, " +
                         "group_removed_event, group_edit, group_held_creation, account_type, recovery_commitment, compromised_account, group_orphan, " +
                         "legal_register.content_operation, legal_register.account_pseudonym, legal_register.requisition_answer, " +
-                        "editorial_signing, editorial_review, editorial_draft_version, editorial_draft, contact_envelope, contact_legal_hold_request, contact_case CASCADE",
+                        "editorial_signing, editorial_review, editorial_draft_version, editorial_draft, contact_envelope, contact_legal_hold_request, contact_case, " +
+                        // Décider: the ballot boxes and what they hold, the validations, the petitions to sign, the proofs
+                        // of the archive; their background tasks must find nothing left by another test.
+                        "vote_account, urne, urne_issued, ballot, public_vote, vote_validation_pending, vote_validation, " +
+                        "vote_validation_batch, elected_certification, vote_session_review, deliberation_submission, petition_draft, " +
+                        "archive_proof CASCADE",
                 )
             }
         }

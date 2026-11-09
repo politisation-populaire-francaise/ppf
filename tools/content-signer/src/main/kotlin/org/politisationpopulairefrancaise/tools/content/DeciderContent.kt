@@ -70,7 +70,8 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     articles.zip(documents).forEach { (article, document) ->
         val readable = catalog.petition(article.address) != null || catalog.pacte(article.address) != null ||
             catalog.engagements.any { it.address == article.address } ||
-            catalog.comparators.any { it.address == article.address } || catalog.positions.any { it.article.address == article.address }
+            catalog.comparators.any { it.address == article.address } || catalog.positions.any { it.article.address == article.address } ||
+            catalog.elections.any { it.address == article.address }
         check(readable) { "${document.name}: the application would not read this block (check its fields; a petition needs its official site)" }
         article.event.tags.filter { it.size >= 4 && it[0] == VoirTags.LINK }.forEach { tag ->
             check(tag[1] in known) { "${document.name}: link to an unknown slug: ${tag[1].substringAfterLast(':')}" }
@@ -91,10 +92,17 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
         sheet.candidates.forEach { candidate ->
             checkNotNull(voir.person(candidate)) { "${sheet.article.slug}: candidate without a sheet in Voir: ${candidate.identifier}" }
         }
+        // The published rule of entry and the freeze (owner's decisions Q1 B and Q4 A): never signed when broken.
+        val problems = sheet.ruleProblems()
+        check(problems.isEmpty()) { "${sheet.article.slug}: " + problems.joinToString("; ") }
         val grid = catalog.grid(sheet, voir)
         grid.aside.forEach { (position, reason) ->
             println("decider: ${position.article.slug} is not shown in ${sheet.article.slug} ($reason)")
         }
+    }
+    // The elections of the calendar (DE-28): the dates come from the sources; the tool only says what looks odd.
+    catalog.elections.forEach { election ->
+        election.warnings().forEach { println("decider: ${election.article.slug}: $it") }
     }
     catalog.engagements.forEach { engagement ->
         val pacte = catalog.pacte(engagement.pacte) ?: error("${engagement.article.slug}: unknown pact")
@@ -109,7 +117,7 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     write(output.resolve("decider.json"), events.map { signer.signChecked(it) })
     println(
         "decider: ${catalog.petitions.size} petition(s), ${catalog.pactes.size} pact(s), ${catalog.engagements.size} answer(s), " +
-            "${catalog.comparators.size} comparator(s), ${catalog.positions.size} position(s)",
+            "${catalog.comparators.size} comparator(s), ${catalog.positions.size} position(s), ${catalog.elections.size} election(s)",
     )
 }
 

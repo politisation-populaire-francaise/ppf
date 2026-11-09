@@ -304,6 +304,9 @@ EOF
     local backoffice_host="${backoffice_origin#https://}"
     grep -q '^PPF_SIGNER_RP_ID=' "$dir/.env" || echo "PPF_SIGNER_RP_ID=$backoffice_host" >> "$dir/.env"
     grep -q '^PPF_SIGNER_APPROVAL_ORIGIN=' "$dir/.env" || echo "PPF_SIGNER_APPROVAL_ORIGIN=https://signature.$backoffice_host" >> "$dir/.env"
+    # Official photos of the comparators (Décider, DE-16): put there by the team as root, named by their
+    # SHA-256 (infra/README.md), readable by everyone, mounted read-only in the server.
+    install -d -m 0755 -o root -g root "$dir/decider_photos"
     # Testimonies (Agir, M5): encrypted files written by the server only.
     install -d -m 0700 -o "$server_uid" -g "$server_uid" "$dir/testimonies"
     grep -q '^PPF_MODERATION_KEY=' "$dir/.env" || echo "PPF_MODERATION_KEY=" >> "$dir/.env"

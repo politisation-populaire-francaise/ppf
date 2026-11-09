@@ -144,6 +144,13 @@ interface RemoteEvents : PublicationPort {
         OpenDataDownload.Unavailable(UnsupportedOperationException("This source has no parliamentary open data"))
 
     /**
+     * `GET /api/v1/decider/photos/{sha256}`: the bytes of an official photo of a comparator (DE-16, Q3), which the
+     * caller checks against [sha256]. The application asks for the photos of every candidate of a sheet together,
+     * never for one alone. Null when the source does not have it or cannot be reached.
+     */
+    suspend fun fetchComparatorPhoto(sha256: String): ByteArray? = null
+
+    /**
      * Where the recovery of the account [pubkey] (lowercase hex) stands (S-146, D-134):
      * `GET /api/v1/accounts/<key>/status`. Sources without it answer [AccountStatusResult.Unavailable].
      */

@@ -8,7 +8,9 @@ import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -23,6 +25,8 @@ import org.politisationpopulairefrancaise.core.identity.RecoveryPhrase
 import org.politisationpopulairefrancaise.core.identity.StoredIdentity
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
+import org.politisationpopulairefrancaise.ui.agir.security.AppLockSetupTags
+import org.politisationpopulairefrancaise.ui.agir.security.SecurityTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -45,6 +49,25 @@ class MySpaceScreenTest {
 
     private fun ComposeUiTest.textOf(tag: String): String =
         onNodeWithTag(tag).fetchSemanticsNode().config.getOrNull(SemanticsProperties.Text)!!.joinToString { it.text }
+
+    private fun ComposeUiTest.has(tag: String): Boolean = onAllNodesWithTag(tag, useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty()
+
+    /**
+     * Right after an account arrives on the device, « Protéger PPF sur cet appareil » comes first (M33, D-082),
+     * « Choisir un code » preselected; the journeys of this class skip it, after its warning.
+     */
+    private fun ComposeUiTest.passLockStep() {
+        waitUntil(timeoutMillis = 10_000) { has(AppLockSetupTags.STEP) }
+        onNodeWithTag(AppLockSetupTags.CHOOSE).assertIsSelected()
+        onNodeWithTag(AccountTags.PUBLIC_KEY).assertDoesNotExist()
+        onNodeWithTag(AppLockSetupTags.SKIP).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(AppLockSetupTags.CONTINUE).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(SecurityTags.DIALOG_CONFIRM).performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 10_000) { !has(AppLockSetupTags.STEP) }
+    }
 
     @Test
     fun creatingAnAccountShowsTheWordsVerifiesThemAndStoresTheKeys() = runComposeUiTest {
@@ -82,6 +105,7 @@ class MySpaceScreenTest {
         }
         onNodeWithTag(AccountTags.VERIFY_SUBMIT).performClick()
         waitForIdle()
+        passLockStep()
 
         val stored = assertNotNull(store.snapshot)
         // Checked, the phrase is erased from the device by default (S-146, D-134).
@@ -101,6 +125,7 @@ class MySpaceScreenTest {
         onNodeWithTag(AccountTags.RESTORE_INPUT).performTextInput(nip06Phrase)
         onNodeWithTag(AccountTags.RESTORE_SUBMIT).performClick()
         waitForIdle()
+        passLockStep()
         onNodeWithTag(AccountTags.PUBLIC_KEY).assertTextContains(nip06Npub)
         // Typed in full, the phrase counts as checked and is not kept on the device.
         assertNull(store.snapshot?.recoveryWords)
@@ -116,6 +141,7 @@ class MySpaceScreenTest {
         onNodeWithTag(AccountTags.RESTORE_INPUT).performTextInput("nsec10allq0gjx7fddtzef0ax00mdps9t2kmtrldkyjfs8l5xruwvh2dq0lhhkp")
         onNodeWithTag(AccountTags.RESTORE_SUBMIT).performClick()
         waitForIdle()
+        passLockStep()
         onNodeWithTag(AccountTags.PUBLIC_KEY).assertTextContains(nip06Npub)
         onNodeWithTag(AccountTags.SHOW_PHRASE).assertDoesNotExist()
         onNodeWithText("Ce compte a été importé par sa clé secrète : il n’a pas de phrase de récupération dans l’application.").assertExists()

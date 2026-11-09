@@ -56,7 +56,7 @@ Un compte PPF est une paire de clés gardée sur le téléphone. Si le télépho
 - **Pas de double voix** : le successeur nommé par l'avis **hérite du curseur de délivrance** (`issued_up_to`) de l'ancienne clé ; il ne reçoit de jetons que pour les urnes ouvertes après le dernier service de l'ancienne. Côté serveur, Communauté fournit `CompromisedAccounts.successorOf(old)` et `predecessorOf(new)` ; une clé ne peut succéder qu'à une seule autre (`409 successor_taken`).
 - Limite assumée : se déclarer compromis sans successeur puis créer un compte neuf redonne un curseur vierge dans la colonne « non vérifiés », comme deux comptes non vérifiés ; la colonne « vérifiés » n'est pas touchée.
 - Niveau « vérifié » et certification « élu » : jamais transmis ; nouvelle validation en personne, nouvelle certification.
-- **Horodatage côté serveur** (jamais par l'appareil) : à l'enregistrement de l'engagement 1776, le serveur appelle `ArchiveService.stamp(sha256)` (server/archive, Décider, dans main à l'entrée de sa branche) ; tout le monde lit `GET /api/v1/archives/<id>` et `/api/v1/archives/<id>.ots` ; l'appareil vérifie avec `OtsFile.read` et `OtsBitcoinVerifier.check` (core/archive).
+- **Horodatage côté serveur** (jamais par l'appareil) : à l'enregistrement de l'engagement 1776, le serveur appelle `ArchiveService.stamp(sha256)` (server/archive, Décider, dans main depuis le 8 novembre 2026) ; tout le monde lit `GET /api/v1/archives/<id>` et `/api/v1/archives/<id>.ots` ; l'appareil vérifie avec `OtsFile.read` et `OtsBitcoinVerifier.check` (core/archive).
 - Il n'existe aucun registre des émissions par personne ni par urne (voulu, D-110) : seulement un curseur par compte. Les jetons déjà délivrés à l'ancienne clé restent sur le téléphone de la victime, utilisables tant qu'elle l'a ; sinon ces votes sont perdus. Jamais deux.
 - **Avis par l'équipe** (D-134, point 3) : il attend l'étape 5 de Décider (validation en personne et lien chiffré de l'audit `vote_validation(session, week, sealed)`, scellé NIP-44 vers PPF_AUDIT_PUBLIC_KEY, clé « audit » hors ligne chez la propriétaire) ; rien à coder de ce côté avant.
 - La phrase effacée du téléphone ne gêne aucun parcours de Décider.
@@ -110,7 +110,9 @@ Un compte PPF est une paire de clés gardée sur le téléphone. Si le télépho
 - Les avis des contacts ne sont demandés que pour les participants des conversations privées ; comptes suivis, membres des cercles et salons rejoints : à brancher par leurs écrans (la classe `ContactAlerts` sert telle quelle). Le profil d'un compte et la notification locale (section 5) ne sont pas faits.
 - Le marqueur « suspect » se fonde sur la date écrite par l'auteur du message (NIP-17) : quelqu'un qui détient la clé peut antidater un message ; l'écriture vers la clé est de toute façon bloquée.
 - « Voir » (8 novembre 2026) : le droit de réponse est grisé avec l'explication (`PublishBlockedNotice`) ; le signalement d'erreur reste possible en anonyme, avec une clé à usage unique, mais plus avec le compte.
-- Les autres espaces (Agir, Décider, salons) ne désactivent pas encore leurs boutons de publication pour un compte compromis : le serveur les refuse (`403`), ils affichent leur message de refus générique, et Mon espace dit la vraie raison.
+- « Décider » (8 novembre 2026, main 5db6689d) : l'envoi d'une revendication et le code de validation sont grisés avec l'explication. Pour, Contre et Blanc **restent actifs** quand l'appareil a déjà reçu le jeton de l'urne (le jeton est aveuglé, jamais relié au compte : il reste celui de la personne) ; sous les boutons d'une urne ouverte, quand `LocalCanPublish` est faux, la ligne `urne_compromised_tokens` dit : « Ce compte a été déclaré compromis : il ne reçoit plus de jeton. Ceux que ce téléphone a déjà reçus restent utilisables ; le nouveau compte annoncé dans la déclaration, s'il y en a un, recevra ceux des urnes suivantes. » (approuvé par le chef d'équipe).
+- Salons (8 novembre 2026, Communauté) : l'écriture dans un salon et les deux boutons de création de salon sont grisés, avec l'explication commune (`PublishBlockedNotice`).
+- « Agir » : grisage de ses boutons de publication avec son entrée de S-146 dans main (en cours le 9 novembre 2026). D'ici là, le serveur refuse (`403`), l'écran affiche son message de refus générique, et Mon espace dit la vraie raison.
 
 **Écarts avec la conception**
 - Section 5 : le serveur ne génère pas d'événements 9000 « sans rôle » pour retirer les rôles (il faudrait une clé de signature du serveur, jamais en clair sur le serveur principal) : il retire directement les lignes de `group_role`, et `GET /api/v1/groups/<id>/roles` ne montre plus la clé. Le motif « compte compromis » ne figure donc pas dans le journal du salon ; l'avis public en tient lieu. À revoir avec le service de signature.
@@ -118,12 +120,16 @@ Un compte PPF est une paire de clés gardée sur le téléphone. Si le télépho
 - `proof` reste facultative tant que l'horodatage n'existe pas.
 - Ajout : `commitment` dans le statut (identifiant du premier engagement, `null` s'il n'y en a pas), pour que Mon espace puisse dire « Votre compte n'a pas encore de clé de secours ».
 
+**Fait par Décider (8 novembre 2026, main 5db6689d)**
+- Horodatage OpenTimestamps de l'engagement : `CommitmentStamper` branché sur `ArchiveService.commitmentStamper()` dans `Application.kt` ; chaque premier engagement de récupération part dans le lot d'horodatage suivant.
+- `PersonAccounts.refusal` : une clé compromise ne s'inscrit plus, ne reçoit plus de jeton, n'est plus validée ni certifiée et ne vote plus en public (`403 account_compromised`) ; le successeur nommé par l'avis reprend le curseur de jetons de l'ancienne clé (`predecessorOf`), sans jamais recevoir deux fois le jeton d'une même urne.
+- Files « Revendications proposées » et « Propositions et amendements » (`server/decider/CompromisedAuthors`) : ce qui a été signé à partir de « compromis depuis » ne peut qu'être refusé ; ce qui a été signé avant porte une mention et se relit comme le reste (`heldVerdict`, comme la file des créations de salons).
+
 **En attente**
-- Horodatage OpenTimestamps de l'engagement : interface `CommitmentStamper` (sans effet par défaut, `CommitmentStamper.NONE`), appelée après l'enregistrement d'un engagement ; à brancher sur `ArchiveService.stamp` de Décider (server/archive) dès qu'il est dans `main`, puis publier l'événement 1040 et le nommer dans `proof`.
-- Branchement dans `PersonAccounts.refusal` et héritage du curseur `issued_up_to` : pôle Décider.
+- Publier la preuve de l'engagement en événement 1040 et la nommer dans `proof` : il faut la signature de la plateforme (usage des preuves d'horodatage, service de signature du Directeur technique) ; `proof` reste facultative d'ici là.
 - Avis par l'équipe (D-134, point 3) : après l'étape 5 de Décider.
 - Site web : « J'ai perdu le contrôle de mon compte » sans l'application (section 4).
 
 **Questions ouvertes**
-- Une création de salon ou un contenu d'Agir **mis en attente** avant l'avis, puis approuvé par l'équipe après : il est publié tel quel. Faut-il que les files du back-office refusent les contenus d'une clé devenue compromise ?
-- Un salon dont le seul administrateur était la clé compromise n'a plus d'administrateur : reprise par l'équipe à concevoir (back-office).
+- Tranché par le chef d'équipe le 8 novembre 2026 : un contenu **mis en attente** puis dont la clé est déclarée compromise ne peut qu'être refusé s'il a été signé à partir de « compromis depuis », et porte une mention sinon (`heldVerdict` ; files des créations de salons, des revendications et des délibérations ; files d'Agir avec son entrée).
+- Un salon dont le seul administrateur était la clé compromise n'a plus d'administrateur : file « Salons sans administrateur » (`groups.orphans`, dans main depuis le 8 novembre 2026, action « Laisser sans administrateur » à deux) ; la reprise par l'équipe (`docs/integration/salons-reprise.md`) attend le contrat 1.3 du service de signature.

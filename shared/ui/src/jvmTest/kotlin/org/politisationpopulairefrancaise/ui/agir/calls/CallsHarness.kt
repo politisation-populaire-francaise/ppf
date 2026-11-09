@@ -115,6 +115,8 @@ internal fun ComposeUiTest.showCalls(
     waitForExamples: Boolean = true,
     /** Where Agir plugs "Témoigner" in: "Je témoigne" then calls it (LocalTestify). */
     testify: ((callAddress: String, callTitle: String) -> Unit)? = null,
+    /** False as for an account declared compromised (S-146): its publication buttons are greyed out. */
+    canPublish: Boolean = true,
 ): CallsHarness {
     val harness = CallsHarness(database)
     val uriHandler = object : UriHandler {
@@ -138,7 +140,7 @@ internal fun ComposeUiTest.showCalls(
         }
         val accountKey = (session.state as? AccountUiState.Ready)?.publicKey?.hex
         LaunchedEffect(accountKey) { library.setAccount(accountKey) }
-        CompositionLocalProvider(LocalUriHandler provides uriHandler) {
+        CompositionLocalProvider(LocalUriHandler provides uriHandler, org.politisationpopulairefrancaise.ui.account.LocalCanPublish provides canPublish) {
             PpfTheme(darkTheme = dark) {
                 Box(Modifier.requiredSize(width.dp, height.dp)) {
                     val screen: @androidx.compose.runtime.Composable () -> Unit = {

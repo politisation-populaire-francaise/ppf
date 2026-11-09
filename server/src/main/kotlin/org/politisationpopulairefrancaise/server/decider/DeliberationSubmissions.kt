@@ -55,6 +55,8 @@ class DeliberationSubmissions(
     private val events: EventRepository,
     private val isEditor: (String) -> Boolean,
     private val clock: Clock = Clock.systemUTC(),
+    /** The authors whose key was declared compromised since (S-146): what they signed after it is only refused. */
+    val authors: CompromisedAuthors = CompromisedAuthors.NONE,
 ) {
     sealed interface Outcome {
         data object Queued : Outcome
@@ -182,6 +184,7 @@ class DeliberationSubmissions(
     fun approve(id: String): Decision {
         val submission = find(id) ?: return Decision.NotFound
         if (submission.status != PENDING) return Decision.AlreadyDecided
+        if (authors.onlyRefusable(submission.event)) return Decision.Refused(CompromisedAuthors.REFUSED)
         val deliberation = runCatching { ContentAddress.parse(submission.deliberation) }.getOrNull()?.let(::deliberation)
             ?: return Decision.Refused("Cette délibération n'existe plus.")
         val phase = if (submission.type == DeliberationFormats.TYPE_PROPOSITION) DeliberationPhase.PROPOSITIONS else DeliberationPhase.AMENDMENTS

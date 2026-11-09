@@ -11,6 +11,7 @@ import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.sign
 import org.politisationpopulairefrancaise.server.TestDatabase
+import org.politisationpopulairefrancaise.server.accounts.CompromisedAccounts
 import org.politisationpopulairefrancaise.server.backoffice.ActionOutcome
 import org.politisationpopulairefrancaise.server.backoffice.TeamActor
 import org.politisationpopulairefrancaise.server.backoffice.TeamRole
@@ -103,6 +104,38 @@ class DeliberationSubmissionsTest {
         // After the phase of propositions: refused at once.
         clock.instant = start.plusSeconds(3 * week + 60)
         assertEquals("phase_closed", refused(submissions.submit(sign(bob, "tard", DeliberationFormats.TYPE_PROPOSITION, deliberation))))
+    }
+
+    @Test
+    fun aContributionSignedAfterItsAuthorWasDeclaredCompromisedCanOnlyBeRefused() {
+        val compromised = CompromisedAccounts(events, clock = { clock.instant })
+        val guarded = DeliberationSubmissions(TestDatabase.dataSource, events, { it == team.publicKey.hex }, clock, CompromisedAuthors(compromised))
+        val reviews = DeliberationQueue(guarded)
+        val deliberation = deliberation()
+        val alice = LocalEventSigner(IdentityKeys.generate())
+        val carol = LocalEventSigner(IdentityKeys.generate())
+        val before = sign(alice, "avant", DeliberationFormats.TYPE_PROPOSITION, deliberation)
+        val after = sign(carol, "apres", DeliberationFormats.TYPE_PROPOSITION, deliberation)
+        assertEquals(DeliberationSubmissions.Outcome.Queued, guarded.submit(before))
+        assertEquals(DeliberationSubmissions.Outcome.Queued, guarded.submit(after))
+        // Two days later, both owners declare their keys compromised: Alice since after her proposition, Carol since before hers.
+        val signedAt = clock.instant.epochSecond
+        clock.instant = clock.instant.plusSeconds(2 * 86_400)
+        CompromiseFixtures.declare(compromised, alice, since = signedAt + 86_400, at = clock.instant.epochSecond)
+        CompromiseFixtures.declare(compromised, carol, since = signedAt - 3_600, at = clock.instant.epochSecond)
+
+        assertTrue(reviews.page(null, 10).items.all { CompromisedAuthors.SHORT in it.summary.orEmpty() }, "both carry the mention")
+        assertTrue(createHTML().div { reviews.render(before.id, this) }.contains("signée avant"))
+        assertTrue(createHTML().div { reviews.render(after.id, this) }.contains("refusée. Compromis depuis le"))
+        // Signed after: only a refusal, even if the action is forced.
+        assertEquals(listOf(DeliberationQueue.REJECT), reviews.actions(after.id).map { it.id })
+        assertEquals(ActionOutcome.Refused(CompromisedAuthors.REFUSED), reviews.perform(after.id, DeliberationQueue.APPROVE, null, moderator))
+        assertNull(events.find(after.id))
+        assertEquals(ActionOutcome.Done, reviews.perform(after.id, DeliberationQueue.REJECT, "[EXEMPLE] Signée après la compromission du compte", moderator))
+        // Signed before: reviewed like any other.
+        assertEquals(listOf(DeliberationQueue.APPROVE, DeliberationQueue.REJECT), reviews.actions(before.id).map { it.id })
+        assertEquals(ActionOutcome.Done, reviews.perform(before.id, DeliberationQueue.APPROVE, null, moderator))
+        assertNotNull(events.find(before.id))
     }
 
     @Test

@@ -42,6 +42,8 @@ import org.politisationpopulairefrancaise.core.agir.calls.CallResponse
 import org.politisationpopulairefrancaise.core.agir.calls.CallRules
 import org.politisationpopulairefrancaise.core.agir.calls.CallType
 import org.politisationpopulairefrancaise.core.signing.EventSigner
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.InfoBox
@@ -371,6 +373,7 @@ internal fun CloseDialog(call: Call, signer: EventSigner?, library: CallsLibrary
     var report by remember(call.address) { mutableStateOf("") }
     var working by remember(call.address) { mutableStateOf(false) }
     val issues = CallRules.checkReport(report)
+    val canPublish = LocalCanPublish.current
     AlertDialog(
         onDismissRequest = { if (!working) onKeep() },
         containerColor = palette.surface2,
@@ -391,6 +394,8 @@ internal fun CloseDialog(call: Call, signer: EventSigner?, library: CallsLibrary
                 )
                 Text(stringResource(Res.string.appels_counter, report.trim().length, CallRules.REPORT_MAX), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
                 issues.forEach { Text(issueText(it, call.type), style = MaterialTheme.typography.bodySmall, color = palette.accentInk) }
+                // The report is published: a compromised account no longer closes its call (S-146).
+                PublishBlockedNotice()
             }
         },
         confirmButton = {
@@ -407,7 +412,7 @@ internal fun CloseDialog(call: Call, signer: EventSigner?, library: CallsLibrary
                         }
                     },
                     text = stringResource(Res.string.appels_close_confirm),
-                    enabled = signer != null && issues.isEmpty() && !working,
+                    enabled = canPublish && signer != null && issues.isEmpty() && !working,
                     color = palette.accentInk,
                     modifier = Modifier.testTag(CallTags.CLOSE_CONFIRM),
                 )

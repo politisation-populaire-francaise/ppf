@@ -8,6 +8,7 @@ import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.comprendre_course_meta
+import org.politisationpopulairefrancaise.ui.resources.comprendre_daily_meta
 import org.politisationpopulairefrancaise.ui.resources.comprendre_progress_done
 import org.politisationpopulairefrancaise.ui.resources.comprendre_progress_new
 import org.politisationpopulairefrancaise.ui.resources.comprendre_progress_step
@@ -19,7 +20,12 @@ import org.politisationpopulairefrancaise.ui.resources.content_updated
 @Composable
 internal fun courseMetaLine(parcours: Parcours): String {
     val article = parcours.article
-    val counts = stringResource(Res.string.comprendre_course_meta, article.durationMinutes ?: DEFAULT_MINUTES, parcours.steps.size, parcours.quizCount)
+    // « Je découvre » (CO-19): « Une leçon par jour · 7 jours » rather than minutes and steps.
+    val counts = if (parcours.daily) {
+        stringResource(Res.string.comprendre_daily_meta, parcours.steps.size)
+    } else {
+        stringResource(Res.string.comprendre_course_meta, article.durationMinutes ?: DEFAULT_MINUTES, parcours.steps.size, parcours.quizCount)
+    }
     val origin = stringResource(
         when (article.origin) {
             ContentOrigin.HUMAN -> Res.string.content_origin_human

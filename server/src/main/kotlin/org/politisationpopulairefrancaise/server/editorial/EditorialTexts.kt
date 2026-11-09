@@ -294,7 +294,10 @@ object EditorialTexts {
         "editorial.type.qui_decide" to "« Qui décide de ça ? »",
         "editorial.type.methode" to "Page de méthode",
         "editorial.type.glossaire" to "Entrée du glossaire",
+        "editorial.type.fiche_pedagogique" to "Fiche pédagogique pour la classe",
         // Fields.
+        "editorial.field.rhythm" to "Rythme du parcours",
+        "editorial.help.rhythm" to "Une leçon par jour, comme « Je découvre » : une simple suggestion au lecteur, jamais un verrou. Ne rien choisir pour un parcours lu d’une traite.",
         "editorial.field.verdict" to "Verdict",
         "editorial.help.verdict" to "Ce que disent les faits de l’affirmation vérifiée.",
         "editorial.field.claim" to "Affirmation vérifiée",
@@ -321,12 +324,21 @@ object EditorialTexts {
         "editorial.field.see_also" to "Voir aussi (autres entrées du glossaire)",
         "editorial.field.related" to "Contenus liés",
         "editorial.help.related" to "« genre:identifiant », séparés par des virgules ; genres : parcours, fiche, decryptage, qui-decide, histoire.",
+        "editorial.field.course" to "Parcours lié",
+        "editorial.help.course" to "Identifiant du parcours « Comprendre en 5 minutes » que la fiche fait vivre en classe. Ses questions servent de quiz à main levée, avec les réponses à part pour l’enseignant.",
+        "editorial.field.level" to "Niveau",
+        "editorial.help.level" to "Le lycée d’abord, puis le cycle 4. L’identifiant de la fiche s’écrit classe-<identifiant du parcours>-<niveau>.",
+        "editorial.field.programme" to "Programme officiel servi",
+        "editorial.help.programme" to "En une phrase, 500 caractères au plus : l’intitulé du programme, le numéro et la date du Bulletin officiel, puis « vérifié le AAAA-MM-JJ ». L’adresse du texte va dans les sources.",
         // Values.
         "comprendre.verdict.exact" to "Exact",
         "comprendre.verdict.plutot-exact" to "Plutôt exact",
         "comprendre.verdict.trompeur" to "Trompeur",
         "comprendre.verdict.contredit-par-les-faits" to "Contredit par les faits",
         "comprendre.verdict.inverifiable" to "Invérifiable",
+        "comprendre.rhythm.quotidien" to "Une leçon par jour",
+        "comprendre.level.lycee" to "Lycée",
+        "comprendre.level.cycle-4" to "Cycle 4 (collège)",
         // Templates of an empty draft (the blocks already written).
         "editorial.template.fiche_pratique" to """
             ::: en-bref
@@ -393,6 +405,39 @@ object EditorialTexts {
 
             ::: objections
             ? « Une idée reçue »
+            > La réponse, avec sa source.
+            :::
+
+            ## Sources
+
+            -
+        """.trimIndent(),
+        "editorial.template.fiche_pedagogique" to """
+            **[EXEMPLE] Cette fiche pédagogique est un brouillon de démonstration rédigé avec l’aide d’une IA. Elle doit être relue par l’équipe éditoriale avant toute publication.**
+
+            ## Objectifs
+
+            -
+
+            ## Prérequis
+
+            -
+
+            ## Déroulé
+
+            - 10 min : Lecture du parcours, ensemble.
+            - 15 min : Questions à main levée (celles du parcours).
+            - 25 min : Débat guidé.
+            - 5 min : Bilan.
+
+            ## Débat guidé
+
+            La question du débat.
+
+            ::: objections
+            ? « Un argument d’un côté du débat »
+            > La réponse, avec sa source.
+            ? « Un argument de l’autre côté »
             > La réponse, avec sa source.
             :::
 

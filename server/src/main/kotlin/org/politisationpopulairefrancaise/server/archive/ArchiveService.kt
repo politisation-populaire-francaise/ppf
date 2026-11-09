@@ -24,6 +24,7 @@ import org.politisationpopulairefrancaise.core.archive.OtsBatch
 import org.politisationpopulairefrancaise.core.archive.OtsBitcoinVerifier
 import org.politisationpopulairefrancaise.core.archive.OtsFile
 import org.politisationpopulairefrancaise.core.archive.OtsTimestamp
+import org.politisationpopulairefrancaise.server.accounts.CommitmentStamper
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Clock
@@ -76,6 +77,13 @@ class ArchiveService internal constructor(
         require(digest.size == DIGEST_SIZE) { "a SHA-256 digest is $DIGEST_SIZE bytes" }
         return store.queue(digest.copyOf(), LocalDate.now(clock))
     }
+
+    /**
+     * Stamps each first recovery commitment (kind 1776) as it is stored (S-146, D-134): the digest is the
+     * event id, which anyone computes again from the public event, so `GET /api/v1/archives/<id>` proves
+     * that the commitment existed before any compromise. Blocking (database), quick: only queued here.
+     */
+    fun commitmentStamper(): CommitmentStamper = CommitmentStamper { commitment -> stamp(commitment.id.hexToByteArray()) }
 
     /** The stored proof of [digest], or null. Blocking (database). */
     fun find(digest: ByteArray): StoredProof? = store.find(digest)

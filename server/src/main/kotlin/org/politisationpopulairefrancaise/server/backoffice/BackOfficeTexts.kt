@@ -16,6 +16,7 @@ object BackOfficeTexts {
     const val NAV_SESSIONS: String = "Séances"
     const val NAV_KEYS: String = "Mes clés"
     const val NAV_REQUISITIONS: String = "Réquisitions"
+    const val NAV_PLATFORM_KEYS: String = "Clés de la plateforme"
     const val SIGN_OUT: String = "Se déconnecter"
     const val FOOTER_PRIVACY: String = "Aucun traceur, aucune ressource extérieure, aucune adresse IP enregistrée."
     const val FOOTER_JOURNAL: String = "Chaque action est inscrite dans le journal de l’équipe, que personne ne peut modifier."
@@ -29,6 +30,7 @@ object BackOfficeTexts {
     const val REASON_PERMANENT_HINT: String = "Le motif est conservé sans limite dans le journal de l’équipe : n’y écrivez rien de personnel."
     const val WIREGUARD_REMINDER: String = "Pensez aussi à faire retirer du serveur le profil WireGuard des appareils de ce membre."
     const val ALERT_JOURNAL_BROKEN: String = "Le journal de l’équipe a été modifié ou raccourci en dehors de l’application : à examiner tout de suite."
+    const val ALERT_SIGNER_JOURNAL_BROKEN: String = "Journal du service de signature : la copie a trouvé une rupture de la chaîne d’empreintes. Copie arrêtée : examinez-la, puis marquez l’alerte traitée."
     const val ALERT_ORGANISATIONS_SHRANK: String = "Organisations vérifiées : liste vide ou réduite de plus de moitié. Aucun validateur suspendu, leurs séances sont refusées. Vérifiez l’annuaire, puis marquez l’alerte traitée."
 
     // Roles
@@ -245,9 +247,136 @@ object BackOfficeTexts {
     const val KEYS_ADD_TITLE: String = "Ajouter une clé"
     const val KEYS_ADD_NAME: String = "Nom de la nouvelle clé"
     const val KEYS_ADD_BUTTON: String = "Enregistrer une nouvelle clé"
+    const val KEYS_FINGERPRINT: String = "empreinte"
+    const val KEYS_FINGERPRINT_HINT: String = "L’empreinte de chaque clé (quatre groupes de quatre caractères) sera montrée sur le téléphone de la propriétaire avant qu’elle signe la liste de l’équipe : comparez-la avec elle le jour de la cérémonie. Si une empreinte ne correspond à aucune de vos clés, dites-le aussitôt."
+    const val KEYS_FINGERPRINT_UNKNOWN: String = "empreinte illisible"
     const val KEYS_SELF_CUT_TITLE: String = "Appareil ou clé perdu ?"
     const val KEYS_SELF_CUT_TEXT: String = "Coupez tout de suite l’accès de votre compte : sessions, rôles et clés. Un administrateur devra ensuite vous inviter de nouveau."
     const val KEYS_SELF_CUT_BUTTON: String = "Couper l’accès de mon compte"
+
+
+    // Keys of the platform (D-141)
+    const val PLATFORM_TITLE: String = "Clés de la plateforme"
+    const val PLATFORM_INTRO: String = "Les contenus de la plateforme sont signés par des clés de travail, une par usage, gardées par le service de signature. La clé racine, sur le téléphone de la propriétaire, certifie ces clés, les révoque et signe la liste de l’équipe. Cette page prépare ce que la racine doit signer ; rien n’est signé ici."
+    const val PLATFORM_SIGNER_OFF: String = "Le service de signature n’est pas configuré sur ce serveur (PPF_SIGNER_URL)."
+    const val PLATFORM_SIGNER_UNAVAILABLE: String = "Le service de signature ne répond pas pour l’instant. Réessayez plus tard."
+    const val PLATFORM_NO_ROOT: String = "La clé publique de la racine n’est pas configurée (PPF_SIGNER_ROOT_PUBKEY, sur le serveur et dans le service) : aucune cérémonie n’est possible."
+    const val PLATFORM_WARNINGS: String = "Points d’attention"
+    const val PLATFORM_KEYS_TITLE: String = "Clés de travail"
+    const val PLATFORM_USE: String = "Usage"
+    const val PLATFORM_KEY: String = "Clé publique"
+    const val PLATFORM_STATE: String = "État"
+    const val PLATFORM_VALIDITY: String = "Validité"
+    const val PLATFORM_LAST_SIGNED: String = "Dernière signature"
+    const val PLATFORM_NEVER: String = "jamais"
+    const val PLATFORM_FROM: String = "du"
+    const val PLATFORM_UNTIL: String = "au"
+    const val PLATFORM_REVOKED_FROM: String = "révoquée à partir du"
+    const val PLATFORM_IN_USE: String = "en usage"
+    const val PLATFORM_NO_KEYS: String = "Le service n’a encore aucune clé de travail."
+    const val PLATFORM_TEAM_LIST: String = "Liste de l’équipe"
+    const val PLATFORM_TEAM_LIST_NONE: String = "Le service ne détient encore aucune liste de l’équipe."
+    const val PLATFORM_TEAM_LIST_HELD: String = "Liste signée par la racine le"
+    const val PLATFORM_TEAM_LIST_END: String = "valable jusqu’au"
+    const val PLATFORM_TEAM_LIST_NO_END: String = "sans fin de validité lisible : aucune approbation possible"
+    const val PLATFORM_TEAM_LIST_MEMBERS: String = "membres"
+    const val PLATFORM_CEREMONY_TITLE: String = "Préparer la cérémonie de la racine"
+    const val PLATFORM_CEREMONY_TEXT: String = "En une seule fois : le certificat de chaque clé à certifier (valable 90 jours à partir de maintenant), la révocation de clôture de chaque clé échue ou remplacée (tout ce qu’elle a signé reste valable, rien de ce qu’elle signerait ensuite), et une nouvelle liste de l’équipe valable 90 jours. La propriétaire scanne ensuite le code QR avec son téléphone, y lit tout en clair et signe."
+    const val PLATFORM_CEREMONY_PREVIEW: String = "Ce qui serait demandé maintenant"
+    const val PLATFORM_CEREMONY_CERTIFICATES: String = "certificat(s)"
+    const val PLATFORM_CEREMONY_REVOCATIONS: String = "révocation(s) de clôture"
+    const val PLATFORM_CEREMONY_MEMBERS: String = "membre(s) dans la liste de l’équipe"
+    const val PLATFORM_CEREMONY_BUTTON: String = "Préparer la cérémonie"
+    const val PLATFORM_EXCLUDED: String = "Comptes actifs laissés hors de la liste de l’équipe"
+    const val PLATFORM_EXCLUDED_NONE: String = "Aucun compte actif n’est laissé hors de la liste."
+    const val PLATFORM_REVOKE_TITLE: String = "Révoquer une clé (compromission)"
+    const val PLATFORM_REVOKE_TEXT: String = "Si une clé de travail a pu être copiée ou volée, préparez sa révocation. Une révocation est définitive : la clé ne pourra plus jamais être utilisée, et ce qu’elle a signé à partir de la date d’effet ne sera plus reconnu. Le service crée aussitôt une nouvelle clé, à certifier à la prochaine cérémonie."
+    const val PLATFORM_REVOKE_KEY: String = "Clé à révoquer"
+    const val PLATFORM_REVOKE_DATE: String = "Date d’effet, heure de Paris (maintenant par défaut ; elle peut être dans le passé, jamais dans le futur)"
+    const val PLATFORM_REVOKE_REASON: String = "Motif (obligatoire, gardé dans le journal de l’équipe, jamais dans la révocation)"
+    const val PLATFORM_REVOKE_BUTTON: String = "Préparer la révocation définitive"
+    const val PLATFORM_REVOKE_NONE: String = "Aucune clé certifiée à révoquer."
+    const val PLATFORM_PREPARED: String = "Demandes préparées en attente du téléphone"
+    const val PLATFORM_PREPARED_NONE: String = "Aucune demande en attente."
+    const val PLATFORM_PREPARED_BY: String = "préparée par"
+    const val PLATFORM_EXPIRES: String = "expire le"
+    const val PLATFORM_COPY_TITLE: String = "Copie du journal du service de signature"
+    const val PLATFORM_COPY_NONE: String = "Aucune ligne copiée pour l’instant (copie toutes les 10 minutes)."
+    const val PLATFORM_COPY_AT: String = "Dernière ligne copiée : n°"
+    const val PLATFORM_COPY_BROKEN: String = "Copie arrêtée : rupture de la chaîne d’empreintes du journal du service. Examinez-la avec le Directeur technique, puis marquez l’alerte traitée sur le tableau de bord : la copie reprendra."
+    const val PLATFORM_COPY_RESUMED: String = "Copie reprise après une rupture, à partir de la ligne n°"
+    const val PLATFORM_KIND_CEREMONY: String = "Cérémonie de la racine"
+    const val PLATFORM_KIND_REVOCATION: String = "Révocation après compromission"
+
+    // A request for the root
+    const val REQUEST_TITLE: String = "Demande pour la racine"
+    const val REQUEST_INTRO: String = "La propriétaire scanne ce code QR avec l’application PPF de son téléphone (espace « Administration de la plateforme »). Le téléphone télécharge la demande auprès du service de signature, vérifie son empreinte, montre tout en clair, puis envoie lui-même les événements signés au service."
+    const val REQUEST_QR_LABEL: String = "Code QR de la demande pour la racine"
+    const val REQUEST_TEXT: String = "Texte du code QR"
+    const val REQUEST_HASH: String = "Empreinte de la demande, à comparer avec celle du téléphone"
+    const val REQUEST_EXPIRES: String = "Le service garde la demande jusqu’au"
+    const val REQUEST_EXPIRES_AFTER: String = " ; après, ou si le service redémarre, préparez-en une nouvelle."
+    const val REQUEST_RELOAD: String = "Rechargez cette page pour voir ce que le service a reçu."
+    const val REQUEST_CONTENT: String = "Ce qui est demandé à la racine, en clair"
+    const val REQUEST_CERTIFICATE: String = "Certificat d’une clé de travail"
+    const val REQUEST_REVOCATION: String = "Révocation définitive d’une clé de travail"
+    const val REQUEST_REVOKED_FROM: String = "à partir du"
+    const val REQUEST_TEAM: String = "Liste de l’équipe"
+    const val REQUEST_TEAM_UNTIL: String = "valable jusqu’au"
+    const val REQUEST_MEMBER_SINCE: String = "accords comptés depuis le"
+    const val REQUEST_MEMBER_NOSTR: String = "clé Nostr"
+    const val REQUEST_MEMBER_NO_NOSTR: String = "aucune clé Nostr reliée"
+    const val REQUEST_MEMBER_USES: String = "peut approuver"
+    const val REQUEST_MEMBER_KEYS: String = "clés d’accès"
+    const val REQUEST_STATE_RECEIVED: String = "reçu par le service"
+    const val REQUEST_STATE_WAITING: String = "en attente de la signature sur le téléphone"
+    const val REQUEST_STATE_UNKNOWN: String = "état inconnu (le service ne répond pas)"
+    const val REQUEST_UNKNOWN_EVENT: String = "Événement illisible"
+    const val REQUEST_BACK: String = "Revenir aux clés de la plateforme"
+    const val REQUEST_GONE_TITLE: String = "Demande inconnue ou expirée"
+    const val REQUEST_GONE_TEXT: String = "Cette demande n’est plus gardée (24 heures au plus, ou le serveur a redémarré). Préparez-en une nouvelle."
+    const val REQUEST_REFUSED_TITLE: String = "Demande refusée par le service de signature"
+    const val REQUEST_REFUSED_TEXT: String = "Le service de signature a refusé la demande, rien n’a été déposé. Code donné par le service :"
+
+    private val signingUses: Map<String, String> = mapOf(
+        "editorial.comprendre" to "Contenus de « Comprendre »",
+        "editorial.voir" to "Briques de « Voir »",
+        "revendications.status" to "Statuts des revendications",
+        "agir.organisations" to "Organisations vérifiées d’« Agir »",
+        "decider.pacte" to "Pacte et contenus de « Décider »",
+        "archives.timestamps" to "Preuves d’horodatage des archives (automatique)",
+        "opendata.index" to "Index des données ouvertes (automatique)",
+        "decider.urn_closure" to "Clôtures des urnes (automatique)",
+    )
+
+    /** French label of a use of the signing service. */
+    fun signingUse(id: String): String = signingUses[id] ?: id
+
+    private val keyStates: Map<String, String> = mapOf(
+        "awaiting_certification" to "à certifier",
+        "scheduled" to "certifiée, pas encore commencée",
+        "active" to "active",
+        "expired" to "échue",
+        "revoked" to "révoquée",
+    )
+
+    /** French label of the state of a working key. */
+    fun keyState(id: String): String = keyStates[id] ?: id
+
+    /** French label of why an account is left out of the team list. */
+    fun exclusion(reason: Exclusion): String = when (reason) {
+        Exclusion.NO_PASSKEY -> "aucune clé d’accès"
+        Exclusion.NO_USE -> "aucun usage à approuver (rôle sans permission de publication, ou une seule clé d’accès)"
+        Exclusion.SHARED_PASSKEY -> "une clé d’accès a la même clé publique que celle d’un autre compte"
+    }
+
+    const val WARNING_NO_TEAM_LIST: String = "Le service ne détient aucune liste de l’équipe : aucune approbation n’est possible. Préparez la cérémonie."
+    const val WARNING_TEAM_LIST_EXPIRED: String = "La liste de l’équipe est échue ou sans fin lisible : plus aucune approbation n’est possible. Préparez la cérémonie tout de suite."
+    const val WARNING_TEAM_LIST_ENDS: String = "La liste de l’équipe prend fin dans moins de 15 jours, le"
+    const val WARNING_KEY_ENDS: String = "prend fin dans moins de 15 jours, le"
+    const val WARNING_KEY_ENDS_PREFIX: String = "La clé en usage pour"
+    const val WARNING_AWAITING: String = "clé(s) attendent leur certificat : préparez la cérémonie."
+    const val WARNING_NO_CURRENT_KEY: String = "Aucune clé en usage, rien ne peut être signé pour :"
 
     // Validation sessions
     const val SESSIONS_TITLE: String = "Séances de validation"
@@ -337,6 +466,8 @@ object BackOfficeTexts {
         "session_closed" to "Séance fermée.",
         "dismissed" to "Alerte marquée comme traitée.",
         "signed_out" to "Vous êtes déconnecté.",
+        "ceremony_prepared" to "Demande déposée dans le service de signature : la propriétaire peut scanner le code QR.",
+        "revocation_prepared" to "Révocation déposée dans le service de signature : la propriétaire peut scanner le code QR.",
     )
 
     fun notice(code: String?): String? = code?.let(notices::get)
@@ -403,6 +534,13 @@ object BackOfficeTexts {
         "requisition_not_approved" to "Cette réquisition n’a pas (ou pas encore) l’accord d’une deuxième personne.",
         "requisition_answered" to "La réponse à cette réquisition a déjà été téléchargée : elle ne se télécharge qu’une fois.",
         "requisition_lapsed" to "Le délai de 7 jours pour télécharger la réponse est dépassé : faites une nouvelle demande.",
+        "signer_off" to "Le service de signature n’est pas configuré sur ce serveur.",
+        "signer_unavailable" to "Le service de signature ne répond pas pour l’instant. Réessayez plus tard.",
+        "no_root" to "La clé publique de la racine n’est pas configurée : aucune demande pour la racine n’est possible.",
+        "nothing_to_sign" to "Rien à demander à la racine : aucune clé à certifier ni à clore, et aucun compte à mettre dans la liste de l’équipe.",
+        "revocation_in_future" to "La date d’effet d’une révocation ne peut pas être dans le futur.",
+        "unknown_platform_key" to "Cette clé de travail n’est pas connue du service de signature.",
+        "key_not_certified" to "Cette clé n’a jamais été certifiée : rien ne lui fait confiance, il n’y a rien à révoquer.",
         "requisition_unavailable" to "Cette réquisition n’a plus de recherche à faire : faites une nouvelle demande.",
     )
 
@@ -445,6 +583,12 @@ object BackOfficeTexts {
         "validation.session_opened" to "Séance de validation ouverte",
         "validation.session_closed" to "Séance de validation fermée",
         "validation.session_revoked" to "Séance de validation révoquée",
+        "platform.ceremony_prepared" to "Cérémonie de la racine préparée",
+        "platform.revocation_prepared" to "Révocation d’une clé de travail préparée",
+        "platform.ceremony_refused" to "Cérémonie de la racine refusée par le service",
+        "platform.revocation_refused" to "Révocation refusée par le service",
+        "signer.journal_break" to "Rupture de la chaîne du journal du service de signature",
+        "signer.journal_resumed" to "Reprise de la copie du journal du service de signature",
         "legal.requisition_answered" to "Réponse à une réquisition judiciaire (référence et nombres de lignes)",
     )
 }
