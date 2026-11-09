@@ -356,3 +356,14 @@ Détail : `docs/integration/agir-camera-protegee.md`. Finalité : garder sur le 
 | Clé maîtresse AES-256 qui emballe les clés des photos | Android Keystore (non exportable, ne quitte jamais le téléphone) | Protéger les clés des photos | Détruite par l'effacement rapide ; recréée à la photo suivante |
 | Vignettes et photo ouverte, déchiffrées | Mémoire de l'application seulement, jamais sur le disque | Afficher la galerie | Tant que l'écran est ouvert et PPF déverrouillé |
 | Copie enregistrée dans la galerie du téléphone (si la personne le confirme après la mise en garde) | Galerie du téléphone (« Pictures », nom `IMG_AAAAMMJJ_HHMM.jpg`), hors de PPF | Choix de la personne pour ses propres données (principe 10) | Hors du contrôle de PPF : la personne la supprime elle-même ; elle peut être sauvegardée en ligne par le téléphone |
+
+## Ajout du 9 novembre 2026 : simulateur du gréviste (AG-60, pas encore compilé)
+
+Détail : `docs/integration/agir-simulateur-greve.md`. Finalité : estimer, sur l'appareil, la retenue de salaire d'une grève et rappeler le préavis et la déclaration du secteur. **Rien n'est enregistré ni envoyé** : ni sur l'appareil, ni sur le serveur. Le salaire est une donnée sensible pour la personne, et l'intention de faire grève peut révéler une opinion (article 9 du RGPD) : le simulateur ne garde ces réponses qu'en mémoire, le temps de la visite. Aucune migration de base de données, aucun code serveur.
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Statut, secteur, rémunération mensuelle brute tapée, heures par semaine et par jour, jours et heures de grève, jours sans service | Calculer l'estimation sur l'appareil | Mémoire seulement (état de l'écran, jamais `rememberSaveable`, que le système peut écrire sur le disque ; ni base, ni préférence, ni fichier, ni journal) | Tant que l'espace « Agir » est affiché ; oubliés en quittant « Agir » et par l'effacement rapide (partie `agir-strike-simulator`) | La personne seule. Jamais transmis : aucune requête du simulateur ne part vers le serveur |
+| Territoire tapé pour « Caisses de grève proches » | Trier sur l'appareil les caisses de grève de l'annuaire (M35) déjà présentes | Mémoire seulement | Comme ci-dessus ; s'il est repris par « Voir toutes les caisses de grève », il rejoint la recherche de la rubrique Solidarité, en mémoire aussi (partie `agir-solidarity`) | La personne seule. Jamais transmis |
+
+Les caisses affichées sont les contenus publics de l'annuaire de M35 (déjà au registre, ajout du 8 novembre 2026) ; les sources s'ouvrent dans le navigateur après « Vous quittez PPF » : les sites officiels visités (legifrance.gouv.fr, service-public.gouv.fr, senat.fr) reçoivent alors l'adresse IP de la personne, comme pour toute page ouverte hors de PPF.

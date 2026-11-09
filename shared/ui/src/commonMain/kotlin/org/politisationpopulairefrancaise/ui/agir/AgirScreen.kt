@@ -32,6 +32,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.core.agir.solidarity.SolidarityFormats
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaLibrary
@@ -51,6 +52,9 @@ import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityLibrary
 import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityScreen
 import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityTab
 import org.politisationpopulairefrancaise.ui.agir.solidarity.rememberSolidarityLibrary
+import org.politisationpopulairefrancaise.ui.agir.strike.StrikeSimulatorScreen
+import org.politisationpopulairefrancaise.ui.agir.strike.StrikeSimulatorState
+import org.politisationpopulairefrancaise.ui.agir.strike.rememberStrikeSimulatorState
 import org.politisationpopulairefrancaise.ui.agir.testimonies.ProvideTestify
 import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyScreen
@@ -90,6 +94,9 @@ enum class AgirRoute(val id: String) {
 
     /** M35: the solidarity funds (AG-10) and the volunteer missions (AG-12), one rubric with tabs. */
     SOLIDARITY("solidarite"),
+
+    /** AG-60: the strike simulator, opened from the funds of the solidarity rubric. */
+    STRIKE_SIMULATOR("simulateur-greve"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -130,6 +137,8 @@ fun AgirScreen(
     /** The agenda and the calls of the shell, whose events and calls may be a collectif's (M24); null builds them. */
     agendaLibrary: AgendaLibrary? = null,
     callsLibrary: CallsLibrary? = null,
+    /** The strike simulator (AG-60), in memory only; null builds one for as long as "Agir" is shown. */
+    strikeSimulator: StrikeSimulatorState? = null,
 ) {
     var route by rememberSaveable { mutableStateOf(AgirRoute.HOME) }
     // Where the back button of the directory leads when a plugged screen opened an organisation's page.
@@ -150,6 +159,8 @@ fun AgirScreen(
     val agendaOfCollectives = agendaLibrary ?: rememberAgendaLibrary(dependencies, start = false)
     val callsOfCollectives = callsLibrary ?: rememberCallsLibrary(dependencies, start = false)
     val solidarityLibrary = solidarity ?: rememberSolidarityLibrary(dependencies)
+    // AG-60: what is typed in the simulator (the pay among it) stays in memory, handed to the quick erase.
+    val strike = strikeSimulator ?: rememberStrikeSimulatorState(dependencies)
     // The protest mode shares the AIDE button's state (rally point, legal teams); alone (tests), its own.
     val help = LocalHelpState.current ?: rememberHelpState(dependencies, directory, library)
     // « Caméra protégée » (AG-58): the shell's, attached to its help state (the quick erase knows it); alone (tests), its own.
@@ -175,6 +186,9 @@ fun AgirScreen(
         } else if (route == AgirRoute.SOLIDARITY && solidarityLibrary.hasSelection) {
             // The page of a fund or a mission closes first, back to the list.
             solidarityLibrary.closeSelection()
+        } else if (route == AgirRoute.STRIKE_SIMULATOR) {
+            // The simulator was opened from the funds of the solidarity rubric: back to them.
+            route = AgirRoute.SOLIDARITY
         } else {
             route = AgirRoute.HOME
             returnTo = null
@@ -266,6 +280,28 @@ fun AgirScreen(
                     // The page of the organisation opens in the directory; its way back returns here.
                     onOpenOrganisation = directory::open,
                     onOpenCalls = { route = AgirRoute.CALLS },
+                    onOpenStrikeSimulator = { route = AgirRoute.STRIKE_SIMULATOR },
+                )
+                AgirRoute.STRIKE_SIMULATOR -> StrikeSimulatorScreen(
+                    state = strike,
+                    solidarity = solidarityLibrary,
+                    windowClass = windowClass,
+                    onBack = { route = AgirRoute.SOLIDARITY },
+                    // A strike fund opens on its page in the solidarity rubric; its way back leads to the list of funds.
+                    onOpenFund = { fund ->
+                        solidarityLibrary.selectTab(SolidarityTab.FUNDS)
+                        solidarityLibrary.openFund(fund)
+                        route = AgirRoute.SOLIDARITY
+                    },
+                    // "Voir toutes les caisses de grève": the funds of the rubric, strike funds only, near the same territory.
+                    onOpenFunds = {
+                        solidarityLibrary.selectTab(SolidarityTab.FUNDS)
+                        solidarityLibrary.clearFundTypes()
+                        solidarityLibrary.toggleFundType(SolidarityFormats.FUND_STRIKE)
+                        if (strike.near.isNotBlank()) solidarityLibrary.setNear(strike.near)
+                        route = AgirRoute.SOLIDARITY
+                    },
+                    modifier = Modifier.fillMaxSize(),
                 )
                 AgirRoute.TESTIFY -> TestimonyScreen(
                     library = testimonyLibrary,
