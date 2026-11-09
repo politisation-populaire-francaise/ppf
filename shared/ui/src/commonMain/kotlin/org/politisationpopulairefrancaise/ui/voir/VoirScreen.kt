@@ -262,6 +262,8 @@ private fun PowerAxis(catalog: VoirCatalog, state: VoirState, actions: VoirActio
     // The association shows its own accounts beside those it asks of the power (PP-01).
     Spacer(Modifier.height(8.dp))
     LinkRow(stringResource(Res.string.transp_open), Lucide.Landmark, onClick = { state.open(VoirDestination.Transparency) }, modifier = Modifier.testTag(TransparencyTags.OPEN))
+    Spacer(Modifier.height(8.dp))
+    LinkRow(stringResource(Res.string.press_open), Lucide.Newspaper, onClick = { state.open(VoirDestination.Press) }, modifier = Modifier.testTag(PressTags.OPEN))
     Spacer(Modifier.height(12.dp))
     MethodCard(actions)
 }
@@ -498,6 +500,7 @@ private fun VoirDetail(
                 VoirDestination.Verify -> VerifyPage(verify, catalog, onOpen = { state.open(it) })
                 VoirDestination.Transparency -> TransparencyPage(catalog.transparency)
                 VoirDestination.Victories -> VictoriesPage(catalog, onOpen = { actions.open(it) }, onNext = actions.next)
+                VoirDestination.Press -> PressPage(catalog, onTransparency = { state.open(VoirDestination.Transparency) }, onVictories = { state.open(VoirDestination.Victories) })
             }
         }
         }
@@ -516,4 +519,5 @@ private fun axisOf(destination: VoirDestination, catalog: VoirCatalog, state: Vo
     VoirDestination.Verify -> state.axis
     VoirDestination.Transparency -> VoirAxis.POUVOIR
     VoirDestination.Victories -> VoirAxis.MOUVEMENT
+    VoirDestination.Press -> VoirAxis.POUVOIR
 }

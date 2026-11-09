@@ -585,6 +585,27 @@ object VoirSchemas {
         ),
     )
 
+    /** A press release of « Espace presse » (PP-04): its day, its text, its sources and its corrections. */
+    val COMMUNIQUE: ContentSchema = ContentSchema(
+        type = ArticleType.COMMUNIQUE,
+        space = EditorialSpace.VOIR,
+        labelKey = "editorial.type.communique",
+        sourceDirectory = "voir/communiques",
+        bundle = BUNDLE,
+        fields = listOf(
+            FieldSpec("date", "voir.field.release_date", value = ValueSpec.Single(FieldType.Date())),
+            archive,
+            source(min = 0),
+            correction,
+        ),
+        body = body,
+        checks = listOf(
+            readable(PressRelease::from) {
+                counts("archive" to it.archives.size, "source" to it.sources.size, "correction" to it.corrections.size)
+            },
+        ),
+    )
+
     /** Every type of [VoirCatalog.TYPES], in its order. */
-    val all: List<ContentSchema> = listOf(INDICATEUR, FAIT, PERSONNE, TEXTE, MOUVEMENT, DOSSIER, REPONSE, PARTI, TRANSPARENCE, VICTOIRE)
+    val all: List<ContentSchema> = listOf(INDICATEUR, FAIT, PERSONNE, TEXTE, MOUVEMENT, DOSSIER, REPONSE, PARTI, TRANSPARENCE, VICTOIRE, COMMUNIQUE)
 }

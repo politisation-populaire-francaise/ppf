@@ -13,6 +13,7 @@ import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
+import org.politisationpopulairefrancaise.core.voir.PressRelease
 import org.politisationpopulairefrancaise.core.voir.TransparencyEntry
 import org.politisationpopulairefrancaise.core.voir.Victory
 import org.politisationpopulairefrancaise.core.voir.VoirCatalog
@@ -41,13 +42,16 @@ fun FlowContent.voirBlockPreview(draft: UnsignedEvent, published: List<SignedEve
     val transparency = TransparencyEntry.from(article)
     // « Nos victoires » (PP-03): shown as on /victoires.
     val victory = Victory.from(article)
-    if (item == null && reply == null && transparency == null && victory == null) return false
+    // « Espace presse » (PP-04): a press release as on /presse.
+    val release = PressRelease.from(article)
+    if (item == null && reply == null && transparency == null && victory == null && release == null) return false
     DIV(attributesMapOf("class", "voir-preview"), HeadingShift(consumer, headingOffset)).visit {
         when {
             item != null -> voirItemBody(item, catalog)
             reply != null -> repliesSection(listOf(reply), offerReply = false)
             transparency != null -> transparencyEntryBody(transparency)
             victory != null -> victoryBody(victory, catalog)
+            release != null -> pressReleaseBody(release)
         }
     }
     return true

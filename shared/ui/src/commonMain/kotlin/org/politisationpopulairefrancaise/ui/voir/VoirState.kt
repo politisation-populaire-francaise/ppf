@@ -48,6 +48,9 @@ sealed interface VoirDestination {
 
     /** « Nos victoires » (M34, PP-03): what the movement obtained, with its sources. */
     data object Victories : VoirDestination
+
+    /** « Espace presse » (M34, PP-04): press releases, media kit, reusable figures, press contact. */
+    data object Press : VoirDestination
 }
 
 /**

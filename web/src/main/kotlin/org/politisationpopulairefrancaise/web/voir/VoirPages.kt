@@ -73,6 +73,11 @@ fun Route.voirPages(source: VoirSource) {
         val catalog = source.catalog()
         call.respondHtml { victoriesDocument(catalog) }
     }
+    // « Espace presse » (PP-04).
+    get(PRESS_PATH) {
+        val catalog = source.catalog()
+        call.respondHtml { pressDocument(catalog) }
+    }
     route(VoirLinks.HOME) {
         get {
             val catalog = source.catalog()

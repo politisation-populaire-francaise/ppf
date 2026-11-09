@@ -931,6 +931,13 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : une victoire est un fait sourcé, écrit et relu à deux, qui renvoie vers ses preuves ; la même chaîne de confiance que le reste.
 - Conséquences : type `victoire` (`ArticleType.VICTOIRE`, `VoirSchemas.VICTOIRE`, `core/voir/Victories.kt`), genres `engagement-tenu`, `revendication-satisfaite`, `loi-modifiee`, `autre`, date et au moins une source obligatoires, liens `a` de rôle `lie` vers les briques de « Voir » ; jamais attribuée à PPF seule ; page de l'application (axe « Le mouvement ») et page du site `/victoires` (`docs/integration/victoires.md`).
 
+## D-106 (2026-11-09) « Espace presse » : communiqués signés, kit de faits, contact par M30
+
+- Contexte : cahier fonctionnel, M34, PP-04 (communiqués, kit média, chiffres réutilisables, contact presse par M30) ; tâche donnée au pôle « Voir » par le chef d'équipe le 8 novembre 2026.
+- Options (coût nul) : A. une page fixe avec une adresse de courriel de presse ; B. un type de contenu signé `communique`, un kit fait de faits seulement, les chiffres par les données ouvertes, le contact par M30 catégorie « Journaliste » (**retenue**) ; C. un canal de contact presse à part.
+- Choix : **B**, décision technique du pôle « Voir ». A demanderait une adresse de courriel, que la version 1 de M30 exclut (D-140) ; C doublerait un canal déjà chiffré, avec ses délais et ses durées de conservation.
+- Conséquences : `ArticleType.COMMUNIQUE`, `VoirSchemas.COMMUNIQUE`, `core/voir/PressReleases.kt` (`PressRelease`, `MediaKit`) ; page de l'application (axe « Le pouvoir ») et page du site `/presse` ; demande au Directeur technique : catégorie choisie d'avance dans les formulaires de contact (`docs/integration/espace-presse.md`, section 3).
+
 ## D-110 (2026-11-07) « Une personne, une voix » : jetons anonymes VOPRF, conditions de la bibliothèque, exigences
 
 - Contexte : conception de `docs/integration/une-personne-une-voix.md` (méthode approuvée par la propriétaire, D-044 ; usages de D-062). Décision technique prise en autonomie (chef d'équipe), le 7 novembre 2026, après relecture complète du document.

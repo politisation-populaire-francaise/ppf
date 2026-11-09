@@ -78,6 +78,9 @@ enum class ArticleType(val tagValue: String) {
      * read by core.voir.Victory.
      */
     VICTOIRE("victoire"),
+
+    /** A press release of PPF (M34, PP-04), read by core.voir.PressRelease. */
+    COMMUNIQUE("communique"),
     ;
 
     companion object {

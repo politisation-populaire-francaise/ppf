@@ -102,6 +102,8 @@ class VoirCatalog(
     val transparency: TransparencyPages = TransparencyPages(emptyList()),
     /** « Nos victoires » (PP-03), newest first. */
     val victories: List<Victory> = emptyList(),
+    /** The press releases of « Espace presse » (PP-04), newest first. */
+    val pressReleases: List<PressRelease> = emptyList(),
 ) {
     private val items: Map<ContentAddress, VoirItem> = buildMap {
         indicators.forEach { put(it.address, VoirItem.OfIndicator(it)) }
@@ -230,7 +232,7 @@ class VoirCatalog(
         val TYPES: List<ArticleType> = listOf(
             ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE,
             ArticleType.MOUVEMENT, ArticleType.DOSSIER, ArticleType.REPONSE, ArticleType.PARTI, ArticleType.TRANSPARENCE,
-            ArticleType.VICTOIRE,
+            ArticleType.VICTOIRE, ArticleType.COMMUNIQUE,
         )
 
         /**
@@ -250,6 +252,7 @@ class VoirCatalog(
                 parties = latest.mapNotNull(PoliticalParty::from).sortedBy { FrenchText.fold(it.name.removePrefix(EXAMPLE_MARKER)) },
                 transparency = TransparencyPages(latest.mapNotNull(TransparencyEntry::from)),
                 victories = latest.mapNotNull(Victory::from).sortedWith(Victory.ORDER),
+                pressReleases = latest.mapNotNull(PressRelease::from).sortedWith(PressRelease.ORDER),
             )
         }
     }
