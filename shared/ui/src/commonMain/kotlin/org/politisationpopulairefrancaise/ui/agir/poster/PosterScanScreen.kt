@@ -100,7 +100,8 @@ import org.politisationpopulairefrancaise.ui.agir.calls.typeLabelResource as cal
  * read is sent anywhere.
  *
  * [onOpened] closes this screen once the agenda shows the mobilization; [onOpenCall] opens a call
- * from its address where the caller can (null: the screen says where to find it).
+ * from its address where the caller can (null: the screen says where to find it). [initial] is a
+ * code already read (tests, and the computer, which has no camera here).
  */
 @Composable
 internal fun PosterScanScreen(
@@ -111,9 +112,10 @@ internal fun PosterScanScreen(
     onOpened: () -> Unit,
     modifier: Modifier = Modifier,
     onOpenCall: ((String) -> Unit)? = null,
+    initial: PosterScan? = null,
 ) {
     val palette = PpfTheme.palette
-    var scan by remember { mutableStateOf<PosterScan?>(null) }
+    var scan by remember { mutableStateOf(initial) }
     SystemBack(enabled = true, onBack = onBack)
     Column(
         modifier.fillMaxSize().background(palette.surface1).verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(PosterTags.SCAN_SCREEN),

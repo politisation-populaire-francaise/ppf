@@ -72,7 +72,9 @@ data class PosterLayout(val format: PosterFormat, val elements: List<PosterEleme
  */
 object PosterLayouts {
     const val MARGIN: Float = 40f
-    const val CODE_SIDE: Float = 248f
+
+    /** 250 points, 88 mm on A4 (125 mm on A3): modules of at least 0.7 mm for the largest code ([PosterQr.MAX_MODULES]). */
+    const val CODE_SIDE: Float = 250f
     const val CODE_GAP: Float = 18f
     val TITLE_SIZES: List<Float> = listOf(48f, 42f, 36f, 31f, 27f, 24f)
     const val TITLE_MAX_LINES: Int = 4
