@@ -378,7 +378,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
             }
             when {
                 // On phones the centre takes the whole screen, with its back button.
-                windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier)
+                windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier.fullWindowSafeArea())
                 windowClass.width == WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, bell, content)
                 windowClass.width == WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, bell, centerScreen ?: content)
                 else -> ExpandedShell(selected, navigate, account, bell, centerScreen ?: content)
@@ -502,7 +502,7 @@ private fun CompactShell(
         modifier = Modifier.testTag(ShellTags.SHELL_COMPACT),
         scrimColor = palette.scrim,
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = palette.surface0, drawerContentColor = palette.ink) {
+            ModalDrawerSheet(drawerContainerColor = palette.surface0, drawerContentColor = palette.ink, windowInsets = menuInsets) {
                 PillarsMenu(selected = selected, onSelect = {
                     onSelect(it)
                     scope.launch { drawerState.close() }
@@ -522,8 +522,9 @@ private fun CompactShell(
                 )
             },
             bottomBar = { BottomBar(selected, onSelect) },
+            contentWindowInsets = phoneContentInsets,
         ) { padding ->
-            content(Modifier.padding(padding))
+            content(Modifier.betweenBarsSafeArea(padding))
         }
     }
 }
@@ -533,7 +534,7 @@ private fun BottomBar(selected: Space, onSelect: (Space) -> Unit) {
     val palette = PpfTheme.palette
     Column(Modifier.background(palette.surface0)) {
         HorizontalDivider(color = palette.border)
-        Row(Modifier.fillMaxWidth().height(76.dp).selectableGroup().testTag(ShellTags.BOTTOM_BAR)) {
+        Row(Modifier.fillMaxWidth().bottomBarSafeArea().height(76.dp).selectableGroup().testTag(ShellTags.BOTTOM_BAR)) {
             quickAccessSections.forEach { section ->
                 BottomBarItem(section, section.space == selected, { onSelect(section.space) }, Modifier.weight(1f))
             }
@@ -588,6 +589,7 @@ private fun MediumShell(
                 contentColor = palette.inkMuted,
                 modifier = Modifier.testTag(ShellTags.NAV_RAIL).verticalScroll(rememberScrollState()),
                 header = { HelpButton(Modifier.padding(top = 8.dp).width(68.dp), stacked = true) },
+                windowInsets = sideNavigationInsets,
             ) {
                 Spacer(Modifier.height(8.dp))
                 quickAccessSections.forEach { section -> RailItem(section, selected, onSelect) }
@@ -595,7 +597,7 @@ private fun MediumShell(
                 pillarSections.forEach { section -> RailItem(section, selected, onSelect) }
             }
             VerticalDivider(color = palette.border)
-            content(Modifier.weight(1f).fillMaxHeight())
+            content(Modifier.weight(1f).fillMaxHeight().besideNavigationSafeArea())
         }
     }
 }
@@ -633,7 +635,7 @@ private fun ExpandedShell(
         Row(Modifier.weight(1f).fillMaxWidth()) {
             SideBar(selected, onSelect, Modifier.width(280.dp).fillMaxHeight().testTag(ShellTags.NAV_DRAWER))
             VerticalDivider(color = palette.border)
-            content(Modifier.weight(1f).fillMaxHeight())
+            content(Modifier.weight(1f).fillMaxHeight().besideNavigationSafeArea())
         }
     }
 }
@@ -642,7 +644,7 @@ private fun ExpandedShell(
 @Composable
 private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifier) {
     val palette = PpfTheme.palette
-    Column(modifier.background(palette.surface0)) {
+    Column(modifier.background(palette.surface0).sideNavigationSafeArea()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
             HelpButton(Modifier.padding(bottom = 12.dp), fullWidth = true)
             quickAccessSections.forEach { section ->
@@ -734,7 +736,7 @@ private fun TopBar(
     val palette = PpfTheme.palette
     Column(Modifier.background(palette.surface0)) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 8.dp),
+            modifier = Modifier.fillMaxWidth().topBarSafeArea().height(56.dp).padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (onMenu != null) {
@@ -782,7 +784,7 @@ private fun DesktopTopBar(account: AccountUiState.Ready?, bell: Bell?, mySpaceSe
     val palette = PpfTheme.palette
     Column(Modifier.background(palette.surface0)) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(64.dp).padding(start = 24.dp, end = 16.dp),
+            modifier = Modifier.fillMaxWidth().topBarSafeArea().height(64.dp).padding(start = 24.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Wordmark(Modifier.width(248.dp), large = true)

@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -45,6 +44,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfRadioRow
 import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfSelectableChip
 import org.politisationpopulairefrancaise.ui.components.PpfTextField
+import org.politisationpopulairefrancaise.ui.components.safeAreaBottomPadding
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.agenda_apply
@@ -235,7 +235,7 @@ internal fun AgendaFilterPanel(
 
         HorizontalDivider(color = palette.border)
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp).then(if (compact) Modifier.navigationBarsPadding() else Modifier),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp).then(if (compact) Modifier.safeAreaBottomPadding() else Modifier),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             PpfPrimaryButton(
