@@ -1,6 +1,6 @@
 # Feuille de route du MVP 1
 
-**Statut : proposition du 11 novembre 2026, à valider par la propriétaire.** Tant qu'elle n'est pas validée, elle ne remplace pas `docs/ROADMAP.md`, qui reste le suivi détaillé de tout ce qui a été fait.
+**Statut : validée par la propriétaire le 11 novembre 2026** (« Je valide la roadmap »), avec les précisions de la section 7 (D-210 à D-214). Elle fixe les priorités ; `docs/ROADMAP.md` reste le suivi détaillé de tout ce qui a été fait.
 
 Un « MVP » est la première version réellement utilisable par le public : peu de choses, mais qui marchent bien.
 
@@ -42,7 +42,7 @@ Chaque jalon se termine par une version d'essai (APK) envoyée à la propriétai
 | Jalon | Ce que vous pourrez tester à la fin | Contenu | Ordre de grandeur |
 |---|---|---|---|
 | **0. Remise en route** | Cette feuille de route, validée | Nouvelle équipe, règles du 9 novembre entrées dans `main` (fait), recherches sur le mouvement lancées (fait), décisions de la section 7 | 1 jour |
-| **1. Une application agréable sur votre téléphone** | Une version où rien ne passe sous les barres du téléphone, à la bonne taille, avec Agir, Décider et Comprendre accessibles en un geste | Correction des barres du système sur les trois formats ; passage en revue des tailles (barres, marges, textes) aux dimensions des Galaxy et avec les réglages « grande police » ; nouvelle navigation du MVP (section 7, décision 2) ; accueil qui mène tout de suite à l'action ; ce qui n'est pas prêt est retiré de la vue ; captures d'écran automatiques des écrans prioritaires | 2 à 4 jours |
+| **1. Une application agréable sur votre téléphone** | Une version où rien ne passe sous les barres du téléphone, à la bonne taille, qui s'ouvre sur un court tutoriel, avec Agir, Décider et Comprendre accessibles en un geste | Correction des barres du système sur les trois formats ; passage en revue des tailles (barres, marges, textes) aux dimensions du Galaxy A34 et avec les réglages « grande police » ; **tutoriel du premier lancement** (voir plus bas) ; nouvelle barre du bas « Accueil, Agir, Décider, Comprendre, Mon espace » ; accueil qui mène tout de suite à l'action ; **rien n'est retiré** : tout ce qui est déjà codé reste actif et visible, par « Plus » ; captures d'écran automatiques des écrans prioritaires | 3 à 5 jours |
 | **2. Agir** | Tout l'espace Agir, hors carte en direct | Entrée de la branche en attente (collectifs, minuteur, caméra protégée, simulateur du gréviste, affiche à code QR, « Et après ? », proches à mobiliser, 13 guides réels) ; kit contre le harcèlement et créneaux de bénévolat à finir ; **nouvelle rubrique « Fédérer »** ; **nouvelle rubrique « S'engager en politique »** ; passe d'ergonomie sur chaque écran | 1 à 2 semaines |
 | **3. Décider** | Revendications, pétitions officielles et Pacte mis en avant | Entrée de la branche en attente (rappels, courriers aux élus, consultations, pétitions locales, vraies pétitions) ; les trois fonctions phares en tête de l'espace et sur l'accueil ; délibération sur les mesures du Pacte ; passe d'ergonomie | 1 semaine, en partie en parallèle du jalon 2 |
 | **4. Comprendre : les textes du cap** | La série de textes prioritaires, lisible dans l'application et sur le site | Entrée des 124 vrais contenus ; série prioritaire (section 5) ; fiches de « S'engager en politique » et de « Fédérer » ; dossiers de recherche sourcés | En continu, dès le jalon 0 |
@@ -51,6 +51,20 @@ Chaque jalon se termine par une version d'essai (APK) envoyée à la propriétai
 
 Les jalons 1 à 4 avancent sans serveur. Le jalon 5 est le chemin critique : sans lui, le MVP n'est pas « fonctionnel » pour les autres. Il peut démarrer dès que la propriétaire le décide, en parallèle du reste.
 
+### Détail du jalon 1 : le tutoriel du premier lancement
+
+Décision de la propriétaire du 11 novembre 2026 : le premier écran n'est plus le fil social mais « un rapide tutoriel de prise en main de l'appli, de son objectif et du contexte, pas à pas », dans « un ordre logique et naturel ». Première proposition d'ordre, à affiner avec elle sur une version d'essai :
+
+1. **Pourquoi cette application** : le moment que vit le pays, et l'objectif (reprendre l'espace politique, ensemble).
+2. **Ici, vous êtes chez vous** : aucun compte demandé pour lire, aucun traceur, un pseudonyme si l'on veut participer.
+3. **Agir** : trouver une action près de chez soi, tenir, fédérer son entourage, s'engager en politique.
+4. **Décider** : voter les revendications, signer les pétitions officielles, peser sur les candidats avec le Pacte.
+5. **Comprendre** : des textes courts et sourcés pour savoir où l'on va.
+6. **Et aussi** : Voir, le fil, les messages, la carte, Mon espace, le bouton AIDE.
+7. **Par où commencer ?** : trois boutons (« Je veux agir », « Je veux donner mon avis », « Je veux comprendre ») qui mènent au bon espace ; choix facultatif de sa commune, gardé sur l'appareil.
+
+Règles : une idée par écran, moins d'une minute en tout, « Passer » toujours visible, lisible sans réseau, rejouable depuis Mon espace et la feuille AIDE, utilisable au lecteur d'écran et au clavier, textes externalisés. Après le tutoriel, l'application s'ouvre sur l'accueil.
+
 ### Détail du jalon 2 (Agir)
 
 | Rubrique | Déjà dans `main` | En attente (à faire entrer) | À créer |
@@ -58,8 +72,25 @@ Les jalons 1 à 4 avancent sans serveur. Le jalon 5 est le chemin critique : san
 | Se mobiliser | Agenda, proposer un événement, appels, annuaire des organisations, vue carte sur Android (jamais essayée sur un téléphone) | Collectifs, affiche et tract à code QR, « Et après ? » | Rappel d'un événement |
 | Tenir | Caisses de grève et de solidarité, missions de bénévolat | Simulateur du gréviste, 13 guides réels (faire grève, déclarer une manifestation, créer une association, coller des affiches, collecter de l'argent, etc.) | Créneaux de bénévolat |
 | **Fédérer** (nouveau) | | « Mes proches à mobiliser » (liste privée, sur l'appareil seulement) | Kit « Convaincre autour de soi » : argumentaires courts, réponses aux objections, « le monde bouge » ; cartes à partager |
-| **S'engager en politique** (nouveau, mis en avant) | Parcours « S'inscrire et voter » et « Se présenter à une élection », calendrier électoral | Rappels d'inscription | Kit du candidat citoyen (législatives d'abord), guide de la liste citoyenne, créer ou rejoindre un parti (fiches identiques pour tous les partis), trouver des colistiers par les collectifs |
+| **S'engager en politique** (nouveau, mis en avant) | Parcours « S'inscrire et voter » et « Se présenter à une élection », calendrier électoral | Rappels d'inscription | Dans l'ordre du calendrier électoral (voir plus bas) : s'inscrire sur les listes électorales et vérifier son inscription, procuration ; puis se présenter et constituer une liste de candidats ; créer ou rejoindre un parti (fiches identiques pour tous les partis) ; trouver des colistiers par les collectifs |
 | Se protéger | Bouton AIDE, mode manifestation, verrouillage, effacement rapide, application discrète, « Besoin de parler ? » | Minuteur « sans nouvelles de moi », caméra protégée | Kit contre le harcèlement (à finir) |
+
+### Détail du jalon 2 : « S'engager en politique » dans l'ordre du calendrier
+
+Décisions de la propriétaire du 11 novembre 2026 : d'abord s'inscrire sur les listes électorales, ensuite créer des listes de candidats ; les priorités suivent le calendrier des élections. Calendrier relevé le 11 novembre 2026 sur les sources officielles (dossier de recherche « droit électoral et candidatures »), à revérifier avant chaque publication :
+
+| Ordre | Échéance | Ce que l'application propose |
+|---|---|---|
+| 1 | **Inscription sur les listes électorales** : au plus tard le vendredi 12 mars 2027 pour la présidentielle (sixième vendredi avant le scrutin, code électoral, article L17 ; date à confirmer par le décret de convocation, pas encore publié) | S'inscrire, vérifier son inscription, se réinscrire après un déménagement, procuration, rappels |
+| 2 | **Présidentielle** : 18 avril et 2 mai 2027 (dates annoncées) | Pacte démocratique, comparateur, calendrier, parrainages |
+| 3 | **Législatives anticipées** : seulement si l'Assemblée est dissoute (scrutin 20 à 40 jours après la dissolution) ; sinon, législatives au plus tard en juin 2029 | Kit du candidat citoyen prêt à servir, « mode dissolution » |
+| 4 | **Départementales et régionales** : mars 2028 (binômes femme-homme, listes paritaires) ; financement de campagne à partir de septembre 2027 | Constituer un binôme ou une liste, mandataire financier, compte de campagne |
+| 5 | **Élections partielles** (municipales surtout), à tout moment ; européennes en juin 2029 ; municipales en mars 2032 | Guide de la liste citoyenne, retours d'expérience des listes citoyennes de 2020 et de 2026 |
+| En continu | Créer ou rejoindre un parti | Mode d'emploi (association, mandataire ou association de financement, comptes), fiches identiques pour tous les partis |
+
+Correction d'une affirmation de la première version de ce document : depuis la dissolution de juin 2024, les législatives ne suivent plus automatiquement la présidentielle. Il n'y en aura en 2027 que si le nouveau président dissout l'Assemblée.
+
+Cadre légal à respecter (code électoral, article L52-8) : une association ne peut fournir ni don ni avantage à la campagne d'un candidat. L'outil est donc le même pour toutes les listes et tous les partis, aux mêmes conditions, sans soutien de PPF à l'un d'eux (décision de la propriétaire : « pour l'instant oui »). Aucune décision de justice ne valide expressément ce montage : à faire confirmer par un avocat et par la CNCCFP avant l'ouverture publique.
 
 ### Détail du jalon 3 (Décider)
 
@@ -82,34 +113,40 @@ Série proposée (titres de travail), chaque texte court, sourcé, relié à une
 
 Quatre recherches documentaires ont été lancées le 11 novembre 2026 pour les nourrir (mouvement social de l'automne 2026 ; maintien de l'ordre et libertés ; mouvements populaires dans le monde ; droit électoral et candidatures). Elles s'appuient d'abord sur les médias et organisations désignés par la propriétaire (Mediapart, L'Humanité, Le Média, Blast, Off Investigation, Contre Attaque, Cerveaux non disponibles, Amnesty International, Ligue des droits de l'homme, ONU) et sur les sources officielles ; chaque fait porte sa source et son statut (établi, allégué, contesté).
 
-Règle en vigueur depuis le 9 novembre (CLAUDE.md, section 7) : les contenus factuels sont rédigés par l'IA, sourcés et affichés « Rédigé par l'IA » ; **les prises de position de PPF ne sont jamais rédigées par l'IA**. Plusieurs textes de la série sont des prises de position : voir la décision 3.
+Règle fixée par la propriétaire le 11 novembre 2026 (elle remplace celle du 9) : « Pour l'instant tout est rédigé par ia on doit aller très très vite pas le choix, puis les humains reliront et reprendront les textes au fur et à mesure. » Les contenus factuels sont affichés « Rédigé par l'IA » ; les textes de position sont affichés « Position de PPF, rédigée par l'IA, en attente de relecture ». Dans tous les cas : chaque fait porte sa source, une qualification politique est présentée comme l'opinion de PPF et non comme un fait, aucune personne n'est qualifiée sans source, aucun appel à la violence. Chaque chiffre des dossiers de recherche est relu sur sa source avant d'entrer dans un texte.
 
 ## 6. Ce qui sort du MVP 1
 
 Rien n'est supprimé : ces parties restent dans le code et reviendront au MVP 2.
 
 - **Agir** : carte de la manifestation en direct, zones dangereuses et sorties, street medics et avocats certifiés, alerte à mes proches, soutien aux personnes interpellées, témoignages publiés. Raisons : elles dépendent de la carte, d'organisations partenaires, d'une relecture par un avocat ou d'une équipe de modération.
-- **Voir** (observatoire, partis, Parlement), **fil social**, **messagerie**, **cercles** : laissés en l'état, sans nouveau développement, hors de la vue principale selon la décision 2.
+- **Voir** (observatoire, partis, Parlement), **fil social**, **messagerie**, **cercles** : pas de nouveau développement, mais ils restent actifs, opérationnels et visibles (décision de la propriétaire du 11 novembre 2026), accessibles par « Plus ».
 - **Administration avancée** : suite du service de signature, back-office complet, modération par IA.
 - **iOS** (les personnes qui ont un iPhone passent par le site), Nostr, Tor, messagerie sans Internet.
 
-## 7. Décisions à prendre par la propriétaire
+## 7. Décisions de la propriétaire
+
+Décisions prises le 11 novembre 2026 (consignées dans `docs/DECISIONS.md`, D-210 à D-214) :
+
+| Sujet | Décision | Ses mots |
+|---|---|---|
+| Feuille de route | Validée. | « Je valide la roadmap » |
+| Mémoire de l'ordinateur | Ne jamais dépasser la mémoire disponible : une seule compilation à la fois, seuil de 6 Go libres avant de compiler, rien de nouveau pendant une compilation. | « mes barrettes de rames sont défectueuses, ne depasse jamais la RAM dispo de mon pc sinon il crash » |
+| Ce qui existe déjà | Rien n'est masqué ni désactivé. | « Tout ce qui a déjà été codé doit rester actif, operationnel et visible pour le moment » |
+| Premier écran | Un tutoriel de prise en main au premier lancement, à la place du fil social. La barre du bas « Accueil, Agir, Décider, Comprendre, Mon espace » est retenue par le chef d'équipe comme conséquence (recommandation de la feuille de route validée) ; tout le reste passe par « Plus ». | « il me parait bien mieux de faire un rapide tutoriel avec de prise en main de l'appli, de son objectif et du contexte, pas à pas » |
+| Textes | Tout est rédigé par l'IA pour l'instant, y compris les textes de position ; les humains relisent ensuite. | « Pour l'instant tout est rédigé par ia on doit aller très très vite pas le choix, puis les humains reliront et reprendront les textes au fur et à mesure. » |
+| « S'engager en politique » | Le même outil pour toutes les listes et tous les partis, sans soutien de PPF à l'un d'eux, pour l'instant. L'inscription sur les listes électorales passe en premier, puis les listes de candidats ; l'ordre suit le calendrier des élections. | « pour l'instant oui » ; « il faut d'abord s'inscrire en priorité sur les listes électorales, et ensuite creer des listes de candidats » ; « mettons les priorités en fonction du calendrier des elections » |
+| Téléphone de référence | Samsung Galaxy A34. | « J'ai un samsung galaxy A34 » |
+
+Décisions encore ouvertes, à prendre avant le jalon 5 :
 
 | N° | Question | Options | Recommandation |
 |---|---|---|---|
-| 1 | **Comment ouvre-t-on ?** | A. Bêta fermée sur invitation (quelques dizaines de personnes de confiance), puis ouverture publique. B. Ouverture publique directe. C. Essais privés seulement pour l'instant. | **A.** Tant que l'association n'est pas déclarée et que les textes n'ont pas été relus par un avocat, c'est la propriétaire qui porte personnellement la responsabilité de ce qui est publié. Une bêta fermée permet d'aller vite en limitant ce risque. |
+| 1 | **Comment ouvre-t-on ?** | A. Bêta fermée sur invitation (quelques dizaines de personnes de confiance), puis ouverture publique. B. Ouverture publique directe. C. Essais privés seulement pour l'instant. | **A.** Tant que l'association n'est pas déclarée et que les textes n'ont pas été relus par un avocat, la responsabilité de ce qui est publié risque de reposer sur la propriétaire en personne (à confirmer par un avocat). |
 | 1 bis | **Serveur** | Le guide prévoit un serveur Hostinger KVM 1 (131,76 € HT pour 24 mois, prix relevé le 7 novembre, à revérifier). La propriétaire avait parlé d'un KVM 2. | L'acheter au début du jalon 5, pas avant. Aucun achat sans son accord. |
-| 2 | **Navigation du MVP sur téléphone** | A. Barre du bas : Accueil, Agir, Décider, Comprendre, Mon espace ; le reste (Voir, Fil, Messages, Carte) dans un menu « Plus ». B. Garder la barre actuelle (Fil, En direct, Carte, Messages, Revendications) et les piliers dans le menu. C. Barre : Accueil, Agir, Revendications, Comprendre, Plus. | **A.** Elle met les trois priorités à un geste et allège l'écran. Elle revient sur la décision du 6 novembre (fil social en écran par défaut). |
-| 3 | **Qui écrit les textes de position ?** | A. La propriétaire les écrit ; l'IA fournit les faits sourcés et un plan. B. L'IA rédige tout, la propriétaire valide, mention « Rédigé par l'IA » (il faut alors modifier la règle du 9 novembre). C. Mixte : les textes de faits par l'IA, et un court texte « Le cap de PPF » écrit ou dicté par la propriétaire. | **C.** Les faits sourcés vont vite et sont solides ; la position engage le collectif et gagne à être dite avec ses mots. |
-| 4 | **« S'engager en politique » : pour qui ?** | A. Le même outil pour toutes les listes et tous les partis, sans soutien de PPF à l'un d'eux. B. PPF choisit les listes ou les partis qu'elle met en avant. | **A.** Une association n'a pas le droit d'aider la campagne d'un candidat (code électoral, article L52-8) : un outil ouvert à tous aux mêmes conditions est la voie sûre. À confirmer par la vérification juridique en cours, puis par un avocat. |
-| 5 | **Votre téléphone** | Modèle du Galaxy, 2 ou 3 captures d'écran du problème, et si la taille de police ou le zoom d'écran ont été agrandis dans les réglages. | Sert à régler les tailles au plus juste dès le jalon 1. |
+| 2 | **Qui relit les propositions des citoyens à l'ouverture ?** | À préciser avec elle. | Au moins deux personnes de confiance en plus d'elle. |
 
-À préciser plus tard, sans urgence : qui relit les propositions des citoyens à l'ouverture (jalon 5) ; calendrier de la déclaration de l'association.
-
-Deux précisions de vocabulaire et de calendrier, à confirmer par la vérification juridique en cours :
-
-- En droit, les « listes électorales » sont les registres des électeurs. Ce que la propriétaire décrit s'appelle des **listes de candidats** (ou listes citoyennes). Le MVP traite les deux : s'inscrire pour voter, et se présenter.
-- Les élections municipales viennent d'avoir lieu (mars 2026) ; les prochaines sont prévues en 2032. Les scrutins les plus proches où des citoyens peuvent se présenter sont les législatives qui suivent la présidentielle d'avril 2027, puis les départementales et régionales (2028). Le kit commence donc par les législatives.
+Vocabulaire : en droit, les « listes électorales » sont les registres des électeurs ; les listes que l'on présente à une élection sont des **listes de candidats** (ou listes citoyennes). Le MVP traite les deux, dans cet ordre.
 
 ## 8. Organisation de l'équipe
 

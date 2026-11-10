@@ -1362,3 +1362,40 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Choix : **B** (Directeur technique, décision technique et gratuite). Exclus des classpaths d'exécution et de test : `com.ionspin.kotlin` (libsodium) et `com.goterl` (son chargeur natif) ; exclu de l'exécution : `net.java.dev.jna` (JNA, que seul libsodium y amenait ; une bibliothèque de test du service en garde la version 5.9.0). Les tâches `verifySignerJar` et `verifyImporterJar`, branchées sur `check` (donc sur `build`), font échouer la compilation si `ppf-signer.jar` ou `ppf-open-data-importer.jar` contient l'une d'elles. Même modèle que l'exclusion déjà faite de SQLDelight et du pilote SQLite.
 - Raison : ces deux conteneurs gardent chacun une clé (clés de travail de la plateforme, clé d'import) et ne calculent aucun jeton de vote : du code natif chargé à l'exécution y serait une surface d'attaque sans usage, dans un conteneur en lecture seule et sans Internet. Les tests du service et de l'importeur, verts sans ces bibliothèques, prouvent qu'aucune de leurs classes ne les charge.
 - Le jour où le service de signature gardera les graines des urnes (D-110, plus tard), cette décision sera revue : il faudra alors un module d'urne à part (option C) plutôt que tout `shared/core`.
+
+## D-210 (2026-11-11) Cap du MVP 1 : Agir, puis Décider, puis Comprendre, et une ergonomie irréprochable
+
+- Contexte : la feuille de route suivie depuis le 5 novembre avançait sur tous les modules à la fois, sans version utilisable. Le mouvement social en cours rend urgente une première version réellement utile. Demande de la propriétaire du 11 novembre 2026 : « j'ai besoin d'un mvp 1 fonctionnel et ergonomique le plus rapidement possible ».
+- Options : A, continuer la feuille de route complète ; B, une feuille de route par jalons centrée sur trois priorités, avec le reste gelé.
+- Choix : **B** (propriétaire, « Je valide la roadmap »). Priorités dans l'ordre : Agir (en entier si possible, la carte en direct plus tard, avec « Fédérer » et « S'engager en politique » mis en avant), Décider (revendications, pétitions officielles, Pacte démocratique), Comprendre (les textes du cap), ergonomie sur téléphone. Jalons et organisation : `docs/ROADMAP-MVP1.md`.
+- Précision de la propriétaire : « Tout ce qui a déjà été codé doit rester actif, operationnel et visible pour le moment ». Rien n'est donc masqué ni désactivé ; les parties non prioritaires ne reçoivent pas de nouveau développement.
+- Raison : livrer vite ce qui sert le plus, sans jeter le travail fait.
+
+## D-211 (2026-11-11) Premier écran : un tutoriel de prise en main, puis l'accueil ; nouvelle barre du bas
+
+- Contexte : le fil social était l'écran par défaut et la barre du bas du téléphone montrait Fil, En direct, Carte, Messages, Revendications (D-026), les quatre piliers étant rangés dans un menu. Les priorités du MVP 1 n'étaient donc pas à portée de main.
+- Options pour le premier écran : A, garder le fil ; B, un tutoriel au premier lancement, puis un accueil qui mène à l'action.
+- Choix : **B** (propriétaire : « il me parait bien mieux de faire un rapide tutoriel avec de prise en main de l'appli, de son objectif et du contexte, pas à pas, il va donc falloir penser à un ordre logique et naturel pour présenter les fonctionnalités »). Ordre proposé dans `docs/ROADMAP-MVP1.md`, à affiner avec elle sur une version d'essai.
+- Conséquence retenue par le chef d'équipe (recommandation de la feuille de route validée) : barre du bas « Accueil, Agir, Décider, Comprendre, Mon espace » ; le fil, les messages, la carte et Voir restent actifs et accessibles par « Plus » (D-210). Révise D-026 sur ce seul point ; réversible sans perte.
+- Raison : une personne qui découvre l'application doit comprendre en moins d'une minute à quoi elle sert et où agir.
+
+## D-212 (2026-11-11) Textes : tout est rédigé par l'IA pour l'instant, positions comprises, puis relu par des humains
+
+- Contexte : la règle du 9 novembre 2026 réservait aux humains les prises de position de PPF. Or les textes prioritaires de « Comprendre » (limites de la manifestation, cap du mouvement) sont en partie des prises de position, et personne n'est disponible pour les écrire assez vite.
+- Options : A, la propriétaire écrit les positions ; B, l'IA rédige tout, les humains valident ensuite ; C, mixte.
+- Choix : **B** (propriétaire : « Pour l'instant tout est rédigé par ia on doit aller très très vite pas le choix, puis les humains reliront et reprendront les textes au fur et à mesure. »).
+- Garde-fous (chef d'équipe) : étiquette visible « Rédigé par l'IA » pour les contenus factuels et « Position de PPF, rédigée par l'IA, en attente de relecture » pour les positions ; chaque fait sourcé et attribué, chaque chiffre relu sur sa source ; une qualification politique est l'opinion de PPF, jamais présentée comme un fait ; aucune personne qualifiée sans source (méthode M17) ; aucun appel ni incitation à la violence ; relecture par un avocat avant l'ouverture publique pour ce qui met en cause des personnes ou des institutions.
+- Raison : la vitesse, sans renoncer à la transparence sur l'origine des textes.
+
+## D-213 (2026-11-11) « S'engager en politique » : le même outil pour tous, dans l'ordre du calendrier électoral
+
+- Contexte : la propriétaire demande de mettre en avant l'inscription sur les listes électorales, la constitution de listes de candidats et l'adhésion à un parti. Le code électoral (article L52-8, version en vigueur lue sur Légifrance le 11 novembre 2026) interdit à toute personne morale autre qu'un parti de fournir un don ou un avantage à la campagne d'un candidat.
+- Options : A, le même outil pour toutes les listes et tous les partis, aux mêmes conditions, sans soutien de PPF ; B, PPF met en avant certaines listes ou certains partis.
+- Choix : **A**, « pour l'instant » (propriétaire). Ordre : « il faut d'abord s'inscrire en priorité sur les listes électorales, et ensuite creer des listes de candidats » ; « mettons les priorités en fonction du calendrier des elections ». Calendrier relevé le 11 novembre 2026 : inscription jusqu'au 12 mars 2027 (à confirmer par le décret de convocation), présidentielle les 18 avril et 2 mai 2027 (dates annoncées), législatives seulement en cas de dissolution (sinon 2029 au plus tard), départementales et régionales en mars 2028, municipales en mars 2032 hors partielles.
+- Raison : sécurité juridique et égalité de traitement. Aucune décision de justice ne valide expressément un outil associatif ouvert à toutes les listes : à faire confirmer par un avocat et par la CNCCFP avant l'ouverture publique.
+
+## D-214 (2026-11-11) Mémoire de l'ordinateur de développement : ne jamais dépasser la mémoire disponible
+
+- Contexte : consigne de la propriétaire : « mes barrettes de rames sont défectueuses, ne depasse jamais la RAM dispo de mon pc sinon il crash ». Quatre écrans bleus les 7 et 8 novembre 2026. L'ordinateur a 15,8 Go.
+- Choix (chef d'équipe, décision technique) : le lanceur de compilation attend désormais 6 Go de mémoire libre au lieu de 4 (une compilation peut en prendre environ 4,5) ; une seule compilation à la fois sur la machine ; aucun agent ni session lancé pendant une compilation, ni en dessous de 3 Go libres ; au plus trois sessions de bloc ouvertes avec la session principale ; pas d'émulateur Android. Règle inscrite dans `CLAUDE.md`, section 10.
+- Raison : un plantage coûte plus de temps qu'une attente.
