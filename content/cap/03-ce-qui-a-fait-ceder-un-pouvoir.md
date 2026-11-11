@@ -28,7 +28,7 @@ Ce qui a fait céder : une majorité élue et des millions de grévistes au mêm
 
 ## 2006 : le CPE retiré
 
-Le 30 mars 2006, le Conseil constitutionnel valide la loi pour l'égalité des chances, dont l'article 8 crée le contrat première embauche (CPE) pour les moins de 26 ans ; elle est promulguée le 31 mars. Après des semaines de mobilisation des étudiants, des lycéens et des syndicats, la loi du 21 avril 2006 réécrit l'article qui créait le CPE : le contrat disparaît, un mois après la décision du Conseil constitutionnel.
+Le 30 mars 2006, le Conseil constitutionnel valide la loi pour l'égalité des chances, dont l'article 8 crée le contrat première embauche (CPE) pour les moins de 26 ans ; elle est promulguée le 31 mars. De février à début avril 2006, étudiants, lycéens et syndicats se mobilisent massivement contre ce contrat (INA). Le 10 avril, le gouvernement annonce son remplacement, et la loi du 21 avril 2006 réécrit l'article qui créait le CPE : le contrat disparaît, un mois après la décision du Conseil constitutionnel.
 
 Ce qui a fait céder : la durée de la mobilisation, l'unité entre jeunesse et syndicats, et une demande précise : le retrait d'un article.
 
@@ -38,7 +38,7 @@ En décembre 2018, pendant le mouvement des gilets jaunes, le Parlement vote une
 
 ## 2023 : des mois de rue, et la réforme passe
 
-En 2023, les syndicats, unis, organisent des mois de grèves et de manifestations contre le report de l'âge de la retraite. La réforme est pourtant promulguée : la loi du 14 avril 2023 porte l'âge légal de départ de 62 à 64 ans. La rue n'a pas suffi face à un gouvernement décidé à aller jusqu'au bout.
+En 2023, les huit organisations syndicales restent unies contre le report de l'âge de la retraite, jusqu'à une quatorzième journée de mobilisation le 6 juin (franceinfo). La réforme est pourtant promulguée : la loi du 14 avril 2023 porte l'âge légal de départ de 62 à 64 ans. La rue n'a pas suffi face à un gouvernement décidé à aller jusqu'au bout.
 
 ## Ce que propose PPF
 
@@ -67,5 +67,7 @@ Cette partie est la position de PPF, rédigée par l'IA et en attente de relectu
 - Assemblée nationale, les décrets-lois de 1938, consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/histoire-et-patrimoine/deuxieme-guerre-mondiale/des-decrets-lois-du-gouvernement-daladier-au-vote-par-la-chambre-des-deputes-et-le-senat-des-pleins-pouvoirs-au-marechal-petain
 - Conseil constitutionnel, décision n° 2006-535 DC du 30 mars 2006 (loi pour l'égalité des chances, article 8, contrat première embauche), consulté le 2026-11-11 : https://www.conseil-constitutionnel.fr/decision/2006/2006535DC.htm
 - Loi n° 2006-457 du 21 avril 2006 sur l'accès des jeunes à la vie active en entreprise, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000269423/
+- INA, « La crise du contrat première embauche (CPE) », fresque Jalons, consulté le 2026-11-11 : http://fresques.ina.fr/jalons/fiche-media/InaEdu04576/la-crise-du-contrat-premiere-embauche-cpe.html
+- franceinfo, « Mobilisation contre la réforme des retraites : l'intersyndicale s'accorde sur une nouvelle journée d'action le 6 juin », mai 2023, consulté le 2026-11-11 : https://www.franceinfo.fr/economie/retraite/reforme-des-retraites/mobilisation-contre-la-reforme-des-retraites-l-intersyndicale-s-accorde-sur-une-nouvelle-journee-d-action-le-6-juin_5803067.html
 - Loi n° 2018-1213 du 24 décembre 2018 portant mesures d'urgence économiques et sociales, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000037851899/
 - Loi n° 2023-270 du 14 avril 2023 de financement rectificative de la sécurité sociale pour 2023, article 10, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000047445077
