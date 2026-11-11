@@ -64,7 +64,11 @@ class SolidarityScreenTest {
 
     private fun ComposeUiTest.countIs(tag: String, text: String) {
         showInList(tag)
-        waitUntil(timeoutMillis = 10_000) { runCatching { onNodeWithTag(tag).assertTextContains(text) }.isSuccess }
+        try {
+            waitUntil(timeoutMillis = 10_000) { runCatching { onNodeWithTag(tag).assertTextContains(text) }.isSuccess }
+        } catch (e: androidx.compose.ui.test.ComposeTimeoutException) {
+            throw AssertionError("expected « $text », shown: ${onNodeWithTag(tag).fetchSemanticsNode().config}", e)
+        }
     }
 
     private fun ComposeUiTest.openFund(slug: String) {
