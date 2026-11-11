@@ -26,6 +26,7 @@ import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
@@ -93,8 +94,33 @@ class RevendicationViewsScreenTest {
     private fun ComposeUiTest.orderIn(viewId: String): List<String> =
         slugsIn(viewId).sortedBy { inPage(viewId, RevendicationTags.CARD + it).fetchSemanticsNode().positionInRoot.y }
 
+    /** The demands already carried by the movement (MVP 1), bundled beside the examples. */
+    private val movement = listOf(
+        "aides-sociales", "carburants-energie", "demission-du-president", "democratie", "droit-de-manifester", "etudiants",
+        "fin-de-parcoursup", "hausse-des-pensions", "hausse-du-smic", "justice-fiscale", "lycees", "negociations-salariales",
+        "planification", "point-d-indice", "services-publics",
+    ).map { "mouvement-$it" }
+
+    /**
+     * [text] is what the examples alone give ("3 revendications"); the demands of the movement sit beside them.
+     * The examples are counted among the cards, and the number shown counts every card of the page.
+     */
     private fun ComposeUiTest.assertCount(viewId: String, text: String) {
-        inPage(viewId, RevendicationTags.COUNT).assertTextEquals(text)
+        assertEquals(text.substringBefore(' ').toInt(), slugsIn(viewId).size, text)
+        val cards = (slugs + movement).count { slug ->
+            onAllNodes(hasTestTag(RevendicationTags.CARD + slug) and hasAnyAncestor(hasTestTag(RevendicationTags.PAGE + viewId))).fetchSemanticsNodes().isNotEmpty()
+        }
+        inPage(viewId, RevendicationTags.COUNT).assertTextEquals(if (cards <= 1) "$cards revendication" else "$cards revendications")
+    }
+
+    /** MVP 1: a demand of the movement says so, and who carries it; an example does not. */
+    @Test
+    fun aDemandOfTheMovementSaysWhoCarriesIt() = runComposeUiTest {
+        openWall(memory())
+        inPage("tout", RevendicationTags.CARD + "mouvement-hausse-des-pensions").performScrollTo()
+            .assert(hasAnyDescendant(hasText("Du mouvement")))
+            .assert(hasAnyDescendant(hasText("Portée par :", substring = true)))
+        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(RevendicationTags.CARD + "medecin-de-garde"))).fetchSemanticsNodes().isEmpty())
     }
 
     private fun ComposeUiTest.waitForDemands() {

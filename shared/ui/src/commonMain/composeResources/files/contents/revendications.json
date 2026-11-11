@@ -354,6 +354,932 @@
         "sig": "bb734dac86e3faac410544b12e9a534ca8c82dc82b55bb9f68d4bbd41693b07c2ae328ec9a6f81a12da8bd2fac5f7363ff123ebb212249838d300076a30d2d9b"
     },
     {
+        "id": "0015f44827d3e656c2064919a0fba54643ee8471fd0c138d20986c20276017ef",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-aides-sociales"
+            ],
+            [
+                "title",
+                "Une hausse des aides sociales"
+            ],
+            [
+                "summary",
+                "Augmenter les aides au logement, les allocations familiales, les bourses et le RSA."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "solidarite"
+            ],
+            [
+                "t",
+                "pouvoir-d-achat"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, CGT, FO, Unsa et FSU, appel du 5 octobre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nL’appel du 5 octobre demande, avec la hausse du SMIC, celle des aides sociales : aides au logement, allocations familiales, bourses, RSA.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [CFDT, CGT, FO, Unsa et FSU, « Appel à la mobilisation pour les salaires, les services publics, l’emploi et l’industrie », 5 octobre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/appel-a-la-mobilisation-pour-les-salaires-les-services-publics-l-emploi-et-l-industrie), lue le 11 novembre 2026\n",
+        "sig": "3debd8ad5a48aed54bb8b71192e164f9feb28732c518bbe9cdaeabbea03666fcb96f9f40e8d6d9f2e551bb960a785c8473adc1346fc1bbec231396558157b915"
+    },
+    {
+        "id": "86a8210c1d53db0b4a7beb4205ad926a2dc23b8ff31ff7701666ca15e64d2e92",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-carburants-energie"
+            ],
+            [
+                "title",
+                "Baisser le prix des carburants, de l’énergie et de la vie courante"
+            ],
+            [
+                "summary",
+                "Contre la vie chère et les superprofits pétroliers."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "pouvoir-d-achat"
+            ],
+            [
+                "t",
+                "energie"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "Coordination « 17 octobre gilet jaune »"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nLa coordination « 17 octobre gilet jaune » dénonce le prix du plein, des courses et des loyers, compare la hausse du gazole, du gaz, de l’électricité et du fioul à celle du SMIC depuis 2017, et refuse les superprofits pétroliers.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [Coordination « 17 octobre gilet jaune » (Coordination régionale Bloquons tout Île-de-France, Peuple révolté, Maintenant !, Indignons-nous Bloquons tout), site de la coordination](https://17octobregiletjaune.net/), lue le 11 novembre 2026\n- [Lyon Mag, « Gilets jaunes : un nouvel appel à manifester le 24 octobre, ils reviendront place Bellecour », 19 octobre 2026](https://www.lyonmag.com/article/154471/gilets-jaunes-un-nouvel-appel-a-manifester-le-24-octobre-ils-reviendront-place-bellecour), lue le 11 novembre 2026\n",
+        "sig": "87ecbdcbc5708f19b0498eea4bcfcad975ed78bcc48b4be9756203465c513694cb87239a436a7be0495d5f7e467b9306d3274c230cb3ff55a4ea52ae1f205b83"
+    },
+    {
+        "id": "94b77c0ee44aa2ce015da3ebc8188b67a53b6853857e0e0141ba416d2a6a145b",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-demission-du-president"
+            ],
+            [
+                "title",
+                "La démission du président de la République"
+            ],
+            [
+                "summary",
+                "« Macron doit partir et laisser la place au peuple ! » : le départ d’Emmanuel Macron, demandé par la coordination du 17 octobre et dans les cortèges."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "democratie"
+            ],
+            [
+                "t",
+                "institutions"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "Coordination « 17 octobre gilet jaune », appel du 24 octobre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "Manifestants du 17 octobre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nLa coordination « 17 octobre gilet jaune » appelle à manifester le 24 octobre en réclamant la démission d’Emmanuel Macron. Dans les cortèges du 17 octobre, des manifestants la demandaient déjà.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [Coordination « 17 octobre gilet jaune » (Coordination régionale Bloquons tout Île-de-France, Peuple révolté, Maintenant !, Indignons-nous Bloquons tout), site de la coordination](https://17octobregiletjaune.net/), lue le 11 novembre 2026\n- [Lyon Mag, « Gilets jaunes : un nouvel appel à manifester le 24 octobre, ils reviendront place Bellecour », 19 octobre 2026](https://www.lyonmag.com/article/154471/gilets-jaunes-un-nouvel-appel-a-manifester-le-24-octobre-ils-reviendront-place-bellecour), lue le 11 novembre 2026\n- [Politis, « Manifestations du 17 octobre : “C’est la convergence des colères aujourd’hui” », 17 octobre 2026](https://www.politis.fr/articles/2026/10/manifestations-du-17-octobre-cest-la-convergence-des-coleres-aujourdhui/), lue le 11 novembre 2026\n",
+        "sig": "f36cb05fe2179eddf6be051e69377d83eac72b9a4ccb166ff6cd312f7498fa1883664d0d11799cc14c24594e59342ad547069c76dbad670a3d746efc2e8475ac"
+    },
+    {
+        "id": "1fdbc5668bc9a0c9bf79e6602c2025ade7d8f379dd76d921e30c6af7225a97ef",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-democratie"
+            ],
+            [
+                "title",
+                "Une démocratie qui ne se limite pas au vote tous les cinq ans"
+            ],
+            [
+                "summary",
+                "Que les citoyens décident aussi entre deux élections."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "democratie"
+            ],
+            [
+                "t",
+                "institutions"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "Coordination « 17 octobre gilet jaune »"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nLa coordination « 17 octobre gilet jaune » rejette une démocratie où l’on vote tous les cinq ans et demande de transformer le fonctionnement démocratique.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [Coordination « 17 octobre gilet jaune » (Coordination régionale Bloquons tout Île-de-France, Peuple révolté, Maintenant !, Indignons-nous Bloquons tout), site de la coordination](https://17octobregiletjaune.net/), lue le 11 novembre 2026\n- [Lyon Mag, « Gilets jaunes : un nouvel appel à manifester le 24 octobre, ils reviendront place Bellecour », 19 octobre 2026](https://www.lyonmag.com/article/154471/gilets-jaunes-un-nouvel-appel-a-manifester-le-24-octobre-ils-reviendront-place-bellecour), lue le 11 novembre 2026\n",
+        "sig": "dc3d3cd89847c3d72baee73407c8546cb8aefa8c91566b5b1185450feae8760d85eb050927ea874feb03330c43682314e2cc48ddef8a15a2d76fd46681d1c434"
+    },
+    {
+        "id": "06bc4e5fc58ac7e4f6e63e1c577d15c5015acafd1c50c512dc463d8a65f55153",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-droit-de-manifester"
+            ],
+            [
+                "title",
+                "Le droit de manifester et la fin des violences policières"
+            ],
+            [
+                "summary",
+                "Défendre la liberté de manifester, de se réunir et de faire grève, et faire cesser les violences policières."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "libertes"
+            ],
+            [
+                "t",
+                "police"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "Coordination « 17 octobre gilet jaune »"
+            ],
+            [
+                "ppf-carried-by",
+                "Union étudiante et Union syndicale lycéenne, plateforme du 5 octobre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "Manifestants du 17 octobre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nLa coordination « 17 octobre gilet jaune » défend la liberté de manifester, de se réunir et de faire grève, demande l’interdiction des lanceurs de balles de défense et des grenades de désencerclement et s’oppose aux interdictions de rassemblement. La plateforme de l’Union étudiante et de l’Union syndicale lycéenne demande des poursuites contre les policiers violents et qu’aucune absence liée à la mobilisation ne soit sanctionnée. Des manifestants du 17 octobre dénoncent les violences policières.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [Coordination « 17 octobre gilet jaune » (Coordination régionale Bloquons tout Île-de-France, Peuple révolté, Maintenant !, Indignons-nous Bloquons tout), site de la coordination](https://17octobregiletjaune.net/), lue le 11 novembre 2026\n- [Lyon Mag, « Gilets jaunes : un nouvel appel à manifester le 24 octobre, ils reviendront place Bellecour », 19 octobre 2026](https://www.lyonmag.com/article/154471/gilets-jaunes-un-nouvel-appel-a-manifester-le-24-octobre-ils-reviendront-place-bellecour), lue le 11 novembre 2026\n- [L’Étudiant, « Mobilisation lycéenne : les lycéens et étudiants proposent 10 mesures d’urgence », 6 octobre 2026](https://www.letudiant.fr/lycee/mobilisation-lyceenne-la-jeunesse-propose-10-mesures-d-urgence.html), lue le 11 novembre 2026\n- [Politis, « Manifestations du 17 octobre : “C’est la convergence des colères aujourd’hui” », 17 octobre 2026](https://www.politis.fr/articles/2026/10/manifestations-du-17-octobre-cest-la-convergence-des-coleres-aujourdhui/), lue le 11 novembre 2026\n",
+        "sig": "3b801b8bb35e846b56a758b7ac61e0557b4b3679b3410bfa45fd23114660cae99d386958d9b1087978df9ca34b5a029faa6ef9bf27f88d0c7fbc88812cb5e810"
+    },
+    {
+        "id": "ea01429a7b844071c20776a3c22d7c2812e56f5041c22aeae3277c0092b44bb0",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-etudiants"
+            ],
+            [
+                "title",
+                "Des bourses revalorisées, le repas à 1 euro et des aides au logement relevées"
+            ],
+            [
+                "summary",
+                "Les mesures contre la précarité étudiante demandées par les organisations de jeunesse."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "education"
+            ],
+            [
+                "t",
+                "logement"
+            ],
+            [
+                "t",
+                "jeunesse"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "Union étudiante et Union syndicale lycéenne, plateforme du 5 octobre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nLa plateforme de l’Union étudiante et de l’Union syndicale lycéenne demande des bourses revalorisées de 200 euros par mois sur douze mois, avec 300 000 boursiers de plus, le repas à 1 euro garanti, l’abandon du gel des APL et leur revalorisation, et la suppression du plan « Bienvenue en France » pour les étudiants étrangers. Le site de la coordination « 17 octobre gilet jaune » reproduit ces mesures, dont le retour aux loyers des résidences universitaires d’avant 2023.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [L’Étudiant, « Mobilisation lycéenne : les lycéens et étudiants proposent 10 mesures d’urgence », 6 octobre 2026](https://www.letudiant.fr/lycee/mobilisation-lyceenne-la-jeunesse-propose-10-mesures-d-urgence.html), lue le 11 novembre 2026\n- [Coordination « 17 octobre gilet jaune » (Coordination régionale Bloquons tout Île-de-France, Peuple révolté, Maintenant !, Indignons-nous Bloquons tout), site de la coordination](https://17octobregiletjaune.net/), lue le 11 novembre 2026\n",
+        "sig": "9562fe6b3fc0bef14a60c38995c46e5f9b4532abaea96563cdf289e8a30c3fee2cfc549020524db917100f3bfcda4e81bd6fbe2111bb8adc4df8c181d7ceb2fa"
+    },
+    {
+        "id": "527be2820b75a2799e323a3e95e1f9eff62c2fa08ee2af4a0a24f7faeae27919",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-fin-de-parcoursup"
+            ],
+            [
+                "title",
+                "La fin de la sélection par Parcoursup et Mon Master"
+            ],
+            [
+                "summary",
+                "Plus de sélection par algorithme pour entrer dans le supérieur, et 250 000 places de plus."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "education"
+            ],
+            [
+                "t",
+                "jeunesse"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "Union étudiante et Union syndicale lycéenne, plateforme du 5 octobre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nLa plateforme de l’Union étudiante et de l’Union syndicale lycéenne demande la fin de la « sélection algorithmique » par Parcoursup et Mon Master, en gardant des plateformes nationales sans sélection, et 250 000 places de plus dès septembre 2027. Les lycéens mobilisés dénoncent Parcoursup (anxiété, contrôle continu, sélectivité).\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [L’Étudiant, « Mobilisation lycéenne : les lycéens et étudiants proposent 10 mesures d’urgence », 6 octobre 2026](https://www.letudiant.fr/lycee/mobilisation-lyceenne-la-jeunesse-propose-10-mesures-d-urgence.html), lue le 11 novembre 2026\n- [LCP, « Blocage des lycées : quelles sont les revendications des élèves ? », 6 octobre 2026, mis à jour le 8 octobre](https://lcp.fr/actualites/blocage-des-lycees-quelles-sont-les-revendications-des-eleves-442989), lue le 11 novembre 2026\n",
+        "sig": "dfde46df60b94483b9fb00eb776d4609a156ed833e17aa87c3d7d3712ad25f658b95cae61cbe356b1d39cbc3c51972d2c504395dc44450cf5f17cc567d237e4b"
+    },
+    {
+        "id": "2fc676d8f790d3302976180a96270e8f99fa6b6128347f29d1a7143ec4d7dca3",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-hausse-des-pensions"
+            ],
+            [
+                "title",
+                "Une hausse des pensions de retraite"
+            ],
+            [
+                "summary",
+                "Revaloriser les pensions du régime de base et des retraites complémentaires Agirc-Arrco."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "retraites"
+            ],
+            [
+                "t",
+                "pouvoir-d-achat"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, CGT, FO, Unsa et FSU, appel du 5 octobre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "CGT, 10 novembre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nL’appel du 5 octobre demande la hausse des pensions, du régime de base comme de la retraite complémentaire Agirc-Arrco. Le 10 novembre, la CGT demande de revaloriser les pensions.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [CFDT, CGT, FO, Unsa et FSU, « Appel à la mobilisation pour les salaires, les services publics, l’emploi et l’industrie », 5 octobre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/appel-a-la-mobilisation-pour-les-salaires-les-services-publics-l-emploi-et-l-industrie), lue le 11 novembre 2026\n- [CGT, « Le 17 novembre : partout la grève… », 10 novembre 2026](https://www.cgt.fr/17-novembre), lue le 11 novembre 2026\n",
+        "sig": "e364ebb9a8244f077777430a54a2be0bf899d3d40a9cdc318fcddbfb93a02790a70a93d9374fe2b67c957699579a0310316edd86d5cd4772c42c160cbfaedc46"
+    },
+    {
+        "id": "2e0ac36d2043dfdaf21535e115de247fba4dfbc6b6fbd5eb36ae5b972de2d5e6",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-hausse-du-smic"
+            ],
+            [
+                "title",
+                "Une hausse du SMIC plus forte que celle annoncée le 9 novembre"
+            ],
+            [
+                "summary",
+                "Les syndicats jugent insuffisante la hausse de 1,6 % du SMIC au 1er décembre 2026 et demandent davantage."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "salaires"
+            ],
+            [
+                "t",
+                "pouvoir-d-achat"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, CGT, FO, Unsa et FSU, appel du 5 octobre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, 9 novembre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "CGT, 10 novembre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nL’appel du 5 octobre demande la hausse du SMIC, sans montant. Le 9 novembre, le gouvernement annonce un SMIC à 1 502 euros net au 1er décembre (1,6 % de hausse) ; la CFDT juge ce « coup de pouce » insuffisant, la CGT demande que les salaires augmentent au moins autant que les prix, FO en prend acte.\n\nMontants cités le 9 novembre par Sophie Binet, secrétaire générale de la CGT, sur France 2 : 150 euros pour la CGT, 100 euros pour la CFDT, 130 euros pour FO. Ces montants ne figurent pas dans les communiqués de la CFDT et de FO lus le même jour.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi (les montants : rapportés par la CGT). Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [CFDT, CGT, FO, Unsa et FSU, « Appel à la mobilisation pour les salaires, les services publics, l’emploi et l’industrie », 5 octobre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/appel-a-la-mobilisation-pour-les-salaires-les-services-publics-l-emploi-et-l-industrie), lue le 11 novembre 2026\n- [CFDT, « Urgence pour les salaires : les négociations salariales doivent s’ouvrir dans tous les secteurs d’activité », 9 novembre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/urgence-pour-les-salaires-les-negociations-salariales-doivent-s-ouvrir-dans-tous-les-secteurs-d-activite), lue le 11 novembre 2026\n- [CGT, « Le 17 novembre : partout la grève… », 10 novembre 2026](https://www.cgt.fr/17-novembre), lue le 11 novembre 2026\n- [Force ouvrière, « La mobilisation paye », 9 novembre 2026](https://www.force-ouvriere.fr/la-mobilisation-paye), lue le 11 novembre 2026\n- [Franceinfo, « SMIC : une hausse à 1 502 euros net dès le 1er décembre, les syndicats réclament davantage », 9 novembre 2026](https://www.franceinfo.fr/economie/pouvoir-achat/smic-une-hausse-a-1-502-euros-net-des-le-1er-decembre-les-syndicats-reclament-davantage_8274533.html), lue le 11 novembre 2026\n",
+        "sig": "c0912e920fedf2f7a2c9879847532f1918a992120081e2a50d3b029d5141ffe917b8b2b26f43eda25ab1c93c18d219b84c52f73c3f2cf0531f154e3e48106481"
+    },
+    {
+        "id": "284114d2a5834bcce38771bc1ead40452734d255886fe788bc4c3f76a25f75f1",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-justice-fiscale"
+            ],
+            [
+                "title",
+                "La justice fiscale : taxer les patrimoines, les héritages et les dividendes"
+            ],
+            [
+                "summary",
+                "Faire contribuer davantage les plus grandes fortunes et les revenus du capital."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "fiscalite"
+            ],
+            [
+                "t",
+                "impots"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, CGT, FO, Unsa et FSU, appel du 5 octobre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "Manifestants du 17 octobre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nL’appel du 5 octobre demande la justice fiscale : taxation des patrimoines, des héritages et des dividendes. Dans les cortèges du 17 octobre, des pancartes demandent de « taxer les riches ».\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [CFDT, CGT, FO, Unsa et FSU, « Appel à la mobilisation pour les salaires, les services publics, l’emploi et l’industrie », 5 octobre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/appel-a-la-mobilisation-pour-les-salaires-les-services-publics-l-emploi-et-l-industrie), lue le 11 novembre 2026\n- [Politis, « Manifestations du 17 octobre : “C’est la convergence des colères aujourd’hui” », 17 octobre 2026](https://www.politis.fr/articles/2026/10/manifestations-du-17-octobre-cest-la-convergence-des-coleres-aujourdhui/), lue le 11 novembre 2026\n",
+        "sig": "2f199e948a316088285cf40b747be7195be06e9937dd5c810ffe4fd08cd31951939b67f51d1e9ca861d22a3a6186567501183d9807c38dccbbe00232526515d5"
+    },
+    {
+        "id": "47338ef9f4d37d5729ccf2e5baa6cc349d939b1afb975749a94251e7ce803532",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-lycees"
+            ],
+            [
+                "title",
+                "Des enseignants remplacés, des classes moins chargées et des lycées rénovés"
+            ],
+            [
+                "summary",
+                "Remplacer les professeurs absents, alléger les classes et les journées, rénover les bâtiments, recruter des personnels."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "education"
+            ],
+            [
+                "t",
+                "jeunesse"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "Lycéens mobilisés, octobre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "Union étudiante et Union syndicale lycéenne, plateforme du 5 octobre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nLes lycéens mobilisés dénoncent des classes de 30 à 35 élèves, des professeurs non remplacés, des journées de 8 h à 18 h et des bâtiments vétustes. La plateforme de l’Union étudiante et de l’Union syndicale lycéenne demande un plan d’urgence de rénovation des bâtiments scolaires et universitaires, un infirmier, un psychologue et un conseiller d’orientation pour 500 élèves, le remplacement des absents et une pause de midi d’au moins une heure trente.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [LCP, « Blocage des lycées : quelles sont les revendications des élèves ? », 6 octobre 2026, mis à jour le 8 octobre](https://lcp.fr/actualites/blocage-des-lycees-quelles-sont-les-revendications-des-eleves-442989), lue le 11 novembre 2026\n- [L’Étudiant, « Mobilisation lycéenne : les lycéens et étudiants proposent 10 mesures d’urgence », 6 octobre 2026](https://www.letudiant.fr/lycee/mobilisation-lyceenne-la-jeunesse-propose-10-mesures-d-urgence.html), lue le 11 novembre 2026\n",
+        "sig": "42f2553c46d95476cb719913007cc5570432b11cc9c8373ddfce687c56320563ab016e61df0e2969381ec3934dda2e274e05d7cf7de90bb4858a27a44176d7fb"
+    },
+    {
+        "id": "7153069c594b13774ab7a708875c5eb1123bf9992492ed5505d9dd94cc8c5118",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-negociations-salariales"
+            ],
+            [
+                "title",
+                "Des négociations salariales dans toutes les branches, et l’égalité de salaire entre femmes et hommes"
+            ],
+            [
+                "summary",
+                "Ouvrir les négociations sur les salaires partout, et conditionner les aides aux entreprises à des engagements salariaux."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "salaires"
+            ],
+            [
+                "t",
+                "egalite"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, CGT, FO, Unsa et FSU, appel du 5 octobre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, 9 novembre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "CGT, 10 novembre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nL’appel du 5 octobre demande l’ouverture de négociations salariales dans les entreprises et les branches, et l’égalité salariale entre les femmes et les hommes. Le 9 novembre, la CFDT demande des négociations dans les 180 branches (grilles de salaires, classifications, mixité des métiers) et que les allègements de cotisations des entreprises dépendent d’engagements sur les salaires. Le 10 novembre, la CGT demande de supprimer les inégalités entre femmes et hommes et de revaloriser les métiers féminisés.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [CFDT, CGT, FO, Unsa et FSU, « Appel à la mobilisation pour les salaires, les services publics, l’emploi et l’industrie », 5 octobre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/appel-a-la-mobilisation-pour-les-salaires-les-services-publics-l-emploi-et-l-industrie), lue le 11 novembre 2026\n- [CFDT, « Urgence pour les salaires : les négociations salariales doivent s’ouvrir dans tous les secteurs d’activité », 9 novembre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/urgence-pour-les-salaires-les-negociations-salariales-doivent-s-ouvrir-dans-tous-les-secteurs-d-activite), lue le 11 novembre 2026\n- [CGT, « Le 17 novembre : partout la grève… », 10 novembre 2026](https://www.cgt.fr/17-novembre), lue le 11 novembre 2026\n",
+        "sig": "4e061ff835ee1005fb13710b400c8cf00038b3d6af716ec6fb69664aa1942c80066dbe0d43ae69fc5c0d63eab2dd48a80d689a4a4ac16ece0b3f1a405ac1c48f"
+    },
+    {
+        "id": "a0608d4fda443f3d9470c104fe085b57dc6b172f7ffa34746247013cf4dba71f",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-planification"
+            ],
+            [
+                "title",
+                "Une planification industrielle et environnementale"
+            ],
+            [
+                "summary",
+                "Que l’État organise l’avenir de l’industrie et la transition écologique, avec l’emploi."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "emploi"
+            ],
+            [
+                "t",
+                "environnement"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, CGT, FO, Unsa et FSU, appel du 5 octobre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nL’appel du 5 octobre, pour les salaires, les services publics, l’emploi et l’industrie, demande une planification industrielle et environnementale.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [CFDT, CGT, FO, Unsa et FSU, « Appel à la mobilisation pour les salaires, les services publics, l’emploi et l’industrie », 5 octobre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/appel-a-la-mobilisation-pour-les-salaires-les-services-publics-l-emploi-et-l-industrie), lue le 11 novembre 2026\n",
+        "sig": "2ad80157bacdb0f8ca7b35b8c83bf002a52abb472c742b59426019b47a3cdffbdfdaad6be1f5599d4fed608faa8c39bda66554f7f03bdb9ce2a2c1764faecbf3"
+    },
+    {
+        "id": "716b99d511c299480f3da7c7decbc2ede2eb64b49a41dce3e75a927df190da27",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-point-d-indice"
+            ],
+            [
+                "title",
+                "Le dégel et la hausse du point d’indice des fonctionnaires"
+            ],
+            [
+                "summary",
+                "Augmenter la valeur du point d’indice et revaloriser les carrières de la fonction publique."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "travail"
+            ],
+            [
+                "t",
+                "services-publics"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, CGT, FO, Unsa et FSU, appel du 5 octobre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "CGT, 10 novembre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "FO, 9 novembre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nL’appel du 5 octobre demande la hausse de la valeur du point d’indice et la revalorisation des carrières de la fonction publique. Le 10 novembre, la CGT demande d’augmenter le point d’indice. Le 9 novembre, FO demande pour les agents publics une « clause miroir » des annonces faites au privé : dégel du point d’indice et rétablissement de la garantie individuelle du pouvoir d’achat (GIPA).\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [CFDT, CGT, FO, Unsa et FSU, « Appel à la mobilisation pour les salaires, les services publics, l’emploi et l’industrie », 5 octobre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/appel-a-la-mobilisation-pour-les-salaires-les-services-publics-l-emploi-et-l-industrie), lue le 11 novembre 2026\n- [CGT, « Le 17 novembre : partout la grève… », 10 novembre 2026](https://www.cgt.fr/17-novembre), lue le 11 novembre 2026\n- [Force ouvrière, « La mobilisation paye », 9 novembre 2026](https://www.force-ouvriere.fr/la-mobilisation-paye), lue le 11 novembre 2026\n",
+        "sig": "a56b65f3803c73124355ca76fcd63021cd0acf455c29d573cc9700721ad5a1a4af8271f6404df6de314917660969229d63649040288d12342282d900a74090b5"
+    },
+    {
+        "id": "8287ca671551303a5ff0b1d1ec848723c96f4fde7f104b5c7d1f7b6d67d7b232",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "mouvement-services-publics"
+            ],
+            [
+                "title",
+                "Des moyens pour les services publics"
+            ],
+            [
+                "summary",
+                "Donner aux services publics les moyens de fonctionner."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "services-publics"
+            ],
+            [
+                "t",
+                "sante"
+            ],
+            [
+                "ppf-from",
+                "mouvement"
+            ],
+            [
+                "ppf-carried-by",
+                "CFDT, CGT, FO, Unsa et FSU, appel du 5 octobre 2026"
+            ],
+            [
+                "ppf-carried-by",
+                "CGT, 10 novembre 2026"
+            ]
+        ],
+        "content": "## Ce que demande le mouvement\n\nL’appel du 5 octobre demande des moyens pour les services publics ; la CGT le redemande le 10 novembre.\n\n## Comment cette revendication a été relevée\n\nPPF n’en est pas l’auteur : l’équipe l’a relevée dans les textes de celles et ceux qui la portent, sans la reprendre à son compte, et la soumet à votre vote comme les autres. Statut de l’information : établi. Texte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [CFDT, CGT, FO, Unsa et FSU, « Appel à la mobilisation pour les salaires, les services publics, l’emploi et l’industrie », 5 octobre 2026](https://www.cfdt.fr/sinformer/communiques-de-presse/appel-a-la-mobilisation-pour-les-salaires-les-services-publics-l-emploi-et-l-industrie), lue le 11 novembre 2026\n- [CGT, « Le 17 novembre : partout la grève… », 10 novembre 2026](https://www.cgt.fr/17-novembre), lue le 11 novembre 2026\n",
+        "sig": "b4dc68969ef3def1d07b2018fa900eda54ae7212db51499e92286d4405e1f0a1a2da1101b278a18d0146cc5914f3090d1294d40912da873e75d6a770b8cb01ad"
+    },
+    {
         "id": "375dac726f1b21b066f5f03b4abd5620fa2ac5de85ddf094d687c8d8046f2461",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793966400,
