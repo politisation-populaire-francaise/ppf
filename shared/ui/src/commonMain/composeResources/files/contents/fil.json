@@ -11,7 +11,7 @@
             ]
         ],
         "content": "[EXEMPLE] Bienvenue sur le fil de Politisation Populaire Française. Ici, vous verrez les publications des comptes que vous suivez, les mobilisations du moment et les contenus qui vous aident à comprendre et à agir. Tout est lisible sans compte ; publier demande un compte, créé sur votre téléphone en douze mots.",
-        "sig": "d2eed353438cfafdf907532f9754881e559c324fb5b62aafb50954617cbdf9dd220ba5f76438deaeff30b2f6e85f7ccc08bc611d1bb057b9262060df1d2c6a16"
+        "sig": "ca9a481b94febb6ca0e235110c6fd56907c08d5cc69ff5e98beed6784e8ded6fd87899ac71e9e9eaf2cbf803ab2640c0da6ef4f00743952237fd5cf77155e1aa"
     },
     {
         "id": "6ae8fd610eb64b0316668b77c530de752ad4049b3f523823e21427add2fad3a4",
@@ -29,7 +29,7 @@
             ]
         ],
         "content": "[EXEMPLE] Rassemblement fictif en cours place de la République à Paris : le cortège est parti à 14 h, ambiance calme et beaucoup de monde. Suivez les mises à jour dans En direct.",
-        "sig": "650837ed164865c0e6e5b1a19d771e37790f76ec1ef29fb24389dff044fef47b0812e7ef57b77273010579a88096b1aaeb9217923f781f513644d2b18de7c3c0"
+        "sig": "bfc3a7f40b3d603d6b302e120632b0678e0f4a69d841c15e4920067ea39bedc4cd651b18659b5bb7e1ff713a55f995597e7147402be1b659d1acd0a847056ff4"
     },
     {
         "id": "9ab270a4a814c5c8cdcdf25e1a459c54a55c9c5d1f18a227a0ae944d2e3377b1",
@@ -47,7 +47,7 @@
             ]
         ],
         "content": "[EXEMPLE] Nouvelle fiche pratique : « Vos droits en manifestation ». Ce qui est permis, ce qui est interdit, et les réflexes avant de partir. À lire hors ligne dans Comprendre, puis Fiches pratiques.",
-        "sig": "9d6bb686103808a52b446a3f7e5b1686cc2ccbcc940c7b13a3c54b38ed0366ad0d58c5908920e35042064b26fb416a048cd6c5fcb2ff1d18fafad2320429c21a"
+        "sig": "0ed5ec1868609e47762ef8da84b09e983a0e8e100c008c0e7ad1170c3c245c39ff14c46f4b8f5ca9901e6f407d642def01c9f46e9e8ddb28e1b791460bfc4834"
     },
     {
         "id": "25efccf492e8a9857fb41db94829a700e2ca8d55379a22d94616ea2a926b655f",
@@ -61,7 +61,7 @@
             ]
         ],
         "content": "[EXEMPLE] Rassemblement fictif de démonstration : samedi 14 novembre, 14 h, place de la République à Paris. Cette publication sert uniquement à montrer à quoi ressemblera une annonce de mobilisation dans le fil.",
-        "sig": "7425166f82aac38f047bbd57edd9ae85f68298b5abdb4a78ba429c6ba732e2a6e4522779e664b716ab1f8c820033ec82e660896eab1b22a2cf421905ffa289f0"
+        "sig": "ef410a039d69caf0d2c7977a2f04df19d7b730cee4ec291a8d0abfd43392d009c131b6f9c7f41d4b4bbd10baffb05bfb7cd5e1063c5b1d15d963b36ad6d55d5d"
     },
     {
         "id": "362f12b996a596dad487ffafb56b7c6bf59247094ba49b466b2d54ca2ab43c76",
@@ -75,6 +75,6 @@
             ]
         ],
         "content": "[EXEMPLE] Quelle fiche pratique vous manque le plus ? Droits au travail pendant une grève, premiers secours, nasse, filmer les forces de l'ordre : dites-le-nous, l'équipe éditoriale écrit en priorité ce que vous demandez.",
-        "sig": "c4536cdd79741c856009f7c0bc5a51f6edc20c2463c125f89dbb0e9cc1b9184575997999f15fd06de26c431b931019e91a59aa901ca522d728051c9ddaca54fa"
+        "sig": "cd3b0d071e494db305c0f68a5925d1b1393cca39683468b675194e802298d3954656c2c4d164bff6f55b4dbb5c81e4d2c80861d95a53a36875f475be60dd9228"
     }
 ]

@@ -18,6 +18,7 @@ import io.ktor.server.routing.routing
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
+import org.politisationpopulairefrancaise.core.platform.RootRequestView
 import org.politisationpopulairefrancaise.core.platform.SigningProtocol
 import org.politisationpopulairefrancaise.core.platform.SigningRefusals
 import java.util.Base64
@@ -80,7 +81,9 @@ private val ApprovalHeaders = createApplicationPlugin("ApprovalHeaders") {
  * - `POST /approbation/{use}/{id}`: the assertion, checked by the service with the approval origin only;
  * - `POST /racine/certificats`, `POST /racine/liste-equipe`: root-signed certificates, revocations and team
  *   list, the same as `POST /v1/certificates` and `POST /v1/team-list` (self-authenticating events), so that
- *   the owner's administration app reaches the service without going through the main server.
+ *   the owner's administration app reaches the service without going through the main server;
+ * - `GET /racine/demandes/{id}`: a root request prepared by the back-office (`{"id","created_at","expires_at",
+ *   "sha256","events"}`), `404` when unknown or expired (D-141).
  *
  * Nothing of the internal API answers here. POST bodies are JSON (anything else is `415`), bounded; no
  * request is logged, no address is kept.
@@ -158,6 +161,13 @@ fun Application.approvalModule(service: SignerService, config: SignerConfig) {
         post("/racine/liste-equipe") {
             if (!call.isJson()) return@post
             call.loadTeamList(service)
+        }
+        // The root request the owner's phone fetches after scanning the QR code of the back-office (D-141):
+        // it checks the hash of the QR code against these events before showing them and signing.
+        get("/racine/demandes/{id}") {
+            val view = withContext(Dispatchers.IO) { service.rootRequest(call.parameters["id"].orEmpty()) }
+                ?: return@get call.refusal(HttpStatusCode.NotFound, SigningRefusals.UNKNOWN_REQUEST)
+            call.respondJson(HttpStatusCode.OK, encode(RootRequestView.serializer(), view))
         }
     }
 }

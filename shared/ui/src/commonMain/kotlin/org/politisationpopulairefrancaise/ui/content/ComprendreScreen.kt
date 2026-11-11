@@ -610,7 +610,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.QUI_DECIDE -> Res.string.comprendre_kind_who
         ArticleType.GLOSSAIRE -> Res.string.glossaire_kind
         ArticleType.REVENDICATION -> Res.string.space_revendications
-        ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE, ArticleType.PARTI -> Res.string.space_voir
+        ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE, ArticleType.PARTI, ArticleType.TRANSPARENCE, ArticleType.VICTOIRE, ArticleType.COMMUNIQUE -> Res.string.space_voir
         ArticleType.ORGANISATION -> Res.string.organisations_content_type
         ArticleType.APPEL -> Res.string.appels_title
         ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION, ArticleType.ELECTION -> Res.string.space_decider

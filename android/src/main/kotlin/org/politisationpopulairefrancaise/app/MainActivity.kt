@@ -2,6 +2,7 @@ package org.politisationpopulairefrancaise.app
 
 import android.Manifest
 import android.content.pm.PackageManager
+import android.content.res.Configuration
 import android.os.Build
 import android.os.Bundle
 import android.os.Process
@@ -30,6 +31,8 @@ class MainActivity : ComponentActivity() {
         val pendingCrash = crashes.pending()?.let { PendingCrashReport(it, crashes::delete) }
         val platform = currentPlatform()
         crashes.install("${AppInfo.VERSION} (${BuildConfig.VERSION_NAME}, ${BuildConfig.BUILD_TYPE})", "${platform.name} ${platform.version}")
+        // Edge to edge, as Android imposes from its version 15: transparent system bars, their icons dark on the
+        // light theme and light on the dark one. The shared interface keeps its content in the safe area (D-180).
         enableEdgeToEdge()
         // The server is fixed at build time (see build.gradle.kts): the preproduction for the test
         // version, none for the others, which then work with the contents bundled in the APK. HTTPS
@@ -81,5 +84,15 @@ class MainActivity : ComponentActivity() {
         }
         permissionAnswer = answer
         notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+    }
+
+    /**
+     * The manifest keeps this activity through a change between the light and the dark theme (uiMode):
+     * the icons of the status bar and of the navigation bar are set again, dark on the light theme and
+     * light on the dark one (D-180). The resources already describe the new configuration here.
+     */
+    override fun onConfigurationChanged(newConfig: Configuration) {
+        super.onConfigurationChanged(newConfig)
+        enableEdgeToEdge()
     }
 }

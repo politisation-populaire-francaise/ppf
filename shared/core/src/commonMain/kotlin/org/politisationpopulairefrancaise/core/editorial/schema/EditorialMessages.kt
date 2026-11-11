@@ -119,6 +119,7 @@ object EditorialMessages {
         "agir.rule.suite_content_address" to "« {0} » n'est pas l'adresse d'un contenu (30023:<clé>:<identifiant>)",
         "agir.rule.suite_link_wrong_type" to "« {0} » doit être un contenu de type {1}, c'est un contenu de type {2}",
         "agir.rule.suite_duplicate" to "« {0} » est déjà donné",
+        "voir.rule.seat_name" to "chaque membre du bureau et du conseil d'administration est nommé (nom et fonction seulement, membre informé avant la publication)",
     )
 
     /** The French template of [code], or null when it is unknown. */

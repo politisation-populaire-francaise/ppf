@@ -39,6 +39,7 @@ import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.identity.PhraseLanguage
 import org.politisationpopulairefrancaise.core.identity.RecoveryPhrase
+import org.politisationpopulairefrancaise.ui.agir.security.AppLockSetupStep
 import org.politisationpopulairefrancaise.ui.agir.security.DeviceSecurityCard
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.InfoBox
@@ -169,7 +170,14 @@ fun MySpaceScreen(
                 }
                 is AccountUiState.Creating -> CreatingCard(session, state, windowClass)
                 is AccountUiState.Restoring -> RestoringCard(session, state)
-                is AccountUiState.Ready -> ReadyCards(session, state, windowClass, mailbox, notifications)
+                // Right after the account arrives on this device: « Protéger PPF sur cet appareil » first (M33, D-082).
+                is AccountUiState.Ready -> if (session.lockStepPending) {
+                    PpfCard(Modifier.fillMaxWidth()) {
+                        AppLockSetupStep(onDone = session::lockStepDone, onSkip = session::lockStepDone)
+                    }
+                } else {
+                    ReadyCards(session, state, windowClass, mailbox, notifications)
+                }
             }
             // The lock, the hidden content and the quick erase of this device (M33), with or without an account.
             DeviceSecurityCard()

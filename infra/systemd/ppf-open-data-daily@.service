@@ -1,4 +1,5 @@
-# Imports the parliamentary open data of one environment (%i), every day (Assemblée nationale, Sénat).
+# Imports the parliamentary open data of one environment (%i), every day (Assemblée nationale, Sénat,
+# presentations of the presidential election, application of the laws).
 # Installed by infra/scripts/bootstrap-server.sh; enabled per environment once its import key exists.
 [Unit]
 Description=PPF: import the parliamentary open data (daily, %i)
@@ -8,4 +9,4 @@ Requires=docker.service
 
 [Service]
 Type=oneshot
-ExecStart=/usr/local/sbin/ppf-open-data-import %i --only an,senat
+ExecStart=/usr/local/sbin/ppf-open-data-import %i --only an,senat,cc,an-barometre

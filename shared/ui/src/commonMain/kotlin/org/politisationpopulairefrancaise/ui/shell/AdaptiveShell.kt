@@ -69,6 +69,7 @@ import org.politisationpopulairefrancaise.ui.endirect.EnDirectScreen
 import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.VoirScreen
 import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentState
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertCodes
 import org.politisationpopulairefrancaise.ui.voir.parlement.ParliamentWeekSlot
 import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentState
 import org.politisationpopulairefrancaise.ui.voir.parlement.rememberParliamentWeekState
@@ -149,6 +150,7 @@ import org.politisationpopulairefrancaise.ui.decider.DeciderState
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
+import org.politisationpopulairefrancaise.core.social.CommunauteDeviceData
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.notifications.NotificationCenterScreen
@@ -223,8 +225,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val accountSession = rememberAccountSession(dependencies.identityStore, remote = dependencies.remote, onSignOut = {
         voting.forget()
         contentLibrary.clearFollowed()
-        messaging.forgetAll()
-        groupsLibrary.clearMemberships()
+        // Awaited to the end: the conversations and the joined rooms are really gone when the keys are.
+        messaging.forgetAllAndWait()
+        groupsLibrary.clearMembershipsAndWait()
         agendaLibrary.forgetUser()
         callsLibrary.clearResponses()
         // The notifications go back to the most protective settings and the server forgets the wake-ups.
@@ -251,6 +254,13 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // AG-63 « Mes proches à mobiliser »: the private list of relatives, on the device only; « Effacer mes clés » erases it too.
     val proches = rememberProchesState(dependencies, accountSession)
     RegisterErasable(dependencies, ProchesState.ERASABLE_ID) { proches.eraseFromDevice() }
+    // Communauté (S-44): the messages and checked contacts, the joined rooms, the notifications and push registrations.
+    dependencies.database?.let { database ->
+        val communaute = remember(database) { CommunauteDeviceData(database) }
+        RegisterErasable(dependencies, communaute.messaging)
+        RegisterErasable(dependencies, communaute.groups)
+        RegisterErasable(dependencies, communaute.notifications)
+    }
     // « Comprendre » (S-44): progress of the courses, chosen commune and directory packages, department packages of the territories.
     dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
     // Décider: the voting tokens, pending requests and choices of the device (S-44).
@@ -272,6 +282,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         voirState.forgetFollows()
         revendicationViews.reset()
         voirRequests.forget()
+        parliamentState.myVotes.forgetOnScreen()
+        parliamentState.sponsorships.forgetOnScreen()
+        parliamentState.application.forgetOnScreen()
     }
     // "Décider": the open page and the follows survive a visit to another space.
     val deciderState = rememberDeciderState(dependencies)
@@ -331,6 +344,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     navigate(Space.MESSAGES)
                 } else if (entry.target == AccountAlerts.MY_SPACE_TARGET) {
                     navigate(Space.MON_ESPACE)
+                } else if (entry.target == VoteAlertCodes.TARGET) {
+                    // « Mes élus ont voté » (VO-34), in the Parliament of « Voir ».
+                    parliamentState.openMyVotes()
+                    navigate(Space.VOIR)
                 }
             }
             val bell = notificationCenter?.let { center -> Bell(center.unreadCount) { centerOpen = true } }
@@ -377,7 +394,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
             }
             when {
                 // On phones the centre takes the whole screen, with its back button.
-                windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier)
+                windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier.fullWindowSafeArea())
                 windowClass.width == WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, bell, content)
                 windowClass.width == WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, bell, centerScreen ?: content)
                 else -> ExpandedShell(selected, navigate, account, bell, centerScreen ?: content)
@@ -506,7 +523,7 @@ private fun CompactShell(
         modifier = Modifier.testTag(ShellTags.SHELL_COMPACT),
         scrimColor = palette.scrim,
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = palette.surface0, drawerContentColor = palette.ink) {
+            ModalDrawerSheet(drawerContainerColor = palette.surface0, drawerContentColor = palette.ink, windowInsets = menuInsets) {
                 PillarsMenu(selected = selected, onSelect = {
                     onSelect(it)
                     scope.launch { drawerState.close() }
@@ -526,8 +543,9 @@ private fun CompactShell(
                 )
             },
             bottomBar = { BottomBar(selected, onSelect) },
+            contentWindowInsets = phoneContentInsets,
         ) { padding ->
-            content(Modifier.padding(padding))
+            content(Modifier.betweenBarsSafeArea(padding))
         }
     }
 }
@@ -537,7 +555,7 @@ private fun BottomBar(selected: Space, onSelect: (Space) -> Unit) {
     val palette = PpfTheme.palette
     Column(Modifier.background(palette.surface0)) {
         HorizontalDivider(color = palette.border)
-        Row(Modifier.fillMaxWidth().height(76.dp).selectableGroup().testTag(ShellTags.BOTTOM_BAR)) {
+        Row(Modifier.fillMaxWidth().bottomBarSafeArea().height(76.dp).selectableGroup().testTag(ShellTags.BOTTOM_BAR)) {
             quickAccessSections.forEach { section ->
                 BottomBarItem(section, section.space == selected, { onSelect(section.space) }, Modifier.weight(1f))
             }
@@ -592,6 +610,7 @@ private fun MediumShell(
                 contentColor = palette.inkMuted,
                 modifier = Modifier.testTag(ShellTags.NAV_RAIL).verticalScroll(rememberScrollState()),
                 header = { HelpButton(Modifier.padding(top = 8.dp).width(68.dp), stacked = true) },
+                windowInsets = sideNavigationInsets,
             ) {
                 Spacer(Modifier.height(8.dp))
                 quickAccessSections.forEach { section -> RailItem(section, selected, onSelect) }
@@ -599,7 +618,7 @@ private fun MediumShell(
                 pillarSections.forEach { section -> RailItem(section, selected, onSelect) }
             }
             VerticalDivider(color = palette.border)
-            content(Modifier.weight(1f).fillMaxHeight())
+            content(Modifier.weight(1f).fillMaxHeight().besideNavigationSafeArea())
         }
     }
 }
@@ -637,7 +656,7 @@ private fun ExpandedShell(
         Row(Modifier.weight(1f).fillMaxWidth()) {
             SideBar(selected, onSelect, Modifier.width(280.dp).fillMaxHeight().testTag(ShellTags.NAV_DRAWER))
             VerticalDivider(color = palette.border)
-            content(Modifier.weight(1f).fillMaxHeight())
+            content(Modifier.weight(1f).fillMaxHeight().besideNavigationSafeArea())
         }
     }
 }
@@ -646,7 +665,7 @@ private fun ExpandedShell(
 @Composable
 private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifier) {
     val palette = PpfTheme.palette
-    Column(modifier.background(palette.surface0)) {
+    Column(modifier.background(palette.surface0).sideNavigationSafeArea()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
             HelpButton(Modifier.padding(bottom = 12.dp), fullWidth = true)
             quickAccessSections.forEach { section ->
@@ -738,7 +757,7 @@ private fun TopBar(
     val palette = PpfTheme.palette
     Column(Modifier.background(palette.surface0)) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 8.dp),
+            modifier = Modifier.fillMaxWidth().topBarSafeArea().height(56.dp).padding(horizontal = 8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (onMenu != null) {
@@ -786,7 +805,7 @@ private fun DesktopTopBar(account: AccountUiState.Ready?, bell: Bell?, mySpaceSe
     val palette = PpfTheme.palette
     Column(Modifier.background(palette.surface0)) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(64.dp).padding(start = 24.dp, end = 16.dp),
+            modifier = Modifier.fillMaxWidth().topBarSafeArea().height(64.dp).padding(start = 24.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             Wordmark(Modifier.width(248.dp), large = true)

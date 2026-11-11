@@ -98,6 +98,12 @@ class VoirCatalog(
     val replies: List<RightOfReply>,
     /** Political parties, by name (accents, case and the [EXEMPLE] marker ignored), never by size. */
     val parties: List<PoliticalParty> = emptyList(),
+    /** « Transparence de PPF » (PP-01): the pages of the association itself, never among the blocks of the axes. */
+    val transparency: TransparencyPages = TransparencyPages(emptyList()),
+    /** « Nos victoires » (PP-03), newest first. */
+    val victories: List<Victory> = emptyList(),
+    /** The press releases of « Espace presse » (PP-04), newest first. */
+    val pressReleases: List<PressRelease> = emptyList(),
 ) {
     private val items: Map<ContentAddress, VoirItem> = buildMap {
         indicators.forEach { put(it.address, VoirItem.OfIndicator(it)) }
@@ -225,7 +231,8 @@ class VoirCatalog(
         /** The editorial types read here, to ask the local copy for them. */
         val TYPES: List<ArticleType> = listOf(
             ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE,
-            ArticleType.MOUVEMENT, ArticleType.DOSSIER, ArticleType.REPONSE, ArticleType.PARTI,
+            ArticleType.MOUVEMENT, ArticleType.DOSSIER, ArticleType.REPONSE, ArticleType.PARTI, ArticleType.TRANSPARENCE,
+            ArticleType.VICTOIRE, ArticleType.COMMUNIQUE,
         )
 
         /**
@@ -243,6 +250,9 @@ class VoirCatalog(
                 dossiers = latest.mapNotNull(VoirDossier::from).sortedBy { FrenchText.fold(it.title) },
                 replies = latest.mapNotNull(RightOfReply::from),
                 parties = latest.mapNotNull(PoliticalParty::from).sortedBy { FrenchText.fold(it.name.removePrefix(EXAMPLE_MARKER)) },
+                transparency = TransparencyPages(latest.mapNotNull(TransparencyEntry::from)),
+                victories = latest.mapNotNull(Victory::from).sortedWith(Victory.ORDER),
+                pressReleases = latest.mapNotNull(PressRelease::from).sortedWith(PressRelease.ORDER),
             )
         }
     }

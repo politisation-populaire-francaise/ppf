@@ -20,7 +20,8 @@ import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
  *   tag whose role (fourth element, as in `["a","30023:<pubkey>:<d>","",<role>]`) is among
  *   [VOIR_PERSON_ROLES], and none of the tags [VOIR_SENSITIVE_TAGS].
  * - Every other use: the service requires no double validation (one approval for a human use, none for
- *   an automatic one). Other poles may add their own rule here later; each use is listed, so that a new
+ *   an automatic one). For [SigningUse.GROUPS_TAKEOVER] (D-144) the two persons are the author, always
+ *   named ([SigningUse.AUTHOR_REQUIRED_USES]), and the member who approves. Other poles may add their own rule here later; each use is listed, so that a new
  *   use cannot be added without deciding its rule. A new rule is a change of the contract.
  */
 object DoubleValidation {
@@ -47,6 +48,8 @@ object DoubleValidation {
         SigningUse.EDITORIAL_VOIR -> !isOrdinaryVoir(event)
         SigningUse.EDITORIAL_COMPRENDRE, SigningUse.REVENDICATIONS_STATUS, SigningUse.AGIR_ORGANISATIONS, SigningUse.DECIDER_PACTE,
         SigningUse.ARCHIVES_TIMESTAMPS, SigningUse.OPENDATA_INDEX, SigningUse.DECIDER_URN_CLOSURE -> false
+        // D-144: one approval, and the author (the member who asked in the queue) always named and never approving.
+        SigningUse.GROUPS_TAKEOVER -> false
     }
 
     private fun isOrdinaryVoir(event: UnsignedEvent): Boolean {

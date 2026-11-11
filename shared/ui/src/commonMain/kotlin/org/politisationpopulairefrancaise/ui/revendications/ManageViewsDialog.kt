@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -37,6 +36,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.PpfPrimaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
+import org.politisationpopulairefrancaise.ui.components.safeAreaBottomPadding
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.rv_add_view
@@ -183,7 +183,7 @@ fun ManageViewsDialog(
 
         HorizontalDivider(color = palette.border)
         Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).then(if (compact) Modifier.navigationBarsPadding() else Modifier),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp).then(if (compact) Modifier.safeAreaBottomPadding() else Modifier),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             PpfTextButton(

@@ -123,6 +123,9 @@ class TestMember(val account: String, val uses: Set<SigningUse>, val validFrom: 
     fun approve(use: SigningUse, event: UnsignedEvent, origin: String = TEST_ORIGIN): PasskeyAssertion = passkey.approve(use, event, origin)
 }
 
+/** The author of the drafts of the tests: an account of the editorial team that is not in the team list. */
+val WRITER: DraftAuthor = DraftAuthor(account = "redaction-exemple")
+
 /** A service in a temporary data directory, its root key and a team, all fictional. */
 class SignerFixture {
     val dir: Path = Files.createTempDirectory("ppf-signer-test")
@@ -206,11 +209,17 @@ class SignerFixture {
 
     fun request(use: SigningUse, event: UnsignedEvent): SignRequest = SignRequest(use.id, EventDraft.of(event))
 
-    fun draft(use: SigningUse, event: UnsignedEvent, double: Boolean = false, author: DraftAuthor? = null): DraftRequest =
+    /**
+     * A draft; an editorial use names its author (D-142), by default [WRITER], who is not in the team list:
+     * the tests that check a missing author pass `null` explicitly.
+     */
+    fun draft(use: SigningUse, event: UnsignedEvent, double: Boolean = false, author: DraftAuthor? = defaultAuthor(use)): DraftRequest =
         DraftRequest(use.id, EventDraft.of(event), double, author)
 
+    fun defaultAuthor(use: SigningUse): DraftAuthor? = if (use in SigningUse.AUTHOR_REQUIRED_USES) WRITER else null
+
     /** Submits the draft of [event] and checks that it is known. */
-    fun submit(service: SignerService, use: SigningUse, event: UnsignedEvent, double: Boolean = false, author: DraftAuthor? = null): DraftOutcome.Submitted =
+    fun submit(service: SignerService, use: SigningUse, event: UnsignedEvent, double: Boolean = false, author: DraftAuthor? = defaultAuthor(use)): DraftOutcome.Submitted =
         assertIs<DraftOutcome.Submitted>(service.submitDraft(draft(use, event, double, author)), "expected the draft to be accepted")
 
     /** Records the approval of [member] (their main passkey) and checks that it is recorded. */

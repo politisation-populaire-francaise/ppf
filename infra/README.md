@@ -53,8 +53,19 @@ Tout ce qui sert à faire tourner la plateforme est décrit ici, en code, pour p
 | `/srv/ppf/<environnement>/.env`, `secrets/` | Réglages et mots de passe de la base (générés sur place) | root, 0600/0400 |
 | `/srv/ppf/<environnement>/releases/<commit>` | Fichiers `infra/` du commit déployé (5 derniers gardés pour revenir en arrière) | root |
 | `/srv/ppf/<environnement>/history` | Date, empreinte et commit de chaque déploiement | root |
+| `/srv/ppf/<environnement>/decider_photos` | Photos officielles des candidats des comparateurs (« Décider », DE-16), nommées par leur empreinte SHA-256, montées en lecture seule dans le serveur (`PPF_DECIDER_PHOTOS_DIR`) | root, 0755 (fichiers 0644) |
 | `/srv/ppf/proxy/conf` | Caddyfile et sites déployés, montés dans Caddy | root |
 | `/etc/wireguard/` | Clés et configuration du tunnel | root, 0600 |
+
+## Photos des comparateurs
+
+Le serveur sert une photo à `GET /api/v1/decider/photos/<empreinte>` seulement si le fichier porte l'empreinte SHA-256 de ses octets, pèse 512 Ko au plus et finit par `.jpg`, `.png` ou `.webp` ; sinon il répond 404 et l'application n'affiche aucune photo de la fiche (tout ou rien, `docs/integration/comparateur-2027.md`, section 11). L'équipe prépare chaque photo sur son ordinateur (cadrage carré de 400 pixels, fond uni, métadonnées retirées), puis la dépose sur le serveur par SSH :
+
+```
+sudo install -m 0644 -o root -g root photo.jpg /srv/ppf/<environnement>/decider_photos/"$(sha256sum photo.jpg | cut -c1-64)".jpg
+```
+
+L'empreinte affichée par `sha256sum photo.jpg` est celle à inscrire dans la fiche signée du comparateur (étiquette `ppf-photo`, `docs/FORMATS.md`). Une photo remplacée change d'empreinte, donc de nom : l'ancienne reste servie aux fiches signées qui la citent. Durée de conservation : celle du registre des données (`docs/REGISTRE_DONNEES.md`, photo officielle d'un candidat).
 
 ## Circuit de mise en ligne
 

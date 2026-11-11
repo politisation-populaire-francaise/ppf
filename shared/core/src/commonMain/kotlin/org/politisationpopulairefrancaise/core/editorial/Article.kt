@@ -82,6 +82,21 @@ enum class ArticleType(val tagValue: String) {
      * demands, calls and chronology it concerns; read by `core.agir.followups.FollowUp`.
      */
     SUITE("suite"),
+
+    /**
+     * A page of « Transparence de PPF » (M34, PP-01, D-104): an instance, an important decision, the annual
+     * accounts or a report of moderation and claims, read by core.voir.TransparencyEntry.
+     */
+    TRANSPARENCE("transparence"),
+
+    /**
+     * A victory of the movement (M34, PP-03): a commitment kept, a demand met, a law changed, with its sources,
+     * read by core.voir.Victory.
+     */
+    VICTOIRE("victoire"),
+
+    /** A press release of PPF (M34, PP-04), read by core.voir.PressRelease. */
+    COMMUNIQUE("communique"),
     ;
 
     companion object {

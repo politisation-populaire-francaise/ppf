@@ -43,6 +43,20 @@ Si le téléphone refuse avec un message sur un **conflit de package** (signatur
 - Le mode sombre du téléphone est respecté (Paramètres, Affichage, Thème sombre).
 - Avec TalkBack activé (Paramètres, Accessibilité), chaque bouton est annoncé par son nom.
 
+### Vérifier que les barres ne se chevauchent plus (ajouté le 11 novembre 2026)
+
+Depuis Android 15, une application occupe tout l'écran, y compris sous la barre d'état du téléphone (l'heure, la batterie) et sous sa barre de navigation (les trois boutons, ou le trait des gestes). C'est donc à l'application de laisser ces zones libres : c'est ce qui manquait, et ce qui est corrigé (D-180). Je n'ai pu le vérifier que sur des téléphones simulés : votre essai sur un vrai Galaxy compte. Cinq minutes suffisent.
+
+1. **En portrait** : ouvrez l'application. En haut, le bouton du menu, le nom, AIDE, la cloche et l'avatar sont entièrement sous l'heure et la batterie, rien ne se superpose. En bas, les cinq entrées (Fil, En direct, Carte, Messages, Revendications) sont entièrement au-dessus des trois boutons du téléphone. La couleur des deux barres va jusqu'au bord de l'écran, sans bande d'une autre couleur.
+2. **Dans chaque espace** (Fil, En direct, Agir, Décider, Comprendre, Mon espace, Revendications) : faites défiler jusqu'en bas ; la dernière ligne se lit en entier au-dessus de la barre du bas. Ouvrez aussi le menu (bouton en haut à gauche) : son premier et son dernier texte sont entièrement visibles.
+3. **En paysage** (téléphone tourné, d'un côté puis de l'autre) : la colonne d'icônes et le haut de l'écran ne passent ni sous le poinçon de la caméra ni sous les trois boutons, qui se placent alors sur le côté.
+4. **Clavier ouvert** : dans Revendications, touchez « Proposer une revendication », puis le premier champ. Ce que vous écrivez reste visible au-dessus du clavier, et vous pouvez faire défiler jusqu'au bouton d'envoi. Même essai dans Messages (zone d'écriture d'une conversation) et dans Mon espace (« J'ai déjà un compte »).
+5. **Feuilles et fenêtres** : le bouton AIDE, puis, dans Revendications, « Filtres » et « Personnaliser ». Leur bouton de fermeture est sous l'heure, leurs boutons du bas au-dessus des trois boutons du téléphone, sans grand vide entre les deux.
+6. **Mode sombre**, sans fermer l'application (Paramètres, Affichage, Sombre) : l'heure, la batterie et les trois boutons deviennent clairs sur fond sombre et restent lisibles ; revenez en clair, ils redeviennent sombres.
+7. **Navigation par gestes**, si vous voulez l'essayer (Paramètres, Affichage, Barre de navigation) : le trait du bas ne touche pas les libellés de la barre du bas.
+
+Si quelque chose se chevauche encore, envoyez-moi une capture d'écran avec le modèle du téléphone et le sens (portrait ou paysage).
+
 ### Tester le compte (ajouté le 5 novembre 2026)
 
 Le compte est le premier élément réel de la phase 1. Il ne sert encore à rien d'autre qu'à exister : aucun contenu ne peut être publié. Il vous permet de vérifier la création, la sauvegarde et la restauration. Faites le test avec un compte d'essai, pas avec un compte que vous voudriez garder.
@@ -681,7 +695,7 @@ La branche principale refuse toute modification directe, toute suppression et to
 La **préproduction** est la version d'essai de PPF sur Internet, sur le vrai serveur, mais fermée au public : seuls vos appareils, reliés par un tunnel WireGuard, peuvent l'ouvrir, et elle ne contient que des données fictives [EXEMPLE]. C'est là que vous validez chaque nouveauté avant qu'elle parte en production.
 
 - **Adresse** : https://preprod.politisation-populaire-francaise.org (tunnel actif, puis identifiant `equipe` et le mot de passe ci-dessus).
-- **Mise en place**, dans l'ordre : `docs/guides/liaison-github.md` (GitHub), `docs/guides/serveur-hostinger-kvm1.md` (achat et configuration du serveur, après votre accord sur le prix), `docs/guides/wireguard-preproduction.md` (vos deux appareils).
+- **Mise en place**, dans l'ordre : `docs/guides/liaison-github.md` (GitHub), `docs/guides/serveur-hostinger-kvm1.md` (achat et configuration du serveur, après votre accord sur le prix), `docs/guides/wireguard-preproduction.md` (vos deux appareils). Avant l'ouverture au public : `docs/guides/creer-cles-equipe.md` (clé de la boîte de l'équipe et clé de l'équipe de sécurité, douze mots sur papier, avec moi dans la discussion).
 - **Mises à jour** : dès qu'un changement est accepté dans la branche principale, GitHub fabrique une nouvelle version du serveur, la signe, et la préproduction l'installe d'elle-même dans les 10 minutes. Si la nouvelle version ne démarre pas correctement, le serveur revient seul à la précédente.
 - **L'APK d'essai** se connecte tout seul à la préproduction quand le tunnel est actif sur le téléphone : fil, messages, salons et propositions passent alors par le vrai serveur, et deux téléphones peuvent échanger.
 - **La production** (le site public) ne reçoit une version qu'avec votre accord écrit, et seulement une version que vous avez vue tourner en préproduction.

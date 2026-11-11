@@ -358,6 +358,12 @@ class GroupsLibrary(
         scope.launch { persistMembership { it.clear() } }
     }
 
+    /** [clearMemberships], awaited to the end (the keys are being erased). */
+    suspend fun clearMembershipsAndWait() {
+        joined = emptySet()
+        persistMembership { it.clear() }
+    }
+
     /** Opens a room and fetches its new messages. */
     fun open(group: Group) {
         selected = group

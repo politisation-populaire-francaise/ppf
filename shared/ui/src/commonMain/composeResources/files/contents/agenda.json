@@ -51,7 +51,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'a pas eu lieu et ne correspond à aucune organisation réelle.\n\nIl montre à quoi ressemble une mobilisation passée dans l'agenda : elle reste consultable dans l'onglet « Passés ».",
-        "sig": "4fba6e112c7ad2d53f2eb8387e432c4cce1651f3790a2fff545007e029b6389cf687d60aabad69d21fdbe472a8a951a7ebf0fb44792d63f83516234222a10c59"
+        "sig": "93cf5ccd8886485763156fa5fa4955eb64f31682fcc31d553f499abd3df6f6b1d282190b315cbaac2af8909ab5922a935d2b030b41c28435b8b3ae5b70d5b776"
     },
     {
         "id": "192ba686e61f7e72c7c5f1920de29d8b0efc2790c60aee1b05bd686757a3981f",
@@ -111,7 +111,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle. Ne vous y rendez pas.\n\nIl montre à quoi ressemblera une mobilisation dans l'agenda : la date, l'heure, le lieu, le territoire et la description.\n\nAvant toute mobilisation, relisez la fiche pratique « Vos droits en manifestation », lisible sans réseau.",
-        "sig": "83b1d908de259126887e1d4f4beaa6ba94fcf4c09896e4dd284b5ab0249196b9585dde75b955f767238ca30f7520b78041f0e8f4b56450ceddd680a9f52e01fe"
+        "sig": "5294f4e3533af0e4d7a8a1730e8483427e07a14e56cdd26851c7dee798dda3b03f54bdb3d3c079a0d8d367f518205404b2a982cfe6bbae3076eea895b7eb0a1f"
     },
     {
         "id": "66d70bd3521af7184afb143980f7ee6944cdbfdff3ad51827bc36a22b3a60496",
@@ -171,7 +171,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nOrdre du jour fictif :\n- tour de parole sur la situation du quartier ;\n- propositions d'actions ;\n- vote à main levée et désignation de deux personnes chargées du compte rendu.",
-        "sig": "32719f0d0b5ebc22cd5b88a71e5fe114bee8e0d2f5b1217a20ac536e46ebf8a038e80de9fa6673b30c0f91e6e9dafa7158ce1ea01445f213c2101c86723d007b"
+        "sig": "5a920ba61c9684c1ed537ca9786807ab31e9cbee9cbd8a4813337b73fd8d19e5eafe879f6f4ce77251c123afd1317a608ea3987b1a814bd6041d1a0e0fea24c0"
     },
     {
         "id": "397a584ce2e364e54c6332d05f87a40dd1fb98059f34c64670b5abdef9d5e79d",
@@ -233,7 +233,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle. Ne vous y rendez pas.\n\nLe lien de cette fiche mène à une adresse réservée aux exemples, qui ne s'ouvre pas : il sert à montrer l'avertissement « Vous quittez PPF ».",
-        "sig": "e51bc652a07cd5714159304dab0e4372d8fcce5eebf7ea3bcf79f10d1ed647e27e1e9483de603ee8fdb1b822265a901a80bfb6e3cc24ff331defd8a6117a999f"
+        "sig": "3e1af505575dfbcc0a3a0dff1aa5fae867bfb8b7ae7d30c5b5cfb7610dde0d5ad7ac92c007053ccb0958f4dd2becd6e6c89df2f0842e1076dcd1a88798f8d96e"
     },
     {
         "id": "bcb92d927dc75cbb5848fb36e20a6260acd519abf9a0ef7f80160d1e4b14aa49",
@@ -287,7 +287,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : cette grève n'est appelée par aucune organisation réelle.\n\nUn événement de plusieurs jours apparaît à sa date de début, avec sa date de fin.",
-        "sig": "90f86513a7b150a5e83f40e14392e55e51b343aaaf742d13ffeaa9ccb2842099db04e36461f82b3f9ca5d08a1d925ec514d64de85b8885ab5d97f43e869fde8b"
+        "sig": "dd747779dbff5bede5b36030d320f7a25daf046eeb97d841764cc71ba1e6af316e45557ace6df6633b54acd2270d55aa2feb75447adce8459297a03abfde4fca"
     },
     {
         "id": "caaddc809ea42b42d2977755483479b98da874aa58b6886ab0c8098e42e255e9",
@@ -345,7 +345,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nIl montre la mention « Reporté ». Toute action annoncée sur PPF respecte la charte : aucune violence, ni contre les personnes, ni contre les biens.",
-        "sig": "97ce21b40540029ef3c4822ac824abb0c8a1204957156ad70b2be01c15547d0e7140a04bea66fab28c752216dc4198ee7dbea71a8f7f5f9237170503dcfae7d2"
+        "sig": "44b9e3d4b032198cf37831641ef2a87e48f782702ee3d7ecf06cdf75f4688a9b3407287a1d9fee80686f01bfa70ae99e6bcb80112235697165555a733f9a2721"
     },
     {
         "id": "cbdaadf91b6b51da34fc71ef6f84d59f55eedb841c8747767f86f696fabb729c",
@@ -403,7 +403,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nUn événement annulé reste visible avec la mention « Annulé » bien en évidence, pour que personne ne se déplace pour rien.",
-        "sig": "db1b997211e9e7a4ee51fa6c00e8b526405016be8222f655a29b3cb2e02ac131731fc3a6a40f31cf77bf43603b8779285bcdde224c43aeebc9c578c4fa58de22"
+        "sig": "91e81a0ff8bb1c546fd68f96a6757ace7dadc4c4f2212557720fd73e6448007f911e92bf51e9f21d83b923c67287712f160a0ff6ef294f4e922f6d52920286ef"
     },
     {
         "id": "68f6faa01e9b0a36b1fca20a1a1727f85efc645e643564930615b69c44381ab5",
@@ -457,7 +457,7 @@
             ]
         ],
         "content": "[EXEMPLE] Événement fictif de démonstration : il n'aura pas lieu et ne correspond à aucune organisation réelle.\n\nSalle accessible en fauteuil roulant (exemple de précision utile à donner dans la description).\n\nL'équipe éditoriale de PPF y annonce sa participation (réponse publique fictive, signée de sa clé) : elle sert à montrer la rubrique « Organisations participantes ».",
-        "sig": "caad2c7871de09a4c2deead80f7c7136d701b15dd91402b96d52428bb0b40604e73eb5152878a41f4103fabdea4cb712dda8e30dda66717c0c1b2fae0a4f4371"
+        "sig": "664a5039cdffc76e3f66ce5da17c86fe0795ec696a870747ef3a92c24eba7782266d3be5a5bd5e9c0c57c4ed60e930203402fde81944ecc2cebbc0ba8cd9b8da"
     },
     {
         "id": "a07974a1e0f7ddc8a76c5a5e233c903a4e4fd390a5b01520ecec675f69ef5dbf",
@@ -487,6 +487,6 @@
             ]
         ],
         "content": "[EXEMPLE] Participation fictive de démonstration.",
-        "sig": "3ef28564604c3ad2f9220303880807951aeadd3c5133d963a973de50445ec8491465969943139ffe98f698e46632b229441d6489c752c0af42c69e13a3e236f5"
+        "sig": "b668533e03ad7ff12e688c72f67f163c2a3f1fd7a4a443533ca97dd9dc7a8c792801b7cf3f1636105e4efb00c4696e3e9211de0b01affed97982bf21890fb9d1"
     }
 ]

@@ -66,6 +66,11 @@ class ParliamentStoreTest {
                 // Added by version 13 (referential of territories, 12.sqm), absent at version 11.
                 driver.execute(null, "DROP TABLE territoire_package", 0)
                 // Added by version 14 (testimonies of Agir, 13.sqm), absent at version 11.
+                // Added by version 17 (alerts of Voir, 16.sqm), absent at version 11.
+                driver.execute(null, "DROP TABLE parliament_alert_option", 0)
+                driver.execute(null, "DROP TABLE parliament_alert_member", 0)
+                driver.execute(null, "DROP TABLE followed_word", 0)
+                driver.execute(null, "DROP TABLE parliament_ballot_seen", 0)
                 driver.execute(null, "DROP TABLE contact_verification", 0)
                 driver.execute(null, "DROP TABLE push_registration", 0)
                 driver.execute(null, "DROP TABLE notification_mark", 0)

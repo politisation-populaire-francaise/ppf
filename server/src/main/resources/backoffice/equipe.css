@@ -528,3 +528,21 @@ code {
   margin: 1rem 0;
   background: var(--surface-1);
 }
+
+/* Requests for the root (D-141): the QR code stays black on white with its quiet zone, whatever the theme. */
+.bo-qr-code svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  background: #ffffff;
+}
+
+.bo-wrap {
+  overflow-wrap: anywhere;
+  word-break: break-all;
+}
+
+.bo-fingerprint code {
+  font-family: ui-monospace, "Cascadia Mono", Consolas, monospace;
+  letter-spacing: 0.05em;
+}

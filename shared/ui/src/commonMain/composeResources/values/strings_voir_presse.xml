@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Espace presse » (M34, PP-04). -->
+<resources>
+    <string name="press_open">Espace presse : communiqués, kit média, chiffres</string>
+    <string name="press_title">Espace presse</string>
+    <string name="press_intro">Pour les journalistes, les chercheurs et les observateurs : les communiqués de PPF, de quoi nous nommer et nous montrer, des chiffres réutilisables avec leurs sources, et le contact presse.</string>
+    <string name="press_releases">Communiqués</string>
+    <string name="press_no_release">Aucun communiqué n’est encore publié.</string>
+    <string name="press_kit">Kit média</string>
+    <string name="press_kit_line">%1$s : %2$s</string>
+    <string name="press_kit_name">Nom</string>
+    <string name="press_kit_site">Site</string>
+    <string name="press_kit_colors">Couleurs</string>
+    <string name="press_kit_typeface">Police</string>
+    <string name="press_kit_icons">Icônes</string>
+    <string name="press_kit_license">Textes et images de PPF : licence CC BY 4.0 ; données : Licence Ouverte 2.0. Citez la source et la date.</string>
+    <string name="press_kit_state">PPF n’utilise jamais l’identité visuelle de l’État (logo officiel, bloc-marque) : merci de ne pas l’associer à nos contenus.</string>
+    <string name="press_figures">Chiffres réutilisables</string>
+    <string name="press_figures_text">Les jeux de données de PPF sont téléchargeables sur la page « Données ouvertes » du site, chacun avec sa source et sa licence. Chaque contenu se cite avec « Citer ce contenu ».</string>
+    <string name="press_dashboard">Tableau de bord du mouvement (sur le site)</string>
+    <string name="press_contact_title">Contact presse</string>
+    <string name="press_contact_text">Écrivez à l’équipe par le formulaire de contact de PPF, en choisissant « Journaliste ». Réponse visée sous %1$d jours. Aucun e-mail n’est demandé : vous suivez l’échange avec votre numéro et votre code.</string>
+</resources>

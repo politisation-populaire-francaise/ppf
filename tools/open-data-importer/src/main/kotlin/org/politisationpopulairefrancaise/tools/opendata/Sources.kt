@@ -35,6 +35,12 @@ interface ImportSources : AutoCloseable {
     fun senatDosleg(): EntrySource
     /** History: `ODSEN_HISTOGROUPES.csv`, the groups of the senators over time. */
     fun senatHistoGroups(): InputStream
+    /** The presentations of the presidential election published by the Conseil constitutionnel (VO-37); null when there is none to read this time. */
+    fun sponsorships(): InputStream? = null
+    /** The application of the laws (VO-36): the file of the laws of the baromètre of the Assemblée nationale; null when there is none to read this time. */
+    fun applicationLaws(): InputStream? = null
+    /** The application of the laws (VO-36): the file of the measures of the same baromètre. */
+    fun applicationMeasures(): InputStream? = null
     override fun close() {}
 }
 
@@ -59,6 +65,9 @@ class ExampleSources(private val accept: (String) -> Boolean = { true }) : Impor
     override fun anHistoryBallots(legislature: Int): EntrySource = entries("an-historique/scrutins-$legislature")
     override fun senatDosleg(): EntrySource = entries("senat-historique/dosleg")
     override fun senatHistoGroups(): InputStream = if (accept("senat-historique/ODSEN_HISTOGROUPES.csv")) ExampleFiles.open("senat-historique/ODSEN_HISTOGROUPES.csv") else ByteArray(0).inputStream()
+    override fun sponsorships(): InputStream? = if (accept("cc/parrainages.json")) ExampleFiles.open("cc/parrainages.json") else null
+    override fun applicationLaws(): InputStream? = if (accept("an-barometre/lois.csv")) ExampleFiles.open("an-barometre/lois.csv") else null
+    override fun applicationMeasures(): InputStream? = if (accept("an-barometre/mesures.csv")) ExampleFiles.open("an-barometre/mesures.csv") else null
     override fun europarl(): EuroparlApi = JsonEuroparlApi { path, offset, _ ->
         if (offset > 0) return@JsonEuroparlApi null
         val file = "pe/" + examplePath(path)
@@ -83,7 +92,11 @@ class ExampleSources(private val accept: (String) -> Boolean = { true }) : Impor
  * hosts only ([ALLOWED_HOSTS]); redirections are not followed (a redirection elsewhere would leave
  * the list). Nothing is sent but the request itself: no cookie, no identifier.
  */
-class OfficialSources(private val http: Downloader = Downloader()) : ImportSources {
+class OfficialSources(
+    private val http: Downloader = Downloader(),
+    /** The data.gouv.fr dataset of the presentations of 2027 (`PPF_SPONSORSHIPS_DATASET`), null until the Conseil constitutionnel creates it. */
+    private val sponsorshipsDataset: String? = null,
+) : ImportSources {
     override val example: Boolean = false
     override val today: String = LocalDate.now(ZoneId.of("Europe/Paris")).toString()
     override val createdAt: Long = System.currentTimeMillis() / 1000
@@ -100,6 +113,31 @@ class OfficialSources(private val http: Downloader = Downloader()) : ImportSourc
     }
     override fun senatDosleg(): EntrySource = ZipEntries(http.download(DOSLEG, folder.resolve("dosleg.zip")))
     override fun senatHistoGroups(): InputStream = Files.newInputStream(http.download(HISTOGROUPES, folder.resolve("histogroupes.csv")))
+
+    /**
+     * The newest JSON file of the dataset of the presentations: the API of data.gouv.fr gives its resources, the
+     * file comes from static.data.gouv.fr (both in [ALLOWED_HOSTS]); nothing is asked without a dataset.
+     */
+    override fun sponsorships(): InputStream? {
+        val dataset = sponsorshipsDataset?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+        if (!DATASET_ID.matches(dataset)) throw UnreadableSourceException("sponsorships: not a dataset identifier")
+        val answer = http.get("$DATA_GOUV_API$dataset/", throttle = false) ?: throw DownloadException("www.data.gouv.fr: no such dataset")
+        val resources = answer.use { lenientJson.parseToJsonElement(it.readBytes().decodeToString()) }["resources"].items()
+        val newest = resources
+            .filter { it["format"].text()?.lowercase() == "json" && it["url"].text()?.startsWith("https://static.data.gouv.fr/") == true }
+            .maxByOrNull { it["last_modified"].text().orEmpty() }
+            ?: throw UnreadableSourceException("sponsorships: no JSON file in the dataset")
+        return Files.newInputStream(http.download(newest["url"].text()!!, folder.resolve("parrainages.json")))
+    }
+
+    /**
+     * The application of the laws (VO-36): the two files of the baromètre of the Assemblée nationale, at their
+     * stable addresses (those of the dataset on data.gouv.fr, checked on 9 November 2026: HTTPS, no redirection),
+     * each with its own size cap.
+     */
+    override fun applicationLaws(): InputStream = Files.newInputStream(http.download(BAROMETER_LAWS, folder.resolve("barometre-lois.csv"), BAROMETER_LAWS_MAX_BYTES))
+    override fun applicationMeasures(): InputStream = Files.newInputStream(http.download(BAROMETER_MEASURES, folder.resolve("barometre-mesures.csv"), BAROMETER_MEASURES_MAX_BYTES))
+
     override fun europarl(): EuroparlApi = JsonEuroparlApi { path, offset, limit ->
         val separator = if ('?' in path) '&' else '?'
         http.get("$EUROPARL_API$path${separator}format=application%2Fld%2Bjson&offset=$offset&limit=$limit", throttle = true)
@@ -127,6 +165,17 @@ class OfficialSources(private val http: Downloader = Downloader()) : ImportSourc
         )
         const val DOSLEG = "https://data.senat.fr/data/dosleg/dosleg.zip"
         const val HISTOGROUPES = "https://data.senat.fr/data/senateurs/ODSEN_HISTOGROUPES.csv"
+
+        // The presentations of the presidential election (VO-37): the dataset of the Conseil constitutionnel on data.gouv.fr.
+        const val DATA_GOUV_API = "https://www.data.gouv.fr/api/1/datasets/"
+        val DATASET_ID = Regex("^[a-z0-9][a-z0-9-]{0,99}$")
+
+        // The application of the laws (VO-36): dataset « Données du baromètre de l'application des lois » (LexImpact,
+        // Licence Ouverte 2.0); 1.4 MB and 7.1 MB on 8 November 2026, capped well above their growth.
+        const val BAROMETER_LAWS = "https://barometre.assemblee-nationale.fr/barometre_application_lois_assemblee.csv"
+        const val BAROMETER_MEASURES = "https://barometre.assemblee-nationale.fr/barometre_application_mesures_assemblee.csv"
+        const val BAROMETER_LAWS_MAX_BYTES: Long = 16L * 1024 * 1024
+        const val BAROMETER_MEASURES_MAX_BYTES: Long = 64L * 1024 * 1024
     }
 }
 
@@ -158,10 +207,20 @@ class LocalOfficialSources(private val folder: Path) : ImportSources {
     override fun anHistoryBallots(legislature: Int): EntrySource = ZipEntries(single("scrutins-$legislature", ".zip"))
     override fun senatDosleg(): EntrySource = ZipEntries(single("dosleg", ".zip"))
     override fun senatHistoGroups(): InputStream = Files.newInputStream(single("histogroupes", ".csv"))
+    override fun sponsorships(): InputStream? = folder.resolve("cc").takeIf { Files.isDirectory(it) }?.let { Files.newInputStream(single("cc", ".json")) }
+    // `an-barometre/` holds the two files under their official names.
+    override fun applicationLaws(): InputStream? = folder.resolve("an-barometre/barometre_application_lois_assemblee.csv").takeIf { Files.isRegularFile(it) }?.let { Files.newInputStream(it) }
+    override fun applicationMeasures(): InputStream? = folder.resolve("an-barometre/barometre_application_mesures_assemblee.csv").takeIf { Files.isRegularFile(it) }?.let { Files.newInputStream(it) }
 }
 
 /** The only hosts the importer ever contacts, in `official` mode only. */
-val ALLOWED_HOSTS: Set<String> = setOf("data.assemblee-nationale.fr", "www.senat.fr", "data.senat.fr", "data.europarl.europa.eu")
+val ALLOWED_HOSTS: Set<String> = setOf(
+    "data.assemblee-nationale.fr", "www.senat.fr", "data.senat.fr", "data.europarl.europa.eu",
+    // The presentations of the presidential election (VO-37).
+    "www.data.gouv.fr", "static.data.gouv.fr",
+    // The application of the laws (VO-36), entry of infra/EGRESS.md agreed by the technical director on 9 November 2026.
+    "barometre.assemblee-nationale.fr",
+)
 
 /** HTTPS downloads from [ALLOWED_HOSTS], size-capped, without redirection. */
 class Downloader(
@@ -185,8 +244,8 @@ class Downloader(
             .build()
     }
 
-    /** Downloads [url] to [file] (at most [MAX_FILE_BYTES]). */
-    fun download(url: String, file: Path): Path {
+    /** Downloads [url] to [file] (at most [maxBytes], [MAX_FILE_BYTES] by default). */
+    fun download(url: String, file: Path, maxBytes: Long = MAX_FILE_BYTES): Path {
         val response = try {
             client.send(request(url), HttpResponse.BodyHandlers.ofInputStream())
         } catch (e: java.io.IOException) {
@@ -203,7 +262,7 @@ class Downloader(
                         val read = body.read(buffer)
                         if (read < 0) break
                         total += read
-                        if (total > MAX_FILE_BYTES) throw DownloadException("${URI.create(url).host}: file larger than $MAX_FILE_BYTES bytes")
+                        if (total > maxBytes) throw DownloadException("${URI.create(url).host}: file larger than $maxBytes bytes")
                         out.write(buffer, 0, read)
                     }
                 }
