@@ -1050,6 +1050,74 @@
         "sig": "039c2477a7d28906edbdad6b31d9f5f19291c361d6c4d8b7016f6a1b6abd4afb94dace08f5e9c1b24f61c73536199d4799c7697d531ed54674fe6a39fbff86e8"
     },
     {
+        "id": "46ea1034882a2f6ba9d9d8f67590044d1712e7f3164e079ca789bba080d62afa",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "glossaire-comparution-immediate"
+            ],
+            [
+                "title",
+                "Comparution immédiate"
+            ],
+            [
+                "summary",
+                "Procédure qui permet de juger une personne le jour même de la fin de sa garde à vue, pour un délit ; elle peut refuser et demander un délai."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "glossaire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "justice"
+            ],
+            [
+                "t",
+                "droits"
+            ],
+            [
+                "ppf-variant",
+                "comparution immédiate"
+            ],
+            [
+                "ppf-variant",
+                "comparutions immédiates"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-garde-a-vue",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:comparution-immediate",
+                "",
+                "lie"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:garde-a-vue",
+                "",
+                "lie"
+            ]
+        ],
+        "content": "La comparution immédiate permet au procureur de faire juger tout de suite par le tribunal correctionnel une personne soupçonnée d'un délit puni d'au moins deux ans de prison, ou de six mois en cas de flagrance (code de procédure pénale, article 395).\n\nLa personne ne peut être jugée le jour même que si elle est d'accord, en présence d'un avocat (article 397). Si elle refuse, l'audience a lieu entre quatre et dix semaines plus tard (article 397-1) ; en attendant, elle peut être laissée libre, placée sous contrôle judiciaire ou en détention provisoire.\n\nExemple : après une garde à vue, une personne refuse d'être jugée le jour même pour avoir le temps de réunir ses témoins.\n\n## Sources\n\n- [Code de procédure pénale, articles 393 à 397-7](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006071154/LEGISCTA000006182903/), consultés le 2026-11-11\n- [Justice.fr, « Comparution immédiate »](https://www.justice.fr/fiche/comparution-immediate), consulté le 2026-11-11\n",
+        "sig": "57472928763d6b3998a8874787da20c011cc90d6bf4d045a3ac2ce205a9404170797d0bbcbbca094d645f44ac6f958c7ad49a6f7abe76f4ecd3970a7a5e7fc73"
+    },
+    {
         "id": "96326c336c588eb79c6052fc6a0486e37c099f2cbd6d618cba12de714d163e86",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1794225600,
@@ -2900,6 +2968,86 @@
         ],
         "content": "Le droit de grève est reconnu par le préambule de la Constitution de 1946 : il « s'exerce dans le cadre des lois qui le réglementent ».\n\nDans le secteur privé, une grève suppose trois conditions :\n- un arrêt total du travail ;\n- un arrêt collectif, en principe d'au moins deux salariés ;\n- des revendications professionnelles connues de l'employeur, comme les salaires ou les conditions de travail.\n\nAucun préavis n'est exigé dans le privé, et il n'est pas nécessaire d'être syndiqué pour faire grève. Dans les services publics, en revanche, un préavis est obligatoire.\n\nFaire grève suspend le contrat de travail sans le rompre. La retenue sur le salaire doit être proportionnelle à la durée de l'arrêt. Un salarié ne peut être ni sanctionné ni licencié pour avoir fait grève, sauf faute lourde, comme une participation personnelle et active à des violences ou à des dégradations (Code du travail, article L2511-1).\n\nCertains agents publics n'ont pas le droit de grève, comme les fonctionnaires actifs de la police nationale, les militaires ou les magistrats judiciaires.\n\nExemple : les salariés d'un entrepôt arrêtent ensemble le travail pour demander une hausse des salaires. Ils n'ont pas à prévenir à l'avance, mais l'employeur doit connaître leurs revendications au moment de l'arrêt.\n\nÀ ne pas confondre avec une manifestation, qui est un rassemblement sur la voie publique : on peut faire grève sans manifester, et manifester sans faire grève.\n\n## Sources\n\n- [Préambule de la Constitution du 27 octobre 1946 (alinéa 7)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946), consulté le 2026-11-09\n- [Code du travail, articles L2511-1 à L2512-5 (exercice du droit de grève)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006160748/), consulté le 2026-11-09\n- [Service-public.gouv.fr, « Droit de grève d'un salarié du secteur privé »](https://www.service-public.gouv.fr/particuliers/vosdroits/F117), consulté le 2026-11-09\n- [Service-public.gouv.fr, « Droit de grève dans la fonction publique »](https://www.service-public.gouv.fr/particuliers/vosdroits/F499), consulté le 2026-11-09\n",
         "sig": "f68b7979e2b6841858e85ddb0b6101bd0a337c825a77b5929b3504839bdf9de61eb6132dcb6ecd244a3b8f3749afd2abf9b5f1a3936d95c3ba461c2e9c52a482"
+    },
+    {
+        "id": "679b8a974010fea70ce6d2e377d5e5467ac5d545b7c359d97804d19790aeac22",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "glossaire-igpn"
+            ],
+            [
+                "title",
+                "IGPN"
+            ],
+            [
+                "summary",
+                "Inspection générale de la police nationale : service du ministère de l'Intérieur qui enquête sur les policiers, à la demande d'un magistrat ou de l'administration."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "glossaire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "police"
+            ],
+            [
+                "t",
+                "justice"
+            ],
+            [
+                "t",
+                "droits"
+            ],
+            [
+                "ppf-variant",
+                "IGPN"
+            ],
+            [
+                "ppf-variant",
+                "Inspection générale de la police nationale"
+            ],
+            [
+                "ppf-variant",
+                "IGGN"
+            ],
+            [
+                "ppf-variant",
+                "Inspection générale de la gendarmerie nationale"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-defenseur-des-droits",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:qui-controle-la-police",
+                "",
+                "lie"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:apres-une-blessure-en-manifestation",
+                "",
+                "lie"
+            ]
+        ],
+        "content": "L'IGPN, souvent appelée « police des polices », enquête sur les policiers à la demande des autorités judiciaires (procureur, juge d'instruction) ou administratives (ministre de l'Intérieur, directeur général de la police nationale, préfet de police). Pour les gendarmes, c'est l'Inspection générale de la gendarmerie nationale (IGGN).\n\nToute personne peut signaler en ligne à l'IGPN le comportement d'un policier ; ce signalement n'est pas une plainte (service-public.gouv.fr, F2546). Le procureur décide des poursuites, et la hiérarchie décide des sanctions disciplinaires.\n\nExemple : un procureur confie à l'IGPN l'enquête sur une plainte pour violences déposée contre un policier après une manifestation.\n\n## Sources\n\n- [Service-public.gouv.fr, « Litige avec les forces de l'ordre » (F2546)](https://www.service-public.gouv.fr/particuliers/vosdroits/F2546), consulté le 2026-11-11\n- [Assemblée nationale, question écrite n° 8450 (17e législature)](https://questions.assemblee-nationale.fr/dyn/17/questions/QANR5L17QE8450.pdf), consulté le 2026-11-11\n",
+        "sig": "885ff1aabca6ff113796e4d2c86b2e01daad946924676e615dd41c3fe285bc9f5770ee2d98ae4803f66a5d0f99f69de768fa35d6b56186003ff8871c050256ed"
     },
     {
         "id": "fb6cec44962a5c79b26b38532ee0b2fd40ee6a6ca8dff6e880f2527597aabb5e",
@@ -5086,6 +5234,84 @@
         "sig": "460224ac621c3cb22dc4190fe37b15550c8b8b8f27b66ca2feecf44b683285c28407e39ae6318b284f4ff14d7b86b66310917896b3e70857dafb4cee6beb8c93"
     },
     {
+        "id": "7e6ca028bb11256521c675290e0215b1725dec6af70af27f13456f50eb1eb9cb",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "glossaire-refere-liberte"
+            ],
+            [
+                "title",
+                "Référé-liberté"
+            ],
+            [
+                "summary",
+                "Procédure d'urgence devant le juge administratif contre une atteinte grave et manifestement illégale à une liberté fondamentale ; le juge statue en 48 heures."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "glossaire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "justice"
+            ],
+            [
+                "t",
+                "droits"
+            ],
+            [
+                "t",
+                "libertes"
+            ],
+            [
+                "ppf-variant",
+                "référé-liberté"
+            ],
+            [
+                "ppf-variant",
+                "référés-libertés"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-conseil-d-etat",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-tribunal-administratif",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:contester-une-decision-de-l-administration",
+                "",
+                "lie"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:declarer-une-manifestation",
+                "",
+                "lie"
+            ]
+        ],
+        "content": "Le référé-liberté permet de saisir en urgence le juge des référés du tribunal administratif quand une administration porte une atteinte grave et manifestement illégale à une liberté fondamentale : manifester, se réunir, s'exprimer, aller et venir. Le juge peut ordonner toute mesure nécessaire et se prononce dans les quarante-huit heures (code de justice administrative, article L521-2).\n\nSa décision peut être contestée devant le Conseil d'État dans les quinze jours ; il statue lui aussi en quarante-huit heures (article L523-1).\n\nExemple : un préfet interdit une manifestation la veille ; les organisateurs saisissent le juge du référé-liberté, qui peut suspendre l'interdiction.\n\n## Sources\n\n- [Code de justice administrative, article L521-2](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006449327), consulté le 2026-11-11\n- [Code de justice administrative, article L523-1](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006449334), consulté le 2026-11-11\n",
+        "sig": "23ccbaf0312de39a3ce4a8b91e35a3e9efc46048b1d1f02a993a7723417635fc9694500311b7409334323dc48d084e6dfe31a42226bfbbde127368378a1aee38"
+    },
+    {
         "id": "744d295cb5fc188f3e0ee0262d6231d81d0b88cd40c55dee3281d7119e7ba266",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1794225600,
@@ -6282,6 +6508,78 @@
         ],
         "content": "L'idée d'un État « total » apparaît dans l'Italie de Mussolini dans les années 1920. Le mot est ensuite utilisé pour comparer l'Allemagne nazie et l'Union soviétique de Staline. La philosophe Hannah Arendt l'a analysé dans « Les Origines du totalitarisme » (1951).\n\nLes analyses décrivent des traits communs : une idéologie officielle imposée comme une vérité, un parti unique de masse qui prend le contrôle de l'État, une police politique qui fait régner la terreur, le monopole des moyens d'information, et des ennemis désignés, comme les Juifs dans l'Allemagne nazie.\n\nExemple : dans l'Allemagne nazie, dès 1933, les syndicats sont supprimés, le parti nazi devient le seul parti autorisé, et la culture, l'éducation et la justice sont mises au pas.\n\nÀ ne pas confondre avec une dictature ordinaire : un régime autoritaire interdit l'opposition, un régime de ce type veut en plus contrôler les pensées et toute la vie sociale. Les historiens débattent de l'usage de ce mot, notamment pour comparer nazisme et stalinisme.\n\n## Sources\n\n- [Encyclopédie Larousse, « totalitarisme »](https://www.larousse.fr/encyclopedie/divers/totalitarisme/187119), consulté le 2026-11-09\n- [Aus Politik und Zeitgeschichte, Bundeszentrale für politische Bildung (agence fédérale allemande d'éducation civique), « Der Totalitarismusbegriff im Wandel » (21 septembre 2006)](https://www.bpb.de/shop/zeitschriften/apuz/29513/der-totalitarismusbegriff-im-wandel/), consulté le 2026-11-09\n- [Musée du mémorial de l'Holocauste des États-Unis (United States Holocaust Memorial Museum), Holocaust Encyclopedia, « Fondations de l'État nazi »](https://encyclopedia.ushmm.org/content/fr/article/foundations-of-the-nazi-state), consulté le 2026-11-09\n",
         "sig": "fa5c703a8a3e007aaabc391b3d00d382fa14946a19d78f8a661c78280137ae26e64f79eb7ef703701b2cb773d657b098966a68a44602bbd051448ec01e09e124"
+    },
+    {
+        "id": "8639da88f8d9c864edd44f3508e598ac6e7d48a32b2b4559824c25249e242c56",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "glossaire-tribunal-administratif"
+            ],
+            [
+                "title",
+                "Tribunal administratif"
+            ],
+            [
+                "summary",
+                "Juridiction qui juge les litiges entre les personnes et les administrations (État, collectivités, services publics) ; on la saisit en principe dans les deux mois."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "glossaire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "justice"
+            ],
+            [
+                "t",
+                "droits"
+            ],
+            [
+                "t",
+                "recours"
+            ],
+            [
+                "ppf-variant",
+                "tribunal administratif"
+            ],
+            [
+                "ppf-variant",
+                "tribunaux administratifs"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-conseil-d-etat",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-refere-liberte",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:contester-une-decision-de-l-administration",
+                "",
+                "lie"
+            ]
+        ],
+        "content": "Le tribunal administratif juge en premier ressort les litiges avec une administration : refus d'une prestation, sanction d'un agent public, arrêté d'un maire ou d'un préfet. Ses jugements peuvent être contestés devant la cour administrative d'appel, puis devant le Conseil d'État.\n\nOn le saisit en principe dans les deux mois qui suivent la notification ou la publication de la décision (code de justice administrative, article R421-1). L'avocat n'y est en principe pas obligatoire, et la requête peut être déposée en ligne avec Télérecours citoyens (service-public.gouv.fr, F2026).\n\nExemple : une personne conteste devant le tribunal administratif le refus de sa commune de lui prêter une salle pour une réunion publique.\n\n## Sources\n\n- [Code de justice administrative, article R421-1](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039807005), consulté le 2026-11-11\n- [Service-public.gouv.fr, « Recours devant le juge administratif » (F2026)](https://www.service-public.gouv.fr/particuliers/vosdroits/F2026), consulté le 2026-11-11\n",
+        "sig": "9887ad3fedef9d3ba53938b9bb3dbe9a8f316510b204f124e20f74b5f9a8dfabe1109a6aa5f2eebb508208e493a52445b1f8b52184b7cb024bfcdaffc75b9b56"
     },
     {
         "id": "78c365df169da88c8b54eb1a597cac208bf764a8efbaf5f1bc932e3da760991d",
