@@ -5,6 +5,8 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 ## Non publié
 
 ### Ajouté
+- Revendications sur le site (11 novembre 2026, D-152) : `/revendications`, celles du mouvement en tête, chacune avec qui la porte, qui la soutient publiquement et ses sources ; le vote reste dans l’application.
+- Rappels des pétitions officielles (11 novembre 2026) : une semaine avant la clôture et la veille, demandés sur la page de la pétition, gardés sur l’appareil.
 - Décider mis en avant (11 novembre 2026, MVP 1, jalon 3) : les trois fonctions phares (revendications, pétitions officielles, Pacte démocratique) en tête de Décider et sur « En direct ».
 - Mur des revendications allégé sur téléphone (11 novembre 2026) : Filtres, Tri et Personnaliser sur une ligne, « Proposer » à côté du nombre, explication repliée « Comment ça marche ? ».
 - Revendications déjà portées par le mouvement (11 novembre 2026, D-152, « Rédigé par l’IA ») : 15 revendications attribuées et sourcées, puce « Du mouvement », ouvertes au vote ; « Également portée par » pour toute revendication ; la démission du gouvernement, revendication citoyenne.
