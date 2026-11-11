@@ -80,3 +80,10 @@ compose.resources {
     packageOfResClass = "org.politisationpopulairefrancaise.ui.resources"
     generateResClass = always
 }
+
+// The interface tests check French texts, plurals included (in French, 0 takes the
+// singular): they run in French whatever the language of the machine (the CI is English).
+tasks.withType<Test>().configureEach {
+    systemProperty("user.language", "fr")
+    systemProperty("user.country", "FR")
+}
