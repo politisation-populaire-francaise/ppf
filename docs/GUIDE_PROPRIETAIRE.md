@@ -68,6 +68,20 @@ Quand je vous enverrai une version (seulement si vous la demandez), voici quoi r
 5. **Téléphone couché** : à gauche, une colonne avec les cinq entrées de la barre du bas, toutes visibles ; le reste est dans le menu.
 6. **Le logo officiel** (11 novembre 2026) : sur l'icône de l'application (fond blanc), à côté du nom en haut quand il y a la place, en tête du menu et en bas de Mon espace ; la présentation s'ouvre sur votre bannière à la Marianne. En mode discret (« Outils »), l'icône reste grise et neutre, même à l'ouverture.
 
+### Vérifier la version d'essai allégée (ajouté le 11 novembre 2026)
+
+Pour passer sous 30 Mo, la version d'essai est maintenant « réduite » à la compilation : l'outil retire le code qui ne sert pas. Une erreur de sa part ne se voit qu'en utilisant l'application, et je n'ai pas de téléphone pour l'essayer : votre essai compte. Dix minutes suffisent ; si un écran se ferme tout seul ou reste vide, notez lequel et envoyez-moi le rapport que l'application propose au lancement suivant.
+
+1. **Ouverture** : la présentation, puis En direct ; la barre du bas et la barre du haut.
+2. **Carte** : la carte s'affiche et se déplace au doigt.
+3. **Agir** : chaque rubrique s'ouvre (Se réunir, S'engager en politique, Fédérer, Témoigner, Solidarité, le simulateur du gréviste, les guides).
+4. **AIDE** : la feuille s'ouvre ; touchez un numéro (le téléphone propose d'appeler, vous pouvez annuler).
+5. **Compte** : dans Mon espace, créez un compte d'essai, notez la phrase de récupération, puis « Effacer mes clés ».
+6. **Messages** : ouvrez la messagerie et un salon.
+7. **Comprendre et Décider** : ouvrez une fiche pratique, une pétition, le mur des revendications.
+8. **Vote anonyme** : en bas de Mon espace, la ligne du contrôle du vote doit dire qu'il fonctionne sur ce téléphone.
+9. **Caméra** : dans le mode manifestation, la caméra protégée s'ouvre (accordez l'autorisation).
+
 ### Tester le compte (ajouté le 5 novembre 2026)
 
 Le compte est le premier élément réel de la phase 1. Il ne sert encore à rien d'autre qu'à exister : aucun contenu ne peut être publié. Il vous permet de vérifier la création, la sauvegarde et la restauration. Faites le test avec un compte d'essai, pas avec un compte que vous voudriez garder.
