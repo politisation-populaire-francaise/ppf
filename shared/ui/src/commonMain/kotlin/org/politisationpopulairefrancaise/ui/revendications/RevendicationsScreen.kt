@@ -91,6 +91,9 @@ import org.politisationpopulairefrancaise.ui.resources.revendication_argument
 import org.politisationpopulairefrancaise.ui.resources.revendication_back
 import org.politisationpopulairefrancaise.ui.resources.revendications_intro
 import org.politisationpopulairefrancaise.ui.resources.rv_how_it_works
+import org.politisationpopulairefrancaise.ui.resources.rv_movement_badge
+import org.politisationpopulairefrancaise.ui.resources.rv_movement_carried_by
+import org.politisationpopulairefrancaise.ui.resources.rv_movement_gathered
 import org.politisationpopulairefrancaise.ui.resources.rv_propose_short
 import org.politisationpopulairefrancaise.ui.resources.rv_how_it_works_closed
 import org.politisationpopulairefrancaise.ui.resources.rv_how_it_works_open
@@ -160,6 +163,8 @@ object RevendicationTags {
     const val CUSTOMIZE = "revendication-customize"
     const val PROPOSE = "revendication-propose"
     const val COUNT = "revendication-count"
+    /** « Du mouvement » and who carries it, on a demand gathered by the team (MVP 1). */
+    const val MOVEMENT = "revendication-movement"
     /** The one-line "Comment ça marche ?" that unfolds the explanation of the wall (MVP 1, lighter header). */
     const val HOW_IT_WORKS = "revendication-how-it-works"
     const val HOW_IT_WORKS_TEXT = "revendication-how-it-works-text"
@@ -256,7 +261,7 @@ fun RevendicationsScreen(
                 wall(Modifier.width(380.dp).fillMaxHeight())
                 VerticalDivider(color = PpfTheme.palette.border)
                 if (selected != null) {
-                    RevendicationDetail(selected, onBack = null, compact = false, Modifier.fillMaxSize(), own = library.ownDemand(selected), onOpenDemand = { library.openAddress(it) })
+                    RevendicationDetail(selected, onBack = null, compact = false, Modifier.fillMaxSize(), own = library.ownDemand(selected), onOpenDemand = { library.openAddress(it) }, movement = library.movementCarriers(selected))
                 } else {
                     Column(Modifier.fillMaxSize().padding(24.dp)) {
                         PageHeader(stringResource(Res.string.space_revendications), stringResource(Res.string.desc_revendications))
@@ -270,6 +275,7 @@ fun RevendicationsScreen(
                 Modifier.fillMaxSize(),
                 own = library.ownDemand(selected),
                 onOpenDemand = { library.openAddress(it) },
+                movement = library.movementCarriers(selected),
             )
             else -> wall(Modifier.fillMaxSize())
         }
@@ -481,6 +487,7 @@ private fun WallPage(
                     selected = library.selectedRevendication?.address == revendication.address,
                     own = library.ownDemand(revendication),
                     petition = library.decider.openPetitionFor(revendication.address, today),
+                    movement = library.movementCarriers(revendication),
                 )
             }
         }
@@ -652,6 +659,8 @@ fun RevendicationCard(
     own: OwnDemand? = null,
     /** The open official petition that carries it (D-115): pinned, its link on the card. */
     petition: Petition? = null,
+    /** Who carries it, when it is a demand of the movement gathered by the team (ContentLibrary.movementCarriers). */
+    movement: List<String>? = null,
 ) {
     val palette = PpfTheme.palette
     val example = revendication.title.startsWith(FeedPost.EXAMPLE_MARKER)
@@ -665,6 +674,10 @@ fun RevendicationCard(
         if (petition != null) {
             Spacer(Modifier.height(8.dp))
             PetitionLink(petition)
+        }
+        if (movement != null) {
+            Spacer(Modifier.height(8.dp))
+            MovementLine(movement)
         }
         Spacer(Modifier.height(10.dp))
         Text(revendication.title.removePrefix(FeedPost.EXAMPLE_MARKER).trim(), style = MaterialTheme.typography.titleSmall)
@@ -697,6 +710,25 @@ private fun PetitionLink(petition: Petition) {
 }
 
 /** The territory and the themes of a demand (localized labels; its raw topics when it has no known theme). */
+/**
+ * A demand already carried by the movement (MVP 1): « Du mouvement », who carries it, and that PPF only
+ * gathered it, with the help of an AI. The same for every such demand, in the order of the sources.
+ */
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun MovementLine(carriers: List<String>) {
+    val palette = PpfTheme.palette
+    Column(Modifier.testTag(RevendicationTags.MOVEMENT), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            PpfBadge(stringResource(Res.string.rv_movement_badge), BadgeStyle.BRAND, Modifier.align(Alignment.CenterVertically))
+            Text(stringResource(Res.string.rv_movement_gathered), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.align(Alignment.CenterVertically))
+        }
+        if (carriers.isNotEmpty()) {
+            Text(stringResource(Res.string.rv_movement_carried_by, carriers.joinToString(" ; ")), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+        }
+    }
+}
+
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
 private fun MetaRow(revendication: Article) {
@@ -755,6 +787,7 @@ private fun RevendicationDetail(
     modifier: Modifier,
     own: OwnDemand? = null,
     onOpenDemand: (String) -> Unit = {},
+    movement: List<String>? = null,
 ) {
     val palette = PpfTheme.palette
     val example = revendication.title.startsWith(FeedPost.EXAMPLE_MARKER)
@@ -780,6 +813,10 @@ private fun RevendicationDetail(
             }
             Spacer(Modifier.height(8.dp))
             MetaRow(revendication)
+            if (movement != null) {
+                Spacer(Modifier.height(8.dp))
+                MovementLine(movement)
+            }
             Text(
                 text = stringResource(Res.string.content_updated, CivilDate.fromEpochSeconds(revendication.updatedAt).toFrench()),
                 style = MaterialTheme.typography.bodyMedium,

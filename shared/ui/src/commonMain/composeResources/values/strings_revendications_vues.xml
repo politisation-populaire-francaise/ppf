@@ -48,6 +48,9 @@
     <string name="rv_how_it_works_closed">explication repliée</string>
     <string name="rv_propose">Proposer une revendication</string>
     <string name="rv_propose_short">Proposer</string>
+    <string name="rv_movement_badge">Du mouvement</string>
+    <string name="rv_movement_gathered">Relevé par PPF, rédigé par l’IA</string>
+    <string name="rv_movement_carried_by">Portée par : %1$s</string>
     <plurals name="rv_count">
         <item quantity="one">%1$d revendication</item>
         <item quantity="other">%1$d revendications</item>

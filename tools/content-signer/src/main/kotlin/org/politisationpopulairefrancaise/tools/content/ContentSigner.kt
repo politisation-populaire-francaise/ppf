@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.tools.content
 
+import org.politisationpopulairefrancaise.core.revendications.MovementDemands
 import kotlinx.coroutines.runBlocking
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
@@ -109,6 +110,16 @@ internal fun prepareBundles(content: Path, author: PublicKey): List<Bundle> {
             body = document.body,
             status = RevendicationStatus.fromTag(document.require("status")) ?: error("${document.name}: unknown status"),
             territory = document.metadata["territory"],
+            // A demand already carried by the movement (MVP 1): `from: mouvement` and who carries it,
+            // `carried_by: <a> ; <b>`, with its sources in the body (core.revendications.MovementDemands).
+            extraTags = when (document.metadata["from"]) {
+                null -> emptyList()
+                MovementDemands.FROM_MOVEMENT -> {
+                    require(document.body.contains("## Sources")) { "${document.name}: a demand of the movement lists its sources" }
+                    MovementDemands.tags(document.require("carried_by").split(" ; "))
+                }
+                else -> error("${document.name}: unknown from: ${document.metadata["from"]}")
+            },
         )
     }
 
