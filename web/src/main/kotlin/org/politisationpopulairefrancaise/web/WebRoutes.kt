@@ -8,6 +8,7 @@ import io.ktor.server.response.respondBytes
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
+import kotlinx.html.a
 import kotlinx.html.h1
 import kotlinx.html.h2
 import kotlinx.html.li
@@ -42,7 +43,12 @@ private val spaceDescriptions: Map<Space, String> = mapOf(
  * the pages of "Voir" replace the placeholder of the space; likewise the pages of "Comprendre"
  * with a [comprendre] source (D-091), which also serves the service worker of offline reading.
  */
-fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = null, decider: DeciderSource? = null) {
+fun Route.webRoutes(
+    voir: VoirSource? = null,
+    comprendre: ComprendreSource? = null,
+    decider: DeciderSource? = null,
+    agenda: AgendaSource? = null,
+) {
     staticResources("/static", "static")
     // Browsers ask for /favicon.ico at the root by themselves: the same file as in /static.
     get("/favicon.ico") {
@@ -55,6 +61,8 @@ fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = nu
     comprendre?.let { comprendrePages(it) }
     // The petitions and the democratic pact (Décider), with the names of the candidates from "Voir".
     decider?.let { deciderPages(it, voir) }
+    // « En direct », AIDE and the spaces that only exist in the application (the shell of the site, D-215).
+    shellPages(voir, comprendre, decider, agenda)
 
     get("/") {
         call.respondHtml {
@@ -66,7 +74,8 @@ fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = nu
                     ul {
                         Space.entries.forEach { space ->
                             li {
-                                +"${spaceLabels.getValue(space)} : ${spaceDescriptions.getValue(space)}"
+                                a(href = "/${space.id}") { +spaceLabels.getValue(space) }
+                                +" : ${spaceDescriptions.getValue(space)}"
                             }
                         }
                     }
@@ -75,7 +84,7 @@ fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = nu
         }
     }
 
-    Space.entries.filter { (voir == null || it != Space.VOIR) && (comprendre == null || it != Space.COMPRENDRE) && (decider == null || (it != Space.DECIDER && it != Space.REVENDICATIONS)) }.forEach { space ->
+    Space.entries.filter { it != Space.EN_DIRECT && it !in appSpaces }.filter { (voir == null || it != Space.VOIR) && (comprendre == null || it != Space.COMPRENDRE) && (decider == null || (it != Space.DECIDER && it != Space.REVENDICATIONS)) }.forEach { space ->
         get("/${space.id}") {
             call.respondHtml {
                 siteLayout(pageTitle = spaceLabels.getValue(space), currentSpace = space) {
