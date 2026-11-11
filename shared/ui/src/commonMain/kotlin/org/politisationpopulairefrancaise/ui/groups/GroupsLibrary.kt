@@ -583,12 +583,12 @@ class GroupsLibrary(
         sending = true
         try {
             val event = signer.sign(unsigned)
-            withContext(Dispatchers.Default) { store.store(event, pending = true) }
+            withContext(Dispatchers.Default) { store.storeSending(event) }
             messageDraft = ""
             join(group.id)
             reloadMessages(store, group)
             val remote = remote ?: return true
-            when (val result = remote.publish(event)) {
+            when (val result = store.sending(event) { remote.publish(event) }) {
                 is PublicationResult.Accepted -> withContext(Dispatchers.Default) { store.markPublished(event.id) }
                 is PublicationResult.Unavailable -> messagesStatus = GroupsStatus.Unreachable // kept pending for the next synchronization
                 is PublicationResult.Rejected -> {

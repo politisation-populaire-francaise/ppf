@@ -227,9 +227,9 @@ class CallsLibrary(
         if (call.author != signer.publicKey.hex || !call.isOpen || CallRules.checkReport(report).isNotEmpty()) return CallSendOutcome.FAILED
         val outcome = try {
             val event = signer.sign(call.closedVersion(report, clock()))
-            val stored = withContext(Dispatchers.Default) { store.store(event, pending = true) }
+            val stored = withContext(Dispatchers.Default) { store.storeSending(event) }
             if (stored != LocalStoreOutcome.STORED) return CallSendOutcome.FAILED
-            when (val result = remote?.publish(event) ?: PublicationResult.Unavailable()) {
+            when (val result = store.sending(event) { remote?.publish(event) ?: PublicationResult.Unavailable() }) {
                 is PublicationResult.Accepted -> {
                     withContext(Dispatchers.Default) { store.markPublished(event.id) }
                     if (result.heldForReview) {
@@ -319,7 +319,7 @@ class CallsLibrary(
 
     /** Publishes the user's calls kept on the device; false when the server could not be reached. */
     private suspend fun publishPending(store: LocalEventStore, remote: RemoteEvents): Boolean {
-        val pending = withContext(Dispatchers.Default) { store.pending().filter(Call::isCall) }
+        val pending = withContext(Dispatchers.Default) { store.pendingToSend().filter(Call::isCall) }
         for (event in pending) {
             when (val result = remote.publish(event)) {
                 is PublicationResult.Accepted -> {

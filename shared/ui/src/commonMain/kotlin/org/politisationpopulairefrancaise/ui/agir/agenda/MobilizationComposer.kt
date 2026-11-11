@@ -107,9 +107,9 @@ class MobilizationComposer(
             val unsigned = draft.toUnsignedEvent(signer.publicKey, now, Mobilization.newIdentifier(draft.title, random))
                 ?: return finish(MobilizationSendOutcome.FAILED)
             val event = signer.sign(collective?.let { CollectiveFormat.withCollective(unsigned, it.id) } ?: unsigned)
-            withContext(Dispatchers.Default) { store.store(event, pending = true) }
+            withContext(Dispatchers.Default) { store.storeSending(event) }
             sent = event
-            val result = remote?.publish(event) ?: PublicationResult.Unavailable()
+            val result = store.sending(event) { remote?.publish(event) ?: PublicationResult.Unavailable() }
             return finish(
                 when (result) {
                     is PublicationResult.Accepted -> {
