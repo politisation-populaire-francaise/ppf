@@ -11,15 +11,18 @@ import org.politisationpopulairefrancaise.server.backoffice.AuditActor
 import org.politisationpopulairefrancaise.server.backoffice.AuditEntry
 import org.politisationpopulairefrancaise.server.backoffice.AuditFilter
 import org.politisationpopulairefrancaise.server.backoffice.AuditLog
+import org.politisationpopulairefrancaise.server.elus.ElusStore
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.StoreOutcome
 import org.politisationpopulairefrancaise.server.legal.LegalRegister
 import java.io.ByteArrayOutputStream
 import java.io.PrintStream
+import java.time.Instant
 import java.sql.SQLException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -78,6 +81,22 @@ class DatabaseRolesTest {
         Database.checkMigrated(app)
         // The callback is idempotent.
         Database.runMigrations(TestDatabase.dataSource, ROLE)
+    }
+
+    @Test
+    fun theServerRoleCanStartAnImportOfTheOfficialsDirectory() {
+        superuser("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '$ROLE') THEN CREATE ROLE $ROLE NOLOGIN; END IF; END $$")
+        superuser("ALTER ROLE $ROLE LOGIN")
+        Database.runMigrations(TestDatabase.dataSource, ROLE)
+        val store = ElusStore(asRole(ROLE))
+        // What an interrupted import left in the staging is cleared at the start of the next one, by the server role.
+        val lock = assertNotNull(store.tryLock())
+        lock.use {
+            val first = store.begin(it, "role-test", Instant.parse("2026-11-11T20:00:00Z"))
+            val second = store.begin(it, "role-test", Instant.parse("2026-11-11T20:05:00Z"))
+            assertTrue(second > first)
+            it.connection.createStatement().use { statement -> statement.executeUpdate("DELETE FROM elus_import WHERE source = 'role-test'") }
+        }
     }
 
     @Test
