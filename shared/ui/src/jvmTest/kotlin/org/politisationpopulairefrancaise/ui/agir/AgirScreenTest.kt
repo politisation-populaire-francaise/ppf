@@ -53,6 +53,7 @@ class AgirScreenTest {
         onNodeWithText("Se mobiliser, s’organiser, s’entraider, témoigner, communiquer même sans Internet", substring = true).assertExists()
         // D-231: four headed sections, then the rubrics in preparation; the highlight of « S'engager » first.
         onNodeWithTag(EngagementFeaturedTags.CARD).performScrollTo().assert(hasClickAction())
+        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.KITS.id).performScrollTo().assert(hasClickAction())
         AgirRubrics.sections.forEach { section -> onNodeWithTag(AgirTags.SECTION + section.id).performScrollTo() }
         cards.forEach { id -> onNodeWithTag(AgirTags.RUBRIC + id).performScrollTo().assert(hasClickAction()) }
         onNodeWithTag(AgirTags.SOON_TITLE).performScrollTo()
