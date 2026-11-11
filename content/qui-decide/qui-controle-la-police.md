@@ -10,9 +10,7 @@ published_at: 2026-11-11
 updated_at: 2026-11-11
 ---
 ::: decideurs
-- etat | ministre | Le ministre de l’Intérieur dirige la police et la gendarmerie ; l’IGPN et l’IGGN, les « polices des polices », sont des services placés sous son autorité, et les sanctions disciplinaires sont décidées par la hiérarchie (code de la sécurité intérieure, articles L411-1 et L421-2 ; décret n° 2013-784 du 28 août 2013).
-- etat | autre | Le procureur de la République dirige les enquêtes sur les infractions commises par des policiers ou des gendarmes, comme pour tout le monde ; il décide des poursuites, et le tribunal juge (code de procédure pénale, articles 12 et 40-1). Le Défenseur des droits, autorité indépendante, veille à la déontologie des forces de sécurité (loi organique n° 2011-333, article 4).
-- etat | depute, senateur | Le Parlement vote les lois sur la police, contrôle le gouvernement et peut créer des commissions d’enquête.
+- etat | ministre, autre, depute, senateur | Le ministre de l’Intérieur dirige la police et la gendarmerie ; l’IGPN et l’IGGN, les « polices des polices », sont des services placés sous son autorité, et les sanctions disciplinaires sont décidées par la hiérarchie (code de la sécurité intérieure, articles L411-1 et L421-2 ; décret n° 2013-784 du 28 août 2013). Le procureur de la République dirige les enquêtes sur les infractions commises par des policiers ou des gendarmes, comme pour tout le monde ; il décide des poursuites, et le tribunal juge (code de procédure pénale, articles 12 et 40-1). Le Défenseur des droits, autorité indépendante, veille à la déontologie des forces de sécurité (loi organique n° 2011-333, article 4). Le Parlement vote les lois sur la police, contrôle le gouvernement et peut créer des commissions d’enquête.
 :::
 
 ::: en-bref
