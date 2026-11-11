@@ -27,6 +27,8 @@ import org.politisationpopulairefrancaise.server.agir.AgirConfig
 import org.politisationpopulairefrancaise.server.agir.AgirSetup
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
 import org.politisationpopulairefrancaise.server.agir.agendaSource
+import org.politisationpopulairefrancaise.server.agir.SlotSignupStore
+import org.politisationpopulairefrancaise.server.agir.slotApi
 import org.politisationpopulairefrancaise.server.agir.callsSource
 import org.politisationpopulairefrancaise.server.agir.organisationsSource
 import org.politisationpopulairefrancaise.server.agir.agirApi
@@ -370,6 +372,8 @@ fun Application.module(
     }
     // Mobilizations, calls and directory of the Agir space: rules, review queue, agenda (contract, section 5).
     val agirSpace = if (dataSource != null && repository != null) AgirSpace.start(this, dataSource, repository, policy, agir) else null
+    // Slots of volunteering of the calls (AP-11): encrypted signups for the organizer, counted by slot, erased after it.
+    val slotSignups = if (dataSource != null && repository != null && agirSpace != null) SlotSignupStore(dataSource, repository).also { it.startPurge(this, 1.hours, log) } else null
     // Testimonies: encrypted envelopes and files only, open when a folder is configured (docs/integration/agir-temoignages.md).
     val testimonySpace = if (dataSource != null && repository != null) TestimonySpace.start(this, dataSource, repository, policy, testimonies) else null
     // Cases of contact, tickets and claims (M30, D-140): unreadable envelopes and follow-up metadata, nightly retention.
@@ -601,6 +605,7 @@ fun Application.module(
             groupsApi(groups)
             revendicationsApi(proposals)
             agirApi(agirSpace)
+            slotApi(slotSignups)
             testimonyApi(testimonySpace, testimonies.config.maxFileBytes)
             contactApi(contactSpace) // Cases of contact and claims (M30): 503 contact_not_open without an inbox key.
             elusApi(elusService)

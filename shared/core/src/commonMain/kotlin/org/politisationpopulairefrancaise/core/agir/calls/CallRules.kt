@@ -116,11 +116,38 @@ object CallRules {
             }
         }
 
+        if (type in CallSlots.TYPES) slots(draft, now)
+
         // The match itself is never kept nor reported: only the field to correct.
         draft.texts().entries.firstOrNull { (_, text) -> text.length <= TEXT_MAX * 2 && DraftRules.containsPersonalData(text) }?.let { (field, _) ->
             add(CallIssue(CallIssueKind.PERSONAL_DATA, field))
         }
     }
+
+    /** The field of the [index]th slot in the issues (AP-11). */
+    fun slotField(index: Int): String = "slot-$index"
+
+    private fun MutableList<CallIssue>.slots(draft: CallDraft, now: Long) {
+        if (draft.slots.size > CallSlots.MAX_SLOTS) add(CallIssue(CallIssueKind.TOO_LONG, FIELD_SLOTS))
+        draft.slots.take(CallSlots.MAX_SLOTS).forEachIndexed { index, slot ->
+            val field = slotField(index)
+            val label = slot.label.trim()
+            val start = slot.start()
+            val end = slot.end()
+            val places = slot.places.trim().toIntOrNull()
+            when {
+                label.isEmpty() -> add(CallIssue(CallIssueKind.MISSING_FIELD, field))
+                label.length > CallSlots.MAX_LABEL -> add(CallIssue(CallIssueKind.TOO_LONG, field))
+                DraftRules.containsPersonalData(label) -> add(CallIssue(CallIssueKind.PERSONAL_DATA, field))
+                start == null || end == null -> add(CallIssue(CallIssueKind.BAD_DATE, field))
+                start < now - PAST_TOLERANCE_SECONDS -> add(CallIssue(CallIssueKind.PAST_DATE, field))
+                places == null || places !in 1..CallSlots.MAX_PLACES -> add(CallIssue(CallIssueKind.BAD_NUMBER, field))
+            }
+        }
+    }
+
+    /** The field of the list of slots, when there are too many. */
+    const val FIELD_SLOTS: String = "slots"
 
     /** The report of a closing (AP-09): optional, 2000 characters at most, no personal data. */
     fun checkReport(report: String): List<CallIssue> = buildList {
