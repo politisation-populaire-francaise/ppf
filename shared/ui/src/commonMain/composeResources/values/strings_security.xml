@@ -138,4 +138,5 @@
     <string name="sec_setup_skip_title">Continuer sans code ?</string>
     <string name="sec_setup_skip_warning">Sans code, toute personne qui tient votre téléphone déverrouillé peut ouvrir PPF, lire vos messages et voir ce que vous suivez. Vous pourrez activer le verrouillage à tout moment dans « Mon espace », « Sécurité de cet appareil ».</string>
     <string name="sec_setup_skip_confirm">Confirmer</string>
+    <string name="sec_lock_reminder_button">Choisir un code pour PPF</string>
 </resources>

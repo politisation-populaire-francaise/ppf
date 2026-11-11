@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Se réunir » in « Agir » (D-198): join or create a collectif, an association, a union; talk in the rooms. -->
+<resources>
+    <string name="gather_rubric_title">Se réunir</string>
+    <string name="gather_rubric_text">Rejoindre ou créer un collectif, une association, un syndicat, et se parler dans les salons.</string>
+    <string name="gather_title">Se réunir</string>
+    <string name="gather_description">Seul, on se décourage ; ensemble, on tient. Trouvez un collectif près de chez vous, une association ou un syndicat, ou créez le vôtre.</string>
+    <string name="gather_back">Revenir à l’accueil d’Agir</string>
+    <string name="gather_collectives_title">Collectifs près de chez moi</string>
+    <string name="gather_collectives_text">Des groupes d’habitants, de collègues ou de militants autour d’une cause ou d’un territoire. Les rejoindre ne publie rien.</string>
+    <string name="gather_organisations_title">Associations, syndicats et organisations</string>
+    <string name="gather_organisations_text">L’annuaire des organisations, avec celles vérifiées par l’équipe : leur territoire, leurs actions, comment les contacter.</string>
+    <string name="gather_association_title">Créer une association</string>
+    <string name="gather_association_text">Les étapes pour déclarer une association loi 1901 : statuts, déclaration en préfecture, compte bancaire.</string>
+    <string name="gather_association_missing">Ce guide arrive avec la prochaine mise à jour des contenus.</string>
+    <string name="gather_rooms_title">Se parler dans les salons</string>
+    <string name="gather_rooms_text">Des salons publics par territoire et par thème, ouverts à toutes et à tous, avec une charte. Pour écrire en privé, la messagerie chiffrée.</string>
+    <string name="gather_open">Ouvrir</string>
+</resources>

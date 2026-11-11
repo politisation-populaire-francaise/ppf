@@ -40,7 +40,7 @@ object AuthorChanges {
         val ignored = when (AgirRules.categoryOf(next)) {
             AgirCategory.MOBILIZATION -> setOf(AgirFormats.TAG_EVENT_STATUS)
             AgirCategory.CALL ->
-                if (AgirRules.callTypeOf(next) == AgirFormats.CALL_TYPE_WITNESSES) {
+                if (AgirRules.callTypeOf(next) in AgirFormats.CALL_TYPES_ALWAYS_REVIEWED) {
                     setOf(AgirFormats.TAG_CALL_STATUS)
                 } else {
                     setOf(AgirFormats.TAG_CALL_STATUS, AgirFormats.TAG_REPORT)

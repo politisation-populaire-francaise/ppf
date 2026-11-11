@@ -60,6 +60,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.ui.crash.rememberTextSharer
+import org.politisationpopulairefrancaise.ui.agir.security.LockReminder
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.proches_add
@@ -87,6 +88,7 @@ import org.politisationpopulairefrancaise.ui.resources.proches_remove
 import org.politisationpopulairefrancaise.ui.resources.proches_remove_cancel
 import org.politisationpopulairefrancaise.ui.resources.proches_remove_confirm
 import org.politisationpopulairefrancaise.ui.resources.proches_remove_question
+import org.politisationpopulairefrancaise.ui.resources.proches_lock_reminder
 import org.politisationpopulairefrancaise.ui.resources.proches_share
 import org.politisationpopulairefrancaise.ui.resources.proches_share_note
 import org.politisationpopulairefrancaise.ui.resources.proches_share_title
@@ -205,6 +207,10 @@ fun ProchesScreen(
                 state.warningShown -> ProchesWarning(state, Modifier.widthIn(max = PROCHES_READABLE))
                 draft != null -> ProcheEditor(state, draft, Modifier.widthIn(max = PROCHES_READABLE))
                 state.loaded -> ListContent(state, share)
+            }
+            // AG-63, question 3 (D-190): while PPF has no code, a line offers one (never imposed).
+            if (state.loaded && state.draft == null && !state.warningShown) {
+                LockReminder(Res.string.proches_lock_reminder, Modifier.widthIn(max = PROCHES_READABLE))
             }
             PrivacyBox(Modifier.widthIn(max = PROCHES_READABLE))
         }

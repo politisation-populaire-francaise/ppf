@@ -413,6 +413,8 @@ object BackOfficeTexts {
     const val AGIR_HELD_TITLE: String = "Agir : mobilisations et appels en relecture"
     const val AGIR_HELD_GONE: String = "Ce contenu n’est plus dans la file (décidé depuis plus de 30 jours, ou inconnu)."
     const val AGIR_UNTITLED: String = "Sans titre"
+    const val AGIR_BLOCKADE_ALWAYS_REVIEWED: String =
+        "Appel à bloquer : toujours relu (D-199). Refusez-le s’il comporte violence, dégradation ou mise en danger, s’il gêne les secours ou l’accès aux soins, s’il vise une personne nommée, ou s’il conseille un moyen d’échapper aux poursuites."
     const val AGIR_WITNESSES_ALWAYS_REVIEWED: String = "Appel à témoins : il est toujours relu par l’équipe, quel que soit son auteur, même une organisation vérifiée."
     const val AGIR_ALREADY_APPROVED: String = "Déjà approuvé et publié."
     const val AGIR_ALREADY_REJECTED: String = "Déjà refusé."
