@@ -17,7 +17,8 @@ sealed interface RevendicationView {
 }
 
 /** What a built-in view is about, so that the interface can name and describe it. */
-enum class BuiltInKind { ALL, FOLLOWED, MINE, NATIONAL, THEME }
+/** MVP 1 (owner, 2026-11-11): Plus de pour, Plus de contre, Récentes, Les plus débattues, Du mouvement, Au Parlement, Rejetées ou closes, Près de chez moi, Mes votes. */
+enum class BuiltInKind { ALL, FOLLOWED, MINE, NATIONAL, THEME, MOST_FOR, MOST_AGAINST, NEWEST, MOST_DEBATED, MOVEMENT, PARLIAMENT, CLOSED, NEAR_ME, MY_VOTES }
 
 /** A view provided by the application; its label comes from the interface's texts. */
 data class BuiltInRevendicationView(
@@ -72,13 +73,26 @@ object RevendicationViews {
         BuiltInKind.NATIONAL,
     )
 
+    val MOST_FOR = BuiltInRevendicationView("plus-de-pour", RevendicationQuery(sort = RevendicationSort.MOST_FOR), BuiltInKind.MOST_FOR)
+    val MOST_AGAINST = BuiltInRevendicationView("plus-de-contre", RevendicationQuery(sort = RevendicationSort.MOST_AGAINST), BuiltInKind.MOST_AGAINST)
+    val NEWEST = BuiltInRevendicationView("recentes", RevendicationQuery(sort = RevendicationSort.NEWEST), BuiltInKind.NEWEST)
+    val MOST_DEBATED = BuiltInRevendicationView("plus-debattues", RevendicationQuery(sort = RevendicationSort.MOST_DEBATED), BuiltInKind.MOST_DEBATED)
+    val MOVEMENT = BuiltInRevendicationView("du-mouvement", RevendicationQuery(scopes = setOf(RevendicationScope.MOVEMENT)), BuiltInKind.MOVEMENT)
+    val PARLIAMENT = BuiltInRevendicationView("au-parlement", RevendicationQuery(scopes = setOf(RevendicationScope.PARLIAMENT)), BuiltInKind.PARLIAMENT)
+    val CLOSED = BuiltInRevendicationView("closes", RevendicationQuery(scopes = setOf(RevendicationScope.CLOSED)), BuiltInKind.CLOSED)
+    val NEAR_ME = BuiltInRevendicationView("pres-de-chez-moi", RevendicationQuery(scopes = setOf(RevendicationScope.NEAR_ME)), BuiltInKind.NEAR_ME)
+    val MY_VOTES = BuiltInRevendicationView("mes-votes", RevendicationQuery(scopes = setOf(RevendicationScope.MY_VOTES)), BuiltInKind.MY_VOTES)
+
+    /** The views of MVP 1, in the order of the catalog and of the default layout. */
+    val USEFUL: List<BuiltInRevendicationView> = listOf(MOST_FOR, NEWEST, MOVEMENT, PARLIAMENT, MOST_DEBATED, MOST_AGAINST, NEAR_ME, CLOSED, MY_VOTES)
+
     /** One view per theme, in the order of [RevendicationThemes.ALL]. */
     val THEMES: List<BuiltInRevendicationView> = RevendicationThemes.ALL.map { theme ->
         BuiltInRevendicationView(THEME_PREFIX + theme.id, RevendicationQuery(themes = setOf(theme.id)), BuiltInKind.THEME, theme.id)
     }
 
     /** Every built-in view, in the order of the catalog. */
-    val BUILT_IN: List<BuiltInRevendicationView> = listOf(ALL, FOLLOWED, MINE, NATIONAL) + THEMES
+    val BUILT_IN: List<BuiltInRevendicationView> = listOf(ALL, FOLLOWED, MINE, NATIONAL) + USEFUL + THEMES
 
     private val builtInById: Map<String, BuiltInRevendicationView> = BUILT_IN.associateBy { it.id }
 
@@ -87,11 +101,13 @@ object RevendicationViews {
     fun theme(themeId: String): BuiltInRevendicationView? = builtIn(THEME_PREFIX + themeId)
 
     /**
-     * The layout of a first launch: Toutes, Comptes suivis, Société, Santé (the owner's own
-     * examples), then Mes revendications when there is an account.
+     * The layout of a first launch: Toutes, the useful views of MVP 1 that read best first (Plus de pour,
+     * Récentes, Du mouvement, Au Parlement), Comptes suivis, Société, Santé (the owner's own examples), then
+     * Mes revendications when there is an account. The others wait in the catalog.
      */
     fun defaultLayout(hasAccount: Boolean): List<RevendicationView> = buildList {
         add(ALL)
+        addAll(listOf(MOST_FOR, NEWEST, MOVEMENT, PARLIAMENT))
         add(FOLLOWED)
         add(THEMES.first { it.themeId == RevendicationThemes.SOCIETE.id })
         add(THEMES.first { it.themeId == RevendicationThemes.SANTE.id })

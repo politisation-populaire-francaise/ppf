@@ -241,7 +241,26 @@ fun RevendicationsScreen(
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val selected = library.selectedRevendication
     val account = session.state as? AccountUiState.Ready
-    val context = RevendicationContext(followed = library.followed, myKey = account?.publicKey?.hex)
+    // What the views of MVP 1 need, all known on the device: the live results, the debates, the movement, the
+    // official petitions, the territory chosen here and the votes made here (none of it leaves the device).
+    val voting = org.politisationpopulairefrancaise.ui.urne.LocalVoting.current
+    val nearMe = rememberChosenTerritories(database)
+    val today = CivilDate.fromEpochSeconds(currentEpochSeconds())
+    val context = remember(library.followed, account, voting?.boxes, voting?.choices, library.debateCounts, library.revendications, library.decider, nearMe) {
+        val boxes = voting?.boxes.orEmpty()
+        val voted = voting?.choices.orEmpty().filterValues { it.first != null && it.first != org.politisationpopulairefrancaise.core.urne.UrneInfo.WITHDRAWN }.keys
+        RevendicationContext(
+            followed = library.followed,
+            myKey = account?.publicKey?.hex,
+            forCounts = boxes.mapNotNull { (subject, box) -> box.results?.let { subject to (it.citizens.counts["pour"] ?: 0L) } }.toMap(),
+            againstCounts = boxes.mapNotNull { (subject, box) -> box.results?.let { subject to (it.citizens.counts["contre"] ?: 0L) } }.toMap(),
+            debateCounts = library.debateCounts,
+            fromMovement = library.revendications.filter { library.movementCarriers(it) != null }.map { it.address.toString() }.toSet(),
+            atParliament = library.revendications.filter { library.decider.openPetitionFor(it.address, today) != null }.map { it.address.toString() }.toSet(),
+            nearMe = nearMe,
+            myVotes = boxes.filterValues { it.number in voted }.keys,
+        )
+    }
     var overlay by remember { mutableStateOf<Overlay?>(null) }
 
     val wall: @Composable (Modifier) -> Unit = { listModifier ->
@@ -496,6 +515,7 @@ private fun WallPage(
                     petition = library.decider.openPetitionFor(revendication.address, today),
                     movement = library.movementCarriers(revendication),
                     supporters = library.demandSupporters(revendication),
+                    debateCount = library.debateCounts[revendication.address.toString()] ?: 0,
                 )
             }
         }
@@ -671,6 +691,8 @@ fun RevendicationCard(
     movement: List<String>? = null,
     /** Who else publicly supports it (ContentLibrary.demandSupporters), the same line for every demand. */
     supporters: List<String> = emptyList(),
+    /** The number of comments of its debate (ContentLibrary.debateCounts). */
+    debateCount: Int = 0,
 ) {
     val palette = PpfTheme.palette
     val example = revendication.title.startsWith(FeedPost.EXAMPLE_MARKER)
@@ -694,17 +716,18 @@ fun RevendicationCard(
             SupportersLine(supporters)
         }
         Spacer(Modifier.height(10.dp))
-        Text(revendication.title.removePrefix(FeedPost.EXAMPLE_MARKER).trim(), style = MaterialTheme.typography.titleSmall)
+        // MVP 1: the demand itself first, readable at a glance; the summary on three lines at most.
+        Text(revendication.title.removePrefix(FeedPost.EXAMPLE_MARKER).trim(), style = MaterialTheme.typography.titleMedium)
         revendication.summary?.let {
             Spacer(Modifier.height(4.dp))
-            Text(it, style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+            Text(it, style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, maxLines = 3, overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis)
         }
         Spacer(Modifier.height(8.dp))
         MetaRow(revendication)
         Spacer(Modifier.height(8.dp))
         HorizontalDivider(color = palette.border)
         Spacer(Modifier.height(4.dp))
-        VoteRow(revendication, onDebate = onOpen)
+        VoteRow(revendication, onDebate = onOpen, debateCount = debateCount)
     }
 }
 
@@ -782,7 +805,7 @@ private fun MetaRow(revendication: Article) {
  * its ballot box is open; the debate itself comes later.
  */
 @Composable
-private fun VoteRow(revendication: Article, detailed: Boolean = false, onDebate: (() -> Unit)? = null) {
+private fun VoteRow(revendication: Article, detailed: Boolean = false, onDebate: (() -> Unit)? = null, debateCount: Int = 0) {
     // D-155: every published demand is open to votes, until it is retained or becomes a campaign.
     val inDebate = revendication.status != RevendicationStatus.RETENUE && revendication.status != RevendicationStatus.CAMPAGNE
     DemandVoteRow(
@@ -791,6 +814,7 @@ private fun VoteRow(revendication: Article, detailed: Boolean = false, onDebate:
         detailed = detailed,
         territoryCode = revendication.event.firstTagValue(RevendicationTags.TERRITORY_CODE),
         onDebate = onDebate,
+        debateCount = debateCount,
     )
 }
 

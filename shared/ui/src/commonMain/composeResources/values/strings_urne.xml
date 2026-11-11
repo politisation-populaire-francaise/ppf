@@ -69,6 +69,12 @@
     <string name="urne_elected_line">Élus, comptés à part : %1$s pour, %2$s contre, %3$s blanc</string>
     <string name="urne_vote_blank">Blanc</string>
     <string name="urne_your_vote">Votre vote : %1$s</string>
+    <string name="urne_gauge_line">%1$d % pour, %2$d % contre, %3$d % blanc</string>
+    <string name="urne_gauge_none">Aucun vote pour l’instant : soyez la première personne à voter.</string>
+    <plurals name="urne_gauge_votes">
+        <item quantity="one">%1$s vote</item>
+        <item quantity="other">%1$s votes</item>
+    </plurals>
     <string name="urne_supports_line">Soutiens des citoyens : %1$s. PPF porte la revendication aux élus concernés au-delà de %2$s soutiens, s’ils sont plus nombreux que les « contre » ; une pétition officielle est déposée au-delà de %3$s.</string>
     <string name="urne_stage_carry">Seuil atteint : PPF porte cette revendication aux élus concernés.</string>
     <string name="urne_stage_petition">Second seuil atteint : l’équipe dépose une pétition officielle, dont le lien s’affichera ici.</string>

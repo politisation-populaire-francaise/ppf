@@ -46,20 +46,20 @@ class RevendicationViewsStateTest {
     fun theDefaultLayoutFollowsTheAccountUntilTheUserChangesIt() {
         val state = state()
         assertTrue(state.loaded)
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante"), state.ids())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante"), state.ids())
         account = true
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante", "mes-revendications"), state.ids())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante", "mes-revendications"), state.ids())
         assertTrue(state.isDefault)
         state.moveUp("theme:sante")
         assertFalse(state.isDefault)
-        assertEquals(listOf("tout", "suivis", "theme:sante", "theme:societe", "mes-revendications"), state.ids())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", "theme:societe", "mes-revendications"), state.ids())
         // Without the account, "Mes revendications" is hidden but keeps its place; moves skip it.
         account = false
-        assertEquals(listOf("tout", "suivis", "theme:sante", "theme:societe"), state.ids())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", "theme:societe"), state.ids())
         assertFalse(state.canMoveDown("theme:societe"))
         state.moveUp("theme:societe")
         account = true
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante", "mes-revendications"), state.ids())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante", "mes-revendications"), state.ids())
     }
 
     @Test
@@ -77,7 +77,7 @@ class RevendicationViewsStateTest {
         assertNull(state.createView("   ", RevendicationQuery()))
         val view = assertNotNull(state.createView(" Lyon ", RevendicationQuery(territories = setOf("metropole de lyon")), afterId = "suivis"))
         assertEquals("Lyon", view.name)
-        assertEquals(listOf("tout", "suivis", view.id, "theme:societe", "theme:sante"), state.ids())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", view.id, "theme:societe", "theme:sante"), state.ids())
         assertEquals(view.id, state.currentViewId)
         state.setFilters(view.id, RevendicationQuery(text = "nuit"))
         assertTrue(state.rename(view.id, "Lyon la nuit"))
@@ -109,13 +109,13 @@ class RevendicationViewsStateTest {
         waitFor { first.loaded }
         first.add(RevendicationViews.NATIONAL)
         first.remove("theme:societe")
-        waitFor { store.layout()?.map { it.id } == listOf("tout", "suivis", "theme:sante", "nationales") }
+        waitFor { store.layout()?.map { it.id } == listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", "nationales") }
 
         val second = state(store)
         assertFalse(second.loaded)
         second.start()
         waitFor { second.loaded }
-        assertEquals(listOf("tout", "suivis", "theme:sante", "nationales"), second.ids())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", "nationales"), second.ids())
         assertTrue(second.catalog.any { it.id == "theme:societe" })
         assertFalse(second.catalog.any { it.id == "nationales" })
 
