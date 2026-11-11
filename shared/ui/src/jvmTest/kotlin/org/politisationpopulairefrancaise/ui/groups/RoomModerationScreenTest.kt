@@ -126,6 +126,11 @@ class RoomModerationScreenTest {
         waitForIdle()
         waitUntil(timeoutMillis = WAIT_MILLIS) { server.stored.any { it.kind == RoomModeration.PUT_USER } }
         assertEquals(listOf(listOf("h", MINE), listOf("p", RoomsFixtures.other.publicKey.hex)), server.stored.single { it.kind == RoomModeration.PUT_USER }.tags)
+        // The test ends once the screen is done with the readmission (dialog closed, room read again), like the
+        // other tests of this class: ending while the sending coroutine still ran left it uncompleted, at random,
+        // and the test failed after a minute (UncompletedCoroutinesError, seen on 11 November 2026).
+        waitUntil(timeoutMillis = WAIT_MILLIS) { count(ModerationTags.DIALOG) == 0 }
+        waitForIdle()
     }
 
     @Test

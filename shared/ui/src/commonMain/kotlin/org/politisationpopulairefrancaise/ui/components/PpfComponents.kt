@@ -295,7 +295,7 @@ private fun RowScope.ButtonContent(icon: ImageVector?, text: String) {
     Text(text, style = MaterialTheme.typography.labelLarge, maxLines = 1)
 }
 
-/** A 44 dp icon button with 10 dp corners; [badge] adds the small accent dot (unread). */
+/** An icon button of the touch target of the tokens (48 dp) with 10 dp corners; [badge] adds the small accent dot (unread). */
 @Composable
 fun PpfIconButton(
     icon: ImageVector,

@@ -120,6 +120,10 @@ import org.politisationpopulairefrancaise.ui.components.NavSubRow
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.Wordmark
 import org.politisationpopulairefrancaise.ui.components.AdaptiveWordmark
+import org.politisationpopulairefrancaise.ui.onboarding.FirstLaunchTutorial
+import org.politisationpopulairefrancaise.ui.onboarding.ProvideTutorial
+import org.politisationpopulairefrancaise.ui.onboarding.TutorialState
+import org.politisationpopulairefrancaise.ui.onboarding.rememberTutorialState
 import org.politisationpopulairefrancaise.ui.components.avatarLetters
 import org.politisationpopulairefrancaise.ui.comprendre.rememberComprendreLibrary
 import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
@@ -246,6 +250,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     })
     // M33: the lock of the application, the content hidden from the system and the quick erase (S-43 to S-45).
     val security = rememberDeviceSecurity(dependencies)
+    // The tutorial of the first launch (D-211, D-216), seen again from Mon espace and the AIDE sheet.
+    val tutorial = rememberTutorialState(dependencies.tutorial)
+    RegisterErasable(dependencies, TutorialState.ERASABLE_ID) { dependencies.tutorial?.forget() }
     // The quick erase (S-44): the keys, with what « Effacer mes clés » already forgets (D-032, D-039), and the rally point.
     RegisterErasable(dependencies, "core-identity") {
         dependencies.identityStore.clear()
@@ -325,7 +332,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The system's back leads from any space to the feed; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
+    ProvideTutorial(tutorial) { ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
         // The ink of the theme for every text of the shell, on every format: the scaffold of phones gave it,
         // the rail and the side bar of larger windows did not (black titles on the dark theme).
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) { CompositionLocalProvider(LocalContentColor provides palette.ink) {
@@ -392,6 +399,14 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 )
             }
             when {
+                // The tutorial takes the whole window; « Passer » or the end lead to « En direct » or to the chosen space.
+                tutorial.isOpen -> FirstLaunchTutorial(
+                    onFinish = { space ->
+                        tutorial.finish()
+                        navigate(space ?: Space.default)
+                    },
+                    modifier = Modifier.fullWindowSafeArea(),
+                )
                 // On phones the centre takes the whole screen, with its back button.
                 windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier.fullWindowSafeArea())
                 windowClass.width == WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, bell, content)
@@ -403,7 +418,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
             }
             HelpSheetHost(help)
         } }
-    } } } } } }
+    } } } } } } }
 }
 
 @Composable

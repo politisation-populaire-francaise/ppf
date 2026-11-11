@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The tutorial of the first launch (D-211, order fixed by the owner on 11 November 2026, D-216).
+     Written by AI (D-212), to be reread by the team. Only what works is presented as available:
+     what is not built yet is in the « Bientôt » box of its screen. -->
+<resources>
+    <string name="tutorial_skip">Passer</string>
+    <string name="tutorial_skip_description">Passer la présentation et ouvrir l’application</string>
+    <string name="tutorial_next">Suivant</string>
+    <string name="tutorial_previous">Précédent</string>
+    <string name="tutorial_step">Étape %1$d sur %2$d</string>
+    <string name="tutorial_soon">Bientôt</string>
+    <string name="tutorial_origin">Présentation rédigée par l’IA, en attente de relecture.</string>
+
+    <string name="tutorial_why_title">Reprendre la parole, ensemble</string>
+    <string name="tutorial_why_text">Depuis septembre, un mouvement social traverse le pays. Pour qu’il tienne et qu’il gagne, il faut s’informer, s’organiser et décider ensemble. Cette application est faite pour ça, par un collectif de citoyens.</string>
+
+    <string name="tutorial_home_title">Ici, vous êtes chez vous</string>
+    <string name="tutorial_home_text">Pas besoin de compte pour lire. Aucun traceur, aucune publicité. Pour participer, un pseudonyme suffit : ni nom, ni téléphone, ni e-mail. Vos votes ne sont jamais reliés à vous.</string>
+
+    <string name="tutorial_act_title">Agir près de chez vous</string>
+    <string name="tutorial_act_text">Trouvez une manifestation, une grève ou une action, et rejoignez-la. Tenez dans la durée grâce aux caisses de grève et à l’entraide. La carte montre les manifestations et les rassemblements annoncés.</string>
+    <string name="tutorial_act_soon">Les rues bloquées sur la carte. Convaincre vos proches. S’engager en politique, à commencer par l’inscription sur les listes électorales.</string>
+
+    <string name="tutorial_gather_title">Se réunir</string>
+    <string name="tutorial_gather_text">Rejoignez un collectif, une association ou un syndicat près de chez vous, ou créez le vôtre. Échangez dans les salons publics et par messages privés chiffrés.</string>
+    <string name="tutorial_gather_soon">Des salons privés ou réservés aux membres. Une messagerie sans réseau, de téléphone à téléphone.</string>
+
+    <string name="tutorial_decide_title">Décider ensemble</string>
+    <string name="tutorial_decide_text">Proposez ce qui doit changer et votez : une personne, une voix. Signez les pétitions officielles. Avec le Pacte démocratique, demandez aux candidats de s’engager.</string>
+
+    <string name="tutorial_help_title">En cas de besoin : AIDE</string>
+    <string name="tutorial_help_text">Le bouton rouge AIDE, en haut de l’écran, est toujours là. Il donne les numéros d’urgence, les legal teams et avocats bénévoles connus, et ce qu’il faut faire en garde à vue.</string>
+    <string name="tutorial_help_soon">Alerter les street medics proches de vous. Alerter un avocat bénévole.</string>
+
+    <string name="tutorial_start_title">Par où commencer ?</string>
+    <string name="tutorial_start_prompt">Je veux…</string>
+    <string name="tutorial_start_act">agir</string>
+    <string name="tutorial_start_opinion">donner mon avis</string>
+    <string name="tutorial_start_understand">comprendre</string>
+    <string name="tutorial_start_ally">m’allier</string>
+    <!-- Read by screen readers: the button alone (« agir ») would lose the sentence above it. -->
+    <string name="tutorial_start_act_description">Je veux agir : ouvrir Agir</string>
+    <string name="tutorial_start_opinion_description">Je veux donner mon avis : ouvrir Décider</string>
+    <string name="tutorial_start_understand_description">Je veux comprendre : ouvrir Comprendre</string>
+    <string name="tutorial_start_ally_description">Je veux m’allier : ouvrir les organisations et les collectifs</string>
+
+    <!-- To see the tutorial again, from Mon espace and from the AIDE sheet. -->
+    <string name="tutorial_replay">Revoir la présentation de l’application</string>
+</resources>
