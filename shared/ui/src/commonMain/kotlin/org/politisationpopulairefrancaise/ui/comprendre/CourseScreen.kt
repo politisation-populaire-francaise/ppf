@@ -68,6 +68,7 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_back
 import org.politisationpopulairefrancaise.ui.resources.comprendre_course_kind
 import org.politisationpopulairefrancaise.ui.resources.comprendre_daily_note
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_link
+import org.politisationpopulairefrancaise.ui.resources.comprendre_workshop_link
 import org.politisationpopulairefrancaise.ui.resources.comprendre_end_score
 import org.politisationpopulairefrancaise.ui.resources.comprendre_end_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_end_unanswered
@@ -102,6 +103,7 @@ object CourseTags {
     const val STEP_TITLE = "course-step-title"
     const val DAILY_NOTE = "course-daily-note"
     const val TEACHING = "course-teaching-sheet"
+    const val WORKSHOP = "course-workshop-sheet"
     const val PROGRESS = "course-progress"
     const val QUIZ = "course-quiz"
     const val VALIDATE = "course-quiz-validate"
@@ -195,17 +197,24 @@ private fun IntroductionPage(comprendre: ComprendreLibrary, parcours: Parcours, 
             PpfSecondaryButton(onClick = comprendre::restart, text = stringResource(Res.string.comprendre_restart), modifier = Modifier.testTag(CourseTags.RESTART), icon = Lucide.Repeat2)
         }
     }
-    // « Pour la classe » (CO-13): the teaching sheets of this course, for a teacher or a group leader.
+    // « Pour la classe » (CO-13) and « Pour un atelier » (CO-24): the sheets of this course, for a teacher or a group leader.
     comprendre.teachingSheetsOf(parcours).forEach { sheet ->
         Spacer(Modifier.height(8.dp))
         PpfTextButton(
             onClick = { comprendre.openArticle(sheet.article) },
-            text = stringResource(Res.string.comprendre_teaching_link, teachingLevelLabel(sheet.level)),
-            modifier = Modifier.testTag(CourseTags.TEACHING),
+            text = if (sheet.isWorkshop) {
+                stringResource(Res.string.comprendre_workshop_link, sheet.article.durationMinutes ?: sheet.totalMinutes)
+            } else {
+                stringResource(Res.string.comprendre_teaching_link, teachingLevelLabel(sheet.level))
+            },
+            modifier = Modifier.testTag(if (sheet.isWorkshop) CourseTags.WORKSHOP else CourseTags.TEACHING),
         )
     }
     Spacer(Modifier.height(16.dp))
     Text(stringResource(Res.string.comprendre_private_note), style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkSubtle)
+    // Licence, verification code and « Citer ce contenu » of the course (D-103, S-141, S-144).
+    Spacer(Modifier.height(16.dp))
+    ComprendreCite(parcours.article)
 }
 
 @Composable

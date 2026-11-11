@@ -1,13 +1,13 @@
 ---
 slug: le-conseil-constitutionnel
-title: [EXEMPLE] Le Conseil constitutionnel
+title: Le Conseil constitutionnel
 summary: Qui sont ses membres, qui peut le saisir avant qu'une loi s'applique, comment chacun peut contester une loi pendant un procès avec la QPC, et ce que ses décisions peuvent annuler.
 topics: institutions, justice, constitution
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Le Conseil constitutionnel compte **neuf membres** nommés pour **neuf ans**, plus les anciens Présidents de la République.
@@ -15,8 +15,6 @@ updated_at: 2026-11-07
 - Depuis le **1er mars 2010**, toute personne qui est partie à un procès peut contester une loi déjà en vigueur : c'est la **question prioritaire de constitutionnalité** (QPC).
 - Une disposition jugée contraire à la Constitution ne peut pas s'appliquer ou est **abrogée**. Ses décisions ne peuvent faire l'objet d'**aucun recours**.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Neuf membres nommés pour neuf ans
 
@@ -115,15 +113,15 @@ Il peut être saisi sur un traité international avant sa ratification : si le t
 
 ## Sources
 
-- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 13, 16, 54, 56 à 62) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Constitution du 4 octobre 1958, article 61 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241074
-- Ordonnance n° 58-1067 du 7 novembre 1958 portant loi organique sur le Conseil constitutionnel, article 23-1 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450780
-- Même ordonnance, article 23-2 (les trois conditions) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450778
-- Même ordonnance, article 23-3 (sursis à statuer) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450776
-- Même ordonnance, article 23-4 (trois mois pour le Conseil d'État ou la Cour de cassation) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450772
-- Même ordonnance, article 23-10 (trois mois pour le Conseil constitutionnel) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450758
-- Conseil constitutionnel, « Le bloc de constitutionnalité » : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite
-- Conseil constitutionnel, décision n° 74-54 DC du 15 janvier 1975 : https://www.conseil-constitutionnel.fr/decision/1975/7454DC.htm
-- Conseil constitutionnel, décision n° 2003-469 DC du 26 mars 2003 : https://www.conseil-constitutionnel.fr/decision/2003/2003469DC.htm
-- Conseil constitutionnel, décision n° 2010-14/22 QPC du 30 juillet 2010 (garde à vue) : https://www.conseil-constitutionnel.fr/decision/2010/201014_22QPC.htm
-- Conseil d'État, « Question prioritaire de constitutionnalité » (entrée en vigueur le 1er mars 2010) : https://www.conseil-etat.fr/actualites/question-prioritaire-de-constitutionnalite
+- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 13, 16, 54, 56 à 62), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Constitution du 4 octobre 1958, article 61, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241074
+- Ordonnance n° 58-1067 du 7 novembre 1958 portant loi organique sur le Conseil constitutionnel, article 23-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450780
+- Même ordonnance, article 23-2 (les trois conditions), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450778
+- Même ordonnance, article 23-3 (sursis à statuer), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450776
+- Même ordonnance, article 23-4 (trois mois pour le Conseil d'État ou la Cour de cassation), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450772
+- Même ordonnance, article 23-10 (trois mois pour le Conseil constitutionnel), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450758
+- Conseil constitutionnel, « Le bloc de constitutionnalité », consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite
+- Conseil constitutionnel, décision n° 74-54 DC du 15 janvier 1975, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/1975/7454DC.htm
+- Conseil constitutionnel, décision n° 2003-469 DC du 26 mars 2003, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2003/2003469DC.htm
+- Conseil constitutionnel, décision n° 2010-14/22 QPC du 30 juillet 2010 (garde à vue), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2010/201014_22QPC.htm
+- Conseil d'État, « Question prioritaire de constitutionnalité » (entrée en vigueur le 1er mars 2010), consulté le 2026-11-09 : https://www.conseil-etat.fr/actualites/question-prioritaire-de-constitutionnalite

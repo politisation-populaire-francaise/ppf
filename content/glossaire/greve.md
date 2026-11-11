@@ -1,6 +1,6 @@
 ---
 slug: glossaire-greve
-title: [EXEMPLE] Grève
+title: Grève
 summary: Arrêt de travail collectif et concerté pour appuyer des revendications professionnelles. C'est un droit garanti par la Constitution, qui s'exerce dans le cadre des lois.
 variants: grève, grèves, droit de grève, gréviste, grévistes
 topics: travail, droits
@@ -8,7 +8,7 @@ see_also: glossaire-preavis-de-greve, glossaire-syndicat, glossaire-convention-c
 related: histoire:front-populaire-1936
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le droit de grève est reconnu par le préambule de la Constitution de 1946 : il « s'exerce dans le cadre des lois qui le réglementent ».
 
@@ -29,7 +29,7 @@ Exemple : les salariés d'un entrepôt arrêtent ensemble le travail pour demand
 
 ## Sources
 
-- [Préambule de la Constitution du 27 octobre 1946 (alinéa 7)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946)
-- [Code du travail, articles L2511-1 à L2512-5 (exercice du droit de grève)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006160748/)
-- [Service-public.gouv.fr, « Droit de grève d'un salarié du secteur privé »](https://www.service-public.gouv.fr/particuliers/vosdroits/F117)
-- [Service-public.gouv.fr, « Droit de grève dans la fonction publique »](https://www.service-public.gouv.fr/particuliers/vosdroits/F499)
+- [Préambule de la Constitution du 27 octobre 1946 (alinéa 7)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946), consulté le 2026-11-09
+- [Code du travail, articles L2511-1 à L2512-5 (exercice du droit de grève)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006160748/), consulté le 2026-11-09
+- [Service-public.gouv.fr, « Droit de grève d'un salarié du secteur privé »](https://www.service-public.gouv.fr/particuliers/vosdroits/F117), consulté le 2026-11-09
+- [Service-public.gouv.fr, « Droit de grève dans la fonction publique »](https://www.service-public.gouv.fr/particuliers/vosdroits/F499), consulté le 2026-11-09

@@ -1,6 +1,6 @@
 ---
 slug: glossaire-liste-electorale
-title: [EXEMPLE] Liste électorale
+title: Liste électorale
 summary: Liste des personnes qui peuvent voter dans une commune ou un consulat. Il faut y être inscrit pour voter, en principe au plus tard le sixième vendredi avant le scrutin.
 variants: liste électorale, listes électorales, inscription électorale, liste électorale consulaire, listes électorales consulaires, listes électorales complémentaires
 topics: elections
@@ -8,7 +8,7 @@ see_also: glossaire-procuration, glossaire-suffrage-universel, glossaire-abstent
 related: parcours:l-election-presidentielle, parcours:le-referendum
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Pour voter, il faut être inscrit sur une liste électorale. Il faut avoir au moins 18 ans la veille du scrutin, être français et jouir de ses droits civils et politiques.
 
@@ -28,5 +28,5 @@ On peut vérifier son inscription et son bureau de vote sur le service en ligne 
 
 ## Sources
 
-- [Service-public.gouv.fr, « Listes électorales : en cas de première inscription »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1367)
-- [Code électoral, articles L16 à L29 (établissement et révision des listes électorales)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006164052/)
+- [Service-public.gouv.fr, « Listes électorales : en cas de première inscription »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1367), consulté le 2026-11-09
+- [Code électoral, articles L16 à L29 (établissement et révision des listes électorales)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006164052/), consulté le 2026-11-09

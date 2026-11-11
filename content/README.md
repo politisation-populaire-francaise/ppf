@@ -2,7 +2,7 @@
 
 Ce dossier contient les contenus signés et livrés avec l'application, pour que les fiches essentielles soient lisibles hors ligne dès l'installation (cahier des charges, section 3.1 ; cahier fonctionnel, M6 et S-26).
 
-Tout ce qui s'y trouve aujourd'hui est marqué **[EXEMPLE]** : des brouillons de démonstration, à faire relire par un avocat avant toute publication réelle. Les contenus réels seront rédigés par l'équipe éditoriale (jamais par l'IA sans relecture) et publiés par le circuit prévu (relecture, validation, publication).
+**Contenus réels et contenus d'exemple** (décision de la propriétaire du 9 novembre 2026) : autant que possible, de vrais contenus plutôt que des exemples, avec la mention « Rédigé par l'IA ». Les contenus de « Comprendre » (`fiches`, `parcours`, `decryptages`, `histoire`, `qui-decide`, `methode`, `glossaire`, `enseignants`) sont de vrais contenus : factuels, vérifiés sur les sources officielles, chaque source avec sa date de consultation, sans le préfixe `[EXEMPLE]`, avec `origin: ai-assisted` (l'application et le site affichent qu'ils sont rédigés avec l'aide d'une IA). Les fiches juridiques restent à faire relire par un avocat avant l'ouverture publique (feuille de route). Ce qui serait inventé reste marqué **[EXEMPLE]** (fil, revendications, agenda, appels, organisations, exemples de « Décider ») ; les prises de position de PPF sont, pour l'instant, rédigées par l'IA et étiquetées comme telles (D-212, dossier `cap`).
 
 **Décision de la propriétaire du 9 novembre 2026** : autant que possible, de vrais contenus plutôt que des exemples, avec la mention « Rédigé par l'IA ». Un contenu réel a un titre sans [EXEMPLE] et `origin: ai-assisted`, et chaque affirmation y est vérifiée sur une source officielle citée avec sa date de consultation (premiers concernés : les fiches pratiques d'« Agir » dans `fiches/`) ; l'agenda, les appels, les organisations, la solidarité et les données de test restent des exemples marqués [EXEMPLE].
 
@@ -58,7 +58,7 @@ Deux ou trois paragraphes courts.
 - Chaque source avec son adresse officielle.
 ```
 
-L'outil de signature refuse un parcours incomplet (étape sans question, question sans explication ou avec plusieurs bonnes réponses, « Et maintenant ? » ou sources absentes). Les quatre parcours actuels sont des brouillons **[EXEMPLE]** rédigés avec l'aide d'une IA (`origin: ai-assisted`), vérifiés sur Légifrance, le Conseil constitutionnel, l'Assemblée nationale et service-public, à faire relire par l'équipe éditoriale.
+L'outil de signature refuse un parcours incomplet (étape sans question, question sans explication ou avec plusieurs bonnes réponses, « Et maintenant ? » ou sources absentes). Les parcours sont de vrais contenus rédigés avec l'aide d'une IA (`origin: ai-assisted`), vérifiés sur Légifrance, le Conseil constitutionnel, l'Assemblée nationale et service-public.
 
 ## Décryptages, histoire des luttes, « Qui décide de ça ? » (`decryptages/`, `histoire/`, `qui-decide/`, `methode/`)
 
@@ -71,7 +71,11 @@ Même en-tête qu'une fiche (sans `type`, donné par le dossier), avec en plus :
 | `qui-decide` | `persons` (identifiants des personnes publiques de `voir/personnes` à nommer dans l'encart, séparés par des virgules ; peut rester vide) |
 | `methode` | rien de plus : la page `notre-methode` explique comment un décryptage est fait et définit les cinq verdicts |
 
-Blocs propres à ces contenus : `::: objections` (paires `? objection` puis `> réponse sourcée`, obligatoire dans les décryptages et l'histoire), `::: chronologie` (lignes `- AAAA-MM-JJ : texte`), et pour « Qui décide de ça ? » un bloc `::: decideurs` en tête du corps (lignes `- niveau | rôles | ce que ce niveau décide (référence)`). L'outil de signature refuse un contenu dont un bloc est mal formé ou dont les sources manquent. Tous les contenus actuels sont des brouillons **[EXEMPLE]** rédigés avec l'aide d'une IA et vérifiés sur les textes officiels, à faire relire.
+Blocs propres à ces contenus : `::: objections` (paires `? objection` puis `> réponse sourcée`, obligatoire dans les décryptages et l'histoire), `::: chronologie` (lignes `- AAAA-MM-JJ : texte`), et pour « Qui décide de ça ? » un bloc `::: decideurs` en tête du corps (lignes `- niveau | rôles | ce que ce niveau décide (référence)`). L'outil de signature refuse un contenu dont un bloc est mal formé ou dont les sources manquent. Ce sont de vrais contenus rédigés avec l'aide d'une IA et vérifiés sur les textes officiels.
+
+## Textes du cap du mouvement (`cap/`, D-200)
+
+Une série de textes courts et sourcés, reliés à une action de l'application (feuille de route du MVP 1, section 5). Même en-tête qu'une fiche (sans `type`, donné par le dossier), avec en plus `nature` (`faits` pour un texte factuel, `position` pour une position de PPF) et `rank` (place dans la série, à partir de 1 ; le nom du fichier commence par ce numéro). Corps : un encart `::: en-bref`, le texte, un bloc `::: et-maintenant` obligatoire, puis `## Sources`. Une position rédigée avec l'aide d'une IA (`origin: ai-assisted`) affiche « Position de PPF, rédigée par l'IA, en attente de relecture » ; la partie « Ce que propose PPF » le rappelle dans le texte. Chaque fait porte sa source et sa date de consultation ; une qualification politique est attribuée à qui l'emploie, jamais présentée comme un fait.
 
 ## Fiches pédagogiques pour la classe (`enseignants/`, CO-13, D-096)
 
@@ -105,7 +109,7 @@ ce qu'il ne faut pas confondre. Encarts `::: en-bref` permis.
 | Champ | Rôle |
 |---|---|
 | `slug` | Identifiant stable de l'entrée, jamais modifié |
-| `title` | Le terme tel qu'il s'affiche, précédé de `[EXEMPLE] ` comme tout contenu pour l'instant |
+| `title` | Le terme tel qu'il s'affiche (sans `[EXEMPLE]` pour un vrai contenu) |
 | `summary` | **La définition rapide de l'infobulle** : une ou deux phrases, 200 caractères au plus, compréhensible sans rien d'autre |
 | `variants` | Les formes repérées dans les textes, séparées par des virgules : singulier, pluriel, sigle et forme longue (`49.3, 49-3, article 49.3, article 49 alinéa 3`). Une virgule à l'intérieur d'une forme s'écrit `\,` (`Conseil économique\, social et environnemental, CESE` ; `article 49\, alinéa 3`). Au moins une. Une forme n'appartient qu'à une entrée |
 | `topics` | Thèmes, séparés par des virgules (facultatif) |

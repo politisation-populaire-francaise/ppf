@@ -12,6 +12,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
+import org.politisationpopulairefrancaise.core.comprendre.CapText
 import org.politisationpopulairefrancaise.core.comprendre.Decryptage
 import org.politisationpopulairefrancaise.core.comprendre.HistoryStory
 import org.politisationpopulairefrancaise.core.comprendre.LearningProgressStore
@@ -89,6 +90,10 @@ class ComprendreLibrary(
     var teachingSheets: List<TeachingSheet> by mutableStateOf(emptyList())
         private set
 
+    /** The texts of the series « Le cap du mouvement » (D-200), in reading order. */
+    var capTexts: List<CapText> by mutableStateOf(emptyList())
+        private set
+
     /** The teaching sheets of [parcours] (« Pour la classe »), lycée first. */
     fun teachingSheetsOf(parcours: Parcours): List<TeachingSheet> =
         teachingSheets.filter { it.courseAddress == parcours.address }.sortedBy { it.level.ordinal }
@@ -139,6 +144,7 @@ class ComprendreLibrary(
                     sheets = articles(ArticleType.QUI_DECIDE).mapNotNull(QuiDecide::from).sortedBy { it.article.title.lowercase() },
                     method = articles(ArticleType.ARTICLE).firstOrNull { it.slug == METHOD_SLUG },
                     teaching = articles(ArticleType.FICHE_PEDAGOGIQUE).mapNotNull(TeachingSheet::from).sortedBy { it.article.title.lowercase() },
+                    cap = CapText.ordered(articles(ArticleType.CAP).mapNotNull(CapText::from)),
                     persons = articles(ArticleType.PERSONNE).mapNotNull(PublicPerson::from).associateBy { it.address.toString() },
                 )
             }
@@ -149,9 +155,10 @@ class ComprendreLibrary(
             sheets = fresh.sheets
             methodPage = fresh.method
             teachingSheets = fresh.teaching
+            capTexts = fresh.cap
             persons = fresh.persons
             val freshChecks = fresh.checks.map { it.article } + fresh.stories.map { it.article } + fresh.sheets.map { it.article } +
-                fresh.teaching.map { it.article } + listOfNotNull(fresh.method)
+                fresh.teaching.map { it.article } + fresh.cap.map { it.article } + listOfNotNull(fresh.method)
             val freshCourses = fresh.courses
             val freshDossiers = fresh.dossiers
             // A newer version of the open course replaces it; a course that disappeared closes.
@@ -303,6 +310,7 @@ class ComprendreLibrary(
         val sheets: List<QuiDecide>,
         val method: Article?,
         val teaching: List<TeachingSheet>,
+        val cap: List<CapText>,
         val persons: Map<String, PublicPerson>,
     )
 

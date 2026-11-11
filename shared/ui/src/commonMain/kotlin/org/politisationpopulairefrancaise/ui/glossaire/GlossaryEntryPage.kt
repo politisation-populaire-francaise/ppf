@@ -57,6 +57,7 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_course_kind
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_history
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_who
 import org.politisationpopulairefrancaise.ui.resources.comprendre_sources
+import org.politisationpopulairefrancaise.ui.comprendre.ComprendreCite
 import org.politisationpopulairefrancaise.ui.resources.content_origin_ai
 import org.politisationpopulairefrancaise.ui.resources.content_origin_human
 import org.politisationpopulairefrancaise.ui.resources.content_type_article
@@ -196,6 +197,9 @@ internal fun GlossaryEntryContent(
                 SectionTitle(stringResource(Res.string.comprendre_sources))
                 SelectionContainer { MarkdownText(entry.sources, glossary = false) }
             }
+            // Licence, verification code and « Citer ce contenu » (D-103, S-141, S-144), as on the site.
+            Spacer(Modifier.height(20.dp))
+            ComprendreCite(entry.article)
             if (onOpenFull != null) {
                 Spacer(Modifier.height(16.dp))
                 PpfSecondaryButton(onClick = onOpenFull, text = stringResource(Res.string.glossaire_page_open_full), icon = Lucide.BookOpen, modifier = Modifier.testTag(GlossaryTags.OPEN_FULL))

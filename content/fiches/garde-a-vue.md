@@ -119,3 +119,6 @@ Les numéros d’articles cités sont ceux du code de procédure pénale en vigu
 - Textes consultables sur Légifrance : https://www.legifrance.gouv.fr
 
 Pages consultées le 9 novembre 2026.
+
+- Code de procédure pénale, article 55-1 (prélèvements et relevés signalétiques), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006575023
+- Rapport au Président de la République relatif à l'ordonnance n° 2025-1091 du 19 novembre 2025 portant réécriture du code de procédure pénale (les articles cités, en vigueur au 9 novembre 2026, seront renumérotés le 1er janvier 2029), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000052605020

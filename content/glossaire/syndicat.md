@@ -1,6 +1,6 @@
 ---
 slug: glossaire-syndicat
-title: [EXEMPLE] Syndicat
+title: Syndicat
 summary: Organisation qui défend les droits et les intérêts matériels et moraux de ses membres, par exemple les salariés d'une profession. Chacun peut adhérer au syndicat de son choix.
 variants: syndicat, syndicats, syndicat professionnel, syndicats professionnels, syndicat de salariés, syndicats de salariés, organisation syndicale, organisations syndicales, liberté syndicale, droit syndical
 topics: travail, droits
@@ -8,7 +8,7 @@ see_also: glossaire-greve, glossaire-convention-collective, glossaire-preavis-de
 related: histoire:front-populaire-1936
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Un syndicat professionnel a pour seul objet l'étude et la défense des droits et des intérêts matériels et moraux, collectifs et individuels, des personnes visées par ses statuts (Code du travail, article L2131-1). Il peut regrouper des personnes qui exercent la même profession, des métiers similaires ou des métiers connexes (article L2131-2).
 
@@ -24,7 +24,7 @@ Exemple : une salariée adhère à un syndicat. Son employeur ne peut pas lui re
 
 ## Sources
 
-- [Code du travail, articles L2131-1 à L2131-6 (objet et constitution des syndicats)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006177912/)
-- [Code du travail, articles L2141-1 et suivants (exercice du droit syndical)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006160730/)
-- [Préambule de la Constitution du 27 octobre 1946 (alinéas 6 et 8)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946)
-- [Code du travail, articles L2511-1 à L2512-5 (préavis dans les services publics)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006160748/)
+- [Code du travail, articles L2131-1 à L2131-6 (objet et constitution des syndicats)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006177912/), consulté le 2026-11-09
+- [Code du travail, articles L2141-1 et suivants (exercice du droit syndical)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006160730/), consulté le 2026-11-09
+- [Préambule de la Constitution du 27 octobre 1946 (alinéas 6 et 8)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946), consulté le 2026-11-09
+- [Code du travail, articles L2511-1 à L2512-5 (préavis dans les services publics)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006160748/), consulté le 2026-11-09

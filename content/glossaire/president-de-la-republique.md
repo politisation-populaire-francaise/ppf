@@ -1,6 +1,6 @@
 ---
 slug: glossaire-president-de-la-republique
-title: [EXEMPLE] Président de la République
+title: Président de la République
 summary: Chef de l'État, élu pour cinq ans au suffrage universel direct. Il nomme le Premier ministre, préside le Conseil des ministres et peut dissoudre l'Assemblée nationale.
 variants: Président de la République, Présidente de la République, chef de l'État, cheffe de l'État, chef de l'Etat, présidence de la République
 topics: institutions, elections
@@ -8,7 +8,7 @@ see_also: glossaire-premier-ministre, glossaire-gouvernement, glossaire-constitu
 related: parcours:l-election-presidentielle, parcours:la-dissolution
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le Président de la République est le chef de l'État. Il est élu pour cinq ans au suffrage universel direct : tous les électeurs votent pour lui. Nul ne peut faire plus de deux mandats de suite (Constitution, article 6). Pour être élu au premier tour, il faut la majorité absolue des suffrages exprimés ; sinon, un second tour a lieu (article 7).
 
@@ -22,5 +22,5 @@ Exemple : après des élections législatives, c'est le Président qui choisit l
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 5 à 9, 15, 19 et 52)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Conseil constitutionnel, « Comment la Constitution organise-t-elle la cohabitation ? »](https://www.conseil-constitutionnel.fr/la-constitution/comment-la-constitution-organise-t-elle-la-cohabitation)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 5 à 9, 15, 19 et 52)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Conseil constitutionnel, « Comment la Constitution organise-t-elle la cohabitation ? »](https://www.conseil-constitutionnel.fr/la-constitution/comment-la-constitution-organise-t-elle-la-cohabitation), consulté le 2026-11-09

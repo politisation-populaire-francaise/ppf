@@ -1,6 +1,6 @@
 ---
 slug: glossaire-depute
-title: [EXEMPLE] Député
+title: Député
 summary: Membre de l'Assemblée nationale, élu pour cinq ans dans une circonscription au suffrage universel direct. Il vote les lois et contrôle le Gouvernement.
 variants: député, députés, députée, députées
 topics: institutions, parlement, elections
@@ -8,7 +8,7 @@ see_also: glossaire-assemblee-nationale, glossaire-senateur, glossaire-parlement
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Un député est un membre de l'Assemblée nationale. Il y a au plus 577 députés (Constitution, article 24). Chacun est élu dans une circonscription, au scrutin uninominal majoritaire à deux tours : on vote pour une personne, pas pour une liste (Code électoral, article L123).
 
@@ -22,7 +22,7 @@ Exemple : pour signaler la fermeture d'un service public dans votre secteur, vou
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 23 et 24)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Code électoral, articles L123 à L126 (mode de scrutin des députés)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148464/)
-- [Code électoral, article L162 (second tour)](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006353380)
-- [Service-public.gouv.fr, « Élections législatives »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1943)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 23 et 24)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Code électoral, articles L123 à L126 (mode de scrutin des députés)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148464/), consulté le 2026-11-09
+- [Code électoral, article L162 (second tour)](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006353380), consulté le 2026-11-09
+- [Service-public.gouv.fr, « Élections législatives »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1943), consulté le 2026-11-09

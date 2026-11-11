@@ -1,13 +1,13 @@
 ---
 slug: commune-departement-region
-title: [EXEMPLE] Commune, département, région : qui s'occupe de quoi ?
+title: Commune, département, région : qui s'occupe de quoi ?
 summary: Écoles, collèges et lycées, poubelles et eau, RSA, trains régionaux : ce que fait chaque collectivité, le rôle de l'intercommunalité et du préfet, et les règles qui les relient.
 topics: collectivites, institutions, services-publics
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - La **commune** s'occupe des affaires de proximité : écoles maternelles et élémentaires, état civil, police municipale. Elle peut agir sur toute affaire d'intérêt communal.
@@ -15,8 +15,6 @@ updated_at: 2026-11-07
 - Le **département** est chargé des **solidarités** (RSA, autonomie des personnes âgées, protection de l'enfance) et des **collèges**.
 - La **région** s'occupe de l'**économie**, de la **formation professionnelle**, des **TER** et des **lycées**. Aucune collectivité ne commande une autre.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Plusieurs niveaux, aucun chef
 
@@ -43,7 +41,7 @@ La commune est la seule collectivité qui peut agir sur toute affaire qui la con
 Les communes se regroupent en intercommunalités : communautés de communes, communautés d'agglomération, communautés urbaines et métropoles. Ces groupements exercent à leur place des compétences importantes :
 
 - la collecte et le traitement des ordures ménagères, une compétence obligatoire des intercommunalités ;
-- l'eau potable, obligatoire pour les métropoles, les communautés urbaines et d'agglomération depuis 2020 ; pour les communautés de communes, ce transfert est redevenu facultatif avec une loi du 11 avril 2025, sauf s'il avait déjà eu lieu ;
+- l'eau potable, obligatoire pour les métropoles et les communautés urbaines, et depuis le 1er janvier 2020 pour les communautés d'agglomération ; pour les communautés de communes, ce transfert n'est plus obligatoire depuis une loi du 11 avril 2025, mais les transferts déjà faits restent acquis ;
 - souvent, les bus, les tramways et le transport à la demande, quand elles sont autorités organisatrices de la mobilité (ministère chargé des collectivités, même tableau).
 
 ::: quiz
@@ -72,9 +70,9 @@ Il a aussi la charge des collèges (bâtiments, équipement, fonctionnement) et 
 
 ## La région : économie, formation, transports
 
-La région est « responsable, sur son territoire, de la définition des orientations en matière de développement économique ». Elle adopte un schéma régional de développement économique, d'innovation et d'internationalisation, et peut aider les entreprises (code général des collectivités territoriales, article L4251-12).
+La région est « responsable, sur son territoire, de la définition des orientations en matière de développement économique ». Elle adopte un schéma régional de développement économique, d'innovation et d'internationalisation, et peut aider les entreprises (code général des collectivités territoriales, article L4251-12 ; tableau de répartition des compétences).
 
-Elle définit et met en œuvre la politique d'apprentissage et de formation professionnelle des jeunes et des adultes qui cherchent un emploi ou une nouvelle orientation. Elle a la charge des lycées (Code de l'éducation, article L214-6).
+Elle est chargée de la politique régionale de formation professionnelle des jeunes et des adultes qui cherchent un emploi ou une nouvelle orientation, et contribue au développement de l'apprentissage sur son territoire (code du travail, article L6121-1). Elle a la charge des lycées (Code de l'éducation, article L214-6).
 
 Elle organise les trains express régionaux, les TER, et les cars entre les villes (code des transports, articles L2121-3 et L3111-1). Elle élabore aussi un grand schéma d'aménagement du territoire, le SRADDET, qui fixe notamment des objectifs pour les infrastructures de transport et pour les déchets (code général des collectivités territoriales, article L4251-1 ; tableau de répartition des compétences).
 
@@ -121,9 +119,12 @@ Certaines compétences sont partagées entre plusieurs niveaux. C'est le cas du 
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 72 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Code général des collectivités territoriales, article L2121-29 (conseil municipal) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006180961/
-- Code général des collectivités territoriales, article L3211-1 (département) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045212762
-- Conseil constitutionnel, décision n° 2016-565 QPC du 16 septembre 2016 (clause de compétence générale des départements) : https://www.conseil-constitutionnel.fr/decision/2016/2016565QPC.htm
-- Ministère chargé des collectivités territoriales, tableau de répartition des compétences (actualisation de juillet 2025 ; articles L1111-4, L2224-7-1, L2224-13 et L4251-12 du CGCT, L212-4, L213-2 et L214-6 du Code de l'éducation, L2121-3 et L3111-1 du code des transports) : https://www.collectivites-locales.gouv.fr/files/files/3.%20Animer%20les%20territoires/Tableau%20r%C3%A9paratition%20des%20comp%C3%A9tences_actualisation%20au%20220825.pdf
-- Collectivites-locales.gouv.fr, « Les groupements intercommunaux » (types d'intercommunalités) : https://www.collectivites-locales.gouv.fr/connaitre-les-acteurs-et-les-institutions/structures-territoriales/les-intercommunalites-et-groupements-de-collectivites/les-groupements-intercommunaux
+- Constitution du 4 octobre 1958, article 72, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Code général des collectivités territoriales, article L2121-29 (conseil municipal), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006180961/
+- Code général des collectivités territoriales, article L3211-1 (département), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045212762
+- Code général des collectivités territoriales, article L4251-12 (région et développement économique), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000030999365
+- Code du travail, article L6121-1 (région et formation professionnelle), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000037386635
+- Conseil constitutionnel, décision n° 2016-565 QPC du 16 septembre 2016 (clause de compétence générale des départements), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2016/2016565QPC.htm
+- Ministère chargé des collectivités territoriales, tableau de répartition des compétences (actualisation de juillet 2025 ; articles L1111-4, L2224-7-1, L2224-13 et L4251-1 du CGCT, L212-4, L213-2 et L214-6 du Code de l'éducation, L2121-3 et L3111-1 du code des transports), consulté le 2026-11-09 : https://www.collectivites-locales.gouv.fr/files/files/3.%20Animer%20les%20territoires/Tableau%20r%C3%A9paratition%20des%20comp%C3%A9tences_actualisation%20au%20220825.pdf
+- Collectivites-locales.gouv.fr, « L'eau et l'assainissement » (loi n° 2025-327 du 11 avril 2025), consulté le 2026-11-09 : https://www.collectivites-locales.gouv.fr/animer-les-territoires/environnement-et-urbanisme/environnement-energie-et-developpement-durable/leau-et-lassainissement
+- Collectivites-locales.gouv.fr, « Les groupements intercommunaux » (types d'intercommunalités), consulté le 2026-11-09 : https://www.collectivites-locales.gouv.fr/connaitre-les-acteurs-et-les-institutions/structures-territoriales/les-intercommunalites-et-groupements-de-collectivites/les-groupements-intercommunaux

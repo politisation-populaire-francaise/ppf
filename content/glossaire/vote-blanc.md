@@ -1,6 +1,6 @@
 ---
 slug: glossaire-vote-blanc
-title: [EXEMPLE] Vote blanc
+title: Vote blanc
 summary: Vote d'un électeur qui met dans l'urne un bulletin sans aucun nom, ou une enveloppe vide. Les votes blancs sont comptés à part, mais ne font pas partie des suffrages exprimés.
 variants: vote blanc, votes blancs, bulletin blanc, bulletins blancs
 topics: elections
@@ -8,7 +8,7 @@ see_also: glossaire-suffrages-exprimes, glossaire-vote-nul, glossaire-abstention
 related: decryptage:vote-blanc-suffrages-exprimes, parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Voter blanc, c'est venir voter sans choisir aucun candidat. On met dans l'urne un bulletin blanc, ou une enveloppe vide, qui compte comme un bulletin blanc.
 
@@ -24,5 +24,5 @@ Exemple : à la présidentielle, 1 000 électeurs votent. 100 votent blanc et 90
 
 ## Sources
 
-- [Code électoral, article L65, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027477739)
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (article 7)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
+- [Code électoral, article L65, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027477739), consulté le 2026-11-09
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (article 7)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09

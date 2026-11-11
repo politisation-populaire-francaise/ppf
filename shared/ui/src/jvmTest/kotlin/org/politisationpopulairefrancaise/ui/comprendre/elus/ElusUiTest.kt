@@ -2,7 +2,10 @@ package org.politisationpopulairefrancaise.ui.comprendre.elus
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
+import androidx.compose.material3.Text
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
@@ -48,6 +51,9 @@ class ElusUiTest {
 
     private val sheet = "ecole"
 
+    /** The tag of the line of test put in the slot under each official. */
+    private val EXTRA = "elus-extra-test"
+
     /**
      * Each test walks a whole journey (several screens and a dialog): three minutes instead of the
      * default minute, so that a busy machine (several builds at once) does not fail it.
@@ -65,8 +71,12 @@ class ElusUiTest {
         dataSaver = { dataSaver },
     )
 
-    private fun ComposeUiTest.openComprendre(dependencies: AppDependencies, width: Int = 400, height: Int = 800) {
-        setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(dependencies) } }
+    private fun ComposeUiTest.openComprendre(dependencies: AppDependencies, width: Int = 400, height: Int = 800, extra: (@androidx.compose.runtime.Composable (org.politisationpopulairefrancaise.core.elus.ElectedOfficial) -> Unit)? = null) {
+        setContent {
+            CompositionLocalProvider(LocalElectedOfficialExtra provides extra) {
+                Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(dependencies) }
+            }
+        }
         if (width < 600) {
             onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
             waitForIdle()
@@ -231,6 +241,8 @@ class ElusUiTest {
         onNodeWithTag(ElusTags.level(DecisionLevel.COMMUNE)).assert(hasAnyDescendant(hasText("Maire · Depuis le 28 mars 2026")))
         onNodeWithTag(ElusTags.level(DecisionLevel.ETAT)).assert(hasAnyDescendant(hasText("Membre de l’Assemblée nationale · Depuis le 22 mars 2026")))
         onNodeWithTag(ElusTags.level(DecisionLevel.UNION_EUROPEENNE)).assert(hasAnyDescendant(hasText("Ana Europe")))
+        // Nothing under the officials until another space fills the slot.
+        assertTrue(onAllNodesWithTag(EXTRA).fetchSemanticsNodes().isEmpty())
         // The large council shows twelve members, the others on request.
         onNodeWithText("Membre Conseil20").assertDoesNotExist()
         onNodeWithTag(ElusTags.showMore(DecisionLevel.COMMUNE, 0)).performScrollTo().performClick()
@@ -261,6 +273,24 @@ class ElusUiTest {
         val store = ElusStore(database)
         assertNull(store.commune())
         assertEquals(0L, store.countPackages())
+    }
+
+    @Test
+    fun theSlotUnderEachOfficialShowsNothingUntilAnotherSpaceFillsIt() = elusTest {
+        val server = ElusTestServer()
+        val database = JvmDatabase.inMemory()
+        // « Voir » will fill it (sponsorships read on the device, VO-34 votes); here, a line of test.
+        openComprendre(dependencies(database, server), extra = { official -> Text("[EXEMPLE] Ligne de ${official.displayName}", Modifier.testTag(EXTRA)) })
+        onNodeWithTag(ElusTags.HOME_ENTRY).performScrollTo().performClick()
+        waitFor(ElusTags.CHOOSE)
+        onNodeWithTag(ElusTags.CHOOSE).performClick()
+        typePostalCode("69001")
+        waitFor(ElusTags.DOWNLOAD)
+        onNodeWithTag(ElusTags.DOWNLOAD).performClick()
+        waitFor(ElusTags.level(DecisionLevel.COMMUNE))
+        // Under the official it belongs to, on the page « Mes élus » only.
+        onNodeWithTag(ElusTags.level(DecisionLevel.COMMUNE)).assert(hasAnyDescendant(hasText("[EXEMPLE] Ligne de Noa Maire")))
+        assertTrue(onAllNodesWithTag(EXTRA).fetchSemanticsNodes().isNotEmpty())
     }
 
     @Test

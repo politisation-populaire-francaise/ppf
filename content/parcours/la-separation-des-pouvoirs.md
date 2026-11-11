@@ -1,13 +1,13 @@
 ---
 slug: la-separation-des-pouvoirs
-title: [EXEMPLE] Qui fait quoi : la séparation des pouvoirs
+title: Qui fait quoi : la séparation des pouvoirs
 summary: Faire la loi, gouverner, juger : qui exerce chaque pouvoir en France, ce que chacun peut faire, et comment ils se contrôlent les uns les autres.
 topics: institutions, constitution, justice
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Trois fonctions sont séparées : **faire la loi** (le Parlement), **gouverner et appliquer la loi** (le Président de la République et le Gouvernement), **juger** (les juges).
@@ -15,8 +15,6 @@ updated_at: 2026-11-07
 - Les juges sont **indépendants** : le Président de la République en est le garant, et les juges du siège ne peuvent pas être déplacés contre leur gré.
 - Chaque pouvoir dispose de moyens d'en **contrôler** un autre : motion de censure, dissolution, contrôle des lois et des décisions de l'administration.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Pourquoi séparer les pouvoirs ?
 
@@ -121,13 +119,13 @@ Les parcours « Le 49.3 et la motion de censure », « La dissolution » et « L
 
 ## Sources
 
-- Déclaration des droits de l'homme et du citoyen de 1789, article 16 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/declaration-des-droits-de-l-homme-et-du-citoyen-de-1789
-- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 5, 12, 20, 21, 24, 34, 37, 38, 49, 61, 64, 65 et 66) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Constitution du 4 octobre 1958, article 24 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241014
-- Conseil constitutionnel, décision n° 86-224 DC du 23 janvier 1987 (compétence du juge administratif) : https://www.conseil-constitutionnel.fr/decision/1987/86224DC.htm
-- Ordonnance n° 58-1270 du 22 décembre 1958 portant loi organique relative au statut de la magistrature (article 4, inamovibilité) : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000339259
-- Ministère de la Justice, « La Cour de cassation » : https://www.justice.gouv.fr/justice-france/cours-tribunaux/lordre-judiciaire/cour-cassation
-- Ministère de la Justice, « Les juridictions civiles » : https://www.justice.gouv.fr/justice-france/lorganisation-cours-tribunaux/lordre-judiciaire/juridictions-civiles
-- Ministère de la Justice, « La justice administrative » : https://www.justice.gouv.fr/justice-france/justice-administrative
-- Conseil d'État, « Juger les litiges entre les citoyens et l'administration » : https://www.conseil-etat.fr/le-conseil-d-etat/missions/juger-les-litiges-entre-les-citoyens-et-l-administration
-- Conseil d'État, « Le dualisme juridictionnel : synergies et complémentarité » (28 septembre 2016, rôle du Tribunal des conflits) : https://www.conseil-etat.fr/publications-colloques/discours-et-interventions/le-dualisme-juridictionnel-synergies-et-complementarite
+- Déclaration des droits de l'homme et du citoyen de 1789, article 16, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/declaration-des-droits-de-l-homme-et-du-citoyen-de-1789
+- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 5, 12, 20, 21, 24, 34, 37, 38, 49, 61, 64, 65 et 66), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Constitution du 4 octobre 1958, article 24, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241014
+- Conseil constitutionnel, décision n° 86-224 DC du 23 janvier 1987 (compétence du juge administratif), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/1987/86224DC.htm
+- Ordonnance n° 58-1270 du 22 décembre 1958 portant loi organique relative au statut de la magistrature (article 4, inamovibilité), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000339259
+- Ministère de la Justice, « La Cour de cassation », consulté le 2026-11-09 : https://www.justice.gouv.fr/justice-france/cours-tribunaux/lordre-judiciaire/cour-cassation
+- Ministère de la Justice, « Les juridictions civiles », consulté le 2026-11-09 : https://www.justice.gouv.fr/justice-france/lorganisation-cours-tribunaux/lordre-judiciaire/juridictions-civiles
+- Ministère de la Justice, « La justice administrative », consulté le 2026-11-09 : https://www.justice.gouv.fr/justice-france/justice-administrative
+- Conseil d'État, « Juger les litiges entre les citoyens et l'administration », consulté le 2026-11-09 : https://www.conseil-etat.fr/le-conseil-d-etat/missions/juger-les-litiges-entre-les-citoyens-et-l-administration
+- Conseil d'État, « Le dualisme juridictionnel : synergies et complémentarité » (28 septembre 2016, rôle du Tribunal des conflits), consulté le 2026-11-09 : https://www.conseil-etat.fr/publications-colloques/discours-et-interventions/le-dualisme-juridictionnel-synergies-et-complementarite

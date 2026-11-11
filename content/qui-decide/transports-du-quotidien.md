@@ -1,13 +1,13 @@
 ---
 slug: transports-du-quotidien
-title: [EXEMPLE] Les transports du quotidien : qui décide de quoi ?
+title: Les transports du quotidien : qui décide de quoi ?
 summary: Bus, tramways, cars, TER et grandes lignes : qui organise chaque service, qui fixe les tarifs et qui décide pour le réseau ferré national.
 topics: transports, mobilite, collectivites
 type: qui-decide
 origin: ai-assisted
 persons:
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: decideurs
 - commune | maire | Le maire exerce la police de la circulation dans l'agglomération, sous réserve des pouvoirs du préfet sur les routes à grande circulation (code général des collectivités territoriales, article L2213-1).
@@ -23,8 +23,6 @@ updated_at: 2026-11-07
 - L'**État** organise les trains d'intérêt national et fixe les priorités du **réseau ferré national**, géré par **SNCF Réseau**.
 :::
 
-**[EXEMPLE] Cette fiche est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
-
 ## Le rôle de la commune
 
 Le maire règle la circulation dans l'agglomération, y compris sur les routes nationales et départementales, sauf pouvoirs du préfet sur les routes à grande circulation (code général des collectivités territoriales, article L2213-1). Certaines communes sont aussi autorités organisatrices de la mobilité (code des transports, article L1231-1).
@@ -33,7 +31,7 @@ Le maire règle la circulation dans l'agglomération, y compris sur les routes n
 
 Les métropoles, les communautés urbaines et d'agglomération, et les communautés de communes qui en ont reçu la compétence sont autorités organisatrices de la mobilité (code des transports, article L1231-1). Elles peuvent organiser des lignes régulières, du transport à la demande, des transports scolaires et des services de mobilités actives, partagées ou solidaires (article L1231-1-1). Elles définissent la politique tarifaire et fixent ou homologuent les tarifs (article L1221-5).
 
-Hors Île-de-France, elles peuvent financer ces services par le versement mobilité, payé par les employeurs d'au moins onze salariés, à un taux qu'elles votent dans les limites fixées par la loi (code général des collectivités territoriales, articles L2333-64 à L2333-67). Leur comité des partenaires, où siègent des employeurs, des associations et des habitants tirés au sort, est consulté avant toute modification de ce versement (code des transports, article L1231-5).
+Hors Île-de-France, elles peuvent financer ces services par le versement mobilité, payé par les employeurs d'au moins onze salariés, à un taux qu'elles votent dans les limites fixées par la loi (code général des collectivités territoriales, articles L2333-64 à L2333-67). Leur comité des partenaires, où siègent des représentants des employeurs et des salariés, des associations et des habitants tirés au sort, est consulté avant toute modification de ce versement (code des transports, article L1231-5).
 
 ## Le rôle de la région
 
@@ -45,7 +43,7 @@ L'État organise les trains de voyageurs d'intérêt national (code des transpor
 
 ## Le rôle de l'Union européenne
 
-Le règlement (CE) n° 1370/2007 encadre les contrats de service public de transport de voyageurs par train et par route. En règle générale, une autorité qui confie un service à une entreprise extérieure doit la choisir après mise en concurrence, sauf exceptions (article 5). La dérogation qui permettait d'attribuer directement un contrat ferroviaire a cessé de s'appliquer le 25 décembre 2023 (article 8).
+Le règlement (CE) n° 1370/2007 encadre les contrats de service public de transport de voyageurs par train et par route. En règle générale, une autorité qui confie un service à une entreprise extérieure doit la choisir après mise en concurrence, sauf exceptions (article 5). La dérogation qui permettait d'attribuer directement un contrat ferroviaire a cessé de s'appliquer le 25 décembre 2023 (article 8) : jusqu'à cette date, les régions ont pu signer sans mise en concurrence une convention de dix ans au plus avec SNCF Voyageurs, et selon la Cour des comptes, tous les exploitants de TER devront avoir été choisis après mise en concurrence à compter de 2034.
 
 ::: objections
 ? « Les cars entre les villes, c'est le département. »
@@ -62,16 +60,17 @@ Le règlement (CE) n° 1370/2007 encadre les contrats de service public de trans
 
 ## Sources
 
-- Code général des collectivités territoriales, article L2213-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041411328
-- Code général des collectivités territoriales, article L2333-64 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042913444
-- Code général des collectivités territoriales, articles L2333-64 à L2333-67 (versement mobilité) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006181011/
-- Code des transports, articles L1231-1 à L1231-5 (autorités organisatrices de la mobilité) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023069255/
-- Code des transports, article L1221-5 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000023085931
-- Code des transports, article L1241-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787268
-- Code des transports, articles L2100-1 à L2100-4 (principes généraux du système ferroviaire) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000029332219/
-- Code des transports, article L2100-1 (modifié par la loi n° 2019-1428 du 24 décembre 2019) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787236
-- Code des transports, article L2111-9 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039786628
-- Code des transports, article L2121-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000037116091
-- Code des transports, article L2121-3 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043976861
-- Code des transports, article L3111-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031104506
+- Code général des collectivités territoriales, article L2213-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041411328
+- Code général des collectivités territoriales, article L2333-64, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042913444
+- Code général des collectivités territoriales, articles L2333-64 à L2333-75 (versement mobilité), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006181011/
+- Code des transports, articles L1231-1 à L1231-5 (autorités organisatrices de la mobilité), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023069255/
+- Code des transports, article L1221-5, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000023085931
+- Code des transports, article L1241-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787268
+- Code des transports, articles L2100-1 à L2100-4 (principes généraux du système ferroviaire), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000029332219/
+- Code des transports, article L2100-1 (modifié par la loi n° 2019-1428 du 24 décembre 2019), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787236
+- Code des transports, article L2111-9, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039786628
+- Code des transports, article L2121-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000037116091
+- Code des transports, article L2121-3, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043976861
+- Code des transports, article L3111-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031104506
 - Règlement (CE) n° 1370/2007 relatif aux services publics de transport de voyageurs par chemin de fer et par route, version consolidée au 24 décembre 2017 : https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:02007R1370-20171224
+- Cour des comptes, « Les transports express régionaux à l'heure de l'ouverture à la concurrence, rapport de suivi » (observations définitives S2024-0663, délibérées le 10 avril 2024), consulté le 2026-11-09 : https://www.ccomptes.fr/sites/default/files/2024-09/20240920-S2024-0663-TER-et-ouverture-a-concurrence.pdf

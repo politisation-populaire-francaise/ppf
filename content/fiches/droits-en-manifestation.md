@@ -101,3 +101,11 @@ Si vous ne pouvez pas ou ne voulez pas justifier de votre identité, vous pouvez
 - Textes consultables sur Légifrance : https://www.legifrance.gouv.fr
 
 Pages consultées le 9 novembre 2026.
+
+- Code de la sécurité intérieure, articles L211-1 à L211-4 (manifestations sur la voie publique), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000025503132/LEGISCTA000025505131/
+- Code pénal, articles 431-3 à 431-8-1 (participation délictueuse à un attroupement), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070719/LEGISCTA000006165359/
+- Code pénal, articles 431-9 à 431-11 (manifestations illicites), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070719/LEGISCTA000006165360/
+- Code de procédure pénale, articles 78-1 à 78-7 (contrôles et vérifications d'identité), en vigueur au 9 novembre 2026, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006151880/
+- Rapport au Président de la République relatif à l'ordonnance n° 2025-1091 du 19 novembre 2025 portant réécriture du code de procédure pénale (les articles cités seront renumérotés le 1er janvier 2029), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000052605020
+- Service-public.gouv.fr, « Organisation de manifestations, défilés ou rassemblements sur la voie publique » (F21899, vérifiée le 3 septembre 2024), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F21899
+- Conseil de l'Europe, Convention européenne des droits de l'homme : https://www.echr.coe.int/documents/d/echr/Convention_FRA

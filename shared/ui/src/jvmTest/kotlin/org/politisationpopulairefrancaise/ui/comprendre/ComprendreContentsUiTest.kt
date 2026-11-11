@@ -24,6 +24,7 @@ import org.politisationpopulairefrancaise.core.comprendre.HistoryStory
 import org.politisationpopulairefrancaise.core.comprendre.QuiDecide
 import org.politisationpopulairefrancaise.core.comprendre.Verdict
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -36,6 +37,7 @@ import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
@@ -89,7 +91,9 @@ class ComprendreContentsUiTest {
             assertTrue(ContentBlocks.hasObjections(article.body), "${article.slug} presents objections and answers")
         }
         (checks.map { it.article } + stories.map { it.article } + sheets.map { it.article }).forEach { article ->
-            assertTrue(article.title.startsWith("[EXEMPLE]"), article.slug)
+            // Real contents written with an AI (decision of the owner, 9 November 2026): no marker, origin shown.
+            assertFalse(article.title.startsWith("[EXEMPLE]"), article.slug)
+            assertEquals(ContentOrigin.AI_ASSISTED, article.origin, article.slug)
             assertEquals(emptyList(), ContentBlocks.problems(article.body), article.slug)
         }
         assertNotNull(articles.firstOrNull { it.slug == METHOD_SLUG }, "the method page explains the verdicts")
@@ -136,13 +140,14 @@ class ComprendreContentsUiTest {
     @Test
     fun aWhoDecidesSheetStartsWithTheElectedOfficialsConcerned() = runComposeUiTest {
         openComprendre(width = 400, height = 800)
-        val sheet = sheets.first { it.persons.isNotEmpty() }
+        // A sheet with a level of the State. The real sheets link no person yet (decision of the owner of 9 November
+        // 2026: real contents; a person of « Voir » is linked only with the method M17): the reading of `persons`
+        // stays covered by ComprendreContentsTest.
+        val sheet = sheets.first { s -> s.steps.any { it.level == DecisionLevel.ETAT } }
         open(sheet.article.slug)
         onNodeWithTag(ComprendreDetailTags.WHO).assertExistsOnce()
         onNodeWithTag(ComprendreDetailTags.ELUS).assertExistsOnce()
         sheet.steps.forEach { step -> onNodeWithTag(ComprendreDetailTags.level(step.level)).performScrollTo() }
-        // The person linked by the editorial team is named under the level of the State.
-        onNodeWithTag(ComprendreDetailTags.level(DecisionLevel.ETAT)).assert(hasAnyDescendant(hasText("Dominique Fictif")))
         if (sheet.steps.any { it.level != DecisionLevel.ETAT && it.level != DecisionLevel.UNION_EUROPEENNE }) {
             onNodeWithText("annuaire officiel des élus", substring = true).performScrollTo()
         }

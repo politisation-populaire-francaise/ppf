@@ -26,7 +26,7 @@ enum class EditorialSpace(val id: String) {
     AGIR("agir"),
 }
 
-/** Whether a common field of every article (summary, topics, duration) is required, optional or absent. */
+/** Whether a common field of every article (summary, topics, duration, review date) is required, optional or absent. */
 enum class Presence { REQUIRED, OPTIONAL, ABSENT }
 
 /** One type of editorial content, as the form, the checks and the event builder see it. */
@@ -44,6 +44,13 @@ data class ContentSchema(
     val topics: Presence = Presence.OPTIONAL,
     /** `duration` in minutes, carried by Article.build as `ppf-duration` (courses only). */
     val duration: Presence = Presence.ABSENT,
+    /**
+     * `review_by`, the date by which the team reviews the content (tag `ppf-review-by`, read by
+     * [org.politisationpopulairefrancaise.core.editorial.ReviewDates]; decision of the team lead of 9 November
+     * 2026, with « Voir »): optional for every type. It never hides nor blocks a content; it feeds the follow-up
+     * queue « À revoir » of the editorial sections only.
+     */
+    val reviewBy: Presence = Presence.OPTIONAL,
     /** The specific fields, in the order of the form. The tags follow the order of the entries of the draft. */
     val fields: List<FieldSpec>,
     val body: BodySpec,
@@ -79,8 +86,9 @@ data class ContentSchema(
         const val DURATION: String = "duration"
         const val PUBLISHED_AT: String = "published_at"
         const val UPDATED_AT: String = "updated_at"
+        const val REVIEW_BY: String = "review_by"
 
-        val COMMON_KEYS: List<String> = listOf(SLUG, TITLE, SUMMARY, TOPICS, TYPE, ORIGIN, DURATION, PUBLISHED_AT, UPDATED_AT)
+        val COMMON_KEYS: List<String> = listOf(SLUG, TITLE, SUMMARY, TOPICS, TYPE, ORIGIN, DURATION, PUBLISHED_AT, UPDATED_AT, REVIEW_BY)
     }
 }
 

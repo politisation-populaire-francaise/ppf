@@ -1,13 +1,13 @@
 ---
 slug: ecole
-title: [EXEMPLE] L'école : qui décide de quoi ?
+title: L'école : qui décide de quoi ?
 summary: De la maternelle au lycée, qui construit et entretient les bâtiments, qui gère la cantine, qui organise les cars scolaires et qui décide des programmes et des enseignants.
 topics: education, collectivites
 type: qui-decide
 origin: ai-assisted
 persons:
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: decideurs
 - commune | maire, elu-local | La commune crée et implante les écoles maternelles et élémentaires publiques, en est propriétaire, les construit, les équipe et paie leur fonctionnement (Code de l'éducation, articles L212-1 et L212-4).
@@ -24,13 +24,11 @@ updated_at: 2026-11-07
 - Les **programmes**, les **diplômes** et les **enseignants** relèvent de l'**État**.
 :::
 
-**[EXEMPLE] Cette fiche est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
-
 ## Le rôle de la commune
 
 Le conseil municipal décide de créer une école maternelle ou élémentaire publique et choisit où l'installer, après avis du préfet (Code de l'éducation, article L212-1). La commune est propriétaire des locaux : elle les construit, les agrandit, les répare, les équipe et paie leur fonctionnement (article L212-4). Elle ne paie pas les enseignants, qui sont rémunérés par l'État (article L211-8).
 
-La cantine de l'école primaire est un service que la commune n'est pas obligée de créer. Si elle existe, l'inscription est un droit pour tous les enfants scolarisés, sans distinction selon leur situation ou celle de leur famille (article L131-13). La commune fixe les tarifs et peut tenir compte du quotient familial (service-public.gouv.fr, « Cantine scolaire à l'école primaire »).
+La cantine de l'école primaire est un service que la commune n'est pas obligée de créer. Si elle existe, l'inscription est un droit pour tous les enfants scolarisés, sans distinction selon leur situation ou celle de leur famille (article L131-13). La commune fixe les tarifs et peut tenir compte du quotient familial (service-public.gouv.fr, « Cantine scolaire à l'école primaire ») ; le prix ne peut pas dépasser le coût du service par usager, déduction faite des subventions (collectivites-locales.gouv.fr).
 
 ## Le rôle de l'intercommunalité
 
@@ -44,7 +42,7 @@ Le département a la charge des collèges : construction, équipement, fonctionn
 
 La région a la charge des lycées, des établissements d'éducation spéciale et des lycées professionnels maritimes : construction, équipement, fonctionnement, restauration, hébergement et entretien, sauf la surveillance des élèves (Code de l'éducation, article L214-6). Elle recrute et gère les agents techniques des lycées (article L214-6-1).
 
-Elle organise aussi les transports scolaires en dehors du territoire des autorités organisatrices de la mobilité (Code des transports, article L3111-7). Elle peut les confier par convention à un département, une commune, une intercommunalité ou une association de parents d'élèves (article L3111-9). En Île-de-France, c'est Île-de-France Mobilités qui les organise (article L1241-1).
+Elle organise aussi les transports scolaires en dehors du territoire des autorités organisatrices de la mobilité (Code des transports, article L3111-7). Elle peut les confier par convention à un département, une commune, une intercommunalité, un syndicat mixte, un établissement d'enseignement ou une association de parents d'élèves ou familiale (article L3111-9). En Île-de-France, c'est Île-de-France Mobilités qui les organise (article L1241-1).
 
 ## Le rôle de l'État
 
@@ -65,15 +63,15 @@ L'éducation est un service public national. L'État fixe les voies de formation
 
 ## Sources
 
-- Code de l'éducation, article L131-13 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000033956550
-- Code de l'éducation, article L211-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524494
-- Code de l'éducation, article L211-8 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049603716
-- Code de l'éducation, article L212-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524507
-- Code de l'éducation, article L212-4 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045293752
-- Code de l'éducation, article L212-8 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524519
-- Code de l'éducation, articles L213-1, L213-2, L214-6 et L214-6-1 (répartition des compétences entre l'État et les collectivités territoriales) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006071191/LEGISCTA000006151333/
-- Code des transports, articles L3111-7 à L3111-10 (transports scolaires) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023070990/
-- Code des transports, articles L1231-1 et suivants (autorités organisatrices de la mobilité) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023069255/
-- Code des transports, article L1241-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787268
-- Collectivites-locales.gouv.fr, « La restauration scolaire » : https://www.collectivites-locales.gouv.fr/animer-les-territoires/services-la-population/les-services-publics-locaux/lenfance-et-lenseignement/la-restauration-scolaire
-- Service-public.gouv.fr, « Cantine scolaire à l'école primaire (maternelle et élémentaire) » : https://www.service-public.gouv.fr/particuliers/vosdroits/F24570
+- Code de l'éducation, article L131-13, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000033956550
+- Code de l'éducation, article L211-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524494
+- Code de l'éducation, article L211-8, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049603716
+- Code de l'éducation, article L212-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524507
+- Code de l'éducation, article L212-4, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045293752
+- Code de l'éducation, article L212-8, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006524519
+- Code de l'éducation, articles L213-1, L213-2, L214-6 et L214-6-1 (répartition des compétences entre l'État et les collectivités territoriales), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006071191/LEGISCTA000006151333/
+- Code des transports, articles L3111-7 à L3111-10 (transports scolaires), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023070990/
+- Code des transports, articles L1231-1 et suivants (autorités organisatrices de la mobilité), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000023086525/LEGISCTA000023069255/
+- Code des transports, article L1241-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787268
+- Collectivites-locales.gouv.fr, « La restauration scolaire », consulté le 2026-11-09 : https://www.collectivites-locales.gouv.fr/animer-les-territoires/services-la-population/les-services-publics-locaux/lenfance-et-lenseignement/la-restauration-scolaire
+- Service-public.gouv.fr, « Cantine scolaire à l'école primaire (maternelle et élémentaire) » (F24570, vérifiée le 20 mai 2025), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F24570

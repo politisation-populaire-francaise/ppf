@@ -1,13 +1,13 @@
 ---
 slug: se-presenter-a-une-election
-title: [EXEMPLE] Se présenter à une élection
+title: Se présenter à une élection
 summary: Qui peut être candidat, comment fonctionnent les présentations d'élus pour la présidentielle de 2027, et les règles pour financer une campagne et rendre ses comptes.
 topics: elections, presidentielle, democratie
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Tout Français qui a la qualité d'**électeur** peut être candidat, sauf incapacité ou inéligibilité prévue par la loi. L'âge minimum est **18 ans** pour la plupart des élections.
@@ -15,8 +15,6 @@ updated_at: 2026-11-07
 - Une campagne se finance par un **mandataire financier**. Les **dons** viennent seulement de personnes physiques, **4 600 euros** au plus par personne et par élection ; les entreprises ne peuvent pas donner.
 - Les dépenses sont **plafonnées** et retracées dans un **compte de campagne**, contrôlé par la CNCCFP. L'État rembourse une partie des dépenses, davantage au-delà de **5 %** des suffrages.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Qui peut être candidat ?
 
@@ -38,7 +36,7 @@ La loi prévoit aussi des cas où une personne ne peut pas être élue, appelés
 
 Pour être candidat à l'élection présidentielle, il faut au moins 500 présentations d'élus, venant d'au moins 30 départements ou collectivités d'outre-mer, sans plus d'un dixième pour un même territoire. On dit souvent « parrainages » (loi du 6 novembre 1962, article 3). Le parcours « Comment fonctionne l'élection présidentielle » présente les élus qui peuvent parrainer.
 
-Les présentations doivent parvenir au Conseil constitutionnel au plus tard le sixième vendredi avant le premier tour, à 18 heures. Pour un premier tour le 18 avril 2027, cela donne le **vendredi 12 mars 2027 à 18 heures**, sous réserve du décret de convocation des électeurs. Le Conseil publie au moins deux fois par semaine le nom et la qualité des élus qui ont présenté chaque candidat (même article).
+Les présentations doivent parvenir au Conseil constitutionnel au plus tard le sixième vendredi avant le premier tour, à 18 heures. La date exacte dépendra du décret de convocation des électeurs, qui fixera le jour du premier tour. Le Conseil publie au moins deux fois par semaine le nom et la qualité des élus qui ont présenté chaque candidat (même article).
 
 Chaque candidat doit aussi déclarer son patrimoine, c'est-à-dire ce qu'il possède. La Haute Autorité pour la transparence de la vie publique rend ces déclarations publiques au moins quinze jours avant le premier tour (même article).
 
@@ -47,7 +45,7 @@ Chaque candidat doit aussi déclarer son patrimoine, c'est-à-dire ce qu'il poss
 - [ ] Jusqu'à la veille du premier tour
 - [x] Jusqu'au sixième vendredi avant le premier tour, à 18 heures
 - [ ] Jusqu'au 31 décembre 2026
-> Les présentations doivent parvenir au Conseil constitutionnel « au plus tard le sixième vendredi précédant le premier tour de scrutin à dix-huit heures » (loi du 6 novembre 1962, article 3), soit le 12 mars 2027 pour un premier tour le 18 avril.
+> Les présentations doivent parvenir au Conseil constitutionnel « au plus tard le sixième vendredi précédant le premier tour de scrutin à dix-huit heures » (loi du 6 novembre 1962, article 3).
 :::
 
 ## Financer une campagne
@@ -68,11 +66,11 @@ Les dépenses sont plafonnées. Pour la présidentielle de 2027, la CNCCFP, la C
 
 ## Le compte de campagne et le remboursement
 
-Après l'élection, le candidat dépose un compte de campagne qui retrace toutes ses recettes et dépenses. C'est obligatoire s'il a obtenu au moins 1 % des suffrages exprimés ou s'il a reçu des dons. En général, le compte doit être déposé au plus tard à 18 heures le dixième vendredi après le premier tour (Code électoral, article L52-12). Pour la présidentielle de 2027, la date limite est le 2 juillet 2027, en ligne, et le compte doit être présenté par un expert-comptable (CNCCFP).
+Après l'élection, le candidat dépose un compte de campagne qui retrace toutes ses recettes et dépenses. C'est obligatoire s'il a obtenu au moins 1 % des suffrages exprimés ou s'il a reçu des dons. En général, le compte doit être déposé au plus tard à 18 heures le dixième vendredi après le premier tour (Code électoral, article L52-12). Pour la présidentielle, c'est le onzième vendredi après le premier tour, à 18 heures (loi du 6 novembre 1962, article 3) ; le dépôt se fait en ligne et le compte doit être présenté par un expert-comptable (CNCCFP).
 
 L'État rembourse une partie des dépenses, de façon forfaitaire, dans la limite de 47,5 % du plafond. Ce remboursement n'est pas versé aux candidats qui ont obtenu moins de 5 % des suffrages exprimés au premier tour (Code électoral, article L52-11-1). La présidentielle a des règles propres : chaque candidat reçoit une avance de 200 000 euros, et ceux qui restent sous 5 % peuvent recevoir un remboursement réduit, 4,75 % du plafond, soit environ 800 000 euros (loi du 6 novembre 1962, article 3 ; CNCCFP).
 
-Pour la présidentielle, la CNCCFP a six mois après le dépôt pour examiner chaque compte, et le remboursement n'est accordé que si les règles ont été respectées. Pour 2027, ses décisions et les comptes seront publiés au plus tard le 2 février 2028 (CNCCFP).
+Pour la présidentielle, la CNCCFP a six mois après le dépôt pour examiner chaque compte, et le remboursement n'est accordé que si les règles ont été respectées ; elle publie ensuite ses décisions et les comptes (loi du 6 novembre 1962, article 3 ; CNCCFP).
 
 ::: quiz
 ? Une candidate aux élections législatives obtient 3 % des suffrages exprimés au premier tour. A-t-elle droit au remboursement forfaitaire de ses dépenses ?
@@ -97,10 +95,10 @@ Pour la présidentielle, la CNCCFP a six mois après le dépôt pour examiner ch
 
 ## Sources
 
-- Code électoral, article L44 (qui peut être candidat) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006353082
-- Code électoral, article L228 (éligibilité au conseil municipal) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027433881
-- Code électoral, articles L52-3-1 à L52-17 (financement et plafonnement des dépenses électorales, dont L52-4, L52-8, L52-11-1 et L52-12) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148459/
-- Loi n° 62-1292 du 6 novembre 1962, article 3 (présentations, déclaration de patrimoine, plafond et remboursement pour la présidentielle) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000052081106
-- CNCCFP, « Élection du Président de la République 2027 » (période de financement, plafonds, dons, dépôt du compte, remboursement) : https://cnccfp.fr/elections/election-du-president-de-la-republique-2027/
-- Sénat, commission des lois, rapport n° 127 (2018-2019), tableau des âges d'éligibilité : https://www.senat.fr/rap/l18-127/l18-127-syn.pdf
-- Service-public.gouv.fr, « Les dates de l'élection présidentielle de 2027 sont annoncées » (2 juillet 2026) : https://www.service-public.gouv.fr/particuliers/actualites/A15053
+- Code électoral, article L44 (qui peut être candidat), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006353082
+- Code électoral, article L228 (éligibilité au conseil municipal), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027433881
+- Code électoral, articles L52-3-1 à L52-17 (financement et plafonnement des dépenses électorales, dont L52-4, L52-8, L52-11-1 et L52-12), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148459/
+- Loi n° 62-1292 du 6 novembre 1962, article 3 (présentations, déclaration de patrimoine, plafond et remboursement pour la présidentielle), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000052081106
+- CNCCFP, « Élection du Président de la République 2027 » (période de financement, plafonds, dons, dépôt du compte, remboursement), consulté le 2026-11-09 : https://cnccfp.fr/elections/election-du-president-de-la-republique-2027/
+- Sénat, commission des lois, rapport n° 127 (2018-2019), tableau des âges d'éligibilité, consulté le 2026-11-09 : https://www.senat.fr/rap/l18-127/l18-127-syn.pdf
+- Service-public.gouv.fr, « Les dates de l'élection présidentielle de 2027 sont annoncées » (2 juillet 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/actualites/A15053

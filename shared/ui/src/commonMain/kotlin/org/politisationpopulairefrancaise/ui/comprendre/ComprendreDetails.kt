@@ -39,6 +39,8 @@ import org.politisationpopulairefrancaise.core.comprendre.ContentBlocks
 import org.politisationpopulairefrancaise.core.comprendre.DecisionLevel
 import org.politisationpopulairefrancaise.core.comprendre.Decryptage
 import org.politisationpopulairefrancaise.core.comprendre.HistoryStory
+import org.politisationpopulairefrancaise.core.comprendre.CapNature
+import org.politisationpopulairefrancaise.core.comprendre.CapText
 import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.comprendre.QuiDecide
 import org.politisationpopulairefrancaise.core.comprendre.TeachingLevel
@@ -57,6 +59,7 @@ import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
+import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.content.FeedPost
 import org.politisationpopulairefrancaise.ui.content.MarkdownText
@@ -68,6 +71,10 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_elus_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_claims
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_results
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_history
+import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_cap
+import org.politisationpopulairefrancaise.ui.resources.cap_origin_position
+import org.politisationpopulairefrancaise.ui.resources.cap_nature_facts
+import org.politisationpopulairefrancaise.ui.resources.cap_nature_position
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_who
 import org.politisationpopulairefrancaise.ui.resources.comprendre_level_commune
 import org.politisationpopulairefrancaise.ui.resources.comprendre_level_departement
@@ -86,13 +93,17 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_role_president
 import org.politisationpopulairefrancaise.ui.resources.comprendre_role_senateur
 import org.politisationpopulairefrancaise.ui.resources.comprendre_sources
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_teaching
+import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_workshop
+import org.politisationpopulairefrancaise.ui.resources.comprendre_animation_hint
+import org.politisationpopulairefrancaise.ui.resources.comprendre_animation_start
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_answer
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_hide_answers
+import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_atelier
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_cycle_4
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_level_lycee
-import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_licence
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_meta
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_neutrality
+import org.politisationpopulairefrancaise.ui.resources.comprendre_workshop_neutrality
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_programme
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_questions
 import org.politisationpopulairefrancaise.ui.resources.comprendre_teaching_questions_intro
@@ -121,6 +132,7 @@ object ComprendreDetailTags {
     const val ELUS = "who-decides-elus"
     const val BACK = "comprendre-detail-back"
     const val TEACHING = "teaching-sheet-detail"
+    const val CAP = "cap-text-detail"
     const val TEACHING_NEUTRALITY = "teaching-sheet-neutrality"
     const val TEACHING_QUESTIONS = "teaching-sheet-questions"
     const val TEACHING_ANSWERS = "teaching-sheet-answers"
@@ -367,13 +379,14 @@ private fun PersonLine(person: PublicPerson) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Teaching sheets for the classroom (CO-13, D-096)
+// Teaching sheets for the classroom (CO-13, D-096), and animation sheets of the workshops (CO-24)
 
 @Composable
 fun teachingLevelLabel(level: TeachingLevel): String = stringResource(
     when (level) {
         TeachingLevel.LYCEE -> Res.string.comprendre_teaching_level_lycee
         TeachingLevel.CYCLE_4 -> Res.string.comprendre_teaching_level_cycle_4
+        TeachingLevel.ATELIER -> Res.string.comprendre_teaching_level_atelier
     },
 )
 
@@ -381,30 +394,47 @@ fun teachingLevelLabel(level: TeachingLevel): String = stringResource(
  * A teaching sheet: the fixed neutrality notice (never the writer's text), the official programme it serves,
  * its text (objectives, prerequisites, timed outline, guided debate with its objections), the questions of
  * the linked [course] for a show of hands with the answers folded apart, the sources and the licence.
- * Nothing is asked, counted or sent from the classroom.
+ * Nothing is asked, counted or sent from the classroom. The animation sheet of a workshop (CO-24) has its own
+ * fixed notice and no programme; its cards to print are on its page of the site.
  */
 @Composable
 fun TeachingSheetDetail(sheet: TeachingSheet, course: Parcours?, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier = Modifier) {
     val palette = PpfTheme.palette
     val subtitle = stringResource(Res.string.comprendre_teaching_meta, teachingLevelLabel(sheet.level), sheet.article.durationMinutes ?: sheet.totalMinutes)
-    DetailColumn(sheet.article, stringResource(Res.string.comprendre_kind_teaching), onBack, compact, modifier.testTag(ComprendreDetailTags.TEACHING), subtitle = subtitle) {
+    val kind = stringResource(if (sheet.isWorkshop) Res.string.comprendre_kind_workshop else Res.string.comprendre_kind_teaching)
+    // CO-24, step 2: the animation mode takes the place of the sheet until it is left; nothing is recorded.
+    var animating by remember(sheet.article.event.id) { mutableStateOf(false) }
+    if (animating) {
+        TeachingAnimationView(sheet, course, onClose = { animating = false }, modifier = modifier)
+        return
+    }
+    DetailColumn(sheet.article, kind, onBack, compact, modifier.testTag(ComprendreDetailTags.TEACHING), subtitle = subtitle) {
         Surface(Modifier.fillMaxWidth(), shape = MaterialTheme.shapes.medium, color = palette.surface2, border = BorderStroke(1.dp, palette.border)) {
             Column(Modifier.padding(16.dp)) {
                 Text(
-                    stringResource(Res.string.comprendre_teaching_neutrality),
+                    stringResource(if (sheet.isWorkshop) Res.string.comprendre_workshop_neutrality else Res.string.comprendre_teaching_neutrality),
                     style = MaterialTheme.typography.bodyMedium,
                     modifier = Modifier.testTag(ComprendreDetailTags.TEACHING_NEUTRALITY),
                 )
+                sheet.programme?.let { programme ->
+                    Spacer(Modifier.height(12.dp))
+                    Text(stringResource(Res.string.comprendre_teaching_programme), style = MaterialTheme.typography.labelLarge, color = palette.inkMuted)
+                    Spacer(Modifier.height(4.dp))
+                    Text(programme, style = MaterialTheme.typography.bodyMedium)
+                }
                 Spacer(Modifier.height(12.dp))
-                Text(stringResource(Res.string.comprendre_teaching_programme), style = MaterialTheme.typography.labelLarge, color = palette.inkMuted)
-                Spacer(Modifier.height(4.dp))
-                Text(sheet.programme, style = MaterialTheme.typography.bodyMedium)
+                Text(stringResource(Res.string.comprendre_animation_hint), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+                Spacer(Modifier.height(8.dp))
+                PpfSecondaryButton(
+                    onClick = { animating = true },
+                    text = stringResource(Res.string.comprendre_animation_start),
+                    small = true,
+                    modifier = Modifier.testTag(AnimationTags.START),
+                )
             }
         }
         Spacer(Modifier.height(16.dp))
         BodyWithActions(sheet.article.body, onNavigate, beforeSources = course?.let { linked -> { TeachingQuestions(linked) } })
-        Spacer(Modifier.height(16.dp))
-        Text(stringResource(Res.string.comprendre_teaching_licence), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
     }
 }
 
@@ -482,15 +512,40 @@ private fun DetailColumn(
             Text(detailMeta(article, kind), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
             Spacer(Modifier.height(16.dp))
             content()
+            // Licence, verification code and « Citer ce contenu » end every content (D-103, S-141, S-144).
+            Spacer(Modifier.height(24.dp))
+            ComprendreCite(article)
         }
     }
 }
 
 @Composable
 private fun detailMeta(article: Article, kind: String): String {
-    val origin = stringResource(if (article.origin == ContentOrigin.AI_ASSISTED) Res.string.content_origin_ai else Res.string.content_origin_human)
+    val origin = stringResource(capOrigin(article) ?: if (article.origin == ContentOrigin.AI_ASSISTED) Res.string.content_origin_ai else Res.string.content_origin_human)
     val updated = stringResource(Res.string.content_updated, CivilDate.fromEpochSeconds(article.updatedAt).toFrench())
     return "$kind · $updated · $origin"
+}
+
+/**
+ * The label of origin of a position of PPF written with the help of an AI and not yet reviewed (D-212):
+ * « Position de PPF, rédigée par l'IA, en attente de relecture »; null for every other content.
+ */
+fun capOrigin(article: Article): StringResource? =
+    CapText.from(article)?.takeIf { it.isUnreviewedAiPosition }?.let { Res.string.cap_origin_position }
+
+/** A text of the series « Le cap du mouvement » (D-200): its body, its « Et maintenant ? » actions, its sources. */
+@Composable
+fun CapDetail(text: CapText, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier = Modifier) {
+    DetailColumn(text.article, stringResource(Res.string.comprendre_kind_cap), onBack, compact, modifier.testTag(ComprendreDetailTags.CAP)) {
+        BodyWithActions(text.article.body, onNavigate)
+    }
+}
+
+/** The card of a text of the series, with its nature (sourced facts or position of PPF). */
+@Composable
+fun CapCard(text: CapText, onOpen: () -> Unit, selected: Boolean, modifier: Modifier = Modifier) {
+    val nature = stringResource(if (text.nature == CapNature.POSITION) Res.string.cap_nature_position else Res.string.cap_nature_facts)
+    SimpleCard(text.article, nature, onOpen, selected, modifier)
 }
 
 /**

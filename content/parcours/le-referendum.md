@@ -1,13 +1,13 @@
 ---
 slug: le-referendum
-title: [EXEMPLE] Le référendum
+title: Le référendum
 summary: Comprendre qui peut organiser un référendum en France, sur quels sujets, et comment fonctionne le référendum d'initiative partagée.
 topics: institutions, referendum, democratie
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Le peuple exerce la souveraineté **par ses représentants** et **par le référendum** (Constitution, article 3).
@@ -15,8 +15,6 @@ updated_at: 2026-11-07
 - Le **référendum d'initiative partagée** demande **185 parlementaires**, puis le soutien d'**un dixième des électeurs inscrits** ; il n'y a pas de vote si le Parlement **examine** le texte à temps.
 - Il existe aussi des référendums pour **réviser la Constitution**, pour l'**entrée d'un État dans l'Union européenne** et au niveau **local**.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Voter directement sur un texte
 
@@ -120,26 +118,26 @@ La Constitution prévoit trois autres cas.
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 3 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240995
-- Constitution du 4 octobre 1958, article 11 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241004
-- Constitution du 4 octobre 1958, article 60 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527548
-- Constitution du 4 octobre 1958, article 61 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241074
-- Constitution du 4 octobre 1958, article 72-1 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527593
-- Constitution du 4 octobre 1958, article 88-5 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000018077285
-- Constitution du 4 octobre 1958, article 89 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240655
-- Loi organique n° 2013-1114 du 6 décembre 2013 portant application de l'article 11 de la Constitution : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000028278925
-- Code général des collectivités territoriales, article LO1112-7 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006389054
-- Conseil constitutionnel, « Référendum d'initiative partagée (RIP) : mode d'emploi » (185 parlementaires sur 925, site de recueil des soutiens) : https://www.conseil-constitutionnel.fr/referendum-d-initiative-partagee/referendum-d-initiative-partagee-rip-mode-d-emploi
-- Conseil constitutionnel, « Référendum d'initiative partagée » (liste des décisions, dont la décision n° 2019-1 RIP du 9 mai 2019) : https://www.conseil-constitutionnel.fr/referendum-d-initiative-partagee
-- Conseil constitutionnel, décision n° 2019-1-8 RIP du 26 mars 2020 (4 717 396 soutiens requis, 1 093 030 recueillis) : https://www.conseil-constitutionnel.fr/decision/2020/201918RIP.htm
-- Conseil constitutionnel, communiqué sur la décision n° 2021-2 RIP du 6 août 2021 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2021-2-rip-du-6-aout-2021-communique-de-presse
-- Conseil constitutionnel, communiqué sur la décision n° 2022-3 RIP du 25 octobre 2022 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2022-3-rip-du-25-octobre-2022-communique-de-presse
-- Conseil constitutionnel, communiqué sur la décision n° 2023-4 RIP du 14 avril 2023 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2023-4-rip-du-14-avril-2023-communique-de-presse
-- Conseil constitutionnel, communiqué sur la décision n° 2023-5 RIP du 3 mai 2023 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2023-5-rip-du-3-mai-2023-communique-de-presse
-- Conseil constitutionnel, communiqué sur la décision n° 2024-6 RIP du 11 avril 2024 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2024-6-rip-du-11-avril-2024-communique-de-presse
-- Conseil constitutionnel, communiqué sur la décision n° 2026-7 RIP du 17 juin 2026 (septième proposition examinée) : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2026-7-rip-du-17-juin-2026-communique-de-presse
-- Conseil constitutionnel, « L'histoire du référendum sous la Ve République » (page mise à jour le 11 février 2020) : https://www.conseil-constitutionnel.fr/la-constitution/l-histoire-du-referendum-sous-la-ve-republique
-- Conseil constitutionnel, « Tableau récapitulatif des référendums de la Vème République » : https://www.conseil-constitutionnel.fr/referendum-sous-la-ve-republique/tableau-recapitulatif-des-referendums-de-la-veme-republique
-- Sénat, rapport n° 99 (2023-2024) de la commission des lois, sur l'examen du texte par les deux assemblées : https://www.senat.fr/rap/l23-099/l23-0996.html
-- Collectivites-locales.gouv.fr, « Le référendum local » (mis à jour le 23 janvier 2026) : https://www.collectivites-locales.gouv.fr/institutions/le-referendum-local
-- Service-public.gouv.fr, « Vérifier votre inscription électorale et votre bureau de vote » : https://www.service-public.gouv.fr/particuliers/vosdroits/R51788
+- Constitution du 4 octobre 1958, article 3, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240995
+- Constitution du 4 octobre 1958, article 11, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241004
+- Constitution du 4 octobre 1958, article 60, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527548
+- Constitution du 4 octobre 1958, article 61, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241074
+- Constitution du 4 octobre 1958, article 72-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527593
+- Constitution du 4 octobre 1958, article 88-5, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000018077285
+- Constitution du 4 octobre 1958, article 89, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240655
+- Loi organique n° 2013-1114 du 6 décembre 2013 portant application de l'article 11 de la Constitution, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000028278925
+- Code général des collectivités territoriales, article LO1112-7, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006389054
+- Conseil constitutionnel, « Référendum d'initiative partagée (RIP) : mode d'emploi » (185 parlementaires sur 925, site de recueil des soutiens), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/referendum-d-initiative-partagee/referendum-d-initiative-partagee-rip-mode-d-emploi
+- Conseil constitutionnel, « Référendum d'initiative partagée » (liste des décisions, dont la décision n° 2019-1 RIP du 9 mai 2019), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/referendum-d-initiative-partagee
+- Conseil constitutionnel, décision n° 2019-1-8 RIP du 26 mars 2020 (4 717 396 soutiens requis, 1 093 030 recueillis), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2020/201918RIP.htm
+- Conseil constitutionnel, communiqué sur la décision n° 2021-2 RIP du 6 août 2021, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2021-2-rip-du-6-aout-2021-communique-de-presse
+- Conseil constitutionnel, communiqué sur la décision n° 2022-3 RIP du 25 octobre 2022, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2022-3-rip-du-25-octobre-2022-communique-de-presse
+- Conseil constitutionnel, communiqué sur la décision n° 2023-4 RIP du 14 avril 2023, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2023-4-rip-du-14-avril-2023-communique-de-presse
+- Conseil constitutionnel, communiqué sur la décision n° 2023-5 RIP du 3 mai 2023, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2023-5-rip-du-3-mai-2023-communique-de-presse
+- Conseil constitutionnel, communiqué sur la décision n° 2024-6 RIP du 11 avril 2024, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2024-6-rip-du-11-avril-2024-communique-de-presse
+- Conseil constitutionnel, communiqué sur la décision n° 2026-7 RIP du 17 juin 2026 (septième proposition examinée), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/actualites/communique/decision-n-2026-7-rip-du-17-juin-2026-communique-de-presse
+- Conseil constitutionnel, « L'histoire du référendum sous la Ve République » (page mise à jour le 11 février 2020), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/la-constitution/l-histoire-du-referendum-sous-la-ve-republique
+- Conseil constitutionnel, « Tableau récapitulatif des référendums de la Vème République », consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/referendum-sous-la-ve-republique/tableau-recapitulatif-des-referendums-de-la-veme-republique
+- Sénat, rapport n° 99 (2023-2024) de la commission des lois, sur l'examen du texte par les deux assemblées, consulté le 2026-11-09 : https://www.senat.fr/rap/l23-099/l23-0996.html
+- Collectivites-locales.gouv.fr, « Le référendum local » (mis à jour le 23 janvier 2026), consulté le 2026-11-09 : https://www.collectivites-locales.gouv.fr/institutions/le-referendum-local
+- Service-public.gouv.fr, « Vérifier votre inscription électorale et votre bureau de vote », consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/R51788

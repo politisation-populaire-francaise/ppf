@@ -1,6 +1,6 @@
 ---
 slug: glossaire-parlement
-title: [EXEMPLE] Parlement
+title: Parlement
 summary: Ensemble des deux assemblées qui votent la loi et contrôlent le Gouvernement : l'Assemblée nationale, élue directement par les citoyens, et le Sénat, élu par des élus.
 variants: Parlement, Parlement français, parlementaire, parlementaires, membre du Parlement, membres du Parlement
 topics: institutions, parlement
@@ -8,7 +8,7 @@ see_also: glossaire-assemblee-nationale, glossaire-senat, glossaire-gouvernement
 related: parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le Parlement comprend deux assemblées : l'Assemblée nationale et le Sénat. Selon l'article 24 de la Constitution, il a trois missions :
 - il vote la loi ;
@@ -27,5 +27,5 @@ Exemple : lors d'une séance de questions au Gouvernement, un député interroge
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 24, 28, 45 et 48)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Union européenne, « Parlement européen : rôles et pouvoirs »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-parliament_fr)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 24, 28, 45 et 48)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Union européenne, « Parlement européen : rôles et pouvoirs »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-parliament_fr), consulté le 2026-11-09

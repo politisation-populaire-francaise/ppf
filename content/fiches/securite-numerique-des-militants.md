@@ -1,12 +1,13 @@
 ---
 slug: securite-numerique-des-militants
-title: [EXEMPLE] Sécurité numérique des militants
-summary: Préparer son téléphone avant une manifestation, savoir ce que la police peut faire de votre téléphone et de son code, choisir une messagerie chiffrée, publier des photos sans exposer les autres, protéger vos comptes. Brouillon à faire relire par un avocat.
+title: Sécurité numérique des militants
+summary: Préparer son téléphone avant une manifestation, savoir ce que la police peut faire de votre téléphone et de son code, choisir une messagerie chiffrée, publier des photos sans exposer les autres, protéger vos comptes.
 topics: droits, manifestation, numerique
 type: fiche-pratique
 origin: ai-assisted
 published_at: 2026-11-08
-updated_at: 2026-11-08
+updated_at: 2026-11-09
+review_by: 2028-10-01
 ---
 ::: en-bref
 - Verrouillez votre téléphone par un **code** plutôt que par l'empreinte ou le visage, et emportez **le moins de données possible**.
@@ -16,13 +17,13 @@ updated_at: 2026-11-08
 - Un **mot de passe différent** par compte, un **gestionnaire de mots de passe** et la **double authentification** protègent vos comptes.
 :::
 
-**[EXEMPLE] Cette fiche est un brouillon de démonstration, préparé avec l'aide d'une IA à partir des pages officielles citées en bas. Elle doit être relue par l'équipe éditoriale et par un avocat avant toute publication. C'est une information juridique générale, pas un conseil juridique : pour votre situation, consultez un avocat.**
+**C'est une information juridique générale, pas un conseil juridique : pour votre situation, consultez un avocat.**
 
 ## Avant de partir
 
 Votre téléphone contient vos messages, vos photos, vos contacts et l'historique de vos déplacements. S'il est perdu, volé ou saisi, tout ce qu'il contient peut être lu par quelqu'un d'autre. Quelques réglages, faits chez vous la veille, limitent ce risque.
 
-La plupart des téléphones récents, iPhone comme Android, chiffrent leur contenu : sans le code, les données sont illisibles. Ce chiffrement ne vous protège vraiment que si le téléphone est verrouillé par un code (cybermalveillance.gouv.fr ; EFF). En France, l'utilisation des moyens de chiffrement est libre (loi n° 2004-575 du 21 juin 2004, article 30).
+La plupart des téléphones récents, iPhone comme Android, chiffrent leur contenu : en cas de perte ou de vol, ce chiffrement empêche de lire vos données (cybermalveillance.gouv.fr). Il repose sur votre code : plus celui-ci est solide, mieux il vous protège (EFF). En France, l'utilisation des moyens de chiffrement est libre (loi n° 2004-575 du 21 juin 2004, article 30).
 
 ::: conseil
 - **Un code plutôt que le doigt ou le visage.** Un doigt ou un visage peuvent servir à déverrouiller votre téléphone sans que vous ayez à dire un mot ; un code reste dans votre tête (EFF). Choisissez un code long (six chiffres ou plus), jamais 0000, 1234 ou votre date de naissance, ou mieux un mot de passe, et activez le verrouillage automatique.
@@ -45,7 +46,7 @@ La plupart des téléphones récents, iPhone comme Android, chiffrent leur conte
 
 ## Votre téléphone face à la police
 
-**En garde à vue**, vos effets personnels, dont votre téléphone, peuvent vous être retirés au début. Ils doivent vous être rendus à la fin, sauf s'ils sont confisqués par la justice (service-public.gouv.fr). Vos droits pendant la garde à vue (silence, avocat, médecin) sont détaillés dans la fiche pratique [EXEMPLE] « Garde à vue : vos droits ».
+**En garde à vue**, vos effets personnels, dont votre téléphone, peuvent vous être retirés au début. Ils doivent vous être rendus à la fin, sauf s'ils sont confisqués par la justice (service-public.gouv.fr). Vos droits pendant la garde à vue (silence, avocat, médecin) sont détaillés dans la fiche pratique « Garde à vue : vos droits ».
 
 **Lors d'une perquisition**, les enquêteurs peuvent saisir les données informatiques nécessaires à la manifestation de la vérité, en plaçant sous main de justice le téléphone lui-même ou une copie de ses données (code de procédure pénale, article 56). Un officier de police judiciaire peut aussi demander à toute personne susceptible de les connaître les informations qui permettent d'accéder à ces données ; ne pas répondre dans les meilleurs délais est puni d'une amende de 3 750 euros (code de procédure pénale, article 57-1).
 
@@ -94,8 +95,8 @@ Le droit à l'image s'applique partout, y compris sur internet (CNIL). Pour une 
 ::: conseil
 - **Retirez les métadonnées** avant de publier : une capture d'écran de la photo n'en garde pas la position, et certaines messageries les retirent à l'envoi (EFF). Dans PPF, quand vous joignez une photo, la position, la date et le modèle de l'appareil sont retirés sur votre téléphone avant tout envoi, et vous pouvez flouter des visages.
 - **Floutez ou masquez** les visages, les tatouages et les signes distinctifs des personnes qui n'ont pas donné leur accord. Un flou trop léger peut laisser reconnaître quelqu'un : préférez un masque opaque.
-- **Réglez vos comptes** : un compte privé limite qui voit vos publications, un compte public est visible de tous, y compris de personnes hostiles. Limitez qui peut voir vos publications et coupez leur géolocalisation (CNIL).
-- **Séparez vos comptes** : n'utilisez pas le même pseudonyme, la même adresse électronique ni la même photo pour des comptes que vous voulez garder distincts, et ne publiez rien qui permette de vous localiser (adresse, plaque d'immatriculation, documents d'identité) (CNIL).
+- **Réglez vos comptes** : choisissez qui peut voir chaque publication (amis, amis d'amis ou tout le monde) ; une publication ouverte à tous peut être vue par des personnes hostiles. Coupez ou limitez la géolocalisation de vos applications (CNIL).
+- **Séparez vos comptes** : n'utilisez pas le même pseudonyme, la même adresse électronique ni la même photo pour des comptes que vous voulez garder distincts, et ne publiez rien qui permette de vous localiser (adresse, plaque d'immatriculation, documents d'identité, carte d'embarquement) (CNIL).
 :::
 
 Le « doxxing » consiste à révéler des informations personnelles sur quelqu'un (adresse, lieu de travail, famille) pour l'exposer à des représailles. C'est un délit, quelle que soit la personne visée.
@@ -111,7 +112,7 @@ Si quelqu'un entre dans votre messagerie électronique ou vos réseaux sociaux, 
 
 ::: conseil
 - **Un mot de passe différent pour chaque compte**, d'au moins douze signes mêlant majuscules, minuscules, chiffres et caractères spéciaux, sans information personnelle ni suite simple comme 123456 ou azerty (cybermalveillance.gouv.fr). Une phrase dont vous gardez les premières lettres est plus facile à retenir (CNIL).
-- **Un gestionnaire de mots de passe** garde tous vos mots de passe dans un coffre chiffré : vous n'avez plus qu'un mot de passe principal à retenir. Cybermalveillance.gouv.fr cite l'exemple de KeePassXC.
+- **Un gestionnaire de mots de passe** garde tous vos mots de passe dans un coffre chiffré : vous n'avez plus qu'un mot de passe principal à retenir. Cybermalveillance.gouv.fr cite l'exemple de KeePassXC, un logiciel libre et gratuit.
 - **Activez la double authentification** partout où elle existe : en plus du mot de passe, un code reçu par SMS, une application ou une clé physique est demandé. Un pirate qui connaît votre mot de passe ne peut alors pas entrer (cybermalveillance.gouv.fr).
 - Gardez sur papier, en lieu sûr, les codes de secours de vos comptes et votre phrase de récupération.
 :::
@@ -121,36 +122,34 @@ L'**hameçonnage** (« phishing ») est un faux message, SMS ou appel qui se fai
 ::: attention
 - Aucune administration ni aucune entreprise sérieuse ne vous demande vos mots de passe ou vos données bancaires par message ou par téléphone (cybermalveillance.gouv.fr).
 - Avant de cliquer, vérifiez l'adresse réelle du lien : un seul caractère changé peut cacher un faux site. En cas de doute, allez directement sur le site ou contactez l'organisme.
-- Si vous avez donné un mot de passe, changez-le tout de suite, ainsi que sur les sites où vous l'utilisiez. Signalez les SMS frauduleux au 33700. Info Escroqueries vous conseille au 0 805 805 817, appel gratuit.
+- Si vous avez donné un mot de passe, changez-le tout de suite, ainsi que sur les sites où vous l'utilisiez. Signalez les SMS frauduleux en les transférant gratuitement au 33700. Info Escroqueries vous conseille au 0 805 805 817, appel gratuit, du lundi au vendredi de 9 h à 18 h 30.
 :::
 
 ## Et maintenant ?
 
 - Préparez votre départ avec le « Mode manifestation », dans l'espace « Agir ».
-- Lisez les fiches pratiques [EXEMPLE] « Garde à vue : vos droits » et « Filmer les forces de l'ordre ».
+- Lisez les fiches pratiques « Garde à vue : vos droits » et « Filmer les forces de l'ordre ».
 - Écrivez à vos proches dans « Messages », chiffré de bout en bout.
 
 ## Sources
 
-- Code pénal, article 434-15-2 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032654251
-- Cour de cassation, assemblée plénière, 7 novembre 2022, pourvoi n° 21-83.146 (texte intégral sur Légifrance) : https://www.legifrance.gouv.fr/juri/id/JURITEXT000046583035
-- Conseil constitutionnel, décision n° 2018-696 QPC du 30 mars 2018 : https://www.conseil-constitutionnel.fr/decision/2018/2018696QPC.htm
-- Code pénal, article 434-4 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006418608
-- Code pénal, article 223-1-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049312762
-- Code pénal, article 226-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049312755
-- Code de procédure pénale, article 56 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042779588
-- Code de procédure pénale, article 57-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047053305
-- Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, article 30 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006421577
-- Service-public.gouv.fr, « Garde à vue » (F14837, vérifiée le 10 juillet 2025) : https://www.service-public.gouv.fr/particuliers/vosdroits/F14837
-- Service-public.gouv.fr, « Droit à l'image et respect de la vie privée » (F32103, vérifiée le 6 mai 2022) : https://www.service-public.gouv.fr/particuliers/vosdroits/F32103
-- CNIL, « Le droit à l'image s'applique-t-il sur internet ? » : https://www.cnil.fr/fr/cnil-direct/question/le-droit-limage-sapplique-t-il-sur-internet
-- CNIL, « Recoupement d'informations en ligne : ce que vous publiez peut dévoiler votre vie privée » (6 février 2024) : https://www.cnil.fr/fr/recoupement-dinformations-en-ligne-ce-que-vous-publiez-peut-devoiler-votre-vie-privee
-- CNIL, « Les conseils de la CNIL pour un bon mot de passe » : https://www.cnil.fr/fr/les-conseils-de-la-cnil-pour-un-bon-mot-de-passe
-- Cybermalveillance.gouv.fr, « Protéger ses appareils mobiles » (mise à jour le 18 mai 2026) : https://www.cybermalveillance.gouv.fr/tous-nos-contenus/bonnes-pratiques/appareils-mobiles
-- Cybermalveillance.gouv.fr, « Pourquoi et comment bien gérer ses mots de passe ? » : https://www.cybermalveillance.gouv.fr/tous-nos-contenus/bonnes-pratiques/mots-de-passe
-- Cybermalveillance.gouv.fr, « Que faire en cas de phishing ou hameçonnage ? » : https://www.cybermalveillance.gouv.fr/tous-nos-contenus/fiches-reflexes/hameconnage-phishing
-- EFF, Surveillance Self-Defense, « Attending a Protest » (en anglais, revue le 26 juin 2026) : https://ssd.eff.org/module/attending-protest
-- EFF, Surveillance Self-Defense, « Communicating With Others » (en anglais) : https://ssd.eff.org/module/communicating-others
-- EFF, Surveillance Self-Defense, « Key Verification » (en anglais) : https://ssd.eff.org/module/key-verification
-
-Pages consultées le 8 novembre 2026.
+- Code pénal, article 434-15-2, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032654251
+- Cour de cassation, assemblée plénière, 7 novembre 2022, pourvoi n° 21-83.146 (texte intégral sur Légifrance), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/juri/id/JURITEXT000046583035
+- Conseil constitutionnel, décision n° 2018-696 QPC du 30 mars 2018, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2018/2018696QPC.htm
+- Code pénal, article 434-4, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006418608
+- Code pénal, article 223-1-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049312762
+- Code pénal, article 226-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049312755
+- Code de procédure pénale, article 56 (en vigueur au 9 novembre 2026, renuméroté le 1er janvier 2029), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042779588
+- Code de procédure pénale, article 57-1 (en vigueur au 9 novembre 2026, renuméroté le 1er janvier 2029), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047053305
+- Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, article 30, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006421577
+- Service-public.gouv.fr, « Garde à vue » (F14837, vérifiée le 10 juillet 2025), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F14837
+- Service-public.gouv.fr, « Droit à l'image et respect de la vie privée » (F32103, vérifiée le 6 mai 2022), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F32103
+- CNIL, « Le droit à l'image s'applique-t-il sur internet ? », consulté le 2026-11-09 : https://www.cnil.fr/fr/cnil-direct/question/le-droit-limage-sapplique-t-il-sur-internet
+- CNIL, « Recoupement d'informations en ligne : ce que vous publiez peut dévoiler votre vie privée » (6 février 2024), consulté le 2026-11-09 : https://www.cnil.fr/fr/recoupement-dinformations-en-ligne-ce-que-vous-publiez-peut-devoiler-votre-vie-privee
+- CNIL, « Les conseils de la CNIL pour un bon mot de passe », consulté le 2026-11-09 : https://www.cnil.fr/fr/les-conseils-de-la-cnil-pour-un-bon-mot-de-passe
+- Cybermalveillance.gouv.fr, « Protéger ses appareils mobiles » (mise à jour le 18 mai 2026), consulté le 2026-11-09 : https://www.cybermalveillance.gouv.fr/tous-nos-contenus/bonnes-pratiques/appareils-mobiles
+- Cybermalveillance.gouv.fr, « Pourquoi et comment bien gérer ses mots de passe ? » (mise à jour le 5 octobre 2026), consulté le 2026-11-09 : https://www.cybermalveillance.gouv.fr/tous-nos-contenus/bonnes-pratiques/mots-de-passe
+- Cybermalveillance.gouv.fr, « Que faire en cas de phishing ou hameçonnage ? » (mise à jour le 26 octobre 2026), consulté le 2026-11-09 : https://www.cybermalveillance.gouv.fr/tous-nos-contenus/fiches-reflexes/hameconnage-phishing
+- EFF, Surveillance Self-Defense, « Attending a Protest » (en anglais, revue le 26 juin 2026), consulté le 2026-11-09 : https://ssd.eff.org/module/attending-protest
+- EFF, Surveillance Self-Defense, « Communicating With Others » (en anglais, revue le 6 août 2024), consulté le 2026-11-09 : https://ssd.eff.org/module/communicating-others
+- EFF, Surveillance Self-Defense, « Key Verification » (en anglais, revue le 1er janvier 2025), consulté le 2026-11-09 : https://ssd.eff.org/module/key-verification

@@ -943,6 +943,21 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - **Licence** : celle de tous les contenus de PPF, choisie par la propriétaire le 8 novembre 2026 (« Ok licence option b ») : CC BY 4.0 pour les textes et les images, Licence Ouverte 2.0 pour les données. Pas de licence propre aux enseignants ; les fiches se branchent sur le mécanisme commun d'identifiant de licence par type de contenu que met en place « Voir ».
 - Les fiches restent marquées [EXEMPLE], avec la mention « rédigé avec l'aide d'une IA », jusqu'à leur relecture par l'équipe éditoriale. Ordre : après CO-19, CO-12 et CO-18 (CO-18 attend l'étape 2 de M30 du Directeur technique, D-143).
 
+## D-097 (2026-11-09) Date de revue commune `ppf-review-by` et file « À revoir »
+
+- Décision du chef d'équipe le 9 novembre 2026, sur la proposition de « Comprendre » (date de revue de CO-12), avec l'accord de « Voir » et la proposition du Directeur technique pour le back-office.
+- **Une seule définition pour tous** : champ commun facultatif `review_by` du moteur à schéma (`ContentSchema.reviewBy`, facultatif pour chaque type de « Comprendre » et de « Voir »), date `AAAA-MM-JJ`, étiquette `ppf-review-by` écrite après les étiquettes propres au type (absente, l'événement ne change pas d'un octet), lue par `core.editorial.ReviewDates`. Le moteur refuse une date qui ne tombe pas après la date de mise à jour ; le serveur, une date qui ne tombe pas après le jour même (la version publiée est datée au moment de la signature).
+- **Une date passée ne masque ni ne bloque aucun contenu** et rien n'est montré au public : elle alimente seulement le suivi de la rédaction.
+- **File « À revoir »** dans chaque section éditoriale (`editorial.comprendre.a_revoir`, `editorial.voir.a_revoir`, vues par les éditeurs de l'espace) : les contenus publiés dont la date est passée ou tombe dans les 60 jours, avec cette date pour échéance (niveau 3 si elle est passée, 2 sinon) ; le tableau de bord les trie, retards en tête, sans rien ajouter au socle. La seule action ouvre un brouillon de mise à jour (page de la section, puis le formulaire habituel), avec une nouvelle date.
+- **Une revue sans changement publie quand même une nouvelle version**, avec la mention « mise à jour » dans le journal public des corrections (D-095).
+- Dans « Voir », la date reste facultative pour commencer. Première utilisation : la fiche CO-12 « Sécurité numérique des militants », à revoir au plus tard le 1er octobre 2028.
+
+## D-098 (2026-11-09) « Mes élus » : un emplacement facultatif sous chaque élu
+
+- Décision du chef d'équipe le 9 novembre 2026, sur la proposition de « Voir » (« mon maire, mon député a parrainé »).
+- « Comprendre » fournit sous chaque élu de la page « Mes élus » un emplacement (`LocalElectedOfficialExtra`) qui n'affiche rien par défaut. « Voir » le remplira après les entrées des deux pôles dans `main`, avec les parrainages lus sur l'appareil seulement et un lien vers sa page ; le même emplacement portera le lien « Leurs votes au Parlement » (VO-34).
+- Jamais de mention « n'a pas parrainé », jamais de bouton pour interpeller l'élu. L'emplacement n'apparaît pas dans les encadrés des fiches « Qui décide de ça ? ».
+
 ## D-100 (2026-11-07) « Cette semaine au Parlement »
 
 - Contexte : cahier fonctionnel 2.0, M20 (VO-31), repris dans « En direct » (M19) ; sources vérifiées : `docs/integration/voir-historique-sources.md` ; détail : `docs/integration/voir-semaine.md`.
@@ -1386,6 +1401,14 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : une seule chaîne chiffrée à tenir et à relire, les mêmes échéances, archives et durées que les autres dossiers, aucun compte jamais relié (l'application ne le propose pas pour ce sous-type) ; l'équipe de vérification ne voit que ces dossiers, par une permission dédiée.
 - Mise en œuvre (branche `feature/contact`) : `TicketSubtype.VERIFICATION` (`verification`) dans le code commun, objectif interne de 15 jours (`CaseGoals.verificationDays`, réglable par `PPF_CASE_GOAL_VERIFICATION_DAYS`) ; permission `contact.verification`, donnée au rôle `editor`, qui n'ouvre que les tickets `verification` (voir, s'assigner ou assigner à un membre qui peut les traiter, priorité, statut, clôture) ; section `verifications`, « Demandes de vérification », enregistrée comme une deuxième portée de la section « Échanges » (`ContactScope.VERIFICATION`), sa boîte limitée par la requête elle-même ; tout autre dossier y répond comme un numéro inconnu. Les modérateurs (`contact.triage`) gardent ces dossiers dans la boîte générale.
 - Limites de la version 1 (contrat `docs/integration/contact-reclamations.md`, section 11, point 14) : chiffrement pour la clé de la boîte de l'équipe, comme les autres dossiers ; une boîte par usage (comme pour le bénévolat, D-146) pourra les reprendre plus tard, sans coût tant qu'aucune donnée réelle n'existe ; aucune pièce jointe (l'image de CO-29 demandera une étape ultérieure).
+
+## D-200 (2026-11-11) Textes du cap du mouvement : un type de contenu `cap`, faits ou position
+
+- Contexte : feuille de route du MVP 1 (section 5) et D-212 (« Pour l'instant tout est rédigé par ia [...] puis les humains reliront ») : les textes de position de PPF doivent porter une étiquette distincte, « Position de PPF, rédigée par l'IA, en attente de relecture », alors que les contenus factuels portent « Rédigé par l'IA ». Le format des contenus ne savait pas distinguer les deux.
+- Options : A, un type `position-ppf` réservé aux positions ; B, un type `cap` pour toute la série, avec un champ `nature` (`faits` ou `position`) et un champ `rank` (place dans la série) ; C, une nouvelle valeur d'origine.
+- Choix : **B**, décision technique prise en autonomie (session « Comprendre et contenus »), le dossier `content/cap` et le principe d'un nouveau type ayant été acceptés par le chef d'équipe le 11 novembre 2026.
+- Raison : la série mêle textes factuels (maintien de l'ordre, monde) et positions ; un seul type garde la série ensemble et dans l'ordre, et l'étiquette dépend de la nature ; l'origine (`human` ou `ai-assisted`) garde son sens. Quand un humain aura relu une position, `origin: human` (ou une mention de relecture) fera disparaître « en attente de relecture ».
+- Mise en œuvre : `ArticleType.CAP` (`cap`, ajouté à la fin), `core/comprendre/CapText.kt` (`CapNature`, `ppf-nature`, `ppf-rank`), `ComprendreSchemas.CAP` (bloc « Et maintenant ? » obligatoire, sources), `ComprendreLinks` (`/comprendre/cap/<identifiant>`), outil de signature (écrit en dernier dans `comprendre.json`), libellés du serveur, section de l'accueil et page de détail dans l'application (`capOrigin`), pages du site (`CapPages.kt`). Session Socle prévenue pour l'affichage hors de Comprendre.
 
 ## D-144 (2026-11-08) Usage de signature « groups.takeover » : la reprise d'un salon sans administrateur signée par la plateforme
 

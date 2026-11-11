@@ -1,6 +1,6 @@
 ---
 slug: glossaire-proposition-de-loi
-title: [EXEMPLE] Proposition de loi
+title: Proposition de loi
 summary: Texte de loi déposé par un ou plusieurs députés ou sénateurs. Il suit au Parlement le même parcours qu'un projet de loi, sans passer par le Conseil des ministres.
 variants: proposition de loi, propositions de loi, PPL
 topics: institutions, parlement
@@ -8,7 +8,7 @@ see_also: glossaire-projet-de-loi, glossaire-amendement, glossaire-navette-parle
 related: parcours:comment-une-loi-est-votee, parcours:le-referendum
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Une proposition de loi est un texte de loi déposé par un ou plusieurs membres du Parlement, députés ou sénateurs (Constitution, article 39).
 
@@ -26,4 +26,4 @@ Exemple : des députés de plusieurs groupes déposent une proposition de loi su
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 11, 39, 40 et 45)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 11, 39, 40 et 45)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09

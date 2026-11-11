@@ -1,6 +1,6 @@
 ---
 slug: glossaire-parrainage
-title: [EXEMPLE] Parrainage
+title: Parrainage
 summary: Signature d'un élu qui présente un candidat à l'élection présidentielle. Il en faut au moins 500, venant d'élus d'au moins 30 départements ou collectivités d'outre-mer.
 variants: parrainage, parrainages, 500 signatures, présentations de candidats
 topics: elections
@@ -8,7 +8,7 @@ see_also: glossaire-president-de-la-republique, glossaire-conseil-constitutionne
 related: parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Pour être candidat à l'élection présidentielle, il faut être présenté par au moins 500 élus. La loi parle de « présentations » ; dans la vie courante, on dit « parrainages » ou « signatures » (loi du 6 novembre 1962, article 3).
 
@@ -26,4 +26,4 @@ La présentation n'est pas un vote : c'est une condition pour qu'une candidature
 
 ## Sources
 
-- [Loi n° 62-1292 du 6 novembre 1962 relative à l'élection du Président de la République au suffrage universel, article 3, version en vigueur](https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000052081106)
+- [Loi n° 62-1292 du 6 novembre 1962 relative à l'élection du Président de la République au suffrage universel, article 3, version en vigueur](https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000052081106), consulté le 2026-11-09

@@ -1,13 +1,13 @@
 ---
 slug: le-role-de-chaque-elu
-title: [EXEMPLE] Le rôle de chaque élu
+title: Le rôle de chaque élu
 summary: De la commune à l'Union européenne, qui élit chaque élu, pour combien de temps, et ce qu'il décide.
 topics: institutions, elections, collectivites
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Les **conseillers municipaux**, **départementaux** et **régionaux** sont élus pour **six ans** ; le **maire** est élu par le conseil municipal.
@@ -15,8 +15,6 @@ updated_at: 2026-11-07
 - Les **députés européens** sont élus pour **cinq ans**, à la proportionnelle, sur des listes nationales.
 - Le **Président de la République** est élu pour **cinq ans** au suffrage universel direct, deux mandats consécutifs au plus.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## La commune : le conseil municipal et le maire
 
@@ -36,7 +34,7 @@ Le conseil municipal « règle par ses délibérations les affaires de la commun
 
 ## Le département et la région
 
-Les conseillers départementaux sont élus pour six ans (Code électoral, article L192). Dans chaque canton, les électeurs choisissent un binôme : une femme et un homme qui se présentent ensemble (article L191). Pour gagner au premier tour, un binôme doit obtenir la majorité absolue des voix et au moins un quart des électeurs inscrits ; sinon, un second tour a lieu.
+Les conseillers départementaux sont élus pour six ans (Code électoral, article L192). Dans chaque canton, les électeurs choisissent un binôme : une femme et un homme qui se présentent ensemble (article L191). Pour gagner au premier tour, un binôme doit obtenir la majorité absolue des voix et au moins un quart des électeurs inscrits ; sinon, un second tour a lieu (article L193).
 
 Le département agit surtout pour la solidarité : personnes fragiles, petite enfance, autonomie des personnes âgées et handicapées (CGCT, article L3211-1). Il verse par exemple le revenu de solidarité active (RSA). Il a aussi la charge des collèges et des routes départementales.
 
@@ -102,7 +100,7 @@ D'après la Constitution, c'est le Gouvernement, dirigé par le Premier ministre
 ? « Le maire est élu directement par les habitants. »
 > Non. Les électeurs élisent le conseil municipal ; c'est ensuite le conseil municipal qui élit le maire parmi ses membres, au scrutin secret et à la majorité absolue (CGCT, articles L2122-4 et L2122-7).
 ? « Les sénateurs ne sont élus par personne. »
-> Ils sont élus, mais au suffrage indirect : par des élus du département, dont 95 % sont des délégués des conseils municipaux, eux-mêmes élus par les électeurs de leur commune (Constitution, article 24 ; Sénat, dossier de presse des sénatoriales 2026).
+> Ils sont élus, mais au suffrage indirect : par des élus du département, dont 95 % sont des délégués des conseils municipaux, eux-mêmes élus par les électeurs de leur commune (Constitution, article 24 ; Sénat, « Mode d'élection des sénateurs »).
 :::
 
 ::: et-maintenant
@@ -113,27 +111,29 @@ D'après la Constitution, c'est le Gouvernement, dirigé par le Premier ministre
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 6 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241002
-- Constitution du 4 octobre 1958, article 7 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527466
-- Constitution du 4 octobre 1958, article 24 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241014
-- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 5, 8, 9, 10, 12, 15, 20, 21 et 49) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Code électoral, article L227 (durée du mandat municipal) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006353530
-- Code électoral, articles L252 à L255-1 (communes de moins de 1 000 habitants) : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006164070/
-- Code électoral, articles L260 à L262 (scrutin de liste municipal) : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006164073/
-- Code électoral, articles L191 à L192 (conseillers départementaux) : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000027573170/
-- Code électoral, article L336 (conseillers régionaux) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027469056
-- Code électoral, articles L338 à L338-1 (scrutin régional) : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006148519/
-- Code électoral, articles L123 à L126 (élection des députés) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148464/
-- Code général des collectivités territoriales, article L2121-29 (conseil municipal) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006180961/
-- Code général des collectivités territoriales, articles L2122-4, L2122-7 et L2122-18 (maire) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006164545/
-- Code général des collectivités territoriales, article L3211-1 (département) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045212762
-- Ministère chargé des collectivités territoriales, tableau de répartition des compétences (actualisation de juillet 2025) : https://www.collectivites-locales.gouv.fr/files/files/3.%20Animer%20les%20territoires/Tableau%20r%C3%A9paratition%20des%20comp%C3%A9tences_actualisation%20au%20220825.pdf
-- Loi n° 77-729 du 7 juillet 1977 relative à l'élection des représentants au Parlement européen : https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006068600/
-- Service-public.gouv.fr, « Élections municipales » (vérifié le 8 avril 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1952
-- Service-public.gouv.fr, « Élections départementales et régionales » (vérifié le 15 septembre 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1958
-- Service-public.gouv.fr, « Élections législatives » (vérifié le 19 juin 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1943
-- Service-public.gouv.fr, « Élections européennes » (vérifié le 14 août 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1944
-- Sénat, dossier de presse « Sénatoriales 2026 » : https://www.senat.fr/fileadmin/cru-1781387320/Presse/Dossiers_de_presse/Senatoriales_2026_dossier_presse.pdf
-- Parlement européen, fiche thématique « Le Parlement européen : modalités d'élection » (avril 2026) : https://www.europarl.europa.eu/factsheets/fr/sheet/21/le-parlement-europeen-modalites-d-election
-- Parlement européen, fiche thématique « Le Parlement européen : compétences » (avril 2026) : https://www.europarl.europa.eu/factsheets/fr/sheet/19/le-parlement-europeen-competences
-- Bureau du Parlement européen en France, « Trombinoscope » (9 janvier 2025), 81 sièges pour la France : https://paris.europarl.europa.eu/home/pagecontent/grid/main/actualites/trombinoscope.html
+- Constitution du 4 octobre 1958, article 6, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241002
+- Constitution du 4 octobre 1958, article 7, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527466
+- Constitution du 4 octobre 1958, article 24, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241014
+- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 5, 8, 9, 10, 12, 15, 20, 21 et 49), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Code électoral, article L227 (durée du mandat municipal), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006353530
+- Code électoral, articles L252 à L255-1 (communes de moins de 1 000 habitants), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006164070/
+- Code électoral, articles L260 à L262 (scrutin de liste municipal), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006164073/
+- Code électoral, articles L191 à L192 (conseillers départementaux), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000027573170/
+- Code électoral, article L193 (élection des conseillers départementaux au premier tour), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027433729
+- Code électoral, article L336 (conseillers régionaux), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027469056
+- Code électoral, articles L338 à L338-1 (scrutin régional), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006148519/
+- Code électoral, articles L123 à L126 (élection des députés), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148464/
+- Code général des collectivités territoriales, article L2121-29 (conseil municipal), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006180961/
+- Code général des collectivités territoriales, articles L2122-4, L2122-7 et L2122-18 (maire), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000006164545/
+- Code général des collectivités territoriales, article L3211-1 (département), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045212762
+- Ministère chargé des collectivités territoriales, tableau de répartition des compétences (actualisation de juillet 2025), consulté le 2026-11-09 : https://www.collectivites-locales.gouv.fr/files/files/3.%20Animer%20les%20territoires/Tableau%20r%C3%A9paratition%20des%20comp%C3%A9tences_actualisation%20au%20220825.pdf
+- Loi n° 77-729 du 7 juillet 1977 relative à l'élection des représentants au Parlement européen, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006068600/
+- Service-public.gouv.fr, « Élections municipales » (vérifié le 8 avril 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1952
+- Service-public.gouv.fr, « Élections départementales et régionales » (vérifié le 6 novembre 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1958
+- Service-public.gouv.fr, « Élections législatives » (vérifié le 19 juin 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1943
+- Service-public.gouv.fr, « Élections européennes » (vérifié le 14 août 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1944
+- Sénat, dossier de presse « Sénatoriales 2026 », consulté le 2026-11-09 : https://www.senat.fr/fileadmin/cru-1781387320/Presse/Dossiers_de_presse/Senatoriales_2026_dossier_presse.pdf
+- Sénat, « Mode d'élection des sénateurs » (délégués des conseils municipaux : 95 % des grands électeurs), consulté le 2026-11-09 : https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html
+- Parlement européen, fiche thématique « Le Parlement européen : modalités d'élection » (avril 2026), consulté le 2026-11-09 : https://www.europarl.europa.eu/factsheets/fr/sheet/21/le-parlement-europeen-modalites-d-election
+- Parlement européen, fiche thématique « Le Parlement européen : compétences » (avril 2026), consulté le 2026-11-09 : https://www.europarl.europa.eu/factsheets/fr/sheet/19/le-parlement-europeen-competences
+- Bureau du Parlement européen en France, « Trombinoscope » (9 janvier 2025), 81 sièges pour la France, consulté le 2026-11-09 : https://paris.europarl.europa.eu/home/pagecontent/grid/main/actualites/trombinoscope.html
