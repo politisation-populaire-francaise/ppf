@@ -9,7 +9,7 @@ agp = "9.3.3"
 compose = "1.12.2"
 # Material 3 is versioned separately by JetBrains; 1.12.0-alpha03 is the version officially
 # paired with Compose Multiplatform 1.12.x (release notes of 1.12.0). No stable 1.12 exists yet.
-composeMaterial3 = "1.12.0-alpha03"
+composeMaterial3 = "1.13.0-beta02"
 ktor = "3.6.1"
 # UnifiedPush connector (Apache 2.0): notifications without Google, wake-ups only (D-130).
 unifiedpush = "3.3.5"
