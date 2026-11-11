@@ -76,9 +76,16 @@ object CaseEnvelopes {
      * of proof of work. Throws [CaseFormatException] for an invalid message and [CaseEnvelopeException] when
      * the result would be larger than [MAX_ENVELOPE_BYTES] (checked before mining).
      */
-    suspend fun build(message: CaseMessage, sender: MessagingSigner, recipient: PublicKey, work: Int = 0, now: Long = currentEpochSeconds()): SignedEvent {
+    suspend fun build(message: CaseMessage, sender: MessagingSigner, recipient: PublicKey, work: Int = 0, now: Long = currentEpochSeconds()): SignedEvent =
+        buildText(message.toJson(), sender, recipient, work, now)
+
+    /**
+     * The same envelope around any text (a private message of kind 14 holding [content]), for the other requests sent
+     * to a single reader through the server, such as the signups to a slot of a call (AP-11).
+     */
+    suspend fun buildText(content: String, sender: MessagingSigner, recipient: PublicKey, work: Int = 0, now: Long = currentEpochSeconds()): SignedEvent {
         require(work in 0..ProofOfWork.MAX_MINED_BITS) { "The proof of work is between 0 and ${ProofOfWork.MAX_MINED_BITS} bits" }
-        val rumor = Rumor.of(UnsignedEvent.create(sender.publicKey, EventKinds.CHAT_MESSAGE, now, listOf(listOf("p", recipient.hex)), message.toJson()))
+        val rumor = Rumor.of(UnsignedEvent.create(sender.publicKey, EventKinds.CHAT_MESSAGE, now, listOf(listOf("p", recipient.hex)), content))
         val seal = try {
             GiftWrap.seal(rumor, sender, recipient, GiftWrap.randomPastTimestamp(now))
         } catch (e: Nip44Exception) {

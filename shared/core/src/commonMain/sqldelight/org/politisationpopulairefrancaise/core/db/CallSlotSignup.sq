@@ -1,0 +1,33 @@
+-- The signups of the user to the slots of calls (AP-11), on the device only: the envelope id the server knows,
+-- the call and the slot, the token that withdraws the signup (the server keeps only its hash) and the end of the
+-- slot, after which the row is forgotten (CallSlots.DEVICE_KEPT_AFTER_END). A signup reveals an engagement, a
+-- sensitive datum under article 9 of the GDPR: part of the quick erase of Agir (S-44).
+-- Added in schema version 19: existing databases get it through migrations/18.sqm.
+
+CREATE TABLE call_slot_signup (
+    id TEXT NOT NULL PRIMARY KEY,
+    call_address TEXT NOT NULL,
+    slot_id TEXT NOT NULL,
+    token TEXT NOT NULL,
+    slot_end INTEGER NOT NULL
+);
+
+CREATE INDEX call_slot_signup_call ON call_slot_signup(call_address);
+
+insert:
+INSERT OR REPLACE INTO call_slot_signup(id, call_address, slot_id, token, slot_end) VALUES (?, ?, ?, ?, ?);
+
+selectOfCall:
+SELECT * FROM call_slot_signup WHERE call_address = ? ORDER BY slot_id;
+
+deleteById:
+DELETE FROM call_slot_signup WHERE id = ?;
+
+deleteEndedBefore:
+DELETE FROM call_slot_signup WHERE slot_end < ?;
+
+deleteAll:
+DELETE FROM call_slot_signup;
+
+countAll:
+SELECT COUNT(*) FROM call_slot_signup;

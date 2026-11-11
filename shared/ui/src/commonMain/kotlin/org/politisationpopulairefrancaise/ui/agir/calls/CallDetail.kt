@@ -41,6 +41,7 @@ import org.politisationpopulairefrancaise.core.agir.calls.CallFields
 import org.politisationpopulairefrancaise.core.agir.calls.CallResponse
 import org.politisationpopulairefrancaise.core.agir.calls.CallRules
 import org.politisationpopulairefrancaise.core.agir.calls.CallType
+import org.politisationpopulairefrancaise.core.messaging.MessagingSigner
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
@@ -91,6 +92,8 @@ internal fun CallDetail(
     closeOutcome: CallSendOutcome?,
     modifier: Modifier = Modifier,
     onMakePoster: ((Call) -> Unit)? = null,
+    /** The key of the account, to read the names signed up to the slots of the user's own call (AP-11). */
+    messagingSigner: MessagingSigner? = null,
 ) {
     val palette = PpfTheme.palette
     val now = library.now()
@@ -126,6 +129,7 @@ internal fun CallDetail(
                 }
             }
             AnswerCard(call, library)
+            SlotsCard(call, library.slots, messagingSigner?.takeIf { accountKey != null && call.author == accountKey })
             if (call.type == CallType.TEMOINS) {
                 InfoBox(Lucide.ShieldCheck) { Text(stringResource(Res.string.appels_witnesses_info), style = MaterialTheme.typography.bodyMedium) }
             }
