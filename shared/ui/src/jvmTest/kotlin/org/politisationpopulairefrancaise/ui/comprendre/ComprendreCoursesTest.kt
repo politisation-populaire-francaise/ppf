@@ -91,6 +91,8 @@ class ComprendreCoursesTest {
                 "l-union-europeenne-qui-decide-quoi", "commune-departement-region", "se-presenter-a-une-election", "les-petitions-officielles",
                 // Laicite and fascism (CO-21, CO-22).
                 "la-laicite", "comprendre-le-fascisme",
+                // Unions and bargaining (MVP 1).
+                "syndicats-et-negociation",
                 // One lesson a day for newcomers (CO-19).
                 "je-decouvre",
             ),

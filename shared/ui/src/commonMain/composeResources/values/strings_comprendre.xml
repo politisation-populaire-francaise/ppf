@@ -148,6 +148,7 @@
     <string name="comprendre_results_none">Aucun contenu ne correspond. Essayez un autre mot ou un autre thème.</string>
     <string name="comprendre_results_clear">Effacer la recherche</string>
     <string name="comprendre_resume_title">Reprendre là où vous en étiez</string>
+    <string name="comprendre_resume_step">Vous en êtes à l’étape %1$d sur %2$d</string>
     <string name="comprendre_resume_action">Continuer</string>
     <string name="comprendre_section_count">%1$d contenus, faites défiler sur le côté</string>
     <string name="comprendre_reading_time">%1$d min de lecture</string>

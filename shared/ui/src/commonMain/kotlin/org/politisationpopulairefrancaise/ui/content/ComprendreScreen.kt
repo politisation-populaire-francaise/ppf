@@ -115,6 +115,7 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_histoire
 import org.politisationpopulairefrancaise.ui.resources.comprendre_results_count
 import org.politisationpopulairefrancaise.ui.resources.comprendre_results_none
 import org.politisationpopulairefrancaise.ui.resources.comprendre_results_clear
+import org.politisationpopulairefrancaise.ui.resources.comprendre_resume_step
 import org.politisationpopulairefrancaise.ui.resources.comprendre_resume_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_resume_action
 import org.politisationpopulairefrancaise.ui.resources.comprendre_section_count
@@ -324,9 +325,9 @@ private fun ComprendreHome(
     val stories = comprendre.stories.filter { shown(it.article) }
     val dossiers = comprendre.dossiers.filter { shown(it) }
     val found = capTexts.size + courses.size + sheets.size + checks.size + guides.size + stories.size + dossiers.size
-    // On the home, each section is one row of cards scrolled sideways, so that the whole space fits in a
-    // few screens; the results of a search or a theme are listed one under the other.
-    val horizontal = !filtering
+    // Rows scrolled sideways (CardFlow) are kept for later: the cards stay one under the other for now,
+    // and the themes and the search are the way to narrow the list.
+    val horizontal = false
     val cardWidth = if (compact) 280.dp else 320.dp
     Column(modifier.verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(ComprendreTags.HOME)) {
         Column(Modifier.widthIn(max = 760.dp)) {
@@ -587,7 +588,7 @@ private fun ResumeCard(course: Parcours, progress: ParcoursProgress, onOpen: () 
         Spacer(Modifier.height(4.dp))
         Text(displayTitle(course), style = MaterialTheme.typography.titleSmall)
         Spacer(Modifier.height(4.dp))
-        Text(progressLine(course, progress), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+        Text(stringResource(Res.string.comprendre_resume_step, (progress.furthestStep + 1).coerceAtMost(course.steps.size), course.steps.size), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
         Spacer(Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
             Text(stringResource(Res.string.comprendre_resume_action), style = MaterialTheme.typography.titleSmall, color = palette.brand, modifier = Modifier.weight(1f))
