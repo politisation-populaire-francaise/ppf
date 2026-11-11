@@ -5,6 +5,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 ## Non publié
 
 ### Modifié
+- Ergonomie (11 novembre 2026, D-240, D-241) : menu en sept rubriques (S'informer, Comprendre, Témoigner, Revendiquer, S'unir et s'organiser, Se politiser, Agir) avec sous-rubriques en accordéon ; tutoriel court en cartes blanches, à l'essai ; bouton AIDE plus petit dans la barre du téléphone.
 - Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
 
 ### Ajouté

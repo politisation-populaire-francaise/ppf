@@ -104,14 +104,15 @@ fun HelpButton(modifier: Modifier = Modifier, fullWidth: Boolean = false, stacke
         shape = MaterialTheme.shapes.small,
         colors = ButtonDefaults.buttonColors(containerColor = palette.accent, contentColor = palette.onAccent),
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp, focusedElevation = 0.dp, hoveredElevation = 0.dp),
-        contentPadding = PaddingValues(horizontal = when { stacked -> 4.dp; compact -> 12.dp; else -> 16.dp }, vertical = 0.dp),
+        // Ergonomics, 11 November 2026 (owner: « le bouton aide devrait etre un peu moins gros »): smaller in the phone's bar.
+        contentPadding = PaddingValues(horizontal = when { stacked -> 4.dp; compact -> 10.dp; else -> 16.dp }, vertical = 0.dp),
         modifier = modifier
             .then(if (fullWidth || stacked) Modifier.fillMaxWidth() else Modifier)
-            .heightIn(min = if (compact) 36.dp else 40.dp)
+            .then(if (compact) Modifier.height(30.dp) else Modifier.heightIn(min = 40.dp))
             .semantics { contentDescription = description }
             .testTag(ManifestationTags.HELP_BUTTON),
     ) {
-        Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = 14.sp, letterSpacing = 0.5.sp, maxLines = 1)
+        Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = if (compact) 12.sp else 14.sp, letterSpacing = 0.5.sp, maxLines = 1)
     }
 }
 

@@ -72,37 +72,33 @@ class FirstLaunchTutorialTest {
         onNodeWithTag(TutorialTags.SCREEN).assertIsDisplayed()
         onNodeWithTag(ShellTags.BOTTOM_BAR).assertDoesNotExist()
         val titles = listOf(
-            "Ensemble, sauvons la démocratie",
-            "Comment faire",
-            "S’informer",
-            "Comprendre",
-            "Témoigner",
-            "Revendiquer",
-            "Communiquer",
-            "Se politiser",
-            "Agir",
-            "Vos données vous appartiennent",
+            "Ensemble, reprenons la démocratie",
+            "Tout pour agir",
+            "Agir près de chez vous",
+            "Seuls on subit",
+            "Votre voix compte",
+            "Protégé, toujours",
             "Par où commencer",
         )
         assertEquals(TutorialStep.entries.size, titles.size)
-        // Her pictures on the screens 1, 2 and 6; the « Bientôt » boxes on « s'unir » and « Agir » only.
-        val pictures = setOf(0, 1, 5)
-        val soon = setOf(6, 8)
+        // Her pictures on the screens 1 and 5 (short version, D-241); the « Bientôt » boxes on « Agir » and « s'unir » only.
+        val pictures = setOf(0, 4)
+        val soon = setOf(2, 3)
         titles.forEachIndexed { index, title ->
             onNodeWithTag(TutorialTags.TITLE).assert(hasText(title, substring = true))
             // « non enlève les étapes »: no number in the titles, only the counter of the interface.
             assertFalse(onNodeWithTag(TutorialTags.TITLE).fetchSemanticsNode().config.toString().contains("Étape"), "no step number in the title ${index + 1}")
-            onNodeWithText("Étape ${index + 1} sur 11").assertExists()
+            onNodeWithText("Étape ${index + 1} sur 7").assertExists()
             onNodeWithTag(TutorialTags.SKIP).assertIsDisplayed()
             assertEquals(index in pictures, has(TutorialTags.ILLUSTRATION), "picture on screen ${index + 1}")
             assertEquals(index in soon, has(TutorialTags.SOON), "Bientôt on screen ${index + 1}")
             assertEquals(index > 0, has(TutorialTags.PREVIOUS), "Précédent on screen ${index + 1}")
             // No label of origin on the tutorial any more (« tu pourras retirer "écrit par une ia" »).
             assertTrue(onAllNodesWithText("par l’IA", substring = true).fetchSemanticsNodes().isEmpty(), "label of origin on screen ${index + 1}")
-            if (index == 5) assertTrue(onAllNodesWithText("Constitution Citoyenne et Démocratique", substring = true).fetchSemanticsNodes().isNotEmpty(), "her new name of the pact")
+            if (index == 4) assertTrue(onAllNodesWithText("Constitution Citoyenne et Démocratique", substring = true).fetchSemanticsNodes().isNotEmpty(), "her new name of the pact")
             if (index == 0) {
                 onNodeWithTag(TutorialTags.ILLUSTRATION).assertIsDisplayed()
-                assertTrue(onAllNodesWithText("sauver notre démocratie", substring = true).fetchSemanticsNodes().isNotEmpty(), "her text, word for word")
+                assertTrue(onAllNodesWithText("au-delà de nos opinions", substring = true).fetchSemanticsNodes().isNotEmpty(), "the short text (D-241)")
             }
             if (index < titles.lastIndex) {
                 onNodeWithTag(TutorialTags.NEXT).performClick()
@@ -187,7 +183,7 @@ class FirstLaunchTutorialTest {
         onNodeWithTag(TutorialTags.REPLAY).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(TutorialTags.SCREEN).assertIsDisplayed()
-        onNodeWithText("Étape 1 sur 11").assertExists()
+        onNodeWithText("Étape 1 sur 7").assertExists()
         onNodeWithTag(TutorialTags.ILLUSTRATION, useUnmergedTree = true).assertExists()
     }
 

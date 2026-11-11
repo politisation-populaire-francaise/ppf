@@ -19,6 +19,10 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.ManifestationTag
 import org.politisationpopulairefrancaise.ui.decider.DeciderTags
 import org.politisationpopulairefrancaise.ui.endirect.EnDirectTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
+import org.politisationpopulairefrancaise.ui.shell.MenuRubric
+import org.politisationpopulairefrancaise.ui.shell.rubricTag
+import org.politisationpopulairefrancaise.ui.shell.openSpace
+import org.politisationpopulairefrancaise.ui.content.ComprendreTags
 import kotlin.test.Test
 
 /**
@@ -54,7 +58,7 @@ class AdaptiveShellTest {
         // The rest is in the menu, with the disclaimer: nothing already built is removed (D-210).
         onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
         waitForIdle()
-        for (space in Space.more) onNodeWithTag(ShellTags.navItem(space)).assertExists()
+        for (rubric in MenuRubric.entries) onNodeWithTag(rubricTag(rubric)).assertExists()
         onNodeWithText("Plateforme citoyenne indépendante, sans lien avec l’État ni le gouvernement.").assertExists()
     }
 
@@ -68,7 +72,7 @@ class AdaptiveShellTest {
 
         onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
         waitForIdle()
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         waitForIdle()
         onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).assertIsSelected()
         onNodeWithText("Aucune revendication pour l’instant.").assertExists() // no local database in this test
@@ -100,7 +104,7 @@ class AdaptiveShellTest {
         onNodeWithTag(ManifestationTags.HELP_BUTTON).assertIsDisplayed()
         onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
         waitForIdle()
-        onNodeWithTag(ShellTags.navItem(Space.DECIDER)).performClick()
+        openSpace(Space.DECIDER)
         waitForIdle()
         onNodeWithTag(DeciderTags.SCREEN).assertExists()
     }
@@ -132,22 +136,26 @@ class AdaptiveShellTest {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp() } }
         onNodeWithTag(ShellTags.SHELL_EXPANDED).assertExists()
         onNodeWithTag(ShellTags.NAV_DRAWER).assertExists()
-        for (space in Space.quickAccess + Space.more) onNodeWithTag(ShellTags.navItem(space)).assertExists()
-        onNodeWithTag(ShellTags.navItem(Space.DECIDER)).performClick()
+        for (space in Space.quickAccess) onNodeWithTag(ShellTags.navItem(space)).assertExists()
+        for (rubric in MenuRubric.entries) onNodeWithTag(rubricTag(rubric)).assertExists()
+        openSpace(Space.DECIDER)
         waitForIdle()
         onNodeWithTag(DeciderTags.SCREEN).assertExists()
         onNodeWithTag(ShellTags.navItem(Space.MESSAGES)).assertIsDisplayed()
     }
 
     @Test
-    fun selectingComprendreUnfoldsItsEntries() = runComposeUiTest {
+    fun aRubricOfTheMenuUnfoldsItsSubRubricsThenFoldsThem() = runComposeUiTest {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp() } }
-        onNodeWithTag(ShellTags.subItem("fiches")).assertDoesNotExist()
-        onNodeWithTag(ShellTags.navItem(Space.DECIDER)).performClick()
+        // D-240: the sub-rubrics stay folded until their rubric is touched; a sub-rubric opens its page.
+        onNodeWithTag(ShellTags.subItem("cap")).assertDoesNotExist()
+        onNodeWithTag(rubricTag(MenuRubric.COMPRENDRE)).performClick()
         waitForIdle()
-        onNodeWithText("Revendiquer, faire campagne, obliger les élus à s’engager, décider ensemble.").assertExists()
-        onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).performClick()
+        onNodeWithTag(ShellTags.subItem("cap")).assertIsDisplayed().performClick()
         waitForIdle()
-        onNodeWithTag(ShellTags.subItem("fiches")).assertIsDisplayed()
+        onNodeWithTag(ComprendreTags.HOME).assertExists()
+        onNodeWithTag(rubricTag(MenuRubric.COMPRENDRE)).performClick()
+        waitForIdle()
+        onNodeWithTag(ShellTags.subItem("cap")).assertDoesNotExist()
     }
 }

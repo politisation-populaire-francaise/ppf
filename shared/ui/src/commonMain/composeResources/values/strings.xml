@@ -18,7 +18,7 @@ Populaire Française</string>
     <string name="space_revendications">Revendications</string>
     <!-- Same word on two lines, for the narrow labels of the bottom bar and of the rail. -->
     <string name="space_revendications_bar">Revendi-\ncations</string>
-    <string name="space_voir">Voir</string>
+    <string name="space_voir">S’informer</string>
     <string name="space_comprendre">Comprendre</string>
     <string name="space_agir">Agir</string>
     <string name="space_decider">Décider</string>
