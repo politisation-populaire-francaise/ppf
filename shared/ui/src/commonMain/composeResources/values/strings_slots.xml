@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Slots of volunteering of the calls (AP-11). -->
+<resources>
+    <string name="slots_title">Créneaux</string>
+    <string name="slots_intro">Inscrivez-vous sur un créneau. Seul l’organisateur verra le nom que vous donnez, chiffré, jamais votre compte. Tout est effacé deux jours après le créneau.</string>
+    <string name="slots_places">%1$d sur %2$d places prises</string>
+    <string name="slots_places_unknown">%1$d places</string>
+    <string name="slots_signup">Je m’inscris</string>
+    <string name="slots_full">Complet</string>
+    <string name="slots_over">Créneau passé</string>
+    <string name="slots_mine">Inscription faite</string>
+    <string name="slots_withdraw">Me désinscrire</string>
+    <string name="slots_withdraw_failed">La désinscription n’est pas partie. Réessayez plus tard.</string>
+    <string name="slots_dialog_title">S’inscrire sur ce créneau</string>
+    <string name="slots_dialog_name">Nom ou pseudonyme pour l’organisateur (facultatif, 40 caractères au plus)</string>
+    <string name="slots_dialog_note">Ce nom part chiffré, pour l’organisateur seulement. Un rappel est programmé sur cet appareil deux heures avant le créneau.</string>
+    <string name="slots_dialog_send">M’inscrire</string>
+    <string name="slots_dialog_sending">Inscription en cours…</string>
+    <string name="slots_cancel">Annuler</string>
+    <string name="slots_close">Fermer</string>
+    <string name="slots_result_done">C’est noté : votre inscription sur ce créneau est enregistrée.</string>
+    <string name="slots_result_full">Ce créneau vient d’être complet.</string>
+    <string name="slots_result_unreachable">L’inscription n’est pas partie : pas de réseau ou serveur injoignable. Réessayez plus tard.</string>
+    <string name="slots_result_refused">Le serveur a refusé l’inscription (appel clos ou créneau passé).</string>
+    <string name="slots_no_server">Inscription impossible : cette version de l’application n’est pas reliée au serveur.</string>
+    <string name="slots_organizer_show">Voir les inscrits</string>
+    <string name="slots_organizer_none">Personne n’est encore inscrit.</string>
+    <string name="slots_organizer_note">Ces noms sont déchiffrés sur cet appareil seulement et ne sont gardés nulle part.</string>
+    <string name="slots_organizer_failed">Impossible de lire les inscriptions pour l’instant.</string>
+    <string name="slots_reminder_title">Créneau : %1$s</string>
+    <string name="slots_editor_title">Créneaux (facultatif)</string>
+    <string name="slots_editor_help">Découpez l’appel en créneaux à places limitées (piquet, permanence, accueil). Une heure de fin avant le début veut dire le lendemain.</string>
+    <string name="slots_editor_label">Intitulé du créneau</string>
+    <string name="slots_editor_date">Jour (JJ/MM/AAAA)</string>
+    <string name="slots_editor_start">Début (HH:MM)</string>
+    <string name="slots_editor_end">Fin (HH:MM)</string>
+    <string name="slots_editor_places">Places</string>
+    <string name="slots_editor_add">Ajouter un créneau</string>
+    <string name="slots_editor_remove">Retirer ce créneau</string>
+    <string name="slots_issue">Créneau %1$d : vérifiez l’intitulé, le jour, les heures et le nombre de places (1 à 999), sans coordonnées personnelles.</string>
+</resources>

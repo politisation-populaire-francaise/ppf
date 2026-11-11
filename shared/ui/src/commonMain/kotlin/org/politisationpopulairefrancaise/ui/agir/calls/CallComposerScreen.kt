@@ -47,6 +47,7 @@ import org.politisationpopulairefrancaise.core.agir.AgirFormats
 import org.politisationpopulairefrancaise.core.agir.calls.Call
 import org.politisationpopulairefrancaise.core.agir.calls.CallDraft
 import org.politisationpopulairefrancaise.core.agir.calls.CallField
+import org.politisationpopulairefrancaise.core.agir.calls.CallSlots
 import org.politisationpopulairefrancaise.core.agir.calls.CallFieldKind
 import org.politisationpopulairefrancaise.core.agir.calls.CallFields
 import org.politisationpopulairefrancaise.core.agir.calls.CallIssue
@@ -290,6 +291,10 @@ private fun ColumnScope.Form(
         Spacer(Modifier.height(24.dp))
         Text(stringResource(Res.string.appels_compose_specific), style = MaterialTheme.typography.titleLarge, modifier = Modifier.semantics { heading() })
         specific.forEach { field -> SpecificInput(field, type, issues, composer) }
+    }
+    if (type in CallSlots.TYPES) {
+        Spacer(Modifier.height(24.dp))
+        SlotsEditor(composer)
     }
     if (type.isFundraising) {
         Spacer(Modifier.height(16.dp))

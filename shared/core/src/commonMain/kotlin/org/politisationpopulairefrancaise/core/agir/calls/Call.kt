@@ -177,7 +177,17 @@ data class CallDraft(
     val fields: Map<String, String> = emptyMap(),
     /** Fundraising only: the author pledges that it is not for a candidate nor a party (AP-08). */
     val notForCandidateOrParty: Boolean = false,
+    /** The slots as typed (AP-11), for the types of [CallSlots.TYPES] only. */
+    val slots: List<SlotDraft> = emptyList(),
 ) {
+    /** The slots to write: the valid ones, numbered in their order. */
+    fun slotList(): List<CallSlot> = if (type !in CallSlots.TYPES) emptyList() else slots.take(CallSlots.MAX_SLOTS).mapIndexedNotNull { index, draft ->
+        val start = draft.start() ?: return@mapIndexedNotNull null
+        val end = draft.end() ?: return@mapIndexedNotNull null
+        val places = draft.places.trim().toIntOrNull() ?: return@mapIndexedNotNull null
+        CallSlot(CallSlots.idFor(index), start, end, places, draft.label.trim()).takeIf(CallSlots::isValid)
+    }
+
     fun date(tag: String): DateTimeText = dates[tag] ?: DateTimeText()
 
     fun field(tag: String): String = fields[tag].orEmpty()
@@ -251,6 +261,7 @@ data class CallDraft(
                 val value = fields[spec.tag].orEmpty().trim()
                 if (value.isNotEmpty()) add(listOf(spec.tag, value))
             }
+            slotList().forEach { add(it.tag()) }
         }
         return UnsignedEvent.create(author, Call.KIND, now, tags, text.trim())
     }

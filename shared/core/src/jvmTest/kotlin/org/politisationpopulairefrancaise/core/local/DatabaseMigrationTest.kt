@@ -108,7 +108,7 @@ class DatabaseMigrationTest {
     }
 
     @Test
-    fun theSchemaIsAtVersion18() {
+    fun theSchemaIsAtVersion19() {
         // 1: events; 2: follow (1.sqm); 3: messaging (2.sqm); 4: sync cursors (3.sqm);
         // 5: views of the demands wall (4.sqm); 6: joined rooms (5.sqm); 7: progress in the courses (6.sqm);
         // 8: followed contents of Voir (7.sqm); 9: agenda answers and proposals (8.sqm);
@@ -118,7 +118,8 @@ class DatabaseMigrationTest {
         // 16: notifications and verified contacts (15.sqm, provisional number of Communauté);
         // 17: « Mes élus ont voté » and the followed words of Voir (16.sqm).
         // 18: personal reminders, private notes of the letters and requests for documents of Décider (17.sqm).
-        assertEquals(18L, PpfDatabase.Schema.version)
+        // 19: signups to the slots of calls (18.sqm).
+        assertEquals(19L, PpfDatabase.Schema.version)
     }
 
     @Test

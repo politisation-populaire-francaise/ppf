@@ -11,6 +11,7 @@ import org.politisationpopulairefrancaise.core.agir.calls.CallFields
 import org.politisationpopulairefrancaise.core.agir.calls.CallIssue
 import org.politisationpopulairefrancaise.core.agir.calls.CallIssueKind
 import org.politisationpopulairefrancaise.core.agir.calls.CallResponse
+import org.politisationpopulairefrancaise.core.agir.calls.CallRules
 import org.politisationpopulairefrancaise.core.agir.calls.CallType
 import org.politisationpopulairefrancaise.core.agir.calls.ParisTime
 import org.politisationpopulairefrancaise.core.time.CivilDate
@@ -182,6 +183,10 @@ internal fun requirementLabel(key: String, type: CallType?): String {
 /** What a finding of the rules says, with the field it points at. */
 @Composable
 internal fun issueText(issue: CallIssue, type: CallType?): String {
+    // AP-11: one sentence per slot to correct.
+    if (issue.field.startsWith("slot-") || issue.field == CallRules.FIELD_SLOTS) {
+        return stringResource(Res.string.slots_issue, (issue.field.removePrefix("slot-").toIntOrNull() ?: 0) + 1)
+    }
     val field = if (issue.kind == CallIssueKind.MISSING_FIELD) requirementLabel(issue.field, type) else stringResource(fieldLabelResource(issue.field, type))
     return when (issue.kind) {
         CallIssueKind.MISSING_TYPE -> stringResource(Res.string.appels_issue_missing_type)
