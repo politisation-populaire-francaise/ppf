@@ -31,7 +31,6 @@ import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.rememberAccountSession
 import org.politisationpopulairefrancaise.ui.agir.AgirFixtures
-import org.politisationpopulairefrancaise.ui.agir.AgirRubrics
 import org.politisationpopulairefrancaise.ui.agir.AgirScreen
 import org.politisationpopulairefrancaise.ui.agir.AgirTags
 import org.politisationpopulairefrancaise.ui.agir.RecordingUriHandler
@@ -152,7 +151,7 @@ class EngagementScreenTest {
         val harness = EngagementHarness(withPartyGuide = false)
         setContent { harness.Content(360) }
         awaitTag(AgirTags.HOME)
-        click(AgirTags.RUBRIC + AgirRubrics.ENGAGER.id)
+        click(EngagementFeaturedTags.OPEN)
         awaitTag(EngagementTags.SCREEN)
         click(EngagementTags.DECIDER)
         click(EngagementTags.PARTIES)
