@@ -8,6 +8,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 - Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
 
 ### Ajouté
+- Proposer une revendication (12 novembre 2026) : parcours court, la revendication, ses thèmes et son territoire suffisent ; les précisions sont facultatives et repliées.
 - Carte et détail d’une revendication (12 novembre 2026) : jauge Pour, Contre, Blanc dès le premier vote, en mots et en couleurs ; nombre de messages sur « Débat » ; titre mis en avant, résumé sur trois lignes.
 - Vues du mur des revendications (12 novembre 2026) : Plus de pour, Plus de contre, Récentes, Les plus débattues, Du mouvement, Au Parlement, Rejetées ou closes, Près de chez moi, Mes votes ; personnalisables comme les autres, calculées sur l’appareil.
 - Débat des revendications (11 novembre 2026, DE-20) : messages Pour, Contre ou Mitigé sous chaque revendication, compteurs qui filtrent, règles du débat, « Signaler » ; le bouton « Débat » de la carte ouvre la revendication.
