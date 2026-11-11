@@ -33,6 +33,11 @@ updates:
     labels: [dependencies]
     commit-message:
       prefix: build
+    # A major version (Java 21 to 25, PostgreSQL 17 to 18) is a decision with a data
+    # migration, taken by hand: only minor and patch updates are proposed.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
   # PostgreSQL/PostGIS and Caddy images of the Compose projects (pinned by digest).
   - package-ecosystem: docker-compose
     directories:
@@ -47,3 +52,8 @@ updates:
     labels: [dependencies]
     commit-message:
       prefix: build
+    # A major version (Java 21 to 25, PostgreSQL 17 to 18) is a decision with a data
+    # migration, taken by hand: only minor and patch updates are proposed.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
