@@ -16,7 +16,7 @@ class RevendicationViewsTest {
     @Test
     fun builtInViewsHaveStableIdsAndTheirCriteria() {
         assertEquals(
-            listOf("tout", "suivis", "mes-revendications", "nationales") + RevendicationThemes.ALL.map { "theme:${it.id}" },
+            listOf("tout", "suivis", "mes-revendications", "nationales") + RevendicationViews.USEFUL.map { it.id } + RevendicationThemes.ALL.map { "theme:${it.id}" },
             RevendicationViews.BUILT_IN.map { it.id },
         )
         assertTrue(RevendicationViews.ALL.query.isUnconstrained)
@@ -30,8 +30,8 @@ class RevendicationViewsTest {
 
     @Test
     fun theDefaultLayoutIsTheOwnersExamplesThenMyDemandsWithAnAccount() {
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante"), RevendicationViews.defaultLayout(hasAccount = false).map { it.id })
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante", "mes-revendications"), RevendicationViews.defaultLayout(hasAccount = true).map { it.id })
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante"), RevendicationViews.defaultLayout(hasAccount = false).map { it.id })
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante", "mes-revendications"), RevendicationViews.defaultLayout(hasAccount = true).map { it.id })
     }
 
     @Test

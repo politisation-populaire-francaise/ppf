@@ -631,6 +631,37 @@ h2 {
   border-color: var(--accent);
 }
 
+/* Les vues d’« En direct » : des onglets en liens, sans script. */
+.view-tabs ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  list-style: none;
+}
+
+.view-tabs a {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border: 1px solid var(--border-strong);
+  border-radius: 999px;
+  color: var(--ink-muted);
+  text-decoration: none;
+}
+
+.view-tabs a[aria-current="page"] {
+  border-color: var(--brand);
+  background: var(--brand);
+  color: var(--on-brand);
+}
+
+.alert-kicker {
+  color: var(--accent-ink);
+}
+
 .agenda-event.compact {
   padding: 0.75rem 0;
   border-top: 1px solid var(--border);

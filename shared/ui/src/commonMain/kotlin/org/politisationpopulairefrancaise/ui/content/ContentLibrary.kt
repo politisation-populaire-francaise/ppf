@@ -176,6 +176,10 @@ class ContentLibrary(
     var decider: DeciderCatalog by mutableStateOf(DeciderCatalog.EMPTY)
         private set
 
+    /** The number of comments of the debate of each demand, by its address (DE-20), read from the copy of the device. */
+    var debateCounts: Map<String, Int> by mutableStateOf(emptyMap())
+        private set
+
     /** The citizen deliberations (DE-25: the measures of the Pacte), opened by the team, contributions reviewed by the server. */
     var deliberations: List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> by mutableStateOf(emptyList())
         private set
@@ -213,6 +217,48 @@ class ContentLibrary(
         val demands = org.politisationpopulairefrancaise.core.revendications.MovementDemands
         if (!trust.isTrusted(article.author) || !demands.isMarked(article)) return null
         return demands.carriers(article)
+    }
+
+    /**
+     * The debate of [demand] (DE-20): the comments the server holds, asked by the tag of the demand and kept on the
+     * device, plus those of the device not sent yet; the newest first. Offline, the copy of the device only.
+     */
+    suspend fun debateOf(demand: Article): List<org.politisationpopulairefrancaise.core.revendications.DebateComment> = withContext(Dispatchers.Default) {
+        val debate = org.politisationpopulairefrancaise.core.revendications.DemandDebate
+        val address = demand.address.toString()
+        val fetched = when (
+            val result = remote?.fetchByTags(
+                listOf(org.politisationpopulairefrancaise.core.publication.TagFilter(debate.TAG_ROOT, address)),
+                RemoteFilter(kinds = listOf(debate.KIND), limit = 200),
+            )
+        ) {
+            is FetchResult.Events -> result.events.filter { it.verify() }.onEach { store?.store(it) }
+            else -> emptyList()
+        }
+        val local = store?.byTag(listOf(debate.KIND), debate.TAG_ROOT, address, limit = 500).orEmpty()
+        debate.of(local + fetched, demand.address)
+    }
+
+    /** Publishes a comment of the debate, kept on the device first (offline-first), sent by the screen itself. */
+    suspend fun sendDebate(
+        signer: EventSigner,
+        demand: Article,
+        stance: org.politisationpopulairefrancaise.core.revendications.DebateStance,
+        text: String,
+    ): org.politisationpopulairefrancaise.core.publication.PublicationResult {
+        val unsigned = org.politisationpopulairefrancaise.core.revendications.DemandDebate.build(signer.publicKey, demand.address, stance, text, org.politisationpopulairefrancaise.core.time.currentEpochSeconds())
+        val event = signer.sign(unsigned)
+        val local = store
+        val unavailable = org.politisationpopulairefrancaise.core.publication.PublicationResult.Unavailable()
+        if (local == null) return remote?.publish(event) ?: unavailable
+        withContext(Dispatchers.Default) { local.storeSending(event) }
+        val result = local.sending(event) { remote?.publish(event) ?: unavailable }
+        when (result) {
+            is org.politisationpopulairefrancaise.core.publication.PublicationResult.Accepted -> withContext(Dispatchers.Default) { local.markPublished(event.id) }
+            is org.politisationpopulairefrancaise.core.publication.PublicationResult.Rejected -> withContext(Dispatchers.Default) { local.delete(event.id) }
+            else -> Unit
+        }
+        return result
     }
 
     fun start() {
@@ -358,7 +404,8 @@ class ContentLibrary(
         status = LibraryStatus.Loading
         val sync = SyncService(store, remote)
         val up = sync.publishPending()
-        var report = up + sync.pull(kinds = listOf(Article.KIND, EventKinds.TEXT_NOTE))
+        // The comments of the debates (DE-20) come with the contents, for the counts of the wall.
+        var report = up + sync.pull(kinds = listOf(Article.KIND, EventKinds.TEXT_NOTE, org.politisationpopulairefrancaise.core.revendications.DemandDebate.KIND))
         // The batches of followed authors never travel in the same pass as a publication of the user:
         // a server could otherwise tie them to its author. After a publication they wait for the next refresh.
         if (up.reachable && up.published == 0) report += pullFollowed(store, remote)
@@ -460,7 +507,10 @@ class ContentLibrary(
             // server, which serves a citizen's contribution only after the review of a person.
             val deliberationEvents = org.politisationpopulairefrancaise.core.decider.DeliberationBoard.TYPES.flatMap { type -> store.byTag(listOf(Article.KIND), Article.TAG_TYPE, type, limit = VOIR_LIMIT) }
             val deliberations = org.politisationpopulairefrancaise.core.decider.DeliberationBoard.from(deliberationEvents.filter { it.verify() }) { trust.isTrusted(it) }
-            Reloaded(guides, demands, own, posts, VoirCatalog.from(voirBlocks), DeciderCatalog.from(deciderBlocks), deliberations)
+            val debate = org.politisationpopulairefrancaise.core.revendications.DemandDebate
+            val debateCounts = store.recent(kinds = listOf(debate.KIND), limit = 5_000).mapNotNull(debate::parse)
+                .distinctBy { it.id }.groupingBy { it.demand.toString() }.eachCount()
+            Reloaded(guides, demands, own, posts, VoirCatalog.from(voirBlocks), DeciderCatalog.from(deciderBlocks), deliberations, debateCounts)
         }
         val freshGuides = fresh.guides
         val freshDemands = fresh.demands to fresh.own
@@ -471,6 +521,7 @@ class ContentLibrary(
         voir = fresh.voir
         decider = fresh.decider
         deliberations = fresh.deliberations
+        debateCounts = fresh.debateCounts
         selected = selected?.let { current -> freshGuides.firstOrNull { it.address == current.address } }
         selectedRevendication = selectedRevendication?.let { current ->
             freshDemands.first.firstOrNull { it.address == current.address } ?: freshDemands.second.firstOrNull { it.article.address == current.address }?.article
@@ -523,6 +574,7 @@ private class Reloaded(
     val voir: VoirCatalog,
     val decider: DeciderCatalog,
     val deliberations: List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = emptyList(),
+    val debateCounts: Map<String, Int> = emptyMap(),
 )
 
 @Composable

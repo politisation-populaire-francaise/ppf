@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui
 
+import org.politisationpopulairefrancaise.ui.endirect.LiveBoardStore
 import org.politisationpopulairefrancaise.ui.onboarding.TutorialStore
 import org.politisationpopulairefrancaise.core.agir.security.DeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
@@ -84,6 +85,8 @@ class AppDependencies(
     val closeApplication: (() -> Unit)? = null,
     /** Remembers that the tutorial of the first launch was seen (D-216); null: no tutorial (tests, previews). */
     val tutorial: TutorialStore? = null,
+    /** Keeps how the person composed « En direct » (views, blocks), on the device only; null: in memory (tests, previews). */
+    val liveBoard: LiveBoardStore? = null,
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -107,6 +110,7 @@ class AppDependencies(
             securityStorage: DeviceSecurityStorage? = null,
             closeApplication: (() -> Unit)? = null,
             tutorial: TutorialStore? = null,
+            liveBoard: LiveBoardStore? = null,
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
             openDataTrust = openDataTrust,
@@ -125,6 +129,7 @@ class AppDependencies(
             securityStorage = securityStorage,
             closeApplication = closeApplication,
             tutorial = tutorial,
+            liveBoard = liveBoard,
         )
     }
 }

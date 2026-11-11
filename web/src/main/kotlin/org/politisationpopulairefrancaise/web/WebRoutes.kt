@@ -65,7 +65,7 @@ fun Route.webRoutes(
     // The petitions and the democratic pact (Décider), with the names of the candidates from "Voir".
     decider?.let { deciderPages(it, voir) }
     // « En direct », AIDE and the spaces that only exist in the application (the shell of the site, D-215).
-    shellPages(voir, comprendre, decider, agenda)
+    shellPages(voir, comprendre, decider, agenda, agirSearch.calls)
     // The lists of parties and public persons of "Voir", and the search over the whole site.
     voir?.let { voirListPages(it) }
     searchPage(voir, comprendre, decider, agirSearch)

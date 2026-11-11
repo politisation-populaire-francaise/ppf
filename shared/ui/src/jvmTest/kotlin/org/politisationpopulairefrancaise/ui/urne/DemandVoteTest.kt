@@ -80,8 +80,11 @@ class DemandVoteTest {
         val remote = ListOnly(listOf(box))
         val voting = voting(remote)
         runBlocking { voting.refreshBoxes() }
-        setContent { PpfTheme { CompositionLocalProvider(LocalVoting provides voting) { DemandVoteRow(subject, inDebate = true) } } }
+        setContent { PpfTheme { CompositionLocalProvider(LocalVoting provides voting) { DemandVoteRow(subject, inDebate = true, detailed = true) } } }
         onNodeWithTag(DemandVoteTags.RESULTS).assertTextContains("1${FrenchNumbers.GROUP_SEPARATOR}234 pour, 3 contre, 0 blanc", substring = true)
+        // The gauge at a glance: percentages in words and the number of votes.
+        onNodeWithTag(VoteGaugeTags.LINE).assertTextContains("100 % pour, 0 % contre, 0 % blanc", substring = true)
+        onNodeWithTag(VoteGaugeTags.LINE).assertTextContains("1${FrenchNumbers.GROUP_SEPARATOR}237 votes", substring = true)
         onNodeWithTag(DemandVoteTags.FOR).assertIsNotEnabled()
         onNodeWithTag(DemandVoteTags.STATUS).assertTextContains("Créez un compte", substring = true)
         // The whole list in one request, whatever the demand shown.

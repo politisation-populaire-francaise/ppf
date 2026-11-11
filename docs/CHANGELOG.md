@@ -8,6 +8,10 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 - Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
 
 ### Ajouté
+- Proposer une revendication (12 novembre 2026) : parcours court, la revendication, ses thèmes et son territoire suffisent ; les précisions sont facultatives et repliées.
+- Carte et détail d’une revendication (12 novembre 2026) : jauge Pour, Contre, Blanc dès le premier vote, en mots et en couleurs ; nombre de messages sur « Débat » ; titre mis en avant, résumé sur trois lignes.
+- Vues du mur des revendications (12 novembre 2026) : Plus de pour, Plus de contre, Récentes, Les plus débattues, Du mouvement, Au Parlement, Rejetées ou closes, Près de chez moi, Mes votes ; personnalisables comme les autres, calculées sur l’appareil.
+- Débat des revendications (11 novembre 2026, DE-20) : messages Pour, Contre ou Mitigé sous chaque revendication, compteurs qui filtrent, règles du débat, « Signaler » ; le bouton « Débat » de la carte ouvre la revendication.
 - Vote des revendications (11 novembre 2026, D-155, D-156) : toutes les revendications publiées s’ouvrent au vote Pour, Contre, Blanc ; « Votre vote » affiché ; résultats visibles dès le premier bulletin.
 - Recherche du site étendue aux appels ouverts, aux organisations et aux collectifs ; l’organisateur d’un appel retire une fausse inscription à un créneau (requête signée, AP-11) (11 novembre 2026).
 - Pages d’Agir sur le site (11 novembre 2026) : « S’engager en politique » (l’inscription sur les listes d’abord), solidarité et caisses de grève, collectifs, kits d’action citoyenne filtrés par liens ; reliées au menu latéral ; la liste des appels passe à `/agir/appels`. « Me rappeler cet événement » sur les mobilisations (S-98).

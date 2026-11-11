@@ -61,6 +61,7 @@ object DemandVoteTags {
     const val AGAINST = "revendication-vote-against"
     const val BLANK = "revendication-vote-blank"
     const val YOUR_VOTE = "revendication-your-vote"
+    const val DEBATE = "revendication-debate"
     const val STATUS = "revendication-vote-status"
     const val RESULTS = "revendication-vote-results"
     const val WITHDRAW = "revendication-vote-withdraw"
@@ -85,6 +86,10 @@ fun DemandVoteRow(
     detailed: Boolean = false,
     /** The demand's `ppf-territory-code` (D-090): its thresholds of supports (D-115); France without one. */
     territoryCode: String? = null,
+    /** « Débat » (DE-20): opens the demand, where its debate is; no button where the debate is already shown. */
+    onDebate: (() -> Unit)? = null,
+    /** The number of comments of its debate, shown on the button « Débat ». */
+    debateCount: Int = 0,
 ) {
     val voting = LocalVoting.current
     val box = voting?.box(subject)
@@ -125,12 +130,15 @@ fun DemandVoteRow(
                 active = state?.choice == BLANK,
                 modifier = Modifier.testTag(DemandVoteTags.BLANK),
             )
-            // The debate itself (arguments for and against) comes later.
-            ActionButton(Lucide.MessageCircle, stringResource(Res.string.revendication_debate), onClick = { }, enabled = false)
+            if (onDebate != null) {
+                val label = stringResource(Res.string.revendication_debate) + if (debateCount > 0) " ($debateCount)" else ""
+                ActionButton(Lucide.MessageCircle, label, onClick = onDebate, enabled = true, modifier = Modifier.testTag(DemandVoteTags.DEBATE))
+            }
         }
         box?.results?.let { results ->
-            // The results show from the first ballot (D-156).
-            Text(
+            // The results show from the first ballot (D-156): the gauge, then the exact counts.
+            VoteGauge(results.citizens, height = if (detailed) 14 else 10)
+            if (detailed) Text(
                 stringResource(Res.string.urne_results_line, count(results.citizens, FOR), count(results.citizens, AGAINST), count(results.citizens, BLANK)),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.testTag(DemandVoteTags.RESULTS),

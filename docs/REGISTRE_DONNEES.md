@@ -316,6 +316,12 @@ Contrat : `docs/integration/contact-reclamations.md`. Les textes des personnes p
 
 Aucune adresse IP, aucune adresse e-mail, aucun numéro de téléphone, aucun identifiant d'appareil, aucun compte de la personne n'est collecté ni journalisé ; les plafonds de débit (30 créations et 120 messages par minute) sont globaux, sans aucune clé liée à la personne ; la preuve de travail est calculée sur l'appareil. Aucun e-mail n'est envoyé en version 1. En développement seulement, la boîte d'exemple (clé secrète publique, marquée [EXEMPLE]) remplace la boîte de l'équipe : elle ne protège rien et n'est jamais acceptée en production.
 
+## Ajout du 11 novembre 2026 : « En direct » composé par chacun
+
+| Donnée | Finalité | Où | Durée | Accès |
+|---|---|---|---|---|
+| Les vues et les blocs choisis pour « En direct » (identifiants des blocs, ordre, nom des vues personnelles) : fichier `en-direct-blocs.txt` | Retrouver son tableau de bord à chaque ouverture | Appareil seulement : dossier privé de l'application (Android et ordinateur) ; jamais envoyé | Jusqu'à l'effacement rapide (partie `ui-live-board`), l'effacement des données de l'application ou sa désinstallation | Personne d'autre que l'application |
+
 ## Ajout du 11 novembre 2026 : tutoriel du premier lancement (D-216, D-184)
 
 | Donnée | Finalité | Où | Durée | Accès |

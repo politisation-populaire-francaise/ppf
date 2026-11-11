@@ -1,5 +1,12 @@
 package org.politisationpopulairefrancaise.ui.revendications.propose
 
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import org.politisationpopulairefrancaise.ui.components.PpfTextButton
+import org.politisationpopulairefrancaise.ui.resources.propose_details_hide
+import org.politisationpopulairefrancaise.ui.resources.propose_details_show
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -120,6 +127,8 @@ import org.politisationpopulairefrancaise.ui.theme.CalloutType
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 object ProposalTags {
+    /** « Ajouter des précisions (facultatif) »: unfolds the summary, why, what is asked and what exists. */
+    const val DETAILS = "proposal-details"
     const val SCREEN = "proposal-screen"
     const val CLOSE = "proposal-close"
     const val TITLE = "proposal-title"
@@ -257,18 +266,6 @@ private fun ColumnScope.Form(
         IssueList(similarity, onOpenDemand, Modifier.testTag(ProposalTags.SIMILAR))
     }
 
-    Field(stringResource(Res.string.propose_field_summary)) {
-        PpfTextField(draft.summary, { composer.draft = draft.copy(summary = it) }, stringResource(Res.string.propose_field_summary_placeholder), Modifier.fillMaxWidth().testTag(ProposalTags.SUMMARY))
-    }
-    Field(stringResource(Res.string.propose_field_why)) {
-        PpfTextField(draft.why, { composer.draft = draft.copy(why = it) }, stringResource(Res.string.propose_field_why_placeholder), Modifier.fillMaxWidth().testTag(ProposalTags.WHY), minLines = 3)
-    }
-    Field(stringResource(Res.string.propose_field_asks)) {
-        PpfTextField(draft.asks, { composer.draft = draft.copy(asks = it) }, stringResource(Res.string.propose_field_asks_placeholder), Modifier.fillMaxWidth().testTag(ProposalTags.ASKS), minLines = 3)
-    }
-    Field(stringResource(Res.string.propose_field_existing), help = stringResource(Res.string.propose_field_existing_help)) {
-        PpfTextField(draft.existing, { composer.draft = draft.copy(existing = it) }, stringResource(Res.string.propose_field_existing_placeholder), Modifier.fillMaxWidth().testTag(ProposalTags.EXISTING), minLines = 2)
-    }
     Field(stringResource(Res.string.propose_field_themes)) {
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             RevendicationThemes.ALL.forEach { theme ->
@@ -289,6 +286,29 @@ private fun ColumnScope.Form(
             modifier = Modifier.fillMaxWidth().testTag(ProposalTags.TERRITORY),
             singleLine = true,
         )
+    }
+
+    // MVP 1: a short path. The demand, its themes and its territory are enough; the rest is optional, folded.
+    var detailsOpen by rememberSaveable { mutableStateOf(draft.summary.isNotBlank() || draft.why.isNotBlank() || draft.asks.isNotBlank() || draft.existing.isNotBlank()) }
+    Spacer(Modifier.height(12.dp))
+    PpfTextButton(
+        onClick = { detailsOpen = !detailsOpen },
+        text = stringResource(if (detailsOpen) Res.string.propose_details_hide else Res.string.propose_details_show),
+        modifier = Modifier.testTag(ProposalTags.DETAILS),
+    )
+    if (detailsOpen) {
+        Field(stringResource(Res.string.propose_field_summary)) {
+            PpfTextField(draft.summary, { composer.draft = draft.copy(summary = it) }, stringResource(Res.string.propose_field_summary_placeholder), Modifier.fillMaxWidth().testTag(ProposalTags.SUMMARY))
+        }
+        Field(stringResource(Res.string.propose_field_why)) {
+            PpfTextField(draft.why, { composer.draft = draft.copy(why = it) }, stringResource(Res.string.propose_field_why_placeholder), Modifier.fillMaxWidth().testTag(ProposalTags.WHY), minLines = 3)
+        }
+        Field(stringResource(Res.string.propose_field_asks)) {
+            PpfTextField(draft.asks, { composer.draft = draft.copy(asks = it) }, stringResource(Res.string.propose_field_asks_placeholder), Modifier.fillMaxWidth().testTag(ProposalTags.ASKS), minLines = 3)
+        }
+        Field(stringResource(Res.string.propose_field_existing), help = stringResource(Res.string.propose_field_existing_help)) {
+            PpfTextField(draft.existing, { composer.draft = draft.copy(existing = it) }, stringResource(Res.string.propose_field_existing_placeholder), Modifier.fillMaxWidth().testTag(ProposalTags.EXISTING), minLines = 2)
+        }
     }
 
     if (withChecks) {

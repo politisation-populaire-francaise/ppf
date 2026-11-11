@@ -321,6 +321,7 @@ private fun FeedPage(
                     },
                     movement = library.movementCarriers(revendication),
                     supporters = library.demandSupporters(revendication),
+                    debateCount = library.debateCounts[revendication.address.toString()] ?: 0,
                 )
             }
             return@LazyColumn
