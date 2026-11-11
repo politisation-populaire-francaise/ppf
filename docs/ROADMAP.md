@@ -223,3 +223,7 @@ Contenus de « Comprendre » (vague 3, D-049) dont un fait daté peut changer d'
 
 - Tests sur téléphone de toutes les versions d'essai envoyées depuis le 6 novembre (dont « Décider », version 446938, et les partis, le droit de réponse et le signalement d'erreur de « Voir ») : reportés à la phase de test et de débogage (« là il faut enchaîner et continuer le développement »).
 - Vague 3 de « Comprendre » (APK 447367) : glossaire (mots soulignés, infobulle, « En savoir plus », glossaire complet et recherche), page « Mes élus » sans serveur (annuaires officiels derrière « Vous quittez PPF »), nouveaux parcours, « Qui décide de ça ? » et fiches pratiques ; avec la préproduction : choix de la commune par code postal et élus fictifs sous chaque niveau.
+
+## Tests désactivés
+
+- `StrikeSimulatorScreenTest.theSimulatorWorksOnAPhoneATabletAndADesktopInLightAndDark` (Agir, 11 novembre 2026) : six ouvertures complètes de la solidarité puis du simulateur dépassent la minute de chaque passage sous la charge ; le même chemin reste couvert par les autres tests du simulateur.

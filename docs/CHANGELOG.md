@@ -5,6 +5,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 ## Non publié
 
 ### Ajouté
+- Ergonomie d'« Agir » (11 novembre 2026, D-233) : filtres des collectifs repliés derrière un bouton « Filtres » ; un outil ouvert depuis les « Kits d'action citoyenne » y ramène, avec les filtres gardés ; le simulateur du gréviste revient là d'où il a été ouvert.
 - Décider mis en avant (11 novembre 2026, MVP 1, jalon 3) : les trois fonctions phares (revendications, pétitions officielles, Pacte démocratique) en tête de Décider et sur « En direct ».
 - Mur des revendications allégé sur téléphone (11 novembre 2026) : Filtres, Tri et Personnaliser sur une ligne, « Proposer » à côté du nombre, explication repliée « Comment ça marche ? ».
 - Revendications déjà portées par le mouvement (11 novembre 2026, D-152, « Rédigé par l’IA ») : 15 revendications attribuées et sourcées, puce « Du mouvement », ouvertes au vote ; « Également portée par » pour toute revendication ; la démission du gouvernement, revendication citoyenne.
