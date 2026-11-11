@@ -301,7 +301,7 @@ services:
 
   db:
     # PostgreSQL 17 with PostGIS, pinned by digest (Dependabot proposes updates).
-    image: postgis/postgis:17-3.6@sha256:1ac10b2551ba84ae05db8e7da477afcd0a3fede99bcb7705da2ee157390cb095
+    image: postgis/postgis:18-3.6@sha256:4a43e3c3e5d55b9208240fc71db543b79c638766280c625a425bd0a2390989c4
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
