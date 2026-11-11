@@ -125,6 +125,7 @@ import org.politisationpopulairefrancaise.ui.components.NavSubRow
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.Wordmark
 import org.politisationpopulairefrancaise.ui.components.AdaptiveWordmark
+import org.politisationpopulairefrancaise.ui.components.PpfSymbol
 import org.politisationpopulairefrancaise.ui.onboarding.FirstLaunchTutorial
 import org.politisationpopulairefrancaise.ui.onboarding.ProvideTutorial
 import org.politisationpopulairefrancaise.ui.onboarding.TutorialState
@@ -817,7 +818,12 @@ private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifi
 private fun MoreMenu(selected: Space, onSelect: (Space) -> Unit) {
     Column(Modifier.fillMaxHeight()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
-            Wordmark(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), large = true)
+            // The symbol of PPF and its full name, at the head of the menu (D-185).
+            Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                PpfSymbol(40.dp, decorative = true)
+                Spacer(Modifier.width(10.dp))
+                Wordmark(large = true)
+            }
             Spacer(Modifier.height(16.dp))
             MoreRows(selected, onSelect)
             SearchSoonRow()
@@ -978,7 +984,11 @@ private fun DesktopTopBar(account: AccountUiState.Ready?, bell: Bell?, selected:
             modifier = Modifier.fillMaxWidth().topBarSafeArea().height(PpfTheme.dimens.desktopTopBarHeight).padding(start = 24.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Wordmark(Modifier.width(PpfTheme.dimens.sideBarWidth - 32.dp), large = true)
+            Row(Modifier.width(PpfTheme.dimens.sideBarWidth - 32.dp), verticalAlignment = Alignment.CenterVertically) {
+                PpfSymbol(36.dp, decorative = true)
+                Spacer(Modifier.width(10.dp))
+                Wordmark(large = true)
+            }
             Spacer(Modifier.width(16.dp))
             Row(
                 modifier = Modifier.weight(1f).widthIn(max = 560.dp).heightIn(min = PpfTheme.dimens.touchTarget)

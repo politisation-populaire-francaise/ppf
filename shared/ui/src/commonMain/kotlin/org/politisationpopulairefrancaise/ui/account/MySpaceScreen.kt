@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.account
 
+import org.politisationpopulairefrancaise.ui.components.PpfSymbol
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import kotlin.math.roundToInt
@@ -195,6 +196,8 @@ fun MySpaceScreen(
             }
             // Which version is installed, on which system: what a tester reports with a problem.
             val platform = currentPlatform()
+            // About the application: its symbol (D-185), then its version.
+            PpfSymbol(32.dp, Modifier.padding(top = 12.dp))
             // The size of the window in dp and the font setting: what a tester reports about a layout (D-183).
             val density = LocalDensity.current
             val window = LocalWindowInfo.current.containerSize

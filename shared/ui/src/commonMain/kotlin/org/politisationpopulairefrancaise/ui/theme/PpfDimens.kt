@@ -42,6 +42,8 @@ data class PpfDimens(
     val wordmarkSize: TextUnit = 14.sp,
     /** Its size when one word per line at [wordmarkSize] does not fit (small phone, large font). */
     val wordmarkSmallSize: TextUnit = 12.sp,
+    /** The symbol of PPF before the name in the top bars (D-185). */
+    val topBarSymbolSize: Dp = 28.dp,
     /** The title of a page ([PageHeader][org.politisationpopulairefrancaise.ui.components.PageHeader]). */
     val pageTitleSize: TextUnit = 28.sp,
     val pageTitleLineHeight: TextUnit = 34.sp,

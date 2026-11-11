@@ -43,6 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.ui.components.ButtonPair
 import org.politisationpopulairefrancaise.ui.components.PpfPrimaryButton
+import org.politisationpopulairefrancaise.ui.components.PpfSymbol
 import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.SystemBack
@@ -200,11 +201,16 @@ fun FirstLaunchTutorial(onFinish: (Space?) -> Unit, modifier: Modifier = Modifie
 @Composable
 private fun StepContent(step: TutorialStep, compactIcon: Boolean, onFinish: (Space?) -> Unit) {
     val palette = PpfTheme.palette
-    Box(
-        Modifier.size(if (compactIcon) 56.dp else 96.dp).background(palette.brandTint, CircleShape),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(step.icon, contentDescription = null, tint = palette.brand, modifier = Modifier.size(if (compactIcon) 28.dp else 48.dp))
+    if (step == TutorialStep.WHY) {
+        // The first screen presents the platform with its symbol (D-185).
+        PpfSymbol(if (compactIcon) 56.dp else 96.dp)
+    } else {
+        Box(
+            Modifier.size(if (compactIcon) 56.dp else 96.dp).background(palette.brandTint, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(step.icon, contentDescription = null, tint = palette.brand, modifier = Modifier.size(if (compactIcon) 28.dp else 48.dp))
+        }
     }
     Spacer(Modifier.height(if (compactIcon) 12.dp else 24.dp))
     Text(
