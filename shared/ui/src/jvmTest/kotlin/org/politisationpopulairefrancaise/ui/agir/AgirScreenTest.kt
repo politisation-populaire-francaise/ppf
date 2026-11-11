@@ -116,14 +116,14 @@ class AgirScreenTest {
             )
         }
         awaitTag(AgirTags.HOME)
-        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.AGENDA.id).performClick()
+        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.AGENDA.id).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag("plugged-agenda").assertExists()
         assertEquals(0, count(AgirTags.PENDING))
         onNodeWithTag("plugged-agenda-back").performClick()
         waitForIdle()
         awaitTag(AgirTags.HOME)
-        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.CALLS.id).performClick()
+        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.CALLS.id).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag("plugged-calls").assertExists()
         onNodeWithTag("plugged-calls-back").performClick()
@@ -187,7 +187,7 @@ class AgirScreenTest {
             )
         }
         awaitTag(AgirTags.HOME)
-        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.AGENDA.id).performClick()
+        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.AGENDA.id).performScrollTo().performClick()
         waitForIdle()
         waitUntil(timeoutMillis = 10_000) { harness.organisations.verified.isVerified(AgirFixtures.LANTERNE_ACCOUNT) }
         onNodeWithTag("plugged-organiser").performClick()
