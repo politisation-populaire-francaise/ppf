@@ -49,6 +49,7 @@ import kotlinx.coroutines.flow.drop
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.ui.components.ReportContentButton
 import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
@@ -858,6 +859,8 @@ private fun RevendicationDetail(
             SelectionContainer {
                 MarkdownText(revendication.body)
             }
+            // S-38, D-234: any user may report a demand to the team (not one's own while it waits).
+            if (own == null) ReportContentButton(revendication.address.toString())
         }
     }
 }

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Signaler ce contenu » (S-38, D-234): one gesture on any content published by a user. -->
+<resources>
+    <string name="report_open">Signaler</string>
+    <string name="report_title">Signaler ce contenu</string>
+    <string name="report_intro">Dites ce qui ne va pas : l’équipe de PPF examinera ce contenu. Aucun compte n’est demandé, et l’équipe ne saura pas qui l’a signalé.</string>
+    <string name="report_reason_illicite">Illicite ou appel à la violence</string>
+    <string name="report_reason_haine">Haine, harcèlement ou menaces</string>
+    <string name="report_reason_donnees_personnelles">Données personnelles d’une autre personne</string>
+    <string name="report_reason_tromperie">Fausse information, arnaque ou usurpation</string>
+    <string name="report_reason_spam">Spam ou doublon</string>
+    <string name="report_reason_autre">Autre</string>
+    <string name="report_comment">Précisions (facultatif, 500 caractères au plus)</string>
+    <string name="report_warning">Un signalement abusif ne fait rien retirer : chaque signalement est lu par une personne de l’équipe, qui décide.</string>
+    <string name="report_cancel">Annuler</string>
+    <string name="report_send">Envoyer le signalement</string>
+    <string name="report_sending">Envoi en cours…</string>
+    <string name="report_sent">Merci : l’équipe a reçu votre signalement et examinera ce contenu.</string>
+    <string name="report_unreachable">Le signalement n’est pas parti : pas de réseau ou serveur injoignable. Réessayez plus tard.</string>
+    <string name="report_refused">Le serveur a refusé ce signalement (trop de signalements à la suite, ou service fermé). Réessayez plus tard.</string>
+    <string name="report_no_server">Signalement impossible pour l’instant : cette version de l’application n’est pas reliée au serveur.</string>
+    <string name="report_close">Fermer</string>
+</resources>

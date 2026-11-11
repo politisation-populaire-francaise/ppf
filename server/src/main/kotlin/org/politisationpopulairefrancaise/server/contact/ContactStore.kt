@@ -39,6 +39,9 @@ enum class EnvelopeDirection(val db: String) {
 }
 
 /** A case as stored (table contact_case): metadata only, never a text. */
+/** A content and its open reports (S-38, D-234). */
+data class ReportedContent(val address: String, val reports: Int, val reasons: List<String>, val lastAt: Instant)
+
 data class StoredCase(
     val number: String,
     val nature: CaseNature,
@@ -61,6 +64,9 @@ data class StoredCase(
     val accessHash: String?,
     val casePubkey: String?,
     val lastActivityAt: Instant,
+    /** A report only (S-38, D-234): the address of the content reported and the code of the reason, in clear. */
+    val reportContent: String? = null,
+    val reportReason: String? = null,
 ) {
     val type: CaseType get() = nature.type
     val motif: ClaimMotif? get() = nature.motif
@@ -154,8 +160,8 @@ class ContactStore(private val dataSource: DataSource) {
             val inserted = connection.prepareStatement(
                 """
                 INSERT INTO contact_case (number, type, subtype, category, motif, status, priority, received_at, deadline_at, deadline_kind,
-                    decision_at, access_hash, case_pubkey, last_activity_at)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    decision_at, access_hash, case_pubkey, last_activity_at, report_content, report_reason)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ON CONFLICT (number) DO NOTHING
                 """.trimIndent(),
             ).use { insert ->
@@ -173,6 +179,8 @@ class ContactStore(private val dataSource: DataSource) {
                 insert.setText(12, case.accessHash)
                 insert.setText(13, case.casePubkey)
                 insert.setInstant(14, case.lastActivityAt)
+                insert.setText(15, case.reportContent)
+                insert.setText(16, case.reportReason)
                 insert.executeUpdate() == 1
             }
             if (!inserted) {
@@ -252,6 +260,39 @@ class ContactStore(private val dataSource: DataSource) {
     }
 
     /** The inbox of the team (S-107): by deadline, then by reception. */
+    /**
+     * The reports still open, grouped by content (S-38, D-234): the most reported first. Nothing is hidden by
+     * this list: the team decides, with the tools of moderation.
+     */
+    fun reportsByContent(limit: Int = 100): List<ReportedContent> = dataSource.connection.use { connection ->
+        connection.prepareStatement(
+            """
+            SELECT report_content, count(*) AS reports, string_agg(DISTINCT report_reason, ',') AS reasons, max(received_at) AS last_at
+            FROM contact_case
+            WHERE report_content IS NOT NULL AND status <> 'closed'
+            GROUP BY report_content
+            ORDER BY reports DESC, last_at DESC
+            LIMIT ?
+            """.trimIndent(),
+        ).use { statement ->
+            statement.setInt(1, limit)
+            statement.executeQuery().use { rows ->
+                buildList {
+                    while (rows.next()) {
+                        add(
+                            ReportedContent(
+                                address = rows.getString("report_content"),
+                                reports = rows.getInt("reports"),
+                                reasons = rows.getString("reasons").orEmpty().split(',').filter { it.isNotEmpty() }.sorted(),
+                                lastAt = rows.getTimestamp("last_at").toInstant(),
+                            ),
+                        )
+                    }
+                }
+            }
+        }
+    }
+
     fun inbox(query: InboxQuery): List<StoredCase> = dataSource.connection.use { connection ->
         val conditions = mutableListOf<String>()
         val binders = mutableListOf<(PreparedStatement, Int) -> Unit>()

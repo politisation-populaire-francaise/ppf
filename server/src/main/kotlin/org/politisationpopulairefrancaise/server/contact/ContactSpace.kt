@@ -8,6 +8,10 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import org.politisationpopulairefrancaise.core.contact.CaseAccess
+import org.politisationpopulairefrancaise.core.contact.ReportReason
+import org.politisationpopulairefrancaise.core.contact.ContentReports
+import org.politisationpopulairefrancaise.core.contact.TicketSubtype
+import org.politisationpopulairefrancaise.core.contact.CaseNature
 import org.politisationpopulairefrancaise.core.contact.CaseApi
 import org.politisationpopulairefrancaise.core.contact.CaseCreated
 import org.politisationpopulairefrancaise.core.contact.CaseCreation
@@ -113,6 +117,15 @@ class ContactSpace(
             !moderation && decisionAt != null -> return refused(BAD_DECISION)
             moderation && !CaseDeadlines.moderationClaimOpen(decisionAt!!, now.epochSecond) -> return refused(DECISION_OUT_OF_TIME)
         }
+        // A report (S-38, D-234): its content and reason, in clear, for this subtype only and well formed.
+        val isReport = nature == CaseNature.Ticket(TicketSubtype.REPORT)
+        val reportContent = request.reportContent
+        val reportReason = request.reportReason
+        if (reportContent != null || reportReason != null) {
+            if (!isReport || reportContent == null || !ContentReports.isContentAddress(reportContent) || ReportReason.fromWire(reportReason) == null) {
+                return refused(BAD_REPORT)
+            }
+        }
         CaseEnvelopes.check(request.envelope, inbox.hex, now.epochSecond, config.workBits)?.let { return refused(ContactRefusal(422, it.code, it.message)) }
         val deadline = CaseDeadlines.of(nature, now.epochSecond, config.goals)
         val case = StoredCase(
@@ -137,6 +150,8 @@ class ContactSpace(
             accessHash = request.accessHash,
             casePubkey = request.casePubkey,
             lastActivityAt = now,
+            reportContent = reportContent,
+            reportReason = reportReason,
         )
         return when (val stored = store.create(case, request.envelope)) {
             ContactStore.Created.Stored -> CreateOutcome.Created(created(case))
@@ -260,6 +275,7 @@ class ContactSpace(
         val NOT_FOUND = ContactRefusal(404, "not_found", "No case with this number and this code.")
         val LOCKED = ContactRefusal(429, "locked", "Too many wrong codes for this number; try again later.")
         val BAD_NUMBER = ContactRefusal(422, "bad_number", "A case number is PPF-XXXXX-XXXXX in Crockford's base 32.")
+        val BAD_REPORT = ContactRefusal(422, "bad_report", "report_content and report_reason belong to a report only: the address of a content and a known reason.")
         val BAD_NATURE = ContactRefusal(422, "bad_nature", "A case has a type and exactly the sub-type, category or motif of that type.")
         val BAD_ACCESS = ContactRefusal(422, "bad_access_hash", "access_hash is a SHA-256 in lowercase hexadecimal.")
         val BAD_CASE_KEY = ContactRefusal(422, "bad_case_pubkey", "case_pubkey is an x-only secp256k1 public key in lowercase hexadecimal.")

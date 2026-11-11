@@ -8,6 +8,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 - Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
 
 ### Ajouté
+- « Signaler ce contenu » (11 novembre 2026, S-38, D-234) : un bouton « Signaler » sur les appels, les mobilisations et les revendications ; six motifs, un commentaire facultatif chiffré pour l'équipe, sans compte ; une file « Signalements par contenu » dans la boîte des échanges du back-office, qui ne masque rien. Laissé de côté : fil, salons et suivi du dossier dans « Mes échanges ».
 - Ergonomie d'« Agir » (11 novembre 2026, D-233) : filtres des collectifs repliés derrière un bouton « Filtres » ; un outil ouvert depuis les « Kits d'action citoyenne » y ramène, avec les filtres gardés ; le simulateur du gréviste revient là d'où il a été ouvert.
 - **Version d'essai allégée et contrôle rapide** (11 novembre 2026, D-188, D-189) : APK réduit par R8 sans renommage (23,5 Mo au lieu de 37,9) ; tâche `ppfGate` facultative ; deux tests instables corrigés (attente d'une carte, remise à zéro de la base après un interblocage), deux désactivés (envoi en double par la synchronisation, listés dans la feuille de route).
 - Décider mis en avant (11 novembre 2026, MVP 1, jalon 3) : les trois fonctions phares (revendications, pétitions officielles, Pacte démocratique) en tête de Décider et sur « En direct ».
