@@ -9,4 +9,10 @@ import org.politisationpopulairefrancaise.core.decider.DeciderCatalog
  */
 fun interface DeciderSource {
     suspend fun catalog(): DeciderCatalog
+
+    /**
+     * The citizen deliberations (DE-25): opened by the editorial team, with the propositions and amendments
+     * the server published after the review of a person. None by default (tests, sources without them).
+     */
+    suspend fun deliberations(): List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = emptyList()
 }

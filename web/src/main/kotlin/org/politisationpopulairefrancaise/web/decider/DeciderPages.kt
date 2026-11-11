@@ -64,7 +64,15 @@ import java.time.ZoneOffset
 fun Route.deciderPages(source: DeciderSource, voir: VoirSource? = null, clock: Clock = Clock.systemUTC()) {
     fun today(): CivilDate = LocalDate.ofInstant(clock.instant(), ZoneOffset.UTC).let { CivilDate(it.year, it.monthValue, it.dayOfMonth) }
     route(DeciderLinks.HOME) {
-        get { source.catalog().let { catalog -> call.respondHtml { deciderHomeDocument(catalog, today()) } } }
+        get {
+            val catalog = source.catalog()
+            val deliberations = source.deliberations()
+            call.respondHtml { deciderHomeDocument(catalog, today(), deliberations, clock.millis() / 1000) }
+        }
+        get("/${DeliberationLinks.PATH}/{slug}") {
+            val board = source.deliberations().firstOrNull { it.address.identifier == call.parameters["slug"] }
+            if (board == null) call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() } else call.respondHtml { deliberationDocument(board, clock.millis() / 1000) }
+        }
         get("/${DeciderLinks.PETITIONS}/{slug}") {
             val catalog = source.catalog()
             val petition = catalog.petitions.firstOrNull { it.address.identifier == call.parameters["slug"] }
@@ -97,7 +105,12 @@ object DeciderLinks {
 // ---------------------------------------------------------------------------------------------
 // Home
 
-fun HTML.deciderHomeDocument(catalog: DeciderCatalog, today: CivilDate) {
+fun HTML.deciderHomeDocument(
+    catalog: DeciderCatalog,
+    today: CivilDate,
+    deliberations: List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = emptyList(),
+    nowSeconds: Long = 0,
+) {
     siteLayout(pageTitle = "Décider", currentSpace = Space.DECIDER) {
         h1 { +"Décider" }
         p(classes = "lead") { +"Les pétitions officielles relayées par PPF et le Pacte démocratique proposé aux candidats. PPF n’adopte rien : ce sont les votes des citoyens qui choisissent." }
@@ -106,6 +119,11 @@ fun HTML.deciderHomeDocument(catalog: DeciderCatalog, today: CivilDate) {
         if (pactes.isNotEmpty()) {
             pageSection("pacte", "Pacte démocratique") {
                 pactes.forEach { pacte -> pacteCard(pacte) }
+            }
+        }
+        if (deliberations.isNotEmpty()) {
+            pageSection("deliberation", "Délibération citoyenne sur les mesures") {
+                deliberations.forEach { deliberationCard(it, nowSeconds) }
             }
         }
         val open = catalog.openPetitions(today)

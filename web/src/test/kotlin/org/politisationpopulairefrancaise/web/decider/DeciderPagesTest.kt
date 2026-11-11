@@ -87,6 +87,33 @@ class DeciderPagesTest {
         assertTrue(html.contains("scope=\"row\""))
     }
 
+    /** DE-25, MVP 1: the deliberation reads without script; proposing and voting stay in the application. */
+    @Test
+    fun theDeliberationShowsItsStepsPropositionsAndAmendments() {
+        var n = 0
+        fun event(pubkey: String, tags: List<List<String>>, content: String = "[EXEMPLE] Texte") =
+            SignedEvent(id = (++n).toString(16).padStart(64, '0'), pubkey = pubkey, createdAt = 100L + n, kind = Article.KIND, tags = tags, content = content, sig = "0".repeat(128))
+        val team = "a".repeat(64)
+        val deliberation = event(team, listOf(
+            listOf("d", "pacte-exemple"), listOf("title", "[EXEMPLE] Les mesures du Pacte"), listOf("ppf-type", "deliberation"),
+            listOf("ppf-phase", "propositions", "1000", "2000"), listOf("ppf-phase", "amendements", "2000", "3000"), listOf("ppf-phase", "vote", "3000", "4000"),
+            listOf("ppf-measures", "5", "10"),
+        ))
+        val link = org.politisationpopulairefrancaise.core.signing.ContentAddress.of(deliberation)!!.toString()
+        val proposition = event("b".repeat(64), listOf(listOf("d", "p1"), listOf("title", "[EXEMPLE] Une mesure"), listOf("ppf-type", "proposition"), listOf("a", link)))
+        val amendment = event("c".repeat(64), listOf(listOf("d", "a1"), listOf("ppf-type", "amendement"), listOf("a", org.politisationpopulairefrancaise.core.signing.ContentAddress.of(proposition)!!.toString())), "[EXEMPLE] Autre rédaction")
+        val board = org.politisationpopulairefrancaise.core.decider.DeliberationBoard.from(listOf(deliberation, proposition, amendment)) { it == team }.single()
+
+        val home = render { deciderHomeDocument(catalog, today, listOf(board), 2500) }
+        assertTrue(home.contains("href="/decider/deliberations/pacte-exemple""))
+        val html = render { deliberationDocument(board, 2500) }
+        checkPage(html)
+        assertTrue(html.contains("Étape en cours : Amendements"))
+        assertTrue(html.contains("[EXEMPLE] Une mesure"))
+        assertTrue(html.contains("[EXEMPLE] Autre rédaction"))
+        assertTrue(html.contains("se font dans l’application PPF"))
+    }
+
     @Test
     fun anUnknownPageSaysSo() {
         val html = render { deciderNotFoundDocument() }
