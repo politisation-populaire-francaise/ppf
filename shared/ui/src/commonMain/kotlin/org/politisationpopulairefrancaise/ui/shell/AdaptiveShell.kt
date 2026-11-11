@@ -403,7 +403,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
             val openMenuTarget: (MenuTarget) -> Unit = { target ->
                 when (target) {
                     is MenuTarget.OpenSpace -> {
-                        when (target.space) {
+                        // Like a tab: from elsewhere the space opens where it was left; from inside it, its home.
+                        if (selected == target.space) when (target.space) {
                             Space.VOIR -> voirState.stack.clear()
                             Space.DECIDER -> deciderState.home()
                             Space.AGIR -> agirRoute = AgirRoute.HOME
@@ -782,10 +783,7 @@ private fun MenuDrawer(selected: Space, onSelect: (Space) -> Unit, modifier: Mod
         scrimColor = palette.scrim,
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = palette.surface0, drawerContentColor = palette.ink, windowInsets = menuInsets) {
-                MoreMenu(selected = selected, onSelect = {
-                    onSelect(it)
-                    scope.launch { drawerState.close() }
-                })
+                MoreMenu(selected = selected, onPicked = { scope.launch { drawerState.close() } })
             }
         },
     ) {
@@ -997,7 +995,7 @@ private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifi
 
 /** The menu of phones: the full name, what is not in the bottom bar, the search to come, the disclaimer. */
 @Composable
-private fun MoreMenu(selected: Space, onSelect: (Space) -> Unit) {
+private fun MoreMenu(selected: Space, onPicked: () -> Unit) {
     Column(Modifier.fillMaxHeight()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
             // The symbol of PPF and its full name, at the head of the menu (D-185).
@@ -1009,7 +1007,8 @@ private fun MoreMenu(selected: Space, onSelect: (Space) -> Unit) {
             Spacer(Modifier.height(8.dp))
             SearchSoonRow()
             Spacer(Modifier.height(8.dp))
-            RubricMenu(selected)
+            // A sub-rubric chosen closes the menu of phones (its page is then on screen).
+            RubricMenu(selected, onPicked = onPicked)
         }
         Disclaimer()
     }

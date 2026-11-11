@@ -79,7 +79,7 @@ private val spaceTagHolders: Map<Space, String> = menuOnlySpaces.mapNotNull { sp
  * screen open at first. Used by the menu of phones and by the side bar of wide windows.
  */
 @Composable
-fun RubricMenu(selected: Space) {
+fun RubricMenu(selected: Space, onPicked: () -> Unit = {}) {
     val onTarget = LocalMenuTargetHandler.current
     var open by rememberSaveable { mutableStateOf(rubricFor(selected)?.id) }
     var current by rememberSaveable { mutableStateOf<String?>(null) }
@@ -106,6 +106,7 @@ fun RubricMenu(selected: Space) {
                         SubRubricRow(stringResource(entry.label), isCurrent, soon, Modifier.testTag(tag)) {
                             current = entry.id
                             onTarget(entry.target)
+                            onPicked()
                         }
                     }
                 }
