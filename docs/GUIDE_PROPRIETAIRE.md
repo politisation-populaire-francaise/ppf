@@ -301,6 +301,13 @@ Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre 
 
 Pour imprimer : choisissez **taille réelle** (ou « 100 % ») dans la fenêtre d'impression, sinon le code QR rétrécit. Ce qui n'est pas encore là : l'iPhone, le PDF sur ordinateur, les affiches d'une fiche ou d'une revendication, les pages du site pour les affiches d'événements très longs.
 
+### Tester les « Kits d'action citoyenne » (ajouté le 11 novembre 2026)
+
+1. Ouvrez « Agir » : sous « S'engager en politique », touchez **Kits d'action citoyenne**.
+2. Sous « Je veux… », touchez **Faire grève** : il reste quatre kits (simulateur du gréviste, caisses, « Faire grève : vos droits », collecter de l'argent). Touchez de nouveau **Faire grève** pour tout revoir.
+3. Touchez **M'organiser** puis **Utilisable sans réseau** : les collectifs disparaissent (ils demandent le serveur), les guides restent.
+4. Touchez un guide : il s'ouvre dans Agir, avec ses sources ; la flèche revient aux kits. Touchez un outil (par exemple le simulateur) : il s'ouvre dans sa rubrique.
+
 ### Tester le kit contre le harcèlement (ajouté le 11 novembre 2026, sur le téléphone)
 
 1. Touchez **AIDE**, puis **Harcèlement ou divulgation en ligne** (ou, dans « Agir », la carte du même nom).
