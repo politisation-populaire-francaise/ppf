@@ -1,8 +1,12 @@
+---
+title: Signaler un contenu
+summary: Comment signaler un contenu illicite ou contraire à la charte, et ce qui se passe ensuite.
+origin: ai-assisted
+updated_at: 2026-11-11
+---
 **PROJET, À FAIRE RELIRE PAR UN AVOCAT**
 
 > Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Il suit les articles 16, 17, 18, 20 et 22 du règlement européen sur les services numériques et la procédure PHAROS du cahier des charges (sections 9.4 et 9.5). **Attention** : le bouton « Signaler ce contenu » n'existe pas encore dans l'application ; pendant la bêta, les signalements passent par le moyen de contact ci-dessous, à choisir par la propriétaire.
-
-# Signaler un contenu
 
 ## Qui peut signaler
 
@@ -27,7 +31,7 @@ Un message privé chiffré se signale par la personne qui l'a reçu : l'équipe 
 2. **Examen par un membre de l'équipe**, en temps utile, avec diligence et objectivité, selon la loi et la charte. Aucun outil automatisé n'est utilisé aujourd'hui.
 3. **Mesure provisoire** : un contenu manifestement illicite et grave (menace, appel à la violence, divulgation d'informations personnelles, contenu pédocriminel ou terroriste) est masqué tout de suite, en attendant la décision.
 4. **Décision motivée**, envoyée à vous et à l'auteur du contenu : ce qui a été décidé (aucune mesure, contenu masqué ou retiré, compte limité ou suspendu), pourquoi (faits, règle de la loi ou de la charte), si un outil automatisé a servi, et comment contester.
-5. **Contestation** possible pendant au moins six mois, gratuitement, examinée par une autre personne que celle qui a décidé (voir les conditions d'utilisation, partie 7).
+5. **Contestation** possible pendant au moins six mois, gratuitement, examinée par une autre personne que celle qui a décidé (voir les [conditions d'utilisation](/conditions-utilisation), partie 7).
 
 ## Cas particuliers
 
@@ -36,6 +40,11 @@ Un message privé chiffré se signale par la personne qui l'a reçu : l'équipe 
 - **Une injure ou une diffamation contre vous** : PPF peut retirer le contenu, mais seule une plainte permet des poursuites. Voir la fiche pratique « Harcèlement en ligne et divulgation d'informations personnelles ».
 - **Signaleurs de confiance** : les signalements des signaleurs de confiance désignés par l'Arcom sont traités en priorité.
 - **Signalements abusifs** : une personne qui envoie souvent des signalements manifestement infondés peut voir ses signalements suspendus pour une durée limitée, après un avertissement.
+
+## Ce qui relève d'autres pages
+
+- **Une faille de sécurité** dans le site ou l'application : voir [Signaler une faille de sécurité](/securite).
+- **Les réquisitions de la justice** et le registre légal des contenus publics : leur nombre est publié chaque mois sur la page [Transparence](/transparence) ; ce que contient ce registre est décrit dans la [politique de confidentialité](/confidentialite).
 
 ## Transparence
 

@@ -1,8 +1,12 @@
+---
+title: Politique de confidentialité
+summary: Ce que PPF garde sur vous, pourquoi, combien de temps, et vos droits.
+origin: ai-assisted
+updated_at: 2026-11-11
+---
 **PROJET, À FAIRE RELIRE PAR UN AVOCAT**
 
-> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation, à partir de `docs/REGISTRE_DONNEES.md`. Il ne décrit que ce que l'application et le serveur font réellement aujourd'hui ; ce qui n'existe pas encore est dit comme tel. Les passages `[À REMPLIR : ...]` ne peuvent être remplis que par la propriétaire. À mettre à jour à chaque ajout au registre des données.
-
-# Politique de confidentialité
+> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation, à partir du registre des données du projet. Il ne décrit que ce que l'application et le serveur font réellement aujourd'hui ; ce qui n'existe pas encore est dit comme tel. Les passages « À REMPLIR » ne peuvent être remplis que par la propriétaire. À mettre à jour à chaque ajout au registre des données.
 
 ## En bref
 
@@ -36,14 +40,12 @@ Sur ordinateur, la base locale de l'application n'est pas encore chiffrée : pro
 
 ## Ce que le serveur garde
 
-| Donnée | Pourquoi | Combien de temps | Qui y accède |
-|---|---|---|---|
-| Contenus que vous publiez (texte, type, date, pseudonyme sous forme de clé publique, signature) | Les publier | Tant qu'ils sont publiés | Tout le monde (ce sont des contenus publics) |
-| Messages privés, sous forme d'enveloppes chiffrées | Les remettre à leur destinataire | De 90 à 365 jours après réception, au choix du destinataire (90 par défaut) | Personne : le serveur ne connaît ni le contenu, ni l'expéditeur, ni la date réelle |
-| Messages des salons | Les afficher aux membres | Tant qu'ils sont publiés (pas encore de durée maximale) | Tout le monde : ces messages ne sont pas chiffrés |
-| Propositions en attente de relecture (revendications, appels, mobilisations) | Les relire avant publication | Pendant la relecture, puis 30 jours après la décision | L'équipe de relecture |
-| Registre légal des contenus publics : pour chaque création, modification ou suppression d'un contenu public, son identifiant, sa date, son type et la clé publique de son auteur ; jamais le texte, jamais d'adresse IP | Obligation légale de conserver les données permettant d'identifier l'auteur d'un contenu | Un an, puis effacement automatique | Personne en temps normal ; sur réquisition judiciaire écrite seulement, avec l'accord de deux membres de l'équipe ; le nombre de réquisitions est publié chaque mois |
-| Abonnement aux notifications (réveil de l'application) | Vous prévenir sans dévoiler le contenu | 30 jours après le dernier renouvellement | Le serveur de notifications de PPF, hébergé par PPF |
+- **Les contenus que vous publiez** (texte, type, date, pseudonyme sous forme de clé publique, signature) : pour les publier ; gardés tant qu'ils sont publiés ; visibles par tout le monde, ce sont des contenus publics.
+- **Les messages privés**, sous forme d'enveloppes chiffrées : pour les remettre à leur destinataire ; gardés de 90 à 365 jours après réception, au choix du destinataire (90 par défaut) ; personne ne peut les lire, le serveur ne connaît ni le contenu, ni l'expéditeur, ni la date réelle.
+- **Les messages des salons** : pour les afficher aux membres ; gardés tant qu'ils sont publiés (pas encore de durée maximale) ; visibles par tout le monde, car ces messages ne sont pas chiffrés.
+- **Les propositions en attente de relecture** (revendications, appels, mobilisations) : pour les relire avant publication ; gardées pendant la relecture, puis 30 jours après la décision ; vues par l'équipe de relecture.
+- **Le registre légal des contenus publics** : pour chaque création, modification ou suppression d'un contenu public, son identifiant, sa date, son type et la clé publique de son auteur, jamais le texte, jamais d'adresse IP. Il répond à l'obligation légale de conserver les données permettant d'identifier l'auteur d'un contenu ; il est gardé un an, puis effacé automatiquement. Personne ne le lit en temps normal : seulement sur réquisition judiciaire écrite, avec l'accord de deux membres de l'équipe ; le nombre de réquisitions est publié chaque mois sur la page [Transparence](/transparence).
+- **L'abonnement aux notifications** (réveil de l'application) : pour vous prévenir sans dévoiler le contenu ; gardé 30 jours après le dernier renouvellement ; utilisé par le serveur de notifications de PPF, hébergé par PPF.
 
 **Votes** : quand un vote est ouvert, le serveur garde d'un côté la liste des comptes autorisés à voter, de l'autre des bulletins anonymes. Il ne peut pas relier un bulletin à un compte. Les bulletins sont publiés à la clôture, sans compte, sans clé, sans adresse IP et sans ordre d'arrivée, avec seulement le jour.
 
@@ -66,7 +68,7 @@ Base juridique de ces traitements : [À FAIRE PRÉCISER PAR L'AVOCAT, question 2
 ## Qui peut recevoir vos données
 
 - L'équipe de PPF, chacun selon son rôle, avec une connexion par clé d'accès et un journal de toutes ses actions que personne ne peut modifier.
-- Notre hébergeur, Hostinger, qui loue le serveur, situé dans l'Union européenne ([À CONFIRMER au contrat : Allemagne]).
+- Notre hébergeur, Hostinger, qui loue le serveur, situé en Allemagne.
 - Les autorités judiciaires, sur réquisition écrite, et seulement pour ce que nous détenons.
 
 Aucune donnée n'est vendue, louée ou utilisée pour de la publicité. Aucune donnée personnelle n'est transférée hors de l'Union européenne. Aucun outil d'intelligence artificielle extérieur ne reçoit vos contenus aujourd'hui ; si cela change, cette politique sera mise à jour avant.
@@ -99,7 +101,7 @@ Cette politique est mise à jour à chaque nouvelle donnée inscrite au registre
 
 - Règlement (UE) 2016/679 (RGPD), articles 6, 9, 11, 12, 13 et 15 à 21, texte publié par la CNIL, consulté le 2026-11-11 : https://www.cnil.fr/fr/reglement-europeen-protection-donnees/chapitre3
 - CNIL, « Informer les personnes », consulté le 2026-11-11 : https://www.cnil.fr/fr/informer-les-personnes
-- Registre des données de PPF : `docs/REGISTRE_DONNEES.md`, lu le 2026-11-11.
+- Registre des données de PPF, lu le 2026-11-11 : https://github.com/politisation-populaire-francaise/ppf/blob/main/docs/REGISTRE_DONNEES.md
 
 ## Questions pour l'avocat
 

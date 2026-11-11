@@ -1,12 +1,16 @@
+---
+title: Conditions d'utilisation
+summary: Les règles d'usage de PPF, comment fonctionne la modération et comment contester une décision.
+origin: ai-assisted
+updated_at: 2026-11-11
+---
 **PROJET, À FAIRE RELIRE PAR UN AVOCAT**
 
-> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Il suit l'article 14 du règlement européen sur les services numériques (conditions claires, publiques, qui disent comment la modération fonctionne et comment contester une décision) et la section 9 du cahier des charges. Les passages `[À REMPLIR : ...]` ne peuvent être remplis que par la propriétaire.
-
-# Conditions d'utilisation
+> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Il suit l'article 14 du règlement européen sur les services numériques (conditions claires, publiques, qui disent comment la modération fonctionne et comment contester une décision) et la section 9 du cahier des charges. Les passages « À REMPLIR » ne peuvent être remplis que par la propriétaire.
 
 ## 1. Ce qu'est PPF
 
-PPF est une plateforme citoyenne gratuite et sans publicité, éditée par le collectif Politisation Populaire Française (voir les mentions légales). Elle permet de s'informer (Voir, Comprendre), d'agir (Agir) et de décider ensemble (Décider). Elle est indépendante de tout parti et de tout candidat, et n'appelle à voter pour personne.
+PPF est une plateforme citoyenne gratuite et sans publicité, éditée par le collectif Politisation Populaire Française (voir les [mentions légales](/mentions-legales)). Elle permet de s'informer (Voir, Comprendre), d'agir (Agir) et de décider ensemble (Décider). Elle est indépendante de tout parti et de tout candidat, et n'appelle à voter pour personne.
 
 ## 2. Une version d'essai, sur invitation
 
@@ -26,8 +30,8 @@ Lire ne demande ni compte ni acceptation. Créer un compte, publier, voter, sout
 ## 5. Ce que vous publiez
 
 - Vous restez l'auteur de vos contenus et responsable de ce que vous publiez. Ils sont signés par votre clé et publics, sauf les messages privés, qui sont chiffrés de bout en bout.
-- En publiant, vous autorisez PPF à les héberger, à les afficher et à les diffuser dans ses applications, sur son site et dans son export ouvert, selon la licence indiquée dans `LICENSE-CONTENUS.md` [À FAIRE PRÉCISER PAR L'AVOCAT : licence des contenus des utilisateurs].
-- Tout contenu respecte la loi et la **charte de contenu**, qui fait partie de ces conditions.
+- En publiant, vous autorisez PPF à les héberger, à les afficher et à les diffuser dans ses applications, sur son site et dans son export ouvert, selon la licence indiquée dans le fichier LICENSE-CONTENUS.md du dépôt de PPF [À FAIRE PRÉCISER PAR L'AVOCAT : licence des contenus des utilisateurs].
+- Tout contenu respecte la loi et la [charte de contenu](/charte), qui fait partie de ces conditions.
 - Les revendications, les témoignages, les appels à témoins et les appels à bloquer sont relus par l'équipe avant leur publication. Les autres contenus sont publiés tout de suite.
 - **Élections** : aucune collecte d'argent, aucun avantage ni aucune propagande au profit d'un candidat ou d'un parti ne passe par PPF (code électoral, article L52-8). Les outils électoraux de PPF traitent tous les candidats de la même façon.
 
@@ -43,7 +47,7 @@ Lire ne demande ni compte ni acceptation. Créer un compte, publier, voter, sout
 
 ## 7. Signaler et contester
 
-- **Signaler** : toute personne, même sans compte, peut signaler un contenu qu'elle estime illicite ou contraire à la charte. Voir la procédure de signalement.
+- **Signaler** : toute personne, même sans compte, peut signaler un contenu qu'elle estime illicite ou contraire à la charte. Voir la [procédure de signalement](/signaler).
 - **Contester une décision** (la vôtre ou celle prise sur votre signalement) : gratuitement, pendant au moins six mois après la décision, par [À REMPLIR : moyen de contact]. Votre réclamation est examinée par une autre personne que celle qui a décidé, et vous recevez une réponse motivée.
 - Vous pouvez aussi saisir un organisme de règlement extrajudiciaire des litiges certifié par l'Arcom, ou la justice.
 

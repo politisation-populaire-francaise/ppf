@@ -1,8 +1,12 @@
+---
+title: Charte de contenu
+summary: Ce qui est bienvenu sur PPF, ce qui est interdit, et ce qui se passe si une règle n'est pas respectée.
+origin: ai-assisted
+updated_at: 2026-11-11
+---
 **PROJET, À FAIRE RELIRE PAR UN AVOCAT**
 
 > Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation, à partir de la charte du cahier des charges (section 9.3, document définitif, reprise sans en changer le sens). Elle est acceptée par chaque personne qui publie, y compris à la création d'un salon, et sert de référence à la modération.
-
-# Charte de contenu
 
 PPF est un espace pour critiquer, revendiquer, s'organiser et décider ensemble. La colère y a sa place ; la violence et la haine, non. Ces règles s'appliquent à tout ce qui est publié : publications, salons, revendications, appels, témoignages, commentaires.
 
@@ -37,7 +41,7 @@ PPF est un espace pour critiquer, revendiquer, s'organiser et décider ensemble.
 
 ## Si une règle n'est pas respectée
 
-Le contenu peut être refusé, masqué ou retiré, et le compte averti, limité ou suspendu en cas d'abus répétés. Chaque décision est motivée et peut être contestée (voir les conditions d'utilisation, partie 7). Un contenu manifestement illicite et grave est masqué dès qu'il est repéré, en attendant la décision de l'équipe.
+Le contenu peut être refusé, masqué ou retiré, et le compte averti, limité ou suspendu en cas d'abus répétés. Chaque décision est motivée et peut être contestée (voir les [conditions d'utilisation](/conditions-utilisation), partie 7). Un contenu manifestement illicite et grave est masqué dès qu'il est repéré, en attendant la décision de l'équipe.
 
 ## Sources consultées
 

@@ -1,8 +1,12 @@
+---
+title: Mentions légales
+summary: Qui édite PPF, qui l'héberge, licences et droit de réponse.
+origin: ai-assisted
+updated_at: 2026-11-11
+---
 **PROJET, À FAIRE RELIRE PAR UN AVOCAT**
 
-> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Les passages entre crochets `[À REMPLIR : ...]` ne peuvent être remplis que par la propriétaire ; rien n'y a été inventé. Les questions pour l'avocat sont regroupées à la fin.
-
-# Mentions légales
+> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Les passages entre crochets « À REMPLIR » ne peuvent être remplis que par la propriétaire ; rien n'y a été inventé. Les questions pour l'avocat sont regroupées à la fin.
 
 ## Éditeur
 
@@ -16,13 +20,13 @@ Le site politisation-populaire-francaise.org et les applications PPF (Android, o
 
 ## Hébergeur
 
-- Hébergeur du serveur et des noms de domaine : **Hostinger**, [À REMPLIR à partir du contrat : dénomination exacte de la société, adresse du siège, numéro de téléphone]
-- Lieu du serveur : centre de données situé en **Allemagne** [À CONFIRMER au contrat]
+- Hébergeur du serveur et des noms de domaine : **Hostinger International Limited**, 61 Lordou Vironos Street, 6023 Larnaca, Chypre (selon les conditions générales de Hostinger ; [À CONFIRMER au contrat]) ; téléphone : [À REMPLIR à partir du contrat]
+- Lieu du serveur : centre de données situé en **Allemagne**
 
 ## Propriété intellectuelle et licences
 
 - Le code source des applications, du site et du serveur est publié sous licence AGPL-3.0-or-later, avec des permissions supplémentaires pour les magasins d'applications : https://github.com/politisation-populaire-francaise/ppf
-- Les contenus éditoriaux et les données suivent les licences décrites dans le fichier `LICENSE-CONTENUS.md` du dépôt.
+- Les contenus éditoriaux et les données suivent les licences décrites dans le fichier LICENSE-CONTENUS.md du dépôt : https://github.com/politisation-populaire-francaise/ppf/blob/main/LICENSE-CONTENUS.md
 - Les données publiques réutilisées (Parlement, Insee, annuaire des élus, Journal officiel) restent soumises à leur licence d'origine, citée avec chaque source.
 - Les contenus publiés par les utilisateurs restent sous leur responsabilité (voir les conditions d'utilisation).
 
@@ -36,14 +40,15 @@ Toute personne nommée ou désignée dans un contenu peut demander un droit de r
 
 ## Signaler un contenu ou une faille
 
-- Un contenu illicite : voir la procédure de signalement [lien à poser vers `/signaler`].
-- Une faille de sécurité : voir la page « Signaler une faille de sécurité » (`/securite`).
+- Un contenu illicite : voir la [procédure de signalement](/signaler).
+- Une faille de sécurité : voir la page [Signaler une faille de sécurité](/securite).
 
 ## Sources consultées
 
 - Loi n° 2004-575 du 21 juin 2004 pour la confiance dans l'économie numérique, article 1-1 (créé par la loi n° 2024-449 du 21 mai 2024), consulté le 2026-11-11 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000049568614
 - Décret n° 2007-1527 du 24 octobre 2007 relatif au droit de réponse en ligne, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000428279
 - Loi n° 2024-449 du 21 mai 2024 visant à sécuriser et à réguler l'espace numérique, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000049563368
+- Hostinger, « Terms of service » (entité contractante pour l'Union européenne et adresse), consulté le 2026-11-11 : https://www.hostinger.com/legal/universal-terms-of-service-agreement
 - Règlement (UE) 2022/2065 sur les services numériques, articles 11 et 12 (points de contact).
 
 ## Questions pour l'avocat

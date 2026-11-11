@@ -10,7 +10,7 @@
 | `charte-de-contenu.md` | `/charte` |
 | `procedure-de-signalement.md` | `/signaler` |
 
-Emplacement définitif sur le site : à fixer avec la session « Mise en ligne ».
+Ces fichiers sont hors de la signature des contenus. Au moment de la compilation, ils sont copiés dans les ressources du site (`web/build.gradle.kts`, dossier `legal/`) et servis par `web/.../LegalPages.kt`, avec un lien dans le pied de page de chaque page (emplacement convenu avec la session « Mise en ligne » le 11 novembre 2026). Format : un en-tête (`title`, `summary`, `origin`, `updated_at`) puis le Markdown du rendu de « Comprendre » (titres, listes, citations, liens ; ni tableau ni code).
 
 ## Blancs que seule la propriétaire peut remplir
 
@@ -18,7 +18,7 @@ Emplacement définitif sur le site : à fixer avec la session « Mise en ligne �
 2. **Directeur ou directrice de la publication** : nom.
 3. **Moyen de contact officiel** (point de contact des utilisateurs et des autorités, demandes RGPD, contestations, droit de réponse) : adresse électronique dédiée (coût éventuel à annoncer) ou clé de messagerie chiffrée de l'équipe.
 4. **Moyen de signalement pendant la bêta**, tant que le bouton « Signaler ce contenu » n'existe pas dans l'application (par exemple un message chiffré à la clé de l'équipe de modération).
-5. **Hostinger** : dénomination exacte, adresse et téléphone figurant au contrat ; pays du centre de données (Allemagne, à confirmer).
+5. **Hostinger** : confirmer au contrat la société « Hostinger International Limited, 61 Lordou Vironos Street, 6023 Larnaca, Chypre » (relevée dans ses conditions générales) et donner son téléphone. Le centre de données est en Allemagne (relevé par la session « Mise en ligne »).
 6. **Après la déclaration** : numéro RNA et adresse du siège.
 7. **Délégué à la protection des données** : désigné ou non (à trancher avec l'avocat).
 8. **Délai promis** pour traiter une demande de suppression d'un contenu ou d'un compte pendant la bêta.
