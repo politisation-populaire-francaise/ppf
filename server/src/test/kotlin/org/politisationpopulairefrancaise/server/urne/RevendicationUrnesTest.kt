@@ -50,11 +50,12 @@ class RevendicationUrnesTest {
     private fun address(signer: LocalEventSigner, d: String) = "30023:${signer.publicKey.hex}:$d"
 
     @Test
-    fun aDemandInDebateGetsItsBoxAndLosesItWhenItLeavesTheDebate() {
+    fun everyPublishedDemandGetsItsBoxAndLosesItWhenRetained() {
         events.store(editor.demand("hopital", "en-debat"))
         events.store(editor.demand("ecole", "nouvelle"))
-        assertEquals(1 to 0, demands.reconcile())
-        val box = service.list(0, 10).single()
+        // D-155: a new demand is open to votes too.
+        assertEquals(2 to 0, demands.reconcile())
+        val box = service.list(0, 10).single { it.subject == address(editor, "hopital") }
         assertEquals(RevendicationUrnes.PREFIX + address(editor, "hopital"), box.id)
         assertEquals(address(editor, "hopital"), box.subject)
         assertEquals(listOf("pour", "contre", "blanc"), box.choices)
@@ -65,18 +66,18 @@ class RevendicationUrnesTest {
         // Retained in the programme: the box closes, and stays closed if the demand comes back.
         events.store(editor.demand("hopital", "retenue", createdAt = 1_794_000_100))
         assertEquals(0 to 1, demands.reconcile())
-        assertTrue(service.list(0, 10).single().closed)
+        assertTrue(service.list(0, 10).single { it.subject == address(editor, "hopital") }.closed)
         events.store(editor.demand("hopital", "en-debat", createdAt = 1_794_000_200))
         assertEquals(0 to 0, demands.reconcile())
-        assertEquals(1, service.list(0, 10).size)
+        assertEquals(2, service.list(0, 10).size)
     }
 
     @Test
-    fun onlyTheTeamPutsADemandInDebate() {
-        // Stored directly (no API in between): a key outside the team cannot open a box.
-        events.store(citizen.demand("vote", "en-debat"))
-        assertEquals(0 to 0, demands.reconcile())
-        assertTrue(service.list(0, 10).isEmpty())
+    fun aCitizenCannotCloseTheBoxOfItsDemandByWritingAStatus() {
+        // Stored directly (no API in between): the status a citizen writes is ignored, its demand counts as « nouvelle ».
+        events.store(citizen.demand("vote", "retenue"))
+        assertEquals(1 to 0, demands.reconcile())
+        assertEquals(false, service.list(0, 10).single().closed)
     }
 
     private fun LocalEventSigner.label(signer: LocalEventSigner, d: String, status: String, createdAt: Long) = runBlocking {
@@ -89,16 +90,16 @@ class RevendicationUrnesTest {
 
     @Test
     fun theTeamPutsACitizensDemandInDebateWithALabelOfItsOwn() {
-        // A citizen's demand, published « nouvelle » after review: no box.
+        // A citizen's demand, published « nouvelle » after review: its box opens (D-155).
         events.store(citizen.demand("piscine", "nouvelle"))
-        assertEquals(0 to 0, demands.reconcile())
-        // A label signed by anyone else than the team changes nothing.
-        events.store(citizen.label(citizen, "piscine", "en-debat", 1_794_000_050))
-        assertEquals(0 to 0, demands.reconcile())
-        // The team's label: in debate, the box opens; the demand keeps its author's signature.
-        events.store(editor.label(citizen, "piscine", "en-debat", 1_794_000_100))
         assertEquals(1 to 0, demands.reconcile())
         assertEquals(address(citizen, "piscine"), service.list(0, 10).single().subject)
+        // A label signed by anyone else than the team changes nothing.
+        events.store(citizen.label(citizen, "piscine", "retenue", 1_794_000_050))
+        assertEquals(0 to 0, demands.reconcile())
+        // The team's label: in debate, the same box stays open; the demand keeps its author's signature.
+        events.store(editor.label(citizen, "piscine", "en-debat", 1_794_000_100))
+        assertEquals(0 to 0, demands.reconcile())
         // A later label of the team: retained, the box closes.
         events.store(editor.label(citizen, "piscine", "retenue", 1_794_000_200))
         assertEquals(0 to 1, demands.reconcile())

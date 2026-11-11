@@ -68,14 +68,12 @@
     <string name="urne_results_line">Citoyens : %1$s pour, %2$s contre, %3$s blanc</string>
     <string name="urne_elected_line">Élus, comptés à part : %1$s pour, %2$s contre, %3$s blanc</string>
     <string name="urne_vote_blank">Blanc</string>
+    <string name="urne_your_vote">Votre vote : %1$s</string>
     <string name="urne_supports_line">Soutiens des citoyens : %1$s. PPF porte la revendication aux élus concernés au-delà de %2$s soutiens, s’ils sont plus nombreux que les « contre » ; une pétition officielle est déposée au-delà de %3$s.</string>
     <string name="urne_stage_carry">Seuil atteint : PPF porte cette revendication aux élus concernés.</string>
     <string name="urne_stage_petition">Second seuil atteint : l’équipe dépose une pétition officielle, dont le lien s’affichera ici.</string>
     <string name="urne_elected_public">Vous votez en tant qu’élu : votre vote est public, signé de votre clé et publié avec votre nom et votre mandat, à part du vote des citoyens.</string>
     <string name="urne_elected_recorded">Votre vote d’élu est publié, signé de votre clé. Vous pouvez le changer ou le retirer jusqu’à la clôture.</string>
-    <string name="urne_too_few">Moins de %1$d bulletins pour l’instant : le détail s’affichera au-delà, pour que personne ne puisse deviner un choix.</string>
-    <string name="urne_results_too_few">Citoyens : moins de %1$d bulletins pour l’instant.</string>
-    <string name="urne_elected_too_few">Élus, comptés à part : moins de %1$d bulletins pour l’instant.</string>
     <string name="urne_alert">Alerte : le serveur n’a pas montré à cet appareil la même clé de vote qu’à tout le monde. Rien n’a été gardé et le vote est suspendu ici. Merci de le signaler à l’équipe.</string>
     <!-- « Mon bulletin a été compté » (DE-29) -->
     <string name="urne_mine_explain">Ce vote est clos et la liste anonyme des bulletins est publiée. Votre appareil peut la télécharger, la même pour tous, refaire le compte et y chercher votre bulletin. Rien n’est envoyé sur vous. La liste peut être longue : préférez le Wi-Fi.</string>

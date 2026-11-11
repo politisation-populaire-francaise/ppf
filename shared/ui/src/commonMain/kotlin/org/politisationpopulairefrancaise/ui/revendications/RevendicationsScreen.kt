@@ -781,7 +781,8 @@ private fun MetaRow(revendication: Article) {
  */
 @Composable
 private fun VoteRow(revendication: Article, detailed: Boolean = false) {
-    val inDebate = revendication.status == RevendicationStatus.EN_DEBAT || revendication.status == RevendicationStatus.TRES_SOUTENUE
+    // D-155: every published demand is open to votes, until it is retained or becomes a campaign.
+    val inDebate = revendication.status != RevendicationStatus.RETENUE && revendication.status != RevendicationStatus.CAMPAGNE
     DemandVoteRow(
         revendication.address.toString(),
         inDebate = inDebate,

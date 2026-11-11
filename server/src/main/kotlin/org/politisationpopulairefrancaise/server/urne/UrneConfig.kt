@@ -20,7 +20,8 @@ import java.security.SecureRandom
  *   voting stays unavailable (an authorization made for another server would pass; review R5). In
  *   development, only the path is compared.
  * - PPF_VOTE_MAX_TOKENS_PER_REQUEST: tokens delivered by one request at most (the rest on the next one).
- * - PPF_VOTE_MIN_DISPLAY: while a box is open, a level column with fewer ballots is hidden (default 5).
+ * - PPF_VOTE_MIN_DISPLAY: while a box is open, a level column with fewer ballots is hidden. Default 1: nothing is
+ *   hidden, the results show from the first ballot (decision of the owner of 2026-11-11, D-156).
  */
 data class UrneConfig(
     val seeds: VoteSeeds?,
@@ -29,8 +30,8 @@ data class UrneConfig(
     val ballotDifficulty: Int,
     val publicUrl: String?,
     val maxTokensPerRequest: Int = 500,
-    /** While a box is open, a level column with fewer ballots is shown as « moins de N » (private threshold, 5). */
-    val minDisplay: Int = 5,
+    /** While a box is open, a level column with fewer ballots is hidden; 1 hides nothing (D-156). */
+    val minDisplay: Int = 1,
 ) {
     companion object {
         private val log = LoggerFactory.getLogger(UrneConfig::class.java)
@@ -58,7 +59,7 @@ data class UrneConfig(
                 ballotDifficulty = bits("PPF_VOTE_POW_BALLOT", production = Ballot.DIFFICULTY, dev = 4).coerceAtMost(Ballot.DIFFICULTY),
                 publicUrl = publicUrl,
                 maxTokensPerRequest = env("PPF_VOTE_MAX_TOKENS_PER_REQUEST")?.toIntOrNull()?.coerceIn(1, 5000) ?: 500,
-                minDisplay = env("PPF_VOTE_MIN_DISPLAY")?.toIntOrNull()?.coerceIn(1, 1000) ?: 5,
+                minDisplay = env("PPF_VOTE_MIN_DISPLAY")?.toIntOrNull()?.coerceIn(1, 1000) ?: 1,
             )
         }
     }

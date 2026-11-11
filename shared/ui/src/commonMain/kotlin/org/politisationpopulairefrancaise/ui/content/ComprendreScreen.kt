@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -27,12 +28,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.heading
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.Space
@@ -47,7 +50,9 @@ import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.ui.comprendre.CapCard
 import org.politisationpopulairefrancaise.ui.comprendre.CapDetail
+import org.politisationpopulairefrancaise.ui.comprendre.ComprendreFinder
 import org.politisationpopulairefrancaise.ui.comprendre.ComprendreLibrary
+import org.politisationpopulairefrancaise.ui.comprendre.ComprendreTheme
 import org.politisationpopulairefrancaise.ui.comprendre.capOrigin
 import org.politisationpopulairefrancaise.ui.comprendre.DecryptageCard
 import org.politisationpopulairefrancaise.ui.comprendre.DecryptageDetail
@@ -69,7 +74,9 @@ import org.politisationpopulairefrancaise.ui.components.PageHeader
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
+import org.politisationpopulairefrancaise.ui.components.PpfSelectableChip
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
+import org.politisationpopulairefrancaise.ui.components.PpfTextField
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.comprendre_cancel
@@ -94,6 +101,25 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_history
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_teaching
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_cap
 import org.politisationpopulairefrancaise.ui.resources.comprendre_cap_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_search_placeholder
+import org.politisationpopulairefrancaise.ui.resources.comprendre_want_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_all
+import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_droits
+import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_institutions
+import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_argent_public
+import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_travail
+import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_vie_chere
+import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_medias
+import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_s_organiser
+import org.politisationpopulairefrancaise.ui.resources.comprendre_theme_histoire
+import org.politisationpopulairefrancaise.ui.resources.comprendre_results_count
+import org.politisationpopulairefrancaise.ui.resources.comprendre_results_none
+import org.politisationpopulairefrancaise.ui.resources.comprendre_results_clear
+import org.politisationpopulairefrancaise.ui.resources.comprendre_resume_step
+import org.politisationpopulairefrancaise.ui.resources.comprendre_resume_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_resume_action
+import org.politisationpopulairefrancaise.ui.resources.comprendre_section_count
+import org.politisationpopulairefrancaise.ui.resources.comprendre_reading_time
 import org.politisationpopulairefrancaise.ui.resources.comprendre_cap_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_who
 import org.politisationpopulairefrancaise.ui.resources.comprendre_who_intro
@@ -160,6 +186,11 @@ object ComprendreTags {
     const val GLOSSARY = "comprendre-glossary"
     const val GLOSSARY_OPEN = "comprendre-glossary-open"
     const val DISCOVER = "comprendre-discover"
+    const val SEARCH = "comprendre-search"
+    const val THEMES = "comprendre-themes"
+    const val THEME = "comprendre-theme-" // followed by the key of the theme, or "tout"
+    const val RESULTS = "comprendre-results"
+    const val RESUME = "comprendre-resume"
 
     /** A card of the home: followed by the slug of the content. */
     const val CARD = "comprendre-card-"
@@ -279,6 +310,25 @@ private fun ComprendreHome(
 ) {
     val palette = PpfTheme.palette
     var confirmClear by remember { mutableStateOf(false) }
+    // « Je veux comprendre… » and the search (owner's request of 11 November 2026: find one's way among
+    // more than a hundred contents). Both stay on the device; nothing is sent.
+    var query by rememberSaveable { mutableStateOf("") }
+    var themeKey by rememberSaveable { mutableStateOf<String?>(null) }
+    val theme = ComprendreTheme.entries.firstOrNull { it.key == themeKey }
+    val filtering = query.isNotBlank() || theme != null
+    fun shown(article: Article) = ComprendreFinder.matches(article, theme, query)
+    val capTexts = comprendre.capTexts.filter { shown(it.article) }
+    val courses = comprendre.courses.filter { shown(it.article) }
+    val sheets = comprendre.sheets.filter { shown(it.article) }
+    val checks = comprendre.decryptages.filter { shown(it.article) }
+    val guides = library.guides.filter { shown(it) }
+    val stories = comprendre.stories.filter { shown(it.article) }
+    val dossiers = comprendre.dossiers.filter { shown(it) }
+    val found = capTexts.size + courses.size + sheets.size + checks.size + guides.size + stories.size + dossiers.size
+    // Rows scrolled sideways (CardFlow) are kept for later: the cards stay one under the other for now,
+    // and the themes and the search are the way to narrow the list.
+    val horizontal = false
+    val cardWidth = if (compact) 280.dp else 320.dp
     Column(modifier.verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(ComprendreTags.HOME)) {
         Column(Modifier.widthIn(max = 760.dp)) {
             if (withHeader) {
@@ -293,62 +343,100 @@ private fun ComprendreHome(
             }
             Spacer(Modifier.height(16.dp))
 
-            // « Je découvre » (CO-19): the lesson of the day of a daily course, until the course is done.
-            comprendre.courses.firstOrNull { it.daily && comprendre.progressOf(it)?.completed != true }?.let { course ->
-                DiscoverCard(course, comprendre.progressOf(course)) { lesson ->
-                    actions.openCourse(course)
-                    comprendre.goToLesson(lesson)
+            PpfTextField(
+                value = query,
+                onValueChange = { query = it },
+                placeholder = stringResource(Res.string.comprendre_search_placeholder),
+                singleLine = true,
+                modifier = Modifier.fillMaxWidth().testTag(ComprendreTags.SEARCH),
+            )
+            Spacer(Modifier.height(12.dp))
+            Text(stringResource(Res.string.comprendre_want_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
+            Spacer(Modifier.height(8.dp))
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).testTag(ComprendreTags.THEMES)) {
+                PpfSelectableChip(stringResource(Res.string.comprendre_theme_all), selected = theme == null, onClick = { themeKey = null }, modifier = Modifier.testTag(ComprendreTags.THEME + "tout"))
+                ComprendreTheme.entries.forEach { entry ->
+                    Spacer(Modifier.width(8.dp))
+                    PpfSelectableChip(themeLabel(entry), selected = theme == entry, onClick = { themeKey = if (theme == entry) null else entry.key }, modifier = Modifier.testTag(ComprendreTags.THEME + entry.key))
                 }
+            }
+            Spacer(Modifier.height(16.dp))
+
+            if (filtering) {
+                Column(Modifier.fillMaxWidth().testTag(ComprendreTags.RESULTS)) {
+                    Text(
+                        if (found == 0) stringResource(Res.string.comprendre_results_none) else stringResource(Res.string.comprendre_results_count, found),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = palette.inkMuted,
+                    )
+                    PpfTextButton(onClick = { query = ""; themeKey = null }, text = stringResource(Res.string.comprendre_results_clear), color = palette.brand)
+                }
+            } else {
+                // « Je découvre » (CO-19): the lesson of the day of a daily course, until the course is done.
+                comprendre.courses.firstOrNull { it.daily && comprendre.progressOf(it)?.completed != true }?.let { course ->
+                    DiscoverCard(course, comprendre.progressOf(course)) { lesson ->
+                        actions.openCourse(course)
+                        comprendre.goToLesson(lesson)
+                    }
+                }
+                // « Reprendre »: the last course started and not finished (the daily one has its own card).
+                comprendre.courses
+                    .filter { !it.daily }
+                    .mapNotNull { course -> comprendre.progressOf(course)?.takeIf { !it.completed }?.let { course to it } }
+                    .lastOrNull()
+                    ?.let { (course, progress) -> ResumeCard(course, progress) { actions.openCourse(course) } }
             }
 
             // The series « Le cap du mouvement » (D-200, ROADMAP-MVP1 section 5) comes first: the priority of the MVP 1.
-            if (comprendre.capTexts.isNotEmpty()) {
-                HomeSection(stringResource(Res.string.comprendre_cap_title), stringResource(Res.string.comprendre_cap_intro), comprendre.capTexts, ComprendreTags.CAP_LIST) { text ->
+            if (capTexts.isNotEmpty()) {
+                HomeSection(stringResource(Res.string.comprendre_cap_title), stringResource(Res.string.comprendre_cap_intro), capTexts, ComprendreTags.CAP_LIST) { text ->
                     CapCard(text, onOpen = { actions.openArticle(text.article) }, selected = comprendre.openArticle?.address == text.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + text.article.slug))
                 }
                 Spacer(Modifier.height(20.dp))
             }
 
-            Column(Modifier.fillMaxWidth().testTag(ComprendreTags.COURSE_LIST)) {
-                SectionHeading(stringResource(Res.string.comprendre_courses_title), stringResource(Res.string.comprendre_courses_intro))
-                if (comprendre.courses.isEmpty() && library.status != LibraryStatus.Loading) {
-                    Text(stringResource(Res.string.comprendre_courses_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
-                }
-                comprendre.courses.forEach { course ->
-                    CourseCard(course, comprendre, onOpen = { actions.openCourse(course) }, selected = comprendre.openCourse?.address == course.address)
-                    Spacer(Modifier.height(12.dp))
+            if (!filtering || courses.isNotEmpty()) {
+                Column(Modifier.fillMaxWidth().testTag(ComprendreTags.COURSE_LIST)) {
+                    SectionHeading(stringResource(Res.string.comprendre_courses_title), stringResource(Res.string.comprendre_courses_intro))
+                    if (comprendre.courses.isEmpty() && library.status != LibraryStatus.Loading) {
+                        Text(stringResource(Res.string.comprendre_courses_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+                    }
+                    CardFlow(courses, horizontal, cardWidth) { course ->
+                        CourseCard(course, comprendre, onOpen = { actions.openCourse(course) }, selected = comprendre.openCourse?.address == course.address)
+                    }
                 }
             }
 
-            GlossarySection(actions.openGlossary)
+            if (!filtering) GlossarySection(actions.openGlossary)
 
-            HomeSection(stringResource(Res.string.comprendre_who_title), stringResource(Res.string.comprendre_who_intro), comprendre.sheets, ComprendreTags.WHO_LIST) { sheet ->
+            HomeSection(stringResource(Res.string.comprendre_who_title), stringResource(Res.string.comprendre_who_intro), sheets, ComprendreTags.WHO_LIST, horizontal, cardWidth) { sheet ->
                 QuiDecideCard(sheet, onOpen = { actions.openArticle(sheet.article) }, selected = comprendre.openArticle?.address == sheet.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + sheet.article.slug))
             }
-            comprendre.elus?.let { elus ->
+            comprendre.elus?.takeIf { !filtering }?.let { elus ->
                 Spacer(Modifier.height(if (comprendre.sheets.isEmpty()) 20.dp else 0.dp))
                 MesElusCard(elus, onOpen = actions.openElus, selected = elus.pageOpen)
             }
-            HomeSection(stringResource(Res.string.comprendre_decryptages_title), stringResource(Res.string.comprendre_checks_intro), comprendre.decryptages, ComprendreTags.CHECK_LIST) { check ->
+            HomeSection(stringResource(Res.string.comprendre_decryptages_title), stringResource(Res.string.comprendre_checks_intro), checks, ComprendreTags.CHECK_LIST, horizontal, cardWidth) { check ->
                 DecryptageCard(check, onOpen = { actions.openArticle(check.article) }, selected = comprendre.openArticle?.address == check.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + check.article.slug))
             }
 
-            Spacer(Modifier.height(20.dp))
-            Column(Modifier.fillMaxWidth().testTag(ContentTags.GUIDE_LIST)) {
-                SectionHeading(stringResource(Res.string.comprendre_rights_title), stringResource(Res.string.comprendre_rights_intro))
-                if (library.guides.isEmpty() && library.status != LibraryStatus.Loading) {
-                    Text(stringResource(Res.string.content_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
-                }
-                library.guides.forEach { guide ->
-                    GuideCard(guide, onOpen = { actions.openGuide(guide) }, selected = library.selected?.address == guide.address)
-                    Spacer(Modifier.height(12.dp))
+            if (!filtering || guides.isNotEmpty()) {
+                Spacer(Modifier.height(20.dp))
+                Column(Modifier.fillMaxWidth().testTag(ContentTags.GUIDE_LIST)) {
+                    SectionHeading(stringResource(Res.string.comprendre_rights_title), stringResource(Res.string.comprendre_rights_intro))
+                    if (library.guides.isEmpty() && library.status != LibraryStatus.Loading) {
+                        Text(stringResource(Res.string.content_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+                    }
+                    CardFlow(guides, horizontal, cardWidth) { guide ->
+                        GuideCard(guide, onOpen = { actions.openGuide(guide) }, selected = library.selected?.address == guide.address)
+                    }
                 }
             }
 
-            HomeSection(stringResource(Res.string.comprendre_history_title), stringResource(Res.string.comprendre_history_intro), comprendre.stories, ComprendreTags.HISTORY_LIST) { story ->
+            HomeSection(stringResource(Res.string.comprendre_history_title), stringResource(Res.string.comprendre_history_intro), stories, ComprendreTags.HISTORY_LIST, horizontal, cardWidth) { story ->
                 HistoryCard(story, onOpen = { actions.openArticle(story.article) }, selected = comprendre.openArticle?.address == story.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + story.article.slug))
             }
-            ArticleSection(stringResource(Res.string.comprendre_dossiers_title), comprendre.dossiers, comprendre.openArticle, actions.openArticle)
+            ArticleSection(stringResource(Res.string.comprendre_dossiers_title), dossiers, comprendre.openArticle, actions.openArticle)
 
             Spacer(Modifier.height(20.dp))
             Text(stringResource(Res.string.comprendre_private_note), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
@@ -450,17 +538,79 @@ private fun GlossarySection(onOpen: () -> Unit) {
 
 /** A section of the home, shown only when it has contents. */
 @Composable
-private fun <T> HomeSection(title: String, intro: String, items: List<T>, tag: String, card: @Composable (T) -> Unit) {
+private fun <T> HomeSection(
+    title: String,
+    intro: String,
+    items: List<T>,
+    tag: String,
+    horizontal: Boolean = false,
+    cardWidth: Dp = 300.dp,
+    card: @Composable (T) -> Unit,
+) {
     if (items.isEmpty()) return
     Spacer(Modifier.height(20.dp))
     Column(Modifier.fillMaxWidth().testTag(tag)) {
         SectionHeading(title, intro)
+        CardFlow(items, horizontal, cardWidth, card)
+    }
+}
+
+/**
+ * The cards of a section: one row scrolled sideways on the home (with the number of contents, so that
+ * a screen reader and a sighted reader both know there is more), or one under the other.
+ */
+@Composable
+private fun <T> CardFlow(items: List<T>, horizontal: Boolean, cardWidth: Dp, card: @Composable (T) -> Unit) {
+    if (!horizontal || items.size <= 1) {
         items.forEach { item ->
             card(item)
             Spacer(Modifier.height(12.dp))
         }
+        return
     }
+    Text(stringResource(Res.string.comprendre_section_count, items.size), style = MaterialTheme.typography.bodySmall, color = PpfTheme.palette.inkSubtle)
+    Spacer(Modifier.height(8.dp))
+    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), verticalAlignment = Alignment.Top) {
+        items.forEachIndexed { index, item ->
+            if (index > 0) Spacer(Modifier.width(12.dp))
+            Box(Modifier.width(cardWidth)) { card(item) }
+        }
+    }
+    Spacer(Modifier.height(12.dp))
 }
+
+/** « Reprendre là où vous en étiez »: the last course started on this device and not finished. */
+@Composable
+private fun ResumeCard(course: Parcours, progress: ParcoursProgress, onOpen: () -> Unit) {
+    val palette = PpfTheme.palette
+    PpfCard(onClick = onOpen, modifier = Modifier.fillMaxWidth().testTag(ComprendreTags.RESUME)) {
+        Text(stringResource(Res.string.comprendre_resume_title), style = MaterialTheme.typography.titleMedium, color = palette.brand, modifier = Modifier.semantics { heading() })
+        Spacer(Modifier.height(4.dp))
+        Text(displayTitle(course), style = MaterialTheme.typography.titleSmall)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(Res.string.comprendre_resume_step, (progress.furthestStep + 1).coerceAtMost(course.steps.size), course.steps.size), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+        Spacer(Modifier.height(8.dp))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Text(stringResource(Res.string.comprendre_resume_action), style = MaterialTheme.typography.titleSmall, color = palette.brand, modifier = Modifier.weight(1f))
+            Icon(Lucide.ChevronRight, contentDescription = null, tint = palette.brand, modifier = Modifier.size(18.dp))
+        }
+    }
+    Spacer(Modifier.height(20.dp))
+}
+
+@Composable
+private fun themeLabel(theme: ComprendreTheme): String = stringResource(
+    when (theme) {
+        ComprendreTheme.RIGHTS -> Res.string.comprendre_theme_droits
+        ComprendreTheme.INSTITUTIONS -> Res.string.comprendre_theme_institutions
+        ComprendreTheme.MONEY -> Res.string.comprendre_theme_argent_public
+        ComprendreTheme.WORK -> Res.string.comprendre_theme_travail
+        ComprendreTheme.LIVING -> Res.string.comprendre_theme_vie_chere
+        ComprendreTheme.MEDIA -> Res.string.comprendre_theme_medias
+        ComprendreTheme.ORGANISE -> Res.string.comprendre_theme_s_organiser
+        ComprendreTheme.HISTORY -> Res.string.comprendre_theme_histoire
+    },
+)
 
 /** A dossier, a fact-check, a story or a « Qui décide de ça ? » sheet, each with its own layout. */
 @Composable
@@ -572,7 +722,7 @@ private fun GuideCard(guide: Article, onOpen: () -> Unit, selected: Boolean) {
             Text(it, style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
         }
         Spacer(Modifier.height(8.dp))
-        Text(metaLine(guide), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
+        Text(metaLine(guide, withReadingTime = true), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
     }
 }
 
@@ -639,7 +789,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
 )
 
 @Composable
-private fun metaLine(guide: Article): String {
+private fun metaLine(guide: Article, withReadingTime: Boolean = false): String {
     val type = typeLabel(guide.type)
     val origin = stringResource(
         when (guide.origin) {
@@ -648,5 +798,8 @@ private fun metaLine(guide: Article): String {
         },
     )
     val updated = stringResource(Res.string.content_updated, CivilDate.fromEpochSeconds(guide.updatedAt).toFrench())
-    return "$type · $updated · $origin"
+    if (!withReadingTime) return "$type · $updated · $origin"
+    // On the cards: the estimated reading time, to choose a content that fits the time one has.
+    val reading = stringResource(Res.string.comprendre_reading_time, ComprendreFinder.readingMinutes(guide.body))
+    return "$type · $reading · $updated · $origin"
 }
