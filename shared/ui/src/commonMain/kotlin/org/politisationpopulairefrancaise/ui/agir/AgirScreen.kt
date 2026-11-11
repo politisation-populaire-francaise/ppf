@@ -247,8 +247,9 @@ fun AgirScreen(
             route = AgirRoute.FEDERER
             returnTo = null
         } else if (route == AgirRoute.STRIKE_SIMULATOR) {
-            // The simulator was opened from the funds of the solidarity rubric: back to them.
-            route = AgirRoute.SOLIDARITY
+            // Opened from the funds of the solidarity rubric, back to them; from the home, back to it.
+            route = if (returnTo == AgirRoute.HOME) AgirRoute.HOME else AgirRoute.SOLIDARITY
+            returnTo = null
         } else {
             route = AgirRoute.HOME
             returnTo = null
@@ -281,6 +282,13 @@ fun AgirScreen(
                             AgirRubrics.FEDERER.id -> route = AgirRoute.FEDERER
                             AgirRubrics.ENGAGER.id -> route = AgirRoute.ENGAGER
                             AgirRubrics.GATHER.id -> route = AgirRoute.GATHER
+                            // AG-59: the kit is drawn by the shell over the window (HarassmentKitLayer).
+                            AgirRubrics.HARASSMENT.id -> help.openHarassmentKit()
+                            // From the home (D-190): its way back returns to the home, not to the funds.
+                            AgirRubrics.STRIKE.id -> {
+                                returnTo = AgirRoute.HOME
+                                route = AgirRoute.STRIKE_SIMULATOR
+                            }
                             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
                         }
                     },
@@ -358,7 +366,10 @@ fun AgirScreen(
                     state = strike,
                     solidarity = solidarityLibrary,
                     windowClass = windowClass,
-                    onBack = { route = AgirRoute.SOLIDARITY },
+                    onBack = {
+                        route = if (returnTo == AgirRoute.HOME) AgirRoute.HOME else AgirRoute.SOLIDARITY
+                        returnTo = null
+                    },
                     // A strike fund opens on its page in the solidarity rubric; its way back leads to the list of funds.
                     onOpenFund = { fund ->
                         solidarityLibrary.selectTab(SolidarityTab.FUNDS)

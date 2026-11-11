@@ -5,6 +5,10 @@
     <!-- Home -->
     <string name="agir_intro">Se mobiliser, s’organiser, s’entraider, témoigner, communiquer même sans Internet : c’est ici que l’on passe à l’action, ensemble.</string>
     <string name="agir_rubrics_title">Rubriques</string>
+    <string name="agir_section_mobilize">Se mobiliser</string>
+    <string name="agir_section_hold">Tenir dans la durée</string>
+    <string name="agir_section_federate">Fédérer son entourage</string>
+    <string name="agir_section_protect">Se protéger</string>
 
     <string name="agir_agenda_title">Agenda des mobilisations</string>
     <string name="agir_agenda_text">Manifestations, grèves, rassemblements, blocages et assemblées générales, près de chez vous et partout en France.</string>
