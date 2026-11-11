@@ -128,6 +128,12 @@ internal fun CallDetail(
             if (call.type == CallType.TEMOINS) {
                 InfoBox(Lucide.ShieldCheck) { Text(stringResource(Res.string.appels_witnesses_info), style = MaterialTheme.typography.bodyMedium) }
             }
+            if (call.type.isBlockade) {
+                // D-199: the legal notice travels with every call to block.
+                Callout(CalloutType.ATTENTION, title = stringResource(Res.string.appels_blockade_title), modifier = Modifier.testTag(CallTags.BLOCKADE_NOTICE)) {
+                    Text(stringResource(Res.string.appels_blockade_law), style = MaterialTheme.typography.bodyMedium)
+                }
+            }
 
             SectionTitle(stringResource(Res.string.appels_section_text))
             SelectionContainer { Text(call.text, style = MaterialTheme.typography.bodyLarge) }

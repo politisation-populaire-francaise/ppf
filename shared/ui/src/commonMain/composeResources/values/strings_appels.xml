@@ -325,4 +325,18 @@
     <string name="appels_declaration_faite">Faite</string>
     <string name="appels_declaration_en_cours">En cours</string>
     <string name="appels_declaration_non_faite">Non faite</string>
+    <!-- D-199: calls to strike and to block (owner, D-215). The legal notice is to be read again on Légifrance before each release. -->
+    <string name="appels_type_greve">Faire grève</string>
+    <string name="appels_type_greve_desc">Appeler à une grève dans un secteur ou une entreprise : la date, qui appelle, pour quoi.</string>
+    <string name="appels_tips_greve">Dites le secteur ou l’entreprise, la date de début, qui appelle (syndicat, assemblée générale) et pour quelles revendications. Dans les services publics, une grève demande un préavis déposé par un syndicat représentatif au moins cinq jours francs avant. Le simulateur du gréviste et les caisses de grève sont dans Agir.</string>
+    <string name="appels_example_greve">Grève dans les écoles de la ville le 24 novembre</string>
+    <string name="appels_type_bloquer">Bloquer</string>
+    <string name="appels_type_bloquer_desc">Appeler à un blocage, un piquet ou une action devant un site ; toujours relu avant publication.</string>
+    <string name="appels_tips_bloquer">Dites le lieu, la date, qui appelle et ce que vous demandez. N’appelez à aucune violence, aucune dégradation, aucune mise en danger, et ne visez aucune personne nommée.</string>
+    <string name="appels_example_bloquer">Piquet devant l’entrepôt le matin du 24 novembre</string>
+    <string name="appels_field_sector">Secteur ou entreprise</string>
+    <string name="appels_field_sector_help">Par exemple : les écoles d’une académie, l’hôpital de la ville, une entreprise et son site.</string>
+    <string name="appels_blockade_title">Bloquer : ce que dit la loi</string>
+    <string name="appels_blockade_rules">Un appel à bloquer est toujours relu par l’équipe avant publication. Il est refusé s’il comporte violence, dégradation ou mise en danger, s’il gêne les secours ou l’accès aux soins, ou s’il vise une personne nommée.</string>
+    <string name="appels_blockade_law">Sont légaux : la grève, un piquet de grève qui laisse passer celles et ceux qui veulent travailler, la fermeture volontaire de son commerce. Exposent à des poursuites : entraver la circulation sur une voie publique (code de la route, article L412-1) et entraver la liberté du travail de manière concertée, par des menaces ou des violences (code pénal, article 431-1). Laissez toujours passer les secours.</string>
 </resources>

@@ -27,6 +27,8 @@ internal fun typeLabelResource(type: CallType): StringResource = when (type) {
     CallType.DEBATTRE -> Res.string.appels_type_debattre
     CallType.S_ORGANISER -> Res.string.appels_type_s_organiser
     CallType.MANIFESTER -> Res.string.appels_type_manifester
+    CallType.GREVE -> Res.string.appels_type_greve
+    CallType.BLOQUER -> Res.string.appels_type_bloquer
     CallType.SOUTENIR -> Res.string.appels_type_soutenir
     CallType.PETITION -> Res.string.appels_type_petition
     CallType.INTERPELLER -> Res.string.appels_type_interpeller
@@ -43,6 +45,8 @@ internal fun typeDescriptionResource(type: CallType): StringResource = when (typ
     CallType.DEBATTRE -> Res.string.appels_type_debattre_desc
     CallType.S_ORGANISER -> Res.string.appels_type_s_organiser_desc
     CallType.MANIFESTER -> Res.string.appels_type_manifester_desc
+    CallType.GREVE -> Res.string.appels_type_greve_desc
+    CallType.BLOQUER -> Res.string.appels_type_bloquer_desc
     CallType.SOUTENIR -> Res.string.appels_type_soutenir_desc
     CallType.PETITION -> Res.string.appels_type_petition_desc
     CallType.INTERPELLER -> Res.string.appels_type_interpeller_desc
@@ -60,6 +64,8 @@ internal fun typeTipsResource(type: CallType): Pair<StringResource, StringResour
     CallType.DEBATTRE -> Res.string.appels_tips_debattre to Res.string.appels_example_debattre
     CallType.S_ORGANISER -> Res.string.appels_tips_s_organiser to Res.string.appels_example_s_organiser
     CallType.MANIFESTER -> Res.string.appels_tips_manifester to Res.string.appels_example_manifester
+    CallType.GREVE -> Res.string.appels_tips_greve to Res.string.appels_example_greve
+    CallType.BLOQUER -> Res.string.appels_tips_bloquer to Res.string.appels_example_bloquer
     CallType.SOUTENIR -> Res.string.appels_tips_soutenir to Res.string.appels_example_soutenir
     CallType.PETITION -> Res.string.appels_tips_petition to Res.string.appels_example_petition
     CallType.INTERPELLER -> Res.string.appels_tips_interpeller to Res.string.appels_example_interpeller
@@ -75,6 +81,8 @@ internal fun typeIcon(type: CallType): ImageVector = when (type) {
     CallType.SE_REUNIR, CallType.S_ORGANISER -> Lucide.Users
     CallType.DEBATTRE -> Lucide.MessagesSquare
     CallType.MANIFESTER -> Lucide.Megaphone
+    CallType.GREVE -> Lucide.HandFist
+    CallType.BLOQUER -> Lucide.Ban
     CallType.SOUTENIR -> Lucide.HandFist
     CallType.PETITION -> Lucide.Pencil
     CallType.INTERPELLER -> Lucide.Landmark
@@ -131,12 +139,14 @@ internal fun fieldLabelResource(field: String, type: CallType? = null): StringRe
     CallFields.PERIOD -> Res.string.appels_field_period
     CallFields.EVIDENCE -> Res.string.appels_field_evidence
     CallFields.RECIPIENT -> Res.string.appels_field_recipient
+    CallFields.SECTOR -> Res.string.appels_field_sector
     else -> Res.string.appels_field_value_placeholder
 }
 
 /** A short help line under some fields. */
 internal fun fieldHelpResource(tag: String): StringResource? = when (tag) {
     CallFields.ORGANIZER -> Res.string.appels_field_organizer_help
+    CallFields.SECTOR -> Res.string.appels_field_sector_help
     CallFields.RECIPIENT -> Res.string.appels_field_recipient_help
     CallFields.SOURCE -> Res.string.appels_field_source_help
     CallFields.EVIDENCE -> Res.string.appels_field_evidence_help

@@ -83,6 +83,7 @@ object CallComposerTags {
     const val TIPS = "call-composer-tips"
     const val WITNESSES_RULES = "call-composer-witnesses"
     const val FUNDRAISING_RULES = "call-composer-fundraising"
+    const val BLOCKADE_RULES = "call-composer-blockade"
     const val PLEDGE = "call-composer-pledge"
     const val FIELD = "call-composer-field-" // followed by "title", "text", "summary", "territory" or a tag
     const val DATE = "call-composer-date-" // followed by a tag
@@ -179,7 +180,7 @@ private fun Header(onClose: () -> Unit) {
     InfoBox(Lucide.Megaphone) { Text(stringResource(Res.string.appels_compose_intro), style = MaterialTheme.typography.bodyMedium) }
 }
 
-/** The thirteen types, one sentence each; fundraising disabled, and said why, for other accounts. */
+/** The types, one sentence each; fundraising disabled, and said why, for other accounts. */
 @Composable
 private fun TypeChoice(canFundraise: Boolean, onChoose: (CallType) -> Unit) {
     Spacer(Modifier.height(20.dp))
@@ -245,6 +246,15 @@ private fun ColumnScope.Form(
         Spacer(Modifier.height(12.dp))
         Callout(CalloutType.ATTENTION, modifier = Modifier.testTag(CallComposerTags.WITNESSES_RULES)) {
             Text(stringResource(Res.string.appels_witnesses_rules), style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+    if (type.isBlockade) {
+        // D-199: always shown, never dismissed; the call is always read by the team before publication.
+        Spacer(Modifier.height(12.dp))
+        Callout(CalloutType.ATTENTION, title = stringResource(Res.string.appels_blockade_title), modifier = Modifier.testTag(CallComposerTags.BLOCKADE_RULES)) {
+            Text(stringResource(Res.string.appels_blockade_rules), style = MaterialTheme.typography.bodyMedium)
+            Spacer(Modifier.height(4.dp))
+            Text(stringResource(Res.string.appels_blockade_law), style = MaterialTheme.typography.bodyMedium)
         }
     }
     if (type.isFundraising) {

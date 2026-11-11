@@ -84,6 +84,9 @@ class AgirHeldQueue(
         if (AgirRules.callTypeOf(event) == AgirFormats.CALL_TYPE_WITNESSES) {
             html.div(classes = "bo-notice bo-notice-warning") { +BackOfficeTexts.AGIR_WITNESSES_ALWAYS_REVIEWED }
         }
+        if (AgirRules.callTypeOf(event) == AgirFormats.CALL_TYPE_BLOCKADE) {
+            html.div(classes = "bo-notice bo-notice-warning") { +BackOfficeTexts.AGIR_BLOCKADE_ALWAYS_REVIEWED }
+        }
         if (held.status != HeldStatus.PENDING) {
             html.div(classes = "bo-notice") {
                 attributes["role"] = "status"
