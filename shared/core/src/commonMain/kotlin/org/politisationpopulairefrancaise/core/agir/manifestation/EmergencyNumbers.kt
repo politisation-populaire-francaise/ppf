@@ -85,6 +85,17 @@ object EmergencyNumbers {
     /** Listening associations of « Besoin de parler ? », cited by sante.fr and Psycom (« Les lignes d'écoute », checked on 8 November 2026). */
     val talkAssociations: List<EmergencyNumber> = listOf(RED_CROSS_LISTENING, SOS_AMITIE)
 
+    /**
+     * The kit against harassment and doxxing (AG-59): the police first, then the lines for victims.
+     * Checked on 9 November 2026: service-public.gouv.fr F32239 « Cyberharcèlement » (verified by the
+     * DILA on 7 August 2026: 3018 for minors and young adults, 116 006 for every victim) and F33954
+     * (3919). The 17 and the 112 stay the numbers of a danger.
+     */
+    val harassmentDanger: List<EmergencyNumber> = listOf(POLICE, EUROPE, DEAF)
+
+    /** The listening and support lines of the kit (AG-59), in this order. */
+    val harassmentSupport: List<EmergencyNumber> = listOf(CYBER_HARASSMENT, VICTIMS, WOMEN)
+
     /** Every number, each once (the 116 006 is in the protest mode and in « Besoin de parler ? »). */
     val all: List<EmergencyNumber> = (emergency + protest + talk + talkAssociations).distinct()
 

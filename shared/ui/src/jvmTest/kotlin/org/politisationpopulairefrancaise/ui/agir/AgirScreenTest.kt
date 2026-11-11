@@ -25,6 +25,7 @@ import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationPage
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsTags
 import org.politisationpopulairefrancaise.ui.groups.GroupsTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
+import org.politisationpopulairefrancaise.ui.agir.engagement.EngagementFeaturedTags
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -38,6 +39,9 @@ import kotlin.test.assertTrue
 class AgirScreenTest {
 
     private val available = AgirRubrics.available.map { it.id }
+
+    /** The cards of the sections (« S'engager en politique » is the highlight above them). */
+    private val cards = AgirRubrics.sections.flatMap { section -> section.rubrics.map { it.id } }
     private val inPreparation = AgirRubrics.inPreparation.map { it.id }
 
     @Test
@@ -47,7 +51,10 @@ class AgirScreenTest {
         awaitTag(AgirTags.HOME)
         onNodeWithText("Agir").assertExists()
         onNodeWithText("Se mobiliser, s’organiser, s’entraider, témoigner, communiquer même sans Internet", substring = true).assertExists()
-        available.forEach { id -> onNodeWithTag(AgirTags.RUBRIC + id).performScrollTo().assert(hasClickAction()) }
+        // D-231: four headed sections, then the rubrics in preparation; the highlight of « S'engager » first.
+        onNodeWithTag(EngagementFeaturedTags.CARD).performScrollTo().assert(hasClickAction())
+        AgirRubrics.sections.forEach { section -> onNodeWithTag(AgirTags.SECTION + section.id).performScrollTo() }
+        cards.forEach { id -> onNodeWithTag(AgirTags.RUBRIC + id).performScrollTo().assert(hasClickAction()) }
         onNodeWithTag(AgirTags.SOON_TITLE).performScrollTo()
         onNodeWithText("Ces rubriques sont prévues mais pas encore prêtes", substring = true).assertExists()
         inPreparation.forEach { id ->
@@ -55,10 +62,10 @@ class AgirScreenTest {
         }
         // "Témoigner" (AG-07), the protest mode (AG-13), the solidarity funds (AG-10) and "Je veux aider" (AG-12) left the rubrics in preparation.
         assertEquals(3, inPreparation.size)
-        assertEquals("federer", available[2])
-        assertEquals("s-engager", available[3])
-        assertEquals("se-reunir", available[4])
-        assertEquals("temoigner", available[5])
+        assertEquals(listOf("se-mobiliser", "tenir", "federer", "se-proteger"), AgirRubrics.sections.map { it.id })
+        assertEquals(listOf("agenda", "appels", "se-reunir", "collectifs", "organisations"), AgirRubrics.sections.first().rubrics.map { it.id })
+        assertTrue("s-engager" in available && "s-engager" !in cards && "simulateur-greve" in cards)
+        assertEquals(cards.size, cards.toSet().size, "each rubric once")
         assertTrue("solidarite" in available && "aider" in available)
         assertTrue("solidarite" !in inPreparation && "aider" !in inPreparation)
         onNodeWithText("Messagerie sans Internet").assertExists()

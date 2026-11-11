@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AG-59 « Kit contre le harcèlement et la divulgation d’informations personnelles » (Agir), step 1:
+     evidence kept encrypted on the device, templates copied or shared by the person herself, nothing
+     sent by PPF. French, "vous", typographic apostrophe (’), no em dash, calm tone. Legal facts
+     checked on 9 November 2026 (docs/integration/agir-harcelement.md, section 3). -->
+<resources>
+    <!-- Entry in the AIDE sheet -->
+    <string name="harcelement_help_title">Harcèlement ou divulgation en ligne</string>
+    <string name="harcelement_help_text">Messages répétés, menaces, votre adresse ou votre visage publiés pour vous exposer : gardez des preuves sur votre téléphone et préparez un signalement. PPF n’envoie rien à votre place.</string>
+    <string name="harcelement_help_open">Ouvrir le kit</string>
+
+    <!-- Screen -->
+    <string name="harcelement_title">Harcèlement en ligne</string>
+    <string name="harcelement_intro">Gardez des preuves, demandez le retrait des contenus et, si vous le souhaitez, portez plainte. Vous avancez à votre rythme : rien ne part sans vous.</string>
+    <string name="harcelement_back">Retour</string>
+    <string name="harcelement_danger_title">En danger ?</string>
+    <string name="harcelement_danger_text">Si une menace vous semble sur le point d’être mise à exécution, appelez le 17 ou le 112. Si vous ne pouvez pas parler, envoyez un SMS au 114.</string>
+    <string name="harcelement_numbers_source">Numéros vérifiés le 9 novembre 2026 sur service-public.gouv.fr (fiches F33954 et F32239).</string>
+
+    <!-- Evidence -->
+    <string name="harcelement_evidence_title">Mes preuves</string>
+    <string name="harcelement_evidence_text">Pour chaque contenu, gardez son adresse exacte, le texte, la date et l’heure où vous l’avez vu, et une capture d’écran. Tout reste chiffré sur ce téléphone, hors de la galerie et de toute sauvegarde en ligne.</string>
+    <string name="harcelement_evidence_android_only">Garder des preuves dans PPF est possible dans l’application Android. Sur cet appareil, rien n’est gardé : vous pouvez quand même préparer un signalement plus bas.</string>
+    <string name="harcelement_evidence_empty">Aucune preuve gardée pour l’instant.</string>
+    <string name="harcelement_evidence_count">Preuves gardées sur ce téléphone : %1$d</string>
+    <string name="harcelement_evidence_loading">Ouverture des preuves…</string>
+    <string name="harcelement_evidence_unreadable">Preuves illisibles, non affichées : %1$d</string>
+    <string name="harcelement_add">Ajouter une preuve</string>
+    <string name="harcelement_seen">Vu le %1$s à %2$s</string>
+    <string name="harcelement_no_platform">Plateforme non précisée</string>
+    <string name="harcelement_with_image">Capture jointe</string>
+    <string name="harcelement_digest_short">Empreinte : %1$s…</string>
+    <string name="harcelement_item_label">Preuve vue le %1$s à %2$s, %3$s</string>
+    <string name="harcelement_timestamp_note">La date de relevé est celle de l’horloge de votre téléphone. PPF ne peut pas encore la faire certifier par un service indépendant : l’empreinte permet seulement de montrer plus tard que la preuve n’a pas changé.</string>
+
+    <!-- Form -->
+    <string name="harcelement_form_title">Nouvelle preuve</string>
+    <string name="harcelement_field_platform">Plateforme ou site</string>
+    <string name="harcelement_field_platform_hint">Le nom du réseau social, d’un forum…</string>
+    <string name="harcelement_field_url">Adresse exacte (URL)</string>
+    <string name="harcelement_field_url_help">Copiez l’adresse du message ou du profil avec « Partager » ou « Copier le lien » dans l’application concernée.</string>
+    <string name="harcelement_field_url_hint">https://…</string>
+    <string name="harcelement_field_date">Date où vous l’avez vu</string>
+    <string name="harcelement_field_date_hint">JJ/MM/AAAA</string>
+    <string name="harcelement_field_time">Heure</string>
+    <string name="harcelement_field_time_hint">HH:MM</string>
+    <string name="harcelement_field_text">Texte du contenu</string>
+    <string name="harcelement_field_text_help">Collez le texte mot pour mot, sans le corriger.</string>
+    <string name="harcelement_field_text_hint">Le texte copié</string>
+    <string name="harcelement_field_note">Note pour vous</string>
+    <string name="harcelement_field_note_hint">Ce que vous voulez retenir (facultatif)</string>
+    <string name="harcelement_image_title">Capture d’écran ou photo</string>
+    <string name="harcelement_image_pick">Choisir une capture d’écran</string>
+    <string name="harcelement_image_attached">Capture jointe : position, modèle du téléphone et date retirés. L’image elle-même n’est pas modifiée.</string>
+    <string name="harcelement_image_remove">Retirer la capture</string>
+    <string name="harcelement_camera_keep">Garder comme preuve</string>
+    <string name="harcelement_image_preview">Aperçu de la capture jointe</string>
+    <string name="harcelement_image_unavailable">Le choix d’une image n’est pas disponible sur cet appareil.</string>
+    <string name="harcelement_image_unsupported">Ce fichier n’est pas une image que PPF sait nettoyer (JPEG, PNG ou WebP). Une capture d’écran ordinaire convient.</string>
+    <string name="harcelement_image_too_large">Cette image est trop lourde (25 Mo au plus).</string>
+    <string name="harcelement_image_malformed">Cette image est abîmée : elle n’a pas été jointe.</string>
+    <string name="harcelement_image_failed">L’image n’a pas pu être lue.</string>
+    <string name="harcelement_keep">Garder cette preuve</string>
+    <string name="harcelement_cancel">Annuler</string>
+    <string name="harcelement_saving">Chiffrement de la preuve…</string>
+    <string name="harcelement_problem_nothing">Ajoutez au moins une capture, une adresse ou un texte.</string>
+    <string name="harcelement_problem_url">Cette adresse n’est pas valide : elle commence par https:// ou http://, sans espace.</string>
+    <string name="harcelement_problem_date">Cette date n’est pas valide : écrivez-la comme 09/11/2026.</string>
+    <string name="harcelement_problem_time">Cette heure n’est pas valide : écrivez-la comme 14:30.</string>
+    <string name="harcelement_problem_future">Ce moment est dans le futur. Vérifiez la date et écrivez l’année.</string>
+    <string name="harcelement_problem_platform">Ce nom est trop long (80 caractères au plus).</string>
+    <string name="harcelement_problem_text">Ce texte est trop long (10 000 caractères au plus).</string>
+    <string name="harcelement_problem_note">Cette note est trop longue (1 000 caractères au plus).</string>
+
+    <!-- Messages -->
+    <string name="harcelement_kept">Preuve gardée et chiffrée sur ce téléphone.</string>
+    <string name="harcelement_deleted">Preuve supprimée.</string>
+    <string name="harcelement_keep_failed">La preuve n’a pas pu être gardée. Réessayez.</string>
+    <string name="harcelement_open_failed">Les preuves n’ont pas pu être ouvertes.</string>
+    <string name="harcelement_delete_failed">La preuve n’a pas pu être supprimée.</string>
+
+    <!-- Detail -->
+    <string name="harcelement_detail_close">Fermer la preuve</string>
+    <string name="harcelement_detail_kept">Gardée le %1$s à %2$s (horloge du téléphone)</string>
+    <string name="harcelement_detail_url">Adresse</string>
+    <string name="harcelement_detail_text">Texte</string>
+    <string name="harcelement_detail_note">Votre note</string>
+    <string name="harcelement_detail_digest">Empreinte SHA-256 de la preuve</string>
+    <string name="harcelement_detail_original_digest">Empreinte SHA-256 du fichier d’origine</string>
+    <string name="harcelement_detail_kept_digest">Empreinte SHA-256 de la copie gardée</string>
+    <string name="harcelement_detail_image_loading">Déchiffrement de la capture…</string>
+    <string name="harcelement_detail_camera_note">La photo reste aussi dans la caméra protégée.</string>
+    <string name="harcelement_delete">Supprimer cette preuve</string>
+    <string name="harcelement_delete_title">Supprimer cette preuve ?</string>
+    <string name="harcelement_delete_text">Elle sera effacée de ce téléphone, capture comprise. Cette action ne peut pas être annulée.</string>
+    <string name="harcelement_delete_confirm">Supprimer</string>
+
+    <!-- Templates -->
+    <string name="harcelement_reports_title">Préparer un signalement</string>
+    <string name="harcelement_reports_text">PPF remplit le modèle avec vos preuves. Vous le relisez, puis vous le copiez ou le partagez vous-même : PPF n’envoie rien à la plateforme, à PHAROS ni au tribunal.</string>
+    <string name="harcelement_tab_platform">Plateforme</string>
+    <string name="harcelement_tab_pharos">PHAROS</string>
+    <string name="harcelement_tab_complaint">Plainte</string>
+    <string name="harcelement_platform_text">Le règlement européen sur les services numériques (DSA, article 16) oblige l’hébergeur à vous offrir un moyen simple de signaler un contenu illicite. Collez ce texte dans son formulaire de signalement, ou envoyez-le à l’adresse de ses mentions légales.</string>
+    <string name="harcelement_pharos_text">PHAROS est le portail officiel du ministère de l’Intérieur pour signaler un contenu public illicite. Ce n’est pas une plainte et il ne retire pas le contenu lui-même. Il ne traite pas les messages privés d’une personne que vous connaissez : dans ce cas, portez plainte. Vos coordonnées y sont facultatives.</string>
+    <string name="harcelement_pharos_open">Ouvrir PHAROS (internet-signalement.gouv.fr)</string>
+    <string name="harcelement_complaint_text">Vous pouvez porter plainte dans tout commissariat ou toute gendarmerie, qui doit l’enregistrer, ou écrire au procureur de la République du tribunal judiciaire du lieu des faits ou du domicile de l’auteur. Le délai est de 6 ans à partir du dernier fait.</string>
+    <string name="harcelement_complaint_model">Modèle officiel sur service-public.gouv.fr</string>
+    <string name="harcelement_offences_title">Ce qui vous arrive</string>
+    <string name="harcelement_offence_harassment">Harcèlement : des messages ou des actes répétés qui vous visent</string>
+    <string name="harcelement_offence_harassment_help">Code pénal, article 222-33-2-2 : en ligne, jusqu’à 2 ans de prison et 30 000 euros d’amende, davantage dans certains cas.</string>
+    <string name="harcelement_offence_doxxing">Divulgation : des informations qui permettent de vous identifier ou de vous localiser, publiées pour vous exposer</string>
+    <string name="harcelement_offence_doxxing_help">Code pénal, article 223-1-1 : jusqu’à 3 ans de prison et 45 000 euros d’amende, davantage dans certains cas.</string>
+    <string name="harcelement_field_explanation">Ce qui se passe, avec vos mots</string>
+    <string name="harcelement_field_explanation_hint">Depuis quand, combien de fois, ce que disent les contenus</string>
+    <string name="harcelement_field_name">Votre nom</string>
+    <string name="harcelement_field_email">Votre adresse électronique</string>
+    <string name="harcelement_identity_help">Le DSA les demande pour une notification complète. Ils restent dans la mémoire de PPF le temps de préparer le texte et ne sont jamais enregistrés.</string>
+    <string name="harcelement_good_faith">Je confirme de bonne foi que ces informations sont exactes et complètes</string>
+    <string name="harcelement_good_faith_help">Cochez seulement si c’est vrai : PPF ne l’écrit pas à votre place.</string>
+    <string name="harcelement_field_author">Auteur, si vous le connaissez</string>
+    <string name="harcelement_field_author_hint">Sinon, la plainte est déposée contre X</string>
+    <string name="harcelement_field_city">Ville du tribunal</string>
+    <string name="harcelement_field_city_hint">Lieu des faits ou domicile de l’auteur</string>
+    <string name="harcelement_evidence_included">Preuves reprises dans le texte</string>
+    <string name="harcelement_missing_title">Pour une notification complète, il manque :</string>
+    <string name="harcelement_missing_explanation">pourquoi le contenu est illicite</string>
+    <string name="harcelement_missing_location">l’adresse exacte du contenu (ou, pour un message privé, où le trouver)</string>
+    <string name="harcelement_missing_identity">votre nom et votre adresse électronique</string>
+    <string name="harcelement_missing_good_faith">votre déclaration de bonne foi</string>
+    <string name="harcelement_missing_note">Vous pouvez copier le texte quand même et le compléter.</string>
+    <string name="harcelement_preview_title">Texte prêt à copier</string>
+    <string name="harcelement_copy">Copier le texte</string>
+    <string name="harcelement_copied">Texte copié</string>
+    <string name="harcelement_share">Partager le texte</string>
+    <string name="harcelement_share_title">Partager le signalement</string>
+    <string name="harcelement_clipboard_note">Le texte copié reste dans le presse-papiers de l’appareil jusqu’à votre prochaine copie.</string>
+    <string name="harcelement_leave_title">Vous quittez PPF</string>
+    <string name="harcelement_leave_text">Ce lien ouvre le site officiel %1$s, hors de PPF. PPF ne lui transmet rien : vous y remplissez vous-même ce que vous choisissez.</string>
+    <string name="harcelement_leave_stay">Rester sur PPF</string>
+    <string name="harcelement_leave_go">Ouvrir le site</string>
+    <string name="harcelement_review_note">Modèles vérifiés le 9 novembre 2026 sur les textes officiels. Ils seront relus par un avocat avant l’ouverture publique de PPF.</string>
+
+    <!-- Support -->
+    <string name="harcelement_support_title">Trouver de l’aide</string>
+    <string name="harcelement_support_text">Vous pouvez en parler, même sans porter plainte. Le 3018 s’adresse aux jeunes, le 116 006 à toutes les victimes, le 3919 aux femmes victimes de violences.</string>
+    <string name="harcelement_support_source">Lignes vérifiées le 9 novembre 2026 sur service-public.gouv.fr (fiches F32239 et F33954).</string>
+    <string name="harcelement_police_chat">Écrire à un policier ou un gendarme</string>
+    <string name="harcelement_police_chat_text">Un service gratuit, ouvert jour et nuit, pour les adultes victimes ou témoins de cyberharcèlement : premiers conseils et orientation (service-public.gouv.fr).</string>
+    <string name="harcelement_circle_soon">Bientôt : prévenir votre cercle, quand les cercles de PPF existeront. Rien n’est envoyé à vos proches pour l’instant.</string>
+    <string name="harcelement_fiche">Lire la fiche « Harcèlement en ligne et divulgation »</string>
+    <string name="harcelement_limits">Une capture d’écran seule peut être contestée : pour une preuve plus solide, un commissaire de justice peut faire un constat, à vos frais. Un téléphone déjà espionné échappe à la protection de PPF.</string>
+</resources>

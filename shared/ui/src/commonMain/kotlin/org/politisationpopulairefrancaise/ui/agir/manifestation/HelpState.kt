@@ -17,6 +17,8 @@ import org.politisationpopulairefrancaise.core.elus.ElusStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.agir.camera.ProtectedCameraState
 import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.harassment.HarassmentKitState
+import org.politisationpopulairefrancaise.ui.agir.harassment.rememberHarassmentKitState
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.timer.TimerState
 import org.politisationpopulairefrancaise.ui.agir.timer.rememberTimerState
@@ -137,6 +139,29 @@ class HelpState(
      * knows; null outside it (tests), where the screens build their own.
      */
     var camera: ProtectedCameraState? = null
+
+    /**
+     * The kit against harassment and doxxing (AG-59), attached by the shell
+     * ([rememberHarassmentKitState]) with the layer that draws it (`HarassmentKitLayer`); null
+     * outside it (tests of the sheet alone), where the sheet does not offer it.
+     */
+    var harassment: HarassmentKitState? = null
+
+    /** True while the kit is shown over the whole window (opened from the sheet, which then closes). */
+    var harassmentOpen: Boolean by mutableStateOf(false)
+        private set
+
+    /** Opens the kit from the sheet; nothing without the shell's kit. */
+    fun openHarassmentKit() {
+        if (harassment == null) return
+        isOpen = false
+        openGuide = null
+        harassmentOpen = true
+    }
+
+    fun closeHarassmentKit() {
+        harassmentOpen = false
+    }
 
     /**
      * The verified legal teams of the directory that have an account (their verified key, `p`): they
