@@ -8,6 +8,8 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 - Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
 
 ### Ajouté
+- Appels et annuaire des organisations sur le site (11 novembre 2026) : `/appels` (appels ouverts, filtres par type et territoire), la page de chaque appel à l’adresse des affiches `/agir/appels/<clé>/<identifiant>` (avec le rappel de la loi pour un appel à bloquer) et `/organisations` ; lisibles sans JavaScript, seulement ce qui est publié.
+- « Signaler » aussi sur les publications du fil et les messages des salons (11 novembre 2026, D-234).
 - « Signaler ce contenu » (11 novembre 2026, S-38, D-234) : un bouton « Signaler » sur les appels, les mobilisations et les revendications ; six motifs, un commentaire facultatif chiffré pour l'équipe, sans compte ; une file « Signalements par contenu » dans la boîte des échanges du back-office, qui ne masque rien. Laissé de côté : fil, salons et suivi du dossier dans « Mes échanges ».
 - Revendications sur le site (11 novembre 2026, D-152) : `/revendications`, celles du mouvement en tête, chacune avec qui la porte, qui la soutient publiquement et ses sources ; le vote reste dans l’application.
 - Rappels des pétitions officielles (11 novembre 2026) : une semaine avant la clôture et la veille, demandés sur la page de la pétition, gardés sur l’appareil.
