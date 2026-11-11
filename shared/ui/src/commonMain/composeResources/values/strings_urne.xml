@@ -69,7 +69,7 @@
     <string name="urne_elected_line">Élus, comptés à part : %1$s pour, %2$s contre, %3$s blanc</string>
     <string name="urne_vote_blank">Blanc</string>
     <string name="urne_your_vote">Votre vote : %1$s</string>
-    <string name="urne_gauge_line">%1$d %% pour, %2$d %% contre, %3$d %% blanc</string>
+    <string name="urne_gauge_line">%1$d % pour, %2$d % contre, %3$d % blanc</string>
     <string name="urne_gauge_none">Aucun vote pour l’instant : soyez la première personne à voter.</string>
     <plurals name="urne_gauge_votes">
         <item quantity="one">%1$s vote</item>
