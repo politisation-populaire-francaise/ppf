@@ -1,6 +1,6 @@
 ---
 slug: glossaire-reglement-europeen
-title: [EXEMPLE] Règlement européen
+title: Règlement européen
 summary: Acte de l'Union européenne obligatoire en entier et applicable directement dans tous les pays de l'Union, sans qu'une loi nationale soit nécessaire.
 variants: règlement européen, règlements européens, règlement de l'Union européenne, règlements de l'Union européenne
 topics: europe, institutions
@@ -8,7 +8,7 @@ see_also: glossaire-directive, glossaire-union-europeenne, glossaire-parlement-e
 related: qui-decide:transports-du-quotidien
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Un règlement européen est un acte législatif contraignant : il doit être appliqué en entier dans toute l'Union européenne. Contrairement à une directive, il n'a pas besoin d'être transposé : il s'applique directement dans chaque pays.
 
@@ -25,6 +25,6 @@ Exemple : si un règlement européen fixe des règles d'étiquetage pour un prod
 
 ## Sources
 
-- [Union européenne, « Types de législation »](https://european-union.europa.eu/institutions-law-budget/law/types-legislation_fr)
-- [Union européenne, « Parlement européen : rôles et pouvoirs »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-parliament_fr)
+- [Union européenne, « Types de législation »](https://european-union.europa.eu/institutions-law-budget/law/types-legislation_fr), consulté le 2026-11-09
+- [Union européenne, « Parlement européen : rôles et pouvoirs »](https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/search-all-eu-institutions-and-bodies/european-parliament_fr), consulté le 2026-11-09
 - [EUR-Lex, glossaire, « Transposition »](https://eur-lex.europa.eu/FR/legal-content/glossary/transposition.html)

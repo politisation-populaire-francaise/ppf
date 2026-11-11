@@ -20,6 +20,7 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.ui.PpfApp
+import org.politisationpopulairefrancaise.ui.agir.collectives.CollectivesTags
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationPageTags
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsTags
 import org.politisationpopulairefrancaise.ui.groups.GroupsTags
@@ -128,7 +129,7 @@ class AgirScreenTest {
     }
 
     @Test
-    fun guidesLeadToComprendreAndCollectivesShowTheRoomsOfMessages() = runComposeUiTest {
+    fun guidesLeadToComprendreAndCollectivesToTheirDirectoryThenTheRoomsOfMessages() = runComposeUiTest {
         val harness = AgirHarness()
         setContent { harness.Content(360, 740) }
         awaitTag(AgirTags.HOME)
@@ -136,10 +137,18 @@ class AgirScreenTest {
         waitForIdle()
         assertEquals(listOf(Space.COMPRENDRE), harness.navigations)
 
+        // M24: the rubric opens the directory of the collectifs; the plain rooms of "Messages" stay one tap away.
         onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.COLLECTIVES.id).performScrollTo().performClick()
         waitForIdle()
         awaitTag(AgirTags.COLLECTIVES)
+        awaitTag(CollectivesTags.DIRECTORY)
+        onNodeWithTag(CollectivesTags.ROOMS).performClick()
+        waitForIdle()
+        awaitTag(AgirTags.ROOMS)
         awaitTag(GroupsTags.PAGE)
+        onNodeWithTag(AgirTags.BACK).performClick()
+        waitForIdle()
+        awaitTag(CollectivesTags.DIRECTORY)
         onNodeWithTag(AgirTags.BACK).performClick()
         waitForIdle()
         awaitTag(AgirTags.HOME)
@@ -191,7 +200,7 @@ class AgirScreenTest {
     }
 
     @Test
-    fun theShellLeadsToAgirOnADesktopAndFromTheMenuOfAPhone() {
+    fun theShellLeadsToAgirOnADesktopAndFromTheBottomBarOfAPhone() {
         runComposeUiTest {
             setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(AgirFixtures.dependencies()) } }
             onNodeWithTag(ShellTags.navItem(Space.AGIR)).performClick()
@@ -201,8 +210,7 @@ class AgirScreenTest {
         }
         runComposeUiTest {
             setContent { Box(Modifier.requiredSize(360.dp, 740.dp)) { PpfApp(AgirFixtures.dependencies()) } }
-            onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
-            waitForIdle()
+            // D-215: Agir is in the bottom bar of phones.
             onNodeWithTag(ShellTags.navItem(Space.AGIR)).performClick()
             waitForIdle()
             mainClock.advanceTimeBy(2_000)

@@ -11,10 +11,15 @@ import org.politisationpopulairefrancaise.core.agir.manifestation.LegalContacts
 import org.politisationpopulairefrancaise.core.agir.manifestation.RallyPoint
 import org.politisationpopulairefrancaise.core.agir.manifestation.RallyPointStorage
 import org.politisationpopulairefrancaise.core.agir.organisations.Organisation
+import org.politisationpopulairefrancaise.core.agir.timer.TimerCandidate
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.elus.ElusStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.agir.camera.ProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
+import org.politisationpopulairefrancaise.ui.agir.timer.TimerState
+import org.politisationpopulairefrancaise.ui.agir.timer.rememberTimerState
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 
 /** The practical guides the AIDE button and the protest mode open (bundled with the application, readable offline). */
@@ -120,6 +125,27 @@ class HelpState(
     /** The legal teams and volunteer lawyers with a telephone, those of the territory first. */
     val legalContacts: List<Organisation> get() = LegalContacts.of(directory.organisations, effectiveTerritory)
 
+    /**
+     * « Sans nouvelles de moi » (AG-55, D-088), attached by the shell ([rememberTimerState]); null
+     * outside it (the protest mode and the sheet alone, in tests), where its blocks show nothing.
+     */
+    var timer: TimerState? = null
+
+    /**
+     * « Caméra protégée » (AG-58, D-089), attached by the shell ([rememberProtectedCameraState]) so that
+     * the protest mode and the testimony form use the one whose part `agir-camera` the quick erase
+     * knows; null outside it (tests), where the screens build their own.
+     */
+    var camera: ProtectedCameraState? = null
+
+    /**
+     * The verified legal teams of the directory that have an account (their verified key, `p`): they
+     * can receive the alert of a timer like a contact. Those whose verification was withdrawn are left out.
+     */
+    fun legalTeamCandidates(): List<TimerCandidate> = directory.organisations
+        .filter { it.type == LEGAL_TEAM_TYPE && !it.revoked }
+        .mapNotNull { organisation -> organisation.accountKey?.let { TimerCandidate(it, legalTeam = true, label = organisation.displayName) } }
+
     /** Keeps [point] on the device; false when it could not be written. */
     fun saveRallyPoint(point: RallyPoint): Boolean {
         val storage = storage ?: return false
@@ -138,6 +164,9 @@ class HelpState(
 
     companion object {
         const val MAX_TERRITORY: Int = 100
+
+        /** The type of the legal teams in the directory (AgirFormats.ORG_TYPES). */
+        const val LEGAL_TEAM_TYPE: String = "legal-team"
     }
 }
 

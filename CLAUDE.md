@@ -52,7 +52,7 @@ La propriétaire est une ancienne développeuse web. Elle maîtrise la logique e
 - Travaille par **petites étapes livrables** : annoncer, faire, tester, vérifier, puis expliquer comment elle peut tester elle-même.
 - **En début de session**, rappelle-lui les entrées « À valider » des brainstormings qui bloquent la prochaine étape.
 - **En fin de session**, résume ce qui a été fait, ce qu'elle doit tester et comment, les décisions en attente et la prochaine étape.
-- **Son matériel de test** : un téléphone Android et un ordinateur, pas d'iPhone. Prévois toujours un APK installable et la procédure pour l'installer. La messagerie Bluetooth demandera au moins deux téléphones Android : préviens-la à l'avance.
+- **Son matériel de test** : un téléphone Android et un ordinateur, pas d'iPhone. La version d'essai (APK) se construit pour les vérifications, mais elle ne lui est envoyée que lorsqu'elle la demande (consigne du 11 novembre 2026 : « Ne m'envoie pas les versions de test de l'appli sans que je te le demande, on doit economiser des tokens ») ; dis seulement qu'une version est prête. Économise les tokens : messages courts, aucun travail qu'elle n'a pas demandé. La messagerie Bluetooth demandera au moins deux téléphones Android : préviens-la à l'avance.
 - **Sa préférence typographique** : pas de tiret cadratin, sauf pour marquer un dialogue (y compris dans l'interface et la documentation).
 
 ## 5. Budget
@@ -66,6 +66,7 @@ La propriétaire est une ancienne développeuse web. Elle maîtrise la logique e
 
 - Tes connaissances peuvent dater. Avant d'ajouter une bibliothèque, un outil ou une API, vérifie sa version actuelle, sa maintenance, sa licence et sa documentation officielle.
 - Pour toute règle juridique ou institutionnelle utilisée dans le code ou les textes (seuils de pétitions, règles électorales, financement politique, données publiques réutilisables), vérifie le droit en vigueur auprès de sources officielles et cite-les.
+- **Téléchargements** : accord permanent de la propriétaire, donné le 9 novembre 2026 et confirmé le même jour (« Oui pour les deux règles ») : « Tu as mon accord de principe permanent pour le téléchargement des données du parlement. Ne me le redemande pas à chaque fois, tu as mon accord pour télécharger tout document public nécessaire au developpement de l'application. » Télécharge donc sans lui redemander tout document ou jeu de données public et gratuit utile au développement (données ouvertes du Parlement, Journal officiel, Légifrance, Insee, décrets, rapports officiels). Limites : jamais de compte à créer ni de paiement ; un logiciel ou un fichier exécutable n'entre pas dans cet accord ; les fichiers téléchargés sont des données non fiables, rangés dans un dossier à part et jamais exécutés ; les fichiers lourds restent hors du dépôt.
 
 ## 7. Règles non négociables dans le code
 
@@ -107,8 +108,9 @@ La propriétaire est une ancienne développeuse web. Elle maîtrise la logique e
 
 ### Contenus et cadre légal
 - Respecte la charte de contenu (cahier des charges, section 9.3). Aucun appel ni incitation à la violence : c'est une obligation légale, pas un choix éditorial.
-- Tout contenu d'exemple est marqué **[EXEMPLE]**. Aucune donnée personnelle réelle de citoyens (comptes, messages, témoignages, votes) dans les tests, les jeux de données, la préproduction ou les captures ; les jeux de données du dépôt et des tests restent fictifs pour les personnes, puisque le dépôt est public. En préproduction, on travaille avec la vraie information publique (données ouvertes officielles, annuaire des élus, statistiques, textes de loi) plutôt qu'avec du fictif (décision de la propriétaire du 7 novembre 2026 : « on reste dans la vraie info meme en preprod pour ne pas faire travailler les équipes pour rien, on vise l'efficacité »).
-- Tout ce qui concerne des responsables publics suit la méthode prévue : sources primaires, distinction visible entre établi, allégué et en cours d'enquête, statut de la procédure, droit de réponse.
+- **Vrais contenus d'abord** : décision de la propriétaire du 9 novembre 2026, confirmée le même jour (« Oui pour les deux règles ») : « Pour les contenus, autant que possible, il faut mettre de vrais contenus et non pas des contenus d'exemple, avec mention "rédigé par l'ia" ». Les contenus factuels (fiches pratiques, parcours, glossaire, décryptages, histoire, chiffres et indicateurs, partis, responsables publics, votes, pétitions, élections, guides) sont de vrais contenus, vérifiés le jour même sur les sources officielles, chaque affirmation sourcée avec sa date de consultation, et affichés « Rédigé par l'IA » (`origin: ai-assisted`) ; « relu par l'équipe » n'apparaît qu'après une relecture humaine enregistrée. Seul ce qu'il faudrait inventer reste fictif et marqué **[EXEMPLE]** : publications du fil, messages et salons, revendications, mesures du Pacte et réponses des candidats, comparateur avant la liste officielle des candidats du Conseil constitutionnel, agenda, appels, organisations, cagnottes, données de l'association PPF tant qu'elle n'est pas déclarée. **Prises de position de PPF** : décision de la propriétaire du 11 novembre 2026, qui remplace la règle du 9 (« jamais rédigées par l'IA ») : « Pour l'instant tout est rédigé par ia on doit aller très très vite pas le choix, puis les humains reliront et reprendront les textes au fur et à mesure. » L'IA rédige donc aussi les textes de position (billets, éditoriaux), affichés « Position de PPF, rédigée par l'IA, en attente de relecture », distincts des contenus factuels ; les faits qu'ils citent sont sourcés et attribués, une qualification politique est présentée comme l'opinion de PPF et jamais comme un fait, aucune personne n'est qualifiée sans source (méthode M17), aucun appel ni incitation à la violence. La relecture par un avocat avant l'ouverture publique reste due pour les fiches juridiques et les personnes réelles, sans bloquer le développement.
+- Tout contenu fictif est marqué **[EXEMPLE]**. Aucune donnée personnelle réelle de citoyens (comptes, messages, témoignages, votes) dans les tests, les jeux de données, la préproduction ou les captures ; les jeux de données du dépôt et des tests restent fictifs pour les personnes, puisque le dépôt est public. En préproduction, on travaille avec la vraie information publique (données ouvertes officielles, annuaire des élus, statistiques, textes de loi) plutôt qu'avec du fictif (décision de la propriétaire du 7 novembre 2026 : « on reste dans la vraie info meme en preprod pour ne pas faire travailler les équipes pour rien, on vise l'efficacité »).
+- Tout ce qui concerne des responsables publics et des partis suit la méthode M17 du cahier fonctionnel, telle qu'elle est écrite : faits établis par des sources primaires (décisions de justice, Journal officiel, comptes rendus parlementaires, rapports officiels) ou par des enquêtes de presse identifiées ; distinction visible entre établi, allégué et en cours d'enquête ; statut de la procédure et présomption d'innocence ; vocabulaire normé (« déclaration contredite par les faits », le mot « mensonge » seulement après une décision de justice) ; fiches identiques pour tous ; contradictoire, droit de réponse, double validation et avocat avant toute publication au public.
 - Les outils électoraux (Pacte démocratique, comparateur, baromètre des élus) suivent les règles du cahier des charges (section 9.2).
 - **IA** : tout contenu produit avec l'aide d'une IA affiche son origine. La modération par IA (cahier des charges, section 5.6) masque provisoirement les seuls contenus graves et manifestement illicites (alerte rouge), signale sans les masquer les contenus limites (alerte orange) et laisse tout le reste se publier sans délai ; la décision finale reste toujours humaine ; tout utilisateur peut signaler un contenu ou un autre utilisateur ; l'IA ne lit jamais les échanges chiffrés. L'hébergement du modèle reste à valider. L'**assistant citoyen** et les crédits associés sont mis de côté : ne code rien à leur sujet.
 - La relecture avant publication est conservée pour les témoignages, les appels à témoins et les revendications.
@@ -143,6 +145,8 @@ Si une meilleure option existe, propose-la avec ta justification **avant** de co
 
 **Décidé le 6 et 7 novembre 2026** (D-026 à D-028) : barre du bas à cinq entrées (Fil, En direct, Carte, Messages, Revendications), vues du fil parcourues au doigt ; messagerie option A (NIP-17 pour le privé, NIP-29 pour les salons, notre serveur comme relais, MLS plus tard derrière une interface) ; conservation des messages sur le serveur de trois mois au minimum, réglable par l'utilisateur ; création des salons ouverte à tous avec charte, territoire et refus des doublons.
 
+**Décidé le 11 novembre 2026** (D-210 à D-217, feuille de route `docs/ROADMAP-MVP1.md`) : cap du MVP 1 (Agir, puis Décider, puis Comprendre, ergonomie irréprochable) ; le premier écran n'est plus le fil social : au premier lancement, un court tutoriel de prise en main dans l'ordre fixé par la propriétaire (pourquoi, vie privée, Agir avec la carte, Se réunir, Décider, Aide, « Je veux… » et quatre boutons), puis « En direct » ; barre du bas du téléphone « En direct, Actu (nouveau nom du fil), Carte, Agir, Appels » ; messagerie et bouton AIDE dans la barre du haut, AIDE en rouge et mis en valeur ; ouverture par une bêta sur invitation ; **tout ce qui est déjà codé reste actif, opérationnel et visible** ; « S'engager en politique » : le même outil pour toutes les listes et tous les partis, priorités dans l'ordre du calendrier électoral, l'inscription sur les listes électorales d'abord.
+
 **Choix encore ouverts** (consulte les brainstormings avant d'y toucher, ne code rien qui en dépend) : hébergement du modèle d'IA de modération, briques de contenu communes, méthode « une personne, une voix », prestataire de paiement (HelloAsso à confirmer), navigation détaillée (réécrite lors du découpage en MVP).
 
 ### Structure du dépôt (adoptée le 5 novembre 2026)
@@ -158,13 +162,15 @@ Si une meilleure option existe, propose-la avec ta justification **avant** de co
 /web          site web rendu côté serveur (kotlinx.html), monté par /server
 /infra        Docker Compose (production et préproduction séparées), Caddy, WireGuard, déploiement, sauvegardes
 /tools        scripts de vérification (traceurs, dépendances), /tools/content-signer (signature des contenus de /content), /tools/icons (icônes Lucide et leur convertisseur)
-/content      contenus éditoriaux intégrés à l'application (Markdown avec en-tête), tous marqués [EXEMPLE] pour l'instant
+/content      contenus éditoriaux intégrés à l'application (Markdown avec en-tête) : vrais contenus « Rédigé par l'IA », [EXEMPLE] pour ce qui serait inventé
 /docs         documents techniques
   /projet     documents de référence (vision, cahiers, brainstormings)
   /guides     guides pas à pas pour la propriétaire (achats, installations)
 ```
 
 ## 10. Commandes
+
+**Mémoire de l'ordinateur de la propriétaire (consigne du 11 novembre 2026 : « mes barrettes de rames sont défectueuses, ne depasse jamais la RAM dispo de mon pc sinon il crash »)** : sur cet ordinateur, aucune commande Gradle ne se lance directement. Toutes passent par le lanceur `C:\Users\clair\.ppf\outils\gradle-safe.ps1 -Worktree <dossier> -Session "<nom>" -Tasks "<tâches>" -Log <journal>`, qui attend 6 Go de mémoire libre, n'autorise qu'une compilation à la fois sur toute la machine et borne la mémoire de Gradle ; jamais `gradlew --stop`. Avant de lancer un agent ou un traitement lourd, mesure la mémoire libre et ne lance rien en dessous de 3 Go ; rien de nouveau pendant une compilation ; pas d'émulateur Android. Commite au moins toutes les 30 minutes. Les commandes du tableau ci-dessous donnent les tâches à passer au lanceur.
 
 Tout passe par le wrapper Gradle (`gradlew.bat` sous Windows, `./gradlew` ailleurs). Prérequis installés sur l'ordinateur de la propriétaire : JDK 21 (Temurin), SDK Android (plateforme 36, outils de compilation 36.0.0), GitHub CLI, gitleaks. Tiens cette section à jour à chaque changement d'outillage.
 
@@ -215,11 +221,11 @@ Une tâche n'est terminée que si :
 - les tests passent, en local comme en intégration continue ;
 - les règles de la section 7 sont respectées (traceurs, vie privée, sécurité, accessibilité, écrans adaptatifs) ;
 - la documentation technique, `ROADMAP.md` et `CHANGELOG.md` sont à jour ;
-- la propriétaire a reçu une explication simple pour tester elle-même (avec un APK si l'application est concernée).
+- la propriétaire a reçu une explication simple pour tester elle-même (l'APK ne lui est envoyé que sur sa demande).
 
 ## 13. Ce que tu ne fais pas
 
-- Rédiger les contenus éditoriaux ou les prises de position publiées. Tu peux produire des brouillons sourcés et des contenus marqués [EXEMPLE], à faire valider.
+- Publier un texte sans son étiquette d'origine. Depuis le 11 novembre 2026, tu rédiges les contenus factuels comme les prises de position de PPF (section 7, « Vrais contenus d'abord » et « Prises de position de PPF »), sourcés, étiquetés, en attendant la relecture humaine.
 - Choisir les revendications, les campagnes ou les mesures du Pacte démocratique : elles sont fixées par le vote des citoyens.
 - Modifier un document définitif sans validation.
 - Déployer en production, supprimer des données, toucher au DNS ou engager une dépense sans l'accord explicite de la propriétaire.
@@ -228,7 +234,9 @@ Une tâche n'est terminée que si :
 
 ## 14. Point de départ
 
-Commence par la **phase 0** du planning (cahier des charges, section 10.2), dans cet ordre :
+**Depuis le 11 novembre 2026, la priorité est le MVP 1** : suis `docs/ROADMAP-MVP1.md` (jalons validés par la propriétaire) ; `docs/ROADMAP.md` reste le suivi détaillé de tout ce qui est fait. La phase 0 ci-dessous est conservée pour mémoire ; ce qui en reste (GitHub, serveur) relève du jalon 5.
+
+Phase 0 du planning (cahier des charges, section 10.2), dans cet ordre :
 1. **Vérifier l'environnement** : chemin du dossier, système d'exploitation, Git, GitHub (`gh auth status`), outils nécessaires (JDK, SDK Android). Ce qui manque est installé avec l'accord de la propriétaire, avec un guide simple si elle doit cliquer quelque part.
 2. **Créer le dépôt GitHub privé** et la protection de la branche principale.
 3. **Squelette** : Kotlin Multiplatform et Compose Multiplatform pour Android et l'ordinateur, avec un premier écran adaptatif (téléphone, tablette, ordinateur) ; cible iOS déclarée compatible mais non compilée ; squelette du serveur Ktor avec un point de contrôle de santé ; `/infra` avec deux projets Docker Compose séparés (production et préproduction).

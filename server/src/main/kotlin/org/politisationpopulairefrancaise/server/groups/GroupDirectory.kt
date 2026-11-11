@@ -1,6 +1,7 @@
 package org.politisationpopulairefrancaise.server.groups
 
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.server.agir.collectives.CollectiveRules
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy.Decision
@@ -30,6 +31,8 @@ class GroupDirectory(
     val moderation: GroupModeration = GroupModeration(events),
     /** Guardrails of the creation (D-132) and the queue of the creations held for the team. */
     val guardrails: GroupGuardrails = GroupGuardrails(events.dataSource),
+    /** The collectifs of Agir (M24, D-087): without a store of the ballot boxes, no collectif is created. */
+    private val collectives: CollectiveRules = CollectiveRules(),
 ) {
 
     /** What [admitAndStore] did with an event. */
@@ -134,6 +137,7 @@ class GroupDirectory(
             if (existing != null && existing.event.pubkey != event.pubkey) {
                 return Decision.Refused(409, "group_taken", "Another key already manages a group with this id.")
             }
+            collectives.descriptionRefusal(existing?.event, event)?.let { return it }
             if (existing != null) {
                 // A new version by the creator (D-131): only while they are an administrator, and the
                 // territory never changes (otherwise the refusal of duplicates would be bypassed).

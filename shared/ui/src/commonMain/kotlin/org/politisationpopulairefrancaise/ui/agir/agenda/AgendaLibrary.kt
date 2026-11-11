@@ -30,6 +30,7 @@ import org.politisationpopulairefrancaise.core.agir.agenda.ProposalRecord
 import org.politisationpopulairefrancaise.core.agir.agenda.ProposalReview
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
+import org.politisationpopulairefrancaise.core.local.LocalStoreOutcome
 import org.politisationpopulairefrancaise.core.publication.HeldStatus
 import org.politisationpopulairefrancaise.core.publication.HeldStatusSource
 import org.politisationpopulairefrancaise.core.publication.HeldStatuses
@@ -41,6 +42,7 @@ import org.politisationpopulairefrancaise.core.sync.SyncReport
 import org.politisationpopulairefrancaise.core.sync.SyncService
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.agir.followups.FollowUpLibrary
 import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.resources.Res
 
@@ -93,6 +95,24 @@ enum class ParticipationOutcome {
     /** The server refused it; the previous answer is put back. */
     REFUSED,
 
+    FAILED,
+}
+
+/** How adding a mobilization read on a poster ended (AG-61). */
+enum class PosterAddOutcome {
+    /** Kept on the device: it shows in the agenda like the mobilizations received from the server. */
+    ADDED,
+
+    /** The device already held this very version. */
+    ALREADY_THERE,
+
+    /** The device holds a newer version under the same address: that one stays. */
+    NEWER_KNOWN,
+
+    /** A valid signed event, but not a mobilization the agenda can show. */
+    NOT_A_MOBILIZATION,
+
+    /** Not verified, or no local store on this platform: nothing was kept. */
     FAILED,
 }
 
@@ -178,6 +198,9 @@ class AgendaLibrary(
     /** The "Proposer un événement" form; its draft survives a visit to another tab. */
     val composer: MobilizationComposer = MobilizationComposer(store, state, remote, clock)
 
+    /** AG-62 « Et après ? »: the sourced follow-ups of the past mobilizations, read on the device (FollowUpLibrary.kt). */
+    val followUps: FollowUpLibrary = FollowUpLibrary(store, trust)
+
     private var accountKey: String? by mutableStateOf(null)
 
     /** The query of the list shown by the current tab. */
@@ -260,6 +283,56 @@ class AgendaLibrary(
 
     fun close() {
         selected = null
+    }
+
+    /**
+     * Keeps on the device a mobilization read on a poster (AG-61), without network: it is checked
+     * again ([SignedEvent.verify]), stored like an event received from the server (the replacement
+     * of versions follows [org.politisationpopulairefrancaise.core.signing.EventReplacement]), then
+     * opened. Nothing is sent: the server never learns that a poster was read.
+     */
+    suspend fun addFromPoster(event: SignedEvent): PosterAddOutcome {
+        val store = store ?: return PosterAddOutcome.FAILED
+        if (!event.verify()) return PosterAddOutcome.FAILED
+        val mobilization = Mobilization.from(event) ?: return PosterAddOutcome.NOT_A_MOBILIZATION
+        val stored = try {
+            passes.withLock {
+                val outcome = withContext(Dispatchers.Default) { store.store(event) }
+                reload(store)
+                outcome
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return PosterAddOutcome.FAILED
+        }
+        openAddress(mobilization.address.toString())
+        return when (stored) {
+            LocalStoreOutcome.STORED -> PosterAddOutcome.ADDED
+            LocalStoreOutcome.DUPLICATE -> PosterAddOutcome.ALREADY_THERE
+            LocalStoreOutcome.SUPERSEDED -> PosterAddOutcome.NEWER_KNOWN
+        }
+    }
+
+    /** True when the device holds a mobilization at [address] (`31923:<key>:<d>`), published or one of the user's own. */
+    fun knows(address: String): Boolean = known.any { it.address.toString() == address }
+
+    /**
+     * Opens the mobilization at the stable address read on a poster (AG-61). When the device does not
+     * hold it, the whole agenda is synchronized as usual first: the server is never asked for that
+     * event alone, so it does not learn which poster was read. False when it stays unknown (no
+     * network, not published, or not a mobilization).
+     */
+    suspend fun openFromPoster(address: String): Boolean {
+        if (knows(address)) {
+            openAddress(address)
+            return true
+        }
+        val store = store ?: return false
+        val remote = remote ?: return false
+        pull(store, remote)
+        openAddress(address)
+        return selected?.address?.toString() == address
     }
 
     /** The user's answer to [mobilization], or null. */

@@ -1,13 +1,13 @@
 ---
 slug: logement-et-loyers
-title: [EXEMPLE] Le logement et les loyers : qui décide de quoi ?
+title: Le logement et les loyers : qui décide de quoi ?
 summary: Qui fixe les règles du bail, qui limite la hausse des loyers, qui décide de construire des logements sociaux et qui aide les locataires en difficulté.
 topics: logement, collectivites
 type: qui-decide
 origin: ai-assisted
 persons:
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: decideurs
 - commune | maire, elu-local | Le maire délivre les permis de construire dans les communes dotées d'un plan local d'urbanisme et agit contre les immeubles dangereux ; certaines communes doivent atteindre 20 % ou 25 % de logements sociaux (code de l'urbanisme, article L422-1 ; code de la construction et de l'habitation, articles L511-4 et L302-5).
@@ -22,8 +22,6 @@ updated_at: 2026-11-07
 - L'**encadrement du niveau des loyers** n'existe que dans quelques villes qui l'ont demandé ; c'est le **préfet** qui fixe les loyers de référence. Cette expérimentation arrive à son terme en **novembre 2026**, sauf si une loi la prolonge.
 - Les **permis de construire** sont délivrés par le **maire** ; le **programme local de l'habitat** est décidé par l'**intercommunalité**.
 :::
-
-**[EXEMPLE] Cette fiche est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
 
 ## Le rôle de la commune
 
@@ -51,7 +49,7 @@ Le Parlement fixe les règles du bail d'habitation dans la loi du 6 juillet 1989
 
 Dans les agglomérations de plus de 50 000 habitants où le logement manque, le Gouvernement limite chaque année par décret la hausse du loyer lors d'une nouvelle location ou d'un renouvellement de bail (article 18). Le décret en vigueur s'applique jusqu'au 31 juillet 2027 (décret n° 2026-644 du 20 juillet 2026).
 
-Là où l'encadrement du niveau des loyers a été demandé, un décret délimite le territoire et le préfet fixe chaque année par arrêté un loyer de référence, un loyer majoré (20 % de plus) et un loyer minoré (30 % de moins). Le préfet peut infliger une amende au bailleur qui dépasse le plafond : jusqu'à 5 000 euros pour une personne, 15 000 euros pour une société (loi ELAN, article 140). Cette expérimentation a été prévue pour huit ans ; selon le Sénat, elle arrive à son terme le 23 novembre 2026. Au 7 novembre 2026, une proposition de loi qui la prolonge de deux ans a été adoptée par le Sénat le 21 octobre 2026 et se trouve en deuxième lecture à l'Assemblée nationale : elle n'est pas encore définitive.
+Là où l'encadrement du niveau des loyers a été demandé, un décret délimite le territoire et le préfet fixe chaque année par arrêté un loyer de référence, un loyer majoré (20 % de plus) et un loyer minoré (30 % de moins). Le préfet peut infliger une amende au bailleur qui dépasse le plafond : jusqu'à 5 000 euros pour une personne, 15 000 euros pour une société (loi ELAN, article 140). Cette expérimentation a été prévue pour huit ans ; selon la rapporteure de la commission des affaires économiques du Sénat, elle arrive à son terme le 23 novembre 2026. Une proposition de loi est en cours d'examen : en première lecture, l'Assemblée nationale avait voté la pérennisation du dispositif ; le Sénat l'a remplacée, le 21 octobre 2026, par une prolongation de deux ans. Au 9 novembre 2026, le texte est en deuxième lecture à l'Assemblée nationale, où son examen en séance est prévu le 18 novembre 2026 : il n'est pas encore définitif.
 
 Le préfet met aussi en œuvre le droit au logement opposable. Une commission de médiation, placée auprès de lui, reconnaît les demandes prioritaires et urgentes ; le préfet doit alors faire loger le demandeur (CCH, article L441-2-3). Sans proposition dans le délai fixé, le demandeur peut saisir le tribunal administratif (article L441-2-3-1).
 
@@ -59,9 +57,9 @@ Enfin, la loi suspend les expulsions locatives du 1er novembre au 31 mars, sauf 
 
 ::: objections
 ? « L'encadrement des loyers fait baisser les loyers. »
-> Selon le rapport d'évaluation commandé par le Premier ministre, cité devant la commission des affaires économiques du Sénat, il freine la hausse des loyers du parc privé d'environ 2 % à 4 % par an. Le même rapport relève qu'il profite peu aux ménages modestes et souvent à des ménages aisés des centres des grandes villes (Sénat, compte rendu de la commission du 14 octobre 2026).
+> Selon le rapport d'évaluation commandé par le Premier ministre, cité devant la commission des affaires économiques du Sénat, il freine la hausse des loyers du parc privé d'environ 2 % à 4 % par an. Selon la rapporteure, le même rapport relève qu'il profite peu aux ménages modestes et souvent à des ménages aisés des centres des grandes villes ; un autre sénateur a soutenu au contraire qu'il profite surtout aux classes moyennes, les plus modestes vivant souvent en logement social (Sénat, compte rendu de la commission du 14 octobre 2026).
 ? « L'encadrement des loyers fait disparaître les logements à louer. »
-> C'est le risque mis en avant par ses opposants : à long terme, moins de logements proposés et moins bien entretenus. Devant la même commission, il a été rappelé que les études menées en Espagne, en Allemagne et aux États-Unis donnent des résultats « ambivalents » et qu'en France, l'évaluation des effets sur l'offre reste partielle (compte rendu du 14 octobre 2026).
+> C'est le risque mis en avant par ses opposants : à long terme, moins de logements proposés et moins bien entretenus. Devant la même commission, la rapporteure a rappelé que les études menées en Espagne, en Allemagne et aux États-Unis donnent des résultats « ambivalents » et qu'en France, l'évaluation des effets sur l'offre reste partielle (compte rendu du 14 octobre 2026).
 ? « Le maire peut bloquer les loyers de sa ville. »
 > Non. L'intercommunalité compétente, ou la Ville de Paris, peut seulement demander l'encadrement ; un décret délimite le territoire et c'est le préfet qui fixe les loyers de référence (loi ELAN, article 140).
 ? « Pendant la trêve hivernale, personne ne peut être expulsé. »
@@ -76,21 +74,22 @@ Enfin, la loi suspend les expulsions locatives du 1er novembre au 31 mars, sauf 
 
 ## Sources
 
-- Code de l'urbanisme, article L422-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000028810368
-- Code de la construction et de l'habitation, article L302-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053546338
-- Code de la construction et de l'habitation, article L302-5 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045214963
-- Code de la construction et de l'habitation, article L511-2 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049398969
-- Code de la construction et de l'habitation, article L511-4 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042342675
-- Code de la construction et de l'habitation, article L635-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049397565
-- Code de la construction et de l'habitation, article L441-2-3 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045211734
-- Code de la construction et de l'habitation, article L441-2-3-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044570004
-- Code des procédures civiles d'exécution, article L412-6 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047900053
-- Loi n° 89-462 du 6 juillet 1989, article 17-1 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000043977085
-- Loi n° 89-462 du 6 juillet 1989, article 18 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000039369552
-- Décret n° 2026-644 du 20 juillet 2026 (évolution de certains loyers) : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000054451221
-- Loi n° 2018-1021 du 23 novembre 2018 (loi ELAN), article 140 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000037642425
-- Loi n° 90-449 du 31 mai 1990, articles 2 à 8 (dont le fonds de solidarité pour le logement) : https://www.legifrance.gouv.fr/codes/section_lc/JORFTEXT000000159413/LEGISCTA000006085646/
-- Sénat, dossier législatif « Retrouver la confiance et l'équilibre dans les rapports locatifs » : https://www.senat.fr/dossier-legislatif/ppl25-217.html
-- Sénat, compte rendu de la commission des affaires économiques, semaine du 12 octobre 2026 : https://www.senat.fr/compte-rendu-commissions/20261012/eco.html
-- Service-public.gouv.fr, « En quoi consiste l'encadrement des loyers à respecter en zone tendue ? » : https://www.service-public.gouv.fr/particuliers/vosdroits/F1314
-- Service-public.gouv.fr, « Droit au logement opposable (Dalo) » : https://www.service-public.gouv.fr/particuliers/vosdroits/F18005
+- Code de l'urbanisme, article L422-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000028810368
+- Code de la construction et de l'habitation, article L302-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053546338
+- Code de la construction et de l'habitation, article L302-5, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045214963
+- Code de la construction et de l'habitation, article L511-2, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049398969
+- Code de la construction et de l'habitation, article L511-4, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042342675
+- Code de la construction et de l'habitation, article L635-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049397565
+- Code de la construction et de l'habitation, article L441-2-3, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045211734
+- Code de la construction et de l'habitation, article L441-2-3-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044570004
+- Code des procédures civiles d'exécution, article L412-6, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047900053
+- Loi n° 89-462 du 6 juillet 1989, article 17-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000043977085
+- Loi n° 89-462 du 6 juillet 1989, article 18, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000039369552
+- Décret n° 2026-644 du 20 juillet 2026 (évolution de certains loyers), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000054451221
+- Loi n° 2018-1021 du 23 novembre 2018 (loi ELAN), article 140, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000037642425
+- Loi n° 90-449 du 31 mai 1990, articles 2 à 8 (dont le fonds de solidarité pour le logement), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/JORFTEXT000000159413/LEGISCTA000006085646/
+- Sénat, dossier législatif « Retrouver la confiance et l'équilibre dans les rapports locatifs », consulté le 2026-11-09 : https://www.senat.fr/dossier-legislatif/ppl25-217.html
+- Assemblée nationale, dossier législatif « Retrouver la confiance et l'équilibre dans les rapports locatifs » (deuxième lecture, séance prévue le 18 novembre 2026), consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/17/dossiers/retrouver_confiance_equilibre_rapports_locatifs_17e
+- Sénat, compte rendu de la commission des affaires économiques, semaine du 12 octobre 2026, consulté le 2026-11-09 : https://www.senat.fr/compte-rendu-commissions/20261012/eco.html
+- Service-public.gouv.fr, « En quoi consiste l'encadrement des loyers à respecter en zone tendue ? » (F1314, vérifiée le 1er novembre 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1314
+- Service-public.gouv.fr, « Droit au logement opposable (Dalo) » (F18005, vérifiée le 8 juillet 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F18005

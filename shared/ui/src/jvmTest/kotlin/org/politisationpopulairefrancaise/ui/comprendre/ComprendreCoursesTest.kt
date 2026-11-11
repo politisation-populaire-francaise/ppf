@@ -11,6 +11,11 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithTag
+import androidx.compose.ui.input.key.Key
+import androidx.compose.ui.test.pressKey
+import androidx.compose.ui.test.performKeyInput
+import androidx.compose.ui.test.assertTextContains
+import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -22,7 +27,9 @@ import kotlinx.serialization.json.Json
 import org.politisationpopulairefrancaise.core.comprendre.LearningProgressStore
 import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
+import org.politisationpopulairefrancaise.core.editorial.ContentCheck
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
@@ -34,6 +41,7 @@ import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import java.io.File
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
@@ -89,7 +97,9 @@ class ComprendreCoursesTest {
             bundled.map { it.article.slug }.toSet(),
         )
         bundled.forEach { course ->
-            assertTrue(course.article.title.startsWith("[EXEMPLE]"), course.article.slug)
+            // Real contents written with an AI (decision of the owner, 9 November 2026): no marker, origin shown.
+            assertFalse(course.article.title.startsWith("[EXEMPLE]"), course.article.slug)
+            assertEquals(ContentOrigin.AI_ASSISTED, course.article.origin, course.article.slug)
             assertTrue(course.steps.isNotEmpty() && course.steps.all { it.quiz != null }, course.article.slug)
             assertNotNull(course.nextActions, course.article.slug)
             assertNotNull(course.sources, course.article.slug)
@@ -133,6 +143,10 @@ class ComprendreCoursesTest {
         waitForIdle()
         // « Pour la classe » (CO-13): the sheet of the course, opened from its introduction.
         waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(CourseTags.TEACHING).fetchSemanticsNodes().isNotEmpty() }
+        // The end of the introduction: licence, code of this version and « Citer ce contenu » (D-103, S-141, S-144).
+        onNodeWithText("Code de vérification : ${ContentCheck.codeOf(loi.article.event)}", substring = true).performScrollTo().assertExists()
+        onNodeWithText("Texte sous licence CC BY 4.0, Politisation Populaire Française.").assertExists()
+        onNodeWithTag(ComprendreCiteTags.CITE).performScrollTo().assert(hasText("Citer ce contenu"))
         onNodeWithTag(CourseTags.TEACHING).performScrollTo().assert(hasText("Pour la classe", substring = true)).performClick()
         waitForIdle()
         onNodeWithTag(ComprendreDetailTags.TEACHING).assertExists()
@@ -144,6 +158,77 @@ class ComprendreCoursesTest {
         onNodeWithText("Afficher les réponses").performScrollTo().performClick()
         waitForIdle()
         assertEquals(loi.quizCount, onAllNodesWithTag(ComprendreDetailTags.TEACHING_ANSWERS).fetchSemanticsNodes().size)
+        // The sheet ends with its licence and its reference too, from the common mechanism of "Voir".
+        assertTrue(onAllNodesWithTag(ComprendreCiteTags.LICENSE).fetchSemanticsNodes().isNotEmpty())
+        assertTrue(onAllNodesWithTag(ComprendreCiteTags.CITE).fetchSemanticsNodes().isNotEmpty())
+    }
+
+    @Test
+    fun aCourseLeadsToItsWorkshopSheetWithItsOwnNoticeAndNoProgramme() = runComposeUiTest {
+        val petitions = bundled.first { it.article.slug == "les-petitions-officielles" }
+        val database = JvmDatabase.inMemory()
+        openComprendre(database, width = 1000, height = 800)
+        // The bundled courses may arrive in several reloads: wait for this one too.
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).performScrollTo().performClick()
+        waitForIdle()
+        // « Pour un atelier » (CO-24): the animation sheet of the course, with its duration.
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(CourseTags.WORKSHOP).fetchSemanticsNodes().isNotEmpty() }
+        assertTrue(onAllNodesWithTag(CourseTags.TEACHING).fetchSemanticsNodes().isEmpty(), "no sheet for the classroom on this course")
+        onNodeWithTag(CourseTags.WORKSHOP).performScrollTo().assert(hasText("Pour un atelier : fiche d’animation (90 minutes)")).performClick()
+        waitForIdle()
+        onNodeWithTag(ComprendreDetailTags.TEACHING).assertExists()
+        assertTrue(onAllNodesWithText("Fiche d’animation", substring = true).fetchSemanticsNodes().isNotEmpty(), "the kind of the sheet")
+        // Its own fixed notice, and no official programme.
+        onNodeWithTag(ComprendreDetailTags.TEACHING_NEUTRALITY).performScrollTo().assert(hasText("L’animatrice ou l’animateur reste libre de ses choix.", substring = true))
+        assertTrue(onAllNodesWithText("Programme officiel").fetchSemanticsNodes().isEmpty(), "a workshop serves no programme")
+        // The questions of the course, the answers folded as for the classroom.
+        onNodeWithTag(ComprendreDetailTags.TEACHING_QUESTIONS).performScrollTo().assertExists()
+        onNodeWithText("Afficher les réponses").performScrollTo().performClick()
+        waitForIdle()
+        assertEquals(petitions.quizCount, onAllNodesWithTag(ComprendreDetailTags.TEACHING_ANSWERS).fetchSemanticsNodes().size)
+    }
+
+    @Test
+    fun theAnimationModeShowsOneSlideAtATimeAndTheAnswerOnDemand() = runComposeUiTest {
+        val petitions = bundled.first { it.article.slug == "les-petitions-officielles" }
+        openComprendre(JvmDatabase.inMemory(), width = 1000, height = 800)
+        // The bundled courses may arrive in several reloads: wait for this one too.
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).performScrollTo().performClick()
+        waitForIdle()
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(CourseTags.WORKSHOP).fetchSemanticsNodes().isNotEmpty() }
+        onNodeWithTag(CourseTags.WORKSHOP).performScrollTo().performClick()
+        waitForIdle()
+        // CO-24, step 2: the animation mode takes the place of the sheet.
+        onNodeWithTag(AnimationTags.START).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.ROOT).assertExists()
+        onNodeWithTag(ComprendreDetailTags.TEACHING).assertDoesNotExist()
+        onNodeWithTag(AnimationTags.POSITION).assertTextContains("1 sur ", substring = true)
+        // A presentation clicker (page down) moves to the first question; its answer stays hidden.
+        onNodeWithTag(AnimationTags.ROOT).performKeyInput { pressKey(Key.PageDown) }
+        waitForIdle()
+        onNodeWithTag(AnimationTags.POSITION).assertTextContains("2 sur ", substring = true)
+        onNodeWithTag(AnimationTags.SLIDE).assert(hasAnyDescendant(hasText(petitions.steps.first { it.quiz != null }.quiz!!.question)))
+        onAllNodesWithTag(AnimationTags.ANSWER).fetchSemanticsNodes().let { assertTrue(it.isEmpty(), "answer hidden") }
+        // The leader shows the answer, then moves on: the next question starts hidden.
+        onNodeWithTag(AnimationTags.REVEAL).performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.ANSWER).assertExists()
+        onNodeWithTag(AnimationTags.NEXT).performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.POSITION).assertTextContains("3 sur ", substring = true)
+        onAllNodesWithTag(AnimationTags.ANSWER).fetchSemanticsNodes().let { assertTrue(it.isEmpty(), "next question hidden") }
+        onNodeWithTag(AnimationTags.PREVIOUS).performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.POSITION).assertTextContains("2 sur ", substring = true)
+        onAllNodesWithTag(AnimationTags.ANSWER).fetchSemanticsNodes().let { assertTrue(it.isEmpty(), "hidden again when going back") }
+        // Leaving brings the sheet back.
+        onNodeWithTag(AnimationTags.CLOSE).performClick()
+        waitForIdle()
+        onNodeWithTag(AnimationTags.ROOT).assertDoesNotExist()
+        onNodeWithTag(ComprendreDetailTags.TEACHING).assertExists()
     }
 
     @Test

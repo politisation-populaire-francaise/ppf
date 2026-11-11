@@ -37,4 +37,16 @@ class SiteLayoutTest {
         assertFalse(html.contains("<script"))
         assertFalse(Regex("https?://").containsMatchIn(html))
     }
+
+    @Test
+    fun theNavigationFollowsTheOrderOfTheApplication() {
+        // D-215: the site lists the spaces in the order of the bottom bar of the application, "Fil" is shown as "Actu".
+        val html = render()
+        val labels = listOf("En direct", "Actu", "Carte", "Agir", "Appels", "Voir", "Comprendre", "Décider", "Revendications", "Messages")
+        val positions = labels.map { html.indexOf(">$it</a>") }
+        assertTrue(positions.all { it >= 0 }, "every label is in the navigation: $positions")
+        assertTrue(positions == positions.sorted(), "in this order: $labels")
+        assertTrue(html.contains("href=\"/appels\""))
+        assertFalse(html.contains(">Fil</a>"))
+    }
 }

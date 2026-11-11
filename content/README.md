@@ -2,7 +2,9 @@
 
 Ce dossier contient les contenus signés et livrés avec l'application, pour que les fiches essentielles soient lisibles hors ligne dès l'installation (cahier des charges, section 3.1 ; cahier fonctionnel, M6 et S-26).
 
-Tout ce qui s'y trouve aujourd'hui est marqué **[EXEMPLE]** : des brouillons de démonstration, à faire relire par un avocat avant toute publication réelle. Les contenus réels seront rédigés par l'équipe éditoriale (jamais par l'IA sans relecture) et publiés par le circuit prévu (relecture, validation, publication).
+**Contenus réels et contenus d'exemple** (décision de la propriétaire du 9 novembre 2026) : autant que possible, de vrais contenus plutôt que des exemples, avec la mention « Rédigé par l'IA ». Les contenus de « Comprendre » (`fiches`, `parcours`, `decryptages`, `histoire`, `qui-decide`, `methode`, `glossaire`, `enseignants`) sont de vrais contenus : factuels, vérifiés sur les sources officielles, chaque source avec sa date de consultation, sans le préfixe `[EXEMPLE]`, avec `origin: ai-assisted` (l'application et le site affichent qu'ils sont rédigés avec l'aide d'une IA). Les fiches juridiques restent à faire relire par un avocat avant l'ouverture publique (feuille de route). Ce qui serait inventé reste marqué **[EXEMPLE]** (fil, revendications, agenda, appels, organisations, exemples de « Décider ») ; les prises de position de PPF sont, pour l'instant, rédigées par l'IA et étiquetées comme telles (D-212, dossier `cap`).
+
+**Décision de la propriétaire du 9 novembre 2026** : autant que possible, de vrais contenus plutôt que des exemples, avec la mention « Rédigé par l'IA ». Un contenu réel a un titre sans [EXEMPLE] et `origin: ai-assisted`, et chaque affirmation y est vérifiée sur une source officielle citée avec sa date de consultation (premiers concernés : les fiches pratiques d'« Agir » dans `fiches/`) ; l'agenda, les appels, les organisations, la solidarité et les données de test restent des exemples marqués [EXEMPLE].
 
 ## Format d'une fiche (`fiches/*.md`)
 
@@ -56,7 +58,7 @@ Deux ou trois paragraphes courts.
 - Chaque source avec son adresse officielle.
 ```
 
-L'outil de signature refuse un parcours incomplet (étape sans question, question sans explication ou avec plusieurs bonnes réponses, « Et maintenant ? » ou sources absentes). Les quatre parcours actuels sont des brouillons **[EXEMPLE]** rédigés avec l'aide d'une IA (`origin: ai-assisted`), vérifiés sur Légifrance, le Conseil constitutionnel, l'Assemblée nationale et service-public, à faire relire par l'équipe éditoriale.
+L'outil de signature refuse un parcours incomplet (étape sans question, question sans explication ou avec plusieurs bonnes réponses, « Et maintenant ? » ou sources absentes). Les parcours sont de vrais contenus rédigés avec l'aide d'une IA (`origin: ai-assisted`), vérifiés sur Légifrance, le Conseil constitutionnel, l'Assemblée nationale et service-public.
 
 ## Décryptages, histoire des luttes, « Qui décide de ça ? » (`decryptages/`, `histoire/`, `qui-decide/`, `methode/`)
 
@@ -69,7 +71,11 @@ Même en-tête qu'une fiche (sans `type`, donné par le dossier), avec en plus :
 | `qui-decide` | `persons` (identifiants des personnes publiques de `voir/personnes` à nommer dans l'encart, séparés par des virgules ; peut rester vide) |
 | `methode` | rien de plus : la page `notre-methode` explique comment un décryptage est fait et définit les cinq verdicts |
 
-Blocs propres à ces contenus : `::: objections` (paires `? objection` puis `> réponse sourcée`, obligatoire dans les décryptages et l'histoire), `::: chronologie` (lignes `- AAAA-MM-JJ : texte`), et pour « Qui décide de ça ? » un bloc `::: decideurs` en tête du corps (lignes `- niveau | rôles | ce que ce niveau décide (référence)`). L'outil de signature refuse un contenu dont un bloc est mal formé ou dont les sources manquent. Tous les contenus actuels sont des brouillons **[EXEMPLE]** rédigés avec l'aide d'une IA et vérifiés sur les textes officiels, à faire relire.
+Blocs propres à ces contenus : `::: objections` (paires `? objection` puis `> réponse sourcée`, obligatoire dans les décryptages et l'histoire), `::: chronologie` (lignes `- AAAA-MM-JJ : texte`), et pour « Qui décide de ça ? » un bloc `::: decideurs` en tête du corps (lignes `- niveau | rôles | ce que ce niveau décide (référence)`). L'outil de signature refuse un contenu dont un bloc est mal formé ou dont les sources manquent. Ce sont de vrais contenus rédigés avec l'aide d'une IA et vérifiés sur les textes officiels.
+
+## Textes du cap du mouvement (`cap/`, D-200)
+
+Une série de textes courts et sourcés, reliés à une action de l'application (feuille de route du MVP 1, section 5). Même en-tête qu'une fiche (sans `type`, donné par le dossier), avec en plus `nature` (`faits` pour un texte factuel, `position` pour une position de PPF) et `rank` (place dans la série, à partir de 1 ; le nom du fichier commence par ce numéro). Corps : un encart `::: en-bref`, le texte, un bloc `::: et-maintenant` obligatoire, puis `## Sources`. Une position rédigée avec l'aide d'une IA (`origin: ai-assisted`) affiche « Position de PPF, rédigée par l'IA, en attente de relecture » ; la partie « Ce que propose PPF » le rappelle dans le texte. Chaque fait porte sa source et sa date de consultation ; une qualification politique est attribuée à qui l'emploie, jamais présentée comme un fait.
 
 ## Fiches pédagogiques pour la classe (`enseignants/`, CO-13, D-096)
 
@@ -103,7 +109,7 @@ ce qu'il ne faut pas confondre. Encarts `::: en-bref` permis.
 | Champ | Rôle |
 |---|---|
 | `slug` | Identifiant stable de l'entrée, jamais modifié |
-| `title` | Le terme tel qu'il s'affiche, précédé de `[EXEMPLE] ` comme tout contenu pour l'instant |
+| `title` | Le terme tel qu'il s'affiche (sans `[EXEMPLE]` pour un vrai contenu) |
 | `summary` | **La définition rapide de l'infobulle** : une ou deux phrases, 200 caractères au plus, compréhensible sans rien d'autre |
 | `variants` | Les formes repérées dans les textes, séparées par des virgules : singulier, pluriel, sigle et forme longue (`49.3, 49-3, article 49.3, article 49 alinéa 3`). Une virgule à l'intérieur d'une forme s'écrit `\,` (`Conseil économique\, social et environnemental, CESE` ; `article 49\, alinéa 3`). Au moins une. Une forme n'appartient qu'à une entrée |
 | `topics` | Thèmes, séparés par des virgules (facultatif) |
@@ -229,10 +235,30 @@ M35 (AG-10, AG-12), décision D-085 ; formats signés dans `docs/FORMATS.md`, se
 - `solidarite/missions/*.md` : `slug`, `title`, `summary`, `skills` (séparées par des virgules, dans la liste fermée de `docs/FORMATS.md`), `territory`, `remote` (`oui` pour une mission à distance), `location`, `commitment`, `people`, `deadline` (`AAAA-MM-JJ`, fin de journée à l'heure de Paris), `status` (`ouverte`, `pourvue`, `close`), `origin`, `published_at`, `updated_at`.
 - Aucun champ `type` dans ces en-têtes. Résultat : `solidarite.json`, à côté de `organisations.json`. Le corps est la présentation (Markdown simple, sans lien cliquable).
 
+### Format d'une suite de mobilisation (`suites/*.md`)
+
+AG-62 « Et après ? » (conception : `docs/integration/agir-et-apres.md` ; format signé : `docs/FORMATS.md`, section 4 septdecies). Une suite dit ce qui a suivi une mobilisation passée de l'agenda ; elle s'affiche sous la description de cette mobilisation, dans l'onglet « Passés ». **Les suites actuelles sont des exemples [EXEMPLE]** : elles suivent la projection-débat de Rennes de `agenda/`, et l'agenda reste fait d'exemples (décision de la propriétaire du 9 novembre 2026), donc ses suites aussi ; l'outil refuse un titre sans [EXEMPLE] et une source hors des domaines réservés aux exemples (`example.org`, `example.com`, `example.net`, `.invalid`).
+
+| Champ | Rôle |
+|---|---|
+| `slug`, `title`, `summary` | Identifiant stable (préfixe `suite-` conseillé), titre avec [EXEMPLE], résumé obligatoire (la phrase montrée sous le titre) |
+| `type` | `suite` |
+| `mobilization` | La mobilisation suivie : `agenda:<slug d'un fichier de agenda/>` ; une ligne par mobilisation si la suite en suit plusieurs |
+| `suite-kind` | `reponse-elu`, `annonce`, `recul`, `texte-depose`, `decision-justice` ou `autre` |
+| `date` | Date de la suite, `AAAA-MM-JJ`, jamais avant la mobilisation |
+| `fact-status` | `etabli`, `allegue` ou `enquete`, comme un fait de « Voir » |
+| `source` | Au moins une : `type \| nom \| adresse https \| date`, comme dans « Voir » ; **l'adresse est obligatoire** |
+| `person` | Facultatif, obligatoire pour une réponse d'élu : `voir:<slug d'une personne de voir/personnes>` (le droit de réponse s'applique) |
+| `demand`, `call`, `chronology` | Facultatifs : `revendication:<slug>`, `appel:<slug>`, `voir:<slug d'un fait de la chronologie>` |
+| `correction` | Facultatif : `date \| résumé public \| correction ou mise-a-jour` |
+| `origin`, `published_at`, `updated_at` | Comme pour une fiche |
+
+Le corps est un texte simple (pas de Markdown), 4 000 caractères au plus. L'outil écrit chaque lien sous la forme d'une adresse complète (`31923:<clé>:<slug>` pour une mobilisation, `30023:<clé>:<slug>` pour le reste) ; n'écrivez jamais l'adresse vous-même. Il refuse un champ inconnu, une suite sans source ou dont une source n'a pas d'adresse, un type ou un statut inconnus, un lien vers un identifiant qui n'existe pas ou du mauvais genre, une réponse d'élu sans `person`. Résultat : `suites.json`.
+
 ## Signer et intégrer les contenus
 
 ```bash
 ./gradlew :tools:content-signer:run
 ```
 
-L'outil lit `content/fiches`, `content/parcours`, `content/decryptages`, `content/histoire`, `content/qui-decide`, `content/methode`, `content/glossaire`, `content/revendications`, `content/fil`, `content/voir`, `content/agenda`, `content/appels`, `content/organisations` et `content/solidarite`, signe chaque fichier en événement (fiches, parcours, contenus de « Comprendre », glossaire, revendications, appels, organisations, caisses et missions : NIP-23, type 30023 ; fil : type 1 ; agenda : type 31923 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `comprendre.json`, `glossaire.json`, `revendications.json`, `fil.json`, `voir.json`, `agenda.json`, `appels.json`, `organisations.json` et `solidarite.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La signature BIP-340 utilise un aléa : relancer l'outil change les signatures de tous les fichiers (les identifiants restent les mêmes), ce qui crée des différences inutiles entre branches ; ne garder que les fichiers réellement modifiés. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.
+L'outil lit `content/fiches`, `content/parcours`, `content/decryptages`, `content/histoire`, `content/qui-decide`, `content/methode`, `content/glossaire`, `content/revendications`, `content/fil`, `content/voir`, `content/agenda`, `content/appels`, `content/organisations`, `content/solidarite` et `content/suites`, signe chaque fichier en événement (fiches, parcours, contenus de « Comprendre », glossaire, revendications, appels, organisations, caisses et missions, suites : NIP-23, type 30023 ; fil : type 1 ; agenda : type 31923 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `comprendre.json`, `glossaire.json`, `revendications.json`, `fil.json`, `voir.json`, `agenda.json`, `appels.json`, `organisations.json`, `solidarite.json` et `suites.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La signature BIP-340 utilise un aléa : relancer l'outil change les signatures de tous les fichiers (les identifiants restent les mêmes), ce qui crée des différences inutiles entre branches ; ne garder que les fichiers réellement modifiés. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.

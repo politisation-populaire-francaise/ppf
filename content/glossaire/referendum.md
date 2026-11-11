@@ -1,6 +1,6 @@
 ---
 slug: glossaire-referendum
-title: [EXEMPLE] Référendum
+title: Référendum
 summary: Vote par lequel les électeurs adoptent ou rejettent eux-mêmes un texte, en répondant oui ou non. Il peut être national ou local.
 variants: référendum, référendums, référendum local, référendums locaux, référendum d'initiative citoyenne, RIC
 topics: institutions, elections
@@ -8,7 +8,7 @@ see_also: glossaire-referendum-d-initiative-partagee, glossaire-president-de-la-
 related: parcours:le-referendum, parcours:la-revision-de-la-constitution
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Selon l'article 3 de la Constitution, le peuple exerce la souveraineté par ses représentants et par le référendum. Lors d'un référendum, les électeurs votent oui ou non à un texte.
 
@@ -27,4 +27,4 @@ Exemple : une commune organise un référendum local sur un projet d'aménagemen
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 3, 11, 60, 72-1, 88-5 et 89)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 3, 11, 60, 72-1, 88-5 et 89)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09

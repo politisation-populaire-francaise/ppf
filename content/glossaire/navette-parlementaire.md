@@ -1,6 +1,6 @@
 ---
 slug: glossaire-navette-parlementaire
-title: [EXEMPLE] Navette parlementaire
+title: Navette parlementaire
 summary: Va-et-vient d'un texte de loi entre l'Assemblée nationale et le Sénat, jusqu'à ce que les deux assemblées adoptent exactement le même texte.
 variants: navette parlementaire, navettes parlementaires
 topics: institutions, parlement
@@ -8,7 +8,7 @@ see_also: glossaire-commission-mixte-paritaire, glossaire-projet-de-loi, glossai
 related: parcours:comment-une-loi-est-votee
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Une loi est examinée successivement par les deux assemblées du Parlement, pour aboutir à un texte identique. Le texte passe donc de l'une à l'autre : c'est la navette (Constitution, article 45).
 
@@ -27,5 +27,5 @@ Exemple : les députés adoptent un projet de loi en première lecture. Les sén
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (article 45)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Sénat, « La commission mixte paritaire »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/la-commission-mixte-paritaire.html)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (article 45)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Sénat, « La commission mixte paritaire »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/la-commission-mixte-paritaire.html), consulté le 2026-11-09

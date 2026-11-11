@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -61,6 +60,8 @@ import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfSelectableChip
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextField
+import org.politisationpopulairefrancaise.ui.components.SafeArea
+import org.politisationpopulairefrancaise.ui.components.safeAreaBottomPadding
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.rv_apply
@@ -309,7 +310,7 @@ fun RevendicationFilterPanel(
         // Actions, always visible under the scrolling sections.
         HorizontalDivider(color = palette.border)
         Column(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp).then(if (compact) Modifier.navigationBarsPadding() else Modifier),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp, vertical = 12.dp).then(if (compact) Modifier.safeAreaBottomPadding() else Modifier),
             verticalArrangement = Arrangement.spacedBy(8.dp),
         ) {
             when (mode) {
@@ -445,6 +446,7 @@ internal fun AdaptivePanel(
             containerColor = palette.surface2,
             contentColor = palette.ink,
             scrimColor = palette.scrim,
+            contentWindowInsets = { SafeArea.current.sheet },
         ) {
             content(close)
         }

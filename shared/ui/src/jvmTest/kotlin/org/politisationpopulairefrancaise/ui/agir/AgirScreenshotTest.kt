@@ -54,8 +54,7 @@ class AgirScreenshotTest {
         val dependencies = AgirFixtures.dependencies()
         setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfTheme(darkTheme = dark) { AdaptiveShell(dependencies) } } }
         if (width < 600) {
-            onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
-            settle()
+            // D-215: Agir is in the bottom bar of phones.
             onNodeWithTag(ShellTags.navItem(Space.AGIR)).performClick()
             mainClock.advanceTimeBy(2_000)
             settle()

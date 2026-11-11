@@ -1,5 +1,13 @@
 package org.politisationpopulairefrancaise.ui.account
 
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import kotlin.math.roundToInt
+import org.politisationpopulairefrancaise.ui.resources.window_label
+import org.politisationpopulairefrancaise.ui.components.ButtonPair
+import org.politisationpopulairefrancaise.ui.onboarding.LocalTutorial
+import org.politisationpopulairefrancaise.ui.onboarding.TutorialTags
+import org.politisationpopulairefrancaise.ui.resources.tutorial_replay
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -181,10 +189,23 @@ fun MySpaceScreen(
             }
             // The lock, the hidden content and the quick erase of this device (M33), with or without an account.
             DeviceSecurityCard()
+            // The tutorial of the first launch, to see again (D-216).
+            LocalTutorial.current?.takeIf { it.available }?.let { tutorial ->
+                PpfSecondaryButton(onClick = tutorial::replay, text = stringResource(Res.string.tutorial_replay), icon = Lucide.CircleQuestionMark, modifier = Modifier.testTag(TutorialTags.REPLAY))
+            }
             // Which version is installed, on which system: what a tester reports with a problem.
             val platform = currentPlatform()
+            // The size of the window in dp and the font setting: what a tester reports about a layout (D-183).
+            val density = LocalDensity.current
+            val window = LocalWindowInfo.current.containerSize
+            val windowLine = stringResource(
+                Res.string.window_label,
+                (window.width / density.density).roundToInt(),
+                (window.height / density.density).roundToInt(),
+                ((density.fontScale * 100).roundToInt() / 100.0).toString().replace('.', ','),
+            )
             Text(
-                stringResource(Res.string.version_label, AppInfo.VERSION) + " · " + stringResource(Res.string.platform_label, platform.name, platform.version),
+                stringResource(Res.string.version_label, AppInfo.VERSION) + " · " + stringResource(Res.string.platform_label, platform.name, platform.version) + " · " + windowLine,
                 style = MaterialTheme.typography.bodySmall,
                 color = PpfTheme.palette.inkSubtle,
                 modifier = Modifier.padding(top = 12.dp).testTag(MY_SPACE_VERSION_TAG),
@@ -220,10 +241,12 @@ private fun NoAccountCard(session: AccountSession) {
         Spacer(Modifier.height(8.dp))
         Text(stringResource(Res.string.account_intro_text), style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.inkMuted)
         Spacer(Modifier.height(16.dp))
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            PpfPrimaryButton(onClick = session::beginCreation, text = stringResource(Res.string.account_create), modifier = Modifier.weight(1f).testTag(AccountTags.CREATE))
-            PpfSecondaryButton(onClick = session::beginRestore, text = stringResource(Res.string.account_restore), modifier = Modifier.weight(1f).testTag(AccountTags.RESTORE))
-        }
+        // Side by side when both labels fit, one above the other otherwise (a 360 dp phone): never cut.
+        ButtonPair(
+            first = { PpfPrimaryButton(onClick = session::beginCreation, text = stringResource(Res.string.account_create), modifier = Modifier.testTag(AccountTags.CREATE)) },
+            second = { PpfSecondaryButton(onClick = session::beginRestore, text = stringResource(Res.string.account_restore), modifier = Modifier.testTag(AccountTags.RESTORE)) },
+            modifier = Modifier.fillMaxWidth(),
+        )
         Spacer(Modifier.height(8.dp))
         PpfTextButton(onClick = session.lostControl::begin, text = stringResource(Res.string.lost_open), modifier = Modifier.testTag(LostControlTags.OPEN), color = PpfTheme.palette.inkMuted)
     }

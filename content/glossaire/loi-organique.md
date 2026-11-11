@@ -1,6 +1,6 @@
 ---
 slug: glossaire-loi-organique
-title: [EXEMPLE] Loi organique
+title: Loi organique
 summary: Loi qui précise l'organisation des institutions, quand la Constitution le prévoit. Elle suit une procédure plus exigeante et le Conseil constitutionnel la contrôle toujours.
 variants: loi organique, lois organiques
 topics: institutions, parlement
@@ -8,7 +8,7 @@ see_also: glossaire-constitution, glossaire-conseil-constitutionnel, glossaire-s
 related: parcours:le-budget-de-l-etat, parcours:le-referendum
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Une loi organique complète la Constitution sur un point précis, quand la Constitution le prévoit. Par exemple, elle fixe la durée des pouvoirs et le nombre des membres de chaque assemblée (article 25), ou les conditions du référendum d'initiative partagée (article 11).
 
@@ -24,5 +24,5 @@ Exemple : la loi organique relative aux lois de finances, appelée LOLF, fixe co
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 11, 25, 42, 46 et 61)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Loi organique n° 2001-692 du 1er août 2001 relative aux lois de finances, version en vigueur](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000394028)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 11, 25, 42, 46 et 61)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Loi organique n° 2001-692 du 1er août 2001 relative aux lois de finances, version en vigueur](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000394028), consulté le 2026-11-09

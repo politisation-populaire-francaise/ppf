@@ -1,13 +1,13 @@
 ---
 slug: le-budget-de-l-etat
-title: [EXEMPLE] Le budget de l'État
+title: Le budget de l'État
 summary: Qui prépare le budget de l'État, comment le Parlement le vote dans un délai limité, et ce qui se passe s'il n'est pas adopté à temps.
 topics: institutions, budget, parlement
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Le budget de l'État est fixé chaque année par une **loi de finances**, préparée par le **Gouvernement** et votée par le **Parlement**.
@@ -15,8 +15,6 @@ updated_at: 2026-11-07
 - Les dépenses sont rangées en **missions** et en **programmes**, selon la **LOLF**.
 - Si le budget n'est pas voté avant le 1er janvier, une **loi spéciale** permet de continuer à percevoir les impôts ; la **Cour des comptes** aide ensuite à contrôler la dépense.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Un budget préparé par le Gouvernement
 
@@ -124,18 +122,18 @@ Enfin, le Parlement vote la loi relative aux résultats de la gestion et portant
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 47 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241054
-- Constitution du 4 octobre 1958, article 47-1 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241050
-- Constitution du 4 octobre 1958, article 47-2 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241048
-- Constitution du 4 octobre 1958, article 49 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062
-- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 39 et 40) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Loi organique n° 2001-692 du 1er août 2001 relative aux lois de finances (LOLF), version en vigueur : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000394028
-- LOLF, article 7 (missions et programmes) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006321025
-- LOLF, article 39 (date de dépôt) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044611960
-- LOLF, article 45 (loi spéciale, services votés) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044611965
-- LOLF, article 47 (amendements sur les crédits) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006321072
-- LOLF, article 58 (missions de la Cour des comptes) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044611777
-- Assemblée nationale, fiche de synthèse n° 53 « L'examen parlementaire des lois de finances » (septembre 2022), pour les articles 9, 34, 38, 41 et 42 de la LOLF et le déroulement de l'examen : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629134/file/Fiche%2053%20-%20Examen%20LF.pdf
-- Sénat, lois promulguées en 2024 (loi n° 2024-1188 du 20 décembre 2024 spéciale) : https://www.senat.fr/dossiers-legislatifs/lois-promulguees-2024.html
-- Sénat, lois promulguées en 2025 (loi n° 2025-1316 du 26 décembre 2025 spéciale) : https://www.senat.fr/dossiers-legislatifs/lois-promulguees-2025.html
-- Portail de la fonction publique, « Cour des comptes » (mis à jour le 23 mai 2025) : https://www.fonction-publique.gouv.fr/cour-des-comptes
+- Constitution du 4 octobre 1958, article 47, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241054
+- Constitution du 4 octobre 1958, article 47-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241050
+- Constitution du 4 octobre 1958, article 47-2, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241048
+- Constitution du 4 octobre 1958, article 49, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062
+- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 39 et 40), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Loi organique n° 2001-692 du 1er août 2001 relative aux lois de finances (LOLF), version en vigueur, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000394028
+- LOLF, article 7 (missions et programmes), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006321025
+- LOLF, article 39 (date de dépôt), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044611960
+- LOLF, article 45 (loi spéciale, services votés), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044611965
+- LOLF, article 47 (amendements sur les crédits), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006321072
+- LOLF, article 58 (missions de la Cour des comptes), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044611777
+- Assemblée nationale, fiche de synthèse n° 53 « L'examen parlementaire des lois de finances » (septembre 2022), pour les articles 9, 34, 38, 41 et 42 de la LOLF et le déroulement de l'examen, consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629134/file/Fiche%2053%20-%20Examen%20LF.pdf
+- Sénat, lois promulguées en 2024 (loi n° 2024-1188 du 20 décembre 2024 spéciale), consulté le 2026-11-09 : https://www.senat.fr/dossiers-legislatifs/lois-promulguees-2024.html
+- Sénat, lois promulguées en 2025 (loi n° 2025-1316 du 26 décembre 2025 spéciale), consulté le 2026-11-09 : https://www.senat.fr/dossiers-legislatifs/lois-promulguees-2025.html
+- Portail de la fonction publique, « Cour des comptes » (mis à jour le 23 mai 2025), consulté le 2026-11-09 : https://www.fonction-publique.gouv.fr/cour-des-comptes

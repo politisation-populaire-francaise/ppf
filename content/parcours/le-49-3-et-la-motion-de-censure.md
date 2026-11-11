@@ -1,13 +1,13 @@
 ---
 slug: le-49-3-et-la-motion-de-censure
-title: [EXEMPLE] Le 49.3 et la motion de censure
+title: Le 49.3 et la motion de censure
 summary: Comment le Gouvernement peut faire adopter un texte sans vote sur ce texte, et comment l'Assemblée nationale peut, en réponse, le renverser.
 topics: institutions, parlement, gouvernement
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-06
-updated_at: 2026-11-06
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Le Gouvernement est **responsable devant l'Assemblée nationale** : elle peut le renverser par une **motion de censure**.
@@ -15,8 +15,6 @@ updated_at: 2026-11-06
 - Depuis 2008, le 49.3 est limité aux **textes budgétaires** et à **un autre texte par session**.
 - Une motion de censure n'est adoptée qu'avec la **majorité des membres** de l'Assemblée ; dans ce cas, le **Gouvernement démissionne**.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Un gouvernement responsable devant les députés
 
@@ -114,11 +112,11 @@ C'est ensuite le Président de la République qui met fin aux fonctions du Premi
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 49, version en vigueur depuis le 1er mars 2009 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062
-- Constitution du 4 octobre 1958, article 49, version en vigueur de 1995 à 2009 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062/2008-07-24
-- Constitution du 4 octobre 1958, article 50 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527530
-- Constitution du 4 octobre 1958, article 8 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527467
-- Constitution du 4 octobre 1958, article 24 (577 députés au plus) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241014
-- Constitution du 4 octobre 1958, article 28 (session ordinaire) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527495
-- Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025), partie sur l'engagement de responsabilité : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
-- Assemblée nationale, fiche de synthèse n° 56 « Les votes à l'Assemblée nationale » (juillet 2024) : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629143/file/Fiche%2056%20-%20Votes.pdf
+- Constitution du 4 octobre 1958, article 49, version en vigueur depuis le 1er mars 2009, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062
+- Constitution du 4 octobre 1958, article 49, version en vigueur de 1995 à 2009, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241062/2008-07-24
+- Constitution du 4 octobre 1958, article 50, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527530
+- Constitution du 4 octobre 1958, article 8, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527467
+- Constitution du 4 octobre 1958, article 24 (577 députés au plus), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241014
+- Constitution du 4 octobre 1958, article 28 (session ordinaire), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527495
+- Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025), partie sur l'engagement de responsabilité, consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
+- Assemblée nationale, fiche de synthèse n° 56 « Les votes à l'Assemblée nationale » (juillet 2024), consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629143/file/Fiche%2056%20-%20Votes.pdf

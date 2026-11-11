@@ -1,6 +1,6 @@
 ---
 slug: glossaire-vote-nul
-title: [EXEMPLE] Vote nul
+title: Vote nul
 summary: Bulletin qui ne peut pas être compté, par exemple parce qu'il était sans enveloppe ou portait un signe de reconnaissance. Il n'entre pas dans les suffrages exprimés.
 variants: vote nul, votes nuls, bulletin nul, bulletins nuls
 topics: elections
@@ -8,12 +8,12 @@ see_also: glossaire-vote-blanc, glossaire-suffrages-exprimes, glossaire-abstenti
 related: decryptage:vote-blanc-suffrages-exprimes
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Un bulletin est nul quand il ne permet pas de compter un vote de façon sûre et secrète. L'article L66 du Code électoral en donne la liste :
 - les bulletins qui désignent mal le candidat, ou dans lesquels l'électeur s'est fait connaître ;
 - ceux trouvés dans l'urne sans enveloppe, ou dans une enveloppe non réglementaire ;
-- ceux imprimés sur du papier de couleur ;
+- ceux écrits sur du papier de couleur ;
 - ceux qui portent, ou dont l'enveloppe porte, des signes de reconnaissance ;
 - ceux qui portent des mentions injurieuses pour les candidats ou pour d'autres personnes.
 
@@ -27,5 +27,5 @@ Exemple : lors du dépouillement, on trouve dans l'urne un bulletin sans envelop
 
 ## Sources
 
-- [Code électoral, article L66, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000028639157)
-- [Code électoral, article L65, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027477739)
+- [Code électoral, article L66, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000028639157), consulté le 2026-11-09
+- [Code électoral, article L65, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027477739), consulté le 2026-11-09

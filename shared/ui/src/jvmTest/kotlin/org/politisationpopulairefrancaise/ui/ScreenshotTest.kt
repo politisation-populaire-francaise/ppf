@@ -33,6 +33,7 @@ import org.politisationpopulairefrancaise.ui.revendications.ManageViewsTags
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationTags
 import org.politisationpopulairefrancaise.ui.revendications.propose.ProposalTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import java.io.File
 import javax.imageio.ImageIO
@@ -73,6 +74,7 @@ class ScreenshotTest {
                 }
             }
         }
+        openSpace(Space.FIL)
         waitForContents(store)
         save("$prefix-fil")
 
@@ -101,7 +103,7 @@ class ScreenshotTest {
         waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(RevendicationTags.CARD + "lyon-transports-nuit").fetchSemanticsNodes().isNotEmpty() }
         save("$prefix-fil-revendications")
 
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         waitForIdle()
         waitUntil(timeoutMillis = 5_000) { onAllNodesWithTag(RevendicationTags.CARD + "lyon-transports-nuit").fetchSemanticsNodes().isNotEmpty() }
         save("$prefix-revendications")

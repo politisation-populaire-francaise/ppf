@@ -1,13 +1,13 @@
 ---
 slug: la-dissolution
-title: [EXEMPLE] La dissolution de l'Assemblée nationale
+title: La dissolution de l'Assemblée nationale
 summary: Comprendre qui peut dissoudre l'Assemblée nationale, dans quels délais une nouvelle Assemblée est élue et ce qui ne change pas pour le Sénat et le Gouvernement.
 topics: institutions, assemblee-nationale, elections
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-06
-updated_at: 2026-11-06
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Seul le **Président de la République** peut dissoudre l'Assemblée nationale, après avoir **consulté** le Premier ministre et les présidents des deux assemblées.
@@ -15,8 +15,6 @@ updated_at: 2026-11-06
 - Pas de nouvelle dissolution **dans l'année** qui suit ces élections, ni pendant un **intérim** de la présidence ou l'usage de l'**article 16**.
 - Le **Sénat** n'est pas dissous et le **Gouvernement** reste en place.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Dissoudre, qu'est-ce que ça veut dire ?
 
@@ -82,7 +80,7 @@ Le pouvoir de dissoudre a des limites. Une dissolution est impossible :
 
 La dissolution ne concerne que l'Assemblée nationale. Le Président ne peut pas dissoudre le Sénat : les sénateurs gardent leur mandat.
 
-Le Gouvernement ne tombe pas non plus. La Constitution oblige le Premier ministre à remettre la démission du Gouvernement quand l'Assemblée nationale adopte une motion de censure (un vote qui lui retire sa confiance) ou désapprouve son programme (Constitution, article 50). Aucun article ne prévoit de démission à cause d'une dissolution : le Premier ministre et les ministres restent donc en place.
+Le Gouvernement ne tombe pas non plus. La Constitution oblige le Premier ministre à remettre la démission du Gouvernement quand l'Assemblée nationale adopte une motion de censure (un vote qui lui retire sa confiance) ou désapprouve son programme ou une déclaration de politique générale (Constitution, article 50). Aucun article ne prévoit de démission à cause d'une dissolution : le Premier ministre et les ministres restent donc en place.
 
 Après les élections, la nouvelle Assemblée pourra à son tour voter une motion de censure. Le Président, lui, garde le pouvoir de nommer le Premier ministre (Constitution, article 8).
 
@@ -102,14 +100,14 @@ Après les élections, la nouvelle Assemblée pourra à son tour voter une motio
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 7 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527466
-- Constitution du 4 octobre 1958, article 8 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527467
-- Constitution du 4 octobre 1958, article 12 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527474
-- Constitution du 4 octobre 1958, article 16 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241008
-- Constitution du 4 octobre 1958, article 19 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527482
-- Constitution du 4 octobre 1958, article 24 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241014
-- Constitution du 4 octobre 1958, article 28 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527495
-- Constitution du 4 octobre 1958, article 50 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527530
-- Assemblée nationale, « Dissolution de l'Assemblée nationale, en application de l'article 12 de la Constitution » : https://www.assemblee-nationale.fr/dyn/actualites-accueil-hub/dissolution-de-l-assemblee-nationale-en-application-de-l-article-12-de-la-constitution
-- Sénat junior, « Dissolution, élections : Sénat Junior fait le point » (2 juillet 2024) : https://junior.senat.fr/lactu/vue-detaillee-de-lactualite/article/dissolution-elections-senat-junior-fait-le-point.html
-- Service-public.gouv.fr, « Vérifier votre inscription électorale et votre bureau de vote » : https://www.service-public.gouv.fr/particuliers/vosdroits/R51788
+- Constitution du 4 octobre 1958, article 7, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527466
+- Constitution du 4 octobre 1958, article 8, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527467
+- Constitution du 4 octobre 1958, article 12, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527474
+- Constitution du 4 octobre 1958, article 16, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241008
+- Constitution du 4 octobre 1958, article 19, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527482
+- Constitution du 4 octobre 1958, article 24, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241014
+- Constitution du 4 octobre 1958, article 28, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527495
+- Constitution du 4 octobre 1958, article 50, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527530
+- Assemblée nationale, « Dissolution de l'Assemblée nationale, en application de l'article 12 de la Constitution », consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/actualites-accueil-hub/dissolution-de-l-assemblee-nationale-en-application-de-l-article-12-de-la-constitution
+- Sénat junior, « Dissolution, élections : Sénat Junior fait le point » (2 juillet 2024), consulté le 2026-11-09 : https://junior.senat.fr/lactu/vue-detaillee-de-lactualite/article/dissolution-elections-senat-junior-fait-le-point.html
+- Service-public.gouv.fr, « Vérifier votre inscription électorale et votre bureau de vote », consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/R51788

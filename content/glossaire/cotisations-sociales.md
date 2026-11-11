@@ -1,13 +1,13 @@
 ---
 slug: glossaire-cotisations-sociales
-title: [EXEMPLE] Cotisations sociales
+title: Cotisations sociales
 summary: Sommes versées par les salariés, les employeurs et les indépendants pour financer la protection sociale : santé, retraite, famille, accidents du travail.
 variants: cotisations sociales, cotisation sociale, cotisations salariales, cotisation salariale, cotisations patronales, cotisation patronale, charges sociales, part salariale, part patronale
 topics: travail, social, budget
 see_also: glossaire-loi-de-financement-de-la-securite-sociale, glossaire-convention-collective, glossaire-syndicat
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Les cotisations sociales sont des versements faits par les personnes et par leurs employeurs aux organismes de sécurité sociale et aux régimes de protection sociale. Selon l'Insee, elles se répartissent entre celles des employeurs, celles des salariés et celles des travailleurs indépendants ou des personnes sans emploi.
 
@@ -27,6 +27,6 @@ Exemple : un salarié payé 2 000 euros brut par mois reçoit moins sur son comp
 
 ## Sources
 
-- [Insee, définition « Cotisations sociales effectives »](https://www.insee.fr/fr/metadonnees/definition/c1996)
-- [Service-public.gouv.fr, « Fiche de paie »](https://www.service-public.gouv.fr/particuliers/vosdroits/F559)
-- [Assemblée nationale, fiche de synthèse n° 54 sur les lois de financement de la sécurité sociale](https://www.assemblee-nationale.fr/dyn/synthese/fonctionnement-assemblee-nationale/travail-legislatif/l-examen-parlementaire-des-projets-de-loi-de-financement-de-la-securite-sociale)
+- [Insee, définition « Cotisations sociales effectives »](https://www.insee.fr/fr/metadonnees/definition/c1996), consulté le 2026-11-09
+- [Service-public.gouv.fr, « Fiche de paie »](https://www.service-public.gouv.fr/particuliers/vosdroits/F559), consulté le 2026-11-09
+- [Assemblée nationale, fiche de synthèse n° 54 sur les lois de financement de la sécurité sociale](https://www.assemblee-nationale.fr/dyn/synthese/fonctionnement-assemblee-nationale/travail-legislatif/l-examen-parlementaire-des-projets-de-loi-de-financement-de-la-securite-sociale), consulté le 2026-11-09

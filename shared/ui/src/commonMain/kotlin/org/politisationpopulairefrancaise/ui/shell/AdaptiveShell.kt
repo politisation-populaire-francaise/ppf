@@ -4,8 +4,10 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -24,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +56,8 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -99,8 +104,13 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpSheetHost
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ProvideHelp
 import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
 import org.politisationpopulairefrancaise.ui.agir.security.DeviceSecurityGate
+import org.politisationpopulairefrancaise.ui.agir.security.LocalPreparePhoneNotifications
 import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
+import org.politisationpopulairefrancaise.ui.agir.timer.rememberTimerState
+import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
+import org.politisationpopulairefrancaise.ui.agir.proches.rememberProchesState
 import org.politisationpopulairefrancaise.core.voir.VoirDeviceData
 import org.politisationpopulairefrancaise.ui.agir.security.rememberDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
@@ -108,11 +118,17 @@ import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.resources.agenda_in_agir_title
+import org.politisationpopulairefrancaise.core.WindowHeightClass
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.NavRow
 import org.politisationpopulairefrancaise.ui.components.NavSubRow
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.Wordmark
+import org.politisationpopulairefrancaise.ui.components.AdaptiveWordmark
+import org.politisationpopulairefrancaise.ui.onboarding.FirstLaunchTutorial
+import org.politisationpopulairefrancaise.ui.onboarding.ProvideTutorial
+import org.politisationpopulairefrancaise.ui.onboarding.TutorialState
+import org.politisationpopulairefrancaise.ui.onboarding.rememberTutorialState
 import org.politisationpopulairefrancaise.ui.components.avatarLetters
 import org.politisationpopulairefrancaise.ui.comprendre.rememberComprendreLibrary
 import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
@@ -132,6 +148,7 @@ import org.politisationpopulairefrancaise.ui.revendications.RevendicationsScreen
 import org.politisationpopulairefrancaise.ui.revendications.rememberRevendicationViewsState
 import org.politisationpopulairefrancaise.ui.revendications.propose.ProposalComposer
 import org.politisationpopulairefrancaise.ui.resources.Res
+import org.politisationpopulairefrancaise.ui.resources.action_messages
 import org.politisationpopulairefrancaise.ui.resources.action_my_space
 import org.politisationpopulairefrancaise.ui.resources.action_notifications_soon
 import org.politisationpopulairefrancaise.ui.resources.action_open_menu
@@ -146,6 +163,8 @@ import org.politisationpopulairefrancaise.ui.decider.DeciderState
 import org.politisationpopulairefrancaise.ui.decider.DeciderRemindersState
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderReminders
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
+import org.politisationpopulairefrancaise.ui.theme.LocalPpfDimens
+import org.politisationpopulairefrancaise.ui.theme.PpfDimens
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
 import org.politisationpopulairefrancaise.core.social.CommunauteDeviceData
@@ -191,13 +210,18 @@ object ShellTags {
  * The application shell, adapted to the window size (cahier fonctionnel, S-05 and M18), after
  * the owner's mock-ups of 2026-11-06:
  *
- * - compact width (phone): a 56 dp top bar (menu, wordmark, search, notifications, avatar of the
- *   account that opens "Mon espace"), a fixed bottom bar with the daily entries (feed, live, map,
- *   messages, demands), the four pillars in a menu opened over the screen;
- * - medium width (tablet, phone in landscape): the same top bar without the menu button and a
- *   rail on the left with every entry;
+ * - compact width (phone): a top bar (menu, name, the red AIDE button, messages, notifications,
+ *   avatar of the account that opens "Mon espace"), a fixed bottom bar with the daily entries in
+ *   the owner's order (D-215: En direct, Actu, Carte, Agir, Appels), the rest in a menu opened over
+ *   the screen (Voir, Comprendre, Décider, Revendications);
+ * - medium width and low window (phone in landscape): the same top bar with its menu, and a narrow
+ *   rail with the five daily entries only, so that each one is visible without scrolling;
+ * - medium width (tablet): the top bar without the menu button and a rail on the left with every
+ *   entry, the AIDE button at its head;
  * - expanded width (desktop): a 64 dp top bar with the search field and the "Mon espace" button,
- *   a 280 dp side bar with the daily entries, then the pillars, then the disclaimer.
+ *   a 280 dp side bar with the daily entries, then the rest, then the disclaimer.
+ *
+ * Every format reaches every space (D-210: nothing already built is removed).
  */
 @Composable
 fun AdaptiveShell(dependencies: AppDependencies) {
@@ -239,12 +263,25 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     })
     // M33: the lock of the application, the content hidden from the system and the quick erase (S-43 to S-45).
     val security = rememberDeviceSecurity(dependencies)
+    // The tutorial of the first launch (D-211, D-216), seen again from Mon espace and the AIDE sheet.
+    val tutorial = rememberTutorialState(dependencies.tutorial)
+    RegisterErasable(dependencies, TutorialState.ERASABLE_ID) { dependencies.tutorial?.forget() }
     // The quick erase (S-44): the keys, with what « Effacer mes clés » already forgets (D-032, D-039), and the rally point.
     RegisterErasable(dependencies, "core-identity") {
         dependencies.identityStore.clear()
         accountSession.signOut()
     }
     RegisterErasable(dependencies, "agir-rally-point") { help.clearRallyPoint() }
+    // AG-55 « Sans nouvelles de moi » (D-088): the timer armed here and the deposits received; erasing never cancels a deposit.
+    val timer = rememberTimerState(dependencies, help, accountSession, messaging)
+    RegisterErasable(dependencies, "agir-minuteur") { timer.eraseFromDevice() }
+    // AG-58 « Caméra protégée » (D-089): the photos of the vault; erasing destroys the Keystore key, then the files.
+    val protectedCamera = rememberProtectedCameraState()
+    help.camera = protectedCamera
+    RegisterErasable(dependencies, "agir-camera") { protectedCamera.eraseFromDevice() }
+    // AG-63 « Mes proches à mobiliser »: the private list of relatives, on the device only; « Effacer mes clés » erases it too.
+    val proches = rememberProchesState(dependencies, accountSession)
+    RegisterErasable(dependencies, ProchesState.ERASABLE_ID) { proches.eraseFromDevice() }
     // Communauté (S-44): the messages and checked contacts, the joined rooms, the notifications and push registrations.
     dependencies.database?.let { database ->
         val communaute = remember(database) { CommunauteDeviceData(database) }
@@ -322,12 +359,16 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         }
     }
     val palette = PpfTheme.palette
-    // The system's back leads from any space to the feed; the screens close what they opened first.
+    // The system's back leads from any space to « En direct »; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
-        BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) {
+    ProvideTutorial(tutorial) { ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting, LocalPreparePhoneNotifications provides notificationsSettings) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
+        // The ink of the theme for every text of the shell, on every format: the scaffold of phones gave it,
+        // the rail and the side bar of larger windows did not (black titles on the dark theme).
+        BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) { CompositionLocalProvider(LocalContentColor provides palette.ink) {
             val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
+            // Phones get the compact sizes of the tokens (titles, margins of cards); larger windows the usual ones.
+            CompositionLocalProvider(LocalPpfDimens provides if (windowClass.width == WindowWidthClass.COMPACT) PpfDimens.compact else PpfDimens()) {
             val account = accountSession.state as? AccountUiState.Ready
             val navigate: (Space) -> Unit = {
                 selected = it
@@ -395,6 +436,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     agendaLibrary = agendaLibrary,
                     callsLibrary = callsLibrary,
                     testimonyLibrary = testimonyLibrary,
+                    proches = proches,
                     mailboxSetting = mailboxSetting,
                     notificationsSettings = notificationsSettings,
                     windowClass = windowClass,
@@ -402,15 +444,27 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 )
             }
             when {
+                // The tutorial takes the whole window; « Passer » or the end lead to « En direct » or to the chosen space.
+                tutorial.isOpen -> FirstLaunchTutorial(
+                    onFinish = { space ->
+                        tutorial.finish()
+                        navigate(space ?: Space.default)
+                    },
+                    modifier = Modifier.fullWindowSafeArea(),
+                )
                 // On phones the centre takes the whole screen, with its back button.
-                windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier)
+                windowClass.width == WindowWidthClass.COMPACT && centerScreen != null -> centerScreen(Modifier.fullWindowSafeArea())
                 windowClass.width == WindowWidthClass.COMPACT -> CompactShell(selected, navigate, account, bell, content)
+                // A phone in landscape: little height, so the phone's bar with its menu and a short rail.
+                windowClass.width == WindowWidthClass.MEDIUM && windowClass.height == WindowHeightClass.COMPACT ->
+                    LowShell(selected, navigate, account, bell, centerScreen ?: content)
                 windowClass.width == WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, bell, centerScreen ?: content)
                 else -> ExpandedShell(selected, navigate, account, bell, centerScreen ?: content)
             }
             HelpSheetHost(help)
-        }
-    } } } } } }
+            }
+        } }
+    } } } } } } }
 }
 
 @Composable
@@ -433,6 +487,7 @@ private fun SpaceContent(
     agendaLibrary: AgendaLibrary,
     callsLibrary: CallsLibrary,
     testimonyLibrary: TestimonyLibrary,
+    proches: ProchesState,
     mailboxSetting: MailboxSetting,
     notificationsSettings: NotificationsSettingsState?,
     windowClass: WindowClass,
@@ -464,7 +519,11 @@ private fun SpaceContent(
                 groups = groupsLibrary,
                 agenda = { slotModifier, onBack ->
                     AgirPlugged(stringResource(Res.string.agenda_in_agir_title), onBack, slotModifier) { inner ->
-                        AgendaScreen(dependencies, accountSession, windowClass, inner, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
+                        AgendaScreen(
+                            dependencies, accountSession, windowClass, inner, onNavigate, agenda = agendaLibrary, organisationName = organisationName,
+                            // A call read on a poster (AG-61, D-190): "Agir" sees it selected and opens its calls.
+                            onOpenCall = { address -> callsLibrary.openAddress(address) },
+                        )
                     }
                 },
                 calls = { slotModifier, onBack ->
@@ -476,6 +535,10 @@ private fun SpaceContent(
                     )
                 },
                 testimonies = testimonyLibrary,
+                proches = proches,
+                // The events and calls of the collectifs (M24) are those of the agenda and of the calls.
+                agendaLibrary = agendaLibrary,
+                callsLibrary = callsLibrary,
                 organisationAgenda = { key, slotModifier ->
                     OrganisationAgenda(agendaLibrary, key, slotModifier) { mobilization ->
                         agendaLibrary.open(mobilization)
@@ -505,10 +568,23 @@ private fun SpaceContent(
             proposal = proposalComposer,
             onNavigate = onNavigate,
         )
+        // The wall of calls of "Agir" on its own (D-215): the same screen as inside "Agir", without the way back.
+        Space.APPELS -> CallsScreen(
+            callsLibrary, accountSession, windowClass, onBack = null, modifier = modifier,
+            isVerifiedOrganisation = { key -> organisationsLibrary.verified.isVerified(key) || dependencies.editorialTrust.isTrusted(key) },
+            onCreateAccount = { onNavigate(Space.MON_ESPACE) },
+        )
         Space.CARTE -> {
             // The directory names the verified organisers of the agenda.
             LaunchedEffect(organisationsLibrary) { organisationsLibrary.ensureStarted() }
-            AgendaScreen(dependencies, accountSession, windowClass, modifier, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
+            AgendaScreen(
+                dependencies, accountSession, windowClass, modifier, onNavigate, agenda = agendaLibrary, organisationName = organisationName,
+                // A call read on a poster (AG-61, D-190) opens on the wall of calls (D-215).
+                onOpenCall = { address ->
+                    callsLibrary.openAddress(address)
+                    onNavigate(Space.APPELS)
+                },
+            )
         }
     }
 }
@@ -522,45 +598,56 @@ private fun CompactShell(
     content: @Composable (Modifier) -> Unit,
 ) {
     val palette = PpfTheme.palette
+    MenuDrawer(selected, onSelect, Modifier.testTag(ShellTags.SHELL_COMPACT)) { openMenu ->
+        Scaffold(
+            containerColor = palette.surface1,
+            contentColor = palette.ink,
+            topBar = { TopBar(onMenu = openMenu, account = account, bell = bell, selected = selected, onSelect = onSelect) },
+            bottomBar = { BottomBar(selected, onSelect) },
+            contentWindowInsets = phoneContentInsets,
+        ) { padding ->
+            content(Modifier.betweenBarsSafeArea(padding))
+        }
+    }
+}
+
+/**
+ * The menu of phones, opened over the screen from the start edge: what is not in the bottom bar
+ * (D-215). [content] receives the action that opens it, for the button of the top bar.
+ */
+@Composable
+private fun MenuDrawer(selected: Space, onSelect: (Space) -> Unit, modifier: Modifier, content: @Composable (openMenu: () -> Unit) -> Unit) {
+    val palette = PpfTheme.palette
     val drawerState = rememberDrawerState(DrawerValue.Closed)
     val scope = rememberCoroutineScope()
     ModalNavigationDrawer(
         drawerState = drawerState,
-        modifier = Modifier.testTag(ShellTags.SHELL_COMPACT),
+        modifier = modifier,
         scrimColor = palette.scrim,
         drawerContent = {
-            ModalDrawerSheet(drawerContainerColor = palette.surface0, drawerContentColor = palette.ink) {
-                PillarsMenu(selected = selected, onSelect = {
+            ModalDrawerSheet(drawerContainerColor = palette.surface0, drawerContentColor = palette.ink, windowInsets = menuInsets) {
+                MoreMenu(selected = selected, onSelect = {
                     onSelect(it)
                     scope.launch { drawerState.close() }
                 })
             }
         },
     ) {
-        Scaffold(
-            containerColor = palette.surface1,
-            topBar = {
-                TopBar(
-                    onMenu = { scope.launch { drawerState.open() } },
-                    account = account,
-                    bell = bell,
-                    mySpaceSelected = selected == Space.MON_ESPACE,
-                    onMySpace = { onSelect(Space.MON_ESPACE) },
-                )
-            },
-            bottomBar = { BottomBar(selected, onSelect) },
-        ) { padding ->
-            content(Modifier.padding(padding))
-        }
+        content { scope.launch { drawerState.open() } }
     }
 }
 
 @Composable
 private fun BottomBar(selected: Space, onSelect: (Space) -> Unit) {
     val palette = PpfTheme.palette
+    val dimens = PpfTheme.dimens
     Column(Modifier.background(palette.surface0)) {
         HorizontalDivider(color = palette.border)
-        Row(Modifier.fillMaxWidth().height(76.dp).selectableGroup().testTag(ShellTags.BOTTOM_BAR)) {
+        // At least the height of the token; more when a large font puts a label on two lines.
+        Row(
+            Modifier.fillMaxWidth().bottomBarSafeArea().height(IntrinsicSize.Min).heightIn(min = dimens.bottomBarHeight)
+                .selectableGroup().testTag(ShellTags.BOTTOM_BAR),
+        ) {
             quickAccessSections.forEach { section ->
                 BottomBarItem(section, section.space == selected, { onSelect(section.space) }, Modifier.weight(1f))
             }
@@ -568,29 +655,32 @@ private fun BottomBar(selected: Space, onSelect: (Space) -> Unit) {
     }
 }
 
-/** One entry of the bottom bar: a pill behind the icon when selected, a two-line label at most. */
+/** One entry of the bottom bar: a pill behind the icon when selected, the label under it. */
 @Composable
 private fun BottomBarItem(section: SectionSpec, active: Boolean, onClick: () -> Unit, modifier: Modifier) {
     val palette = PpfTheme.palette
+    val dimens = PpfTheme.dimens
     val color = if (active) palette.brand else palette.inkMuted
     Column(
         modifier = modifier
             .fillMaxHeight()
             .selectable(selected = active, role = Role.Tab, onClick = onClick)
             .testTag(ShellTags.navItem(section.space))
-            .padding(top = 10.dp, bottom = 6.dp),
+            .padding(top = 8.dp, bottom = 6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
     ) {
         Box(
-            modifier = Modifier.size(width = 56.dp, height = 30.dp).clip(CircleShape).background(if (active) palette.brandTint else Color.Transparent),
+            modifier = Modifier.size(width = dimens.bottomBarPillWidth, height = dimens.bottomBarPillHeight).clip(CircleShape)
+                .background(if (active) palette.brandTint else Color.Transparent),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(section.icon, contentDescription = null, tint = color, modifier = Modifier.size(22.dp))
+            Icon(section.icon, contentDescription = null, tint = color, modifier = Modifier.size(dimens.barIcon))
         }
         Spacer(Modifier.height(4.dp))
         Text(
             text = stringResource(section.barLabel),
-            style = MaterialTheme.typography.labelMedium.copy(fontSize = 11.sp, lineHeight = 13.sp, letterSpacing = 0.sp),
+            style = MaterialTheme.typography.labelMedium.copy(fontSize = dimens.bottomBarLabelSize, lineHeight = dimens.bottomBarLabelLineHeight, letterSpacing = 0.sp),
             color = color,
             textAlign = TextAlign.Center,
             maxLines = 2,
@@ -608,22 +698,88 @@ private fun MediumShell(
 ) {
     val palette = PpfTheme.palette
     Column(Modifier.fillMaxSize().testTag(ShellTags.SHELL_MEDIUM)) {
-        TopBar(onMenu = null, account = account, bell = bell, mySpaceSelected = selected == Space.MON_ESPACE, onMySpace = { onSelect(Space.MON_ESPACE) })
+        TopBar(onMenu = null, account = account, bell = bell, selected = selected, onSelect = onSelect)
         Row(Modifier.weight(1f).fillMaxWidth()) {
             NavigationRail(
                 containerColor = palette.surface0,
                 contentColor = palette.inkMuted,
                 modifier = Modifier.testTag(ShellTags.NAV_RAIL).verticalScroll(rememberScrollState()),
                 header = { HelpButton(Modifier.padding(top = 8.dp).width(68.dp), stacked = true) },
+                windowInsets = sideNavigationInsets,
             ) {
                 Spacer(Modifier.height(8.dp))
                 quickAccessSections.forEach { section -> RailItem(section, selected, onSelect) }
                 HorizontalDivider(Modifier.padding(horizontal = 16.dp, vertical = 8.dp).width(40.dp), color = palette.border)
-                pillarSections.forEach { section -> RailItem(section, selected, onSelect) }
+                moreSections.forEach { section -> RailItem(section, selected, onSelect) }
             }
             VerticalDivider(color = palette.border)
-            content(Modifier.weight(1f).fillMaxHeight())
+            content(Modifier.weight(1f).fillMaxHeight().besideNavigationSafeArea())
         }
+    }
+}
+
+/**
+ * A phone in landscape (wide but less than 480 dp high): the top bar of phones, with its menu and
+ * the AIDE button, and a short rail with the five daily entries, all visible without scrolling.
+ */
+@Composable
+private fun LowShell(
+    selected: Space,
+    onSelect: (Space) -> Unit,
+    account: AccountUiState.Ready?,
+    bell: Bell?,
+    content: @Composable (Modifier) -> Unit,
+) {
+    val palette = PpfTheme.palette
+    MenuDrawer(selected, onSelect, Modifier.testTag(ShellTags.SHELL_MEDIUM)) { openMenu ->
+        Column(Modifier.fillMaxSize()) {
+            TopBar(onMenu = openMenu, account = account, bell = bell, selected = selected, onSelect = onSelect)
+            Row(Modifier.weight(1f).fillMaxWidth()) {
+                Column(
+                    // The tag first: the rail is its background, from the edge of the screen, camera hole included.
+                    Modifier.testTag(ShellTags.NAV_RAIL).fillMaxHeight().background(palette.surface0).sideNavigationSafeArea()
+                        .verticalScroll(rememberScrollState()).width(80.dp)
+                        .selectableGroup(),
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    quickAccessSections.forEach { section -> CompactRailItem(section, section.space == selected) { onSelect(section.space) } }
+                }
+                VerticalDivider(color = palette.border)
+                content(Modifier.weight(1f).fillMaxHeight().besideNavigationSafeArea())
+            }
+        }
+    }
+}
+
+/** One entry of the short rail: the entry of the bottom bar, at the height of a touch target and a label. */
+@Composable
+private fun CompactRailItem(section: SectionSpec, active: Boolean, onClick: () -> Unit) {
+    val palette = PpfTheme.palette
+    val dimens = PpfTheme.dimens
+    val color = if (active) palette.brand else palette.inkMuted
+    Column(
+        modifier = Modifier.fillMaxWidth().heightIn(min = dimens.compactRailItemHeight)
+            .selectable(selected = active, role = Role.Tab, onClick = onClick)
+            .testTag(ShellTags.navItem(section.space))
+            .padding(vertical = 2.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+    ) {
+        Box(
+            Modifier.size(width = dimens.bottomBarPillWidth, height = dimens.bottomBarPillHeight).clip(CircleShape)
+                .background(if (active) palette.brandTint else Color.Transparent),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(section.icon, contentDescription = null, tint = color, modifier = Modifier.size(dimens.barIcon))
+        }
+        Text(
+            text = stringResource(section.barLabel),
+            style = MaterialTheme.typography.labelMedium.copy(fontSize = dimens.bottomBarLabelSize, lineHeight = dimens.bottomBarLabelLineHeight, letterSpacing = 0.sp),
+            color = color,
+            textAlign = TextAlign.Center,
+            maxLines = 2,
+        )
     }
 }
 
@@ -633,7 +789,7 @@ private fun RailItem(section: SectionSpec, selected: Space, onSelect: (Space) ->
     NavigationRailItem(
         selected = section.space == selected,
         onClick = { onSelect(section.space) },
-        icon = { Icon(section.icon, contentDescription = null, modifier = Modifier.size(22.dp)) },
+        icon = { Icon(section.icon, contentDescription = null, modifier = Modifier.size(PpfTheme.dimens.barIcon)) },
         label = { Text(stringResource(section.barLabel), style = MaterialTheme.typography.labelMedium, textAlign = TextAlign.Center) },
         colors = NavigationRailItemDefaults.colors(
             selectedIconColor = palette.brand,
@@ -656,49 +812,50 @@ private fun ExpandedShell(
 ) {
     val palette = PpfTheme.palette
     Column(Modifier.fillMaxSize().testTag(ShellTags.SHELL_EXPANDED)) {
-        DesktopTopBar(account = account, bell = bell, mySpaceSelected = selected == Space.MON_ESPACE, onMySpace = { onSelect(Space.MON_ESPACE) })
+        DesktopTopBar(account = account, bell = bell, selected = selected, onSelect = onSelect)
         Row(Modifier.weight(1f).fillMaxWidth()) {
-            SideBar(selected, onSelect, Modifier.width(280.dp).fillMaxHeight().testTag(ShellTags.NAV_DRAWER))
+            SideBar(selected, onSelect, Modifier.width(PpfTheme.dimens.sideBarWidth).fillMaxHeight().testTag(ShellTags.NAV_DRAWER))
             VerticalDivider(color = palette.border)
-            content(Modifier.weight(1f).fillMaxHeight())
+            content(Modifier.weight(1f).fillMaxHeight().besideNavigationSafeArea())
         }
     }
 }
 
-/** The side bar of wide windows: daily entries, pillars, then the disclaimer at the bottom. */
+/** The side bar of wide windows: the daily entries, the rest, then the disclaimer at the bottom. */
 @Composable
 private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifier) {
     val palette = PpfTheme.palette
-    Column(modifier.background(palette.surface0)) {
+    Column(modifier.background(palette.surface0).sideNavigationSafeArea()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
             HelpButton(Modifier.padding(bottom = 12.dp), fullWidth = true)
             quickAccessSections.forEach { section ->
                 NavRow(section.icon, stringResource(section.title), section.space == selected, { onSelect(section.space) }, Modifier.testTag(ShellTags.navItem(section.space)))
                 Spacer(Modifier.height(4.dp))
             }
-            Spacer(Modifier.height(8.dp))
-            PillarRows(selected, onSelect)
+            HorizontalDivider(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), color = palette.border)
+            MoreRows(selected, onSelect)
         }
         Disclaimer()
     }
 }
 
-/** The menu of phones: wordmark, the four pillars, the disclaimer. */
+/** The menu of phones: the full name, what is not in the bottom bar, the search to come, the disclaimer. */
 @Composable
-private fun PillarsMenu(selected: Space, onSelect: (Space) -> Unit) {
+private fun MoreMenu(selected: Space, onSelect: (Space) -> Unit) {
     Column(Modifier.fillMaxHeight()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
             Wordmark(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), large = true)
             Spacer(Modifier.height(16.dp))
-            PillarRows(selected, onSelect)
+            MoreRows(selected, onSelect)
+            SearchSoonRow()
         }
         Disclaimer()
     }
 }
 
 @Composable
-private fun PillarRows(selected: Space, onSelect: (Space) -> Unit) {
-    pillarSections.forEach { section ->
+private fun MoreRows(selected: Space, onSelect: (Space) -> Unit) {
+    moreSections.forEach { section ->
         val isSelected = section.space == selected
         NavRow(section.icon, stringResource(section.title), isSelected, { onSelect(section.space) }, Modifier.testTag(ShellTags.navItem(section.space)))
         if (isSelected && section.space == Space.COMPRENDRE) {
@@ -712,6 +869,17 @@ private fun PillarRows(selected: Space, onSelect: (Space) -> Unit) {
             Spacer(Modifier.height(4.dp))
         }
         Spacer(Modifier.height(4.dp))
+    }
+}
+
+/** The search waits for its module: on phones it is announced in the menu, not in the crowded top bar. */
+@Composable
+private fun SearchSoonRow() {
+    val palette = PpfTheme.palette
+    Row(Modifier.fillMaxWidth().heightIn(min = PpfTheme.dimens.touchTarget).padding(horizontal = 12.dp), verticalAlignment = Alignment.CenterVertically) {
+        Icon(Lucide.Search, contentDescription = null, tint = palette.inkSubtle, modifier = Modifier.size(20.dp))
+        Spacer(Modifier.width(12.dp))
+        Text(stringResource(Res.string.nav_search_soon), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
     }
 }
 
@@ -749,35 +917,59 @@ private fun BellButton(bell: Bell?) {
     PpfIconButton(Lucide.Bell, label, onClick = bell.onOpen, modifier = Modifier.testTag(ShellTags.NOTIFICATIONS), badge = bell.unread > 0)
 }
 
-/** The 56 dp bar of phones and tablets. Search waits for its module. */
+/**
+ * The top bar of phones and tablets (D-215). With a menu (phones, portrait or landscape): the menu,
+ * the name (whole, or « PPF » when it does not fit), the red AIDE button, which dominates the bar,
+ * the messages, the notifications and the avatar. Without a menu (tablets, whose rail carries the
+ * AIDE button): the full name, the search to come, the messages, the notifications, the avatar.
+ */
 @Composable
 private fun TopBar(
     onMenu: (() -> Unit)?,
     account: AccountUiState.Ready?,
     bell: Bell?,
-    mySpaceSelected: Boolean,
-    onMySpace: () -> Unit,
+    selected: Space,
+    onSelect: (Space) -> Unit,
 ) {
     val palette = PpfTheme.palette
     Column(Modifier.background(palette.surface0)) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(56.dp).padding(horizontal = 8.dp),
+            // No outer margin: the 48 dp buttons already leave space around their icons, the name gets the room.
+            modifier = Modifier.fillMaxWidth().topBarSafeArea().height(PpfTheme.dimens.topBarHeight),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (onMenu != null) {
                 PpfIconButton(Lucide.Menu, stringResource(Res.string.action_open_menu), onMenu, Modifier.testTag(ShellTags.MENU_BUTTON), tint = palette.ink)
             }
-            Wordmark(Modifier.weight(1f).padding(start = if (onMenu != null) 4.dp else 8.dp))
-            // Phones (the bar with the menu): the AIDE button sits in the top bar, where it never
-            // covers a list, a composer or its send button; tablets and computers have it in the rail
-            // and the side bar.
-            if (onMenu != null) HelpButton(Modifier.padding(horizontal = 4.dp), compact = true)
-            PpfIconButton(Lucide.Search, stringResource(Res.string.action_search_soon), onClick = { }, enabled = false)
+            AdaptiveWordmark(Modifier.weight(1f).padding(start = if (onMenu != null) 0.dp else 16.dp, end = 8.dp))
+            // Phones: the AIDE button sits in the top bar, where it never covers a list, a composer or
+            // its send button; tablets and computers have it at the head of the rail and of the side bar.
+            if (onMenu != null) {
+                HelpButton(compact = true)
+            } else {
+                PpfIconButton(Lucide.Search, stringResource(Res.string.action_search_soon), onClick = { }, enabled = false)
+            }
+            MessagesButton(selected == Space.MESSAGES) { onSelect(Space.MESSAGES) }
             BellButton(bell)
-            AvatarButton(account, mySpaceSelected, onMySpace)
+            AvatarButton(account, selected == Space.MON_ESPACE) { onSelect(Space.MON_ESPACE) }
         }
         HorizontalDivider(color = palette.border)
     }
+}
+
+/** The private messages and the rooms, in the top bar of every format (D-215). */
+@Composable
+private fun MessagesButton(selected: Boolean, onClick: () -> Unit) {
+    val palette = PpfTheme.palette
+    PpfIconButton(
+        Lucide.MessageSquare,
+        stringResource(Res.string.action_messages),
+        onClick,
+        // Announced as the current place, like the entries of the bars.
+        Modifier.semantics { this.selected = selected }.testTag(ShellTags.navItem(Space.MESSAGES)),
+        tint = if (selected) palette.brand else palette.inkMuted,
+        selected = selected,
+    )
 }
 
 /** The avatar of the top bar: it opens "Mon espace" (a generic silhouette without an account). */
@@ -788,7 +980,7 @@ private fun AvatarButton(account: AccountUiState.Ready?, selected: Boolean, onCl
         onClick = onClick,
         shape = MaterialTheme.shapes.small,
         colors = IconButtonDefaults.iconButtonColors(contentColor = if (selected) palette.brand else palette.inkMuted),
-        modifier = Modifier.size(44.dp).testTag(ShellTags.navItem(Space.MON_ESPACE)),
+        modifier = Modifier.size(PpfTheme.dimens.iconButton).testTag(ShellTags.navItem(Space.MON_ESPACE)),
     ) {
         if (account != null) {
             Avatar(
@@ -803,19 +995,20 @@ private fun AvatarButton(account: AccountUiState.Ready?, selected: Boolean, onCl
     }
 }
 
-/** The 64 dp bar of wide windows: wordmark, search field, notifications, "Mon espace". */
+/** The bar of wide windows: wordmark, search field, messages, notifications, "Mon espace". */
 @Composable
-private fun DesktopTopBar(account: AccountUiState.Ready?, bell: Bell?, mySpaceSelected: Boolean, onMySpace: () -> Unit) {
+private fun DesktopTopBar(account: AccountUiState.Ready?, bell: Bell?, selected: Space, onSelect: (Space) -> Unit) {
     val palette = PpfTheme.palette
+    val mySpaceSelected = selected == Space.MON_ESPACE
     Column(Modifier.background(palette.surface0)) {
         Row(
-            modifier = Modifier.fillMaxWidth().height(64.dp).padding(start = 24.dp, end = 16.dp),
+            modifier = Modifier.fillMaxWidth().topBarSafeArea().height(PpfTheme.dimens.desktopTopBarHeight).padding(start = 24.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Wordmark(Modifier.width(248.dp), large = true)
+            Wordmark(Modifier.width(PpfTheme.dimens.sideBarWidth - 32.dp), large = true)
             Spacer(Modifier.width(16.dp))
             Row(
-                modifier = Modifier.weight(1f).widthIn(max = 560.dp).heightIn(min = 44.dp)
+                modifier = Modifier.weight(1f).widthIn(max = 560.dp).heightIn(min = PpfTheme.dimens.touchTarget)
                     .background(palette.surface1, CircleShape)
                     .border(1.dp, palette.border, CircleShape)
                     .padding(horizontal = 16.dp),
@@ -826,15 +1019,16 @@ private fun DesktopTopBar(account: AccountUiState.Ready?, bell: Bell?, mySpaceSe
                 Text(stringResource(Res.string.nav_search_soon), style = MaterialTheme.typography.bodyLarge, color = palette.inkSubtle, maxLines = 1)
             }
             Spacer(Modifier.width(16.dp))
+            MessagesButton(selected == Space.MESSAGES) { onSelect(Space.MESSAGES) }
             BellButton(bell)
             Spacer(Modifier.width(8.dp))
             OutlinedButton(
-                onClick = onMySpace,
+                onClick = { onSelect(Space.MON_ESPACE) },
                 shape = CircleShape,
                 border = BorderStroke(1.dp, if (mySpaceSelected) palette.brand else palette.borderStrong),
                 colors = ButtonDefaults.outlinedButtonColors(containerColor = if (mySpaceSelected) palette.brandTint else palette.surface2, contentColor = palette.ink),
                 contentPadding = PaddingValues(start = 6.dp, end = 16.dp),
-                modifier = Modifier.heightIn(min = 44.dp).testTag(ShellTags.navItem(Space.MON_ESPACE)),
+                modifier = Modifier.heightIn(min = PpfTheme.dimens.touchTarget).testTag(ShellTags.navItem(Space.MON_ESPACE)),
             ) {
                 if (account != null) {
                     Avatar(seed = account.publicKey.hex, letters = avatarLetters(account.publicKey.hex), size = 32.dp)

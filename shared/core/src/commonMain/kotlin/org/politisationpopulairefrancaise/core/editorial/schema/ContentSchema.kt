@@ -17,9 +17,16 @@ import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
 enum class EditorialSpace(val id: String) {
     COMPRENDRE("comprendre"),
     VOIR("voir"),
+
+    /**
+     * The editorial contents of « Agir » (AG-62, the follow-ups of a mobilization). Schemas only for now: no
+     * section nor queue of the back-office is registered for it, and the column `editorial_draft.space` of the
+     * server accepts `comprendre` and `voir` only (docs/integration/agir-et-apres.md).
+     */
+    AGIR("agir"),
 }
 
-/** Whether a common field of every article (summary, topics, duration) is required, optional or absent. */
+/** Whether a common field of every article (summary, topics, duration, review date) is required, optional or absent. */
 enum class Presence { REQUIRED, OPTIONAL, ABSENT }
 
 /** One type of editorial content, as the form, the checks and the event builder see it. */
@@ -37,6 +44,13 @@ data class ContentSchema(
     val topics: Presence = Presence.OPTIONAL,
     /** `duration` in minutes, carried by Article.build as `ppf-duration` (courses only). */
     val duration: Presence = Presence.ABSENT,
+    /**
+     * `review_by`, the date by which the team reviews the content (tag `ppf-review-by`, read by
+     * [org.politisationpopulairefrancaise.core.editorial.ReviewDates]; decision of the team lead of 9 November
+     * 2026, with « Voir »): optional for every type. It never hides nor blocks a content; it feeds the follow-up
+     * queue « À revoir » of the editorial sections only.
+     */
+    val reviewBy: Presence = Presence.OPTIONAL,
     /** The specific fields, in the order of the form. The tags follow the order of the entries of the draft. */
     val fields: List<FieldSpec>,
     val body: BodySpec,
@@ -72,8 +86,9 @@ data class ContentSchema(
         const val DURATION: String = "duration"
         const val PUBLISHED_AT: String = "published_at"
         const val UPDATED_AT: String = "updated_at"
+        const val REVIEW_BY: String = "review_by"
 
-        val COMMON_KEYS: List<String> = listOf(SLUG, TITLE, SUMMARY, TOPICS, TYPE, ORIGIN, DURATION, PUBLISHED_AT, UPDATED_AT)
+        val COMMON_KEYS: List<String> = listOf(SLUG, TITLE, SUMMARY, TOPICS, TYPE, ORIGIN, DURATION, PUBLISHED_AT, UPDATED_AT, REVIEW_BY)
     }
 }
 
@@ -90,8 +105,27 @@ data class FieldSpec(
     val tag: String? = null,
     /** Values that write no tag (the default of the field, such as `auto: oui` in the glossary). */
     val silentValues: Set<String> = emptySet(),
+    /**
+     * With [tag] « a » and a [ValueSpec.Single] value: the role written after the address,
+     * `["a", <value>, "", <role>]`. The value is then the full address `kind:pubkey:identifier` of an event that
+     * is not a content of the space under its key (a mobilization of the agenda, kind 31923, by any author; a
+     * demand or a call of a citizen; a block of « Voir » under the key of « Voir »), checked by a
+     * [SchemaCheck] of the schema. Read back by [EditorialEngine.draftOf] through this role (AG-62).
+     */
+    val addressRole: String? = null,
 ) {
+    init {
+        require(addressRole == null || (tag == ADDRESS_TAG && value is ValueSpec.Single)) {
+            "$key: an address role needs the tag \"a\" and a single value"
+        }
+    }
+
     val tagName: String get() = tag ?: "ppf-$key"
+
+    companion object {
+        /** The NIP-01 tag of a link to an addressable event. */
+        const val ADDRESS_TAG: String = "a"
+    }
 }
 
 /** Repetition of a key: ONE (exactly one), OPTIONAL (zero or one), MANY(min, max) (repeated key, one tag each). */

@@ -93,6 +93,10 @@ object SolidarityTags {
     const val FUNDS_CLEAR = "solidarity-funds-clear"
     const val FUNDS_ABOUT = "solidarity-funds-about"
 
+    /** AG-60: the entry of the strike simulator, under the funds, and its button. */
+    const val STRIKE_SIMULATOR = "solidarity-strike-simulator"
+    const val OPEN_STRIKE_SIMULATOR = "solidarity-open-strike-simulator"
+
     // Missions
     const val MISSIONS_INTRO = "solidarity-missions-intro"
     const val SKILL = "solidarity-skill-" // followed by the skill, or "all"
@@ -121,7 +125,9 @@ object SolidarityTags {
  *
  * Whoever manages a fund is looked up in the [directory] of organisations the device holds;
  * [onOpenOrganisation] opens its page there. [onOpenCalls] leads to the calls, where organisations
- * and citizens look for volunteers too. Nothing the user types or picks here leaves the device.
+ * and citizens look for volunteers too. [onOpenStrikeSimulator], when given, adds the entry of the
+ * strike simulator (AG-60) at the end of the funds. Nothing the user types or picks here leaves the
+ * device.
  */
 @Composable
 fun SolidarityScreen(
@@ -132,6 +138,7 @@ fun SolidarityScreen(
     onBack: (() -> Unit)? = null,
     onOpenOrganisation: ((Organisation) -> Unit)? = null,
     onOpenCalls: (() -> Unit)? = null,
+    onOpenStrikeSimulator: (() -> Unit)? = null,
 ) {
     LaunchedEffect(library) { library.ensureStarted() }
     // The managers of the funds are entries of the directory: it loads once, shared with the rest of "Agir".
@@ -160,7 +167,7 @@ fun SolidarityScreen(
         when {
             sideBySide -> Row(Modifier.fillMaxSize()) {
                 Box(Modifier.width(listWidth).fillMaxHeight()) {
-                    SolidarityList(library, organisations, onBack, onOpenCalls, contentPadding = 16.dp)
+                    SolidarityList(library, organisations, onBack, onOpenCalls, contentPadding = 16.dp, onOpenStrikeSimulator = onOpenStrikeSimulator)
                 }
                 VerticalDivider(color = PpfTheme.palette.border)
                 Box(Modifier.weight(1f).fillMaxHeight()) {
@@ -168,7 +175,7 @@ fun SolidarityScreen(
                 }
             }
             fund != null || mission != null -> page(Modifier.fillMaxSize(), library::closeSelection)
-            else -> SolidarityList(library, organisations, onBack, onOpenCalls, contentPadding = if (compact) 16.dp else 24.dp)
+            else -> SolidarityList(library, organisations, onBack, onOpenCalls, contentPadding = if (compact) 16.dp else 24.dp, onOpenStrikeSimulator = onOpenStrikeSimulator)
         }
     }
 }
@@ -209,6 +216,7 @@ private fun SolidarityList(
     onBack: (() -> Unit)?,
     onOpenCalls: (() -> Unit)?,
     contentPadding: Dp,
+    onOpenStrikeSimulator: (() -> Unit)? = null,
 ) {
     val palette = PpfTheme.palette
     val tab = library.tab
@@ -240,7 +248,7 @@ private fun SolidarityList(
             }
         }
         when (tab) {
-            SolidarityTab.FUNDS -> fundItems(library, organisations)
+            SolidarityTab.FUNDS -> fundItems(library, organisations, onOpenStrikeSimulator)
             SolidarityTab.MISSIONS -> missionItems(library, onOpenCalls)
             SolidarityTab.MUTUAL_AID -> mutualAidItems()
         }
@@ -249,7 +257,7 @@ private fun SolidarityList(
 
 // The funds (AG-10)
 
-private fun LazyListScope.fundItems(library: SolidarityLibrary, organisations: List<Organisation>) {
+private fun LazyListScope.fundItems(library: SolidarityLibrary, organisations: List<Organisation>, onOpenStrikeSimulator: (() -> Unit)? = null) {
     val query = library.fundQuery
     val results = library.fundResults
     val territories = library.fundTerritories
@@ -358,6 +366,27 @@ private fun LazyListScope.fundItems(library: SolidarityLibrary, organisations: L
     item(key = "funds-about") {
         InfoBox(Lucide.ShieldCheck, Modifier.widthIn(max = READABLE).padding(top = 8.dp).testTag(SolidarityTags.FUNDS_ABOUT)) {
             Text(stringResource(Res.string.solidarite_funds_about), style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+    if (onOpenStrikeSimulator != null) {
+        // AG-60: the strike simulator, at the end of the funds so that nothing above it moves.
+        item(key = "strike-simulator") {
+            InfoBox(Lucide.ScrollText, Modifier.widthIn(max = READABLE).testTag(SolidarityTags.STRIKE_SIMULATOR)) {
+                Text(
+                    stringResource(Res.string.greve_entry_title),
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.semantics { heading() },
+                )
+                Spacer(Modifier.height(4.dp))
+                Text(stringResource(Res.string.greve_entry_text), style = MaterialTheme.typography.bodyMedium)
+                Spacer(Modifier.height(8.dp))
+                PpfSecondaryButton(
+                    onClick = onOpenStrikeSimulator,
+                    text = stringResource(Res.string.greve_entry_open),
+                    modifier = Modifier.testTag(SolidarityTags.OPEN_STRIKE_SIMULATOR),
+                    small = true,
+                )
+            }
         }
     }
 }

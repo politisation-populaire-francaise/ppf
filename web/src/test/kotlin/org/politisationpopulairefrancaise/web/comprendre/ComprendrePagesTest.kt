@@ -52,7 +52,7 @@ class ComprendrePagesTest {
 
     @Test
     fun theBundledContentsAreAllRead() {
-        assertEquals(7, catalog.fiches.size)
+        assertEquals(20, catalog.fiches.size)
         assertEquals(19, catalog.parcours.size)
         assertEquals(6, catalog.decryptages.size)
         assertEquals(3, catalog.stories.size)
@@ -67,7 +67,7 @@ class ComprendrePagesTest {
         val unsigned = Article.build(stranger.publicKey, "garde-a-vue", "Fausse fiche", "Fausse.", emptyList(), ArticleType.FICHE_PRATIQUE, ContentOrigin.HUMAN, 1_900_000_000, 1_900_000_000, "Texte piégé.")
         val forged = stranger.sign(unsigned)
         val mixed = ComprendreCatalog.fromEvents(events + forged) { it == EditorialTrust.EXAMPLE_EDITOR }
-        assertTrue(mixed.fiche("garde-a-vue")!!.title.startsWith("[EXEMPLE] Garde"))
+        assertEquals("Garde à vue : vos droits", mixed.fiche("garde-a-vue")!!.title)
         // A tampered event of the trusted key is refused too (its signature no longer matches).
         val original = events.first { it.tags.any { t -> t[0] == "d" && t[1] == "garde-a-vue" } }
         val tampered = original.copy(content = "Texte modifié.", createdAt = original.createdAt + 10)
@@ -101,14 +101,38 @@ class ComprendrePagesTest {
         val html = render { ficheDocument(catalog.fiche("garde-a-vue")!!, catalog) }
         checkPage(html)
         listOf("callout callout-en-bref", "callout callout-legal", "callout callout-illegal", "callout callout-conseil").forEach { assertTrue(html.contains(it), it) }
-        assertTrue(html.contains("Contenu d’exemple"))
+        // A real content (owner's decision of 9 November 2026): no example badge, the origin is shown.
+        assertFalse(html.contains("Contenu d’exemple"))
+        assertTrue(html.contains("Rédigé avec l’aide d’une IA"))
         // External addresses: a link marked as leaving the site, without referrer.
-        assertTrue(html.contains("href=\"https://www.legifrance.gouv.fr\" rel=\"noopener noreferrer nofollow external\""))
+        assertTrue(Regex("href=\"https://www\\.legifrance\\.gouv\\.fr[^\"]*\" rel=\"noopener noreferrer nofollow external\"").containsMatchIn(html))
         assertTrue(html.contains("(site extérieur)"))
         val next = html.indexOf("Et maintenant ?")
         val sources = html.indexOf("id=\"sources\"")
         assertTrue(next in 1 until sources, "sources come last")
-        assertTrue(html.indexOf("Rédigé par l’équipe") > sources)
+        assertTrue(html.indexOf("class=\"origin\"") > sources)
+    }
+
+    @Test
+    fun everyContentEndsWithItsLicenceItsReferenceAndItsVerificationCode() {
+        val fiche = catalog.fiche("garde-a-vue")!!
+        val html = render { ficheDocument(fiche, catalog) }
+        checkPage(html)
+        assertTrue(html.indexOf("class=\"origin\"") > html.indexOf("id=\"sources\""), "after the sources")
+        // The licence of the texts of PPF (D-103), a link that leaves the site without referrer.
+        assertTrue(html.contains("Texte sous licence <a href=\"https://creativecommons.org/licenses/by/4.0/deed.fr\" rel=\"noopener noreferrer nofollow external\">"))
+        // « Citer ce contenu » (S-144): the stable address of the page, this version and its fingerprint.
+        assertTrue(html.contains("<summary>Citer ce contenu</summary>"))
+        assertTrue(html.contains("https://politisation-populaire-francaise.org/comprendre/fiches/garde-a-vue"))
+        assertTrue(html.contains("empreinte SHA-256 ${fiche.event.id}, licence CC BY 4.0"))
+        // The code of this version (S-141), to check a printed or copied page.
+        assertTrue(html.contains("<code>${fiche.event.id.take(16)}</code>"))
+        assertTrue(html.contains("href=\"/v/${fiche.event.id.take(16)}\""))
+        // A course too, under its own address.
+        val course = catalog.course("le-referendum")!!
+        val courseHtml = render { parcoursDocument(course, catalog) }
+        assertTrue(courseHtml.contains("https://politisation-populaire-francaise.org/comprendre/parcours/le-referendum"))
+        assertTrue(courseHtml.contains("href=\"/v/${course.article.event.id.take(16)}\""))
     }
 
     @Test

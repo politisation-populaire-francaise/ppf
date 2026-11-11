@@ -39,6 +39,7 @@ import org.politisationpopulairefrancaise.server.backoffice.publicPort
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.events.EventRepository
 import org.politisationpopulairefrancaise.server.events.PublicationPolicy
+import org.politisationpopulairefrancaise.server.agir.collectives.exampleCollectives
 import org.politisationpopulairefrancaise.server.groups.GroupKinds
 import org.politisationpopulairefrancaise.server.revendications.DecisionOutcome
 import org.politisationpopulairefrancaise.server.revendications.ProposalQueue
@@ -93,6 +94,8 @@ fun main() {
     // The development key exists only for this run; it is never written anywhere nor printed.
     val developmentKey = LocalEventSigner(IdentityKeys.generate())
     exampleGroup(developmentKey).forEach(repository::store)
+    // Two example collectifs of Agir (M24) and an event in the name of the first one (DevCollectives.kt).
+    exampleCollectives().forEach(repository::store)
 
     val editors = PublicationPolicy.parseKeys(System.getenv(PublicationPolicy.EDITOR_KEYS_VARIABLE)) +
         seeded.map { it.pubkey } + developmentKey.publicKey.hex

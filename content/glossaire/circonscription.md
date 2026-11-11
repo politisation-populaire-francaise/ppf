@@ -1,6 +1,6 @@
 ---
 slug: glossaire-circonscription
-title: [EXEMPLE] Circonscription
+title: Circonscription
 summary: Territoire dans lequel des électeurs élisent un ou plusieurs représentants. Pour les élections législatives, chaque circonscription élit un député.
 variants: circonscription, circonscriptions, circonscription électorale, circonscriptions électorales, circonscription législative, circonscriptions législatives
 topics: elections
@@ -8,7 +8,7 @@ see_also: glossaire-depute, glossaire-scrutin-majoritaire, glossaire-assemblee-n
 related: parcours:le-role-de-chaque-elu
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Une circonscription est un territoire découpé pour une élection. Les électeurs qui y sont inscrits élisent leur ou leurs représentants.
 
@@ -27,8 +27,8 @@ Exemple : une grande ville peut être découpée en plusieurs circonscriptions l
 
 ## Sources
 
-- [Code électoral, articles L123 à L126 (élection des députés)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148464/)
-- [Code électoral, articles L191 à L192 (conseillers départementaux)](https://www.legifrance.gouv.fr/codes/id/LEGISCTA000027573170/)
-- [Loi n° 77-729 du 7 juillet 1977 relative à l'élection des représentants au Parlement européen](https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006068600/)
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 24 et 34)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Sénat, « Mode d'élection des sénateurs »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html)
+- [Code électoral, articles L123 à L126 (élection des députés)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148464/), consulté le 2026-11-09
+- [Code électoral, articles L191 à L192 (conseillers départementaux)](https://www.legifrance.gouv.fr/codes/id/LEGISCTA000027573170/), consulté le 2026-11-09
+- [Loi n° 77-729 du 7 juillet 1977 relative à l'élection des représentants au Parlement européen](https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006068600/), consulté le 2026-11-09
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 24 et 34)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Sénat, « Mode d'élection des sénateurs »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html), consulté le 2026-11-09

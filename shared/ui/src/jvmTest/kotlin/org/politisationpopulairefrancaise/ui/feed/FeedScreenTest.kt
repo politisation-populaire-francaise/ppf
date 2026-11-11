@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.feed
 
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
@@ -49,6 +51,8 @@ class FeedScreenTest {
     fun bundledPostsAreShownNewestFirstWithoutAccount() = runComposeUiTest {
         val store = LocalEventStore(JvmDatabase.inMemory())
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(AppDependencies(InMemoryIdentityStore(), contentStore = store)) } }
+        // The feed, "Actu", is no longer the first screen (D-215).
+        openSpace(Space.FIL)
         waitForPosts(store)
         assertEquals(5, store.recent(kinds = listOf(1)).size)
         // The [EXEMPLE] marker is shown as a badge, not in the text.
@@ -69,6 +73,8 @@ class FeedScreenTest {
     fun theDemandsViewShowsTheBundledDemands() = runComposeUiTest {
         val store = LocalEventStore(JvmDatabase.inMemory())
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(AppDependencies(InMemoryIdentityStore(), contentStore = store)) } }
+        // The feed, "Actu", is no longer the first screen (D-215).
+        openSpace(Space.FIL)
         waitForPosts(store)
         onNodeWithTag(FeedTags.TAB + FeedFilter.REVENDICATIONS.id).performClick()
         waitForIdle()
@@ -87,6 +93,8 @@ class FeedScreenTest {
         val identity = InMemoryIdentityStore(StoredIdentity.of(phrase.deriveKeys(), phrase))
         val store = LocalEventStore(JvmDatabase.inMemory())
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(AppDependencies(identity, contentStore = store)) } }
+        // The feed, "Actu", is no longer the first screen (D-215).
+        openSpace(Space.FIL)
         waitForPosts(store)
         waitUntil(timeoutMillis = 5_000) { hasNode(FeedTags.COMPOSER) }
 

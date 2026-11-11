@@ -1,6 +1,6 @@
 ---
 slug: je-decouvre
-title: [EXEMPLE] Je découvre : sept jours pour comprendre qui décide
+title: Je découvre : sept jours pour comprendre qui décide
 summary: Sept micro-leçons de deux minutes, une par jour, pour les nouveaux venus : qui décide de quoi, comment une loi est votée, vos droits fondamentaux, voter, agir dans le cadre de la loi, démêler le vrai du faux, puis choisir comment continuer.
 topics: institutions, democratie, elections, droits
 type: parcours
@@ -8,7 +8,7 @@ origin: ai-assisted
 duration: 14
 rhythm: quotidien
 published_at: 2026-11-08
-updated_at: 2026-11-08
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Sept **micro-leçons** d'environ **deux minutes**, une par jour. Chacune se termine par **une question** et renvoie à un parcours plus complet.
@@ -16,8 +16,6 @@ updated_at: 2026-11-08
 - Jours 4 à 6 : **voter**, **agir dans le cadre de la loi** et **vérifier une information** avant de la croire ou de la partager.
 - Jour 7 : **et maintenant ?** S'informer, s'engager, rejoindre ou créer un collectif.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Jour 1 : Qui décide de quoi ?
 
@@ -147,7 +145,7 @@ Pour aller plus loin : les parcours « Les pétitions officielles » et « Le dr
 
 Avant de croire ou de partager une information, trois vérifications prennent une minute.
 
-- **Qui parle ?** Cherchez l'auteur, le site et ses mentions légales. Méfiez-vous des adresses imitées : en 2023, Viginum, le service de l'État qui protège contre les ingérences numériques étrangères, a repéré un faux site copiant un média connu. Les sites de l'administration française se terminent par « .gouv.fr » ou « .fr », jamais par « .gouv.org » ou « .gouv.com ».
+- **Qui parle ?** Cherchez l'auteur, le site et ses mentions légales. Méfiez-vous des adresses imitées : en 2023, Viginum, le service de l'État qui protège contre les ingérences numériques étrangères, a repéré de fausses pages imitant des médias français et des sites du Gouvernement. Les sites de l'administration française se terminent par « .gouv.fr » ou « .fr », jamais par « .gouv.org » ou « .gouv.com ».
 - **De quand ça date ?** Une vieille information peut ressortir comme si elle était nouvelle. Regardez la date et vérifiez si d'autres médias connus en parlent.
 - **D'où vient l'image ?** Une photo est souvent plus ancienne que l'événement qu'elle prétend montrer, ou sortie de son contexte. Une recherche d'image inversée montre où elle a déjà été publiée. Une image peut aussi avoir été fabriquée par une intelligence artificielle.
 
@@ -173,7 +171,7 @@ En six jours, vous avez vu qui décide, comment, et avec quels droits. Voici tro
 
 - **S'informer.** Les parcours de l'espace Comprendre approfondissent chaque sujet en quelques minutes. L'espace Voir rassemble des faits, des chiffres et des textes sourcés.
 - **S'engager.** L'espace Agir présente des mobilisations, des appels et des organisations. Vous pouvez aussi proposer ou soutenir une revendication.
-- **Rejoindre ou créer un collectif.** Une association, c'est deux personnes ou plus qui mettent en commun leurs connaissances ou leur activité, sans chercher à partager des bénéfices (loi du 1er juillet 1901, article 1er). Elle se forme librement, sans autorisation ni déclaration (article 2). Le Conseil constitutionnel range la liberté d'association parmi les principes protégés par la Constitution (décision n° 71-44 DC du 16 juillet 1971).
+- **Rejoindre ou créer un collectif.** Une association, c'est deux personnes ou plus qui mettent en commun, de façon permanente, leurs connaissances ou leur activité, sans chercher à partager des bénéfices (loi du 1er juillet 1901, article 1er). Elle se forme librement, sans autorisation ni déclaration (article 2). Le Conseil constitutionnel range la liberté d'association parmi les principes protégés par la Constitution (décision n° 71-44 DC du 16 juillet 1971).
 
 Pour agir en justice, percevoir des cotisations ou recevoir des dons, une association doit être déclarée et rendue publique (articles 5 et 6). La déclaration se fait au greffe des associations du département, en ligne, sur place ou par courrier ; en Alsace et en Moselle, les règles sont différentes (service-public.gouv.fr).
 
@@ -207,40 +205,44 @@ Pour aller plus loin : le parcours « Se présenter à une élection », et tous
 
 ## Sources
 
-- Constitution du 4 octobre 1958, texte intégral en vigueur (préambule, articles 6, 24, 39, 45, 61, 61-1, 62, 72 et 88-1) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Constitution du 4 octobre 1958, article 10 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527469
-- Déclaration des droits de l'homme et du citoyen de 1789 (articles 1er, 10 et 11) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/declaration-des-droits-de-l-homme-et-du-citoyen-de-1789
-- Préambule de la Constitution du 27 octobre 1946 (alinéas 3, 6, 7, 11 et 13) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946
-- Conseil constitutionnel, « Le bloc de constitutionnalité » (Déclaration de 1789, préambule de 1946 et Charte de l'environnement) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite
-- Conseil d'État, « Question prioritaire de constitutionnalité » (entrée en vigueur le 1er mars 2010) : https://www.conseil-etat.fr/actualites/question-prioritaire-de-constitutionnalite
-- Conseil constitutionnel, décision n° 71-44 DC du 16 juillet 1971 (liberté d'association) : https://www.conseil-constitutionnel.fr/decision/1971/7144DC.htm
-- Ministère de l'Europe et des Affaires étrangères, « La France et la Cour européenne des droits de l'Homme » (Rome, 4 novembre 1950 ; 46 pays ; ratification le 3 mai 1974 ; recours individuel accepté en 1981 ; page mise à jour le 21 juillet 2026) : https://www.diplomatie.gouv.fr/fr/le-ministere-en-action/agir-pour-la-paix-et-le-respect-des-droits-de-l-homme/s-engager-au-sein-d-une-justice-internationale/la-france-et-la-cour-europeenne-des-droits-de-l-homme
-- Cour européenne des droits de l'homme, « Requérants » (délai de quatre mois, siège à Strasbourg) : https://www.echr.coe.int/fr/apply-to-the-court
-- Convention européenne des droits de l'homme, article 35 (épuisement des voies de recours internes, délai de quatre mois) : https://www.echr.coe.int/documents/d/echr/convention_FRA
-- Code civil, article 1er (entrée en vigueur des lois) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006419280
-- Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025) : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
-- Assemblée nationale, « 577 députés » (liste des députés) : https://www.assemblee-nationale.fr/dyn/vos-deputes
-- Assemblée nationale, fiche de synthèse n° 63 « Les questions » (questions écrites publiées au Journal officiel ; juillet 2024) : https://www.assemblee-nationale.fr/dyn/synthese/fonctionnement-assemblee-nationale/evaluation-politiques-publiques-controle-gouvernement/les-questions
-- Ministère chargé des collectivités territoriales, tableau de répartition des compétences (actualisation de juillet 2025 ; Code de l'éducation, articles L212-4, L213-2 et L214-6 ; CGCT, article L2224-13) : https://www.collectivites-locales.gouv.fr/files/files/3.%20Animer%20les%20territoires/Tableau%20r%C3%A9paratition%20des%20comp%C3%A9tences_actualisation%20au%20220825.pdf
-- EUR-Lex, synthèse « Répartition des compétences au sein de l'Union européenne » (traité sur l'Union européenne, article 5 ; traité sur le fonctionnement de l'Union européenne, article 3) : https://eur-lex.europa.eu/FR/legal-content/summary/division-of-competences-within-the-european-union.html
-- Code électoral, article L17 (date limite d'inscription), version en vigueur au 8 novembre 2026 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964790
-- Code électoral, article L163-2 (fausses informations avant une élection), version en vigueur au 8 novembre 2026 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039278631
-- Service-public.gouv.fr, « Listes électorales : en cas de première inscription » (vérifié le 3 mars 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1367
-- Service-public.gouv.fr, « Inscription sur les listes électorales : des changements à partir de juillet 2026 » (18 juin 2026, décret n° 2026-493 du 12 juin 2026) : https://www.service-public.gouv.fr/particuliers/actualites/A18967
-- Service-public.gouv.fr, « Vote par procuration » (vérifié le 2 février 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1604
-- Service-public.gouv.fr, « Élections municipales » (vérifié le 8 avril 2026 ; vote des citoyens européens) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1952
-- Service-public.gouv.fr, « Élections européennes » (vérifié le 14 août 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1944
-- Service-public.gouv.fr, « Élections législatives » (mandat de cinq ans, sauf dissolution) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1943
-- Service-public.gouv.fr, « Élections régionales et élections départementales » (vérifié le 6 novembre 2026 ; prochaines élections prévues en mars 2028) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1958
-- Service-public.gouv.fr, « Quelles sont les dates des prochaines élections ? » (vérifié le 21 octobre 2026) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1939
-- Sénat, « Mode d'élection des sénateurs » (mandat de six ans, suffrage universel indirect) : https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html
-- Sénat, Instruction générale du Bureau, chapitre « Pétitions » (mise à jour du 1er octobre 2025) : https://www.senat.fr/reglement/reglement80.html
+- Constitution du 4 octobre 1958, texte intégral en vigueur (préambule, articles 6, 24, 39, 45, 61, 61-1, 62, 72 et 88-1), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Constitution du 4 octobre 1958, article 10, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527469
+- Déclaration des droits de l'homme et du citoyen de 1789 (articles 1er, 10 et 11), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/declaration-des-droits-de-l-homme-et-du-citoyen-de-1789
+- Préambule de la Constitution du 27 octobre 1946 (alinéas 3, 6, 7, 11 et 13), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946
+- Conseil constitutionnel, « Le bloc de constitutionnalité » (Déclaration de 1789, préambule de 1946 et Charte de l'environnement), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite
+- Conseil d'État, « Question prioritaire de constitutionnalité » (entrée en vigueur le 1er mars 2010), consulté le 2026-11-09 : https://www.conseil-etat.fr/actualites/question-prioritaire-de-constitutionnalite
+- Conseil constitutionnel, décision n° 71-44 DC du 16 juillet 1971 (liberté d'association), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/1971/7144DC.htm
+- Ministère de l'Europe et des Affaires étrangères, « La France et la Cour européenne des droits de l'Homme » (Rome, 4 novembre 1950 ; 46 pays ; ratification le 3 mai 1974 ; recours individuel accepté en 1981 ; page mise à jour le 21 juillet 2026), consulté le 2026-11-09 : https://www.diplomatie.gouv.fr/fr/le-ministere-en-action/agir-pour-la-paix-et-le-respect-des-droits-de-l-homme/s-engager-au-sein-d-une-justice-internationale/la-france-et-la-cour-europeenne-des-droits-de-l-homme
+- Cour européenne des droits de l'homme, « Requérants » (délai de quatre mois, siège à Strasbourg), consulté le 2026-11-09 : https://www.echr.coe.int/fr/apply-to-the-court
+- Convention européenne des droits de l'homme, article 35 (épuisement des voies de recours internes, délai de quatre mois), consulté le 2026-11-09 : https://www.echr.coe.int/documents/d/echr/convention_FRA
+- Code civil, article 1er (entrée en vigueur des lois), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006419280
+- Assemblée nationale, fiche de synthèse n° 46 « La procédure législative » (14 mai 2025), consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/contenu/telechargement/629113/file/Fiche%2046%20-%20Proc%C3%A9dure%20l%C3%A9gislative.pdf
+- Assemblée nationale, « 577 députés » (liste des députés), consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/vos-deputes
+- Assemblée nationale, fiche de synthèse n° 63 « Les questions » (questions écrites publiées au Journal officiel ; juillet 2024), consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/synthese/fonctionnement-assemblee-nationale/evaluation-politiques-publiques-controle-gouvernement/les-questions
+- Ministère chargé des collectivités territoriales, tableau de répartition des compétences (actualisation de juillet 2025 ; Code de l'éducation, articles L212-4, L213-2 et L214-6 ; CGCT, article L2224-13), consulté le 2026-11-09 : https://www.collectivites-locales.gouv.fr/files/files/3.%20Animer%20les%20territoires/Tableau%20r%C3%A9paratition%20des%20comp%C3%A9tences_actualisation%20au%20220825.pdf
+- EUR-Lex, synthèse « Répartition des compétences au sein de l'Union européenne » (traité sur l'Union européenne, article 5 ; traité sur le fonctionnement de l'Union européenne, article 3), consulté le 2026-11-09 : https://eur-lex.europa.eu/FR/legal-content/summary/division-of-competences-within-the-european-union.html
+- Code électoral, article L17 (date limite d'inscription), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964790
+- Code électoral, article L163-2 (fausses informations avant une élection), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039278631
+- Service-public.gouv.fr, « Listes électorales : en cas de première inscription » (page vérifiée par l'administration le 3 mars 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1367
+- Service-public.gouv.fr, « Inscription sur les listes électorales : des changements à partir de juillet 2026 » (18 juin 2026, décret n° 2026-493 du 12 juin 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/actualites/A18967
+- Service-public.gouv.fr, « Vote par procuration » (page vérifiée par l'administration le 2 février 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1604
+- Service-public.gouv.fr, « Élections municipales » (page vérifiée par l'administration le 8 avril 2026 ; vote des citoyens européens), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1952
+- Service-public.gouv.fr, « Élections : droit de vote d'un citoyen européen en France » (municipales et européennes), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1937
+- Service-public.gouv.fr, « Élections européennes » (page vérifiée par l'administration le 14 août 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1944
+- Service-public.gouv.fr, « Élections législatives » (mandat de cinq ans, sauf dissolution), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1943
+- Service-public.gouv.fr, « Élections régionales et élections départementales » (page vérifiée par l'administration le 6 novembre 2026 ; prochaines élections prévues en mars 2028), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1958
+- Service-public.gouv.fr, « Quelles sont les dates des prochaines élections ? » (page vérifiée par l'administration le 21 octobre 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1939
+- Sénat, « Mode d'élection des sénateurs » (mandat de six ans, suffrage universel indirect), consulté le 2026-11-09 : https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html
+- Sénat, Instruction générale du Bureau, chapitre « Pétitions » (mise à jour du 1er octobre 2025), consulté le 2026-11-09 : https://www.senat.fr/reglement/reglement80.html
 - CESE, « Lancement de la plateforme de pétitions citoyennes du CESE » (12 mai 2023) : https://www.lecese.fr/print/pdf/node/17449
+- CESE, « Règlement des pétitions » (150 000 signatures de personnes de 16 ans et plus, françaises ou résidant régulièrement en France, recueillies en un an), consulté le 2026-11-09 : https://petitions.lecese.fr/pages/reglement
 - Règlement de l'Assemblée nationale, articles 147 à 151 (pétitions) : https://www.assemblee-nationale.fr/dyn/17/divers/texte_reference/02_reglement_assemblee_nationale.html
-- Code de la sécurité intérieure, articles L211-1 à L211-4 (manifestations sur la voie publique), version en vigueur au 8 novembre 2026 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000025503132/LEGISCTA000025508382/
-- Code de la sécurité intérieure, article L211-2 (déclaration préalable) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038382528
-- Code pénal, article 322-1 (destructions et dégradations) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047053456
+- Assemblée nationale, plateforme des pétitions, « Parcours d'une pétition » (renvoi en commission, classement ou examen), consulté le 2026-11-09 : https://petitions.assemblee-nationale.fr/pages/parcours_petition
+- Code de la sécurité intérieure, articles L211-1 à L211-4 (manifestations sur la voie publique), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000025503132/LEGISCTA000025508382/
+- Code de la sécurité intérieure, article L211-2 (déclaration préalable), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000038382528
+- Code pénal, article 322-1 (destructions et dégradations), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000047053456
 - CLEMI, « Lutter contre les manipulations de l'information en famille » (fiche rédigée avec Viginum, mise en ligne le 11 mai 2026) : https://www.clemi.fr/familles/publications/grandir-dans-un-monde-connecte-ca-sapprend/apprendre-sinformer-et-developper-son-esprit-critique/lutter-contre-les-manipulations-de-linformation-en-famille
+- Ministère de l'Europe et des Affaires étrangères, « Déclaration de Catherine Colonna : ingérences numériques étrangères » (13 juin 2023 ; campagne détectée par Viginum, fausses pages usurpant l'identité de médias nationaux et de sites gouvernementaux), consulté le 2026-11-09 : https://www.diplomatie.gouv.fr/fr/presse-et-ressources/decouvrir-et-informer/actualites/declaration-de-catherine-colonna-ingerences-numeriques-etrangeres-detection-par-la-france-d-une
 - DGCCRF, « Démarches administratives : faites attention aux faux sites » (adresses en « .gouv.fr » ou « .fr ») : https://www.economie.gouv.fr/dgccrf/les-fiches-pratiques/demarches-administratives-faites-attention-aux-faux-sites
-- Loi du 1er juillet 1901 relative au contrat d'association (articles 1er, 2, 5 et 6) : https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006069570
-- Service-public.gouv.fr, « Création d'une association » (déclaration au greffe des associations, publication gratuite au Journal officiel des associations) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1119
+- Loi du 1er juillet 1901 relative au contrat d'association (articles 1er, 2, 5 et 6), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006069570
+- Service-public.gouv.fr, « Création d'une association » (déclaration au greffe des associations, publication gratuite au Journal officiel des associations), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1119

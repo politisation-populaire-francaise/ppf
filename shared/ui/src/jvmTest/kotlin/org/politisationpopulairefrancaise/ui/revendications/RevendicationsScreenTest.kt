@@ -22,6 +22,7 @@ import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -33,7 +34,7 @@ class RevendicationsScreenTest {
 
     private fun ComposeUiTest.openWall(dependencies: AppDependencies, width: Int, height: Int) {
         setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(dependencies) } }
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         waitForIdle()
         waitUntil(timeoutMillis = 10_000) {
             onAllNodesWithTag(RevendicationTags.CARD + "transparence-agenda-elus").fetchSemanticsNodes().isNotEmpty()

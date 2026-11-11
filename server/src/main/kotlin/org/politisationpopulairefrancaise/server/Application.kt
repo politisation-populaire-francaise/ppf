@@ -28,6 +28,7 @@ import org.politisationpopulairefrancaise.server.agir.AgirSetup
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
 import org.politisationpopulairefrancaise.server.agir.agendaSource
 import org.politisationpopulairefrancaise.server.agir.agirApi
+import org.politisationpopulairefrancaise.server.agir.collectives.CollectiveRules
 import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonyQueue
 import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySetup
 import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySpace
@@ -63,6 +64,7 @@ import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsPurge
 import org.politisationpopulairefrancaise.server.editorial.EditorialDraftsSection
 import org.politisationpopulairefrancaise.server.editorial.EditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.EditorialQueue
+import org.politisationpopulairefrancaise.server.editorial.EditorialReviewDueQueue
 import org.politisationpopulairefrancaise.server.editorial.EditorialReviews
 import org.politisationpopulairefrancaise.server.editorial.UnpluggedEditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.EditorialSigning
@@ -426,15 +428,20 @@ fun Application.module(
         )
         // The queue editorial.comprendre (counts, deadlines and levels of the dashboard).
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.COMPRENDRE, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
+        // « À revoir »: the published contents whose review date (ppf-review-by) is past or within 60 days.
+        teamBackOffice.queues.register(EditorialReviewDueQueue(EditorialSpace.COMPRENDRE, publishedContents, teamBackOffice.clock))
         // The same circuit for Voir (step 6), on the schemas of core/voir/VoirSchemas.kt; its preview is the page of the site.
         teamBackOffice.sections.register(
             EditorialDraftsSection(EditorialSpace.VOIR, drafts, reviews, publishedContents, teamBackOffice.clock, publisher),
         )
         teamBackOffice.queues.register(EditorialQueue(EditorialSpace.VOIR, reviews) { account -> teamBackOffice.member(account)?.pseudonym })
+        teamBackOffice.queues.register(EditorialReviewDueQueue(EditorialSpace.VOIR, publishedContents, teamBackOffice.clock))
         // A draft never submitted and unchanged for 180 days is deleted (docs/REGISTRE_DONNEES.md).
         EditorialDraftsPurge(drafts).start(this, 24.hours, log)
     }
     val limits = PostLimits(relay)
+    // The store of the ballot boxes (D-110), before the rooms: a collectif (M24, D-087) is founded by an account validated in person.
+    val urneStore = dataSource?.takeIf { urne.seeds != null }?.let { UrneStore(it, LegalRegister(policy::isEditor)) }
     // Rooms (NIP-29): directory, roles and moderation (D-131), guardrails of the creation (D-132).
     val groups = repository?.let {
         GroupDirectory(
@@ -446,12 +453,12 @@ fun Application.module(
                 isTrusted = policy::isEditor,
                 youngAccountDays = GroupGuardrails.youngAccountDaysFromEnvironment(),
             ),
+            collectives = CollectiveRules(urneStore, accountTypes, compromised),
         )
     }
     // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published; the
     // demands in debate get theirs, closed when they leave the debate.
     // Only a natural person votes (D-116): the editorial keys and the organisations of the directory are refused.
-    val urneStore = dataSource?.takeIf { urne.seeds != null }?.let { UrneStore(it, LegalRegister(policy::isEditor)) }
     val urnes = urneStore?.let { store ->
         val organisations = VerifiedOrganisations(store.dataSource, policy::isEditor)
         UrneService.create(

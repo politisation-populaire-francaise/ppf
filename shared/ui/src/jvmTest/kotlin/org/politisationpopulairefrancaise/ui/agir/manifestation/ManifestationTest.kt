@@ -277,7 +277,7 @@ class ManifestationTest {
         onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.MANIFESTATION.id).performScrollTo().performClick()
         waitForIdle()
         awaitTag(ManifestationTags.SCREEN)
-        onNodeWithText("[EXEMPLE] Textes à relire par un avocat").assertExists()
+        onNodeWithText("Rédigé par l’IA").assertExists()
 
         // The checklist is ticked in memory.
         onNodeWithTag(ManifestationTags.CHECK + 1).performScrollTo().assertIsOff().performClick()

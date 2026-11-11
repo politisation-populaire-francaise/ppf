@@ -958,6 +958,13 @@ a.gloss:hover {
   overflow-wrap: anywhere;
 }
 
+/* The code to check a version of a content (S-141), under the reference; printed with the page. */
+.verify-line {
+  color: var(--ink-subtle);
+  font-size: 0.875rem;
+  overflow-wrap: anywhere;
+}
+
 /* Teaching sheets for the classroom (CO-13, D-096): the questions and the answers for the teacher. */
 .licence {
   color: var(--ink-subtle);
@@ -972,6 +979,27 @@ a.gloss:hover {
 .teaching-answer-list h3 {
   margin: 0 0 0.25rem;
   font-size: 1rem;
+}
+
+/* Workshops of popular education (CO-24): the cards to cut out, to lead the workshop without a screen. */
+.workshop-card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  gap: 1rem;
+  margin: 1rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.workshop-card {
+  padding: 1rem;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-md);
+  overflow-wrap: anywhere;
+}
+
+.workshop-card .kicker {
+  margin: 0 0 0.5rem;
 }
 
 /*
@@ -1013,6 +1041,10 @@ a.gloss:hover {
   .skip-link {
     display: none;
   }
+  /* The reference opens on a screen only: on paper, the licence and the verification code stay. */
+  .cite {
+    display: none;
+  }
   .teaching-answers {
     break-before: page;
     page-break-before: always;
@@ -1021,6 +1053,19 @@ a.gloss:hover {
   .teaching-answer-list > li {
     break-inside: avoid;
     page-break-inside: avoid;
+  }
+  /* The cards of a workshop start on a new page, two by row, never cut between two pages. */
+  .workshop-cards {
+    break-before: page;
+    page-break-before: always;
+  }
+  .workshop-card-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+  .workshop-card {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    border-radius: 0;
   }
 }
 

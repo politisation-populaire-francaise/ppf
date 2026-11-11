@@ -1,6 +1,6 @@
 ---
 slug: glossaire-conseil-d-etat
-title: [EXEMPLE] Conseil d'État
+title: Conseil d'État
 summary: Institution qui conseille le Gouvernement sur ses projets de loi, d'ordonnance et de décret, et qui est la plus haute juridiction pour les litiges avec l'administration.
 variants: Conseil d'État, Conseil d'Etat
 topics: institutions, justice
@@ -8,7 +8,7 @@ see_also: glossaire-decret, glossaire-conseil-constitutionnel, glossaire-projet-
 related: qui-decide:manifester-qui-autorise
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le Conseil d'État a deux grands rôles.
 
@@ -22,6 +22,6 @@ Exemple : le 6 juillet 2020, pendant la crise sanitaire, le juge des référés 
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 37, 38, 39 et 61-1)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Conseil d'État, « Missions du Conseil d'État »](https://www.conseil-etat.fr/qui-sommes-nous/le-conseil-d-etat/missions)
-- [Conseil d'État, « Le juge des référés du Conseil d'État suspend l'obligation d'obtenir une autorisation avant d'organiser une manifestation » (6 juillet 2020)](https://www.conseil-etat.fr/actualites/le-juge-des-referes-du-conseil-d-etat-suspend-l-obligation-d-obtenir-une-autorisation-avant-d-organiser-une-manifestation)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 37, 38, 39 et 61-1)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Conseil d'État, « Missions du Conseil d'État »](https://www.conseil-etat.fr/qui-sommes-nous/le-conseil-d-etat/missions), consulté le 2026-11-09
+- [Conseil d'État, « Le juge des référés du Conseil d'État suspend l'obligation d'obtenir une autorisation avant d'organiser une manifestation » (6 juillet 2020)](https://www.conseil-etat.fr/actualites/le-juge-des-referes-du-conseil-d-etat-suspend-l-obligation-d-obtenir-une-autorisation-avant-d-organiser-une-manifestation), consulté le 2026-11-09

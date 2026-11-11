@@ -3,7 +3,9 @@ package org.politisationpopulairefrancaise.web.comprendre
 import kotlinx.html.FlowContent
 import kotlinx.html.a
 import kotlinx.html.article
+import kotlinx.html.code
 import kotlinx.html.dd
+import kotlinx.html.details
 import kotlinx.html.div
 import kotlinx.html.dl
 import kotlinx.html.dt
@@ -15,9 +17,11 @@ import kotlinx.html.li
 import kotlinx.html.nav
 import kotlinx.html.ol
 import kotlinx.html.p
+import kotlinx.html.pre
 import kotlinx.html.script
 import kotlinx.html.section
 import kotlinx.html.span
+import kotlinx.html.summary
 import kotlinx.html.ul
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.comprendre.ComprendreLinks
@@ -27,8 +31,13 @@ import org.politisationpopulairefrancaise.core.comprendre.GlossaryEntry
 import org.politisationpopulairefrancaise.core.comprendre.TeachingLevel
 import org.politisationpopulairefrancaise.core.comprendre.Verdict
 import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.Citation
+import org.politisationpopulairefrancaise.core.editorial.ContentCheck
+import org.politisationpopulairefrancaise.core.editorial.ContentLicenses
+import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.voir.PublicRole
 import org.politisationpopulairefrancaise.web.voir.BadgeTone
+import org.politisationpopulairefrancaise.web.voir.externalLink
 import org.politisationpopulairefrancaise.web.voir.originLine
 
 // ---------------------------------------------------------------------------------------------
@@ -75,12 +84,14 @@ internal val PublicRole.comprendreLabel: String get() = when (this) {
 internal val TeachingLevel.label: String get() = when (this) {
     TeachingLevel.LYCEE -> "Lycée"
     TeachingLevel.CYCLE_4 -> "Cycle 4 (collège)"
+    TeachingLevel.ATELIER -> "Atelier d’éducation populaire"
 }
 
 /** The level of a teaching sheet, inside a sentence: « fiche pédagogique (lycée) ». */
 internal val TeachingLevel.inSentence: String get() = when (this) {
     TeachingLevel.LYCEE -> "lycée"
     TeachingLevel.CYCLE_4 -> "cycle 4"
+    TeachingLevel.ATELIER -> "atelier"
 }
 
 /**
@@ -91,10 +102,11 @@ internal const val TEACHING_NEUTRALITY: String =
     "L’enseignant reste libre de ses choix pédagogiques. Cette fiche respecte la neutralité de l’enseignement public : elle présente des faits et des débats, jamais une consigne de vote ni une position partisane."
 
 /**
- * The licence of the texts of PPF (D-103: CC BY 4.0, attribution « Politisation Populaire Française »), written
- * here until the common mechanism of "Voir" (`ContentLicenses.of(type)`) reaches main.
+ * The notice of every animation sheet of a workshop of popular education (CO-24; docs/integration/comprendre-enseignants.md,
+ * section 6): a fixed text, like [TEACHING_NEUTRALITY], for the associations, unions, social centres and libraries.
  */
-internal const val TEACHING_LICENCE: String = "Texte sous licence CC BY 4.0, Politisation Populaire Française"
+internal const val WORKSHOP_NEUTRALITY: String =
+    "L’animatrice ou l’animateur reste libre de ses choix. Cette fiche présente des faits et des débats, jamais une consigne de vote ni une position partisane."
 
 /** One official directory to find one's elected officials (option C, as `OfficialDirectories` of the application). */
 internal class OfficialDirectory(val url: String, val title: String, val text: String)
@@ -162,7 +174,9 @@ internal fun FlowContent.contentBadges(article: Article, extra: (FlowContent.() 
     div(classes = "badges") {
         extra?.invoke(this)
         if (isExample(article)) span(classes = BadgeTone.WARNING.css) { +"Contenu d’exemple" }
-        if (article.origin == org.politisationpopulairefrancaise.core.editorial.ContentOrigin.AI_ASSISTED) {
+        if (isUnreviewedAiPosition(article)) {
+            span(classes = BadgeTone.WARNING.css) { +CAP_POSITION_LABEL }
+        } else if (article.origin == org.politisationpopulairefrancaise.core.editorial.ContentOrigin.AI_ASSISTED) {
             span(classes = BadgeTone.NEUTRAL.css) { +"Rédigé avec l’aide d’une IA" }
         }
     }
@@ -227,10 +241,47 @@ internal fun FlowContent.glossaryTerms(renderer: ComprendreRenderer) {
     }
 }
 
-/** The origin of the text and its dates, as on the pages of "Voir". */
-internal fun FlowContent.comprendreOrigin(article: Article) {
+/**
+ * The end of every published page of "Comprendre": the origin of the text and its dates, as on the pages of
+ * "Voir"; its licence (D-103, `ContentLicenses.of(type)`, none for a text whose rights stay with its author);
+ * « Citer ce contenu » (S-144) and the verification code of this version (S-141), printed with the page so
+ * that a printed or copied sheet can be checked on `/v/<code>`. [path] is the page of the content (null:
+ * no reference); [consultedOn] the day of the reader. Never on a preview: a draft has no published version.
+ */
+internal fun FlowContent.comprendreOrigin(article: Article, path: String? = ComprendreLinks.pathOf(article), consultedOn: CivilDate = parisToday()) {
+    if (isUnreviewedAiPosition(article)) p(classes = "origin") { +"$CAP_POSITION_LABEL." }
     originLine(article)
+    ContentLicenses.of(article.type)?.let { license ->
+        p(classes = "licence") {
+            +"Texte sous licence "
+            externalLink(license.url, license.shortName)
+            +", ${ContentLicenses.ATTRIBUTION}."
+        }
+    }
+    if (path != null) comprendreCite(article, ComprendreLinks.urlOf(path), consultedOn)
 }
+
+/** « Citer ce contenu » (S-144), selectable without script, then the code to check this version (S-141). */
+internal fun FlowContent.comprendreCite(article: Article, url: String, consultedOn: CivilDate) {
+    val citation = Citation.of(article, url, consultedOn)
+    details(classes = "cite") {
+        summary { +"Citer ce contenu" }
+        p { +citation.text }
+        p(classes = "muted") { +"La même référence au format CSL-JSON, pour un logiciel de bibliographie (Zotero, par exemple) :" }
+        pre { code { +citation.cslJson } }
+    }
+    val verification = ContentCheck.codeOf(article.event)
+    p(classes = "verify-line") {
+        +"Code de vérification : "
+        code { +verification }
+        +". "
+        a(href = "/v/$verification") { +"Vérifier que ce contenu vient de PPF et n’a pas été modifié" }
+    }
+}
+
+/** The day of the reader, in France, for « consulté le » of a reference. */
+internal fun parisToday(): CivilDate =
+    java.time.LocalDate.now(java.time.ZoneId.of("Europe/Paris")).let { CivilDate(it.year, it.monthValue, it.dayOfMonth) }
 
 /** The reading body of a content, a card of the page. */
 internal fun FlowContent.readingBody(block: FlowContent.() -> Unit) {
@@ -247,3 +298,7 @@ internal fun FlowContent.offlineScript() {
 }
 
 internal const val PWA_SCRIPT: String = "/static/pwa.js"
+
+/** A text of the series « Le cap » that is a position of PPF written with the help of an AI, not yet reviewed (D-212). */
+internal fun isUnreviewedAiPosition(article: Article): Boolean =
+    org.politisationpopulairefrancaise.core.comprendre.CapText.from(article)?.isUnreviewedAiPosition == true

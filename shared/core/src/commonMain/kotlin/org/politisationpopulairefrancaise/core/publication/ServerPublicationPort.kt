@@ -376,6 +376,9 @@ class ServerPublicationPort(
             "successor_taken" -> RejectionReason.SUCCESSOR_TAKEN
             "invalid_commitment" -> RejectionReason.INVALID_COMMITMENT
             "invalid_notice" -> RejectionReason.INVALID_NOTICE
+            "collective_needs_verified" -> RejectionReason.COLLECTIVE_NEEDS_VERIFIED
+            "collective_immutable" -> RejectionReason.COLLECTIVE_IMMUTABLE
+            "collective_role_required" -> RejectionReason.COLLECTIVE_ROLE_REQUIRED
             else -> RejectionReason.REFUSED
         }
 

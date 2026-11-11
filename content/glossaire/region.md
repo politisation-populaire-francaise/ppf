@@ -1,6 +1,6 @@
 ---
 slug: glossaire-region
-title: [EXEMPLE] Région
+title: Région
 summary: Collectivité territoriale la plus étendue, administrée par le conseil régional élu pour six ans. Elle a notamment la charge des lycées et soutient le développement économique.
 variants: région, régions, conseil régional, conseils régionaux, conseiller régional, conseillers régionaux, conseillère régionale, conseillères régionales
 topics: collectivites
@@ -8,7 +8,7 @@ see_also: glossaire-departement, glossaire-commune, glossaire-collectivite-terri
 related: parcours:le-role-de-chaque-elu, qui-decide:transports-du-quotidien, qui-decide:ecole
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 La région est la collectivité territoriale qui couvre le plus grand territoire. Elle couvre en général plusieurs départements.
 
@@ -24,7 +24,7 @@ Exemple : pour une question sur les bâtiments d'un lycée public, c'est le cons
 
 ## Sources
 
-- [Code général des collectivités territoriales, article L4221-1, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045210137)
-- [Code électoral, articles L338 et L338-1](https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006148519/)
-- [Service-public.gouv.fr, « Élections départementales et régionales »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1958)
-- [Conseil constitutionnel, « 1982-2022 : quarante ans de décentralisation en France » (Titre VII, octobre 2022)](https://www.conseil-constitutionnel.fr/publications/titre-vii/1982-2022-quarante-ans-de-decentralisation-en-france)
+- [Code général des collectivités territoriales, article L4221-1, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045210137), consulté le 2026-11-09
+- [Code électoral, articles L338 et L338-1](https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006148519/), consulté le 2026-11-09
+- [Service-public.gouv.fr, « Élections départementales et régionales »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1958), consulté le 2026-11-09
+- [Conseil constitutionnel, « 1982-2022 : quarante ans de décentralisation en France » (Titre VII, octobre 2022)](https://www.conseil-constitutionnel.fr/publications/titre-vii/1982-2022-quarante-ans-de-decentralisation-en-france), consulté le 2026-11-09

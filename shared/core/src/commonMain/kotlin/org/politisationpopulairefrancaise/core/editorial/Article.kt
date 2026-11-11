@@ -77,6 +77,13 @@ enum class ArticleType(val tagValue: String) {
     FICHE_PEDAGOGIQUE("fiche-pedagogique"),
 
     /**
+     * A sourced follow-up of a past mobilization (AG-62 « Et après ? »): an answer of an elected official, an
+     * announcement, a retreat, a bill filed, a court decision, linked to the mobilizations it follows and to the
+     * demands, calls and chronology it concerns; read by `core.agir.followups.FollowUp`.
+     */
+    SUITE("suite"),
+
+    /**
      * A page of « Transparence de PPF » (M34, PP-01, D-104): an instance, an important decision, the annual
      * accounts or a report of moderation and claims, read by core.voir.TransparencyEntry.
      */
@@ -108,6 +115,12 @@ enum class ArticleType(val tagValue: String) {
      * collectivity, its registered voters, where to sign, the counts and what became of it. PPF collects no signature.
      */
     PETITION_LOCALE("petition-locale"),
+
+    /**
+     * A text of the series « Le cap du mouvement » (docs/ROADMAP-MVP1.md, section 5; D-200): short, sourced, linked
+     * to an action; sourced facts or a position of PPF (`ppf-nature`), read by `core.comprendre.CapText`.
+     */
+    CAP("cap"),
     ;
 
     companion object {
