@@ -30,6 +30,7 @@ private val spaceDescriptions: Map<Space, String> = mapOf(
     Space.AGIR to "Se mobiliser, s’organiser, s’entraider, témoigner, communiquer.",
     Space.DECIDER to "Revendiquer, faire campagne, obliger les élus à s’engager, décider ensemble.",
     Space.MON_ESPACE to "Votre tableau de bord personnel : votre territoire, vos suivis, vos votes. Tout reste sur votre appareil.",
+    Space.APPELS to "Les appels à la grève, à manifester, à soutenir, à bloquer : qui appelle, où, quand, et comment répondre.",
 )
 
 /**

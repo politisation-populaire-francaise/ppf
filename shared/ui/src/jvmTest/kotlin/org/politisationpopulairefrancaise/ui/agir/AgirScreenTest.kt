@@ -200,7 +200,7 @@ class AgirScreenTest {
     }
 
     @Test
-    fun theShellLeadsToAgirOnADesktopAndFromTheMenuOfAPhone() {
+    fun theShellLeadsToAgirOnADesktopAndFromTheBottomBarOfAPhone() {
         runComposeUiTest {
             setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(AgirFixtures.dependencies()) } }
             onNodeWithTag(ShellTags.navItem(Space.AGIR)).performClick()
@@ -210,8 +210,7 @@ class AgirScreenTest {
         }
         runComposeUiTest {
             setContent { Box(Modifier.requiredSize(360.dp, 740.dp)) { PpfApp(AgirFixtures.dependencies()) } }
-            onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
-            waitForIdle()
+            // D-215: Agir is in the bottom bar of phones.
             onNodeWithTag(ShellTags.navItem(Space.AGIR)).performClick()
             waitForIdle()
             mainClock.advanceTimeBy(2_000)

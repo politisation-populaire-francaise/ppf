@@ -27,6 +27,7 @@ import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
 import org.politisationpopulairefrancaise.ui.feed.FeedTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -47,6 +48,8 @@ class FlowsTest {
 
     private fun ComposeUiTest.launch(dependencies: AppDependencies, width: Int = 1000, height: Int = 740): LocalEventStore {
         setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(dependencies) } }
+        // The feed, "Actu", is no longer the first screen (D-215).
+        openSpace(Space.FIL)
         val store = dependencies.contentStore!!
         waitUntil(timeoutMillis = 10_000) { store.recent(kinds = listOf(1)).size == 5 }
         waitForIdle()

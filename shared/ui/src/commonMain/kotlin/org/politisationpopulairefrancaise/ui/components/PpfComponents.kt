@@ -74,7 +74,7 @@ fun PpfCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     selected: Boolean = false,
-    contentPadding: PaddingValues = PaddingValues(16.dp),
+    contentPadding: PaddingValues = PaddingValues(PpfTheme.dimens.cardPadding),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val palette = PpfTheme.palette
@@ -295,7 +295,7 @@ private fun RowScope.ButtonContent(icon: ImageVector?, text: String) {
     Text(text, style = MaterialTheme.typography.labelLarge, maxLines = 1)
 }
 
-/** A 44 dp icon button with 10 dp corners; [badge] adds the small accent dot (unread). */
+/** An icon button of the touch target of the tokens (48 dp) with 10 dp corners; [badge] adds the small accent dot (unread). */
 @Composable
 fun PpfIconButton(
     icon: ImageVector,
@@ -305,17 +305,25 @@ fun PpfIconButton(
     enabled: Boolean = true,
     tint: Color = PpfTheme.palette.inkMuted,
     badge: Boolean = false,
+    /** The current place (the messages of the top bar while they are open): a tinted background. */
+    selected: Boolean = false,
 ) {
     val palette = PpfTheme.palette
-    Box(modifier.size(44.dp)) {
+    val dimens = PpfTheme.dimens
+    // The touch target of the tokens (48 dp, never less: WCAG 2.2, 2.5.8).
+    Box(modifier.size(dimens.iconButton)) {
         IconButton(
             onClick = onClick,
             enabled = enabled,
             shape = MaterialTheme.shapes.small,
-            colors = IconButtonDefaults.iconButtonColors(contentColor = tint, disabledContentColor = tint.copy(alpha = 0.38f)),
-            modifier = Modifier.size(44.dp),
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = if (selected) palette.brandTint else Color.Transparent,
+                contentColor = tint,
+                disabledContentColor = tint.copy(alpha = 0.38f),
+            ),
+            modifier = Modifier.size(dimens.iconButton),
         ) {
-            Icon(icon, contentDescription = contentDescription, modifier = Modifier.size(22.dp))
+            Icon(icon, contentDescription = contentDescription, modifier = Modifier.size(dimens.barIcon))
         }
         if (badge) {
             Box(
@@ -452,7 +460,12 @@ fun SettingRow(label: String, divider: Boolean = true, trailing: @Composable Row
 @Composable
 fun PageHeader(title: String, description: String? = null, modifier: Modifier = Modifier) {
     Column(modifier) {
-        Text(title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
+        val dimens = PpfTheme.dimens
+        Text(
+            title,
+            style = MaterialTheme.typography.headlineMedium.copy(fontSize = dimens.pageTitleSize, lineHeight = dimens.pageTitleLineHeight),
+            modifier = Modifier.semantics { heading() },
+        )
         if (description != null) {
             Spacer(Modifier.height(6.dp))
             Text(description, style = MaterialTheme.typography.bodyLarge, color = PpfTheme.palette.inkMuted)

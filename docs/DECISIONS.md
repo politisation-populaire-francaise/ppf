@@ -1449,6 +1449,38 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Raison : c'est la seule option qui donne le rendu attendu (fonds jusqu'au bord, contenus protégés, pas de double marge) sans toucher aux tailles ni à la navigation, et avec le moins de lignes changées dans la coquille.
 - Limites signalées : rien n'a été vérifié sur un vrai téléphone dans cette session (liste des points dans `docs/GUIDE_PROPRIETAIRE.md`, section 2) ; en paysage sur un téléphone, le clavier laisse très peu de hauteur aux écrans ; l'écran de verrouillage par code est un dialogue plein écran dont le fond s'arrête aux barres du système ; le jour où iOS sera compilé, vérifier que l'hôte iOS ne remonte pas en plus l'écran au-dessus du clavier.
 
+## D-181 (2026-11-11) Bouton AIDE : plus petit, le mot seul, à plat
+
+- Contexte : le bouton AIDE de la barre du haut (icône de bouée, anneau clair, ombre) dominait trop la barre d'un téléphone de 360 dp et laissait peu de place au nom.
+- Choix (propriétaire, ses mots, relayés par le chef d'équipe) : « il faut réduire le bouton aide il est trop gros, et pas assez beau ni moderne visuellement, fais plus simple sans icon et flat avec le meme rouge que present dans le reste de l'appli ».
+- Mise en œuvre (`HelpButton`, `ui/agir/manifestation/HelpSheet.kt`, avec l'accord de la session Agir) : le mot « AIDE » seul, en gras, sans icône ; aucune ombre, aucun anneau ni contour ; fond `accent` (#C8213A en clair), texte `onAccent` (contraste AA) ; coins de 10 dp comme les autres boutons ; dessin de 36 dp de haut dans la barre du haut, 40 dp sur le rail et la barre latérale ; zone tactile de 48 dp au moins (taille minimale des composants Material) ; libellé du lecteur d'écran inchangé (« AIDE : urgence, avocat, point de ralliement »). Même bouton partout.
+
+## D-182 (2026-11-11) Le nom en entier dans la barre du haut, jamais coupé
+
+- Contexte : le nom était coupé sur tous les téléphones (« Politisati / on » à 360 dp). Une première correction le remplaçait par « PPF » quand il ne tenait pas.
+- Choix (propriétaire, par le chef d'équipe) : pas d'abréviation, le nom s'écrit en entier (son système de design ne tranche pas l'usage public de « PPF »).
+- Mise en œuvre (`components/AdaptiveWordmark.kt`) : la première forme qui tient dans la place laissée par les boutons est retenue : deux lignes à 14 sp ; un mot par ligne à 14 sp ; un mot par ligne à 12 sp ; puis, avec une grande police sur un petit téléphone, un mot par ligne à une taille qui ne suit plus le réglage de police (le nom devient un logo, lu en entier par le lecteur d'écran), enfin un peu plus petite. C'est le texte réellement dessiné qui dit s'il déborde : la police de l'identité arrive après la première image, une mesure faite avant serait fausse. Vérifié par `TopBarTest` à 360, 384 et 411 dp et aux polices 1,0, 1,15 et 1,3 : nom complet, rien de coupé, aucun chevauchement, chaque bouton de 48 dp au moins.
+- Pour libérer la place (décision technique) : la barre n'a plus de marge extérieure (les boutons de 48 dp laissent déjà de l'air autour de leurs icônes) et la loupe « Recherche (bientôt) », inactive, passe dans le menu du téléphone.
+
+## D-183 (2026-11-11) Mise en œuvre de la barre du bas et de la barre du haut (D-215)
+
+- Décisions techniques prises en autonomie, sans objection du chef d'équipe :
+  - nouvel espace `Space.APPELS` (identifiant stable `appels`) : le mur des appels d'Agir, le même écran que dans Agir, sans flèche retour ; un appel lu sur une affiche depuis la carte y mène ;
+  - `Space.quickAccess` = En direct, Actu, Carte, Agir, Appels ; `Space.default` = En direct (premier écran après le tutoriel, et destination du geste retour) ; « Actu » est un libellé, l'identifiant `fil` ne change pas ;
+  - `Space.more` = Voir, Comprendre, Décider, Revendications : le menu du téléphone, puis, sous les entrées quotidiennes, le rail et la barre latérale ; la messagerie est dans la barre du haut de tous les formats ; Mon espace derrière l'avatar. Un test vérifie que chaque espace reste accessible (D-210) ;
+  - une fenêtre de moins de 480 dp de haut n'est jamais « large » (`WindowClass.of`) : un téléphone de 384 ou 412 dp couché (plus de 840 dp de large) prend le rail et non la disposition « ordinateur » ; dans une fenêtre basse, la barre du haut du téléphone (menu, AIDE) et un rail court des cinq entrées quotidiennes, toutes visibles sans défiler ;
+  - couleur du texte fournie par la coquille sur tous les formats (les titres sortaient en noir sur fond sombre sur le rail et la barre latérale) ;
+  - jetons de dimensions `PpfDimens` (`ui/theme/PpfDimens.kt`, `PpfTheme.dimens`) : hauteurs des barres, zones tactiles, tailles du nom ; la barre du bas passe de 76 à 64 dp (une ligne de libellé, deux si la police l'exige) ; boutons d'icône de 44 à 48 dp.
+- Le site reprend le même ordre dans sa navigation (« Actu » et « Appels » compris).
+
+## D-184 (2026-11-11) Tutoriel du premier lancement : mise en œuvre (D-211, D-216)
+
+- Écrans dans l'ordre fixé par la propriétaire, textes rédigés par l'IA (D-212), dans `strings_tutoriel.xml`, mention « Présentation rédigée par l'IA, en attente de relecture » ; déroulé envoyé au chef d'équipe pour la propriétaire.
+- Honnêteté : ce qui n'est pas encore codé est dans un encadré « Bientôt » (rues bloquées sur la carte ; salons privés ou réservés, messagerie sans réseau ; alerte aux street medics, alerte à un avocat bénévole). « Mes proches à mobiliser » (Agir, entré le 11 novembre 2026) et les guides « S'engager en politique » (Comprendre, entrés le même jour) sont présentés comme disponibles sur l'écran Agir.
+- « Passer » toujours visible en haut, « Précédent » et « Suivant » en bas, « Étape N sur 7 » annoncé au lecteur d'écran, geste retour vers l'écran précédent, fonctionne sans réseau, trois formats et grande police (testé). Dernier écran : « Je veux… » au-dessus de quatre boutons, deux par deux, l'un sous l'autre si un libellé ne tient pas ; « agir » et « m'allier » ouvrent Agir (la page « Se réunir » d'Agir, `AgirRoute.GATHER`, sera branchée à son arrivée dans `main`), « donner mon avis » Décider, « comprendre » Comprendre.
+- État « vu » (décision technique) : un fichier vide `tutorial-seen` dans le dossier privé de l'application (Android et ordinateur), rien d'autre, jamais envoyé ; fourni par les hôtes (`AppDependencies.tutorial`), absent dans les tests et les aperçus (pas de tutoriel). Il est oublié par l'effacement rapide (partie `ui-tutorial`) : un appareil effacé s'ouvre sur le tutoriel, comme un neuf. Pas de table ni de migration.
+- Rejouable depuis Mon espace et la feuille AIDE (« Revoir la présentation de l'application »).
+
 ## D-210 (2026-11-11) Cap du MVP 1 : Agir, puis Décider, puis Comprendre, et une ergonomie irréprochable
 
 - Contexte : la feuille de route suivie depuis le 5 novembre avançait sur tous les modules à la fois, sans version utilisable. Le mouvement social en cours rend urgente une première version réellement utile. Demande de la propriétaire du 11 novembre 2026 : « j'ai besoin d'un mvp 1 fonctionnel et ergonomique le plus rapidement possible ».

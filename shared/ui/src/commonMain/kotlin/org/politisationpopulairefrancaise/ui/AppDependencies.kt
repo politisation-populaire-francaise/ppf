@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui
 
+import org.politisationpopulairefrancaise.ui.onboarding.TutorialStore
 import org.politisationpopulairefrancaise.core.agir.security.DeviceSecurityStorage
 import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.device.DeviceErasable
@@ -80,6 +81,8 @@ class AppDependencies(
     val erasables: DeviceEraseRegistry = DeviceEraseRegistry(),
     /** Closes the application after the quick erase; null where it cannot (tests, previews). */
     val closeApplication: (() -> Unit)? = null,
+    /** Remembers that the tutorial of the first launch was seen (D-216); null: no tutorial (tests, previews). */
+    val tutorial: TutorialStore? = null,
 ) {
     companion object {
         /** For tests and previews: nothing survives the process, no contents, no network. */
@@ -102,6 +105,7 @@ class AppDependencies(
             openDataTrust: OpenDataTrust = OpenDataKeys.testBuilds(),
             securityStorage: DeviceSecurityStorage? = null,
             closeApplication: (() -> Unit)? = null,
+            tutorial: TutorialStore? = null,
         ): AppDependencies = AppDependencies(
             identityStore = identityStore,
             openDataTrust = openDataTrust,
@@ -118,6 +122,7 @@ class AppDependencies(
             urneRemote = urneRemote,
             securityStorage = securityStorage,
             closeApplication = closeApplication,
+            tutorial = tutorial,
         )
     }
 }

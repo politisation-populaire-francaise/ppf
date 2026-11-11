@@ -32,6 +32,7 @@ import org.politisationpopulairefrancaise.ui.revendications.ManageViewsTags
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationTags
 import org.politisationpopulairefrancaise.ui.revendications.propose.ProposalTags
 import org.politisationpopulairefrancaise.ui.theme.LightPalette
+import org.politisationpopulairefrancaise.ui.theme.PpfDimens
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import kotlin.math.abs
 import kotlin.test.Test
@@ -54,19 +55,26 @@ class ShellSafeAreaTest {
         FakeDevice("statut-haut-gestes", width = 360, height = 800, statusBar = 48, navigationBar = 16),
     )
 
-    /** The rail: windows from 600 to 839 dp wide, a 360 dp phone on its side among them. */
+    /** The rail with every entry: windows from 600 dp wide and 480 dp high (tablets). */
     private val tablets = listOf(
-        FakeDevice.landscapeButtons,
-        FakeDevice("paysage-360-gestes", width = 800, height = 360, statusBar = 24, navigationBar = 24, cutoutLeft = 36),
         FakeDevice("tablette-portrait", width = 700, height = 1000, statusBar = 24, navigationBar = 48),
     )
 
-    /** The side bar: windows of 840 dp and more, which a 384 or 412 dp phone on its side also is. */
+    /** The short rail and the menu: phones on their side, less than 480 dp high, even wider than 840 dp. */
+    private val lowWindows = listOf(
+        FakeDevice.landscapeButtons,
+        FakeDevice("paysage-360-gestes", width = 800, height = 360, statusBar = 24, navigationBar = 24, cutoutLeft = 36),
+        FakeDevice.landscapeGestures,
+    )
+
+    /** The side bar: windows of 840 dp and more, at least 480 dp high. */
     private val wide = listOf(
         FakeDevice("tablette-paysage", width = 1280, height = 800, statusBar = 24, navigationBar = 48),
         FakeDevice("tablette-paysage-encoche", width = 1000, height = 740, statusBar = 32, navigationBar = 24, navigationBarRight = 48, cutoutLeft = 32),
-        FakeDevice.landscapeGestures,
     )
+
+    private val dimens = PpfDimens()
+    private val bottomBar = dimens.bottomBarHeight.value.toInt()
 
     /** The application in the window of [device], in the light theme whatever the theme of the computer that runs the test. */
     private fun onDevice(
@@ -131,7 +139,7 @@ class ShellSafeAreaTest {
         onDevice(device) {
             onNodeWithTag(ShellTags.SHELL_COMPACT).assertExists()
             // The top bar: its 56 dp row starts right under the status bar, its background covers the status bar.
-            for (tag in listOf(ShellTags.MENU_BUTTON, ManifestationTags.HELP_BUTTON, ShellTags.NOTIFICATIONS, ShellTags.navItem(Space.MON_ESPACE))) {
+            for (tag in listOf(ShellTags.MENU_BUTTON, ManifestationTags.HELP_BUTTON, ShellTags.navItem(Space.MESSAGES), ShellTags.NOTIFICATIONS, ShellTags.navItem(Space.MON_ESPACE))) {
                 val rect = bounds(tag)
                 assertInSafeArea(device, rect, tag)
                 assertTrue(rect.bottom.value <= device.statusBar + 56 + 0.6f, "${device.name}, $tag: below the 56 dp row of the top bar ($rect)")
@@ -139,19 +147,19 @@ class ShellSafeAreaTest {
             assertDp(device.statusBar + 28, bounds(ShellTags.MENU_BUTTON).let { (it.top.value + it.bottom.value) / 2 }, "${device.name}, centre of the menu button")
             assertBarBackground(device, device.width / 2, 2, "status bar")
 
-            // The bottom bar: its 76 dp row ends right above the navigation bar, its background covers it.
+            // The bottom bar: its row ends right above the navigation bar, its background covers it.
             val bar = bounds(ShellTags.BOTTOM_BAR)
-            assertDp(device.safeBottom - 76, bar.top.value, "${device.name}, top of the bottom bar")
+            assertDp(device.safeBottom - bottomBar, bar.top.value, "${device.name}, top of the bottom bar")
             assertDp(device.safeBottom, bar.bottom.value, "${device.name}, bottom of the bottom bar")
             for (space in Space.quickAccess) assertInSafeArea(device, bounds(ShellTags.navItem(space)), "entry ${space.id}")
             assertBarBackground(device, device.width / 2, device.height - 2, "navigation bar")
 
-            // The screen: exactly between the two bars (56 dp and 76 dp, one divider each), nothing taken twice.
+            // The screen: exactly between the two bars (one divider each), nothing taken twice.
             val content = bounds(ShellTags.CONTENT)
             assertDp(0, content.left.value, "${device.name}, left of the screen")
             assertDp(device.width, content.right.value, "${device.name}, right of the screen")
             assertDp(device.statusBar + 57, content.top.value, "${device.name}, top of the screen")
-            assertDp(device.safeBottom - 77, content.bottom.value, "${device.name}, bottom of the screen")
+            assertDp(device.safeBottom - bottomBar - 1, content.bottom.value, "${device.name}, bottom of the screen")
         }
     }
 
@@ -160,7 +168,7 @@ class ShellSafeAreaTest {
         val device = FakeDevice.galaxy384
         onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
         settle()
-        for (space in Space.pillars) assertInSafeArea(device, bounds(ShellTags.navItem(space)), "pillar ${space.id}")
+        for (space in Space.more) assertInSafeArea(device, bounds(ShellTags.navItem(space)), "entry of the menu ${space.id}")
         val disclaimer = onNodeWithText("Plateforme citoyenne indépendante, sans lien avec l’État ni le gouvernement.").getUnclippedBoundsInRoot()
         assertDp(device.safeBottom - 12, disclaimer.bottom.value, "bottom of the disclaimer of the menu")
         // The sheet of the menu itself covers the whole height, status bar included.
@@ -191,13 +199,13 @@ class ShellSafeAreaTest {
             assertBarBackground(device, 2, device.statusBar + 57 + 150, "rail beside the camera hole")
             val help = bounds(ManifestationTags.HELP_BUTTON)
             assertInSafeArea(device, help, "help button of the rail")
-            for (space in Space.quickAccess + Space.pillars) {
+            for (space in Space.quickAccess + Space.more) {
                 val entry = bounds(ShellTags.navItem(space))
                 assertTrue(entry.left.value >= device.safeLeft - 0.6f, "${device.name}, entry ${space.id}: under the camera hole ($entry)")
             }
             onNodeWithTag(ShellTags.NAV_RAIL).performSemanticsAction(SemanticsActions.ScrollBy) { it(0f, 10_000f) }
             waitForIdle()
-            assertInSafeArea(device, bounds(ShellTags.navItem(Space.pillars.last())), "last entry of the rail, scrolled to its end")
+            assertInSafeArea(device, bounds(ShellTags.navItem(Space.more.last())), "last entry of the rail, scrolled to its end")
 
             // The screen: beside the rail, under the top bar, out of the side buttons and of the navigation bar.
             val content = bounds(ShellTags.CONTENT)
@@ -205,6 +213,47 @@ class ShellSafeAreaTest {
             assertDp(device.statusBar + 57, content.top.value, "${device.name}, top of the screen")
             assertDp(device.safeRight, content.right.value, "${device.name}, right of the screen")
             assertDp(device.safeBottom, content.bottom.value, "${device.name}, bottom of the screen")
+        }
+    }
+
+    @Test
+    fun lowWindowsShowTheFiveDailyEntriesWithoutScrolling() = lowWindows.forEach { device ->
+        onDevice(device) {
+            // A phone on its side, even wider than 840 dp: the top bar of phones and a short rail, never the side bar.
+            onNodeWithTag(ShellTags.SHELL_MEDIUM).assertExists()
+            onNodeWithTag(ShellTags.NAV_DRAWER).assertDoesNotExist()
+            for (tag in listOf(ShellTags.MENU_BUTTON, ManifestationTags.HELP_BUTTON, ShellTags.navItem(Space.MESSAGES), ShellTags.NOTIFICATIONS, ShellTags.navItem(Space.MON_ESPACE))) {
+                val rect = bounds(tag)
+                assertInSafeArea(device, rect, tag)
+                assertTrue(rect.bottom.value <= device.statusBar + 56 + 0.6f, "${device.name}, $tag: below the 56 dp row of the top bar ($rect)")
+            }
+            assertBarBackground(device, device.width / 2, 2, "status bar")
+            assertBarBackground(device, 2, device.statusBar + 28, "top bar beside the camera hole")
+
+            val rail = bounds(ShellTags.NAV_RAIL)
+            assertDp(0, rail.left.value, "${device.name}, left of the rail")
+            assertDp(device.statusBar + 57, rail.top.value, "${device.name}, top of the rail")
+            // Each of the five entries whole, in the safe area, at least 48 dp high, without scrolling.
+            for (space in Space.quickAccess) {
+                val entry = bounds(ShellTags.navItem(space))
+                assertInSafeArea(device, entry, "entry ${space.id} of the short rail")
+                assertTrue(entry.bottom.value <= device.safeBottom + 0.6f, "${device.name}, entry ${space.id}: visible without scrolling ($entry)")
+                assertTrue(entry.bottom.value - entry.top.value >= 48 - 0.6f, "${device.name}, entry ${space.id}: a 48 dp target ($entry)")
+            }
+
+            val content = bounds(ShellTags.CONTENT)
+            assertTrue(content.left.value >= rail.right.value, "${device.name}: the screen starts under the rail ($content, rail $rail)")
+            assertDp(device.statusBar + 57, content.top.value, "${device.name}, top of the screen")
+            assertDp(device.safeRight, content.right.value, "${device.name}, right of the screen")
+            assertDp(device.safeBottom, content.bottom.value, "${device.name}, bottom of the screen")
+
+            // The rest is in the menu, beside the camera hole.
+            onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
+            settle()
+            for (space in Space.more) {
+                val entry = bounds(ShellTags.navItem(space))
+                assertTrue(entry.left.value >= device.safeLeft - 0.6f, "${device.name}, menu entry ${space.id}: under the camera hole ($entry)")
+            }
         }
     }
 
@@ -226,12 +275,12 @@ class ShellSafeAreaTest {
             assertDp(device.height, sideBar.bottom.value, "${device.name}, bottom of the side bar")
             assertBarBackground(device, 2, device.height - 2, "side bar under the navigation bar")
             assertInSafeArea(device, bounds(ManifestationTags.HELP_BUTTON), "help button of the side bar")
-            for (space in Space.quickAccess + Space.pillars) {
+            for (space in Space.quickAccess + Space.more) {
                 val entry = bounds(ShellTags.navItem(space))
                 assertTrue(entry.left.value >= device.safeLeft - 0.6f, "${device.name}, entry ${space.id}: under the camera hole ($entry)")
             }
-            // On a phone on its side the entries scroll: the last one, scrolled to, is above the disclaimer.
-            val last = ShellTags.navItem(Space.pillars.last())
+            // In a low window the entries scroll: the last one, scrolled to, is above the disclaimer.
+            val last = ShellTags.navItem(Space.more.last())
             onNodeWithTag(last).performScrollTo()
             waitForIdle()
             assertInSafeArea(device, bounds(last), "last entry of the side bar, scrolled to")
@@ -269,7 +318,7 @@ class ShellSafeAreaTest {
     fun proposalFormStaysAboveTheKeyboard() {
         val device = FakeDevice.galaxy360.copy(keyboard = 320)
         onDevice(device, ::withAccount) {
-            onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+            openSpace(Space.REVENDICATIONS)
             awaitTag(RevendicationTags.PROPOSE)
             onAllNodesWithTag(RevendicationTags.PROPOSE).onFirst().performScrollTo().performClick()
             awaitTag(ProposalTags.TITLE)
@@ -291,7 +340,7 @@ class ShellSafeAreaTest {
         // padding (12 dp, then 8 dp) above the navigation bar, not two bars above it.
         val device = FakeDevice.galaxy384
         onDevice(device, ::withDatabase) {
-            onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+            openSpace(Space.REVENDICATIONS)
             awaitTag(RevendicationTags.FILTERS)
             onNodeWithTag(RevendicationTags.FILTERS).performClick()
             settle()
@@ -310,7 +359,7 @@ class ShellSafeAreaTest {
         // With the keyboard (the field of the searched words): the actions rise above it.
         val typing = device.copy(keyboard = 330)
         onDevice(typing, ::withDatabase) {
-            onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+            openSpace(Space.REVENDICATIONS)
             awaitTag(RevendicationTags.FILTERS)
             onNodeWithTag(RevendicationTags.FILTERS).performClick()
             settle()
@@ -341,7 +390,7 @@ class ShellSafeAreaTest {
         onDevice(phone, safeArea = false) {
             val content = bounds(ShellTags.CONTENT)
             assertDp(57, content.top.value, "top of the screen")
-            assertDp(700 - 77, content.bottom.value, "bottom of the screen")
+            assertDp(700 - bottomBar - 1, content.bottom.value, "bottom of the screen")
             assertDp(700, bounds(ShellTags.BOTTOM_BAR).bottom.value, "bottom of the bottom bar")
             assertDp(28, bounds(ShellTags.MENU_BUTTON).let { (it.top.value + it.bottom.value) / 2 }, "centre of the menu button")
         }

@@ -3,7 +3,11 @@ package org.politisationpopulairefrancaise.ui.groups
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.SemanticsActions
 import androidx.compose.ui.test.ComposeUiTest
+import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.assertIsEnabled
+import androidx.compose.ui.test.performSemanticsAction
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.hasTestTag
@@ -75,6 +79,18 @@ class RoomModerationScreenTest {
 
     private fun ComposeUiTest.count(tag: String) = onAllNodesWithTag(tag).fetchSemanticsNodes().size
 
+    /**
+     * Presses the button [tag] of a menu or of a dialog once it is on screen and enabled, through its
+     * click action rather than a touch at its centre: a touch sent while the popup window of the menu or
+     * of the dialog was still being placed was lost at random, and the test then waited a minute for a
+     * readmission that was never sent (11 November 2026).
+     */
+    private fun ComposeUiTest.tap(tag: String) {
+        waitUntil(timeoutMillis = WAIT_MILLIS) { runCatching { onNodeWithTag(tag).assertIsDisplayed().assertIsEnabled() }.isSuccess }
+        onNodeWithTag(tag).performSemanticsAction(SemanticsActions.OnClick)
+        waitForIdle()
+    }
+
     private fun otherMessageId(server: RoomsServer) = server.stored.single { it.content == OTHER_TEXT }.id
 
     private fun ComposeUiTest.openMenuOf(messageId: String) {
@@ -93,8 +109,7 @@ class RoomModerationScreenTest {
         onNodeWithTag(ModerationTags.MENU_ADMIN).assertExists()
         onNodeWithTag(ModerationTags.MENU_MODERATOR).assertExists()
         assertEquals(0, count(ModerationTags.MENU_READMIT))
-        onNodeWithTag(ModerationTags.MENU_EXCLUDE).performClick()
-        waitForIdle()
+        tap(ModerationTags.MENU_EXCLUDE)
 
         // Public and signed, the safe choice first; the reason is mandatory.
         awaitTag(ModerationTags.DIALOG)
@@ -103,13 +118,11 @@ class RoomModerationScreenTest {
         val cancelTop = onNodeWithTag(ModerationTags.DIALOG_CANCEL).fetchSemanticsNode().boundsInRoot.top
         val confirmTop = onNodeWithTag(ModerationTags.DIALOG_CONFIRM).fetchSemanticsNode().boundsInRoot.top
         assertTrue(cancelTop < confirmTop, "the safe choice comes first")
-        onNodeWithTag(ModerationTags.DIALOG_CONFIRM).performClick()
-        waitForIdle()
+        tap(ModerationTags.DIALOG_CONFIRM)
         awaitTag(ModerationTags.DIALOG_REASON_MISSING)
         assertTrue(server.published.none { it.kind == RoomModeration.REMOVE_USER }, "nothing sent without a reason")
         onNodeWithTag(ModerationTags.DIALOG_REASON).performTextInput("[EXEMPLE] Propos hors charte")
-        onNodeWithTag(ModerationTags.DIALOG_CONFIRM).performClick()
-        waitForIdle()
+        tap(ModerationTags.DIALOG_CONFIRM)
         waitUntil(timeoutMillis = WAIT_MILLIS) { server.stored.any { it.kind == RoomModeration.REMOVE_USER } }
         val exclusion = server.stored.single { it.kind == RoomModeration.REMOVE_USER }
         assertEquals(RoomsFixtures.ownKey, exclusion.pubkey)
@@ -119,13 +132,18 @@ class RoomModerationScreenTest {
 
         // The menu now offers to readmit.
         openMenuOf(messageId)
-        onNodeWithTag(ModerationTags.MENU_READMIT).performClick()
-        waitForIdle()
+        tap(ModerationTags.MENU_READMIT)
         awaitTag(ModerationTags.DIALOG)
-        onNodeWithTag(ModerationTags.DIALOG_CONFIRM).performClick()
-        waitForIdle()
+        tap(ModerationTags.DIALOG_CONFIRM)
+        // The readmission is dated after the exclusion, even within the same second (GroupsLibrary.moderationTime).
         waitUntil(timeoutMillis = WAIT_MILLIS) { server.stored.any { it.kind == RoomModeration.PUT_USER } }
+        assertTrue(server.stored.single { it.kind == RoomModeration.PUT_USER }.createdAt > exclusion.createdAt, "readmitted after the exclusion")
         assertEquals(listOf(listOf("h", MINE), listOf("p", RoomsFixtures.other.publicKey.hex)), server.stored.single { it.kind == RoomModeration.PUT_USER }.tags)
+        // The test ends once the screen is done with the readmission (dialog closed, room read again), like the
+        // other tests of this class: ending while the sending coroutine still ran left it uncompleted, at random,
+        // and the test failed after a minute (UncompletedCoroutinesError, seen on 11 November 2026).
+        waitUntil(timeoutMillis = WAIT_MILLIS) { count(ModerationTags.DIALOG) == 0 }
+        waitForIdle()
     }
 
     @Test

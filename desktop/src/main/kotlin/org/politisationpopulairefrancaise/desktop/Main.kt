@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.desktop
 
+import org.politisationpopulairefrancaise.ui.onboarding.TutorialStore
+import java.io.File
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Window
 import androidx.compose.ui.window.application
@@ -52,6 +54,8 @@ fun main(args: Array<String>) {
         urneRemote = urneRemote,
         // The lock of the application and the quick erase (M33: S-43, S-44).
         securityStorage = FileDeviceSecurityStorage(dataDirectory.resolve(FileDeviceSecurityStorage.FILE_NAME)),
+        // The tutorial of the first launch (D-216): seen or not, kept on the computer only.
+        tutorial = FileTutorialStore(dataDirectory.resolve("tutorial-seen").toFile()),
         closeApplication = { exitProcess(0) },
     )
     // What the host itself keeps, for the quick erase: the crash report.
@@ -64,5 +68,22 @@ fun main(args: Array<String>) {
         ) {
             PpfApp(dependencies, crashReport = pendingCrash)
         }
+    }
+}
+
+/**
+ * The tutorial of the first launch was seen (D-216): one empty file in the private directory of the
+ * application, nothing else, never sent. Erased by the quick erase (the tutorial then shows again).
+ */
+private class FileTutorialStore(private val file: File) : TutorialStore {
+    override fun seen(): Boolean = file.exists()
+
+    override fun markSeen() {
+        file.parentFile?.mkdirs()
+        file.writeText("")
+    }
+
+    override fun forget() {
+        check(!file.exists() || file.delete()) { "tutorial flag not erased" }
     }
 }

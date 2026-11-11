@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.app
 
+import org.politisationpopulairefrancaise.ui.onboarding.TutorialStore
 import android.Manifest
 import android.content.pm.PackageManager
 import android.content.res.Configuration
@@ -56,6 +57,8 @@ class MainActivity : ComponentActivity() {
             openDataTrust = if (BuildConfig.BUILD_TYPE == "release") OpenDataKeys.release() else OpenDataKeys.testBuilds(),
             // The lock of the application and the quick erase (M33: S-43, S-44, S-45).
             securityStorage = AndroidDeviceSecurityStorage(applicationContext),
+            // The tutorial of the first launch (D-216): seen or not, kept on the phone only.
+            tutorial = FileTutorialStore(File(filesDir, "tutorial-seen")),
             closeApplication = {
                 finishAndRemoveTask()
                 Process.killProcess(Process.myPid())
@@ -94,5 +97,22 @@ class MainActivity : ComponentActivity() {
     override fun onConfigurationChanged(newConfig: Configuration) {
         super.onConfigurationChanged(newConfig)
         enableEdgeToEdge()
+    }
+}
+
+/**
+ * The tutorial of the first launch was seen (D-216): one empty file in the private directory of the
+ * application, nothing else, never sent. Erased by the quick erase (the tutorial then shows again).
+ */
+private class FileTutorialStore(private val file: File) : TutorialStore {
+    override fun seen(): Boolean = file.exists()
+
+    override fun markSeen() {
+        file.parentFile?.mkdirs()
+        file.writeText("")
+    }
+
+    override fun forget() {
+        check(!file.exists() || file.delete()) { "tutorial flag not erased" }
     }
 }
