@@ -88,6 +88,23 @@ fun Route.deciderPages(source: DeciderSource, voir: VoirSource? = null, clock: C
                 call.respondHtml { pacteDocument(pacte, board) }
             }
         }
+        get("/${DeciderMoreLinks.COMPARATOR}/{slug}") {
+            val catalog = source.catalog()
+            val sheet = catalog.comparators.firstOrNull { it.article.slug == call.parameters["slug"] }
+            if (sheet == null) call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() } else call.respondHtml { comparatorDocument(catalog.grid(sheet, voir?.catalog() ?: VoirCatalog.EMPTY)) }
+        }
+        get("/${DeciderMoreLinks.ELECTIONS}/{slug}") {
+            val election = source.catalog().elections.firstOrNull { it.article.slug == call.parameters["slug"] }
+            if (election == null) call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() } else call.respondHtml { electionDocument(election) }
+        }
+        get("/${DeciderMoreLinks.CONSULTATIONS}/{slug}") {
+            val consultation = source.catalog().consultations.firstOrNull { it.article.slug == call.parameters["slug"] }
+            if (consultation == null) call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() } else call.respondHtml { consultationDocument(consultation, today()) }
+        }
+        get("/${DeciderMoreLinks.LETTERS}/{slug}") {
+            val letter = source.catalog().letters.firstOrNull { it.article.slug == call.parameters["slug"] }
+            if (letter == null) call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() } else call.respondHtml { letterDocument(letter) }
+        }
         get("/{rest...}") { call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() } }
     }
     // The wall of the demands, readable without script (D-152): the demands of the movement first.
@@ -124,15 +141,23 @@ fun HTML.deciderHomeDocument(
         p(classes = "lead") { +"Les pétitions officielles relayées par PPF et la Constitution Citoyenne et Démocratique proposée aux candidats. PPF n’adopte rien : ce sont les votes des citoyens qui choisissent." }
         if (catalog.isEmpty) p(classes = "notice") { +"Aucun contenu publié pour l’instant." }
         val pactes = catalog.pactes
-        if (pactes.isNotEmpty()) {
-            pageSection("pacte", "Constitution Citoyenne et Démocratique") {
-                pactes.forEach { pacte -> pacteCard(pacte) }
-            }
+        pageSection("pacte", "Constitution Citoyenne et Démocratique") {
+            if (pactes.isEmpty()) p(classes = "muted") { +"Aucune Constitution Citoyenne et Démocratique publiée pour l’instant." }
+            pactes.forEach { pacte -> pacteCard(pacte) }
         }
-        if (deliberations.isNotEmpty()) {
-            pageSection("deliberation", "Délibération citoyenne sur les mesures") {
-                deliberations.forEach { deliberationCard(it, nowSeconds) }
+        pageSection("deliberation", "Délibération citoyenne sur les mesures") {
+            if (deliberations.isEmpty()) {
+                p(classes = "muted") { +"La délibération sur les mesures de la Constitution Citoyenne et Démocratique n’est pas encore ouverte : ses dates seront publiées ici. Proposer, amender et voter se feront dans l’application PPF." }
             }
+            deliberations.forEach { deliberationCard(it, nowSeconds) }
+        }
+        pageSection("comparateur", "Comparer les candidats") {
+            if (catalog.comparators.isEmpty()) p(classes = "muted") { +"Aucun comparateur publié pour l’instant." }
+            catalog.comparators.forEach { comparatorCard(it) }
+        }
+        pageSection("calendrier", "Calendrier électoral") {
+            if (catalog.elections.isEmpty()) p(classes = "muted") { +"Aucune élection publiée pour l’instant." }
+            catalog.elections.forEach { electionCard(it) }
         }
         val open = catalog.openPetitions(today)
         pageSection("petitions-ouvertes", "Pétitions officielles ouvertes") {
@@ -144,6 +169,15 @@ fun HTML.deciderHomeDocument(
             pageSection("petitions-closes", "Pétitions closes") {
                 ul { closed.forEach { petition -> li { a(href = DeciderLinks.petition(petition)) { +petition.title } } } }
             }
+        }
+        pageSection("consultations", "Consultations publiques") {
+            p { +"On y répond sur le site officiel de l’organisateur, jamais sur PPF." }
+            if (catalog.consultations.isEmpty()) p(classes = "muted") { +"Aucune consultation publiée pour l’instant." }
+            catalog.consultations.forEach { consultationCard(it, today) }
+        }
+        pageSection("courriers", "Écrire à ses élus") {
+            if (catalog.letters.isEmpty()) p(classes = "muted") { +"Aucun modèle de courrier publié pour l’instant." }
+            catalog.letters.forEach { letterCard(it) }
         }
     }
 }
