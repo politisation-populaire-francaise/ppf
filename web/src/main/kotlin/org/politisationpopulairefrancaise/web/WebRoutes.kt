@@ -1,6 +1,10 @@
 package org.politisationpopulairefrancaise.web
 
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.html.respondHtml
+import io.ktor.server.response.respond
+import io.ktor.server.response.respondBytes
 import io.ktor.server.http.content.staticResources
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.get
@@ -40,6 +44,11 @@ private val spaceDescriptions: Map<Space, String> = mapOf(
  */
 fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = null, decider: DeciderSource? = null) {
     staticResources("/static", "static")
+    // Browsers ask for /favicon.ico at the root by themselves: the same file as in /static.
+    get("/favicon.ico") {
+        val icon = Route::class.java.classLoader.getResourceAsStream("static/favicon.ico")?.use { it.readBytes() }
+        if (icon == null) call.respond(HttpStatusCode.NotFound) else call.respondBytes(icon, ContentType("image", "x-icon"))
+    }
     voir?.let { voirPages(it) }
     comprendre?.let { comprendrePages(it) }
     // The petitions and the democratic pact (Décider), with the names of the candidates from "Voir".

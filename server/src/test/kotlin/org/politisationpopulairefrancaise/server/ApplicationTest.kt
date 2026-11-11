@@ -35,9 +35,10 @@ class ApplicationTest {
         assertTrue(body.contains("Politisation Populaire Française"))
         assertFalse(body.contains("googleapis"), "no Google resource")
         assertFalse(body.contains("<script"), "no script in the skeleton page")
-        // Only same-site URLs are allowed in the page.
-        val externalUrl = Regex("https?://").find(body)
-        assertEquals(null, externalUrl, "no external URL: ${externalUrl?.value}")
+        // Nothing is loaded from another server; the only absolute address is the preview image of a
+        // shared link, on our own domain (D-185).
+        val external = Regex("""https?://[^"]+""").findAll(body).map { it.value }.filterNot { it.startsWith("https://politisation-populaire-francaise.org/") }.toList()
+        assertEquals(emptyList(), external, "no external URL")
     }
 
     @Test
