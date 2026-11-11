@@ -61,6 +61,7 @@ require '^assets/composeResources/[^/]+/files/contents/revendications\.json$' "b
 require '^assets/composeResources/[^/]+/files/contents/voir\.json$' "bundled contents of Voir (voir.json)"
 require '^assets/composeResources/[^/]+/files/contents/decider\.json$' "bundled contents of Decider (decider.json)"
 require '^assets/composeResources/[^/]+/files/contents/solidarite\.json$' "bundled solidarity funds and missions of Agir (solidarite.json)"
+require '^assets/composeResources/[^/]+/files/contents/suites\.json$' "bundled follow-ups of mobilizations of Agir (suites.json)"
 require '^assets/composeResources/[^/]+/font/atkinson_hyperlegible_regular\.ttf$' "bundled font (Atkinson Hyperlegible)"
 # Map of the agenda (docs/integration/agir-carte.md): the background bundled for use without network,
 # the glyphs of its labels, and the MapLibre native libraries for every supported architecture.

@@ -1,0 +1,209 @@
+[
+    {
+        "id": "8765f8cfd714faa19490d2ae5b1c68c89c11a4be9b1336dc74a0d17164846210",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "suite-projection-rennes-second-debat"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Un second débat serait prévu en décembre, sur le projet de loi relatif à l'ordre public"
+            ],
+            [
+                "summary",
+                "Un média local fictif rapporte que les organisateurs prépareraient un second débat ; ils ne l'ont pas encore confirmé."
+            ],
+            [
+                "published_at",
+                "1793793600"
+            ],
+            [
+                "ppf-type",
+                "suite"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "a",
+                "31923:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:projection-debat-rennes-2026-11-03",
+                "",
+                "mobilisation"
+            ],
+            [
+                "ppf-suite-kind",
+                "annonce"
+            ],
+            [
+                "ppf-date",
+                "2026-11-04"
+            ],
+            [
+                "ppf-fact-status",
+                "allegue"
+            ],
+            [
+                "ppf-source",
+                "medias",
+                "Article d'un média local (exemple)",
+                "https://example.org/exemple/suites/media-local-second-debat",
+                "2026-11-04"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:chrono-49-3-ordre-public",
+                "",
+                "chronologie"
+            ]
+        ],
+        "content": "[EXEMPLE] Suite fictive de démonstration : ni le débat ni l'article n'existent, et aucune organisation réelle n'est concernée.\n\nElle montre une suite « alléguée » : une seule source, un article de presse, rapporte l'annonce, que les organisateurs n'ont pas confirmée. Elle deviendra « établie » quand une source primaire, leur communiqué, sera publiée.\n",
+        "sig": "310617debf72f0e8b7ec18f3c391020b8997ea96c855bffa4e390208021ec5dc8e1652793244d62dad14b2eed761219bd0d196b26095d61dbc17ce505e9cee70"
+    },
+    {
+        "id": "9caf7469921f83ceac882008044f011b89fb5765e178f4564827422d81fd255e",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "suite-projection-rennes-reponse-deputee"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Une députée fictive répond par écrit aux questions posées pendant le débat"
+            ],
+            [
+                "summary",
+                "Camille Exemple, députée fictive, répond par une lettre publique aux trois questions de la salle, dont la publication de l'agenda des élus."
+            ],
+            [
+                "published_at",
+                "1793966400"
+            ],
+            [
+                "ppf-type",
+                "suite"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "a",
+                "31923:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:projection-debat-rennes-2026-11-03",
+                "",
+                "mobilisation"
+            ],
+            [
+                "ppf-suite-kind",
+                "reponse-elu"
+            ],
+            [
+                "ppf-date",
+                "2026-11-06"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-source",
+                "declaration",
+                "Lettre publique de la députée (exemple)",
+                "https://example.org/exemple/suites/lettre-deputee",
+                "2026-11-06"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:camille-exemple",
+                "",
+                "personne"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:transparence-agenda-elus",
+                "",
+                "revendication"
+            ]
+        ],
+        "content": "[EXEMPLE] Suite fictive de démonstration : la députée, la lettre et le débat sont fictifs.\n\nElle montre la réponse d'un élu : sa fiche dans « Voir » est liée, pour que le droit de réponse s'applique, de même que la revendication dont parle la lettre.\n",
+        "sig": "073a698947ad52560ef4078843c6dbc7504aefb487dac8165b00839bf54b8b1f15e2e17550b7ac832d6ca26fc8730c7c1c04662d4d3e82b1e17e79865da8687d"
+    },
+    {
+        "id": "d83dca16220c30c9d3889e4462c9e2bbcfab5b6818ba5681e6af9b81d18f6bc3",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "suite-projection-rennes-proposition-de-loi"
+            ],
+            [
+                "title",
+                "[EXEMPLE] Une proposition de loi fictive sur l'agenda public des élus est déposée"
+            ],
+            [
+                "summary",
+                "La députée fictive dépose une proposition de loi qui reprend la revendication évoquée pendant le débat."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "suite"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "a",
+                "31923:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:projection-debat-rennes-2026-11-03",
+                "",
+                "mobilisation"
+            ],
+            [
+                "ppf-suite-kind",
+                "texte-depose"
+            ],
+            [
+                "ppf-date",
+                "2026-11-09"
+            ],
+            [
+                "ppf-fact-status",
+                "etabli"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Proposition de loi déposée (exemple)",
+                "https://example.org/exemple/suites/proposition-de-loi",
+                "2026-11-09"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:camille-exemple",
+                "",
+                "personne"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:transparence-agenda-elus",
+                "",
+                "revendication"
+            ]
+        ],
+        "content": "[EXEMPLE] Suite fictive de démonstration : la proposition de loi n'existe pas.\n\nElle montre un texte déposé, relié à la revendication qu'il reprend. Son parcours au Parlement se suivra dans « Voir », avec les autres textes en discussion.\n",
+        "sig": "fb9b010f23fcabd87ac2199a4404a1ad615e02846eba82b645a87577e7042cc96de7529d728d1126c7acb614c2d4fdbc0aca3983726089eaa1c7a2eaf8f2bcbe"
+    }
+]
