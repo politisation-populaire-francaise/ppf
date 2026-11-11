@@ -56,6 +56,8 @@ import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
+import org.politisationpopulairefrancaise.core.contact.ContentReports
+import org.politisationpopulairefrancaise.ui.components.ReportContentButton
 import org.politisationpopulairefrancaise.ui.components.ActionButton
 import org.politisationpopulairefrancaise.ui.components.AuthorDialog
 import org.politisationpopulairefrancaise.ui.components.Avatar
@@ -554,6 +556,11 @@ private fun PostCard(
             )
             ActionButton(icon = Lucide.MessageCircle, label = stringResource(Res.string.feed_comment), onClick = { }, enabled = false)
             ActionButton(icon = Lucide.Repeat2, label = stringResource(Res.string.feed_relay), onClick = { }, enabled = false)
+            // S-38, D-234: someone else's post may be reported to the team.
+            if (!mine && !post.editorial) {
+                Spacer(Modifier.weight(1f))
+                ReportContentButton(ContentReports.eventAddress(post.event.kind, post.event.id))
+            }
         }
     }
 }

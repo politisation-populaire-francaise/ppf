@@ -46,6 +46,10 @@ data class CaseCreation(
     /** The public key of the case, x only, lowercase hexadecimal. */
     @SerialName("case_pubkey") val casePubkey: String,
     val envelope: SignedEvent,
+    /** A report only (S-38, D-234): the address of the content reported, in clear for the back office. */
+    @SerialName("report_content") val reportContent: String? = null,
+    /** A report only: the code of its [ReportReason], in clear. */
+    @SerialName("report_reason") val reportReason: String? = null,
 ) {
     val nature: CaseNature? get() = CaseNature.of(type, subtype, category, motif)
 

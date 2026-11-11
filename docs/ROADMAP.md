@@ -164,6 +164,8 @@ Reporté par la propriétaire (7 novembre 2026) : rien n'est bloqué en attendan
 
 ## À faire relire par un avocat avant l'ouverture publique
 
+- « Signaler ce contenu » (S-38, D-234) : conformité du mécanisme de notification à l'article 16 du règlement (UE) 2022/2065 (le nom et l'adresse électronique du notifiant doivent être « facilités » ; PPF n'en demande pas), suite donnée aux signalements et exposé des motifs (article 17).
+
 - Kit contre le harcèlement (AG-59, D-230) : les trois modèles de signalement (plateforme au titre de l'article 16 du règlement sur les services numériques, dont le texte officiel reste à relire sur EUR-Lex ; PHAROS ; plainte au procureur) et les qualifications citées (code pénal, articles 222-33-2-2 et 223-1-1).
 
 - Appels à bloquer (D-199, 11 novembre 2026) : l'encadré juridique du formulaire et de l'appel (code de la route, article L412-1 ; code pénal, article 431-1), la charte de ces appels, la relecture systématique avant publication et la question du statut d'éditeur de PPF pour les appels ainsi relus.

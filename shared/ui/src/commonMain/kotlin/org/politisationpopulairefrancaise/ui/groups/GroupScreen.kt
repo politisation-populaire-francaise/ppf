@@ -48,6 +48,9 @@ import org.politisationpopulairefrancaise.core.groups.GroupMessage
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
+import org.politisationpopulairefrancaise.core.contact.ContentReports
+import org.politisationpopulairefrancaise.core.signing.EventKinds
+import org.politisationpopulairefrancaise.ui.components.ReportContentButton
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.InfoBox
@@ -394,6 +397,8 @@ private fun MessageBubble(
         }
         // The menu of the message and its author (D-131), outside the merged bubble so that it is reached on its own.
         MessageMenu(message.id, choices, onChoose)
+        // S-38, D-234: someone else's message may be reported to the team, without leaving the room.
+        if (!mine) ReportContentButton(ContentReports.eventAddress(EventKinds.GROUP_CHAT, message.id))
     }
 }
 

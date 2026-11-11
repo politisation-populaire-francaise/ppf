@@ -79,7 +79,9 @@ class ElusStore(val dataSource: DataSource) {
     /** Starts an import of [source]: removes what an interrupted import left, returns the new id. */
     fun begin(lock: ImportLock, source: String, now: Instant): Long {
         val c = lock.connection
-        c.createStatement().use { it.executeUpdate("TRUNCATE elus_staging") }
+        // DELETE, not TRUNCATE: the restricted role of the server (afterMigrate.sql, D-127) may delete rows but
+        // has no TRUNCATE right; with TRUNCATE, every import failed in preproduction with « permission denied ».
+        c.createStatement().use { it.executeUpdate("DELETE FROM elus_staging") }
         c.createStatement().use { it.executeUpdate("DELETE FROM elus_import WHERE status = 'building'") }
         return c.prepareStatement("INSERT INTO elus_import (source, status, started_at) VALUES (?, 'building', ?) RETURNING id").use { statement ->
             statement.setString(1, source)

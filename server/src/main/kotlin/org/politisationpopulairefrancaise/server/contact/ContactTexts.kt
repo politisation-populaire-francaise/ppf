@@ -219,4 +219,23 @@ object ContactTexts {
         DeadlineKind.LEGAL -> LEGAL
         DeadlineKind.GOAL -> GOAL
     }
+
+    // Reports of contents (S-38, D-234).
+    const val REPORTS_TITLE: String = "Signalements par contenu"
+    const val REPORTS_INTRO: String = "Les signalements encore ouverts, regroupés par contenu, du plus signalé au moins signalé. Cette liste ne masque rien : l’équipe décide, avec les outils de modération. Le commentaire de chaque signalement reste chiffré dans son dossier."
+    const val REPORTS_EMPTY: String = "Aucun signalement ouvert."
+    const val COLUMN_CONTENT: String = "Contenu (adresse)"
+    const val COLUMN_REPORTS: String = "Signalements"
+    const val COLUMN_REASONS: String = "Motifs"
+    const val COLUMN_LAST_REPORT: String = "Dernier reçu"
+
+    fun reportReason(code: String): String = when (code) {
+        "illicite" -> "illicite ou appel à la violence"
+        "haine" -> "haine ou harcèlement"
+        "donnees-personnelles" -> "données personnelles d’autrui"
+        "tromperie" -> "fausse information ou arnaque"
+        "spam" -> "spam ou doublon"
+        "autre" -> "autre"
+        else -> code
+    }
 }

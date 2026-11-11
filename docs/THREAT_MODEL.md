@@ -563,3 +563,11 @@ Conception : `docs/integration/signalement-message-chiffre.md` (version 0.4, val
 
 - Menace : une faille dans une bibliothèque native chargée à l'exécution (libsodium, JNA) donnerait une prise dans le service de signature ou l'importeur, qui gardent une clé, alors qu'ils n'en ont aucun usage.
 - Parade : libsodium, son chargeur et JNA sont exclus de leurs jars, et la compilation échoue s'ils y reviennent (`verifySignerJar`, `verifyImporterJar`). Seul le serveur principal, qui délivre les jetons de vote, les emporte.
+
+## Ajout du 11 novembre 2026 : signaler un contenu (S-38, D-234)
+
+| Menace | Parade en place | Risque restant |
+|---|---|---|
+| Signalements en masse contre un contenu ou une personne pour le faire retirer | La file « Signalements par contenu » ne masque rien : une personne de l'équipe décide ; limitation de débit des créations de dossiers et preuve de travail de 16 bits par signalement ; le nombre de signalements s'affiche, il ne décide pas | Une campagne coordonnée peut encombrer la file ; à surveiller dans le tableau de bord |
+| Retrouver qui a signalé | Dossier ouvert sans compte, clé de dossier à usage unique ; le serveur ne garde ni adresse IP ni compte ; seul le commentaire, chiffré, pourrait trahir son auteur | Ce que la personne écrit elle-même dans son commentaire |
+| Lecture du commentaire par le serveur | Chiffré de bout en bout pour la boîte de l'équipe (NIP-59) ; seuls l'adresse du contenu (publique) et le code du motif sont en clair | Tant que la boîte de l'équipe n'est pas créée, l'application écrit à la boîte d'exemple (développement seulement, documenté) |
