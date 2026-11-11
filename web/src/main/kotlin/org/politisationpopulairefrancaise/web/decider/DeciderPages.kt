@@ -90,6 +90,14 @@ fun Route.deciderPages(source: DeciderSource, voir: VoirSource? = null, clock: C
         }
         get("/{rest...}") { call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() } }
     }
+    // The wall of the demands, readable without script (D-152): the demands of the movement first.
+    route(RevendicationLinks.HOME) {
+        get { source.demands().let { demands -> call.respondHtml { revendicationsDocument(demands) } } }
+        get("/{slug}") {
+            val demand = source.demands().firstOrNull { it.slug == call.parameters["slug"] }
+            if (demand == null) call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() } else call.respondHtml { revendicationDocument(demand) }
+        }
+    }
 }
 
 /** The stable addresses of the pages of "Décider". */

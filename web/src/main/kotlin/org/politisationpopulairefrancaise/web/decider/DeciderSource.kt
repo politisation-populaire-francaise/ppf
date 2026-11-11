@@ -15,4 +15,7 @@ fun interface DeciderSource {
      * the server published after the review of a person. None by default (tests, sources without them).
      */
     suspend fun deliberations(): List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = emptyList()
+
+    /** The demands signed by the editorial team (D-152), newest first. None by default. */
+    suspend fun demands(): List<org.politisationpopulairefrancaise.core.editorial.Article> = emptyList()
 }

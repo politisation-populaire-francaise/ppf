@@ -156,6 +156,8 @@ internal fun PetitionPage(
     actions: DeciderActions,
     onOpenBill: (LegislativeText) -> Unit,
     wide: Boolean,
+    /** The reminders of « Décider »; null without a database (previews). */
+    reminders: DeciderRemindersState? = null,
 ) {
     val palette = PpfTheme.palette
     val progress = PetitionRules.progress(petition)
@@ -224,6 +226,10 @@ internal fun PetitionPage(
         if (open) {
             Spacer(Modifier.height(16.dp))
             ShareKit(petition, progress)
+        }
+        if (reminders != null && open && petition.closesOn != null) {
+            Spacer(Modifier.height(16.dp))
+            PetitionRemindersSection(petition, reminders)
         }
         Spacer(Modifier.height(16.dp))
         MarkdownText(petition.article.body)

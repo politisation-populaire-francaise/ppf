@@ -19,6 +19,8 @@ import org.politisationpopulairefrancaise.core.decider.ElectionReminderKind
 import org.politisationpopulairefrancaise.core.decider.ElectionReminders
 import org.politisationpopulairefrancaise.core.decider.PlannedElectionReminder
 import org.politisationpopulairefrancaise.core.decider.PublicConsultation
+import org.politisationpopulairefrancaise.core.decider.Petition
+import org.politisationpopulairefrancaise.core.decider.PetitionReminders
 import org.politisationpopulairefrancaise.core.notifications.NotificationCategory
 import org.politisationpopulairefrancaise.core.reminders.Reminder
 import org.politisationpopulairefrancaise.core.reminders.ReminderStore
@@ -60,6 +62,7 @@ class DeciderRemindersState(
     private val electionTexts: suspend (ElectionCalendar, PlannedElectionReminder) -> ReminderText = ::electionReminderText,
     private val consultationTexts: suspend (PublicConsultation, String) -> ReminderText = ::consultationReminderText,
     private val documentTexts: suspend (DocumentRequestNote, String) -> ReminderText = ::documentReminderText,
+    private val petitionTexts: suspend (Petition, String) -> ReminderText = ::petitionReminderText,
 ) {
     /** Bumped at each change of the store, so the pages read it again. */
     var version: Int by mutableStateOf(0)
@@ -132,6 +135,21 @@ class DeciderRemindersState(
 
     fun stop(consultation: PublicConsultation) = stop(ConsultationReminders.owner(consultation))
 
+    // The official petitions (MVP 1): a week before the closing and the day before.
+
+    fun isAsked(petition: Petition): Boolean = store.plan(PetitionReminders.owner(petition)) != null
+
+    fun upcoming(petition: Petition): List<Reminder> = upcomingOf(PetitionReminders.owner(petition))
+
+    /** « Me rappeler cette pétition » : a week before its closing and the day before. */
+    fun ask(petition: Petition) {
+        store.setPlan(PetitionReminders.owner(petition), setOf(PetitionReminders.WEEK_BEFORE, PetitionReminders.EVE))
+        turnCategoryOn()
+        replanNow { replan(petition) }
+    }
+
+    fun stop(petition: Petition) = stop(PetitionReminders.owner(petition))
+
     // The requests for administrative documents (DE-31): planned from the days the person noted, not from the contents.
 
     /** Whether the user asked for the reminders of the deadlines of [note]. */
@@ -157,10 +175,12 @@ class DeciderRemindersState(
     suspend fun replanAll(catalog: DeciderCatalog) {
         val elections = store.plans(ElectionReminders.OWNER_PREFIX)
         val consultations = store.plans(ConsultationReminders.OWNER_PREFIX)
-        if (elections.isEmpty() && consultations.isEmpty()) return
+        val petitions = store.plans(PetitionReminders.OWNER_PREFIX)
+        if (elections.isEmpty() && consultations.isEmpty() && petitions.isEmpty()) return
         // A content absent from those read (not synchronized yet) keeps its reminders as they are.
         elections.forEach { plan -> catalog.elections.firstOrNull { ElectionReminders.owner(it) == plan.owner }?.let { replan(it) } }
         consultations.forEach { plan -> catalog.consultations.firstOrNull { ConsultationReminders.owner(it) == plan.owner }?.let { replan(it) } }
+        petitions.forEach { plan -> catalog.petitions.firstOrNull { PetitionReminders.owner(it) == plan.owner }?.let { replan(it) } }
         version++
     }
 
@@ -194,6 +214,16 @@ class DeciderRemindersState(
         store.replaceFuture(owner, planned, now)
     }
 
+    private suspend fun replan(petition: Petition) {
+        val owner = PetitionReminders.owner(petition)
+        val kinds = store.plan(owner)?.kinds ?: return
+        val now = clock()
+        val planned = PetitionReminders.plan(petition, now).filter { (key, _) -> key in kinds }.map { (key, dueAt) ->
+            reminder(PetitionReminders.reminderId(petition, key), owner, petitionTexts(petition, key), PETITION_TARGET + petition.article.slug, dueAt, now)
+        }
+        store.replaceFuture(owner, planned, now)
+    }
+
     private suspend fun replan(note: DocumentRequestNote) {
         val owner = DocumentRequestReminders.owner(note)
         val kinds = store.plan(owner)?.kinds ?: return
@@ -216,6 +246,9 @@ class DeciderRemindersState(
 
         /** Where a reminder of a consultation leads: `ppf:decider/consultation/<slug>`. */
         const val CONSULTATION_TARGET: String = "ppf:decider/consultation/"
+
+        /** Where a reminder of a petition leads: `ppf:decider/petition/<slug>`. */
+        const val PETITION_TARGET: String = "ppf:decider/petition/"
 
         /** Where a reminder of a request for a document leads: the page of the requests (DE-31). */
         const val DOCUMENT_TARGET: String = "ppf:decider/documents"
