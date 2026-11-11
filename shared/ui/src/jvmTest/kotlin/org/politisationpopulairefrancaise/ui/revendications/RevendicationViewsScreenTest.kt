@@ -57,6 +57,7 @@ import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.feed.FeedTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -102,7 +103,7 @@ class RevendicationViewsScreenTest {
 
     private fun ComposeUiTest.openWall(dependencies: AppDependencies, width: Int = 1000, height: Int = 740) {
         setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(dependencies) } }
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         waitForDemands()
     }
 
@@ -295,7 +296,7 @@ class RevendicationViewsScreenTest {
         val dependencies = persistent(database)
         var generation by mutableStateOf(0)
         setContent { key(generation) { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } } }
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         waitForDemands()
 
         openView("suivis")
@@ -325,7 +326,7 @@ class RevendicationViewsScreenTest {
         // A new screen on the same database finds the view again.
         runOnIdle { generation++ }
         waitForIdle()
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         waitForDemands()
         assertEquals(listOf("tout", custom.id, "suivis", "theme:societe", "theme:sante"), tabIds())
         openView(custom.id)
@@ -443,7 +444,7 @@ class RevendicationViewsScreenTest {
         waitForIdle()
         waitUntil(timeoutMillis = 5_000) { dependencies.followStore!!.all() == listOf(EditorialTrust.EXAMPLE_EDITOR) }
 
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         waitForDemands()
         // The view shown before leaving is shown again.
         onNodeWithTag(RevendicationTags.TAB + "suivis").assertIsSelected()

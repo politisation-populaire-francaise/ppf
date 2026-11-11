@@ -1,6 +1,9 @@
 package org.politisationpopulairefrancaise.ui.agir.manifestation
 
-import androidx.compose.foundation.BorderStroke
+import org.politisationpopulairefrancaise.ui.components.PpfTextButton
+import org.politisationpopulairefrancaise.ui.onboarding.LocalTutorial
+import org.politisationpopulairefrancaise.ui.onboarding.TutorialTags
+import org.politisationpopulairefrancaise.ui.resources.tutorial_replay
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -16,7 +19,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -79,43 +81,32 @@ object HelpSoon {
 }
 
 /**
- * The AIDE button (AG-27, D-044): the accent colour, the word « AIDE » always written, one gesture
- * to the emergency sheet. It floats above the bottom bar on phones, heads the rail on tablets and
- * the side bar on computers. [fullWidth] fills the side bar. Nothing without the shell's help state.
+ * The AIDE button (AG-27, D-044, D-181): the accent colour, the word « AIDE » alone, one gesture to
+ * the emergency sheet. It sits in the top bar of phones ([compact]), heads the rail of tablets
+ * ([stacked]) and the side bar of computers ([fullWidth]). Nothing without the shell's help state.
  */
 @Composable
 fun HelpButton(modifier: Modifier = Modifier, fullWidth: Boolean = false, stacked: Boolean = false, compact: Boolean = false) {
     val help = LocalHelpState.current ?: return
     val palette = PpfTheme.palette
     val description = stringResource(Res.string.help_button_description)
+    // Decision of the owner, 11 November 2026 (D-181): « plus simple sans icon et flat avec le meme rouge
+    // que present dans le reste de l'appli ». The word alone, flat (no shadow, no ring), in the accent red
+    // of the identity, white text (AA contrast); smaller than before. The drawing may be lower than 48 dp:
+    // the button keeps a 48 dp touch target (Material's minimum interactive size).
     Button(
         onClick = help::open,
-        shape = if (stacked) MaterialTheme.shapes.medium else CircleShape,
+        shape = MaterialTheme.shapes.small,
         colors = ButtonDefaults.buttonColors(containerColor = palette.accent, contentColor = palette.onAccent),
-        border = BorderStroke(2.dp, palette.surface0),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp),
-        contentPadding = when {
-            stacked -> PaddingValues(horizontal = 4.dp, vertical = 6.dp)
-            compact -> PaddingValues(horizontal = 12.dp, vertical = 0.dp)
-            else -> PaddingValues(horizontal = 18.dp, vertical = 0.dp)
-        },
+        elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp, pressedElevation = 0.dp, focusedElevation = 0.dp, hoveredElevation = 0.dp),
+        contentPadding = PaddingValues(horizontal = when { stacked -> 4.dp; compact -> 12.dp; else -> 16.dp }, vertical = 0.dp),
         modifier = modifier
-            .then(if (fullWidth) Modifier.fillMaxWidth() else Modifier)
-            .heightIn(min = if (compact) 44.dp else 56.dp)
+            .then(if (fullWidth || stacked) Modifier.fillMaxWidth() else Modifier)
+            .heightIn(min = if (compact) 36.dp else 40.dp)
             .semantics { contentDescription = description }
             .testTag(ManifestationTags.HELP_BUTTON),
     ) {
-        if (stacked) {
-            // The narrow rail of tablets: the icon above the word.
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(Lucide.LifeBuoy, contentDescription = null, modifier = Modifier.size(22.dp))
-                Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = 15.sp, letterSpacing = 1.sp)
-            }
-        } else {
-            Icon(Lucide.LifeBuoy, contentDescription = null, modifier = Modifier.size(if (compact) 20.dp else 24.dp))
-            Spacer(Modifier.width(if (compact) 6.dp else 8.dp))
-            Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = if (compact) 16.sp else 18.sp, letterSpacing = 1.sp)
-        }
+        Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = 14.sp, letterSpacing = 0.5.sp, maxLines = 1)
     }
 }
 
@@ -218,6 +209,19 @@ private fun HelpSheetContent(help: HelpState, title: String) {
     SectionHeading(stringResource(Res.string.help_rally_title), Lucide.MapPin)
     Spacer(Modifier.height(4.dp))
     RallyPointBlock(help)
+
+    // The tutorial of the first launch, to see again (D-216): the sheet closes, the tutorial opens.
+    LocalTutorial.current?.takeIf { it.available }?.let { tutorial ->
+        SheetDivider()
+        PpfTextButton(
+            onClick = {
+                help.close()
+                tutorial.replay()
+            },
+            text = stringResource(Res.string.tutorial_replay),
+            modifier = Modifier.testTag(TutorialTags.REPLAY),
+        )
+    }
 
     // The quick erase (S-44), last: never pressed by mistake on the way to the numbers.
     if (LocalDeviceSecurity.current != null) {

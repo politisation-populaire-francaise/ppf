@@ -243,6 +243,10 @@ object PpfTheme {
 
     val extended: PpfExtendedColors
         @Composable get() = LocalPpfExtendedColors.current
+
+    /** The sizes of the bars, touch targets and margins. */
+    val dimens: PpfDimens
+        @Composable get() = LocalPpfDimens.current
 }
 
 @Composable

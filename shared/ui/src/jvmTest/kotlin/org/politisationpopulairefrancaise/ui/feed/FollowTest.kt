@@ -39,6 +39,7 @@ import org.politisationpopulairefrancaise.ui.account.AccountTags
 import org.politisationpopulairefrancaise.ui.components.AuthorDialogTags
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
@@ -75,6 +76,8 @@ class FollowTest {
     ): LocalEventStore {
         val dependencies = AppDependencies.withDatabase(identity, database)
         setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(dependencies) } }
+        // The feed, "Actu", is no longer the first screen (D-215).
+        openSpace(Space.FIL)
         val store = dependencies.contentStore!!
         waitUntil(timeoutMillis = 10_000) { store.recent(kinds = listOf(1)).size == 5 }
         waitForIdle()

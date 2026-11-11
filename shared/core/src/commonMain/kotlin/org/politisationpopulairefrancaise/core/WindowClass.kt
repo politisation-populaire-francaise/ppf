@@ -44,7 +44,16 @@ enum class WindowHeightClass {
 /** The combination of both classes for a given window. */
 data class WindowClass(val width: WindowWidthClass, val height: WindowHeightClass) {
     companion object {
-        fun of(widthDp: Float, heightDp: Float): WindowClass =
-            WindowClass(WindowWidthClass.fromWidthDp(widthDp), WindowHeightClass.fromHeightDp(heightDp))
+        /**
+         * A window lower than 480 dp is never "expanded" in width: a phone turned in landscape
+         * (a Galaxy A34 is about 411 x 892 dp) is wider than 840 dp but has no room for the
+         * desktop layout (its 64 dp bar, its 280 dp side bar, two panes); it gets the rail.
+         */
+        fun of(widthDp: Float, heightDp: Float): WindowClass {
+            val height = WindowHeightClass.fromHeightDp(heightDp)
+            val width = WindowWidthClass.fromWidthDp(widthDp)
+            val capped = if (height == WindowHeightClass.COMPACT && width == WindowWidthClass.EXPANDED) WindowWidthClass.MEDIUM else width
+            return WindowClass(capped, height)
+        }
     }
 }

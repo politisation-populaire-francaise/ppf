@@ -2,5 +2,6 @@
 <resources>
     <color name="ic_launcher_background">#9E2A3A</color>
     <color name="ic_launcher_neutral_background">#5F6368</color>
-    <color name="window_background">#FCFAF8</color>
+    <!-- The background of the window before the first frame: surface1 of PpfPalette (light), so that nothing changes tint at start. -->
+    <color name="window_background">#F3F5FB</color>
 </resources>

@@ -69,16 +69,13 @@ class SystemBarsScreenshotTest {
                 PpfTheme(darkTheme = dark) { AdaptiveShell(dependencies) }
             }
         }
+        openSpace(Space.FIL)
         await(FeedTags.LIVE)
     }
 
-    /** A pillar: in the menu on phones, in the rail or the side bar elsewhere (scrolled to on a phone on its side). */
-    private fun ComposeUiTest.openPillar(device: FakeDevice, space: Space) {
-        if (device.width < 600) {
-            onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
-            settle()
-        }
-        onNodeWithTag(ShellTags.navItem(space)).performScrollTo().performClick()
+    /** A space: from the bars when it is there, otherwise from the menu (phones, phones on their side). */
+    private fun ComposeUiTest.openPillar(@Suppress("UNUSED_PARAMETER") device: FakeDevice, space: Space) {
+        openSpace(space)
         settle()
     }
 
@@ -93,7 +90,7 @@ class SystemBarsScreenshotTest {
         await(EnDirectTags.SCREEN)
         save(folder, "$prefix-en-direct")
 
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         await(RevendicationTags.FILTERS)
         await(RevendicationTags.CARD + "lyon-transports-nuit", timeoutMillis = 10_000)
         save(folder, "$prefix-revendications")
@@ -105,10 +102,17 @@ class SystemBarsScreenshotTest {
         onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
         settle()
         save(folder, "$prefix-menu")
+        // The menu closes on its scrim; Agir is in the bottom bar (D-215).
+        onNodeWithTag(ShellTags.navItem(Space.DECIDER)).performClick()
+        settle()
         onNodeWithTag(ShellTags.navItem(Space.AGIR)).performClick()
         settle()
         await(AgirTags.HOME)
         save(folder, "$prefix-agir")
+
+        onNodeWithTag(ShellTags.navItem(Space.APPELS)).performClick()
+        settle()
+        save(folder, "$prefix-appels")
 
         openPillar(device, Space.DECIDER)
         await(DeciderTags.SCREEN)
@@ -173,7 +177,7 @@ class SystemBarsScreenshotTest {
             runDesktopComposeUiTest(width = device.width, height = device.height) {
                 val folder = if (safeArea) "apres" else "avant"
                 show(device, dark = false, safeArea = safeArea)
-                onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+                openSpace(Space.REVENDICATIONS)
                 await(RevendicationTags.PROPOSE)
                 onAllNodesWithTag(RevendicationTags.PROPOSE).onFirst().performScrollTo().performClick()
                 await(ProposalTags.TITLE)
