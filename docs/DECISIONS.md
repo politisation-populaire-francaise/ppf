@@ -1524,6 +1524,12 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Point signalé : le dessin n'est pas le bloc-marque de l'État (pas de profil de Marianne dans des bandes tricolores), mais il associe une Marianne et le drapeau français ; à garder en tête pour la vérification d'antériorité à l'INPI et la relecture par un avocat avant l'ouverture publique.
 - Reste : de nouvelles bannières de réseaux sociaux au logo officiel.
 
+## D-188 (2026-11-11) Version d'essai Android sous 30 Mo : réduction du code par R8, sans renommage
+
+- Contexte : la version d'essai pesait 37,9 Mo (code non réduit 19,2 Mo, bibliothèques natives 13,4 Mo dont la carte, contenus 3,8 Mo) ; au-delà de 30 Mo, elle ne peut pas être envoyée facilement au téléphone de la propriétaire.
+- Choix (approuvé par le chef d'équipe) : réduction du code et des ressources par R8 sur la version d'essai, comme sur la version de publication, mais sans renommage des classes (`proguard-preview.pro` : `-dontobfuscate`), pour qu'un rapport de plantage nomme les vraies classes ; règles de conservation ajoutées pour la découverte du moteur réseau de Ktor et pour la signature secp256k1 (JNI). Si cela ne suffit pas : une version réservée aux processeurs arm64 (Galaxy A34), qui retire 6 Mo.
+- Risque : une erreur de réduction ne se voit qu'à l'exécution, et l'ordinateur n'a pas d'émulateur Android. Vérifications : contrôle du contenu de l'APK, suite d'interface, captures ; puis essai à la main de chaque écran sur le téléphone (liste dans `docs/GUIDE_PROPRIETAIRE.md`).
+
 ## D-210 (2026-11-11) Cap du MVP 1 : Agir, puis Décider, puis Comprendre, et une ergonomie irréprochable
 
 - Contexte : la feuille de route suivie depuis le 5 novembre avançait sur tous les modules à la fois, sans version utilisable. Le mouvement social en cours rend urgente une première version réellement utile. Demande de la propriétaire du 11 novembre 2026 : « j'ai besoin d'un mvp 1 fonctionnel et ergonomique le plus rapidement possible ».
