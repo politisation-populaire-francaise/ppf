@@ -205,6 +205,10 @@ class ContentLibrary(
      * A demand already carried by the movement and gathered by the team (MVP 1, « Du mouvement »): the mark
      * counts only on a demand signed by a trusted editorial key, never on a citizen's.
      */
+    /** The organisations that publicly support a demand (« Également portée par »), on a demand of the team only. */
+    fun demandSupporters(article: Article): List<String> =
+        if (trust.isTrusted(article.author)) org.politisationpopulairefrancaise.core.revendications.MovementDemands.supporters(article) else emptyList()
+
     fun movementCarriers(article: Article): List<String>? {
         val demands = org.politisationpopulairefrancaise.core.revendications.MovementDemands
         if (!trust.isTrusted(article.author) || !demands.isMarked(article)) return null

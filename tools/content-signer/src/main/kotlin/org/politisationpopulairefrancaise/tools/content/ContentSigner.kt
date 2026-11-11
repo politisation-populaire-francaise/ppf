@@ -119,6 +119,14 @@ internal fun prepareBundles(content: Path, author: PublicKey): List<Bundle> {
                     MovementDemands.tags(document.require("carried_by").split(" ; "))
                 }
                 else -> error("${document.name}: unknown from: ${document.metadata["from"]}")
+            } + document.metadata["supported_by"].orEmpty().let { supporters ->
+                // Any demand may name who else publicly supports it: `supported_by: <a> ; <b>` (D-152).
+                if (supporters.isBlank()) {
+                    emptyList()
+                } else {
+                    require(document.body.contains("## Sources")) { "${document.name}: the public supporters of a demand are sourced" }
+                    MovementDemands.supporterTags(supporters.split(" ; "))
+                }
             },
         )
     }

@@ -99,7 +99,7 @@ class RevendicationViewsScreenTest {
         "aides-sociales", "carburants-energie", "demission-du-president", "democratie", "droit-de-manifester", "etudiants",
         "fin-de-parcoursup", "hausse-des-pensions", "hausse-du-smic", "justice-fiscale", "lycees", "negociations-salariales",
         "planification", "point-d-indice", "services-publics",
-    ).map { "mouvement-$it" }
+    ).map { "mouvement-$it" } + "demission-du-gouvernement"
 
     /**
      * [text] is what the examples alone give ("3 revendications"); the demands of the movement sit beside them.
@@ -121,6 +121,16 @@ class RevendicationViewsScreenTest {
             .assert(hasAnyDescendant(hasText("Du mouvement")))
             .assert(hasAnyDescendant(hasText("Portée par :", substring = true)))
         assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(RevendicationTags.CARD + "medecin-de-garde"))).fetchSemanticsNodes().isEmpty())
+    }
+
+    /** D-152: a citizen demand names who else publicly supports it, without the chip of the movement. */
+    @Test
+    fun aCitizenDemandSaysWhoElseSupportsItPublicly() = runComposeUiTest {
+        openWall(memory())
+        val card = RevendicationTags.CARD + "demission-du-gouvernement"
+        inPage("tout", card).performScrollTo()
+        inPage("tout", RevendicationTags.SUPPORTERS).assertTextEquals("Également portée par : NPA-L’Anticapitaliste (parti politique), 4 novembre 2026")
+        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(card))).fetchSemanticsNodes().isEmpty())
     }
 
     private fun ComposeUiTest.waitForDemands() {

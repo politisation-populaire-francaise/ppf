@@ -92,6 +92,7 @@ import org.politisationpopulairefrancaise.ui.resources.revendication_back
 import org.politisationpopulairefrancaise.ui.resources.revendications_intro
 import org.politisationpopulairefrancaise.ui.resources.rv_how_it_works
 import org.politisationpopulairefrancaise.ui.resources.rv_movement_badge
+import org.politisationpopulairefrancaise.ui.resources.rv_supported_by
 import org.politisationpopulairefrancaise.ui.resources.rv_movement_carried_by
 import org.politisationpopulairefrancaise.ui.resources.rv_movement_gathered
 import org.politisationpopulairefrancaise.ui.resources.rv_propose_short
@@ -165,6 +166,8 @@ object RevendicationTags {
     const val COUNT = "revendication-count"
     /** « Du mouvement » and who carries it, on a demand gathered by the team (MVP 1). */
     const val MOVEMENT = "revendication-movement"
+    /** « Également portée par », on any demand of the team that names public supporters (D-152). */
+    const val SUPPORTERS = "revendication-supporters"
     /** The one-line "Comment ça marche ?" that unfolds the explanation of the wall (MVP 1, lighter header). */
     const val HOW_IT_WORKS = "revendication-how-it-works"
     const val HOW_IT_WORKS_TEXT = "revendication-how-it-works-text"
@@ -261,7 +264,7 @@ fun RevendicationsScreen(
                 wall(Modifier.width(380.dp).fillMaxHeight())
                 VerticalDivider(color = PpfTheme.palette.border)
                 if (selected != null) {
-                    RevendicationDetail(selected, onBack = null, compact = false, Modifier.fillMaxSize(), own = library.ownDemand(selected), onOpenDemand = { library.openAddress(it) }, movement = library.movementCarriers(selected))
+                    RevendicationDetail(selected, onBack = null, compact = false, Modifier.fillMaxSize(), own = library.ownDemand(selected), onOpenDemand = { library.openAddress(it) }, movement = library.movementCarriers(selected), supporters = library.demandSupporters(selected))
                 } else {
                     Column(Modifier.fillMaxSize().padding(24.dp)) {
                         PageHeader(stringResource(Res.string.space_revendications), stringResource(Res.string.desc_revendications))
@@ -276,6 +279,7 @@ fun RevendicationsScreen(
                 own = library.ownDemand(selected),
                 onOpenDemand = { library.openAddress(it) },
                 movement = library.movementCarriers(selected),
+                supporters = library.demandSupporters(selected),
             )
             else -> wall(Modifier.fillMaxSize())
         }
@@ -488,6 +492,7 @@ private fun WallPage(
                     own = library.ownDemand(revendication),
                     petition = library.decider.openPetitionFor(revendication.address, today),
                     movement = library.movementCarriers(revendication),
+                    supporters = library.demandSupporters(revendication),
                 )
             }
         }
@@ -661,6 +666,8 @@ fun RevendicationCard(
     petition: Petition? = null,
     /** Who carries it, when it is a demand of the movement gathered by the team (ContentLibrary.movementCarriers). */
     movement: List<String>? = null,
+    /** Who else publicly supports it (ContentLibrary.demandSupporters), the same line for every demand. */
+    supporters: List<String> = emptyList(),
 ) {
     val palette = PpfTheme.palette
     val example = revendication.title.startsWith(FeedPost.EXAMPLE_MARKER)
@@ -678,6 +685,10 @@ fun RevendicationCard(
         if (movement != null) {
             Spacer(Modifier.height(8.dp))
             MovementLine(movement)
+        }
+        if (supporters.isNotEmpty()) {
+            Spacer(Modifier.height(8.dp))
+            SupportersLine(supporters)
         }
         Spacer(Modifier.height(10.dp))
         Text(revendication.title.removePrefix(FeedPost.EXAMPLE_MARKER).trim(), style = MaterialTheme.typography.titleSmall)
@@ -727,6 +738,17 @@ private fun MovementLine(carriers: List<String>) {
             Text(stringResource(Res.string.rv_movement_carried_by, carriers.joinToString(" ; ")), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
         }
     }
+}
+
+/** « Également portée par » : the organisations that publicly support a demand, sourced in its text (D-152). */
+@Composable
+private fun SupportersLine(supporters: List<String>) {
+    Text(
+        stringResource(Res.string.rv_supported_by, supporters.joinToString(" ; ")),
+        style = MaterialTheme.typography.bodySmall,
+        color = PpfTheme.palette.inkMuted,
+        modifier = Modifier.testTag(RevendicationTags.SUPPORTERS),
+    )
 }
 
 @OptIn(ExperimentalLayoutApi::class)
@@ -788,6 +810,7 @@ private fun RevendicationDetail(
     own: OwnDemand? = null,
     onOpenDemand: (String) -> Unit = {},
     movement: List<String>? = null,
+    supporters: List<String> = emptyList(),
 ) {
     val palette = PpfTheme.palette
     val example = revendication.title.startsWith(FeedPost.EXAMPLE_MARKER)
@@ -816,6 +839,10 @@ private fun RevendicationDetail(
             if (movement != null) {
                 Spacer(Modifier.height(8.dp))
                 MovementLine(movement)
+            }
+            if (supporters.isNotEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                SupportersLine(supporters)
             }
             Text(
                 text = stringResource(Res.string.content_updated, CivilDate.fromEpochSeconds(revendication.updatedAt).toFrench()),

@@ -318,6 +318,7 @@ private fun FeedPage(
                         onNavigate(Space.REVENDICATIONS)
                     },
                     movement = library.movementCarriers(revendication),
+                    supporters = library.demandSupporters(revendication),
                 )
             }
             return@LazyColumn

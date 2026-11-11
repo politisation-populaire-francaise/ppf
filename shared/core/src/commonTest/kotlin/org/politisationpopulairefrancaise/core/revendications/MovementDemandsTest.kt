@@ -35,6 +35,16 @@ class MovementDemandsTest {
     }
 
     @Test
+    fun anyDemandMayNameItsPublicSupportersApartFromItsOrigin() {
+        val tags = MovementDemands.supporterTags(listOf("NPA-L’Anticapitaliste (parti politique), 4 novembre 2026", " "))
+        assertEquals(listOf(listOf("ppf-supported-by", "NPA-L’Anticapitaliste (parti politique), 4 novembre 2026")), tags)
+        val article = demand(tags)
+        assertFalse(MovementDemands.isMarked(article))
+        assertEquals(listOf("NPA-L’Anticapitaliste (parti politique), 4 novembre 2026"), MovementDemands.supporters(article))
+        assertEquals(emptyList(), MovementDemands.carriers(article))
+    }
+
+    @Test
     fun anOrdinaryDemandIsNotMarkedAndADemandOfTheMovementNamesWhoCarriesIt() {
         assertFalse(MovementDemands.isMarked(demand(emptyList())))
         assertFalse(MovementDemands.isMarked(demand(listOf(listOf("ppf-from", "ailleurs")))))
