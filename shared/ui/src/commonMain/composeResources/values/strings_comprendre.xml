@@ -133,4 +133,22 @@
     <string name="comprendre_verify_code">Code de vérification : %1$s. Pour vérifier une copie reçue : « Vérifier un contenu reçu » dans « Voir », ou la page « Vérifier un contenu » du site.</string>
     <string name="comprendre_cite">Citer ce contenu</string>
     <string name="comprendre_cite_copied">Référence copiée : titre, dates, version, adresse et empreinte.</string>
+    <string name="comprendre_search_placeholder">Chercher dans Comprendre (ex. : chômage, référé, budget)</string>
+    <string name="comprendre_want_title">Je veux comprendre…</string>
+    <string name="comprendre_theme_all">Tout</string>
+    <string name="comprendre_theme_droits">Mes droits, police et justice</string>
+    <string name="comprendre_theme_institutions">Les institutions et les élections</string>
+    <string name="comprendre_theme_argent_public">L’argent public</string>
+    <string name="comprendre_theme_travail">Le travail</string>
+    <string name="comprendre_theme_vie_chere">Logement et vie chère</string>
+    <string name="comprendre_theme_medias">Médias et transparence</string>
+    <string name="comprendre_theme_s_organiser">S’organiser et agir</string>
+    <string name="comprendre_theme_histoire">L’histoire des luttes</string>
+    <string name="comprendre_results_count">%1$d contenus trouvés</string>
+    <string name="comprendre_results_none">Aucun contenu ne correspond. Essayez un autre mot ou un autre thème.</string>
+    <string name="comprendre_results_clear">Effacer la recherche</string>
+    <string name="comprendre_resume_title">Reprendre là où vous en étiez</string>
+    <string name="comprendre_resume_action">Continuer</string>
+    <string name="comprendre_section_count">%1$d contenus, faites défiler sur le côté</string>
+    <string name="comprendre_reading_time">%1$d min de lecture</string>
 </resources>
