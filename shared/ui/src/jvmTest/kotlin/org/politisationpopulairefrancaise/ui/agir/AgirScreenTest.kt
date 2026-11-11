@@ -56,6 +56,7 @@ class AgirScreenTest {
         onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.KITS.id).performScrollTo().assert(hasClickAction())
         AgirRubrics.sections.forEach { section -> onNodeWithTag(AgirTags.SECTION + section.id).performScrollTo() }
         cards.forEach { id -> onNodeWithTag(AgirTags.RUBRIC + id).performScrollTo().assert(hasClickAction()) }
+        onNodeWithTag(AgirNowTags.SOON_TOGGLE).performScrollTo().performClick()
         onNodeWithTag(AgirTags.SOON_TITLE).performScrollTo()
         onNodeWithText("Ces rubriques sont prévues mais pas encore prêtes", substring = true).assertExists()
         inPreparation.forEach { id ->

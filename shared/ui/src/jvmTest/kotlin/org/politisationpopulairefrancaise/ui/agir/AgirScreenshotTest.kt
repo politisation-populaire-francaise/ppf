@@ -64,6 +64,7 @@ class AgirScreenshotTest {
         }
         awaitTag(AgirTags.HOME)
         save("$prefix-agir")
+        onNodeWithTag(AgirNowTags.SOON_TOGGLE).performScrollTo().performClick()
         onNodeWithTag(AgirTags.SOON + AgirRubrics.inPreparation.last().id).performScrollTo()
         settle()
         save("$prefix-agir-en-preparation")

@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.agir
 
+import org.politisationpopulairefrancaise.core.agir.AgirHighlights
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -305,13 +306,34 @@ fun AgirScreen(
     ProvideTestify(testify) {
         Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
             when (route) {
-                AgirRoute.HOME -> AgirHome(
-                    windowClass = windowClass,
-                    onOpen = { rubric ->
-                        returnTo = null
-                        openRubric(rubric)
-                    },
-                )
+                AgirRoute.HOME -> {
+                    // « En ce moment » reads the agenda and the calls already on the device (loaded once, like their screens).
+                    LaunchedEffect(Unit) {
+                        agendaOfCollectives.start()
+                        callsOfCollectives.start()
+                    }
+                    val now = agendaOfCollectives.now
+                    AgirHome(
+                        windowClass = windowClass,
+                        onOpen = { rubric ->
+                            returnTo = null
+                            openRubric(rubric)
+                        },
+                        highlights = AgirHighlights.of(agendaOfCollectives.mobilizations, callsOfCollectives.calls, now),
+                        now = now,
+                        nowActions = AgirNowActions(
+                            openMobilization = { agendaOfCollectives.open(it); route = AgirRoute.AGENDA },
+                            openCall = { callsOfCollectives.open(it); route = AgirRoute.CALLS },
+                            proposeEvent = { agendaOfCollectives.composer.open = true; route = AgirRoute.AGENDA },
+                            launchCall = { callsOfCollectives.composer.open = true; route = AgirRoute.CALLS },
+                        ),
+                        onGoal = { goal ->
+                            kitsFilters.goalId = goal.id
+                            returnTo = null
+                            route = AgirRoute.KITS
+                        },
+                    )
+                }
                 AgirRoute.AGENDA -> if (agenda != null) agenda(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_agenda_title, windowClass, home)
                 AgirRoute.CALLS -> if (calls != null) calls(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_calls_title, windowClass, home)
                 AgirRoute.ORGANISATIONS -> OrganisationsScreen(

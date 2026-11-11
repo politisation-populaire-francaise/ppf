@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « En ce moment » and the folded rubrics in preparation on the home of « Agir ». -->
+<resources>
+    <string name="agir_now_title">En ce moment</string>
+    <string name="agir_now_empty">Aucune mobilisation ni échéance d’appel dans les prochains jours. À vous de lancer quelque chose :</string>
+    <string name="agir_now_under_way">En cours</string>
+    <string name="agir_now_propose">Proposer un événement</string>
+    <string name="agir_now_launch">Lancer un appel</string>
+    <string name="agir_soon_show">Voir les rubriques en préparation (%1$d)</string>
+    <string name="agir_soon_hide">Masquer les rubriques en préparation</string>
+</resources>

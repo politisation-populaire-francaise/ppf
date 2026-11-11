@@ -1,5 +1,12 @@
 package org.politisationpopulairefrancaise.ui.agir
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import org.politisationpopulairefrancaise.core.agir.AgirHighlights
+import org.politisationpopulairefrancaise.core.agir.kits.KitGoal
+import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -200,7 +207,12 @@ internal fun AgirHome(
     onOpen: (AgirRubric) -> Unit,
     modifier: Modifier = Modifier,
     today: CivilDate = ParisTime.dateOf(ParisTime.epochDay(currentEpochSeconds())),
+    highlights: AgirHighlights? = null,
+    now: Long = currentEpochSeconds(),
+    nowActions: AgirNowActions? = null,
+    onGoal: ((KitGoal) -> Unit)? = null,
 ) {
+    var soonOpen by rememberSaveable { mutableStateOf(false) }
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
     Column(modifier.fillMaxSize().background(palette.surface1).verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp)) {
@@ -208,6 +220,12 @@ internal fun AgirHome(
             PageHeader(stringResource(Res.string.space_agir), stringResource(Res.string.agir_intro))
             // AG-55 « Sans nouvelles de moi »: the alerts of relatives first, then the person's own timer and the discreet lines.
             TimerHomeBlock(onOpenOwn = { onOpen(AgirRubrics.MANIFESTATION) }, modifier = Modifier.padding(top = 16.dp))
+            // « En ce moment »: what is happening this week, one tap away; or the two ways to start something.
+            if (highlights != null && nowActions != null) {
+                AgirNowCard(highlights, now, nowActions, Modifier.padding(top = 16.dp).widthIn(max = 720.dp))
+            }
+            // « Je veux… »: from a goal straight to its kits.
+            if (onGoal != null) AgirGoals(onGoal, Modifier.padding(top = 16.dp).widthIn(max = 720.dp))
             // D-213: « S'engager en politique » put forward, with the next milestone of the electoral calendar.
             EngagementFeatured(today, onOpen = { onOpen(AgirRubrics.ENGAGER) }, modifier = Modifier.padding(top = 16.dp).widthIn(max = 720.dp))
             // D-232: every kit and guide in one place, filtered by goal.
@@ -219,11 +237,20 @@ internal fun AgirHome(
                 RubricGrid(section.rubrics) { rubric, cardModifier -> RubricCard(rubric, onClick = { onOpen(rubric) }, cardModifier, compact) }
             }
             Spacer(Modifier.height(32.dp))
-            SectionTitle(stringResource(Res.string.agir_soon_title), Modifier.testTag(AgirTags.SOON_TITLE))
-            Spacer(Modifier.height(6.dp))
-            Text(stringResource(Res.string.agir_soon_text), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
-            Spacer(Modifier.height(12.dp))
-            RubricGrid(AgirRubrics.inPreparation) { rubric, cardModifier -> RubricCard(rubric, onClick = null, cardModifier, compact) }
+            // The rubrics in preparation stay listed (« tout reste visible »), folded under one line so that they do not take a screen.
+            PpfTextButton(
+                onClick = { soonOpen = !soonOpen },
+                text = if (soonOpen) stringResource(Res.string.agir_soon_hide) else stringResource(Res.string.agir_soon_show, AgirRubrics.inPreparation.size),
+                modifier = Modifier.testTag(AgirNowTags.SOON_TOGGLE),
+            )
+            if (soonOpen) {
+                Spacer(Modifier.height(8.dp))
+                SectionTitle(stringResource(Res.string.agir_soon_title), Modifier.testTag(AgirTags.SOON_TITLE))
+                Spacer(Modifier.height(6.dp))
+                Text(stringResource(Res.string.agir_soon_text), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+                Spacer(Modifier.height(12.dp))
+                RubricGrid(AgirRubrics.inPreparation) { rubric, cardModifier -> RubricCard(rubric, onClick = null, cardModifier, compact) }
+            }
         }
     }
 }
