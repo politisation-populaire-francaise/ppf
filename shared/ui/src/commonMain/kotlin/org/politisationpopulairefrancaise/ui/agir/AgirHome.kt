@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.disabled
@@ -68,7 +69,6 @@ import org.politisationpopulairefrancaise.ui.resources.agir_organisations_text
 import org.politisationpopulairefrancaise.ui.resources.agir_organisations_title
 import org.politisationpopulairefrancaise.ui.resources.agir_protest_mode_text
 import org.politisationpopulairefrancaise.ui.resources.agir_protest_mode_title
-import org.politisationpopulairefrancaise.ui.resources.agir_rubrics_title
 import org.politisationpopulairefrancaise.ui.resources.agir_safety_text
 import org.politisationpopulairefrancaise.ui.resources.agir_safety_title
 import org.politisationpopulairefrancaise.ui.resources.agir_solidarity_text
@@ -82,7 +82,15 @@ import org.politisationpopulairefrancaise.ui.resources.agir_testify_title
 import org.politisationpopulairefrancaise.ui.resources.engager_rubric_text
 import org.politisationpopulairefrancaise.ui.resources.engager_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.federer_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.agir_section_federate
+import org.politisationpopulairefrancaise.ui.resources.agir_section_hold
+import org.politisationpopulairefrancaise.ui.resources.agir_section_mobilize
+import org.politisationpopulairefrancaise.ui.resources.agir_section_protect
 import org.politisationpopulairefrancaise.ui.resources.gather_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.greve_entry_text
+import org.politisationpopulairefrancaise.ui.resources.greve_entry_title
+import org.politisationpopulairefrancaise.ui.resources.harcelement_help_text
+import org.politisationpopulairefrancaise.ui.resources.harcelement_help_title
 import org.politisationpopulairefrancaise.ui.resources.gather_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.federer_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.proches_rubric_text
@@ -123,8 +131,26 @@ object AgirRubrics {
     /** « Se réunir » (D-198): collectifs, organisations, « Créer une association », rooms. */
     val GATHER = AgirRubric("se-reunir", Res.string.gather_rubric_title, Res.string.gather_rubric_text, Lucide.Users)
 
-    /** What can be opened today. */
-    val available: List<AgirRubric> = listOf(AGENDA, CALLS, FEDERER, ENGAGER, GATHER, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, PROCHES, COLLECTIVES, GUIDES)
+    /** « Kit contre le harcèlement » (AG-59, D-230): opens the kit the shell draws over the window. */
+    val HARASSMENT = AgirRubric("harcelement", Res.string.harcelement_help_title, Res.string.harcelement_help_text, Lucide.ShieldCheck)
+
+    /** The strike simulator (AG-60) in « Tenir » (D-190); it is also reached from the strike funds. */
+    val STRIKE = AgirRubric("simulateur-greve", Res.string.greve_entry_title, Res.string.greve_entry_text, Lucide.ListChecks)
+
+    /**
+     * The sections of the home, in the order of the roadmap of the MVP 1 (jalon 2, D-231): one heading each,
+     * so that a phone shows a few cards at a time instead of one long list. « S'engager en politique » is put
+     * forward above them (D-213); nothing is hidden (D-211).
+     */
+    val sections: List<AgirSection> = listOf(
+        AgirSection("se-mobiliser", Res.string.agir_section_mobilize, listOf(AGENDA, CALLS, GATHER, COLLECTIVES, ORGANISATIONS)),
+        AgirSection("tenir", Res.string.agir_section_hold, listOf(SOLIDARITY, HELP, STRIKE, GUIDES)),
+        AgirSection("federer", Res.string.agir_section_federate, listOf(FEDERER, PROCHES)),
+        AgirSection("se-proteger", Res.string.agir_section_protect, listOf(MANIFESTATION, HARASSMENT, TESTIFY)),
+    )
+
+    /** What can be opened today: the cards of the sections, then the highlight of « S'engager en politique ». */
+    val available: List<AgirRubric> = sections.flatMap { it.rubrics } + ENGAGER
 
     /** Planned but not ready: shown honestly, disabled, without any date. */
     val inPreparation: List<AgirRubric> = listOf(
@@ -134,12 +160,16 @@ object AgirRubrics {
     )
 }
 
+/** A heading of the home of "Agir" and its cards. */
+data class AgirSection(val id: String, val title: StringResource, val rubrics: List<AgirRubric>)
+
 /** Test tags of the home of "Agir". */
 object AgirTags {
     const val HOME = "agir-home"
     const val RUBRIC = "agir-rubric-" // followed by the rubric id
     const val SOON = "agir-soon-" // followed by the rubric id
     const val SOON_TITLE = "agir-soon-title"
+    const val SECTION = "agir-section-" // followed by the section id
     const val BACK = "agir-back"
     const val PENDING = "agir-pending"
     const val COLLECTIVES = "agir-collectives"
@@ -175,16 +205,18 @@ internal fun AgirHome(
             TimerHomeBlock(onOpenOwn = { onOpen(AgirRubrics.MANIFESTATION) }, modifier = Modifier.padding(top = 16.dp))
             // D-213: « S'engager en politique » put forward, with the next milestone of the electoral calendar.
             EngagementFeatured(today, onOpen = { onOpen(AgirRubrics.ENGAGER) }, modifier = Modifier.padding(top = 16.dp).widthIn(max = 720.dp))
-            Spacer(Modifier.height(24.dp))
-            SectionTitle(stringResource(Res.string.agir_rubrics_title))
-            Spacer(Modifier.height(12.dp))
-            RubricGrid(AgirRubrics.available) { rubric, cardModifier -> RubricCard(rubric, onClick = { onOpen(rubric) }, cardModifier) }
+            AgirRubrics.sections.forEach { section ->
+                Spacer(Modifier.height(24.dp))
+                SectionTitle(stringResource(section.title), Modifier.testTag(AgirTags.SECTION + section.id))
+                Spacer(Modifier.height(12.dp))
+                RubricGrid(section.rubrics) { rubric, cardModifier -> RubricCard(rubric, onClick = { onOpen(rubric) }, cardModifier, compact) }
+            }
             Spacer(Modifier.height(32.dp))
             SectionTitle(stringResource(Res.string.agir_soon_title), Modifier.testTag(AgirTags.SOON_TITLE))
             Spacer(Modifier.height(6.dp))
             Text(stringResource(Res.string.agir_soon_text), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
             Spacer(Modifier.height(12.dp))
-            RubricGrid(AgirRubrics.inPreparation) { rubric, cardModifier -> RubricCard(rubric, onClick = null, cardModifier) }
+            RubricGrid(AgirRubrics.inPreparation) { rubric, cardModifier -> RubricCard(rubric, onClick = null, cardModifier, compact) }
         }
     }
 }
@@ -212,7 +244,7 @@ private fun RubricGrid(rubrics: List<AgirRubric>, card: @Composable (AgirRubric,
 
 /** One rubric: an icon, its name, one line of explanation. [onClick] null: in preparation, disabled. */
 @Composable
-private fun RubricCard(rubric: AgirRubric, onClick: (() -> Unit)?, modifier: Modifier) {
+private fun RubricCard(rubric: AgirRubric, onClick: (() -> Unit)?, modifier: Modifier, compact: Boolean = false) {
     val palette = PpfTheme.palette
     val title = stringResource(rubric.title)
     val enabled = onClick != null
@@ -245,7 +277,14 @@ private fun RubricCard(rubric: AgirRubric, onClick: (() -> Unit)?, modifier: Mod
                     PpfBadge(stringResource(Res.string.agir_soon_badge), BadgeStyle.NEUTRAL)
                 }
                 Spacer(Modifier.height(4.dp))
-                Text(stringResource(rubric.text), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+                // On phones two lines of explanation; the screen reader still reads it whole.
+                Text(
+                    stringResource(rubric.text),
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = palette.inkMuted,
+                    maxLines = if (compact) 2 else Int.MAX_VALUE,
+                    overflow = TextOverflow.Ellipsis,
+                )
             }
             if (enabled) {
                 Spacer(Modifier.width(8.dp))

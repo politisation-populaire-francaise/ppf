@@ -24,8 +24,25 @@ import javax.crypto.spec.SecretKeySpec
 object AndroidProtectedVault {
     const val DIRECTORY: String = "ppf-camera"
 
+    /** The directory of the evidence of the harassment kit (AG-59), apart from the photos. */
+    const val EVIDENCE_DIRECTORY: String = "ppf-harcelement"
+
+    /** The Keystore alias of the evidence's own master key: erasing one vault never touches the other. */
+    const val EVIDENCE_MASTER_ALIAS: String = "ppf-harcelement-master"
+
     fun create(context: Context): ProtectedVault =
         EncryptedPhotoVault(DirectoryVaultFiles(File(context.applicationContext.noBackupFilesDir, DIRECTORY)), KeystoreVaultCrypto())
+
+    /**
+     * The vault of the harassment kit (AG-59): the same format and the same cryptography as the
+     * photos, in its own no-backup directory, under its own master key of the Keystore and its own
+     * associated data ([EncryptedPhotoVault.EVIDENCE_DOMAIN]).
+     */
+    fun createEvidence(context: Context): ProtectedVault = EncryptedPhotoVault(
+        DirectoryVaultFiles(File(context.applicationContext.noBackupFilesDir, EVIDENCE_DIRECTORY)),
+        KeystoreVaultCrypto(EVIDENCE_MASTER_ALIAS),
+        domain = EncryptedPhotoVault.EVIDENCE_DOMAIN,
+    )
 }
 
 /**
@@ -33,7 +50,7 @@ object AndroidProtectedVault {
  * and a master AES-256-GCM key of the Android Keystore for wrapping them: the Keystore chooses the
  * nonce of each wrap itself (randomized encryption, the default), and the key never leaves it.
  */
-internal class KeystoreVaultCrypto : VaultCrypto {
+internal class KeystoreVaultCrypto(private val masterAlias: String = MASTER_ALIAS) : VaultCrypto {
     private val random = SecureRandom()
 
     override fun newKey(): ByteArray = ByteArray(KEY_BYTES).also { random.nextBytes(it) }
@@ -73,23 +90,23 @@ internal class KeystoreVaultCrypto : VaultCrypto {
         return cipher.doFinal(wrapped, NONCE_BYTES, wrapped.size - NONCE_BYTES)
     }
 
-    override fun hasMasterKey(): Boolean = keyStore().containsAlias(MASTER_ALIAS)
+    override fun hasMasterKey(): Boolean = keyStore().containsAlias(masterAlias)
 
     override fun destroyMasterKey() {
         val store = keyStore()
-        if (store.containsAlias(MASTER_ALIAS)) store.deleteEntry(MASTER_ALIAS)
-        if (keyStore().containsAlias(MASTER_ALIAS)) throw GeneralSecurityException("the master key of the protected camera could not be destroyed")
+        if (store.containsAlias(masterAlias)) store.deleteEntry(masterAlias)
+        if (keyStore().containsAlias(masterAlias)) throw GeneralSecurityException("the master key of the protected camera could not be destroyed")
     }
 
     private fun keyStore(): KeyStore = KeyStore.getInstance(ANDROID_KEYSTORE).apply { load(null) }
 
-    private fun existingMasterKey(): SecretKey? = (keyStore().getEntry(MASTER_ALIAS, null) as? KeyStore.SecretKeyEntry)?.secretKey
+    private fun existingMasterKey(): SecretKey? = (keyStore().getEntry(masterAlias, null) as? KeyStore.SecretKeyEntry)?.secretKey
 
     private fun masterKey(): SecretKey {
         existingMasterKey()?.let { return it }
         val generator = KeyGenerator.getInstance(KeyProperties.KEY_ALGORITHM_AES, ANDROID_KEYSTORE)
         generator.init(
-            KeyGenParameterSpec.Builder(MASTER_ALIAS, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
+            KeyGenParameterSpec.Builder(masterAlias, KeyProperties.PURPOSE_ENCRYPT or KeyProperties.PURPOSE_DECRYPT)
                 .setBlockModes(KeyProperties.BLOCK_MODE_GCM)
                 .setEncryptionPaddings(KeyProperties.ENCRYPTION_PADDING_NONE)
                 .setKeySize(256)
@@ -100,6 +117,7 @@ internal class KeystoreVaultCrypto : VaultCrypto {
 
     private companion object {
         const val ANDROID_KEYSTORE = "AndroidKeyStore"
+        /** The master key of the protected camera (D-089), unchanged. */
         const val MASTER_ALIAS = "ppf-camera-master"
         const val TRANSFORMATION = "AES/GCM/NoPadding"
         const val KEY_BYTES = 32
