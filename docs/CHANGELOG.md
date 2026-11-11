@@ -5,6 +5,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 ## Non publié
 
 ### Modifié
+- Accueil de Décider (12 novembre 2026) : les pétitions ouvertes, puis la Constitution Citoyenne et Démocratique et sa délibération, avant le calendrier et le reste.
 - Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
 
 ### Ajouté
