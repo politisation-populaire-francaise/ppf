@@ -53,8 +53,8 @@ class ComprendrePagesTest {
     @Test
     fun theBundledContentsAreAllRead() {
         assertEquals(22, catalog.fiches.size)
-        assertEquals(19, catalog.parcours.size)
-        assertEquals(6, catalog.decryptages.size)
+        assertEquals(20, catalog.parcours.size)
+        assertEquals(7, catalog.decryptages.size)
         assertEquals(3, catalog.stories.size)
         assertEquals(12, catalog.sheets.size)
         assertEquals(72, catalog.glossary.size)
