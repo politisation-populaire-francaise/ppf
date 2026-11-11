@@ -26,15 +26,15 @@ updated_at: 2026-11-11
 
 ## Ils ont renversé un pouvoir, sans tout obtenir
 
-- **Bangladesh, été 2024** : un mouvement étudiant contraint la Première ministre à quitter le pays. Selon le Haut-Commissariat des Nations unies aux droits de l'homme, la répression a pu faire jusqu'à 1 400 morts entre le 1er juillet et le 15 août 2024.
+- **Bangladesh, été 2024** : un mouvement étudiant contraint la Première ministre à quitter le pays. Selon le Haut-Commissariat des Nations unies aux droits de l'homme, la répression des manifestations a pu faire jusqu'à 1 400 morts.
 - **Népal, septembre 2025** : une interdiction de réseaux sociaux déclenche une révolte de la jeunesse ; le Premier ministre démissionne. Entre 76 et 77 personnes sont mortes selon les sources. Un parti créé trois ans plus tôt gagne les élections du 5 mars 2026 avec 182 sièges sur 275. Un an après la révolte, selon le Kathmandu Post, les gens attendent encore de voir les promesses changer leur vie quotidienne, et aucune poursuite n'a été engagée contre l'ancien Premier ministre.
 - **Madagascar, 2025** : la colère contre les coupures d'eau et d'électricité, à partir du 25 septembre, fait fuir le président ; c'est un colonel qui prend le pouvoir. Un an plus tard, l'élection présidentielle est promise pour fin 2027 et, selon les militants, les demandes de base ne sont toujours pas satisfaites.
 
 ## Ils n'ont rien obtenu, pour l'instant
 
 - **Géorgie** : des manifestations chaque jour depuis le 28 novembre 2024, quand le gouvernement a arrêté les négociations d'adhésion à l'Union européenne. Le pouvoir a durci les sanctions contre les manifestants et n'a pas changé de cap.
-- **Belgique** : malgré de grandes manifestations syndicales, comme à Bruxelles le 14 octobre 2025, la Chambre adopte la réforme des pensions dans la nuit du 28 au 29 mai 2026. Un syndicat et un parti annoncent un recours devant la Cour constitutionnelle.
-- **Maroc, 2025** : après les manifestations de la jeunesse pour la santé et l'éducation, le parquet annonce que plus de 2 400 personnes sont poursuivies.
+- **Belgique** : malgré de grandes manifestations syndicales, comme à Bruxelles le 14 octobre 2025 (environ 80 000 personnes selon la police), la Chambre adopte la réforme des pensions dans la nuit du 28 au 29 mai 2026. Un syndicat et un parti annoncent un recours devant la Cour constitutionnelle.
+- **Maroc, 2025** : après les manifestations de la jeunesse pour la santé et l'éducation, les autorités arrêtent environ 2 100 personnes et en poursuivent au moins 1 400, dont 330 enfants, selon l'Association marocaine des droits humains citée par Human Rights Watch.
 
 ## Ce qu'on peut en retenir
 

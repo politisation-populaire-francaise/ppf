@@ -187,7 +187,7 @@ class CallsLibraryTest {
         content.start()
         eventually { content.status == LibraryStatus.Offline && content.guides.isNotEmpty() }
         val callSlugs = calls.calls.map { it.slug }.toSet()
-        assertEquals(20, content.guides.size)
+        assertEquals(22, content.guides.size)
         assertTrue(content.guides.none { it.slug in callSlugs })
         assertTrue(content.revendications.none { it.slug in callSlugs })
         assertEquals(24, content.revendications.size) // 8 examples and 16 real demands (D-152)
