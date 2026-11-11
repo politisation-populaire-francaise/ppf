@@ -3,7 +3,7 @@ slug: budget-2027-et-si-l-assemblee-le-rejette
 title: Budget 2027 : qui le vote, et que se passe-t-il s'il est rejeté ?
 summary: Le 4 novembre 2026, l'Assemblée nationale a rejeté la partie recettes du budget 2027, sans aucune voix pour. Où en est le texte, qui décide maintenant, et ce que prévoient la Constitution et la loi si le budget n'est pas voté à temps.
 topics: budget, institutions, parlement
-type: dossier
+type: fiche-pratique
 origin: ai-assisted
 published_at: 2026-11-11
 updated_at: 2026-11-11

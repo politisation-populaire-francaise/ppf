@@ -3,7 +3,7 @@ slug: qui-paie-quels-impots
 title: Qui paie quels impôts ? Les chiffres officiels
 summary: Ce que rapportent les principaux impôts, qui paie l'impôt sur le revenu, et comment impôts et prestations réduisent les écarts de niveau de vie, d'après la DGFiP et l'Insee.
 topics: budget, impots, inegalites
-type: dossier
+type: fiche-pratique
 origin: ai-assisted
 published_at: 2026-11-11
 updated_at: 2026-11-11

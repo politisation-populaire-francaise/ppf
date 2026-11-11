@@ -3,7 +3,7 @@ slug: salaires-smic-et-inflation
 title: Salaires, Smic et inflation : les chiffres
 summary: Comment le Smic suit les prix, ce qu'est un « coup de pouce », et pourquoi les autres salaires suivent les prix plus lentement, avec les derniers chiffres officiels.
 topics: travail, salaires, pouvoir d'achat
-type: dossier
+type: fiche-pratique
 origin: ai-assisted
 published_at: 2026-11-11
 updated_at: 2026-11-11

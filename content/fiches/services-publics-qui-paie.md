@@ -3,7 +3,7 @@ slug: services-publics-qui-paie
 title: Hôpital, école, justice : qui paie, et où se décident leurs moyens ?
 summary: L'hôpital est surtout payé par l'Assurance maladie, l'école et la justice par l'État, les bâtiments scolaires par les collectivités. Leurs moyens se décident chaque automne au Parlement et dans les conseils élus.
 topics: services publics, budget, institutions
-type: dossier
+type: fiche-pratique
 origin: ai-assisted
 published_at: 2026-11-11
 updated_at: 2026-11-11
