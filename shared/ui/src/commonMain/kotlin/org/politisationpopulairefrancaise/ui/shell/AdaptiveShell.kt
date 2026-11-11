@@ -139,7 +139,9 @@ import org.politisationpopulairefrancaise.ui.comprendre.rememberComprendreLibrar
 import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
 import org.politisationpopulairefrancaise.ui.content.ComprendreSection
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
+import org.politisationpopulairefrancaise.ui.endirect.LatestCapBlock
 import org.politisationpopulairefrancaise.ui.endirect.LiveBoardState
+import org.politisationpopulairefrancaise.ui.endirect.MyElusBlock
 import org.politisationpopulairefrancaise.ui.endirect.RemindersBlock
 import org.politisationpopulairefrancaise.ui.endirect.UrgentCallsBlock
 import org.politisationpopulairefrancaise.ui.endirect.rememberLiveBoardState
@@ -611,6 +613,8 @@ private fun SpaceContent(
     reminderStore: ReminderStore? = null,
     openTarget: (String?) -> Unit = {},
 ) {
+    // One library of « Comprendre » for its space and the blocks of « En direct » (the cap, my elected officials).
+    val comprendreLibrary = rememberComprendreLibrary(dependencies)
     // The organisers of the agenda are named after the directory when they are verified organisations.
     val organisationName: (String) -> String? = { key -> organisationsLibrary.verified.organisationFor(key)?.name }
     when (selected) {
@@ -633,6 +637,20 @@ private fun SpaceContent(
                 }
             },
             reminders = reminderStore?.let { store -> { slotModifier: Modifier -> RemindersBlock(store, slotModifier) { openTarget(it.target) } } },
+            cap = { slotModifier ->
+                LatestCapBlock(comprendreLibrary, slotModifier) { text ->
+                    comprendreLibrary.openArticle(text.article)
+                    onNavigate(Space.COMPRENDRE)
+                }
+            },
+            elus = comprendreLibrary.elus?.let { library ->
+                { slotModifier: Modifier ->
+                    MyElusBlock(library, slotModifier) {
+                        library.openPage()
+                        onNavigate(Space.COMPRENDRE)
+                    }
+                }
+            },
             onRefresh = {
                 contentLibrary.refresh()
                 agendaLibrary.refresh()
@@ -663,7 +681,7 @@ private fun SpaceContent(
             },
         )
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate, requests = voirRequests, parliament = parliamentState)
-        Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate, requestedSection = comprendreSection, onSectionHandled = onComprendreSectionHandled)
+        Space.COMPRENDRE -> ComprendreScreen(contentLibrary, comprendreLibrary, windowClass, modifier, onNavigate, requestedSection = comprendreSection, onSectionHandled = onComprendreSectionHandled)
         Space.AGIR -> {
             // The verified organisations name the organisers of the agenda and may call for donations.
             LaunchedEffect(organisationsLibrary) { organisationsLibrary.ensureStarted() }

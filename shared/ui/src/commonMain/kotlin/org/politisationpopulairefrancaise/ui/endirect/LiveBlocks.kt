@@ -36,6 +36,9 @@ import kotlinx.coroutines.withContext
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.agir.calls.Call
+import org.politisationpopulairefrancaise.core.comprendre.CapText
+import org.politisationpopulairefrancaise.ui.comprendre.ComprendreLibrary
+import org.politisationpopulairefrancaise.ui.comprendre.elus.ElusLibrary
 import org.politisationpopulairefrancaise.core.endirect.LiveBlock
 import org.politisationpopulairefrancaise.core.endirect.LivePreset
 import org.politisationpopulairefrancaise.core.endirect.LiveView
@@ -68,6 +71,12 @@ import org.politisationpopulairefrancaise.ui.resources.live_block_rappels
 import org.politisationpopulairefrancaise.ui.resources.live_block_une
 import org.politisationpopulairefrancaise.ui.resources.live_calls_due
 import org.politisationpopulairefrancaise.ui.resources.live_calls_none
+import org.politisationpopulairefrancaise.ui.resources.live_block_cap
+import org.politisationpopulairefrancaise.ui.resources.live_block_elus
+import org.politisationpopulairefrancaise.ui.resources.live_cap_none
+import org.politisationpopulairefrancaise.ui.resources.live_cap_read
+import org.politisationpopulairefrancaise.ui.resources.live_elus_choose
+import org.politisationpopulairefrancaise.ui.resources.live_elus_count
 import org.politisationpopulairefrancaise.ui.resources.live_customize_done
 import org.politisationpopulairefrancaise.ui.resources.live_customize_hint
 import org.politisationpopulairefrancaise.ui.resources.live_customize_title
@@ -101,6 +110,8 @@ object LiveBoardTags {
     const val REFRESH = "en-direct-refresh"
     const val CALLS = "en-direct-calls"
     const val REMINDERS = "en-direct-reminders"
+    const val CAP = "en-direct-cap"
+    const val ELUS = "en-direct-elus"
     fun view(id: String) = "en-direct-view-$id"
     fun block(block: LiveBlock) = "en-direct-block-${block.id}"
     fun up(block: LiveBlock) = "en-direct-up-${block.id}"
@@ -119,6 +130,8 @@ internal fun titleOf(block: LiveBlock): StringResource = when (block) {
     LiveBlock.FIGURES -> Res.string.live_block_chiffres
     LiveBlock.PARLIAMENT -> Res.string.live_block_parlement
     LiveBlock.REMINDERS -> Res.string.live_block_rappels
+    LiveBlock.CAP -> Res.string.live_block_cap
+    LiveBlock.ELUS -> Res.string.live_block_elus
     LiveBlock.NEWS -> Res.string.live_block_actu
     LiveBlock.CHRONOLOGY -> Res.string.live_block_chronologie
 }
@@ -158,6 +171,42 @@ fun RemindersBlock(store: ReminderStore, modifier: Modifier = Modifier, now: () 
         if (reminders.isEmpty()) Text(stringResource(Res.string.live_reminders_none), style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.inkSubtle)
         reminders.forEach { reminder ->
             LiveRow(reminder.title, stringResource(Res.string.live_reminder_due, CivilDate.fromEpochSeconds(reminder.dueAt).toFrenchShort()), example = false) { onOpen(reminder) }
+        }
+    }
+}
+
+/** « Le cap du mouvement »: the latest text published; touching it opens it in Comprendre. */
+@Composable
+fun LatestCapBlock(comprendre: ComprendreLibrary, modifier: Modifier = Modifier, onOpen: (CapText) -> Unit) {
+    LaunchedEffect(comprendre) { if (comprendre.capTexts.isEmpty()) comprendre.reload() }
+    val latest = comprendre.capTexts.maxByOrNull { it.article.publishedAt ?: 0L }
+    Column(modifier.testTag(LiveBoardTags.CAP)) {
+        if (latest == null) {
+            Text(stringResource(Res.string.live_cap_none), style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.inkSubtle)
+        } else {
+            PpfCard(onClick = { onOpen(latest) }, modifier = Modifier.fillMaxWidth()) {
+                Text(latest.article.title, style = MaterialTheme.typography.titleMedium, maxLines = 3, overflow = TextOverflow.Ellipsis)
+                latest.article.summary?.let {
+                    Spacer(Modifier.height(4.dp))
+                    Text(it, style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.inkMuted, maxLines = 3, overflow = TextOverflow.Ellipsis)
+                }
+                Spacer(Modifier.height(6.dp))
+                Text(stringResource(Res.string.live_cap_read), style = MaterialTheme.typography.labelLarge, color = PpfTheme.palette.brand)
+            }
+        }
+    }
+}
+
+/** « Mes élus »: the commune chosen in Comprendre and how many officials it has; touching it opens the page. */
+@Composable
+fun MyElusBlock(elus: ElusLibrary, modifier: Modifier = Modifier, onOpen: () -> Unit) {
+    LaunchedEffect(elus) { elus.load() }
+    val mine = elus.mine
+    Column(modifier.testTag(LiveBoardTags.ELUS)) {
+        if (mine == null) {
+            LiveRow(stringResource(Res.string.live_elus_choose), null, example = false, onOpen = onOpen)
+        } else {
+            LiveRow(mine.officials.commune.name, stringResource(Res.string.live_elus_count, mine.officials.count), example = mine.example, onOpen = onOpen)
         }
     }
 }

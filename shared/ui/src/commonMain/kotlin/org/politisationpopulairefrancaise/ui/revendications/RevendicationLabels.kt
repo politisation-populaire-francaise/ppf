@@ -36,6 +36,7 @@ import org.politisationpopulairefrancaise.ui.resources.rv_view_mine_desc
 import org.politisationpopulairefrancaise.ui.resources.rv_view_national
 import org.politisationpopulairefrancaise.ui.resources.rv_view_national_desc
 import org.politisationpopulairefrancaise.ui.resources.rv_view_theme_desc
+import org.politisationpopulairefrancaise.ui.resources.*
 
 /** The name of a view as its tab shows it. */
 @Composable
@@ -47,6 +48,15 @@ fun viewLabel(view: RevendicationView): String = when (view) {
         BuiltInKind.MINE -> stringResource(Res.string.rv_view_mine)
         BuiltInKind.NATIONAL -> stringResource(Res.string.rv_view_national)
         BuiltInKind.THEME -> themeLabel(view.themeId.orEmpty())
+        BuiltInKind.MOST_FOR -> stringResource(Res.string.rv_view_most_for)
+        BuiltInKind.MOST_AGAINST -> stringResource(Res.string.rv_view_most_against)
+        BuiltInKind.NEWEST -> stringResource(Res.string.rv_view_newest)
+        BuiltInKind.MOST_DEBATED -> stringResource(Res.string.rv_view_most_debated)
+        BuiltInKind.MOVEMENT -> stringResource(Res.string.rv_view_movement)
+        BuiltInKind.PARLIAMENT -> stringResource(Res.string.rv_view_parliament)
+        BuiltInKind.CLOSED -> stringResource(Res.string.rv_view_closed)
+        BuiltInKind.NEAR_ME -> stringResource(Res.string.rv_view_near_me)
+        BuiltInKind.MY_VOTES -> stringResource(Res.string.rv_view_my_votes)
     }
 }
 
@@ -60,13 +70,33 @@ fun viewDescription(view: RevendicationView): String = when (view) {
         BuiltInKind.MINE -> stringResource(Res.string.rv_view_mine_desc)
         BuiltInKind.NATIONAL -> stringResource(Res.string.rv_view_national_desc)
         BuiltInKind.THEME -> stringResource(Res.string.rv_view_theme_desc, themeLabel(view.themeId.orEmpty()))
+        BuiltInKind.MOST_FOR -> stringResource(Res.string.rv_view_most_for_desc)
+        BuiltInKind.MOST_AGAINST -> stringResource(Res.string.rv_view_most_against_desc)
+        BuiltInKind.NEWEST -> stringResource(Res.string.rv_view_newest_desc)
+        BuiltInKind.MOST_DEBATED -> stringResource(Res.string.rv_view_most_debated_desc)
+        BuiltInKind.MOVEMENT -> stringResource(Res.string.rv_view_movement_desc)
+        BuiltInKind.PARLIAMENT -> stringResource(Res.string.rv_view_parliament_desc)
+        BuiltInKind.CLOSED -> stringResource(Res.string.rv_view_closed_desc)
+        BuiltInKind.NEAR_ME -> stringResource(Res.string.rv_view_near_me_desc)
+        BuiltInKind.MY_VOTES -> stringResource(Res.string.rv_view_my_votes_desc)
     }
+}
+
+fun scopeLabelResource(scope: org.politisationpopulairefrancaise.core.revendications.RevendicationScope): StringResource = when (scope) {
+    org.politisationpopulairefrancaise.core.revendications.RevendicationScope.MOVEMENT -> Res.string.rv_view_movement
+    org.politisationpopulairefrancaise.core.revendications.RevendicationScope.PARLIAMENT -> Res.string.rv_view_parliament
+    org.politisationpopulairefrancaise.core.revendications.RevendicationScope.CLOSED -> Res.string.rv_view_closed
+    org.politisationpopulairefrancaise.core.revendications.RevendicationScope.NEAR_ME -> Res.string.rv_view_near_me
+    org.politisationpopulairefrancaise.core.revendications.RevendicationScope.MY_VOTES -> Res.string.rv_view_my_votes
 }
 
 fun sortLabelResource(sort: RevendicationSort): StringResource = when (sort) {
     RevendicationSort.NEWEST -> Res.string.rv_sort_newest
     RevendicationSort.POPULAR -> Res.string.rv_sort_popular
     RevendicationSort.UPDATED -> Res.string.rv_sort_updated
+    RevendicationSort.MOST_FOR -> Res.string.rv_view_most_for
+    RevendicationSort.MOST_AGAINST -> Res.string.rv_view_most_against
+    RevendicationSort.MOST_DEBATED -> Res.string.rv_view_most_debated
 }
 
 fun statusLabelResource(status: RevendicationStatus): StringResource = when (status) {

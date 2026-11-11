@@ -8,6 +8,7 @@ import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsEnabled
 import androidx.compose.ui.test.assertIsNotEnabled
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -90,6 +91,7 @@ class ProposalScreenTest {
 
     private fun ComposeUiTest.fillValidDraft(title: String = "Un médecin de garde joignable le soir dans chaque canton") {
         onNodeWithTag(ProposalTags.TITLE).performTextInput(title)
+        if (onAllNodesWithTag(ProposalTags.WHY).fetchSemanticsNodes().isEmpty()) onNodeWithTag(ProposalTags.DETAILS).performScrollTo().performClick()
         onNodeWithTag(ProposalTags.WHY).performScrollTo().performTextInput("Le soir, il ne reste que les urgences.")
         onNodeWithTag(ProposalTags.ASKS).performScrollTo().performTextInput("Une permanence de garde par canton.")
         onNodeWithTag(ProposalTags.THEME + "sante").performScrollTo().performClick()
@@ -130,6 +132,7 @@ class ProposalScreenTest {
         onNodeWithTag(ProposalTags.SEND).performScrollTo().assertIsEnabled()
 
         // Personal data blocks again, whatever the rest.
+        if (onAllNodesWithTag(ProposalTags.WHY).fetchSemanticsNodes().isEmpty()) onNodeWithTag(ProposalTags.DETAILS).performScrollTo().performClick()
         onNodeWithTag(ProposalTags.WHY).performScrollTo().performTextReplacement("Appelez-moi au 06 12 34 56 78.")
         waitForIdle()
         onNodeWithTag(IssueTags.ISSUE + "personal_data").performScrollTo().assertExists()
