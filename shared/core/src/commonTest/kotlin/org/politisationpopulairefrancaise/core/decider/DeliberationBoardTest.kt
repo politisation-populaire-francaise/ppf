@@ -23,7 +23,7 @@ class DeliberationBoardTest {
     private fun deliberation(pubkey: String = team, slug: String = "pacte-2027") = event(
         pubkey, 100,
         listOf(
-            listOf("d", slug), listOf("title", "[EXEMPLE] Les mesures du Pacte"), listOf("ppf-type", "deliberation"),
+            listOf("d", slug), listOf("title", "[EXEMPLE] Les mesures de la Constitution Citoyenne et Démocratique"), listOf("ppf-type", "deliberation"),
             listOf("ppf-phase", "propositions", "1000", "2000"), listOf("ppf-phase", "amendements", "2000", "3000"), listOf("ppf-phase", "vote", "3000", "4000"),
             listOf("ppf-measures", "5", "10"),
         ),

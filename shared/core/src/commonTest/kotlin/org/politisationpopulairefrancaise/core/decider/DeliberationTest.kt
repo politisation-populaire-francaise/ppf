@@ -30,7 +30,7 @@ class DeliberationTest {
         team.sign(
             kind = EventKinds.LONG_FORM_ARTICLE,
             tags = listOf(listOf("d", "pacte-2027"), listOf("ppf-type", "deliberation"), listOf("title", "[EXEMPLE] Pacte démocratique 2027"), measures) + tags,
-            content = "[EXEMPLE] Délibération sur les mesures du Pacte.",
+            content = "[EXEMPLE] Délibération sur les mesures de la Constitution Citoyenne et Démocratique.",
             createdAt = start - 86_400,
         )
 

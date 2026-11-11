@@ -1,7 +1,7 @@
 ---
 slug: reponse-pacte-alex
 type: engagement
-title: [EXEMPLE] Réponse d’Alex Modèle au Pacte démocratique
+title: [EXEMPLE] Réponse d’Alex Modèle à la Constitution Citoyenne et Démocratique
 pacte: pacte-election-exemple
 candidate: alex-modele
 received: 2026-11-05
