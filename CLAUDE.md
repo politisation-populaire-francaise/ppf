@@ -52,7 +52,7 @@ La propriétaire est une ancienne développeuse web. Elle maîtrise la logique e
 - Travaille par **petites étapes livrables** : annoncer, faire, tester, vérifier, puis expliquer comment elle peut tester elle-même.
 - **En début de session**, rappelle-lui les entrées « À valider » des brainstormings qui bloquent la prochaine étape.
 - **En fin de session**, résume ce qui a été fait, ce qu'elle doit tester et comment, les décisions en attente et la prochaine étape.
-- **Son matériel de test** : un téléphone Android et un ordinateur, pas d'iPhone. Prévois toujours un APK installable et la procédure pour l'installer. La messagerie Bluetooth demandera au moins deux téléphones Android : préviens-la à l'avance.
+- **Son matériel de test** : un téléphone Android et un ordinateur, pas d'iPhone. La version d'essai (APK) se construit pour les vérifications, mais elle ne lui est envoyée que lorsqu'elle la demande (consigne du 11 novembre 2026 : « Ne m'envoie pas les versions de test de l'appli sans que je te le demande, on doit economiser des tokens ») ; dis seulement qu'une version est prête. Économise les tokens : messages courts, aucun travail qu'elle n'a pas demandé. La messagerie Bluetooth demandera au moins deux téléphones Android : préviens-la à l'avance.
 - **Sa préférence typographique** : pas de tiret cadratin, sauf pour marquer un dialogue (y compris dans l'interface et la documentation).
 
 ## 5. Budget
@@ -221,7 +221,7 @@ Une tâche n'est terminée que si :
 - les tests passent, en local comme en intégration continue ;
 - les règles de la section 7 sont respectées (traceurs, vie privée, sécurité, accessibilité, écrans adaptatifs) ;
 - la documentation technique, `ROADMAP.md` et `CHANGELOG.md` sont à jour ;
-- la propriétaire a reçu une explication simple pour tester elle-même (avec un APK si l'application est concernée).
+- la propriétaire a reçu une explication simple pour tester elle-même (l'APK ne lui est envoyé que sur sa demande).
 
 ## 13. Ce que tu ne fais pas
 
