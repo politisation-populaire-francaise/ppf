@@ -672,9 +672,10 @@ private fun LowShell(
             TopBar(onMenu = openMenu, account = account, bell = bell, selected = selected, onSelect = onSelect)
             Row(Modifier.weight(1f).fillMaxWidth()) {
                 Column(
-                    Modifier.fillMaxHeight().background(palette.surface0).sideNavigationSafeArea()
+                    // The tag first: the rail is its background, from the edge of the screen, camera hole included.
+                    Modifier.testTag(ShellTags.NAV_RAIL).fillMaxHeight().background(palette.surface0).sideNavigationSafeArea()
                         .verticalScroll(rememberScrollState()).width(80.dp).padding(vertical = 4.dp)
-                        .selectableGroup().testTag(ShellTags.NAV_RAIL),
+                        .selectableGroup(),
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {

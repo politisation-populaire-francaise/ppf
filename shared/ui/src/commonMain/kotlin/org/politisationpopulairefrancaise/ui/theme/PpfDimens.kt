@@ -38,10 +38,10 @@ data class PpfDimens(
     val compactRailItemHeight: Dp = 52.dp,
     /** The side bar of wide windows. */
     val sideBarWidth: Dp = 280.dp,
-    /** The wordmark of the top bars (full name on two lines, or « PPF »). */
+    /** The wordmark of the top bars: the full name, on two or three lines (D-182). */
     val wordmarkSize: TextUnit = 14.sp,
-    val wordmarkLineHeight: TextUnit = 16.sp,
-    val wordmarkShortSize: TextUnit = 20.sp,
+    /** Its size when one word per line at [wordmarkSize] does not fit (small phone, large font). */
+    val wordmarkSmallSize: TextUnit = 12.sp,
 )
 
 val LocalPpfDimens = staticCompositionLocalOf { PpfDimens() }
