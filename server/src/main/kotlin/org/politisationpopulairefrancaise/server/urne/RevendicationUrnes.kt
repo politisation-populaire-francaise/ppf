@@ -9,22 +9,25 @@ import java.time.Clock
 import javax.sql.DataSource
 
 /**
- * The ballot boxes of the demands wall (DE-01, D-110, step 4 of the design): a demand that the team
- * put in debate gets its box, and the box closes when the demand leaves the debate.
+ * The ballot boxes of the demands wall (DE-01, D-110, step 4 of the design): every published demand
+ * gets its box (decision of the owner of 2026-11-11: « vote pour/contre » must work on the wall, D-155),
+ * and the box closes when the demand is retained, becomes a campaign or disappears.
  *
  * - **Opened** for every published demand (kind 30023, `ppf-type` = `revendication`) whose status is
- *   « en débat » or « très soutenue »: the status of the latest label of the team ([StatusLabels],
- *   NIP-32), or the status written in a demand of the team itself (only the team moves a demand
- *   forward; a citizen's demand is published « nouvelle »). The box: `decider:revendication:<address>`,
+ *   « nouvelle », « en débat » or « très soutenue »: the status of the latest label of the team
+ *   ([StatusLabels], NIP-32), or the status written in a demand of the team itself (only the team moves a
+ *   demand forward; a citizen's demand counts as « nouvelle » whatever it writes; the server publishes it
+ *   only after the review of a person). The box: `decider:revendication:<address>`,
  *   choices `pour`, `contre` and `blanc` (the blank vote counted and shown; not voting is abstaining,
  *   shown by the participation; owner's decision of 7 November 2026), results shown live, no natural end.
- * - **Closed early** when the demand is retained in the programme, becomes a campaign, goes back to
- *   « nouvelle » or disappears (deleted): the closing publishes the keys and the anonymous ballots,
+ * - **Closed early** when the demand is retained in the programme, becomes a campaign or disappears
+ *   (deleted): the closing publishes the keys and the anonymous ballots,
  *   so that anyone can recount (6.7). A box is never reopened: a demand that comes back to the
  *   debate keeps its closed box (one box per demand, one vote per account).
  *
- * Voting is limited to the demands in debate because the server computes one token per account and
- * per open box (measured at step 1, D-110): opening a box for every demand would not hold.
+ * The server computes one token per account and per open box (measured at step 1, D-110): with every
+ * published demand open, the number of boxes follows the number of demands kept on the wall; the
+ * reviewed publication of the citizens' demands and [UrneConfig.maxTokensPerRequest] keep it bounded.
  *
  * Run by the closing task of [UrneService] at every pass; it only reads the events and opens or
  * closes boxes, idempotently.
@@ -110,6 +113,6 @@ class RevendicationUrnes(
     companion object {
         const val PREFIX: String = "decider:revendication:"
         val CHOICES: List<String> = listOf("pour", "contre", "blanc")
-        private val VOTABLE = setOf(RevendicationStatus.EN_DEBAT, RevendicationStatus.TRES_SOUTENUE)
+        private val VOTABLE = setOf(RevendicationStatus.NOUVELLE, RevendicationStatus.EN_DEBAT, RevendicationStatus.TRES_SOUTENUE)
     }
 }

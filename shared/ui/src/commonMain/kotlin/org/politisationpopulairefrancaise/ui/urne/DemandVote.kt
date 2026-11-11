@@ -49,6 +49,7 @@ import org.politisationpopulairefrancaise.ui.resources.urne_stage_petition
 import org.politisationpopulairefrancaise.ui.resources.urne_supports_line
 import org.politisationpopulairefrancaise.ui.resources.urne_unavailable
 import org.politisationpopulairefrancaise.ui.resources.urne_vote_blank
+import org.politisationpopulairefrancaise.ui.resources.urne_your_vote
 import org.politisationpopulairefrancaise.ui.resources.urne_withdraw
 import org.politisationpopulairefrancaise.ui.resources.urne_withdrawn
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
@@ -61,6 +62,7 @@ object DemandVoteTags {
     const val FOR = "revendication-vote-for"
     const val AGAINST = "revendication-vote-against"
     const val BLANK = "revendication-vote-blank"
+    const val YOUR_VOTE = "revendication-your-vote"
     const val STATUS = "revendication-vote-status"
     const val RESULTS = "revendication-vote-results"
     const val WITHDRAW = "revendication-vote-withdraw"
@@ -176,6 +178,18 @@ fun DemandVoteRow(
             state.choice == UrneInfo.WITHDRAWN -> stringResource(Res.string.urne_withdrawn)
             !state.sent -> stringResource(Res.string.urne_sending)
             else -> stringResource(Res.string.urne_recorded)
+        }
+        // After a vote, the choice made on this device, in words (the ballot itself leaves later, anonymous).
+        val chosen = state?.choice?.takeIf { it != UrneInfo.WITHDRAWN && voting?.elected != true }
+        if (chosen != null) {
+            val label = stringResource(
+                when (chosen) {
+                    FOR -> Res.string.revendication_vote_for
+                    AGAINST -> Res.string.revendication_vote_against
+                    else -> Res.string.urne_vote_blank
+                },
+            )
+            Text(stringResource(Res.string.urne_your_vote, label), style = MaterialTheme.typography.labelLarge, color = palette.brand, modifier = Modifier.testTag(DemandVoteTags.YOUR_VOTE))
         }
         Text(status, style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.testTag(DemandVoteTags.STATUS))
         // An account declared compromised gets no new token (S-146), but the tokens already on this device stay the
