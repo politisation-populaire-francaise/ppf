@@ -305,17 +305,25 @@ fun PpfIconButton(
     enabled: Boolean = true,
     tint: Color = PpfTheme.palette.inkMuted,
     badge: Boolean = false,
+    /** The current place (the messages of the top bar while they are open): a tinted background. */
+    selected: Boolean = false,
 ) {
     val palette = PpfTheme.palette
-    Box(modifier.size(44.dp)) {
+    val dimens = PpfTheme.dimens
+    // The touch target of the tokens (48 dp, never less: WCAG 2.2, 2.5.8).
+    Box(modifier.size(dimens.iconButton)) {
         IconButton(
             onClick = onClick,
             enabled = enabled,
             shape = MaterialTheme.shapes.small,
-            colors = IconButtonDefaults.iconButtonColors(contentColor = tint, disabledContentColor = tint.copy(alpha = 0.38f)),
-            modifier = Modifier.size(44.dp),
+            colors = IconButtonDefaults.iconButtonColors(
+                containerColor = if (selected) palette.brandTint else Color.Transparent,
+                contentColor = tint,
+                disabledContentColor = tint.copy(alpha = 0.38f),
+            ),
+            modifier = Modifier.size(dimens.iconButton),
         ) {
-            Icon(icon, contentDescription = contentDescription, modifier = Modifier.size(22.dp))
+            Icon(icon, contentDescription = contentDescription, modifier = Modifier.size(dimens.barIcon))
         }
         if (badge) {
             Box(

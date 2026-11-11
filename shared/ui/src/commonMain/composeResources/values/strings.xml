@@ -8,7 +8,8 @@
 Populaire Française</string>
     <string name="badge_example">[EXEMPLE]</string>
 
-    <string name="space_fil">Fil</string>
+    <!-- « Actu » is the name of the feed since 11 November 2026 (D-215); its stable id stays "fil". -->
+    <string name="space_fil">Actu</string>
     <string name="space_carte">Carte</string>
     <string name="space_en_direct">En direct</string>
     <string name="space_messages">Messages</string>
@@ -20,6 +21,7 @@ Populaire Française</string>
     <string name="space_agir">Agir</string>
     <string name="space_decider">Décider</string>
     <string name="space_mon_espace">Mon espace</string>
+    <string name="space_appels">Appels</string>
 
     <string name="desc_fil">Les publications des comptes que vous suivez, les mobilisations et les contenus du moment.</string>
     <string name="desc_carte">Manifestations, rassemblements et lieux utiles près de chez vous. Bientôt disponible.</string>
@@ -31,6 +33,7 @@ Populaire Française</string>
     <string name="desc_agir">Se mobiliser, s’organiser, s’entraider, témoigner, communiquer.</string>
     <string name="desc_decider">Revendiquer, faire campagne, obliger les élus à s’engager, décider ensemble.</string>
     <string name="desc_mon_espace">Votre tableau de bord personnel : votre territoire, vos suivis, vos votes. Tout reste sur votre appareil.</string>
+    <string name="desc_appels">Les appels à la grève, à manifester, à soutenir, à bloquer : qui appelle, où, quand, et comment répondre.</string>
 
     <string name="action_open_menu">Ouvrir le menu</string>
     <string name="action_close_menu">Fermer le menu</string>
@@ -55,6 +58,8 @@ Populaire Française</string>
 
     <string name="nav_disclaimer">Plateforme citoyenne indépendante, sans lien avec l’État ni le gouvernement.</string>
     <string name="nav_search_soon">Recherche : bientôt disponible</string>
+    <!-- The entry of the private messages in the top bar (D-215). -->
+    <string name="action_messages">Messages</string>
 
     <!-- Encarts des contenus -->
     <string name="callout_en_bref">En bref</string>

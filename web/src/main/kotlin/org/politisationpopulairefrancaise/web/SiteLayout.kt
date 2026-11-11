@@ -22,7 +22,8 @@ import org.politisationpopulairefrancaise.core.Space
 
 /** French labels of the spaces for the web site. */
 val spaceLabels: Map<Space, String> = mapOf(
-    Space.FIL to "Fil",
+    // "Actu" is the label of the feed since D-215; its stable id stays "fil".
+    Space.FIL to "Actu",
     Space.EN_DIRECT to "En direct",
     Space.CARTE to "Carte",
     Space.MESSAGES to "Messages",
@@ -32,6 +33,7 @@ val spaceLabels: Map<Space, String> = mapOf(
     Space.AGIR to "Agir",
     Space.DECIDER to "Décider",
     Space.MON_ESPACE to "Mon espace",
+    Space.APPELS to "Appels",
 )
 
 /**
