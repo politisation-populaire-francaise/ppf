@@ -82,9 +82,9 @@ class ProposalComposer(
         sending = true
         try {
             val event = signer.sign(draft.toUnsignedEvent(signer.publicKey, clock()))
-            withContext(Dispatchers.Default) { store.store(event, pending = true) }
+            withContext(Dispatchers.Default) { store.storeSending(event) }
             sent = event
-            val result = remote?.publish(event) ?: PublicationResult.Unavailable()
+            val result = store.sending(event) { remote?.publish(event) ?: PublicationResult.Unavailable() }
             return finish(
                 when (result) {
                     is PublicationResult.Accepted -> {

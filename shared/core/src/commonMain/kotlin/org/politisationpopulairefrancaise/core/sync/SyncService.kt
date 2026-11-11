@@ -30,10 +30,13 @@ data class SyncReport(
  */
 class SyncService(private val local: LocalEventStore, private val remote: RemoteEvents) {
 
-    /** Publishes locally pending events, oldest first; stops at the first network failure. */
+    /**
+     * Publishes locally pending events, oldest first; stops at the first network failure. Leaves out
+     * those a screen is sending at this moment ([LocalEventStore.storeSending]).
+     */
     suspend fun publishPending(): SyncReport {
         var report = SyncReport()
-        for (event in local.pending()) {
+        for (event in local.pendingToSend()) {
             when (val result = remote.publish(event)) {
                 is PublicationResult.Accepted -> {
                     local.markPublished(event.id)

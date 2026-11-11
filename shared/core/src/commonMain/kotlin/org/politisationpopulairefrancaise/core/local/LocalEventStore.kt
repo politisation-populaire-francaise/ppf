@@ -5,7 +5,14 @@ import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.signing.EventReplacement
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.TagsJson
+import org.politisationpopulairefrancaise.core.publication.PublicationResult
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import kotlin.concurrent.atomics.AtomicReference
+import kotlin.concurrent.atomics.ExperimentalAtomicApi
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TimeMark
+import kotlin.time.TimeSource
 
 enum class LocalStoreOutcome { STORED, DUPLICATE, SUPERSEDED }
 
@@ -14,9 +21,64 @@ enum class LocalStoreOutcome { STORED, DUPLICATE, SUPERSEDED }
  * user's own publications until the server accepts them (`pending`). Replacement of older versions
  * follows [EventReplacement], exactly like the server, so both sides converge.
  */
-class LocalEventStore(private val database: PpfDatabase, private val clock: () -> Long = ::currentEpochSeconds) {
+@OptIn(ExperimentalAtomicApi::class)
+class LocalEventStore(
+    private val database: PpfDatabase,
+    private val sendingTime: TimeSource = TimeSource.Monotonic,
+    // Last, so that `LocalEventStore(database) { now }` keeps setting the clock.
+    private val clock: () -> Long = ::currentEpochSeconds,
+) {
 
     private val queries get() = database.eventQueries
+
+    /** The publications a screen stored to send them itself, with when it did (memory only). */
+    private val claims = AtomicReference<Map<String, TimeMark>>(emptyMap())
+
+    /**
+     * Stores [event] as pending for the screen that sends it right after: for [SENDING_GRACE], the
+     * synchronizations leave it alone ([pendingToSend]), so that it does not leave twice (the
+     * synchronization used to send it again while the screen was sending it, 11 November 2026). If
+     * the screen could not send it (no network), a later synchronization takes it after that delay.
+     */
+    fun storeSending(event: SignedEvent): LocalStoreOutcome {
+        val now = sendingTime.markNow()
+        while (true) {
+            val current = claims.load()
+            if (claims.compareAndSet(current, current + (event.id to now))) break
+        }
+        return store(event, pending = true)
+    }
+
+    /**
+     * The screen's own attempt at sending [event], stored by [storeSending]: when it fails (no network, refusal,
+     * error), the event is handed back to the synchronizations at once; when it succeeds, it stays the screen's
+     * until [markPublished].
+     */
+    suspend fun sending(event: SignedEvent, publish: suspend () -> PublicationResult): PublicationResult {
+        val result = try {
+            publish()
+        } catch (failure: Throwable) {
+            release(event.id)
+            throw failure
+        }
+        if (result !is PublicationResult.Accepted) release(event.id)
+        return result
+    }
+
+    private fun release(id: String) {
+        while (true) {
+            val current = claims.load()
+            if (id !in current || claims.compareAndSet(current, current - id)) return
+        }
+    }
+
+    /** The pending publications that a synchronization may send: those no screen is sending now, oldest first. */
+    fun pendingToSend(): List<SignedEvent> {
+        val current = claims.load()
+        val fresh = current.filterValues { it.elapsedNow() < SENDING_GRACE }
+        if (fresh.size != current.size) claims.compareAndSet(current, fresh)
+        return pending().filter { it.id !in fresh }
+    }
 
     /** Stores a verified event; the caller checks the signature first. */
     fun store(event: SignedEvent, pending: Boolean = false): LocalStoreOutcome = database.transactionWithResult {
@@ -64,7 +126,10 @@ class LocalEventStore(private val database: PpfDatabase, private val clock: () -
     /** The user's publications not yet accepted by the server, oldest first. */
     fun pending(): List<SignedEvent> = queries.selectPending().executeAsList().map { it.toSignedEvent() }
 
-    fun markPublished(id: String) = queries.markPublished(id)
+    fun markPublished(id: String) {
+        queries.markPublished(id)
+        release(id)
+    }
 
     fun delete(id: String) = database.transaction {
         queries.deleteTagsOf(id)
@@ -94,4 +159,9 @@ class LocalEventStore(private val database: PpfDatabase, private val clock: () -
         content = content,
         sig = sig,
     )
+
+    companion object {
+        /** How long a publication stored by its screen is left to it before a synchronization may send it. */
+        val SENDING_GRACE: Duration = 60.seconds
+    }
 }

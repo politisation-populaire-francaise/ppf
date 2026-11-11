@@ -77,9 +77,9 @@ class CallComposer(
         try {
             val unsigned = draft.toUnsignedEvent(signer.publicKey, clock())
             val event = signer.sign(collective?.let { CollectiveFormat.withCollective(unsigned, it.id) } ?: unsigned)
-            withContext(Dispatchers.Default) { store.store(event, pending = true) }
+            withContext(Dispatchers.Default) { store.storeSending(event) }
             sent = event
-            val result = remote?.publish(event) ?: PublicationResult.Unavailable()
+            val result = store.sending(event) { remote?.publish(event) ?: PublicationResult.Unavailable() }
             return finish(
                 when (result) {
                     is PublicationResult.Accepted -> {

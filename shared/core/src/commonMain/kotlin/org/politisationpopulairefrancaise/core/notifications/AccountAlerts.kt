@@ -82,7 +82,7 @@ class CompromiseNoticesSource(
 
     override suspend fun collect(after: Long?): List<NotificationCandidate> {
         val self = me() ?: return emptyList()
-        val store = LocalEventStore(database, clock)
+        val store = LocalEventStore(database, clock = clock)
         val now = clock()
         val queries = database.notificationsQueries
         return queries.selectEventIdsReceivedAfter(AccountRecovery.NOTICE_KIND.toLong(), after ?: Long.MIN_VALUE, MAX_PER_ROUND)

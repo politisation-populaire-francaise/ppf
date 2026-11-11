@@ -377,8 +377,8 @@ class AgendaLibrary(
             val createdAt = maxOf(clock(), (previous?.createdAt ?: 0) + 1)
             val event = signer.sign(Participation.build(signer.publicKey, mobilization, status, createdAt, role))
             passes.withLock {
-                withContext(Dispatchers.Default) { store.store(event, pending = true) }
-                val outcome = when (val result = remote?.publish(event) ?: PublicationResult.Unavailable()) {
+                withContext(Dispatchers.Default) { store.storeSending(event) }
+                val outcome = when (val result = store.sending(event) { remote?.publish(event) ?: PublicationResult.Unavailable() }) {
                     is PublicationResult.Accepted -> {
                         withContext(Dispatchers.Default) { store.markPublished(event.id) }
                         if (status == ParticipationStatus.ACCEPTED) ParticipationOutcome.SHOWN else ParticipationOutcome.WITHDRAWN
@@ -460,8 +460,8 @@ class AgendaLibrary(
         val outcome = try {
             val event = signer.sign(Mobilization.cancellation(mobilization, clock()))
             passes.withLock {
-                withContext(Dispatchers.Default) { store.store(event, pending = true) }
-                val outcome = when (val result = remote?.publish(event) ?: PublicationResult.Unavailable()) {
+                withContext(Dispatchers.Default) { store.storeSending(event) }
+                val outcome = when (val result = store.sending(event) { remote?.publish(event) ?: PublicationResult.Unavailable() }) {
                     is PublicationResult.Accepted -> {
                         withContext(Dispatchers.Default) {
                             store.markPublished(event.id)

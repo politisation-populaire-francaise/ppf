@@ -93,11 +93,11 @@ class MailboxSetting(
             // Strictly newer than the setting it replaces, even when changed twice in one second.
             val createdAt = maxOf(clock(), (previous?.event?.createdAt ?: 0L) + 1)
             val event = signer.sign(MailboxRetention.build(signer.publicKey, choice, createdAt))
-            store?.let { local -> withContext(Dispatchers.Default) { local.store(event, pending = true) } }
+            store?.let { local -> withContext(Dispatchers.Default) { local.storeSending(event) } }
             retention = choice
             status = MailboxStatus.PENDING
             val remote = remote ?: return
-            when (val result = remote.publish(event)) {
+            when (val result = store?.sending(event) { remote.publish(event) } ?: remote.publish(event)) {
                 is PublicationResult.Accepted -> {
                     store?.let { local -> withContext(Dispatchers.Default) { local.markPublished(event.id) } }
                     status = MailboxStatus.SAVED
