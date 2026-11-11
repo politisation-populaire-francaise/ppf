@@ -1376,7 +1376,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Contexte : le fil social était l'écran par défaut et la barre du bas du téléphone montrait Fil, En direct, Carte, Messages, Revendications (D-026), les quatre piliers étant rangés dans un menu. Les priorités du MVP 1 n'étaient donc pas à portée de main.
 - Options pour le premier écran : A, garder le fil ; B, un tutoriel au premier lancement, puis un accueil qui mène à l'action.
 - Choix : **B** (propriétaire : « il me parait bien mieux de faire un rapide tutoriel avec de prise en main de l'appli, de son objectif et du contexte, pas à pas, il va donc falloir penser à un ordre logique et naturel pour présenter les fonctionnalités »). Ordre proposé dans `docs/ROADMAP-MVP1.md`, à affiner avec elle sur une version d'essai.
-- Conséquence retenue par le chef d'équipe (recommandation de la feuille de route validée) : barre du bas « Accueil, Agir, Décider, Comprendre, Mon espace » ; le fil, les messages, la carte et Voir restent actifs et accessibles par « Plus » (D-210). Révise D-026 sur ce seul point ; réversible sans perte.
+- Barre du bas : voir D-215. La première déduction du chef d'équipe (« Accueil, Agir, Décider, Comprendre, Mon espace ») a été corrigée par la propriétaire le jour même. Ordre du tutoriel : voir D-216.
 - Raison : une personne qui découvre l'application doit comprendre en moins d'une minute à quoi elle sert et où agir.
 
 ## D-212 (2026-11-11) Textes : tout est rédigé par l'IA pour l'instant, positions comprises, puis relu par des humains
@@ -1399,3 +1399,22 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Contexte : consigne de la propriétaire : « mes barrettes de rames sont défectueuses, ne depasse jamais la RAM dispo de mon pc sinon il crash ». Quatre écrans bleus les 7 et 8 novembre 2026. L'ordinateur a 15,8 Go.
 - Choix (chef d'équipe, décision technique) : le lanceur de compilation attend désormais 6 Go de mémoire libre au lieu de 4 (une compilation peut en prendre environ 4,5) ; une seule compilation à la fois sur la machine ; aucun agent ni session lancé pendant une compilation, ni en dessous de 3 Go libres ; au plus trois sessions de bloc ouvertes avec la session principale ; pas d'émulateur Android. Règle inscrite dans `CLAUDE.md`, section 10.
 - Raison : un plantage coûte plus de temps qu'une attente.
+
+## D-215 (2026-11-11) Barre du bas et barre du haut du téléphone
+
+- Contexte : la barre du bas montrait Fil, En direct, Carte, Messages, Revendications (D-026). La propriétaire la modifie pour le MVP 1.
+- Choix (propriétaire, ses mots) : « En direct doit apparaitre en premier » ; « "Fil" doit s'appeler Actu » ; « La map reste au centre » ; « Ensuite doit venir "Agir" qui remplace "revendication" » ; « Puis enfin "Appels" (a la grève, manifester, soutenir, bloquer etc) ». Soit, dans l'ordre : **En direct, Actu, Carte, Agir, Appels**. « La messagerie doit passer en top bar ainsi que le bouton Aide, et Aide doit etre mis en valeur et ressortie en rouge. »
+- Conséquences (chef d'équipe) : l'écran d'arrivée après le tutoriel est « En direct » ; « Actu » est un nouveau libellé, l'identifiant stable `fil` ne change pas ; « Revendications » reste accessible par Décider et par le menu, comme Voir, Comprendre, Décider et Mon espace (D-210 : rien n'est retiré) ; même ordre sur le rail et la barre latérale des grands écrans.
+- Révise D-026 (ordre et contenu de la barre) et la déduction de D-211.
+
+## D-216 (2026-11-11) Ordre du tutoriel du premier lancement
+
+- Choix (propriétaire) : 1. pourquoi cette application ; 2. « ici, vous êtes chez vous » (vie privée) ; 3. Agir, « oublie pas la dedans on doit prssenter la carte qui indique les manifestations en cours, idealement les rues bloquées » ; 4. « "Se reunir" (on presente alors comment rejoindre un collectif/asso/syndicat ou en créer un, comment comuniquer (salons privés, publics, réservés etc, bitchat, hors réseau...) » ; 5. Décider ; 6. « Aide (street medic, avocat, urgence) » ; 7. par où commencer : « rajoute un 4e bouton "je veux m'allier", et retire tous les "je veux" des boutons, on le mettra en phrase au dessus des boutons pour l'ux », soit la phrase « Je veux… » et quatre boutons : agir, donner mon avis, comprendre, m'allier.
+- Règle d'honnêteté (chef d'équipe) : le tutoriel ne présente comme disponible que ce qui fonctionne. Le 11 novembre 2026, les rues bloquées sur la carte, la messagerie hors réseau (bitchat, phase 4), l'alerte aux street medics et l'alerte « Besoin d'un avocat » ne sont pas codées : elles portent la mention « Bientôt » jusqu'à leur livraison.
+
+## D-217 (2026-11-11) Ouverture par une bêta sur invitation ; serveur ; rappel de la règle de modération
+
+- Ouverture : « Oui ca sera une beta sur invitation au debut » (propriétaire). L'ouverture publique viendra ensuite.
+- Serveur : « Oui j'achète le serveur demain » (12 novembre 2026), en suivant `docs/guides/serveur-hostinger-kvm1.md` avec l'offre KVM 2 retenue le 7 novembre 2026. Le jalon 5 (mise en ligne) démarre à cet achat ; la préproduction peut être déployée par paquet avant la liaison GitHub (D-128).
+- Modération : rappel de la propriétaire, déjà écrit au cahier des charges (5.6) et dans `CLAUDE.md` : « C'est l'ia qui filtre et l'equipe qui tranche ce qui est mis en alerte par l'ia, et y'a aussi les signalements des users ». Aucune décision nouvelle. Reste ouvert, avant l'ouverture publique seulement : l'hébergement du modèle d'IA (brainstorming du cahier des charges, entrée du 4 novembre 2026).
+- Sources : la propriétaire n'est pas abonnée à Mediapart ; elle fournira des captures d'écran de publications des médias de confiance.

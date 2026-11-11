@@ -42,7 +42,7 @@ Chaque jalon se termine par une version d'essai (APK) envoyée à la propriétai
 | Jalon | Ce que vous pourrez tester à la fin | Contenu | Ordre de grandeur |
 |---|---|---|---|
 | **0. Remise en route** | Cette feuille de route, validée | Nouvelle équipe, règles du 9 novembre entrées dans `main` (fait), recherches sur le mouvement lancées (fait), décisions de la section 7 | 1 jour |
-| **1. Une application agréable sur votre téléphone** | Une version où rien ne passe sous les barres du téléphone, à la bonne taille, qui s'ouvre sur un court tutoriel, avec Agir, Décider et Comprendre accessibles en un geste | Correction des barres du système sur les trois formats ; passage en revue des tailles (barres, marges, textes) aux dimensions du Galaxy A34 et avec les réglages « grande police » ; **tutoriel du premier lancement** (voir plus bas) ; nouvelle barre du bas « Accueil, Agir, Décider, Comprendre, Mon espace » ; accueil qui mène tout de suite à l'action ; **rien n'est retiré** : tout ce qui est déjà codé reste actif et visible, par « Plus » ; captures d'écran automatiques des écrans prioritaires | 3 à 5 jours |
+| **1. Une application agréable sur votre téléphone** | Une version où rien ne passe sous les barres du téléphone, à la bonne taille, qui s'ouvre sur un court tutoriel, avec En direct, l'actualité, la carte, Agir et les appels à portée de pouce | Correction des barres du système sur les trois formats (**faite le 11 novembre 2026**, D-180, à confirmer sur le téléphone) ; passage en revue des tailles (barres, marges, textes) aux dimensions du Galaxy A34 et avec les réglages « grande police » ; **tutoriel du premier lancement** (voir plus bas) ; nouvelle barre du bas « En direct, Actu, Carte, Agir, Appels » ; messagerie et bouton AIDE rouge dans la barre du haut ; **rien n'est retiré** : tout ce qui est déjà codé reste actif et visible ; captures d'écran automatiques des écrans prioritaires | 3 à 5 jours |
 | **2. Agir** | Tout l'espace Agir, hors carte en direct | Entrée de la branche en attente (collectifs, minuteur, caméra protégée, simulateur du gréviste, affiche à code QR, « Et après ? », proches à mobiliser, 13 guides réels) ; kit contre le harcèlement et créneaux de bénévolat à finir ; **nouvelle rubrique « Fédérer »** ; **nouvelle rubrique « S'engager en politique »** ; passe d'ergonomie sur chaque écran | 1 à 2 semaines |
 | **3. Décider** | Revendications, pétitions officielles et Pacte mis en avant | Entrée de la branche en attente (rappels, courriers aux élus, consultations, pétitions locales, vraies pétitions) ; les trois fonctions phares en tête de l'espace et sur l'accueil ; délibération sur les mesures du Pacte ; passe d'ergonomie | 1 semaine, en partie en parallèle du jalon 2 |
 | **4. Comprendre : les textes du cap** | La série de textes prioritaires, lisible dans l'application et sur le site | Entrée des 124 vrais contenus ; série prioritaire (section 5) ; fiches de « S'engager en politique » et de « Fédérer » ; dossiers de recherche sourcés | En continu, dès le jalon 0 |
@@ -51,19 +51,33 @@ Chaque jalon se termine par une version d'essai (APK) envoyée à la propriétai
 
 Les jalons 1 à 4 avancent sans serveur. Le jalon 5 est le chemin critique : sans lui, le MVP n'est pas « fonctionnel » pour les autres. Il peut démarrer dès que la propriétaire le décide, en parallèle du reste.
 
-### Détail du jalon 1 : le tutoriel du premier lancement
+### Détail du jalon 1 : barres de navigation et tutoriel du premier lancement
 
-Décision de la propriétaire du 11 novembre 2026 : le premier écran n'est plus le fil social mais « un rapide tutoriel de prise en main de l'appli, de son objectif et du contexte, pas à pas », dans « un ordre logique et naturel ». Première proposition d'ordre, à affiner avec elle sur une version d'essai :
+**Barre du bas du téléphone** (décision de la propriétaire du 11 novembre 2026, D-215), dans cet ordre :
+
+| Place | Entrée | Remarque |
+|---|---|---|
+| 1 | **En direct** | Premier écran après le tutoriel |
+| 2 | **Actu** | Nouveau nom du fil social |
+| 3 | **Carte** | Reste au centre |
+| 4 | **Agir** | Remplace « Revendications », qui reste accessible par Décider et par le menu |
+| 5 | **Appels** | Appels à la grève, à manifester, à soutenir, à bloquer, etc. |
+
+**Barre du haut** : la messagerie y monte, à côté du bouton **AIDE**, qui est mis en valeur et ressort en rouge. Voir, Comprendre, Décider, Revendications et Mon espace restent accessibles (menu et avatar) : rien de ce qui est codé n'est retiré.
+
+**Tutoriel du premier lancement** (D-211, ordre fixé par la propriétaire le 11 novembre 2026, D-216) : « un rapide tutoriel de prise en main de l'appli, de son objectif et du contexte, pas à pas ».
 
 1. **Pourquoi cette application** : le moment que vit le pays, et l'objectif (reprendre l'espace politique, ensemble).
 2. **Ici, vous êtes chez vous** : aucun compte demandé pour lire, aucun traceur, un pseudonyme si l'on veut participer.
-3. **Agir** : trouver une action près de chez soi, tenir, fédérer son entourage, s'engager en politique.
-4. **Décider** : voter les revendications, signer les pétitions officielles, peser sur les candidats avec le Pacte.
-5. **Comprendre** : des textes courts et sourcés pour savoir où l'on va.
-6. **Et aussi** : Voir, le fil, les messages, la carte, Mon espace, le bouton AIDE.
-7. **Par où commencer ?** : trois boutons (« Je veux agir », « Je veux donner mon avis », « Je veux comprendre ») qui mènent au bon espace ; choix facultatif de sa commune, gardé sur l'appareil.
+3. **Agir** : trouver une action près de chez soi, tenir, fédérer son entourage, s'engager en politique ; avec la **carte**, qui montre les manifestations en cours et, idéalement, les rues bloquées.
+4. **Se réunir** : rejoindre un collectif, une association ou un syndicat, ou en créer un ; communiquer (salons privés, publics, réservés ; messagerie hors réseau).
+5. **Décider** : voter les revendications, signer les pétitions officielles, peser sur les candidats avec le Pacte.
+6. **Aide** : urgence, street medics, avocat.
+7. **Par où commencer ?** : la phrase « Je veux… » au-dessus de quatre boutons, « agir », « donner mon avis », « comprendre », « m'allier », qui mènent au bon endroit.
 
-Règles : une idée par écran, moins d'une minute en tout, « Passer » toujours visible, lisible sans réseau, rejouable depuis Mon espace et la feuille AIDE, utilisable au lecteur d'écran et au clavier, textes externalisés. Après le tutoriel, l'application s'ouvre sur l'accueil.
+Règles : une idée par écran, moins d'une minute en tout, « Passer » toujours visible, lisible sans réseau, rejouable depuis Mon espace et la feuille AIDE, utilisable au lecteur d'écran et au clavier, textes externalisés.
+
+Honnêteté envers l'utilisateur : le tutoriel ne présente comme disponible que ce qui marche. Le 11 novembre 2026, ne sont pas encore codés : les rues bloquées sur la carte, la messagerie hors réseau (bitchat, phase 4), l'alerte aux street medics et l'alerte « Besoin d'un avocat » (conçues, elles demandent des organisations partenaires et la relecture d'un avocat). Ils apparaissent dans le tutoriel avec la mention « Bientôt », jusqu'à leur livraison.
 
 ### Détail du jalon 2 (Agir)
 
@@ -120,31 +134,31 @@ Règle fixée par la propriétaire le 11 novembre 2026 (elle remplace celle du 9
 Rien n'est supprimé : ces parties restent dans le code et reviendront au MVP 2.
 
 - **Agir** : carte de la manifestation en direct, zones dangereuses et sorties, street medics et avocats certifiés, alerte à mes proches, soutien aux personnes interpellées, témoignages publiés. Raisons : elles dépendent de la carte, d'organisations partenaires, d'une relecture par un avocat ou d'une équipe de modération.
-- **Voir** (observatoire, partis, Parlement), **fil social**, **messagerie**, **cercles** : pas de nouveau développement, mais ils restent actifs, opérationnels et visibles (décision de la propriétaire du 11 novembre 2026), accessibles par « Plus ».
+- **Voir** (observatoire, partis, Parlement), **fil social**, **messagerie**, **cercles** : pas de nouveau développement, mais ils restent actifs, opérationnels et visibles (décision de la propriétaire du 11 novembre 2026) : « Actu » dans la barre du bas, la messagerie dans la barre du haut, le reste par le menu.
 - **Administration avancée** : suite du service de signature, back-office complet, modération par IA.
 - **iOS** (les personnes qui ont un iPhone passent par le site), Nostr, Tor, messagerie sans Internet.
 
 ## 7. Décisions de la propriétaire
 
-Décisions prises le 11 novembre 2026 (consignées dans `docs/DECISIONS.md`, D-210 à D-214) :
+Décisions prises le 11 novembre 2026 (consignées dans `docs/DECISIONS.md`, D-210 à D-217) :
 
 | Sujet | Décision | Ses mots |
 |---|---|---|
 | Feuille de route | Validée. | « Je valide la roadmap » |
 | Mémoire de l'ordinateur | Ne jamais dépasser la mémoire disponible : une seule compilation à la fois, seuil de 6 Go libres avant de compiler, rien de nouveau pendant une compilation. | « mes barrettes de rames sont défectueuses, ne depasse jamais la RAM dispo de mon pc sinon il crash » |
 | Ce qui existe déjà | Rien n'est masqué ni désactivé. | « Tout ce qui a déjà été codé doit rester actif, operationnel et visible pour le moment » |
-| Premier écran | Un tutoriel de prise en main au premier lancement, à la place du fil social. La barre du bas « Accueil, Agir, Décider, Comprendre, Mon espace » est retenue par le chef d'équipe comme conséquence (recommandation de la feuille de route validée) ; tout le reste passe par « Plus ». | « il me parait bien mieux de faire un rapide tutoriel avec de prise en main de l'appli, de son objectif et du contexte, pas à pas » |
+| Premier écran | Un tutoriel de prise en main au premier lancement, à la place du fil social ; ordre du tutoriel fixé par elle (détail du jalon 1). | « il me parait bien mieux de faire un rapide tutoriel avec de prise en main de l'appli, de son objectif et du contexte, pas à pas » |
+| Barre du bas | En direct, Actu (nouveau nom du fil), Carte au centre, Agir (à la place de Revendications), Appels. | « En direct doit apparaitre en premier », « "Fil" doit s'appeler Actu », « La map reste au centre », « "Agir" qui remplace "revendication" », « Puis enfin "Appels" (a la grève, manifester, soutenir, bloquer etc) » |
+| Barre du haut | Messagerie et bouton AIDE ; AIDE en rouge, mis en valeur. | « La messagerie doit passer en top bar ainsi que le bouton Aide, et Aide doit etre mis en valeur et ressortie en rouge. » |
 | Textes | Tout est rédigé par l'IA pour l'instant, y compris les textes de position ; les humains relisent ensuite. | « Pour l'instant tout est rédigé par ia on doit aller très très vite pas le choix, puis les humains reliront et reprendront les textes au fur et à mesure. » |
 | « S'engager en politique » | Le même outil pour toutes les listes et tous les partis, sans soutien de PPF à l'un d'eux, pour l'instant. L'inscription sur les listes électorales passe en premier, puis les listes de candidats ; l'ordre suit le calendrier des élections. | « pour l'instant oui » ; « il faut d'abord s'inscrire en priorité sur les listes électorales, et ensuite creer des listes de candidats » ; « mettons les priorités en fonction du calendrier des elections » |
+| Ouverture | Une bêta sur invitation d'abord. | « Oui ca sera une beta sur invitation au debut » |
+| Serveur | Acheté par la propriétaire le 12 novembre 2026, en suivant `docs/guides/serveur-hostinger-kvm1.md` (offre KVM 2 retenue le 7 novembre). | « Oui j'achète le serveur demain » |
+| Modération | Règle déjà fixée (cahier des charges 5.6, `CLAUDE.md` section 7), rappelée par elle : l'IA filtre, l'équipe tranche ce que l'IA met en alerte, et les utilisateurs signalent. | « C'est l'ia qui filtre et l'equipe qui tranche ce qui est mis en alerte par l'ia, et y'a aussi les signalements des users » |
 | Téléphone de référence | Samsung Galaxy A34. | « J'ai un samsung galaxy A34 » |
+| Sources | Pas d'abonnement à Mediapart ; elle fournira des captures d'écran de publications Instagram des médias de confiance. | « je te donnerai des captures ecrans des slides insta » |
 
-Décisions encore ouvertes, à prendre avant le jalon 5 :
-
-| N° | Question | Options | Recommandation |
-|---|---|---|---|
-| 1 | **Comment ouvre-t-on ?** | A. Bêta fermée sur invitation (quelques dizaines de personnes de confiance), puis ouverture publique. B. Ouverture publique directe. C. Essais privés seulement pour l'instant. | **A.** Tant que l'association n'est pas déclarée et que les textes n'ont pas été relus par un avocat, la responsabilité de ce qui est publié risque de reposer sur la propriétaire en personne (à confirmer par un avocat). |
-| 1 bis | **Serveur** | Le guide prévoit un serveur Hostinger KVM 1 (131,76 € HT pour 24 mois, prix relevé le 7 novembre, à revérifier). La propriétaire avait parlé d'un KVM 2. | L'acheter au début du jalon 5, pas avant. Aucun achat sans son accord. |
-| 2 | **Qui relit les propositions des citoyens à l'ouverture ?** | À préciser avec elle. | Au moins deux personnes de confiance en plus d'elle. |
+Reste à trancher avant l'ouverture publique, sans urgence pour la bêta : l'hébergement du modèle d'IA de modération (brainstorming du cahier des charges, entrée du 4 novembre 2026). Pendant la bêta sur invitation, la relecture humaine des files existantes suffit.
 
 Vocabulaire : en droit, les « listes électorales » sont les registres des électeurs ; les listes que l'on présente à une élection sont des **listes de candidats** (ou listes citoyennes). Le MVP traite les deux, dans cet ordre.
 
