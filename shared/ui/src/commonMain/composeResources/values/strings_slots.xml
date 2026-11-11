@@ -3,6 +3,7 @@
 <resources>
     <string name="slots_title">Créneaux</string>
     <string name="slots_intro">Inscrivez-vous sur un créneau. Seul l’organisateur verra le nom que vous donnez, chiffré, jamais votre compte. Tout est effacé deux jours après le créneau.</string>
+    <string name="slots_not_published">Les inscriptions ouvriront dès que l’appel sera publié.</string>
     <string name="slots_places">%1$d sur %2$d places prises</string>
     <string name="slots_places_unknown">%1$d places</string>
     <string name="slots_signup">Je m’inscris</string>
