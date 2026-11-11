@@ -132,6 +132,9 @@ Même en-tête qu'une fiche (sans `type`), avec en plus :
 |---|---|
 | `status` | `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` (étiquette `ppf-status`), mis à jour par l'équipe |
 | `territory` | Territoire concerné : « France », un département, une métropole (étiquette `ppf-territory`) |
+| `from` | Facultatif : `mouvement` pour une revendication déjà portée par le mouvement et relevée par PPF (étiquette `ppf-from`, D-152) ; demande `carried_by` et une section `## Sources` |
+| `carried_by` | Avec `from: mouvement` : qui la porte, où et quand, séparés par ` ; ` (étiquettes `ppf-carried-by`) |
+| `supported_by` | Facultatif, pour toute revendication : les organisations qui la soutiennent publiquement, avec la date, séparées par ` ; ` (étiquettes `ppf-supported-by`, affichées « Également portée par ») ; demande une section `## Sources` |
 
 Le titre est la revendication elle-même, en une ou deux phrases ; le résumé la précise ; le corps est l'argumentaire. Les exemples livrés avec l'application ne sont pas des revendications de PPF : les vraies seront proposées et votées par les citoyens (cahier fonctionnel, M11).
 

@@ -86,6 +86,9 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-territory-code` | Code du référentiel des territoires (section 4 nonies) à côté du libellé ; pas encore accepté par le serveur pour les revendications | Non |
+| `ppf-from` | Revendications de l’équipe seulement : `mouvement` pour une revendication déjà portée par le mouvement, relevée par PPF (D-152) ; lue seulement sur une clé de l’équipe | Non |
+| `ppf-carried-by` | Avec `ppf-from` : qui la porte, où et quand, une étiquette par organisation ou appel, dans l’ordre des sources (D-152) | Non |
+| `ppf-supported-by` | Toute revendication de l’équipe : une organisation (parti, syndicat, collectif) qui la soutient publiquement, avec la date ; sources dans le texte ; affichée « Également portée par » (D-152) | Non |
 | `ppf-duration` | Parcours : durée de lecture annoncée ; fiches pédagogiques : durée de la séance ; en minutes (1 à 240) | Non |
 | `ppf-rhythm` | Parcours seulement : rythme de lecture conseillé ; seule valeur, `quotidien` (une leçon, c'est-à-dire une étape, par jour, comme « Je découvre », CO-19). Simple suggestion affichée au lecteur, jamais un verrou ; une valeur inconnue est ignorée | Non |
 | `ppf-origin` | `human` (rédigé par un humain) ou `ai-assisted` (produit avec l'aide d'une IA) | Oui |

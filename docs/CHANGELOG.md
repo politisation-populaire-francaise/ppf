@@ -5,6 +5,10 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 ## Non publié
 
 ### Ajouté
+- Décider mis en avant (11 novembre 2026, MVP 1, jalon 3) : les trois fonctions phares (revendications, pétitions officielles, Pacte démocratique) en tête de Décider et sur « En direct ».
+- Mur des revendications allégé sur téléphone (11 novembre 2026) : Filtres, Tri et Personnaliser sur une ligne, « Proposer » à côté du nombre, explication repliée « Comment ça marche ? ».
+- Revendications déjà portées par le mouvement (11 novembre 2026, D-152, « Rédigé par l’IA ») : 15 revendications attribuées et sourcées, puce « Du mouvement », ouvertes au vote ; « Également portée par » pour toute revendication ; la démission du gouvernement, revendication citoyenne.
+- Délibération citoyenne sur les mesures du Pacte (11 novembre 2026, D-153) : écran de Décider (étapes datées, proposer, amender, soutenir, voter) et page du site ; dates proposées, pas encore publiées.
 - Appels « Faire grève » et « Bloquer » (11 novembre 2026, D-199) : deux types d'appels de plus ; un appel à bloquer est toujours relu avant publication et porte un encadré juridique (code de la route L412-1, code pénal 431-1) dans le formulaire et sur l'appel.
 - « Se réunir » dans « Agir » (11 novembre 2026, D-198) : collectifs, annuaire des organisations, guide « Créer une association » et salons réunis sur une page, que le tutoriel peut ouvrir.
 - « En ce moment » sur la carte et dans l'agenda (11 novembre 2026, D-197) : les mobilisations en cours, d'après les dates de l'agenda, et les blocages annoncés par leurs organisateurs.
