@@ -102,7 +102,8 @@ class RevendicationUrnes(
                 while (r.next()) {
                     val address = r.getString(2)
                     val written = r.getString(3)?.let(RevendicationStatus::fromTag)
-                    val status = StatusLabels.effective(r.getString(1), written, labels[address].orEmpty(), isEditor)
+                    // A status the citizen wrote is not trusted (null): its demand counts as « nouvelle » (D-155).
+                    val status = StatusLabels.effective(r.getString(1), written, labels[address].orEmpty(), isEditor) ?: RevendicationStatus.NOUVELLE
                     if (status in VOTABLE) found += address
                 }
                 found
