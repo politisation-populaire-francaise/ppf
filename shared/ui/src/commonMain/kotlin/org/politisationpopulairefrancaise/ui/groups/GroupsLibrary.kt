@@ -66,6 +66,8 @@ data class GroupDraft(
     val difference: String = "",
     /** The user confirmed the creation despite the rooms of close name. */
     val confirmSimilar: Boolean = false,
+    /** Tags added to the description: those of a collectif of Agir (M24, D-087), empty for a plain room. */
+    val extraTags: List<List<String>> = emptyList(),
 ) {
     val differenceTooLong: Boolean get() = difference.trim().length > Group.MAX_DIFFERENCE_LENGTH
 
@@ -504,7 +506,7 @@ class GroupsLibrary(
                     id = Group.numbered(base, number)
                 }
                 val difference = if (draft.confirmSimilar) draft.difference.trim().takeIf { it.isNotEmpty() } else null
-                val unsigned = runCatching { Group.build(signer.publicKey, id, name, about, territory, createdAt = clock(), difference = difference) }.getOrNull()
+                val unsigned = runCatching { Group.build(signer.publicKey, id, name, about, territory, createdAt = clock(), difference = difference).let { it.copy(tags = it.tags + draft.extraTags) } }.getOrNull()
                     ?: run { creationError = CreationError.InvalidName; return null }
                 val event = signer.sign(unsigned)
                 when (val result = remote.publish(event)) {

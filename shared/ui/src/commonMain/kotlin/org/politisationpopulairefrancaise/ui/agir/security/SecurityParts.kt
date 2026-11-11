@@ -117,9 +117,10 @@ object SecurityTags {
     const val WIPE_CLOSE = "security-wipe-close"
     const val DISCREET_TOGGLE = "security-discreet-toggle"
     const val PREPARE = "security-prepare"
-    const val PREPARE_ITEM = "security-prepare-" // followed by lock, code-only, hide, phrase, wipe
+    const val PREPARE_ITEM = "security-prepare-" // followed by lock, code-only, hide, discreet, notifications, map, phrase, wipe
     const val PREPARE_LOCK = "security-prepare-lock-action"
     const val PREPARE_HIDE = "security-prepare-hide-action"
+    const val PREPARE_DETAILS = "security-prepare-details-action"
     const val HELP_WIPE = "security-help-wipe"
 }
 

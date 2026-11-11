@@ -48,6 +48,8 @@ import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
+import org.politisationpopulairefrancaise.ui.agir.followups.MobilizationFollowUps
+import org.politisationpopulairefrancaise.ui.agir.poster.PosterTags
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.Inset
 import org.politisationpopulairefrancaise.ui.components.PpfCard
@@ -58,6 +60,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfSelectableChip
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
+import org.politisationpopulairefrancaise.ui.resources.affiche_make
 import org.politisationpopulairefrancaise.ui.resources.agenda_add_calendar
 import org.politisationpopulairefrancaise.ui.resources.agenda_back
 import org.politisationpopulairefrancaise.ui.resources.agenda_cancel_confirm
@@ -119,6 +122,7 @@ internal fun MobilizationDetail(
     onBack: (() -> Unit)?,
     modifier: Modifier,
     signer: EventSigner? = null,
+    onMakePoster: ((Mobilization) -> Unit)? = null,
 ) {
     val palette = PpfTheme.palette
     val uriHandler = LocalUriHandler.current
@@ -201,6 +205,10 @@ internal fun MobilizationDetail(
                 mobilization.links.firstOrNull()?.let { link ->
                     PpfSecondaryButton(onClick = { leaving = link }, text = stringResource(Res.string.agenda_link), icon = Lucide.Globe, modifier = Modifier.testTag(AgendaTags.LINK))
                 }
+                // AG-61: a poster of a published event to come; it publishes nothing.
+                if (onMakePoster != null && !mobilization.isPast(now) && !mobilization.cancelled && (own == null || own.state == OwnProposalState.PUBLISHED)) {
+                    PpfSecondaryButton(onClick = { onMakePoster(mobilization) }, text = stringResource(Res.string.affiche_make), icon = Lucide.Printer, modifier = Modifier.testTag(PosterTags.MAKE))
+                }
             }
             mobilization.links.firstOrNull()?.let { link ->
                 Spacer(Modifier.height(4.dp))
@@ -264,6 +272,8 @@ internal fun MobilizationDetail(
                     Text(mobilization.description, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.testTag(AgendaTags.DESCRIPTION))
                 }
             }
+
+            MobilizationFollowUps(mobilization, agenda, openLink) // AG-62 « Et après ? », past mobilizations only (FollowUpsSection.kt)
 
             Spacer(Modifier.height(20.dp))
             Text(

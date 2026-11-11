@@ -53,6 +53,7 @@ import org.politisationpopulairefrancaise.core.agir.agenda.MobilizationType
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
+import org.politisationpopulairefrancaise.ui.agir.collectives.CollectiveComposerNote
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
@@ -244,6 +245,8 @@ internal fun ProposeMobilizationScreen(
                 }
                 Spacer(Modifier.height(12.dp))
                 InfoBox(Lucide.Calendar) { Text(stringResource(Res.string.agenda_form_intro), style = MaterialTheme.typography.bodyMedium) }
+                // Opened from the page of a collectif (M24): in whose name the event is proposed.
+                CollectiveComposerNote(composer.collective)
 
                 Field(stringResource(Res.string.agenda_field_type)) {
                     FlowRow(Modifier.selectableGroup(), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {

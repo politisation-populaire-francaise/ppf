@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AG-62 « Et après ? » of "Agir": the sourced follow-ups of a past mobilization, shown on its detail
+     (docs/integration/agir-et-apres.md). French, the user is addressed with "vous", typographic
+     apostrophe (’), no em dash. -->
+<resources>
+    <!-- Section of the detail of a past mobilization -->
+    <string name="suites_title">Et après ?</string>
+    <string name="suites_intro">Ce qui a suivi cette mobilisation, sources à l’appui : réponses des élus, annonces, reculs, textes déposés.</string>
+    <string name="suites_loading">Recherche des suites de cette mobilisation…</string>
+    <string name="suites_empty">Aucune suite n’est encore connue pour cette mobilisation. L’équipe de rédaction les ajoute quand elles sont vérifiées.</string>
+
+    <!-- What happened (ppf-suite-kind) -->
+    <string name="suites_kind_reponse_elu">Réponse d’un élu</string>
+    <string name="suites_kind_annonce">Annonce</string>
+    <string name="suites_kind_recul">Recul</string>
+    <string name="suites_kind_texte_depose">Texte déposé</string>
+    <string name="suites_kind_decision_justice">Décision de justice</string>
+    <string name="suites_kind_autre">Autre suite</string>
+
+    <!-- One follow-up -->
+    <string name="suites_date">Le %1$s</string>
+    <string name="suites_sources">Sources</string>
+    <string name="suites_source">%1$s (%2$s)</string>
+    <string name="suites_source_dated">%1$s (%2$s, %3$s)</string>
+    <string name="suites_link_person">Personne concernée : %1$s</string>
+    <string name="suites_link_demand">Revendication : %1$s</string>
+    <string name="suites_link_call">Appel : %1$s</string>
+    <string name="suites_link_chronology">Chronologie de « Voir » : %1$s</string>
+    <string name="suites_reply_title">Droit de réponse de %1$s</string>
+    <string name="suites_reply_note">Une personne nommée ici peut demander un droit de réponse à l’équipe de rédaction, depuis sa fiche dans « Voir ».</string>
+
+    <!-- The type of content, where contents of every kind are listed -->
+    <string name="suites_content_type">Suite d’une mobilisation</string>
+</resources>

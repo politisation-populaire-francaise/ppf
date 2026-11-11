@@ -104,8 +104,13 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.HelpSheetHost
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ProvideHelp
 import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
 import org.politisationpopulairefrancaise.ui.agir.security.DeviceSecurityGate
+import org.politisationpopulairefrancaise.ui.agir.security.LocalPreparePhoneNotifications
 import org.politisationpopulairefrancaise.ui.agir.security.ProvideDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.security.RegisterErasable
+import org.politisationpopulairefrancaise.ui.agir.timer.rememberTimerState
+import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
+import org.politisationpopulairefrancaise.ui.agir.proches.rememberProchesState
 import org.politisationpopulairefrancaise.core.voir.VoirDeviceData
 import org.politisationpopulairefrancaise.ui.agir.security.rememberDeviceSecurity
 import org.politisationpopulairefrancaise.ui.agir.calls.CallsScreen
@@ -259,6 +264,16 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         accountSession.signOut()
     }
     RegisterErasable(dependencies, "agir-rally-point") { help.clearRallyPoint() }
+    // AG-55 « Sans nouvelles de moi » (D-088): the timer armed here and the deposits received; erasing never cancels a deposit.
+    val timer = rememberTimerState(dependencies, help, accountSession, messaging)
+    RegisterErasable(dependencies, "agir-minuteur") { timer.eraseFromDevice() }
+    // AG-58 « Caméra protégée » (D-089): the photos of the vault; erasing destroys the Keystore key, then the files.
+    val protectedCamera = rememberProtectedCameraState()
+    help.camera = protectedCamera
+    RegisterErasable(dependencies, "agir-camera") { protectedCamera.eraseFromDevice() }
+    // AG-63 « Mes proches à mobiliser »: the private list of relatives, on the device only; « Effacer mes clés » erases it too.
+    val proches = rememberProchesState(dependencies, accountSession)
+    RegisterErasable(dependencies, ProchesState.ERASABLE_ID) { proches.eraseFromDevice() }
     // Communauté (S-44): the messages and checked contacts, the joined rooms, the notifications and push registrations.
     dependencies.database?.let { database ->
         val communaute = remember(database) { CommunauteDeviceData(database) }
@@ -329,10 +344,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         }
     }
     val palette = PpfTheme.palette
-    // The system's back leads from any space to the feed; the screens close what they opened first.
+    // The system's back leads from any space to « En direct »; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideTutorial(tutorial) { ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
+    ProvideTutorial(tutorial) { ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting, LocalPreparePhoneNotifications provides notificationsSettings) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
         // The ink of the theme for every text of the shell, on every format: the scaffold of phones gave it,
         // the rail and the side bar of larger windows did not (black titles on the dark theme).
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) { CompositionLocalProvider(LocalContentColor provides palette.ink) {
@@ -392,6 +407,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     agendaLibrary = agendaLibrary,
                     callsLibrary = callsLibrary,
                     testimonyLibrary = testimonyLibrary,
+                    proches = proches,
                     mailboxSetting = mailboxSetting,
                     notificationsSettings = notificationsSettings,
                     windowClass = windowClass,
@@ -440,6 +456,7 @@ private fun SpaceContent(
     agendaLibrary: AgendaLibrary,
     callsLibrary: CallsLibrary,
     testimonyLibrary: TestimonyLibrary,
+    proches: ProchesState,
     mailboxSetting: MailboxSetting,
     notificationsSettings: NotificationsSettingsState?,
     windowClass: WindowClass,
@@ -471,7 +488,11 @@ private fun SpaceContent(
                 groups = groupsLibrary,
                 agenda = { slotModifier, onBack ->
                     AgirPlugged(stringResource(Res.string.agenda_in_agir_title), onBack, slotModifier) { inner ->
-                        AgendaScreen(dependencies, accountSession, windowClass, inner, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
+                        AgendaScreen(
+                            dependencies, accountSession, windowClass, inner, onNavigate, agenda = agendaLibrary, organisationName = organisationName,
+                            // A call read on a poster (AG-61, D-190): "Agir" sees it selected and opens its calls.
+                            onOpenCall = { address -> callsLibrary.openAddress(address) },
+                        )
                     }
                 },
                 calls = { slotModifier, onBack ->
@@ -483,6 +504,10 @@ private fun SpaceContent(
                     )
                 },
                 testimonies = testimonyLibrary,
+                proches = proches,
+                // The events and calls of the collectifs (M24) are those of the agenda and of the calls.
+                agendaLibrary = agendaLibrary,
+                callsLibrary = callsLibrary,
                 organisationAgenda = { key, slotModifier ->
                     OrganisationAgenda(agendaLibrary, key, slotModifier) { mobilization ->
                         agendaLibrary.open(mobilization)
@@ -520,7 +545,14 @@ private fun SpaceContent(
         Space.CARTE -> {
             // The directory names the verified organisers of the agenda.
             LaunchedEffect(organisationsLibrary) { organisationsLibrary.ensureStarted() }
-            AgendaScreen(dependencies, accountSession, windowClass, modifier, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
+            AgendaScreen(
+                dependencies, accountSession, windowClass, modifier, onNavigate, agenda = agendaLibrary, organisationName = organisationName,
+                // A call read on a poster (AG-61, D-190) opens on the wall of calls (D-215).
+                onOpenCall = { address ->
+                    callsLibrary.openAddress(address)
+                    onNavigate(Space.APPELS)
+                },
+            )
         }
     }
 }

@@ -65,7 +65,7 @@ Le numéro détermine le comportement :
 | 20000 à 29999 | Éphémères : non conservés. |
 | 30000 à 39999 | Adressables : remplaçables par identifiant (`d`), voir section 4. |
 
-Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies), `9` (message d'un salon, NIP-29), `9000`, `9001`, `9002` et `9005` (rôles et modération d'un salon, NIP-29, D-131 : section 5, partie rôles et modération), `39000` (description d'un salon, NIP-29), `1776` (engagement envers une clé de secours) et `1777` (avis de compromission), du brouillon NIP-41 : section 4 undecies, `1985` (étiquette NIP-32 : statut d'une revendication), `1040` (attestation OpenTimestamps, NIP-03 : preuve d'horodatage d'une archive). Types propres à PPF : `37240` (certificat d'une clé de travail de la plateforme) et `37241` (liste de l'équipe pour les accords de signature), section 4 decies. Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
+Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies), `9` (message d'un salon, NIP-29), `9000`, `9001`, `9002` et `9005` (rôles et modération d'un salon, NIP-29, D-131 : section 5, partie rôles et modération), `39000` (description d'un salon, NIP-29), `1776` (engagement envers une clé de secours) et `1777` (avis de compromission), du brouillon NIP-41 : section 4 undecies, `1985` (étiquette NIP-32 : statut d'une revendication), `1040` (attestation OpenTimestamps, NIP-03 : preuve d'horodatage d'une archive). Types propres à PPF : `37240` (certificat d'une clé de travail de la plateforme) et `37241` (liste de l'équipe pour les accords de signature), section 4 decies ; types privés, qui ne voyagent que chiffrés dans une enveloppe : `8590` à `8592` (témoignages, `docs/integration/agir-temoignages.md`) et `8593` (minuteur « Sans nouvelles de moi », section 4 quindecies). Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
 
 ## 4. Identifiant stable d'un contenu modifiable
 
@@ -82,7 +82,7 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `summary` | Résumé | Non |
 | `published_at` | Première publication, secondes depuis 1970, en texte | Non |
 | `t` | Un thème par étiquette (`droits`, `manifestation`, …) | Non |
-| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide`, `fiche-pedagogique` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
+| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide`, `fiche-pedagogique` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `suite` pour les suites d'une mobilisation (section 4 septdecies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-territory-code` | Code du référentiel des territoires (section 4 nonies) à côté du libellé ; pas encore accepté par le serveur pour les revendications | Non |
@@ -266,6 +266,7 @@ Le vocabulaire commun est dans `shared/core/.../core/agir/AgirFormats.kt` ; le c
 | `a` | Non | Adresse de l'appel dont l'événement est issu (AP-07) |
 | `r` | Non | Lien `http` ou `https`, sans espace |
 | `summary` | Non | Résumé court |
+| `ppf-collective` | Non | Identifiant du salon du collectif au nom duquel l'événement est publié (M24, section 4 quaterdecies) ; accepté seulement de son fondateur, de ses administrateurs et de ses modérateurs |
 
 **Codes d'erreur**, communs à l'application et au serveur : `missing_field` (message `d`), `missing_title`, `missing_start`, `bad_end`, `missing_location`, `bad_event_type`, `missing_territory`, `missing_charter`, `missing_field` avec le nom de l'étiquette pour une valeur facultative illisible, `too_long` avec le nom de l'étiquette. L'application est plus stricte que le serveur sur certaines longueurs (lieu 200 caractères, résumé 280) ; le serveur borne toute étiquette sans limite propre à 1000 caractères.
 
@@ -302,7 +303,7 @@ Réponse NIP-52 à un événement de calendrier (« Calendar Event RSVP »), adr
 Contenu adressable `30023:<clé>:<d>`, comme les revendications. `content` : le texte de l'appel en texte brut (pas de Markdown, donc aucun lien cliquable caché), 8000 caractères au plus ; pour un appel à témoins, la description factuelle, sans accuser nommément personne.
 
 - **Étiquettes communes** : `d` (l'application prend les premiers mots du titre repliés et quatre caractères hexadécimaux, 64 caractères `a-z0-9-` au plus ; le serveur accepte jusqu'à 128), `title`, `ppf-type` = `appel`, `ppf-call-type`, `ppf-territory`, `ppf-charter` = `1.0`, `published_at`, `ppf-origin` = `human`.
-- **Facultatives** : `summary`, `ppf-goal` (entier positif), `ppf-deadline` (secondes), `start`, `end`, `start_tzid` (`Europe/Paris`), `location`, `g`, `r` (liens), `ppf-call-status` (`ouvert`, écrit à la création, ou `clos` ; absente, elle se lit `ouvert`), `ppf-report` (bilan à la clôture, 2000 caractères au plus).
+- **Facultatives** : `summary`, `ppf-goal` (entier positif), `ppf-deadline` (secondes), `start`, `end`, `start_tzid` (`Europe/Paris`), `location`, `g`, `r` (liens), `ppf-call-status` (`ouvert`, écrit à la création, ou `clos` ; absente, elle se lit `ouvert`), `ppf-report` (bilan à la clôture, 2000 caractères au plus), `ppf-collective` (salon du collectif au nom duquel l'appel est lancé, M24, section 4 quaterdecies ; fondateur, administrateurs et modérateurs seulement).
 - **Valeurs libres** des champs propres aux types : texte (l'application limite à 300 caractères, 1000 pour `ppf-action`, `ppf-request`, `ppf-use`, `ppf-mission`, `ppf-alternatives` et `ppf-accessibility`, comme le serveur, qui borne toute étiquette sans limite propre à 1000 caractères, `AgirFormats.MAX_TAG_VALUE`) ; aucune coordonnée personnelle (adresse électronique, téléphone, IBAN, numéro de sécurité sociale) dans le texte ni dans les champs libres, vérifié par l'application puis par le serveur (`400 personal_data`) ; `ppf-people` et `ppf-goal` sont des entiers positifs ; `ppf-remote` vaut `oui` pour une mission à distance ; le parcours d'une manifestation va dans le texte.
 - **Clôture par l'auteur** : nouvelle version à la même adresse où seuls `ppf-call-status` (`clos`) et `ppf-report` changent (pour un appel à témoins, seul le statut peut changer sans relecture).
 
@@ -930,6 +931,118 @@ Contenus éditoriaux publics (type 30023), publiés seulement par une clé édit
 | `ppf-origin` | non | comme ci-dessus |
 
 `content` : description de la mission en Markdown simple.
+
+## 4 quaterdecies. Collectifs d'« Agir » (M24, étape 1, D-087)
+
+Un collectif **est** un salon (NIP-29, section 5 et `docs/integration/salons-roles.md`) dont la description (type 39000, signée par son fondateur) porte un marqueur et quelques étiquettes en plus. Tout le reste vient du salon : identifiant `d`, `name`, `about`, `ppf-territory`, `ppf-charter` = `1.0`, refus des doublons et garde-fous de la création (D-028, D-132), rôles et modération (D-131), fil de messages (le salon général du collectif), annuaire `GET /api/v1/groups`. Règles communes à l'application et au serveur : `shared/core/.../core/agir/collectives/Collective.kt` (`CollectiveFormat`) ; détail et raisons : `docs/integration/agir-collectifs.md`.
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `ppf-collective` | oui | `1` : marqueur et version du format ; une seule |
+| `ppf-scope` | oui | portée : `national`, `regional`, `departemental`, `local`, `quartier` ou `etablissement` ; une seule |
+| `ppf-collective-type` | oui | `collectif`, `club`, `comite`, `assemblee`, `reseau` ou `autre` ; une seule ; une valeur inconnue est lue `autre` |
+| `t` | non, 5 au plus | un thème : minuscules, espaces intérieurs réduits à un seul, sans `#` en tête, 1 à 40 caractères, jamais deux fois le même |
+| `l` | non | langue, code ISO 639-1 de deux lettres minuscules ; absente, `fr` |
+| `ppf-territory-code` | non | code du référentiel des territoires (section 4 nonies), écrit exactement comme le référentiel l'écrit (`com:69123`, `dep:2A`) ; seulement quand le fondateur a choisi un territoire proposé, jamais deviné ; sert à « près de chez moi », calculé sur l'appareil |
+| `ppf-internal-charter` | non | charte interne du collectif, publique, 3000 caractères au plus ; une seule, jamais vide |
+| `ppf-visibility` | non | `public` (absente, de même) ; seule valeur acceptée à l'étape 1. Réservées pour plus tard, refusées aujourd'hui : `prive`, `secret` (salons chiffrés de bout en bout) |
+| `ppf-join` | non | `open` (absente, de même) ; seule valeur acceptée à l'étape 1. Réservées pour plus tard, refusées aujourd'hui : `request`, `invitation` (liste des membres, point d'attention n° 26) |
+
+**Fondateur** : l'auteur de la description, premier administrateur (D-131), publiquement relié au collectif. Seul lui republie la description (`409 group_taken` pour une autre clé, `403 not_allowed` s'il a rendu son rôle d'administrateur). **Ne changent jamais** une fois le collectif créé : `ppf-collective`, `ppf-scope`, `ppf-territory-code`, `ppf-territory`, `ppf-charter`, `ppf-visibility`, `ppf-join` (`409 collective_immutable`). Un salon ordinaire ne devient pas un collectif par une nouvelle version, ni un collectif un salon ordinaire (la reprise d'un salon existant viendra avec `docs/integration/salons-reprise.md`). Les autres administrateurs changent le nom et la présentation par `edit-metadata` (9002), comme pour tout salon.
+
+**Création** : réservée à un compte de personne (pas un compte de collectif, D-133), non déclaré compromis pour cet événement (S-146) et **validé en personne** (D-112 : niveau `verifie`, ou `elu` pour un élu certifié, rencontré lui aussi) ; sinon `403 collective_needs_verified` (ou `403 account_compromised`). Sans le stockage des urnes sur le serveur, aucun collectif n'est créé. Aucune limite au nombre de collectifs par personne (les garde-fous de D-132 sur la création de salons s'appliquent).
+
+**Codes d'erreur** (`400`) : `collective_bad_marker`, `collective_bad_scope`, `collective_bad_type`, `collective_too_many_themes`, `collective_bad_theme`, `collective_bad_language`, `collective_bad_territory_code`, `collective_bad_internal_charter`, `collective_charter_too_long`, `collective_visibility_unsupported`, `collective_join_unsupported`.
+
+**Au nom d'un collectif** : une mobilisation (31923) ou un appel (30023, `ppf-type` = `appel`) peut porter `["ppf-collective", "<identifiant du salon>"]` (une seule, identifiant de salon valide, sinon `400 missing_field` avec le message `ppf-collective`). Le serveur l'accepte seulement de son fondateur ou d'une clé qui détient `admin` ou `moderator` dans le salon au moment où il le reçoit (`403 collective_role_required`) ; une étiquette qui ne désigne aucun collectif répond `404 collective_not_found`. Les règles habituelles d'« Agir » s'appliquent ensuite (relecture, contenus retenus). Un auteur qui a perdu son rôle peut encore annuler ou clore ce qu'il a publié. Les événements et appels publics rejoignent l'agenda, la carte et le mur communs. Ceux réservés aux membres attendent les salons chiffrés.
+
+**Sur l'appareil seulement** : rejoindre un collectif, c'est rejoindre son salon (table locale `group_membership`, rien n'est publié, le serveur ne connaît aucun membre) ; le nombre de membres n'est donc pas affiché. La recherche, les filtres et « près de chez moi » (commune choisie dans « Mes élus », puis les territoires qui la contiennent) ne quittent jamais l'appareil.
+
+## 4 quindecies. Minuteur « Sans nouvelles de moi » d'« Agir » (AG-55, D-088)
+
+Messages privés entre le compte de la personne qui arme un minuteur et chacun des destinataires qu'elle a choisis. Ils ne voyagent jamais en clair : chaque message est une **rumeur** (NIP-59) de type **8593**, scellée (type 13) par le compte de la personne pour **un** destinataire, puis emballée (type 1059) par une clé jetable, exactement comme un message privé (section 4 ter). Le serveur ne reçoit que l'enveloppe : il ne voit ni le type 8593, ni l'auteur, ni l'échéance, ni le contenu, et rien ne change pour lui. Détail et raisons : `docs/integration/agir-minuteur.md`. Le type 8593 est privé (il ne voyage que chiffré) ; aucun NIP connu ne l'utilise en novembre 2026, à vérifier dans la liste des NIP avant la phase 3 (Nostr), comme les types 8590 à 8592 des témoignages.
+
+Étiquettes communes à toutes les rumeurs du minuteur :
+
+| Étiquette | Contenu |
+|---|---|
+| `p` | la clé du destinataire de cette rumeur, seule : un destinataire ne sait jamais qui d'autre est prévenu |
+| `ppf-type` | `minuteur` |
+| `ppf-action` | `depot`, `annulation` ou `report` |
+| `ppf-timer` | identifiant du minuteur : 32 octets aléatoires en hexadécimal minuscule (64 caractères), tirés à l'armement |
+
+`created_at` est la vraie date du message (celle de l'enveloppe et du sceau est aléatoire). L'auteur est vérifié par le sceau (section 4 ter).
+
+**Dépôt** (`ppf-action` = `depot`), une rumeur par destinataire à l'armement :
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `ppf-deadline` | oui | échéance, secondes depuis 1970 ; plus tard que `created_at`, de 48 heures au plus (sinon la rumeur est ignorée) |
+| `ppf-hash` | oui | `h` = SHA-256 du secret aléatoire de 32 octets gardé par l'appareil de la personne, hexadécimal minuscule |
+| `location` | non | le lieu prévu, **écrit par la personne** (200 caractères au plus) ; jamais une position lue sur l'appareil |
+
+`content` : le texte de l'alerte préparé par la personne, texte brut, 1 000 caractères au plus, non vide.
+
+**Annulation** (`ppf-action` = `annulation`) : `["ppf-secret","<s>"]`, le secret courant en hexadécimal. Acceptée seulement si SHA-256(`s`) est le `h` courant du même minuteur (même `ppf-timer`, même auteur). `content` vide.
+
+**Report** (`ppf-action` = `report`) : `["ppf-secret","<s>"]` (secret courant), `["ppf-deadline","<nouvelle échéance>"]`, `["ppf-hash","<h'>"]` (empreinte du nouveau secret, gardé par l'appareil de la personne). Accepté seulement si SHA-256(`s`) est le `h` courant ; `h'` devient alors le `h` courant. `content` vide.
+
+**Lecture chez le destinataire** : les enveloppes arrivent dans n'importe quel ordre (leurs dates sont aléatoires). L'appareil garde tout ce qui arrive pour un minuteur (auteur, `ppf-timer`) et suit la chaîne : partant du `h` du dépôt, une révélation compte si son secret donne le `h` courant ; un report change l'échéance et `h` ; une annulation clôt la chaîne. Sans annulation valide, l'alerte s'affiche à l'échéance, sans réseau. Un dépôt en double est ignoré ; un dépôt dont l'échéance est passée depuis plus de 7 jours n'est pas une alerte ; un minuteur est oublié 7 jours après son échéance ou son annulation (plus longtemps que la fenêtre où ses enveloppes peuvent être relues) ; 50 minuteurs au plus par appareil, 50 révélations au plus par minuteur.
+
+**Sur l'appareil de la personne** (préférence privée sur Android, fichier `minuteur.json` du dossier privé sur ordinateur ; aucune table, aucune migration) : document JSON `TimerDeviceData` (version 1) : le compte propriétaire, le minuteur armé (identifiant, échéances réelle et affichée, destinataires, texte, lieu, `h`, secret courant caché, sel et nombre d'itérations du code « je vais bien », empreinte lente du code de détresse, essais faux), les envois en attente (sceaux déjà chiffrés, réemballés à chaque essai) et les minuteurs reçus. Le secret courant n'y est jamais en clair : il est caché par un XOR avec 32 octets tirés par HKDF-SHA-256 (sel : un nonce aléatoire de 16 octets ; info : `ppf-minuteur-secret-v1`) de la clé que donne le code « je vais bien » (PBKDF2-HMAC-SHA-256, sel aléatoire de 16 octets, 600 000 itérations, puis poivre HMAC de l'Android Keystore quand il existe). Vérifier un code, c'est ouvrir cette boîte et comparer SHA-256 du résultat avec `h`.
+
+## 4 sexdecies. Code QR des affiches d'« Agir » (AG-61, étape 1, décision à numéroter)
+
+Le code QR d'une affiche ou d'un tract fabriqué sur l'appareil porte soit l'événement signé lui-même, soit l'adresse stable du contenu. Règles communes : `shared/core/.../core/agir/poster/PosterQr.kt` et `AgirLinks.kt` ; détail et raisons : `docs/integration/agir-affiche-qr.md`. Rien dans le code ne concerne la personne qui a fait ou imprimé l'affiche.
+
+**Forme « événement »** (le cas normal) :
+
+```
+PPF:EVENT:1:<Base45 du gzip du JSON de l'événement signé>
+```
+
+| Partie | Contenu |
+|---|---|
+| `PPF:EVENT:1:` | marqueur et version du format, en capitales (mode alphanumérique des codes QR) ; une autre version prendra un autre chiffre |
+| charge | Base45 (RFC 9285) des octets gzip (RFC 1952) du JSON exact de l'événement signé (section 2), en UTF-8, tel que `SignedEvent.toJson()` l'écrit ; tous les caractères appartiennent à l'alphabet Base45 (`0-9`, `A-Z`, espace, `$%*+-./:`) |
+
+- **Taille** : 1 451 caractères au plus, préfixe compris : capacité d'un code de version 25 au niveau de correction M en mode alphanumérique (ISO/IEC 18004). Un événement plus long prend la forme « adresse ».
+- **Lecture** : Base45 décodé (longueur de reste 1 refusée, valeur trop grande refusée, caractère hors alphabet refusé), gzip décompressé (64 Ko au plus), JSON lu, puis identifiant et signature vérifiés (`SignedEvent.verify()`). Un événement dont l'identifiant ou la signature ne correspond pas est **refusé** ; un code illisible n'est jamais lu comme un événement. Un événement valide est exactement celui que son auteur a signé ; l'application dit qui l'a signé (équipe de PPF, organisation vérifiée, ou compte inconnu) avant de l'ajouter à l'agenda.
+- **Types acceptés à l'étape 1** : mobilisation de l'agenda (31923), ajoutée à l'agenda de l'appareil ; appel (30023, `ppf-type` = `appel`), lu sur place. Tout autre événement valide est montré comme « ni un événement de l'agenda ni un appel ».
+
+**Forme « adresse »** (événement trop long) :
+
+| Contenu | Adresse |
+|---|---|
+| Mobilisation (31923) | `https://politisation-populaire-francaise.org/agir/agenda/<clé de l'auteur>/<identifiant d>` |
+| Appel (30023, `ppf-type` = `appel`) | `https://politisation-populaire-francaise.org/agir/appels/<clé de l'auteur>/<identifiant d>` |
+
+Clé en hexadécimal minuscule (64 caractères) ; identifiant écrit tel quel s'il ne contient que des caractères non réservés (RFC 3986), sinon codé en pourcentage comme les adresses de « Voir ». **Jamais de paramètre ni de fragment.** À la lecture, seules ces adresses exactes sont suivies : `https`, l'un des six domaines de PPF (`www.` admis), ni nom d'utilisateur, ni port, ni paramètre, ni fragment, ni autre chemin. Les pages du site à ces adresses sont à écrire (question 1 de la note) ; l'application ouvre la mobilisation qu'elle connaît, après la synchronisation habituelle de tout l'agenda si besoin.
+
+## 4 septdecies. Suites d'une mobilisation d'« Agir » (AG-62, décision à numéroter)
+
+> Numéro pris le 9 novembre 2026 ; l'agent d'AG-61 (affiche avec code QR) ajoute peut-être une section au même moment : la session qui fusionne garde l'ordre d'entrée dans `main` et renumérote la seconde. Conception, règles et questions : `docs/integration/agir-et-apres.md`. **Pas encore compilé ni signé** (`suites.json` n'existe pas encore).
+
+Une suite (« Et après ? ») dit ce qui a suivi une mobilisation passée de l'agenda : réponse d'un élu, annonce, recul, texte déposé, décision de justice. C'est un contenu éditorial NIP-23 (type `30023`, `ppf-type` = `suite`) signé par une clé éditoriale : étiquettes communes de la section 4 bis (`summary` obligatoire), puis, dans l'ordre de l'en-tête. Lecture : `shared/core/.../core/agir/followups/FollowUp.kt` ; schéma du moteur éditorial : `FollowUpSchema.kt`.
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `a` de rôle `mobilisation` | Oui, 1 à 20 | `["a", "31923:<clé>:<d>", "", "mobilisation"]` : adresse complète de la mobilisation suivie (section 4 sexies), quel que soit son auteur |
+| `ppf-suite-kind` | Oui | `reponse-elu`, `annonce`, `recul`, `texte-depose`, `decision-justice` ou `autre` |
+| `ppf-date` | Oui | Date de la suite, `AAAA-MM-JJ` (comme un fait de « Voir ») |
+| `ppf-fact-status` | Oui | `etabli`, `allegue` ou `enquete` : le vocabulaire des faits de « Voir » (section 4 quinquies) |
+| `ppf-source` | Oui, une ou plus | type de source de « Voir », nom, adresse `https://` **obligatoire**, date facultative |
+| `a` de rôle `personne` | Non, 20 au plus ; obligatoire pour `reponse-elu` | `30023:<clé>:<d>` d'une personne publique de « Voir » : le droit de réponse s'applique |
+| `a` de rôle `revendication` | Non, 20 au plus | `30023:<clé>:<d>` d'une revendication (section 4 quater) |
+| `a` de rôle `appel` | Non, 20 au plus | `30023:<clé>:<d>` d'un appel (section 4 sexies) |
+| `a` de rôle `chronologie` | Non, 20 au plus | `30023:<clé>:<d>` d'un fait de la chronologie de « Voir » (VO-06) |
+| `ppf-correction` | Non | date, résumé public, nature (`correction` ou `mise-a-jour`), comme la section 4 bis |
+
+Les liens portent l'adresse complète, et non un identifiant sous la clé de l'espace, parce que leurs cibles sont signées par d'autres clés (l'auteur d'une mobilisation, d'une revendication ou d'un appel ; la clé de « Voir »). Le même lien n'est donné qu'une fois. `content` : texte simple, 4 000 caractères au plus.
+
+**Lecture sur l'appareil** : une suite sans type connu, sans date, sans statut connu, sans mobilisation de type 31923 ou sans source qui ait son adresse est ignorée ; une source sans adresse est écartée ; seules les suites d'une clé éditoriale de confiance sont montrées. Pour une même adresse, la version la plus récente l'emporte. Les suites d'une mobilisation sont cherchées sur l'appareil, par l'étiquette `a` de son adresse, jamais demandées au serveur pour une mobilisation donnée ; quand elles viendront du serveur, elles seront tirées par type, toutes. Un droit de réponse de « Voir » (`ppf-type` = `reponse`) dont la cible est une suite s'affiche sous elle (le schéma de `reponse` n'accepte pas encore cette cible : question 3 de la note).
+
+**Paquet intégré** : `suites.json`, écrit par `tools/content-signer` à partir de `content/suites` (format dans `content/README.md`), absent tant que l'outil n'a pas été lancé ; l'application le tolère.
 
 ## 5. API du serveur (version 1)
 

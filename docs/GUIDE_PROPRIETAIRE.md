@@ -210,6 +210,104 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 6. Onglet « Je veux aider » : cochez « Traduction » : seules les missions de traduction restent ; la phrase dessous rappelle que vos compétences restent sur votre appareil. Sur une mission, « Proposer mon aide » est grisé avec l'explication (il arrivera avec la messagerie de l'équipe, M30).
 7. Onglet « Entraide » : l'explication de ce qui se prépare (covoiturage, hébergement) et pourquoi ce n'est pas encore là.
 8. Tournez le téléphone ou élargissez la fenêtre : sur ordinateur, la liste et la page sont côte à côte.
+
+### Tester les collectifs dans « Agir » (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
+
+Ce qui suit sera possible une fois le travail compilé et fusionné (il a été écrit sans pouvoir compiler, la machine étant réservée à une autre équipe). Un collectif est un groupe de citoyens avec une page, des rôles, un calendrier et des appels ; un salon reste un simple espace de discussion, ouvert à tous.
+
+1. Lancez le serveur de développement (`gradlew :server:runDev`), puis l'application de bureau reliée à lui (variable `PPF_SERVER_URL=http://localhost:8080`, puis `gradlew :desktop:run`).
+2. Ouvrez « Agir », puis la carte « Collectifs » : deux collectifs fictifs marqués [EXEMPLE] apparaissent (des cyclistes à Lyon, des parents d'élèves à Paris), avec leur type, leur portée et leur territoire. Les salons ordinaires n'y sont pas : le lien « Voir les salons de discussion » les ouvre, et le retour ramène aux collectifs.
+3. Touchez un thème (« vélo »), un type ou une portée : la liste se resserre ; « Effacer les filtres » la remet. Si vous avez choisi votre commune dans « Mes élus » (espace « Comprendre »), le filtre « Près de chez moi » apparaît. Tout cela reste sur votre appareil.
+4. Ouvrez « Collectif des cyclistes » : sa présentation, ses thèmes, sa charte interne (touchez « Lire la charte interne »), ses rôles publics, et dans « Prochains événements » une balade [EXEMPLE]. Touchez « Rejoindre le collectif » : la phrase rappelle que rien n'est publié. « Ouvrir le salon du collectif » ouvre son salon de discussion.
+5. Touchez « Créer un collectif » avec un compte d'essai : comme ce compte n'est pas validé en personne, l'écran l'explique, renvoie vers « Mon espace » (carte « Mon niveau de votant ») et propose de créer un salon à la place. C'est voulu : seul un compte validé en personne peut fonder un collectif.
+6. La création elle-même (quatre étapes, charte décochée au départ, mise en garde « Votre pseudonyme sera publiquement relié à ce collectif », « Annuler » avant « Créer le collectif ») est vérifiée par les tests automatiques. Pour l'essayer à la main, il faudra un compte validé en personne par une séance de validation du back-office ; je vous guiderai pas à pas quand ce sera prêt sur le serveur de développement.
+7. Élargissez la fenêtre, puis réduisez-la à la taille d'un téléphone : la page reste lisible, centrée, sans débordement ; essayez aussi le mode sombre.
+
+### Tester le minuteur « Sans nouvelles de moi » (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
+
+Ce minuteur prévient vos proches si vous ne confirmez pas que vous allez bien à l'heure que vous avez choisie. **Il n'est pas encore dans une version installable** : ce guide servira dès qu'il aura été compilé et sera entré dans une version de test.
+
+**Avant de commencer** : il faut **deux comptes** (la personne qui arme le minuteur et un proche qui reçoit l'alerte), et que les deux se soient déjà écrit au moins un message privé (le minuteur propose les contacts de vos conversations). L'idéal est **deux téléphones Android** avec la version de test reliée à la préproduction ; sinon, deux fenêtres de l'application sur l'ordinateur avec le serveur de développement, comme pour la messagerie (section « Échanger un message entre deux comptes sur l'ordinateur », étapes 1 à 8). Gardez toujours le même ordinateur ou les mêmes téléphones pendant l'essai.
+
+1. Sur l'appareil de la personne (compte 1) : « Agir », **Mode manifestation**, rubrique **Sans nouvelles de moi**, **Préparer un minuteur**. Lisez « Comment ça marche ».
+2. Cochez le compte 2. Laissez « Dans 2 h » ou touchez **Heure précise** et tapez une heure dans 20 minutes (pour ne pas attendre trop longtemps). Gardez le message proposé ou écrivez le vôtre, en commençant par [EXEMPLE]. Facultatif : un lieu prévu, par exemple « [EXEMPLE] Place de la République ».
+3. Choisissez un code « je vais bien » (par exemple 7391 ; 1234 ou 0000 sont refusés), tapez-le deux fois, puis un **code de détresse** différent (par exemple 2580). Touchez **Continuer** : une fenêtre explique qui recevra l'alerte et quand. Touchez d'abord **Annuler** : rien n'est armé. Recommencez et touchez **Armer le minuteur** : « Minuteur armé, dépôts partis : 1 sur 1 ».
+4. Sur l'appareil du proche (compte 2) : ouvrez « Agir » (et, si besoin, Messages pour actualiser) : en haut, le bloc **Minuteurs de vos proches** dit « … vous a désigné(e) pour un minuteur jusqu'à HH:MM ». Le message n'est pas encore visible : c'est voulu.
+5. **Vrai code** : sur l'appareil de la personne, **Je vais bien**, tapez 7391, **Valider** : « Minuteur annulé ». Chez le proche, après une actualisation des messages, la ligne devient « … a confirmé aller bien ».
+6. **Code de détresse** : armez un nouveau minuteur (étapes 2 et 3) avec une heure dans 20 minutes, puis **Je vais bien** avec 2580 : l'écran affiche exactement le même « Minuteur annulé », et plus aucun minuteur n'apparaît. Chez le proche, la ligne reste ; à l'heure prévue, **l'alerte s'affiche d'elle-même** en haut d'« Agir » et dans la feuille AIDE (après le 15 et le 112), avec le message, le lieu, l'heure de la dernière synchronisation et la phrase « une annulation a pu ne pas encore arriver ». Touchez **Masquer cette alerte**, puis **Masquer**.
+7. **Repousser** : avec un minuteur en cours, touchez **Repousser**, choisissez « Dans 1 h », tapez le vrai code : « Minuteur repoussé », et l'heure change aussi chez le proche (après actualisation).
+8. **Téléphone éteint** (deux téléphones seulement) : armez un minuteur dans 20 minutes, puis éteignez le téléphone de la personne. À l'heure, sur le téléphone du proche (PPF ouvert), l'alerte s'affiche quand même.
+9. À la fin, sur un compte d'essai seulement, l'**effacement rapide** efface aussi le minuteur et les alertes reçues ; il n'annule jamais une alerte déjà déposée chez un proche (c'est le but si le téléphone est saisi).
+
+Ce qui n'est pas encore là : le réveil du téléphone du proche à l'heure exacte quand PPF est fermé (il viendra avec les rappels de « Décider ») ; les cercles de « Communauté » à la place des contacts ; l'iPhone.
+
+### Tester la caméra protégée (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
+
+La caméra protégée prend des photos qui restent chiffrées dans PPF : elles ne vont jamais dans la galerie du téléphone ni dans une sauvegarde en ligne, et la position, le modèle du téléphone et la date sont retirés. **Elle n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée et sera entrée dans une version de test. Il faut votre **téléphone Android** (sur l'ordinateur, l'écran dit seulement que la caméra protégée est sur l'application Android). Photographiez seulement des objets ou un paysage, jamais une personne réelle.
+
+1. Ouvrez « Agir », **Mode manifestation**, rubrique **Caméra protégée**, puis **Ouvrir la caméra protégée**. La première fois, Android demande l'accès à la caméra : touchez **Pendant l'utilisation de l'application** (ou **Autoriser**). Si vous refusez, l'écran explique pourquoi et propose **Autoriser la caméra**.
+2. Visez un objet et touchez **Prendre une photo protégée** : « Photo protégée. Elle est chiffrée dans PPF, hors de la galerie du téléphone. » La vignette apparaît dans **Mes photos protégées**.
+3. **Vérifiez qu'elle n'est pas dans la galerie** : quittez PPF, ouvrez l'application Galerie (ou Photos) du téléphone : la photo n'y est pas.
+4. **Vérifiez qu'elle est cachée** : revenez dans PPF, sur la caméra protégée, puis ouvrez la liste des applications récentes (le carré ou le geste du bas de l'écran) : l'aperçu de PPF est vide. Essayez une capture d'écran : Android la refuse. C'est voulu, même si « Masquer le contenu » est désactivé dans « Mon espace ».
+5. Touchez la vignette : la photo s'ouvre. Touchez **Supprimer**, puis d'abord **Annuler** : elle reste. Prenez une deuxième photo, ouvrez-la, **Supprimer**, puis **Supprimer la photo** : elle disparaît.
+6. Ouvrez une photo et touchez **Enregistrer dans la galerie du téléphone** : une mise en garde explique que la copie sortira de la protection. Touchez d'abord **Annuler** : rien ne se passe. Recommencez et touchez **Enregistrer quand même** : « Une copie est dans la galerie du téléphone ». Dans la Galerie, elle porte un nom neutre (IMG_ puis la date) ; la photo reste aussi dans PPF. Pensez à supprimer cette copie de la Galerie après l'essai. Sur Android 8 et 9, le téléphone vous demande d'abord où l'enregistrer.
+7. Ouvrez une photo et touchez **Témoigner avec cette photo** : le formulaire « Témoigner » s'ouvre avec la photo, comme une photo choisie dans la galerie (floutage, mention des informations retirées). Le retour ramène au mode manifestation. Depuis « Témoigner », le bouton **Prendre une photo avec la caméra protégée** mène au même écran.
+8. Si le verrouillage de PPF est activé (« Mon espace », « Sécurité de cet appareil ») : quittez PPF, revenez : l'écran de verrouillage protège aussi les photos.
+9. À la fin, sur un compte d'essai seulement, l'**effacement rapide** efface aussi toutes les photos protégées : il détruit d'abord la clé qui les protège, puis les fichiers. Rouvrez la caméra protégée : « Aucune photo protégée sur ce téléphone ».
+
+Ce qui n'est pas encore là : la vidéo (étape suivante), l'envoi automatique vers des avocats partenaires (son coût de stockage vous sera présenté avant toute décision), l'iPhone.
+
+### Tester le simulateur du gréviste (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
+
+Le simulateur estime ce qu'une grève retire de la paie, selon le statut (salarié du privé, fonction publique de l'État, territoriale ou hospitalière), et rappelle le préavis et la déclaration à faire avant la grève dans certains secteurs. **Il n'est pas encore dans une version installable** : ce guide servira dès qu'il aura été compilé et sera entré dans une version de test. Il marche de la même façon sur le téléphone et sur l'ordinateur, sans serveur. Tapez des montants fictifs, jamais votre vrai salaire si quelqu'un regarde l'écran : rien n'est enregistré, mais l'écran l'affiche.
+
+1. Ouvrez « Agir », touchez **Solidarité et caisses de grève**, descendez tout en bas de la liste des caisses : l'encadré **Simulateur du gréviste**, puis **Ouvrir le simulateur**.
+2. En haut, la phrase au cadenas rappelle que rien n'est enregistré ni envoyé. Le statut **Salarié d'une entreprise** est choisi. Tapez **2400** dans « Rémunération mensuelle brute » (laissez 35 heures par semaine et 7 heures par jour). Plus bas, l'estimation affiche **Retenue estimée : 110,77 €** (une journée de 7 heures sur 151,67 heures par mois), avec le détail, la règle, ses sources et la ligne « Rédigé par l'IA, règles vérifiées le 9 novembre 2026 ».
+3. Choisissez **Fonction publique de l'État** : **80,00 €** (un trentième). Pour le jour 1, touchez **Heures** et tapez **2** : toujours **80,00 €**, car dans l'État une heure de grève coûte un trentième entier. Choisissez **Fonction publique territoriale** : **31,65 €** (2 heures divisées par 151,67).
+4. Revenez à **Fonction publique de l'État**, touchez **Ajouter un jour de grève** (jour 2, journée entière), puis deux fois **+** sous « Jours sans service entre deux jours de grève » (un week-end) : **320,00 €**, soit quatre trentièmes, comme une grève le vendredi et le lundi suivant.
+5. Dans « Votre secteur », choisissez **École maternelle ou élémentaire publique** : sous « Avant de faire grève », la négociation préalable, le préavis de cinq jours francs et la déclaration 48 heures avant apparaissent.
+6. Revenez à **Salarié d'une entreprise** et choisissez le secteur **Autre service public géré par une entreprise** : le simulateur dit qu'il ne calcule pas encore ce cas (règle à faire confirmer par un avocat) et garde le rappel du préavis.
+7. Sous « Caisses de grève proches », les caisses de grève fictives [EXEMPLE] de l'annuaire apparaissent ; tapez **35000** (Rennes) : seule reste celle qui sert partout en France. Touchez-la : sa page s'ouvre dans la rubrique Solidarité.
+8. Tout en bas, touchez une source, par exemple « Service-public.gouv.fr … (fiche F117) » : « Vous quittez PPF » s'affiche ; **Rester sur PPF** referme la fenêtre, **Ouvrir la source** ouvre la page officielle dans le navigateur.
+9. Quittez « Agir » (touchez un autre espace en bas), puis revenez au simulateur : tous les champs sont vides, la preuve que rien n'a été gardé. Essayez aussi le mode sombre et, sur l'ordinateur, une fenêtre large : les questions et l'estimation sont côte à côte.
+
+Ce qui n'est pas encore là : les gardes de 24 heures, le forfait en jours, les entreprises privées chargées d'un service public hors transports (règles à confirmer) ; la relecture des règles par un avocat avant l'ouverture publique.
+
+### Tester l'affiche à code QR (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
+
+Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre appareil. Son code QR contient l'événement signé lui-même : un téléphone l'ajoute à son agenda **sans réseau**, après avoir vérifié qu'il n'a pas été modifié. **L'affiche n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée. Il faut votre **ordinateur** (pour faire l'affiche) et votre **téléphone Android** (pour la scanner). Les événements de l'agenda sont tous fictifs ([EXEMPLE]).
+
+1. **Sur l'ordinateur**, ouvrez « Carte » (ou « Agir », puis « Agenda des mobilisations ») et touchez la mobilisation « Rassemblement pour les services publics » (Paris). Dans son détail, cliquez sur **Faire une affiche**.
+2. L'écran « Faire une affiche » montre un aperçu. Choisissez **A4**, puis **A3** : la ligne sous l'aperçu indique le format choisi (« 29,7 × 42 cm » pour l'A3). Revenez en A4.
+3. Lisez l'encadré : « Le code QR contient l'événement signé lui-même… » et « Le code ne contient rien sur vous ».
+4. Si vous le souhaitez, tapez une mention de l'imprimeur, par exemple « [EXEMPLE] Imprimé par nos soins » : elle s'ajoute en bas de l'aperçu. Elle n'est gardée nulle part.
+5. Cliquez sur **Enregistrer en image PNG**, choisissez un dossier (par exemple votre Bureau) et validez : « Affiche enregistrée ». Ouvrez l'image : titre, date en toutes lettres, lieu, organisateur, code QR en bas à gauche et la phrase « Scannez pour ajouter à votre agenda, même sans réseau ».
+6. **Sur le téléphone**, coupez le Wi-Fi et les données mobiles (mode avion). Ouvrez PPF, « Carte », puis **Scanner une affiche** en haut de la liste. La première fois, Android demande l'accès à la caméra : touchez **Pendant l'utilisation de l'application**.
+7. Visez le code QR de l'image, à l'écran de l'ordinateur (ou sur la feuille imprimée) : « Signature vérifiée », puis « Signé par l'équipe de PPF », et l'événement. Touchez **Ajouter à mon agenda** : comme cet exemple est déjà dans l'agenda du téléphone, il répond « Cet événement est déjà dans votre agenda » (c'est normal ; un événement que le téléphone ne connaît pas encore donnerait « Ajouté à votre agenda »). **Voir dans l'agenda** ouvre son détail.
+8. Touchez **Scanner un autre code** et visez un autre code QR (celui d'un emballage, d'un ticket) : « Ce code n'est pas celui d'une affiche PPF : rien n'est ouvert ».
+9. Sur l'ordinateur, le bouton « Scanner une affiche » n'apparaît pas : la lecture se fait avec un téléphone. Sur le téléphone, **Faire une affiche** enregistre un PDF : choisissez l'endroit dans la fenêtre qui s'ouvre (par exemple « Téléchargements »), puis ouvrez-le pour vérifier.
+10. En bas de l'écran de l'affiche, **Lire la fiche « Coller des affiches et distribuer des tracts »** ouvre la fiche pratique : où l'on peut afficher, ce que la loi demande, ce qui change pendant la campagne présidentielle.
+
+Pour imprimer : choisissez **taille réelle** (ou « 100 % ») dans la fenêtre d'impression, sinon le code QR rétrécit. Ce qui n'est pas encore là : l'iPhone, le PDF sur ordinateur, les affiches d'une fiche ou d'une revendication, les pages du site pour les affiches d'événements très longs.
+
+### Tester « Mes proches à mobiliser » (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
+
+Une liste rien qu'à vous, sur votre appareil, de quelques proches que vous aimeriez entraîner avec vous : pour chacun, un surnom, des sujets qui pourraient l'intéresser, la prochaine étape et, si vous voulez, un rappel. **Elle n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée et sera entrée dans une version de test. Elle marche de la même façon sur le téléphone et sur l'ordinateur, sans serveur. Pour vos essais, prenez des surnoms inventés (par exemple « [EXEMPLE] Tante M. »), jamais le nom d'une vraie personne.
+
+1. Ouvrez « Agir » et touchez la carte **Mes proches à mobiliser**. L'écran explique la liste et, en bas, l'encadré au cadenas « Ce que garde cette liste ».
+2. Touchez **Ajouter un proche** : la mise en garde « Avant de commencer » s'affiche d'abord (ce qui est gardé, que rien n'est envoyé, qu'un surnom suffit). Touchez **Annuler** : rien n'est gardé, vous revenez à l'écran de départ.
+3. Touchez de nouveau **Ajouter un proche**, puis **Commencer ma liste** : le formulaire s'ouvre. Touchez **Enregistrer** sans rien écrire : « Écrivez un surnom pour enregistrer ».
+4. Tapez « [EXEMPLE] Tante M. ». Choisissez les sujets **Santé**, **Logement** et **Travail** : les autres sujets se grisent (trois au plus). Touchez de nouveau **Santé** pour le retirer.
+5. Dans « Prochaine étape », choisissez **Partager un contenu** ; dans « Me le rappeler », choisissez **Demain** (la date s'affiche sous chaque choix). Touchez **Enregistrer**.
+6. La carte de « [EXEMPLE] Tante M. » apparaît dans « Ma liste », avec « Prochaine étape : Partager un contenu », ses sujets et la date du rappel. Plus bas, « Des contenus sur ses sujets » propose des fiches et des parcours déjà sur votre appareil (par exemple « Faire grève : vos droits »). Touchez **Copier le lien** : « Lien copié ». Collez-le dans une note : seuls le titre et l'adresse publique du contenu apparaissent, jamais le surnom.
+7. Sur le téléphone, touchez **Partager** sur un contenu : Android propose vos applications ; touchez la flèche retour pour ne rien envoyer.
+8. Touchez **Passer à : L'inviter à une mobilisation** : l'étape change. Si vous avez ouvert l'agenda auparavant, des mobilisations à venir sur ces sujets passent en tête des contenus proposés.
+9. Touchez **Modifier**, choisissez **Pas de rappel** puis **Enregistrer**. Touchez **Retirer** : la question « Retirer ce proche de votre liste ? » s'affiche ; **Annuler** le garde, **Retirer** l'efface de l'appareil.
+10. Ajoutez deux proches, puis fermez et rouvrez PPF : la liste est toujours là. Dans « Mon espace », lancez l'**effacement rapide** (ou « Effacer mes clés » si vous avez un compte de test) : en revenant dans la rubrique, la liste est vide.
+11. Essayez aussi le mode sombre et, sur l'ordinateur, une fenêtre large : les cartes se rangent par deux.
+
+Ce qui n'est pas encore là : la notification le jour du rappel (elle viendra avec les rappels de l'appareil de « Décider » ; en attendant, le proche passe en tête de la liste avec « À faire aujourd'hui »), l'iPhone, le chiffrement de la liste par une clé du téléphone (question posée au chef d'équipe).
+
 ### Tester l'écran « En direct » (ajouté le 7 novembre 2026)
 
 1. Touchez **En direct** dans la barre du bas (deuxième bouton).

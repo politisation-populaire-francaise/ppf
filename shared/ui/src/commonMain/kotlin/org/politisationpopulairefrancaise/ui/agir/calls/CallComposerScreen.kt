@@ -59,6 +59,7 @@ import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
+import org.politisationpopulairefrancaise.ui.agir.collectives.CollectiveComposerNote
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
 import org.politisationpopulairefrancaise.ui.components.PpfCard
@@ -149,6 +150,8 @@ internal fun CallComposerScreen(
                     return@Column
                 }
                 Header(onClose)
+                // Opened from the page of a collectif (M24): in whose name the call is launched.
+                CollectiveComposerNote(composer.collective)
                 val type = composer.draft.type
                 if (type == null) {
                     TypeChoice(canFundraise, composer::chooseType)

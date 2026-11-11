@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- M33 "Sécurité de l'appareil" (Agir): the lock of the application (S-43), the quick erase (S-44),
      the content hidden from the system (S-45) and « Préparer mon téléphone » (AG-56). French, "vous",
-     typographic apostrophe (’), no em dash. The legal texts are [EXEMPLE], to be read by a lawyer. -->
+     typographic apostrophe (’), no em dash. Real contents written with an AI (owner's decision of 9 November 2026,
+     « Rédigé par l’IA »), legal facts checked on Légifrance on 9 November 2026, to be read again by a lawyer. -->
 <resources>
     <!-- Lock screen -->
     <string name="sec_lock_title">PPF est verrouillé</string>
@@ -97,15 +98,22 @@
     <string name="sec_status_ok">Fait</string>
     <string name="sec_status_todo">À faire</string>
     <string name="sec_phone_settings_title">Réglages du téléphone</string>
-    <string name="sec_phone_biometric">[EXEMPLE] Pourquoi un code plutôt que l’empreinte ou le visage : on peut poser votre doigt sur le téléphone ou le tenir devant votre visage sans votre accord, alors qu’un code reste dans votre tête.</string>
-    <string name="sec_phone_settings_1">[EXEMPLE] Avant de partir, désactivez le déverrouillage du téléphone par empreinte ou par visage, ou utilisez son mode « Verrouillage » (Android 9 et plus, menu du bouton marche), qui impose le code.</string>
-    <string name="sec_phone_settings_2">[EXEMPLE] Choisissez un code d’au moins 6 chiffres plutôt qu’un schéma, que l’on devine en regardant par-dessus l’épaule.</string>
-    <string name="sec_phone_settings_3">[EXEMPLE] Masquez le contenu des notifications sur l’écran verrouillé.</string>
-    <string name="sec_phone_settings_4">[EXEMPLE] Si vous filmez, désactivez la sauvegarde automatique des photos vers un service en ligne.</string>
-    <string name="sec_phone_legal">[EXEMPLE, à vérifier par un avocat] La Cour de cassation (assemblée plénière, 7 novembre 2022, n° 21-83.146) a jugé que le code de déverrouillage d’un téléphone peut être une « convention secrète de déchiffrement » quand le téléphone est équipé d’un moyen de cryptologie et que ce code permet de déchiffrer ses données ; le juge le vérifie au cas par cas. Refuser de le remettre sur réquisition de l’autorité judiciaire peut alors être puni, si le téléphone a pu servir à préparer ou commettre un crime ou un délit (Code pénal, article 434-15-2 : jusqu’à trois ans d’emprisonnement et 270 000 € d’amende). Ce texte n’est pas un conseil juridique : demandez à une legal team.</string>
+    <string name="sec_phone_biometric">Pourquoi un code plutôt que l’empreinte ou le visage : on peut poser votre doigt sur le téléphone ou le tenir devant votre visage sans votre accord, alors qu’un code reste dans votre tête.</string>
+    <string name="sec_phone_settings_1">Avant de partir, désactivez le déverrouillage du téléphone par empreinte ou par visage, ou utilisez son mode « Verrouillage » (Android 9 et plus, menu du bouton marche), qui impose le code.</string>
+    <string name="sec_phone_settings_2">Choisissez un code d’au moins 6 chiffres plutôt qu’un schéma, que l’on devine en regardant par-dessus l’épaule.</string>
+    <string name="sec_phone_settings_3">Masquez le contenu des notifications sur l’écran verrouillé.</string>
+    <string name="sec_phone_settings_4">Si vous filmez, désactivez la sauvegarde automatique des photos vers un service en ligne.</string>
+    <string name="sec_phone_legal">La Cour de cassation (assemblée plénière, 7 novembre 2022, n° 21-83.146) a jugé que le code de déverrouillage d’un téléphone peut être une « convention secrète de déchiffrement » quand le téléphone est équipé d’un moyen de cryptologie et que ce code permet de déchiffrer ses données ; le juge le vérifie au cas par cas. Refuser de le remettre sur réquisition de l’autorité judiciaire peut alors être puni, si le téléphone a pu servir à préparer ou commettre un crime ou un délit (Code pénal, article 434-15-2 : jusqu’à trois ans d’emprisonnement et 270 000 € d’amende). Ce texte n’est pas un conseil juridique : demandez à une legal team. Sources : Légifrance, arrêt n° 21-83.146 et article 434-15-2 du Code pénal, consultés le 9 novembre 2026. Rédigé par l’IA ; relecture par un avocat à venir.</string>
     <string name="sec_prepare_discreet">Nom et icône discrets</string>
     <string name="sec_prepare_discreet_on">Activé : l’icône neutre « Outils » est sur l’écran d’accueil.</string>
     <string name="sec_prepare_discreet_off">Désactivé (facultatif).</string>
+    <string name="sec_prepare_notifications">Notifications discrètes</string>
+    <string name="sec_prepare_notifications_none">PPF n’affiche aucune notification sur cet appareil.</string>
+    <string name="sec_prepare_notifications_discreet">Oui : sur l’écran verrouillé, seulement « PPF : nouvelle activité », sans expéditeur ni extrait.</string>
+    <string name="sec_prepare_notifications_details">Non : l’expéditeur et un extrait s’affichent une fois le téléphone déverrouillé.</string>
+    <string name="sec_prepare_notifications_action">Masquer les détails</string>
+    <string name="sec_prepare_map">Carte sans réseau</string>
+    <string name="sec_prepare_map_text">Prête : le fond de carte de la France est intégré à l’application, la carte des mobilisations reste lisible sans réseau avec celles déjà reçues. Le détail des rues demande le réseau.</string>
 
     <!-- S-45: discreet application -->
     <string name="sec_discreet_toggle">Application discrète</string>

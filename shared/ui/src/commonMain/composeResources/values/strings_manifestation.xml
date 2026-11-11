@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- M25 "Secours, sécurité et défense en manifestation": the AIDE button and its emergency sheet
      (AG-27, first version), and the protest mode (AG-13). French, "vous", typographic apostrophe (’),
-     no em dash. Every legal text here is an [EXEMPLE] to be read again by a lawyer before launch. -->
+     no em dash. Real contents written with an AI (owner's decision of 9 November 2026, « Rédigé par l’IA »); the
+     rules of law are in the sourced and dated fiches; everything is read again by a lawyer before launch. -->
 <resources>
     <!-- The AIDE button -->
     <string name="help_button">AIDE</string>
@@ -73,12 +74,12 @@
     <!-- The protest mode (AG-13) -->
     <string name="manif_title">Mode manifestation</string>
     <string name="manif_intro">Préparez votre manifestation avant de partir : tout ce qui est ici reste lisible sans réseau et sans compte. Sur place, le bouton AIDE est toujours à portée de main.</string>
-    <string name="manif_example_title">[EXEMPLE] Textes à relire par un avocat</string>
-    <string name="manif_example_text">Ces conseils sont des brouillons de démonstration, préparés avec l’aide d’une IA. Ils seront relus par un avocat et construits avec les organisations existantes avant le lancement.</string>
+    <string name="manif_example_title">Rédigé par l’IA</string>
+    <string name="manif_example_text">Ces conseils pratiques ont été rédigés avec l’aide d’une IA. Les règles de droit sont dans les fiches, avec leurs sources officielles et leur date de vérification. Un avocat et les organisations existantes (legal teams, street medics) les reliront avant l’ouverture au public.</string>
     <string name="manif_open_help">Ouvrir l’AIDE</string>
 
     <string name="manif_checklist_title">Avant de partir</string>
-    <string name="manif_checklist_text">[EXEMPLE] Cochez au fur et à mesure. Rien n’est enregistré.</string>
+    <string name="manif_checklist_text">Cochez au fur et à mesure. Rien n’est enregistré.</string>
     <string name="manif_check_1">Noter sur papier, ou sur le bras, le numéro de la legal team et celui d’un proche.</string>
     <string name="manif_check_2">Convenir d’un point de ralliement avec vos proches.</string>
     <string name="manif_check_3">Prévenir un proche : où vous allez, avec qui, quand vous pensez rentrer.</string>
@@ -104,9 +105,9 @@
     <string name="manif_territory_hint">Il reste sur cet appareil, en mémoire seulement.</string>
 
     <string name="manif_phone_title">Sécurité de votre téléphone</string>
-    <string name="manif_phone_1">[EXEMPLE] Verrouillez votre téléphone par un code et vérifiez que son chiffrement est activé.</string>
-    <string name="manif_phone_2">[EXEMPLE] Laissez à la maison ce dont vous n’avez pas besoin : photos personnelles, comptes sensibles.</string>
-    <string name="manif_phone_3">[EXEMPLE] Avant de partager une photo, floutez les visages des autres manifestants.</string>
+    <string name="manif_phone_1">Verrouillez votre téléphone par un code et vérifiez que son chiffrement est activé.</string>
+    <string name="manif_phone_2">Laissez à la maison ce dont vous n’avez pas besoin : photos personnelles, comptes sensibles.</string>
+    <string name="manif_phone_3">Avant de partager une photo, floutez les visages des autres manifestants.</string>
     <string name="manif_phone_soon">Bientôt dans l’application : verrouillage de PPF, effacement rapide et application discrète.</string>
 
     <string name="manif_injury_title">Après une blessure</string>

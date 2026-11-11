@@ -37,8 +37,15 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.agir.manifestation.EmergencyNumbers
+import org.politisationpopulairefrancaise.ui.agir.camera.ProtectedCameraEntry
+import org.politisationpopulairefrancaise.ui.agir.camera.ProtectedCameraScreen
+import org.politisationpopulairefrancaise.ui.agir.camera.ProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
 import org.politisationpopulairefrancaise.ui.agir.security.PreparePhoneBlock
+import org.politisationpopulairefrancaise.ui.agir.timer.TimerEntry
+import org.politisationpopulairefrancaise.ui.agir.timer.TimerScreen
 import org.politisationpopulairefrancaise.ui.components.InfoBox
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.ui.components.PageHeader
 import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
@@ -47,6 +54,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfTextField
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.agir_back
+import org.politisationpopulairefrancaise.ui.resources.camera_entry_title
 import org.politisationpopulairefrancaise.ui.resources.help_rally_title
 import org.politisationpopulairefrancaise.ui.resources.help_vital_text
 import org.politisationpopulairefrancaise.ui.resources.manif_check_1
@@ -86,6 +94,7 @@ import org.politisationpopulairefrancaise.ui.resources.manif_territory_hint
 import org.politisationpopulairefrancaise.ui.resources.manif_territory_label
 import org.politisationpopulairefrancaise.ui.resources.manif_testify
 import org.politisationpopulairefrancaise.ui.resources.manif_title
+import org.politisationpopulairefrancaise.ui.resources.timer_entry_title
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** The items of « Avant de partir », in order ([EXEMPLE], to be read again with the organisations). */
@@ -99,14 +108,59 @@ internal val checklist: List<StringResource> = listOf(
  * readable offline and without an account. The checklist is ticked in memory only; the guides are
  * those bundled with the application, read here; the territory typed for the legal teams stays in
  * memory; the rally point is the one of the AIDE button, kept on the device. Nothing is sent.
+ *
+ * « Caméra protégée » (AG-58) opens over it like the timer; [camera] is the shell's (null: the one
+ * attached to [help], else one of its own), and [onTestifyWithPhoto] hands a protected photo to the
+ * testimony form (null: « Témoigner avec cette photo » is not offered).
  */
 @Composable
-fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () -> Unit, modifier: Modifier = Modifier) {
+fun ManifestationScreen(
+    help: HelpState,
+    windowClass: WindowClass,
+    onBack: () -> Unit,
+    modifier: Modifier = Modifier,
+    camera: ProtectedCameraState? = null,
+    onTestifyWithPhoto: ((bytes: ByteArray, takenAt: Long) -> Unit)? = null,
+) {
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
     LaunchedEffect(help) { help.prepare() }
     var guide by rememberSaveable { mutableStateOf<String?>(null) }
+    // Kept above the screen of the timer, so that coming back from it keeps the place in the page.
     val scroll = rememberScrollState()
+    // « Sans nouvelles de moi » (AG-55): its screen opens over the protest mode, with a way back.
+    val timer = help.timer
+    var timerOpen by rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(timer?.screenRequested) {
+        if (timer != null && timer.screenRequested) {
+            timerOpen = true
+            timer.screenShown()
+        }
+    }
+    if (timer != null && timerOpen) {
+        SystemBack(enabled = true) { timerOpen = false }
+        TimerScreen(timer, windowClass, onBack = { timerOpen = false }, modifier = modifier)
+        return
+    }
+    // « Caméra protégée » (AG-58): its screen opens over the protest mode too, with a way back.
+    val protectedCamera = camera ?: help.camera ?: rememberProtectedCameraState()
+    var cameraOpen by rememberSaveable { mutableStateOf(false) }
+    if (cameraOpen) {
+        SystemBack(enabled = true) { cameraOpen = false }
+        ProtectedCameraScreen(
+            protectedCamera,
+            windowClass,
+            onBack = { cameraOpen = false },
+            modifier = modifier,
+            onTestify = onTestifyWithPhoto?.let { testify ->
+                { bytes: ByteArray, takenAt: Long ->
+                    cameraOpen = false
+                    testify(bytes, takenAt)
+                }
+            },
+        )
+        return
+    }
     val open = guide
     if (open != null) {
         Column(modifier.fillMaxSize().background(palette.surface1).verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp)) {
@@ -175,6 +229,16 @@ fun ManifestationScreen(help: HelpState, windowClass: WindowClass, onBack: () ->
 
             Section(stringResource(Res.string.help_rally_title), Lucide.MapPin) {
                 RallyPointBlock(help)
+            }
+
+            if (timer != null) {
+                Section(stringResource(Res.string.timer_entry_title), Lucide.Clock) {
+                    TimerEntry(timer, onOpen = { timerOpen = true })
+                }
+            }
+
+            Section(stringResource(Res.string.camera_entry_title), Lucide.Camera) {
+                ProtectedCameraEntry(protectedCamera, onOpen = { cameraOpen = true })
             }
 
             Section(stringResource(Res.string.manif_phone_title), Lucide.Lock) {

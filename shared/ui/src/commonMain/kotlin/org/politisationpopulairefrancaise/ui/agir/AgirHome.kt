@@ -38,6 +38,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.ui.agir.timer.TimerHomeBlock
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.PageHeader
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
@@ -74,6 +75,8 @@ import org.politisationpopulairefrancaise.ui.resources.agir_soon_text
 import org.politisationpopulairefrancaise.ui.resources.agir_soon_title
 import org.politisationpopulairefrancaise.ui.resources.agir_testify_text
 import org.politisationpopulairefrancaise.ui.resources.agir_testify_title
+import org.politisationpopulairefrancaise.ui.resources.proches_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.proches_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.space_agir
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
@@ -98,8 +101,11 @@ object AgirRubrics {
     /** "Je veux aider" (M35, AG-12): opens the solidarity rubric on the volunteer missions. */
     val HELP = AgirRubric("aider", Res.string.agir_help_title, Res.string.agir_help_text, Lucide.Heart)
 
+    /** « Mes proches à mobiliser » (AG-63): the private list of a few relatives, on the device only. */
+    val PROCHES = AgirRubric("proches", Res.string.proches_rubric_title, Res.string.proches_rubric_text, Lucide.UsersRound)
+
     /** What can be opened today. */
-    val available: List<AgirRubric> = listOf(AGENDA, CALLS, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, COLLECTIVES, GUIDES)
+    val available: List<AgirRubric> = listOf(AGENDA, CALLS, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, PROCHES, COLLECTIVES, GUIDES)
 
     /** Planned but not ready: shown honestly, disabled, without any date. */
     val inPreparation: List<AgirRubric> = listOf(
@@ -118,6 +124,9 @@ object AgirTags {
     const val BACK = "agir-back"
     const val PENDING = "agir-pending"
     const val COLLECTIVES = "agir-collectives"
+
+    /** The plain rooms (salons) reached from the directory of the collectifs. */
+    const val ROOMS = "agir-rooms"
 }
 
 /** How many cards a row of the home holds for a given width: 1 on phones, 2 on tablets, 3 on wide windows. */
@@ -138,6 +147,8 @@ internal fun AgirHome(windowClass: WindowClass, onOpen: (AgirRubric) -> Unit, mo
     Column(modifier.fillMaxSize().background(palette.surface1).verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp)) {
         Column(Modifier.widthIn(max = 1100.dp).testTag(AgirTags.HOME)) {
             PageHeader(stringResource(Res.string.space_agir), stringResource(Res.string.agir_intro))
+            // AG-55 « Sans nouvelles de moi »: the alerts of relatives first, then the person's own timer and the discreet lines.
+            TimerHomeBlock(onOpenOwn = { onOpen(AgirRubrics.MANIFESTATION) }, modifier = Modifier.padding(top = 16.dp))
             Spacer(Modifier.height(24.dp))
             SectionTitle(stringResource(Res.string.agir_rubrics_title))
             Spacer(Modifier.height(12.dp))

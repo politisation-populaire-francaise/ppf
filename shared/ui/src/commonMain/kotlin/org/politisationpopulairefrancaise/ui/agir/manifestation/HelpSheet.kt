@@ -45,6 +45,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.agir.manifestation.EmergencyNumbers
 import org.politisationpopulairefrancaise.ui.agir.security.HelpWipeBlock
 import org.politisationpopulairefrancaise.ui.agir.security.LocalDeviceSecurity
+import org.politisationpopulairefrancaise.ui.agir.timer.TimerAlerts
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
@@ -165,6 +166,13 @@ private fun HelpSheetContent(help: HelpState, title: String) {
     Text(stringResource(Res.string.help_vital_text), style = MaterialTheme.typography.bodyMedium)
     Spacer(Modifier.height(8.dp))
     EmergencyNumbersBlock(EmergencyNumbers.emergency)
+
+    // AG-55: the alert of a relative without news, right after the emergency numbers (which always come first).
+    val timer = help.timer
+    if (timer != null && timer.alerts.isNotEmpty()) {
+        Spacer(Modifier.height(12.dp))
+        TimerAlerts(timer)
+    }
 
     SheetDivider()
     SectionHeading(stringResource(Res.string.help_lawyer_title), Lucide.ShieldCheck)

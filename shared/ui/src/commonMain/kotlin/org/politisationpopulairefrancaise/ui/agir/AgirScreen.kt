@@ -32,18 +32,32 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.core.agir.solidarity.SolidarityFormats
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
+import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaLibrary
+import org.politisationpopulairefrancaise.ui.agir.agenda.rememberAgendaLibrary
+import org.politisationpopulairefrancaise.ui.agir.calls.CallsLibrary
+import org.politisationpopulairefrancaise.ui.agir.calls.rememberCallsLibrary
+import org.politisationpopulairefrancaise.ui.agir.camera.rememberProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.collectives.CollectivesScreen
+import org.politisationpopulairefrancaise.ui.agir.collectives.rememberCollectivesLibrary
 import org.politisationpopulairefrancaise.ui.agir.manifestation.LocalHelpState
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ManifestationScreen
 import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpState
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsScreen
 import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisationsLibrary
+import org.politisationpopulairefrancaise.ui.agir.proches.ProchesScreen
+import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
+import org.politisationpopulairefrancaise.ui.agir.proches.rememberProchesState
 import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityLibrary
 import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityScreen
 import org.politisationpopulairefrancaise.ui.agir.solidarity.SolidarityTab
 import org.politisationpopulairefrancaise.ui.agir.solidarity.rememberSolidarityLibrary
+import org.politisationpopulairefrancaise.ui.agir.strike.StrikeSimulatorScreen
+import org.politisationpopulairefrancaise.ui.agir.strike.StrikeSimulatorState
+import org.politisationpopulairefrancaise.ui.agir.strike.rememberStrikeSimulatorState
 import org.politisationpopulairefrancaise.ui.agir.testimonies.ProvideTestify
 import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyLibrary
 import org.politisationpopulairefrancaise.ui.agir.testimonies.TestimonyScreen
@@ -63,7 +77,7 @@ import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.agir_agenda_title
 import org.politisationpopulairefrancaise.ui.resources.agir_back
 import org.politisationpopulairefrancaise.ui.resources.agir_calls_title
-import org.politisationpopulairefrancaise.ui.resources.agir_collectives_title
+import org.politisationpopulairefrancaise.ui.resources.collectifs_rooms_title
 import org.politisationpopulairefrancaise.ui.resources.agir_pending_text
 import org.politisationpopulairefrancaise.ui.resources.agir_pending_title
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
@@ -75,11 +89,20 @@ enum class AgirRoute(val id: String) {
     CALLS("appels"),
     ORGANISATIONS("organisations"),
     COLLECTIVES("collectifs"),
+
+    /** The plain rooms of "Messages" (salons), open to all, reached from the directory of the collectifs (M24). */
+    ROOMS("salons"),
     TESTIFY("temoigner"),
     MANIFESTATION("mode-manifestation"),
 
     /** M35: the solidarity funds (AG-10) and the volunteer missions (AG-12), one rubric with tabs. */
     SOLIDARITY("solidarite"),
+
+    /** AG-60: the strike simulator, opened from the funds of the solidarity rubric. */
+    STRIKE_SIMULATOR("simulateur-greve"),
+
+    /** AG-63: « Mes proches à mobiliser », the private list of a few relatives. */
+    PROCHES("proches"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -89,8 +112,10 @@ typealias AgirSlot = @Composable (modifier: Modifier, onBack: () -> Unit) -> Uni
  * The space "Agir" (vision, pillar 3): its home, then each rubric with a way back to it. The
  * agenda and the calls are developed by other blocks and plugged in through [agenda] and [calls];
  * while they are null, their rubric shows "En préparation". The directory of organisations lives
- * here ([OrganisationsScreen]); the collectives are the rooms of "Messages", shown here with the
- * same state ([groups], the shell's). "Guides pour s'organiser" leads to "Comprendre".
+ * here ([OrganisationsScreen]); the collectifs (M24, D-087) are rooms of "Messages" carrying a
+ * marker, with their own directory, page and creation ([CollectivesScreen]) on the same rooms
+ * ([groups], the shell's); the plain rooms stay one tap away ([AgirRoute.ROOMS]). "Guides pour
+ * s'organiser" leads to "Comprendre".
  *
  * [organisations] is the directory shared with the other blocks (its [OrganisationsLibrary.verified]
  * keys mark the organisations' publications); null builds one for as long as "Agir" is shown.
@@ -115,8 +140,30 @@ fun AgirScreen(
     testimonies: TestimonyLibrary? = null,
     /** Solidarity and "Je veux aider" (M35); null builds one for as long as "Agir" is shown. */
     solidarity: SolidarityLibrary? = null,
+    /** The agenda and the calls of the shell, whose events and calls may be a collectif's (M24); null builds them. */
+    agendaLibrary: AgendaLibrary? = null,
+    callsLibrary: CallsLibrary? = null,
+    /** The strike simulator (AG-60), in memory only; null builds one for as long as "Agir" is shown. */
+    strikeSimulator: StrikeSimulatorState? = null,
+    /**
+     * « Mes proches à mobiliser » (AG-63): the shell's, whose part `agir-proches` the quick erase knows;
+     * null builds one for as long as "Agir" is shown (tests).
+     */
+    proches: ProchesState? = null,
+    /**
+     * A rubric the shell asks to open (the tutorial's « m'allier » opens [AgirRoute.GATHER]); applied once,
+     * then [onRouteRequestHandled] lets the shell forget it. Works whether "Agir" was already shown or not.
+     */
+    requestedRoute: AgirRoute? = null,
+    onRouteRequestHandled: () -> Unit = {},
 ) {
     var route by rememberSaveable { mutableStateOf(AgirRoute.HOME) }
+    LaunchedEffect(requestedRoute) {
+        if (requestedRoute != null) {
+            route = requestedRoute
+            onRouteRequestHandled()
+        }
+    }
     // Where the back button of the directory leads when a plugged screen opened an organisation's page.
     var returnTo by rememberSaveable { mutableStateOf<AgirRoute?>(null) }
     val directory = organisations ?: rememberOrganisationsLibrary(dependencies)
@@ -129,9 +176,28 @@ fun AgirScreen(
     }
     val home: () -> Unit = { route = AgirRoute.HOME }
     val testimonyLibrary = testimonies ?: rememberTestimonyLibrary(dependencies, start = false)
+    // The collectifs (M24) live on the rooms of the shell; their events and calls on its agenda and its calls.
+    val rooms = groups ?: rememberGroupsLibrary(dependencies)
+    val collectives = rememberCollectivesLibrary(dependencies, rooms)
+    val agendaOfCollectives = agendaLibrary ?: rememberAgendaLibrary(dependencies, start = false)
+    val callsOfCollectives = callsLibrary ?: rememberCallsLibrary(dependencies, start = false)
+    // A call opened from elsewhere (a poster scanned on the map, AG-61, D-190) shows at once when "Agir" opens.
+    LaunchedEffect(Unit) {
+        if (route == AgirRoute.HOME && requestedRoute == null && callsOfCollectives.selected != null) route = AgirRoute.CALLS
+    }
+    // ...and from the agenda of "Agir" (its poster scanner selects the call): the calls take over.
+    LaunchedEffect(callsOfCollectives.selected?.address) {
+        if (route == AgirRoute.AGENDA && callsOfCollectives.selected != null) route = AgirRoute.CALLS
+    }
     val solidarityLibrary = solidarity ?: rememberSolidarityLibrary(dependencies)
+    // AG-60: what is typed in the simulator (the pay among it) stays in memory, handed to the quick erase.
+    val strike = strikeSimulator ?: rememberStrikeSimulatorState(dependencies)
+    // AG-63: the list of relatives stays on the device; the shell hands its own (erased by the quick erase).
+    val relatives = proches ?: rememberProchesState(dependencies, session)
     // The protest mode shares the AIDE button's state (rally point, legal teams); alone (tests), its own.
     val help = LocalHelpState.current ?: rememberHelpState(dependencies, directory, library)
+    // « Caméra protégée » (AG-58): the shell's, attached to its help state (the quick erase knows it); alone (tests), its own.
+    val camera = help.camera ?: rememberProtectedCameraState()
     // "Je témoigne" of a call for witnesses opens the form linked to the call; back returns to the calls.
     val testify: (String, String) -> Unit = { address, title ->
         testimonyLibrary.answer(address, title)
@@ -147,9 +213,15 @@ fun AgirScreen(
         } else if (route == AgirRoute.TESTIFY && returnTo != null) {
             route = returnTo ?: AgirRoute.HOME
             returnTo = null
+        } else if (route == AgirRoute.ROOMS) {
+            // The plain rooms were opened from the directory of the collectifs: back to it.
+            route = AgirRoute.COLLECTIVES
         } else if (route == AgirRoute.SOLIDARITY && solidarityLibrary.hasSelection) {
             // The page of a fund or a mission closes first, back to the list.
             solidarityLibrary.closeSelection()
+        } else if (route == AgirRoute.STRIKE_SIMULATOR) {
+            // The simulator was opened from the funds of the solidarity rubric: back to them.
+            route = AgirRoute.SOLIDARITY
         } else {
             route = AgirRoute.HOME
             returnTo = null
@@ -178,6 +250,7 @@ fun AgirScreen(
                                 solidarityLibrary.selectTab(SolidarityTab.MISSIONS)
                                 route = AgirRoute.SOLIDARITY
                             }
+                            AgirRubrics.PROCHES.id -> route = AgirRoute.PROCHES
                             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
                         }
                     },
@@ -197,8 +270,39 @@ fun AgirScreen(
                     notesKey = library.posts,
                     organisationAgenda = organisationAgenda,
                 )
-                AgirRoute.COLLECTIVES -> Collectives(dependencies, groups, session, windowClass, onNavigate, onBack = home)
-                AgirRoute.MANIFESTATION -> ManifestationScreen(help, windowClass, onBack = home)
+                AgirRoute.COLLECTIVES -> CollectivesScreen(
+                    library = collectives,
+                    session = session,
+                    windowClass = windowClass,
+                    agenda = agendaOfCollectives,
+                    calls = callsOfCollectives,
+                    onBack = home,
+                    onNavigate = onNavigate,
+                    onOpenRooms = { route = AgirRoute.ROOMS },
+                    onCreateRoom = {
+                        rooms.beginCreation("")
+                        route = AgirRoute.ROOMS
+                    },
+                    onOpenMobilization = { mobilization ->
+                        agendaOfCollectives.open(mobilization)
+                        route = AgirRoute.AGENDA
+                    },
+                    onOpenCall = { call ->
+                        callsOfCollectives.open(call)
+                        route = AgirRoute.CALLS
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+                AgirRoute.ROOMS -> Collectives(dependencies, rooms, session, windowClass, onNavigate, onBack = { route = AgirRoute.COLLECTIVES })
+                AgirRoute.MANIFESTATION -> ManifestationScreen(
+                    help, windowClass, onBack = home, camera = camera,
+                    // « Témoigner avec cette photo » of the protected camera: the form opens with the photo; back returns here.
+                    onTestifyWithPhoto = { bytes, takenAt ->
+                        testimonyLibrary.attachFromCamera(bytes, takenAt)
+                        returnTo = AgirRoute.MANIFESTATION
+                        route = AgirRoute.TESTIFY
+                    },
+                )
                 AgirRoute.SOLIDARITY -> SolidarityScreen(
                     library = solidarityLibrary,
                     directory = directory,
@@ -210,6 +314,34 @@ fun AgirScreen(
                     // The page of the organisation opens in the directory; its way back returns here.
                     onOpenOrganisation = directory::open,
                     onOpenCalls = { route = AgirRoute.CALLS },
+                    onOpenStrikeSimulator = { route = AgirRoute.STRIKE_SIMULATOR },
+                )
+                AgirRoute.STRIKE_SIMULATOR -> StrikeSimulatorScreen(
+                    state = strike,
+                    solidarity = solidarityLibrary,
+                    windowClass = windowClass,
+                    onBack = { route = AgirRoute.SOLIDARITY },
+                    // A strike fund opens on its page in the solidarity rubric; its way back leads to the list of funds.
+                    onOpenFund = { fund ->
+                        solidarityLibrary.selectTab(SolidarityTab.FUNDS)
+                        solidarityLibrary.openFund(fund)
+                        route = AgirRoute.SOLIDARITY
+                    },
+                    // "Voir toutes les caisses de grève": the funds of the rubric, strike funds only, near the same territory.
+                    onOpenFunds = {
+                        solidarityLibrary.selectTab(SolidarityTab.FUNDS)
+                        solidarityLibrary.clearFundTypes()
+                        solidarityLibrary.toggleFundType(SolidarityFormats.FUND_STRIKE)
+                        if (strike.near.isNotBlank()) solidarityLibrary.setNear(strike.near)
+                        route = AgirRoute.SOLIDARITY
+                    },
+                    modifier = Modifier.fillMaxSize(),
+                )
+                AgirRoute.PROCHES -> ProchesScreen(
+                    state = relatives,
+                    windowClass = windowClass,
+                    modifier = Modifier.fillMaxSize(),
+                    onBack = home,
                 )
                 AgirRoute.TESTIFY -> TestimonyScreen(
                     library = testimonyLibrary,
@@ -220,13 +352,14 @@ fun AgirScreen(
                         returnTo = null
                     },
                     onCreateAccount = { onNavigate(Space.MON_ESPACE) },
+                    camera = camera,
                 )
             }
         }
     }
 }
 
-/** The rooms of collectives, as in "Messages", with a way back to "Agir" above the list. */
+/** The plain rooms (salons), as in "Messages", with a way back to the directory of the collectifs above the list. */
 @Composable
 private fun Collectives(
     dependencies: AppDependencies,
@@ -243,8 +376,8 @@ private fun Collectives(
         return
     }
     val compact = windowClass.width == WindowWidthClass.COMPACT
-    Column(Modifier.fillMaxSize().testTag(AgirTags.COLLECTIVES)) {
-        BackTitle(stringResource(Res.string.agir_collectives_title), onBack, Modifier.padding(start = if (compact) 8.dp else 16.dp, top = 8.dp, end = 16.dp))
+    Column(Modifier.fillMaxSize().testTag(AgirTags.ROOMS)) {
+        BackTitle(stringResource(Res.string.collectifs_rooms_title), onBack, Modifier.padding(start = if (compact) 8.dp else 16.dp, top = 8.dp, end = 16.dp))
         Box(Modifier.weight(1f).fillMaxWidth()) {
             CollectivesPage(rooms, session, windowClass, onNavigate)
         }

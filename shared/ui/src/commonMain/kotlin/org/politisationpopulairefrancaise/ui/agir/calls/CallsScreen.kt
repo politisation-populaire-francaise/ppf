@@ -58,8 +58,12 @@ import org.politisationpopulairefrancaise.core.agir.calls.CallQuery
 import org.politisationpopulairefrancaise.core.agir.calls.CallSort
 import org.politisationpopulairefrancaise.core.agir.calls.CallStatusFilter
 import org.politisationpopulairefrancaise.core.agir.calls.CallType
+import org.politisationpopulairefrancaise.core.agir.poster.PosterContent
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
+import org.politisationpopulairefrancaise.ui.agir.poster.PosterExporter
+import org.politisationpopulairefrancaise.ui.agir.poster.PosterScreen
+import org.politisationpopulairefrancaise.ui.agir.poster.rememberPlatformPosterExporter
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.InfoBox
@@ -76,6 +80,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfTabs
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextField
 import org.politisationpopulairefrancaise.ui.components.PpfToolbarButton
+import org.politisationpopulairefrancaise.ui.components.shortNpub
 import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.content.OwnDemandState
 import org.politisationpopulairefrancaise.ui.icons.Lucide
@@ -166,9 +171,12 @@ fun CallsScreen(
     onCreateEvent: ((Call) -> Unit)? = null,
     onCreateDemand: ((Call) -> Unit)? = null,
     onCreateAccount: (() -> Unit)? = null,
+    posterExporter: PosterExporter = rememberPlatformPosterExporter(),
 ) {
     // The shell keeps the library for the whole run and starts it here, the first time the calls are shown.
     LaunchedEffect(library) { library.start() }
+    // AG-61: the call whose poster is being made (memory only).
+    var posterOf by remember { mutableStateOf<Call?>(null) }
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val twoPanes = windowClass.width == WindowWidthClass.EXPANDED
     val account = session.state as? AccountUiState.Ready
@@ -199,6 +207,13 @@ fun CallsScreen(
                 )
                 return@Box
             }
+            val poster = posterOf
+            if (poster != null) {
+                val content = remember(poster.event.id) { PosterContent.of(poster) }
+                // The author as the detail names them ("Lancé par").
+                PosterScreen(content, listOf(shortNpub(poster.author)), compact, posterExporter, onBack = { posterOf = null }, modifier = Modifier.fillMaxSize())
+                return@Box
+            }
             val detail: @Composable (Call, (() -> Unit)?) -> Unit = { call, back ->
                 CallDetail(
                     call = call,
@@ -213,6 +228,7 @@ fun CallsScreen(
                     onClose = { closing = it },
                     closeOutcome = closeOutcome?.takeIf { it.first == call.address.toString() }?.second,
                     modifier = Modifier.fillMaxSize(),
+                    onMakePoster = { posterOf = it },
                 )
             }
             val selected = library.selected

@@ -25,6 +25,7 @@ import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -44,6 +45,9 @@ import org.politisationpopulairefrancaise.core.agir.testimonies.TestimonyProgres
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
+import org.politisationpopulairefrancaise.ui.agir.camera.ProtectedCameraScreen
+import org.politisationpopulairefrancaise.ui.agir.camera.ProtectedCameraState
+import org.politisationpopulairefrancaise.ui.agir.camera.ProtectedCameraTestimonyEntry
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -54,6 +58,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfPrimaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextField
+import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.media.BlurEditor
 import org.politisationpopulairefrancaise.ui.media.ImagePicker
@@ -180,6 +185,8 @@ fun ProvideTestify(testify: (callAddress: String, callTitle: String) -> Unit, co
 /**
  * "Témoigner" (AG-07) with "Mes témoignages": the form on the left and the list on the right on
  * wide screens, one under the other on phones. [picker] is the platform's photo chooser by default.
+ * [camera] adds « Caméra protégée » (AG-58) next to it: its screen opens over the form, and
+ * « Témoigner avec cette photo » attaches the photo and comes back (null: not offered).
  */
 @Composable
 fun TestimonyScreen(
@@ -190,6 +197,7 @@ fun TestimonyScreen(
     onCreateAccount: () -> Unit,
     modifier: Modifier = Modifier,
     picker: ImagePicker? = null,
+    camera: ProtectedCameraState? = null,
 ) {
     LaunchedEffect(library) { library.start() }
     val chooser = picker ?: rememberImagePicker { result ->
@@ -200,21 +208,39 @@ fun TestimonyScreen(
             PickResult.Cancelled -> Unit
         }
     }
+    // Kept above the screen of the protected camera, so that coming back from it keeps the place in the form.
+    val scroll = rememberScrollState()
+    var cameraOpen by rememberSaveable { mutableStateOf(false) }
+    if (camera != null && cameraOpen) {
+        SystemBack(enabled = true) { cameraOpen = false }
+        ProtectedCameraScreen(
+            camera,
+            windowClass,
+            onBack = { cameraOpen = false },
+            modifier = modifier,
+            onTestify = { bytes, takenAt ->
+                library.attachFromCamera(bytes, takenAt)
+                cameraOpen = false
+            },
+        )
+        return
+    }
+    val openCamera: (() -> Unit)? = if (camera != null) ({ cameraOpen = true }) else null
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val expanded = windowClass.width == WindowWidthClass.EXPANDED
-    Column(modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(TestimonyTags.SCREEN)) {
+    Column(modifier.fillMaxSize().verticalScroll(scroll).padding(if (compact) 16.dp else 24.dp).testTag(TestimonyTags.SCREEN)) {
         PpfIconButton(Lucide.ArrowLeft, stringResource(Res.string.temoignages_back), onBack, Modifier.testTag(TestimonyTags.BACK), tint = PpfTheme.palette.ink)
         Spacer(Modifier.height(8.dp))
         PageHeader(stringResource(Res.string.temoignages_title), stringResource(Res.string.temoignages_intro))
         Spacer(Modifier.height(16.dp))
         if (expanded) {
             Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
-                Column(Modifier.weight(3f)) { Form(library, session, chooser, onCreateAccount) }
+                Column(Modifier.weight(3f)) { Form(library, session, chooser, onCreateAccount, camera, openCamera) }
                 Column(Modifier.weight(2f)) { Mine(library) }
             }
         } else {
             Column(Modifier.widthIn(max = 720.dp)) {
-                Form(library, session, chooser, onCreateAccount)
+                Form(library, session, chooser, onCreateAccount, camera, openCamera)
                 Spacer(Modifier.height(24.dp))
                 Mine(library)
             }
@@ -223,7 +249,14 @@ fun TestimonyScreen(
 }
 
 @Composable
-private fun Form(library: TestimonyLibrary, session: AccountSession, picker: ImagePicker, onCreateAccount: () -> Unit) {
+private fun Form(
+    library: TestimonyLibrary,
+    session: AccountSession,
+    picker: ImagePicker,
+    onCreateAccount: () -> Unit,
+    camera: ProtectedCameraState? = null,
+    onOpenCamera: (() -> Unit)? = null,
+) {
     val palette = PpfTheme.palette
     val state = library.sendState
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -281,7 +314,7 @@ private fun Form(library: TestimonyLibrary, session: AccountSession, picker: Ima
         Field(Res.string.temoignages_field_place, Res.string.temoignages_field_place_help, problems, listOf(TestimonyProblem.PLACE_TOO_LONG)) {
             PpfTextField(library.place, { library.place = it }, stringResource(Res.string.temoignages_field_place), Modifier.fillMaxWidth().testTag(TestimonyTags.PLACE), singleLine = true)
         }
-        PhotoSection(library, picker)
+        PhotoSection(library, picker, camera, onOpenCamera)
         Row(
             Modifier.fillMaxWidth().toggleable(library.charterAccepted, role = Role.Checkbox) { library.charterAccepted = it }.testTag(TestimonyTags.CHARTER),
             verticalAlignment = Alignment.CenterVertically,
@@ -349,13 +382,18 @@ private fun Errors(problems: List<TestimonyProblem>, mine: List<TestimonyProblem
 }
 
 @Composable
-private fun PhotoSection(library: TestimonyLibrary, picker: ImagePicker) {
+private fun PhotoSection(library: TestimonyLibrary, picker: ImagePicker, camera: ProtectedCameraState?, onOpenCamera: (() -> Unit)?) {
     val palette = PpfTheme.palette
     var askOriginal by remember { mutableStateOf(false) }
     PpfCard(Modifier.fillMaxWidth()) {
         Text(stringResource(Res.string.temoignages_photo_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
         Spacer(Modifier.height(8.dp))
         val photo = library.photo
+        // « Caméra protégée » (AG-58): a photo taken in PPF, kept encrypted outside the phone's gallery.
+        if (camera != null && onOpenCamera != null && photo == null && !library.preparingPhoto) {
+            ProtectedCameraTestimonyEntry(camera, onOpenCamera)
+            Spacer(Modifier.height(8.dp))
+        }
         when {
             library.preparingPhoto -> Text(stringResource(Res.string.media_preparing), style = MaterialTheme.typography.bodyMedium)
             !picker.available && photo == null -> Text(stringResource(Res.string.temoignages_photo_unavailable), style = MaterialTheme.typography.bodyMedium)

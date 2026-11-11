@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- AG-61, posters and leaflets with a QR code (ui/agir/poster): the screen, the printed words, the scan. -->
+<resources>
+    <!-- Entry points and screen -->
+    <string name="affiche_make">Faire une affiche</string>
+    <string name="affiche_title">Faire une affiche</string>
+    <string name="affiche_back">Retour</string>
+    <string name="affiche_intro">L’affiche est fabriquée sur cet appareil : rien n’est envoyé, rien n’est publié. Seul le fichier que vous enregistrez est gardé, à l’endroit que vous choisissez.</string>
+    <string name="affiche_format_title">Format</string>
+    <string name="affiche_format_a4">A4</string>
+    <string name="affiche_format_a4_help">21 × 29,7 cm, une feuille d’imprimante ordinaire</string>
+    <string name="affiche_format_a3">A3</string>
+    <string name="affiche_format_a3_help">29,7 × 42 cm, pour une imprimante A3 ou une boutique de reprographie</string>
+    <string name="affiche_preview_title">Aperçu</string>
+    <string name="affiche_preview_note">Aperçu approché : la mise en page exacte est celle du fichier enregistré.</string>
+    <string name="affiche_format_caption">Format %1$s : %2$s</string>
+    <string name="affiche_qr_description">Code QR de l’affiche</string>
+    <string name="affiche_qr_event">Le code QR contient l’événement signé lui-même : un téléphone l’ajoute à son agenda même sans réseau, après avoir vérifié sa signature.</string>
+    <string name="affiche_qr_call">Le code QR contient l’appel signé lui-même : un téléphone le lit même sans réseau, après avoir vérifié sa signature.</string>
+    <string name="affiche_qr_address">Ce contenu est trop long pour un code lisible sur une affiche : le code QR donne son adresse sur le site de PPF, sans aucun paramètre de suivi.</string>
+    <string name="affiche_qr_private">Le code ne contient rien sur vous : ni votre compte, ni l’appareil, ni la date ou le lieu de l’impression.</string>
+    <string name="affiche_printer_title">Mention de l’imprimeur (facultatif)</string>
+    <string name="affiche_printer_placeholder">Nom et adresse de l’imprimeur</string>
+    <string name="affiche_printer_help">Elle s’imprime en bas de l’affiche et n’est gardée nulle part. La fiche ci-dessous explique quand la loi la demande.</string>
+    <string name="affiche_export_pdf">Enregistrer en PDF</string>
+    <string name="affiche_export_png">Enregistrer en image PNG</string>
+    <string name="affiche_export_busy">Préparation de l’affiche…</string>
+    <string name="affiche_export_note_pdf">Imprimez le PDF en taille réelle (« 100 % ») pour garder un code QR bien lisible.</string>
+    <string name="affiche_export_note_png">Sur ordinateur, l’affiche est une image PNG à 150 points par pouce. Imprimez-la en taille réelle (« 100 % ») pour garder un code QR bien lisible.</string>
+    <string name="affiche_export_unavailable">Pas encore disponible sur iPhone : l’application iOS n’est pas encore construite. Faites l’affiche depuis un téléphone Android ou un ordinateur.</string>
+    <string name="affiche_export_done">Affiche enregistrée. Elle n’est gardée que dans le fichier que vous avez choisi.</string>
+    <string name="affiche_export_failed">L’affiche n’a pas pu être enregistrée. Réessayez.</string>
+    <string name="affiche_export_unsupported">Cet appareil ne peut pas encore enregistrer d’affiche.</string>
+    <string name="affiche_save_title">Enregistrer l’affiche</string>
+    <string name="affiche_guide_title">Où coller vos affiches</string>
+    <string name="affiche_guide_text">Avant de coller une affiche ou de distribuer un tract, lisez la fiche pratique : elle dit où l’on peut afficher, ce que la loi demande et ce qui change pendant la campagne présidentielle.</string>
+    <string name="affiche_guide_open">Lire la fiche « Coller des affiches et distribuer des tracts »</string>
+
+    <!-- Printed on the poster -->
+    <string name="affiche_print_marker">[EXEMPLE]</string>
+    <string name="affiche_print_kind_call">APPEL · %1$s</string>
+    <string name="affiche_print_when">Quand</string>
+    <string name="affiche_print_deadline">Jusqu’au</string>
+    <string name="affiche_print_where">Où</string>
+    <string name="affiche_print_territory">Territoire</string>
+    <string name="affiche_print_hosts">Organisé par</string>
+    <string name="affiche_print_launched">Lancé par</string>
+    <string name="affiche_print_scan_event">Scannez pour ajouter à votre agenda, même sans réseau</string>
+    <string name="affiche_print_scan_call">Scannez pour lire cet appel, même sans réseau</string>
+    <string name="affiche_print_scan_address_event">Scannez pour retrouver cet événement sur PPF</string>
+    <string name="affiche_print_scan_address_call">Scannez pour retrouver cet appel sur PPF</string>
+    <string name="affiche_print_help_event">Avec l’application PPF : « Carte et agenda », puis « Scanner une affiche ». La signature est vérifiée : une affiche modifiée est refusée.</string>
+    <string name="affiche_print_help_address">Le code mène au site politisation-populaire-francaise.org, sans aucun paramètre de suivi.</string>
+    <string name="affiche_print_footer">Affiche faite avec l’application Politisation Populaire Française · politisation-populaire-francaise.org</string>
+
+    <!-- Scanning a poster -->
+    <string name="affiche_scan">Scanner une affiche</string>
+    <string name="affiche_scan_title">Scanner une affiche</string>
+    <string name="affiche_scan_intro">Visez le code QR d’une affiche PPF. L’événement qu’il contient est vérifié sur votre téléphone, sans réseau : rien n’est envoyé.</string>
+    <string name="affiche_scan_again">Scanner un autre code</string>
+    <string name="affiche_scan_verified">Signature vérifiée : c’est exactement ce que son auteur a signé.</string>
+    <string name="affiche_scan_signed_team">Signé par l’équipe de PPF.</string>
+    <string name="affiche_scan_signed_org">Signé par %1$s, organisation vérifiée.</string>
+    <string name="affiche_scan_signed_unknown">Signé par le compte %1$s, que l’application ne connaît pas. La signature prouve que le contenu n’a pas été modifié, pas que son auteur est fiable : comparez avec ce qui est écrit sur l’affiche.</string>
+    <string name="affiche_scan_forged">Signature invalide : ce code a été modifié ou fabriqué. Rien n’est ajouté.</string>
+    <string name="affiche_scan_damaged">Ce code ne se lit pas en entier. Rapprochez-vous de l’affiche ou cherchez plus de lumière, puis réessayez.</string>
+    <string name="affiche_scan_not_ppf">Ce code n’est pas celui d’une affiche PPF : rien n’est ouvert.</string>
+    <string name="affiche_scan_not_event">Ce code contient un contenu signé qui n’est ni un événement de l’agenda ni un appel.</string>
+    <string name="affiche_scan_add">Ajouter à mon agenda</string>
+    <string name="affiche_scan_added">Ajouté à votre agenda, sur ce téléphone seulement.</string>
+    <string name="affiche_scan_already">Cet événement est déjà dans votre agenda.</string>
+    <string name="affiche_scan_newer">Votre agenda contient déjà une version plus récente de cet événement : c’est elle qui reste.</string>
+    <string name="affiche_scan_failed">L’événement n’a pas pu être ajouté sur cet appareil.</string>
+    <string name="affiche_scan_open">Voir dans l’agenda</string>
+    <string name="affiche_scan_call_note">Appel lu sur l’affiche et vérifié. Il n’est pas enregistré sur votre téléphone.</string>
+    <string name="affiche_scan_address_looking">Recherche de l’événement dans l’agenda…</string>
+    <string name="affiche_scan_address_missing">Ce code donne l’adresse de l’événement, que votre agenda ne contient pas encore. Il s’ouvrira quand votre téléphone aura du réseau.</string>
+    <string name="affiche_scan_address_call">Ce code donne l’adresse d’un appel : retrouvez-le dans « Appels », dans « Agir ».</string>
+    <string name="affiche_scan_open_call">Ouvrir l’appel</string>
+    <string name="affiche_scan_retry">Réessayer</string>
+</resources>

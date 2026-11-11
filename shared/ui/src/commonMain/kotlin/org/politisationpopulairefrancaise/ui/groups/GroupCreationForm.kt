@@ -303,9 +303,9 @@ private fun Actions(groups: GroupsLibrary, session: AccountSession, onClose: () 
     }
 }
 
-/** The creation is held for the team's review (D-132): "En attente de vérification". */
+/** The creation is held for the team's review (D-132): "En attente de vérification". Also shown by the wizard of the collectifs of Agir. */
 @Composable
-private fun HeldView(room: Group, onClose: () -> Unit) {
+internal fun HeldView(room: Group, onClose: () -> Unit) {
     Spacer(Modifier.height(20.dp))
     Callout(CalloutType.CONSEIL, Modifier.testTag(GroupsTags.FORM_HELD), title = stringResource(Res.string.groups_form_held_title)) {
         Text(room.displayName, style = MaterialTheme.typography.titleSmall)
@@ -376,10 +376,10 @@ private fun SimilarView(groups: GroupsLibrary, session: AccountSession, error: C
     Spacer(Modifier.height(16.dp))
 }
 
-/** What went wrong with the last attempt; for a duplicate, the offer to join the existing room. */
+/** What went wrong with the last attempt; for a duplicate, the offer to join the existing room. Also shown by the wizard of the collectifs of Agir. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CreationErrorView(groups: GroupsLibrary, session: AccountSession, launch: (suspend () -> Unit) -> Unit) {
+internal fun CreationErrorView(groups: GroupsLibrary, session: AccountSession, launch: (suspend () -> Unit) -> Unit) {
     val palette = PpfTheme.palette
     when (val error = groups.creationError) {
         null -> Unit
