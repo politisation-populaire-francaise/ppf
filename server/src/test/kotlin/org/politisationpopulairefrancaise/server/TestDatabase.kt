@@ -19,6 +19,20 @@ object TestDatabase {
     }
 
     fun reset() {
+        // A background task of the previous test may still write while TRUNCATE locks every table:
+        // PostgreSQL then cancels one of the two (deadlock, 40P01). Try again a few times.
+        repeat(5) { attempt ->
+            try {
+                truncateAll()
+                return
+            } catch (e: java.sql.SQLException) {
+                if (e.sqlState != "40P01" || attempt == 4) throw e
+                Thread.sleep(200L * (attempt + 1))
+            }
+        }
+    }
+
+    private fun truncateAll() {
         dataSource.connection.use { connection ->
             connection.createStatement().use {
                 it.executeUpdate(

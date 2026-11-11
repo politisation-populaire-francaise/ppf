@@ -157,8 +157,9 @@ class EngagementScreenTest {
         click(EngagementTags.PARTIES)
         click(EngagementTags.COURSE + Engagement.COURSE_REGISTER)
         assertEquals(listOf(Space.DECIDER, Space.VOIR, Space.COMPRENDRE), harness.navigations.toList())
-        // The bundled guides are imported in the background: wait for the guide before counting it.
-        waitUntil(timeoutMillis = 60_000) { count(EngagementTags.GUIDE + Engagement.GUIDE_LEGISLATIVES) == 1 }
+        // The guides are read in the background: wait for the card before counting it (it was counted too early at random).
+        awaitTag(EngagementTags.GUIDE + Engagement.GUIDE_LEGISLATIVES)
+        assertEquals(1, count(EngagementTags.GUIDE + Engagement.GUIDE_LEGISLATIVES))
 
         // Running mates: the directory of the collectifs, whose way back returns to the steps.
         click(EngagementTags.COLLECTIVES)

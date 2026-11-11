@@ -4,6 +4,10 @@ Suite de l'entrée « Inventaire complet des fonctionnalités » de `docs/brains
 
 ---
 
+### [2026-11-11] Nouveau nom : Constitution Citoyenne et Démocratique
+- Statut : Intégré le 2026-11-11 (D-154)
+- Description : décision de la propriétaire, relayée par le chef d’équipe, mot pour mot : « le pacte démocratique/pacte citoyen et démocratique doit devenir partout y compris dans les documents du projet : Constitution Citoyenne et Démocratique ». Le « Pacte démocratique » (ou « pacte citoyen et démocratique ») s’appelle désormais partout « Constitution Citoyenne et Démocratique », dans ce document comme ailleurs ; les entrées anciennes sont réécrites avec le nouveau nom, leur contenu ne change pas. Les identifiants techniques (`ppf-pacte-*`, type `pacte`) restent les mêmes.
+
 #### Points d'attention
 
 1. **Commentaires (S-39)** : le CF 1.0 donne au contributeur le droit de « commenter » sans dire où.
@@ -43,7 +47,7 @@ Suite de l'entrée « Inventaire complet des fonctionnalités » de `docs/brains
       - PPF peut accepter une réponse au-delà du délai légal de trois mois ; c'est un choix, pas une obligation.
    - **Ajout de la propriétaire (2026-11-05)** : chaque demande de droit de réponse déclenche dans l'administration une notification du niveau d'importance le plus élevé, 5 sur 5 (S-115), pour ne jamais manquer le délai de trois jours.
    - Rappel de méthode : l'article lui-même suit le vocabulaire normé de M17, « déclaration contredite par les faits » plutôt que « fake news », sauf si l'intention de tromper est établie ; c'est ce qui le rend inattaquable face au droit de réponse et à une éventuelle plainte.
-   - À rapprocher de la piste DE-23 « Réponses des élus », qui permettra aux élus de répondre aussi aux interpellations et au Pacte.
+   - À rapprocher de la piste DE-23 « Réponses des élus », qui permettra aux élus de répondre aussi aux interpellations et à la Constitution Citoyenne et Démocratique.
    - Sources (vérifiées le 4 novembre 2026) : décret n° 2007-1527 du 24 octobre 2007, article 3 (longueur), cité par Le Monde du droit : https://www.lemondedudroit.fr/pi-tic/299-medias/54567-droit-de-reponse-regime-distinct-pour-les-sites-internet.html ; conditions d'exercice en ligne (bénéficiaires, délai de trois mois, insertion sous trois jours, réponse identifiable et associée au message) : https://www.legavox.fr/blog/maitre-anthony-bem/reputation-internet-conditions-exercice-droit-4586.htm
 8. **Protection du compte super-administrateur (S-56)** : c'est la clé de toute la plateforme. Recommandation : deux super-administrateurs au minimum, chacun avec une clé de sécurité physique (petit objet USB ou NFC, de quelques dizaines d'euros), et une procédure de secours écrite et conservée hors ligne. L'achat des clés fera l'objet d'un guide pas à pas.
    - **Décision de la propriétaire (2026-11-04)** : retenu, deux super-administrateurs avec chacun une clé de sécurité physique.
@@ -178,7 +182,7 @@ Suite de l'entrée « Inventaire complet des fonctionnalités » de `docs/brains
     - VO-04 : grille de l'indice de gravité ;
     - CO-06 à CO-08 : option retenue sur la non-violence (brainstorming-vision.md) ;
     - DE-04 et EQ-08 : modalités du choix des campagnes ;
-    - DE-08 : liste de départ du Pacte ;
+    - DE-08 : liste de départ de la Constitution Citoyenne et Démocratique ;
     - DE-06, DE-08, DE-16 : conséquences du retrait de la non-partisanerie ;
     - DE-14 : méthode « une personne, une voix » ;
     - DE-17 : statut de PPF et avis d'un avocat.

@@ -16,7 +16,7 @@ Nouveau type `ppf-type` = `election` (ajouté à la fin de `ArticleType`), le m�
 
 | Étiquette | Contenu |
 |---|---|
-| `ppf-election` | `identifiant`, `libellé` (comme le Pacte et le comparateur, qui y renvoient) |
+| `ppf-election` | `identifiant`, `libellé` (comme la Constitution Citoyenne et Démocratique et le comparateur, qui y renvoient) |
 | `ppf-election-status` | `annoncee` (date annoncée, décret attendu) ou `convoquee` (décret publié) |
 | `ppf-decree` | Le décret de convocation : `numéro`, `date du Journal officiel`, `adresse sur Légifrance` (obligatoire pour `convoquee`) |
 | `ppf-round` | Les tours, au format du comparateur (`numéro`, `jour en métropole`, `premier jour de vote outre-mer`, `fermeture des derniers bureaux`) |

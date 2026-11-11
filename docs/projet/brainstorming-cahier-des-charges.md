@@ -6,6 +6,10 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-11] Nouveau nom : Constitution Citoyenne et Démocratique
+- Statut : Intégré le 2026-11-11 (D-154)
+- Description : décision de la propriétaire, relayée par le chef d’équipe, mot pour mot : « le pacte démocratique/pacte citoyen et démocratique doit devenir partout y compris dans les documents du projet : Constitution Citoyenne et Démocratique ». Le « Pacte démocratique » (ou « pacte citoyen et démocratique ») s’appelle désormais partout « Constitution Citoyenne et Démocratique », dans ce document comme ailleurs ; les entrées anciennes sont réécrites avec le nouveau nom, leur contenu ne change pas. Les identifiants techniques (`ppf-pacte-*`, type `pacte`) restent les mêmes.
+
 ### [2026-11-04] Nom de domaine
 - Statut : Intégré le 2026-11-05 (cahier des charges 1.3)
 - Concerne : cahier-des-charges.md, sections 1.2 et 10.2 (phase 0)
@@ -33,7 +37,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 ### [2026-11-04] Phase 1 trop chargée face à l'urgence ?
 - Statut : Question
 - Concerne : cahier-des-charges.md, section 10.2
-- Description : la phase 1 contient beaucoup de modules alors que le mouvement est en cours et que le Pacte démocratique doit être diffusé au début de l'année 2027.
+- Description : la phase 1 contient beaucoup de modules alors que le mouvement est en cours et que la Constitution Citoyenne et Démocratique doit être diffusée au début de l'année 2027.
 - Options :
   - A. Garder la phase 1 telle quelle.
   - B. Créer une « phase 1a » minimale (site web lisible, fiches pratiques hors ligne, carte et agenda, mur des revendications avec vote), puis une « phase 1b » avec le reste.
@@ -190,16 +194,16 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Description : la vision 3.0 ne dit plus que PPF est non partisan. Plusieurs passages des autres documents reposent encore sur cette notion :
   - cahier des charges, principe 8 « Non partisane » ;
   - cahier des charges, 9.2 : les outils qui concernent des candidats les traitent tous de façon identique ;
-  - cahier fonctionnel : règle transverse « Traitement identique », Pacte démocratique envoyé à tous les candidats, comparateur « strictement identique » ;
+  - cahier fonctionnel : règle transverse « Traitement identique », Constitution Citoyenne et Démocratique envoyée à tous les candidats, comparateur « strictement identique » ;
   - instructions : garde-fou interdisant à l'IA de produire un contenu qui soutient un candidat ou un parti.
 - Ce qui ne change pas, quelle que soit la décision : tant que PPF est une association, la loi lui interdit de financer une campagne ou de fournir à un candidat des avantages, même en nature (site, fichiers, communication). Cette limite reste dans le cahier des charges (9.2).
 - Options :
-  - A. Supprimer le principe général « Non partisane » et le garde-fou des instructions, mais garder le traitement identique à l'intérieur de trois outils précis (Pacte démocratique, comparateur, baromètre des élus) : leur crédibilité vient justement de ce qu'ils appliquent les mêmes règles à tous.
+  - A. Supprimer le principe général « Non partisane » et le garde-fou des instructions, mais garder le traitement identique à l'intérieur de trois outils précis (Constitution Citoyenne et Démocratique, comparateur, baromètre des élus) : leur crédibilité vient justement de ce qu'ils appliquent les mêmes règles à tous.
   - B. Supprimer toute notion de traitement identique, y compris dans ces outils.
-- Recommandation : A. Un Pacte ou un comparateur jugé partial perd sa force de pression et devient facile à contester.
+- Recommandation : A. Une Constitution Citoyenne et Démocratique ou un comparateur jugé partial perd sa force de pression et devient facile à contester.
 - Décision de la propriétaire (2026-11-07, D-062) : **option A** dans un premier temps, puis, le même jour, transmise par le chef d'équipe : « pas besoin de texte sur la non partisanerie, on n'affirme pas en tant que ppf qu'on est partisans ou non partisans, on est simplement une association engagée et militante dont l'objectif premier est la politisation et redonner une gouvernance réelle au peuple (donc être à nouveau dans une démocratie). Pas besoin de préciser quoi que ce soit, nos actes parleront pour nous. »
   - Cahier des charges 1.4 : principe 8 retiré **sans texte de remplacement** (les principes 9 et 10 gardent leur numéro) ; la menace de la section 5.5 devient « faire passer la plateforme pour le soutien d'un candidat ou d'un parti ». Les textes de remplacement proposés plus tôt ne sont pas utilisés.
-  - Restent, comme règles de méthode et de droit, pas comme une déclaration : le traitement identique des candidats dans le Pacte, le comparateur et le baromètre (cahier des charges, 9.2, limite légale) et les fiches identiques pour tous (cahier fonctionnel, M17) ; la règle transverse « Traitement identique » du cahier fonctionnel est inchangée.
+  - Restent, comme règles de méthode et de droit, pas comme une déclaration : le traitement identique des candidats dans la Constitution Citoyenne et Démocratique, le comparateur et le baromètre (cahier des charges, 9.2, limite légale) et les fiches identiques pour tous (cahier fonctionnel, M17) ; la règle transverse « Traitement identique » du cahier fonctionnel est inchangée.
   - Nulle part PPF n'est décrite comme partisane ou non partisane : l'invite de l'IA qui vérifie les revendications et le modèle de menaces ont été reformulés ; la vision ne le dit plus depuis la version 3.0 ; CLAUDE.md n'en parle pas.
   - Point à faire relire par un avocat : en dehors de ces trois outils, un appel de PPF à voter pour un candidat pourrait être vu comme un avantage en nature accordé par une personne morale (Code électoral, article L52-8) ; inscrit dans la feuille de route.
 
@@ -254,10 +258,10 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
   - **Indicateur et mesure** : valeur, méthode, source, fiabilité ;
   - **Texte et vote** : loi, amendement, scrutin, position de chaque élu ;
   - **Document archivé** : copie, empreinte, horodatage ;
-  - **Revendication**, **Campagne**, **Engagement** (Pacte démocratique) ;
+  - **Revendication**, **Campagne**, **Engagement** (Constitution Citoyenne et Démocratique) ;
   - **Contenu éditorial** : article, fiche pratique, dossier, décryptage.
 - Exemple : une fausse information diffusée par un élu est un seul « fait sourcé » ; il apparaît à la fois dans la fiche de l'élu (Voir), dans le décryptage (Comprendre) et, si besoin, dans le fil d'actualité (Maintenant).
-- Mise à jour du 2026-11-06 : mise en œuvre technique pour l'espace « Voir » seulement (D-034, décision technique prise en autonomie) : indicateur et mesures, fait sourcé, personne publique, texte et votes, mouvement dans le monde, dossier, droit de réponse, au format NIP-23 avec des étiquettes structurées (`docs/FORMATS.md`, section 4 quinquies). Un même fait apparaît bien à plusieurs endroits sans être recopié. Les autres briques (organisation, événement de la carte, campagne, engagement du Pacte) restent à faire quand leurs espaces seront développés ; l'entrée reste « À valider » pour le principe général.
+- Mise à jour du 2026-11-06 : mise en œuvre technique pour l'espace « Voir » seulement (D-034, décision technique prise en autonomie) : indicateur et mesures, fait sourcé, personne publique, texte et votes, mouvement dans le monde, dossier, droit de réponse, au format NIP-23 avec des étiquettes structurées (`docs/FORMATS.md`, section 4 quinquies). Un même fait apparaît bien à plusieurs endroits sans être recopié. Les autres briques (organisation, événement de la carte, campagne, engagement de la Constitution Citoyenne et Démocratique) restent à faire quand leurs espaces seront développés ; l'entrée reste « À valider » pour le principe général.
 - Décision :
 
 ### [2026-11-05] Identités, phrase de récupération et signature des contenus : choix techniques

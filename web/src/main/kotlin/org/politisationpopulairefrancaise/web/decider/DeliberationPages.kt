@@ -72,7 +72,7 @@ fun HTML.deliberationDocument(board: DeliberationBoard, now: Long) {
                 }
             }
             p {
-                +"PPF n’adopte rien : les votes des citoyens choisissent la rédaction de chaque mesure, puis les mesures du Pacte, de ${deliberation.minMeasures} à ${deliberation.maxMeasures} parmi celles qui ont plus de « pour » que de « contre ». Le vote blanc est compté. Chaque contribution est relue par une personne avant d’être publiée."
+                +"PPF n’adopte rien : les votes des citoyens choisissent la rédaction de chaque mesure, puis les mesures de la Constitution Citoyenne et Démocratique, de ${deliberation.minMeasures} à ${deliberation.maxMeasures} parmi celles qui ont plus de « pour » que de « contre ». Le vote blanc est compté. Chaque contribution est relue par une personne avant d’être publiée."
             }
             p(classes = "notice") { +"Proposer, amender et voter se font dans l’application PPF, où le vote est anonyme : personne, pas même PPF, ne peut relier un bulletin à un compte." }
         }
