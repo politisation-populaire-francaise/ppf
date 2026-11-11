@@ -33,6 +33,7 @@ import org.politisationpopulairefrancaise.core.agir.calls.Call
 import org.politisationpopulairefrancaise.core.agir.calls.CallFields
 import org.politisationpopulairefrancaise.core.agir.calls.CallStatus
 import org.politisationpopulairefrancaise.core.agir.calls.CallType
+import org.politisationpopulairefrancaise.core.agir.calls.slots
 import org.politisationpopulairefrancaise.core.agir.organisations.Organisation
 import org.politisationpopulairefrancaise.core.agir.poster.AgirLinks
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
@@ -202,6 +203,22 @@ fun HTML.callDocument(item: Call) {
             }
         }
         item.text.lines().filter { it.isNotBlank() }.forEach { line -> p { +line } }
+        item.slots.takeIf { it.isNotEmpty() }?.let { slots ->
+            section {
+                attributes["aria-labelledby"] = "creneaux"
+                h2 { id = "creneaux"; +"Créneaux" }
+                slots.forEach { slot ->
+                    p {
+                        strong { +slot.label }
+                        +" : du "
+                        dateTime(slot.start)
+                        +" au "
+                        dateTime(slot.end)
+                        +" (${slot.places} places). Inscription dans l’application."
+                    }
+                }
+            }
+        }
         item.report?.let { report ->
             h2 { +"Bilan" }
             report.lines().filter { it.isNotBlank() }.forEach { line -> p { +line } }

@@ -141,7 +141,8 @@ interface SlotClient {
 
     suspend fun signUp(request: SlotSignupRequest): SlotOutcome
 
-    suspend fun withdraw(withdrawal: SlotWithdrawal): Boolean
+    /** [SlotOutcome.Done] once withdrawn, [SlotOutcome.Refused] when the server no longer knows it (erased, or wrong token). */
+    suspend fun withdraw(withdrawal: SlotWithdrawal): SlotOutcome
 
     /** The envelopes of the signups of [call], for its organizer. */
     suspend fun signups(call: String): List<SignedEvent>?
