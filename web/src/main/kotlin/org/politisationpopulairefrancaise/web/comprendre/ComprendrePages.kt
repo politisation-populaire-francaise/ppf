@@ -72,6 +72,9 @@ fun Route.comprendrePages(source: ComprendreSource) {
         get("/${ComprendreLinks.DECRYPTAGES}/{slug}") { item(source, { catalog, slug -> catalog.decryptage(slug) }) { value, catalog -> decryptageDocument(value, catalog) } }
         get("/${ComprendreLinks.HISTOIRE}") { page(source) { storiesDocument(it) } }
         get("/${ComprendreLinks.HISTOIRE}/{slug}") { item(source, { catalog, slug -> catalog.story(slug) }) { value, catalog -> storyDocument(value, catalog) } }
+        // The series « Le cap du mouvement » (D-200): CapPages.kt.
+        get("/${ComprendreLinks.CAP}") { page(source) { capListDocument(it) } }
+        get("/${ComprendreLinks.CAP}/{slug}") { item(source, { catalog, slug -> catalog.capText(slug) }) { value, catalog -> capDocument(value, catalog) } }
         get("/${ComprendreLinks.QUI_DECIDE}") { page(source) { sheetsDocument(it) } }
         get("/${ComprendreLinks.QUI_DECIDE}/{slug}") { item(source, { catalog, slug -> catalog.sheet(slug) }) { value, catalog -> sheetDocument(value, catalog) } }
         // The teaching sheets for the classroom (CO-13, D-096): TeachingPages.kt.
@@ -113,6 +116,10 @@ fun HTML.comprendreHomeDocument(catalog: ComprendreCatalog) {
     siteLayout(pageTitle = "Comprendre", currentSpace = Space.COMPRENDRE) {
         comprendreHead(null, "Comprendre", "Qui décide de quoi, comment fonctionnent les institutions, vos droits, le vrai et le faux.")
         if (catalog.isEmpty) p(classes = "notice") { +"Aucun contenu publié pour l’instant." }
+        // The series « Le cap du mouvement » first: the priority of the MVP 1 (D-200).
+        homeSection("cap", CAP_TITLE, CAP_INTRO, ComprendreLinks.CAP, "Toute la série", catalog.capTexts.size) {
+            catalog.capTexts.forEach { capCard(it, 3) }
+        }
         homeSection("droits", "Connaître ses droits", "Des fiches pratiques à garder sur soi, lisibles sans connexion.", ComprendreLinks.FICHES, "Toutes les fiches pratiques", catalog.fiches.size) {
             catalog.fiches.take(HOME_ITEMS).forEach { articleCard(it, "Fiche pratique", 3) }
             p { a(href = ComprendreLinks.OFFLINE) { +"Lire les fiches sans connexion" } }
@@ -165,7 +172,7 @@ private fun FlowContent.homeSection(id: String, title: String, intro: String, se
     }
 }
 
-private fun FlowContent.listDocumentBody(title: String, lead: String, empty: Boolean, block: FlowContent.() -> Unit) {
+internal fun FlowContent.listDocumentBody(title: String, lead: String, empty: Boolean, block: FlowContent.() -> Unit) {
     comprendreBreadcrumb(null, title)
     comprendreHead(null, title, lead)
     section(classes = "card-list") {

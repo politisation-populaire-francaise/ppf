@@ -174,7 +174,9 @@ internal fun FlowContent.contentBadges(article: Article, extra: (FlowContent.() 
     div(classes = "badges") {
         extra?.invoke(this)
         if (isExample(article)) span(classes = BadgeTone.WARNING.css) { +"Contenu d’exemple" }
-        if (article.origin == org.politisationpopulairefrancaise.core.editorial.ContentOrigin.AI_ASSISTED) {
+        if (isUnreviewedAiPosition(article)) {
+            span(classes = BadgeTone.WARNING.css) { +CAP_POSITION_LABEL }
+        } else if (article.origin == org.politisationpopulairefrancaise.core.editorial.ContentOrigin.AI_ASSISTED) {
             span(classes = BadgeTone.NEUTRAL.css) { +"Rédigé avec l’aide d’une IA" }
         }
     }
@@ -247,6 +249,7 @@ internal fun FlowContent.glossaryTerms(renderer: ComprendreRenderer) {
  * no reference); [consultedOn] the day of the reader. Never on a preview: a draft has no published version.
  */
 internal fun FlowContent.comprendreOrigin(article: Article, path: String? = ComprendreLinks.pathOf(article), consultedOn: CivilDate = parisToday()) {
+    if (isUnreviewedAiPosition(article)) p(classes = "origin") { +"$CAP_POSITION_LABEL." }
     originLine(article)
     ContentLicenses.of(article.type)?.let { license ->
         p(classes = "licence") {
@@ -295,3 +298,7 @@ internal fun FlowContent.offlineScript() {
 }
 
 internal const val PWA_SCRIPT: String = "/static/pwa.js"
+
+/** A text of the series « Le cap » that is a position of PPF written with the help of an AI, not yet reviewed (D-212). */
+internal fun isUnreviewedAiPosition(article: Article): Boolean =
+    org.politisationpopulairefrancaise.core.comprendre.CapText.from(article)?.isUnreviewedAiPosition == true

@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.web.comprendre
 
+import org.politisationpopulairefrancaise.core.comprendre.CapText
 import org.politisationpopulairefrancaise.core.comprendre.ComprendreLinks
 import org.politisationpopulairefrancaise.core.comprendre.Decryptage
 import org.politisationpopulairefrancaise.core.comprendre.GlossaryEntry
@@ -42,6 +43,8 @@ class ComprendreCatalog(
     val corrections: List<PublicCorrection> = emptyList(),
     /** The teaching sheets for the classroom (CO-13, D-096), each linked to one course. */
     val teachingSheets: List<TeachingSheet> = emptyList(),
+    /** The texts of the series « Le cap du mouvement » (D-200), in reading order. */
+    val capTexts: List<CapText> = emptyList(),
 ) {
     private val byPath: Map<String, Any> = buildMap {
         fiches.forEach { a -> ComprendreLinks.pathOf(a)?.let { put(it, a) } }
@@ -50,11 +53,12 @@ class ComprendreCatalog(
         stories.forEach { put(ComprendreLinks.pathOf(it.article)!!, it) }
         sheets.forEach { put(ComprendreLinks.pathOf(it.article)!!, it) }
         teachingSheets.forEach { put(ComprendreLinks.pathOf(it.article)!!, it) }
+        capTexts.forEach { put(ComprendreLinks.pathOf(it.article)!!, it) }
     }
 
     /** Every content with a page, by identifier, to follow a link `30023:<key>:<identifier>`. */
     private val bySlug: Map<String, Article> = buildMap {
-        (fiches + parcours.map { it.article } + decryptages.map { it.article } + stories.map { it.article } + sheets.map { it.article } + glossary.entries.map { it.article } + teachingSheets.map { it.article })
+        (fiches + parcours.map { it.article } + decryptages.map { it.article } + stories.map { it.article } + sheets.map { it.article } + glossary.entries.map { it.article } + teachingSheets.map { it.article } + capTexts.map { it.article })
             .forEach { putIfAbsent(it.slug, it) }
     }
 
@@ -64,6 +68,7 @@ class ComprendreCatalog(
     fun story(slug: String): HistoryStory? = stories.firstOrNull { it.article.slug == slug }
     fun sheet(slug: String): QuiDecide? = sheets.firstOrNull { it.article.slug == slug }
     fun teachingSheet(slug: String): TeachingSheet? = teachingSheets.firstOrNull { it.article.slug == slug }
+    fun capText(slug: String): CapText? = capTexts.firstOrNull { it.article.slug == slug }
 
     /** The course a teaching sheet brings to the classroom, by its full address; null when it is not published. */
     fun courseOf(sheet: TeachingSheet): Parcours? = parcours.firstOrNull { it.address == sheet.courseAddress }
@@ -92,6 +97,7 @@ class ComprendreCatalog(
             ArticleType.ARTICLE,
             ArticleType.PERSONNE,
             ArticleType.FICHE_PEDAGOGIQUE,
+            ArticleType.CAP,
         )
 
         /** The identifier of the page « Notre méthode » (same as the application). */
@@ -125,6 +131,7 @@ class ComprendreCatalog(
                 corrections = PublicCorrection.of(articles),
                 teachingSheets = newest(ArticleType.FICHE_PEDAGOGIQUE).mapNotNull(TeachingSheet::from)
                     .sortedWith(compareBy<TeachingSheet>({ it.level.ordinal }, { byTitle(it.article) })),
+                capTexts = CapText.ordered(newest(ArticleType.CAP).mapNotNull(CapText::from)),
             )
         }
     }
