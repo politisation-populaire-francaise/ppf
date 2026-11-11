@@ -44,7 +44,8 @@ jobs:
           echo "$GITLEAKS_SHA256  $RUNNER_TEMP/$archive" | sha256sum -c --quiet
           tar -xzf "$RUNNER_TEMP/$archive" -C "$RUNNER_TEMP" gitleaks
       - name: Scan the whole history for secrets
-        run: "$RUNNER_TEMP/gitleaks" git --log-opts="--all" --redact --no-banner --exit-code 1
+        run: |
+          "$RUNNER_TEMP/gitleaks" git --log-opts="--all" --redact --no-banner --exit-code 1
 
   trackers:
     name: Traceurs et tiers
