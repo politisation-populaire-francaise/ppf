@@ -8,6 +8,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 - Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
 
 ### Ajouté
+- Recherche du site étendue aux appels ouverts, aux organisations et aux collectifs ; l’organisateur d’un appel retire une fausse inscription à un créneau (requête signée, AP-11) (11 novembre 2026).
 - Pages d’Agir sur le site (11 novembre 2026) : « S’engager en politique » (l’inscription sur les listes d’abord), solidarité et caisses de grève, collectifs, kits d’action citoyenne filtrés par liens ; reliées au menu latéral ; la liste des appels passe à `/agir/appels`. « Me rappeler cet événement » sur les mobilisations (S-98).
 - Site, Décider (11 novembre 2026) : pages du comparateur des candidats, du calendrier électoral, des consultations et des courriers ; chaque entrée de Décider du menu mène à une vraie section.
 - **Site : la coquille de l’application** (11 novembre 2026, D-215) : barre du haut avec le logo, le bouton AIDE rouge, Messages et Mon espace ; menu latéral dans l’ordre de l’application, sous-rubriques en accordéon, repliable en rail d’icônes sur ordinateur, ouvert par-dessus la page sur téléphone, sans script ; pied de page en colonnes ; nouvelles pages « En direct », AIDE (`/aide`) et pages des espaces propres à l’application à la place des emplacements réservés de la phase 0.

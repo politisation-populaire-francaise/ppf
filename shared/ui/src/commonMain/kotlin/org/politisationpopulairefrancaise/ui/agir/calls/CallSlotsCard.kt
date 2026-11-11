@@ -40,6 +40,7 @@ import org.politisationpopulairefrancaise.core.agir.calls.SlotSignups
 import org.politisationpopulairefrancaise.core.agir.calls.SlotWithdrawal
 import org.politisationpopulairefrancaise.core.agir.calls.slots
 import org.politisationpopulairefrancaise.core.messaging.MessagingSigner
+import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.notifications.NotificationCategory
 import org.politisationpopulairefrancaise.core.reminders.Reminder
 import org.politisationpopulairefrancaise.core.reminders.ReminderStore
@@ -65,6 +66,7 @@ object SlotTags {
     const val CLOSE = "slots-close"
     const val ORGANIZER = "slots-organizer"
     const val ORGANIZER_LIST = "slots-organizer-list"
+    const val ORGANIZER_REMOVE = "slots-organizer-remove-"
     const val EDITOR = "slots-editor-"
     const val EDITOR_LABEL = "slots-editor-label-"
     const val EDITOR_DATE = "slots-editor-date-"
@@ -124,12 +126,18 @@ class SlotsLibrary(
         return false
     }
 
-    /** The names signed up to each slot of [call], decrypted with the key of its author; null without an answer. */
-    suspend fun names(call: Call, organizer: MessagingSigner): Map<String, List<String>>? {
+    /** The signups to each slot of [call] (envelope id and name), decrypted with the key of its author; null without an answer. */
+    suspend fun names(call: Call, organizer: MessagingSigner): Map<String, List<Pair<String, String>>>? {
         val envelopes = client?.signups(call.address.toString()) ?: return null
         return withContext(Dispatchers.Default) {
-            envelopes.mapNotNull { SlotSignups.open(it, organizer, call.address.toString()) }.groupBy({ it.slot }, { it.name })
+            envelopes.mapNotNull { SlotSignups.openWithId(it, organizer, call.address.toString()) }.groupBy({ it.second.slot }, { it.first to it.second.name })
         }
+    }
+
+    /** The organizer removes a signup (a fake one, a duplicate); true once the server no longer has it. */
+    suspend fun remove(signupId: String, organizer: EventSigner): Boolean {
+        val outcome = client?.remove(signupId, organizer) ?: return false
+        return outcome is SlotOutcome.Done
     }
 
     private fun reminderId(signupId: String) = "agir:slot:$signupId"
@@ -142,7 +150,7 @@ class SlotsLibrary(
 
 /** AP-11: the slots of a call, with their places, the user's signups and, for the author, the names signed up. */
 @Composable
-internal fun SlotsCard(call: Call, slotsLibrary: SlotsLibrary, organizer: MessagingSigner?) {
+internal fun SlotsCard(call: Call, slotsLibrary: SlotsLibrary, organizer: MessagingSigner?, organizerSigner: EventSigner? = null) {
     val slots = call.slots
     if (slots.isEmpty()) return
     val palette = PpfTheme.palette
@@ -151,7 +159,8 @@ internal fun SlotsCard(call: Call, slotsLibrary: SlotsLibrary, organizer: Messag
     var mine by remember(call.address) { mutableStateOf(slotsLibrary.mine(call)) }
     var signingUp by remember(call.address) { mutableStateOf<CallSlot?>(null) }
     var failed by remember(call.address) { mutableStateOf(false) }
-    var names by remember(call.address) { mutableStateOf<Map<String, List<String>>?>(null) }
+    var names by remember(call.address) { mutableStateOf<Map<String, List<Pair<String, String>>>?>(null) }
+    var removeFailed by remember(call.address) { mutableStateOf(false) }
     var namesFailed by remember(call.address) { mutableStateOf(false) }
     LaunchedEffect(call.address) { counts = slotsLibrary.counts(call) }
     val now = slotsLibrary.now()
@@ -191,15 +200,35 @@ internal fun SlotsCard(call: Call, slotsLibrary: SlotsLibrary, organizer: Messag
                     else -> PpfPrimaryButton({ signingUp = slot }, stringResource(Res.string.slots_signup), enabled = call.isOpen, modifier = Modifier.testTag(SlotTags.SIGNUP + slot.id))
                 }
                 names?.let { all ->
-                    val here = all[slot.id].orEmpty()
-                    Text(
-                        if (here.isEmpty()) stringResource(Res.string.slots_organizer_none) else here.sorted().joinToString(", "),
-                        style = MaterialTheme.typography.bodyMedium,
-                        modifier = Modifier.testTag(SlotTags.ORGANIZER_LIST),
-                    )
+                    val here = all[slot.id].orEmpty().sortedBy { it.second }
+                    if (here.isEmpty()) {
+                        Text(stringResource(Res.string.slots_organizer_none), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag(SlotTags.ORGANIZER_LIST))
+                    }
+                    here.forEach { (id, name) ->
+                        androidx.compose.foundation.layout.Row(verticalAlignment = androidx.compose.ui.Alignment.CenterVertically, modifier = Modifier.testTag(SlotTags.ORGANIZER_LIST)) {
+                            Text(name, style = MaterialTheme.typography.bodyMedium, modifier = Modifier.weight(1f))
+                            if (organizerSigner != null) {
+                                PpfTextButton(
+                                    onClick = {
+                                        scope.launch {
+                                            val done = slotsLibrary.remove(id, organizerSigner)
+                                            removeFailed = !done
+                                            if (done) {
+                                                names = names?.mapValues { (_, list) -> list.filterNot { it.first == id } }
+                                                counts = slotsLibrary.counts(call) ?: counts
+                                            }
+                                        }
+                                    },
+                                    text = stringResource(Res.string.slots_organizer_remove),
+                                    modifier = Modifier.testTag(SlotTags.ORGANIZER_REMOVE + id),
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
+        if (removeFailed) Text(stringResource(Res.string.slots_organizer_remove_failed), style = MaterialTheme.typography.bodySmall, color = palette.accentInk)
         if (failed) Text(stringResource(Res.string.slots_withdraw_failed), style = MaterialTheme.typography.bodySmall, color = palette.accentInk)
         if (organizer != null) {
             Spacer(Modifier.height(12.dp))

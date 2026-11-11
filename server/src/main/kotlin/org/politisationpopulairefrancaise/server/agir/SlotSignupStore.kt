@@ -27,7 +27,11 @@ import org.politisationpopulairefrancaise.core.agir.calls.SlotCounts
 import org.politisationpopulairefrancaise.core.agir.calls.SlotEnvelopes
 import org.politisationpopulairefrancaise.core.agir.calls.SlotSignupAnswer
 import org.politisationpopulairefrancaise.core.agir.calls.SlotSignupRequest
+import org.politisationpopulairefrancaise.core.agir.calls.SlotRemoval
 import org.politisationpopulairefrancaise.core.agir.calls.SlotWithdrawal
+import org.politisationpopulairefrancaise.core.urne.Nip98
+import org.politisationpopulairefrancaise.core.urne.Nip98ReplayGuard
+import io.ktor.server.request.uri
 import org.politisationpopulairefrancaise.core.agir.calls.slots
 import org.politisationpopulairefrancaise.core.contact.CaseEnvelopes
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
@@ -150,6 +154,25 @@ class SlotSignupStore(private val dataSource: DataSource, private val events: Ev
         }
     }
 
+    /** The call a signup belongs to, or null when the server no longer has it. */
+    fun callOf(id: String): String? {
+        if (!HEX64.matches(id)) return null
+        return dataSource.connection.use { connection ->
+            connection.prepareStatement("SELECT call_address FROM call_slot_signup WHERE id = ?").use { statement ->
+                statement.setString(1, id)
+                statement.executeQuery().use { rows -> if (rows.next()) rows.getString(1) else null }
+            }
+        }
+    }
+
+    /** Removes the signup [id] (the organizer's decision, checked by the route); false when it was already gone. */
+    fun remove(id: String): Boolean = dataSource.connection.use { connection ->
+        connection.prepareStatement("DELETE FROM call_slot_signup WHERE id = ?").use { statement ->
+            statement.setString(1, id)
+            statement.executeUpdate() > 0
+        }
+    }
+
     /** Erases the signups of the slots ended more than two days ago; returns how many. */
     fun purge(): Int = dataSource.connection.use { connection ->
         connection.prepareStatement("DELETE FROM call_slot_signup WHERE expires_at < ?").use { statement ->
@@ -216,6 +239,8 @@ class SlotSignupStore(private val dataSource: DataSource, private val events: Ev
  * - GET /api/v1/agir/slots?call=<address>: `{"slots": {"<id>": <taken>}}`.
  * - GET /api/v1/agir/slots/signups?call=<address>: `{"envelopes": [...]}`, readable by the author of the call only.
  * - POST /api/v1/agir/slots/withdraw: a [SlotWithdrawal]; `204`, or `404 not_found` (unknown id or wrong token).
+ * - POST /api/v1/agir/slots/remove: a [SlotRemoval] with `Authorization: Nostr` (NIP-98) signed by the author of the
+ *   call; `204`, `401` with the code of the refusal (also when the signer is not the author), `404 not_found`.
  *
  * The ceilings are global (one-time keys sign the envelopes: no budget per key, nothing tied to an address).
  */
@@ -242,6 +267,34 @@ fun Route.slotApi(store: SlotSignupStore?, signups: RateLimiter = RateLimiter(60
             ?: return@get call.refuse(SlotSignupStore.BAD_CALL)
         call.response.header(HttpHeaders.CacheControl, "no-store")
         call.respond(SlotEnvelopes(withContext(Dispatchers.IO) { store.envelopes(address) }))
+    }
+    val replay = Nip98ReplayGuard()
+    post(SlotApi.REMOVE) {
+        val body = call.readLimited() ?: return@post
+        if (withdrawals.tryAcquire(GLOBAL) is RateLimiter.Outcome.Limited) return@post call.limited()
+        val removal = runCatching { SlotApi.json.decodeFromString(SlotRemoval.serializer(), body) }.getOrNull()
+            ?: return@post call.refuse(SlotSignupStore.MALFORMED)
+        val callAddress = withContext(Dispatchers.IO) { store.callOf(removal.id) }
+            ?: return@post call.refuse(SlotRefusal(404, "not_found", "No signup with this id."))
+        val author = SlotSignupStore.parseAddress(callAddress)?.pubkey ?: return@post call.refuse(SlotSignupStore.BAD_CALL)
+        val path = call.request.uri
+        val now = java.time.Instant.now().epochSecond
+        val result = Nip98.verify(
+            call.request.headers[HttpHeaders.Authorization],
+            { u -> u.substringAfter("://").substringAfter('/', "").let { "/$it" } == path },
+            "POST",
+            body.encodeToByteArray(),
+            now,
+            acceptsSigner = { it == author },
+        )
+        when (result) {
+            is Nip98.Result.Invalid -> call.refuse(SlotRefusal(401, result.reason, "Only the author of the call removes a signup."))
+            is Nip98.Result.Valid -> {
+                if (!synchronized(replay) { replay.firstUse(result.eventId, now) }) return@post call.refuse(SlotRefusal(401, "replayed_authorization", "This authorization was already used."))
+                withContext(Dispatchers.IO) { store.remove(removal.id) }
+                call.respond(HttpStatusCode.NoContent)
+            }
+        }
     }
     post(SlotApi.WITHDRAW) {
         val body = call.readLimited() ?: return@post

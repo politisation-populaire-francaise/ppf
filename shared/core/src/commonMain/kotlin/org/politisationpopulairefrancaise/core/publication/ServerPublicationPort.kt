@@ -24,6 +24,7 @@ import org.politisationpopulairefrancaise.core.agir.calls.SlotClient
 import org.politisationpopulairefrancaise.core.agir.calls.SlotCounts
 import org.politisationpopulairefrancaise.core.agir.calls.SlotEnvelopes
 import org.politisationpopulairefrancaise.core.agir.calls.SlotOutcome
+import org.politisationpopulairefrancaise.core.agir.calls.SlotRemoval
 import org.politisationpopulairefrancaise.core.agir.calls.SlotSignupAnswer
 import org.politisationpopulairefrancaise.core.agir.calls.SlotSignupRequest
 import org.politisationpopulairefrancaise.core.agir.calls.SlotWithdrawal
@@ -41,7 +42,10 @@ import org.politisationpopulairefrancaise.core.identity.NoticeCheck
 import org.politisationpopulairefrancaise.core.revendications.ProposalState
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSource
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatuses
+import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.core.urne.Nip98
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentFormat
 import org.politisationpopulairefrancaise.core.territoires.TerritoiresReader
 
@@ -110,10 +114,18 @@ class ServerPublicationPort(
         null
     }
 
-    private suspend fun slotPost(path: String, body: String, done: (String) -> SlotOutcome): SlotOutcome {
+    /** `POST /api/v1/agir/slots/remove` (AP-11): the organizer removes a signup, signed by the key of the call (NIP-98). */
+    override suspend fun remove(id: String, organizer: EventSigner): SlotOutcome {
+        val body = SlotApi.json.encodeToString(SlotRemoval.serializer(), SlotRemoval(id))
+        val authorization = Nip98.authorization(organizer, "$baseUrl${SlotApi.REMOVE}", "POST", body.encodeToByteArray(), currentEpochSeconds())
+        return slotPost(SlotApi.REMOVE, body, authorization) { SlotOutcome.Done(id, 0) }
+    }
+
+    private suspend fun slotPost(path: String, body: String, authorization: String? = null, done: (String) -> SlotOutcome): SlotOutcome {
         val response = try {
             client.post("$baseUrl$path") {
                 contentType(ContentType.Application.Json)
+                authorization?.let { header(HttpHeaders.Authorization, it) }
                 setBody(body)
             }
         } catch (e: CancellationException) {
