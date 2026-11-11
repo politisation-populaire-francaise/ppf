@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.agir.collectives
 
+import org.politisationpopulairefrancaise.ui.agir.TEST_WINDOW_HEIGHT
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.CompositionLocalProvider
@@ -101,7 +102,7 @@ class AgirCollectivesTest {
 
     private fun ComposeUiTest.show(dependencies: AppDependencies, voting: VotingState?, home: List<String> = emptyList(), width: Int = 1000, height: Int = 1400) {
         setContent {
-            Box(Modifier.requiredSize(width.dp, height.dp)) {
+            Box(Modifier.requiredSize(width.dp, minOf(height, TEST_WINDOW_HEIGHT).dp)) {
                 PpfTheme {
                     CompositionLocalProvider(LocalVoting provides voting) {
                         val account = rememberAccountSession(dependencies.identityStore)

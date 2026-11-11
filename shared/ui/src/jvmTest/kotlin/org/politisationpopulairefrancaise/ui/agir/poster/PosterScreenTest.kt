@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.agir.poster
 
+import org.politisationpopulairefrancaise.ui.agir.TEST_WINDOW_HEIGHT
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.Composable
@@ -72,7 +73,7 @@ class PosterScreenTest {
         val agenda = remember { AgendaLibrary(device.store, device.state, EditorialTrust.bundledExamples(), device.server, scope, clock = { AgendaClock.NOW }).also { it.start() } }
         val session = remember { AccountSession(device.identityStore, scope).also { it.start() } }
         PpfTheme {
-            Box(Modifier.requiredSize(width.dp, height.dp)) {
+            Box(Modifier.requiredSize(width.dp, minOf(height, TEST_WINDOW_HEIGHT).dp)) {
                 AgendaScreen(
                     dependencies = device.dependencies,
                     session = session,
@@ -202,7 +203,7 @@ class PosterScreenTest {
         remember { onReady(agenda) }
         val names = remember { AgendaNames({ null }, { agenda.isEditorial(it) }) }
         PpfTheme {
-            Box(Modifier.requiredSize(400.dp, 900.dp)) {
+            Box(Modifier.requiredSize(400.dp, TEST_WINDOW_HEIGHT.dp)) {
                 PosterScanScreen(agenda, names, compact = true, onBack = {}, onOpened = onOpened, initial = scan)
             }
         }

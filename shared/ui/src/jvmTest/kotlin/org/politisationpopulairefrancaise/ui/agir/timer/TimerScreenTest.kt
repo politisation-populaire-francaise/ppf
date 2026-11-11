@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.agir.timer
 
+import org.politisationpopulairefrancaise.ui.agir.TEST_WINDOW_HEIGHT
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
@@ -111,7 +112,7 @@ private class TimerHarness(val hasServer: Boolean = true, val withAccount: Boole
         LaunchedEffect(created) {
             created.setAccount(if (withAccount) me.publicKey.hex else null, if (withAccount && hasServer) transport else null)
         }
-        Box(Modifier.requiredSize(width.dp, 1000.dp)) {
+        Box(Modifier.requiredSize(width.dp, TEST_WINDOW_HEIGHT.dp)) {
             PpfTheme(darkTheme = dark) {
                 CompositionLocalProvider(LocalCanPublish provides canPublish) {
                     if (blocks) {

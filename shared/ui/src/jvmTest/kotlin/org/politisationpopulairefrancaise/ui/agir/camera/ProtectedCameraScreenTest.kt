@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.agir.camera
 
+import org.politisationpopulairefrancaise.ui.agir.TEST_WINDOW_HEIGHT
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.requiredSize
@@ -116,7 +117,7 @@ private class CameraHarness(val vault: InMemoryProtectedVault = InMemoryProtecte
         val created = remember { ProtectedCameraState(vault, scope) }
         state = created
         exporter.onResult = { created.exportFinished(it) }
-        Box(Modifier.requiredSize(width.dp, height.dp)) {
+        Box(Modifier.requiredSize(width.dp, minOf(height, TEST_WINDOW_HEIGHT).dp)) {
             PpfTheme(darkTheme = dark) {
                 ProtectedCameraScreen(
                     created,
@@ -153,7 +154,7 @@ class ProtectedCameraScreenTest {
             runComposeUiTest {
                 val dependencies = AgirFixtures.dependencies()
                 setContent {
-                    Box(Modifier.requiredSize(width.dp, 900.dp)) {
+                    Box(Modifier.requiredSize(width.dp, TEST_WINDOW_HEIGHT.dp)) {
                         PpfTheme(darkTheme = dark) {
                             CompositionLocalProvider(LocalRallyPointStorage provides InMemoryRallyPointStorage()) {
                                 val library = rememberContentLibrary(dependencies)
@@ -180,7 +181,7 @@ class ProtectedCameraScreenTest {
         setContent {
             val scope = rememberCoroutineScope()
             val state = remember { ProtectedCameraState(null, scope) }
-            Box(Modifier.requiredSize(420.dp, 800.dp)) {
+            Box(Modifier.requiredSize(420.dp, TEST_WINDOW_HEIGHT.dp)) {
                 PpfTheme { ProtectedCameraScreen(state, WindowClass.of(420f, 800f), onBack = {}) }
             }
         }
@@ -297,7 +298,7 @@ class ProtectedCameraScreenTest {
                     override fun pick() = Unit
                 }
             }
-            Box(Modifier.requiredSize(420.dp, 900.dp)) {
+            Box(Modifier.requiredSize(420.dp, TEST_WINDOW_HEIGHT.dp)) {
                 PpfTheme {
                     TestimonyScreen(testimonies, session, WindowClass.of(420f, 900f), onBack = {}, onCreateAccount = {}, picker = picker, camera = camera)
                 }
@@ -325,7 +326,7 @@ class ProtectedCameraScreenTest {
             val testimonies = remember { TestimonyLibrary(store = null, transport = null, scope = scope) }
             val session = remember { AccountSession(InMemoryIdentityStore(), scope).also { it.start() } }
             val camera = remember { ProtectedCameraState(null, scope) }
-            Box(Modifier.requiredSize(420.dp, 900.dp)) {
+            Box(Modifier.requiredSize(420.dp, TEST_WINDOW_HEIGHT.dp)) {
                 PpfTheme {
                     TestimonyScreen(testimonies, session, WindowClass.of(420f, 900f), onBack = {}, onCreateAccount = {}, camera = camera)
                 }
