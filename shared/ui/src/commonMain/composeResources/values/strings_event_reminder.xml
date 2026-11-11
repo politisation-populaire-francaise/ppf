@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Me rappeler cet événement » (S-98): reminders programmed on the device only. -->
+<resources>
+    <string name="event_reminder_set">Me rappeler cet événement</string>
+    <string name="event_reminder_on">Rappel programmé la veille et deux heures avant.</string>
+    <string name="event_reminder_remove">Retirer le rappel</string>
+    <string name="event_reminder_note">Le rappel est programmé sur cet appareil seulement ; rien n’est envoyé.</string>
+    <string name="event_reminder_day_before">Demain</string>
+    <string name="event_reminder_soon">Dans deux heures</string>
+</resources>

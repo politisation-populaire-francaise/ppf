@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.agir.agenda
 
+import org.politisationpopulairefrancaise.core.reminders.ReminderStore
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -149,6 +150,8 @@ class AgendaLibrary(
     private val scope: CoroutineScope,
     /** Seconds since 1970; injectable so that tests and captures show a fixed day. */
     val clock: () -> Long = ::currentEpochSeconds,
+    /** The reminders of the device (S-98): « Me rappeler cet événement »; none in tests and previews. */
+    val reminders: ReminderStore? = null,
 ) {
     private val passes = Mutex()
     private val answerWrites = Mutex()
@@ -671,6 +674,7 @@ class AgendaLibrary(
             remote = dependencies.remote,
             scope = scope,
             clock = clock,
+            reminders = dependencies.database?.let { ReminderStore(it) },
         )
     }
 }
