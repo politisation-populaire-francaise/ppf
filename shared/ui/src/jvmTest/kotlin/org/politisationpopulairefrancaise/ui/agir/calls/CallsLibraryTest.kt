@@ -190,6 +190,6 @@ class CallsLibraryTest {
         assertEquals(20, content.guides.size)
         assertTrue(content.guides.none { it.slug in callSlugs })
         assertTrue(content.revendications.none { it.slug in callSlugs })
-        assertEquals(8, content.revendications.size)
+        assertEquals(24, content.revendications.size) // 8 examples and 16 real demands (D-152)
     }
 }

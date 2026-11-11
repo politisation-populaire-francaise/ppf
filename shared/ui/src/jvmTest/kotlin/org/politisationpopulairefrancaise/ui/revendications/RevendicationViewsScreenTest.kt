@@ -119,9 +119,10 @@ class RevendicationViewsScreenTest {
     fun aDemandOfTheMovementSaysWhoCarriesIt() = runComposeUiTest {
         openWall(memory())
         inPage("tout", RevendicationTags.CARD + "mouvement-hausse-des-pensions").performScrollTo()
-            .assert(hasAnyDescendant(hasText("Du mouvement")))
-            .assert(hasAnyDescendant(hasText("Portée par :", substring = true)))
-        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(RevendicationTags.CARD + "medecin-de-garde"))).fetchSemanticsNodes().isEmpty())
+            .assert(hasText("Du mouvement", substring = true))
+            .assert(hasText("Portée par :", substring = true))
+        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(RevendicationTags.CARD + "mouvement-hausse-des-pensions")), useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty())
+        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(RevendicationTags.CARD + "medecin-de-garde")), useUnmergedTree = true).fetchSemanticsNodes().isEmpty())
     }
 
     /** D-152: a citizen demand names who else publicly supports it, without the chip of the movement. */
@@ -130,8 +131,9 @@ class RevendicationViewsScreenTest {
         openWall(memory())
         val card = RevendicationTags.CARD + "demission-du-gouvernement"
         inPage("tout", card).performScrollTo()
-        inPage("tout", RevendicationTags.SUPPORTERS).assertTextEquals("Également portée par : NPA-L’Anticapitaliste (parti politique), 4 novembre 2026")
-        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(card))).fetchSemanticsNodes().isEmpty())
+        onNode(hasTestTag(RevendicationTags.SUPPORTERS) and hasAnyAncestor(hasTestTag(card)), useUnmergedTree = true)
+            .assertTextEquals("Également portée par : NPA-L’Anticapitaliste (parti politique), 4 novembre 2026")
+        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(card)), useUnmergedTree = true).fetchSemanticsNodes().isEmpty())
     }
 
     private fun ComposeUiTest.waitForDemands() {
@@ -233,7 +235,7 @@ class RevendicationViewsScreenTest {
         onNodeWithTag(FilterPanelTags.THEME + "education").performScrollTo().performClick()
         onNodeWithTag(FilterPanelTags.THEME + "education").assertIsOn()
         // The main button counts live.
-        onNodeWithTag(FilterPanelTags.APPLY).assertTextContains("Afficher 3 revendications")
+        onNodeWithTag(FilterPanelTags.APPLY).assertTextContains("Afficher 6 revendications") // 3 examples, 3 demands of the movement
         onNodeWithTag(FilterPanelTags.APPLY).performClick()
         closeModal()
         onNodeWithTag(FilterPanelTags.PANEL).assertDoesNotExist()
@@ -302,7 +304,7 @@ class RevendicationViewsScreenTest {
         onNodeWithTag(FilterPanelTags.THEME + "logement").assertIsOff().assertIsNotEnabled()
         // Other criteria stay free: the status narrows the view's demands.
         onNodeWithTag(FilterPanelTags.STATUS + "en-debat").performScrollTo().performClick()
-        onNodeWithTag(FilterPanelTags.APPLY).assertTextContains("Afficher 0 revendication")
+        onNodeWithTag(FilterPanelTags.APPLY).assertTextContains("Afficher 1 revendication") // the services publics of the movement
         onNodeWithTag(FilterPanelTags.STATUS + "en-debat").performClick()
         onNodeWithTag(FilterPanelTags.STATUS + "nouvelle").performClick()
         onNodeWithTag(FilterPanelTags.APPLY).performClick()
