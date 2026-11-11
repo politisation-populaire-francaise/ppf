@@ -147,9 +147,13 @@ class AgirCollectivesTest {
         awaitTag(CollectivesTags.CARD + id)
     }
 
-    /** Clicks a filter of the directory, after scrolling the list back to its filters. */
+    /** Clicks a filter of the directory, after scrolling back to its filters and unfolding them if needed (D-233). */
     private fun ComposeUiTest.clickFilter(tag: String) {
         onNodeWithTag(CollectivesTags.LIST).performScrollToKey("filters")
+        if (count(tag) == 0) {
+            onNodeWithTag(CollectivesTags.FILTERS_TOGGLE).performScrollTo().performClick()
+            waitForIdle()
+        }
         onNodeWithTag(tag).performScrollTo().performClick()
     }
 
