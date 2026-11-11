@@ -40,7 +40,7 @@ Cette partie est la position de PPF, rédigée par l'IA et en attente de relectu
 
 1. **Un cap commun, décidé par les gens eux-mêmes.** Les revendications doivent être votées, une personne une voix, et non fixées par quelques porte-parole.
 2. **Personne ne signe à notre place.** Un accord ne vaut que s'il répond aux revendications votées. Avant de signer, ceux qui négocient doivent revenir vers ceux qui se mobilisent.
-3. **D'autres leviers que le défilé.** La grève, avec une caisse pour tenir ; le boycott ciblé ; les pétitions officielles, qui obligent le Parlement ou les élus locaux à répondre ; la solidarité concrète.
+3. **D'autres leviers que le défilé.** La grève, avec une caisse pour tenir ; le boycott ciblé ; la solidarité concrète ; les pétitions officielles, pour ce qu'elles obtiennent vraiment. À l'Assemblée nationale, une pétition est examinée ou classée par une commission ; au-delà de 500 000 signataires dans au moins 30 départements ou collectivités d'outre-mer, la Conférence des présidents peut organiser un débat en séance, sans vote, mais rien ne l'y oblige. Au Sénat, une pétition qui réunit 100 000 signatures en six mois est examinée par la Conférence des Présidents, qui décide librement des suites. Dans une commune, un département ou une région, une pétition peut demander une consultation des électeurs ou un débat, mais l'assemblée locale décide librement d'y donner suite, et une consultation ne donne qu'un avis. Aucune pétition ne fait adopter une loi : elle met un sujet à l'ordre du jour et compte les soutiens.
 4. **Le vote et les mandats.** S'inscrire sur les listes électorales avant la présidentielle d'avril 2027, puis présenter des listes de candidats et gagner des mandats.
 5. **Fédérer autour de soi.** Chaque personne convaincue dans sa famille, au travail ou dans son quartier compte davantage qu'un défilé de plus.
 
@@ -76,4 +76,8 @@ Cette partie est la position de PPF, rédigée par l'IA et en attente de relectu
 - Loi n° 2006-457 du 21 avril 2006 sur l'accès des jeunes à la vie active en entreprise, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000000269423/
 - Conseil constitutionnel, décision n° 2006-535 DC du 30 mars 2006 (article 8 de la loi pour l'égalité des chances, contrat première embauche), consulté le 2026-11-11 : https://www.conseil-constitutionnel.fr/decision/2006/2006535DC.htm
 - Loi n° 2018-1213 du 24 décembre 2018 portant mesures d'urgence économiques et sociales, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000037851899/
+- Règlement de l'Assemblée nationale, articles 147 à 151, consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/17/divers/texte_reference/02_reglement_assemblee_nationale.html
+- Sénat, Instruction générale du Bureau, chapitre « Pétitions » (mise à jour du 1er octobre 2025), consulté le 2026-11-09 : https://www.senat.fr/reglement/reglement80.html
+- Code général des collectivités territoriales, article L1112-16, rédaction de la loi n° 2022-217 du 21 février 2022, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045210334
+- Constitution du 4 octobre 1958, article 72-1, consultée le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527593
 - Erica Chenoweth, « The Future of Nonviolent Resistance », Journal of Democracy, vol. 31, n° 3, juillet 2020, p. 69-84, consulté le 2026-11-11 : https://www.journalofdemocracy.org/articles/the-future-of-nonviolent-resistance/
