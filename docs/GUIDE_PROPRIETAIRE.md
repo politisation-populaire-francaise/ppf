@@ -290,6 +290,18 @@ Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre 
 
 Pour imprimer : choisissez **taille réelle** (ou « 100 % ») dans la fenêtre d'impression, sinon le code QR rétrécit. Ce qui n'est pas encore là : l'iPhone, le PDF sur ordinateur, les affiches d'une fiche ou d'une revendication, les pages du site pour les affiches d'événements très longs.
 
+### Tester « Fédérer » (ajouté le 11 novembre 2026)
+
+« Fédérer » rassemble ce qui aide à convaincre son entourage : votre liste de proches, le kit « Convaincre autour de soi » (écrit par l'équipe Comprendre, avec ses sources) et des cartes à montrer ou à partager. **Le kit arrivera avec la prochaine mise à jour des contenus** : en attendant, l'écran le dit et la liste des proches marche déjà. Aucune version d'essai n'est envoyée sans votre demande.
+
+1. Ouvrez « Agir » et touchez la carte **Fédérer**, la troisième. L'écran « Fédérer autour de soi » s'ouvre.
+2. Touchez **Ouvrir ma liste** : la liste de vos proches s'ouvre. Si PPF n'a pas encore de code, une ligne propose **Choisir un code pour PPF** (rien n'est imposé). Touchez la flèche retour : vous revenez sur « Fédérer », pas sur l'accueil.
+3. Quand le kit sera là : sous « Cartes à montrer ou à partager », chaque argument, chaque réponse à une objection et « Le monde bouge » forment une carte, avec la mention « Produit avec l'aide d'une IA ». Touchez **Copier le texte** : « Texte copié ». Collez-le dans une note : la carte, la mention d'origine et l'adresse de la fiche complète apparaissent.
+4. Sur le téléphone, touchez **Partager** : Android propose vos applications ; touchez la flèche retour pour ne rien envoyer.
+5. Touchez **Lire le kit en entier, avec ses sources** : la fiche s'ouvre dans Agir ; la flèche la referme.
+
+Rien de ce que vous faites ici ne quitte le téléphone, sauf ce que vous choisissez vous-même de partager.
+
 ### Tester « Mes proches à mobiliser » (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
 
 Une liste rien qu'à vous, sur votre appareil, de quelques proches que vous aimeriez entraîner avec vous : pour chacun, un surnom, des sujets qui pourraient l'intéresser, la prochaine étape et, si vous voulez, un rappel. **Elle n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée et sera entrée dans une version de test. Elle marche de la même façon sur le téléphone et sur l'ordinateur, sans serveur. Pour vos essais, prenez des surnoms inventés (par exemple « [EXEMPLE] Tante M. »), jamais le nom d'une vraie personne.

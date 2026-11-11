@@ -1509,3 +1509,10 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 ## D-194 (2026-11-09, numérotée le 2026-11-11) « Mes proches à mobiliser » (AG-63)
 
 - Décision écrite à la section 9 de `docs/integration/agir-proches.md` (liste privée sur l'appareil seulement, effacée avec les clés), complétée par D-190.
+
+## D-195 (2026-11-11) « Fédérer » : une rubrique d'« Agir » faite de ce qui existe
+
+- Contexte : demande de la propriétaire (fédérer son entourage, lui ouvrir les yeux, c'est agir ; feuille de route du MVP 1, jalon 2) ; le kit « Convaincre autour de soi » est écrit par la session Comprendre (fiche pratique `convaincre-autour-de-soi`).
+- Options : (A) une rubrique qui réutilise la liste des proches (AG-63) et lit le kit de Comprendre, découpé en cartes sur l'appareil ; (B) un nouveau type de contenu « carte à partager » signé à part ; (C) un simple lien vers la fiche dans Comprendre.
+- Choix (décision technique prise en autonomie) : **A**. Le kit reste la seule référence (sources, mention d'origine, relecture) ; l'application ne fait que le découper (arguments numérotés, bloc `::: objections`, liste « Le monde bouge ») et chaque carte partagée porte la mention « rédigé par l'IA » et l'adresse de la fiche complète. Rien n'est envoyé ni compté : partager et copier sont les gestes de la personne ; la liste des proches ne quitte jamais l'appareil. Sans le kit sur l'appareil, l'écran le dit.
+- Raison : aucun nouveau format à signer ni à relire, aucune donnée nouvelle ; B dédoublerait le contenu, C laisserait la personne sans rien à montrer pendant une discussion.
