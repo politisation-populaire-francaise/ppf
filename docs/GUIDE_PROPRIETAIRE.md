@@ -211,7 +211,7 @@ C'est là que l'on voit le circuit complet : une proposition attend la relecture
 7. Onglet « Entraide » : l'explication de ce qui se prépare (covoiturage, hébergement) et pourquoi ce n'est pas encore là.
 8. Tournez le téléphone ou élargissez la fenêtre : sur ordinateur, la liste et la page sont côte à côte.
 
-### Tester les collectifs dans « Agir » (ajouté le 9 novembre 2026, pas encore compilé)
+### Tester les collectifs dans « Agir » (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
 
 Ce qui suit sera possible une fois le travail compilé et fusionné (il a été écrit sans pouvoir compiler, la machine étant réservée à une autre équipe). Un collectif est un groupe de citoyens avec une page, des rôles, un calendrier et des appels ; un salon reste un simple espace de discussion, ouvert à tous.
 
@@ -223,7 +223,7 @@ Ce qui suit sera possible une fois le travail compilé et fusionné (il a été 
 6. La création elle-même (quatre étapes, charte décochée au départ, mise en garde « Votre pseudonyme sera publiquement relié à ce collectif », « Annuler » avant « Créer le collectif ») est vérifiée par les tests automatiques. Pour l'essayer à la main, il faudra un compte validé en personne par une séance de validation du back-office ; je vous guiderai pas à pas quand ce sera prêt sur le serveur de développement.
 7. Élargissez la fenêtre, puis réduisez-la à la taille d'un téléphone : la page reste lisible, centrée, sans débordement ; essayez aussi le mode sombre.
 
-### Tester le minuteur « Sans nouvelles de moi » (ajouté le 9 novembre 2026, pas encore compilé)
+### Tester le minuteur « Sans nouvelles de moi » (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
 
 Ce minuteur prévient vos proches si vous ne confirmez pas que vous allez bien à l'heure que vous avez choisie. **Il n'est pas encore dans une version installable** : ce guide servira dès qu'il aura été compilé et sera entré dans une version de test.
 
@@ -241,7 +241,7 @@ Ce minuteur prévient vos proches si vous ne confirmez pas que vous allez bien �
 
 Ce qui n'est pas encore là : le réveil du téléphone du proche à l'heure exacte quand PPF est fermé (il viendra avec les rappels de « Décider ») ; les cercles de « Communauté » à la place des contacts ; l'iPhone.
 
-### Tester la caméra protégée (ajouté le 9 novembre 2026, pas encore compilée)
+### Tester la caméra protégée (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
 
 La caméra protégée prend des photos qui restent chiffrées dans PPF : elles ne vont jamais dans la galerie du téléphone ni dans une sauvegarde en ligne, et la position, le modèle du téléphone et la date sont retirés. **Elle n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée et sera entrée dans une version de test. Il faut votre **téléphone Android** (sur l'ordinateur, l'écran dit seulement que la caméra protégée est sur l'application Android). Photographiez seulement des objets ou un paysage, jamais une personne réelle.
 
@@ -257,7 +257,7 @@ La caméra protégée prend des photos qui restent chiffrées dans PPF : elles n
 
 Ce qui n'est pas encore là : la vidéo (étape suivante), l'envoi automatique vers des avocats partenaires (son coût de stockage vous sera présenté avant toute décision), l'iPhone.
 
-### Tester le simulateur du gréviste (ajouté le 9 novembre 2026, pas encore compilé)
+### Tester le simulateur du gréviste (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
 
 Le simulateur estime ce qu'une grève retire de la paie, selon le statut (salarié du privé, fonction publique de l'État, territoriale ou hospitalière), et rappelle le préavis et la déclaration à faire avant la grève dans certains secteurs. **Il n'est pas encore dans une version installable** : ce guide servira dès qu'il aura été compilé et sera entré dans une version de test. Il marche de la même façon sur le téléphone et sur l'ordinateur, sans serveur. Tapez des montants fictifs, jamais votre vrai salaire si quelqu'un regarde l'écran : rien n'est enregistré, mais l'écran l'affiche.
 
@@ -273,7 +273,7 @@ Le simulateur estime ce qu'une grève retire de la paie, selon le statut (salari
 
 Ce qui n'est pas encore là : les gardes de 24 heures, le forfait en jours, les entreprises privées chargées d'un service public hors transports (règles à confirmer) ; la relecture des règles par un avocat avant l'ouverture publique.
 
-### Tester l'affiche à code QR (ajouté le 9 novembre 2026, pas encore compilée)
+### Tester l'affiche à code QR (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
 
 Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre appareil. Son code QR contient l'événement signé lui-même : un téléphone l'ajoute à son agenda **sans réseau**, après avoir vérifié qu'il n'a pas été modifié. **L'affiche n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée. Il faut votre **ordinateur** (pour faire l'affiche) et votre **téléphone Android** (pour la scanner). Les événements de l'agenda sont tous fictifs ([EXEMPLE]).
 
@@ -290,7 +290,7 @@ Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre 
 
 Pour imprimer : choisissez **taille réelle** (ou « 100 % ») dans la fenêtre d'impression, sinon le code QR rétrécit. Ce qui n'est pas encore là : l'iPhone, le PDF sur ordinateur, les affiches d'une fiche ou d'une revendication, les pages du site pour les affiches d'événements très longs.
 
-### Tester « Mes proches à mobiliser » (ajouté le 9 novembre 2026, pas encore compilé)
+### Tester « Mes proches à mobiliser » (ajouté le 9 novembre 2026, compilé le 11 novembre 2026)
 
 Une liste rien qu'à vous, sur votre appareil, de quelques proches que vous aimeriez entraîner avec vous : pour chacun, un surnom, des sujets qui pourraient l'intéresser, la prochaine étape et, si vous voulez, un rappel. **Elle n'est pas encore dans une version installable** : ce guide servira dès qu'elle aura été compilée et sera entrée dans une version de test. Elle marche de la même façon sur le téléphone et sur l'ordinateur, sans serveur. Pour vos essais, prenez des surnoms inventés (par exemple « [EXEMPLE] Tante M. »), jamais le nom d'une vraie personne.
 
