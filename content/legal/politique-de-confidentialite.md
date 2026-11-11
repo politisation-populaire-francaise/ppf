@@ -20,7 +20,7 @@ updated_at: 2026-11-11
 
 [À REMPLIR : responsable du traitement. Tant que l'association n'est pas déclarée, voir la question 1 pour l'avocat ; ensuite, l'association PPF, son adresse et son numéro RNA.]
 
-Contact pour toute question ou demande sur vos données : [À REMPLIR : moyen de contact]. Délégué à la protection des données : [À REMPLIR : désigné ou non ; voir la question 4].
+Contact pour toute question ou demande sur vos données : [À COMPLÉTER : adresse de contact]. Délégué à la protection des données : [À REMPLIR : désigné ou non ; voir la question 4].
 
 ## Ce qui reste sur votre appareil
 
@@ -77,7 +77,7 @@ Quand vous ouvrez un lien vers un autre site, l'application vous prévient d'abo
 
 ## Vos droits
 
-Vous pouvez demander l'accès à vos données, leur rectification, leur effacement, la limitation de leur traitement, vous opposer à un traitement, et récupérer vos données dans un format ouvert (RGPD, articles 15 à 21). Écrivez-nous : [À REMPLIR : moyen de contact]. Nous répondons dans un délai d'un mois, qui peut être prolongé de deux mois pour une demande complexe (article 12).
+Vous pouvez demander l'accès à vos données, leur rectification, leur effacement, la limitation de leur traitement, vous opposer à un traitement, et récupérer vos données dans un format ouvert (RGPD, articles 15 à 21). Écrivez-nous : [À COMPLÉTER : adresse de contact]. Nous répondons dans un délai d'un mois, qui peut être prolongé de deux mois pour une demande complexe (article 12).
 
 Comme nous ne connaissons pas votre identité, nous vous demanderons de prouver que le compte est bien le vôtre, par exemple en signant un message avec votre clé. Si nous ne pouvons pas relier une demande à des données, nous vous le dirons (article 11).
 

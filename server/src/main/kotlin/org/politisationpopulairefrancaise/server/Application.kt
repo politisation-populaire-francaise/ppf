@@ -158,6 +158,7 @@ import org.politisationpopulairefrancaise.web.openDataPage
 import org.politisationpopulairefrancaise.web.verifyPages
 import org.politisationpopulairefrancaise.web.securityPages
 import org.politisationpopulairefrancaise.web.voir.VoirSource
+import org.politisationpopulairefrancaise.web.LegalPages
 import org.politisationpopulairefrancaise.web.webRoutes
 import org.slf4j.LoggerFactory
 import javax.sql.DataSource
@@ -240,6 +241,8 @@ fun main() {
             ExampleSeed.load(examples, EventRepository(dataSource, LegalRegister(PublicationPolicy.fromEnvironment()::isEditor)))
         }
     }
+    // Checked before the server starts: in production, a legal text with a blank left is refused.
+    LegalPages.requireComplete(ServerConfig.environment)
     // Checked before the server starts: a malformed security contact, or none in production, is refused (S-92).
     val securityContact = SecurityContactSetup.fromEnvironment(ServerConfig.environment, ServerConfig.port)
     // Checked before the server starts: a back-office under a wrong or plain-http address is refused.

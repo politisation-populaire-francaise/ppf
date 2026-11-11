@@ -5,6 +5,7 @@ import kotlinx.html.html
 import kotlinx.html.stream.createHTML
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFailsWith
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
@@ -88,5 +89,24 @@ class LegalPagesTest {
         assertEquals("11 novembre 2026", frenchDate("2026-11-11"))
         assertEquals("1er août 2027", frenchDate("2027-08-01"))
         assertEquals("bientôt", frenchDate("bientôt"))
+    }
+
+    @Test
+    fun blanksStopProductionButNotPreproduction() {
+        assertEquals(
+            listOf("[À COMPLÉTER : adresse de contact]", "[À REMPLIR : nom]", "[À CONFIRMER au contrat]", "[À VÉRIFIER avant publication]"),
+            LegalPages.blanksIn(
+                "Contact : [À COMPLÉTER : adresse de contact]. Directeur : [À REMPLIR : nom]. " +
+                    "Lieu : [À CONFIRMER au contrat]. Cookies : [À VÉRIFIER avant publication]. " +
+                    "Base juridique : [À FAIRE PRÉCISER PAR L'AVOCAT, question 2]. Lien : [charte](/charte).",
+            ),
+        )
+        // Today the contact and the publisher are still blank (the owner fills them in).
+        val blanks = LegalPages.blanks()
+        assertTrue(blanks.getValue("mentions-legales.md").any { it.startsWith("[À COMPLÉTER : adresse de contact") }, blanks.toString())
+        LegalPages.requireComplete("development")
+        LegalPages.requireComplete("preproduction")
+        val refused = assertFailsWith<IllegalArgumentException> { LegalPages.requireComplete("production") }
+        assertTrue("mentions-legales.md" in refused.message.orEmpty(), refused.message)
     }
 }

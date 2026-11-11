@@ -12,6 +12,10 @@
 
 Ces fichiers sont hors de la signature des contenus. Au moment de la compilation, ils sont copiés dans les ressources du site (`web/build.gradle.kts`, dossier `legal/`) et servis par `web/.../LegalPages.kt`, avec un lien dans le pied de page de chaque page (emplacement convenu avec la session « Mise en ligne » le 11 novembre 2026). Format : un en-tête (`title`, `summary`, `origin`, `updated_at`) puis le Markdown du rendu de « Comprendre » (titres, listes, citations, liens ; ni tableau ni code).
 
+## Démarrage refusé en production tant qu'un blanc reste
+
+Un blanc s'écrit `[À COMPLÉTER : …]`, `[À REMPLIR : …]`, `[À CONFIRMER …]` ou `[À VÉRIFIER …]`. Tant qu'il en reste un dans ces textes, le serveur refuse de démarrer en production (`LegalPages.requireComplete`, appelé au démarrage) ; il démarre en développement et en préproduction. Les questions pour l'avocat (`[À FAIRE PRÉCISER PAR L'AVOCAT …]`) ne bloquent pas : la bêta ouvre avant sa relecture (feuille de route du MVP 1, décision 1). Le contact est en attente de la propriétaire (adresse `contact@` demandée) ; l'adresse du compte GitHub ne doit pas y être publiée.
+
 ## Blancs que seule la propriétaire peut remplir
 
 1. **Éditeur** tant que l'association n'est pas déclarée : qui (personne physique) en répond, et si elle choisit l'anonymat permis à un éditeur non professionnel (son identité est alors donnée à Hostinger seulement).

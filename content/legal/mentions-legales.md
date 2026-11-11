@@ -15,7 +15,7 @@ Le site politisation-populaire-francaise.org et les applications PPF (Android, o
 - Statut : collectif non encore déclaré ; numéro RNA et adresse du siège : [À REMPLIR après la déclaration en préfecture : numéro RNA, adresse du siège]
 - Personne responsable de l'édition tant que l'association n'est pas déclarée : [À REMPLIR : voir la question 1 pour l'avocat ; si l'éditeur est une personne physique qui édite à titre non professionnel, la loi lui permet de ne publier que l'identité de l'hébergeur, à condition de lui avoir donné ses propres coordonnées]
 - Directeur ou directrice de la publication : [À REMPLIR : nom de la personne]
-- Contact : [À REMPLIR : moyen de contact électronique, par exemple une adresse dédiée ou la clé de messagerie chiffrée de l'équipe ; il servira aussi de point de contact pour les autorités et pour les utilisateurs]
+- Contact : [À COMPLÉTER : adresse de contact ; elle servira aussi de point de contact pour les autorités et pour les utilisateurs]
 - Téléphone : [À REMPLIR, sauf si l'option d'anonymat de l'éditeur non professionnel est retenue]
 
 ## Hébergeur

@@ -48,7 +48,7 @@ Lire ne demande ni compte ni acceptation. Créer un compte, publier, voter, sout
 ## 7. Signaler et contester
 
 - **Signaler** : toute personne, même sans compte, peut signaler un contenu qu'elle estime illicite ou contraire à la charte. Voir la [procédure de signalement](/signaler).
-- **Contester une décision** (la vôtre ou celle prise sur votre signalement) : gratuitement, pendant au moins six mois après la décision, par [À REMPLIR : moyen de contact]. Votre réclamation est examinée par une autre personne que celle qui a décidé, et vous recevez une réponse motivée.
+- **Contester une décision** (la vôtre ou celle prise sur votre signalement) : gratuitement, pendant au moins six mois après la décision, par [À COMPLÉTER : adresse de contact]. Votre réclamation est examinée par une autre personne que celle qui a décidé, et vous recevez une réponse motivée.
 - Vous pouvez aussi saisir un organisme de règlement extrajudiciaire des litiges certifié par l'Arcom, ou la justice.
 
 ## 8. Clôturer son compte

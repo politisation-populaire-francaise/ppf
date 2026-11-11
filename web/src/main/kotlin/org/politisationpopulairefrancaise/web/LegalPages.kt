@@ -29,6 +29,35 @@ object LegalPages {
         LegalPage("/signaler", "procedure-de-signalement.md", "Signaler un contenu"),
     )
 
+    /**
+     * A blank only the owner or the team can fill: « [À COMPLÉTER : …] », « [À REMPLIR …] »,
+     * « [À CONFIRMER …] » or « [À VÉRIFIER …] ». The questions for the lawyer (« [À FAIRE PRÉCISER PAR
+     * L'AVOCAT …] ») are not blanks: the beta opens before the lawyer's review (MVP 1, decision 1).
+     */
+    private val BLANK = Regex("\\[À (COMPLÉTER|REMPLIR|CONFIRMER|VÉRIFIER)\\b[^\\]]*]")
+
+    /** The blanks still in the legal texts, by file, in reading order; a missing file is a blank too. */
+    fun blanks(): Map<String, List<String>> = ALL.associate { page ->
+        val text = load(page)
+        page.file to if (text == null) listOf("(fichier absent)") else blanksIn(text.body)
+    }.filterValues { it.isNotEmpty() }
+
+    /** The blanks of one text, in reading order. */
+    fun blanksIn(body: String): List<String> = BLANK.findAll(body).map { it.value }.toList()
+
+    /**
+     * Refuses to start in production while a legal text has a blank (the contact, the publisher...), so that
+     * no page « [À COMPLÉTER] » is ever served to the public. Development and preproduction start anyway.
+     */
+    fun requireComplete(environment: String) {
+        if (environment != "production") return
+        val blanks = blanks()
+        require(blanks.isEmpty()) {
+            "In production, the legal texts of content/legal must have no blank left: " +
+                blanks.entries.joinToString("; ") { (file, found) -> "$file (${found.size})" }
+        }
+    }
+
     /** The text of [page] from the resources of the site, or null when the file is missing. */
     fun load(page: LegalPage): LegalText? =
         LegalPages::class.java.classLoader.getResourceAsStream("legal/${page.file}")
