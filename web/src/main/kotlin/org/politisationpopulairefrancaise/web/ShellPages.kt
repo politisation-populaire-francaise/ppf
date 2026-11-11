@@ -67,26 +67,35 @@ fun Route.shellPages(
     agenda: AgendaSource? = null,
 ) {
     get(SiteNavigation.HELP_PATH) { call.respondHtml { helpDocument() } }
+    // The site opens on « En direct », as the application does.
+    get("/") {
+        val contents = liveContents(voir, comprendre, decider, agenda)
+        call.respondHtml { liveDocument(contents) }
+    }
     get("/${Space.EN_DIRECT.id}") {
-        val voirCatalog = voir?.catalog()?.takeUnless { it.isEmpty }
-        val today = parisToday()
-        val contents = LiveContents(
-            mobilizations = agenda?.mobilizations(AgendaQuery()).orEmpty().take(LIVE_ITEMS),
-            figures = voirCatalog?.let { catalog ->
-                catalog.keyFigures(VoirAxis.MOUVEMENT).ifEmpty { catalog.indicators }.take(LIVE_FIGURES)
-            }.orEmpty(),
-            facts = voirCatalog?.chronology()?.take(LIVE_ITEMS).orEmpty(),
-            voir = voirCatalog,
-            petitions = decider?.catalog()?.openPetitions(today)?.take(LIVE_ITEMS).orEmpty(),
-            decryptages = comprendre?.catalog()?.decryptages?.take(LIVE_ITEMS)?.mapNotNull { d ->
-                ComprendreLinks.pathOf(d.article)?.let { NavLink(d.article.title, it) }
-            }.orEmpty(),
-        )
+        val contents = liveContents(voir, comprendre, decider, agenda)
         call.respondHtml { liveDocument(contents) }
     }
     appSpaces.forEach { space ->
         get("/${space.id}") { call.respondHtml { appSpaceDocument(space) } }
     }
+}
+
+private suspend fun liveContents(voir: VoirSource?, comprendre: ComprendreSource?, decider: DeciderSource?, agenda: AgendaSource?): LiveContents {
+    val voirCatalog = voir?.catalog()?.takeUnless { it.isEmpty }
+    val today = parisToday()
+    return LiveContents(
+        mobilizations = agenda?.mobilizations(AgendaQuery()).orEmpty().take(LIVE_ITEMS),
+        figures = voirCatalog?.let { catalog ->
+            catalog.keyFigures(VoirAxis.MOUVEMENT).ifEmpty { catalog.indicators }.take(LIVE_FIGURES)
+        }.orEmpty(),
+        facts = voirCatalog?.chronology()?.take(LIVE_ITEMS).orEmpty(),
+        voir = voirCatalog,
+        petitions = decider?.catalog()?.openPetitions(today)?.take(LIVE_ITEMS).orEmpty(),
+        decryptages = comprendre?.catalog()?.decryptages?.take(LIVE_ITEMS)?.mapNotNull { d ->
+            ComprendreLinks.pathOf(d.article)?.let { NavLink(d.article.title, it) }
+        }.orEmpty(),
+    )
 }
 
 // ---------------------------------------------------------------------------------------------

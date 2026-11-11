@@ -131,6 +131,10 @@ fun HTML.siteLayout(pageTitle: String, currentSpace: Space? = null, content: MAI
                     attributes["aria-label"] = "AIDE : urgence, avocat, numéros utiles"
                     +"AIDE"
                 }
+                a(href = SEARCH_PATH, classes = "top-icon") {
+                    icon("search")
+                    span(classes = "top-icon-label") { +"Rechercher" }
+                }
                 topIcon(Space.MESSAGES, currentSpace)
                 topIcon(Space.MON_ESPACE, currentSpace)
             }
