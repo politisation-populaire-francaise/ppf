@@ -24,6 +24,7 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
+import org.politisationpopulairefrancaise.ui.account.AccountTags
 import org.politisationpopulairefrancaise.ui.agir.gather.GatherTags
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ManifestationTags
 import org.politisationpopulairefrancaise.ui.endirect.EnDirectTags
@@ -157,7 +158,9 @@ class FirstLaunchTutorialTest {
         }
         onNodeWithTag(TutorialTags.start(TutorialStart.PRIVACY_SETTINGS)).performScrollTo().performClick()
         waitForIdle()
-        onNodeWithTag(ShellTags.navItem(Space.MON_ESPACE)).assertIsSelected()
+        onNodeWithTag(TutorialTags.SCREEN).assertDoesNotExist()
+        // Mon espace, without an account: its card to create one, above the settings.
+        waitUntil(timeoutMillis = 10_000) { has(AccountTags.CREATE) }
     }
 
     @Test
