@@ -18,6 +18,7 @@ import androidx.compose.ui.test.assertIsNotEnabled
 import androidx.compose.ui.test.hasAnyAncestor
 import androidx.compose.ui.test.hasTestTag
 import androidx.compose.ui.test.onAllNodesWithText
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
@@ -197,7 +198,8 @@ class TimerScreenTest {
                 show(harness, width, dark = width == 700)
                 fillSetup(harness, DURESS)
                 awaitTag(TimerTags.CONFIRM_DIALOG)
-                onNodeWithText("même si votre téléphone est éteint, perdu ou saisi", substring = true).assertExists()
+                // In the confirmation itself (the screen above says it too).
+                onNode(hasText("même si votre téléphone est éteint, perdu ou saisi", substring = true) and hasAnyAncestor(hasTestTag(TimerTags.CONFIRM_DIALOG))).assertExists()
                 assertTrue(harness.transport.delivered.isEmpty(), "nothing leaves before the confirmation at $width dp")
 
                 // « Annuler » first: nothing is armed.

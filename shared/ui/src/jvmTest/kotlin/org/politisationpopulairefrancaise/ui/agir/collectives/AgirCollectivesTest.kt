@@ -16,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performScrollToKey
 import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
@@ -136,6 +137,22 @@ class AgirCollectivesTest {
     private fun ComposeUiTest.awaitTag(tag: String) =
         waitUntil(timeoutMillis = 20_000) { onAllNodesWithTag(tag).fetchSemanticsNodes().isNotEmpty() }
 
+    /**
+     * Waits for a collectif in the directory and scrolls the list to its card: the header and the filters come first,
+     * so on a short window the cards are composed only once scrolled to.
+     */
+    private fun ComposeUiTest.awaitCard(id: String) {
+        waitUntil(timeoutMillis = 20_000) { this@AgirCollectivesTest::library.isInitialized && library.shown.any { it.id == id } }
+        onNodeWithTag(CollectivesTags.LIST).performScrollToKey(id)
+        awaitTag(CollectivesTags.CARD + id)
+    }
+
+    /** Clicks a filter of the directory, after scrolling the list back to its filters. */
+    private fun ComposeUiTest.clickFilter(tag: String) {
+        onNodeWithTag(CollectivesTags.LIST).performScrollToKey("filters")
+        onNodeWithTag(tag).performScrollTo().performClick()
+    }
+
     private fun ComposeUiTest.count(tag: String): Int = onAllNodesWithTag(tag).fetchSemanticsNodes().size
 
     private fun ComposeUiTest.awaitAccount() = waitUntil(timeoutMillis = 20_000) { this@AgirCollectivesTest::session.isInitialized && session.signer != null }
@@ -144,33 +161,33 @@ class AgirCollectivesTest {
     fun theDirectoryShowsOnlyTheCollectivesAndFiltersThemOnTheDevice() = runComposeUiTest {
         val server = server()
         show(RoomsFixtures.withoutAccount(server), voting = null, home = listOf("arm:69384", "com:69123", "epci:200046977", "dep:69"))
-        awaitTag(CollectivesTags.CARD + CYCLISTES)
+        awaitCard(CYCLISTES)
         // The plain rooms of the same directory are not collectifs.
         assertEquals(0, count(CollectivesTags.CARD + RoomsFixtures.SANTE))
         assertTrue(library.shown.none { it.id == RoomsFixtures.LIVREURS })
         // Near the home first (the district, then the town), then by name.
         assertEquals(listOf(CROIX_ROUSSE, CYCLISTES, LECTURE, PARIS_SANTE), library.shown.map { it.id })
 
-        onNodeWithTag(CollectivesTags.THEME + "santé").performClick()
+        clickFilter(CollectivesTags.THEME + "santé")
         waitForIdle()
         assertEquals(listOf(CROIX_ROUSSE, PARIS_SANTE), library.shown.map { it.id })
         assertEquals(0, count(CollectivesTags.CARD + CYCLISTES))
 
-        onNodeWithTag(CollectivesTags.SCOPE + CollectiveScope.QUARTIER.tagValue).performClick()
+        clickFilter(CollectivesTags.SCOPE + CollectiveScope.QUARTIER.tagValue)
         waitForIdle()
         assertEquals(listOf(CROIX_ROUSSE), library.shown.map { it.id })
-        awaitTag(CollectivesTags.CARD + CROIX_ROUSSE)
+        awaitCard(CROIX_ROUSSE)
         assertEquals(0, count(CollectivesTags.CARD + PARIS_SANTE))
 
-        onNodeWithTag(CollectivesTags.CLEAR).performClick()
+        clickFilter(CollectivesTags.CLEAR)
         waitForIdle()
-        onNodeWithTag(CollectivesTags.TYPE + CollectiveType.COMITE.tagValue).performClick()
+        clickFilter(CollectivesTags.TYPE + CollectiveType.COMITE.tagValue)
         waitForIdle()
         assertEquals(listOf(PARIS_SANTE), library.shown.map { it.id })
 
-        onNodeWithTag(CollectivesTags.CLEAR).performClick()
+        clickFilter(CollectivesTags.CLEAR)
         waitForIdle()
-        onNodeWithTag(CollectivesTags.NEAR).performClick()
+        clickFilter(CollectivesTags.NEAR)
         waitForIdle()
         assertEquals(listOf(CROIX_ROUSSE, CYCLISTES), library.shown.map { it.id })
 
@@ -181,7 +198,7 @@ class AgirCollectivesTest {
     @Test
     fun withoutAKnownHomeTheNearMeFilterIsHidden() = runComposeUiTest {
         show(RoomsFixtures.withoutAccount(server()), voting = null)
-        awaitTag(CollectivesTags.CARD + CYCLISTES)
+        awaitCard(CYCLISTES)
         assertEquals(0, count(CollectivesTags.NEAR))
     }
 
@@ -307,6 +324,7 @@ class AgirCollectivesTest {
         awaitAccount()
 
         // A collectif of another member, where the user holds no role: its events, no composer.
+        awaitCard(CYCLISTES)
         onNodeWithTag(CollectivesTags.CARD + CYCLISTES).performClick()
         waitForIdle()
         awaitTag(CollectivesTags.PAGE)
@@ -324,7 +342,7 @@ class AgirCollectivesTest {
         // Its own collectif: the founder proposes an event in its name, through the composer of the agenda.
         onNodeWithTag(CollectivesTags.PAGE_BACK).performClick()
         waitForIdle()
-        awaitTag(CollectivesTags.CARD + LECTURE)
+        awaitCard(LECTURE)
         onNodeWithTag(CollectivesTags.CARD + LECTURE).performClick()
         waitForIdle()
         awaitTag(CollectivesTags.PROPOSE_EVENT)
@@ -341,7 +359,7 @@ class AgirCollectivesTest {
         // A collectif where the user is a moderator: the composers once its public roles are read.
         onNodeWithTag(CollectivesTags.PAGE_BACK).performClick()
         waitForIdle()
-        awaitTag(CollectivesTags.CARD + CROIX_ROUSSE)
+        awaitCard(CROIX_ROUSSE)
         onNodeWithTag(CollectivesTags.CARD + CROIX_ROUSSE).performClick()
         waitForIdle()
         awaitTag(CollectivesTags.PROPOSE_EVENT)
