@@ -76,6 +76,8 @@
     <string name="rv_section_sort">Trier par</string>
     <string name="rv_section_themes">Thèmes</string>
     <string name="rv_section_territory">Territoire</string>
+    <string name="propose_details_show">Ajouter des précisions (facultatif) : pourquoi, ce qui est demandé, ce qui existe</string>
+    <string name="propose_details_hide">Masquer les précisions</string>
     <string name="rv_section_scopes">Où en est-elle, d’où vient-elle</string>
     <string name="rv_view_most_for">Plus de pour</string>
     <string name="rv_view_most_for_desc">Celles qui recueillent le plus de votes Pour.</string>

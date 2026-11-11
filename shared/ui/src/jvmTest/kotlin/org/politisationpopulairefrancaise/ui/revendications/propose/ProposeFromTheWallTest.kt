@@ -70,6 +70,7 @@ class ProposeFromTheWallTest {
 
     private fun ComposeUiTest.fillAndSend() {
         onNodeWithTag(ProposalTags.TITLE).performTextInput(title)
+        if (onAllNodesWithTag(ProposalTags.WHY).fetchSemanticsNodes().isEmpty()) onNodeWithTag(ProposalTags.DETAILS).performScrollTo().performClick()
         onNodeWithTag(ProposalTags.WHY).performScrollTo().performTextInput("Le soir, il ne reste que les urgences.")
         onNodeWithTag(ProposalTags.ASKS).performScrollTo().performTextInput("Une permanence de garde par canton.")
         onNodeWithTag(ProposalTags.THEME + "sante").performScrollTo().performClick()
