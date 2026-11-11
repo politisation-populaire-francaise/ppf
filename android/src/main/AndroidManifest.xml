@@ -38,12 +38,16 @@
 
         <!-- The two entries of the launcher (S-45, « Application discrète »): the usual name and icon,
              or a neutral name and icon without any hint of PPF. One only is enabled at a time, switched
-             by the application (PackageManager.setComponentEnabledSetting); Android 8 (API 26) and later. -->
+             by the application (PackageManager.setComponentEnabledSetting); Android 8 (API 26) and later.
+             The round icon is declared on the usual entry only, never on the application: the neutral entry
+             must not inherit the symbol of PPF. The splash screen of Android 12 and later shows the icon of
+             the entry that was touched, so no splash icon is set in the theme (D-185). -->
         <activity-alias
             android:name=".LauncherDefault"
             android:enabled="true"
             android:exported="true"
             android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher_round"
             android:label="@string/app_name"
             android:targetActivity=".MainActivity">
             <intent-filter>

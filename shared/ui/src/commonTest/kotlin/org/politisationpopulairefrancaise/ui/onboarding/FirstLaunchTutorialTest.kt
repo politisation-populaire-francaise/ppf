@@ -7,6 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
+import androidx.compose.ui.test.assertContentDescriptionContains
 import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.onAllNodesWithTag
@@ -21,6 +22,8 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
+import org.politisationpopulairefrancaise.ui.agir.gather.GatherTags
+import org.politisationpopulairefrancaise.ui.components.SymbolTags
 import org.politisationpopulairefrancaise.ui.endirect.EnDirectTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
@@ -57,6 +60,8 @@ class FirstLaunchTutorialTest {
         show(store)
         onNodeWithTag(TutorialTags.SCREEN).assertIsDisplayed()
         onNodeWithTag(ShellTags.BOTTOM_BAR).assertDoesNotExist()
+        // The first screen presents the platform with its symbol, named for screen readers (D-185).
+        onNodeWithTag(SymbolTags.SYMBOL).assertIsDisplayed().assertContentDescriptionContains("Symbole de Politisation Populaire Française", substring = true)
         val titles = listOf(
             "Reprendre la parole, ensemble",
             "Ici, vous êtes chez vous",
@@ -89,6 +94,8 @@ class FirstLaunchTutorialTest {
         waitForIdle()
         onNodeWithTag(TutorialTags.SCREEN).assertDoesNotExist()
         onNodeWithTag(ShellTags.navItem(Space.AGIR)).assertIsSelected()
+        // Straight on the page « Se réunir » of Agir.
+        waitUntil(timeoutMillis = 10_000) { has(GatherTags.SCREEN) }
         assertTrue(store.seen())
     }
 

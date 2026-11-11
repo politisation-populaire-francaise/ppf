@@ -1,13 +1,18 @@
 {
   "name": "Politisation Populaire Française",
-  "short_name": "PPF",
+  "short_name": "Politisation",
+  "description": "Voir, comprendre, agir, décider. Plateforme citoyenne indépendante, sans lien avec l’État ni le gouvernement.",
   "lang": "fr",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#fcfaf8",
-  "theme_color": "#9e2a3a",
+  "background_color": "#F3F5FB",
+  "theme_color": "#2B3A8F",
   "icons": [
-    { "src": "/static/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+    { "src": "/static/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/static/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/static/icon-maskable-192.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
+    { "src": "/static/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ]
 }

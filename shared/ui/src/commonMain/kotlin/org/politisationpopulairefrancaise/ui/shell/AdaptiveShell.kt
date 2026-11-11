@@ -88,6 +88,7 @@ import org.politisationpopulairefrancaise.ui.account.MailboxSetting
 import org.politisationpopulairefrancaise.ui.account.MySpaceScreen
 import org.politisationpopulairefrancaise.ui.account.rememberAccountSession
 import org.politisationpopulairefrancaise.ui.account.rememberMailboxSetting
+import org.politisationpopulairefrancaise.ui.agir.AgirRoute
 import org.politisationpopulairefrancaise.ui.agir.AgirScreen
 import org.politisationpopulairefrancaise.ui.agir.AgirPlugged
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaLibrary
@@ -127,8 +128,10 @@ import org.politisationpopulairefrancaise.ui.components.NavSubRow
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.Wordmark
 import org.politisationpopulairefrancaise.ui.components.AdaptiveWordmark
+import org.politisationpopulairefrancaise.ui.components.PpfSymbol
 import org.politisationpopulairefrancaise.ui.onboarding.FirstLaunchTutorial
 import org.politisationpopulairefrancaise.ui.onboarding.ProvideTutorial
+import org.politisationpopulairefrancaise.ui.onboarding.TutorialStart
 import org.politisationpopulairefrancaise.ui.onboarding.TutorialState
 import org.politisationpopulairefrancaise.ui.onboarding.rememberTutorialState
 import org.politisationpopulairefrancaise.ui.components.avatarLetters
@@ -261,6 +264,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val security = rememberDeviceSecurity(dependencies)
     // The tutorial of the first launch (D-211, D-216), seen again from Mon espace and the AIDE sheet.
     val tutorial = rememberTutorialState(dependencies.tutorial)
+    // A rubric of "Agir" asked by the shell (« m'allier » of the tutorial opens « Se réunir »), forgotten once applied.
+    var agirRoute by remember { mutableStateOf<AgirRoute?>(null) }
     RegisterErasable(dependencies, TutorialState.ERASABLE_ID) { dependencies.tutorial?.forget() }
     // The quick erase (S-44): the keys, with what « Effacer mes clés » already forgets (D-032, D-039), and the rally point.
     RegisterErasable(dependencies, "core-identity") {
@@ -418,6 +423,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     callsLibrary = callsLibrary,
                     testimonyLibrary = testimonyLibrary,
                     proches = proches,
+                    agirRoute = agirRoute,
+                    onAgirRouteHandled = { agirRoute = null },
                     mailboxSetting = mailboxSetting,
                     notificationsSettings = notificationsSettings,
                     windowClass = windowClass,
@@ -429,9 +436,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 when {
                     // The tutorial takes the whole window; « Passer » or the end lead to « En direct » or to the chosen space.
                     tutorial.isOpen -> FirstLaunchTutorial(
-                        onFinish = { space ->
+                        onFinish = { choice ->
                             tutorial.finish()
-                            navigate(space ?: Space.default)
+                            if (choice == TutorialStart.ALLY) agirRoute = AgirRoute.GATHER
+                            navigate(choice?.space ?: Space.default)
                         },
                         modifier = Modifier.fullWindowSafeArea(),
                     )
@@ -471,6 +479,8 @@ private fun SpaceContent(
     callsLibrary: CallsLibrary,
     testimonyLibrary: TestimonyLibrary,
     proches: ProchesState,
+    agirRoute: AgirRoute?,
+    onAgirRouteHandled: () -> Unit,
     mailboxSetting: MailboxSetting,
     notificationsSettings: NotificationsSettingsState?,
     windowClass: WindowClass,
@@ -500,6 +510,8 @@ private fun SpaceContent(
                 dependencies, contentLibrary, accountSession, windowClass, modifier, onNavigate,
                 organisations = organisationsLibrary,
                 groups = groupsLibrary,
+                requestedRoute = agirRoute,
+                onRouteRequestHandled = onAgirRouteHandled,
                 agenda = { slotModifier, onBack ->
                     AgirPlugged(stringResource(Res.string.agenda_in_agir_title), onBack, slotModifier) { inner ->
                         AgendaScreen(
@@ -826,7 +838,12 @@ private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifi
 private fun MoreMenu(selected: Space, onSelect: (Space) -> Unit) {
     Column(Modifier.fillMaxHeight()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
-            Wordmark(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), large = true)
+            // The symbol of PPF and its full name, at the head of the menu (D-185).
+            Row(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), verticalAlignment = Alignment.CenterVertically) {
+                PpfSymbol(40.dp, decorative = true)
+                Spacer(Modifier.width(10.dp))
+                Wordmark(large = true)
+            }
             Spacer(Modifier.height(16.dp))
             MoreRows(selected, onSelect)
             SearchSoonRow()
@@ -987,7 +1004,11 @@ private fun DesktopTopBar(account: AccountUiState.Ready?, bell: Bell?, selected:
             modifier = Modifier.fillMaxWidth().topBarSafeArea().height(PpfTheme.dimens.desktopTopBarHeight).padding(start = 24.dp, end = 16.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            Wordmark(Modifier.width(PpfTheme.dimens.sideBarWidth - 32.dp), large = true)
+            Row(Modifier.width(PpfTheme.dimens.sideBarWidth - 32.dp), verticalAlignment = Alignment.CenterVertically) {
+                PpfSymbol(36.dp, decorative = true)
+                Spacer(Modifier.width(10.dp))
+                Wordmark(large = true)
+            }
             Spacer(Modifier.width(16.dp))
             Row(
                 modifier = Modifier.weight(1f).widthIn(max = 560.dp).heightIn(min = PpfTheme.dimens.touchTarget)
