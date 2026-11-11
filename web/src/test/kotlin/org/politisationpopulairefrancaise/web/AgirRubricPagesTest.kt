@@ -17,7 +17,7 @@ class AgirRubricPagesTest {
         val html = createHTML().html { engagerDocument(CivilDate(2026, 11, 11), catalog = null) }
         assertTrue(html.indexOf("Étape 1 : s’inscrire") in 0 until html.indexOf("Étape 2"), "registering first")
         assertTrue(html.contains("href=\"https://www.service-public.gouv.fr/particuliers/vosdroits/R51788\" rel=\"noopener noreferrer nofollow external\""))
-        assertTrue(html.contains("Prochaine échéance : dernier jour pour s’inscrire"))
+        assertTrue(html.contains("Prochaine échéance : </strong>dernier jour pour s’inscrire"))
         assertTrue(html.contains("href=\"/comprendre/fiches/constituer-une-liste-citoyenne\""))
         assertTrue(html.contains("L52-8"))
         assertFalse(html.contains("<script"))

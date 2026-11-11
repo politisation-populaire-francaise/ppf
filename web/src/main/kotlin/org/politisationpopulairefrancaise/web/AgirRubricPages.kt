@@ -45,6 +45,7 @@ import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreCatalog
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
+import org.politisationpopulairefrancaise.web.comprendre.parisToday
 
 /** Where the page of the collectifs reads the listed collectifs (public or private, never secret), filtered by territory. */
 fun interface CollectivesSource {
@@ -78,16 +79,25 @@ private fun coursePath(slug: String) = "${ComprendreLinks.HOME}/${ComprendreLink
  * of the practical guides; without it, the links keep their slug.
  */
 fun Route.agirRubricPages(comprendre: ComprendreSource?, collectives: CollectivesSource?, funds: FundsSource?) {
-    get(AgirSitePaths.ENGAGER) { call.respondHtml { engagerDocument(parisToday(), comprendre?.catalog()) } }
+    get(AgirSitePaths.ENGAGER) {
+        val catalog = comprendre?.catalog()
+        call.respondHtml { engagerDocument(parisToday(), catalog) }
+    }
     get(AgirSitePaths.KITS) {
         val goal = call.request.queryParameters["but"]?.let { id -> KitGoal.entries.firstOrNull { it.id == id } }
         val offline = call.request.queryParameters["sans-reseau"] == "1"
-        call.respondHtml { kitsDocument(goal, offline, comprendre?.catalog()) }
+        val catalog = comprendre?.catalog()
+        call.respondHtml { kitsDocument(goal, offline, catalog) }
     }
-    get(AgirSitePaths.SOLIDARITY) { call.respondHtml { solidarityDocument(funds?.funds(), comprendre?.catalog()) } }
+    get(AgirSitePaths.SOLIDARITY) {
+        val list = funds?.funds()
+        val catalog = comprendre?.catalog()
+        call.respondHtml { solidarityDocument(list, catalog) }
+    }
     get(AgirSitePaths.COLLECTIVES) {
         val territory = call.request.queryParameters["territoire"]?.trim()?.take(MAX_TERRITORY)?.takeIf { it.isNotEmpty() }
-        call.respondHtml { collectivesDocument(territory, collectives?.collectives(territory)) }
+        val list = collectives?.collectives(territory)
+        call.respondHtml { collectivesDocument(territory, list) }
     }
 }
 

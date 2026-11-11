@@ -45,5 +45,5 @@ fun fundsSource(events: EventRepository, isEditor: (String) -> Boolean): FundsSo
 
 /** The collectifs of the site (`/agir/collectifs`): the rooms described as collectifs, filtered by territory as for the rooms. */
 fun collectivesSource(groups: GroupDirectory): CollectivesSource = CollectivesSource { territory ->
-    withContext(Dispatchers.IO) { groups.search(null, territory, GroupDirectory.MAX_LIMIT) }.mapNotNull(Collective::from)
+    withContext(Dispatchers.IO) { groups.search(null, territory, GroupDirectory.MAX_LIMIT) }.mapNotNull { Collective.from(it.event) }
 }
