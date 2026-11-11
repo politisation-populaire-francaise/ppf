@@ -18,8 +18,8 @@
     <string name="tutorial_home_text">Pas besoin de compte pour lire. Aucun traceur, aucune publicité. Pour participer, un pseudonyme suffit : ni nom, ni téléphone, ni e-mail. Vos votes ne sont jamais reliés à vous.</string>
 
     <string name="tutorial_act_title">Agir près de chez vous</string>
-    <string name="tutorial_act_text">Trouvez une manifestation, une grève ou une action, et rejoignez-la. Tenez dans la durée grâce aux caisses de grève et à l’entraide. La carte montre les manifestations et les rassemblements annoncés.</string>
-    <string name="tutorial_act_soon">Les rues bloquées sur la carte. Convaincre vos proches. S’engager en politique, à commencer par l’inscription sur les listes électorales.</string>
+    <string name="tutorial_act_text">Trouvez une manifestation, une grève ou une action, et rejoignez-la. Tenez dans la durée grâce aux caisses de grève et à l’entraide. Mobilisez vos proches et engagez-vous en politique, à commencer par l’inscription sur les listes électorales. La carte montre les manifestations et les rassemblements annoncés.</string>
+    <string name="tutorial_act_soon">Les rues bloquées sur la carte.</string>
 
     <string name="tutorial_gather_title">Se réunir</string>
     <string name="tutorial_gather_text">Rejoignez un collectif, une association ou un syndicat près de chez vous, ou créez le vôtre. Échangez dans les salons publics et par messages privés chiffrés.</string>
