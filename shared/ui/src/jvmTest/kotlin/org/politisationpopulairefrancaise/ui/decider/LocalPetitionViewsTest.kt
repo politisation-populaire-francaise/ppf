@@ -70,7 +70,7 @@ class LocalPetitionViewsTest {
     fun withoutACommuneChosenNoLocalPetitionIsShown() = runComposeUiTest {
         show()
         // The other contents of « Décider » are read: the local petition is not among them.
-        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(DeciderTags.card("petition-an-ordre-public")).fetchSemanticsNodes().isNotEmpty() }
+        waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(DeciderTags.card("petition-an-5103")).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithTag(DeciderTags.card(SLUG)).assertDoesNotExist()
         onNodeWithTag(DeciderTags.section("petitions-locales")).assertDoesNotExist()
     }

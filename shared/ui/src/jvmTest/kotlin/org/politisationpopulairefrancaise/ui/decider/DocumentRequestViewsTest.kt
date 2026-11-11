@@ -36,7 +36,7 @@ class DocumentRequestViewsTest {
         val store = DocumentRequestStore(JvmDatabase.inMemory())
         setContent {
             PpfTheme {
-                Box(Modifier.requiredSize(420.dp, 900.dp).verticalScroll(rememberScrollState())) {
+                Box(Modifier.requiredSize(420.dp, 760.dp).verticalScroll(rememberScrollState())) {
                     DocumentRequestPage(store, reminders = null, today = today)
                 }
             }
