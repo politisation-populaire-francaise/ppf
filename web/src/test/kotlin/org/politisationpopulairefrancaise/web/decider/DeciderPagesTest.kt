@@ -105,7 +105,7 @@ class DeciderPagesTest {
         val board = org.politisationpopulairefrancaise.core.decider.DeliberationBoard.from(listOf(deliberation, proposition, amendment)) { it == team }.single()
 
         val home = render { deciderHomeDocument(catalog, today, listOf(board), 2500) }
-        assertTrue(home.contains("href="/decider/deliberations/pacte-exemple""))
+        assertTrue(home.contains("href=\"/decider/deliberations/pacte-exemple\""))
         val html = render { deliberationDocument(board, 2500) }
         checkPage(html)
         assertTrue(html.contains("Étape en cours : Amendements"))
