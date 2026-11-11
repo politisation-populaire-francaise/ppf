@@ -26,5 +26,6 @@ Cœur : `EvidenceLockerTest`, `HarassmentReportsTest`, `EvidenceVaultTest` (29 t
 ## 4. Reste à faire
 
 - Guide `harcelement-en-ligne-et-divulgation` (demandé à la session Comprendre) : sans lui, le lien du kit dit honnêtement que le guide n'est pas encore là.
+- Règlement (UE) 2022/2065, article 16 : la structure de la notification (explication étayée, adresse exacte, nom et adresse électronique, déclaration de bonne foi, accusé de réception, décision avec voies de recours) a été recoupée le 11 novembre 2026 sur des commentaires du texte ; le texte officiel n'a pas pu être relu sur EUR-Lex ce jour-là : à relire avant l'ouverture publique.
 - Relecture par un avocat des trois modèles et des qualifications citées (code pénal, harcèlement en ligne et divulgation d'informations personnelles), avant l'ouverture publique.
 - « Prévenir mon cercle » avec les cercles (M28) ; vidéo des preuves avec celle de la caméra protégée.

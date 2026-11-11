@@ -153,6 +153,8 @@ Reporté par la propriétaire (7 novembre 2026) : rien n'est bloqué en attendan
 
 ## À faire relire par un avocat avant l'ouverture publique
 
+- Kit contre le harcèlement (AG-59, D-230) : les trois modèles de signalement (plateforme au titre de l'article 16 du règlement sur les services numériques, dont le texte officiel reste à relire sur EUR-Lex ; PHAROS ; plainte au procureur) et les qualifications citées (code pénal, articles 222-33-2-2 et 223-1-1).
+
 - Appels à bloquer (D-199, 11 novembre 2026) : l'encadré juridique du formulaire et de l'appel (code de la route, article L412-1 ; code pénal, article 431-1), la charte de ces appels, la relecture systématique avant publication et la question du statut d'éditeur de PPF pour les appels ainsi relus.
 - « S'engager en politique » (D-196, D-213) : l'outil ouvert à toutes les listes et à tous les partis aux mêmes conditions au regard de l'article L52-8 du code électoral (à faire confirmer aussi par la CNCCFP).
 Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture juridique à la fin.
