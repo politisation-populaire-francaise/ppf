@@ -16,6 +16,8 @@
     <string name="live_block_chiffres">Chiffres clés</string>
     <string name="live_block_parlement">Cette semaine au Parlement</string>
     <string name="live_block_rappels">Mes rappels</string>
+    <string name="live_block_cap">Le cap du mouvement</string>
+    <string name="live_block_elus">Mes élus</string>
     <string name="live_block_actu">L’actu de PPF</string>
     <string name="live_block_chronologie">Chronologie du mouvement</string>
 
@@ -48,4 +50,9 @@
     <string name="live_calls_due">Avant le %1$s</string>
     <string name="live_reminders_none">Aucun rappel prévu. Ils se posent depuis l’agenda, les élections, les consultations et les pétitions.</string>
     <string name="live_reminder_due">Le %1$s</string>
+    <string name="live_cap_none">Aucun texte publié pour l’instant.</string>
+    <string name="live_cap_read">Lire le texte</string>
+    <string name="live_elus_choose">Choisissez votre commune pour voir vos élus, de la mairie au Parlement européen.</string>
+    <string name="live_elus_count">%1$d élus, de la mairie au Parlement européen</string>
+    <string name="live_elus_open">Voir mes élus</string>
 </resources>

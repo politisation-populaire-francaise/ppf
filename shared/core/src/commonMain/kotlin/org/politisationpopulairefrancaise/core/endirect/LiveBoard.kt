@@ -23,6 +23,10 @@ enum class LiveBlock(val id: String) {
     PARLIAMENT("parlement"),
     /** My personal reminders, kept on the device. */
     REMINDERS("rappels"),
+    /** The latest text of « Le cap du mouvement » (Comprendre). */
+    CAP("cap"),
+    /** My elected officials, from the commune chosen in Comprendre. */
+    ELUS("mes-elus"),
     /** The latest posts of PPF. */
     NEWS("actu"),
     /** The latest facts of the chronology. */
@@ -38,7 +42,7 @@ enum class LiveBlock(val id: String) {
 enum class LivePreset(val id: String, val blocks: List<LiveBlock>) {
     ESSENTIEL(
         "essentiel",
-        listOf(LiveBlock.LIVE, LiveBlock.ALERTS, LiveBlock.DECIDER, LiveBlock.FIGURES, LiveBlock.UPCOMING, LiveBlock.CALLS, LiveBlock.PARLIAMENT, LiveBlock.HEADLINE, LiveBlock.NEWS, LiveBlock.CHRONOLOGY),
+        listOf(LiveBlock.LIVE, LiveBlock.ALERTS, LiveBlock.DECIDER, LiveBlock.FIGURES, LiveBlock.UPCOMING, LiveBlock.CALLS, LiveBlock.PARLIAMENT, LiveBlock.HEADLINE, LiveBlock.CAP, LiveBlock.NEWS, LiveBlock.CHRONOLOGY),
     ),
     MOBILISATION(
         "mobilisation",
@@ -46,11 +50,11 @@ enum class LivePreset(val id: String, val blocks: List<LiveBlock>) {
     ),
     POLITIQUE(
         "politique",
-        listOf(LiveBlock.ALERTS, LiveBlock.PARLIAMENT, LiveBlock.DECIDER, LiveBlock.HEADLINE, LiveBlock.CHRONOLOGY, LiveBlock.NEWS),
+        listOf(LiveBlock.ALERTS, LiveBlock.PARLIAMENT, LiveBlock.ELUS, LiveBlock.DECIDER, LiveBlock.HEADLINE, LiveBlock.CAP, LiveBlock.CHRONOLOGY, LiveBlock.NEWS),
     ),
     PRES_DE_CHEZ_MOI(
         "pres-de-chez-moi",
-        listOf(LiveBlock.UPCOMING, LiveBlock.CALLS, LiveBlock.LIVE, LiveBlock.ALERTS, LiveBlock.REMINDERS),
+        listOf(LiveBlock.UPCOMING, LiveBlock.CALLS, LiveBlock.ELUS, LiveBlock.LIVE, LiveBlock.ALERTS, LiveBlock.REMINDERS),
     ),
     ;
 

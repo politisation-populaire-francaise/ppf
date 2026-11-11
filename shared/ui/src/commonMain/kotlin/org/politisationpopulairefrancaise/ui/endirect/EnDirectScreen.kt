@@ -111,6 +111,10 @@ fun EnDirectScreen(
     calls: (@Composable (Modifier) -> Unit)? = null,
     /** « Mes rappels », filled by `RemindersBlock`; the block is not offered when null. */
     reminders: (@Composable (Modifier) -> Unit)? = null,
+    /** « Le cap du mouvement », filled by `LatestCapBlock`; not offered when null. */
+    cap: (@Composable (Modifier) -> Unit)? = null,
+    /** « Mes élus », filled by `MyElusBlock`; not offered when null. */
+    elus: (@Composable (Modifier) -> Unit)? = null,
     /** Asks every source of the page for its news; no button when null. */
     onRefresh: (() -> Unit)? = null,
 ) {
@@ -239,6 +243,8 @@ fun EnDirectScreen(
             put(LiveBlock.FIGURES, figuresBlock)
             parliamentWeek?.let { slot -> put(LiveBlock.PARLIAMENT) { slot(Modifier.fillMaxWidth()) } }
             reminders?.let { slot -> put(LiveBlock.REMINDERS) { Section(stringResource(Res.string.live_block_rappels), LiveBoardTags.block(LiveBlock.REMINDERS)) { slot(Modifier.fillMaxWidth()) } } }
+            cap?.let { slot -> put(LiveBlock.CAP) { Section(stringResource(Res.string.live_block_cap), LiveBoardTags.block(LiveBlock.CAP)) { slot(Modifier.fillMaxWidth()) } } }
+            elus?.let { slot -> put(LiveBlock.ELUS) { Section(stringResource(Res.string.live_block_elus), LiveBoardTags.block(LiveBlock.ELUS)) { slot(Modifier.fillMaxWidth()) } } }
             put(LiveBlock.NEWS, newsBlock)
             put(LiveBlock.CHRONOLOGY, chronologyBlock)
         }
