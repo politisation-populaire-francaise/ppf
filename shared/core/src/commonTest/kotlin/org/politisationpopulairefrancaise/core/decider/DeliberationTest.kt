@@ -29,7 +29,7 @@ class DeliberationTest {
     private suspend fun deliberation(tags: List<List<String>> = phases(), measures: List<String> = listOf("ppf-measures", "5", "10")): SignedEvent =
         team.sign(
             kind = EventKinds.LONG_FORM_ARTICLE,
-            tags = listOf(listOf("d", "pacte-2027"), listOf("ppf-type", "deliberation"), listOf("title", "[EXEMPLE] Pacte démocratique 2027"), measures) + tags,
+            tags = listOf(listOf("d", "pacte-2027"), listOf("ppf-type", "deliberation"), listOf("title", "[EXEMPLE] Constitution Citoyenne et Démocratique 2027"), measures) + tags,
             content = "[EXEMPLE] Délibération sur les mesures de la Constitution Citoyenne et Démocratique.",
             createdAt = start - 86_400,
         )
@@ -65,7 +65,7 @@ class DeliberationTest {
     @Test
     fun aDeliberationIsDatedTheSameForEveryone() = runTest {
         val deliberation = assertNotNull(Deliberation.parse(deliberation()))
-        assertEquals("[EXEMPLE] Pacte démocratique 2027", deliberation.title)
+        assertEquals("[EXEMPLE] Constitution Citoyenne et Démocratique 2027", deliberation.title)
         assertEquals(5 to 10, deliberation.minMeasures to deliberation.maxMeasures)
         assertNull(deliberation.phaseAt(start - 1))
         assertEquals(DeliberationPhase.PROPOSITIONS, deliberation.phaseAt(start))
