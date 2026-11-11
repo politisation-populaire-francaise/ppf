@@ -17,3 +17,12 @@ dependencies {
 
     testImplementation(kotlin("test"))
 }
+
+// The legal texts (content/legal, outside the signed contents) become resources of the site under legal/.
+tasks.processResources {
+    from(rootProject.layout.projectDirectory.dir("content/legal")) {
+        include("*.md")
+        exclude("README.md")
+        into("legal")
+    }
+}
