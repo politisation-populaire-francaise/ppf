@@ -177,6 +177,7 @@ Tout passe par le wrapper Gradle (`gradlew.bat` sous Windows, `./gradlew` ailleu
 | Besoin | Commande |
 |---|---|
 | Tout compiler et lancer tous les tests | `gradlew build` |
+| Contrôle rapide avant d'entrer dans `main` (tous les tests, version d'essai Android, bureau ; sans publication, iOS ni lint complet), puis les trois scripts de vérification | `gradlew ppfGate --continue` |
 | APK de test à envoyer sur un téléphone (version d'essai non débogable, signature de test partagée) | `gradlew :android:assemblePreview` puis `android/build/outputs/apk/preview/android-preview.apk` |
 | APK de développement (débogable, ordinateur seulement, jamais envoyé sur un téléphone) | `gradlew :android:assembleDebug` puis `android/build/outputs/apk/debug/` |
 | Application de bureau, lancement direct | `gradlew :desktop:run` |

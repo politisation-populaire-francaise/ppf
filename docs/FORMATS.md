@@ -354,7 +354,7 @@ Publiée seulement par une clé de l'équipe éditoriale. `content` : la présen
 
 **Organisation vérifiée** : une clé nommée en `p` d'une fiche signée par une clé éditoriale de confiance (`PPF_EDITOR_KEYS` sur le serveur, `EditorialTrust` sur l'appareil). La fiche la plus récente décrit la clé (à date égale, le plus petit identifiant) ; une nouvelle version sans `p` retire la vérification, de même qu'une version `ppf-org-status` = `revoquee` qui garde sa clé `p` : celle-ci n'est plus vérifiée, ni sur l'appareil (`VerifiedOrganisations.revocationFor` rend la fiche révoquée) ni sur le serveur (le cache est oublié dès le stockage de la fiche). Transparence : la fiche révoquée n'est jamais effacée en silence ; elle perd son badge « Vérifiée », sort de la liste par défaut de l'annuaire (filtre « Inclure les vérifications retirées ») et sa page, ouverte par un lien, affiche « Vérification retirée par PPF le … » (date de la version révoquée, heure de Paris). Republier la fiche avec `verifiee` ou sans l'étiquette rétablit la vérification. Les écrans des fiches pratiques n'affichent jamais ces fiches.
 
-## 4 septies. Espace « Décider » : pétitions, Pacte démocratique, réponses (D-059, D-060)
+## 4 septies. Espace « Décider » : pétitions, Constitution Citoyenne et Démocratique, réponses (D-059, D-060)
 
 Même principe que « Voir » : des événements NIP-23 (type 30023) signés par l'équipe éditoriale, avec `ppf-type`, un corps Markdown et des étiquettes structurées (champs positionnels, champ vide = inconnu). Les étiquettes communes `ppf-source`, `ppf-archive`, `ppf-correction`, `ppf-next` et les liens `a` gardent leur sens. Contenus intégrés : `decider.json`. Signés par la plateforme, ces contenus relèvent de l'usage `decider.pacte` (section 4 decies), qui accepte exactement un `ppf-type` parmi `pacte`, `engagement`, `petition` et `proposition-finale` (texte final d'une délibération, format à décrire par « Décider ») ; ces quatre types ne sont jamais ceux d'un contenu éditorial.
 
@@ -373,7 +373,7 @@ Même principe que « Voir » : des événements NIP-23 (type 30023) signés par
 | `ppf-milestone` | Étape franchie : `date`, `libellé` |
 | `a` rôle `texte` | Le texte de loi de « Voir » concerné |
 
-### Pacte (`ppf-type` = `pacte`)
+### Constitution Citoyenne et Démocratique (`ppf-type` = `pacte`)
 
 | Étiquette | Contenu |
 |---|---|
@@ -389,9 +389,9 @@ Empreinte du texte envoyé : SHA-256 (hexadécimal) du texte `ppf-pacte-v1\n`, p
 
 | Étiquette | Contenu |
 |---|---|
-| `a` rôle `pacte` | Le Pacte (un seul) |
+| `a` rôle `pacte` | La Constitution Citoyenne et Démocratique (un seul) |
 | `a` rôle `candidat` | Le candidat (un seul) |
-| `ppf-pacte-text` | Empreinte du texte répondu ; la réponse ne compte que si elle est égale à celle du Pacte |
+| `ppf-pacte-text` | Empreinte du texte répondu ; la réponse ne compte que si elle est égale à celle de la Constitution Citoyenne et Démocratique |
 | `ppf-received` | Jour de réception (obligatoire) |
 | `ppf-answer` | `identifiant de mesure`, `signe` ou `refuse`, `commentaire` (facultatif) ; une seule par mesure |
 | `ppf-archive` | Document reçu : `empreinte SHA-256`, `preuve d'horodatage`, `adresse de l'archive`, `date` |
@@ -402,7 +402,7 @@ Suivi après l'élection : un fait de « Voir » porte `a` rôle `pacte` et `ppf
 
 | Étiquette | Contenu |
 |---|---|
-| `ppf-election` | `identifiant`, `libellé`, `premier tour (AAAA-MM-JJ, facultatif)` (comme le Pacte) |
+| `ppf-election` | `identifiant`, `libellé`, `premier tour (AAAA-MM-JJ, facultatif)` (comme la Constitution Citoyenne et Démocratique) |
 | `ppf-theme` | Un thème, dans l'ordre de la grille (répétée, 1 à 20, distincts) ; identifiants des thèmes des revendications |
 | `a` rôle `candidat` | Chaque candidat : sa fiche de « Voir » |
 | `ppf-round` | Un tour (répétée, numéros distincts) : `numéro`, `jour du vote en métropole`, `premier jour de vote (outre-mer, facultatif, au plus 2 jours avant)`, `fermeture des derniers bureaux (HH:MM, heure de Paris, facultatif : 20:00)`. Fixe le gel (`ElectionRound`) ; un tour illisible fait refuser toute la fiche, jamais ignorer |
@@ -420,7 +420,7 @@ Règle d'entrée (décision de la propriétaire, Q1 option B ; `ComparatorSheet.
 
 | Étiquette | Contenu |
 |---|---|
-| `ppf-election` | `identifiant`, `libellé` (le même que le Pacte et le comparateur de cette élection) |
+| `ppf-election` | `identifiant`, `libellé` (le même que la Constitution Citoyenne et Démocratique et le comparateur de cette élection) |
 | `ppf-election-status` | `annoncee` (dates annoncées, décret attendu) ou `convoquee` (décret publié) |
 | `ppf-decree` | Le décret de convocation : `numéro`, `jour du Journal officiel`, `page sur Légifrance (https)` ; obligatoire pour `convoquee`, interdit pour `annoncee` |
 | `ppf-round` | Les tours, au format du comparateur (au moins un) |

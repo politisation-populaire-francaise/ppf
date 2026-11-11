@@ -2,7 +2,7 @@
 
 - Pôle « Décider », 7 novembre 2026. Refondue le même soir sur les décisions de la propriétaire (D-115, section 8) : prête à coder.
 - Sources : cahier fonctionnel 2.0, M13.5 (DE-25, DE-08, DE-04) ; décision de la propriétaire D-062 (« c'est le peuple qui doit la modifier et la valider via notre appli ») ; conception du vote, section 11 (`docs/integration/une-personne-une-voix.md`) ; contrat `core/urne` (`docs/integration/urne-contrat.md`).
-- Premier usage : les mesures du Pacte démocratique pour la présidentielle de 2027, ouvertes au plus tard en janvier 2027 ; puis les modalités des campagnes. Le même module servira au Programme du peuple (DE-03), aux cahiers de doléances (DE-02) et aux votations (M13.6).
+- Premier usage : les mesures de la Constitution Citoyenne et Démocratique pour la présidentielle de 2027, ouvertes au plus tard en janvier 2027 ; puis les modalités des campagnes. Le même module servira au Programme du peuple (DE-03), aux cahiers de doléances (DE-02) et aux votations (M13.6).
 
 ## 1. Ce que la délibération doit garantir
 
@@ -31,7 +31,7 @@ Les propositions et amendements passent par la même file de relecture que les r
 | 2. Amendements | 2 semaines | On propose une autre rédaction d'une proposition ; on vote sur chaque amendement | Une urne par amendement : `pour`, `contre`, `blanc` |
 | 3. Vote final | 2 semaines | Chaque mesure, dans sa rédaction retenue, est soumise au vote | Une urne par mesure (méthode : section 8, Q1) |
 
-Calendrier pour le Pacte : ouverture en décembre 2026 dès que le module est prêt, au plus tard début janvier 2027 ; sept semaines en tout ; envoi du Pacte aux candidats ensuite (même jour, même délai pour tous, DE-08). Les dates exactes seront fixées avec le calendrier officiel de l'élection, à vérifier auprès des sources officielles.
+Calendrier pour la Constitution Citoyenne et Démocratique : ouverture en décembre 2026 dès que le module est prêt, au plus tard début janvier 2027 ; sept semaines en tout ; envoi de la Constitution Citoyenne et Démocratique aux candidats ensuite (même jour, même délai pour tous, DE-08). Les dates exactes seront fixées avec le calendrier officiel de l'élection, à vérifier auprès des sources officielles.
 
 ## 4. Du vote des amendements au texte final (mécanique, sans choix de l'équipe)
 
@@ -45,16 +45,16 @@ Calendrier pour le Pacte : ouverture en décembre 2026 dès que le module est pr
 ## 5. Le résultat du vote final
 
 - Chaque mesure est votée `pour`, `contre` ou `blanc`.
-- Le Pacte réunit les **5 à 10 mesures les plus soutenues parmi celles qui ont plus de `pour` que de `contre`** (option A de la propriétaire ; `MeasureSelection` dans `core/decider`). À égalité de soutiens, le moins de `contre`, puis l'ordre de la délibération. Le seuil national de soutiens (D-115) n'est pas exigé : le Pacte est lui-même le moyen de porter ces mesures aux candidats. S'il y en a moins de 5, la délibération le dit et l'équipe ne complète pas la liste elle-même.
+- La Constitution Citoyenne et Démocratique réunit les **5 à 10 mesures les plus soutenues parmi celles qui ont plus de `pour` que de `contre`** (option A de la propriétaire ; `MeasureSelection` dans `core/decider`). À égalité de soutiens, le moins de `contre`, puis l'ordre de la délibération. Le seuil national de soutiens (D-115) n'est pas exigé : la Constitution Citoyenne et Démocratique est elle-même le moyen de porter ces mesures aux candidats. S'il y en a moins de 5, la délibération le dit et l'équipe ne complète pas la liste elle-même.
 - Aucun seuil de participation : la participation est affichée à côté de chaque résultat.
-- La liste retenue devient le Pacte : même texte (empreinte), envoi, tableau public (D-060, D-062).
+- La liste retenue devient la Constitution Citoyenne et Démocratique : même texte (empreinte), envoi, tableau public (D-060, D-062).
 
 ## 6. Côté technique (aperçu)
 
 - Serveur : comme les revendications (`RevendicationUrnes`), une tâche ouvre et ferme les urnes selon les phases publiées : `decider:deliberation:soutien:<adresse>`, `decider:deliberation:amendement:<adresse>`, `decider:deliberation:final:<adresse>` ; `closesAt` = fin de la phase (connue à l'ouverture, sans clôture anticipée). Aucune donnée nouvelle sur les personnes : les propositions sont des contenus publics signés par un pseudonyme.
 - Cœur commun : `core/decider/Deliberation.kt` (lecture des événements, phases, calcul du texte final et du résultat, mêmes fonctions sur l'appareil et sur le serveur, testées sur des exemples) ; formats dans `docs/FORMATS.md`.
-- Interface : un écran « Délibération » dans Décider (déroulé et dates, propositions avec leur texte et leurs amendements, vote avec le composant commun, résultats par niveau), le formulaire de proposition et d'amendement sur le modèle de celui des revendications ; la mention « proposition de départ, pas encore votée » sur le Pacte tant que le vote final n'a pas eu lieu.
-- Site sans JavaScript : lecture des propositions, des amendements et des résultats (tâche « Pacte et pétitions sur le site »).
+- Interface : un écran « Délibération » dans Décider (déroulé et dates, propositions avec leur texte et leurs amendements, vote avec le composant commun, résultats par niveau), le formulaire de proposition et d'amendement sur le modèle de celui des revendications ; la mention « proposition de départ, pas encore votée » sur la Constitution Citoyenne et Démocratique tant que le vote final n'a pas eu lieu.
+- Site sans JavaScript : lecture des propositions, des amendements et des résultats (tâche « Constitution Citoyenne et Démocratique et pétitions sur le site »).
 
 ## 6 bis. Réalisation (8 novembre 2026)
 
@@ -65,7 +65,7 @@ Calendrier pour le Pacte : ouverture en décembre 2026 dès que le module est pr
 ## 7. Ce qui reste hors de cette première version
 
 - Débat argumenté (arguments pour et contre) : bouton « Débat » des revendications, plus tard.
-- Changer les modalités elles-mêmes (durées, méthode, limites) : une délibération « modalités », ouverte avec le même module après celle du Pacte.
+- Changer les modalités elles-mêmes (durées, méthode, limites) : une délibération « modalités », ouverte avec le même module après celle de la Constitution Citoyenne et Démocratique.
 - Fusion de propositions en doublon : signalée par la relecture, décidée par l'équipe avec une trace publique, pas automatique.
 
 ## 8. Décisions de la propriétaire (7 novembre 2026, mots exacts relayés par le chef d'équipe)
@@ -74,7 +74,7 @@ Calendrier pour le Pacte : ouverture en décembre 2026 dès que le module est pr
 - « Une mesure ne peut pas être adoptée par PPF, nous ne sommes qu'une association qui a pour mission de porter la voix des citoyens. » : plus d'« adoption », les votes choisissent la rédaction et les mesures ; au-delà des seuils de soutiens, PPF porte (D-115, `docs/integration/seuils-soutiens.md`).
 - Durées 3, 2 et 2 semaines : « On peut tenter de partir là dessus oui ».
 - Pas de seuil de participation : « Oui ».
-- Pacte : les 5 à 10 mesures les plus soutenues, avec plus de « pour » que de « contre » (option A).
+- Constitution Citoyenne et Démocratique : les 5 à 10 mesures les plus soutenues, avec plus de « pour » que de « contre » (option A).
 - Le vote des élus est public et à part (D-115) ; les organisations ne votent pas.
 
 ## 9. Questions posées (historique)

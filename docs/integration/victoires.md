@@ -31,5 +31,5 @@ Le corps (Markdown) dit ce qui a été obtenu et comment, sans s'en attribuer le
 ## 4. Plus tard
 
 - Lier une revendication citoyenne satisfaite (signée par son auteur, pas par l'équipe), avec le pôle des revendications ; en attendant, « Et maintenant ? » mène à l'espace des revendications.
-- Lier un engagement de candidat du Pacte démocratique (« Décider »), avec le pôle « Décider ».
+- Lier un engagement de candidat de la Constitution Citoyenne et Démocratique (« Décider »), avec le pôle « Décider ».
 - Compter les victoires dans le tableau de bord fédérateur (PP-07).

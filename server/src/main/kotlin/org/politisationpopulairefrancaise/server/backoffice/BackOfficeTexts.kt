@@ -343,7 +343,7 @@ object BackOfficeTexts {
         "editorial.voir" to "Briques de « Voir »",
         "revendications.status" to "Statuts des revendications",
         "agir.organisations" to "Organisations vérifiées d’« Agir »",
-        "decider.pacte" to "Pacte et contenus de « Décider »",
+        "decider.pacte" to "Constitution Citoyenne et Démocratique et contenus de « Décider »",
         "archives.timestamps" to "Preuves d’horodatage des archives (automatique)",
         "opendata.index" to "Index des données ouvertes (automatique)",
         "decider.urn_closure" to "Clôtures des urnes (automatique)",

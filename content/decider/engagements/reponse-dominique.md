@@ -1,7 +1,7 @@
 ---
 slug: reponse-pacte-dominique
 type: engagement
-title: [EXEMPLE] Réponse de Dominique Fictif au Pacte démocratique
+title: [EXEMPLE] Réponse de Dominique Fictif à la Constitution Citoyenne et Démocratique
 pacte: pacte-election-exemple
 candidate: dominique-fictif
 received: 2026-11-03

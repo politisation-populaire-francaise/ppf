@@ -65,7 +65,7 @@ internal object ApprovalTexts {
         SigningUse.EDITORIAL_VOIR -> "Brique sourcée de l'espace « Voir »"
         SigningUse.REVENDICATIONS_STATUS -> "Statut d'une revendication"
         SigningUse.AGIR_ORGANISATIONS -> "Fiche d'une organisation vérifiée (« Agir »)"
-        SigningUse.DECIDER_PACTE -> "Pacte démocratique ou réponse d'un candidat (« Décider »)"
+        SigningUse.DECIDER_PACTE -> "Constitution Citoyenne et Démocratique ou réponse d'un candidat (« Décider »)"
         SigningUse.ARCHIVES_TIMESTAMPS -> "Preuve d'horodatage des archives (automatique)"
         SigningUse.OPENDATA_INDEX -> "Index des données ouvertes (automatique)"
         SigningUse.DECIDER_URN_CLOSURE -> "Clôture d'une urne (automatique)"

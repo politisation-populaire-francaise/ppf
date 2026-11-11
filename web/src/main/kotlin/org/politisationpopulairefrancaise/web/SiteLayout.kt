@@ -121,6 +121,12 @@ fun HTML.siteLayout(pageTitle: String, currentSpace: Space? = null, content: MAI
             p { a(href = "/presse") { +"Espace presse" } }
             p { a(href = "/tableau-de-bord") { +"Tableau de bord" } }
             p { a(href = "/securite") { +"Signaler une faille de sécurité" } }
+            p {
+                LegalPages.ALL.forEachIndexed { index, page ->
+                    if (index > 0) +" · "
+                    a(href = page.path) { +page.footerLabel }
+                }
+            }
         }
     }
 }

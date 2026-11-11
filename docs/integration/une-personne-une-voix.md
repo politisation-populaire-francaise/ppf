@@ -1,8 +1,8 @@
 # « Une personne, une voix » : conception technique
 
 - Pôle « Décider », 7 novembre 2026. Statut : **approuvé par le chef d'équipe le 7 novembre 2026 (D-110)**, avec les conditions et exigences de la section 15 ; les points qui changent l'expérience des citoyens (section 9) sont présentés à la propriétaire.
-- Références : D-044 (méthode approuvée par la propriétaire), D-062 (délibération citoyenne sur le Pacte et les campagnes), brainstorming du cahier des charges (entrée « Méthode technique une personne, une voix »), inventaire S-86 à S-91 et point d'attention n° 10 (barrières combinées, résultats transparents), point d'attention n° 9 (jetons anonymes), cahier des charges 2 (principes 9 et 10), 5.1 et 5.5.
-- Usages : votations (M13.6), votes sur les revendications (M11), délibération sur le Pacte et les campagnes (propositions, amendements, vote final), compteurs de participation d'« Agir », signalements chiffrés de « Voir » (VO-03).
+- Références : D-044 (méthode approuvée par la propriétaire), D-062 (délibération citoyenne sur la Constitution Citoyenne et Démocratique et les campagnes), brainstorming du cahier des charges (entrée « Méthode technique une personne, une voix »), inventaire S-86 à S-91 et point d'attention n° 10 (barrières combinées, résultats transparents), point d'attention n° 9 (jetons anonymes), cahier des charges 2 (principes 9 et 10), 5.1 et 5.5.
+- Usages : votations (M13.6), votes sur les revendications (M11), délibération sur la Constitution Citoyenne et Démocratique et les campagnes (propositions, amendements, vote final), compteurs de participation d'« Agir », signalements chiffrés de « Voir » (VO-03).
 
 ## 1. Ce que le système doit garantir
 
@@ -209,14 +209,14 @@ Si la mesure dépasse ce que tient le KVM 1 :
 - Lecture et création de codes QR (validation en personne) : bibliothèques à vérifier à l'étape 5 (jamais ML Kit, qui est un service Google).
 - Archivage horodaté (tâche suivante du pôle) : `java-opentimestamps` n'est plus maintenu (version 1.20 de janvier 2021, LGPL-3.0, dépend de bitcoinj 0.14.7) ; à comparer : un petit client OpenTimestamps écrit par nous, ou l'horodatage RFC 3161 de BouncyCastle (`bcpkix-jdk18on` 1.86, JVM seulement, suffisant pour le serveur).
 
-## 11. Délibération citoyenne sur le Pacte et les campagnes (D-062)
+## 11. Délibération citoyenne sur la Constitution Citoyenne et Démocratique et les campagnes (D-062)
 
-La propriétaire a décidé que la liste des mesures du Pacte et les modalités des campagnes « seront populaires » : la liste de PPF n'est qu'une proposition de départ. Le même mécanisme de jetons sert :
-- **Une délibération** a un objet (par exemple « les mesures du Pacte pour la présidentielle de 2027 », « les modalités des campagnes »), des phases datées et la proposition de départ de PPF, affichée avec la mention « proposition de départ, pas encore votée ».
+La propriétaire a décidé que la liste des mesures de la Constitution Citoyenne et Démocratique et les modalités des campagnes « seront populaires » : la liste de PPF n'est qu'une proposition de départ. Le même mécanisme de jetons sert :
+- **Une délibération** a un objet (par exemple « les mesures de la Constitution Citoyenne et Démocratique pour la présidentielle de 2027 », « les modalités des campagnes »), des phases datées et la proposition de départ de PPF, affichée avec la mention « proposition de départ, pas encore votée ».
 - **Propositions et amendements** : publiés sous le pseudonyme de leur auteur (comme les revendications, avec la même relecture avant publication et les mêmes vérifications automatiques) ; chaque proposition et chaque amendement a son **urne** (pour, contre, abstention), donc ses jetons.
 - **Vote final** : une seule urne dont le bulletin porte tout le choix (par exemple une mention par mesure en jugement majoritaire, ou l'approbation de cinq à dix mesures). La méthode de vote finale est elle-même une modalité que les citoyens pourront changer ; la proposition de départ sera faite avec le module.
 - Le même module servira au Programme du peuple (DE-03), aux cahiers de doléances (DE-02) et aux votations (M13.6, une seule question).
-- Calendrier : pour une diffusion du Pacte au début de 2027, la délibération sur les mesures doit s'ouvrir au plus tard en janvier 2027.
+- Calendrier : pour une diffusion de la Constitution Citoyenne et Démocratique au début de 2027, la délibération sur les mesures doit s'ouvrir au plus tard en janvier 2027.
 
 ## 12. Branchements par pôle
 
@@ -224,7 +224,7 @@ La propriétaire a décidé que la liste des mesures du Pacte et les modalités 
 |---|---|---|
 | Votations (M13.6) | La question | Décider |
 | Revendications (M11) | Chaque revendication publiée (pour, contre) | Décider |
-| Délibération (Pacte, campagnes) | Propositions, amendements, vote final | Décider |
+| Délibération (Constitution Citoyenne et Démocratique, campagnes) | Propositions, amendements, vote final | Décider |
 | Participation (« J'y participe », soutiens d'un appel) | La mobilisation ou l'appel ; le nombre public de participants vient des bulletins ; afficher son nom reste un choix à part (D-044) | Agir |
 | Signalements chiffrés (VO-03) | Le couple indicateur et événement ; le bulletin porte la valeur signalée | Voir |
 

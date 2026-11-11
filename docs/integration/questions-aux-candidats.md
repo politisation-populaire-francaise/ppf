@@ -3,7 +3,7 @@
 - Pôle « Décider », 9 novembre 2026. Cahier fonctionnel 2.1, DE-30 : « Questions proposées et votées (une urne par question) ; les dix plus soutenues sont envoyées le même jour, avec le même délai, à tous les candidats ; réponses côte à côte dans le comparateur (DE-16) ; absence de réponse affichée. » Priorité : tôt, **ouverture en janvier 2027**. Dépendances : traitement identique (cahier des charges, section 9.2), « une personne, une voix » (D-110, D-112), avocat.
 - **Rien n'est codé** : quatre choix attendent une décision (section 6, entrée « À valider » du brainstorming du cahier fonctionnel), puis la relecture par un avocat avant l'ouverture.
 
-## 1. Les règles déjà fixées (cahier des charges, section 9.2 ; D-060, D-062 pour le Pacte)
+## 1. Les règles déjà fixées (cahier des charges, section 9.2 ; D-060, D-062 pour la Constitution Citoyenne et Démocratique)
 
 - Mêmes questions, même jour d'envoi, même délai pour tous les candidats ; une ligne par candidat, même sans réponse ; ordre alphabétique ; une réponse arrivée après la date limite n'est pas comptée comme une réponse dans le délai, mais reste visible avec sa date.
 - Aucun appel à voter, aucun classement des candidats, aucune note ; PPF ne dit jamais qui a « bien » répondu.

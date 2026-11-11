@@ -1236,6 +1236,14 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Décisions techniques prises en autonomie (gratuites) : `DeliberationBoard` assemble sur l'appareil et sur le serveur une délibération publiée par l'équipe, ses propositions (celles de départ en premier) et les amendements mis au vote, par les mêmes règles ; `DeliberationDrafts` écrit les contributions au format que relit le serveur ; l'écran « Délibération » de Décider montre les étapes datées, le soutien (propositions), les amendements et leur vote (pour, contre, blanc), le vote final, avec le composant commun des urnes ; le formulaire signe, garde sur l'appareil et envoie par le port de publication unique, pour relecture ; la page du site `/decider/deliberations/<slug>` se lit sans script, et renvoie à l'application pour proposer et voter.
 - Dates : proposées par « Décider » et soumises à la propriétaire par le chef d'équipe (propositions du 1er au 21 décembre 2026, amendements du 22 décembre au 4 janvier 2027, vote du 5 au 18 janvier 2027) ; brouillon non publié dans `docs/integration/deliberation-pacte-2027-brouillon.md`, rien n'est signé avant sa réponse.
 
+## D-154 (2026-11-11) Le « Pacte démocratique » s'appelle désormais « Constitution Citoyenne et Démocratique »
+
+- Décision de la propriétaire, relayée par le chef d'équipe, mot pour mot : « le pacte démocratique/pacte citoyen et démocratique doit devenir partout y compris dans les documents du projet : Constitution Citoyenne et Démocratique ». Elle vaut validation explicite de ce seul changement de nom dans les documents de référence (`docs/projet/` : cahier des charges 2.4, cahier fonctionnel 2.3, brainstormings).
+- Ancien nom : « Pacte démocratique » (ou « pacte citoyen et démocratique »). Nouveau nom : « Constitution Citoyenne et Démocratique », au féminin (« la Constitution Citoyenne et Démocratique », « envoyée », « signée »).
+- Ce qui change : ce que lisent les personnes (textes de l'application, du site et du back-office, contenus de `content/`, documentation technique, documents de référence). Ce qui ne change pas : les identifiants techniques stables (étiquettes `ppf-pacte-*`, type de contenu `pacte`, noms de classes, usage de signature `DECIDER_PACTE`, adresses déjà publiées comme `/decider/pacte/...`). L'historique de ce fichier et du journal des modifications reste tel quel.
+- Règle d'écriture : toujours le nom complet, pour ne jamais confondre avec la Constitution de la République ; celle-ci est écrite « Constitution de 1958 » ou « Constitution de la République » là où les deux se côtoient (mesures du contenu d'exemple, renvoi vers Comprendre).
+- `CLAUDE.md` est modifié par le chef d'équipe ; les libellés de Socle (tutoriel, description des revendications), de Comprendre (texte du cap n° 6) et d'Agir leur sont signalés.
+
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
 - Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.
@@ -1585,6 +1593,19 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - iOS : icône 1024 sur fond blanc opaque, rangée dans les déclinaisons.
 - Point signalé : le dessin n'est pas le bloc-marque de l'État (pas de profil de Marianne dans des bandes tricolores), mais il associe une Marianne et le drapeau français ; à garder en tête pour la vérification d'antériorité à l'INPI et la relecture par un avocat avant l'ouverture publique.
 - Reste : de nouvelles bannières de réseaux sociaux au logo officiel.
+
+## D-188 (2026-11-11) Version d'essai Android sous 30 Mo : réduction du code par R8, sans renommage
+
+- Contexte : la version d'essai pesait 37,9 Mo (code non réduit 19,2 Mo, bibliothèques natives 13,4 Mo dont la carte, contenus 3,8 Mo) ; au-delà de 30 Mo, elle ne peut pas être envoyée facilement au téléphone de la propriétaire.
+- Choix (approuvé par le chef d'équipe) : réduction du code et des ressources par R8 sur la version d'essai, comme sur la version de publication, mais sans renommage des classes (`proguard-preview.pro` : `-dontobfuscate`), pour qu'un rapport de plantage nomme les vraies classes ; règles de conservation ajoutées pour la découverte du moteur réseau de Ktor et pour la signature secp256k1 (JNI). Si cela ne suffit pas : une version réservée aux processeurs arm64 (Galaxy A34), qui retire 6 Mo.
+- Risque : une erreur de réduction ne se voit qu'à l'exécution, et l'ordinateur n'a pas d'émulateur Android. Vérifications : contrôle du contenu de l'APK, suite d'interface, captures ; puis essai à la main de chaque écran sur le téléphone (liste dans `docs/GUIDE_PROPRIETAIRE.md`).
+
+## D-189 (2026-11-11) Contrôle d'entrée allégé sur l'ordinateur de la propriétaire (`ppfGate`)
+
+- Contexte : la vérification complète avant chaque entrée dans `main` (`build --continue :android:assemblePreview`, règle 5 bis du registre) prend environ 40 minutes sur l'ordinateur de développement, une seule à la fois. Mesure sur le journal du 11 novembre 2026 : 247 tâches exécutées, dont 65 pour les variantes Android de publication et de développement et le lint complet, 31 pour les cibles iOS, et les archives du serveur et du service de signature.
+- Choix (proposé par le socle, approuvé par le chef d'équipe ; usage local seulement, d'accord avec Mise en ligne) : une tâche Gradle racine `ppfGate` qui garde tous les tests (modules multiplateformes : tests JVM ; modules JVM : `check`, qui porte aussi la vérification des jars signés de D-145), la version d'essai Android (`assemblePreview`, avec ses contrôles « lint vital ») et l'application de bureau, suivie des trois scripts. Elle retire la version de publication Android et son R8, `assembleDebug`, le lint complet, les cibles iOS (aucun Mac) et les archives `dist`.
+- Ce qui n'est plus fait à chaque entrée locale reste fait ailleurs : l'intégration continue sur GitHub garde le `build` complet à chaque envoi (gratuit, dépôt public), et un `gradlew build` complet est lancé avant chaque version publiée.
+- Gain estimé : 15 à 20 minutes sur 40, et moins de mémoire ; à mesurer au premier passage. La règle 5 bis du registre et les consignes sont mises à jour par le chef d'équipe quand `ppfGate` est dans `main`.
 
 ## D-210 (2026-11-11) Cap du MVP 1 : Agir, puis Décider, puis Comprendre, et une ergonomie irréprochable
 

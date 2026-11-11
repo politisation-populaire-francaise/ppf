@@ -1,7 +1,7 @@
 ---
 slug: reponse-pacte-camille
 type: engagement
-title: [EXEMPLE] Réponse de Camille Exemple au Pacte démocratique
+title: [EXEMPLE] Réponse de Camille Exemple à la Constitution Citoyenne et Démocratique
 pacte: pacte-election-exemple
 candidate: camille-exemple
 received: 2026-10-28

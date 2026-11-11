@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The three flagship tools of "Décider" (MVP 1, jalon 3), at the top of Décider and on En direct.
+<!-- The three flagship tools of "Décider" (MVP 1, jalon 3; the pact is now the Constitution Citoyenne et Démocratique, D-154), at the top of Décider and on En direct.
      French, typographic apostrophe (’), no em dash. -->
 <resources>
     <string name="decider_highlights_title">Décider ensemble</string>
@@ -15,7 +15,7 @@
         <item quantity="other">%1$d pétitions ouvertes, à signer sur les sites officiels</item>
     </plurals>
     <string name="decider_highlight_petitions_none">Les règles et les seuils des sites officiels</string>
-    <string name="decider_highlight_pacte">Pacte démocratique</string>
+    <string name="decider_highlight_pacte">Constitution Citoyenne et Démocratique</string>
     <plurals name="decider_highlight_pacte_measures">
         <item quantity="one">%1$d mesure, ce que les candidats s’engagent à faire</item>
         <item quantity="other">%1$d mesures, ce que les candidats s’engagent à faire</item>

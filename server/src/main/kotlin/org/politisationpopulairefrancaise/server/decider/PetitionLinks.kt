@@ -98,7 +98,7 @@ class PetitionLinks(
             ?: return@runBlocking Submit.Refused("Collez l'adresse de la pétition sur le site officiel (Assemblée nationale, Sénat, CESE, référendum d'initiative partagée ou initiative citoyenne européenne), en https.")
         val article = demand(demand) ?: return@runBlocking Submit.Refused("Cette revendication n'est pas publiée.")
         if (pending(demand.toString()) != null) return@runBlocking Submit.Refused("Une pétition de cette revendication attend déjà son approbation.")
-        val key = signer.currentKey(SigningUse.DECIDER_PACTE) ?: return@runBlocking Submit.Refused("Le service de signature n'est pas configuré ou n'a pas de clé pour le Pacte et les pétitions.")
+        val key = signer.currentKey(SigningUse.DECIDER_PACTE) ?: return@runBlocking Submit.Refused("Le service de signature n'est pas configuré ou n'a pas de clé pour la Constitution Citoyenne et Démocratique et les pétitions.")
         val now = clock.instant().epochSecond
         val unsigned = UnsignedEvent(
             pubkey = key,

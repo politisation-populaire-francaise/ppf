@@ -4,6 +4,10 @@ Suite de l'entrée « Inventaire complet des fonctionnalités » de `docs/brains
 
 ---
 
+### [2026-11-11] Nouveau nom : Constitution Citoyenne et Démocratique
+- Statut : Intégré le 2026-11-11 (D-154)
+- Description : décision de la propriétaire, relayée par le chef d’équipe, mot pour mot : « le pacte démocratique/pacte citoyen et démocratique doit devenir partout y compris dans les documents du projet : Constitution Citoyenne et Démocratique ». Le « Pacte démocratique » (ou « pacte citoyen et démocratique ») s’appelle désormais partout « Constitution Citoyenne et Démocratique », dans ce document comme ailleurs ; les entrées anciennes sont réécrites avec le nouveau nom, leur contenu ne change pas. Les identifiants techniques (`ppf-pacte-*`, type `pacte`) restent les mêmes.
+
 #### Partie B : fonctionnalités PPF (144 fonctionnalités ci-dessous, plus 24 retenues lors du tri)
 
 **Règles communes à toutes les fonctionnalités PPF**
@@ -11,7 +15,7 @@ Suite de l'entrée « Inventaire complet des fonctionnalités » de `docs/brains
 - La distinction entre ce qui est établi, allégué ou en cours d'enquête est toujours visible (Brainstorming, M17).
 - Chaque contenu se termine par une passerelle « Et maintenant ? » vers une action dans un autre espace (CF 1.0, étendu à tous les espaces par l'entrée « Navigation et UX »).
 - Un compte, un vote, un soutien ; seuls les résultats agrégés sont publiés (CF 1.0) ; les votes des comptes non confirmés sont comptés à part (S-91).
-- Traitement identique dans les outils électoraux (Pacte démocratique, comparateur, baromètre) : gardé dans ces trois outils (décision du 7 novembre 2026, D-062, entrée « Conséquences du retrait de la notion de non-partisanerie » du brainstorming du cahier des charges).
+- Traitement identique dans les outils électoraux (Constitution Citoyenne et Démocratique, comparateur, baromètre) : gardé dans ces trois outils (décision du 7 novembre 2026, D-062, entrée « Conséquences du retrait de la notion de non-partisanerie » du brainstorming du cahier des charges).
 - Tout contenu d'exemple est marqué [EXEMPLE].
 - **Origine de chaque contenu** (décision de la propriétaire) : chaque contenu affiche son origine, rédigé par un humain ou produit avec l'aide d'une IA, et, le cas échéant, sa relecture par un membre de l'équipe (par exemple « synthèse réalisée avec l'aide d'une IA à partir de vos contributions, relue par l'équipe »). Le règlement européen sur l'IA (article 50, paragraphe 4, applicable depuis le 2 août 2026) impose de signaler les textes générés par IA publiés pour informer le public sur des questions d'intérêt public, sauf lorsqu'un humain les a relus et en assume la responsabilité éditoriale. Pour PPF, la mention est un choix de transparence, qui protège aussi les synthèses contre les accusations de manipulation.
 
@@ -200,7 +204,7 @@ Voir les points d'attention n° 17, n° 18 et n° 24.
 | DE-05 | Soutenir une campagne | Compteur de soutiens par territoire. | CF 1.0 (M13.5) |
 | DE-06 | Baromètre des élus | Par campagne : engagé, pour, contre, abstention, sans réponse. | CF 1.0 (M13.5) |
 | DE-07 | Pétitions officielles | Relais des pétitions de l'Assemblée, du Sénat, de l'initiative citoyenne européenne et des RIP ouverts ; seuils expliqués ; objectifs par territoire et suivi des 30 départements. | CF 1.0 (M10) |
-| DE-08 | Pacte démocratique | Liste votée, envoi à tous les candidats, tableau public des réponses, archivage horodaté, suivi après l'élection. | CF 1.0 (M13.5) + Brainstorming (liste) |
+| DE-08 | Constitution Citoyenne et Démocratique | Liste votée, envoi à tous les candidats, tableau public des réponses, archivage horodaté, suivi après l'élection. | CF 1.0 (M13.5) + Brainstorming (liste) |
 | DE-09 | Interpeller ses élus | Modèles de courrier à personnaliser ; suivi public des réponses reçues ou non. | CF 1.0 (M13.1) |
 | DE-10 | Participer à la démocratie existante | Listes électorales, procuration, assesseur, budgets participatifs, consultations et enquêtes publiques, conseils de quartier. | CF 1.0 (M13.1) |
 | DE-11 | S'engager en politique | Guides : créer un collectif, une association politique, une liste citoyenne, un parti. | CF 1.0 (M13.4) |
@@ -244,7 +248,7 @@ Tableau de bord personnel, accessible depuis la barre du haut et personnalisable
 | EQ-03 | Double validation et contradictoire | Pour tout contenu de « Voir : le pouvoir » : deux validations et demande de réaction à la personne concernée avant publication. | Brainstorming (M17) |
 | EQ-04 | Suivi des droits de réponse | Délai de trois jours affiché, alerte avant échéance. | Brainstorming (M17) |
 | EQ-05 | Synthèse des revendications | Regroupement assisté par IA, validation, rédaction des synthèses et des cahiers de doléances. | CF 1.0 (M11) |
-| EQ-06 | Envoi du Pacte et suivi des réponses | Même texte et même délai pour tous les candidats, archivage horodaté des réponses. | CF 1.0 (M13.5) |
+| EQ-06 | Envoi de la Constitution Citoyenne et Démocratique et suivi des réponses | Même texte et même délai pour tous les candidats, archivage horodaté des réponses. | CF 1.0 (M13.5) |
 | EQ-07 | Vérification des organisations | Examen des demandes (S-81), contrôle de l'existence légale, attribution, suspension et retrait du badge « vérifiée ». | CF 1.0 (M3), précisé |
 | EQ-08 | Votes de priorisation | Organisation des votes sur les campagnes, nombre de campagnes actives, archivage des résultats. | Brainstorming (modalités du choix des campagnes) |
 
@@ -303,7 +307,7 @@ La piste S-99 « Mon espace d'engagement » est fusionnée dans TE-06 et la pist
 | AG-39 | Relais des alertes sans réseau | Le bouton AIDE, les sorties et les messages de coordination passent par Bluetooth de téléphone en téléphone (comme AG-16) quand le réseau mobile est saturé, ce qui arrive souvent dans les grands rassemblements. | La coordination des secours et de la sécurité ne doit pas dépendre du réseau. | Plus tard (avec la messagerie hors ligne) |
 | AG-40 | Observateurs et legal teams | Position des observateurs des pratiques policières et des legal teams, visible par la seule coordination, comme pour les street medics et l'équipe de sécurité (AG-45). | Documenter et défendre, pas seulement soigner. | Plus tard |
 | DE-22 | Écrire la loi ensemble | Rédaction collaborative d'une proposition de loi citoyenne à partir d'une revendication très soutenue : texte, amendements citoyens, vote final, remise aux parlementaires. | Passer de la revendication au texte prêt à être déposé. | Plus tard |
-| DE-23 | Réponses des élus | Compte « élu vérifié » permettant aux élus de répondre publiquement aux interpellations et au Pacte, tous avec exactement les mêmes droits et le même affichage. | Transformer l'interpellation en dialogue public et traçable. | Plus tard (avec un avis juridique) |
+| DE-23 | Réponses des élus | Compte « élu vérifié » permettant aux élus de répondre publiquement aux interpellations et à la Constitution Citoyenne et Démocratique, tous avec exactement les mêmes droits et le même affichage. | Transformer l'interpellation en dialogue public et traçable. | Plus tard (avec un avis juridique) |
 | DE-24 | Budget participatif de PPF | Les comptes certifiés votent l'usage d'une partie des dons reçus par l'association. | PPF applique à elle-même la démocratie qu'elle défend. | Plus tard (il faut d'abord des dons) |
 | PP-03 | Nos victoires | Ce qui a été obtenu : engagements tenus, revendications satisfaites, lois modifiées, avec les sources. | Montrer que l'engagement sert à quelque chose, contre le découragement. | Tôt |
 | PP-04 | Espace presse | Communiqués, kit média, chiffres réutilisables, contact presse. | Faciliter la reprise par les médias. | Tôt |
