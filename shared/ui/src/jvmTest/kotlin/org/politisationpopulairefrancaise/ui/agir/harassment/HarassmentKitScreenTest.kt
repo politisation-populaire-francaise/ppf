@@ -53,7 +53,9 @@ private fun ComposeUiTest.show(vault: ProtectedVault?, sharing: ReportSharing, w
 
 @OptIn(ExperimentalTestApi::class)
 private fun ComposeUiTest.click(tag: String) {
-    onNodeWithTag(tag).performScrollTo().performClick()
+    // Inside the scrolled screen, or in a dialog that does not scroll.
+    runCatching { onNodeWithTag(tag).performScrollTo() }
+    onNodeWithTag(tag).performClick()
     waitForIdle()
 }
 
