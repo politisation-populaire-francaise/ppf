@@ -154,6 +154,60 @@
         "sig": "163d3a8ea601f82d964b818557cbbb7043e092f2d9ce47fda2688132677a2216b499fe18ba8aa1b8d56ec7340871a90abf3290ddb9a53ee8699e315067392af8"
     },
     {
+        "id": "339c4217c42290552cc30cd63f54bbc7f4b9e1f0ac627da5acec629f00ee47cd",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "demission-du-gouvernement"
+            ],
+            [
+                "title",
+                "La démission du gouvernement en place"
+            ],
+            [
+                "summary",
+                "Le départ du gouvernement de Sébastien Lecornu, revendication citoyenne soumise à votre vote."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "revendication"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "ppf-status",
+                "en-debat"
+            ],
+            [
+                "ppf-territory",
+                "France"
+            ],
+            [
+                "t",
+                "democratie"
+            ],
+            [
+                "t",
+                "institutions"
+            ],
+            [
+                "ppf-supported-by",
+                "NPA-L’Anticapitaliste (parti politique), 4 novembre 2026"
+            ]
+        ],
+        "content": "## Ce que demande la revendication\n\nQue le gouvernement en place, dirigé par Sébastien Lecornu, démissionne.\n\n## Qui la porte aussi publiquement\n\nLe NPA-L’Anticapitaliste, parti politique, appelle le 4 novembre 2026 à « faire tomber le gouvernement Lecornu », qu’il juge illégitime. Les autres organisations (partis, syndicats, collectifs) qui la porteront publiquement seront ajoutées ici, sources à l’appui. PPF informe de ces soutiens sans les reprendre à son compte.\n\nTexte rédigé avec l’aide d’une IA, relu sur ses sources le jour de sa publication.\n\n## Sources\n\n- [NPA-L’Anticapitaliste, « Lecornu, démission ! », hebdomadaire L’Anticapitaliste, 4 novembre 2026](https://lanticapitaliste.org/actualite/politique/lecornu-demission), lue le 11 novembre 2026\n",
+        "sig": "a804ca467bf5d91803a178ffd81c86165c39bd3b3ae1eee95be581d88fb0533ba27e5dfa8f6031a4f104c67ab775deb7285304591f4940c4f876316f4d63a216"
+    },
+    {
         "id": "18c6630994ede114d8d287ecdc9ce84755d13148231b6587273b593d726c14f3",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793620800,
