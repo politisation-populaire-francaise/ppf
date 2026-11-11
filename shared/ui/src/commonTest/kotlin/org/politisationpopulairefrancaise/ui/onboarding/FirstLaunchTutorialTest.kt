@@ -22,6 +22,7 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
+import org.politisationpopulairefrancaise.ui.agir.gather.GatherTags
 import org.politisationpopulairefrancaise.ui.components.SymbolTags
 import org.politisationpopulairefrancaise.ui.endirect.EnDirectTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
@@ -93,6 +94,8 @@ class FirstLaunchTutorialTest {
         waitForIdle()
         onNodeWithTag(TutorialTags.SCREEN).assertDoesNotExist()
         onNodeWithTag(ShellTags.navItem(Space.AGIR)).assertIsSelected()
+        // Straight on the page « Se réunir » of Agir.
+        waitUntil(timeoutMillis = 10_000) { has(GatherTags.SCREEN) }
         assertTrue(store.seen())
     }
 

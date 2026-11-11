@@ -88,6 +88,7 @@ import org.politisationpopulairefrancaise.ui.account.MailboxSetting
 import org.politisationpopulairefrancaise.ui.account.MySpaceScreen
 import org.politisationpopulairefrancaise.ui.account.rememberAccountSession
 import org.politisationpopulairefrancaise.ui.account.rememberMailboxSetting
+import org.politisationpopulairefrancaise.ui.agir.AgirRoute
 import org.politisationpopulairefrancaise.ui.agir.AgirScreen
 import org.politisationpopulairefrancaise.ui.agir.AgirPlugged
 import org.politisationpopulairefrancaise.ui.agir.agenda.AgendaLibrary
@@ -128,6 +129,7 @@ import org.politisationpopulairefrancaise.ui.components.AdaptiveWordmark
 import org.politisationpopulairefrancaise.ui.components.PpfSymbol
 import org.politisationpopulairefrancaise.ui.onboarding.FirstLaunchTutorial
 import org.politisationpopulairefrancaise.ui.onboarding.ProvideTutorial
+import org.politisationpopulairefrancaise.ui.onboarding.TutorialStart
 import org.politisationpopulairefrancaise.ui.onboarding.TutorialState
 import org.politisationpopulairefrancaise.ui.onboarding.rememberTutorialState
 import org.politisationpopulairefrancaise.ui.components.avatarLetters
@@ -260,6 +262,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val security = rememberDeviceSecurity(dependencies)
     // The tutorial of the first launch (D-211, D-216), seen again from Mon espace and the AIDE sheet.
     val tutorial = rememberTutorialState(dependencies.tutorial)
+    // A rubric of "Agir" asked by the shell (« m'allier » of the tutorial opens « Se réunir »), forgotten once applied.
+    var agirRoute by remember { mutableStateOf<AgirRoute?>(null) }
     RegisterErasable(dependencies, TutorialState.ERASABLE_ID) { dependencies.tutorial?.forget() }
     // The quick erase (S-44): the keys, with what « Effacer mes clés » already forgets (D-032, D-039), and the rally point.
     RegisterErasable(dependencies, "core-identity") {
@@ -413,6 +417,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     callsLibrary = callsLibrary,
                     testimonyLibrary = testimonyLibrary,
                     proches = proches,
+                    agirRoute = agirRoute,
+                    onAgirRouteHandled = { agirRoute = null },
                     mailboxSetting = mailboxSetting,
                     notificationsSettings = notificationsSettings,
                     windowClass = windowClass,
@@ -422,9 +428,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
             when {
                 // The tutorial takes the whole window; « Passer » or the end lead to « En direct » or to the chosen space.
                 tutorial.isOpen -> FirstLaunchTutorial(
-                    onFinish = { space ->
+                    onFinish = { choice ->
                         tutorial.finish()
-                        navigate(space ?: Space.default)
+                        if (choice == TutorialStart.ALLY) agirRoute = AgirRoute.GATHER
+                        navigate(choice?.space ?: Space.default)
                     },
                     modifier = Modifier.fullWindowSafeArea(),
                 )
@@ -463,6 +470,8 @@ private fun SpaceContent(
     callsLibrary: CallsLibrary,
     testimonyLibrary: TestimonyLibrary,
     proches: ProchesState,
+    agirRoute: AgirRoute?,
+    onAgirRouteHandled: () -> Unit,
     mailboxSetting: MailboxSetting,
     notificationsSettings: NotificationsSettingsState?,
     windowClass: WindowClass,
@@ -492,6 +501,8 @@ private fun SpaceContent(
                 dependencies, contentLibrary, accountSession, windowClass, modifier, onNavigate,
                 organisations = organisationsLibrary,
                 groups = groupsLibrary,
+                requestedRoute = agirRoute,
+                onRouteRequestHandled = onAgirRouteHandled,
                 agenda = { slotModifier, onBack ->
                     AgirPlugged(stringResource(Res.string.agenda_in_agir_title), onBack, slotModifier) { inner ->
                         AgendaScreen(

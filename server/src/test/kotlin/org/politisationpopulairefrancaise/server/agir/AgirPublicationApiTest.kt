@@ -113,7 +113,7 @@ class AgirPublicationApiTest {
     fun callsArePublishedByTrustedKeysAndHeldOtherwise() = testApplication {
         start()
         client.verifyOrganisation()
-        val ordinary = AgirFormats.CALL_TYPES - AgirFormats.CALL_TYPE_WITNESSES - AgirFormats.CALL_TYPE_FUNDRAISING
+        val ordinary = AgirFormats.CALL_TYPES - AgirFormats.CALL_TYPES_ALWAYS_REVIEWED - AgirFormats.CALL_TYPE_FUNDRAISING
         for (type in ordinary) {
             client.assertPublished(editor.call(type))
             client.assertPublished(organisationKey.call(type))
@@ -126,6 +126,16 @@ class AgirPublicationApiTest {
         start()
         client.verifyOrganisation()
         for (author in listOf(editor, organisationKey, citizen)) client.assertHeld(author.call(AgirFormats.CALL_TYPE_WITNESSES))
+    }
+
+    @Test
+    fun callsToBlockAreAlwaysHeldAndCallsToStrikeAreOrdinary() = testApplication {
+        // D-199: a call to block is read by the team first, whoever publishes it; a call to strike follows the common rule.
+        start()
+        client.verifyOrganisation()
+        for (author in listOf(editor, organisationKey, citizen)) client.assertHeld(author.call(AgirFormats.CALL_TYPE_BLOCKADE))
+        client.assertPublished(organisationKey.call(AgirFormats.CALL_TYPE_STRIKE))
+        client.assertHeld(citizen.call(AgirFormats.CALL_TYPE_STRIKE))
     }
 
     @Test

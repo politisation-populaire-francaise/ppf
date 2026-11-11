@@ -295,7 +295,7 @@ class OrganisationsScreenTest {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
         onNodeWithTag(ShellTags.navItem(Space.AGIR)).performClick()
         waitForIdle()
-        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.ORGANISATIONS.id).performClick()
+        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.ORGANISATIONS.id).performScrollTo().performClick()
         waitForIdle()
         awaitCard(AgirFixtures.LANTERNE)
         val store = dependencies.contentStore!!

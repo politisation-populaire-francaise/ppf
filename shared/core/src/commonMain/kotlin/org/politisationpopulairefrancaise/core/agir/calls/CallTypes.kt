@@ -20,12 +20,18 @@ enum class CallResponse {
     TESTIFY,
 }
 
-/** The thirteen types of calls of AP-01, with their wire values ([AgirFormats.CALL_TYPES]). */
+/** The types of calls of AP-01 and D-199, with their wire values ([AgirFormats.CALL_TYPES]). */
 enum class CallType(val tagValue: String, val response: CallResponse) {
     SE_REUNIR("se-reunir", CallResponse.ATTEND),
     DEBATTRE("debattre", CallResponse.ATTEND),
     S_ORGANISER("s-organiser", CallResponse.ATTEND),
     MANIFESTER("manifester", CallResponse.ATTEND),
+
+    /** D-199: « Je soutiens »; the sector or the company, the start, who calls (a union, a general assembly). */
+    GREVE("greve", CallResponse.SUPPORT),
+
+    /** D-199: « J'y serai »; always reviewed, with its legal notice in the form and on the call. */
+    BLOQUER("bloquer", CallResponse.ATTEND),
     SOUTENIR("soutenir", CallResponse.SUPPORT),
     PETITION("petition", CallResponse.SIGNED),
     INTERPELLER("interpeller", CallResponse.SUPPORT),
@@ -49,6 +55,12 @@ enum class CallType(val tagValue: String, val response: CallResponse) {
 
     /** Always held for review, whoever publishes it (AP-02). */
     val isWitnesses: Boolean get() = tagValue == AgirFormats.CALL_TYPE_WITNESSES
+
+    /** A call to block (D-199): its legal notice is shown in the form and on the call. */
+    val isBlockade: Boolean get() = tagValue == AgirFormats.CALL_TYPE_BLOCKADE
+
+    /** Held for review whoever publishes it: the calls for witnesses (AP-02) and to block (D-199). */
+    val alwaysReviewed: Boolean get() = tagValue in AgirFormats.CALL_TYPES_ALWAYS_REVIEWED
 
     companion object {
         fun fromTag(value: String): CallType? = entries.firstOrNull { it.tagValue == value }
@@ -134,6 +146,9 @@ object CallFields {
     const val PERIOD: String = "ppf-period"
     const val EVIDENCE: String = "ppf-evidence"
     const val RECIPIENT: String = "ppf-recipient"
+
+    /** The sector or the company on strike (D-199). */
+    const val SECTOR: String = "ppf-sector"
 
     /** The value of [REMOTE] when the mission can be done remotely. */
     const val YES: String = "oui"

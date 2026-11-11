@@ -37,6 +37,7 @@ object CallFixtures {
         CallFields.PERIOD to "Décembre 2026",
         CallFields.EVIDENCE to "Photos, vidéos, récits",
         CallFields.RECIPIENT to "[EXEMPLE] Legal team fictive",
+        CallFields.SECTOR to "[EXEMPLE] Les écoles de Villefictive",
     )
 
     /** A draft of [type] that meets every rule at [NOW] (a verified organisation for a fundraising). */

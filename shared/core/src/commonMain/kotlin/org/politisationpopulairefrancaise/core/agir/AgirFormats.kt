@@ -122,9 +122,9 @@ object AgirFormats {
     const val TAG_DEADLINE: String = "ppf-deadline"
     const val TAG_REPORT: String = "ppf-report"
 
-    /** AP-01, in the order of the inventory. */
+    /** AP-01, in the order of the inventory; « greve » and « bloquer » added by D-199 (owner, D-215). */
     val CALL_TYPES: List<String> = listOf(
-        "se-reunir", "debattre", "s-organiser", "manifester", "soutenir", "petition", "interpeller",
+        "se-reunir", "debattre", "s-organiser", "manifester", "greve", "bloquer", "soutenir", "petition", "interpeller",
         "boycotter", "collecte", "benevoles", "information", "temoins", "autre",
     )
 
@@ -137,6 +137,15 @@ object AgirFormats {
     /** Always held for review, whoever publishes it (AP-02). */
     const val CALL_TYPE_WITNESSES: String = "temoins"
 
+    /** A call to strike (D-199): a constitutional right; the sector or the company, and the start. */
+    const val CALL_TYPE_STRIKE: String = "greve"
+
+    /** A call to block (D-199): always held for review, with its legal notice in the form and on the call. */
+    const val CALL_TYPE_BLOCKADE: String = "bloquer"
+
+    /** The types held for review whoever publishes them, a verified organisation or the editorial team included. */
+    val CALL_TYPES_ALWAYS_REVIEWED: Set<String> = setOf(CALL_TYPE_WITNESSES, CALL_TYPE_BLOCKADE)
+
     /**
      * AP-10: the tags a call of each type must carry, on top of the common ones (d, title,
      * ppf-type, ppf-call-type, ppf-territory, ppf-charter). "location|r" means one of the two.
@@ -148,6 +157,8 @@ object AgirFormats {
         "debattre" to listOf("ppf-object", TAG_START, "location|r", "ppf-organizer", "ppf-accessibility"),
         "s-organiser" to listOf("ppf-object", TAG_START, "location|r", "ppf-organizer", "ppf-accessibility"),
         "manifester" to listOf(TAG_START, TAG_LOCATION, "ppf-organizer", TAG_DECLARATION),
+        "greve" to listOf("ppf-sector", TAG_START, "ppf-organizer"),
+        "bloquer" to listOf(TAG_START, TAG_LOCATION, "ppf-organizer"),
         "soutenir" to listOf("ppf-cause", "ppf-action", TAG_DEADLINE),
         "petition" to listOf(TAG_LINK, "ppf-platform", TAG_GOAL, TAG_DEADLINE),
         "interpeller" to listOf("ppf-targets", "ppf-request", TAG_DEADLINE),
