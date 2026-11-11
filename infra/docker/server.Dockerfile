@@ -12,7 +12,7 @@
 
 # Eclipse Temurin 21 JRE on Ubuntu 24.04 (glibc: the native libsecp256k1 of the server needs it).
 # Pinned by digest; Dependabot proposes updates.
-FROM eclipse-temurin:21-jre-noble@sha256:0eda5830ed7b669abc246a8dc520ea8a23cab06f9a8d4b6964109e2f2394e46f
+FROM eclipse-temurin:25-jre-noble@sha256:a98128a57de944a72bd31fbc79b898edd5a5864d3652071d5bbd2160ab7d7dce
 
 ARG PPF_REVISION=unknown
 LABEL org.opencontainers.image.title="ppf-server" \
