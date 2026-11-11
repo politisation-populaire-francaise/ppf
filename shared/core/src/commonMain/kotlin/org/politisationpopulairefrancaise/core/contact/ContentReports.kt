@@ -70,15 +70,20 @@ object ContentReports {
      */
     fun inbox(): PublicKey = ContactInbox.preproduction() ?: ContactInbox.EXAMPLE
 
-    /** Whether [address] reads as the stable address of a published content: `<kind>:<64 hex>:<identifier>`. */
+    /**
+     * Whether [address] names a published content: `<kind>:<author key>:<identifier>` for an addressable content (a call,
+     * an event, a demand), `<kind>:<event id>` for another one (a post of the feed, a message of a room).
+     */
     fun isContentAddress(address: String): Boolean {
         if (address.length > CaseMessage.MAX_CONTENT_ADDRESS) return false
         val parts = address.split(':', limit = 3)
-        return parts.size == 3 &&
-            parts[0].isNotEmpty() && parts[0].all { it.isDigit() } &&
-            parts[1].length == 64 && parts[1].all { it in '0'..'9' || it in 'a'..'f' } &&
-            parts[2].isNotEmpty()
+        val hex64 = parts.getOrNull(1)?.let { key -> key.length == 64 && key.all { it in '0'..'9' || it in 'a'..'f' } } == true
+        val kind = parts[0].isNotEmpty() && parts[0].length <= 5 && parts[0].all { it.isDigit() }
+        return kind && hex64 && (parts.size == 2 || (parts.size == 3 && parts[2].isNotEmpty()))
     }
+
+    /** The address of a content that has no stable address (a post, a message of a room): its kind and its id. */
+    fun eventAddress(kind: Int, eventId: String): String = "$kind:$eventId"
 
     /** Prepares the case of a report on [address]; the proof of work makes this slow on purpose (call it off the main thread). */
     suspend fun prepare(
