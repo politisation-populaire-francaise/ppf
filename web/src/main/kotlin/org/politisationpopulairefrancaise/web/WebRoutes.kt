@@ -73,7 +73,7 @@ fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = nu
         }
     }
 
-    Space.entries.filter { (voir == null || it != Space.VOIR) && (comprendre == null || it != Space.COMPRENDRE) && (decider == null || it != Space.DECIDER) }.forEach { space ->
+    Space.entries.filter { (voir == null || it != Space.VOIR) && (comprendre == null || it != Space.COMPRENDRE) && (decider == null || (it != Space.DECIDER && it != Space.REVENDICATIONS)) }.forEach { space ->
         get("/${space.id}") {
             call.respondHtml {
                 siteLayout(pageTitle = spaceLabels.getValue(space), currentSpace = space) {

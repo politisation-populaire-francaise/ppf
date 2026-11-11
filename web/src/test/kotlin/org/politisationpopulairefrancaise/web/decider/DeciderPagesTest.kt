@@ -114,6 +114,26 @@ class DeciderPagesTest {
         assertTrue(html.contains("se font dans l’application PPF"))
     }
 
+    /** D-152: the wall on the site, the demands of the movement first, with who carries them and their sources. */
+    @Test
+    fun theDemandsOfTheMovementComeFirstWithWhoCarriesThemAndTheirSources() {
+        val demands = read(DIRECTORY, "revendications.json").mapNotNull(Article::from).filter { it.event.pubkey == EditorialTrust.EXAMPLE_EDITOR }
+        val html = render { revendicationsDocument(demands) }
+        checkPage(html)
+        assertTrue(html.contains("Ce que le mouvement demande déjà"))
+        assertTrue(html.contains("href=\"/revendications/mouvement-hausse-du-smic\""))
+        assertTrue(html.indexOf("mouvement-hausse-du-smic") < html.indexOf("Revendications citoyennes"), "the movement first")
+        assertTrue(html.contains("Également portée par : NPA-L’Anticapitaliste (parti politique), 4 novembre 2026"))
+        assertTrue(html.indexOf("Exemples") > html.indexOf("Revendications citoyennes"), "the examples last")
+
+        val smic = demands.single { it.slug == "mouvement-hausse-du-smic" }
+        val page = render { revendicationDocument(smic) }
+        checkPage(page)
+        assertTrue(page.contains("Portée par :"))
+        assertTrue(page.contains("href=\"https://www.cgt.fr/17-novembre\""), "the sources are links")
+        assertTrue(page.contains("dans l’application PPF"))
+    }
+
     @Test
     fun anUnknownPageSaysSo() {
         val html = render { deciderNotFoundDocument() }
