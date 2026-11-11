@@ -39,7 +39,7 @@ val spaceLabels: Map<Space, String> = mapOf(
 /** The preview of a shared link: the description, the image (absolute, on the main domain) and its alternative text. */
 internal const val SHARE_DESCRIPTION = "Voir, comprendre, agir, décider. Plateforme citoyenne indépendante, sans lien avec l’État ni le gouvernement."
 internal const val SHARE_IMAGE = "https://politisation-populaire-francaise.org/static/og-image-1200x630.png"
-internal const val SHARE_IMAGE_ALT = "Logo de Politisation Populaire Française : une bulle de parole contenant trois silhouettes de taille croissante."
+internal const val SHARE_IMAGE_ALT = "Logo de Politisation Populaire Française : une Marianne coiffée du bonnet phrygien brandit le drapeau français au milieu d’une foule de citoyens et de musiciens."
 
 /**
  * Common layout of every page: French, accessible landmarks, skip link,
@@ -55,10 +55,10 @@ fun HTML.siteLayout(pageTitle: String, currentSpace: Space? = null, content: MAI
         title { +"$pageTitle | ${AppInfo.NAME}" }
         link(rel = "stylesheet", href = "/static/site.css")
         link(rel = "manifest", href = "/static/manifest.webmanifest")
-        // The symbol of PPF (design/identite, D-185), served by our own server only: a bitmap for every
-        // browser, the vector that turns light on a dark browser, the icon of an iPhone home screen.
-        link(rel = "icon", href = "/favicon.ico") { attributes["sizes"] = "48x48" }
-        link(rel = "icon", href = "/static/favicon.svg", type = "image/svg+xml")
+        // The official logo of PPF (design/identite/logo-officiel, D-187), served by our own server only: on a
+        // white disc, readable on light and dark tabs; the icon of an iPhone home screen.
+        link(rel = "icon", href = "/favicon.ico") { attributes["sizes"] = "16x16 32x32 48x48" }
+        link(rel = "icon", href = "/static/favicon-32x32.png", type = "image/png") { attributes["sizes"] = "32x32" }
         link(rel = "apple-touch-icon", href = "/static/apple-touch-icon.png")
         meta(name = "theme-color") {
             attributes["content"] = "#2B3A8F"

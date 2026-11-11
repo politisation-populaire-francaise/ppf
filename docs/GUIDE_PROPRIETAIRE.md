@@ -66,7 +66,7 @@ Quand je vous enverrai une version (seulement si vous la demandez), voici quoi r
 3. **Barre du haut** : le menu, le nom en entier (sur deux ou trois lignes selon la place), le bouton AIDE rouge, plus petit et sans icône, la messagerie, la cloche et votre avatar. Rien ne déborde, même avec une grande police (Paramètres, Affichage, Taille et style de police).
 4. **Le menu** (en haut à gauche) : Voir, Comprendre, Décider, Revendications. Rien n'a été retiré.
 5. **Téléphone couché** : à gauche, une colonne avec les cinq entrées de la barre du bas, toutes visibles ; le reste est dans le menu.
-6. **Le symbole de PPF** (ajouté le 11 novembre 2026) : sur l'icône de l'application (bulle indigo et point rouge), à côté du nom en haut quand il y a la place, en tête du menu, sur le premier écran de la présentation et en bas de Mon espace. En mode discret (« Outils »), l'icône reste grise et neutre, même à l'ouverture.
+6. **Le logo officiel** (11 novembre 2026) : sur l'icône de l'application (fond blanc), à côté du nom en haut quand il y a la place, en tête du menu et en bas de Mon espace ; la présentation s'ouvre sur votre bannière à la Marianne. En mode discret (« Outils »), l'icône reste grise et neutre, même à l'ouverture.
 
 ### Tester le compte (ajouté le 5 novembre 2026)
 

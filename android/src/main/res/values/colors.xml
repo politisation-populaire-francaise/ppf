@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- The indigo of the identity behind the symbol of the launcher icon (design/identite, D-185). -->
-    <color name="ic_launcher_background">#2B3A8F</color>
+    <!-- White behind the official logo of the launcher icon (design/identite/logo-officiel, D-187). -->
+    <color name="ic_launcher_background">#FFFFFF</color>
     <color name="ic_launcher_neutral_background">#5F6368</color>
     <!-- The background of the window before the first frame: surface1 of PpfPalette (light), so that nothing changes tint at start. -->
     <color name="window_background">#F3F5FB</color>
