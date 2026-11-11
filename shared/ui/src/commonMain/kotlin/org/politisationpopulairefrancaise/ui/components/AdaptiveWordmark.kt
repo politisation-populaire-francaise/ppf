@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalDensity
@@ -12,7 +15,6 @@ import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.sp
 import org.jetbrains.compose.resources.stringResource
@@ -32,7 +34,8 @@ object WordmarkTags {
  * the room left by the buttons wins: the wordmark on two lines at its size; one word per line; one
  * word per line a little smaller; and, with a large font on a small phone, one word per line at a
  * size that no longer follows the font setting (the name is then a logo, read whole by screen
- * readers). Each way is measured with the font size chosen by the user, a word is never broken.
+ * readers). The drawn text says whether it fits, with the font size chosen by the user and the
+ * typeface really drawn; a word is never broken.
  */
 @Composable
 fun AdaptiveWordmark(modifier: Modifier = Modifier) {
@@ -51,21 +54,21 @@ fun AdaptiveWordmark(modifier: Modifier = Modifier) {
         oneWordPerLine to style((dimens.wordmarkSmallSize.value / fontScale).sp),
         oneWordPerLine to style((dimens.wordmarkSmallSize.value * 0.9f / fontScale).sp),
     )
-    val measurer = rememberTextMeasurer()
+    val brand = PpfTheme.palette.brand
     BoxWithConstraints(modifier, contentAlignment = Alignment.CenterStart) {
-        val maxWidth = constraints.maxWidth
-        val maxHeight = constraints.maxHeight
-        val chosen = remember(candidates, maxWidth, maxHeight, measurer) {
-            candidates.firstOrNull { (text, style) ->
-                val size = measurer.measure(text, style, softWrap = false).size
-                size.width <= maxWidth && size.height <= maxHeight
-            } ?: candidates.last()
-        }
+        // Starts again from the first way whenever the room or the font setting changes (a phone turned).
+        var index by remember(constraints.maxWidth, constraints.maxHeight, fontScale) { mutableIntStateOf(0) }
+        val (text, style) = candidates[index.coerceAtMost(candidates.lastIndex)]
         Text(
-            text = chosen.first,
-            color = PpfTheme.palette.brand,
-            style = chosen.second,
+            text = text,
+            color = brand,
+            style = style,
             softWrap = false,
+            // The text itself says when it does not fit, in the typeface really drawn: the identity's is
+            // loaded after the first frame, and a layout measured before it would be too narrow.
+            onTextLayout = { layout ->
+                if ((layout.didOverflowWidth || layout.didOverflowHeight) && index < candidates.lastIndex) index++
+            },
             modifier = Modifier.semantics { contentDescription = name }.testTag(WordmarkTags.WORDMARK),
         )
     }

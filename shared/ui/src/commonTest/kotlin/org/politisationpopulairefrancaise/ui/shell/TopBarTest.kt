@@ -49,7 +49,11 @@ class TopBarTest {
             assertEquals("PolitisationPopulaireFrançaise", shown.replace("\n", "").replace(" ", ""), "$case: the whole name, no abbreviation")
             val layouts = mutableListOf<TextLayoutResult>()
             wordmark.config[SemanticsActions.GetTextLayoutResult].action?.invoke(layouts)
-            assertFalse(layouts.single().hasVisualOverflow, "$case: the name is cut")
+            val layout = layouts.single()
+            assertFalse(
+                layout.hasVisualOverflow,
+                "$case: the name is cut (${layout.lineCount} lines, box ${layout.size}, text ${layout.multiParagraph.width} x ${layout.multiParagraph.height}, ${layout.layoutInput.style.fontSize}, «${layout.layoutInput.text}»)",
+            )
 
             // Nothing overlaps, from the menu to the avatar.
             val order = listOf(ShellTags.MENU_BUTTON, WordmarkTags.WORDMARK, ManifestationTags.HELP_BUTTON, ShellTags.navItem(Space.MESSAGES), ShellTags.NOTIFICATIONS, ShellTags.navItem(Space.MON_ESPACE))
