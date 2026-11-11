@@ -57,6 +57,8 @@ object SiteNavigation {
             NavLink("Le mouvement", "${VoirLinks.HOME}#mouvement"),
             NavLink("Le pouvoir", "${VoirLinks.HOME}#pouvoir"),
             NavLink("Les libertés", "${VoirLinks.HOME}#libertes"),
+            NavLink("Responsables publics", "${VoirLinks.HOME}/personnes"),
+            NavLink("Partis politiques", "${VoirLinks.HOME}/partis"),
             NavLink("Chronologie du mouvement", VoirLinks.CHRONOLOGY),
             NavLink("Observatoire des libertés", VoirLinks.LIBERTIES),
             NavLink("Tableau de bord", "/tableau-de-bord"),

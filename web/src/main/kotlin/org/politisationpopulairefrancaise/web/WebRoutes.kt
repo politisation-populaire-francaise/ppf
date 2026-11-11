@@ -21,6 +21,7 @@ import org.politisationpopulairefrancaise.web.decider.deciderPages
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
 import org.politisationpopulairefrancaise.web.comprendre.comprendrePages
 import org.politisationpopulairefrancaise.web.voir.VoirSource
+import org.politisationpopulairefrancaise.web.voir.voirListPages
 import org.politisationpopulairefrancaise.web.voir.voirPages
 
 /** French description of each space, same wording as the applications. */
@@ -63,26 +64,9 @@ fun Route.webRoutes(
     decider?.let { deciderPages(it, voir) }
     // « En direct », AIDE and the spaces that only exist in the application (the shell of the site, D-215).
     shellPages(voir, comprendre, decider, agenda)
-
-    get("/") {
-        call.respondHtml {
-            siteLayout(pageTitle = "Accueil") {
-                h1 { +"Voir, comprendre, agir, décider" }
-                p { +"Politisation Populaire Française est un collectif citoyen qui veut redonner l’espace politique aux citoyens." }
-                section {
-                    h2 { +"Les espaces de la plateforme" }
-                    ul {
-                        Space.entries.forEach { space ->
-                            li {
-                                a(href = "/${space.id}") { +spaceLabels.getValue(space) }
-                                +" : ${spaceDescriptions.getValue(space)}"
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
+    // The lists of parties and public persons of "Voir", and the search over the whole site.
+    voir?.let { voirListPages(it) }
+    searchPage(voir, comprendre, decider)
 
     Space.entries.filter { it != Space.EN_DIRECT && it !in appSpaces }.filter { (voir == null || it != Space.VOIR) && (comprendre == null || it != Space.COMPRENDRE) && (decider == null || (it != Space.DECIDER && it != Space.REVENDICATIONS)) }.forEach { space ->
         get("/${space.id}") {

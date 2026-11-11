@@ -71,6 +71,22 @@ class VoirPagesTest {
     }
 
     @Test
+    fun theListsOfPersonsAndPartiesLeadToTheSheetsAndTheSiteSearchFindsThem() = testApplication {
+        start()
+        val persons = client.page("/voir/personnes")
+        assertTrue(persons.contains("href=\"/voir/personnes/alex-modele\""))
+        val parties = client.page("/voir/partis")
+        assertTrue(parties.contains("<h1>Partis politiques</h1>"))
+        examples.parties.firstOrNull()?.let { assertTrue(parties.contains(it.name)) }
+        // One search over the site: the person is found by the beginning of a word, accents ignored.
+        val found = client.page("/recherche?q=modele")
+        assertTrue(found.contains("href=\"/voir/personnes/alex-modele\""), found)
+        assertTrue(client.page("/recherche").contains("role=\"search\""))
+        // The site opens on « En direct », as the application does.
+        assertTrue(client.page("/").contains("<h1>En direct</h1>"))
+    }
+
+    @Test
     fun anIndicatorHasItsChartAndTheSameDataAsATable() = testApplication {
         start()
         val html = client.page("/voir/chiffres/manifestants-journees")
