@@ -200,9 +200,9 @@ object FollowUpSchema {
         ),
         // The reader is asked only once every address is well-formed (a wrong address would also make it unreadable).
         checks = listOf(SchemaCheck { draft, event, context -> addresses.problems(draft, event, context).ifEmpty { readable.problems(draft, event, context) } }),
-        // Fails closed until the team lead decides (docs/integration/agir-et-apres.md, questions): a follow-up often
-        // names a public official, so two editors who wrote nothing approve it, as the contents of M17.
-        approvals = EditorialApprovals.M17,
+        // The common rule (team lead, D-190): one approval; EditorialApprovals asks for two when the follow-up
+        // implicates a person (role `cible`), never for a plain mention of an elected official (role `personne`).
+        approvals = EditorialApprovals.ORDINARY,
     )
 
     val all: List<ContentSchema> = listOf(SUITE)

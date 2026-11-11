@@ -89,7 +89,7 @@ Rien à l'étape 1. Le circuit éditorial n'a pas besoin du type pour l'outil de
 4. Vérifier sur l'ordinateur (`gradlew :desktop:run`) : Carte et agenda, onglet « Passés », la projection-débat de Rennes, section « Et après ? » avec ses trois suites, puis un APK (`gradlew :android:assemblePreview`).
 5. Prendre un numéro de décision pour la décision ci-dessous et la reporter dans `docs/DECISIONS.md`, et un numéro de section définitif dans `docs/FORMATS.md` si l'agent d'AG-61 a pris le même (section 9).
 
-## 9. Décision à numéroter
+## 9. Décision D-193
 
 **Contexte** : AG-62 demande les suites sourcées d'une mobilisation passée, reliées aux revendications, aux appels et à la chronologie. Le bloc de numéros de décisions d'« Agir » est épuisé ; cette décision attend son numéro.
 

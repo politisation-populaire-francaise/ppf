@@ -183,7 +183,7 @@ Modifiés (tous du pôle Agir, aucun fichier d'un autre pôle) :
 
 Non touchés : `content/` (la fiche `faire-greve-vos-droits.md` est réécrite par un autre agent ; les textes du simulateur suivent la loi, pas la fiche), `docs/DECISIONS.md`, le serveur, les migrations.
 
-## 8. Décision à numéroter
+## 8. Décision D-191
 
 **Simulateur du gréviste (AG-60), règles et conception.** Contexte : la spécification du cahier fonctionnel (AG-60) demande la retenue selon le statut, le préavis et la déclaration selon le secteur, et les caisses de grève proches, avec des règles vérifiées sur Légifrance et relues. Options étudiées pour l'entrée : (A) une nouvelle carte sur l'accueil d'« Agir » ; (B) un encadré à la fin des caisses de la rubrique Solidarité ; (C) un quatrième onglet de la rubrique. Choix : **B** (l'accueil et les onglets restent tels quels, l'encadré est à côté des caisses de grève, dont il réutilise l'annuaire). Règles retenues : section 2 de cette note (privé : 52/12 de la durée hebdomadaire ; État : trentième indivisible et jours sans service compris ; territoriale et hospitalière : 1/30, 1/60, 1/151,67, au plus un trentième par jour). Points laissés hors du simulateur, à confirmer : section 2.8. Données : tout en mémoire, rien d'enregistré ni d'envoyé, partie `agir-strike-simulator` de l'effacement rapide. Raison : livrer un outil utile pendant le mouvement sans jamais garder ni transmettre le salaire, et ne rien affirmer qu'une source officielle ne dit pas.
 

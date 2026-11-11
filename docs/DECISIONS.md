@@ -1481,3 +1481,31 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Serveur : « Oui j'achète le serveur demain » (12 novembre 2026), en suivant `docs/guides/serveur-hostinger-kvm1.md` avec l'offre KVM 2 retenue le 7 novembre 2026. Le jalon 5 (mise en ligne) démarre à cet achat ; la préproduction peut être déployée par paquet avant la liaison GitHub (D-128).
 - Modération : rappel de la propriétaire, déjà écrit au cahier des charges (5.6) et dans `CLAUDE.md` : « C'est l'ia qui filtre et l'equipe qui tranche ce qui est mis en alerte par l'ia, et y'a aussi les signalements des users ». Aucune décision nouvelle. Reste ouvert, avant l'ouverture publique seulement : l'hébergement du modèle d'IA (brainstorming du cahier des charges, entrée du 4 novembre 2026).
 - Sources : la propriétaire n'est pas abonnée à Mediapart ; elle fournira des captures d'écran de publications des médias de confiance.
+
+## D-190 (2026-11-11) Agir, questions en attente du MVP 1 : réponses du chef d'équipe
+
+- Contexte : questions des notes `docs/integration/agir-*.md` relevées par la session « [Agir] MVP 1 » (note `agir-questions-mvp1.md` du dossier partagé des sessions), réponses du chef d'équipe du 11 novembre 2026.
+- Choix, à faire par la session Agir :
+  1. Rien de PPF ne quitte le téléphone par une sauvegarde ou un transfert d'appareil à appareil : `android:dataExtractionRules` (`res/xml/data_extraction_rules.xml`, tous les domaines exclus de `cloud-backup` et de `device-transfer`), en plus d'`allowBackup="false"` ; `tools/check-apk.sh` le vérifie dans l'APK (AG-58, question 5).
+  2. Un appel lu sur une affiche (AG-61) s'ouvre dans les appels d'« Agir », depuis la carte comme depuis l'agenda d'« Agir » (`onOpenCall` branché dans la coquille).
+  3. Codes de refus précis des collectifs, ajoutés à la fin de `RejectionReason` : `COLLECTIVE_NEEDS_VERIFIED`, `COLLECTIVE_IMMUTABLE`, `COLLECTIVE_ROLE_REQUIRED` (M24, question 4).
+  4. « Et après ? » (AG-62) suit la règle commune d'`EditorialApprovals` : une approbation par défaut, deux quand la suite met en cause une personne (rôle `cible`) ; une simple mention d'un élu (rôle `personne`) n'en demande pas deux.
+- Validé en bloc tel que codé : collectifs publics seulement, appartenance gardée sur l'appareil, pas de statuts publiés (M24, questions 1 à 3) ; minuteur (AG-55, questions 1 à 7, texte de l'écran sur la liste de relecture de l'avocat) ; caméra protégée (AG-58, questions 1 à 4) ; simulateur du gréviste (AG-60, questions 1 à 3, 5 et 6, avec une carte « Simulateur du gréviste » dans la rubrique « Tenir ») ; proches à mobiliser (AG-63, questions 1 à 7).
+- Pour plus tard, hors MVP 1 : aligner le `FLAG_SECURE` de la caméra protégée sur D-083 (activé par défaut, retirable après mise en garde, principe 10).
+- « Rues bloquées » sur la carte : dans le MVP 1, seulement les blocages du mouvement annoncés dans l'agenda, mis en avant « en cours » sur la carte ; fermetures officielles et signalements en direct attendent ; jamais la position des forces de l'ordre (points d'attention n° 14 et 24).
+
+## D-191 (2026-11-09, numérotée le 2026-11-11) Simulateur du gréviste (AG-60)
+
+- Décision écrite à la section 8 de `docs/integration/agir-simulateur-greve.md` (entrée par l'encadré des caisses de grève, règles de retenue par statut, cas incertains sans montant), complétée par D-190 (carte dans « Tenir »).
+
+## D-192 (2026-11-09, numérotée le 2026-11-11) Affiche et tract à code QR (AG-61)
+
+- Décision écrite à la section 9 de `docs/integration/agir-affiche-qr.md` (événement signé dans le code QR, `PPF:EVENT:1:` Base45 et gzip, niveau M, adresse de repli), complétée par D-190 (ouverture de l'appel lu).
+
+## D-193 (2026-11-09, numérotée le 2026-11-11) « Et après ? », les suites d'une mobilisation (AG-62)
+
+- Décision écrite à la section 9 de `docs/integration/agir-et-apres.md` (type éditorial `suite`, option A), avec la règle d'approbation de D-190 à la place des deux approbations par prudence.
+
+## D-194 (2026-11-09, numérotée le 2026-11-11) « Mes proches à mobiliser » (AG-63)
+
+- Décision écrite à la section 9 de `docs/integration/agir-proches.md` (liste privée sur l'appareil seulement, effacée avec les clés), complétée par D-190.

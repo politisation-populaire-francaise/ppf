@@ -455,7 +455,11 @@ private fun SpaceContent(
                 groups = groupsLibrary,
                 agenda = { slotModifier, onBack ->
                     AgirPlugged(stringResource(Res.string.agenda_in_agir_title), onBack, slotModifier) { inner ->
-                        AgendaScreen(dependencies, accountSession, windowClass, inner, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
+                        AgendaScreen(
+                            dependencies, accountSession, windowClass, inner, onNavigate, agenda = agendaLibrary, organisationName = organisationName,
+                            // A call read on a poster (AG-61, D-190): "Agir" sees it selected and opens its calls.
+                            onOpenCall = { address -> callsLibrary.openAddress(address) },
+                        )
                     }
                 },
                 calls = { slotModifier, onBack ->
@@ -502,7 +506,14 @@ private fun SpaceContent(
         Space.CARTE -> {
             // The directory names the verified organisers of the agenda.
             LaunchedEffect(organisationsLibrary) { organisationsLibrary.ensureStarted() }
-            AgendaScreen(dependencies, accountSession, windowClass, modifier, onNavigate, agenda = agendaLibrary, organisationName = organisationName)
+            AgendaScreen(
+                dependencies, accountSession, windowClass, modifier, onNavigate, agenda = agendaLibrary, organisationName = organisationName,
+                // A call read on a poster (AG-61, D-190) opens in the calls of "Agir".
+                onOpenCall = { address ->
+                    callsLibrary.openAddress(address)
+                    onNavigate(Space.AGIR)
+                },
+            )
         }
     }
 }

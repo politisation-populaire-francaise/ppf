@@ -6,6 +6,7 @@ import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.editorial.schema.CheckContext
 import org.politisationpopulairefrancaise.core.editorial.schema.Codes
 import org.politisationpopulairefrancaise.core.editorial.schema.ContentDraft
+import org.politisationpopulairefrancaise.core.editorial.schema.EditorialApprovals
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialEngine
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialMessages
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSchemas
@@ -16,6 +17,8 @@ import org.politisationpopulairefrancaise.core.editorial.schema.Position
 import org.politisationpopulairefrancaise.core.editorial.schema.Problem
 import org.politisationpopulairefrancaise.core.editorial.schema.ValueSpec
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.platform.SigningUse
+import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.signing.UnsignedEvent
@@ -300,5 +303,20 @@ class FollowUpSchemaTest {
         assertFailsWith<IllegalArgumentException> {
             FieldSpec("x", "l", value = ValueSpec.Positional(listOf(Position("p", "l", FieldType.Text()))), tag = "a", addressRole = "role")
         }
+    }
+    @Test
+    fun oneApprovalUnlessTheFollowUpImplicatesAPerson() {
+        // D-190: the common rule of EditorialApprovals; a plain mention of an elected official is not enough for two.
+        fun suite(vararg links: List<String>) = UnsignedEvent(
+            author.hex, 1_793_000_000L, EventKinds.LONG_FORM_ARTICLE,
+            listOf(listOf("d", "suite-exemple"), listOf("ppf-type", ArticleType.SUITE.tagValue)) + links.toList(),
+            "[EXEMPLE]",
+        )
+        val person = "30023:${"b".repeat(64)}:personne-exemple"
+        val use = SigningUse.EDITORIAL_COMPRENDRE
+        assertEquals(EditorialApprovals.ORDINARY, schema.approvals)
+        assertEquals(EditorialApprovals.ORDINARY, EditorialApprovals.required(schema, use, suite()))
+        assertEquals(EditorialApprovals.ORDINARY, EditorialApprovals.required(schema, use, suite(listOf("a", person, "", FollowUpLinkKind.PERSON.role))))
+        assertEquals(EditorialApprovals.M17, EditorialApprovals.required(schema, use, suite(listOf("a", person, "", "cible"))))
     }
 }

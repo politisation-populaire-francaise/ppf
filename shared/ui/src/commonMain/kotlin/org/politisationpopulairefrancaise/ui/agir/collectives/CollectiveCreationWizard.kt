@@ -61,6 +61,7 @@ import org.politisationpopulairefrancaise.ui.groups.CreationError
 import org.politisationpopulairefrancaise.ui.groups.CreationErrorView
 import org.politisationpopulairefrancaise.ui.groups.HeldView
 import org.politisationpopulairefrancaise.ui.icons.Lucide
+import org.politisationpopulairefrancaise.core.publication.RejectionReason
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.collectifs_checking
 import org.politisationpopulairefrancaise.ui.resources.collectifs_create_room
@@ -104,6 +105,8 @@ import org.politisationpopulairefrancaise.ui.resources.collectifs_wizard_next
 import org.politisationpopulairefrancaise.ui.resources.collectifs_wizard_no_server
 import org.politisationpopulairefrancaise.ui.resources.collectifs_wizard_previous
 import org.politisationpopulairefrancaise.ui.resources.collectifs_wizard_refused
+import org.politisationpopulairefrancaise.ui.resources.collectifs_wizard_refused_immutable
+import org.politisationpopulairefrancaise.ui.resources.collectifs_wizard_refused_role
 import org.politisationpopulairefrancaise.ui.resources.collectifs_wizard_scope
 import org.politisationpopulairefrancaise.ui.resources.collectifs_wizard_soon_invitation
 import org.politisationpopulairefrancaise.ui.resources.collectifs_wizard_soon_private
@@ -509,8 +512,15 @@ private fun StepConfirm(library: CollectivesLibrary, session: AccountSession) {
         Spacer(Modifier.height(16.dp))
         // The answers of the server, as the rooms' form shows them (duplicate, close names, too many, offline...).
         CreationErrorView(groups, session, launch = { block -> scope.launch { block() } })
-        if (groups.creationError is CreationError.Refused) {
-            Text(stringResource(Res.string.collectifs_wizard_refused), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag(CollectivesTags.REFUSED))
+        val refusal = groups.creationError as? CreationError.Refused
+        if (refusal != null) {
+            // The precise code of the server when it has one (D-190), else the general explanation.
+            val text = when (refusal.reason) {
+                RejectionReason.COLLECTIVE_IMMUTABLE -> Res.string.collectifs_wizard_refused_immutable
+                RejectionReason.COLLECTIVE_ROLE_REQUIRED -> Res.string.collectifs_wizard_refused_role
+                else -> Res.string.collectifs_wizard_refused
+            }
+            Text(stringResource(text), style = MaterialTheme.typography.bodyMedium, modifier = Modifier.testTag(CollectivesTags.REFUSED))
             Spacer(Modifier.height(12.dp))
         }
     }

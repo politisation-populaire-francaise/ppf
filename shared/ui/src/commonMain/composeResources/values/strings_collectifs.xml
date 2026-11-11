@@ -156,4 +156,6 @@
     <string name="collectifs_wizard_submit">Créer le collectif</string>
     <string name="collectifs_wizard_submitting">Création…</string>
     <string name="collectifs_wizard_refused">Le serveur a refusé ce collectif. Vérifiez que votre compte est toujours validé en personne (Mon espace, carte « Mon niveau de votant ») et que les textes respectent les limites.</string>
+    <string name="collectifs_wizard_refused_immutable">Le serveur a refusé ce changement : ce qui fait un collectif (son territoire, son type, ses thèmes) ne change plus une fois qu'il est créé. Créez un nouveau collectif si besoin.</string>
+    <string name="collectifs_wizard_refused_role">Le serveur a refusé : seuls le fondateur et les modérateurs du collectif peuvent publier en son nom.</string>
 </resources>

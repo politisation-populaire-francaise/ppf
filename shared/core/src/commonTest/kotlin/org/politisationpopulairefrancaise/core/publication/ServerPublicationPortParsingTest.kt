@@ -25,6 +25,10 @@ class ServerPublicationPortParsingTest {
         assertEquals(RejectionReason.DESCRIPTION_TOO_LONG, ServerPublicationPort.rejectionReason("description_too_long"))
         // A room action the account may not take (roles of the rooms, D-131).
         assertEquals(RejectionReason.NOT_ALLOWED, ServerPublicationPort.rejectionReason("not_allowed"))
+        // The refusals of the collectifs of "Agir" (M24, D-190).
+        assertEquals(RejectionReason.COLLECTIVE_NEEDS_VERIFIED, ServerPublicationPort.rejectionReason("collective_needs_verified"))
+        assertEquals(RejectionReason.COLLECTIVE_IMMUTABLE, ServerPublicationPort.rejectionReason("collective_immutable"))
+        assertEquals(RejectionReason.COLLECTIVE_ROLE_REQUIRED, ServerPublicationPort.rejectionReason("collective_role_required"))
         assertEquals(RejectionReason.REFUSED, ServerPublicationPort.rejectionReason("some_new_error"))
         assertEquals(RejectionReason.REFUSED, ServerPublicationPort.rejectionReason(null))
     }

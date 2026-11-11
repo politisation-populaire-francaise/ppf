@@ -150,8 +150,20 @@ fun AgirScreen(
      * null builds one for as long as "Agir" is shown (tests).
      */
     proches: ProchesState? = null,
+    /**
+     * A rubric the shell asks to open (the tutorial's « m'allier » opens [AgirRoute.GATHER]); applied once,
+     * then [onRouteRequestHandled] lets the shell forget it. Works whether "Agir" was already shown or not.
+     */
+    requestedRoute: AgirRoute? = null,
+    onRouteRequestHandled: () -> Unit = {},
 ) {
     var route by rememberSaveable { mutableStateOf(AgirRoute.HOME) }
+    LaunchedEffect(requestedRoute) {
+        if (requestedRoute != null) {
+            route = requestedRoute
+            onRouteRequestHandled()
+        }
+    }
     // Where the back button of the directory leads when a plugged screen opened an organisation's page.
     var returnTo by rememberSaveable { mutableStateOf<AgirRoute?>(null) }
     val directory = organisations ?: rememberOrganisationsLibrary(dependencies)
@@ -169,6 +181,14 @@ fun AgirScreen(
     val collectives = rememberCollectivesLibrary(dependencies, rooms)
     val agendaOfCollectives = agendaLibrary ?: rememberAgendaLibrary(dependencies, start = false)
     val callsOfCollectives = callsLibrary ?: rememberCallsLibrary(dependencies, start = false)
+    // A call opened from elsewhere (a poster scanned on the map, AG-61, D-190) shows at once when "Agir" opens.
+    LaunchedEffect(Unit) {
+        if (route == AgirRoute.HOME && requestedRoute == null && callsOfCollectives.selected != null) route = AgirRoute.CALLS
+    }
+    // ...and from the agenda of "Agir" (its poster scanner selects the call): the calls take over.
+    LaunchedEffect(callsOfCollectives.selected?.address) {
+        if (route == AgirRoute.AGENDA && callsOfCollectives.selected != null) route = AgirRoute.CALLS
+    }
     val solidarityLibrary = solidarity ?: rememberSolidarityLibrary(dependencies)
     // AG-60: what is typed in the simulator (the pay among it) stays in memory, handed to the quick erase.
     val strike = strikeSimulator ?: rememberStrikeSimulatorState(dependencies)

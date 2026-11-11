@@ -113,6 +113,16 @@ if [ "$not_debuggable" -eq 1 ]; then
     else
         echo "ok   not debuggable"
     fi
+    # Nothing leaves the phone by a backup or a device-to-device transfer (D-190): allowBackup stays
+    # false (Android 11 and older) and dataExtractionRules excludes every domain (Android 12 and later).
+    manifest_tree="$("$aapt2" dump xmltree --file AndroidManifest.xml "$apk" | tr -d '\r')"
+    if grep -qE 'android:allowBackup\([^)]*\)=false' <<<"$manifest_tree" \
+        && grep -qE 'android:dataExtractionRules\([^)]*\)=@' <<<"$manifest_tree"; then
+        echo "ok   no backup and no device-to-device transfer (allowBackup=false, dataExtractionRules)"
+    else
+        echo "UNEXPECTED  backup or device-to-device transfer allowed (allowBackup or dataExtractionRules missing)" >&2
+        status=1
+    fi
 fi
 
 if [ -n "$expected_cert" ]; then

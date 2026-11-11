@@ -89,7 +89,7 @@ Modifiés (pôle « Agir ») :
 
 **Aucun fichier d'un autre pôle n'est modifié.** Utilisés sans les toucher : le composant QR de « Décider » (`ui/components/qr`), `VoirLinks` de « Voir » (`SITE`, `encodeSegment`), `OfficialSite` (`core/editorial`), `GuideReader` et `LocalHelpState` du mode manifestation d'« Agir ». Le shell (`AdaptiveShell.kt`) n'est pas modifié : les écrans s'ouvrent à l'intérieur d'`AgendaScreen` et de `CallsScreen`, avec les valeurs par défaut des nouveaux paramètres. Rien dans les fichiers d'AG-60 (simulateur de grève).
 
-## 9. Décision à numéroter
+## 9. Décision D-192
 
 **Affiche et tract à code QR, étape 1 (AG-61)** : contexte, cahier fonctionnel ligne 404 ; décision par délégation de la propriétaire au chef d'équipe (brainstorming du 8 novembre 2026).
 

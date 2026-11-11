@@ -77,7 +77,7 @@ Un seul petit document JSON (`ProchesData`, version 1), comme le minuteur d'AG-5
 - Les mobilisations et appels n'apparaissent que si l'agenda ou les appels ont été ouverts au moins une fois (c'est là que l'appareil les reçoit) ; la ligne « Pas encore de contenu sur ces sujets » le dit.
 - La correspondance par mots peut manquer un contenu (« repas scolaire » n'est pas « cantine ») ou en prendre un de trop.
 
-## 9. Décision à numéroter
+## 9. Décision D-194
 
 **« Mes proches à mobiliser » (AG-63), conception de l'étape 1.** Contexte : cahier fonctionnel, AG-63 (ligne 405), avec la dépendance « Opinions supposées d'autrui (RGPD, article 9) : jamais envoyées, mise en garde » ; conception donnée par la session « Agir » le 9 novembre 2026. Choix :
 
