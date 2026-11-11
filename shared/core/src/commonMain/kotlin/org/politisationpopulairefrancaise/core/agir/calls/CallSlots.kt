@@ -12,6 +12,7 @@ import org.politisationpopulairefrancaise.core.messaging.GiftWrap
 import org.politisationpopulairefrancaise.core.messaging.LocalMessagingSigner
 import org.politisationpopulairefrancaise.core.messaging.MessagingSigner
 import org.politisationpopulairefrancaise.core.signing.EventKinds
+import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 
@@ -79,6 +80,9 @@ object SlotApi {
     const val SIGNUPS: String = "$SLOTS/signups"
     const val WITHDRAW: String = "$SLOTS/withdraw"
 
+    /** The organizer removes a signup (a fake one, a duplicate), authenticated by the key of the call (NIP-98). */
+    const val REMOVE: String = "$SLOTS/remove"
+
     /** The proof of work asked for a signup unless the server says otherwise. */
     const val WORK_BITS: Int = 16
 
@@ -119,6 +123,10 @@ data class SlotEnvelopes(val envelopes: List<SignedEvent>)
 @Serializable
 data class SlotWithdrawal(val id: String, val token: String)
 
+/** `POST /api/v1/agir/slots/remove`: the organizer removes the signup [id], with `Authorization: Nostr` signed by the author of the call. */
+@Serializable
+data class SlotRemoval(val id: String)
+
 /** A signup ready to send, and the token the device keeps to withdraw it. */
 class PreparedSignup(val request: SlotSignupRequest, val token: String)
 
@@ -146,6 +154,9 @@ interface SlotClient {
 
     /** The envelopes of the signups of [call], for its organizer. */
     suspend fun signups(call: String): List<SignedEvent>?
+
+    /** The organizer removes the signup [id] of one of their calls, signing the request with [organizer] (NIP-98). */
+    suspend fun remove(id: String, organizer: EventSigner): SlotOutcome = SlotOutcome.Refused(null)
 }
 
 /**
@@ -174,6 +185,10 @@ object SlotSignups {
 
     /** SHA-256 of the token, in lowercase hexadecimal: what the server keeps. */
     fun hashToken(token: String): String = Crypto.sha256(token.encodeToByteArray()).toHex()
+
+    /** Opens a signup with the key of the organizer, with the id of its envelope; null when it is not a signup to [callAddress]. */
+    fun openWithId(envelope: SignedEvent, organizer: MessagingSigner, callAddress: String): Pair<String, SlotSignupMessage>? =
+        open(envelope, organizer, callAddress)?.let { envelope.id to it }
 
     /** Opens a signup with the key of the organizer; null when it is not a signup to [callAddress]. */
     fun open(envelope: SignedEvent, organizer: MessagingSigner, callAddress: String): SlotSignupMessage? = runCatching {

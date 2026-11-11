@@ -231,6 +231,7 @@ fun CallsScreen(
                     modifier = Modifier.fillMaxSize(),
                     onMakePoster = { posterOf = it },
                     messagingSigner = session.messagingSigner,
+                    eventSigner = session.signer,
                 )
             }
             val selected = library.selected

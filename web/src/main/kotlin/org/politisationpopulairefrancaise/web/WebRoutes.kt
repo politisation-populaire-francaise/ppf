@@ -49,6 +49,8 @@ fun Route.webRoutes(
     comprendre: ComprendreSource? = null,
     decider: DeciderSource? = null,
     agenda: AgendaSource? = null,
+    /** The published calls, organisations and collectifs of « Agir », for the search of the site. */
+    agirSearch: AgirSearchSources = AgirSearchSources(),
 ) {
     staticResources("/static", "static")
     // Browsers ask for /favicon.ico at the root by themselves: the same file as in /static.
@@ -66,7 +68,7 @@ fun Route.webRoutes(
     shellPages(voir, comprendre, decider, agenda)
     // The lists of parties and public persons of "Voir", and the search over the whole site.
     voir?.let { voirListPages(it) }
-    searchPage(voir, comprendre, decider)
+    searchPage(voir, comprendre, decider, agirSearch)
 
     Space.entries.filter { it != Space.EN_DIRECT && it !in appSpaces }.filter { (voir == null || it != Space.VOIR) && (comprendre == null || it != Space.COMPRENDRE) && (decider == null || (it != Space.DECIDER && it != Space.REVENDICATIONS)) }.forEach { space ->
         get("/${space.id}") {

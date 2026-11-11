@@ -1,6 +1,21 @@
 package org.politisationpopulairefrancaise.server.agir
 
+import io.ktor.client.request.header
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import io.ktor.serialization.kotlinx.json.json
+import io.ktor.server.application.install
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.routing.routing
+import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.runBlocking
+import org.politisationpopulairefrancaise.core.agir.calls.SlotApi
+import org.politisationpopulairefrancaise.core.agir.calls.SlotRemoval
+import org.politisationpopulairefrancaise.core.urne.Nip98
 import org.politisationpopulairefrancaise.core.agir.calls.Call
 import org.politisationpopulairefrancaise.core.agir.calls.CallSlots
 import org.politisationpopulairefrancaise.core.agir.calls.SlotSignups
@@ -68,5 +83,26 @@ class SlotSignupStoreTest {
         assertEquals("bad_envelope", (store.signUp(signup.request.copy(call = other), work = 0) as SlotSignupResult.Refused).refusal.code)
         assertEquals("bad_envelope", (store.signUp(signup.request, work = 30) as SlotSignupResult.Refused).refusal.code, "not enough proof of work")
         assertEquals(0, store.purge())
+    }
+
+    @Test
+    fun onlyTheAuthorOfTheCallRemovesASignup() = testApplication {
+        application {
+            install(ContentNegotiation) { json() }
+            routing { slotApi(store) }
+        }
+        val call = publishedCall(places = 3)
+        val signup = runBlocking { SlotSignups.prepare(call, call.slots.single(), "Faux nom", work = 0) }
+        assertIs<SlotSignupResult.Stored>(store.signUp(signup.request, work = 0))
+        val body = SlotApi.json.encodeToString(SlotRemoval.serializer(), SlotRemoval(signup.request.envelope.id))
+        suspend fun removeAs(signer: LocalEventSigner) = client.post(SlotApi.REMOVE) {
+            contentType(ContentType.Application.Json)
+            header(HttpHeaders.Authorization, Nip98.authorization(signer, "http://localhost${SlotApi.REMOVE}", "POST", body.encodeToByteArray(), nowSeconds()))
+            setBody(body)
+        }
+        assertEquals(HttpStatusCode.Unauthorized, removeAs(LocalEventSigner(IdentityKeys.generate())).status)
+        assertEquals(mapOf("c1" to 1), store.counts(call.address.toString()))
+        assertEquals(HttpStatusCode.NoContent, removeAs(organizer).status)
+        assertEquals(emptyMap(), store.counts(call.address.toString()))
     }
 }

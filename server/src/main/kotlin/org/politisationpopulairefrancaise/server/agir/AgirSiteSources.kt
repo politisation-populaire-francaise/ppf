@@ -7,7 +7,13 @@ import org.politisationpopulairefrancaise.core.agir.calls.Call
 import org.politisationpopulairefrancaise.core.agir.organisations.Organisation
 import org.politisationpopulairefrancaise.server.events.EventFilter
 import org.politisationpopulairefrancaise.server.events.EventRepository
+import org.politisationpopulairefrancaise.core.agir.collectives.Collective
+import org.politisationpopulairefrancaise.core.agir.solidarity.SolidarityFormats
+import org.politisationpopulairefrancaise.core.agir.solidarity.SolidarityFund
+import org.politisationpopulairefrancaise.server.groups.GroupDirectory
 import org.politisationpopulairefrancaise.web.CallsSource
+import org.politisationpopulairefrancaise.web.CollectivesSource
+import org.politisationpopulairefrancaise.web.FundsSource
 import org.politisationpopulairefrancaise.web.OrganisationsSource
 
 /**
@@ -28,4 +34,16 @@ fun organisationsSource(events: EventRepository, isEditor: (String) -> Boolean):
     withContext(Dispatchers.IO) {
         events.query(EventFilter(kinds = listOf(Organisation.KIND), tags = mapOf(AgirFormats.TAG_TYPE to listOf(AgirFormats.TYPE_ORGANISATION)), limit = EventFilter.MAX_LIMIT))
     }.filter { isEditor(it.pubkey) }.mapNotNull(Organisation::parse)
+}
+
+/** The solidarity funds of the site (`/agir/solidarite`): entries signed by an editorial key, as on the device. */
+fun fundsSource(events: EventRepository, isEditor: (String) -> Boolean): FundsSource = FundsSource {
+    withContext(Dispatchers.IO) {
+        events.query(EventFilter(kinds = listOf(SolidarityFund.KIND), tags = mapOf(AgirFormats.TAG_TYPE to listOf(SolidarityFormats.TYPE_FUND)), limit = EventFilter.MAX_LIMIT))
+    }.filter { isEditor(it.pubkey) }.mapNotNull(SolidarityFund::parse)
+}
+
+/** The collectifs of the site (`/agir/collectifs`): the rooms described as collectifs, filtered by territory as for the rooms. */
+fun collectivesSource(groups: GroupDirectory): CollectivesSource = CollectivesSource { territory ->
+    withContext(Dispatchers.IO) { groups.search(null, territory, GroupDirectory.MAX_LIMIT) }.mapNotNull { Collective.from(it.event) }
 }

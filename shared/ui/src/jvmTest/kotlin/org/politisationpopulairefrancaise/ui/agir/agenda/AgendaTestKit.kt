@@ -222,7 +222,7 @@ internal fun TestAgenda(
     onReady: (AgendaLibrary, AccountSession) -> Unit = { _, _ -> },
 ) {
     val scope = rememberCoroutineScope()
-    val agenda = remember { AgendaLibrary(device.store, device.state, trust, device.server, scope, clock).also { it.start() } }
+    val agenda = remember { AgendaLibrary(device.store, device.state, trust, device.server, scope, clock = clock).also { it.start() } }
     val session = remember { AccountSession(device.identityStore, scope).also { it.start() } }
     remember { onReady(agenda, session) }
     PpfTheme(darkTheme = dark) {

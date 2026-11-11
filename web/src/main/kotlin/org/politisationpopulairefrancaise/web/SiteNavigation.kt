@@ -46,11 +46,13 @@ object SiteNavigation {
         Space.AGIR to listOf(
             NavLink("Toutes les rubriques", "/agir"),
             NavLink("Agenda des mobilisations", "/agenda"),
-            NavLink("Témoigner", "/agir#temoigner"),
-            NavLink("Se réunir", "/agir#collectifs"),
-            NavLink("S’engager en politique", "/agir#s-engager"),
-            NavLink("Solidarité et caisses de grève", "/agir#solidarite"),
+            NavLink("Appels à agir", "/agir/appels"),
+            NavLink("Kits d’action citoyenne", AgirSitePaths.KITS),
+            NavLink("S’engager en politique", AgirSitePaths.ENGAGER),
+            NavLink("Collectifs", AgirSitePaths.COLLECTIVES),
+            NavLink("Solidarité et caisses de grève", AgirSitePaths.SOLIDARITY),
             NavLink("Annuaire des organisations", "/organisations"),
+            NavLink("Témoigner", "/agir#temoigner"),
         ),
         Space.VOIR to listOf(
             NavLink("Vue d’ensemble", VoirLinks.HOME),

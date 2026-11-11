@@ -26,6 +26,8 @@
     <string name="slots_organizer_show">Voir les inscrits</string>
     <string name="slots_organizer_none">Personne n’est encore inscrit.</string>
     <string name="slots_organizer_note">Ces noms sont déchiffrés sur cet appareil seulement et ne sont gardés nulle part.</string>
+    <string name="slots_organizer_remove">Retirer</string>
+    <string name="slots_organizer_remove_failed">Le retrait n’est pas parti. Réessayez plus tard.</string>
     <string name="slots_organizer_failed">Impossible de lire les inscriptions pour l’instant.</string>
     <string name="slots_reminder_title">Créneau : %1$s</string>
     <string name="slots_editor_title">Créneaux (facultatif)</string>

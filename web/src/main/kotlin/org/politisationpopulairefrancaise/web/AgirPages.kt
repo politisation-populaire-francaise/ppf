@@ -90,14 +90,14 @@ private const val MAX_FILTER_LENGTH: Int = 200
 fun callPath(call: Call): String = AgirLinks.pathOf(call)
 
 /**
- * The public pages of « Agir » readable without JavaScript: the open calls (`/appels`, filtered by type and
+ * The public pages of « Agir » readable without JavaScript: the open calls (`/agir/appels`, filtered by type and
  * territory by a form sent by GET), the page of one call (`/agir/appels/<key>/<identifier>`, the address of the
  * posters) and the directory of the organisations (`/organisations`). Only what the server published: the calls held
  * for review never show. Links lead out of the site only to web addresses, marked as such.
  */
 fun Route.agirPages(calls: CallsSource?, organisations: OrganisationsSource?) {
     if (calls != null) {
-        get("/appels") {
+        get(AgirLinks.CALLS) {
             val parameters = call.request.queryParameters
             val type = parameters["type"]?.let(CallType::fromTag)
             val territory = parameters["territory"]?.trim()?.take(MAX_FILTER_LENGTH)?.takeIf { it.isNotEmpty() }
@@ -140,7 +140,7 @@ fun HTML.callsDocument(type: CallType?, territory: String?, calls: List<Call>) {
     siteLayout(pageTitle = "Appels à agir", currentSpace = Space.AGIR) {
         h1 { +"Appels à agir" }
         p { +"Grèves, manifestations, soutiens, blocages, pétitions, collectes : les appels ouverts, publiés par l’équipe, par les organisations vérifiées ou relus avant publication. Pour répondre ou lancer un appel, utilisez l’application." }
-        form(action = "/appels", method = FormMethod.get) {
+        form(action = AgirLinks.CALLS, method = FormMethod.get) {
             attributes["role"] = "search"
             attributes["aria-label"] = "Filtrer les appels"
             label { htmlFor = "appels-type"; +"Type" }
@@ -189,7 +189,7 @@ fun HTML.callsDocument(type: CallType?, territory: String?, calls: List<Call>) {
 /** The page of one call: what, when, where, who, the text, and the legal notice of a call to block (D-199). */
 fun HTML.callDocument(item: Call) {
     siteLayout(pageTitle = item.title.trim(), currentSpace = Space.AGIR) {
-        p { a(href = "/appels") { +"Tous les appels" } }
+        p { a(href = AgirLinks.CALLS) { +"Tous les appels" } }
         h1 {
             if (item.status == CallStatus.CLOSED) strong { +"Clos : " }
             +item.title.trim()
@@ -285,6 +285,7 @@ fun HTML.organisationsDocument(type: String?, territory: String?, entries: List<
             }
             entries.forEach { entry ->
                 article(classes = "agenda-event") {
+                    id = "org-${entry.slug}"
                     h3 { +entry.name.trim() }
                     dl {
                         dt { +"Type" }
@@ -312,7 +313,7 @@ private fun HTML.notFoundDocument() {
     siteLayout(pageTitle = "Appel introuvable", currentSpace = Space.AGIR) {
         h1 { +"Appel introuvable" }
         p { +"Cet appel n’existe pas ou n’est plus publié." }
-        p { a(href = "/appels") { +"Voir les appels ouverts" } }
+        p { a(href = AgirLinks.CALLS) { +"Voir les appels ouverts" } }
     }
 }
 

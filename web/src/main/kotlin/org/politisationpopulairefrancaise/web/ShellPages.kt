@@ -16,6 +16,7 @@ import kotlinx.html.p
 import kotlinx.html.section
 import kotlinx.html.span
 import kotlinx.html.ul
+import org.politisationpopulairefrancaise.core.agir.poster.AgirLinks
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.agir.manifestation.EmergencyChannel
 import org.politisationpopulairefrancaise.core.agir.manifestation.EmergencyNumber
@@ -257,18 +258,20 @@ private val appPages: Map<Space, AppSpacePage> = mapOf(
         rubrics = listOf(
             AppRubric("agenda", "Agenda des mobilisations", "Manifestations, grèves, rassemblements, blocages et assemblées générales, près de chez vous et partout en France.", NavLink("Ouvrir l’agenda", "/agenda")),
             AppRubric("temoigner", "Témoigner", "Photos, vidéos et récits envoyés par un canal sécurisé, vérifiés et anonymisés avant publication."),
-            AppRubric("collectifs", "Se réunir", "Trouver un collectif près de chez vous, voir ses événements et ses appels, ou en fonder un. Les salons de discussion restent ouverts à tous.", NavLink("Organiser une réunion publique, déclarer une manifestation", fiche("declarer-une-manifestation"))),
-            AppRubric("s-engager", "S’engager en politique", "S’inscrire sur les listes électorales, voter, se présenter, monter une liste, créer ou rejoindre un parti : dans l’ordre du calendrier, les mêmes outils pour tous.", NavLink("Constituer une liste citoyenne", fiche("constituer-une-liste-citoyenne"))),
-            AppRubric("solidarite", "Solidarité et caisses de grève", "Caisses de grève et de solidarité juridique vérifiées par l’équipe, avec des liens vers leurs propres pages de dons.", NavLink("Faire grève : vos droits", fiche("faire-greve-vos-droits"))),
+            AppRubric("collectifs", "Se réunir", "Trouver un collectif près de chez vous, voir ses événements et ses appels, ou en fonder un. Les salons de discussion restent ouverts à tous.", NavLink("Les collectifs", AgirSitePaths.COLLECTIVES)),
+            AppRubric("s-engager", "S’engager en politique", "S’inscrire sur les listes électorales, voter, se présenter, monter une liste, créer ou rejoindre un parti : dans l’ordre du calendrier, les mêmes outils pour tous.", NavLink("Les étapes, dans l’ordre du calendrier", AgirSitePaths.ENGAGER)),
+            AppRubric("solidarite", "Solidarité et caisses de grève", "Caisses de grève et de solidarité juridique vérifiées par l’équipe, avec des liens vers leurs propres pages de dons.", NavLink("Les caisses vérifiées", AgirSitePaths.SOLIDARITY)),
             AppRubric("organisations", "Organisations", "Associations, syndicats, collectifs, legal teams, street medics et avocats bénévoles, vérifiés par l’équipe de PPF.", NavLink("L’annuaire des organisations", "/organisations")),
-            AppRubric("appels", "Appels", "Se réunir, soutenir une cause, interpeller ses élus, chercher des bénévoles : les appels des citoyens et des organisations.", NavLink("Les appels ouverts", "/appels")),
+            AppRubric("appels", "Appels", "Se réunir, soutenir une cause, interpeller ses élus, chercher des bénévoles : les appels des citoyens et des organisations.", NavLink("Les appels ouverts", AgirLinks.CALLS)),
+            AppRubric("kits", "Kits d’action citoyenne", "Manifester, faire grève, s’organiser, convaincre, se présenter, se protéger : tous les outils et guides au même endroit.", NavLink("Les kits, par but", AgirSitePaths.KITS)),
+            AppRubric("hors-reseau", "Messagerie hors réseau", "Des messages de proche en proche, sans réseau, entre téléphones : à venir dans l’application."),
             AppRubric("mode-manifestation", "Mode manifestation", "L’essentiel en un geste et hors ligne : vos droits, les numéros utiles, les premiers secours.", NavLink("AIDE : numéros utiles et avocat", SiteNavigation.HELP_PATH)),
         ),
     ),
     Space.APPELS to AppSpacePage(
         lead = "Les appels à la grève, à manifester, à soutenir, à bloquer : qui appelle, où, quand, et comment répondre.",
         rubrics = listOf(
-            AppRubric("appels", "Les appels", "Chaque appel dit qui appelle, où, quand et comment répondre ; on y répond depuis l’application.", NavLink("L’agenda des mobilisations", "/agenda")),
+            AppRubric("appels", "Les appels", "Chaque appel dit qui appelle, où, quand et comment répondre ; on y répond depuis l’application.", NavLink("Les appels ouverts", AgirLinks.CALLS)),
         ),
     ),
     Space.MON_ESPACE to AppSpacePage(

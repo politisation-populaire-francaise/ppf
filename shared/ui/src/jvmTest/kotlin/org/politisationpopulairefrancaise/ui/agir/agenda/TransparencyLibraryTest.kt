@@ -27,7 +27,7 @@ class TransparencyLibraryTest {
     private val union = AgendaKit()
 
     private fun CoroutineScope.library(device: AgendaDevice, clock: () -> Long = { AgendaClock.NOW }) =
-        AgendaLibrary(device.store, device.state, EditorialTrust.bundledExamples(), device.server, this, clock)
+        AgendaLibrary(device.store, device.state, EditorialTrust.bundledExamples(), device.server, this, clock = clock)
 
     private suspend fun awaitUntil(condition: () -> Boolean) = withTimeout(20_000) {
         while (!condition()) delay(20)
