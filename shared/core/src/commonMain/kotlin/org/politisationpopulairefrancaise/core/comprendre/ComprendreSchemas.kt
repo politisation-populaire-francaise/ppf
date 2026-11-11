@@ -243,8 +243,36 @@ object ComprendreSchemas {
     )
 
     /**
-     * In the order the tool writes them (comprendre.json: fact-checks, stories, sheets, method, then the
-     * teaching sheets, written last so that the events before them keep their place).
+     * A text of the series « Le cap du mouvement » (`content/cap`, D-200): its nature (sourced facts or a position
+     * of PPF, shown in the label of origin, D-212), its rank in the series, a « Et maintenant ? » block that links it
+     * to an action of the application, and its sources.
      */
-    val all: List<ContentSchema> = listOf(FICHE_PRATIQUE, PARCOURS, DECRYPTAGE, HISTOIRE, QUI_DECIDE, METHODE, GLOSSAIRE, FICHE_PEDAGOGIQUE)
+    val CAP: ContentSchema = ContentSchema(
+        type = ArticleType.CAP,
+        space = EditorialSpace.COMPRENDRE,
+        labelKey = "editorial.type.cap",
+        sourceDirectory = "cap",
+        bundle = "comprendre.json",
+        fields = listOf(
+            FieldSpec("nature", "editorial.field.nature", "editorial.help.nature", value = ValueSpec.Single(FieldType.Choice(CapNature.entries.map { it.tagValue }, "comprendre.nature.")), tag = CapText.TAG_NATURE),
+            FieldSpec("rank", "editorial.field.rank", "editorial.help.rank", value = ValueSpec.Single(FieldType.Number(min = 1.0, max = 99.0)), tag = CapText.TAG_RANK),
+        ),
+        body = BodySpec(
+            blocks = listOf(BlockSpec(ParcoursFormat.NEXT_ACTIONS_BLOCK, min = 1, max = 1)) + commonBlocks(),
+            templateKey = "editorial.template.cap",
+        ),
+        checks = listOf(
+            SchemaCheck { _, event, _ ->
+                val unchecked = SignedEvent(event.idHex(), event.pubkey, event.createdAt, event.kind, event.tags, event.content, "0".repeat(128))
+                if (Article.from(unchecked)?.let(CapText::from) == null) listOf(Problem("comprendre.rule.cap_readable")) else emptyList()
+            },
+        ),
+    )
+
+    /**
+     * In the order the tool writes them (comprendre.json: fact-checks, stories, sheets, method, then the
+     * teaching sheets and the texts of the series « Le cap », written last so that the events before them keep
+     * their place).
+     */
+    val all: List<ContentSchema> = listOf(FICHE_PRATIQUE, PARCOURS, DECRYPTAGE, HISTOIRE, QUI_DECIDE, METHODE, GLOSSAIRE, FICHE_PEDAGOGIQUE, CAP)
 }

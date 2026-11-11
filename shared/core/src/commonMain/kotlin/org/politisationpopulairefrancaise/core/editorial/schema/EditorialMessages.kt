@@ -95,6 +95,7 @@ object EditorialMessages {
         "comprendre.rule.glossary_readable" to "l'application ne lirait pas cette entrée du glossaire",
         "comprendre.rule.glossary_definition" to "la définition (résumé) a {1} caractères, {0} au plus",
         "comprendre.rule.glossary_title" to "le terme (titre) est vide",
+        "comprendre.rule.cap_readable" to "l'application ne lirait pas ce texte du cap (nature ou place dans la série manquante)",
         "comprendre.rule.teaching_section_unknown" to "la section « ## {0} » n'existe pas dans une fiche pédagogique (sections possibles : {1})",
         "comprendre.rule.teaching_section_repeated" to "la section « ## {0} » est écrite {1} fois, une seule est possible",
         "comprendre.rule.teaching_section_order" to "les sections viennent dans cet ordre : {0} (« Pour aller plus loin » est facultative)",

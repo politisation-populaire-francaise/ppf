@@ -39,6 +39,8 @@ import org.politisationpopulairefrancaise.core.comprendre.ContentBlocks
 import org.politisationpopulairefrancaise.core.comprendre.DecisionLevel
 import org.politisationpopulairefrancaise.core.comprendre.Decryptage
 import org.politisationpopulairefrancaise.core.comprendre.HistoryStory
+import org.politisationpopulairefrancaise.core.comprendre.CapNature
+import org.politisationpopulairefrancaise.core.comprendre.CapText
 import org.politisationpopulairefrancaise.core.comprendre.Parcours
 import org.politisationpopulairefrancaise.core.comprendre.QuiDecide
 import org.politisationpopulairefrancaise.core.comprendre.TeachingLevel
@@ -69,6 +71,10 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_elus_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_claims
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_results
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_history
+import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_cap
+import org.politisationpopulairefrancaise.ui.resources.cap_origin_position
+import org.politisationpopulairefrancaise.ui.resources.cap_nature_facts
+import org.politisationpopulairefrancaise.ui.resources.cap_nature_position
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_who
 import org.politisationpopulairefrancaise.ui.resources.comprendre_level_commune
 import org.politisationpopulairefrancaise.ui.resources.comprendre_level_departement
@@ -126,6 +132,7 @@ object ComprendreDetailTags {
     const val ELUS = "who-decides-elus"
     const val BACK = "comprendre-detail-back"
     const val TEACHING = "teaching-sheet-detail"
+    const val CAP = "cap-text-detail"
     const val TEACHING_NEUTRALITY = "teaching-sheet-neutrality"
     const val TEACHING_QUESTIONS = "teaching-sheet-questions"
     const val TEACHING_ANSWERS = "teaching-sheet-answers"
@@ -514,9 +521,31 @@ private fun DetailColumn(
 
 @Composable
 private fun detailMeta(article: Article, kind: String): String {
-    val origin = stringResource(if (article.origin == ContentOrigin.AI_ASSISTED) Res.string.content_origin_ai else Res.string.content_origin_human)
+    val origin = stringResource(capOrigin(article) ?: if (article.origin == ContentOrigin.AI_ASSISTED) Res.string.content_origin_ai else Res.string.content_origin_human)
     val updated = stringResource(Res.string.content_updated, CivilDate.fromEpochSeconds(article.updatedAt).toFrench())
     return "$kind · $updated · $origin"
+}
+
+/**
+ * The label of origin of a position of PPF written with the help of an AI and not yet reviewed (D-212):
+ * « Position de PPF, rédigée par l'IA, en attente de relecture »; null for every other content.
+ */
+fun capOrigin(article: Article): StringResource? =
+    CapText.from(article)?.takeIf { it.isUnreviewedAiPosition }?.let { Res.string.cap_origin_position }
+
+/** A text of the series « Le cap du mouvement » (D-200): its body, its « Et maintenant ? » actions, its sources. */
+@Composable
+fun CapDetail(text: CapText, onBack: (() -> Unit)?, onNavigate: (Space) -> Unit, compact: Boolean, modifier: Modifier = Modifier) {
+    DetailColumn(text.article, stringResource(Res.string.comprendre_kind_cap), onBack, compact, modifier.testTag(ComprendreDetailTags.CAP)) {
+        BodyWithActions(text.article.body, onNavigate)
+    }
+}
+
+/** The card of a text of the series, with its nature (sourced facts or position of PPF). */
+@Composable
+fun CapCard(text: CapText, onOpen: () -> Unit, selected: Boolean, modifier: Modifier = Modifier) {
+    val nature = stringResource(if (text.nature == CapNature.POSITION) Res.string.cap_nature_position else Res.string.cap_nature_facts)
+    SimpleCard(text.article, nature, onOpen, selected, modifier)
 }
 
 /**

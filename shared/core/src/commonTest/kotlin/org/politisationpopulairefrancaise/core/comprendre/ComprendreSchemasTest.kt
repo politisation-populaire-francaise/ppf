@@ -50,7 +50,7 @@ class ComprendreSchemasTest {
     @Test
     fun everyTypeOfComprendreHasItsSchema() {
         assertEquals(
-            setOf(ArticleType.FICHE_PRATIQUE, ArticleType.PARCOURS, ArticleType.DECRYPTAGE, ArticleType.HISTOIRE, ArticleType.QUI_DECIDE, ArticleType.ARTICLE, ArticleType.GLOSSAIRE, ArticleType.FICHE_PEDAGOGIQUE),
+            setOf(ArticleType.FICHE_PRATIQUE, ArticleType.PARCOURS, ArticleType.DECRYPTAGE, ArticleType.HISTOIRE, ArticleType.QUI_DECIDE, ArticleType.ARTICLE, ArticleType.GLOSSAIRE, ArticleType.FICHE_PEDAGOGIQUE, ArticleType.CAP),
             EditorialSchemas.of(EditorialSpace.COMPRENDRE).map { it.type }.toSet(),
         )
         assertEquals(ComprendreSchemas.QUI_DECIDE, EditorialSchemas.of(ArticleType.QUI_DECIDE))
@@ -183,5 +183,23 @@ class ComprendreSchemasTest {
         val back = EditorialEngine.draftOf(ComprendreSchemas.HISTOIRE, signed, context)
         assertEquals(unsigned, EditorialEngine.build(ComprendreSchemas.HISTOIRE, back, author))
         assertEquals(listOf("period" to "1936 | 1938", "country" to "France", "claims" to "hausse des salaires ; congés payés"), back.entries.drop(8))
+    }
+
+    @Test
+    fun aCapTextNeedsItsNatureItsRankItsNextActionsAndItsSources() {
+        val next = "::: et-maintenant
+- [Trouver une action](ppf:agir)
+:::
+"
+        val entries = common("ce-que-la-rue-a-gagne", null) + listOf("nature" to "position", "rank" to "1")
+        assertEquals(emptyList(), check(ComprendreSchemas.CAP, entries, next + sources))
+        assertEquals(listOf(listOf("ppf-nature", "position"), listOf("ppf-rank", "1")), tags(ComprendreSchemas.CAP, entries, next + sources))
+        assertTrue(Codes.BODY_BLOCK_TOO_FEW in check(ComprendreSchemas.CAP, entries, sources).map { it.code }, "a cap text links to an action")
+        val wrong = entries.map { if (it.first == "nature") it.first to "opinion" else it }
+        assertTrue(Codes.VALUE_CHOICE in check(ComprendreSchemas.CAP, wrong, next + sources).map { it.code })
+        val noRank = entries.filter { it.first != "rank" }
+        assertTrue(Codes.FIELD_MISSING in check(ComprendreSchemas.CAP, noRank, next + sources).map { it.code })
+        assertEquals(ComprendreSchemas.CAP, EditorialSchemas.of(ArticleType.CAP))
+        assertEquals("/comprendre/cap/ce-que-la-rue-a-gagne", ComprendreLinks.pathOf(ArticleType.CAP, "ce-que-la-rue-a-gagne"))
     }
 }

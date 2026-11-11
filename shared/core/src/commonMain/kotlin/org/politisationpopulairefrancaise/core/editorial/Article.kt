@@ -75,6 +75,12 @@ enum class ArticleType(val tagValue: String) {
      * 55 minutes with a group, linked to its course and to a level, read by `core.comprendre.TeachingSheet`.
      */
     FICHE_PEDAGOGIQUE("fiche-pedagogique"),
+
+    /**
+     * A text of the series « Le cap du mouvement » (docs/ROADMAP-MVP1.md, section 5; D-200): short, sourced, linked
+     * to an action; sourced facts or a position of PPF (`ppf-nature`), read by `core.comprendre.CapText`.
+     */
+    CAP("cap"),
     ;
 
     companion object {

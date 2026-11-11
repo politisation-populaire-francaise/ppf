@@ -312,6 +312,11 @@ object EditorialTexts {
         "editorial.type.methode" to "Page de méthode",
         "editorial.type.glossaire" to "Entrée du glossaire",
         "editorial.type.fiche_pedagogique" to "Fiche pédagogique pour la classe",
+        "editorial.type.cap" to "Texte du cap du mouvement",
+        "editorial.field.nature" to "Nature du texte",
+        "editorial.help.nature" to "Des faits sourcés, ou une position de PPF (affichée « Position de PPF, rédigée par l’IA, en attente de relecture » tant qu’aucun humain ne l’a relue).",
+        "editorial.field.rank" to "Place dans la série",
+        "editorial.help.rank" to "Ordre de lecture dans la série, à partir de 1.",
         // Fields.
         "editorial.field.rhythm" to "Rythme du parcours",
         "editorial.help.rhythm" to "Une leçon par jour, comme « Je découvre » : une simple suggestion au lecteur, jamais un verrou. Ne rien choisir pour un parcours lu d’une traite.",
@@ -357,6 +362,8 @@ object EditorialTexts {
         "comprendre.level.lycee" to "Lycée",
         "comprendre.level.cycle-4" to "Cycle 4 (collège)",
         "comprendre.level.atelier" to "Atelier d’éducation populaire",
+        "comprendre.nature.faits" to "Faits sourcés",
+        "comprendre.nature.position" to "Position de PPF",
         // Templates of an empty draft (the blocks already written).
         "editorial.template.fiche_pratique" to """
             ::: en-bref
@@ -388,6 +395,21 @@ object EditorialTexts {
 
             ::: et-maintenant
             -
+            :::
+
+            ## Sources
+
+            -
+        """.trimIndent(),
+        "editorial.template.cap" to """
+            ::: en-bref
+            -
+            :::
+
+            ## Première partie
+
+            ::: et-maintenant
+            - [Une action de l’application](ppf:agir)
             :::
 
             ## Sources

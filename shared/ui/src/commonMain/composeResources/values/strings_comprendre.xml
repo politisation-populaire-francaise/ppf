@@ -52,6 +52,12 @@
     <string name="comprendre_kind_history">Histoire</string>
     <string name="comprendre_kind_who">Qui décide ?</string>
     <string name="comprendre_kind_teaching">Fiche pédagogique</string>
+    <string name="comprendre_kind_cap">Le cap du mouvement</string>
+    <string name="comprendre_cap_title">Le cap du mouvement</string>
+    <string name="comprendre_cap_intro">Des textes courts et sourcés pour tenir dans la durée et agir autrement qu’en défilant.</string>
+    <string name="cap_nature_facts">Faits sourcés</string>
+    <string name="cap_nature_position">Position de PPF</string>
+    <string name="cap_origin_position">Position de PPF, rédigée par l’IA, en attente de relecture</string>
     <string name="comprendre_verdict_exact">Exact</string>
     <string name="comprendre_verdict_mostly_exact">Plutôt exact</string>
     <string name="comprendre_verdict_misleading">Trompeur</string>
