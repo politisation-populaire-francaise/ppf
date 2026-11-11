@@ -194,7 +194,13 @@ fun AgirScreen(
             route = AgirRoute.ORGANISATIONS
         }
     }
-    val home: () -> Unit = { route = AgirRoute.HOME }
+    // Back from a rubric: to « Kits d'action citoyenne » when it was opened from there (D-232), else to the home.
+    val home: () -> Unit = {
+        route = if (returnTo == AgirRoute.KITS) AgirRoute.KITS else AgirRoute.HOME
+        returnTo = null
+    }
+    // Where the strike simulator leads back: the home, the kits or the funds it was opened from.
+    var strikeReturn by rememberSaveable { mutableStateOf<AgirRoute?>(null) }
     val testimonyLibrary = testimonies ?: rememberTestimonyLibrary(dependencies, start = false)
     // The collectifs (M24) live on the rooms of the shell; their events and calls on its agenda and its calls.
     val rooms = groups ?: rememberGroupsLibrary(dependencies)
@@ -251,12 +257,11 @@ fun AgirScreen(
             route = AgirRoute.FEDERER
             returnTo = null
         } else if (route == AgirRoute.STRIKE_SIMULATOR) {
-            // Opened from the funds of the solidarity rubric, back to them; from the home, back to it.
-            route = if (returnTo == AgirRoute.HOME) AgirRoute.HOME else AgirRoute.SOLIDARITY
-            returnTo = null
+            // Back to where it was opened from: the funds of the solidarity rubric, the home or the kits.
+            route = strikeReturn ?: AgirRoute.SOLIDARITY
+            strikeReturn = null
         } else {
-            route = AgirRoute.HOME
-            returnTo = null
+            home()
         }
     }
     // A rubric opened from the home or from « Kits d'action citoyenne » (D-232).
@@ -282,9 +287,10 @@ fun AgirScreen(
             AgirRubrics.GATHER.id -> route = AgirRoute.GATHER
             // AG-59: the kit is drawn by the shell over the window (HarassmentKitLayer).
             AgirRubrics.HARASSMENT.id -> help.openHarassmentKit()
-            // From the home (D-190): its way back returns to the home, not to the funds.
+            // From the home (D-190) or the kits: its way back returns there, not to the funds.
             AgirRubrics.STRIKE.id -> {
-                returnTo = AgirRoute.HOME
+                strikeReturn = returnTo ?: AgirRoute.HOME
+                returnTo = null
                 route = AgirRoute.STRIKE_SIMULATOR
             }
             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
@@ -298,7 +304,10 @@ fun AgirScreen(
             when (route) {
                 AgirRoute.HOME -> AgirHome(
                     windowClass = windowClass,
-                    onOpen = openRubric,
+                    onOpen = { rubric ->
+                        returnTo = null
+                        openRubric(rubric)
+                    },
                 )
                 AgirRoute.AGENDA -> if (agenda != null) agenda(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_agenda_title, windowClass, home)
                 AgirRoute.CALLS -> if (calls != null) calls(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_calls_title, windowClass, home)
@@ -362,20 +371,23 @@ fun AgirScreen(
                     windowClass = windowClass,
                     onBack = {
                         solidarityLibrary.closeSelection()
-                        route = AgirRoute.HOME
+                        home()
                     },
                     // The page of the organisation opens in the directory; its way back returns here.
                     onOpenOrganisation = directory::open,
                     onOpenCalls = { route = AgirRoute.CALLS },
-                    onOpenStrikeSimulator = { route = AgirRoute.STRIKE_SIMULATOR },
+                    onOpenStrikeSimulator = {
+                        strikeReturn = AgirRoute.SOLIDARITY
+                        route = AgirRoute.STRIKE_SIMULATOR
+                    },
                 )
                 AgirRoute.STRIKE_SIMULATOR -> StrikeSimulatorScreen(
                     state = strike,
                     solidarity = solidarityLibrary,
                     windowClass = windowClass,
                     onBack = {
-                        route = if (returnTo == AgirRoute.HOME) AgirRoute.HOME else AgirRoute.SOLIDARITY
-                        returnTo = null
+                        route = strikeReturn ?: AgirRoute.SOLIDARITY
+                        strikeReturn = null
                     },
                     // A strike fund opens on its page in the solidarity rubric; its way back leads to the list of funds.
                     onOpenFund = { fund ->
@@ -406,7 +418,13 @@ fun AgirScreen(
                 AgirRoute.KITS -> KitsScreen(
                     library = library,
                     windowClass = windowClass,
-                    onOpenRubric = { id -> AgirRubrics.available.firstOrNull { it.id == id }?.let(openRubric) },
+                    // A tool opened from the kits leads back to them.
+                    onOpenRubric = { id ->
+                        AgirRubrics.available.firstOrNull { it.id == id }?.let { rubric ->
+                            returnTo = AgirRoute.KITS
+                            openRubric(rubric)
+                        }
+                    },
                     modifier = Modifier.fillMaxSize(),
                     onBack = home,
                 )

@@ -29,6 +29,7 @@ import org.politisationpopulairefrancaise.ui.agir.AgirTags
 import org.politisationpopulairefrancaise.ui.agir.RecordingUriHandler
 import org.politisationpopulairefrancaise.ui.agir.TEST_WINDOW_HEIGHT
 import org.politisationpopulairefrancaise.ui.agir.awaitTag
+import org.politisationpopulairefrancaise.ui.agir.federer.FedererTags
 import org.politisationpopulairefrancaise.ui.agir.count
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ManifestationTags
 import org.politisationpopulairefrancaise.ui.agir.proches.LocalProchesStorage
@@ -118,6 +119,16 @@ class KitsScreenTest {
                 click(KitsTags.GOAL + KitGoal.GREVE.id)
                 click(KitsTags.KIT + "simulateur-greve")
                 awaitTag(StrikeTags.SCREEN)
+                // Its way back returns to the kits, not to the home of "Agir".
+                click(StrikeTags.BACK)
+                awaitTag(KitsTags.SCREEN)
+                click(KitsTags.CLEAR)
+                click(KitsTags.KIT + "federer")
+                awaitTag(FedererTags.SCREEN)
+                click(FedererTags.BACK)
+                awaitTag(KitsTags.SCREEN)
+                click(KitsTags.BACK)
+                awaitTag(AgirTags.HOME)
             }
         }
     }
