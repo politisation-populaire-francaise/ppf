@@ -1,6 +1,6 @@
 ---
 slug: glossaire-intercommunalite
-title: [EXEMPLE] Intercommunalité
+title: Intercommunalité
 summary: Regroupement de communes qui mettent en commun certaines compétences, comme les déchets ou le développement économique. La communauté de communes en est un exemple.
 variants: intercommunalité, intercommunalités, EPCI, établissement public de coopération intercommunale, établissements publics de coopération intercommunale, communauté de communes, communautés de communes, communauté d'agglomération, communautés d'agglomération, communauté urbaine, communautés urbaines, syndicat de communes, syndicats de communes, syndicat intercommunal, syndicats intercommunaux, conseiller communautaire, conseillers communautaires
 topics: collectivites
@@ -8,7 +8,7 @@ see_also: glossaire-commune, glossaire-collectivite-territoriale, glossaire-dece
 related: qui-decide:transports-du-quotidien, qui-decide:ecole
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Une intercommunalité regroupe plusieurs communes, qui lui confient certaines compétences. Juridiquement, c'est un établissement public de coopération intercommunale, ou EPCI. Ce n'est pas une collectivité territoriale.
 
@@ -26,5 +26,5 @@ Exemple : dans beaucoup de villages, le ramassage des ordures ménagères est or
 
 ## Sources
 
-- [Collectivites-locales.gouv.fr, « Les groupements intercommunaux »](https://www.collectivites-locales.gouv.fr/institutions/groupements-intercommunaux)
-- [Service-public.gouv.fr, « Élections municipales »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1952)
+- [Collectivites-locales.gouv.fr, « Les groupements intercommunaux »](https://www.collectivites-locales.gouv.fr/institutions/groupements-intercommunaux), consulté le 2026-11-09
+- [Service-public.gouv.fr, « Élections municipales »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1952), consulté le 2026-11-09

@@ -1,6 +1,6 @@
 ---
 slug: glossaire-referendum-d-initiative-partagee
-title: [EXEMPLE] Référendum d'initiative partagée
+title: Référendum d'initiative partagée
 summary: Procédure qui permet de soumettre une proposition de loi au référendum, si elle est déposée par un cinquième des parlementaires puis soutenue par un dixième des électeurs inscrits.
 variants: référendum d'initiative partagée, référendums d'initiative partagée, RIP
 topics: institutions, elections
@@ -8,7 +8,7 @@ see_also: glossaire-referendum, glossaire-proposition-de-loi, glossaire-conseil-
 related: parcours:le-referendum
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le référendum d'initiative partagée, ou RIP, est prévu par l'article 11 de la Constitution. On dit « partagée » parce que l'initiative vient à la fois des parlementaires et des électeurs.
 
@@ -27,6 +27,6 @@ Exemple : pour une proposition sur l'exploitation des aérodromes de Paris, le r
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (article 11)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Loi organique n° 2013-1114 du 6 décembre 2013 portant application de l'article 11 de la Constitution (articles 3, 4 et 9)](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000028278925)
-- [Conseil constitutionnel, décision n° 2019-1-8 RIP du 26 mars 2020](https://www.conseil-constitutionnel.fr/decision/2020/201918RIP.htm)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (article 11)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Loi organique n° 2013-1114 du 6 décembre 2013 portant application de l'article 11 de la Constitution (articles 3, 4 et 9)](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000028278925), consulté le 2026-11-09
+- [Conseil constitutionnel, décision n° 2019-1-8 RIP du 26 mars 2020](https://www.conseil-constitutionnel.fr/decision/2020/201918RIP.htm), consulté le 2026-11-09

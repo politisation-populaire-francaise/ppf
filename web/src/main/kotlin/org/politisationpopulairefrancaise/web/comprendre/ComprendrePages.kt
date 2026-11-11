@@ -72,6 +72,9 @@ fun Route.comprendrePages(source: ComprendreSource) {
         get("/${ComprendreLinks.DECRYPTAGES}/{slug}") { item(source, { catalog, slug -> catalog.decryptage(slug) }) { value, catalog -> decryptageDocument(value, catalog) } }
         get("/${ComprendreLinks.HISTOIRE}") { page(source) { storiesDocument(it) } }
         get("/${ComprendreLinks.HISTOIRE}/{slug}") { item(source, { catalog, slug -> catalog.story(slug) }) { value, catalog -> storyDocument(value, catalog) } }
+        // The series « Le cap du mouvement » (D-200): CapPages.kt.
+        get("/${ComprendreLinks.CAP}") { page(source) { capListDocument(it) } }
+        get("/${ComprendreLinks.CAP}/{slug}") { item(source, { catalog, slug -> catalog.capText(slug) }) { value, catalog -> capDocument(value, catalog) } }
         get("/${ComprendreLinks.QUI_DECIDE}") { page(source) { sheetsDocument(it) } }
         get("/${ComprendreLinks.QUI_DECIDE}/{slug}") { item(source, { catalog, slug -> catalog.sheet(slug) }) { value, catalog -> sheetDocument(value, catalog) } }
         // The teaching sheets for the classroom (CO-13, D-096): TeachingPages.kt.
@@ -113,6 +116,10 @@ fun HTML.comprendreHomeDocument(catalog: ComprendreCatalog) {
     siteLayout(pageTitle = "Comprendre", currentSpace = Space.COMPRENDRE) {
         comprendreHead(null, "Comprendre", "Qui décide de quoi, comment fonctionnent les institutions, vos droits, le vrai et le faux.")
         if (catalog.isEmpty) p(classes = "notice") { +"Aucun contenu publié pour l’instant." }
+        // The series « Le cap du mouvement » first: the priority of the MVP 1 (D-200).
+        homeSection("cap", CAP_TITLE, CAP_INTRO, ComprendreLinks.CAP, "Toute la série", catalog.capTexts.size) {
+            catalog.capTexts.forEach { capCard(it, 3) }
+        }
         homeSection("droits", "Connaître ses droits", "Des fiches pratiques à garder sur soi, lisibles sans connexion.", ComprendreLinks.FICHES, "Toutes les fiches pratiques", catalog.fiches.size) {
             catalog.fiches.take(HOME_ITEMS).forEach { articleCard(it, "Fiche pratique", 3) }
             p { a(href = ComprendreLinks.OFFLINE) { +"Lire les fiches sans connexion" } }
@@ -130,7 +137,7 @@ fun HTML.comprendreHomeDocument(catalog: ComprendreCatalog) {
         homeSection("histoire", "Histoire des luttes", "Ce que les mouvements sociaux et les révolutions ont obtenu, et pourquoi.", ComprendreLinks.HISTOIRE, "Toute l’histoire des luttes", catalog.stories.size) {
             catalog.stories.take(HOME_ITEMS).forEach { storyCard(it, 3) }
         }
-        homeSection("pour-la-classe", "Pour la classe", "Des fiches pédagogiques pour faire vivre un parcours en 55 minutes avec un groupe, à projeter ou à imprimer.", ComprendreLinks.ENSEIGNANTS, "Toutes les fiches pédagogiques", catalog.teachingSheets.size) {
+        homeSection("pour-la-classe", "Pour la classe", "Des fiches pédagogiques pour faire vivre un parcours en 55 minutes avec une classe, et des fiches d’animation pour les ateliers d’éducation populaire, à projeter ou à imprimer.", ComprendreLinks.ENSEIGNANTS, "Toutes les fiches pédagogiques", catalog.teachingSheets.size) {
             catalog.teachingSheets.take(HOME_ITEMS).forEach { teachingCard(it, catalog, 3) }
         }
         comprendreSection("glossaire", "Glossaire") {
@@ -165,7 +172,7 @@ private fun FlowContent.homeSection(id: String, title: String, intro: String, se
     }
 }
 
-private fun FlowContent.listDocumentBody(title: String, lead: String, empty: Boolean, block: FlowContent.() -> Unit) {
+internal fun FlowContent.listDocumentBody(title: String, lead: String, empty: Boolean, block: FlowContent.() -> Unit) {
     comprendreBreadcrumb(null, title)
     comprendreHead(null, title, lead)
     section(classes = "card-list") {
@@ -320,10 +327,15 @@ fun HTML.parcoursDocument(course: Parcours, catalog: ComprendreCatalog) {
         }
         course.steps.forEach { step -> stepSection(renderer, step, course.steps.size) }
         if (course.objections.isNotEmpty()) section(classes = "objections-card") { renderer.objections(this, course.objections) }
-        // CO-13: the teaching sheets that bring this course to the classroom, when there are some.
+        // CO-13 and CO-24: the sheets that bring this course to the classroom or to a workshop, when there are some.
         val teaching = catalog.teachingSheetsFor(course)
         if (teaching.isNotEmpty()) {
-            comprendreSection("pour-la-classe", "Pour la classe", "teaching-link") {
+            val title = when {
+                teaching.none { it.isWorkshop } -> "Pour la classe"
+                teaching.all { it.isWorkshop } -> "Pour un atelier"
+                else -> "Pour la classe et les ateliers"
+            }
+            comprendreSection("pour-la-classe", title, "teaching-link") {
                 ul(classes = "link-list") { teaching.forEach { sheet -> li { a(href = ComprendreLinks.pathOf(sheet.article)!!) { +teachingLinkLabel(sheet) } } } }
             }
         }
@@ -519,7 +531,7 @@ fun HTML.methodDocument(method: Article, catalog: ComprendreCatalog) {
             SiteStep("Lire les étiquettes de « Voir »", VoirLinks.METHOD),
         ))
         sourcesSection(renderer, parts.sources)
-        comprendreOrigin(method)
+        comprendreOrigin(method, ComprendreLinks.METHOD)
         offlineScript()
     }
 }

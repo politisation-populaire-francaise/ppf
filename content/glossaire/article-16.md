@@ -1,6 +1,6 @@
 ---
 slug: glossaire-article-16
-title: [EXEMPLE] Article 16
+title: Article 16
 summary: Article de la Constitution qui donne des pouvoirs exceptionnels au Président de la République en cas de menace grave et immédiate, quand les institutions ne fonctionnent plus normalement.
 variants: article 16 de la Constitution, pouvoirs exceptionnels
 topics: institutions
@@ -8,7 +8,7 @@ see_also: glossaire-president-de-la-republique, glossaire-conseil-constitutionne
 related: parcours:la-dissolution
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 L'article 16 de la Constitution organise des pouvoirs exceptionnels. Le Président de la République peut y recourir quand deux conditions sont réunies :
 - les institutions de la République, l'indépendance de la Nation, l'intégrité du territoire ou l'exécution des engagements internationaux sont menacées d'une manière grave et immédiate ;
@@ -24,5 +24,5 @@ Exemple : selon le Conseil constitutionnel, l'article 16 n'a été appliqué qu'
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 16 et 36)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
-- [Conseil constitutionnel, « Que prévoit-elle en cas de guerre ? »](https://www.conseil-constitutionnel.fr/la-constitution/que-prevoit-elle-en-cas-de-guerre)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 16 et 36)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09
+- [Conseil constitutionnel, « Que prévoit-elle en cas de guerre ? »](https://www.conseil-constitutionnel.fr/la-constitution/que-prevoit-elle-en-cas-de-guerre), consulté le 2026-11-09

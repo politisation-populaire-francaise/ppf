@@ -75,3 +75,10 @@ En 2021, l’article 52 de la loi dite « sécurité globale », qui voulait pun
 - Code de procédure pénale, article 56 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049778813
 
 Pages consultées le 9 novembre 2026.
+
+- Défenseur des droits, avis n° 20-06 du 17 novembre 2020 sur la proposition de loi relative à la sécurité globale, consulté le 2026-11-09 : https://juridique.defenseurdesdroits.fr/doc_num.php?explnum_id=20210
+- Défenseur des droits, décision n° 2018-183 du 27 juillet 2018 (effacement de photos demandé lors d'un contrôle), consulté le 2026-11-09 : https://juridique.defenseurdesdroits.fr/doc_num.php?explnum_id=17999
+- Défenseur des droits, décision n° 2018-292 du 21 décembre 2018 (journalistes en manifestation, rappel de la circulaire), consulté le 2026-11-09 : https://juridique.defenseurdesdroits.fr/doc_num.php?explnum_id=18281
+- Code pénal, article 226-1 (atteinte à la vie privée), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049312755
+- Code pénal, article 223-1-1 (révélation d'informations exposant une personne à un risque), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000049312762
+- Code pénal, articles 433-6 à 433-10 (rébellion), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006165370

@@ -104,3 +104,5 @@ Si vous êtes victime d’une infraction, vous pouvez demander réparation à la
 - Code de procédure pénale, article 706-5 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048442334
 
 Pages consultées le 9 novembre 2026.
+
+- Défenseur des droits, « Contrôler le respect de la déontologie par les professionnels de la sécurité », consulté le 2026-11-09 : https://www.defenseurdesdroits.fr/controler-le-respect-de-la-deontologie-par-les-professionnels-de-la-securite-195

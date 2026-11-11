@@ -39,12 +39,15 @@ import kotlinx.html.ul
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
+import org.politisationpopulairefrancaise.core.editorial.ReviewDates
+import org.politisationpopulairefrancaise.core.editorial.schema.Codes
 import org.politisationpopulairefrancaise.core.editorial.schema.ContentSchema
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialApprovals
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialEngine
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSchemas
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialSpace
 import org.politisationpopulairefrancaise.core.editorial.schema.Problem
+import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.identity.PublicKey
 import org.politisationpopulairefrancaise.server.backoffice.BackOfficeSection
 import org.politisationpopulairefrancaise.server.backoffice.Notice
@@ -108,6 +111,8 @@ class EditorialDraftsSection(
             val schema = schemaOf(pathParameter("type")) ?: return@post notFound()
             postNew(schema, form)
         }
+        // « À revoir » (review date): the page that opens an update draft of one published content.
+        routes.get("mise-a-jour") { reviewDuePage(query["slug"]?.trim().orEmpty()) }
         routes.post("mise-a-jour") { form -> createUpdate(form["slug"]?.trim().orEmpty()) }
         routes.get("brouillons/{id}") {
             val (draft, schema) = draftOf(pathParameter("id")) ?: return@get notFound()
@@ -530,6 +535,34 @@ class EditorialDraftsSection(
     }
 
     /** A draft of a published content of the space, its first version read from the published event. */
+    /**
+     * The page reached from the queue « À revoir » ([EditorialReviewDueQueue]): the content, its review date, how
+     * to review it, and the one button that creates its update draft (a POST with the form token of the section).
+     */
+    private suspend fun SectionContext.reviewDuePage(slug: String) {
+        val event = published.snapshot().ofSpace(space).firstOrNull { it.firstTagValue("d") == slug } ?: return redirect(query = "erreur=not_published")
+        val title = event.firstTagValue(Article.TAG_TITLE).orEmpty().ifBlank { EditorialTexts.UNTITLED }
+        respondPage(EditorialTexts.REVIEW_DUE_PAGE_TITLE) {
+            h1 { +EditorialTexts.REVIEW_DUE_PAGE_TITLE }
+            dl(classes = "bo-facts") {
+                dt { +EditorialTexts.COLUMN_TITLE }
+                dd { +title }
+                dt { +EditorialTexts.SLUG_LABEL }
+                dd { code { +slug } }
+                dt { +EditorialTexts.REVIEW_DUE_DATE }
+                dd { +(ReviewDates.of(event)?.toFrench() ?: EditorialTexts.CHOICE_NONE) }
+                dt { +EditorialTexts.REVIEW_DUE_UPDATED }
+                dd { +CivilDate.fromEpochSeconds(event.createdAt).toFrench() }
+            }
+            p { +EditorialTexts.REVIEW_DUE_HOW }
+            form(action = path("mise-a-jour"), method = FormMethod.post) {
+                csrfInput(this)
+                input(type = InputType.hidden, name = "slug") { value = slug }
+                button(type = ButtonType.submit, classes = "bo-button") { +EditorialTexts.REVIEW_DUE_OPEN }
+            }
+        }
+    }
+
     private suspend fun SectionContext.createUpdate(slug: String) {
         val snapshot = published.snapshot()
         val event = snapshot.ofSpace(space).firstOrNull { it.firstTagValue("d") == slug } ?: return redirect(query = "erreur=not_published")
@@ -978,7 +1011,20 @@ class EditorialDraftsSection(
      */
     fun check(schema: ContentSchema, content: DraftContent, isUpdate: Boolean = false): List<Problem> {
         val context = published.snapshot().context(space, drafts.openSlugs())
-        return EditorialEngine.check(schema, content.draft(schema.type), context) + UpdateChecks.problems(content, isUpdate)
+        val problems = EditorialEngine.check(schema, content.draft(schema.type), context) + UpdateChecks.problems(content, isUpdate)
+        return problems + reviewProblems(content, problems)
+    }
+
+    /**
+     * The review date must fall after today too: the platform dates the published version at the moment it
+     * signs it, so a date already past would put the content back in « À revoir » at once (the engine checks it
+     * against the date of update written in the draft, which an update keeps from the published version).
+     */
+    private fun reviewProblems(content: DraftContent, already: List<Problem>): List<Problem> {
+        if (already.any { it.field == ContentSchema.REVIEW_BY }) return emptyList()
+        val review = CivilDate.parseIso(content.entries.lastOrNull { it.first == ContentSchema.REVIEW_BY }?.second) ?: return emptyList()
+        val today = CivilDate.parseIso(today()) ?: return emptyList()
+        return if (review > today) emptyList() else listOf(Problem(Codes.REVIEW_NOT_AFTER_UPDATE, ContentSchema.REVIEW_BY, args = listOf(review.toIso(), today.toIso())))
     }
 
     /**

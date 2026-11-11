@@ -1,6 +1,6 @@
 ---
 slug: glossaire-directive
-title: [EXEMPLE] Directive
+title: Directive
 summary: Acte de l'Union européenne qui fixe aux pays des objectifs à atteindre, en leur laissant choisir les moyens. Chaque pays doit la transposer dans son droit avant une date limite.
 variants: directive européenne, directives européennes, directive de l'Union européenne, directives de l'Union européenne, transposition d'une directive, transposer une directive
 topics: europe, institutions
@@ -8,7 +8,7 @@ see_also: glossaire-reglement-europeen, glossaire-union-europeenne, glossaire-co
 related: qui-decide:prix-des-carburants
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Une directive est un acte législatif de l'Union européenne. Elle fixe des objectifs que les pays doivent atteindre, mais chaque pays choisit les mesures pour y parvenir.
 
@@ -27,5 +27,6 @@ Le mot directive, seul, peut aussi désigner une simple consigne : il n'est donc
 
 ## Sources
 
-- [Union européenne, « Types de législation »](https://european-union.europa.eu/institutions-law-budget/law/types-legislation_fr)
+- [Union européenne, « Types de législation »](https://european-union.europa.eu/institutions-law-budget/law/types-legislation_fr), consulté le 2026-11-09
 - [EUR-Lex, glossaire, « Transposition »](https://eur-lex.europa.eu/FR/legal-content/glossary/transposition.html)
+- [Commission européenne, « Procédure d'infraction »](https://commission.europa.eu/law/application-eu-law/implementing-eu-law/infringement-procedure_fr), consulté le 2026-11-09

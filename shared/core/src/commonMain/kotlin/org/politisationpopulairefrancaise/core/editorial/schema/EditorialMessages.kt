@@ -37,6 +37,9 @@ object Codes {
     const val BODY_BLOCK_TOO_MANY: String = "editorial.problem.body_block_too_many"
     const val BODY_INVALID: String = "editorial.problem.body_invalid"
     const val UNBUILDABLE: String = "editorial.problem.unbuildable"
+    /** The date of review is not after the date of update (args = [review_by, updated_at]). */
+    const val REVIEW_NOT_AFTER_UPDATE: String = "editorial.problem.review_not_after_update"
+
     /** A problem of a [SchemaCheck] that wraps an existing reader: args = [message of the reader]. */
     const val CHECK: String = "editorial.problem.check"
 }
@@ -60,6 +63,7 @@ object EditorialMessages {
         Codes.VALUE_MULTILINE to "le texte doit tenir sur une ligne",
         Codes.VALUE_CHOICE to "« {0} » n'est pas une valeur possible ({1})",
         Codes.VALUE_DATE to "« {0} » n'est pas une date AAAA-MM-JJ valide",
+        Codes.REVIEW_NOT_AFTER_UPDATE to "la date de revue ({0}) doit tomber après la date de mise à jour ({1}) : choisissez la prochaine date de revue",
         Codes.VALUE_DATE_OR_YEAR to "« {0} » n'est ni une date AAAA-MM-JJ, ni un mois AAAA-MM, ni une année AAAA",
         Codes.VALUE_NUMBER to "« {0} » n'est pas un nombre écrit à la française (par exemple 4 210 345,60)",
         Codes.VALUE_NUMBER_DECIMALS to "« {0} » : un nombre entier est attendu, sans virgule",
@@ -91,6 +95,7 @@ object EditorialMessages {
         "comprendre.rule.glossary_readable" to "l'application ne lirait pas cette entrée du glossaire",
         "comprendre.rule.glossary_definition" to "la définition (résumé) a {1} caractères, {0} au plus",
         "comprendre.rule.glossary_title" to "le terme (titre) est vide",
+        "comprendre.rule.cap_readable" to "l'application ne lirait pas ce texte du cap (nature ou place dans la série manquante)",
         "comprendre.rule.teaching_section_unknown" to "la section « ## {0} » n'existe pas dans une fiche pédagogique (sections possibles : {1})",
         "comprendre.rule.teaching_section_repeated" to "la section « ## {0} » est écrite {1} fois, une seule est possible",
         "comprendre.rule.teaching_section_order" to "les sections viennent dans cet ordre : {0} (« Pour aller plus loin » est facultative)",
@@ -100,6 +105,9 @@ object EditorialMessages {
         "comprendre.rule.teaching_no_step" to "le déroulé n'a aucune étape minutée (« - 10 min : ce que fait la classe »)",
         "comprendre.rule.teaching_duration" to "les étapes du déroulé font {1} minutes en tout, la durée annoncée est de {0} minutes",
         "comprendre.rule.teaching_readable" to "l'application ne lirait pas cette fiche pédagogique (vérifiez le parcours lié, le niveau et le programme)",
+        "comprendre.rule.teaching_programme_required" to "une fiche pour la classe (niveau {0}) cite le programme officiel qu'elle sert",
+        "comprendre.rule.teaching_programme_workshop" to "une fiche d'atelier ne sert aucun programme officiel : laissez ce champ vide",
+        "comprendre.rule.teaching_workshop_duration" to "un atelier dure de {0} à {1} minutes, pas {2}",
         // Rules of the schemas of Voir.
         "voir.rule.unreadable" to "l'application ne lirait pas cette brique de « Voir » (vérifiez ses champs)",
         "voir.rule.line_ignored" to "l'application ignorerait {0} ligne(s) de ce champ",

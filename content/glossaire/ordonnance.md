@@ -1,6 +1,6 @@
 ---
 slug: glossaire-ordonnance
-title: [EXEMPLE] Ordonnance
+title: Ordonnance
 summary: Texte adopté par le Gouvernement dans un domaine qui relève normalement de la loi, après autorisation du Parlement. Le Parlement doit ensuite la ratifier par une loi.
 variants: ordonnance de l'article 38, ordonnances de l'article 38, par ordonnance, par ordonnances, légiférer par ordonnances, gouverner par ordonnances, loi d'habilitation, lois d'habilitation, projet de loi de ratification
 topics: institutions, gouvernement, parlement
@@ -8,7 +8,7 @@ see_also: glossaire-decret, glossaire-gouvernement, glossaire-parlement, glossai
 related: parcours:comment-une-loi-est-votee, parcours:le-budget-de-l-etat
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Une ordonnance permet au Gouvernement de prendre lui-même des mesures qui relèvent normalement de la loi. Il doit d'abord en demander l'autorisation au Parlement, pour l'exécution de son programme et pour une durée limitée (Constitution, article 38).
 
@@ -28,4 +28,4 @@ Exemple : le Parlement autorise le Gouvernement à réécrire par ordonnances un
 
 ## Sources
 
-- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 13, 38, 47 et 47-1)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur)
+- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 13, 38, 47 et 47-1)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09

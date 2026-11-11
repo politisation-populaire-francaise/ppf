@@ -1,13 +1,13 @@
 ---
 slug: eau-du-robinet
-title: [EXEMPLE] L'eau du robinet : qui décide de quoi ?
+title: L'eau du robinet : qui décide de quoi ?
 summary: Qui distribue l'eau potable, qui fixe son prix, qui contrôle sa qualité et qui peut limiter son usage en cas de sécheresse.
 topics: eau, environnement, collectivites
 type: qui-decide
 origin: ai-assisted
 persons:
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: decideurs
 - commune | maire, elu-local | La commune est compétente pour la distribution d'eau potable : elle gère le service elle-même ou le confie à une entreprise, et le conseil municipal fixe le prix de l'eau (code général des collectivités territoriales, articles L2224-7-1 et L2224-12-4).
@@ -24,11 +24,9 @@ updated_at: 2026-11-07
 - En cas de **sécheresse**, ce sont les **préfets** qui limitent les usages, en gardant la priorité à l'eau potable.
 :::
 
-**[EXEMPLE] Cette fiche est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
-
 ## Le rôle de la commune
 
-La commune est compétente pour la distribution d'eau potable. Elle délimite dans un schéma les zones desservies et peut aussi produire, transporter et stocker l'eau. Ce schéma comprend un diagnostic des installations et un programme de travaux chiffré ; si le réseau perd trop d'eau, un plan d'actions est obligatoire (code général des collectivités territoriales, ou CGCT, article L2224-7-1). En cas de rupture d'approvisionnement, le maire peut demander de l'eau à une commune voisine qui a des réserves suffisantes (article L2224-7-1-1).
+La commune est compétente pour la distribution d'eau potable. Elle délimite dans un schéma les zones desservies et peut aussi produire, transporter et stocker l'eau. Ce schéma comprend un diagnostic des installations et un programme de travaux chiffré ; si le réseau perd trop d'eau, un plan d'actions est obligatoire (code général des collectivités territoriales, ou CGCT, article L2224-7-1). En cas de rupture d'approvisionnement, le maire peut demander de l'eau à une commune voisine dont les réserves dépassent ses besoins ; si elle accepte, elle la fournit gratuitement et la commune qui la reçoit paie le transport (article L2224-7-1-1).
 
 La commune peut gérer le service elle-même, avec son personnel (en régie), ou le confier à une entreprise par une délégation de service public (collectivites-locales.gouv.fr). Le service doit avoir un budget à part, équilibré, financé par les factures des usagers ; le budget général de la commune ne peut en principe pas le subventionner, sauf exceptions, notamment pour les communes de moins de 3 000 habitants (collectivites-locales.gouv.fr).
 
@@ -46,7 +44,7 @@ Le département met une assistance technique à la disposition des communes et d
 
 ## Le rôle de l'État
 
-Celui qui produit ou distribue l'eau doit surveiller sa qualité, se soumettre au contrôle sanitaire, prendre des mesures et informer les habitants en cas de risque pour la santé (code de la santé publique, articles L1321-1 et L1321-4). Le contrôle sanitaire relève de l'État : il est organisé par le directeur général de l'agence régionale de santé et réalisé par l'agence ou par un laboratoire agréé (article L1321-5). Les résultats sont affichés en mairie et une synthèse annuelle est jointe à la facture d'eau (articles D1321-103 à D1321-105).
+Celui qui produit ou distribue l'eau doit surveiller sa qualité, se soumettre au contrôle sanitaire, prendre des mesures et informer les habitants en cas de risque pour la santé (code de la santé publique, articles L1321-1 et L1321-4). Le contrôle sanitaire relève de l'État : il est organisé par le directeur général de l'agence régionale de santé et réalisé par l'agence ou par un laboratoire agréé (article L1321-5). Les résultats sont affichés en mairie (article D1321-104), publiés sur le site du ministère chargé de la santé, et une synthèse annuelle est jointe à la facture d'eau (service-public.gouv.fr).
 
 Dans chaque grand bassin, une agence de l'eau, établissement public de l'État placé sous la tutelle du ministre chargé de l'environnement, travaille à une gestion équilibrée et durable de la ressource (code de l'environnement, article L213-8-1).
 
@@ -73,17 +71,17 @@ La directive (UE) 2020/2184 du 16 décembre 2020, adoptée par le Parlement euro
 
 ## Sources
 
-- Code général des collectivités territoriales, articles L2224-7-1 à L2224-7-4 (distribution d'eau) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000046782144/
-- Code général des collectivités territoriales, article L2224-12-4 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041410387
-- Code général des collectivités territoriales, article L3232-1-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787397
-- Loi n° 2025-327 du 11 avril 2025 visant à assouplir la gestion des compétences « eau » et « assainissement » : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051451755
-- Code de la santé publique, articles L1321-1 à L1321-10 (eaux potables) : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072665/LEGISCTA000006171049/
+- Code général des collectivités territoriales, articles L2224-7-1 à L2224-7-4 (distribution d'eau), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070633/LEGISCTA000046782144/
+- Code général des collectivités territoriales, article L2224-12-4, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041410387
+- Code général des collectivités territoriales, article L3232-1-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039787397
+- Loi n° 2025-327 du 11 avril 2025 visant à assouplir la gestion des compétences « eau » et « assainissement », consulté le 2026-11-09 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000051451755
+- Code de la santé publique, articles L1321-1 A à L1321-10 (eaux potables), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072665/LEGISCTA000006171049/
 - Code de la santé publique, article L1321-5 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042654843
-- Code de la santé publique, articles D1321-103 à D1321-105 (information sur la qualité de l'eau) : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006190964/
-- Code de l'environnement, article L211-3 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000054715689
-- Code de l'environnement, article L213-8-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000054715732
-- Directive (UE) 2020/2184 du 16 décembre 2020 relative à la qualité des eaux destinées à la consommation humaine (fiche Légifrance) : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000045770552
-- Ordonnance n° 2022-1611 du 22 décembre 2022 relative à l'accès et à la qualité des eaux destinées à la consommation humaine : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000046780481
-- Collectivites-locales.gouv.fr, « L'eau et l'assainissement » : https://www.collectivites-locales.gouv.fr/animer-les-territoires/environnement-et-urbanisme/environnement-energie-et-developpement-durable/leau-et-lassainissement
-- Ecologie.gouv.fr, « Origine et gestion de la sécheresse » : https://www.ecologie.gouv.fr/politiques-publiques/origine-gestion-secheresse
-- Service-public.gouv.fr, « Comment obtenir des informations sur la qualité de l'eau du robinet ? » : https://www.service-public.gouv.fr/particuliers/vosdroits/F664
+- Code de la santé publique, articles D1321-103 à D1321-106 (information sur la qualité de l'eau), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006190964/
+- Code de l'environnement, article L211-3, rédaction de la loi n° 2026-796 du 18 août 2026, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000054715689
+- Code de l'environnement, article L213-8-1, rédaction de la loi n° 2026-796 du 18 août 2026, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000054715732
+- Directive (UE) 2020/2184 du 16 décembre 2020 relative à la qualité des eaux destinées à la consommation humaine (fiche Légifrance), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000045770552
+- Ordonnance n° 2022-1611 du 22 décembre 2022 relative à l'accès et à la qualité des eaux destinées à la consommation humaine, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000046780481
+- Collectivites-locales.gouv.fr, « L'eau et l'assainissement », consulté le 2026-11-09 : https://www.collectivites-locales.gouv.fr/animer-les-territoires/environnement-et-urbanisme/environnement-energie-et-developpement-durable/leau-et-lassainissement
+- Ecologie.gouv.fr, « Origine et gestion de la sécheresse » (mise à jour le 5 juin 2024), consulté le 2026-11-09 : https://www.ecologie.gouv.fr/politiques-publiques/origine-gestion-secheresse
+- Service-public.gouv.fr, « Comment obtenir des informations sur la qualité de l'eau du robinet ? » (F664, vérifiée le 17 août 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F664

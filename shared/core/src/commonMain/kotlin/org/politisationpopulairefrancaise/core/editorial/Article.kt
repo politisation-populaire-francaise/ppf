@@ -97,6 +97,12 @@ enum class ArticleType(val tagValue: String) {
 
     /** A press release of PPF (M34, PP-04), read by core.voir.PressRelease. */
     COMMUNIQUE("communique"),
+
+    /**
+     * A text of the series « Le cap du mouvement » (docs/ROADMAP-MVP1.md, section 5; D-200): short, sourced, linked
+     * to an action; sourced facts or a position of PPF (`ppf-nature`), read by `core.comprendre.CapText`.
+     */
+    CAP("cap"),
     ;
 
     companion object {

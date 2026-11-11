@@ -523,6 +523,8 @@ Une classe, deux enregistrements : `EditorialQueue(EditorialSpace.COMPRENDRE)` (
 
 - **Échéances et niveaux** (S-115) : une correction (`change_kind = correction`) a le niveau 4 et une échéance de 48 heures après la soumission ; un contenu nouveau ou une mise à jour, niveau 2, échéance de 7 jours ; un élément en `signing_refused`, niveau 5, sans échéance. La demande de validation à deux expire après 7 jours (socle).
 - `pendingCount` = éléments `in_review` et `signing_refused`.
+- **File « À revoir »** (D-097, 9 novembre 2026) : à côté de `editorial.<espace>`, la file `editorial.<espace>.a_revoir` (`EditorialReviewDueQueue`) liste les contenus publiés dont la date de revue `ppf-review-by` est passée ou tombe dans les 60 jours, la date en échéance ; son détail mène à la page `mise-a-jour?slug=<identifiant>` de la section, dont le seul bouton crée le brouillon de mise à jour. Rien n'est stocké : la liste est lue dans les contenus publiés.
+- **Compte compromis (S-146)** : rien à appliquer ici (examen du 9 novembre 2026, `docs/integration/compte-compromis.md`). Les brouillons sont écrits par des comptes d'équipe connectés par leurs clés d'accès, puis signés par la clé de la plateforme : aucune clé de citoyen ne les signe, et la clé Nostr facultative d'un compte d'équipe ne sert qu'à reconnaître la même personne entre auteur et relecteur.
 
 ### 5.4 Ce qu'il faut demander au socle (Directeur technique)
 

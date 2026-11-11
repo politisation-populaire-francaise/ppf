@@ -1,13 +1,13 @@
 ---
 slug: la-revision-de-la-constitution
-title: [EXEMPLE] La révision de la Constitution
+title: La révision de la Constitution
 summary: Comprendre qui peut proposer de modifier la Constitution, comment le texte est adopté et ce qui ne peut jamais être révisé.
 topics: institutions, constitution, democratie
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Une révision **modifie le texte de la Constitution** ; la procédure est fixée par l'**article 89**.
@@ -15,8 +15,6 @@ updated_at: 2026-11-07
 - Le texte doit être voté **dans les mêmes termes** par l'Assemblée nationale et le Sénat, puis approuvé par **référendum** ou, pour un projet, par le **Congrès** à la majorité des **trois cinquièmes**.
 - La **forme républicaine** du Gouvernement ne peut pas être révisée.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Réviser la Constitution, qu'est-ce que c'est ?
 
@@ -30,7 +28,7 @@ Selon le Conseil constitutionnel, la Constitution de 1958 a été révisée 25 f
 - 2 octobre 2000 : le mandat du Président passe de sept à cinq ans ;
 - 23 février 2007 : l'abolition de la peine de mort entre dans la Constitution ;
 - 23 juillet 2008 : modernisation des institutions, avec notamment le référendum d'initiative partagée ;
-- 8 mars 2024 : la liberté de recourir à l'interruption volontaire de grossesse est inscrite dans la Constitution. C'est la révision la plus récente au 7 novembre 2026.
+- 8 mars 2024 : la liberté de recourir à l'interruption volontaire de grossesse est inscrite dans la Constitution. C'est la révision la plus récente au 9 novembre 2026.
 
 ::: quiz
 ? Que veut dire « réviser la Constitution » ?
@@ -126,14 +124,14 @@ Une autre voie a été utilisée dans le passé. Le 28 octobre 1962, le Préside
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 7 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527466
-- Constitution du 4 octobre 1958, article 11 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241004
-- Constitution du 4 octobre 1958, article 42 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241032
-- Constitution du 4 octobre 1958, article 61 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241074
-- Constitution du 4 octobre 1958, article 89 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240655
-- Constitution du 4 octobre 1958, texte consolidé en vigueur au 7 novembre 2026 (dernière mise à jour des données : 10 mars 2024) : https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006071194
-- Conseil constitutionnel, « Les révisions constitutionnelles » (25 révisions, de 1960 au 8 mars 2024) : https://www.conseil-constitutionnel.fr/la-constitution/les-revisions-constitutionnelles
-- Conseil constitutionnel, « L'histoire du référendum sous la Ve République » (page mise à jour le 11 février 2020) : https://www.conseil-constitutionnel.fr/la-constitution/l-histoire-du-referendum-sous-la-ve-republique
-- Conseil constitutionnel, « Tableau récapitulatif des référendums de la Vème République » : https://www.conseil-constitutionnel.fr/referendum-sous-la-ve-republique/tableau-recapitulatif-des-referendums-de-la-veme-republique
-- Assemblée nationale, « Fiche de synthèse n° 55 : La révision de la Constitution » : https://www.assemblee-nationale.fr/dyn/synthese/fonctionnement-assemblee-nationale/travail-legislatif/la-revision-de-la-constitution
-- Sénat, dossier législatif du projet de loi constitutionnelle relatif à la liberté de recourir à l'interruption volontaire de grossesse : https://www.senat.fr/dossier-legislatif/pjl23-299.html
+- Constitution du 4 octobre 1958, article 7, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527466
+- Constitution du 4 octobre 1958, article 11, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241004
+- Constitution du 4 octobre 1958, article 42, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241032
+- Constitution du 4 octobre 1958, article 61, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241074
+- Constitution du 4 octobre 1958, article 89, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240655
+- Constitution du 4 octobre 1958, texte consolidé en vigueur au 9 novembre 2026 (dernière mise à jour des données : 10 mars 2024), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/LEGITEXT000006071194
+- Conseil constitutionnel, « Les révisions constitutionnelles » (25 révisions, de 1960 au 8 mars 2024), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/la-constitution/les-revisions-constitutionnelles
+- Conseil constitutionnel, « L'histoire du référendum sous la Ve République » (page mise à jour le 11 février 2020), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/la-constitution/l-histoire-du-referendum-sous-la-ve-republique
+- Conseil constitutionnel, « Tableau récapitulatif des référendums de la Vème République », consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/referendum-sous-la-ve-republique/tableau-recapitulatif-des-referendums-de-la-veme-republique
+- Assemblée nationale, « Fiche de synthèse n° 55 : La révision de la Constitution » (actualisée le 11 mars 2024), consulté le 2026-11-09 : https://www.assemblee-nationale.fr/dyn/synthese/fonctionnement-assemblee-nationale/travail-legislatif/la-revision-de-la-constitution
+- Sénat, dossier législatif du projet de loi constitutionnelle relatif à la liberté de recourir à l'interruption volontaire de grossesse, consulté le 2026-11-09 : https://www.senat.fr/dossier-legislatif/pjl23-299.html

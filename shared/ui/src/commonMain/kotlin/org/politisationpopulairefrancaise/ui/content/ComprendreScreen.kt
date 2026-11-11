@@ -45,7 +45,10 @@ import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
 import org.politisationpopulairefrancaise.core.editorial.ContentOrigin
 import org.politisationpopulairefrancaise.core.time.CivilDate
+import org.politisationpopulairefrancaise.ui.comprendre.CapCard
+import org.politisationpopulairefrancaise.ui.comprendre.CapDetail
 import org.politisationpopulairefrancaise.ui.comprendre.ComprendreLibrary
+import org.politisationpopulairefrancaise.ui.comprendre.capOrigin
 import org.politisationpopulairefrancaise.ui.comprendre.DecryptageCard
 import org.politisationpopulairefrancaise.ui.comprendre.DecryptageDetail
 import org.politisationpopulairefrancaise.ui.comprendre.HistoryCard
@@ -89,6 +92,9 @@ import org.politisationpopulairefrancaise.ui.resources.comprendre_history_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_history_title
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_history
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_teaching
+import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_cap
+import org.politisationpopulairefrancaise.ui.resources.comprendre_cap_title
+import org.politisationpopulairefrancaise.ui.resources.comprendre_cap_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_kind_who
 import org.politisationpopulairefrancaise.ui.resources.comprendre_who_intro
 import org.politisationpopulairefrancaise.ui.resources.comprendre_who_title
@@ -150,6 +156,7 @@ object ComprendreTags {
     const val WHO_LIST = "who-decides-list"
     const val CHECK_LIST = "decryptage-list"
     const val HISTORY_LIST = "history-list"
+    const val CAP_LIST = "cap-list"
     const val GLOSSARY = "comprendre-glossary"
     const val GLOSSARY_OPEN = "comprendre-glossary-open"
     const val DISCOVER = "comprendre-discover"
@@ -292,6 +299,14 @@ private fun ComprendreHome(
                     actions.openCourse(course)
                     comprendre.goToLesson(lesson)
                 }
+            }
+
+            // The series « Le cap du mouvement » (D-200, ROADMAP-MVP1 section 5) comes first: the priority of the MVP 1.
+            if (comprendre.capTexts.isNotEmpty()) {
+                HomeSection(stringResource(Res.string.comprendre_cap_title), stringResource(Res.string.comprendre_cap_intro), comprendre.capTexts, ComprendreTags.CAP_LIST) { text ->
+                    CapCard(text, onOpen = { actions.openArticle(text.article) }, selected = comprendre.openArticle?.address == text.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + text.article.slug))
+                }
+                Spacer(Modifier.height(20.dp))
             }
 
             Column(Modifier.fillMaxWidth().testTag(ComprendreTags.COURSE_LIST)) {
@@ -454,8 +469,10 @@ private fun ArticleDetail(comprendre: ComprendreLibrary, article: Article, onBac
     val story = comprendre.stories.firstOrNull { it.article.address == article.address }
     val sheet = comprendre.sheets.firstOrNull { it.article.address == article.address }
     val teaching = comprendre.teachingSheets.firstOrNull { it.article.address == article.address }
+    val cap = comprendre.capTexts.firstOrNull { it.article.address == article.address }
     val method = comprendre.methodPage
     when {
+        cap != null -> CapDetail(cap, onBack, onNavigate, compact, modifier)
         teaching != null -> TeachingSheetDetail(teaching, comprendre.courses.firstOrNull { it.address == teaching.courseAddress }, onBack, onNavigate, compact, modifier)
         check != null -> DecryptageDetail(check, onOpenMethod = method?.let { page -> { comprendre.openArticle(page) } }, onBack = onBack, onNavigate = onNavigate, compact = compact, modifier = modifier)
         story != null -> HistoryDetail(story, onBack, onNavigate, compact, modifier)
@@ -617,6 +634,7 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.TEMOIGNAGE -> Res.string.temoignages_content_type
         ArticleType.FICHE_PEDAGOGIQUE -> Res.string.comprendre_kind_teaching
         ArticleType.SUITE -> Res.string.suites_content_type
+        ArticleType.CAP -> Res.string.comprendre_kind_cap
     },
 )
 
@@ -626,7 +644,7 @@ private fun metaLine(guide: Article): String {
     val origin = stringResource(
         when (guide.origin) {
             ContentOrigin.HUMAN -> Res.string.content_origin_human
-            ContentOrigin.AI_ASSISTED -> Res.string.content_origin_ai
+            ContentOrigin.AI_ASSISTED -> capOrigin(guide) ?: Res.string.content_origin_ai
         },
     )
     val updated = stringResource(Res.string.content_updated, CivilDate.fromEpochSeconds(guide.updatedAt).toFrench())

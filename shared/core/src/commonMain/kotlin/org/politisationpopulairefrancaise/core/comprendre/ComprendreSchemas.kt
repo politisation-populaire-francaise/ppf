@@ -197,7 +197,8 @@ object ComprendreSchemas {
     /**
      * A teaching sheet for the classroom (CO-13, D-096, docs/integration/comprendre-enseignants.md): one course,
      * one level, the official programme it serves, and the sections of [TeachingSheetFormat]. The quiz is the
-     * one of the linked course, never rewritten in the sheet.
+     * one of the linked course, never rewritten in the sheet. The same format, with the level `atelier`, is the
+     * animation sheet of a workshop of popular education (CO-24): no programme, 45 minutes to 2 hours.
      */
     val FICHE_PEDAGOGIQUE: ContentSchema = ContentSchema(
         type = ArticleType.FICHE_PEDAGOGIQUE,
@@ -210,7 +211,8 @@ object ComprendreSchemas {
             // « course: le-referendum »: one ["a", "30023:<key>:le-referendum", "", "parcours"], a published course.
             FieldSpec("course", "editorial.field.course", "editorial.help.course", value = ValueSpec.Link(ComprendreTags.COURSE_LINK_ROLE, TargetType.COURSE)),
             FieldSpec("level", "editorial.field.level", "editorial.help.level", value = ValueSpec.Single(FieldType.Choice(TeachingLevel.entries.map { it.tagValue }, "comprendre.level.")), tag = ComprendreTags.LEVEL),
-            FieldSpec("programme", "editorial.field.programme", "editorial.help.programme", value = ValueSpec.Single(FieldType.Text(TeachingSheetFormat.PROGRAMME_MAX)), tag = ComprendreTags.PROGRAMME),
+            // Required for a level of school, absent for a workshop (CO-24): checked below with the level.
+            FieldSpec("programme", "editorial.field.programme", "editorial.help.programme", occurs = Occurs.OPTIONAL, value = ValueSpec.Single(FieldType.Text(TeachingSheetFormat.PROGRAMME_MAX)), tag = ComprendreTags.PROGRAMME),
         ),
         body = BodySpec(
             blocks = listOf(
@@ -228,7 +230,12 @@ object ComprendreSchemas {
                 val duration = draft.entries.lastOrNull { it.first == ContentSchema.DURATION }?.second?.trim()?.toIntOrNull()
                 TeachingSheetFormat.problems(draft.body, duration)
             },
-            SchemaCheck { _, event, _ ->
+            // A programme for a level of school, none for a workshop, which lasts 45 minutes to 2 hours (CO-24);
+            // then, as a last safety net, the sheet must read as the applications read it.
+            SchemaCheck { draft, event, _ ->
+                fun value(key: String) = draft.entries.lastOrNull { it.first == key }?.second?.trim()
+                val level = TeachingSheetFormat.levelProblems(value(TeachingSheetFormat.LEVEL_KEY), value(TeachingSheetFormat.PROGRAMME_KEY), value(ContentSchema.DURATION)?.toIntOrNull())
+                if (level.isNotEmpty()) return@SchemaCheck level
                 val unchecked = SignedEvent(event.idHex(), event.pubkey, event.createdAt, event.kind, event.tags, event.content, "0".repeat(128))
                 if (Article.from(unchecked)?.let(TeachingSheet::from) == null) listOf(Problem(TeachingSheetFormat.RULE_READABLE)) else emptyList()
             },
@@ -236,8 +243,36 @@ object ComprendreSchemas {
     )
 
     /**
-     * In the order the tool writes them (comprendre.json: fact-checks, stories, sheets, method, then the
-     * teaching sheets, written last so that the events before them keep their place).
+     * A text of the series « Le cap du mouvement » (`content/cap`, D-200): its nature (sourced facts or a position
+     * of PPF, shown in the label of origin, D-212), its rank in the series, a « Et maintenant ? » block that links it
+     * to an action of the application, and its sources.
      */
-    val all: List<ContentSchema> = listOf(FICHE_PRATIQUE, PARCOURS, DECRYPTAGE, HISTOIRE, QUI_DECIDE, METHODE, GLOSSAIRE, FICHE_PEDAGOGIQUE)
+    val CAP: ContentSchema = ContentSchema(
+        type = ArticleType.CAP,
+        space = EditorialSpace.COMPRENDRE,
+        labelKey = "editorial.type.cap",
+        sourceDirectory = "cap",
+        bundle = "comprendre.json",
+        fields = listOf(
+            FieldSpec("nature", "editorial.field.nature", "editorial.help.nature", value = ValueSpec.Single(FieldType.Choice(CapNature.entries.map { it.tagValue }, "comprendre.nature.")), tag = CapText.TAG_NATURE),
+            FieldSpec("rank", "editorial.field.rank", "editorial.help.rank", value = ValueSpec.Single(FieldType.Number(min = 1.0, max = 99.0)), tag = CapText.TAG_RANK),
+        ),
+        body = BodySpec(
+            blocks = listOf(BlockSpec(ParcoursFormat.NEXT_ACTIONS_BLOCK, min = 1, max = 1)) + commonBlocks(),
+            templateKey = "editorial.template.cap",
+        ),
+        checks = listOf(
+            SchemaCheck { _, event, _ ->
+                val unchecked = SignedEvent(event.idHex(), event.pubkey, event.createdAt, event.kind, event.tags, event.content, "0".repeat(128))
+                if (Article.from(unchecked)?.let(CapText::from) == null) listOf(Problem("comprendre.rule.cap_readable")) else emptyList()
+            },
+        ),
+    )
+
+    /**
+     * In the order the tool writes them (comprendre.json: fact-checks, stories, sheets, method, then the
+     * teaching sheets and the texts of the series « Le cap », written last so that the events before them keep
+     * their place).
+     */
+    val all: List<ContentSchema> = listOf(FICHE_PRATIQUE, PARCOURS, DECRYPTAGE, HISTOIRE, QUI_DECIDE, METHODE, GLOSSAIRE, FICHE_PEDAGOGIQUE, CAP)
 }

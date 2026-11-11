@@ -1,6 +1,6 @@
 ---
 slug: glossaire-abstention
-title: [EXEMPLE] Abstention
+title: Abstention
 summary: Fait, pour un électeur inscrit, de ne pas voter. Le taux d'abstention est la part des inscrits qui n'ont pas voté à une élection.
 variants: abstention, abstentions, taux d'abstention, abstentionniste, abstentionnistes
 topics: elections
@@ -8,7 +8,7 @@ see_also: glossaire-liste-electorale, glossaire-vote-blanc, glossaire-suffrages-
 related: decryptage:vote-blanc-suffrages-exprimes
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 S'abstenir, c'est ne pas aller voter alors qu'on est inscrit sur une liste électorale. Sauf pour les grands électeurs qui élisent les sénateurs, voter n'est pas obligatoire en France. Le taux d'abstention se calcule en divisant le nombre d'inscrits qui n'ont pas voté par le nombre total d'inscrits.
 
@@ -26,6 +26,6 @@ Exemple : sur 1 000 inscrits, 600 votent. Il y a 400 abstentionnistes, soit un t
 
 ## Sources
 
-- [Insee Première n° 1929, « Vingt ans de participation électorale : en 2022, les écarts selon l'âge et le diplôme continuent de se creuser » (novembre 2022)](https://www.insee.fr/fr/statistiques/6658143)
-- [Code électoral, articles L123 à L126](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148464/)
-- [Sénat, « Mode d'élection des sénateurs »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html)
+- [Insee Première n° 1929, « Vingt ans de participation électorale : en 2022, les écarts selon l'âge et le diplôme continuent de se creuser » (novembre 2022)](https://www.insee.fr/fr/statistiques/6658143), consulté le 2026-11-09
+- [Code électoral, articles L123 à L126](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148464/), consulté le 2026-11-09
+- [Sénat, « Mode d'élection des sénateurs »](https://www.senat.fr/connaitre-le-senat/role-et-fonctionnement/mode-delection-des-senateurs.html), consulté le 2026-11-09

@@ -1,15 +1,15 @@
 ---
 slug: loi-1905-toute-la-france
-title: [EXEMPLE] « La loi de 1905 s'applique dans toute la France : l'État n'y paie aucun culte »
+title: « La loi de 1905 s'applique dans toute la France : l'État n'y paie aucun culte »
 summary: Trompeur : c'est le principe, mais la loi de 1905 ne s'est jamais appliquée en Alsace et en Moselle, où l'État paie encore les ministres de certains cultes, ni en Guyane, et elle prévoit elle-même des exceptions comme les aumôneries.
 topics: laicite, institutions
 type: decryptage
 origin: ai-assisted
 verdict: trompeur
 claim: La loi de 1905 s'applique dans toute la France : l'État n'y paie aucun culte.
-claim_context: Affirmation qui circule dans des débats sur la laïcité, novembre 2026
+claim_context: Idée répandue, formulée ici par la rédaction
 published_at: 2026-11-08
-updated_at: 2026-11-08
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Le principe est vrai : la République ne reconnaît, ne salarie ni ne subventionne aucun culte (loi du 9 décembre 1905, article 2).
@@ -18,8 +18,6 @@ updated_at: 2026-11-08
 - La loi de 1905 n'a pas non plus été étendue à la **Guyane**, où la collectivité paie les ministres du culte catholique (décision du Conseil constitutionnel du 2 juin 2017).
 - La loi de 1905 prévoit elle-même une exception : les **aumôneries** de certains établissements publics.
 :::
-
-**[EXEMPLE] Ce décryptage est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Ce que dit l'affirmation
 
@@ -54,7 +52,7 @@ La loi de 1905 est souvent présentée comme le texte unique de la laïcité, et
 
 ## Sources
 
-- Loi du 9 décembre 1905 concernant la séparation des Églises et de l'État (article 2), version en vigueur au 8 novembre 2026 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000508749
-- Conseil constitutionnel, décision n° 2012-297 QPC du 21 février 2013, Association pour la promotion et l'expansion de la laïcité (traitement des pasteurs des Églises consistoriales dans les départements du Bas-Rhin, du Haut-Rhin et de la Moselle) : https://www.conseil-constitutionnel.fr/decision/2013/2012297QPC.htm
-- Conseil constitutionnel, décision n° 2017-633 QPC du 2 juin 2017, Collectivité territoriale de la Guyane (rémunération des ministres du culte en Guyane) : https://www.conseil-constitutionnel.fr/decision/2017/2017633QPC.htm
-- Constitution du 4 octobre 1958, texte intégral en vigueur (article 1er) : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Loi du 9 décembre 1905 concernant la séparation des Églises et de l'État (article 2), version en vigueur au 9 novembre 2026, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000508749
+- Conseil constitutionnel, décision n° 2012-297 QPC du 21 février 2013, Association pour la promotion et l'expansion de la laïcité (traitement des pasteurs des Églises consistoriales dans les départements du Bas-Rhin, du Haut-Rhin et de la Moselle), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2013/2012297QPC.htm
+- Conseil constitutionnel, décision n° 2017-633 QPC du 2 juin 2017, Collectivité territoriale de la Guyane (rémunération des ministres du culte en Guyane), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2017/2017633QPC.htm
+- Constitution du 4 octobre 1958, texte intégral en vigueur (article 1er), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur

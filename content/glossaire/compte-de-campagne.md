@@ -1,6 +1,6 @@
 ---
 slug: glossaire-compte-de-campagne
-title: [EXEMPLE] Compte de campagne
+title: Compte de campagne
 summary: Document où un candidat retrace toutes les recettes et toutes les dépenses de sa campagne électorale. Il est déposé auprès d'une commission nationale, qui le contrôle.
 variants: compte de campagne, comptes de campagne, Commission nationale des comptes de campagne et des financements politiques, CNCCFP, plafond des dépenses électorales
 topics: elections
@@ -8,7 +8,7 @@ see_also: glossaire-parrainage, glossaire-suffrages-exprimes, glossaire-presiden
 related: parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Un candidat ou une tête de liste soumis à un plafond de dépenses doit tenir un compte de campagne s'il obtient au moins 1 % des suffrages exprimés, ou s'il reçoit des dons de personnes (Code électoral, article L52-12). Il y retrace :
 - toutes les recettes, selon leur origine ;
@@ -25,5 +25,5 @@ Exemple : une entreprise prête gratuitement une salle à un candidat pour une r
 
 ## Sources
 
-- [Code électoral, article L52-12, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000052092735)
-- [Code électoral, article L52-8, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039446180)
+- [Code électoral, article L52-12, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000052092735), consulté le 2026-11-09
+- [Code électoral, article L52-8, version en vigueur](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039446180), consulté le 2026-11-09

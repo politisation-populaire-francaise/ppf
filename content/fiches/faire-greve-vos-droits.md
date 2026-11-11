@@ -121,3 +121,6 @@ La grève suspend le contrat de travail sans le rompre.
 - Code des transports, article L1324-11 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000023085495
 
 Pages consultées le 9 novembre 2026.
+
+- Code du travail, articles L1132-1 à L1132-4 (principe de non-discrimination), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006177836/
+- Code du travail, articles R3243-1 à R3243-9 (bulletin de paie), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000018487280/

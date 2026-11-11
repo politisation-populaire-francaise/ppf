@@ -1,13 +1,13 @@
 ---
 slug: ramassage-des-dechets
-title: [EXEMPLE] Le ramassage des déchets : qui décide de quoi ?
+title: Le ramassage des déchets : qui décide de quoi ?
 summary: Qui organise la collecte des poubelles et le tri, qui fixe la taxe ou la redevance d'ordures ménagères, qui sanctionne les dépôts sauvages et qui planifie les centres de traitement.
 topics: dechets, environnement, collectivites
 type: qui-decide
 origin: ai-assisted
 persons:
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: decideurs
 - commune | maire, elu-local | Le maire définit les règles de collecte et de tri, sauf quand ce rôle revient au président de l'intercommunalité, et peut sanctionner les dépôts sauvages par une amende pouvant atteindre 15 000 euros (code général des collectivités territoriales, article L2224-16 ; code de l'environnement, article L541-3).
@@ -24,8 +24,6 @@ updated_at: 2026-11-07
 - Le **maire**, ou le président de l'intercommunalité, fixe les **règles de collecte** et peut **sanctionner** les dépôts sauvages.
 - La **région** planifie les centres de traitement ; la **loi** et l'**Union européenne** fixent les objectifs de tri et de recyclage.
 :::
-
-**[EXEMPLE] Cette fiche est un brouillon de démonstration rédigé avec l'aide d'une IA. Elle doit être relue par l'équipe éditoriale avant toute publication.**
 
 ## Le rôle de la commune
 
@@ -62,7 +60,7 @@ La loi fixe les grandes obligations. Par exemple, tous les producteurs ou déten
 
 ## Le rôle de l'Union européenne
 
-La directive 2008/98/CE du 19 novembre 2008 relative aux déchets, adoptée par le Parlement européen et le Conseil, fixe le cadre européen. Elle a été modifiée notamment par la directive (UE) 2018/851 et par la directive (UE) 2025/1892 ; la France l'a transposée par plusieurs textes, dont l'ordonnance n° 2010-1579 du 17 décembre 2010 (Légifrance).
+La directive 2008/98/CE du 19 novembre 2008 relative aux déchets, adoptée par le Parlement européen et le Conseil, fixe le cadre européen. Elle a été modifiée notamment par la directive (UE) 2018/851 et par la directive (UE) 2025/1892, entrée en vigueur le 16 octobre 2025, qui porte sur les déchets textiles et alimentaires et que les États doivent transposer dans un délai de vingt mois ; la France a transposé la directive de 2008 par plusieurs textes, dont l'ordonnance n° 2010-1579 du 17 décembre 2010 (Légifrance ; Commission européenne).
 
 ::: objections
 ? « Le ramassage des poubelles, c'est toujours la mairie. »
@@ -81,11 +79,12 @@ La directive 2008/98/CE du 19 novembre 2008 relative aux déchets, adoptée par 
 
 ## Sources
 
-- Code général des collectivités territoriales, article L2224-13 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041598995
-- Code général des collectivités territoriales, article L2224-16 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042176177
-- Code général des impôts, article 1520 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000037986339
-- Code de l'environnement, article L541-3 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048247402
-- Code de l'environnement, article L541-13 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043974969
-- Code de l'environnement, article L541-21-1 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041627130
-- Directive 2008/98/CE du 19 novembre 2008 relative aux déchets (fiche Légifrance) : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000019818802
-- Collectivites-locales.gouv.fr, « Les déchets » : https://www.collectivites-locales.gouv.fr/competences/les-dechets
+- Code général des collectivités territoriales, article L2224-13, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041598995
+- Code général des collectivités territoriales, article L2224-16, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042176177
+- Code général des impôts, article 1520, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000037986339
+- Code de l'environnement, article L541-3, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000048247402
+- Code de l'environnement, article L541-13, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000043974969
+- Code de l'environnement, article L541-21-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000041627130
+- Directive 2008/98/CE du 19 novembre 2008 relative aux déchets (fiche Légifrance), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000019818802
+- Commission européenne, « Revised Waste Framework Directive enters into force » (en anglais, 16 octobre 2025), consulté le 2026-11-09 : https://environment.ec.europa.eu/news/revised-waste-framework-directive-enters-force-2025-10-16_en
+- Collectivites-locales.gouv.fr, « Les déchets », consulté le 2026-11-09 : https://www.collectivites-locales.gouv.fr/competences/les-dechets

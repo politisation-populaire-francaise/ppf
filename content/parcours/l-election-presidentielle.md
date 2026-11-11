@@ -1,13 +1,13 @@
 ---
 slug: l-election-presidentielle
-title: [EXEMPLE] Comment fonctionne l'élection présidentielle
+title: Comment fonctionne l'élection présidentielle
 summary: Comprendre comment le Président de la République est élu : la durée du mandat, les deux tours, les 500 présentations d'élus, qui peut voter et le rôle du Conseil constitutionnel.
 topics: institutions, elections, presidentielle
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-06
-updated_at: 2026-11-06
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - Le Président est élu pour **cinq ans** au **suffrage universel direct**, et nul ne peut exercer **plus de deux mandats consécutifs**.
@@ -15,8 +15,6 @@ updated_at: 2026-11-06
 - Pour être candidat, il faut au moins **500 présentations** d'élus, venant d'au moins **30 départements ou collectivités d'outre-mer**.
 - Le **Conseil constitutionnel** veille à la régularité de l'élection et **proclame les résultats**.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Un mandat de cinq ans, choisi par tous les électeurs
 
@@ -68,7 +66,7 @@ Le Conseil constitutionnel rend publics, au fur et à mesure et au moins deux fo
 
 Sont électeurs les Français majeurs des deux sexes qui jouissent de leurs droits civils et politiques (Constitution, article 3). En pratique, il faut avoir au moins 18 ans la veille du scrutin et être inscrit sur une liste électorale.
 
-Un jeune qui a fait son recensement citoyen à 16 ans est inscrit automatiquement à 18 ans, comme une personne devenue française par naturalisation. Sinon, il faut demander son inscription, en ligne, à la mairie ou par courrier. Pour voter à une élection, la demande doit en principe parvenir à la mairie au plus tard le 6e vendredi avant le premier tour.
+Un jeune qui a fait son recensement citoyen à 16 ans est inscrit automatiquement à 18 ans, comme une personne devenue française depuis 2019. Sinon, il faut demander son inscription, en ligne, à la mairie ou par courrier. Pour voter à une élection, la demande doit en principe parvenir à la mairie au plus tard le 6e vendredi avant le premier tour.
 
 ::: conseil
 - Vérifiez votre inscription et l'adresse de votre bureau de vote sur le service officiel : https://www.service-public.gouv.fr/particuliers/vosdroits/R51788
@@ -104,14 +102,14 @@ Le Conseil constitutionnel veille à la régularité de l'élection, c'est-à-di
 
 ## Sources
 
-- Constitution du 4 octobre 1958, article 3 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240995
-- Constitution du 4 octobre 1958, article 6 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241002
-- Constitution du 4 octobre 1958, article 7 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527466
-- Constitution du 4 octobre 1958, article 58 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527544
-- Loi n° 62-1292 du 6 novembre 1962 relative à l'élection du Président de la République au suffrage universel : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000684037
-- Loi n° 62-1292 du 6 novembre 1962, article 1 bis (convocation des électeurs) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000043303712
-- Loi n° 62-1292 du 6 novembre 1962, article 3 (présentations, rôle du Conseil constitutionnel) : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000052081106
-- Code électoral, article L65 (bulletins blancs) : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027477739
-- Conseil constitutionnel, « Comment le vote blanc est-il comptabilisé ? » (présidentielle 2022) : https://presidentielle2022.conseil-constitutionnel.fr/le-vote/etre-electeur-et-voter/vote-blanc-comptabilise.html
-- Service-public.gouv.fr, « Listes électorales : en cas de première inscription » : https://www.service-public.gouv.fr/particuliers/vosdroits/F1367
-- Service-public.gouv.fr, « Vérifier votre inscription électorale et votre bureau de vote » : https://www.service-public.gouv.fr/particuliers/vosdroits/R51788
+- Constitution du 4 octobre 1958, article 3, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019240995
+- Constitution du 4 octobre 1958, article 6, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000019241002
+- Constitution du 4 octobre 1958, article 7, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527466
+- Constitution du 4 octobre 1958, article 58, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000006527544
+- Loi n° 62-1292 du 6 novembre 1962 relative à l'élection du Président de la République au suffrage universel, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000684037
+- Loi n° 62-1292 du 6 novembre 1962, article 1 bis (convocation des électeurs), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000043303712
+- Loi n° 62-1292 du 6 novembre 1962, article 3 (présentations, rôle du Conseil constitutionnel), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000052081106
+- Code électoral, article L65 (bulletins blancs), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000027477739
+- Conseil constitutionnel, « Comment le vote blanc est-il comptabilisé ? » (présidentielle 2022), consulté le 2026-11-09 : https://presidentielle2022.conseil-constitutionnel.fr/le-vote/etre-electeur-et-voter/vote-blanc-comptabilise.html
+- Service-public.gouv.fr, « Listes électorales : en cas de première inscription », consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1367
+- Service-public.gouv.fr, « Vérifier votre inscription électorale et votre bureau de vote », consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/R51788

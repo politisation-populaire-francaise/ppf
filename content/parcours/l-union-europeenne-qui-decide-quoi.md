@@ -1,13 +1,13 @@
 ---
 slug: l-union-europeenne-qui-decide-quoi
-title: [EXEMPLE] L'Union européenne : qui décide quoi ?
+title: L'Union européenne : qui décide quoi ?
 summary: Dans quels domaines l'Union européenne peut agir, qui propose et qui vote ses lois, ce que sont un règlement et une directive, où intervient la France et comment les citoyens peuvent peser.
 topics: europe, institutions, democratie
 type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 ::: en-bref
 - L'Union européenne n'agit que dans les domaines que les **traités** lui confient ; le reste appartient aux États.
@@ -15,8 +15,6 @@ updated_at: 2026-11-07
 - Un **règlement** s'applique tel quel dans toute l'Union ; une **directive** fixe des objectifs que chaque pays atteint par ses propres mesures.
 - Les citoyens votent aux élections européennes et peuvent lancer une **initiative citoyenne européenne** avec un million de signatures.
 :::
-
-**[EXEMPLE] Ce parcours est un brouillon de démonstration rédigé avec l'aide d'une IA. Il doit être relu par l'équipe éditoriale avant toute publication.**
 
 ## Ce que l'Union peut faire, et ce qu'elle ne peut pas faire
 
@@ -62,7 +60,7 @@ Dans la procédure la plus courante, appelée « procédure législative ordinai
 
 Les lois européennes prennent deux formes principales :
 
-- le **règlement** est obligatoire et doit être appliqué en entier dans toute l'Union. Exemple : le règlement sur les frais d'itinérance, c'est-à-dire l'usage de son téléphone mobile dans un autre pays de l'Union, prolongé en 2022 pour dix ans ;
+- le **règlement** est obligatoire et doit être appliqué en entier dans toute l'Union. Exemple : le règlement sur les frais d'itinérance, c'est-à-dire l'usage de son téléphone mobile dans un autre pays de l'Union, renouvelé en 2022 pour dix ans ;
 - la **directive** fixe des objectifs aux pays de l'Union, mais chaque pays choisit ses propres mesures pour les atteindre. Exemple : la directive sur les plastiques à usage unique, qui réduit ou interdit des objets jetables comme les pailles.
 
 Il existe aussi des décisions, obligatoires pour ceux à qui elles s'adressent, et des recommandations ou des avis, qui ne sont pas obligatoires (Union européenne, « Types d'actes législatifs »).
@@ -120,12 +118,12 @@ Enfin, tous les citoyens et résidents de l'Union peuvent adresser une **pétiti
 
 ## Sources
 
-- EUR-Lex, synthèse « Répartition des compétences au sein de l'Union européenne » (traité sur l'Union européenne, article 5 ; traité sur le fonctionnement de l'Union européenne, articles 2 à 6) : https://eur-lex.europa.eu/FR/legal-content/summary/division-of-competences-within-the-european-union.html
-- Union européenne, « Types d'institutions et d'organes » : https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/types-institutions-and-bodies_fr
-- Union européenne, « Types d'actes législatifs » : https://european-union.europa.eu/institutions-law-budget/law/types-legislation_fr
-- Parlement européen, fiche thématique 1.3.6 « Le Conseil européen » (septembre 2026) : https://www.europarl.europa.eu/factsheets/fr/sheet/23/le-conseil-de-l-union-europeenne
-- Constitution du 4 octobre 1958, articles 88-1, 88-4 et 88-6 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
-- Commission européenne, initiative citoyenne européenne, « Comment ça marche » : https://citizens-initiative.europa.eu/how-it-works_fr
-- Parlement européen, portail des pétitions : https://www.europarl.europa.eu/petitions/fr/home
-- Bureau du Parlement européen en France, « Trombinoscope » (81 sièges pour la France) : https://paris.europarl.europa.eu/home/pagecontent/grid/main/actualites/trombinoscope.html
-- Service-public.gouv.fr, « Élections européennes » (vérifié le 14 août 2026, prochaine élection en 2029) : https://www.service-public.gouv.fr/particuliers/vosdroits/F1944
+- EUR-Lex, synthèse « Répartition des compétences au sein de l'Union européenne » (traité sur l'Union européenne, article 5 ; traité sur le fonctionnement de l'Union européenne, articles 2 à 6), consulté le 2026-11-09 : https://eur-lex.europa.eu/FR/legal-content/summary/division-of-competences-within-the-european-union.html
+- Union européenne, « Types d'institutions et d'organes », consulté le 2026-11-09 : https://european-union.europa.eu/institutions-law-budget/institutions-and-bodies/types-institutions-and-bodies_fr
+- Union européenne, « Types d'actes législatifs », consulté le 2026-11-09 : https://european-union.europa.eu/institutions-law-budget/law/types-legislation_fr
+- Parlement européen, fiche thématique 1.3.6 « Le Conseil européen » (septembre 2026), consulté le 2026-11-09 : https://www.europarl.europa.eu/factsheets/fr/sheet/23/le-conseil-de-l-union-europeenne
+- Constitution du 4 octobre 1958, articles 88-1, 88-4 et 88-6, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur
+- Commission européenne, initiative citoyenne européenne, « Comment ça marche », consulté le 2026-11-09 : https://citizens-initiative.europa.eu/how-it-works_fr
+- Parlement européen, portail des pétitions, consulté le 2026-11-09 : https://www.europarl.europa.eu/petitions/fr/home
+- Bureau du Parlement européen en France, « Trombinoscope » (81 sièges pour la France), consulté le 2026-11-09 : https://paris.europarl.europa.eu/home/pagecontent/grid/main/actualites/trombinoscope.html
+- Service-public.gouv.fr, « Élections européennes » (vérifié le 14 août 2026, prochaine élection en 2029), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1944

@@ -2,18 +2,24 @@ package org.politisationpopulairefrancaise.core.comprendre
 
 import org.politisationpopulairefrancaise.core.editorial.Article
 import org.politisationpopulairefrancaise.core.editorial.ArticleType
+import org.politisationpopulairefrancaise.core.editorial.schema.ContentSchema
 import org.politisationpopulairefrancaise.core.editorial.schema.EditorialEngine
 import org.politisationpopulairefrancaise.core.editorial.schema.Problem
 
 /**
  * The levels a teaching sheet serves (D-096): the lycée first (EMC from the seconde to the terminale), then
- * the cycle 4 (collège, from the 5e to the 3e). The level `atelier` of the popular education kit comes with
- * CO-24. Values never renamed: they are the `ppf-level` tags of signed events.
+ * the cycle 4 (collège, from the 5e to the 3e), then the workshops of popular education (CO-24: associations,
+ * unions, social centres, libraries; 45 minutes to 2 hours, no official programme). Values never renamed: they
+ * are the `ppf-level` tags of signed events. New levels go at the end.
  */
 enum class TeachingLevel(val tagValue: String) {
     LYCEE("lycee"),
     CYCLE_4("cycle-4"),
+    ATELIER("atelier"),
     ;
+
+    /** True for a level of school, which serves an official programme; false for a workshop. */
+    val isSchool: Boolean get() = this != ATELIER
 
     companion object {
         fun fromTag(value: String?): TeachingLevel? = entries.firstOrNull { it.tagValue == value?.trim() }
@@ -26,18 +32,20 @@ data class TeachingStep(val minutes: Int, val text: String)
 /**
  * A teaching sheet for the classroom (CO-13, D-096, docs/integration/comprendre-enseignants.md): how to bring
  * one course of "Comprendre" to life in 55 minutes with a group. Linked to its course by an `a` tag of role
- * `parcours` and to a level (`ppf-level`); it cites the official programme it serves (`ppf-programme`). Its
- * body has the sections of [TeachingSheetFormat], in that order. The quiz « à main levée » is never rewritten:
- * the readers take the questions of the linked course. No account, no data of pupils: the sheet is read,
- * projected and printed, it measures nothing.
+ * `parcours` and to a level (`ppf-level`); a sheet of school cites the official programme it serves
+ * (`ppf-programme`). The same format is the animation sheet of a workshop of popular education (CO-24, level
+ * [TeachingLevel.ATELIER]): 45 minutes to 2 hours, no programme, printable cards to lead it without a screen.
+ * Its body has the sections of [TeachingSheetFormat], in that order. The quiz « à main levée » is never
+ * rewritten: the readers take the questions of the linked course. No account, no data of pupils nor of
+ * participants: the sheet is read, projected and printed, it measures nothing.
  */
 data class TeachingSheet(
     val article: Article,
     /** Address of the linked course: `30023:<key>:<identifier>`. */
     val courseAddress: String,
     val level: TeachingLevel,
-    /** The programme served, in one sentence: title, Bulletin officiel, date, date of verification. */
-    val programme: String,
+    /** The programme served, in one sentence: title, Bulletin officiel, date, date of verification; null for a workshop. */
+    val programme: String?,
     /** The text before the first section (the warning of an example content). */
     val introduction: String,
     val objectives: String,
@@ -59,10 +67,14 @@ data class TeachingSheet(
     /** The sum of the minutes of the timed steps. */
     val totalMinutes: Int get() = steps.sumOf { it.minutes }
 
+    /** True for the animation sheet of a workshop of popular education (CO-24). */
+    val isWorkshop: Boolean get() = level == TeachingLevel.ATELIER
+
     companion object {
         /**
-         * Reads a sheet; null when the content is not a teaching sheet or misses its course, its level or its
-         * programme: it is then not shown. The body is read leniently (a missing section is empty).
+         * Reads a sheet; null when the content is not a teaching sheet or misses its course, its level or, for a
+         * level of school, its programme: it is then not shown. A workshop has no programme (a stray tag is
+         * ignored). The body is read leniently (a missing section is empty).
          */
         fun from(article: Article): TeachingSheet? {
             if (article.type != ArticleType.FICHE_PEDAGOGIQUE) return null
@@ -71,7 +83,7 @@ data class TeachingSheet(
                 ?.takeIf { it.split(':', limit = 3).size == 3 && it.substringAfterLast(':').isNotBlank() }
                 ?: return null
             val level = TeachingLevel.fromTag(event.firstTagValue(ComprendreTags.LEVEL)) ?: return null
-            val programme = event.firstTagValue(ComprendreTags.PROGRAMME)?.trim()?.takeIf { it.isNotEmpty() } ?: return null
+            val programme = if (level.isSchool) event.firstTagValue(ComprendreTags.PROGRAMME)?.trim()?.takeIf { it.isNotEmpty() } ?: return null else null
             val parsed = TeachingSheetFormat.parse(article.body)
             return TeachingSheet(
                 article = article,
@@ -137,6 +149,10 @@ object TeachingSheetFormat {
     /** The longest programme sentence (`ppf-programme`). */
     const val PROGRAMME_MAX: Int = 500
 
+    /** The shortest and the longest workshop of popular education, in minutes (CO-24: 45 minutes to 2 hours). */
+    const val WORKSHOP_MIN_MINUTES: Int = 45
+    const val WORKSHOP_MAX_MINUTES: Int = 120
+
     const val RULE_SECTION_UNKNOWN: String = "comprendre.rule.teaching_section_unknown"
     const val RULE_SECTION_REPEATED: String = "comprendre.rule.teaching_section_repeated"
     const val RULE_SECTION_ORDER: String = "comprendre.rule.teaching_section_order"
@@ -146,6 +162,30 @@ object TeachingSheetFormat {
     const val RULE_NO_STEP: String = "comprendre.rule.teaching_no_step"
     const val RULE_DURATION: String = "comprendre.rule.teaching_duration"
     const val RULE_READABLE: String = "comprendre.rule.teaching_readable"
+    const val RULE_PROGRAMME_REQUIRED: String = "comprendre.rule.teaching_programme_required"
+    const val RULE_PROGRAMME_WORKSHOP: String = "comprendre.rule.teaching_programme_workshop"
+    const val RULE_WORKSHOP_DURATION: String = "comprendre.rule.teaching_workshop_duration"
+
+    /** The key of the level and of the programme in a draft (fields of `ComprendreSchemas.FICHE_PEDAGOGIQUE`). */
+    const val LEVEL_KEY: String = "level"
+    const val PROGRAMME_KEY: String = "programme"
+
+    /**
+     * The problems that depend on the level ([levelTag], as written): a sheet of school must cite its programme;
+     * a workshop has none, and lasts from [WORKSHOP_MIN_MINUTES] to [WORKSHOP_MAX_MINUTES] minutes. An unknown
+     * level is left to the check of the field.
+     */
+    fun levelProblems(levelTag: String?, programme: String?, durationMinutes: Int?): List<Problem> {
+        val level = TeachingLevel.fromTag(levelTag) ?: return emptyList()
+        val hasProgramme = !programme.isNullOrBlank()
+        return buildList {
+            if (level.isSchool && !hasProgramme) add(Problem(RULE_PROGRAMME_REQUIRED, PROGRAMME_KEY, args = listOf(level.tagValue)))
+            if (!level.isSchool && hasProgramme) add(Problem(RULE_PROGRAMME_WORKSHOP, PROGRAMME_KEY))
+            if (!level.isSchool && durationMinutes != null && durationMinutes !in WORKSHOP_MIN_MINUTES..WORKSHOP_MAX_MINUTES) {
+                add(Problem(RULE_WORKSHOP_DURATION, ContentSchema.DURATION, args = listOf(WORKSHOP_MIN_MINUTES.toString(), WORKSHOP_MAX_MINUTES.toString(), durationMinutes.toString())))
+            }
+        }
+    }
 
     fun parse(markdown: String): ParsedTeachingSheet {
         val introduction = mutableListOf<String>()

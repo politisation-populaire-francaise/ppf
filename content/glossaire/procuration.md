@@ -1,6 +1,6 @@
 ---
 slug: glossaire-procuration
-title: [EXEMPLE] Procuration
+title: Procuration
 summary: Démarche par laquelle un électeur absent le jour du vote confie à un autre électeur le soin de voter à sa place, dans son propre bureau de vote.
 variants: procuration, procurations, vote par procuration
 topics: elections
@@ -8,7 +8,7 @@ see_also: glossaire-liste-electorale, glossaire-abstention, glossaire-suffrage-u
 related: parcours:l-election-presidentielle
 origin: ai-assisted
 published_at: 2026-11-07
-updated_at: 2026-11-07
+updated_at: 2026-11-09
 ---
 Le vote par procuration permet à un électeur qui ne pourra pas aller voter de désigner une autre personne pour voter à sa place (Code électoral, articles L71 et suivants).
 
@@ -30,4 +30,4 @@ Une personne qui a donné procuration peut encore voter elle-même, si elle se p
 
 ## Sources
 
-- [Service-public.gouv.fr, « Vote par procuration »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1604)
+- [Service-public.gouv.fr, « Vote par procuration »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1604), consulté le 2026-11-09
