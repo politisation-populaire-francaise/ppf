@@ -30,6 +30,8 @@ import org.politisationpopulairefrancaise.server.agir.agendaSource
 import org.politisationpopulairefrancaise.server.agir.SlotSignupStore
 import org.politisationpopulairefrancaise.server.agir.slotApi
 import org.politisationpopulairefrancaise.server.agir.callsSource
+import org.politisationpopulairefrancaise.server.agir.collectivesSource
+import org.politisationpopulairefrancaise.server.agir.fundsSource
 import org.politisationpopulairefrancaise.server.agir.organisationsSource
 import org.politisationpopulairefrancaise.server.agir.agirApi
 import org.politisationpopulairefrancaise.server.agir.collectives.CollectiveRules
@@ -158,6 +160,7 @@ import org.politisationpopulairefrancaise.web.ContentVerifier
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
 import org.politisationpopulairefrancaise.web.agirPages
+import org.politisationpopulairefrancaise.web.agirRubricPages
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
 import org.politisationpopulairefrancaise.web.openDataPage
 import org.politisationpopulairefrancaise.web.verifyPages
@@ -618,7 +621,13 @@ fun Application.module(
             openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
             openExport?.let { export -> verifyPages(ContentVerifier { export.check(it) }) } // « Vérifier un contenu PPF » (S-141).
             agirSpace?.let { agendaPage(it.agendaSource()) }
-            agirPages(repository?.takeIf { agirSpace != null }?.let(::callsSource), repository?.let { organisationsSource(it, policy::isEditor) }) // /appels, /agir/appels/…, /organisations.
+            agirPages(repository?.takeIf { agirSpace != null }?.let(::callsSource), repository?.let { organisationsSource(it, policy::isEditor) }) // /agir/appels, /agir/appels/…, /organisations.
+            // S'engager en politique, solidarité, collectifs, kits d'action citoyenne: the rubric pages of « Agir » on the site.
+            agirRubricPages(
+                comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
+                collectives = groups?.let(::collectivesSource),
+                funds = repository?.let { fundsSource(it, policy::isEditor) },
+            )
             tilesRoutes(tiles)
             comparatorPhotosRoutes(ComparatorPhotosConfig.fromEnvironment()) // Official photos of the comparators (DE-16, Q3).
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
