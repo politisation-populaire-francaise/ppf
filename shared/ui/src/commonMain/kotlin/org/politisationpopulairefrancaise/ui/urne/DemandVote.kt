@@ -34,8 +34,6 @@ import org.politisationpopulairefrancaise.ui.resources.urne_demand_opening
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_line
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_public
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_recorded
-import org.politisationpopulairefrancaise.ui.resources.urne_elected_too_few
-import org.politisationpopulairefrancaise.ui.resources.urne_results_too_few
 import org.politisationpopulairefrancaise.ui.resources.urne_need_account
 import org.politisationpopulairefrancaise.ui.resources.urne_no_token
 import org.politisationpopulairefrancaise.ui.resources.urne_not_voted
@@ -131,12 +129,9 @@ fun DemandVoteRow(
             ActionButton(Lucide.MessageCircle, stringResource(Res.string.revendication_debate), onClick = { }, enabled = false)
         }
         box?.results?.let { results ->
+            // The results show from the first ballot (D-156).
             Text(
-                if (results.citizens.hidden) {
-                    stringResource(Res.string.urne_results_too_few, results.minimum ?: 5)
-                } else {
-                    stringResource(Res.string.urne_results_line, count(results.citizens, FOR), count(results.citizens, AGAINST), count(results.citizens, BLANK))
-                },
+                stringResource(Res.string.urne_results_line, count(results.citizens, FOR), count(results.citizens, AGAINST), count(results.citizens, BLANK)),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.testTag(DemandVoteTags.RESULTS),
             )
@@ -155,9 +150,7 @@ fun DemandVoteRow(
                     SupportThresholds.Stage.BELOW -> Unit
                 }
             }
-            if (results.electedOfficials.hidden) {
-                Text(stringResource(Res.string.urne_elected_too_few, results.minimum ?: 5), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
-            } else if (results.electedOfficials.ballots > 0) {
+            if (results.electedOfficials.ballots > 0) {
                 Text(
                     stringResource(Res.string.urne_elected_line, count(results.electedOfficials, FOR), count(results.electedOfficials, AGAINST), count(results.electedOfficials, BLANK)),
                     style = MaterialTheme.typography.bodySmall,

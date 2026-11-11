@@ -39,7 +39,6 @@ import org.politisationpopulairefrancaise.ui.resources.urne_no_token
 import org.politisationpopulairefrancaise.ui.resources.urne_privacy
 import org.politisationpopulairefrancaise.ui.resources.urne_recorded
 import org.politisationpopulairefrancaise.ui.resources.urne_sending
-import org.politisationpopulairefrancaise.ui.resources.urne_too_few
 import org.politisationpopulairefrancaise.ui.resources.urne_unavailable
 import org.politisationpopulairefrancaise.ui.resources.urne_withdraw
 import org.politisationpopulairefrancaise.ui.resources.urne_withdrawn
@@ -148,10 +147,6 @@ private fun CountsBlock(title: String?, counts: ChoiceCounts, labels: Map<String
     val palette = PpfTheme.palette
     Inset(Modifier.fillMaxWidth()) {
         title?.let { Text(it, style = MaterialTheme.typography.labelLarge) }
-        if (counts.hidden) {
-            Text(stringResource(Res.string.urne_too_few, minimum ?: 5), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
-            return@Inset
-        }
         labels.forEach { (code, label) ->
             Text("$label : ${counts.counts[code] ?: 0}", style = MaterialTheme.typography.bodyMedium)
         }

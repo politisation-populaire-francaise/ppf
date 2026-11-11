@@ -1244,6 +1244,18 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Règle d'écriture : toujours le nom complet, pour ne jamais confondre avec la Constitution de la République ; celle-ci est écrite « Constitution de 1958 » ou « Constitution de la République » là où les deux se côtoient (mesures du contenu d'exemple, renvoi vers Comprendre).
 - `CLAUDE.md` est modifié par le chef d'équipe ; les libellés de Socle (tutoriel, description des revendications), de Comprendre (texte du cap n° 6) et d'Agir leur sont signalés.
 
+## D-155 (2026-11-11) Toutes les revendications publiées s'ouvrent au vote
+
+- Décision de la propriétaire, relayée par le chef d'équipe, mot pour mot : « Les revendications doivent absolument etre retravaillées sur l'ux, l'ergonomie et le fonctionnel, c'est actuellement beaucoup trop pauvre et trop brouillon et surtout ce n'est pas vraiment fonctionnel (vote pour/contre, bulle de debat etc), tout doit pouvoir être testable en preproduction donc fonctionnel ».
+- Constat : une urne ne s'ouvrait que pour une revendication « en débat » ou « très soutenue » ; une revendication citoyenne, publiée « nouvelle », n'avait jamais d'urne et ses boutons restaient grisés.
+- Choix : une urne pour toute revendication publiée (« nouvelle », « en débat », « très soutenue »), fermée quand la revendication est retenue, devient une campagne ou disparaît ; le statut qu'écrit un citoyen ne compte pas (sa revendication est « nouvelle »). L'anonymat ne change pas : un jeton aveugle par compte et par urne, envoi différé. L'application dit le vote fait (« Votre vote : Pour »).
+
+## D-156 (2026-11-11) Les résultats d'une urne s'affichent dès le premier bulletin
+
+- Décision de la propriétaire, relayée par le chef d'équipe, mot pour mot : « Retire la règle des résultats masqués sous 5 votes je me rends compte que ca ne rime a rien au contraire c'est un problème. »
+- Choix : `PPF_VOTE_MIN_DISPLAY` vaut 1 par défaut, en production comme en préproduction (le mécanisme reste, sans effet) ; les textes « moins de 5 bulletins » sont retirés de l'application. Le questionnaire M26 (D-150) garde son propre seuil.
+- Risque accepté par la propriétaire, inscrit dans `THREAT_MODEL.md` : avec très peu de votants, le résultat peut laisser deviner le choix d'une personne si l'on sait par ailleurs qu'elle a voté.
+
 ## D-120 (2026-11-07) Back-office : connexion par clé d'accès, sans mot de passe ni code TOTP, avec WebAuthn4J
 
 - Contexte : étape 1 du socle du back-office (contrat `docs/integration/back-office.md`, M15 et M16). Le cahier des charges demande une double authentification obligatoire « TOTP ou clé de sécurité » pour l'équipe.
