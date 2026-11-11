@@ -206,16 +206,28 @@ private fun DeciderHome(
             Spacer(Modifier.height(16.dp))
             Text(stringResource(Res.string.decider_empty), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted)
         }
-        val elections = catalog.upcomingElections(today, territories)
-        if (elections.isNotEmpty()) {
-            Spacer(Modifier.height(24.dp))
-            Column(Modifier.testTag(DeciderTags.section("elections"))) {
-                SectionHeader(stringResource(Res.string.decider_elections_section))
-                Text(stringResource(Res.string.decider_elections_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
-                elections.forEach { election ->
-                    Spacer(Modifier.height(12.dp))
-                    ElectionCard(election, today, onOpen = { state.open(DeciderDestination.Election(election.address)) }, modifier = Modifier.widthIn(max = 760.dp))
-                }
+        // MVP 1: the flagship tools first (petitions, then the Constitution and its deliberation), then the calendar.
+        Spacer(Modifier.height(24.dp))
+        val open = catalog.openPetitions(today)
+        val closed = catalog.closedPetitions(today)
+        Column(Modifier.onGloballyPositioned { sectionTops[DeciderHighlight.PETITIONS] = it.positionInParent().y.toInt() }.testTag(DeciderTags.section("petitions"))) {
+            SectionHeader(
+                stringResource(Res.string.decider_petitions_section_count, open.size),
+                action = stringResource(Res.string.decider_thresholds_link),
+                actionTag = DeciderTags.THRESHOLDS_OPEN,
+                onAction = { state.open(DeciderDestination.Thresholds()) },
+            )
+            Text(stringResource(Res.string.decider_petitions_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+            Spacer(Modifier.height(12.dp))
+            if (open.isEmpty()) Text(stringResource(Res.string.decider_petitions_none_open), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
+            PetitionGrid(open, today, columns) { state.open(DeciderDestination.Petition(it.address)) }
+            if (closed.isNotEmpty()) {
+                Spacer(Modifier.height(8.dp))
+                PpfTextButton(
+                    onClick = { state.open(DeciderDestination.ClosedPetitions) },
+                    text = stringResource(Res.string.decider_closed_link, closed.size),
+                    modifier = Modifier.testTag(DeciderTags.CLOSED_OPEN),
+                )
             }
         }
         catalog.currentPacte()?.let { pacte ->
@@ -242,6 +254,18 @@ private fun DeciderHome(
                 }
             }
         }
+        val elections = catalog.upcomingElections(today, territories)
+        if (elections.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.testTag(DeciderTags.section("elections"))) {
+                SectionHeader(stringResource(Res.string.decider_elections_section))
+                Text(stringResource(Res.string.decider_elections_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+                elections.forEach { election ->
+                    Spacer(Modifier.height(12.dp))
+                    ElectionCard(election, today, onOpen = { state.open(DeciderDestination.Election(election.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+                }
+            }
+        }
         catalog.currentComparator()?.let { sheet ->
             Spacer(Modifier.height(24.dp))
             Column(Modifier.testTag(DeciderTags.section("comparateur"))) {
@@ -249,29 +273,6 @@ private fun DeciderHome(
                 Text(stringResource(Res.string.decider_comparator_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
                 Spacer(Modifier.height(12.dp))
                 ComparatorCard(catalog.grid(sheet, voir), onOpen = { state.open(DeciderDestination.Comparator(sheet.address)) }, modifier = Modifier.widthIn(max = 760.dp))
-            }
-        }
-        Spacer(Modifier.height(24.dp))
-        val open = catalog.openPetitions(today)
-        val closed = catalog.closedPetitions(today)
-        Column(Modifier.onGloballyPositioned { sectionTops[DeciderHighlight.PETITIONS] = it.positionInParent().y.toInt() }.testTag(DeciderTags.section("petitions"))) {
-            SectionHeader(
-                stringResource(Res.string.decider_petitions_section_count, open.size),
-                action = stringResource(Res.string.decider_thresholds_link),
-                actionTag = DeciderTags.THRESHOLDS_OPEN,
-                onAction = { state.open(DeciderDestination.Thresholds()) },
-            )
-            Text(stringResource(Res.string.decider_petitions_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
-            Spacer(Modifier.height(12.dp))
-            if (open.isEmpty()) Text(stringResource(Res.string.decider_petitions_none_open), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
-            PetitionGrid(open, today, columns) { state.open(DeciderDestination.Petition(it.address)) }
-            if (closed.isNotEmpty()) {
-                Spacer(Modifier.height(8.dp))
-                PpfTextButton(
-                    onClick = { state.open(DeciderDestination.ClosedPetitions) },
-                    text = stringResource(Res.string.decider_closed_link, closed.size),
-                    modifier = Modifier.testTag(DeciderTags.CLOSED_OPEN),
-                )
             }
         }
         // The official consultations (DE-27): open ones first, then those to come; the local ones later, by the commune.
