@@ -47,7 +47,7 @@ Si le téléphone refuse avec un message sur un **conflit de package** (signatur
 
 Depuis Android 15, une application occupe tout l'écran, y compris sous la barre d'état du téléphone (l'heure, la batterie) et sous sa barre de navigation (les trois boutons, ou le trait des gestes). C'est donc à l'application de laisser ces zones libres : c'est ce qui manquait, et ce qui est corrigé (D-180). Je n'ai pu le vérifier que sur des téléphones simulés : votre essai sur un vrai Galaxy compte. Cinq minutes suffisent.
 
-1. **En portrait** : ouvrez l'application. En haut, le bouton du menu, le nom, AIDE, la cloche et l'avatar sont entièrement sous l'heure et la batterie, rien ne se superpose. En bas, les cinq entrées (Fil, En direct, Carte, Messages, Revendications) sont entièrement au-dessus des trois boutons du téléphone. La couleur des deux barres va jusqu'au bord de l'écran, sans bande d'une autre couleur.
+1. **En portrait** : ouvrez l'application. En haut, le bouton du menu, le nom, AIDE, la cloche et l'avatar sont entièrement sous l'heure et la batterie, rien ne se superpose. En bas, les cinq entrées (En direct, Actu, Carte, Agir, Appels depuis le 11 novembre) sont entièrement au-dessus des trois boutons du téléphone. La couleur des deux barres va jusqu'au bord de l'écran, sans bande d'une autre couleur.
 2. **Dans chaque espace** (Fil, En direct, Agir, Décider, Comprendre, Mon espace, Revendications) : faites défiler jusqu'en bas ; la dernière ligne se lit en entier au-dessus de la barre du bas. Ouvrez aussi le menu (bouton en haut à gauche) : son premier et son dernier texte sont entièrement visibles.
 3. **En paysage** (téléphone tourné, d'un côté puis de l'autre) : la colonne d'icônes et le haut de l'écran ne passent ni sous le poinçon de la caméra ni sous les trois boutons, qui se placent alors sur le côté.
 4. **Clavier ouvert** : dans Revendications, touchez « Proposer une revendication », puis le premier champ. Ce que vous écrivez reste visible au-dessus du clavier, et vous pouvez faire défiler jusqu'au bouton d'envoi. Même essai dans Messages (zone d'écriture d'une conversation) et dans Mon espace (« J'ai déjà un compte »).
@@ -56,6 +56,16 @@ Depuis Android 15, une application occupe tout l'écran, y compris sous la barre
 7. **Navigation par gestes**, si vous voulez l'essayer (Paramètres, Affichage, Barre de navigation) : le trait du bas ne touche pas les libellés de la barre du bas.
 
 Si quelque chose se chevauche encore, envoyez-moi une capture d'écran avec le modèle du téléphone et le sens (portrait ou paysage).
+
+### La nouvelle navigation et le tutoriel (ajouté le 11 novembre 2026)
+
+Quand je vous enverrai une version (seulement si vous la demandez), voici quoi regarder, en trois minutes :
+
+1. **Premier lancement** : la présentation en sept écrans s'ouvre (pourquoi l'application, vie privée, Agir, Se réunir, Décider, AIDE, « Je veux… »). « Passer » est toujours en haut à droite. Les choses pas encore prêtes sont dans un encadré « Bientôt ». Au dernier écran, chacun des quatre boutons mène au bon endroit. Elle ne revient plus ensuite ; « Revoir la présentation de l'application » la relance, dans Mon espace et dans la feuille AIDE.
+2. **Barre du bas** : En direct, Actu, Carte, Agir, Appels, dans cet ordre ; l'application s'ouvre sur En direct. « Appels » montre le mur des appels (grève, manifestation, soutien, blocage).
+3. **Barre du haut** : le menu, le nom en entier (sur deux ou trois lignes selon la place), le bouton AIDE rouge, plus petit et sans icône, la messagerie, la cloche et votre avatar. Rien ne déborde, même avec une grande police (Paramètres, Affichage, Taille et style de police).
+4. **Le menu** (en haut à gauche) : Voir, Comprendre, Décider, Revendications. Rien n'a été retiré.
+5. **Téléphone couché** : à gauche, une colonne avec les cinq entrées de la barre du bas, toutes visibles ; le reste est dans le menu.
 
 ### Tester le compte (ajouté le 5 novembre 2026)
 

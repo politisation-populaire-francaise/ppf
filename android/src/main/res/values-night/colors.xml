@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="window_background">#141311</color>
+    <!-- surface1 of the dark PpfPalette. -->
+    <color name="window_background">#181C30</color>
 </resources>

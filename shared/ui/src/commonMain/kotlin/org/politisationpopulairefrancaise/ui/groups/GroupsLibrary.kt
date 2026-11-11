@@ -612,19 +612,30 @@ class GroupsLibrary(
 
     /** Removes [message] from the open room, with a public [reason] (moderators, administrators, its author). */
     suspend fun removeMessage(signer: EventSigner, message: GroupMessage, reason: String): Boolean =
-        moderate(signer) { RoomModeration.deleteEvent(signer.publicKey, message.groupId, message.id, reason, clock()) }
+        moderate(signer) { RoomModeration.deleteEvent(signer.publicKey, message.groupId, message.id, reason, moderationTime()) }
 
     /** Names [target] administrator or moderator ([role]), or takes their role back ([role] null). */
     suspend fun setRole(signer: EventSigner, target: String, role: RoomRole?): Boolean =
-        moderate(signer) { group -> RoomModeration.putUser(signer.publicKey, group.id, target, role, clock()) }
+        moderate(signer) { group -> RoomModeration.putUser(signer.publicKey, group.id, target, role, moderationTime()) }
 
     /** Excludes [target] from the open room, with a public [reason]. */
     suspend fun exclude(signer: EventSigner, target: String, reason: String): Boolean =
-        moderate(signer) { group -> RoomModeration.removeUser(signer.publicKey, group.id, target, reason, clock()) }
+        moderate(signer) { group -> RoomModeration.removeUser(signer.publicKey, group.id, target, reason, moderationTime()) }
 
     /** Readmits the excluded [target] in the open room. */
     suspend fun readmit(signer: EventSigner, target: String): Boolean =
-        moderate(signer) { group -> RoomModeration.putUser(signer.publicKey, group.id, target, null, clock()) }
+        moderate(signer) { group -> RoomModeration.putUser(signer.publicKey, group.id, target, null, moderationTime()) }
+
+    /** The date of this device's last accepted moderation action (seconds). */
+    private var lastModerationAt = 0L
+
+    /**
+     * The date of a new moderation action: never the same second as the previous one of this device.
+     * The journal of a room is read in the order of the dates, then of the identifiers (D-131): an
+     * exclusion followed at once by a readmission, within the same second, could otherwise be read in
+     * the other order, and the readmission refused (seen at random in a test, 11 November 2026).
+     */
+    private fun moderationTime(): Long = maxOf(clock(), lastModerationAt + 1)
 
     fun dismissModerationError() {
         moderationError = null
@@ -646,6 +657,7 @@ class GroupsLibrary(
             val event = signer.sign(unsigned)
             return when (val result = remote.publish(event)) {
                 is PublicationResult.Accepted -> {
+                    lastModerationAt = maxOf(lastModerationAt, event.createdAt)
                     withContext(Dispatchers.Default) { store.store(event) }
                     reloadMessages(store, group)
                     if (event.kind == RoomModeration.EDIT_METADATA) reload(store)
