@@ -6,17 +6,15 @@ updated_at: 2026-11-11
 ---
 **PROJET, À FAIRE RELIRE PAR UN AVOCAT**
 
-> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Les passages entre crochets « À REMPLIR » ne peuvent être remplis que par la propriétaire ; rien n'y a été inventé. Les questions pour l'avocat sont regroupées à la fin.
+> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Les passages entre crochets « À COMPLÉTER » ou « À CONFIRMER » ne peuvent être remplis que par la propriétaire ; rien n'y a été inventé. Tant qu'il en reste un, le serveur refuse de démarrer en production. Les questions pour l'avocat sont regroupées à la fin.
 
 ## Éditeur
 
 Le site politisation-populaire-francaise.org et les applications PPF (Android, ordinateur) sont édités par le collectif citoyen **Politisation Populaire Française (PPF)**, en cours de déclaration en association régie par la loi du 1er juillet 1901.
 
-- Statut : collectif non encore déclaré ; numéro RNA et adresse du siège : [À REMPLIR après la déclaration en préfecture : numéro RNA, adresse du siège]
-- Personne responsable de l'édition tant que l'association n'est pas déclarée : [À REMPLIR : voir la question 1 pour l'avocat ; si l'éditeur est une personne physique qui édite à titre non professionnel, la loi lui permet de ne publier que l'identité de l'hébergeur, à condition de lui avoir donné ses propres coordonnées]
-- Directeur ou directrice de la publication : [À REMPLIR : nom de la personne]
-- Contact : [À COMPLÉTER : adresse de contact ; elle servira aussi de point de contact pour les autorités et pour les utilisateurs]
-- Téléphone : [À REMPLIR, sauf si l'option d'anonymat de l'éditeur non professionnel est retenue]
+- Éditeur : [À COMPLÉTER à la déclaration de l'association : dénomination, adresse du siège, numéro RNA, téléphone]. Rien n'est publié au public avant cette déclaration.
+- Directrice de la publication : [À COMPLÉTER]
+- Contact : contact@politisation-populaire-francaise.org (point de contact pour les utilisateurs et pour les autorités, en français et en anglais)
 
 ## Hébergeur
 
@@ -53,6 +51,4 @@ Toute personne nommée ou désignée dans un contenu peut demander un droit de r
 
 ## Questions pour l'avocat
 
-1. Tant que l'association n'est pas déclarée, elle n'a pas de personnalité juridique : qui est juridiquement l'éditeur (la propriétaire, une autre personne, les membres du collectif) et qui est directeur de la publication ? L'option d'anonymat de l'éditeur non professionnel (article 1-1, II) s'applique-t-elle ?
-2. Après la déclaration : mentions exactes pour une association (dénomination, siège, numéro RNA, directeur de la publication).
-3. Le point de contact pour les autorités et pour les utilisateurs (DSA, articles 11 et 12) peut-il être une messagerie chiffrée, ou faut-il une adresse électronique ?
+1. Mentions exactes pour une association déclarée (dénomination, siège, numéro RNA, directrice de la publication, téléphone).

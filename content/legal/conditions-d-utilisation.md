@@ -6,7 +6,7 @@ updated_at: 2026-11-11
 ---
 **PROJET, À FAIRE RELIRE PAR UN AVOCAT**
 
-> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Il suit l'article 14 du règlement européen sur les services numériques (conditions claires, publiques, qui disent comment la modération fonctionne et comment contester une décision) et la section 9 du cahier des charges. Les passages « À REMPLIR » ne peuvent être remplis que par la propriétaire.
+> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Il suit l'article 14 du règlement européen sur les services numériques (conditions claires, publiques, qui disent comment la modération fonctionne et comment contester une décision) et la section 9 du cahier des charges. Les passages « À COMPLÉTER » ou « À CONFIRMER » ne peuvent être remplis que par la propriétaire.
 
 ## 1. Ce qu'est PPF
 
@@ -14,7 +14,7 @@ PPF est une plateforme citoyenne gratuite et sans publicité, éditée par le co
 
 ## 2. Une version d'essai, sur invitation
 
-PPF est en bêta : l'accès se fait sur invitation, certaines fonctions sont incomplètes et peuvent changer ou s'arrêter, et des erreurs sont possibles. Merci de nous les signaler. [À REMPLIR : durée de la bêta et sort des comptes et contenus à sa fin.]
+PPF est en bêta : l'accès se fait sur invitation, certaines fonctions sont incomplètes et peuvent changer ou s'arrêter, et des erreurs sont possibles. Merci de nous les signaler. [À COMPLÉTER : durée de la bêta et sort des comptes et contenus à sa fin, à préciser.]
 
 ## 3. Accepter ces conditions
 
@@ -48,12 +48,12 @@ Lire ne demande ni compte ni acceptation. Créer un compte, publier, voter, sout
 ## 7. Signaler et contester
 
 - **Signaler** : toute personne, même sans compte, peut signaler un contenu qu'elle estime illicite ou contraire à la charte. Voir la [procédure de signalement](/signaler).
-- **Contester une décision** (la vôtre ou celle prise sur votre signalement) : gratuitement, pendant au moins six mois après la décision, par [À COMPLÉTER : adresse de contact]. Votre réclamation est examinée par une autre personne que celle qui a décidé, et vous recevez une réponse motivée.
+- **Contester une décision** (la vôtre ou celle prise sur votre signalement) : gratuitement, pendant au moins six mois après la décision, par un message à contact@politisation-populaire-francaise.org. Votre réclamation est examinée par une autre personne que celle qui a décidé, et vous recevez une réponse motivée.
 - Vous pouvez aussi saisir un organisme de règlement extrajudiciaire des litiges certifié par l'Arcom, ou la justice.
 
 ## 8. Clôturer son compte
 
-Vous pouvez cesser d'utiliser votre compte à tout moment et effacer l'application et ses données de votre appareil. Pendant la bêta, la suppression sur le serveur de vos contenus publiés et de votre compte se fait sur demande à l'équipe [À REMPLIR : moyen et délai ; À CONFIRMER par l'équipe technique : outil d'effacement manuel côté serveur]. Les votes déjà comptés restent comptés, de façon anonyme. Les contenus publiés peuvent être détachés de votre pseudonyme (« compte supprimé ») ou supprimés un par un.
+Vous pouvez cesser d'utiliser votre compte à tout moment et effacer l'application et ses données de votre appareil. Pendant la bêta, la suppression sur le serveur de vos contenus publiés et de votre compte se fait sur demande à contact@politisation-populaire-francaise.org, dans les 72 heures [À CONFIRMER par l'équipe technique : outil d'effacement manuel côté serveur]. Les votes déjà comptés restent comptés, de façon anonyme. Les contenus publiés peuvent être détachés de votre pseudonyme (« compte supprimé ») ou supprimés un par un.
 
 ## 9. Responsabilité
 

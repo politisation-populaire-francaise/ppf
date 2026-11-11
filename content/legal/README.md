@@ -16,17 +16,21 @@ Ces fichiers sont hors de la signature des contenus. Au moment de la compilation
 
 Un blanc s'écrit `[À COMPLÉTER : …]`, `[À REMPLIR : …]`, `[À CONFIRMER …]` ou `[À VÉRIFIER …]`. Tant qu'il en reste un dans ces textes, le serveur refuse de démarrer en production (`LegalPages.requireComplete`, appelé au démarrage) ; il démarre en développement et en préproduction. Les questions pour l'avocat (`[À FAIRE PRÉCISER PAR L'AVOCAT …]`) ne bloquent pas : la bêta ouvre avant sa relecture (feuille de route du MVP 1, décision 1). Le contact est en attente de la propriétaire (adresse `contact@` demandée) ; l'adresse du compte GitHub ne doit pas y être publiée.
 
-## Blancs que seule la propriétaire peut remplir
+## Réponses de la propriétaire (11 novembre 2026, relayées par le chef d'équipe)
 
-1. **Éditeur** tant que l'association n'est pas déclarée : qui (personne physique) en répond, et si elle choisit l'anonymat permis à un éditeur non professionnel (son identité est alors donnée à Hostinger seulement).
-2. **Directeur ou directrice de la publication** : nom.
-3. **Moyen de contact officiel** (point de contact des utilisateurs et des autorités, demandes RGPD, contestations, droit de réponse) : adresse électronique dédiée (coût éventuel à annoncer) ou clé de messagerie chiffrée de l'équipe.
-4. **Moyen de signalement pendant la bêta**, tant que le bouton « Signaler ce contenu » n'existe pas dans l'application (par exemple un message chiffré à la clé de l'équipe de modération).
-5. **Hostinger** : confirmer au contrat la société « Hostinger International Limited, 61 Lordou Vironos Street, 6023 Larnaca, Chypre » (relevée dans ses conditions générales) et donner son téléphone. Le centre de données est en Allemagne (relevé par la session « Mise en ligne »).
-6. **Après la déclaration** : numéro RNA et adresse du siège.
-7. **Délégué à la protection des données** : désigné ou non (à trancher avec l'avocat).
-8. **Délai promis** pour traiter une demande de suppression d'un contenu ou d'un compte pendant la bêta.
-9. **Durée de la bêta** et sort des comptes et des contenus à sa fin.
+- Rien n'est publié au public tant que l'association n'est pas déclarée : pas d'anonymat d'éditeur à traiter ; l'éditeur est « à compléter à la déclaration ».
+- Directrice de la publication : la propriétaire pour l'instant ; son nom n'est pas écrit (« à compléter »).
+- Contact officiel : contact@politisation-populaire-francaise.org (aussi pour les signalements et les demandes sur les données). L'adresse du compte GitHub n'est jamais publiée.
+- Suppression d'un contenu ou d'un compte pendant la bêta : dans les 72 heures.
+- Durée de la bêta et sort des données à sa fin : pas encore décidés (« à préciser »).
+- Délégué à la protection des données : désigné au sein de l'association ou vu avec l'avocat.
+
+## Blancs restants (le serveur refuse de démarrer en production tant qu'il en reste un)
+
+1. Éditeur et responsable du traitement : dénomination, siège, numéro RNA, téléphone, à la déclaration de l'association.
+2. Nom de la directrice de la publication.
+3. Durée de la bêta et sort des données à sa fin.
+4. Confirmer au contrat Hostinger International Limited (Larnaca, Chypre) et son téléphone.
 
 ## À confirmer par l'équipe technique
 

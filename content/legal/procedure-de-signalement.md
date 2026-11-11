@@ -6,7 +6,7 @@ updated_at: 2026-11-11
 ---
 **PROJET, À FAIRE RELIRE PAR UN AVOCAT**
 
-> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Il suit les articles 16, 17, 18, 20 et 22 du règlement européen sur les services numériques et la procédure PHAROS du cahier des charges (sections 9.4 et 9.5). **Attention** : le bouton « Signaler ce contenu » n'existe pas encore dans l'application ; pendant la bêta, les signalements passent par le moyen de contact ci-dessous, à choisir par la propriétaire.
+> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation. Il suit les articles 16, 17, 18, 20 et 22 du règlement européen sur les services numériques et la procédure PHAROS du cahier des charges (sections 9.4 et 9.5). **Attention** : le bouton « Signaler ce contenu » n'existe pas encore dans l'application ; pendant la bêta, les signalements passent par l'adresse de contact ci-dessous.
 
 ## Qui peut signaler
 
@@ -14,7 +14,7 @@ Tout le monde, même sans compte. Votre signalement ne révèle jamais votre ide
 
 ## Comment signaler
 
-Pendant la bêta : [À REMPLIR : moyen de contact pour les signalements, par exemple un message privé chiffré à la clé de l'équipe de modération depuis la messagerie de l'application, ou une adresse dédiée]. Plus tard, un bouton sur chaque contenu.
+Pendant la bêta : écrivez à contact@politisation-populaire-francaise.org. Plus tard, un bouton sur chaque contenu.
 
 Pour que nous puissions agir, indiquez :
 

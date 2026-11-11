@@ -101,9 +101,9 @@ class LegalPagesTest {
                     "Base juridique : [À FAIRE PRÉCISER PAR L'AVOCAT, question 2]. Lien : [charte](/charte).",
             ),
         )
-        // Today the contact and the publisher are still blank (the owner fills them in).
+        // Today the publisher is still blank: it is filled in when the association is declared.
         val blanks = LegalPages.blanks()
-        assertTrue(blanks.getValue("mentions-legales.md").any { it.startsWith("[À COMPLÉTER : adresse de contact") }, blanks.toString())
+        assertTrue(blanks.getValue("mentions-legales.md").any { it.startsWith("[À COMPLÉTER à la déclaration") }, blanks.toString())
         LegalPages.requireComplete("development")
         LegalPages.requireComplete("preproduction")
         val refused = assertFailsWith<IllegalArgumentException> { LegalPages.requireComplete("production") }

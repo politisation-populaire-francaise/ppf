@@ -6,7 +6,7 @@ updated_at: 2026-11-11
 ---
 **PROJET, À FAIRE RELIRE PAR UN AVOCAT**
 
-> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation, à partir du registre des données du projet. Il ne décrit que ce que l'application et le serveur font réellement aujourd'hui ; ce qui n'existe pas encore est dit comme tel. Les passages « À REMPLIR » ne peuvent être remplis que par la propriétaire. À mettre à jour à chaque ajout au registre des données.
+> Brouillon rédigé par l'IA le 11 novembre 2026 pour la bêta sur invitation, à partir du registre des données du projet. Il ne décrit que ce que l'application et le serveur font réellement aujourd'hui ; ce qui n'existe pas encore est dit comme tel. Les passages « À COMPLÉTER » ou « À CONFIRMER » ne peuvent être remplis que par la propriétaire. À mettre à jour à chaque ajout au registre des données.
 
 ## En bref
 
@@ -18,9 +18,9 @@ updated_at: 2026-11-11
 
 ## Qui est responsable de vos données
 
-[À REMPLIR : responsable du traitement. Tant que l'association n'est pas déclarée, voir la question 1 pour l'avocat ; ensuite, l'association PPF, son adresse et son numéro RNA.]
+L'association Politisation Populaire Française, [À COMPLÉTER à la déclaration de l'association : adresse du siège et numéro RNA].
 
-Contact pour toute question ou demande sur vos données : [À COMPLÉTER : adresse de contact]. Délégué à la protection des données : [À REMPLIR : désigné ou non ; voir la question 4].
+Contact pour toute question ou demande sur vos données : contact@politisation-populaire-francaise.org. Délégué à la protection des données : sa désignation sera décidée au sein de l'association, avec son avocat.
 
 ## Ce qui reste sur votre appareil
 
@@ -57,13 +57,13 @@ Sur ordinateur, la base locale de l'application n'est pas encore chiffrée : pro
 
 Une opinion politique est une donnée sensible au sens du RGPD (article 9). PPF est conçue pour ne jamais pouvoir relier un vote, un soutien ou un engagement à une identité réelle : seuls des résultats agrégés sont publiés. Si vous publiez vous-même vos opinions sous votre pseudonyme, elles deviennent publiques ; vous pouvez les retirer de PPF, mais pas des copies déjà faites par d'autres.
 
-Base juridique de ces traitements : [À FAIRE PRÉCISER PAR L'AVOCAT, question 2].
+Base juridique de ces traitements : [À FAIRE PRÉCISER PAR L'AVOCAT, question 1].
 
 ## Pourquoi nous traitons ces données (bases juridiques)
 
-- Publier et acheminer vos contenus et messages : l'exécution des conditions d'utilisation que vous acceptez en contribuant (RGPD, article 6, 1, b) [À CONFIRMER].
+- Publier et acheminer vos contenus et messages : l'exécution des conditions d'utilisation que vous acceptez en contribuant (RGPD, article 6, 1, b) [À FAIRE PRÉCISER PAR L'AVOCAT].
 - Registre légal des contenus publics : une obligation légale (RGPD, article 6, 1, c ; loi n° 2004-575 du 21 juin 2004, article 6 ; décret n° 2021-1362 du 20 octobre 2021).
-- Sécurité du service et lutte contre les abus : notre intérêt légitime (RGPD, article 6, 1, f) [À CONFIRMER].
+- Sécurité du service et lutte contre les abus : notre intérêt légitime (RGPD, article 6, 1, f) [À FAIRE PRÉCISER PAR L'AVOCAT].
 
 ## Qui peut recevoir vos données
 
@@ -77,21 +77,21 @@ Quand vous ouvrez un lien vers un autre site, l'application vous prévient d'abo
 
 ## Vos droits
 
-Vous pouvez demander l'accès à vos données, leur rectification, leur effacement, la limitation de leur traitement, vous opposer à un traitement, et récupérer vos données dans un format ouvert (RGPD, articles 15 à 21). Écrivez-nous : [À COMPLÉTER : adresse de contact]. Nous répondons dans un délai d'un mois, qui peut être prolongé de deux mois pour une demande complexe (article 12).
+Vous pouvez demander l'accès à vos données, leur rectification, leur effacement, la limitation de leur traitement, vous opposer à un traitement, et récupérer vos données dans un format ouvert (RGPD, articles 15 à 21). Écrivez-nous : contact@politisation-populaire-francaise.org. Nous répondons dans un délai d'un mois, qui peut être prolongé de deux mois pour une demande complexe (article 12).
 
 Comme nous ne connaissons pas votre identité, nous vous demanderons de prouver que le compte est bien le vôtre, par exemple en signant un message avec votre clé. Si nous ne pouvons pas relier une demande à des données, nous vous le dirons (article 11).
 
-Pendant la bêta, certaines suppressions ne sont pas encore automatiques : la suppression par vous-même d'un contenu publié et la suppression d'un compte sur le serveur sont à faire par demande à l'équipe [À REMPLIR : délai de traitement promis ; À CONFIRMER par l'équipe technique : outil de retrait et d'effacement manuel côté serveur]. Le bouton « Tout effacer » de l'application efface ce qui est sur votre appareil, pas ce qui a été publié.
+Pendant la bêta, certaines suppressions ne sont pas encore automatiques : la suppression par vous-même d'un contenu publié et la suppression d'un compte sur le serveur sont à faire par demande à contact@politisation-populaire-francaise.org : elles sont faites dans les 72 heures [À CONFIRMER par l'équipe technique : outil de retrait et d'effacement manuel côté serveur]. Le bouton « Tout effacer » de l'application efface ce qui est sur votre appareil, pas ce qui a été publié.
 
 Vous pouvez aussi adresser une réclamation à la Commission nationale de l'informatique et des libertés (CNIL) : https://www.cnil.fr/fr/adresser-une-plainte
 
 ## Mineurs
 
-PPF est ouverte à tous, sans vérification d'âge, et applique à tous les réglages les plus protecteurs. [À FAIRE PRÉCISER PAR L'AVOCAT, question 3 : règles applicables aux moins de 15 ans.]
+PPF est ouverte à tous, sans vérification d'âge, et applique à tous les réglages les plus protecteurs. [À FAIRE PRÉCISER PAR L'AVOCAT, question 2 : règles applicables aux moins de 15 ans.]
 
 ## Bêta sur invitation
 
-[À REMPLIR : durée prévue de la bêta et sort des données à sa fin (conservées ou effacées).]
+[À COMPLÉTER : durée de la bêta et sort des données à sa fin, à préciser.]
 
 ## Modifications
 
@@ -105,9 +105,8 @@ Cette politique est mise à jour à chaque nouvelle donnée inscrite au registre
 
 ## Questions pour l'avocat
 
-1. Responsable du traitement tant que l'association n'est pas déclarée.
-2. Base juridique des traitements qui peuvent révéler une opinion politique (contenus publiés, salons, revendications, votes anonymes) : article 9, 2, a (consentement explicite), d (organisme à but non lucratif poursuivant une finalité politique, pour ses membres) ou e (données rendues publiques par la personne) ?
-3. Mineurs de moins de 15 ans (loi Informatique et libertés, article 45) : quelles règles, sachant qu'aucune vérification d'âge n'est faite ?
-4. Délégué à la protection des données : obligatoire (article 37) au vu des opinions politiques traitées ? L'analyse d'impact (article 35) est-elle exigée avant la bêta ou seulement avant l'ouverture publique ?
-5. Conservation des données d'identification (décret n° 2021-1362) face à l'absence d'adresse IP : le registre pseudonyme suffit-il ?
-6. Durées « sans limite » du journal d'audit de l'équipe et du service de signature.
+1. Base juridique des traitements qui peuvent révéler une opinion politique (contenus publiés, salons, revendications, votes anonymes) : article 9, 2, a (consentement explicite), d (organisme à but non lucratif poursuivant une finalité politique, pour ses membres) ou e (données rendues publiques par la personne) ?
+2. Mineurs de moins de 15 ans (loi Informatique et libertés, article 45) : quelles règles, sachant qu'aucune vérification d'âge n'est faite ?
+3. Délégué à la protection des données : obligatoire (article 37) au vu des opinions politiques traitées ? L'analyse d'impact (article 35) est-elle exigée avant la bêta ou seulement avant l'ouverture publique ?
+4. Conservation des données d'identification (décret n° 2021-1362) face à l'absence d'adresse IP : le registre pseudonyme suffit-il ?
+5. Durées « sans limite » du journal d'audit de l'équipe et du service de signature.
