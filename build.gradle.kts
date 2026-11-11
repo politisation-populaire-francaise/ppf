@@ -17,5 +17,11 @@ plugins {
 subprojects {
     dependencyLocking {
         lockAllConfigurations()
+        // Native artifacts chosen by the operating system of the build machine (Windows on
+        // the owner's computer, Linux on the CI): their version follows the locked parent
+        // (desktop-jvm, skiko, embedded-postgres), only the platform suffix differs.
+        ignoredDependencies.add("org.jetbrains.compose.desktop:desktop-jvm-*")
+        ignoredDependencies.add("org.jetbrains.skiko:skiko-awt-runtime-*")
+        ignoredDependencies.add("io.zonky.test.postgres:embedded-postgres-binaries-*")
     }
 }
