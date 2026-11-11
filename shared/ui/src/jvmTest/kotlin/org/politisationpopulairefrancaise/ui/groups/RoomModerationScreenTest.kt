@@ -135,7 +135,9 @@ class RoomModerationScreenTest {
         tap(ModerationTags.MENU_READMIT)
         awaitTag(ModerationTags.DIALOG)
         tap(ModerationTags.DIALOG_CONFIRM)
+        // The readmission is dated after the exclusion, even within the same second (GroupsLibrary.moderationTime).
         waitUntil(timeoutMillis = WAIT_MILLIS) { server.stored.any { it.kind == RoomModeration.PUT_USER } }
+        assertTrue(server.stored.single { it.kind == RoomModeration.PUT_USER }.createdAt > exclusion.createdAt, "readmitted after the exclusion")
         assertEquals(listOf(listOf("h", MINE), listOf("p", RoomsFixtures.other.publicKey.hex)), server.stored.single { it.kind == RoomModeration.PUT_USER }.tags)
         // The test ends once the screen is done with the readmission (dialog closed, room read again), like the
         // other tests of this class: ending while the sending coroutine still ran left it uncompleted, at random,
