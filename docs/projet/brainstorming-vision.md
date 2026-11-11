@@ -6,6 +6,10 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-11] Nouveau nom : Constitution Citoyenne et Démocratique
+- Statut : Intégré le 2026-11-11 (D-154)
+- Description : décision de la propriétaire, relayée par le chef d’équipe, mot pour mot : « le pacte démocratique/pacte citoyen et démocratique doit devenir partout y compris dans les documents du projet : Constitution Citoyenne et Démocratique ». Le « Pacte démocratique » (ou « pacte citoyen et démocratique ») s’appelle désormais partout « Constitution Citoyenne et Démocratique », dans ce document comme ailleurs ; les entrées anciennes sont réécrites avec le nouveau nom, leur contenu ne change pas. Les identifiants techniques (`ppf-pacte-*`, type `pacte`) restent les mêmes.
+
 ### [2026-11-04] Statut de PPF : association, parti, ou les deux ?
 - Statut : Décidé le 2026-11-07 (association ; D-062) ; intégré le 2026-11-07 au cahier des charges 2.0, section 1.5
 - Concerne : vision.md, sections 1, 7 et 9 ; cahier-fonctionnel.md, M13.7
@@ -45,7 +49,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 ### [2026-11-04] Mesurer la réussite de la mission
 - Statut : Idée
 - Concerne : vision.md, section 5
-- Description : définir quelques indicateurs d'impact, par exemple : nombre de citoyens actifs, nombre de signatures obtenues sur les pétitions officielles, nombre de candidats ayant signé le Pacte démocratique, nombre d'élus ayant tenu leurs engagements, nombre de collectifs et de listes citoyennes créés, réformes démocratiques obtenues.
+- Description : définir quelques indicateurs d'impact, par exemple : nombre de citoyens actifs, nombre de signatures obtenues sur les pétitions officielles, nombre de candidats ayant signé la Constitution Citoyenne et Démocratique, nombre d'élus ayant tenu leurs engagements, nombre de collectifs et de listes citoyennes créés, réformes démocratiques obtenues.
 - Décision :
 
 ### [2026-11-04] Cohérence après le retrait de la valeur « Non-violence »
@@ -72,7 +76,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 ### [2026-11-04] Articuler la lutte contre le fascisme et le traitement identique des candidats
 - Statut : Intégré le 2026-11-04
 - Concerne : vision.md, section 7 (valeurs « Lutte contre le fascisme et la mouvance néonazie » et « Militante mais non partisane »)
-- Description : les deux valeurs peuvent entrer en tension si la lutte contre le fascisme conduit la plateforme à prendre position contre un parti ou un candidat lors d'une élection, alors que les outils électoraux (Pacte démocratique, comparateur, baromètre) traitent tous les candidats de façon identique.
+- Description : les deux valeurs peuvent entrer en tension si la lutte contre le fascisme conduit la plateforme à prendre position contre un parti ou un candidat lors d'une élection, alors que les outils électoraux (Constitution Citoyenne et Démocratique, comparateur, baromètre) traitent tous les candidats de façon identique.
 - Options :
   - A. La lutte porte sur les idées, les actes et les groupes (éducation historique, documentation des violences et des discours de haine, signalement des contenus illégaux, soutien aux victimes), tandis que les outils électoraux restent strictement identiques pour tous les candidats.
   - B. La plateforme prend publiquement position contre certains partis ou candidats. Risques : perte du caractère non partisan, risque juridique en période électorale, contestation possible de la valeur « Militante mais non partisane ».

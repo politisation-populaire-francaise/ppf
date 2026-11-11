@@ -844,7 +844,7 @@
         "sig": "71097051067329134446ccbef87d6861d898d5b00c68b2907833059786c1a83659cc0d531e179779834b5161594caeb4c56898f56ea8192908c2feec4e8061fe"
     },
     {
-        "id": "9148be193f4afeeb32aaff9a39c2890545017ce7d4c0537208e0819a905ab9b5",
+        "id": "9588c2dd3a924dda325f36dffdc8bb564ad256880a61406535d784d4dd566a47",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793880000,
         "kind": 30023,
@@ -855,7 +855,7 @@
             ],
             [
                 "title",
-                "[EXEMPLE] Réponse d’Alex Modèle au Pacte démocratique"
+                "[EXEMPLE] Réponse d’Alex Modèle à la Constitution Citoyenne et Démocratique"
             ],
             [
                 "published_at",
@@ -931,14 +931,14 @@
             ],
             [
                 "ppf-pacte-text",
-                "427ea1e2939bc70f9ab20031344893fc5dc40e51d22cdca718b43f2d1bc8ed85"
+                "21065dcf3676567ec95c6448ff519427659b941f7b2c93739a32902a79527769"
             ]
         ],
         "content": "Contenu de démonstration : la réponse est fictive.\n",
-        "sig": "e3cd491d9d2e2377c38ebaee0769e9fba4546cff44887ad38dfee33814b46ce420dfba5aa2bfb277bef944d06b81e83549ec24168f6cc9f8140a1d5186b7f31e"
+        "sig": "20275e5232a3902cba5f043910f1ae5b76d4531660e2fe625ebe1687ffec0165f7aec386138f8041ee2833aca71b3e782e35e2b697bbafb577c2b89dd455b964"
     },
     {
-        "id": "bc7663313981ff653e574444ba1232e35d5df15ae7f2dca3896a2e0a29cc7fc4",
+        "id": "eac3f9f568c8af807552b6f7251713e6f163ecc91c78bf6c04b7cdfadfd10a09",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793188800,
         "kind": 30023,
@@ -949,7 +949,7 @@
             ],
             [
                 "title",
-                "[EXEMPLE] Réponse de Camille Exemple au Pacte démocratique"
+                "[EXEMPLE] Réponse de Camille Exemple à la Constitution Citoyenne et Démocratique"
             ],
             [
                 "published_at",
@@ -1026,14 +1026,14 @@
             ],
             [
                 "ppf-pacte-text",
-                "427ea1e2939bc70f9ab20031344893fc5dc40e51d22cdca718b43f2d1bc8ed85"
+                "21065dcf3676567ec95c6448ff519427659b941f7b2c93739a32902a79527769"
             ]
         ],
         "content": "Contenu de démonstration : la réponse est fictive.\n",
-        "sig": "87356602e6dac7ab72abe01e269ca7c6eedf594f2132def924734493752d97dcf936600bee8f6b02262c08528eec07424cd79145c9253821fac36c7764afbefc"
+        "sig": "793770b26dd900bb20d201d95c5f5a1558c14563f9b72afca56fee00b250cf4e02d4dfbfe444fccf1e2a39302b0fa388a1c195e0504bd29eb7102196012eda37"
     },
     {
-        "id": "01307a8a52dd1139b629130e8755f76222c8ffe9f520b9d5e2a98a038417d48b",
+        "id": "35e634a56cb5afc011be5d3f1ca611c32f43c5a360ce156c23f363a8022a8690",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793707200,
         "kind": 30023,
@@ -1044,7 +1044,7 @@
             ],
             [
                 "title",
-                "[EXEMPLE] Réponse de Dominique Fictif au Pacte démocratique"
+                "[EXEMPLE] Réponse de Dominique Fictif à la Constitution Citoyenne et Démocratique"
             ],
             [
                 "published_at",
@@ -1106,14 +1106,14 @@
             ],
             [
                 "ppf-pacte-text",
-                "427ea1e2939bc70f9ab20031344893fc5dc40e51d22cdca718b43f2d1bc8ed85"
+                "21065dcf3676567ec95c6448ff519427659b941f7b2c93739a32902a79527769"
             ]
         ],
         "content": "Contenu de démonstration : la réponse est fictive. Le candidat n’a pas répondu sur les trois dernières mesures : elles restent « en attente » jusqu’à la date limite.\n",
-        "sig": "64511a8744766f2658f9921669ee02263830a125ff0a1289308247b43921913712ed61a1ad8cce265f3e634af0174689b088343c3086bf5b0f9dcb6d62a47eec"
+        "sig": "45d765a908af5956691cb0d10c7248af4e4cf88a57a1b79410d3e42aaede5f258f91cd1307f36b66d2d998ad4f43c1683082e0e07a9d406d7285ce50ae7d0105"
     },
     {
-        "id": "4f58ce6f2f14a67f07704ba0cafd4f10b516a1a0ede1dfa918ba109ad3025b29",
+        "id": "221409cf086f9cf1ca4948f902740840e22ff07232b84d176dfc2bcf9a202278",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1793966400,
         "kind": 30023,
@@ -1124,7 +1124,7 @@
             ],
             [
                 "title",
-                "[EXEMPLE] Pacte démocratique pour l’élection d’exemple"
+                "[EXEMPLE] Constitution Citoyenne et Démocratique pour l’élection d’exemple"
             ],
             [
                 "summary",
@@ -1172,7 +1172,7 @@
                 "ppf-measure",
                 "ric",
                 "Référendum d’initiative citoyenne",
-                "Déposer, dans les six mois suivant l’élection, un projet de révision de la Constitution permettant aux citoyens de provoquer un référendum législatif, abrogatoire ou constituant, à partir d’un nombre de signatures fixé par une loi organique.",
+                "Déposer, dans les six mois suivant l’élection, un projet de révision de la Constitution de 1958 permettant aux citoyens de provoquer un référendum législatif, abrogatoire ou constituant, à partir d’un nombre de signatures fixé par une loi organique.",
                 "Constitution, articles 3, 11 et 89"
             ],
             [
@@ -1192,8 +1192,8 @@
             [
                 "ppf-measure",
                 "referendum-constitution",
-                "Référendum pour toute révision de la Constitution",
-                "Ne jamais soumettre une révision de la Constitution au Congrès : la soumettre au référendum.",
+                "Référendum pour toute révision de la Constitution de 1958",
+                "Ne jamais soumettre une révision de la Constitution de 1958 au Congrès : la soumettre au référendum.",
                 "Constitution, article 89"
             ],
             [
@@ -1243,17 +1243,17 @@
             ],
             [
                 "ppf-next",
-                "Proposer une mesure pour le prochain Pacte",
+                "Proposer une mesure pour la prochaine Constitution Citoyenne et Démocratique",
                 "space:revendications"
             ],
             [
                 "ppf-next",
-                "Comprendre la révision de la Constitution",
+                "Comprendre la révision de la Constitution de la République",
                 "space:comprendre"
             ]
         ],
-        "content": "Contenu de démonstration : l’élection, les candidats et leurs réponses sont fictifs. Les mesures reprennent la liste de départ proposée au vote, qui n’a pas encore été validée.\n\n## Comment le Pacte est envoyé\n\nLe même texte est envoyé le même jour à tous les candidats, sans exception, avec le même délai de réponse. Pour chaque mesure, un candidat signe ou refuse ; sans réponse avant la date limite, la case indique « Sans réponse ».\n\n## Après l’élection\n\nPour chaque élu, chaque mesure est suivie : propositions de loi déposées, votes, déclarations. Chaque fait est sourcé dans « Voir ».\n",
-        "sig": "8d631810bc90abc433eab71e9afca2b9d37d8ee884a8820919dbcdfb31283122eb31940631a41413a13124b332d9e9c7182f11dc47b68d4bbc7d00fc8e97b3a5"
+        "content": "Contenu de démonstration : l’élection, les candidats et leurs réponses sont fictifs. Les mesures reprennent la liste de départ proposée au vote, qui n’a pas encore été validée.\n\n## Comment la Constitution Citoyenne et Démocratique est envoyée\n\nLe même texte est envoyé le même jour à tous les candidats, sans exception, avec le même délai de réponse. Pour chaque mesure, un candidat signe ou refuse ; sans réponse avant la date limite, la case indique « Sans réponse ».\n\n## Après l’élection\n\nPour chaque élu, chaque mesure est suivie : propositions de loi déposées, votes, déclarations. Chaque fait est sourcé dans « Voir ».\n",
+        "sig": "f80f4d6adb3eeec9b703434b4bf5c3dc801222a352d8c6f2c88e4fbeca24e78bba822efb7d07d14eba574ae4b77fd0f894e6fc00db9459c9b064fe2ab01f4f6e"
     },
     {
         "id": "6461531ba5095311d93aa2c9c5377c83221c439fb073cfb18b9e6a729babe939",

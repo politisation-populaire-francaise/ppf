@@ -6,6 +6,10 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-11] Nouveau nom : Constitution Citoyenne et Démocratique
+- Statut : Intégré le 2026-11-11 (D-154)
+- Description : décision de la propriétaire, relayée par le chef d’équipe, mot pour mot : « le pacte démocratique/pacte citoyen et démocratique doit devenir partout y compris dans les documents du projet : Constitution Citoyenne et Démocratique ». Le « Pacte démocratique » (ou « pacte citoyen et démocratique ») s’appelle désormais partout « Constitution Citoyenne et Démocratique », dans ce document comme ailleurs ; les entrées anciennes sont réécrites avec le nouveau nom, leur contenu ne change pas. Les identifiants techniques (`ppf-pacte-*`, type `pacte`) restent les mêmes.
+
 ### [2026-11-09] DE-30 Questions citoyennes aux candidats : qui propose, quelle sélection, quand, comment répondre
 - Statut : À valider
 - Concerne : cahier-fonctionnel.md (M13.7, DE-30 ; DE-16, DE-25) ; cahier-des-charges.md (section 9.2) ; conception `docs/integration/questions-aux-candidats.md`
@@ -112,7 +116,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
     - Observer son conseil municipal : Tôt pour le guide, Plus tard pour le relevé des délibérations, DE-32 (M13.1 suite, avec Comprendre).
     - Boussole 2027 (type Wahl-O-Mat) : Plus tard, DE-33 (M13.7), neutralité des thèses : avocat.
     - Carte des opinions (type Pol.is) : Plus tard, conception à étudier, DE-34 (M13.5).
-    - Jury citoyen tiré au sort pour le suivi du Pacte : Plus tard (après l'élection), DE-35 (M13.5), avocat.
+    - Jury citoyen tiré au sort pour le suivi de la Constitution Citoyenne et Démocratique : Plus tard (après l'élection), DE-35 (M13.5), avocat.
     - Budget du peuple : Plus tard (automne 2027), DE-36 (M13.6).
     - Collectivités partenaires : Plus tard, DE-37 (M13.5), avocat.
     - Délégation de vote par thème (démocratie liquide) : **Écarté**, contraire à l'urne anonyme (D-110) ; inscrit à l'annexe D du cahier fonctionnel.
@@ -145,23 +149,23 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ### [2026-11-07] Espace « Décider » : première version et questions ouvertes
 - Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
-- Concerne : cahier-fonctionnel.md, M10 (pétitions), M13.5 (Pacte démocratique) ; inventaire, DE-07 et DE-08
-- Description : première version codée le 7 novembre 2026 avec des contenus [EXEMPLE] (D-059 à D-061) : pétitions officielles avec leurs seuils réels et ce qu'ils ne garantissent pas, Pacte démocratique avec son tableau public identique pour tous. Le droit a été revérifié le 7 novembre 2026 (`docs/integration/decider-petitions-droit.md`) : rien n'a changé depuis le 4 novembre ; une réforme du Règlement de l'Assemblée, qui aurait supprimé le seuil de 100 000, a été retirée de l'ordre du jour le 15 juillet 2026.
+- Concerne : cahier-fonctionnel.md, M10 (pétitions), M13.5 (Constitution Citoyenne et Démocratique) ; inventaire, DE-07 et DE-08
+- Description : première version codée le 7 novembre 2026 avec des contenus [EXEMPLE] (D-059 à D-061) : pétitions officielles avec leurs seuils réels et ce qu'ils ne garantissent pas, Constitution Citoyenne et Démocratique avec son tableau public identique pour tous. Le droit a été revérifié le 7 novembre 2026 (`docs/integration/decider-petitions-droit.md`) : rien n'a changé depuis le 4 novembre ; une réforme du Règlement de l'Assemblée, qui aurait supprimé le seuil de 100 000, a été retirée de l'ordre du jour le 15 juillet 2026.
 - Questions à la propriétaire :
   1. **CESE** : j'ai ajouté les pétitions au Conseil économique, social et environnemental (150 000 signataires dès 16 ans, avis sous six mois), absentes de M10. Les garde-t-on ? Recommandation : oui, c'est une pétition officielle prévue par la Constitution et ouverte dès 16 ans.
-  2. **Réponse au Pacte arrivée après la date limite** : A. comptée, avec la mention « réponse reçue après le délai » (codé, réversible) ; B. non comptée. Recommandation : A, le but est d'obtenir des engagements, l'équité est assurée par la même mention pour tous.
+  2. **Réponse à la Constitution Citoyenne et Démocratique arrivée après la date limite** : A. comptée, avec la mention « réponse reçue après le délai » (codé, réversible) ; B. non comptée. Recommandation : A, le but est d'obtenir des engagements, l'équité est assurée par la même mention pour tous.
   3. **Relevé des compteurs** : aujourd'hui l'équipe relève le compteur à la main. Les pétitions de l'Assemblée et du Sénat sont publiées chaque lundi en données ouvertes sur data.gouv.fr (Licence Ouverte) : le serveur pourrait les relever automatiquement, sans que l'application contacte un tiers. Gratuit. Recommandation : oui, après le premier déploiement.
   4. **Objectifs par territoire** (M10) : aucune plateforme ne publie la répartition des signataires par département. On peut proposer des objectifs indicatifs proportionnels à la population, avec un référentiel des territoires (le même que pour « Qui décide de ça ? » et les salons). À faire avec ce référentiel.
   5. **Pétitions locales** (article 72-1 de la Constitution : un dixième des électeurs d'une commune pour demander une consultation) : à ajouter plus tard ?
-  6. **Envoi réel du Pacte** : par quel canal (courrier recommandé à l'adresse officielle de chaque candidat, courriel), et qui signe l'envoi pour l'association ? L'horodatage des réponses (OpenTimestamps, gratuit, ou RFC 3161) reste à choisir.
-  7. Rappel : la **liste des mesures** (entrée « Liste de départ des mesures du Pacte démocratique ») et les **modalités des campagnes** sont toujours « À valider » ; les mesures affichées sont des exemples.
+  6. **Envoi réel de la Constitution Citoyenne et Démocratique** : par quel canal (courrier recommandé à l'adresse officielle de chaque candidat, courriel), et qui signe l'envoi pour l'association ? L'horodatage des réponses (OpenTimestamps, gratuit, ou RFC 3161) reste à choisir.
+  7. Rappel : la **liste des mesures** (entrée « Liste de départ des mesures de la Constitution Citoyenne et Démocratique ») et les **modalités des campagnes** sont toujours « À valider » ; les mesures affichées sont des exemples.
 - Décision de la propriétaire (2026-11-07, D-062) :
   1. CESE : gardé.
   2. Réponse arrivée après la date limite : **non comptée** (option B) : « si le candidat est en retard c'est qu'il n'a pas pris les choses au sérieux, donc on ne compte pas ». Elle reste visible sous le tableau, avec sa date de réception.
   3. Relevé automatique des compteurs par le serveur : oui.
   4. Objectifs de signatures par territoire : oui (référentiel des territoires confié au pôle « Comprendre »).
   5. Pétitions locales : oui.
-  6. Envoi du Pacte : manuel pour l'instant (envoi et prise de contact par l'équipe), à revoir plus tard. Le choix de l'horodatage reste technique (tâche « archivage horodaté » du pôle « Décider »).
+  6. Envoi de la Constitution Citoyenne et Démocratique : manuel pour l'instant (envoi et prise de contact par l'équipe), à revoir plus tard. Le choix de l'horodatage reste technique (tâche « archivage horodaté » du pôle « Décider »).
   7. La liste des mesures et les modalités des campagnes « seront populaires » : celles de PPF ne sont qu'un modèle, rien d'officiel ni de validé tant que les utilisateurs n'y ont pas participé (voir les deux entrées concernées).
 
 ### [2026-11-07] Agir : publication des mobilisations et des appels
@@ -349,7 +353,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 - Recommandation : l'équipe vérifie seulement la faisabilité juridique et la conformité à la charte, sans filtrer selon ses préférences ; 3 campagnes actives au maximum pour concentrer les forces ; vote de priorisation tous les 6 mois.
 - Décision de la propriétaire (2026-11-07) : « la liste des mesures et des modalités sera populaire » ; la recommandation ci-dessus n'est qu'un modèle de départ, rien d'officiel ni de validé tant que les utilisateurs n'y ont pas participé ; les citoyens la modifient et la valident dans l'application (proposer, amender, voter), avec la méthode « une personne, une voix ». Le modèle est affiché avec la mention « proposition de départ, pas encore votée ».
 
-### [2026-11-04] Liste de départ des mesures du Pacte démocratique
+### [2026-11-04] Liste de départ des mesures de la Constitution Citoyenne et Démocratique
 - Statut : Intégré le 2026-11-07 (cahier fonctionnel 2.0)
 - Concerne : cahier-fonctionnel.md, M13.5
 - Description : en attendant que le mur des revendications fonctionne, proposer au vote une liste de départ, marquée [EXEMPLE] :
@@ -527,7 +531,7 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 | **Voir** : libertés et contre-pouvoirs | Indépendance de la justice, propriété des médias, état des contre-pouvoirs, libertés publiques | M17 (volets 7 à 9), observatoire des libertés |
 | **Comprendre** | Qui décide de ça ?, parcours « Comprendre en 5 minutes », fiches pratiques et droits, décryptage des fausses informations, dossiers, histoire des luttes, bibliothèque, sécurité numérique, ressources pour les enseignants | M6, M7, M8, M13.1 (sauf « Mes élus »), idées en cours |
 | **Agir** | Carte et agenda, annuaire, groupes locaux, appels, témoigner, lanceurs d'alerte, solidarité et caisses de grève, boycotts, je veux aider, mode manifestation, secours et sécurité en manifestation, soutien aux victimes, messagerie | M1, M3, M5, M12, M14, idées en cours |
-| **Décider** | Revendications et Programme du peuple, campagnes et pétitions, Pacte démocratique, interpeller ses élus, s'engager en politique (collectifs, partis, kit du candidat), votations et assemblées citoyennes, élections | M10, M11, M13.3 à M13.7, M13.1 (interpeller) |
+| **Décider** | Revendications et Programme du peuple, campagnes et pétitions, Constitution Citoyenne et Démocratique, interpeller ses élus, s'engager en politique (collectifs, partis, kit du candidat), votations et assemblées citoyennes, élections | M10, M11, M13.3 à M13.7, M13.1 (interpeller) |
 | **Mon espace** (anciennement « Mon territoire ») | Tableau de bord personnel et personnalisable : territoire, élus, votes, pétitions, chiffres et contenus suivis | M13.1 (« Mes élus »), idées en cours |
 | **Transverse** | Carte, recherche, comptes, modération, transparence de PPF | M15, M16, idées en cours |
 

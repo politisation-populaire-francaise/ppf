@@ -4,6 +4,9 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 
 ## Non publié
 
+### Modifié
+- Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
+
 ### Ajouté
 - Décider mis en avant (11 novembre 2026, MVP 1, jalon 3) : les trois fonctions phares (revendications, pétitions officielles, Pacte démocratique) en tête de Décider et sur « En direct ».
 - Mur des revendications allégé sur téléphone (11 novembre 2026) : Filtres, Tri et Personnaliser sur une ligne, « Proposer » à côté du nombre, explication repliée « Comment ça marche ? ».

@@ -61,11 +61,11 @@ Proposition : pas de condition de répartition. Quand la validation en personne 
 - Le destinataire exact dépend du sujet. L'équipe le choisit avec « Qui décide de ça ? » et l'annuaire des élus (D-047), et la page de la revendication le dit (envoi, date, réponse ou absence de réponse).
 - La revendication porte un `ppf-territory-code`. Le formulaire choisira le territoire dans le référentiel (recherche sur l'appareil, D-090) ; sans code, elle compte comme nationale.
 
-## 7. La liste des mesures du Pacte dans ce modèle
+## 7. La liste des mesures de la Constitution Citoyenne et Démocratique dans ce modèle
 
-- Les mesures du Pacte sont les propositions de la délibération (DE-25), toutes de territoire `fr`, votées pour, contre ou blanc (3, 2 et 2 semaines, décision de la propriétaire).
-- Proposition : le Pacte rassemble les 5 à 10 mesures qui ont le plus de soutiens parmi celles qui ont plus de `pour` que de `contre`. Chacune est affichée avec ses soutiens et le seuil national. Le seuil de 100 000 n'est pas exigé pour entrer dans le Pacte : le Pacte est lui-même le moyen de porter la voix des citoyens aux candidats, et l'audience de PPF ne l'atteindra pas avant janvier 2027. Une mesure qui le dépasse le dit.
-- Variante : n'y faire entrer que les mesures au-dessus du seuil national. Le Pacte serait probablement vide en 2027.
+- Les mesures de la Constitution Citoyenne et Démocratique sont les propositions de la délibération (DE-25), toutes de territoire `fr`, votées pour, contre ou blanc (3, 2 et 2 semaines, décision de la propriétaire).
+- Proposition : la Constitution Citoyenne et Démocratique rassemble les 5 à 10 mesures qui ont le plus de soutiens parmi celles qui ont plus de `pour` que de `contre`. Chacune est affichée avec ses soutiens et le seuil national. Le seuil de 100 000 n'est pas exigé pour entrer dans la Constitution Citoyenne et Démocratique : la Constitution Citoyenne et Démocratique est elle-même le moyen de porter la voix des citoyens aux candidats, et l'audience de PPF ne l'atteindra pas avant janvier 2027. Une mesure qui le dépasse le dit.
+- Variante : n'y faire entrer que les mesures au-dessus du seuil national. La Constitution Citoyenne et Démocratique serait probablement vide en 2027.
 
 ## 8. Points de vigilance
 
@@ -77,7 +77,7 @@ Proposition : pas de condition de répartition. Quand la validation en personne 
 
 - **Q1. Planchers.** A : 25 et 100. B : 10 et 50. C : le dixième des électeurs inscrits pour une commune (la règle légale des pétitions locales), beaucoup plus haut.
 - **Q2. Répartition.** A : aucune condition, en le disant (anonymat). B : une part de comptes vérifiés au second seuil dès que la validation existe.
-- **Q3. Le Pacte.** A : les 5 à 10 mesures les plus soutenues, avec plus de `pour` que de `contre`. B : seulement celles au-dessus du seuil national.
+- **Q3. La Constitution Citoyenne et Démocratique.** A : les 5 à 10 mesures les plus soutenues, avec plus de `pour` que de `contre`. B : seulement celles au-dessus du seuil national.
 - **Q4. Les `contre`.** A : affichés et transmis, sans effet sur le seuil (comme les pétitions de l'Assemblée, qui n'ont pas de « contre »). B : ne porter que si les `pour` dépassent aussi les `contre`.
 
 ## Réalisation du second seuil (8 novembre 2026)
