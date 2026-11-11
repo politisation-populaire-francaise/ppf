@@ -4,6 +4,7 @@ title: Ce que la manifestation a déjà gagné, et ses limites
 summary: Depuis septembre 2026, la rue a rassemblé des centaines de milliers de personnes et montré à tous l'état de nos libertés. Elle a obtenu des gestes, pas encore gain de cause. Pour gagner, il faut lui ajouter d'autres formes d'action.
 topics: mouvement social, manifestation, libertés, stratégie
 nature: position
+rank: 1
 origin: ai-assisted
 published_at: 2026-11-11
 updated_at: 2026-11-11
