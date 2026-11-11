@@ -138,7 +138,7 @@ fun HTML.agendaDocument(query: AgendaQuery, events: List<SignedEvent>) {
     }
 }
 
-private fun kotlinx.html.FlowContent.mobilization(event: SignedEvent) {
+internal fun kotlinx.html.FlowContent.mobilization(event: SignedEvent) {
     val start = event.firstTagValue(AgirFormats.TAG_START)?.toLongOrNull() ?: return
     val end = event.firstTagValue(AgirFormats.TAG_END)?.toLongOrNull()?.takeIf { it > start }
     val zone = zoneOf(event)

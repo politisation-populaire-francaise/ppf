@@ -75,7 +75,8 @@ class TeachingPagesTest {
         assertFalse(Regex(" on[a-z]+=\"").containsMatchIn(html), "no event handler")
         assertFalse(html.contains("—"), "no em dash")
         assertFalse(html.contains("<form"), "nothing is ever sent from the classroom")
-        assertFalse(html.contains("<input"))
+        // The only input is the switch of the menu of the site.
+        assertFalse(Regex("<input(?! type=\"checkbox\" class=\"nav-toggle\")").containsMatchIn(html))
         // The stylesheet of the site, with its print block.
         val stylesheet = Regex("<link[^>]*href=\"/static/site.css\"[^>]*>").find(html)?.value.orEmpty()
         assertTrue(stylesheet.contains("rel=\"stylesheet\""), stylesheet)
@@ -155,7 +156,7 @@ class TeachingPagesTest {
     fun thePrintStylesheetHidesTheSiteAndStartsTheAnswersOnANewPage() {
         val css = assertNotNull(javaClass.getResource("/static/site.css")).readText()
         val print = css.substring(css.lastIndexOf("@media print"))
-        listOf(".site-header", ".site-footer", "display: none", "--ink: #000000", "--surface-1: #ffffff", ".teaching-answers", "break-before: page")
+        listOf(".topbar", ".sidenav", ".site-footer", "display: none", "--ink: #000000", "--surface-1: #ffffff", ".teaching-answers", "break-before: page")
             .forEach { assertTrue(print.contains(it), it) }
         assertFalse(css.contains("—"))
     }

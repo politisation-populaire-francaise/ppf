@@ -623,6 +623,7 @@ fun Application.module(
                 voir = voir ?: repository?.let { EditorialVoirSource(it, policy) },
                 comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
                 decider = deciderSource,
+                agenda = agirSpace?.agendaSource(), // « En direct » shows the next mobilizations.
             )
         }
         if (backOffice != null && teamBackOffice != null) {

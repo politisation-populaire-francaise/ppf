@@ -69,7 +69,7 @@ class CorrectionsPageTest {
         assertTrue(html.contains("[EXEMPLE] Ajout d’une source &amp; d’un lien &lt;officiel&gt;."), "the summary is escaped")
         assertTrue(html.contains("Mise à jour") && html.contains("Correction"))
         listOf("Ancienne ligne", "Ligne inventée", "hier").forEach { assertFalse(html.contains(it), it) }
-        assertTrue(html.contains("<a href=\"/comprendre\" aria-current=\"page\">Comprendre</a>"), "the layout of the pages of Comprendre")
+        assertTrue(html.contains("<a href=\"/comprendre\" aria-current=\"page\">Vue d’ensemble</a>"), "the layout of the pages of Comprendre")
     }
 
     @Test
