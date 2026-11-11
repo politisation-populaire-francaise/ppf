@@ -131,7 +131,7 @@ class EditorialReviewDueTest {
         assertTrue(queue.actions("en-retard").isEmpty(), "the update draft is opened on the page of the section")
         assertTrue(createHTML().div { queue.render("plus-tard", this) }.contains(EditorialTexts.REVIEW_DUE_GONE))
         // The day the date of « plus-tard » enters the window, it is listed too.
-        clock.advance(java.time.Duration.ofDays(1))
+        clock.advance(kotlin.time.Duration.parse("1d"))
         assertEquals(3, queue().pendingCount())
     }
 

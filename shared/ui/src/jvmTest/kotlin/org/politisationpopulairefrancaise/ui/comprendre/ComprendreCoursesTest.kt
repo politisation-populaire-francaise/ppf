@@ -168,6 +168,8 @@ class ComprendreCoursesTest {
         val petitions = bundled.first { it.article.slug == "les-petitions-officielles" }
         val database = JvmDatabase.inMemory()
         openComprendre(database, width = 1000, height = 800)
+        // The bundled courses may arrive in several reloads: wait for this one too.
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).performScrollTo().performClick()
         waitForIdle()
         // « Pour un atelier » (CO-24): the animation sheet of the course, with its duration.
@@ -191,6 +193,8 @@ class ComprendreCoursesTest {
     fun theAnimationModeShowsOneSlideAtATimeAndTheAnswerOnDemand() = runComposeUiTest {
         val petitions = bundled.first { it.article.slug == "les-petitions-officielles" }
         openComprendre(JvmDatabase.inMemory(), width = 1000, height = 800)
+        // The bundled courses may arrive in several reloads: wait for this one too.
+        waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithTag(ComprendreTags.COURSE_CARD + petitions.article.slug).performScrollTo().performClick()
         waitForIdle()
         waitUntil(timeoutMillis = 60_000) { onAllNodesWithTag(CourseTags.WORKSHOP).fetchSemanticsNodes().isNotEmpty() }
