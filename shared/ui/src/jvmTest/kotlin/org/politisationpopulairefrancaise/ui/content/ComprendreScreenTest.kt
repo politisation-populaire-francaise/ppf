@@ -14,6 +14,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
@@ -21,6 +22,7 @@ import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.comprendre.ComprendreTheme
 import org.politisationpopulairefrancaise.ui.PpfApp
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
@@ -103,5 +105,26 @@ class ComprendreScreenTest {
         }
         assertEquals(0, dependencies.contentStore!!.count())
         onNodeWithTag(ContentTags.GUIDE_CARD + "garde-a-vue").assertDoesNotExist()
+    }
+
+    /** « Je veux comprendre… » and the search narrow the home to the matching contents, offline. */
+    @Test
+    fun themesAndSearchNarrowTheHome() = runComposeUiTest {
+        val dependencies = dependencies()
+        openComprendre(dependencies, width = 1000, height = 740)
+        waitForGuides()
+        onNodeWithTag(ComprendreTags.RESULTS).assertDoesNotExist()
+
+        onNodeWithTag(ComprendreTags.THEME + ComprendreTheme.WORK.key).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ComprendreTags.RESULTS).assertExists()
+        onNodeWithTag(ContentTags.GUIDE_CARD + "licenciement-et-prud-hommes").assertExists()
+        onNodeWithTag(ContentTags.GUIDE_CARD + "garde-a-vue").assertDoesNotExist()
+
+        onNodeWithTag(ComprendreTags.THEME + "tout").performScrollTo().performClick()
+        onNodeWithTag(ComprendreTags.SEARCH).performScrollTo().performTextInput("referé")
+        waitForIdle()
+        onNodeWithTag(ContentTags.GUIDE_CARD + "contester-une-decision-de-l-administration").assertExists()
+        onNodeWithTag(ContentTags.GUIDE_CARD + "licenciement-et-prud-hommes").assertDoesNotExist()
     }
 }
