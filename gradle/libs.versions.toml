@@ -25,7 +25,7 @@ androidxActivity = "1.13.0"
 # transitive dependency; 3.5.3 on Maven Central, checked on 2026-11-08). CameraX shows the camera on Android only
 # (AndroidX, Apache 2.0, no Google Play services; 1.6.1 stable, checked on 2026-11-08). Never ML Kit.
 # The server uses ZXing core too, for the QR code of the ceremony of the root (D-141).
-zxing = "3.5.3"
+zxing = "3.5.4"
 camerax = "1.6.1"
 # Identities and content signatures (cahier des charges, section 3.2). Bitcoin Core's audited
 # libsecp256k1 (Schnorr BIP-340) wrapped for Kotlin Multiplatform by ACINQ, and ACINQ's bitcoin-kmp
