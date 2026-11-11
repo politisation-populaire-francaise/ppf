@@ -159,6 +159,7 @@ import org.politisationpopulairefrancaise.server.signing.SignerAdmin
 import org.politisationpopulairefrancaise.web.ContentVerifier
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
+import org.politisationpopulairefrancaise.web.AgirSearchSources
 import org.politisationpopulairefrancaise.web.agirPages
 import org.politisationpopulairefrancaise.web.agirRubricPages
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
@@ -638,6 +639,11 @@ fun Application.module(
                 comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
                 decider = deciderSource,
                 agenda = agirSpace?.agendaSource(), // « En direct » shows the next mobilizations.
+                agirSearch = AgirSearchSources(
+                    calls = repository?.takeIf { agirSpace != null }?.let(::callsSource),
+                    organisations = repository?.let { organisationsSource(it, policy::isEditor) },
+                    collectives = groups?.let(::collectivesSource),
+                ),
             )
         }
         if (backOffice != null && teamBackOffice != null) {

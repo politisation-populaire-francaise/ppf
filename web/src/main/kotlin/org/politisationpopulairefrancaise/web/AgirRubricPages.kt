@@ -398,6 +398,7 @@ fun HTML.collectivesDocument(territory: String?, collectives: List<Collective>?)
             }
             shown.forEach { collective ->
                 article(classes = "agenda-event") {
+                    id = "collectif-${collective.id}"
                     h3 { +collective.name.trim() }
                     dl {
                         dt { +"Type" }
@@ -427,4 +428,28 @@ private fun FlowContent.guide(catalog: ComprendreCatalog?, slug: String, fallbac
 
 private fun FlowContent.course(catalog: ComprendreCatalog?, slug: String, fallback: String) {
     a(href = coursePath(slug)) { +("Parcours : " + (catalog?.course(slug)?.article?.title ?: fallback)) }
+}
+
+/**
+ * The contents of « Agir » the search of the site reads (`/recherche`): the open calls, the organisations of the
+ * directory and the listed collectifs, matched on their name and summary with the words of the query.
+ */
+class AgirSearchSources(
+    val calls: CallsSource? = null,
+    val organisations: OrganisationsSource? = null,
+    val collectives: CollectivesSource? = null,
+) {
+    suspend fun search(query: String, limit: Int): List<SearchHit> {
+        fun matches(vararg texts: String?) = org.politisationpopulairefrancaise.core.text.FrenchText.matchesAllWords(texts.filterNotNull().joinToString(" "), query)
+        val now = java.time.Instant.now().epochSecond
+        val hits = buildList {
+            calls?.calls()?.filter { it.isOpen && (it.deadline == null || it.deadline!! >= now) && matches(it.title, it.summary, it.territory) }
+                ?.forEach { add(SearchHit(it.title.trim(), callPath(it), listOfNotNull("Appel", it.territory, it.summary).joinToString(" · "))) }
+            organisations?.organisations()?.filter { !it.revoked && matches(it.name, it.summary, it.territory) }
+                ?.forEach { add(SearchHit(it.name.trim(), "/organisations#org-${it.slug}", listOf("Organisation", it.territory, it.summary).joinToString(" · "))) }
+            collectives?.collectives(null)?.filter { it.listed && matches(it.name, it.about, it.territory) }
+                ?.forEach { add(SearchHit(it.name.trim(), "${AgirSitePaths.COLLECTIVES}#collectif-${it.id}", listOfNotNull("Collectif", it.territory).joinToString(" · "))) }
+        }
+        return hits.take(limit)
+    }
 }

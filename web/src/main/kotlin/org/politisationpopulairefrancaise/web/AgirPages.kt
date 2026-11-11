@@ -285,6 +285,7 @@ fun HTML.organisationsDocument(type: String?, territory: String?, entries: List<
             }
             entries.forEach { entry ->
                 article(classes = "agenda-event") {
+                    id = "org-${entry.slug}"
                     h3 { +entry.name.trim() }
                     dl {
                         dt { +"Type" }

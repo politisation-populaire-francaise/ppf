@@ -45,7 +45,7 @@ class SearchResults(val query: String, val groups: List<Pair<String, List<Search
  * reuses the searches of the catalogs (Voir, Décider) and the same word matching for Comprendre
  * (accents and case ignored, word beginnings: "manif" finds "manifestation"). Nothing is logged.
  */
-fun Route.searchPage(voir: VoirSource?, comprendre: ComprendreSource?, decider: DeciderSource?) {
+fun Route.searchPage(voir: VoirSource?, comprendre: ComprendreSource?, decider: DeciderSource?, agir: AgirSearchSources = AgirSearchSources()) {
     get(SEARCH_PATH) {
         val query = call.request.queryParameters["q"]?.trim()?.take(MAX_SEARCH).orEmpty()
         val results = if (FrenchText.words(query).isEmpty()) SearchResults(query, emptyList()) else SearchResults(query, buildList {
@@ -63,6 +63,7 @@ fun Route.searchPage(voir: VoirSource?, comprendre: ComprendreSource?, decider: 
             }
             decider?.catalog()?.searchPetitions(query)?.take(PER_SPACE)?.map { SearchHit(it.title, DeciderLinks.petition(it), it.article.summary) }
                 ?.let { add("Décider" to it) }
+            agir.search(query, PER_SPACE).takeIf { it.isNotEmpty() }?.let { add("Agir" to it) }
         }.filter { it.second.isNotEmpty() })
         call.respondHtml { searchDocument(results) }
     }
@@ -75,7 +76,7 @@ fun HTML.searchDocument(results: SearchResults) {
             attributes["role"] = "search"
             label {
                 htmlFor = "q"
-                +"Chercher dans Voir, Comprendre et Décider"
+                +"Chercher dans Voir, Comprendre, Agir et Décider"
             }
             input(type = InputType.search, name = "q") {
                 id = "q"

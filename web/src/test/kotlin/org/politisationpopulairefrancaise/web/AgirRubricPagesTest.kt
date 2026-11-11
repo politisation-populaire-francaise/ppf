@@ -1,10 +1,14 @@
 package org.politisationpopulairefrancaise.web
 
+import kotlinx.coroutines.runBlocking
 import kotlinx.html.html
 import kotlinx.html.stream.createHTML
+import org.politisationpopulairefrancaise.core.agir.calls.Call
 import org.politisationpopulairefrancaise.core.agir.kits.CitizenKits
 import org.politisationpopulairefrancaise.core.agir.kits.KitGoal
+import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.time.CivilDate
+import kotlin.test.assertEquals
 import kotlin.test.Test
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -41,5 +45,16 @@ class AgirRubricPagesTest {
         assertTrue(collectives.contains("Aucun collectif"))
         assertTrue(collectives.contains("value=\"Lyon &amp; co\""))
         assertTrue(collectives.contains("utilisez l’application PPF"))
+    }
+
+    @Test
+    fun theSearchOfTheSiteFindsTheOpenCallsOfAgir() = runBlocking {
+        fun call(d: String, title: String, status: String) = requireNotNull(Call.from(SignedEvent("b".repeat(64), "a".repeat(64), 1, Call.KIND, listOf(
+            listOf("d", d), listOf("ppf-type", "appel"), listOf("title", title), listOf("ppf-call-type", "soutenir"),
+            listOf("ppf-territory", "Lyon"), listOf("ppf-call-status", status),
+        ), "[EXEMPLE] Texte.", "c".repeat(128))))
+        val sources = AgirSearchSources(calls = { listOf(call("cantine", "[EXEMPLE] Soutenir la cantine", "ouvert"), call("cantine-close", "[EXEMPLE] Soutenir la cantine centrale", "clos")) })
+        val hits = sources.search("cantine", 20)
+        assertEquals(listOf("/agir/appels/${"a".repeat(64)}/cantine"), hits.map { it.href }, "the closed call is left out")
     }
 }
