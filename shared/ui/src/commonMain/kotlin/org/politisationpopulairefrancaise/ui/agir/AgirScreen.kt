@@ -48,6 +48,7 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpStat
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsScreen
 import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisationsLibrary
+import org.politisationpopulairefrancaise.ui.agir.federer.FedererScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
 import org.politisationpopulairefrancaise.ui.agir.proches.rememberProchesState
@@ -103,6 +104,9 @@ enum class AgirRoute(val id: String) {
 
     /** AG-63: « Mes proches à mobiliser », the private list of a few relatives. */
     PROCHES("proches"),
+
+    /** « Fédérer » (D-195): the list of relatives, the kit « Convaincre autour de soi » and its cards to share. */
+    FEDERER("federer"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -219,6 +223,10 @@ fun AgirScreen(
         } else if (route == AgirRoute.SOLIDARITY && solidarityLibrary.hasSelection) {
             // The page of a fund or a mission closes first, back to the list.
             solidarityLibrary.closeSelection()
+        } else if (route == AgirRoute.PROCHES && returnTo == AgirRoute.FEDERER) {
+            // The list was opened from « Fédérer »: back to it.
+            route = AgirRoute.FEDERER
+            returnTo = null
         } else if (route == AgirRoute.STRIKE_SIMULATOR) {
             // The simulator was opened from the funds of the solidarity rubric: back to them.
             route = AgirRoute.SOLIDARITY
@@ -251,6 +259,7 @@ fun AgirScreen(
                                 route = AgirRoute.SOLIDARITY
                             }
                             AgirRubrics.PROCHES.id -> route = AgirRoute.PROCHES
+                            AgirRubrics.FEDERER.id -> route = AgirRoute.FEDERER
                             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
                         }
                     },
@@ -340,6 +349,20 @@ fun AgirScreen(
                 AgirRoute.PROCHES -> ProchesScreen(
                     state = relatives,
                     windowClass = windowClass,
+                    modifier = Modifier.fillMaxSize(),
+                    // Opened from « Fédérer », the list leads back to it.
+                    onBack = {
+                        route = returnTo ?: AgirRoute.HOME
+                        returnTo = null
+                    },
+                )
+                AgirRoute.FEDERER -> FedererScreen(
+                    library = library,
+                    windowClass = windowClass,
+                    onOpenProches = {
+                        returnTo = AgirRoute.FEDERER
+                        route = AgirRoute.PROCHES
+                    },
                     modifier = Modifier.fillMaxSize(),
                     onBack = home,
                 )

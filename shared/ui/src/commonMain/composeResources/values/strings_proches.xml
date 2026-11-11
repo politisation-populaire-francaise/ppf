@@ -99,4 +99,5 @@
     <string name="proches_privacy_kept">Un surnom, jusqu’à trois sujets, une étape et une date de rappel, pour douze proches au plus : rien d’autre, ni nom, ni numéro, ni carnet d’adresses.</string>
     <string name="proches_privacy_device">Elle reste sur cet appareil : elle n’est jamais envoyée, ni à PPF ni à personne, et n’est liée à aucun compte.</string>
     <string name="proches_privacy_erase">L’effacement rapide et « Effacer mes clés » l’effacent. Le verrouillage de l’application la protège si votre téléphone est pris.</string>
+    <string name="proches_lock_reminder">Protégez cette liste : avec un code, personne d’autre que vous ne peut ouvrir PPF sur ce téléphone et lire vos notes.</string>
 </resources>

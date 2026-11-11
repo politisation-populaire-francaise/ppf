@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rubric « Fédérer » of « Agir » (D-195): convince one's circle, on the device only. -->
+<resources>
+    <string name="federer_rubric_title">Fédérer</string>
+    <string name="federer_rubric_text">Ouvrir les yeux de son entourage, c'est agir : votre liste de proches, des arguments, des réponses aux objections et des cartes à partager.</string>
+    <string name="federer_title">Fédérer autour de soi</string>
+    <string name="federer_description">Chaque personne convaincue compte. Parlez du mouvement à vos proches, à vos collègues, à vos voisins, à votre rythme. Rien de ce que vous faites ici ne quitte votre téléphone, sauf ce que vous choisissez de partager.</string>
+    <string name="federer_back">Revenir à l’accueil d’Agir</string>
+    <string name="federer_proches_title">Mes proches à mobiliser</string>
+    <string name="federer_proches_text">Une petite liste privée de personnes à convaincre, avec un pas à leur proposer et un rappel. Elle reste sur ce téléphone.</string>
+    <string name="federer_proches_open">Ouvrir ma liste</string>
+    <string name="federer_kit_title">Le kit « Convaincre autour de soi »</string>
+    <string name="federer_kit_text">Quelques arguments courts et sourcés, les réponses aux objections qu’on entend le plus, et ce que les autres pays nous apprennent.</string>
+    <string name="federer_kit_open">Lire le kit en entier, avec ses sources</string>
+    <string name="federer_kit_missing">Le kit arrive avec la prochaine mise à jour des contenus de l’application. En attendant, votre liste de proches est déjà prête.</string>
+    <string name="federer_cards_title">Cartes à montrer ou à partager</string>
+    <string name="federer_cards_help">Montrez une carte sur votre téléphone pendant la discussion, ou partagez-la : elle renvoie à la fiche complète et à ses sources.</string>
+    <string name="federer_card_argument">Argument</string>
+    <string name="federer_card_answer">Réponse à une objection</string>
+    <string name="federer_card_world">Le monde bouge</string>
+    <string name="federer_share">Partager</string>
+    <string name="federer_share_title">Partager cette carte</string>
+    <string name="federer_copy">Copier le texte</string>
+    <string name="federer_copied">Texte copié</string>
+    <string name="federer_tips_title">Quelques conseils</string>
+    <string name="federer_tips_text">Écoutez d’abord, partez de ce qui touche la personne. Dites vrai, victoires comme échecs. Proposez un petit pas : vérifier son inscription sur les listes électorales, voter une revendication, signer une pétition officielle. Et respectez le désaccord : une conversation peut reprendre plus tard.</string>
+</resources>
