@@ -91,7 +91,12 @@ fun Route.deciderPages(source: DeciderSource, voir: VoirSource? = null, clock: C
         get("/${DeciderMoreLinks.COMPARATOR}/{slug}") {
             val catalog = source.catalog()
             val sheet = catalog.comparators.firstOrNull { it.article.slug == call.parameters["slug"] }
-            if (sheet == null) call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() } else call.respondHtml { comparatorDocument(catalog.grid(sheet, voir?.catalog() ?: VoirCatalog.EMPTY)) }
+            if (sheet == null) {
+                call.respondHtml(HttpStatusCode.NotFound) { deciderNotFoundDocument() }
+            } else {
+                val grid = catalog.grid(sheet, voir?.catalog() ?: VoirCatalog.EMPTY)
+                call.respondHtml { comparatorDocument(grid) }
+            }
         }
         get("/${DeciderMoreLinks.ELECTIONS}/{slug}") {
             val election = source.catalog().elections.firstOrNull { it.article.slug == call.parameters["slug"] }
