@@ -1493,6 +1493,36 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - application : composant commun `PpfSymbol` (code commun, compatible iOS), dessiné à partir de la géométrie du lot, aux couleurs `brand` et `accent` du thème, qui sont exactement celles des versions claire et sombre du lot ; taille minimale de 16 dp ; lu comme « Symbole de Politisation Populaire Française… » par le lecteur d'écran, sauf quand le nom est écrit à côté. Placé avant le nom dans la barre du haut (quand le nom entier tient encore à côté, sinon le nom seul, D-182 passant d'abord), en tête du menu, dans la barre de l'ordinateur, sur le premier écran du tutoriel et en bas de Mon espace avec la version (il n'existe pas d'écran « À propos »).
 - Points à valider repris du LISEZMOI (dans `docs/ROADMAP.md`) : le symbole reste provisoire en attendant, si elle le souhaite, la Marianne et le bonnet phrygien de l'artiste bénévole ; le nom court « Politisation » du manifeste reste provisoire ; vérification d'antériorité à l'INPI avant tout dépôt de marque.
 
+## D-186 (2026-11-11) Tutoriel du premier lancement, version 2 : les textes et les images de la propriétaire
+
+- Contexte : après essai sur son Galaxy A34, la propriétaire : « L'ux est absolument parfaite, mais le contenu ne va pas, je vais le reprendre et tu pourras retirer "écrit par une ia, en attente de relecture" ». Consigne complète du chef d'équipe : `tutoriel-v2.md` (dossier de passation du MVP 1).
+- Choix :
+  - la mécanique ne change pas (Passer, Précédent, Suivant, « Étape N sur 11 », rejouable, état « vu » sur l'appareil) ;
+  - onze écrans : 1 « Ensemble, sauvons la démocratie ! », 2 « Comment faire ? », 3 à 9 (S'informer, Comprendre, Témoigner, Revendiquer, Communiquer, s'unir et s'organiser, Se politiser, Agir), 10 « Vos données vous appartiennent », 11 « Par où commencer ? » ; aucun numéro d'étape dans les titres (« non enlève les étapes ») : seul le compteur « N sur 11 » de l'interface reste ;
+  - « Constitution Citoyenne et Démocratique » à la place de « Pacte Citoyen et Démocratique » sur l'écran 6 (décision de la propriétaire : le Pacte démocratique s'appelle désormais ainsi partout ; le reste de l'application relève de Décider) ;
+  - écrans 1 à 6 : ses mots, sans changement ; seule la typographie française est corrigée (apostrophe typographique, espace insécable avant « : », espace fine insécable avant « ; ! ? ») ; écrans 7 à 10 : textes du chef d'équipe, à relire par elle ; sur l'écran 10, la phrase sur les réglages est ramenée à ce que fait l'application (« au plus protecteur dès le départ ; vous pouvez les modifier dans Mon espace ») ;
+  - plus d'étiquette d'origine sur le tutoriel ;
+  - ses images (`design/identite/illustrations/`, originaux) : la Marianne en bannière des écrans 1 et 2 (`tutorial_marianne.jpg`, 1080 × 540, 75 Ko au lieu d'environ 1 Mo, aplatie sur blanc), le bonnet phrygien sur l'écran 6 (`tutorial_bonnet.png`, 480 px, 63 Ko) ; posées sur une carte claire dans les deux thèmes, l'indigo des dessins se perdant sur une page sombre ; texte alternatif pour chacune ; sur un écran haut, la bannière reste en haut et le texte défile dessous ; dans une fenêtre basse, les deux défilent ;
+  - icônes Lucide pour les autres écrans (actualité, ampoule, mégaphone, groupe, urne, poing, bouclier) ;
+  - écran 10 : bouton « Régler ma confidentialité » (ouvre Mon espace) ;
+  - dernier écran : « Recevoir de l'aide » en rouge sur toute la largeur (ouvre la feuille AIDE), puis deux colonnes : M'informer (En direct), Comprendre, Témoigner (rubrique d'Agir), Revendiquer (mur des revendications), Rejoindre un collectif (« Se réunir » d'Agir), Me politiser (« S'engager en politique »), Agir, Soutenir (« Solidarité » d'Agir) ; une paire de boutons passe l'un sous l'autre quand un libellé ne tient pas ; la phrase « Je veux… » est retirée (les libellés sont déjà à la première personne) ;
+  - le logo ne figure plus sur le premier écran : la bannière de la propriétaire le remplace ; rien d'autre n'y est ajouté (« non n'ajoute rien au premier écran je verrai ça avec des avocats »).
+- Textes : balisage simple dans les chaînes de `strings_tutoriel.xml` (`**gras**`, lignes « - » pour les listes), lu par `TutorialMarkup`.
+- Point signalé au chef d'équipe, sans rien changer à ses mots : « celles et ceux qui sont censées » (accord).
+
+## D-187 (2026-11-11) Logo officiel : la Marianne de la propriétaire, décliné par support
+
+- Contexte : décision de la propriétaire, ses mots : « Le logo officiel est désormais celui-ci applique les changements immédiatement : [...] marianne-logo.png et ajuste le logo en fonction de l'endroit et le support sur lequel il apparait ». Il remplace le symbole à la bulle de parole (D-185).
+- Choix (décisions techniques prises en autonomie, sur consigne du chef d'équipe) :
+  - l'original dans `design/identite/logo-officiel/`, ses déclinaisons produites par un script PowerShell sans dépendance (`deriver-logo.ps1`) ; l'ancien lot à la bulle dans `design/identite/archive-bulle/`, embarqué nulle part ;
+  - Android : icône adaptative sur fond blanc (l'indigo du dessin disparaîtrait sur le fond indigo de l'ancienne icône), dessin dans le cercle de 66 dp ; ronde (disque blanc), classique (carré blanc arrondi) ; monochrome : les parties colorées en une couleur, les traits blancs laissés vides, pour que le dessin reste lisible teinté ; l'icône neutre du mode discret ne change pas ;
+  - site : à 16 et 32 pixels, la Marianne et son drapeau seuls, sur un disque blanc (le dessin entier y serait illisible ; le disque le garde lisible sur un onglet sombre) ; le dessin entier dès 48 pixels ; plus d'icône vectorielle (le logo est une image) ; image de partage refaite (logo et nom) ;
+  - ordinateur : `ppf.ico` et `ppf.png` refaits, la fenêtre affiche le logo de l'application ;
+  - application : `PpfSymbol` affiche désormais l'image du logo (256 pixels), sur un disque clair en thème sombre ; mêmes places qu'en D-185 (barre du haut quand le nom entier tient à côté, menu, barre de l'ordinateur, Mon espace) ; taille minimale 24 dp ;
+  - iOS : icône 1024 sur fond blanc opaque, rangée dans les déclinaisons.
+- Point signalé : le dessin n'est pas le bloc-marque de l'État (pas de profil de Marianne dans des bandes tricolores), mais il associe une Marianne et le drapeau français ; à garder en tête pour la vérification d'antériorité à l'INPI et la relecture par un avocat avant l'ouverture publique.
+- Reste : de nouvelles bannières de réseaux sociaux au logo officiel.
+
 ## D-210 (2026-11-11) Cap du MVP 1 : Agir, puis Décider, puis Comprendre, et une ergonomie irréprochable
 
 - Contexte : la feuille de route suivie depuis le 5 novembre avançait sur tous les modules à la fois, sans version utilisable. Le mouvement social en cours rend urgente une première version réellement utile. Demande de la propriétaire du 11 novembre 2026 : « j'ai besoin d'un mvp 1 fonctionnel et ergonomique le plus rapidement possible ».

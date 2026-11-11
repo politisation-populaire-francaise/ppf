@@ -73,13 +73,13 @@ class FirstLaunchTutorialTest {
         val titles = listOf(
             "Ensemble, sauvons la démocratie",
             "Comment faire",
-            "Étape 1",
-            "Étape 2",
-            "Étape 3",
-            "Étape 4",
-            "Étape 5",
-            "Étape 6",
-            "Étape 7",
+            "S’informer",
+            "Comprendre",
+            "Témoigner",
+            "Revendiquer",
+            "Communiquer",
+            "Se politiser",
+            "Agir",
             "Vos données vous appartiennent",
             "Par où commencer",
         )
@@ -89,6 +89,8 @@ class FirstLaunchTutorialTest {
         val soon = setOf(6, 8)
         titles.forEachIndexed { index, title ->
             onNodeWithTag(TutorialTags.TITLE).assert(hasText(title, substring = true))
+            // « non enlève les étapes »: no number in the titles, only the counter of the interface.
+            assertFalse(onNodeWithTag(TutorialTags.TITLE).fetchSemanticsNode().config.toString().contains("Étape"), "no step number in the title ${index + 1}")
             onNodeWithText("Étape ${index + 1} sur 11").assertExists()
             onNodeWithTag(TutorialTags.SKIP).assertIsDisplayed()
             assertEquals(index in pictures, has(TutorialTags.ILLUSTRATION), "picture on screen ${index + 1}")
@@ -96,6 +98,7 @@ class FirstLaunchTutorialTest {
             assertEquals(index > 0, has(TutorialTags.PREVIOUS), "Précédent on screen ${index + 1}")
             // No label of origin on the tutorial any more (« tu pourras retirer "écrit par une ia" »).
             assertTrue(onAllNodesWithText("par l’IA", substring = true).fetchSemanticsNodes().isEmpty(), "label of origin on screen ${index + 1}")
+            if (index == 5) assertTrue(onAllNodesWithText("Constitution Citoyenne et Démocratique", substring = true).fetchSemanticsNodes().isNotEmpty(), "her new name of the pact")
             if (index == 0) {
                 onNodeWithTag(TutorialTags.ILLUSTRATION).assertIsDisplayed()
                 assertTrue(onAllNodesWithText("sauver notre démocratie", substring = true).fetchSemanticsNodes().isNotEmpty(), "her text, word for word")
