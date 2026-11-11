@@ -53,11 +53,14 @@ object Engagement {
     /** Registering on the electoral rolls, conditions and online service (service-public.gouv.fr, F1367). */
     const val REGISTER_PAGE: String = "https://www.service-public.gouv.fr/particuliers/vosdroits/F1367"
 
-    /** Checking one's registration and polling station (official online service). */
-    const val CHECK_REGISTRATION: String = "https://www.service-public.gouv.fr/particuliers/vosdroits/services-en-ligne-et-formulaires/ISE"
+    /** Checking one's registration and polling station: the official online service « ISE » (service-public.gouv.fr, R51788). */
+    const val CHECK_REGISTRATION: String = "https://www.service-public.gouv.fr/particuliers/vosdroits/R51788"
 
-    /** Code électoral, article L52-8 (Légifrance): why PPF supports no list and no party. */
-    const val L52_8: String = "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006353166"
+    /**
+     * Code électoral on Légifrance, its version in force (article L52-8, chapter V bis: why PPF supports no list and
+     * no party). The whole code rather than one version of the article, whose identifier changes with each amendment.
+     */
+    const val L52_8: String = "https://www.legifrance.gouv.fr/codes/texte_lc/LEGITEXT000006070239/"
 
     // Stable identifiers of the contents the steps open (practical guides and courses of « Comprendre »).
     const val GUIDE_PROXY: String = "voter-par-procuration"

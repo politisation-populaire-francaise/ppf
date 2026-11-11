@@ -43,7 +43,7 @@
 
     <string name="engager_neutral_title">Les mêmes outils pour tous</string>
     <string name="engager_neutral_text">PPF ne soutient aucune liste, aucun candidat et aucun parti : une association ne peut aider la campagne d’un candidat (code électoral, article L52-8). Ces outils sont ouverts à toutes et à tous, aux mêmes conditions.</string>
-    <string name="engager_neutral_source">Lire l’article L52-8</string>
+    <string name="engager_neutral_source">Lire le code électoral (article L52-8)</string>
     <string name="engager_milestone_inscription">dernier jour pour s’inscrire sur les listes électorales</string>
     <string name="engager_milestone_tour1">premier tour de la présidentielle</string>
     <string name="engager_milestone_tour2">second tour de la présidentielle</string>

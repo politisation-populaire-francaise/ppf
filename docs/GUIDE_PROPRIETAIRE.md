@@ -290,6 +290,13 @@ Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre 
 
 Pour imprimer : choisissez **taille réelle** (ou « 100 % ») dans la fenêtre d'impression, sinon le code QR rétrécit. Ce qui n'est pas encore là : l'iPhone, le PDF sur ordinateur, les affiches d'une fiche ou d'une revendication, les pages du site pour les affiches d'événements très longs.
 
+### Tester « S'engager en politique », « Se réunir », « En ce moment » et les appels à la grève et au blocage (ajouté le 11 novembre 2026)
+
+1. Ouvrez « Agir » : sous le titre, la carte **S'engager en politique** donne la prochaine échéance (le dernier jour pour s'inscrire sur les listes électorales, le vendredi 12 mars 2027) et le nombre de jours restants. Touchez **Voir les étapes** : quatre étapes dans l'ordre du calendrier. **Vérifier mon inscription** ouvre le service officiel (il demande FranceConnect) ; les guides s'ouvrent dans Agir ; **Trouver des colistiers dans les collectifs** ouvre les collectifs, et la flèche retour revient aux étapes.
+2. De retour sur l'accueil, touchez **Se réunir** : collectifs, organisations, « Créer une association » et salons ; chaque flèche retour revient sur « Se réunir ».
+3. Ouvrez la **Carte** : quand une mobilisation de l'agenda est en cours, le bandeau rouge « En ce moment » la nomme, au-dessus de la liste comme de la carte.
+4. Dans « Agir », **Appels**, **Lancer un appel** : les types **Faire grève** et **Bloquer** apparaissent. Choisissez **Bloquer** : l'encadré « Bloquer : ce que dit la loi » s'affiche et ne se ferme pas ; un appel à bloquer part toujours en relecture.
+
 ### Tester « Fédérer » (ajouté le 11 novembre 2026)
 
 « Fédérer » rassemble ce qui aide à convaincre son entourage : votre liste de proches, le kit « Convaincre autour de soi » (écrit par l'équipe Comprendre, avec ses sources) et des cartes à montrer ou à partager. **Le kit arrivera avec la prochaine mise à jour des contenus** : en attendant, l'écran le dit et la liste des proches marche déjà. Aucune version d'essai n'est envoyée sans votre demande.
