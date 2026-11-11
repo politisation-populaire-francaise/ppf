@@ -48,6 +48,8 @@ import org.politisationpopulairefrancaise.ui.agir.manifestation.rememberHelpStat
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsLibrary
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsScreen
 import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisationsLibrary
+import org.politisationpopulairefrancaise.ui.agir.engagement.EngagementLinks
+import org.politisationpopulairefrancaise.ui.agir.engagement.EngagementScreen
 import org.politisationpopulairefrancaise.ui.agir.federer.FedererScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
@@ -107,6 +109,9 @@ enum class AgirRoute(val id: String) {
 
     /** « Fédérer » (D-195): the list of relatives, the kit « Convaincre autour de soi » and its cards to share. */
     FEDERER("federer"),
+
+    /** « S'engager en politique » (D-196, D-213): four steps in the order of the electoral calendar. */
+    ENGAGER("s-engager"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -223,6 +228,9 @@ fun AgirScreen(
         } else if (route == AgirRoute.SOLIDARITY && solidarityLibrary.hasSelection) {
             // The page of a fund or a mission closes first, back to the list.
             solidarityLibrary.closeSelection()
+        } else if (route == AgirRoute.COLLECTIVES && returnTo == AgirRoute.ENGAGER) {
+            route = AgirRoute.ENGAGER
+            returnTo = null
         } else if (route == AgirRoute.PROCHES && returnTo == AgirRoute.FEDERER) {
             // The list was opened from « Fédérer »: back to it.
             route = AgirRoute.FEDERER
@@ -260,6 +268,7 @@ fun AgirScreen(
                             }
                             AgirRubrics.PROCHES.id -> route = AgirRoute.PROCHES
                             AgirRubrics.FEDERER.id -> route = AgirRoute.FEDERER
+                            AgirRubrics.ENGAGER.id -> route = AgirRoute.ENGAGER
                             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
                         }
                     },
@@ -285,7 +294,11 @@ fun AgirScreen(
                     windowClass = windowClass,
                     agenda = agendaOfCollectives,
                     calls = callsOfCollectives,
-                    onBack = home,
+                    // Opened from « S'engager en politique » (running mates), the directory leads back to it.
+                    onBack = {
+                        route = returnTo ?: AgirRoute.HOME
+                        returnTo = null
+                    },
                     onNavigate = onNavigate,
                     onOpenRooms = { route = AgirRoute.ROOMS },
                     onCreateRoom = {
@@ -355,6 +368,22 @@ fun AgirScreen(
                         route = returnTo ?: AgirRoute.HOME
                         returnTo = null
                     },
+                )
+                AgirRoute.ENGAGER -> EngagementScreen(
+                    library = library,
+                    windowClass = windowClass,
+                    links = EngagementLinks(
+                        openDecider = { onNavigate(Space.DECIDER) },
+                        openParties = { onNavigate(Space.VOIR) },
+                        openComprendre = { onNavigate(Space.COMPRENDRE) },
+                        // The collectifs, to find running mates; their way back returns here.
+                        openCollectives = {
+                            returnTo = AgirRoute.ENGAGER
+                            route = AgirRoute.COLLECTIVES
+                        },
+                    ),
+                    modifier = Modifier.fillMaxSize(),
+                    onBack = home,
                 )
                 AgirRoute.FEDERER -> FedererScreen(
                     library = library,

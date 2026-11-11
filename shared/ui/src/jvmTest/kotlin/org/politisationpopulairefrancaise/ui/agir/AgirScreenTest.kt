@@ -56,7 +56,8 @@ class AgirScreenTest {
         // "Témoigner" (AG-07), the protest mode (AG-13), the solidarity funds (AG-10) and "Je veux aider" (AG-12) left the rubrics in preparation.
         assertEquals(3, inPreparation.size)
         assertEquals("federer", available[2])
-        assertEquals("temoigner", available[3])
+        assertEquals("s-engager", available[3])
+        assertEquals("temoigner", available[4])
         assertTrue("solidarite" in available && "aider" in available)
         assertTrue("solidarite" !in inPreparation && "aider" !in inPreparation)
         onNodeWithText("Messagerie sans Internet").assertExists()
