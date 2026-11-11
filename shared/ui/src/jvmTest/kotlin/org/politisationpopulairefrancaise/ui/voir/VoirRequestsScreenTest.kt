@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.voir
 
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
@@ -78,7 +80,7 @@ class VoirRequestsScreenTest {
     private fun ComposeUiTest.openVoir(dependencies: AppDependencies) {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
         waitForIdle()
-        onNodeWithText("Voir").performClick()
+        openSpace(Space.VOIR)
         waitForIdle()
         waitUntil(timeoutMillis = 10_000) { has(VoirTags.card("manifestants-journees")) }
     }
@@ -119,7 +121,7 @@ class VoirRequestsScreenTest {
         onNodeWithTag(VoirRequestTags.REPLY_TEXT).performScrollTo().performTextInput("[EXEMPLE] Brouillon")
         click(VoirRequestTags.CREATE_ACCOUNT)
         waitUntil(timeoutMillis = 5_000) { has(AccountTags.CREATE) }
-        onNodeWithText("Voir").performClick()
+        openSpace(Space.VOIR)
         waitForIdle()
         onNodeWithTag(VoirRequestTags.REPLY_TEXT).assert(hasText("[EXEMPLE] Brouillon"))
     }

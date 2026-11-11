@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.voir
 
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.runtime.DisposableEffect
@@ -54,7 +56,7 @@ class VoirScreenTest {
             onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
             waitForIdle()
         }
-        onNodeWithText("Voir").performClick()
+        openSpace(Space.VOIR)
         waitForIdle()
         if (width < 600) {
             mainClock.advanceTimeBy(2_000)
@@ -277,7 +279,7 @@ class VoirScreenTest {
             }
             Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies()) }
         }
-        onNodeWithText("Voir").performClick()
+        openSpace(Space.VOIR)
         waitForIdle()
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(VoirTags.card("manifestants-journees")).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithTag(VoirTags.card("manifestants-journees")).performClick()

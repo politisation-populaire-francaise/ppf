@@ -19,6 +19,9 @@ import org.politisationpopulairefrancaise.core.agir.AgirFormats
 import org.politisationpopulairefrancaise.core.agir.calls.Call
 import org.politisationpopulairefrancaise.core.agir.calls.CallQuery
 import org.politisationpopulairefrancaise.core.agir.calls.CallResponseStore
+import org.politisationpopulairefrancaise.core.agir.calls.SlotClient
+import org.politisationpopulairefrancaise.core.agir.calls.SlotSignupStore
+import org.politisationpopulairefrancaise.core.reminders.ReminderStore
 import org.politisationpopulairefrancaise.core.agir.calls.CallRules
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
@@ -91,6 +94,8 @@ class CallsLibrary(
     private val clock: () -> Long = ::currentEpochSeconds,
     /** The bundled examples; injectable so that tests can start from an empty wall. */
     private val bundled: suspend () -> ByteArray? = { runCatching { Res.readBytes(BUNDLED_FILE) }.getOrNull() },
+    /** The slots of the calls (AP-11): the user's signups, the server and the reminders. */
+    val slots: SlotsLibrary = SlotsLibrary(null, null, null, clock),
 ) {
     private val responseWrites = Mutex()
 
@@ -227,9 +232,9 @@ class CallsLibrary(
         if (call.author != signer.publicKey.hex || !call.isOpen || CallRules.checkReport(report).isNotEmpty()) return CallSendOutcome.FAILED
         val outcome = try {
             val event = signer.sign(call.closedVersion(report, clock()))
-            val stored = withContext(Dispatchers.Default) { store.store(event, pending = true) }
+            val stored = withContext(Dispatchers.Default) { store.storeSending(event) }
             if (stored != LocalStoreOutcome.STORED) return CallSendOutcome.FAILED
-            when (val result = remote?.publish(event) ?: PublicationResult.Unavailable()) {
+            when (val result = store.sending(event) { remote?.publish(event) ?: PublicationResult.Unavailable() }) {
                 is PublicationResult.Accepted -> {
                     withContext(Dispatchers.Default) { store.markPublished(event.id) }
                     if (result.heldForReview) {
@@ -319,7 +324,7 @@ class CallsLibrary(
 
     /** Publishes the user's calls kept on the device; false when the server could not be reached. */
     private suspend fun publishPending(store: LocalEventStore, remote: RemoteEvents): Boolean {
-        val pending = withContext(Dispatchers.Default) { store.pending().filter(Call::isCall) }
+        val pending = withContext(Dispatchers.Default) { store.pendingToSend().filter(Call::isCall) }
         for (event in pending) {
             when (val result = remote.publish(event)) {
                 is PublicationResult.Accepted -> {
@@ -422,6 +427,7 @@ fun rememberCallsLibrary(dependencies: AppDependencies, start: Boolean = true): 
             remote = dependencies.remote,
             scope = scope,
             responses = dependencies.database?.let(::CallResponseStore),
+            slots = SlotsLibrary(dependencies.database?.let(::SlotSignupStore), dependencies.remote as? SlotClient, dependencies.database?.let { ReminderStore(it) }),
         ).also { if (start) it.start() }
     }
 }

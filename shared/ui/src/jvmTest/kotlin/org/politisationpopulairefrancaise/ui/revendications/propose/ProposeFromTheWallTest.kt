@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.revendications.propose
 
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
@@ -42,7 +43,6 @@ import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
 import org.politisationpopulairefrancaise.ui.revendications.RevendicationTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -62,7 +62,7 @@ class ProposeFromTheWallTest {
 
     private fun ComposeUiTest.openForm(dependencies: AppDependencies) {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         waitOrDump("the form's button") { onAllNodesWithTag(RevendicationTags.PROPOSE).fetchSemanticsNodes().isNotEmpty() }
         onNode(hasTestTag(RevendicationTags.PROPOSE) and hasAnyAncestor(hasTestTag(RevendicationTags.PAGE + "tout"))).performScrollTo().performClick()
         waitForIdle()
@@ -135,7 +135,6 @@ class ProposeFromTheWallTest {
         assertEquals(0, onAllNodesWithTag(RevendicationTags.OWN_STATE + "waiting", useUnmergedTree = true).fetchSemanticsNodes().size, "not on the wall before its review")
     }
 
-    @Ignore // Instable (11 nov. 2026) : la synchronisation périodique renvoie parfois la même publication en attente pendant son envoi ; voir ROADMAP, Tests désactivés.
     @Test
     fun aDemandSentForReviewShowsItsStateThenTheServersReport() = runComposeUiTest {
         val server = ReviewingServer()

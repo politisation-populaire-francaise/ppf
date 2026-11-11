@@ -230,6 +230,8 @@ fun CallsScreen(
                     closeOutcome = closeOutcome?.takeIf { it.first == call.address.toString() }?.second,
                     modifier = Modifier.fillMaxSize(),
                     onMakePoster = { posterOf = it },
+                    messagingSigner = session.messagingSigner,
+                    eventSigner = session.signer,
                 )
             }
             val selected = library.selected

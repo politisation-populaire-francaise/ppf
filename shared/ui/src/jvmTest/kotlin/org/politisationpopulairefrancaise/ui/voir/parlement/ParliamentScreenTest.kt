@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.voir.parlement
 
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.requiredSize
@@ -300,7 +302,7 @@ class ParliamentScreenTest {
             database = database,
         )
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
-        onNodeWithText("Voir").performClick()
+        openSpace(Space.VOIR)
         waitForIdle()
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(VoirTags.card("manifestants-journees")).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithTag(VoirTags.tab(1)).performClick()

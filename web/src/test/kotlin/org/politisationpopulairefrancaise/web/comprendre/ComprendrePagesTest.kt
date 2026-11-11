@@ -52,12 +52,12 @@ class ComprendrePagesTest {
 
     @Test
     fun theBundledContentsAreAllRead() {
-        assertEquals(26, catalog.fiches.size)
+        assertEquals(34, catalog.fiches.size)
         assertEquals(20, catalog.parcours.size)
-        assertEquals(7, catalog.decryptages.size)
+        assertEquals(8, catalog.decryptages.size)
         assertEquals(3, catalog.stories.size)
-        assertEquals(12, catalog.sheets.size)
-        assertEquals(72, catalog.glossary.size)
+        assertEquals(15, catalog.sheets.size)
+        assertEquals(80, catalog.glossary.size)
         assertNotNull(catalog.method)
     }
 
@@ -93,7 +93,7 @@ class ComprendrePagesTest {
         listOf("Connaître ses droits", "Comprendre en 5 minutes", "Qui décide de ça ?", "Le vrai du faux", "Histoire des luttes", "Glossaire", "Notre méthode").forEach { assertTrue(html.contains(it), it) }
         listOf("/comprendre/fiches", "/comprendre/parcours", "/comprendre/decryptages", "/comprendre/histoire", "/comprendre/qui-decide", "/comprendre/glossaire", "/comprendre/methode", "/comprendre/hors-ligne")
             .forEach { assertTrue(html.contains("href=\"$it"), it) }
-        assertTrue(html.contains("<a href=\"/comprendre\" aria-current=\"page\">Comprendre</a>"))
+        assertTrue(html.contains("<a href=\"/comprendre\" aria-current=\"page\">Vue d’ensemble</a>"))
     }
 
     @Test
@@ -162,7 +162,8 @@ class ComprendrePagesTest {
         assertTrue(html.contains("<summary>Voir la bonne réponse</summary>"))
         assertTrue(html.contains("La bonne réponse : A. "))
         assertFalse(html.contains("<form"), "no answer is ever sent")
-        assertFalse(html.contains("<input"))
+        // The only input is the switch of the menu of the site.
+        assertFalse(Regex("<input(?! type=\"checkbox\" class=\"nav-toggle\")").containsMatchIn(html))
         assertTrue(html.contains("href=\"#etape-1\""))
         assertTrue(html.contains("id=\"etape-${course.steps.size}\""))
         // « Et maintenant ? » leads to the spaces of the site.

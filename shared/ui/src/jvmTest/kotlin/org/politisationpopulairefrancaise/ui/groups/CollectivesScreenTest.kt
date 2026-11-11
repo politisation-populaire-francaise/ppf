@@ -31,7 +31,6 @@ import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.PpfApp
 import org.politisationpopulairefrancaise.ui.messages.MessagesTags
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
-import kotlin.test.Ignore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -176,7 +175,6 @@ class CollectivesScreenTest {
         assertEquals(0, count(GroupsTags.SCREEN, this))
     }
 
-    @Ignore // Instable (11 nov. 2026) : la synchronisation périodique renvoie parfois la même publication en attente pendant son envoi ; voir ROADMAP, Tests désactivés.
     @Test
     fun aMessageIsSignedByTheAccountAndSentToTheRoom() = runComposeUiTest {
         val server = RoomsFixtures.server()

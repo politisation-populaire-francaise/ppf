@@ -20,6 +20,9 @@ class ContentReportsTest {
         assertFalse(ContentReports.isContentAddress("30023:abc:appel"))
         assertFalse(ContentReports.isContentAddress("pas une adresse"))
         assertFalse(ContentReports.isContentAddress("30023:${"a".repeat(64)}:"))
+        // A post of the feed or a message of a room: its kind and its id.
+        assertTrue(ContentReports.isContentAddress(ContentReports.eventAddress(1, "b".repeat(64))))
+        assertFalse(ContentReports.isContentAddress("1:abc"))
     }
 
     @Test

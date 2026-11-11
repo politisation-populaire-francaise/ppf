@@ -27,6 +27,12 @@ import org.politisationpopulairefrancaise.server.agir.AgirConfig
 import org.politisationpopulairefrancaise.server.agir.AgirSetup
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
 import org.politisationpopulairefrancaise.server.agir.agendaSource
+import org.politisationpopulairefrancaise.server.agir.SlotSignupStore
+import org.politisationpopulairefrancaise.server.agir.slotApi
+import org.politisationpopulairefrancaise.server.agir.callsSource
+import org.politisationpopulairefrancaise.server.agir.collectivesSource
+import org.politisationpopulairefrancaise.server.agir.fundsSource
+import org.politisationpopulairefrancaise.server.agir.organisationsSource
 import org.politisationpopulairefrancaise.server.agir.agirApi
 import org.politisationpopulairefrancaise.server.agir.collectives.CollectiveRules
 import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonyQueue
@@ -153,6 +159,9 @@ import org.politisationpopulairefrancaise.server.signing.SignerAdmin
 import org.politisationpopulairefrancaise.web.ContentVerifier
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
+import org.politisationpopulairefrancaise.web.AgirSearchSources
+import org.politisationpopulairefrancaise.web.agirPages
+import org.politisationpopulairefrancaise.web.agirRubricPages
 import org.politisationpopulairefrancaise.web.comprendre.ComprendreSource
 import org.politisationpopulairefrancaise.web.openDataPage
 import org.politisationpopulairefrancaise.web.verifyPages
@@ -367,6 +376,8 @@ fun Application.module(
     }
     // Mobilizations, calls and directory of the Agir space: rules, review queue, agenda (contract, section 5).
     val agirSpace = if (dataSource != null && repository != null) AgirSpace.start(this, dataSource, repository, policy, agir) else null
+    // Slots of volunteering of the calls (AP-11): encrypted signups for the organizer, counted by slot, erased after it.
+    val slotSignups = if (dataSource != null && repository != null && agirSpace != null) SlotSignupStore(dataSource, repository).also { it.startPurge(this, 1.hours, log) } else null
     // Testimonies: encrypted envelopes and files only, open when a folder is configured (docs/integration/agir-temoignages.md).
     val testimonySpace = if (dataSource != null && repository != null) TestimonySpace.start(this, dataSource, repository, policy, testimonies) else null
     // Cases of contact, tickets and claims (M30, D-140): unreadable envelopes and follow-up metadata, nightly retention.
@@ -598,6 +609,7 @@ fun Application.module(
             groupsApi(groups)
             revendicationsApi(proposals)
             agirApi(agirSpace)
+            slotApi(slotSignups)
             testimonyApi(testimonySpace, testimonies.config.maxFileBytes)
             contactApi(contactSpace) // Cases of contact and claims (M30): 503 contact_not_open without an inbox key.
             elusApi(elusService)
@@ -610,6 +622,13 @@ fun Application.module(
             openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
             openExport?.let { export -> verifyPages(ContentVerifier { export.check(it) }) } // « Vérifier un contenu PPF » (S-141).
             agirSpace?.let { agendaPage(it.agendaSource()) }
+            agirPages(repository?.takeIf { agirSpace != null }?.let(::callsSource), repository?.let { organisationsSource(it, policy::isEditor) }) // /agir/appels, /agir/appels/…, /organisations.
+            // S'engager en politique, solidarité, collectifs, kits d'action citoyenne: the rubric pages of « Agir » on the site.
+            agirRubricPages(
+                comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
+                collectives = groups?.let(::collectivesSource),
+                funds = repository?.let { fundsSource(it, policy::isEditor) },
+            )
             tilesRoutes(tiles)
             comparatorPhotosRoutes(ComparatorPhotosConfig.fromEnvironment()) // Official photos of the comparators (DE-16, Q3).
             parlementRoutes() // Parliamentary open data, read-only from PPF_OPEN_DATA_DIR (D-064).
@@ -619,6 +638,12 @@ fun Application.module(
                 voir = voir ?: repository?.let { EditorialVoirSource(it, policy) },
                 comprendre = comprendre ?: repository?.let { EditorialComprendreSource(it, policy) },
                 decider = deciderSource,
+                agenda = agirSpace?.agendaSource(), // « En direct » shows the next mobilizations.
+                agirSearch = AgirSearchSources(
+                    calls = repository?.takeIf { agirSpace != null }?.let(::callsSource),
+                    organisations = repository?.let { organisationsSource(it, policy::isEditor) },
+                    collectives = groups?.let(::collectivesSource),
+                ),
             )
         }
         if (backOffice != null && teamBackOffice != null) {

@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.content
 
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
@@ -14,6 +16,7 @@ import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.onNodeWithText
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.performTextInput
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.editorial.EditorialTrust
@@ -21,6 +24,7 @@ import org.politisationpopulairefrancaise.core.identity.InMemoryIdentityStore
 import org.politisationpopulairefrancaise.core.local.JvmDatabase
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.ui.AppDependencies
+import org.politisationpopulairefrancaise.ui.comprendre.ComprendreTheme
 import org.politisationpopulairefrancaise.ui.PpfApp
 import org.politisationpopulairefrancaise.ui.shell.ShellTags
 import kotlin.test.Test
@@ -38,13 +42,8 @@ class ComprendreScreenTest {
 
     private fun ComposeUiTest.openComprendre(dependencies: AppDependencies, width: Int, height: Int) {
         setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(dependencies) } }
-        if (width < 600) {
-            // Phone: the sections are in the menu.
-            onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
-            waitForIdle()
-        }
-        onNodeWithText("Comprendre").performClick()
-        waitForIdle()
+        // The menu in seven rubrics (D-240): « Accueil de Comprendre », under its rubric.
+        openSpace(Space.COMPRENDRE)
         if (width < 600) {
             // Let the menu finish closing, otherwise its scrim swallows the next click.
             mainClock.advanceTimeBy(2_000)
@@ -63,7 +62,7 @@ class ComprendreScreenTest {
         val dependencies = dependencies()
         openComprendre(dependencies, width = 1000, height = 740)
         waitForGuides()
-        assertEquals(26, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "fiche-pratique").size)
+        assertEquals(34, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "fiche-pratique").size)
         onNodeWithTag(ContentTags.GUIDE_CARD + "droits-en-manifestation").assertExists()
         onNodeWithTag(ContentTags.GUIDE_CARD + "filmer-les-forces-de-l-ordre").assertExists()
         onNodeWithText("Hors ligne", substring = true).assertExists()
@@ -103,5 +102,26 @@ class ComprendreScreenTest {
         }
         assertEquals(0, dependencies.contentStore!!.count())
         onNodeWithTag(ContentTags.GUIDE_CARD + "garde-a-vue").assertDoesNotExist()
+    }
+
+    /** « Je veux comprendre… » and the search narrow the home to the matching contents, offline. */
+    @Test
+    fun themesAndSearchNarrowTheHome() = runComposeUiTest {
+        val dependencies = dependencies()
+        openComprendre(dependencies, width = 1000, height = 740)
+        waitForGuides()
+        onNodeWithTag(ComprendreTags.RESULTS).assertDoesNotExist()
+
+        onNodeWithTag(ComprendreTags.THEME + ComprendreTheme.WORK.key).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(ComprendreTags.RESULTS).assertExists()
+        onNodeWithTag(ContentTags.GUIDE_CARD + "licenciement-et-prud-hommes").assertExists()
+        onNodeWithTag(ContentTags.GUIDE_CARD + "garde-a-vue").assertDoesNotExist()
+
+        onNodeWithTag(ComprendreTags.THEME + "tout").performScrollTo().performClick()
+        onNodeWithTag(ComprendreTags.SEARCH).performScrollTo().performTextInput("referé")
+        waitForIdle()
+        onNodeWithTag(ContentTags.GUIDE_CARD + "contester-une-decision-de-l-administration").assertExists()
+        onNodeWithTag(ContentTags.GUIDE_CARD + "licenciement-et-prud-hommes").assertDoesNotExist()
     }
 }

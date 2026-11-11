@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
+import org.politisationpopulairefrancaise.ui.components.EventReminderToggle
 import org.politisationpopulairefrancaise.ui.components.ReportContentButton
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
@@ -256,6 +257,9 @@ internal fun MobilizationDetail(
             }
 
             if (!mobilization.isPast(now) && !mobilization.cancelled) {
+                // S-98: the day before and two hours before, on the device only.
+                Spacer(Modifier.height(12.dp))
+                EventReminderToggle(agenda.reminders, "agir:mobilisation:$address", mobilization.displayTitle, mobilization.start, now)
                 Spacer(Modifier.height(16.dp))
                 if (signer != null && account != null && names.counts(account)) {
                     // A verified organisation or PPF: "J'y serai" becomes the choice to show it publicly or not (D-044).

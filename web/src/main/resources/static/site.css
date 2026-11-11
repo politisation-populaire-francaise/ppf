@@ -114,50 +114,373 @@ button:focus-visible {
   z-index: 10;
 }
 
-.site-header {
+/* ------------------------------------------------------------------------------------------
+   Coquille du site, calquée sur l’application de bureau (D-215) : barre du haut, menu latéral en
+   accordéon, repliable en rail d’icônes ; sur téléphone, le menu s’ouvre par-dessus la page.
+   Sans script : une case à cocher (#nav-toggle) et des sélecteurs de frères. */
+
+.icon {
+  width: 20px;
+  height: 20px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.nav-toggle {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 30;
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  gap: 1rem;
-  padding: 0.75rem 1rem;
+  gap: 0.5rem;
+  min-height: 56px;
+  padding: 0.25rem 0.75rem;
   background: var(--surface-0);
   border-bottom: 1px solid var(--border);
 }
 
-.site-title {
-  font-weight: 700;
+.menu-button,
+.top-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 0.5rem;
+  border-radius: var(--radius-md);
+  color: var(--ink-muted);
   text-decoration: none;
+  cursor: pointer;
+}
+
+.menu-button:hover,
+.top-icon:hover {
+  background: var(--surface-1);
+  color: var(--ink);
+}
+
+.nav-toggle:focus-visible ~ .topbar .menu-button {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.menu-button-label,
+.top-icon-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+.top-icon[aria-current="page"] {
   color: var(--brand);
+  background: var(--brand-tint);
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+  min-height: 44px;
+  color: var(--brand);
+  text-decoration: none;
   line-height: 1.15;
 }
 
-.site-header nav ul {
+.brand-logo {
+  width: 36px;
+  height: 36px;
+  flex: none;
+  border-radius: 50%;
+  background: #ffffff;
+}
+
+.brand-name {
+  font-size: 0.95rem;
+}
+
+.top-actions {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.25rem 0.25rem;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: auto;
+}
+
+/* Le bouton AIDE, rouge et à plat comme dans l’application (D-181). */
+.help-button {
+  display: inline-flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0 1rem;
+  border-radius: var(--radius-md);
+  background: var(--accent);
+  color: #ffffff;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+}
+
+.help-button:hover {
+  background: var(--accent-ink);
+}
+
+@media (prefers-color-scheme: dark) {
+  .help-button {
+    background: #c8213a;
+  }
+  .help-button:hover {
+    background: #9e1b2b;
+  }
+}
+
+.shell {
+  display: flex;
+  align-items: flex-start;
+  min-height: calc(100vh - 56px);
+}
+
+.sidenav {
+  flex: none;
+  display: flex;
+  flex-direction: column;
+  width: 17rem;
+  padding: 1rem 0.75rem;
+  background: var(--surface-0);
+  border-right: 1px solid var(--border);
+}
+
+.nav-list {
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.site-header nav a {
-  display: inline-block;
-  min-height: 44px;
-  padding: 0.6rem 0.75rem;
-  border-radius: var(--radius-md);
-  color: var(--ink-muted);
-  text-decoration: none;
+.nav-list > li + li {
+  margin-top: 4px;
 }
 
-.site-header nav a[aria-current="page"] {
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 44px;
+  padding: 0 0.75rem;
+  border-radius: var(--radius-md);
+  color: var(--ink-muted);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.nav-link:hover {
+  background: var(--surface-1);
+  color: var(--ink);
+}
+
+.nav-link[aria-current="page"],
+.nav-link.is-current {
   color: var(--brand);
   background: var(--brand-tint);
 }
 
+.nav-label {
+  flex: 1;
+}
+
+summary.nav-link {
+  list-style: none;
+}
+
+summary.nav-link::-webkit-details-marker {
+  display: none;
+}
+
+summary.nav-link:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+
+.chevron {
+  width: 18px;
+  height: 18px;
+  transition: transform 0.15s ease;
+}
+
+.nav-group[open] > summary .chevron {
+  transform: rotate(180deg);
+}
+
+.nav-sub {
+  margin: 4px 0 8px;
+  padding: 0 0 0 1.5rem;
+  list-style: none;
+}
+
+.nav-sub a {
+  display: flex;
+  align-items: center;
+  min-height: 40px;
+  padding: 0.25rem 0.75rem 0.25rem 1rem;
+  border-left: 2px solid var(--border);
+  color: var(--ink-muted);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.nav-sub a:hover {
+  color: var(--ink);
+  border-left-color: var(--border-strong);
+}
+
+.nav-sub a[aria-current="page"] {
+  color: var(--brand);
+  font-weight: 700;
+  border-left-color: var(--brand);
+}
+
+/* Le lien direct d’un pilier ne sert que dans le rail d’icônes. */
+.nav-rail-link {
+  display: none;
+}
+
+.nav-divider {
+  height: 1px;
+  margin: 0.75rem;
+  background: var(--border);
+}
+
+.nav-disclaimer {
+  margin: auto 0.75rem 0;
+  padding-top: 1.5rem;
+  color: var(--ink-subtle);
+  font-size: 0.8125rem;
+}
+
+.nav-backdrop {
+  display: none;
+}
+
+.page {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100vh - 56px);
+}
+
 main {
-  max-width: 44rem;
+  flex: 1;
+  width: 100%;
+  max-width: 48rem;
   margin: 0 auto;
   padding: 1.5rem 1rem 3rem;
+}
+
+/* Ordinateur et tablette : le menu reste à côté du contenu, la case le replie en rail d’icônes. */
+@media (min-width: 60rem) {
+  .sidenav {
+    position: sticky;
+    top: 56px;
+    height: calc(100vh - 56px);
+    overflow-y: auto;
+  }
+  .brand-name {
+    font-size: 1.05rem;
+  }
+  .nav-toggle:checked ~ .shell .sidenav {
+    width: 4.5rem;
+    padding: 1rem 0.5rem;
+  }
+  .nav-toggle:checked ~ .shell .nav-group,
+  .nav-toggle:checked ~ .shell .nav-disclaimer {
+    display: none;
+  }
+  .nav-toggle:checked ~ .shell .nav-rail-link {
+    display: flex;
+  }
+  .nav-toggle:checked ~ .shell .nav-link {
+    justify-content: center;
+    padding: 0;
+  }
+  .nav-toggle:checked ~ .shell .nav-label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .nav-toggle:checked ~ .shell .nav-divider {
+    margin: 0.75rem 0.25rem;
+  }
+}
+
+/* Téléphone : le menu est caché, la case l’ouvre par-dessus la page. */
+@media (max-width: 59.99rem) {
+  .sidenav {
+    position: fixed;
+    top: 56px;
+    bottom: 0;
+    left: 0;
+    z-index: 25;
+    width: min(20rem, 85vw);
+    overflow-y: auto;
+    visibility: hidden;
+    transform: translateX(-100%);
+    transition: transform 0.2s ease, visibility 0.2s;
+  }
+  .nav-toggle:checked ~ .shell .sidenav {
+    visibility: visible;
+    transform: none;
+    box-shadow: 0 8px 24px rgba(20, 24, 43, 0.25);
+  }
+  .nav-toggle:checked ~ .shell .nav-backdrop {
+    display: block;
+    position: fixed;
+    inset: 56px 0 0 0;
+    z-index: 20;
+    background: rgba(15, 18, 32, 0.45);
+  }
+}
+
+@media (max-width: 30rem) {
+  .brand-name {
+    font-size: 0.8125rem;
+  }
+  .help-button {
+    padding: 0 0.75rem;
+  }
+  .top-icon {
+    min-width: 40px;
+    padding: 0 0.25rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sidenav,
+  .chevron {
+    transition: none;
+  }
 }
 
 main > section,
@@ -182,21 +505,155 @@ h2 {
   color: var(--brand);
 }
 
+/* Pied de page en colonnes. */
 .site-footer {
-  padding: 1rem;
+  padding: 2rem 1rem 1.5rem;
   border-top: 1px solid var(--border);
   color: var(--ink-subtle);
   font-size: 0.875rem;
   background: var(--surface-0);
 }
 
+.footer-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(11rem, 1fr));
+  gap: 1.5rem 2rem;
+  max-width: 64rem;
+  margin: 0 auto;
+}
+
+.footer-column h2 {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink);
+}
+
+.footer-column ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.footer-column a {
+  display: inline-block;
+  padding: 0.3rem 0;
+  color: var(--ink-muted);
+  font-weight: 400;
+}
+
+.footer-column a:hover {
+  color: var(--brand);
+}
+
+.footer-bottom {
+  max-width: 64rem;
+  margin: 1.5rem auto 0;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.footer-bottom p {
+  margin: 0.25rem 0;
+}
+
 @media (min-width: 48rem) {
-  .site-header {
-    padding: 1rem 2rem;
-  }
   h1 {
     font-size: 2.25rem;
   }
+  main {
+    padding: 2rem 2rem 3rem;
+  }
+}
+
+/* Pages de la coquille : En direct, AIDE, pages renvoyant vers l’application. */
+.card-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.card-list > li {
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.card-list > li:first-child {
+  border-top: 0;
+}
+
+.section-more {
+  margin: 0.75rem 0 0;
+}
+
+.app-only {
+  display: inline-block;
+  margin: 0.25rem 0 0;
+  padding: 0.125rem 0.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--brand-tint);
+  color: var(--brand);
+  font-size: 0.8125rem;
+  font-weight: 700;
+}
+
+.numbers {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.numbers li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.75rem;
+  padding: 0.5rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.numbers li:first-child {
+  border-top: 0;
+}
+
+.number {
+  min-width: 6.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.number a {
+  text-decoration: none;
+}
+
+.vital {
+  border-color: var(--accent);
+}
+
+.agenda-event.compact {
+  padding: 0.75rem 0;
+  border-top: 1px solid var(--border);
+}
+
+.agenda-event.compact h3 {
+  margin: 0 0 0.375rem;
+  font-size: 1.0625rem;
+}
+
+.agenda-event.compact dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 0.125rem 0.75rem;
+  margin: 0;
+}
+
+.agenda-event.compact dt {
+  color: var(--ink-subtle);
+}
+
+.agenda-event.compact dd {
+  margin: 0;
 }
 
 /* ------------------------------------------------------------------------------------------
@@ -926,7 +1383,7 @@ a.gloss:hover {
 }
 
 @media print {
-  .site-header,
+  .topbar,
   .site-footer,
   .skip-link,
   .breadcrumb,
@@ -1035,8 +1492,8 @@ a.gloss:hover {
     color: #000000;
     background: #ffffff;
   }
-  .site-header,
-  .site-header nav,
+  .topbar,
+  .sidenav, .nav-backdrop, .nav-toggle,
   .site-footer,
   .skip-link {
     display: none;

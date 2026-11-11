@@ -19,6 +19,15 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.agir.calls.SlotApi
+import org.politisationpopulairefrancaise.core.agir.calls.SlotClient
+import org.politisationpopulairefrancaise.core.agir.calls.SlotCounts
+import org.politisationpopulairefrancaise.core.agir.calls.SlotEnvelopes
+import org.politisationpopulairefrancaise.core.agir.calls.SlotOutcome
+import org.politisationpopulairefrancaise.core.agir.calls.SlotRemoval
+import org.politisationpopulairefrancaise.core.agir.calls.SlotSignupAnswer
+import org.politisationpopulairefrancaise.core.agir.calls.SlotSignupRequest
+import org.politisationpopulairefrancaise.core.agir.calls.SlotWithdrawal
 import org.politisationpopulairefrancaise.core.contact.CaseApi
 import org.politisationpopulairefrancaise.core.contact.CaseCreation
 import org.politisationpopulairefrancaise.core.contact.CaseSender
@@ -33,7 +42,10 @@ import org.politisationpopulairefrancaise.core.identity.NoticeCheck
 import org.politisationpopulairefrancaise.core.revendications.ProposalState
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatusSource
 import org.politisationpopulairefrancaise.core.revendications.ProposalStatuses
+import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.core.urne.Nip98
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentFormat
 import org.politisationpopulairefrancaise.core.territoires.TerritoiresReader
 
@@ -48,7 +60,7 @@ class ServerPublicationPort(
     internal val client: HttpClient,
     /** Origin of the server, without trailing slash, e.g. "https://politisation-populaire-francaise.org". */
     internal val baseUrl: String,
-) : RemoteEvents, ProposalStatusSource, HeldStatusSource, CompromisedRefusals, CaseSender {
+) : RemoteEvents, ProposalStatusSource, HeldStatusSource, CompromisedRefusals, CaseSender, SlotClient {
 
     private val refused = MutableStateFlow<Set<String>>(emptySet())
     override val refusedAsCompromised: StateFlow<Set<String>> get() = refused
@@ -69,6 +81,66 @@ class ServerPublicationPort(
             in 200..299 -> ReportOutcome.Sent(creation.number)
             in 500..599 -> ReportOutcome.Unreachable
             else -> ReportOutcome.Refused(runCatching { json.decodeFromString(ApiErrorBody.serializer(), response.bodyAsText()).error }.getOrNull())
+        }
+    }
+
+    /** `GET /api/v1/agir/slots?call=` (AP-11): the places taken in each slot; null without an answer. */
+    override suspend fun counts(call: String): Map<String, Int>? = try {
+        val response = client.get("$baseUrl${SlotApi.SLOTS}") { parameter("call", call) }
+        if (response.status.value == 200) SlotApi.json.decodeFromString(SlotCounts.serializer(), response.bodyAsText()).slots else null
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        null
+    }
+
+    /** `POST /api/v1/agir/slots` (AP-11): a signup, encrypted for the organizer. */
+    override suspend fun signUp(request: SlotSignupRequest): SlotOutcome = slotPost(SlotApi.SLOTS, SlotApi.json.encodeToString(SlotSignupRequest.serializer(), request)) { body ->
+        val answer = SlotApi.json.decodeFromString(SlotSignupAnswer.serializer(), body)
+        SlotOutcome.Done(answer.id, answer.taken)
+    }
+
+    /** `POST /api/v1/agir/slots/withdraw` (AP-11). */
+    override suspend fun withdraw(withdrawal: SlotWithdrawal): SlotOutcome =
+        slotPost(SlotApi.WITHDRAW, SlotApi.json.encodeToString(SlotWithdrawal.serializer(), withdrawal)) { SlotOutcome.Done(withdrawal.id, 0) }
+
+    /** `GET /api/v1/agir/slots/signups?call=` (AP-11): the envelopes, for the organizer. */
+    override suspend fun signups(call: String): List<SignedEvent>? = try {
+        val response = client.get("$baseUrl${SlotApi.SIGNUPS}") { parameter("call", call) }
+        if (response.status.value == 200) SlotApi.json.decodeFromString(SlotEnvelopes.serializer(), response.bodyAsText()).envelopes else null
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        null
+    }
+
+    /** `POST /api/v1/agir/slots/remove` (AP-11): the organizer removes a signup, signed by the key of the call (NIP-98). */
+    override suspend fun remove(id: String, organizer: EventSigner): SlotOutcome {
+        val body = SlotApi.json.encodeToString(SlotRemoval.serializer(), SlotRemoval(id))
+        val authorization = Nip98.authorization(organizer, "$baseUrl${SlotApi.REMOVE}", "POST", body.encodeToByteArray(), currentEpochSeconds())
+        return slotPost(SlotApi.REMOVE, body, authorization) { SlotOutcome.Done(id, 0) }
+    }
+
+    private suspend fun slotPost(path: String, body: String, authorization: String? = null, done: (String) -> SlotOutcome): SlotOutcome {
+        val response = try {
+            client.post("$baseUrl$path") {
+                contentType(ContentType.Application.Json)
+                authorization?.let { header(HttpHeaders.Authorization, it) }
+                setBody(body)
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return SlotOutcome.Unreachable
+        }
+        val text = response.bodyAsText()
+        return when (response.status.value) {
+            in 200..299 -> runCatching { done(text) }.getOrElse { SlotOutcome.Unreachable }
+            in 500..599 -> SlotOutcome.Unreachable
+            else -> {
+                val code = runCatching { json.decodeFromString(ApiErrorBody.serializer(), text).error }.getOrNull()
+                if (code == "full") SlotOutcome.Full else SlotOutcome.Refused(code)
+            }
         }
     }
 

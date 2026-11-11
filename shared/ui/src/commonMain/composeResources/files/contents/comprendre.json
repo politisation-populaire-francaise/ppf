@@ -112,6 +112,64 @@
         "sig": "f0d13fee36fe059afe14597ac9f20fdf436a318f59b6a4980ac1726719736e8422dcc7f1490e896c502caad682b0cd5afdad9b4d7a9fd13c1d9465113241b3c6"
     },
     {
+        "id": "07ec425243e82515de6fa30500a41ac1a34cd698d75770c2e3d72a1057bab36e",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "conseil-constitutionnel-loi-deja-votee"
+            ],
+            [
+                "title",
+                "« Une fois une loi en vigueur, plus personne ne peut la faire annuler par le Conseil constitutionnel »"
+            ],
+            [
+                "summary",
+                "Faux depuis 2010 : pendant un procès, une partie peut contester une loi déjà en vigueur par une question prioritaire de constitutionnalité, et le Conseil constitutionnel peut l’abroger."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "decryptage"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "institutions"
+            ],
+            [
+                "t",
+                "justice"
+            ],
+            [
+                "t",
+                "droits"
+            ],
+            [
+                "ppf-verdict",
+                "contredit-par-les-faits"
+            ],
+            [
+                "ppf-claim",
+                "Une fois une loi en vigueur, plus personne ne peut la faire annuler par le Conseil constitutionnel."
+            ],
+            [
+                "ppf-claim-context",
+                "Idée répandue, formulée ici par la rédaction"
+            ]
+        ],
+        "content": "::: en-bref\n- Depuis le **1er mars 2010**, une loi déjà en vigueur peut être contestée devant le Conseil constitutionnel par une **question prioritaire de constitutionnalité** (QPC).\n- Il faut être **partie à un procès** : la question est posée devant le juge de ce procès, puis filtrée par le Conseil d’État ou la Cour de cassation.\n- Si le Conseil constitutionnel juge la disposition contraire à la Constitution, elle est **abrogée**, à la date qu’il fixe.\n- Ce que l’affirmation a de juste : un citoyen ne peut pas saisir **directement** le Conseil constitutionnel, en dehors d’un procès.\n:::\n\n## Ce que dit l’affirmation\n\nL’affirmation soutient qu’après sa promulgation, une loi ne peut plus être contrôlée par le Conseil constitutionnel : seul le contrôle avant promulgation, demandé par des responsables politiques, existerait.\n\n## Ce que disent les textes\n\nAvant sa promulgation, une loi peut être soumise au Conseil constitutionnel par le président de la République, le Premier ministre, le président de l’une des deux assemblées, ou 60 députés ou 60 sénateurs (Constitution, article 61).\n\nDepuis la révision constitutionnelle du 23 juillet 2008, entrée en vigueur sur ce point le 1er mars 2010, une loi déjà en vigueur peut aussi être contestée : lors d’un procès, une partie peut soutenir qu’une disposition législative porte atteinte aux droits et libertés que la Constitution garantit (Constitution, article 61-1). La question est posée dans un écrit séparé et motivé ; le juge du procès la transmet si elle remplit trois conditions, puis le Conseil d’État ou la Cour de cassation a trois mois pour l’envoyer au Conseil constitutionnel, qui a lui-même trois mois pour juger (ordonnance n° 58-1067, articles 23-1 à 23-10).\n\nUne disposition déclarée inconstitutionnelle sur ce fondement est abrogée à partir de la publication de la décision ou d’une date ultérieure fixée par celle-ci (Constitution, article 62). Exemple : le 30 juillet 2010, saisi de QPC, le Conseil a déclaré contraires à la Constitution les règles de la garde à vue de l’époque, à compter du 1er juillet 2011, ce qui a conduit le Parlement à les réécrire (décision n° 2010-14/22 QPC).\n\n## Pourquoi cette idée circule\n\nLa QPC est récente à l’échelle de la Constitution de 1958, et elle passe par un procès : on ne peut pas saisir le Conseil constitutionnel en ligne, ni en dehors d’un litige. Beaucoup de personnes en concluent que la porte est fermée.\n\n::: objections\n? « Il faut être juriste et avoir un procès : ce n’est pas accessible aux citoyens. »\n> Il faut bien être partie à un procès, et un avocat est souvent utile. Mais une association, un syndicat ou une personne qui conteste une décision devant un tribunal peut soulever la question à cette occasion (Constitution, article 61-1).\n? « Le Conseil constitutionnel peut annuler une loi parce qu’elle est injuste. »\n> Non : il juge seulement si elle respecte la Constitution ; il n’a pas un pouvoir général d’appréciation identique à celui du Parlement (décision n° 74-54 DC du 15 janvier 1975).\n:::\n\n::: et-maintenant\n- [Proposer une revendication pour changer une loi](ppf:revendications)\n- [Suivre le parcours « Le Conseil constitutionnel » dans Comprendre](ppf:comprendre)\n- Pour une loi qui vous touche dans un procès en cours, parlez de la QPC à votre avocat.\n:::\n\n## Sources\n\n- Constitution du 4 octobre 1958, texte intégral en vigueur (articles 61, 61-1 et 62), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur\n- Ordonnance n° 58-1067 du 7 novembre 1958 portant loi organique sur le Conseil constitutionnel, article 23-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450780\n- Même ordonnance, article 23-4, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450772\n- Même ordonnance, article 23-10, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000021450758\n- Conseil constitutionnel, décision n° 2010-14/22 QPC du 30 juillet 2010 (garde à vue), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/2010/201014_22QPC.htm\n- Conseil constitutionnel, décision n° 74-54 DC du 15 janvier 1975, consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/decision/1975/7454DC.htm\n- Conseil d’État, « La question prioritaire de constitutionnalité devant la juridiction administrative », consulté le 2026-11-11 : https://www.conseil-etat.fr/decisions-de-justice/jurisprudence/dossiers-thematiques/la-question-prioritaire-de-constitutionnalite-devant-la-juridiction-administrative\n",
+        "sig": "1c8babb9da7b053d18a05281398b8a779742e4c697d8dd643e4ba8823850fe286d1309b033a3a3e95ade9c14f6e348defbabcb65f1d6a06609344b3b6b7f727d"
+    },
+    {
         "id": "ce9724fa074f64b439e5f71c2add355811d93a30be9e00d7093987686c6460b8",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1794225600,
@@ -969,6 +1027,52 @@
         "sig": "fe0080e40b83f0652c91f4b38f5372ffe2d479b26ea919617f83df2668a9238b453ac3e3dd6bc18bc9125f792b37f3131a27df4822acab1a252500f1b0bd227d"
     },
     {
+        "id": "1173274c270a33ed3730deacfc542c88f9dfbba200eebfe6baf2f6ff69bae334",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "prix-de-l-electricite"
+            ],
+            [
+                "title",
+                "Le prix de l’électricité : qui décide ?"
+            ],
+            [
+                "summary",
+                "Qui fixe le tarif réglementé d’EDF, ce qui compose votre facture, la hausse de 2,5 % du 1er août 2026, la fin de l’Arenh et ce que peuvent changer le Parlement et l’Union européenne."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "qui-decide"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "energie"
+            ],
+            [
+                "t",
+                "vie-chere"
+            ],
+            [
+                "t",
+                "institutions"
+            ]
+        ],
+        "content": "::: decideurs\n- etat | ministre, depute, senateur | Les ministres chargés de l’énergie et de l’économie décident des tarifs réglementés de vente d’électricité, sur proposition de la Commission de régulation de l’énergie (CRE), autorité administrative indépendante ; l’État est aussi l’actionnaire unique d’EDF. Le Parlement vote les taxes sur l’électricité (accise, TVA) dans la loi de finances et les grandes règles du marché, comme le dispositif qui remplace l’Arenh depuis le 1er janvier 2026.\n- union-europeenne | eurodepute, ministre | L’Union européenne fixe les règles du marché intérieur de l’électricité ; les ministres des États membres et le Parlement européen les adoptent ensemble.\n:::\n\n::: en-bref\n- Beaucoup de foyers ont le **tarif réglementé** (le « tarif bleu » d’EDF) ; les autres ont une offre de marché, dont le prix est souvent indexé sur ce tarif.\n- Ce tarif est **proposé par la CRE** et **décidé par le gouvernement**. Il couvre trois parts : l’**électricité** elle-même, les **réseaux** (le TURPE) et les **taxes**.\n- Au **1er août 2026**, il a augmenté en moyenne de **2,5 %** TTC, soit environ 26 € de plus par an pour un foyer type, surtout à cause de la hausse du coût des réseaux.\n- Depuis le **1er janvier 2026**, l’Arenh, qui obligeait EDF à vendre une partie de son électricité nucléaire à prix fixe à ses concurrents, est **terminé**.\n:::\n\n## Qui fixe le tarif réglementé\n\nLa Commission de régulation de l’énergie calcule et propose les tarifs réglementés de vente d’électricité (TRVE) à partir des coûts : approvisionnement en électricité, acheminement par les réseaux, commercialisation ; le gouvernement décide. Le 15 juillet 2026, la CRE a proposé une hausse moyenne de 2,5 % TTC au 1er août 2026 pour les particuliers et les petites entreprises, principalement liée à la hausse du tarif d’utilisation des réseaux publics (TURPE), et le gouvernement l’a suivie (CRE, délibération n° 2026-147 ; Connaissance des énergies, dépêche AFP du 16 juillet 2026).\n\n## Ce qui compose votre facture\n\n- **L’énergie** : le coût de production ou d’achat de l’électricité.\n- **Les réseaux** : le TURPE, fixé par la CRE, paie l’entretien et le développement des lignes (Enedis, RTE).\n- **Les taxes** : l’accise sur l’électricité et la TVA, votées par le Parlement.\n\n## La fin de l’Arenh\n\nDe 2011 à fin 2025, l’accès régulé à l’électricité nucléaire historique (Arenh) obligeait EDF à vendre une partie de sa production nucléaire à ses concurrents à un prix fixe. Il a pris fin le 31 décembre 2025. Il est remplacé par un mécanisme qui prélève une partie des revenus d’EDF quand les prix de marché dépassent certains seuils, pour les redistribuer aux consommateurs (Autorité de la concurrence, avis n° 25-A-16 ; fonctionnement détaillé à revérifier sur l’avis). Les effets réels sur les factures sont débattus : le gouvernement annonçait des factures stables, des comparateurs prévoient des hausses.\n\n::: objections\n? « EDF fixe ses prix comme il veut. »\n> Non : pour le tarif réglementé, c’est la CRE qui propose et le gouvernement qui décide. EDF fixe librement ses offres de marché, comme ses concurrents.\n? « Le prix de l’électricité dépend surtout du prix du gaz. »\n> En partie : sur le marché européen, le prix de gros dépend souvent de la dernière centrale appelée, parfois au gaz. Mais la facture d’un foyer comprend aussi les réseaux et les taxes, qui n’en dépendent pas.\n? « La hausse d’août 2026 vient de la production nucléaire. »\n> Non : selon la CRE, elle vient principalement de la hausse du coût des réseaux (TURPE).\n:::\n\n::: et-maintenant\n- [Voir et voter les revendications sur la vie chère et l’énergie](ppf:revendications)\n- [Interpeller votre député sur les taxes et le prix de l’électricité](ppf:decider)\n- Comparer les offres sur le comparateur public du médiateur national de l’énergie : https://comparateur-offres.energie-info.fr/\n:::\n\n## Sources\n\n- Commission de régulation de l’énergie, délibération n° 2026-147 du 15 juillet 2026 portant proposition des tarifs réglementés de vente d’électricité, consultée le 2026-11-11 : https://www.cre.fr/fileadmin/Documents/Deliberations/2026/260715_2026-147_TRVE.pdf\n- Connaissance des énergies (AFP), « Électricité : le gouvernement suit l’avis du régulateur d’une hausse de 2,5 % des tarifs réglementés », consulté le 2026-11-11 : https://www.connaissancedesenergies.org/afp/electricite-le-gouvernement-suit-lavis-du-regulateur-cre-dune-hausse-de-25-des-tarifs-reglementes-260716\n- Autorité de la concurrence, avis n° 25-A-16, consulté le 2026-11-11 : https://www.autoritedelaconcurrence.fr/sites/default/files/integral_texts/2026-02/25a16.pdf\n- Médiateur national de l’énergie, comparateur d’offres : https://comparateur-offres.energie-info.fr/\n",
+        "sig": "b8a530d3509167ef7c5afd4bcca7f12558ef3c58a68dbf0d93c133b5b0b52d75319a48b3c06650ea67afc33fbe2fe95b889f3f7a382091c73c58b7a2c7f23d2f"
+    },
+    {
         "id": "1198e4a1fbf32ca0da3020294125f05500938fabe158c608da4f056406f5d5c6",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1794225600,
@@ -1013,6 +1117,98 @@
         ],
         "content": "::: decideurs\n- region | elu-local | Seules les régions d'outre-mer fixent les tarifs de l'accise sur le gazole et l'essence, sous un plafond national (code des impositions sur les biens et services, article L312-38).\n- etat | ministre, depute, senateur | Le Parlement vote les tarifs de l'accise sur les énergies et le taux de la TVA, et le Gouvernement ne peut encadrer les prix qu'en cas de crise (code des impositions sur les biens et services, article L312-35 ; code de commerce, article L410-2).\n- union-europeenne | ministre, eurodepute | Les ministres des États membres, après consultation du Parlement européen, fixent à l'unanimité les niveaux minimaux de taxation des carburants (directive 2003/96/CE, article 4).\n:::\n\n::: en-bref\n- Le **prix à la pompe** n'est pas fixé par l'État : il est **libre** et dépend du marché, sauf mesures exceptionnelles.\n- Les **taxes** sur les carburants (l'**accise sur les énergies** et la **TVA**) sont fixées par la **loi**, votée par le **Parlement**.\n- L'**Union européenne** impose des **niveaux minimaux** de taxation que la France doit respecter.\n- En métropole, les **régions** ne peuvent plus majorer cette taxe depuis le **1er août 2025** ; les communes et les départements n'ont aucun pouvoir sur elle.\n:::\n\n## Le rôle de la région\n\nEn métropole, les régions pouvaient majorer l'accise sur le gazole et l'essence, dans une limite fixée par la loi. La loi de finances pour 2025 a supprimé cette possibilité au 1er août 2025 (code des impositions sur les biens et services, ou CIBS, ancien article L312-39) ; la majoration propre à l'Île-de-France a pris fin le 1er janvier 2026 (ancien article L312-40). Les régions reçoivent toujours une part de cette taxe, fixée par la loi (code général des collectivités territoriales, article L4331-2).\n\nDans les régions d'outre-mer, comme la Guadeloupe ou La Réunion, la collectivité fixe elle-même ces tarifs, sans dépasser les tarifs nationaux (CIBS, article L312-38 ; code général des collectivités territoriales, article L4434-2).\n\nLes communes et les départements ne peuvent ni créer ni moduler une taxe sur les carburants : le code ne prévoit aucune modulation à leur profit (CIBS, articles L312-38 à L312-41). Seule la loi peut autoriser une collectivité à fixer le taux d'un impôt (Constitution, article 72-2).\n\n## Le rôle de l'État\n\nLe Parlement fixe le taux des impôts et vote les lois de finances (Constitution, articles 34 et 47). Les tarifs de l'accise sur les énergies sont écrits dans la loi ; le tableau des tarifs des carburants a été modifié en dernier lieu par la loi de finances pour 2026, en vigueur sur ce point depuis le 1er mars 2026 (CIBS, article L312-35). La loi prévoit aussi des tarifs particuliers, par exemple un tarif réduit en Corse (article L312-41).\n\nLa TVA est calculée sur un prix qui comprend déjà l'accise (code général des impôts, article 267). Son taux normal, qui s'applique sauf texte contraire, est de 20 % (article 278). Ces règles passeront dans le CIBS le 1er janvier 2027 (ordonnance n° 2025-1247 du 17 décembre 2025).\n\nL'État ne fixe pas le prix à la pompe : sauf exception prévue par la loi, il résulte de la concurrence. Le Gouvernement peut seulement, par décret en Conseil d'État, prendre des mesures temporaires contre des hausses ou des baisses excessives de prix en cas de crise, de circonstances exceptionnelles ou de situation anormale du marché, pour six mois au plus (code de commerce, article L410-2). En Guadeloupe, en Guyane et en Martinique, le préfet fixe des prix maximaux (code de l'énergie, article R671-1).\n\n## Le rôle de l'Union européenne\n\nLes règles sur les accises et la TVA sont adoptées à l'unanimité par le Conseil, où siègent les ministres des États membres, après consultation du Parlement européen (traité sur le fonctionnement de l'Union européenne, article 113).\n\nLa directive 2003/96/CE fixe des niveaux minimaux de taxation hors TVA : depuis 2010, 359 euros pour 1 000 litres d'essence sans plomb et 330 euros pour 1 000 litres de gazole (article 4 et annexe I). La directive 2006/112/CE impose un taux normal de TVA d'au moins 15 % (article 97). Chaque État peut taxer davantage.\n\n::: objections\n? « Si l'essence est chère, c'est que l'État fixe son prix. »\n> En métropole, l'État fixe les taxes mais pas le prix final, qui résulte de la concurrence ; il ne peut l'encadrer que temporairement, en cas de crise (code de commerce, article L410-2).\n? « Ma région pourrait baisser la taxe sur le carburant. »\n> En métropole, non : les régions pouvaient seulement majorer l'accise, et cette possibilité a été supprimée en 2025 (CIBS, ancien article L312-39).\n? « La France pourrait supprimer toute taxe sur les carburants. »\n> Pas avec les règles européennes actuelles : elle doit appliquer au moins les niveaux minimaux de la directive 2003/96/CE (article 4).\n:::\n\n::: et-maintenant\n- [Proposer ou soutenir une revendication](ppf:revendications)\n- Écrire à votre député ou à vos sénateurs, qui votent la loi de finances : liste des députés (https://www.assemblee-nationale.fr/dyn/vos-deputes) et des sénateurs par département (https://www.senat.fr/senateurs/sencir.html).\n- Contacter les députés européens élus en France, consultés sur la fiscalité de l'énergie (https://www.europarl.europa.eu/meps/fr/search/advanced?countryCode=FR).\n:::\n\n## Sources\n\n- Constitution du 4 octobre 1958, articles 34, 47 et 72-2 (texte publié par le Conseil constitutionnel), consulté le 2026-11-09 : https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur\n- Code des impositions sur les biens et services, article L312-35, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053562477\n- Code des impositions sur les biens et services, articles L312-38 à L312-41 (modulations géographiques, dont les articles L312-39 et L312-40 abrogés par la loi n° 2025-127 du 14 février 2025, article 20), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000044595989/LEGISCTA000044598429/\n- Loi n° 2026-103 du 19 février 2026 de finances pour 2026 : https://www.legifrance.gouv.fr/jorf/id/JORFTEXT000053508155\n- Code général des collectivités territoriales, article L4331-2, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000053562972\n- Code général des collectivités territoriales, article L4434-2, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000044872294\n- Code général des impôts, article 267, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000042910064\n- Code général des impôts, article 278, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000026950057\n- BOFiP, « Dispositions transitoires liées à l'entrée en vigueur de l'ordonnance codifiant la taxe sur la valeur ajoutée dans le code des impositions sur les biens et services » (BOI-RES-TVA-000253, 7 octobre 2026), consulté le 2026-11-09 : https://bofip.impots.gouv.fr/bofip/14901-PGP.html/identifiant=BOI-RES-TVA-000253-20261007\n- Code de commerce, article L410-2, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000019798129\n- Code de l'énergie, article R671-1, consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000031749963\n- Traité sur le fonctionnement de l'Union européenne, article 113 : https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:12016E113\n- Directive 2003/96/CE du Conseil du 27 octobre 2003 (taxation des produits énergétiques et de l'électricité) : https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:32003L0096\n- Commission européenne, « Droits d'accise sur l'énergie » (niveaux minimaux de taxation), consulté le 2026-11-09 : https://taxation-customs.ec.europa.eu/taxation-1/excise-duties/excise-duty-energy_fr\n- Directive 2006/112/CE du Conseil du 28 novembre 2006 (système commun de TVA), version consolidée au 1er janvier 2025 : https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:02006L0112-20250101\n- Commission européenne, « Taux de TVA » (taux normal d'au moins 15 %), consulté le 2026-11-09 : https://taxation-customs.ec.europa.eu/taxation/vat/vat-directive/vat-rates_fr\n",
         "sig": "c4bbc5a28a9573f2d2ec53f63e7ada7542a6ae2499c43d537cf948043798193a5195890bbac803903d5571b7c83dc1e11f115ccbf79447e77598fc3ec75abf9b"
+    },
+    {
+        "id": "1276c3aa2aad90f52c0374b89942b292fee317a708ddffe22d73520195210556",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "qui-controle-la-police"
+            ],
+            [
+                "title",
+                "Qui contrôle la police et la gendarmerie ?"
+            ],
+            [
+                "summary",
+                "L’IGPN et l’IGGN, le procureur et les juges, le Défenseur des droits, le Parlement : qui peut enquêter sur un policier ou un gendarme, qui sanctionne, et les critiques sur leur indépendance."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "qui-decide"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "police"
+            ],
+            [
+                "t",
+                "justice"
+            ],
+            [
+                "t",
+                "droits"
+            ]
+        ],
+        "content": "::: decideurs\n- etat | ministre, autre, depute, senateur | Le ministre de l’Intérieur dirige la police et la gendarmerie ; l’IGPN et l’IGGN, les « polices des polices », sont des services placés sous son autorité, et les sanctions disciplinaires sont décidées par la hiérarchie (code de la sécurité intérieure, articles L411-1 et L421-2 ; décret n° 2013-784 du 28 août 2013). Le procureur de la République dirige les enquêtes sur les infractions commises par des policiers ou des gendarmes, comme pour tout le monde ; il décide des poursuites, et le tribunal juge (code de procédure pénale, articles 12 et 40-1). Le Défenseur des droits, autorité indépendante, veille à la déontologie des forces de sécurité (loi organique n° 2011-333, article 4). Le Parlement vote les lois sur la police, contrôle le gouvernement et peut créer des commissions d’enquête.\n:::\n\n::: en-bref\n- Un policier ou un gendarme peut faire l’objet de **deux procédures** différentes : une **pénale** (s’il a commis une infraction) et une **disciplinaire** (s’il a manqué à ses devoirs).\n- La procédure pénale est dirigée par le **procureur** ou un **juge**. Ils confient souvent l’enquête à l’**IGPN** (police) ou à l’**IGGN** (gendarmerie).\n- La procédure disciplinaire est décidée par la **hiérarchie**, au ministère de l’Intérieur.\n- Le **Défenseur des droits** est indépendant du ministère : tout le monde peut le saisir, gratuitement.\n- L’indépendance de l’IGPN et de l’IGGN est **critiquée** par des avocats, des magistrats et des parlementaires, parce qu’elles dépendent du même ministère que les agents contrôlés.\n:::\n\n## Les « polices des polices » : IGPN et IGGN\n\nL’Inspection générale de la police nationale (IGPN) et l’Inspection générale de la gendarmerie nationale (IGGN) sont des services d’enquête internes. L’IGPN, réorganisée par le décret n° 2013-784 du 28 août 2013, enquête à la demande des **autorités judiciaires** (procureur, juge d’instruction) ou des **autorités administratives** (ministre de l’Intérieur, directeur général de la police nationale, préfet de police), selon les réponses du gouvernement aux questions écrites des députés (Assemblée nationale, 17e législature).\n\n- Dans une **enquête judiciaire**, l’IGPN agit sous la direction d’un magistrat, qui décide seul des suites : poursuites ou classement.\n- Dans une **enquête administrative**, elle peut proposer une **sanction** à la hiérarchie de l’agent ; c’est l’administration qui décide.\n\nToute personne peut **signaler** en ligne le comportement d’un policier à l’IGPN. Ce signalement **n’est pas une plainte** : il permet à l’IGPN d’être informée et, si nécessaire, de vérifier les faits. L’IGPN confirme par courriel la prise en compte, et vous avez trente jours pour compléter (service-public.gouv.fr, F2546 et R33718).\n\n## La justice\n\nUn policier ou un gendarme est soumis au code pénal comme tout le monde. Une **plainte** se dépose dans n’importe quel commissariat ou gendarmerie, qui doit l’enregistrer, ou par écrit au **procureur de la République** (voir la fiche « Après une blessure en manifestation »). Tout fonctionnaire qui apprend un crime ou un délit dans ses fonctions doit le signaler au procureur (code de procédure pénale, article 40).\n\n## Le Défenseur des droits\n\nIl est indépendant du gouvernement. Il peut être saisi gratuitement pour un manquement à la déontologie d’un policier, d’un gendarme, d’un policier municipal ou d’un agent de sécurité privée, et peut demander à l’autorité compétente d’engager des **poursuites disciplinaires** ; le saisir **ne suspend pas** les délais pour aller en justice (service-public.gouv.fr, F2546). Il ne peut ni sanctionner ni juger.\n\n## Le débat sur l’indépendance\n\nLes agents de l’IGPN sont des policiers, rattachés au ministère de l’Intérieur. Des magistrats, des avocats et le Conseil des barreaux européens estiment que ces inspections n’offrent pas l’apparence d’indépendance et d’impartialité exigée par la Cour européenne des droits de l’homme ; des députés ont interrogé le gouvernement en 2025 sur une réforme (Assemblée nationale, questions écrites de la 17e législature). Les responsables de l’IGPN et de l’IGGN contestent toute « impunité » des forces de l’ordre (LCP). Confier ce contrôle à un organe extérieur à la police est une revendication possible, pas une règle actuelle en France.\n\n::: objections\n? « L’IGPN décide si un policier est poursuivi. »\n> Non : dans une enquête judiciaire, c’est le procureur qui décide des poursuites (code de procédure pénale, article 40-1) ; l’IGPN enquête pour lui. La sanction disciplinaire, elle, est décidée par la hiérarchie.\n? « Signaler à l’IGPN, c’est porter plainte. »\n> Non : le signalement n’est pas un dépôt de plainte (service-public.gouv.fr, F2546). Pour une infraction, il faut porter plainte, dans les délais de prescription.\n? « Le Défenseur des droits peut sanctionner un policier. »\n> Non : il peut recommander, demander des poursuites disciplinaires et présenter ses observations en justice, mais pas sanctionner (loi organique n° 2011-333).\n:::\n\n::: et-maintenant\n- [Proposer ou soutenir une revendication sur le contrôle de la police](ppf:revendications)\n- Signaler un comportement à l’IGPN : https://www.signalement-igpn.fsi.interieur.gouv.fr/\n- Saisir le Défenseur des droits : https://formulaire.defenseurdesdroits.fr/formulaire_saisine/\n- [Interpeller votre député ou vos sénateurs](ppf:decider)\n:::\n\n## Sources\n\n- Service-public.gouv.fr, « Litige avec les forces de l’ordre ou un organisme privé chargé de la sécurité » (F2546, vérifiée le 13 août 2026), consultée le 2026-11-11 : https://www.service-public.gouv.fr/particuliers/vosdroits/F2546\n- Service-public.gouv.fr, signalement à l’IGPN (R33718, vérifiée le 10 avril 2026), consultée le 2026-11-11 : https://www.service-public.gouv.fr/particuliers/vosdroits/R33718\n- Code de procédure pénale, articles 12 à 29-1 (police judiciaire), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006071154/LEGISCTA000006151872/\n- Loi organique n° 2011-333 du 29 mars 2011 relative au Défenseur des droits, consultée le 2026-11-09 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000023781167/\n- Code de la sécurité intérieure, articles L411-1 à L411-3 (police nationale), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000025503132/LEGISCTA000025505857/\n- Code de la sécurité intérieure, articles L421-1 et L421-2 (gendarmerie nationale), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000025503132/LEGISCTA000025505928/\n- Assemblée nationale, question écrite n° 8450 (17e législature), consultée le 2026-11-11 : https://questions.assemblee-nationale.fr/dyn/17/questions/QANR5L17QE8450.pdf\n- Assemblée nationale, question écrite n° 8683 (17e législature), consultée le 2026-11-11 : https://questions.assemblee-nationale.fr/dyn/17/questions/QANR5L17QE8683.pdf\n- LCP, « Les chefs de l’IGPN et de l’IGGN démentent toute “impunité” des forces de l’ordre », consulté le 2026-11-11 : https://lcp.fr/actualites/les-chefs-de-l-igpn-et-de-l-iggn-dementent-toute-impunite-des-forces-de-l-ordre-203801\n",
+        "sig": "7e17ed3fdde23d2c2ed0536989b34c1662fbc60cf4f15ce4d472a67d4c00d1ef93828befa68a00b4f05ab87be08ebfda00924f5916afb8ed6ce8a67eb7c5967d"
+    },
+    {
+        "id": "e724a0cfddc7601c518675ed2e5ede1cdeebed6ad6570486469f907c2486605c",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "qui-controle-les-medias"
+            ],
+            [
+                "title",
+                "Qui possède et qui contrôle les médias ?"
+            ],
+            [
+                "summary",
+                "Les règles qui limitent la concentration des télévisions, des radios et des journaux, le rôle de l’Arcom et du Parlement, et ce qu’a établi la commission d’enquête du Sénat sur la concentration des médias."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "qui-decide"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "medias"
+            ],
+            [
+                "t",
+                "democratie"
+            ],
+            [
+                "t",
+                "institutions"
+            ]
+        ],
+        "content": "::: decideurs\n- etat | depute, senateur, autre, president, ministre | Le Parlement fixe par la loi les règles de propriété et de concentration des médias (loi n° 86-1067 du 30 septembre 1986, articles 39 à 41-2) et peut enquêter, comme la commission d’enquête du Sénat de 2022. L’Arcom, autorité publique indépendante, attribue les fréquences de télévision et de radio, veille au pluralisme et contrôle les rachats de chaînes ; l’Autorité de la concurrence contrôle les concentrations d’entreprises. Le président de la République nomme le président de l’Arcom ; le gouvernement prépare les projets de loi sur les médias et fixe les aides à la presse.\n- union-europeenne | eurodepute | Le règlement européen sur la liberté des médias (2024) ajoute des règles de transparence sur la propriété des médias, appliquées en France par l’Arcom.\n:::\n\n::: en-bref\n- En France, des groupes privés possèdent la plupart des grandes chaînes de télévision, des radios et des journaux nationaux. Ce n’est pas interdit : la loi **limite** seulement certaines concentrations.\n- Exemple de limite : une même personne ne peut pas détenir plus de **49 %** du capital d’une chaîne nationale de télévision hertzienne dont l’audience dépasse **8 %** (loi du 30 septembre 1986, article 39).\n- L’**Arcom** attribue les fréquences et veille au pluralisme ; elle n’a pas de pouvoir sur la propriété de la presse écrite ni d’internet.\n- La commission d’enquête du Sénat a jugé en 2022 que ces règles, conçues en **1986**, sont dépassées par le numérique, et a fait **32 propositions**.\n:::\n\n## Ce que dit la loi\n\nLes règles anti-concentration datent de deux lois de 1986 : la loi du 1er août 1986 portant réforme du régime juridique de la presse, et la loi du 30 septembre 1986 relative à la liberté de communication. Leurs mécanismes n’ont pas changé dans leurs principes depuis (Assemblée nationale, rapports de la commission des affaires culturelles).\n\n- **Télévision** : nul ne peut détenir, directement ou indirectement, plus de 49 % du capital ou des droits de vote d’un service national de télévision diffusé par voie hertzienne terrestre dont l’audience moyenne dépasse 8 % (loi n° 86-1067, article 39, version en vigueur depuis le 27 octobre 2021 ; seuils à revérifier sur le texte intégral).\n- **Cumuls entre médias** : pour protéger le pluralisme, aucune autorisation nationale ne peut être délivrée à qui se trouverait dans plus de deux des situations prévues (télévision, radio, presse quotidienne d’information politique et générale) (articles 41-1 et 41-2).\n- **Presse écrite** : elle n’a pas besoin d’autorisation. La loi du 1er août 1986 limite la part de diffusion de la presse quotidienne d’information politique et générale qu’une même personne peut contrôler (seuil à revérifier sur Légifrance).\n\n## Qui contrôle\n\nL’**Arcom** (Autorité de régulation de la communication audiovisuelle et numérique) est une autorité publique indépendante. Son collège compte neuf membres : son président est nommé par le président de la République, et six membres sont désignés par les présidents de l’Assemblée nationale et du Sénat (Sénat, rapport n° 68, 2025-2026). Elle examine par exemple les demandes d’agrément quand une chaîne change de propriétaire, en application de l’article 42-3 de la loi de 1986, comme pour le rachat du groupe Altice Médias par le groupe CMA CGM en 2024 (Arcom, communiqué).\n\n## Ce qu’a établi le Sénat\n\nLa commission d’enquête du Sénat sur la concentration des médias a rendu son rapport le 29 mars 2022 (rapport n° 593, 2021-2022). Elle a entendu les principaux propriétaires de médias, dont Vincent Bolloré, Bernard Arnault, Arnaud Lagardère, Patrick Drahi, Xavier Niel et Martin Bouygues, et a formulé 32 propositions, par exemple un administrateur indépendant au conseil d’administration des groupes de médias, après avis de l’Arcom (Public Sénat ; Concurrences). Le rapport a été adopté après de fortes divisions entre sénateurs : une partie d’entre eux en contestait les conclusions (Public Sénat).\n\nDepuis, des propositions de loi ont été déposées pour remplacer les seuils par média par un seuil unique de « pouvoir d’influence », tous médias confondus (vie-publique.fr). Les règles de 1986 restent celles qui s’appliquent.\n\n::: objections\n? « La loi interdit à un milliardaire de posséder plusieurs médias. »\n> Non : la loi limite certaines situations (plus de 49 % d’une grande chaîne nationale, plus de deux situations de cumul au niveau national), mais elle n’interdit pas de posséder plusieurs titres ou chaînes (loi n° 86-1067, articles 39 et 41-1).\n? « L’Arcom contrôle tous les médias. »\n> Non : elle régule l’audiovisuel et certaines plateformes numériques ; la presse écrite n’a pas besoin d’autorisation et ne dépend pas d’elle.\n? « Le propriétaire décide de ce que publient les journalistes. »\n> Les rédactions ont des chartes et des droits (clause de conscience), mais le propriétaire nomme la direction. L’indépendance réelle d’une rédaction est au cœur du débat ouvert par la commission d’enquête du Sénat.\n:::\n\n::: et-maintenant\n- [Proposer ou soutenir une revendication sur le pluralisme des médias](ppf:revendications)\n- [Interpeller votre député ou vos sénateurs](ppf:decider)\n- Signaler un manquement d’une chaîne de télévision ou d’une radio à l’Arcom : https://www.arcom.fr/\n:::\n\n## Sources\n\n- Loi n° 86-1067 du 30 septembre 1986 relative à la liberté de communication, version en vigueur au 11 novembre 2026 (articles 39, 41, 41-1 et 41-2), consultée le 2026-11-11 : https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000512205/\n- Loi n° 86-1067, article 39 (version en vigueur depuis le 27 octobre 2021), consulté le 2026-11-11 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044260461\n- Loi n° 86-1067, article 41-1, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000044260455\n- Sénat, rapport n° 593 (2021-2022) de la commission d’enquête sur la concentration des médias en France, consulté le 2026-11-11 : https://www.senat.fr/rap/r21-593-1/r21-593-1_mono.html\n- Public Sénat, « Concentration des médias : le rapport du Sénat adopté dans la douleur », consulté le 2026-11-11 : https://www.publicsenat.fr/actualites/politique/concentration-des-medias-le-rapport-du-senat-adopte-dans-la-douleur-200645\n- Concurrences, « Médias : le Sénat adopte le rapport de la commission d’enquête sur la concentration », consulté le 2026-11-11 : https://www.concurrences.com/fr/review/numeros/no-3-2022/chroniques/concentrations/medias-le-senat-adopte-le-rapport-de-la-commission-d-enquete-sur-la\n- Sénat, rapport n° 68 (2025-2026), synthèse (composition de l’Arcom), consulté le 2026-11-11 : https://www.senat.fr/rap/r25-068/r25-068-syn.pdf\n- Arcom, communiqué sur la demande d’agrément de la prise de contrôle du groupe Altice Médias par le groupe CMA CGM (mai 2024), consulté le 2026-11-11 : https://arcom.fr/sites/default/files/2024-05/Communiqu%C3%A9%20Demande%20d%E2%80%99agr%C3%A9ment%20%C3%A0%20la%20prise%20de%20contr%C3%B4le%20exclusif%20du%20groupe%20Altice%20M%C3%A9dias%20par%20le%20groupe%20CMA-CGM%20-%20Publication%20de%20l%E2%80%99%C3%A9tude%20d%E2%80%99impact.pdf\n- Vie-publique.fr, « Concentration des médias en France : des règles à changer ? », consulté le 2026-11-11 : https://www.vie-publique.fr/en-bref/284734-concentration-des-medias-en-france-des-regles-changer\n",
+        "sig": "69a8f58b923dafb4cda3a1c1913f3d9c517a2fdfc16c94c3e75415a3a9d863fb152a93ebdd3c532c284c171c90982d44551310ac861f295282548e8481f0df7a"
     },
     {
         "id": "f6dba545e4a7188706e003ed6c8cb4933e099e48a1acc0ccaffe1bb5f3641696",

@@ -2,12 +2,15 @@ package org.politisationpopulairefrancaise.core.local
 
 import kotlinx.coroutines.test.runTest
 import org.politisationpopulairefrancaise.core.identity.IdentityKeys
+import org.politisationpopulairefrancaise.core.publication.PublicationResult
 import org.politisationpopulairefrancaise.core.signing.EventKinds
 import org.politisationpopulairefrancaise.core.signing.LocalEventSigner
 import org.politisationpopulairefrancaise.core.signing.sign
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
+import kotlin.time.Duration.Companion.seconds
+import kotlin.time.TestTimeSource
 
 class LocalEventStoreTest {
 
@@ -66,5 +69,36 @@ class LocalEventStoreTest {
         store.delete(received.id)
         assertNull(store.find(received.id))
         assertEquals(1, store.count())
+    }
+
+    @Test
+    fun aPublicationItsScreenIsSendingIsLeftToItForAWhile() = runTest {
+        val time = TestTimeSource()
+        val store = LocalEventStore(JvmDatabase.inMemory(), clock = { 1_700_000_000 }, sendingTime = time)
+        val sent = alice.sign(kind = EventKinds.TEXT_NOTE, content = "envoyé par l'écran", createdAt = 50)
+        val waiting = alice.sign(kind = EventKinds.TEXT_NOTE, content = "en attente", createdAt = 40)
+        store.storeSending(sent)
+        store.store(waiting, pending = true)
+        assertEquals(listOf(waiting, sent), store.pending())
+        // The synchronization leaves the one being sent to its screen ...
+        assertEquals(listOf(waiting), store.pendingToSend())
+        // ... and takes it once the screen had its chance (no network, for example).
+        time += LocalEventStore.SENDING_GRACE + 1.seconds
+        assertEquals(listOf(waiting, sent), store.pendingToSend())
+    }
+
+    @Test
+    fun aFailedAttemptHandsThePublicationBackToTheSynchronization() = runTest {
+        val event = alice.sign(kind = EventKinds.TEXT_NOTE, content = "hors ligne", createdAt = 50)
+        store.storeSending(event)
+        store.sending(event) { PublicationResult.Unavailable() }
+        assertEquals(listOf(event), store.pendingToSend())
+        // A success keeps it for the screen until it is marked published.
+        val other = alice.sign(kind = EventKinds.TEXT_NOTE, content = "en ligne", createdAt = 60)
+        store.storeSending(other)
+        store.sending(other) { PublicationResult.Accepted(other.id) }
+        assertEquals(listOf(event), store.pendingToSend())
+        store.markPublished(other.id)
+        assertEquals(listOf(event), store.pendingToSend())
     }
 }

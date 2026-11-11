@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.glossaire
 
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -249,7 +250,7 @@ class GlossaryUiTest {
         GlossaryFixtures.events.forEach { store.store(it) }
         val dependencies = AppDependencies(identityStore = InMemoryIdentityStore(), contentStore = store, editorialTrust = GlossaryFixtures.trust)
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
-        onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).performClick()
+        openSpace(Space.COMPRENDRE)
         waitForIdle()
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ComprendreTags.GLOSSARY_OPEN).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithText("Ouvrir le glossaire (4 mots)").assertExists()
@@ -272,7 +273,7 @@ class GlossaryUiTest {
         (GlossaryFixtures.events + GlossaryFixtures.guide).forEach { store.store(it) }
         val dependencies = AppDependencies(identityStore = InMemoryIdentityStore(), contentStore = store, editorialTrust = GlossaryFixtures.trust)
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
-        onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).performClick()
+        openSpace(Space.COMPRENDRE)
         waitForIdle()
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ContentTags.GUIDE_CARD + GlossaryFixtures.GUIDE_SLUG).fetchSemanticsNodes().isNotEmpty() }
         onNodeWithTag(ContentTags.GUIDE_CARD + GlossaryFixtures.GUIDE_SLUG).performScrollTo().performClick()

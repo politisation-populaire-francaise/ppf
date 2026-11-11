@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.voir
 
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
@@ -52,7 +54,7 @@ class VoirScreenshotTest {
             onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
             waitForIdle()
         }
-        onNodeWithText("Voir").performClick()
+        openSpace(Space.VOIR)
         settle()
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(VoirTags.card("manifestants-journees")).fetchSemanticsNodes().isNotEmpty() }
         settle()

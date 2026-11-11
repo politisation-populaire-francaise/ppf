@@ -164,12 +164,12 @@ class ScreenshotTest {
             onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
             waitForIdle()
             save("$prefix-menu")
-            onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).performClick()
+            openSpace(Space.COMPRENDRE)
             waitForIdle()
             mainClock.advanceTimeBy(2_000)
             waitForIdle()
         } else {
-            onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).performClick()
+            openSpace(Space.COMPRENDRE)
             waitForIdle()
         }
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ContentTags.GUIDE_CARD + "garde-a-vue").fetchSemanticsNodes().isNotEmpty() }

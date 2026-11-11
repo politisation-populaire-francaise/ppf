@@ -81,9 +81,9 @@ class DeliberationComposer(
                 is ContributionTarget.NewAmendment -> DeliberationDrafts.amendment(signer.publicKey, current.proposition, text, justification, now, identifier)
             }
             val event = signer.sign(unsigned)
-            withContext(Dispatchers.Default) { store.store(event, pending = true) }
+            withContext(Dispatchers.Default) { store.storeSending(event) }
             return finish(
-                when (val result = remote?.publish(event) ?: PublicationResult.Unavailable()) {
+                when (val result = store.sending(event) { remote?.publish(event) ?: PublicationResult.Unavailable() }) {
                     is PublicationResult.Accepted -> {
                         withContext(Dispatchers.Default) { store.markPublished(event.id) }
                         if (result.heldForReview) SendOutcome.SENT_FOR_REVIEW else SendOutcome.PUBLISHED

@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.comprendre.elus
 
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Text
@@ -81,7 +83,7 @@ class ElusUiTest {
             onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
             waitForIdle()
         }
-        onNodeWithText("Comprendre").performClick()
+        openSpace(Space.COMPRENDRE)
         waitForIdle()
         if (width < 600) {
             mainClock.advanceTimeBy(2_000)

@@ -18,7 +18,8 @@ import org.politisationpopulairefrancaise.core.Space
 fun ComposeUiTest.openSpace(space: Space) {
     val tag = ShellTags.navItem(space)
     val onScreen = runCatching { onNodeWithTag(tag).assertIsDisplayed() }.isSuccess
-    if (!onScreen && onAllNodesWithTag(ShellTags.MENU_BUTTON).fetchSemanticsNodes().isNotEmpty()) {
+    val menuShown = runCatching { onNodeWithTag(rubricTag(MenuRubric.INFORMER)).assertIsDisplayed() }.isSuccess
+    if (!onScreen && !menuShown && onAllNodesWithTag(ShellTags.MENU_BUTTON).fetchSemanticsNodes().isNotEmpty()) {
         onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
         waitForIdle()
     }

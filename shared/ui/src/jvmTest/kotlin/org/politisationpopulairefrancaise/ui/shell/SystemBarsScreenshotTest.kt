@@ -103,7 +103,7 @@ class SystemBarsScreenshotTest {
         settle()
         save(folder, "$prefix-menu")
         // The menu closes on its scrim; Agir is in the bottom bar (D-215).
-        onNodeWithTag(ShellTags.navItem(Space.DECIDER)).performClick()
+        openSpace(Space.DECIDER)
         settle()
         onNodeWithTag(ShellTags.navItem(Space.AGIR)).performClick()
         settle()

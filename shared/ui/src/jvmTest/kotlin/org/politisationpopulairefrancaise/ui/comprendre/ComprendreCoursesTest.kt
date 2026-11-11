@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.comprendre
 
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
@@ -68,7 +70,7 @@ class ComprendreCoursesTest {
             onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
             waitForIdle()
         }
-        onNodeWithText("Comprendre").performClick()
+        openSpace(Space.COMPRENDRE)
         waitForIdle()
         if (width < 600) {
             // Let the menu finish closing, otherwise its scrim swallows the next click.
@@ -91,6 +93,8 @@ class ComprendreCoursesTest {
                 "l-union-europeenne-qui-decide-quoi", "commune-departement-region", "se-presenter-a-une-election", "les-petitions-officielles",
                 // Laicite and fascism (CO-21, CO-22).
                 "la-laicite", "comprendre-le-fascisme",
+                // Unions and bargaining (MVP 1).
+                "syndicats-et-negociation",
                 // One lesson a day for newcomers (CO-19).
                 "je-decouvre",
             ),

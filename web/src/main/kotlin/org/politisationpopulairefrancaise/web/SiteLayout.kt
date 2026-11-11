@@ -1,13 +1,23 @@
 package org.politisationpopulairefrancaise.web
 
+import kotlinx.html.FlowContent
 import kotlinx.html.HTML
+import kotlinx.html.HTMLTag
+import kotlinx.html.InputType
+import kotlinx.html.LI
 import kotlinx.html.MAIN
 import kotlinx.html.a
 import kotlinx.html.body
+import kotlinx.html.details
+import kotlinx.html.div
 import kotlinx.html.footer
+import kotlinx.html.h2
 import kotlinx.html.head
 import kotlinx.html.header
 import kotlinx.html.id
+import kotlinx.html.img
+import kotlinx.html.input
+import kotlinx.html.label
 import kotlinx.html.lang
 import kotlinx.html.li
 import kotlinx.html.link
@@ -15,8 +25,11 @@ import kotlinx.html.main
 import kotlinx.html.meta
 import kotlinx.html.nav
 import kotlinx.html.p
+import kotlinx.html.span
+import kotlinx.html.summary
 import kotlinx.html.title
 import kotlinx.html.ul
+import kotlinx.html.unsafe
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.Space
 
@@ -41,9 +54,20 @@ internal const val SHARE_DESCRIPTION = "Voir, comprendre, agir, décider. Platef
 internal const val SHARE_IMAGE = "https://politisation-populaire-francaise.org/static/og-image-1200x630.png"
 internal const val SHARE_IMAGE_ALT = "Logo de Politisation Populaire Française : une Marianne coiffée du bonnet phrygien brandit le drapeau français au milieu d’une foule de citoyens et de musiciens."
 
+/** The disclaimer under the menu of the application, word for word. */
+internal const val NAV_DISCLAIMER = "Plateforme citoyenne indépendante, sans lien avec l’État ni le gouvernement."
+
+/** An icon of the site sprite (the Lucide icons of the application), decorative: the text beside it says what it is. */
+internal fun HTMLTag.icon(name: String, classes: String = "icon") {
+    unsafe { +"<svg class=\"$classes\" aria-hidden=\"true\" focusable=\"false\"><use href=\"/static/icons.svg#$name\"></use></svg>" }
+}
+
 /**
- * Common layout of every page: French, accessible landmarks, skip link,
- * self-hosted stylesheet, no script. The content is rendered inside <main>.
+ * Common layout of every page, built like the desktop application (D-215): a top bar with the logo,
+ * the red AIDE button, Messages and Mon espace; a side menu in the order of the application, each
+ * pillar opening its sub-sections in an accordion (`details`). The menu folds into a rail of icons
+ * to leave room to the content; on a phone it opens over the page. All of it without script (a
+ * check box and CSS), with the self-hosted stylesheet and icons only. The content goes in <main>.
  */
 fun HTML.siteLayout(pageTitle: String, currentSpace: Space? = null, content: MAIN.() -> Unit) {
     lang = "fr"
@@ -81,52 +105,142 @@ fun HTML.siteLayout(pageTitle: String, currentSpace: Space? = null, content: MAI
     }
     body {
         a(href = "#contenu", classes = "skip-link") { +"Aller au contenu" }
-        header(classes = "site-header") {
-            a(href = "/", classes = "site-title") { +AppInfo.NAME }
-            nav {
+        // The switch of the menu, before everything it acts on (CSS sibling selectors): on a phone it opens the
+        // menu over the page, on a wider screen it folds the menu into a rail of icons.
+        input(type = InputType.checkBox, classes = "nav-toggle") {
+            id = "nav-toggle"
+            attributes["aria-label"] = "Afficher ou réduire le menu"
+            attributes["aria-controls"] = "menu"
+        }
+        header(classes = "topbar") {
+            label(classes = "menu-button") {
+                htmlFor = "nav-toggle"
+                attributes["aria-hidden"] = "true"
+                icon("menu")
+                span(classes = "menu-button-label") { +"Menu" }
+            }
+            a(href = "/", classes = "brand") {
+                img(src = "/static/icon-192.png", alt = "", classes = "brand-logo") {
+                    attributes["width"] = "36"
+                    attributes["height"] = "36"
+                }
+                span(classes = "brand-name") { +AppInfo.NAME }
+            }
+            div(classes = "top-actions") {
+                a(href = SiteNavigation.HELP_PATH, classes = "help-button") {
+                    attributes["aria-label"] = "AIDE : urgence, avocat, numéros utiles"
+                    +"AIDE"
+                }
+                a(href = SEARCH_PATH, classes = "top-icon") {
+                    icon("search")
+                    span(classes = "top-icon-label") { +"Rechercher" }
+                }
+                topIcon(Space.MESSAGES, currentSpace)
+                topIcon(Space.MON_ESPACE, currentSpace)
+            }
+        }
+        div(classes = "shell") {
+            nav(classes = "sidenav") {
+                id = "menu"
                 attributes["aria-label"] = "Navigation principale"
-                ul {
-                    Space.primary.forEach { space ->
-                        li {
-                            a(href = "/${space.id}") {
-                                if (space == currentSpace) attributes["aria-current"] = "page"
-                                +spaceLabels.getValue(space)
-                            }
-                        }
-                    }
-                    li {
-                        a(href = "/${Space.MON_ESPACE.id}", classes = "nav-my-space") {
-                            if (currentSpace == Space.MON_ESPACE) attributes["aria-current"] = "page"
-                            +spaceLabels.getValue(Space.MON_ESPACE)
-                        }
+                ul(classes = "nav-list") { SiteNavigation.quick.forEach { li { navEntry(it, currentSpace) } } }
+                div(classes = "nav-divider") { attributes["role"] = "separator" }
+                ul(classes = "nav-list") { SiteNavigation.more.forEach { li { navEntry(it, currentSpace) } } }
+                p(classes = "nav-disclaimer") { +NAV_DISCLAIMER }
+            }
+            // On a phone, a tap beside the open menu closes it.
+            label(classes = "nav-backdrop") {
+                htmlFor = "nav-toggle"
+                attributes["aria-hidden"] = "true"
+            }
+            div(classes = "page") {
+                main {
+                    id = "contenu"
+                    content()
+                }
+                siteFooter()
+            }
+        }
+    }
+}
+
+private fun FlowContent.topIcon(space: Space, currentSpace: Space?) {
+    a(href = "/${space.id}", classes = "top-icon") {
+        if (space == currentSpace) attributes["aria-current"] = "page"
+        icon(SiteNavigation.iconOf(space))
+        span(classes = "top-icon-label") { +spaceLabels.getValue(space) }
+    }
+}
+
+private fun LI.navEntry(entry: NavEntry, currentSpace: Space?) {
+    val current = entry.space == currentSpace
+    if (entry.children.isEmpty()) {
+        a(href = entry.href, classes = "nav-link") {
+            if (current) attributes["aria-current"] = "page"
+            icon(entry.icon)
+            span(classes = "nav-label") { +entry.label }
+        }
+        return
+    }
+    // In the rail of icons, the pillar is a plain link to its page.
+    a(href = entry.href, classes = "nav-link nav-rail-link") {
+        if (current) attributes["aria-current"] = "page"
+        attributes["title"] = entry.label
+        icon(entry.icon)
+        span(classes = "nav-label") { +entry.label }
+    }
+    details(classes = "nav-group") {
+        if (current) attributes["open"] = "open"
+        summary(classes = "nav-link" + if (current) " is-current" else "") {
+            icon(entry.icon)
+            span(classes = "nav-label") { +entry.label }
+            icon("chevron-down", classes = "icon chevron")
+        }
+        ul(classes = "nav-sub") {
+            entry.children.forEachIndexed { index, child ->
+                li {
+                    a(href = child.href) {
+                        // The first link is the page of the space itself.
+                        if (current && index == 0) attributes["aria-current"] = "page"
+                        +child.label
                     }
                 }
             }
         }
-        main {
-            id = "contenu"
-            content()
+    }
+}
+
+private fun FlowContent.siteFooter() {
+    footer(classes = "site-footer") {
+        div(classes = "footer-columns") {
+            footerColumn("La plateforme", listOf(
+                NavLink("Recevoir de l’aide", SiteNavigation.HELP_PATH),
+                NavLink("Vérifier un contenu", "/verifier"),
+                NavLink("Données ouvertes", "/donnees"),
+                NavLink("Lire hors ligne", "/comprendre/hors-ligne"),
+            ))
+            footerColumn("PPF", listOf(
+                NavLink("Transparence de PPF", "/transparence"),
+                NavLink("Nos victoires", "/victoires"),
+                NavLink("Espace presse", "/presse"),
+                NavLink("Tableau de bord", "/tableau-de-bord"),
+            ))
+            footerColumn("Informations légales", LegalPages.ALL.map { NavLink(it.footerLabel, it.path) })
+            footerColumn("Sécurité", listOf(
+                NavLink("Signaler une faille de sécurité", "/securite"),
+                NavLink("Réutiliser nos contenus", "/donnees#licence"),
+            ))
         }
-        footer(classes = "site-footer") {
-            p { +"[EXEMPLE] Squelette de la phase 0. Aucun contenu réel. Version ${AppInfo.VERSION}." }
-            p { +"Aucun traceur, aucune ressource tierce : tout est hébergé par Politisation Populaire Française." }
-            p {
-                +"Textes et images de PPF : licence CC BY 4.0 ; données : Licence Ouverte 2.0. "
-                a(href = "/donnees#licence") { +"Réutiliser nos contenus" }
-            }
-            p { a(href = "/verifier") { +"Vérifier un contenu" } }
-            p { a(href = "/donnees") { +"Données ouvertes" } }
-            p { a(href = "/transparence") { +"Transparence de PPF" } }
-            p { a(href = "/victoires") { +"Nos victoires" } }
-            p { a(href = "/presse") { +"Espace presse" } }
-            p { a(href = "/tableau-de-bord") { +"Tableau de bord" } }
-            p { a(href = "/securite") { +"Signaler une faille de sécurité" } }
-            p {
-                LegalPages.ALL.forEachIndexed { index, page ->
-                    if (index > 0) +" · "
-                    a(href = page.path) { +page.footerLabel }
-                }
-            }
+        div(classes = "footer-bottom") {
+            p { +"$NAV_DISCLAIMER Aucun traceur, aucune ressource tierce : tout est hébergé par ${AppInfo.NAME}." }
+            p { +"Textes et images de PPF : licence CC BY 4.0 ; données : Licence Ouverte 2.0. Version ${AppInfo.VERSION}." }
         }
+    }
+}
+
+private fun FlowContent.footerColumn(title: String, links: List<NavLink>) {
+    div(classes = "footer-column") {
+        h2 { +title }
+        ul { links.forEach { link -> li { a(href = link.href) { +link.label } } } }
     }
 }

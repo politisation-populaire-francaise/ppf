@@ -52,7 +52,7 @@ class DeciderPagesTest {
         assertEquals(5, catalog.petitions.size)
         val html = render { deciderHomeDocument(catalog, today) }
         checkPage(html)
-        assertTrue(html.contains("<a href=\"/decider\" aria-current=\"page\">Décider</a>"))
+        assertTrue(html.contains("<a href=\"/decider\" aria-current=\"page\">Vue d’ensemble</a>"))
         assertTrue(html.contains("href=\"/decider/pacte/pacte-election-exemple\""))
         listOf("petition-an-ordre-public", "petition-cese-vie-chere", "petition-ice-energie", "petition-senat-indexation", "petition-senat-retraites")
             .forEach { assertTrue(html.contains("href=\"/decider/petitions/$it\""), it) }
@@ -132,6 +132,34 @@ class DeciderPagesTest {
         assertTrue(page.contains("Portée par :"))
         assertTrue(page.contains("href=\"https://www.cgt.fr/17-novembre\""), "the sources are links")
         assertTrue(page.contains("dans l’application PPF"))
+    }
+
+    /** MVP 1: every entry of Décider in the side menu leads to a section that always exists, and each item to its page. */
+    @Test
+    fun everyEntryOfTheMenuLeadsToARealPage() {
+        val home = render { deciderHomeDocument(catalog, today) }
+        checkPage(home)
+        for (id in listOf("pacte", "deliberation", "petitions-ouvertes", "comparateur", "calendrier", "consultations", "courriers")) {
+            assertTrue(home.contains("id=\"$id\""), id)
+        }
+        assertTrue(home.contains("n’est pas encore ouverte"), "the deliberation says when nothing is open")
+        catalog.comparators.forEach { sheet ->
+            assertTrue(home.contains("href=\"${DeciderMoreLinks.comparator(sheet)}\""))
+            checkPage(render { comparatorDocument(catalog.grid(sheet, VoirCatalog.EMPTY)) })
+        }
+        catalog.elections.forEach { election ->
+            assertTrue(home.contains("href=\"${DeciderMoreLinks.election(election)}\""))
+            checkPage(render { electionDocument(election) }.also { assertTrue(it.contains("dans l’application PPF")) })
+        }
+        catalog.consultations.forEach { consultation ->
+            assertTrue(home.contains("href=\"${DeciderMoreLinks.consultation(consultation)}\""))
+            checkPage(render { consultationDocument(consultation, today) })
+        }
+        catalog.letters.forEach { letter ->
+            assertTrue(home.contains("href=\"${DeciderMoreLinks.letter(letter)}\""))
+            checkPage(render { letterDocument(letter) }.also { assertTrue(it.contains("PPF n’envoie rien")) })
+        }
+        assertTrue(catalog.elections.isNotEmpty() && catalog.letters.isNotEmpty() && catalog.consultations.isNotEmpty(), "the real contents of Décider are read")
     }
 
     @Test
