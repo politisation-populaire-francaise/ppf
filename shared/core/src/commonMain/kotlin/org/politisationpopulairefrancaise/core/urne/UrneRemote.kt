@@ -143,8 +143,13 @@ class HttpUrneRemote(
         authenticated.get("$baseUrl/api/v1/urnes/$number/journal")
     }
 
+    // The published list of a closed box goes by the anonymous client too (DE-29): asking for it to look for
+    // one's own ballot must never travel on the connection that carried the account.
     override suspend fun closing(number: Long): UrneAnswer<UrneClosing> = call(UrneClosing.serializer()) {
-        authenticated.get("$baseUrl/api/v1/urnes/$number/closing")
+        anonymous.get("$baseUrl/api/v1/urnes/$number/closing") {
+            header(HttpHeaders.Connection, "close")
+            header(HttpHeaders.UserAgent, GENERIC_AGENT)
+        }
     }
 
     private suspend fun <T> call(serializer: kotlinx.serialization.KSerializer<T>, request: suspend () -> HttpResponse): UrneAnswer<T> {

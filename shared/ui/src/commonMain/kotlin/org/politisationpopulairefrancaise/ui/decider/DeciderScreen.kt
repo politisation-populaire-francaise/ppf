@@ -24,7 +24,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateMapOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -37,6 +42,8 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.decider.DeciderCatalog
+import org.politisationpopulairefrancaise.core.decider.DocumentRequestStore
+import org.politisationpopulairefrancaise.core.decider.LetterNoteStore
 import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
@@ -53,6 +60,15 @@ import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
+import org.politisationpopulairefrancaise.ui.resources.decider_consultations_section
+import org.politisationpopulairefrancaise.ui.resources.decider_letters_section
+import org.politisationpopulairefrancaise.ui.resources.decider_local_section
+import org.politisationpopulairefrancaise.ui.resources.decider_local_section_intro
+import org.politisationpopulairefrancaise.ui.resources.decider_letters_section_intro
+import org.politisationpopulairefrancaise.ui.resources.decider_documents_open
+import org.politisationpopulairefrancaise.ui.resources.decider_documents_section
+import org.politisationpopulairefrancaise.ui.resources.decider_documents_section_intro
+import org.politisationpopulairefrancaise.ui.resources.decider_consultations_section_intro
 import org.politisationpopulairefrancaise.ui.resources.decider_elections_section
 import org.politisationpopulairefrancaise.ui.resources.decider_elections_section_intro
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
@@ -61,6 +77,7 @@ import org.politisationpopulairefrancaise.ui.voir.SectionHeader
 import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.rememberVoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.withoutExample
+import org.politisationpopulairefrancaise.ui.resources.deliberation_section
 
 /**
  * "Décider" (vision, pillar 4: reprendre le pouvoir). This first version gathers what the law
@@ -84,7 +101,12 @@ fun DeciderScreen(
     now: () -> Long = ::currentEpochSeconds,
     /** For the past votes of the comparator (history packages of "Voir") and their reports; null in previews. */
     dependencies: AppDependencies? = null,
+    /** The reminders of the elections (DE-28), kept on the device; null where there is none (previews). */
+    reminders: DeciderRemindersState? = null,
+    /** The account's signer, to propose and amend in a deliberation; null without an account. */
+    signer: org.politisationpopulairefrancaise.core.signing.EventSigner? = null,
 ) {
+    val deliberationComposer = remember(dependencies) { dependencies?.let { DeliberationComposer(it.contentStore, it.remote) } }
     val pastVotes = dependencies?.let { rememberPastVotesState(it) }
     val reports = dependencies?.let { rememberVoirRequestSession(it, messaging = null) }
     val photos = dependencies?.let { rememberComparatorPhotosState(it) }
@@ -122,9 +144,9 @@ fun DeciderScreen(
         Box(Modifier.fillMaxSize().testTag(DeciderTags.SCREEN)) {
             val current = state.current
             if (current == null) {
-                DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate)
+                DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate, territories = rememberDeviceTerritories(dependencies), demands = library.revendications.size, deliberations = library.deliberations, nowSeconds = now())
             } else {
-                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos) }
+                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos, reminders = reminders, dependencies = dependencies, deliberations = library.deliberations, deliberationComposer = deliberationComposer, signer = signer) }
             }
         }
     }
@@ -140,19 +162,51 @@ private fun DeciderHome(
     compact: Boolean,
     columns: Int,
     onNavigate: (Space) -> Unit,
+    /** The commune chosen on the device and its department: the local elections, consultations and petitions. */
+    territories: Set<String> = emptySet(),
+    /** The number of demands on the wall, for the highlight « Revendications ». */
+    demands: Int = 0,
+    /** The citizen deliberations (DE-25), shown with the pact they prepare. */
+    deliberations: List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = emptyList(),
+    nowSeconds: Long = 0,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(padding)) {
+    val scroll = rememberScrollState()
+    // Where the flagship sections start in the page, to bring one into view (highlights, "En direct").
+    val sectionTops = remember { mutableStateMapOf<DeciderHighlight, Int>() }
+    val requested = state.sectionToShow
+    val requestedTop = requested?.let { sectionTops[it] }
+    LaunchedEffect(requested, requestedTop) {
+        if (requested != null && requestedTop != null) {
+            scroll.animateScrollTo(requestedTop)
+            state.sectionToShow = null
+        }
+    }
+    val pacteToOpen = catalog.currentPacte() ?: catalog.pactes.firstOrNull()
+    Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(padding)) {
         PageHeader(stringResource(Res.string.space_decider), if (compact) null else stringResource(Res.string.desc_decider))
         Spacer(Modifier.height(8.dp))
         Text(stringResource(Res.string.decider_intro), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+        // MVP 1 (jalon 3): the three flagship tools first, one touch each.
+        Spacer(Modifier.height(16.dp))
+        DeciderHighlights(
+            figures = DeciderHighlightFigures.of(demands, catalog, today),
+            onOpen = { highlight ->
+                when (highlight) {
+                    DeciderHighlight.REVENDICATIONS -> onNavigate(Space.REVENDICATIONS)
+                    DeciderHighlight.PETITIONS -> state.sectionToShow = DeciderHighlight.PETITIONS
+                    DeciderHighlight.PACTE -> pacteToOpen?.let { state.open(DeciderDestination.Pacte(it.address)) }
+                }
+            },
+            modifier = Modifier.widthIn(max = 760.dp),
+        )
         FollowedStrip(catalog, state)
         if (catalog.isEmpty && status != LibraryStatus.Loading) {
             Spacer(Modifier.height(16.dp))
             Text(stringResource(Res.string.decider_empty), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted)
         }
-        val elections = catalog.upcomingElections(today)
+        val elections = catalog.upcomingElections(today, territories)
         if (elections.isNotEmpty()) {
             Spacer(Modifier.height(24.dp))
             Column(Modifier.testTag(DeciderTags.section("elections"))) {
@@ -177,6 +231,17 @@ private fun DeciderHome(
                 }
             }
         }
+        // The citizen deliberation on the measures of the pact (DE-25, MVP 1): propose, amend, vote.
+        if (deliberations.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.widthIn(max = 760.dp).testTag(DeciderTags.section("deliberation"))) {
+                SectionHeader(stringResource(Res.string.deliberation_section))
+                deliberations.forEach { board ->
+                    Spacer(Modifier.height(8.dp))
+                    DeliberationCard(board, nowSeconds, onOpen = { state.open(DeciderDestination.Deliberation(board.address)) })
+                }
+            }
+        }
         catalog.currentComparator()?.let { sheet ->
             Spacer(Modifier.height(24.dp))
             Column(Modifier.testTag(DeciderTags.section("comparateur"))) {
@@ -189,7 +254,7 @@ private fun DeciderHome(
         Spacer(Modifier.height(24.dp))
         val open = catalog.openPetitions(today)
         val closed = catalog.closedPetitions(today)
-        Column(Modifier.testTag(DeciderTags.section("petitions"))) {
+        Column(Modifier.onGloballyPositioned { sectionTops[DeciderHighlight.PETITIONS] = it.positionInParent().y.toInt() }.testTag(DeciderTags.section("petitions"))) {
             SectionHeader(
                 stringResource(Res.string.decider_petitions_section_count, open.size),
                 action = stringResource(Res.string.decider_thresholds_link),
@@ -208,6 +273,52 @@ private fun DeciderHome(
                     modifier = Modifier.testTag(DeciderTags.CLOSED_OPEN),
                 )
             }
+        }
+        // The official consultations (DE-27): open ones first, then those to come; the local ones later, by the commune.
+        val consultations = catalog.currentConsultations(today, territories)
+        if (consultations.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.testTag(DeciderTags.section("consultations"))) {
+                SectionHeader(stringResource(Res.string.decider_consultations_section))
+                Text(stringResource(Res.string.decider_consultations_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+                consultations.forEach { consultation ->
+                    Spacer(Modifier.height(12.dp))
+                    ConsultationCard(consultation, today, onOpen = { state.open(DeciderDestination.Consultation(consultation.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+                }
+            }
+        }
+        // The local petitions (DE-26), for the commune chosen on the device and its department only.
+        val localPetitions = catalog.localPetitionsFor(territories)
+        if (localPetitions.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.testTag(DeciderTags.section("petitions-locales"))) {
+                SectionHeader(stringResource(Res.string.decider_local_section))
+                Text(stringResource(Res.string.decider_local_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+                localPetitions.forEach { petition ->
+                    Spacer(Modifier.height(12.dp))
+                    LocalPetitionCard(petition, onOpen = { state.open(DeciderDestination.LocalPetition(petition.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+                }
+            }
+        }
+        // The model letters to one's elected officials (DE-09): filled in on the device, sent by the person.
+        if (catalog.letters.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.testTag(DeciderTags.section("courriers"))) {
+                SectionHeader(stringResource(Res.string.decider_letters_section))
+                Text(stringResource(Res.string.decider_letters_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+                catalog.letters.forEach { letter ->
+                    Spacer(Modifier.height(12.dp))
+                    LetterCard(letter, onOpen = { state.open(DeciderDestination.Letter(letter.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+                }
+            }
+        }
+        // Asking for an administrative document (DE-31): written on the device, sent by the person, deadlines counted here.
+        Spacer(Modifier.height(24.dp))
+        Column(Modifier.widthIn(max = 760.dp).testTag(DeciderTags.section("documents"))) {
+            SectionHeader(stringResource(Res.string.decider_documents_section))
+            Text(stringResource(Res.string.decider_documents_section_intro), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+            Spacer(Modifier.height(8.dp))
+            LinkRow(stringResource(Res.string.decider_documents_open), Lucide.ScrollText, onClick = { state.open(DeciderDestination.Documents) }, modifier = Modifier.testTag(DeciderTags.link("documents")))
         }
         Spacer(Modifier.height(24.dp))
         Column(Modifier.widthIn(max = 760.dp).testTag(DeciderTags.section("more"))) {
@@ -273,6 +384,11 @@ private fun DeciderDetail(
     pastVotes: PastVotesState?,
     reports: VoirRequestSession?,
     photos: ComparatorPhotosState?,
+    reminders: DeciderRemindersState?,
+    dependencies: AppDependencies?,
+    deliberations: List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = emptyList(),
+    deliberationComposer: DeliberationComposer? = null,
+    signer: org.politisationpopulairefrancaise.core.signing.EventSigner? = null,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -297,6 +413,9 @@ private fun DeciderDetail(
                             wide = wide,
                         )
                     } ?: Missing()
+                    is DeciderDestination.Deliberation -> deliberations.firstOrNull { it.address == current.address }?.let { board ->
+                        DeliberationPage(board, nowSeconds, deliberationComposer, signer)
+                    } ?: Missing()
                     is DeciderDestination.Pacte -> catalog.pacte(current.address)?.let { pacte ->
                         PactePage(catalog.board(pacte, voir, today), state, actions, wide)
                     } ?: Missing()
@@ -311,8 +430,22 @@ private fun DeciderDetail(
                         )
                     } ?: Missing()
                     is DeciderDestination.Election -> catalog.elections.firstOrNull { it.address == current.address }?.let { election ->
-                        ElectionPage(election, today)
+                        ElectionPage(election, today, reminders)
                     } ?: Missing()
+                    is DeciderDestination.Consultation -> catalog.consultation(current.address)?.let { consultation ->
+                        ConsultationPage(consultation, today, actions, reminders)
+                    } ?: Missing()
+                    is DeciderDestination.LocalPetition -> catalog.localPetition(current.address)?.let { petition ->
+                        LocalPetitionPage(petition, actions)
+                    } ?: Missing()
+                    is DeciderDestination.Letter -> catalog.letter(current.address)?.let { letter ->
+                        LetterPage(letter, rememberDeviceElus(dependencies), today, actions, notes = dependencies?.database?.let { remember(it) { LetterNoteStore(it) } })
+                    } ?: Missing()
+                    DeciderDestination.Documents -> DocumentRequestPage(
+                        store = dependencies?.database?.let { remember(it) { DocumentRequestStore(it) } },
+                        reminders = reminders,
+                        today = today,
+                    )
                     is DeciderDestination.PastVotes -> {
                         val sheet = catalog.comparators.firstOrNull { it.address == current.sheet }
                         if (sheet == null || pastVotes == null) {

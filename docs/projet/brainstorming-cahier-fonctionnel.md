@@ -6,6 +6,61 @@ Statuts possibles : Idée, Question, À étudier, À valider, Intégré le [date
 
 ---
 
+### [2026-11-09] DE-30 Questions citoyennes aux candidats : qui propose, quelle sélection, quand, comment répondre
+- Statut : À valider
+- Concerne : cahier-fonctionnel.md (M13.7, DE-30 ; DE-16, DE-25) ; cahier-des-charges.md (section 9.2) ; conception `docs/integration/questions-aux-candidats.md`
+- Contexte : DE-30 ouvre en janvier 2027. Les règles de traitement identique sont fixées (mêmes questions, même jour, même délai, absence de réponse affichée, ordre alphabétique). Quatre choix restent avant de coder.
+- Options, avec la recommandation :
+  1. **Qui propose** : A, toute personne avec un compte, relecture par l'équipe sur la forme seulement (une question pour tous, qui ne vise aucun candidat), motif des refus publié (recommandé) ; B, questions issues d'une délibération (DE-25), plus lent ; C, présélection par l'équipe (écarté : ce serait l'équipe qui choisit).
+  2. **Sélection** : A, les dix questions les plus soutenues par les citoyens, deux au plus par thème, à égalité la plus ancienne (recommandé) ; B, la même règle avec les seuls bulletins vérifiés (plus robuste aux faux comptes, mais exclut les non vérifiés) ; C, sans limite par thème.
+  3. **Envoi et délai** : A, envoi le lundi 1er mars 2027, 21 jours pour répondre, le même délai pour un candidat ajouté plus tard (recommandé) ; B, envoi le jour de la liste officielle des candidats (délai très court avant le premier tour). Propositions du 4 au 24 janvier, vote du 25 janvier au 14 février 2027 ; calendrier recalé sur le décret de convocation.
+  4. **Réponse** : A, par écrit depuis l'adresse officielle de la campagne, 1 500 caractères au plus par question, publiée telle quelle avec sa date et la mention « réponse transmise par l'équipe de campagne », original archivé et horodaté (recommandé) ; B, signée depuis un compte certifié du candidat (demande une certification des candidats, comme DE-23) ; C, A puis B.
+- Coût : gratuit (serveur et urnes existants). Avocat avant l'ouverture des propositions (section 9.8), déjà prévu.
+- Décision : en attente (chef d'équipe, par délégation de la propriétaire).
+
+### [2026-11-09] Délégué à la protection des données avant l'ouverture publique
+- Statut : À valider (par la propriétaire elle-même : budget et juridique)
+- Concerne : cahier-des-charges.md (sections 5, 9.8 et 12) ; toute la plateforme (votes, soutiens, engagements, questionnaire M26) ; analyse `docs/integration/questionnaire-aipd.md` (section 7, point 4)
+- Contexte : le RGPD (article 37, paragraphe 1, c) impose de désigner un délégué à la protection des données quand l'activité de base consiste à traiter à grande échelle des catégories particulières de données (article 9 : les opinions politiques en font partie). PPF recueillera des votes, des soutiens, des engagements et, avec M26, des réponses sur le bord politique. L'analyse d'impact de M26 (9 novembre 2026) conclut que la désignation semble obligatoire avant l'ouverture publique.
+- Options à présenter à la propriétaire (aucune n'est engagée) :
+  - **A. Un délégué bénévole**, membre de l'association, formé (la CNIL propose une formation en ligne gratuite). Avantages : gratuit. Inconvénients : il doit être compétent et ses autres missions ne doivent pas entraîner de conflit d'intérêts (article 38, paragraphe 6) : ni la présidence ni la responsabilité technique, par exemple.
+  - **B. Un délégué partagé** avec d'autres associations, qui exerce ses missions sur la base d'un contrat de service (article 37, paragraphe 6). Coût : à chiffrer.
+  - **C. Un délégué externe** (cabinet ou avocat), lui aussi sous contrat de service. Coût : à chiffrer, probablement hors du budget de mise en route de 300 €.
+- Recommandation : faire confirmer l'obligation par l'avocat (déjà prévu avant l'ouverture, cahier des charges, section 9.8), puis A si un membre compétent et indépendant se présente, sinon chiffrer B et C.
+- Décision : en attente. Le chef d'équipe (9 novembre 2026, 8 h 45) : « question pour la propriétaire avant l'ouverture publique, à confirmer par l'avocat, aucune dépense ». Rien ne bloque le développement : la question doit être tranchée avant l'ouverture publique.
+
+### [2026-11-09] M26 : analyse d'impact du questionnaire citoyen, choix avant de coder
+- Statut : Décidé par le chef d'équipe (délégation) le 2026-11-09 pour les points 1, 2, 3 et 5 ; point 4 ouvert (entrée « Délégué à la protection des données » ci-dessus) ; rien à coder avant la relecture juridique de l'analyse
+- Concerne : cahier-fonctionnel.md (M26, PR-01 à PR-07 ; DE-21) ; cahier-des-charges.md (sections 5 et 9.8) ; analyse `docs/integration/questionnaire-aipd.md`
+- Contexte : le cahier demande une analyse d'impact avant le lancement de M26. Première version écrite le 9 novembre 2026. Elle relève que la liste anonyme des bulletins, publiée à la clôture pour le recomptage (D-110), réidentifierait des votants si les réponses du questionnaire y figuraient (département peu peuplé, âge, sexe, bord politique, vote).
+- Choix à valider, avec la recommandation :
+  1. **Réponses hors de la liste publiée, effacées après agrégation** (mesures M1 et M2). Option A (recommandée) : la liste publiée garde le vote et le recomptage, le serveur publie des répartitions signées puis efface les réponses bulletin par bulletin ; on recompte les votes, pas les réponses. Option B : réponses dans un bulletin séparé, sans lien avec le vote ; mais on perd ce que M26 veut montrer (qui soutient quoi). Option C : tout publier ; écartée (réidentification).
+  2. **Seuil *k* par case** (PR-04) : recommandé 20 ; une seule catégorie à la fois face au vote, jamais deux croisées.
+  3. **Département ou région** : recommandé, la région pour une question nationale, le département seulement pour une question départementale ou plus large si chaque case dépasse le seuil.
+  4. **Délégué à la protection des données** (RGPD, article 37, 1, c) : la désignation semble obligatoire avant l'ouverture publique (opinions politiques à grande échelle : votes, soutiens, questionnaire) ; à faire confirmer par l'avocat ; délégué bénévole, mutualisé ou externe (coût à chiffrer, aucune dépense engagée).
+  5. Libellés neutres des hauteurs du baromètre (point d'attention n° 9) et durée de la session (30 minutes proposées).
+- Décision du chef d'équipe, par délégation de la propriétaire (9 novembre 2026, 8 h 45), consignée sous D-150 :
+  1. oui : les réponses n'apparaissent jamais dans la liste publiée ; répartitions signées, puis effacement bulletin par bulletin ;
+  2. oui : une case n'est affichée qu'à partir de 20 personnes, une seule catégorie à la fois ;
+  3. oui : la région pour une question nationale ;
+  4. délégué à la protection des données : question pour la propriétaire avant l'ouverture publique, à confirmer par l'avocat, aucune dépense (entrée ci-dessus) ;
+  5. oui : mots neutres ; 30 minutes en mémoire au plus.
+  - « Rien à coder de M26 avant la relecture juridique de l'analyse. »
+
+### [2026-11-09] DE-09 « Interpeller ses élus » : le suivi public des réponses
+- Statut : Décidé par le chef d'équipe (délégation) le 2026-11-09, à intégrer au cahier fonctionnel
+- Concerne : cahier-fonctionnel.md (M13.1, DE-09 ; DE-23) ; conception `docs/integration/interpeller-ses-elus.md`
+- Contexte : DE-09 demande des « modèles de courrier à personnaliser » et un « suivi public des réponses reçues ou non, sans données personnelles au-delà du mandat public ». La première partie est faite le 9 novembre 2026 (modèles remplis sur l'appareil et envoyés par la personne elle-même ; PPF n'envoie rien et ne garde rien). La seconde dit publiquement, d'un élu nommé, s'il a répondu : elle demande une décision.
+- Options :
+  - **A. Pas de suivi public pour l'instant.** Chacun peut noter sur son appareil s'il a reçu une réponse (privé, effaçable). Avantages : aucun risque juridique, rien sur le serveur. Inconvénients : la pression collective sur les élus reste invisible. Coût : nul.
+  - **B. Un compteur anonyme et les réponses signées des élus (DE-23).** Après l'envoi, « J'ai envoyé ce courrier » ajoute 1 à un compteur public par élu et par modèle, sans compte ni lien avec la personne (preuve de travail auto-hébergée, limites de débit) ; la réponse n'est comptée que si l'élu la publie lui-même, signée, depuis un compte d'élu certifié (DE-23), avec le même affichage pour tous : « N citoyens disent lui avoir écrit ; réponse publique : oui (date) ou pas encore ». Avantages : rend visible la demande des citoyens sans exposer personne ; une seule source pour la réponse, l'élu lui-même. Inconvénients : un compteur déclaratif peut être gonflé (parade : preuve de travail, plafond par appareil et par jour, mention « déclaratif ») ; dire qu'un élu nommé n'a « pas encore » répondu relève de la méthode M17 et du droit de réponse ; relecture par un avocat avant la mise en ligne. Coût : gratuit (serveur existant).
+  - **C. Les citoyens publient la réponse reçue** (copie ou capture), relue par l'équipe. Avantages : montre les vraies réponses. Inconvénients : authenticité impossible à garantir, courrier privé de l'élu publié sans son accord, risque de diffamation, charge de relecture. Coût : temps de l'équipe.
+- Recommandation : **A maintenant, B avec DE-23** (après l'avis de l'avocat, en même temps que les réponses signées des élus) ; C écartée.
+- Décision du chef d'équipe, par délégation de la propriétaire (9 novembre 2026, 1 h 35 ; « transparence d'abord, pousser au maximum ce qu'un citoyen peut faire, avocats à la fin ») : **B comme cible, A tout de suite comme première étape, C écartée.**
+  - Maintenant (A) : chacun note en privé, sur son appareil, qu'il a écrit et s'il a reçu une réponse.
+  - Avec DE-23 (B, au même moment) : deux compteurs publics, « N citoyens disent lui avoir écrit » et « N disent avoir reçu une réponse » ; chaque déclaration passe par un jeton anonyme (une personne, une voix, comme les urnes), jamais reliée à un compte ; mention visible « déclaré par des citoyens, non vérifié » (méthode établi, allégué) ; même règle pour tous les élus, aucun classement ; affichage seulement à partir de 5 déclarations ; les réponses que l'élu publie lui-même depuis son compte certifié, avec son droit de réponse.
+  - Avocat : relecture avant l'ouverture publique, comme pour tout le reste (cahier des charges, section 9.8).
+
 ### [2026-11-08] Brainstorming de la nuit : fonctionnalités indispensables, innovantes et pertinentes
 - Statut : Intégré le 2026-11-08 (cahier fonctionnel 2.1, cahier des charges 2.2)
 - Concerne : cahier-fonctionnel.md (M1, M2, M4, M5, M6, M12, M13.1, M13.5 à M13.7, M14, M16 à M18, M20 à M25, M27, M29, M32 à M35, annexes B à D) ; cahier-des-charges.md (sections 3.2, 3.3, 3.4.2, 3.5, 3.8, 4.1, 5.1, 5.2, 5.7, 5.8, 5.11 à 5.13, 6 à 10, 12)

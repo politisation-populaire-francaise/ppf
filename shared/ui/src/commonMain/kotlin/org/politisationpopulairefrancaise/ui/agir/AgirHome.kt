@@ -88,6 +88,8 @@ import org.politisationpopulairefrancaise.ui.resources.agir_section_mobilize
 import org.politisationpopulairefrancaise.ui.resources.agir_section_protect
 import org.politisationpopulairefrancaise.ui.resources.gather_rubric_text
 import org.politisationpopulairefrancaise.ui.resources.greve_entry_text
+import org.politisationpopulairefrancaise.ui.resources.kits_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.kits_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.greve_entry_title
 import org.politisationpopulairefrancaise.ui.resources.harcelement_help_text
 import org.politisationpopulairefrancaise.ui.resources.harcelement_help_title
@@ -149,8 +151,11 @@ object AgirRubrics {
         AgirSection("se-proteger", Res.string.agir_section_protect, listOf(MANIFESTATION, HARASSMENT, TESTIFY)),
     )
 
-    /** What can be opened today: the cards of the sections, then the highlight of « S'engager en politique ». */
-    val available: List<AgirRubric> = sections.flatMap { it.rubrics } + ENGAGER
+    /** « Kits d'action citoyenne » (D-232): a card of its own under the highlight, above the sections. */
+    val KITS = AgirRubric("kits", Res.string.kits_rubric_title, Res.string.kits_rubric_text, Lucide.ListChecks)
+
+    /** What can be opened today: the kits, the cards of the sections, then the highlight of « S'engager en politique ». */
+    val available: List<AgirRubric> = listOf(KITS) + sections.flatMap { it.rubrics } + ENGAGER
 
     /** Planned but not ready: shown honestly, disabled, without any date. */
     val inPreparation: List<AgirRubric> = listOf(
@@ -205,6 +210,8 @@ internal fun AgirHome(
             TimerHomeBlock(onOpenOwn = { onOpen(AgirRubrics.MANIFESTATION) }, modifier = Modifier.padding(top = 16.dp))
             // D-213: « S'engager en politique » put forward, with the next milestone of the electoral calendar.
             EngagementFeatured(today, onOpen = { onOpen(AgirRubrics.ENGAGER) }, modifier = Modifier.padding(top = 16.dp).widthIn(max = 720.dp))
+            // D-232: every kit and guide in one place, filtered by goal.
+            RubricCard(AgirRubrics.KITS, onClick = { onOpen(AgirRubrics.KITS) }, Modifier.padding(top = 12.dp).widthIn(max = 720.dp).fillMaxWidth(), compact)
             AgirRubrics.sections.forEach { section ->
                 Spacer(Modifier.height(24.dp))
                 SectionTitle(stringResource(section.title), Modifier.testTag(AgirTags.SECTION + section.id))

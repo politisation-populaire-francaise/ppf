@@ -132,6 +132,9 @@ Même en-tête qu'une fiche (sans `type`), avec en plus :
 |---|---|
 | `status` | `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` (étiquette `ppf-status`), mis à jour par l'équipe |
 | `territory` | Territoire concerné : « France », un département, une métropole (étiquette `ppf-territory`) |
+| `from` | Facultatif : `mouvement` pour une revendication déjà portée par le mouvement et relevée par PPF (étiquette `ppf-from`, D-152) ; demande `carried_by` et une section `## Sources` |
+| `carried_by` | Avec `from: mouvement` : qui la porte, où et quand, séparés par ` ; ` (étiquettes `ppf-carried-by`) |
+| `supported_by` | Facultatif, pour toute revendication : les organisations qui la soutiennent publiquement, avec la date, séparées par ` ; ` (étiquettes `ppf-supported-by`, affichées « Également portée par ») ; demande une section `## Sources` |
 
 Le titre est la revendication elle-même, en une ou deux phrases ; le résumé la précise ; le corps est l'argumentaire. Les exemples livrés avec l'application ne sont pas des revendications de PPF : les vraies seront proposées et votées par les citoyens (cahier fonctionnel, M11).
 
@@ -165,6 +168,8 @@ Même principe que « Voir » : chaque champ de l'en-tête devient une étiquett
 - Une réponse : `pacte`, `candidate`, `received`, une ligne `answer: identifiant | signe ou refuse | commentaire` par mesure répondue, `archive`. **N'écrivez jamais l'empreinte du texte** : l'outil la calcule à partir du Pacte.
 
 La liste complète est dans `docs/FORMATS.md`, section 4 septies. L'outil refuse une pétition hors d'un site officiel, un Pacte sans date limite, une réponse d'une personne qui n'est pas candidate ou à une mesure inconnue.
+
+**Vrais contenus et contenus des tests** (décision de la propriétaire du 9 novembre 2026, D-151) : les pétitions, le calendrier électoral, les modèles de courrier et les consultations de `decider/` sont réels, vérifiés le jour même sur les sources officielles, chaque source avec sa date de consultation, et marqués `origin: ai-assisted` (« Rédigé par l'IA »). Restent [EXEMPLE] dans `decider/` : le Pacte, les réponses des candidats, le comparateur et ses positions (jusqu'à la liste officielle du Conseil constitutionnel), et la pétition locale (aucune source officielle commune ne recense les pétitions locales). Les contenus fictifs que lisent les tests sont dans `tests/decider/` : l'outil les signe à part dans `shared/ui/src/jvmTest/resources/contents/decider-tests.json`, jamais embarqué dans l'application.
 
 ## Espace « Agir » : mobilisations, appels, organisations
 

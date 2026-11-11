@@ -219,7 +219,7 @@ class FollowTest {
         onNodeWithTag(FeedTags.TAB + FeedFilter.REVENDICATIONS.id).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(FeedTags.TAB + FeedFilter.REVENDICATIONS.id).assertIsSelected()
-        waitUntil(timeoutMillis = 5_000) { hasNode(RevendicationTags.CARD + "lyon-transports-nuit") }
+        waitUntil(timeoutMillis = 5_000) { hasNode(RevendicationTags.CARD + "mouvement-carburants-energie") }
     }
 
     @Test

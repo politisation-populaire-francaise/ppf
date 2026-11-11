@@ -193,6 +193,10 @@ fun DemandVoteRow(
         if (detailed && box != null && voting?.elected != true) {
             Text(stringResource(Res.string.urne_privacy), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
         }
+        // DE-29: after the closing, the same button for everyone (voted here or not).
+        if (detailed && box != null && box.closed && voting != null && voting.enabled) {
+            MyBallotCheckSection(check = { voting.checkClosed(subject) })
+        }
     }
 }
 

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Kits d'action citoyenne » in « Agir » (D-232): the kits and guides that already exist, gathered and filtered. -->
+<resources>
+    <string name="kits_rubric_title">Kits d’action citoyenne</string>
+    <string name="kits_rubric_text">Manifester, faire grève, s’organiser, convaincre, se présenter, se protéger : tous les kits et guides au même endroit.</string>
+    <string name="kits_title">Kits d’action citoyenne</string>
+    <string name="kits_description">Les outils et les guides pratiques de l’application, réunis et classés par but. Chacun reste aussi dans sa rubrique.</string>
+    <string name="kits_back">Revenir à l’accueil d’Agir</string>
+    <string name="kits_filter_title">Je veux…</string>
+    <string name="kits_goal_manifester">Manifester</string>
+    <string name="kits_goal_greve">Faire grève</string>
+    <string name="kits_goal_s_organiser">M’organiser</string>
+    <string name="kits_goal_convaincre">Convaincre</string>
+    <string name="kits_goal_se_presenter">Me présenter</string>
+    <string name="kits_goal_se_proteger">Me protéger</string>
+    <string name="kits_filter_offline">Utilisable sans réseau</string>
+    <string name="kits_filter_clear">Tout afficher</string>
+    <plurals name="kits_count">
+        <item quantity="one">%1$d kit</item>
+        <item quantity="other">%1$d kits</item>
+    </plurals>
+    <string name="kits_offline_badge">Sans réseau</string>
+    <string name="kits_tool_badge">Outil</string>
+    <string name="kits_guide_badge">Guide</string>
+    <string name="kits_guide_soon">Ce guide arrive avec la prochaine mise à jour des contenus.</string>
+    <string name="kits_poster_title">Affiche et tract à code QR</string>
+    <string name="kits_poster_text">Depuis une mobilisation de l’agenda, une affiche ou un tract à imprimer, avec un code QR qui contient l’événement, lisible même sans réseau.</string>
+    <string name="kits_empty">Aucun kit ne correspond à ces filtres.</string>
+</resources>

@@ -42,15 +42,25 @@ class EditorialDeciderSource(
         fresh
     }
 
+    /**
+     * The citizen deliberations (DE-25): a deliberation counts only signed by an editorial key; its
+     * propositions and amendments are the published ones, a citizen's being stored only after the review of
+     * a person (DeliberationSubmissions). Read on each call: they change while a phase is open.
+     */
+    override suspend fun deliberations(): List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = withContext(Dispatchers.IO) {
+        val types = org.politisationpopulairefrancaise.core.decider.DeliberationBoard.TYPES
+        org.politisationpopulairefrancaise.core.decider.DeliberationBoard.from(readEvents(types)) { policy.isEditor(it) }
+    }
+
     /** Every stored content of these types, page after page (newest first), at most [MAX_EVENTS]. */
-    private fun readEvents(): List<SignedEvent> {
+    private fun readEvents(types: List<String> = DeciderCatalog.TYPES.map { it.tagValue }): List<SignedEvent> {
         val seen = LinkedHashMap<String, SignedEvent>()
         var until: Long? = null
         while (seen.size < MAX_EVENTS) {
             val page = events.query(
                 EventFilter(
                     kinds = listOf(Article.KIND),
-                    tags = mapOf(Article.TAG_TYPE to DeciderCatalog.TYPES.map { it.tagValue }),
+                    tags = mapOf(Article.TAG_TYPE to types),
                     until = until,
                     limit = EventFilter.MAX_LIMIT,
                 ),

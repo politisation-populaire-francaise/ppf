@@ -45,7 +45,8 @@ class RevendicationsScreenTest {
     fun bundledDemandsAreListedWithTheirStatusAndOpenBesideTheListOnWideWindows() = runComposeUiTest {
         val dependencies = dependencies()
         openWall(dependencies, width = 1000, height = 740)
-        assertEquals(8, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "revendication").size)
+        // 8 examples, 15 demands of the movement and the citizen demand of the resignation of the government (D-152).
+        assertEquals(24, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "revendication").size)
         onNodeWithTag(RevendicationTags.CARD + "cantines-tarif-social").assertExists()
         onNodeWithTag(RevendicationTags.CARD + "lyon-transports-nuit").assertExists()
         onAllNodesWithText("Très soutenue").onFirst().assertExists()

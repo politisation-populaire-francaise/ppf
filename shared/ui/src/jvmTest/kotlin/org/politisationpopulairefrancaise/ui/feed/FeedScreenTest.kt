@@ -79,9 +79,10 @@ class FeedScreenTest {
         onNodeWithTag(FeedTags.TAB + FeedFilter.REVENDICATIONS.id).performClick()
         waitForIdle()
         onNodeWithTag(FeedTags.TAB + FeedFilter.REVENDICATIONS.id).assertIsSelected()
-        // Newest first, then by title: the Lyon demand leads; the third card is below the fold (lazy list).
-        waitUntil(timeoutMillis = 5_000) { hasNode(RevendicationTags.CARD + "lyon-transports-nuit") }
-        assertTrue(hasNode(RevendicationTags.CARD + "transparence-agenda-elus"))
+        // Newest first, then by title (the lazy list composes only the first cards).
+        // The real demands of 11 November 2026 (D-152) are the newest: they lead, in the order of their titles.
+        waitUntil(timeoutMillis = 5_000) { hasNode(RevendicationTags.CARD + "mouvement-carburants-energie") }
+        assertTrue(hasNode(RevendicationTags.CARD + "mouvement-etudiants"))
         // No composer and no publication on this view, only demands.
         assertTrue(!hasNode(FeedTags.COMPOSER))
         onAllNodesWithTag(RevendicationTags.VOTE_FOR).onFirst().assertIsNotEnabled()

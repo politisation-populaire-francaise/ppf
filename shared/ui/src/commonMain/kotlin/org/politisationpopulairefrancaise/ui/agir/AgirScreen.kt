@@ -52,6 +52,7 @@ import org.politisationpopulairefrancaise.ui.agir.engagement.EngagementLinks
 import org.politisationpopulairefrancaise.ui.agir.engagement.EngagementScreen
 import org.politisationpopulairefrancaise.ui.agir.federer.FedererScreen
 import org.politisationpopulairefrancaise.ui.agir.gather.GatherLinks
+import org.politisationpopulairefrancaise.ui.agir.kits.KitsScreen
 import org.politisationpopulairefrancaise.ui.agir.gather.GatherScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
@@ -117,6 +118,9 @@ enum class AgirRoute(val id: String) {
 
     /** « Se réunir » (D-198): collectifs, organisations, « Créer une association », rooms; the tutorial's « m'allier ». */
     GATHER("se-reunir"),
+
+    /** « Kits d'action citoyenne » (D-232): the tools and guides gathered, filtered by goal. */
+    KITS("kits"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -255,6 +259,38 @@ fun AgirScreen(
             returnTo = null
         }
     }
+    // A rubric opened from the home or from « Kits d'action citoyenne » (D-232).
+    val openRubric: (AgirRubric) -> Unit = { rubric ->
+        when (rubric.id) {
+            AgirRubrics.AGENDA.id -> route = AgirRoute.AGENDA
+            AgirRubrics.CALLS.id -> route = AgirRoute.CALLS
+            AgirRubrics.ORGANISATIONS.id -> route = AgirRoute.ORGANISATIONS
+            AgirRubrics.COLLECTIVES.id -> route = AgirRoute.COLLECTIVES
+            AgirRubrics.TESTIFY.id -> route = AgirRoute.TESTIFY
+            AgirRubrics.MANIFESTATION.id -> route = AgirRoute.MANIFESTATION
+            AgirRubrics.SOLIDARITY.id -> {
+                solidarityLibrary.selectTab(SolidarityTab.FUNDS)
+                route = AgirRoute.SOLIDARITY
+            }
+            AgirRubrics.HELP.id -> {
+                solidarityLibrary.selectTab(SolidarityTab.MISSIONS)
+                route = AgirRoute.SOLIDARITY
+            }
+            AgirRubrics.PROCHES.id -> route = AgirRoute.PROCHES
+            AgirRubrics.FEDERER.id -> route = AgirRoute.FEDERER
+            AgirRubrics.ENGAGER.id -> route = AgirRoute.ENGAGER
+            AgirRubrics.GATHER.id -> route = AgirRoute.GATHER
+            // AG-59: the kit is drawn by the shell over the window (HarassmentKitLayer).
+            AgirRubrics.HARASSMENT.id -> help.openHarassmentKit()
+            // From the home (D-190): its way back returns to the home, not to the funds.
+            AgirRubrics.STRIKE.id -> {
+                returnTo = AgirRoute.HOME
+                route = AgirRoute.STRIKE_SIMULATOR
+            }
+            AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
+            AgirRubrics.KITS.id -> route = AgirRoute.KITS
+        }
+    }
     // The shell's modifier carries its own test tag: the screens below carry theirs on inner boxes.
     // "Je témoigne" of the calls reads LocalTestify, provided here for every screen of Agir.
     ProvideTestify(testify) {
@@ -262,36 +298,7 @@ fun AgirScreen(
             when (route) {
                 AgirRoute.HOME -> AgirHome(
                     windowClass = windowClass,
-                    onOpen = { rubric ->
-                        when (rubric.id) {
-                            AgirRubrics.AGENDA.id -> route = AgirRoute.AGENDA
-                            AgirRubrics.CALLS.id -> route = AgirRoute.CALLS
-                            AgirRubrics.ORGANISATIONS.id -> route = AgirRoute.ORGANISATIONS
-                            AgirRubrics.COLLECTIVES.id -> route = AgirRoute.COLLECTIVES
-                            AgirRubrics.TESTIFY.id -> route = AgirRoute.TESTIFY
-                            AgirRubrics.MANIFESTATION.id -> route = AgirRoute.MANIFESTATION
-                            AgirRubrics.SOLIDARITY.id -> {
-                                solidarityLibrary.selectTab(SolidarityTab.FUNDS)
-                                route = AgirRoute.SOLIDARITY
-                            }
-                            AgirRubrics.HELP.id -> {
-                                solidarityLibrary.selectTab(SolidarityTab.MISSIONS)
-                                route = AgirRoute.SOLIDARITY
-                            }
-                            AgirRubrics.PROCHES.id -> route = AgirRoute.PROCHES
-                            AgirRubrics.FEDERER.id -> route = AgirRoute.FEDERER
-                            AgirRubrics.ENGAGER.id -> route = AgirRoute.ENGAGER
-                            AgirRubrics.GATHER.id -> route = AgirRoute.GATHER
-                            // AG-59: the kit is drawn by the shell over the window (HarassmentKitLayer).
-                            AgirRubrics.HARASSMENT.id -> help.openHarassmentKit()
-                            // From the home (D-190): its way back returns to the home, not to the funds.
-                            AgirRubrics.STRIKE.id -> {
-                                returnTo = AgirRoute.HOME
-                                route = AgirRoute.STRIKE_SIMULATOR
-                            }
-                            AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
-                        }
-                    },
+                    onOpen = openRubric,
                 )
                 AgirRoute.AGENDA -> if (agenda != null) agenda(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_agenda_title, windowClass, home)
                 AgirRoute.CALLS -> if (calls != null) calls(Modifier.fillMaxSize(), home) else PendingRubric(Res.string.agir_calls_title, windowClass, home)
@@ -395,6 +402,13 @@ fun AgirScreen(
                         route = returnTo ?: AgirRoute.HOME
                         returnTo = null
                     },
+                )
+                AgirRoute.KITS -> KitsScreen(
+                    library = library,
+                    windowClass = windowClass,
+                    onOpenRubric = { id -> AgirRubrics.available.firstOrNull { it.id == id }?.let(openRubric) },
+                    modifier = Modifier.fillMaxSize(),
+                    onBack = home,
                 )
                 AgirRoute.GATHER -> GatherScreen(
                     library = library,
