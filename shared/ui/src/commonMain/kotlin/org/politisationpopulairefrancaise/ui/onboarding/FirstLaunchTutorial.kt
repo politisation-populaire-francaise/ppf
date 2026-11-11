@@ -110,7 +110,6 @@ import org.politisationpopulairefrancaise.ui.resources.tutorial_why_text
 import org.politisationpopulairefrancaise.ui.resources.tutorial_why_title
 import org.politisationpopulairefrancaise.ui.theme.Callout
 import org.politisationpopulairefrancaise.ui.theme.CalloutType
-import org.politisationpopulairefrancaise.ui.theme.LightPalette
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** Test tags of the tutorial, also useful for accessibility tooling. */
@@ -234,20 +233,26 @@ fun FirstLaunchTutorial(onFinish: (TutorialStart?) -> Unit, modifier: Modifier =
             }
             ProgressDots(index, steps.size)
             BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-                // A tall window keeps the picture of the owner above the text, which scrolls; a low one scrolls both.
-                val pinned = step.illustration?.banner == true && maxHeight >= 520.dp
+                // A tall phone keeps the picture of the owner above the text, which scrolls. Elsewhere the
+                // picture scrolls with the text, and a screen shorter than the window is centred in it
+                // (a computer: nothing piled up at the top of a large window).
+                val pinned = step.illustration?.banner == true && maxHeight >= 520.dp && maxWidth < 600.dp
                 val scroll = rememberScrollState()
                 LaunchedEffect(index) { scroll.scrollTo(0) }
                 Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
                     if (pinned) {
                         Box(Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)) { Illustration(step.illustration!!) }
                     }
-                    Column(
-                        Modifier.weight(1f).fillMaxWidth().verticalScroll(scroll).padding(horizontal = 20.dp, vertical = 16.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        Column(Modifier.widthIn(max = 600.dp).fillMaxWidth()) {
-                            StepContent(step, showIllustration = !pinned, onFinish = onFinish)
+                    BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
+                        val viewport = maxHeight
+                        Column(
+                            Modifier.fillMaxWidth().verticalScroll(scroll).heightIn(min = viewport).padding(horizontal = 20.dp, vertical = 16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center,
+                        ) {
+                            Column(Modifier.widthIn(max = 600.dp).fillMaxWidth()) {
+                                StepContent(step, showIllustration = !pinned, onFinish = onFinish)
+                            }
                         }
                     }
                 }
@@ -275,8 +280,20 @@ private fun ColumnScope.StepContent(step: TutorialStep, showIllustration: Boolea
     val palette = PpfTheme.palette
     val illustration = step.illustration
     when {
-        illustration != null && showIllustration -> {
+        illustration != null && illustration.banner && showIllustration -> {
             Illustration(illustration)
+            Spacer(Modifier.height(16.dp))
+        }
+        // The bonnet of the owner is shown as the icons of the other screens, in the same round.
+        illustration != null && !illustration.banner -> {
+            Box(Modifier.align(Alignment.CenterHorizontally).size(72.dp).background(palette.brandTint, CircleShape), contentAlignment = Alignment.Center) {
+                Image(
+                    painter = painterResource(illustration.image),
+                    contentDescription = stringResource(illustration.description),
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier.size(44.dp).testTag(TutorialTags.ILLUSTRATION),
+                )
+            }
             Spacer(Modifier.height(16.dp))
         }
         step.icon != null -> {
@@ -319,28 +336,17 @@ private fun ColumnScope.StepContent(step: TutorialStep, showIllustration: Boolea
 }
 
 /**
- * A picture of the owner: the Marianne as a wide banner, « assez grand pour percuter », the bonnet
- * smaller. On a light card in both themes: the indigo of the drawings would be lost on a dark page.
+ * The Marianne of the owner as a wide banner, « assez grand pour percuter », on the transparent
+ * background of her drawing (her request of 11 November 2026: no white card behind it).
  */
 @Composable
 private fun Illustration(illustration: TutorialIllustration) {
-    val description = stringResource(illustration.description)
-    Surface(
-        color = LightPalette.surface2,
-        shape = MaterialTheme.shapes.medium,
-        modifier = Modifier.widthIn(max = 600.dp).fillMaxWidth().testTag(TutorialTags.ILLUSTRATION),
-    ) {
-        Image(
-            painter = painterResource(illustration.image),
-            contentDescription = description,
-            contentScale = ContentScale.Fit,
-            modifier = if (illustration.banner) {
-                Modifier.fillMaxWidth().aspectRatio(2f).padding(8.dp)
-            } else {
-                Modifier.fillMaxWidth().heightIn(max = 140.dp).aspectRatio(1f).padding(12.dp)
-            },
-        )
-    }
+    Image(
+        painter = painterResource(illustration.image),
+        contentDescription = stringResource(illustration.description),
+        contentScale = ContentScale.Fit,
+        modifier = Modifier.widthIn(max = 600.dp).fillMaxWidth().aspectRatio(2f).testTag(TutorialTags.ILLUSTRATION),
+    )
 }
 
 /**
