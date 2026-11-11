@@ -15,7 +15,7 @@ ktor = "3.6.1"
 unifiedpush = "3.3.5"
 # Tink for Android (Apache 2.0), used by the UnifiedPush connector to decrypt RFC 8291 messages; the
 # Android flavour embeds a light protobuf instead of the whole protobuf-java of the JVM flavour.
-tinkAndroid = "1.23.0"
+tinkAndroid = "1.24.0"
 kotlinxHtml = "0.12.0"
 kotlinxSerialization = "1.12.0"
 logback = "1.6.6"
