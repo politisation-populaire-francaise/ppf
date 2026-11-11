@@ -1,6 +1,11 @@
 package org.politisationpopulairefrancaise.ui.endirect
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.horizontalScroll
+import androidx.compose.runtime.remember
+import org.politisationpopulairefrancaise.core.endirect.LiveBlock
+import org.politisationpopulairefrancaise.ui.components.PpfIconButton
+import org.politisationpopulairefrancaise.ui.components.PpfTabs
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
@@ -100,7 +105,16 @@ fun EnDirectScreen(
     /** « Décider ensemble » (MVP 1, jalon 3): demands, official petitions, Pacte, filled by `DeciderHighlights`. */
     decider: (@Composable (Modifier) -> Unit)? = null,
     now: () -> Long = ::currentEpochSeconds,
+    /** How the person composed the page (views, blocks); in memory when null (tests, previews). */
+    board: LiveBoardState? = null,
+    /** « Appels qui pressent », filled by `UrgentCallsBlock`; the block is not offered when null. */
+    calls: (@Composable (Modifier) -> Unit)? = null,
+    /** « Mes rappels », filled by `RemindersBlock`; the block is not offered when null. */
+    reminders: (@Composable (Modifier) -> Unit)? = null,
+    /** Asks every source of the page for its news; no button when null. */
+    onRefresh: (() -> Unit)? = null,
 ) {
+    val boardState = board ?: remember { LiveBoardState(null) }
     val catalog = library.voir
     val nowSeconds = now()
     val today = CivilDate.fromEpochSeconds(nowSeconds)
@@ -136,6 +150,7 @@ fun EnDirectScreen(
             }
         }
         val figuresBlock: @Composable ColumnScope.() -> Unit = {
+            if (figures.isEmpty()) EmptyBlock(stringResource(Res.string.live_key_figures), stringResource(Res.string.live_figures_none), EnDirectTags.FIGURES)
             if (figures.isNotEmpty()) {
                 Column(Modifier.fillMaxWidth().testTag(EnDirectTags.FIGURES)) {
                     SectionHeader(
@@ -161,6 +176,7 @@ fun EnDirectScreen(
             }
         }
         val headlineBlock: @Composable ColumnScope.() -> Unit = {
+            if (headline == null) EmptyBlock(stringResource(Res.string.live_headline), stringResource(Res.string.live_headline_none), EnDirectTags.HEADLINE)
             if (headline != null) {
                 Section(stringResource(Res.string.live_headline), EnDirectTags.HEADLINE) {
                     HeadlineCard(headline) {
@@ -171,6 +187,7 @@ fun EnDirectScreen(
             }
         }
         val liveBlock: @Composable ColumnScope.() -> Unit = {
+            if (live.isEmpty()) EmptyBlock(stringResource(Res.string.live_block_en_cours), stringResource(Res.string.live_live_none), EnDirectTags.LIVE)
             if (live.isNotEmpty()) {
                 Column(Modifier.fillMaxWidth().testTag(EnDirectTags.LIVE)) {
                     LiveLabel()
@@ -183,6 +200,7 @@ fun EnDirectScreen(
             }
         }
         val newsBlock: @Composable ColumnScope.() -> Unit = {
+            if (news.isEmpty()) EmptyBlock(stringResource(Res.string.live_news), stringResource(Res.string.live_news_none), EnDirectTags.NEWS)
             if (news.isNotEmpty()) {
                 Section(stringResource(Res.string.live_news), EnDirectTags.NEWS) {
                     news.forEachIndexed { index, post ->
@@ -193,6 +211,7 @@ fun EnDirectScreen(
             }
         }
         val chronologyBlock: @Composable ColumnScope.() -> Unit = {
+            if (chronology.isEmpty()) EmptyBlock(stringResource(Res.string.live_chronology), stringResource(Res.string.live_chronology_none), EnDirectTags.CHRONOLOGY)
             if (chronology.isNotEmpty()) {
                 Column(Modifier.fillMaxWidth().testTag(EnDirectTags.CHRONOLOGY)) {
                     SectionHeader(
@@ -210,44 +229,86 @@ fun EnDirectScreen(
             }
         }
 
+        val renderers: Map<LiveBlock, @Composable ColumnScope.() -> Unit> = buildMap {
+            put(LiveBlock.LIVE, liveBlock)
+            put(LiveBlock.ALERTS, alertsBlock)
+            put(LiveBlock.UPCOMING, upcomingBlock)
+            calls?.let { slot -> put(LiveBlock.CALLS) { Section(stringResource(Res.string.live_block_appels), LiveBoardTags.block(LiveBlock.CALLS)) { slot(Modifier.fillMaxWidth()) } } }
+            decider?.let { slot -> put(LiveBlock.DECIDER) { slot(Modifier.fillMaxWidth()) } }
+            put(LiveBlock.HEADLINE, headlineBlock)
+            put(LiveBlock.FIGURES, figuresBlock)
+            parliamentWeek?.let { slot -> put(LiveBlock.PARLIAMENT) { slot(Modifier.fillMaxWidth()) } }
+            reminders?.let { slot -> put(LiveBlock.REMINDERS) { Section(stringResource(Res.string.live_block_rappels), LiveBoardTags.block(LiveBlock.REMINDERS)) { slot(Modifier.fillMaxWidth()) } } }
+            put(LiveBlock.NEWS, newsBlock)
+            put(LiveBlock.CHRONOLOGY, chronologyBlock)
+        }
+        val shown = boardState.board.selected.blocks.filter { it in renderers }
+
         Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(padding).testTag(EnDirectTags.SCREEN)) {
-            PageHeader(stringResource(Res.string.space_en_direct), stringResource(Res.string.desc_en_direct))
+            Row(verticalAlignment = Alignment.Top) {
+                PageHeader(stringResource(Res.string.space_en_direct), stringResource(Res.string.desc_en_direct), Modifier.weight(1f))
+                onRefresh?.let { refresh ->
+                    PpfIconButton(Lucide.RefreshCw, stringResource(Res.string.live_refresh), refresh, Modifier.testTag(LiveBoardTags.REFRESH))
+                }
+                PpfIconButton(
+                    Lucide.SlidersHorizontal,
+                    stringResource(Res.string.live_customize_description),
+                    { boardState.editing = !boardState.editing },
+                    Modifier.testTag(LiveBoardTags.CUSTOMIZE),
+                    selected = boardState.editing,
+                )
+            }
+            Spacer(Modifier.height(8.dp))
+            // The views: the ready-made ones, then the personal ones; one touch to switch.
+            val views = boardState.board.views
+            Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()).testTag(LiveBoardTags.VIEWS)) {
+                PpfTabs(
+                    labels = views.map { labelOf(it) },
+                    selected = views.indexOfFirst { it.id == boardState.board.selected.id }.coerceAtLeast(0),
+                    onSelect = { boardState.select(views[it].id) },
+                    tagFor = { LiveBoardTags.view(views[it].id) },
+                )
+            }
             Spacer(Modifier.height(16.dp))
+            if (boardState.editing) {
+                LiveBoardEditor(boardState, Modifier.widthIn(max = 760.dp), available = renderers.keys)
+                Spacer(Modifier.height(24.dp))
+            }
             if (catalog.isEmpty && library.posts.isEmpty() && library.status != LibraryStatus.Loading) {
                 Text(stringResource(Res.string.live_empty), style = MaterialTheme.typography.bodyLarge, color = PpfTheme.palette.inkMuted)
                 return@Column
             }
+            if (shown.isEmpty()) {
+                Text(stringResource(Res.string.live_view_empty), style = MaterialTheme.typography.bodyLarge, color = PpfTheme.palette.inkMuted)
+                return@Column
+            }
             if (twoColumns) {
+                // Wide windows: the figures and the facts on the left, what moves on the right, each in the chosen order.
                 Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
                     Column(Modifier.weight(1.4f), verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                        alertsBlock()
-                        figuresBlock()
-                        chronologyBlock()
+                        shown.filter { it in WIDE_BLOCKS }.forEach { block -> renderers.getValue(block)() }
                     }
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                        liveBlock()
-                        decider?.invoke(Modifier.fillMaxWidth())
-                        headlineBlock()
-                        upcomingBlock()
-                        parliamentWeek?.invoke(Modifier.fillMaxWidth())
-                        newsBlock()
+                        shown.filterNot { it in WIDE_BLOCKS }.forEach { block -> renderers.getValue(block)() }
                     }
                 }
             } else {
-                // Phones: what changes by the minute first, then the figures, then the rest.
                 Column(Modifier.widthIn(max = 760.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
-                    liveBlock()
-                    alertsBlock()
-                    decider?.invoke(Modifier.fillMaxWidth())
-                    figuresBlock()
-                    upcomingBlock()
-                    parliamentWeek?.invoke(Modifier.fillMaxWidth())
-                    headlineBlock()
-                    newsBlock()
-                    chronologyBlock()
+                    shown.forEach { block -> renderers.getValue(block)() }
                 }
             }
         }
+    }
+}
+
+/** The blocks of the wide column of large windows. */
+private val WIDE_BLOCKS: Set<LiveBlock> = setOf(LiveBlock.ALERTS, LiveBlock.FIGURES, LiveBlock.CHRONOLOGY)
+
+/** A block the person chose that has nothing to show yet: its title and one line. */
+@Composable
+private fun EmptyBlock(title: String, text: String, tag: String) {
+    Section(title, tag) {
+        Text(text, style = MaterialTheme.typography.bodyMedium, color = PpfTheme.palette.inkSubtle)
     }
 }
 
