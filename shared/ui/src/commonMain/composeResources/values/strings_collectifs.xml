@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Collectifs of "Agir" (M24, step 1, D-087): directory (AG-47), page (AG-48), events and calls of a
+     collectif (AG-49, AG-50), creation wizard (S-129). French, the user is addressed with "vous",
+     typographic apostrophe (’), no em dash. -->
+<resources>
+    <!-- Directory -->
+    <string name="collectifs_title">Collectifs</string>
+    <string name="collectifs_back">Retour</string>
+    <string name="collectifs_intro">Des groupes de citoyens, d’un quartier ou d’un établissement jusqu’à tout le pays. Chacun a une page, des rôles, un calendrier et des appels. Rejoindre un collectif ne publie rien.</string>
+    <string name="collectifs_search_hint">Rechercher un collectif (nom, thème, territoire)</string>
+    <string name="collectifs_create">Créer un collectif</string>
+    <string name="collectifs_rooms_link">Voir les salons de discussion</string>
+    <string name="collectifs_rooms_title">Salons de discussion</string>
+    <string name="collectifs_rooms_text">Un salon est un simple espace de discussion, que tout compte peut créer. Un collectif est réservé aux comptes validés en personne.</string>
+    <string name="collectifs_filter_near">Près de chez moi</string>
+    <string name="collectifs_filter_theme">Thème</string>
+    <string name="collectifs_filter_type">Type</string>
+    <string name="collectifs_filter_scope">Portée</string>
+    <string name="collectifs_filter_clear">Effacer les filtres</string>
+    <string name="collectifs_empty">Aucun collectif pour l’instant. Vous pouvez en fonder un avec un compte validé en personne, ou rejoindre un salon de discussion.</string>
+    <string name="collectifs_empty_filtered">Aucun collectif ne correspond à cette recherche.</string>
+    <string name="collectifs_card_near">Près de chez vous</string>
+    <string name="collectifs_card_joined">Rejoint</string>
+    <string name="collectifs_missing_text">Ce collectif n’est pas, ou plus, sur cet appareil. Revenez à la liste pour la mettre à jour.</string>
+    <string name="collectifs_status_loading">Mise à jour…</string>
+    <string name="collectifs_status_unavailable">Les collectifs ne sont pas disponibles sur cet appareil.</string>
+    <string name="collectifs_status_offline">Pas de serveur : seuls les collectifs déjà sur l’appareil sont affichés.</string>
+    <string name="collectifs_status_unreachable">Le serveur ne répond pas : les collectifs déjà sur l’appareil sont affichés.</string>
+
+    <!-- Scope (ppf-scope) -->
+    <string name="collectifs_scope_national">Tout le pays</string>
+    <string name="collectifs_scope_regional">Région</string>
+    <string name="collectifs_scope_departemental">Département</string>
+    <string name="collectifs_scope_local">Commune ou ville</string>
+    <string name="collectifs_scope_quartier">Quartier</string>
+    <string name="collectifs_scope_etablissement">Établissement (école, entreprise…)</string>
+    <string name="collectifs_scope_unknown">Portée inconnue</string>
+
+    <!-- Type (ppf-collective-type) -->
+    <string name="collectifs_type_collectif">Collectif</string>
+    <string name="collectifs_type_club">Club</string>
+    <string name="collectifs_type_comite">Comité</string>
+    <string name="collectifs_type_assemblee">Assemblée</string>
+    <string name="collectifs_type_reseau">Réseau</string>
+    <string name="collectifs_type_autre">Autre</string>
+
+    <!-- Language (l, ISO 639-1) -->
+    <string name="collectifs_language_fr">Français</string>
+    <string name="collectifs_language_en">Anglais</string>
+    <string name="collectifs_language_es">Espagnol</string>
+    <string name="collectifs_language_de">Allemand</string>
+    <string name="collectifs_language_it">Italien</string>
+    <string name="collectifs_language_pt">Portugais</string>
+    <string name="collectifs_language_ar">Arabe</string>
+    <string name="collectifs_language_br">Breton</string>
+    <string name="collectifs_language_oc">Occitan</string>
+    <string name="collectifs_language_eu">Basque</string>
+
+    <!-- Page -->
+    <string name="collectifs_page_language">Langue : %1$s</string>
+    <string name="collectifs_page_charter_show">Lire la charte interne</string>
+    <string name="collectifs_page_charter_hide">Masquer la charte interne</string>
+    <string name="collectifs_page_charter_title">Charte interne du collectif</string>
+    <string name="collectifs_page_joined">Vous avez rejoint ce collectif sur cet appareil.</string>
+    <string name="collectifs_page_join">Rejoindre le collectif</string>
+    <string name="collectifs_page_leave">Quitter le collectif</string>
+    <string name="collectifs_page_membership_note">Rejoindre ne publie rien : seul cet appareil le sait, et le serveur ne connaît pas les membres. C’est pourquoi le nombre de membres n’est pas affiché.</string>
+    <string name="collectifs_page_open_room">Ouvrir le salon du collectif</string>
+    <string name="collectifs_page_publish_title">Publier au nom du collectif</string>
+    <string name="collectifs_page_publish_text">Réservé au fondateur, aux administrateurs et aux modérateurs. Les événements et les appels publics rejoignent l’agenda, la carte et les appels de tous, relus comme les autres.</string>
+    <string name="collectifs_page_propose_event">Proposer un événement du collectif</string>
+    <string name="collectifs_page_launch_call">Lancer un appel du collectif</string>
+    <string name="collectifs_page_roles_title">Rôles</string>
+    <string name="collectifs_page_roles_founder">Fondateur ou fondatrice : %1$s</string>
+    <string name="collectifs_page_roles_admins">Autres administrateurs : %1$s</string>
+    <string name="collectifs_page_roles_moderators">Modérateurs : %1$s</string>
+    <string name="collectifs_page_roles_none">aucun</string>
+    <string name="collectifs_page_roles_note">Les rôles sont publics, comme dans tous les salons. La liste des membres n’existe nulle part sur le serveur.</string>
+    <string name="collectifs_page_you">%1$s (vous)</string>
+    <string name="collectifs_page_events_title">Prochains événements</string>
+    <string name="collectifs_page_events_empty">Aucun événement à venir pour l’instant.</string>
+    <string name="collectifs_page_calls_title">Appels en cours</string>
+    <string name="collectifs_page_calls_empty">Aucun appel en cours pour l’instant.</string>
+    <string name="collectifs_composer_note">Publié au nom du collectif « %1$s ». Seuls son fondateur, ses administrateurs et ses modérateurs le peuvent ; votre pseudonyme reste visible comme auteur.</string>
+
+    <!-- Creation: account not validated in person -->
+    <string name="collectifs_need_account">Créer un collectif demande un compte, puis sa validation en personne. La lecture des collectifs reste ouverte à tous, sans compte.</string>
+    <string name="collectifs_need_account_button">Créer mon compte</string>
+    <string name="collectifs_checking">Vérification du niveau de votre compte…</string>
+    <string name="collectifs_needs_verified_title">Créer un collectif demande un compte validé en personne</string>
+    <string name="collectifs_needs_verified_text">Un collectif a une page, des rôles, un calendrier et des appels, et parle au nom de ses membres. Pour éviter les faux collectifs créés en série, seul un compte validé en personne peut en fonder un. Le nombre de collectifs par personne n’est pas limité.</string>
+    <string name="collectifs_needs_verified_not_yet">Votre compte n’est pas encore validé en personne.</string>
+    <string name="collectifs_needs_verified_unknown">Le niveau de votre compte n’a pas pu être vérifié : pas de réseau, ou compte pas encore inscrit au vote.</string>
+    <string name="collectifs_needs_verified_how">Pour faire valider votre compte, rencontrez un validateur bénévole et montrez-lui votre code : il se trouve dans Mon espace, sur la carte « Mon niveau de votant ».</string>
+    <string name="collectifs_open_my_space">Ouvrir Mon espace</string>
+    <string name="collectifs_room_instead">En attendant, un salon de discussion est ouvert à tous les comptes : on peut y discuter et s’organiser, sans page ni rôles de collectif.</string>
+    <string name="collectifs_create_room">Créer un salon</string>
+
+    <!-- Creation wizard -->
+    <string name="collectifs_wizard_title">Créer un collectif</string>
+    <string name="collectifs_wizard_close">Fermer</string>
+    <string name="collectifs_wizard_step">Étape %1$d sur %2$d</string>
+    <string name="collectifs_wizard_step_identity">Nom, territoire et portée</string>
+    <string name="collectifs_wizard_step_presentation">Présentation, type, thèmes et langue</string>
+    <string name="collectifs_wizard_step_charter">Charte interne</string>
+    <string name="collectifs_wizard_step_confirm">Vérifier et créer</string>
+    <string name="collectifs_wizard_name">Nom du collectif</string>
+    <string name="collectifs_wizard_name_placeholder">Par exemple : Collectif santé de Villeurbanne</string>
+    <string name="collectifs_wizard_counter">%1$d sur %2$d</string>
+    <string name="collectifs_wizard_territory">Territoire</string>
+    <string name="collectifs_wizard_territory_help">Une commune, un quartier, un département ou « France ». Choisissez une proposition du référentiel des territoires : votre collectif sera trouvé « près de chez moi ».</string>
+    <string name="collectifs_wizard_territory_placeholder">Par exemple : Villeurbanne</string>
+    <string name="collectifs_wizard_territory_code">Territoire du référentiel : %1$s</string>
+    <string name="collectifs_wizard_territory_code_clear">Retirer</string>
+    <string name="collectifs_wizard_scope">Portée</string>
+    <string name="collectifs_wizard_id">Identifiant du salon : %1$s</string>
+    <string name="collectifs_wizard_about">Présentation</string>
+    <string name="collectifs_wizard_about_placeholder">Ce que fait le collectif, pour qui, comment y participer.</string>
+    <string name="collectifs_wizard_type">Type</string>
+    <string name="collectifs_wizard_themes">Thèmes</string>
+    <string name="collectifs_wizard_themes_help">Jusqu’à 5 thèmes séparés par des virgules, de 40 caractères au plus : ils servent à la recherche.</string>
+    <string name="collectifs_wizard_themes_placeholder">Par exemple : santé, hôpital public</string>
+    <string name="collectifs_wizard_language">Langue</string>
+    <string name="collectifs_wizard_internal_charter">Charte interne (facultative)</string>
+    <string name="collectifs_wizard_internal_charter_help">Les règles propres à votre collectif, en plus de la charte de PPF : comment vous décidez, comment vous accueillez. Elle est publique.</string>
+    <string name="collectifs_wizard_internal_charter_placeholder">Par exemple : nous décidons en assemblée, une fois par mois.</string>
+    <string name="collectifs_wizard_next">Continuer</string>
+    <string name="collectifs_wizard_previous">Étape précédente</string>
+    <string name="collectifs_wizard_missing">Encore à remplir : %1$s.</string>
+    <string name="collectifs_problem_name_missing">un nom (une lettre ou un chiffre au moins)</string>
+    <string name="collectifs_problem_name_too_long">un nom plus court (80 caractères au plus)</string>
+    <string name="collectifs_problem_territory_missing">un territoire</string>
+    <string name="collectifs_problem_territory_too_long">un territoire plus court (100 caractères au plus)</string>
+    <string name="collectifs_problem_scope_missing">la portée</string>
+    <string name="collectifs_problem_about_too_long">une présentation plus courte (1 000 caractères au plus)</string>
+    <string name="collectifs_problem_type_missing">le type</string>
+    <string name="collectifs_problem_too_many_themes">5 thèmes au plus</string>
+    <string name="collectifs_problem_theme_too_long">des thèmes plus courts (40 caractères au plus)</string>
+    <string name="collectifs_problem_internal_charter_too_long">une charte interne plus courte (3 000 caractères au plus)</string>
+    <string name="collectifs_problem_charter_not_accepted">l’acceptation de la charte de PPF</string>
+    <string name="collectifs_wizard_summary_title">Votre collectif</string>
+    <string name="collectifs_wizard_visibility_title">Visibilité et adhésion</string>
+    <string name="collectifs_wizard_visibility_public">Public et ouvert à tous : tout le monde voit sa page et peut le rejoindre.</string>
+    <string name="collectifs_wizard_soon_private">Privé (bientôt)</string>
+    <string name="collectifs_wizard_soon_secret">Secret (bientôt)</string>
+    <string name="collectifs_wizard_soon_request">Sur demande (bientôt)</string>
+    <string name="collectifs_wizard_soon_invitation">Sur invitation (bientôt)</string>
+    <string name="collectifs_wizard_soon_text">Les collectifs privés ou secrets et l’adhésion sur demande ou sur invitation viendront plus tard : ils demandent des salons chiffrés de bout en bout et une liste des membres que le serveur ne peut pas lire. Pour l’instant, un collectif est public et ouvert à tous.</string>
+    <string name="collectifs_wizard_charter_title">Charte de PPF</string>
+    <string name="collectifs_wizard_charter_text">Comme pour un salon, fonder un collectif, c’est accepter la charte des valeurs de PPF.</string>
+    <string name="collectifs_wizard_charter_accept">J’accepte la charte de PPF</string>
+    <string name="collectifs_wizard_warning_title">Votre pseudonyme sera publiquement relié à ce collectif</string>
+    <string name="collectifs_wizard_warning_text">Le collectif est publié signé par votre compte : tout le monde pourra voir que votre pseudonyme l’a fondé. Fonder un collectif peut révéler un engagement politique, syndical ou associatif, une donnée sensible protégée par le RGPD (article 9). Si vous ne voulez pas être relié à ce collectif, ne le créez pas avec ce compte.</string>
+    <string name="collectifs_wizard_no_server">La création d’un collectif demande le serveur, qui vérifie votre niveau de compte et l’absence de doublon : réessayez quand le réseau sera revenu.</string>
+    <string name="collectifs_wizard_cancel">Annuler</string>
+    <string name="collectifs_wizard_submit">Créer le collectif</string>
+    <string name="collectifs_wizard_submitting">Création…</string>
+    <string name="collectifs_wizard_refused">Le serveur a refusé ce collectif. Vérifiez que votre compte est toujours validé en personne (Mon espace, carte « Mon niveau de votant ») et que les textes respectent les limites.</string>
+    <string name="collectifs_wizard_refused_immutable">Le serveur a refusé ce changement : ce qui fait un collectif (son territoire, son type, ses thèmes) ne change plus une fois qu'il est créé. Créez un nouveau collectif si besoin.</string>
+    <string name="collectifs_wizard_refused_role">Le serveur a refusé : seuls le fondateur et les modérateurs du collectif peuvent publier en son nom.</string>
+</resources>

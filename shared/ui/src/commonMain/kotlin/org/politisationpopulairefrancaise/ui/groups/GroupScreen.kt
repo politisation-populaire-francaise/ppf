@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.groups
 
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -442,6 +444,8 @@ private fun Composer(
                         modifier = Modifier.padding(bottom = 8.dp).testTag(GroupsTags.SEND_ERROR),
                     )
                 }
+                // A compromised account no longer writes anywhere (S-146): the common notice says why.
+                val canPublish = LocalCanPublish.current
                 when {
                     account == null -> InfoBox(Lucide.KeyRound, Modifier.testTag(GroupsTags.NEED_ACCOUNT)) {
                         Text(stringResource(Res.string.groups_need_account_write), style = MaterialTheme.typography.bodyMedium)
@@ -453,6 +457,7 @@ private fun Composer(
                             modifier = Modifier.testTag(GroupsTags.CREATE_ACCOUNT),
                         )
                     }
+                    !canPublish -> PublishBlockedNotice()
                     bannedReason != null -> InfoBox(Lucide.Ban, Modifier.testTag(ModerationTags.BANNED)) {
                         Text(stringResource(Res.string.groups_mod_banned, bannedReason), style = MaterialTheme.typography.bodyMedium)
                     }

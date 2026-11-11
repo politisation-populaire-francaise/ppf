@@ -22,6 +22,10 @@ object EventKinds {
     /** Gift wrap: a seal encrypted again by a throwaway key, the only event the server sees. */
     const val GIFT_WRAP: Int = 1059
 
+    // "Agir", AG-55 « Sans nouvelles de moi » (decision D-088, docs/integration/agir-minuteur.md).
+    /** A timer rumor (alert deposit, cancellation, report): private, only ever inside a seal, never seen by the server. Used by no NIP. */
+    const val TIMER: Int = 8593
+
     // Rooms of collectives (NIP-29, decisions D-027 and D-028) and user settings (NIP-78).
     /** A message in a room: plain text, exactly one `h` tag naming the room. */
     const val GROUP_CHAT: Int = 9

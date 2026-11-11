@@ -65,7 +65,7 @@ Le numéro détermine le comportement :
 | 20000 à 29999 | Éphémères : non conservés. |
 | 30000 à 39999 | Adressables : remplaçables par identifiant (`d`), voir section 4. |
 
-Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies), `9` (message d'un salon, NIP-29), `9000`, `9001`, `9002` et `9005` (rôles et modération d'un salon, NIP-29, D-131 : section 5, partie rôles et modération), `39000` (description d'un salon, NIP-29), `1776` (engagement envers une clé de secours) et `1777` (avis de compromission), du brouillon NIP-41 : section 4 undecies, `1985` (étiquette NIP-32 : statut d'une revendication), `1040` (attestation OpenTimestamps, NIP-03 : preuve d'horodatage d'une archive). Types propres à PPF : `37240` (certificat d'une clé de travail de la plateforme) et `37241` (liste de l'équipe pour les accords de signature), section 4 decies. Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
+Types standards utilisés : `0` (profil), `1` (note courte), `5` (demande de suppression), `30023` (article long), `31923` (événement de calendrier daté, NIP-52 : mobilisation de l'agenda, section 4 sexies), `31925` (réponse à un événement de calendrier, NIP-52 : réponse publique d'une organisation à une mobilisation, section 4 sexies), `9` (message d'un salon, NIP-29), `9000`, `9001`, `9002` et `9005` (rôles et modération d'un salon, NIP-29, D-131 : section 5, partie rôles et modération), `39000` (description d'un salon, NIP-29), `1776` (engagement envers une clé de secours) et `1777` (avis de compromission), du brouillon NIP-41 : section 4 undecies, `1985` (étiquette NIP-32 : statut d'une revendication), `1040` (attestation OpenTimestamps, NIP-03 : preuve d'horodatage d'une archive). Types propres à PPF : `37240` (certificat d'une clé de travail de la plateforme) et `37241` (liste de l'équipe pour les accords de signature), section 4 decies ; types privés, qui ne voyagent que chiffrés dans une enveloppe : `8590` à `8592` (témoignages, `docs/integration/agir-temoignages.md`) et `8593` (minuteur « Sans nouvelles de moi », section 4 quindecies). Les types propres aux contenus PPF (fiche pratique, événement de mobilisation, revendication, etc.) seront attribués dans la plage adressable et ajoutés ici au fur et à mesure.
 
 ## 4. Identifiant stable d'un contenu modifiable
 
@@ -82,7 +82,7 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `summary` | Résumé | Non |
 | `published_at` | Première publication, secondes depuis 1970, en texte | Non |
 | `t` | Un thème par étiquette (`droits`, `manifestation`, …) | Non |
-| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide`, `fiche-pedagogique` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
+| `ppf-type` | `fiche-pratique`, `dossier`, `decryptage`, `article` (défaut), `parcours`, `histoire`, `qui-decide`, `fiche-pedagogique` ou `revendication` (et les briques de « Voir », section 4 quinquies) ; `appel` et `organisation` pour l'espace « Agir » (section 4 sexies) ; `suite` pour les suites d'une mobilisation (section 4 septdecies) ; `glossaire` pour une entrée du glossaire (ci-dessous, D-048) | Non |
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-territory-code` | Code du référentiel des territoires (section 4 nonies) à côté du libellé ; pas encore accepté par le serveur pour les revendications | Non |
@@ -236,6 +236,10 @@ Types de source : `autorites`, `organisateurs`, `comptage-independant`, `medias`
 | `mouvement` | `ppf-country` (obligatoire), `ppf-period` : début, fin ; `ppf-claim` (une par revendication), `ppf-result` (une par résultat obtenu). |
 | `dossier` | `ppf-axis` (un dossier sans axe n'est pas affiché dans « Voir »). |
 | `reponse` | `ppf-respondent` (nom de la personne qui répond, obligatoire) et un lien `a` de rôle `cible`. Le corps est la réponse. |
+| (API) | « Tableau de bord fédérateur » (PP-07, D-107) : `GET /api/v1/tableau-de-bord` renvoie `{"format": 1, "updatedOn": "AAAA-MM-JJ", "metrics": [{"code": "<code>", "measured": true, "months": [{"month": "AAAA-MM", "added": 3}]}]}`, chaque code de la liste fixe (`adherents`, `comptes-actifs`, `revendications`, `votes`, `appels`, `organisations`, `collectifs`, `signatures`, `engagements`, `argent-collecte`, `argent-redistribue`, montants en centimes) dans cet ordre ; `measured: false` veut dire « non mesuré » (jamais zéro). Modèle : `core/voir/Dashboard.kt`. |
+| `communique` | « Espace presse » (PP-04, D-106) : `ppf-date` (obligatoire) ; `ppf-archive`, `ppf-source`, `ppf-correction` comme ci-dessus. Le corps est le communiqué. Jamais parmi les briques des axes. |
+| `victoire` | « Nos victoires » (PP-03, D-105) : `ppf-victory` (obligatoire) : `engagement-tenu`, `revendication-satisfaite`, `loi-modifiee`, `autre` ; `ppf-date` (obligatoire) ; liens `a` de rôle `lie` vers les briques de « Voir » ; au moins une `ppf-source` ; `ppf-archive`, `ppf-correction`, `ppf-next` comme ci-dessus. Jamais parmi les briques des axes. |
+| `transparence` | « Transparence de PPF » (PP-01, D-104) : `ppf-rubric` (obligatoire) : `instance`, `decision`, `comptes`, `rapport` ; `ppf-instance` : `assemblee-generale`, `conseil-administration`, `bureau`, `equipe-editoriale`, `equipe-moderation`, `autre` (obligatoire pour une instance) ; `ppf-seat` : fonction, nom (obligatoire pour le `bureau` et le `conseil-administration`, décision de la propriétaire du 9 novembre 2026 ; ailleurs seulement à la demande de la personne), depuis, mode de désignation, rien d'autre sur la personne ; `ppf-date` (obligatoire pour une décision) ; `ppf-tally` : pour, contre, abstention ; `ppf-year` (obligatoire pour des comptes) ; `ppf-account-line` : `produit` ou `charge`, catégorie, montant en euros ; `ppf-approved` : date d'approbation ; `ppf-period` : début, fin (début obligatoire pour un rapport) ; `ppf-figure` : code de la liste fixe de `docs/integration/transparence-ppf.md`, section 2, valeur ; `ppf-archive`, `ppf-source`, `ppf-correction` comme ci-dessus. Jamais parmi les briques des axes. |
 
 ## 4 sexies. Espace « Agir » : mobilisations, appels, organisations (D-039 à D-044)
 
@@ -263,6 +267,7 @@ Le vocabulaire commun est dans `shared/core/.../core/agir/AgirFormats.kt` ; le c
 | `a` | Non | Adresse de l'appel dont l'événement est issu (AP-07) |
 | `r` | Non | Lien `http` ou `https`, sans espace |
 | `summary` | Non | Résumé court |
+| `ppf-collective` | Non | Identifiant du salon du collectif au nom duquel l'événement est publié (M24, section 4 quaterdecies) ; accepté seulement de son fondateur, de ses administrateurs et de ses modérateurs |
 
 **Codes d'erreur**, communs à l'application et au serveur : `missing_field` (message `d`), `missing_title`, `missing_start`, `bad_end`, `missing_location`, `bad_event_type`, `missing_territory`, `missing_charter`, `missing_field` avec le nom de l'étiquette pour une valeur facultative illisible, `too_long` avec le nom de l'étiquette. L'application est plus stricte que le serveur sur certaines longueurs (lieu 200 caractères, résumé 280) ; le serveur borne toute étiquette sans limite propre à 1000 caractères.
 
@@ -299,7 +304,7 @@ Réponse NIP-52 à un événement de calendrier (« Calendar Event RSVP »), adr
 Contenu adressable `30023:<clé>:<d>`, comme les revendications. `content` : le texte de l'appel en texte brut (pas de Markdown, donc aucun lien cliquable caché), 8000 caractères au plus ; pour un appel à témoins, la description factuelle, sans accuser nommément personne.
 
 - **Étiquettes communes** : `d` (l'application prend les premiers mots du titre repliés et quatre caractères hexadécimaux, 64 caractères `a-z0-9-` au plus ; le serveur accepte jusqu'à 128), `title`, `ppf-type` = `appel`, `ppf-call-type`, `ppf-territory`, `ppf-charter` = `1.0`, `published_at`, `ppf-origin` = `human`.
-- **Facultatives** : `summary`, `ppf-goal` (entier positif), `ppf-deadline` (secondes), `start`, `end`, `start_tzid` (`Europe/Paris`), `location`, `g`, `r` (liens), `ppf-call-status` (`ouvert`, écrit à la création, ou `clos` ; absente, elle se lit `ouvert`), `ppf-report` (bilan à la clôture, 2000 caractères au plus).
+- **Facultatives** : `summary`, `ppf-goal` (entier positif), `ppf-deadline` (secondes), `start`, `end`, `start_tzid` (`Europe/Paris`), `location`, `g`, `r` (liens), `ppf-call-status` (`ouvert`, écrit à la création, ou `clos` ; absente, elle se lit `ouvert`), `ppf-report` (bilan à la clôture, 2000 caractères au plus), `ppf-collective` (salon du collectif au nom duquel l'appel est lancé, M24, section 4 quaterdecies ; fondateur, administrateurs et modérateurs seulement).
 - **Valeurs libres** des champs propres aux types : texte (l'application limite à 300 caractères, 1000 pour `ppf-action`, `ppf-request`, `ppf-use`, `ppf-mission`, `ppf-alternatives` et `ppf-accessibility`, comme le serveur, qui borne toute étiquette sans limite propre à 1000 caractères, `AgirFormats.MAX_TAG_VALUE`) ; aucune coordonnée personnelle (adresse électronique, téléphone, IBAN, numéro de sécurité sociale) dans le texte ni dans les champs libres, vérifié par l'application puis par le serveur (`400 personal_data`) ; `ppf-people` et `ppf-goal` sont des entiers positifs ; `ppf-remote` vaut `oui` pour une mission à distance ; le parcours d'une manifestation va dans le texte.
 - **Clôture par l'auteur** : nouvelle version à la même adresse où seuls `ppf-call-status` (`clos`) et `ppf-report` changent (pour un appel à témoins, seul le statut peut changer sans relecture).
 
@@ -656,7 +661,7 @@ Certification d'un élu (DE-23, étape 5) : `POST /api/v1/urnes/certifications`,
 Urnes des revendications : identifiant `decider:revendication:<adresse>`, choix `pour`, `contre`, `blanc` (le vote blanc est compté et affiché ; ne pas voter, c'est l'abstention, montrée par la participation ; décision de la propriétaire du 7 novembre 2026), ouvertes pour une revendication « en débat » ou « très soutenue », fermées quand elle quitte le débat. Tant qu'une urne est ouverte, une colonne de niveau qui a de 1 à 4 bulletins (seuil privé `PPF_VOTE_MIN_DISPLAY`, 5 par défaut) est cachée dans les résultats (`ChoiceCounts.hidden` = `true`, `UrneResults.minimum` = 5) et dans le journal, avec le total des citoyens si elle en fait partie (le total moins l'autre colonne la redonnerait) ; tout est publié à la clôture.
 ## 4 octies. Données ouvertes du Parlement (D-064, D-065)
 
-Index : événement NIP-01, kind 30078, `d` = `ppf:parlement-index`, signé par une clé d'import (`OpenDataKeys`) ; `content` = l'index JSON (`example`, `importedOn`, `sources` avec nom, adresse, licence et date, `packages` avec nom, sha256 et taille). Paquets : `membres` (membres et groupes), `scrutins-an-AAAA-MM`, `votes-pe-AAAA-MM` (scrutins avec décomptes, décompte par groupe, positions `pour`, `contre`, `abstention`, `nonVotant`, `delegated`, `corrections` de type `mise-au-point` ou `dysfonctionnement`, `notVotingCauses`). Identifiants préfixés : `an:PA…`, `senat:…`, `pe:…`, scrutins `an:17:<numéro>`, dossiers `an-dossier:DLR5L17N…`. Code de circonscription : département puis numéro sur deux chiffres (`0101`, `2A01`, `97101`), commun avec l'annuaire des élus. Une brique de « Voir » peut porter `ppf-official-id` (personne ou texte). Modèles Kotlin : `core/voir/parlement/ParliamentFormat.kt` ; détail dans `docs/integration/voir-donnees-ouvertes.md`, section 3.
+Index : événement NIP-01, kind 30078, `d` = `ppf:parlement-index`, signé par une clé d'import (`OpenDataKeys`) ; `content` = l'index JSON (`example`, `importedOn`, `sources` avec nom, adresse, licence et date, `packages` avec nom, sha256 et taille). Paquets : `membres` (membres et groupes), `scrutins-an-AAAA-MM`, `votes-pe-AAAA-MM` (scrutins avec décomptes, décompte par groupe, positions `pour`, `contre`, `abstention`, `nonVotant`, `delegated`, `corrections` de type `mise-au-point` ou `dysfonctionnement`, `notVotingCauses`). Identifiants préfixés : `an:PA…`, `senat:…`, `pe:…`, scrutins `an:17:<numéro>`, dossiers `an-dossier:DLR5L17N…`. Code de circonscription : département puis numéro sur deux chiffres (`0101`, `2A01`, `97101`), commun avec l'annuaire des élus. Une brique de « Voir » peut porter `ppf-official-id` (personne ou texte). Paquets à part dans le même index : `parrainages-2027` (source `cc`, `docs/integration/voir-parrainages.md`, section 2) et `application-lois-<législature>` (source `an-barometre`, `docs/integration/voir-applicometre.md`, section 2), lus par `core/voir/parlement/OpenDataPackageLoader.kt`. Modèles Kotlin : `core/voir/parlement/ParliamentFormat.kt` ; détail dans `docs/integration/voir-donnees-ouvertes.md`, section 3.
 
 ### Historique des votes, pour le comparateur de « Décider » (D-066)
 
@@ -678,7 +683,7 @@ Cité par le même index signé, réécrit à chaque import (deux imports identi
 
 ## 4 decies. Signature de la plateforme : certificats, révocations, liste de l'équipe (D-129)
 
-Contrat : `docs/integration/service-signature.md` (version 1.2 du 8 novembre 2026). Modèles Kotlin communs aux applications, au serveur et au service de signature : `core/platform/` (`KeyCertificate`, `TeamList`, `PasskeyFingerprint`, `PlatformTrust`, `SigningUse`, `UrnClosures`, `ApprovalChallenge`, `SigningProtocol`).
+Contrat : `docs/integration/service-signature.md` (version 1.3 du 8 novembre 2026). Modèles Kotlin communs aux applications, au serveur et au service de signature : `core/platform/` (`KeyCertificate`, `TeamList`, `PasskeyFingerprint`, `PlatformTrust`, `SigningUse`, `UrnClosures`, `ApprovalChallenge`, `SigningProtocol`, `RootRequests`, `RootRequestQr`).
 
 **Clé racine.** Clé secp256k1 de la plateforme, sur le téléphone de la propriétaire (option A du contrat). Elle ne signe que les deux types ci-dessous : un contenu signé par la racine n'est jamais un contenu de la plateforme. Sa clé publique est la seule constante de confiance (`PlatformRoot.PUBLIC_KEY`) ; elle reste vide tant que la racine n'existe pas, et rien n'est alors reconnu comme contenu de la plateforme (jamais « tout »). La préproduction a sa propre racine, qui ne certifie jamais une clé de la production, et inversement.
 
@@ -691,7 +696,7 @@ Signé par la racine, `content` vide.
 | Étiquette | Contenu | Nombre |
 |---|---|---|
 | `d` | Clé publique de la clé de travail, hexadécimal minuscule (jamais la racine) | Une |
-| `ppf-key-use` | Un usage : `editorial.comprendre`, `editorial.voir`, `revendications.status`, `agir.organisations`, `decider.pacte`, `archives.timestamps`, `opendata.index`, `decider.urn_closure` | Une par usage ; un usage inconnu est ignoré par les applications ; le service de signature n'accepte un certificat `active` que s'il nomme exactement l'usage de la clé, une seule fois |
+| `ppf-key-use` | Un usage : `editorial.comprendre`, `editorial.voir`, `revendications.status`, `agir.organisations`, `decider.pacte`, `archives.timestamps`, `opendata.index`, `decider.urn_closure`, `groups.takeover` | Une par usage ; un usage inconnu est ignoré par les applications ; le service de signature n'accepte un certificat `active` que s'il nomme exactement l'usage de la clé, une seule fois |
 | `ppf-not-before` | Début de la validité, secondes depuis 1970, en chiffres | Une |
 | `ppf-not-after` | Fin de la validité (exclue), 90 jours au plus après le début | Une |
 | `ppf-key-status` | `["ppf-key-status","active"]`, ou `["ppf-key-status","revoquee","<date d'effet en secondes>"]` | Une |
@@ -714,12 +719,27 @@ Un événement est un **contenu valide de la plateforme pour un usage** (`Platfo
 | `archives.timestamps` | 1040 | Le type suffit | Aucun | Exactement un `e` (64 caractères hexadécimaux : l'empreinte horodatée) et au plus un `k` (type, en chiffres) ; `content` = la preuve `.ots` en base64 canonique, 8 Kio au plus une fois décodée, qui commence par l'en-tête OpenTimestamps (`\x00OpenTimestamps\x00\x00Proof\x00` puis `bf89e2e884e89294`), la version majeure 1, l'opération SHA-256 du fichier (`0x08`) et les 32 octets de l'empreinte, égaux à la valeur de `e`. **Aucun autre format de preuve n'est accepté pour l'instant** (RFC 3161 compris : un jeton RFC 3161 n'entre pas dans un événement 1040 de NIP-03 ; s'il en faut un, ce sera un autre type et une modification du contrat) |
 | `opendata.index` | 30078 | Exactement `d` = `ppf:parlement-index` | Aucun | Exactement `["d","ppf:parlement-index"]` (section 4 octies) ; `content` = un objet JSON |
 | `decider.urn_closure` | 30078 | Exactement un `d` qui commence par `ppf:urne-cloture:` | Aucun | Exactement `d` = `ppf:urne-cloture:<n>`, `ppf-urne` = `<n>` et `ppf-closing-sha256` = l'empreinte SHA-256 du document de clôture (`GET /api/v1/urnes/{n}/closing`) ; `content` = un objet JSON ; **jamais une seconde clôture pour le même `d`** |
+| `groups.takeover` (D-144) | 9000 | Toute la forme : exactement un `h` (identifiant de salon valide), exactement un `p` = `["p","<clé>","admin"]`, aucune autre étiquette, `content` = le motif, non vide, 500 caractères au plus | Un, d'un autre membre que l'auteur, toujours nommé (D-142, D-144) | La même forme (codes `kind_not_allowed`, `tag_not_allowed`, `missing_tag`, `bad_tag`, `bad_content`) ; la clé nommée n'est jamais une clé de la plateforme (clé de travail du service ou racine) |
 
 Les formes des trois usages automatiques sont celles de la version 1 du contrat : « Décider » les confirme avant de brancher l'archivage horodaté et la clôture des urnes, et toute modification est une modification du contrat (section 4). Pour tous les usages : 64 Kio au plus (forme canonique), 1000 étiquettes au plus, `created_at` au plus 5 minutes dans le futur et au plus 8 jours dans le passé (1 jour pour un usage automatique). **La signature prouve que la plateforme a dit le contenu, pas qu'il est vrai** : l'index des données ouvertes et les clôtures d'urnes portent un JSON choisi par le serveur sans relecture humaine, et les applications vérifient tout ce qui peut l'être (empreintes des paquets, empreinte du document de clôture, recomptage quand la méthode le permet).
 
 ### Clôture d'une urne : la première l'emporte (pour « Décider »)
 
 Exception à la règle des événements adressables : pour un même `d` = `ppf:urne-cloture:<n>`, l'application garde la **première** clôture signée par la plateforme (le plus petit `created_at`, à égalité le plus petit `id`), jamais la plus récente, et montre toute autre clôture signée par la plateforme pour le même `d` comme un **conflit** (« Deux clôtures signées existent pour cette urne : la première est retenue »). Une clôture plus récente ne remplace jamais la première, qu'elle vienne de la même clé ou de la clé suivante (autre adresse). Code commun : `UrnClosures.choose(événements, confiance)` rend, pour chaque `d`, la clôture retenue et la liste des conflits ; seuls comptent les événements que `PlatformTrust` accepte pour `decider.urn_closure`. Le service de signature, de son côté, refuse définitivement une seconde clôture pour le même `d` (`urn_already_closed`). Le stockage local et le serveur gardent donc **toutes** les clôtures reçues pour un `d` (pas de remplacement par `EventReplacement` pour ce type et ce préfixe), à brancher par « Décider ».
+
+### Reprise d'un salon resté sans administrateur (usage `groups.takeover`, D-144)
+
+Quand le seul administrateur d'un salon public a été déclaré compromis, l'équipe peut nommer un administrateur, par une action à deux (conception `docs/integration/salons-reprise.md`). La trace est publique et vérifiable : un **put-user de NIP-29 (type 9000)** signé par la clé de travail certifiée pour `groups.takeover`, de la forme exacte du put-user des salons (`RoomModeration.putUser`), le motif en plus :
+
+```json
+{"kind":9000,"pubkey":"<clé de travail groups.takeover>","tags":[["h","collectif-exemple"],["p","<clé nommée>","admin"]],"content":"[EXEMPLE] Le seul administrateur a été déclaré compromis ; le modérateur en place reprend le salon."}
+```
+
+- Étiquettes : exactement un `h` (l'identifiant du salon, 1 à 64 caractères `a-z0-9._~-`) et exactement un `p` à trois éléments, la clé nommée en 64 caractères hexadécimaux minuscules et le rôle `admin` (jamais `moderator`, jamais sans rôle) ; aucune autre étiquette (le put-user des salons n'en ajoute aucune).
+- `content` : le motif, montré publiquement dans le journal du salon, non vide, 500 caractères au plus, sans donnée personnelle (règle de la file `groups.orphans`).
+- La clé nommée n'est jamais une clé de la plateforme : la clé de la plateforme ne reçoit jamais de rôle.
+- Les applications reconnaissent la nomination comme celle de l'équipe quand `PlatformTrust.check(événement, SigningUse.GROUPS_TAKEOVER)` l'accepte, et l'affichent avec la mention « par l'équipe de PPF » et son motif. Le serveur ne la publie que si le salon n'a toujours aucun administrateur (`409 room_has_admin`).
+- Code commun : `GroupTakeover.breach` (la forme et ses codes de refus, la même dans les applications, le serveur et le service de signature), `GroupTakeover.unsigned` (construit l'événement non signé), `GroupTakeover.target` (la clé nommée).
 
 ### Liste de l'équipe (type 37241, adressable)
 
@@ -737,13 +757,25 @@ Lecture qui échoue fermée (8 novembre 2026) : une liste sans `ppf-not-after`, 
 
 **Empreinte d'une clé d'accès** (`PasskeyFingerprint.of`, `TeamCredential.fingerprint`) : les 8 premiers octets du SHA-256 de la clé COSE, en hexadécimal minuscule par groupes de 4 caractères (exemple : la clé de trois octets `abc` donne `ba78 16bf 8f01 cfea`). Montrée par l'écran d'inscription du back-office et par le téléphone de la propriétaire avant de signer la liste.
 
+### Demande pour la racine (D-141)
+
+Les événements **non signés** que la racine doit signer, préparés par le back-office et gardés 24 heures par le service de signature pour le téléphone de la propriétaire (contrat, section 5). Dépôt : `POST /v1/root-requests` (API interne), corps `{"events":[<événement non signé>, …]}`, chaque événement au format NIP-01 sans `id` ni `sig` (`pubkey`, `created_at`, `kind`, `tags`, `content`), de 1 à 100, 512 Kio au plus. Lecture par le téléphone : `GET /racine/demandes/{id}` (adresse d'approbation), réponse `{"id","created_at","expires_at","sha256","events":[…]}`.
+
+- **Identifiant** : 128 bits aléatoires, 32 caractères hexadécimaux minuscules.
+- **Empreinte** (`sha256`, `RootRequests.sha256`) : SHA-256, en hexadécimal minuscule, du texte `[` + les sérialisations canoniques NIP-01 des événements (`[0,"<pubkey>",<created_at>,<kind>,<tags>,"<content>"]`, celles dont le SHA-256 est l'identifiant de chaque événement), dans l'ordre, séparées par des virgules, sans espace + `]`. Elle lie chaque événement et leur ordre : le téléphone la recalcule sur ce qu'il a lu et refuse une demande dont l'empreinte n'est pas celle du code QR.
+- **Événements acceptés** (`RootRequests.read` et `RootRequests.check`, lecture qui échoue fermée) : signés par la racine (`pubkey`), `content` vide, datés d'au plus 5 minutes dans le futur et d'au plus 24 heures dans le passé ; un certificat (type 37240, `ppf-key-status` = `active`) ou une révocation (même type, `["ppf-key-status","revoquee","<date d'effet>"]`, la date toujours présente) d'une clé connue du service, avec les seules étiquettes `d`, `ppf-key-use` (une seule, l'usage de la clé), `ppf-not-before`, `ppf-not-after` (90 jours au plus), `ppf-key-status` et `alt` ; une liste de l'équipe (type 37241, `d` = `ppf-equipe`, `ppf-not-after` au plus 90 jours après sa date) avec les seules étiquettes `d`, `ppf-not-after`, `ppf-member` (quatre champs), `ppf-member-use` (un usage humain), `ppf-credential` (quatre champs) et `alt`, dont la lecture de `TeamList` garde chaque membre et chaque clé d'accès ; jamais deux événements de même adresse. Codes de refus dans le contrat, section 5.
+
+### Code QR d'une demande pour la racine (D-141)
+
+Texte : `PPF-RACINE:1:<environnement>:<identifiant>:<empreinte>`, par exemple `PPF-RACINE:1:preproduction:0123456789abcdef0123456789abcdef:<64 caractères hexadécimaux>`. `PPF-RACINE` puis la version du format (`1`), l'environnement (`production`, `preproduction` ou `development`), l'identifiant de la demande et son empreinte, séparés par `:` ; rien d'autre (`RootRequestQr.parse` refuse tout autre texte). Le téléphone choisit l'adresse d'approbation **qu'il connaît** pour cet environnement (jamais une adresse venue du code), y lit la demande et compare son empreinte. Dessiné par le back-office en SVG (ZXing core, correction d'erreur M, noir sur blanc, marge de 4 modules, aucun style en ligne), avec à côté le texte et l'empreinte par groupes de 4 caractères pour la comparer ou la recopier.
+
 ### Défi d'un accord
 
-Le défi WebAuthn qu'un membre signe pour approuver la signature d'un événement est SHA-256 du texte `ppf-approval-v1`, saut de ligne, usage, saut de ligne, identifiant hexadécimal de l'événement non signé (`ApprovalChallenge`). Exemple : l'usage `editorial.voir` et l'identifiant fait de 64 fois `a` donnent `6191c603b63bb16d1acb87d97834ad0872576eac06bb6027bd13929c38674f9a`. Depuis la version 1.2 du contrat, ce défi est donné au navigateur par le **service de signature lui-même**, sur sa propre page d'approbation (`<PPF_SIGNER_APPROVAL_ORIGIN>/approbation/<usage>/<id>`), jamais par le serveur principal. Le service vérifie l'assertion avec la clé COSE de la liste de l'équipe (jamais avec une clé envoyée dans la requête), son **origine d'approbation seulement** (une assertion faite sur le back-office est refusée), l'identifiant de partie de confiance des clés du back-office (`PPF_SIGNER_RP_ID`) et la vérification de la personne.
+Le défi WebAuthn qu'un membre signe pour approuver la signature d'un événement est SHA-256 du texte `ppf-approval-v1`, saut de ligne, usage, saut de ligne, identifiant hexadécimal de l'événement non signé (`ApprovalChallenge`). Exemple : l'usage `editorial.voir` et l'identifiant fait de 64 fois `a` donnent `6191c603b63bb16d1acb87d97834ad0872576eac06bb6027bd13929c38674f9a`. Depuis la version 1.2 du contrat, ce défi est donné au navigateur par le **service de signature lui-même**, sur sa propre page d'approbation (`<PPF_SIGNER_APPROVAL_ORIGIN>/approbation/<usage>/<id>`), jamais par le serveur principal. Le service vérifie l'assertion avec la clé COSE de la liste de l'équipe (jamais avec une clé envoyée dans la requête), son **origine d'approbation seulement** (une assertion faite sur le back-office est refusée), l'identifiant de partie de confiance des clés du back-office (`PPF_SIGNER_RP_ID`) et la vérification de la personne. L'auteur nommé d'un brouillon n'approuve jamais son propre contenu, et un brouillon éditorial nomme toujours son auteur (D-142).
 
 ### API interne et pages d'approbation du service de signature
 
-Hors API publique. API interne : port 8090 de son conteneur, joignable seulement par le serveur, qui présente `Authorization: Bearer <jeton>` (fichier secret partagé) ; brouillons (`POST /v1/drafts`, `GET /v1/drafts/{usage}/{id}`), signature (`POST /v1/sign`, qui refuse tout corps portant encore une approbation), certificats, liste, journal. Pages d'approbation : port 8091, sur leur propre adresse, servies et vérifiées par le service ; elles reçoivent aussi directement de l'application de la propriétaire les certificats, révocations et listes signés (`POST /racine/certificats`, `POST /racine/liste-equipe`). Requêtes et réponses en JSON (`core/platform/SigningProtocol.kt`) ; détail dans le contrat, section 5.
+Hors API publique. API interne : port 8090 de son conteneur, joignable seulement par le serveur, qui présente `Authorization: Bearer <jeton>` (fichier secret partagé) ; brouillons (`POST /v1/drafts`, `GET /v1/drafts/{usage}/{id}`), signature (`POST /v1/sign`, qui refuse tout corps portant encore une approbation), certificats, liste, journal. Pages d'approbation : port 8091, sur leur propre adresse, servies et vérifiées par le service ; elles reçoivent aussi directement de l'application de la propriétaire les certificats, révocations et listes signés (`POST /racine/certificats`, `POST /racine/liste-equipe`). Depuis la version 1.3 : demandes pour la racine (`POST /v1/root-requests` sur l'API interne, `GET /racine/demandes/{id}` sur les pages d'approbation). Requêtes et réponses en JSON (`core/platform/SigningProtocol.kt`) ; détail dans le contrat, section 5.
 
 ## 4 undecies. Clé de secours et compte compromis (S-146, D-134)
 
@@ -850,6 +882,168 @@ Les objectifs internes se règlent dans la configuration privée du serveur (`PP
 - `contact_case` : numéro (clé), type, sous-type, catégorie ou motif, statut, priorité (`normal`, `high`), membre assigné, dates de réception, d'échéance (et sa nature), de prolongation (et son motif), de la décision contestée, auteur de la décision et membre mis en cause (comptes de l'équipe, remplis par l'équipe), clôture, archive juridique (motif, date de réexamen, date de l'alerte), anonymisation, `access_hash`, `case_pubkey`, dernière activité. Jamais d'adresse IP, d'e-mail, de téléphone, d'identifiant d'appareil ni de compte de la personne.
 - `contact_envelope` : identifiant de l'enveloppe (clé), ordre de réception, numéro du dossier, sens (`in` vers la boîte, `out` vers la clé du dossier), JSON de l'enveloppe, date de réception, membre auteur d'une réponse. Jamais modifiée (un déclencheur l'interdit, et le rôle restreint du serveur n'a pas le droit `UPDATE`).
 - `contact_legal_hold_request` : une demande d'archive juridique, ou de sa levée, qui attend une deuxième personne (7 jours au plus).
+
+## 4 terdecies. Solidarité d'« Agir » : caisses et missions (M35, D-085)
+
+Contenus éditoriaux publics (type 30023), publiés seulement par une clé éditoriale et lus seulement s'ils sont signés par une clé de confiance. Détail et raisons : `docs/integration/agir-solidarite.md`. Le serveur les accepte comme tout 30023 éditorial (il refuse tout 30023 non éditorial qui n'est pas un appel). Paquet de l'application : `solidarite.json`.
+
+### Caisse de solidarité (`ppf-type` = `caisse`)
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `d` | oui | identifiant stable, 1 à 64 caractères `a-z0-9._~-` |
+| `title` | oui | nom de la caisse, 1 à 140 caractères ([EXEMPLE] pour un exemple) |
+| `summary` | oui | résumé |
+| `published_at` | oui | première publication, secondes depuis 1970 |
+| `ppf-type` | oui | `caisse` |
+| `ppf-fund-type` | oui | `greve` (caisse de grève), `juridique` (solidarité juridique : frais d'avocat, amendes, soutien aux personnes poursuivies), `autre` ; une valeur inconnue est lue `autre` |
+| `ppf-territory` | oui | commune, département ou `France`, écrit « Commune (dd) » comme l'annuaire |
+| `ppf-beneficiary` | oui | à qui elle sert, en clair (« Grévistes des transports urbains de Lille ») ; même nom d'étiquette que la collecte des appels (AP-10) |
+| `ppf-verified` | oui | date `AAAA-MM-JJ` à laquelle l'équipe a vérifié la caisse (la page de dons appartient bien à celui qui la gère) |
+| `ppf-no-party` | oui | `oui` : l'équipe a vérifié que la caisse ne sert ni un candidat ni un parti (point d'attention n° 12, D-039) ; sans cette valeur, la fiche est écartée |
+| `ppf-manager` | l'un des deux | nom de celui qui gère la caisse, en clair |
+| `a` | l'un des deux | adresse (`30023:<clé>:<d>`) de la fiche de l'annuaire de l'organisation qui gère la caisse |
+| `r` | pour une caisse ouverte | la page de dons de la caisse : seulement `https://`, nom d'hôte ASCII, sans partie « utilisateur@ » ; la première adresse valable est la seule retenue |
+| `ppf-sector` | non | secteur (« Transports », « Éducation ») |
+| `ppf-strike` | non | la grève ou le mouvement soutenu |
+| `ppf-fund-status` | non | `ouverte` (défaut, absente), `close` (la caisse ne reçoit plus de dons), `retiree` (l'équipe a retiré la fiche) ; une valeur inconnue est lue `retiree` : elle n'étend jamais la confiance |
+| `ppf-origin` | non | `human` ou `ai-assisted`, affichée |
+| `g` | non | géohash placé par l'équipe elle-même |
+
+`content` : présentation en Markdown simple (8 000 caractères au plus), sans lien cliquable (le rendu Markdown commun n'ouvre aucun lien).
+
+**Pourquoi un type à part plutôt qu'une fiche d'organisation de type « caisse »** : une caisse n'est pas une organisation, elle est gérée par une organisation ; elle a ses propres champs (bénéficiaires, grève, page de dons, engagement « ni candidat ni parti »). Surtout, une fiche d'organisation qui porte une clé `p` **vérifie** cette clé (`VerifiedOrganisations`) : réutiliser ce format pour les caisses mélangerait deux règles de confiance, et une caisse risquerait d'apparaître dans l'annuaire ou de rendre « vérifiée » la clé de son gestionnaire. Avec un type à part, rien ne change pour l'annuaire, l'agenda ni les appels.
+
+**Qui la gère** : le gestionnaire est désigné par l'adresse de sa fiche dans l'annuaire (`a`), retrouvée sur l'appareil parmi les fiches de confiance (à défaut de l'adresse exacte, par son identifiant `d`, par exemple après une rotation de la clé éditoriale). L'écran dit en mots l'un des trois états : « organisation vérifiée par PPF », « vérification retirée par PPF », ou « n'est pas dans l'annuaire de PPF » (nom seul, `ppf-manager`).
+
+### Mission de bénévolat (`ppf-type` = `mission`)
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `d`, `title`, `summary`, `published_at`, `ppf-type` | oui | comme ci-dessus, `ppf-type` = `mission` |
+| `ppf-skill` | oui, une ou plusieurs | `juriste`, `traduction`, `developpement`, `graphisme`, `verification`, `moderation`, `accueil`, `autre` ; une valeur inconnue est lue `autre` |
+| `ppf-territory` | oui | territoire, `France` pour une mission à distance |
+| `ppf-remote` | l'un des deux | `oui` : la mission se fait à distance (même valeur que les appels « Chercher des bénévoles ») |
+| `location` | l'un des deux | lieu en clair, jamais l'adresse d'une personne |
+| `ppf-commitment` | non | temps demandé, en clair (« Deux heures par semaine ») |
+| `ppf-people` | non | nombre de personnes recherchées, entier positif |
+| `ppf-deadline` | non | date limite, secondes depuis 1970 |
+| `ppf-mission-status` | non | `ouverte` (défaut, absente), `pourvue`, `close` ; une valeur inconnue est lue `close` |
+| `ppf-origin` | non | comme ci-dessus |
+
+`content` : description de la mission en Markdown simple.
+
+## 4 quaterdecies. Collectifs d'« Agir » (M24, étape 1, D-087)
+
+Un collectif **est** un salon (NIP-29, section 5 et `docs/integration/salons-roles.md`) dont la description (type 39000, signée par son fondateur) porte un marqueur et quelques étiquettes en plus. Tout le reste vient du salon : identifiant `d`, `name`, `about`, `ppf-territory`, `ppf-charter` = `1.0`, refus des doublons et garde-fous de la création (D-028, D-132), rôles et modération (D-131), fil de messages (le salon général du collectif), annuaire `GET /api/v1/groups`. Règles communes à l'application et au serveur : `shared/core/.../core/agir/collectives/Collective.kt` (`CollectiveFormat`) ; détail et raisons : `docs/integration/agir-collectifs.md`.
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `ppf-collective` | oui | `1` : marqueur et version du format ; une seule |
+| `ppf-scope` | oui | portée : `national`, `regional`, `departemental`, `local`, `quartier` ou `etablissement` ; une seule |
+| `ppf-collective-type` | oui | `collectif`, `club`, `comite`, `assemblee`, `reseau` ou `autre` ; une seule ; une valeur inconnue est lue `autre` |
+| `t` | non, 5 au plus | un thème : minuscules, espaces intérieurs réduits à un seul, sans `#` en tête, 1 à 40 caractères, jamais deux fois le même |
+| `l` | non | langue, code ISO 639-1 de deux lettres minuscules ; absente, `fr` |
+| `ppf-territory-code` | non | code du référentiel des territoires (section 4 nonies), écrit exactement comme le référentiel l'écrit (`com:69123`, `dep:2A`) ; seulement quand le fondateur a choisi un territoire proposé, jamais deviné ; sert à « près de chez moi », calculé sur l'appareil |
+| `ppf-internal-charter` | non | charte interne du collectif, publique, 3000 caractères au plus ; une seule, jamais vide |
+| `ppf-visibility` | non | `public` (absente, de même) ; seule valeur acceptée à l'étape 1. Réservées pour plus tard, refusées aujourd'hui : `prive`, `secret` (salons chiffrés de bout en bout) |
+| `ppf-join` | non | `open` (absente, de même) ; seule valeur acceptée à l'étape 1. Réservées pour plus tard, refusées aujourd'hui : `request`, `invitation` (liste des membres, point d'attention n° 26) |
+
+**Fondateur** : l'auteur de la description, premier administrateur (D-131), publiquement relié au collectif. Seul lui republie la description (`409 group_taken` pour une autre clé, `403 not_allowed` s'il a rendu son rôle d'administrateur). **Ne changent jamais** une fois le collectif créé : `ppf-collective`, `ppf-scope`, `ppf-territory-code`, `ppf-territory`, `ppf-charter`, `ppf-visibility`, `ppf-join` (`409 collective_immutable`). Un salon ordinaire ne devient pas un collectif par une nouvelle version, ni un collectif un salon ordinaire (la reprise d'un salon existant viendra avec `docs/integration/salons-reprise.md`). Les autres administrateurs changent le nom et la présentation par `edit-metadata` (9002), comme pour tout salon.
+
+**Création** : réservée à un compte de personne (pas un compte de collectif, D-133), non déclaré compromis pour cet événement (S-146) et **validé en personne** (D-112 : niveau `verifie`, ou `elu` pour un élu certifié, rencontré lui aussi) ; sinon `403 collective_needs_verified` (ou `403 account_compromised`). Sans le stockage des urnes sur le serveur, aucun collectif n'est créé. Aucune limite au nombre de collectifs par personne (les garde-fous de D-132 sur la création de salons s'appliquent).
+
+**Codes d'erreur** (`400`) : `collective_bad_marker`, `collective_bad_scope`, `collective_bad_type`, `collective_too_many_themes`, `collective_bad_theme`, `collective_bad_language`, `collective_bad_territory_code`, `collective_bad_internal_charter`, `collective_charter_too_long`, `collective_visibility_unsupported`, `collective_join_unsupported`.
+
+**Au nom d'un collectif** : une mobilisation (31923) ou un appel (30023, `ppf-type` = `appel`) peut porter `["ppf-collective", "<identifiant du salon>"]` (une seule, identifiant de salon valide, sinon `400 missing_field` avec le message `ppf-collective`). Le serveur l'accepte seulement de son fondateur ou d'une clé qui détient `admin` ou `moderator` dans le salon au moment où il le reçoit (`403 collective_role_required`) ; une étiquette qui ne désigne aucun collectif répond `404 collective_not_found`. Les règles habituelles d'« Agir » s'appliquent ensuite (relecture, contenus retenus). Un auteur qui a perdu son rôle peut encore annuler ou clore ce qu'il a publié. Les événements et appels publics rejoignent l'agenda, la carte et le mur communs. Ceux réservés aux membres attendent les salons chiffrés.
+
+**Sur l'appareil seulement** : rejoindre un collectif, c'est rejoindre son salon (table locale `group_membership`, rien n'est publié, le serveur ne connaît aucun membre) ; le nombre de membres n'est donc pas affiché. La recherche, les filtres et « près de chez moi » (commune choisie dans « Mes élus », puis les territoires qui la contiennent) ne quittent jamais l'appareil.
+
+## 4 quindecies. Minuteur « Sans nouvelles de moi » d'« Agir » (AG-55, D-088)
+
+Messages privés entre le compte de la personne qui arme un minuteur et chacun des destinataires qu'elle a choisis. Ils ne voyagent jamais en clair : chaque message est une **rumeur** (NIP-59) de type **8593**, scellée (type 13) par le compte de la personne pour **un** destinataire, puis emballée (type 1059) par une clé jetable, exactement comme un message privé (section 4 ter). Le serveur ne reçoit que l'enveloppe : il ne voit ni le type 8593, ni l'auteur, ni l'échéance, ni le contenu, et rien ne change pour lui. Détail et raisons : `docs/integration/agir-minuteur.md`. Le type 8593 est privé (il ne voyage que chiffré) ; aucun NIP connu ne l'utilise en novembre 2026, à vérifier dans la liste des NIP avant la phase 3 (Nostr), comme les types 8590 à 8592 des témoignages.
+
+Étiquettes communes à toutes les rumeurs du minuteur :
+
+| Étiquette | Contenu |
+|---|---|
+| `p` | la clé du destinataire de cette rumeur, seule : un destinataire ne sait jamais qui d'autre est prévenu |
+| `ppf-type` | `minuteur` |
+| `ppf-action` | `depot`, `annulation` ou `report` |
+| `ppf-timer` | identifiant du minuteur : 32 octets aléatoires en hexadécimal minuscule (64 caractères), tirés à l'armement |
+
+`created_at` est la vraie date du message (celle de l'enveloppe et du sceau est aléatoire). L'auteur est vérifié par le sceau (section 4 ter).
+
+**Dépôt** (`ppf-action` = `depot`), une rumeur par destinataire à l'armement :
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `ppf-deadline` | oui | échéance, secondes depuis 1970 ; plus tard que `created_at`, de 48 heures au plus (sinon la rumeur est ignorée) |
+| `ppf-hash` | oui | `h` = SHA-256 du secret aléatoire de 32 octets gardé par l'appareil de la personne, hexadécimal minuscule |
+| `location` | non | le lieu prévu, **écrit par la personne** (200 caractères au plus) ; jamais une position lue sur l'appareil |
+
+`content` : le texte de l'alerte préparé par la personne, texte brut, 1 000 caractères au plus, non vide.
+
+**Annulation** (`ppf-action` = `annulation`) : `["ppf-secret","<s>"]`, le secret courant en hexadécimal. Acceptée seulement si SHA-256(`s`) est le `h` courant du même minuteur (même `ppf-timer`, même auteur). `content` vide.
+
+**Report** (`ppf-action` = `report`) : `["ppf-secret","<s>"]` (secret courant), `["ppf-deadline","<nouvelle échéance>"]`, `["ppf-hash","<h'>"]` (empreinte du nouveau secret, gardé par l'appareil de la personne). Accepté seulement si SHA-256(`s`) est le `h` courant ; `h'` devient alors le `h` courant. `content` vide.
+
+**Lecture chez le destinataire** : les enveloppes arrivent dans n'importe quel ordre (leurs dates sont aléatoires). L'appareil garde tout ce qui arrive pour un minuteur (auteur, `ppf-timer`) et suit la chaîne : partant du `h` du dépôt, une révélation compte si son secret donne le `h` courant ; un report change l'échéance et `h` ; une annulation clôt la chaîne. Sans annulation valide, l'alerte s'affiche à l'échéance, sans réseau. Un dépôt en double est ignoré ; un dépôt dont l'échéance est passée depuis plus de 7 jours n'est pas une alerte ; un minuteur est oublié 7 jours après son échéance ou son annulation (plus longtemps que la fenêtre où ses enveloppes peuvent être relues) ; 50 minuteurs au plus par appareil, 50 révélations au plus par minuteur.
+
+**Sur l'appareil de la personne** (préférence privée sur Android, fichier `minuteur.json` du dossier privé sur ordinateur ; aucune table, aucune migration) : document JSON `TimerDeviceData` (version 1) : le compte propriétaire, le minuteur armé (identifiant, échéances réelle et affichée, destinataires, texte, lieu, `h`, secret courant caché, sel et nombre d'itérations du code « je vais bien », empreinte lente du code de détresse, essais faux), les envois en attente (sceaux déjà chiffrés, réemballés à chaque essai) et les minuteurs reçus. Le secret courant n'y est jamais en clair : il est caché par un XOR avec 32 octets tirés par HKDF-SHA-256 (sel : un nonce aléatoire de 16 octets ; info : `ppf-minuteur-secret-v1`) de la clé que donne le code « je vais bien » (PBKDF2-HMAC-SHA-256, sel aléatoire de 16 octets, 600 000 itérations, puis poivre HMAC de l'Android Keystore quand il existe). Vérifier un code, c'est ouvrir cette boîte et comparer SHA-256 du résultat avec `h`.
+
+## 4 sexdecies. Code QR des affiches d'« Agir » (AG-61, étape 1, décision à numéroter)
+
+Le code QR d'une affiche ou d'un tract fabriqué sur l'appareil porte soit l'événement signé lui-même, soit l'adresse stable du contenu. Règles communes : `shared/core/.../core/agir/poster/PosterQr.kt` et `AgirLinks.kt` ; détail et raisons : `docs/integration/agir-affiche-qr.md`. Rien dans le code ne concerne la personne qui a fait ou imprimé l'affiche.
+
+**Forme « événement »** (le cas normal) :
+
+```
+PPF:EVENT:1:<Base45 du gzip du JSON de l'événement signé>
+```
+
+| Partie | Contenu |
+|---|---|
+| `PPF:EVENT:1:` | marqueur et version du format, en capitales (mode alphanumérique des codes QR) ; une autre version prendra un autre chiffre |
+| charge | Base45 (RFC 9285) des octets gzip (RFC 1952) du JSON exact de l'événement signé (section 2), en UTF-8, tel que `SignedEvent.toJson()` l'écrit ; tous les caractères appartiennent à l'alphabet Base45 (`0-9`, `A-Z`, espace, `$%*+-./:`) |
+
+- **Taille** : 1 451 caractères au plus, préfixe compris : capacité d'un code de version 25 au niveau de correction M en mode alphanumérique (ISO/IEC 18004). Un événement plus long prend la forme « adresse ».
+- **Lecture** : Base45 décodé (longueur de reste 1 refusée, valeur trop grande refusée, caractère hors alphabet refusé), gzip décompressé (64 Ko au plus), JSON lu, puis identifiant et signature vérifiés (`SignedEvent.verify()`). Un événement dont l'identifiant ou la signature ne correspond pas est **refusé** ; un code illisible n'est jamais lu comme un événement. Un événement valide est exactement celui que son auteur a signé ; l'application dit qui l'a signé (équipe de PPF, organisation vérifiée, ou compte inconnu) avant de l'ajouter à l'agenda.
+- **Types acceptés à l'étape 1** : mobilisation de l'agenda (31923), ajoutée à l'agenda de l'appareil ; appel (30023, `ppf-type` = `appel`), lu sur place. Tout autre événement valide est montré comme « ni un événement de l'agenda ni un appel ».
+
+**Forme « adresse »** (événement trop long) :
+
+| Contenu | Adresse |
+|---|---|
+| Mobilisation (31923) | `https://politisation-populaire-francaise.org/agir/agenda/<clé de l'auteur>/<identifiant d>` |
+| Appel (30023, `ppf-type` = `appel`) | `https://politisation-populaire-francaise.org/agir/appels/<clé de l'auteur>/<identifiant d>` |
+
+Clé en hexadécimal minuscule (64 caractères) ; identifiant écrit tel quel s'il ne contient que des caractères non réservés (RFC 3986), sinon codé en pourcentage comme les adresses de « Voir ». **Jamais de paramètre ni de fragment.** À la lecture, seules ces adresses exactes sont suivies : `https`, l'un des six domaines de PPF (`www.` admis), ni nom d'utilisateur, ni port, ni paramètre, ni fragment, ni autre chemin. Les pages du site à ces adresses sont à écrire (question 1 de la note) ; l'application ouvre la mobilisation qu'elle connaît, après la synchronisation habituelle de tout l'agenda si besoin.
+
+## 4 septdecies. Suites d'une mobilisation d'« Agir » (AG-62, décision à numéroter)
+
+> Numéro pris le 9 novembre 2026 ; l'agent d'AG-61 (affiche avec code QR) ajoute peut-être une section au même moment : la session qui fusionne garde l'ordre d'entrée dans `main` et renumérote la seconde. Conception, règles et questions : `docs/integration/agir-et-apres.md`. **Pas encore compilé ni signé** (`suites.json` n'existe pas encore).
+
+Une suite (« Et après ? ») dit ce qui a suivi une mobilisation passée de l'agenda : réponse d'un élu, annonce, recul, texte déposé, décision de justice. C'est un contenu éditorial NIP-23 (type `30023`, `ppf-type` = `suite`) signé par une clé éditoriale : étiquettes communes de la section 4 bis (`summary` obligatoire), puis, dans l'ordre de l'en-tête. Lecture : `shared/core/.../core/agir/followups/FollowUp.kt` ; schéma du moteur éditorial : `FollowUpSchema.kt`.
+
+| Étiquette | Obligatoire | Contenu |
+|---|---|---|
+| `a` de rôle `mobilisation` | Oui, 1 à 20 | `["a", "31923:<clé>:<d>", "", "mobilisation"]` : adresse complète de la mobilisation suivie (section 4 sexies), quel que soit son auteur |
+| `ppf-suite-kind` | Oui | `reponse-elu`, `annonce`, `recul`, `texte-depose`, `decision-justice` ou `autre` |
+| `ppf-date` | Oui | Date de la suite, `AAAA-MM-JJ` (comme un fait de « Voir ») |
+| `ppf-fact-status` | Oui | `etabli`, `allegue` ou `enquete` : le vocabulaire des faits de « Voir » (section 4 quinquies) |
+| `ppf-source` | Oui, une ou plus | type de source de « Voir », nom, adresse `https://` **obligatoire**, date facultative |
+| `a` de rôle `personne` | Non, 20 au plus ; obligatoire pour `reponse-elu` | `30023:<clé>:<d>` d'une personne publique de « Voir » : le droit de réponse s'applique |
+| `a` de rôle `revendication` | Non, 20 au plus | `30023:<clé>:<d>` d'une revendication (section 4 quater) |
+| `a` de rôle `appel` | Non, 20 au plus | `30023:<clé>:<d>` d'un appel (section 4 sexies) |
+| `a` de rôle `chronologie` | Non, 20 au plus | `30023:<clé>:<d>` d'un fait de la chronologie de « Voir » (VO-06) |
+| `ppf-correction` | Non | date, résumé public, nature (`correction` ou `mise-a-jour`), comme la section 4 bis |
+
+Les liens portent l'adresse complète, et non un identifiant sous la clé de l'espace, parce que leurs cibles sont signées par d'autres clés (l'auteur d'une mobilisation, d'une revendication ou d'un appel ; la clé de « Voir »). Le même lien n'est donné qu'une fois. `content` : texte simple, 4 000 caractères au plus.
+
+**Lecture sur l'appareil** : une suite sans type connu, sans date, sans statut connu, sans mobilisation de type 31923 ou sans source qui ait son adresse est ignorée ; une source sans adresse est écartée ; seules les suites d'une clé éditoriale de confiance sont montrées. Pour une même adresse, la version la plus récente l'emporte. Les suites d'une mobilisation sont cherchées sur l'appareil, par l'étiquette `a` de son adresse, jamais demandées au serveur pour une mobilisation donnée ; quand elles viendront du serveur, elles seront tirées par type, toutes. Un droit de réponse de « Voir » (`ppf-type` = `reponse`) dont la cible est une suite s'affiche sous elle (le schéma de `reponse` n'accepte pas encore cette cible : question 3 de la note).
+
+**Paquet intégré** : `suites.json`, écrit par `tools/content-signer` à partir de `content/suites` (format dans `content/README.md`), absent tant que l'outil n'a pas été lancé ; l'application le tolère.
 
 ## 5. API du serveur (version 1)
 

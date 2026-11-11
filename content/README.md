@@ -4,6 +4,8 @@ Ce dossier contient les contenus signés et livrés avec l'application, pour que
 
 **Contenus réels et contenus d'exemple** (décision de la propriétaire du 9 novembre 2026) : autant que possible, de vrais contenus plutôt que des exemples, avec la mention « Rédigé par l'IA ». Les contenus de « Comprendre » (`fiches`, `parcours`, `decryptages`, `histoire`, `qui-decide`, `methode`, `glossaire`, `enseignants`) sont de vrais contenus : factuels, vérifiés sur les sources officielles, chaque source avec sa date de consultation, sans le préfixe `[EXEMPLE]`, avec `origin: ai-assisted` (l'application et le site affichent qu'ils sont rédigés avec l'aide d'une IA). Les fiches juridiques restent à faire relire par un avocat avant l'ouverture publique (feuille de route). Ce qui serait inventé reste marqué **[EXEMPLE]** (fil, revendications, agenda, appels, organisations, exemples de « Décider ») ; les prises de position de PPF sont, pour l'instant, rédigées par l'IA et étiquetées comme telles (D-212, dossier `cap`).
 
+**Décision de la propriétaire du 9 novembre 2026** : autant que possible, de vrais contenus plutôt que des exemples, avec la mention « Rédigé par l'IA ». Un contenu réel a un titre sans [EXEMPLE] et `origin: ai-assisted`, et chaque affirmation y est vérifiée sur une source officielle citée avec sa date de consultation (premiers concernés : les fiches pratiques d'« Agir » dans `fiches/`) ; l'agenda, les appels, les organisations, la solidarité et les données de test restent des exemples marqués [EXEMPLE].
+
 ## Format d'une fiche (`fiches/*.md`)
 
 Un en-tête entre deux lignes `---`, puis le texte en Markdown (titres `##`, listes `-`, gras `**`).
@@ -144,7 +146,7 @@ Le corps est le texte de la publication (type 1, note courte).
 
 ## Format des contenus de « Voir » (`voir/**/*.md`)
 
-Les sous-dossiers (`indicateurs`, `faits`, `personnes`, `textes`, `monde`, `dossiers`, `reponses`) ne servent qu'à ranger : c'est le champ `type` qui compte (`indicateur`, `fait`, `personne`, `texte`, `mouvement`, `dossier`, `reponse`). L'en-tête reprend `slug`, `title`, `summary`, `topics`, `origin`, `published_at` et `updated_at` ; **chaque autre champ devient une étiquette `ppf-<champ>`** dont les valeurs sont séparées par `|` ; seuls les champs prévus par le schéma du type (`shared/core/.../core/voir/VoirSchemas.kt`) sont acceptés. Un champ répété donne plusieurs étiquettes (une mesure, une source, un mandat par ligne). Les lignes qui commencent par `#` sont des commentaires.
+Les sous-dossiers (`indicateurs`, `faits`, `personnes`, `textes`, `monde`, `dossiers`, `reponses`, `partis`, `transparence`, `victoires`, `communiques`) ne servent qu'à ranger : c'est le champ `type` qui compte (`indicateur`, `fait`, `personne`, `texte`, `mouvement`, `dossier`, `reponse`, `parti`, `transparence`, `victoire`, `communique`). Les victoires (`victoire`, PP-03) sont décrites dans `docs/integration/victoires.md`, section 2. Les pages de « Transparence de PPF » (`transparence`, PP-01) sont décrites dans `docs/integration/transparence-ppf.md`, section 2. L'en-tête reprend `slug`, `title`, `summary`, `topics`, `origin`, `published_at` et `updated_at` ; **chaque autre champ devient une étiquette `ppf-<champ>`** dont les valeurs sont séparées par `|` ; seuls les champs prévus par le schéma du type (`shared/core/.../core/voir/VoirSchemas.kt`) sont acceptés. Un champ répété donne plusieurs étiquettes (une mesure, une source, un mandat par ligne). Les lignes qui commencent par `#` sont des commentaires.
 
 - `person`, `text`, `indicator` et `target` nomment une autre brique par son `slug` (lien).
 - `next` est « libellé | cible », la cible étant `fiche:<slug>`, `voir:<slug>` ou `espace:<carte, revendications, decider…>`.
@@ -223,10 +225,38 @@ En-tête entre deux lignes `---`, puis la présentation en Markdown.
 
 Résultat : `organisations.json` (type 30023, `ppf-type` = `organisation`). L'application n'accepte ces fiches que signées par une clé de l'équipe éditoriale. Les clés `pubkey` des exemples ont été tirées au hasard sans garder leur clé secrète : personne ne peut publier en leur nom.
 
+### Format d'une caisse de solidarité et d'une mission de bénévolat (`solidarite/caisses/*.md`, `solidarite/missions/*.md`)
+
+M35 (AG-10, AG-12), décision D-085 ; formats signés dans `docs/FORMATS.md`, section 4 terdecies.
+
+- `solidarite/caisses/*.md` : `slug`, `title`, `summary`, `fund_type` (`greve`, `juridique` ou `autre`), `territory`, `beneficiary`, `verified` (date de vérification par l'équipe, `AAAA-MM-JJ`), `no_party` (`oui` obligatoire : ni candidat ni parti), `manager` (nom) et/ou `manager_entry` (identifiant d'une fiche de `organisations/`, transformé en adresse `30023:<clé de l'outil>:<slug>` ; l'outil vérifie que la fiche existe), `donation_link` (`https://` seulement), `sector`, `strike`, `status` (`ouverte`, `close`, `retiree`), `origin`, `geohash`, `published_at`, `updated_at` (`AAAA-MM-JJ`, midi UTC comme les autres contenus). Avant de publier une vraie caisse : `docs/guides/verification-caisses-solidarite.md`.
+- `solidarite/missions/*.md` : `slug`, `title`, `summary`, `skills` (séparées par des virgules, dans la liste fermée de `docs/FORMATS.md`), `territory`, `remote` (`oui` pour une mission à distance), `location`, `commitment`, `people`, `deadline` (`AAAA-MM-JJ`, fin de journée à l'heure de Paris), `status` (`ouverte`, `pourvue`, `close`), `origin`, `published_at`, `updated_at`.
+- Aucun champ `type` dans ces en-têtes. Résultat : `solidarite.json`, à côté de `organisations.json`. Le corps est la présentation (Markdown simple, sans lien cliquable).
+
+### Format d'une suite de mobilisation (`suites/*.md`)
+
+AG-62 « Et après ? » (conception : `docs/integration/agir-et-apres.md` ; format signé : `docs/FORMATS.md`, section 4 septdecies). Une suite dit ce qui a suivi une mobilisation passée de l'agenda ; elle s'affiche sous la description de cette mobilisation, dans l'onglet « Passés ». **Les suites actuelles sont des exemples [EXEMPLE]** : elles suivent la projection-débat de Rennes de `agenda/`, et l'agenda reste fait d'exemples (décision de la propriétaire du 9 novembre 2026), donc ses suites aussi ; l'outil refuse un titre sans [EXEMPLE] et une source hors des domaines réservés aux exemples (`example.org`, `example.com`, `example.net`, `.invalid`).
+
+| Champ | Rôle |
+|---|---|
+| `slug`, `title`, `summary` | Identifiant stable (préfixe `suite-` conseillé), titre avec [EXEMPLE], résumé obligatoire (la phrase montrée sous le titre) |
+| `type` | `suite` |
+| `mobilization` | La mobilisation suivie : `agenda:<slug d'un fichier de agenda/>` ; une ligne par mobilisation si la suite en suit plusieurs |
+| `suite-kind` | `reponse-elu`, `annonce`, `recul`, `texte-depose`, `decision-justice` ou `autre` |
+| `date` | Date de la suite, `AAAA-MM-JJ`, jamais avant la mobilisation |
+| `fact-status` | `etabli`, `allegue` ou `enquete`, comme un fait de « Voir » |
+| `source` | Au moins une : `type \| nom \| adresse https \| date`, comme dans « Voir » ; **l'adresse est obligatoire** |
+| `person` | Facultatif, obligatoire pour une réponse d'élu : `voir:<slug d'une personne de voir/personnes>` (le droit de réponse s'applique) |
+| `demand`, `call`, `chronology` | Facultatifs : `revendication:<slug>`, `appel:<slug>`, `voir:<slug d'un fait de la chronologie>` |
+| `correction` | Facultatif : `date \| résumé public \| correction ou mise-a-jour` |
+| `origin`, `published_at`, `updated_at` | Comme pour une fiche |
+
+Le corps est un texte simple (pas de Markdown), 4 000 caractères au plus. L'outil écrit chaque lien sous la forme d'une adresse complète (`31923:<clé>:<slug>` pour une mobilisation, `30023:<clé>:<slug>` pour le reste) ; n'écrivez jamais l'adresse vous-même. Il refuse un champ inconnu, une suite sans source ou dont une source n'a pas d'adresse, un type ou un statut inconnus, un lien vers un identifiant qui n'existe pas ou du mauvais genre, une réponse d'élu sans `person`. Résultat : `suites.json`.
+
 ## Signer et intégrer les contenus
 
 ```bash
 ./gradlew :tools:content-signer:run
 ```
 
-L'outil lit `content/fiches`, `content/parcours`, `content/decryptages`, `content/histoire`, `content/qui-decide`, `content/methode`, `content/glossaire`, `content/revendications`, `content/fil`, `content/voir`, `content/agenda`, `content/appels` et `content/organisations`, signe chaque fichier en événement (fiches, parcours, contenus de « Comprendre », glossaire, revendications, appels et organisations : NIP-23, type 30023 ; fil : type 1 ; agenda : type 31923 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `comprendre.json`, `glossaire.json`, `revendications.json`, `fil.json`, `voir.json`, `agenda.json`, `appels.json` et `organisations.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La signature BIP-340 utilise un aléa : relancer l'outil change les signatures de tous les fichiers (les identifiants restent les mêmes), ce qui crée des différences inutiles entre branches ; ne garder que les fichiers réellement modifiés. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.
+L'outil lit `content/fiches`, `content/parcours`, `content/decryptages`, `content/histoire`, `content/qui-decide`, `content/methode`, `content/glossaire`, `content/revendications`, `content/fil`, `content/voir`, `content/agenda`, `content/appels`, `content/organisations`, `content/solidarite` et `content/suites`, signe chaque fichier en événement (fiches, parcours, contenus de « Comprendre », glossaire, revendications, appels, organisations, caisses et missions, suites : NIP-23, type 30023 ; fil : type 1 ; agenda : type 31923 ; voir `docs/FORMATS.md`) et écrit `fiches.json`, `parcours.json`, `comprendre.json`, `glossaire.json`, `revendications.json`, `fil.json`, `voir.json`, `agenda.json`, `appels.json`, `organisations.json`, `solidarite.json` et `suites.json` dans `shared/ui/src/commonMain/composeResources/files/contents/`, que l'application charge au premier démarrage. La signature BIP-340 utilise un aléa : relancer l'outil change les signatures de tous les fichiers (les identifiants restent les mêmes), ce qui crée des différences inutiles entre branches ; ne garder que les fichiers réellement modifiés. La clé de signature des exemples est lue dans le fichier indiqué par `PPF_CONTENT_KEY_FILE` (par défaut `~/.ppf/content-example.nsec`, hors dépôt) ; si le fichier n'existe pas, l'outil crée une nouvelle clé et affiche la clé publique à inscrire dans `EditorialTrust`.

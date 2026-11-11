@@ -304,6 +304,9 @@ EOF
     local backoffice_host="${backoffice_origin#https://}"
     grep -q '^PPF_SIGNER_RP_ID=' "$dir/.env" || echo "PPF_SIGNER_RP_ID=$backoffice_host" >> "$dir/.env"
     grep -q '^PPF_SIGNER_APPROVAL_ORIGIN=' "$dir/.env" || echo "PPF_SIGNER_APPROVAL_ORIGIN=https://signature.$backoffice_host" >> "$dir/.env"
+    # Official photos of the comparators (Décider, DE-16): put there by the team as root, named by their
+    # SHA-256 (infra/README.md), readable by everyone, mounted read-only in the server.
+    install -d -m 0755 -o root -g root "$dir/decider_photos"
     # Testimonies (Agir, M5): encrypted files written by the server only.
     install -d -m 0700 -o "$server_uid" -g "$server_uid" "$dir/testimonies"
     grep -q '^PPF_MODERATION_KEY=' "$dir/.env" || echo "PPF_MODERATION_KEY=" >> "$dir/.env"
@@ -325,6 +328,9 @@ EOF
     [ -f "$dir/secrets/import_key" ] || (umask 077; : > "$dir/secrets/import_key")
     chown "$importer_uid:$importer_uid" "$dir/secrets/import_key"
     chmod 400 "$dir/secrets/import_key"
+    # Presentations of the presidential election (Voir, VO-37): the data.gouv.fr dataset of 2027, read by the
+    # importer, empty until the decree of convocation (nothing is asked while it is empty).
+    grep -q '^PPF_SPONSORSHIPS_DATASET=' "$dir/.env" || echo "PPF_SPONSORSHIPS_DATASET=" >> "$dir/.env"
 }
 # The example content signer (EditorialTrust.EXAMPLE_EDITOR) publishes the [EXEMPLE] contents of the
 # preproduction only. The production starts with no editor key.

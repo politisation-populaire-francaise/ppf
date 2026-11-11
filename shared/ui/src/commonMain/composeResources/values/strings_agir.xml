@@ -13,9 +13,9 @@
     <string name="agir_organisations_title">Organisations</string>
     <string name="agir_organisations_text">Associations, syndicats, collectifs, legal teams, street medics et avocats bénévoles, vérifiés par l’équipe de PPF.</string>
     <string name="agir_collectives_title">Collectifs</string>
-    <string name="agir_collectives_text">Les salons des collectifs, des syndicats et des associations, pour s’organiser ensemble. Les mêmes que dans Messages.</string>
+    <string name="agir_collectives_text">Trouver un collectif près de chez vous, voir ses événements et ses appels, ou en fonder un avec un compte validé en personne. Les salons de discussion restent ouverts à tous.</string>
     <string name="agir_guides_title">Guides pour s’organiser</string>
-    <string name="agir_guides_text">Vos droits et les fiches pratiques sont dans l’espace « Comprendre ». Les guides pour créer une association ou déclarer une manifestation y sont en préparation.</string>
+    <string name="agir_guides_text">Vos droits, les guides pour s’organiser (déclarer une manifestation, créer une association, organiser une réunion publique, afficher et distribuer des tracts, collecter de l’argent) et les démarches de solidarité (aide juridictionnelle, trêve hivernale, Défenseur des droits) sont dans l’espace « Comprendre ».</string>
 
     <!-- In preparation: honest, without a date -->
     <string name="agir_soon_title">En préparation</string>
@@ -29,9 +29,9 @@
     <string name="agir_safety_title">Secours et sécurité en manifestation</string>
     <string name="agir_safety_text">Coordonner les secours et la défense juridique, sans jamais remplacer le 15 ou le 112.</string>
     <string name="agir_solidarity_title">Solidarité et caisses de grève</string>
-    <string name="agir_solidarity_text">Caisses de grève, solidarité juridique, entraide pour le covoiturage ou l’hébergement.</string>
+    <string name="agir_solidarity_text">Caisses de grève et de solidarité juridique vérifiées par l’équipe, avec des liens vers leurs propres pages de dons.</string>
     <string name="agir_help_title">Je veux aider</string>
-    <string name="agir_help_text">Proposer ses compétences aux missions de bénévolat publiées par l’équipe.</string>
+    <string name="agir_help_text">Les missions de bénévolat publiées par l’équipe, à trier selon vos compétences.</string>
     <string name="agir_material_title">Matériel militant</string>
     <string name="agir_material_text">Tracts, affiches et visuels à imprimer, avec le territoire et la date d’une mobilisation.</string>
     <string name="agir_offline_title">Messagerie sans Internet</string>

@@ -92,11 +92,21 @@ class TeamList private constructor(
         fun read(event: SignedEvent, root: String): TeamList? {
             if (event.kind != EventKinds.PLATFORM_TEAM_LIST || event.pubkey != root || !event.verify()) return null
             if (event.tags.singleValue("d") != IDENTIFIER) return null
-            val notAfter = event.tags.singleValue(TAG_NOT_AFTER)?.let(::parseSeconds)
-                ?.takeIf { it > event.createdAt && it - event.createdAt <= MAX_VALIDITY_SECONDS }
+            val (members, notAfter) = parse(event.tags, event.createdAt)
+            return TeamList(event, members, notAfter)
+        }
+
+        /**
+         * The members and the end that [tags] describe, read exactly as [read] reads a signed list (failing
+         * closed), but without any signature: for an unsigned list of a root request, that the signing
+         * service checks and the owner's phone shows before the root signs it ([RootRequests]).
+         */
+        internal fun parse(tags: List<List<String>>, createdAt: Long): Pair<Map<String, TeamMember>, Long?> {
+            val notAfter = tags.singleValue(TAG_NOT_AFTER)?.let(::parseSeconds)
+                ?.takeIf { it > createdAt && it - createdAt <= MAX_VALIDITY_SECONDS }
             val described = mutableMapOf<String, MutableList<TeamMember>>()
             val malformed = mutableSetOf<String>()
-            for (tag in event.tags) {
+            for (tag in tags) {
                 if (tag.isEmpty() || tag[0] != TAG_MEMBER) continue
                 if (tag.size < 3) {
                     // A line too short still names its account, which is then dropped.
@@ -113,7 +123,7 @@ class TeamList private constructor(
                 }
                 described.getOrPut(account) { mutableListOf() }.add(TeamMember(account, validFrom, nostr.ifEmpty { null }, emptySet(), emptyList()))
             }
-            val credentials = event.tags.filter { it.size >= 4 && it[0] == TAG_CREDENTIAL }.mapNotNull { tag ->
+            val credentials = tags.filter { it.size >= 4 && it[0] == TAG_CREDENTIAL }.mapNotNull { tag ->
                 val id = decodeCanonicalBase64Url(tag[2], MAX_CREDENTIAL_ID_LENGTH) ?: return@mapNotNull null
                 val key = decodeCanonicalBase64Url(tag[3], MAX_PUBLIC_KEY_LENGTH) ?: return@mapNotNull null
                 ListedCredential(tag[1], TeamCredential(tag[2], tag[3]), id.toHexString(), key.toHexString())
@@ -125,7 +135,7 @@ class TeamList private constructor(
                 .filter { (account, lines) -> lines.size == 1 && account !in malformed && ACCOUNT.matches(account) }
                 .mapValues { it.value.single() }
             val uses = mutableMapOf<String, MutableSet<SigningUse>>()
-            for (tag in event.tags) {
+            for (tag in tags) {
                 if (tag.size < 3 || tag[0] != TAG_MEMBER_USE || tag[1] !in accounts) continue
                 SigningUse.fromId(tag[2])?.let { uses.getOrPut(tag[1]) { mutableSetOf() }.add(it) }
             }
@@ -137,7 +147,7 @@ class TeamList private constructor(
             val members = accounts.mapValues { (account, member) ->
                 member.copy(uses = uses[account].orEmpty(), credentials = byAccount[account].orEmpty())
             }
-            return TeamList(event, members, notAfter)
+            return members to notAfter
         }
 
         /** The latest team list of [root] among [events], null when there is none. */

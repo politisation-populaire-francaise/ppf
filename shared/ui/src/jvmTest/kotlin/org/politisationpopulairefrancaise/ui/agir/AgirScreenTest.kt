@@ -20,6 +20,7 @@ import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.ui.PpfApp
+import org.politisationpopulairefrancaise.ui.agir.collectives.CollectivesTags
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationPageTags
 import org.politisationpopulairefrancaise.ui.agir.organisations.OrganisationsTags
 import org.politisationpopulairefrancaise.ui.groups.GroupsTags
@@ -52,9 +53,11 @@ class AgirScreenTest {
         inPreparation.forEach { id ->
             onNodeWithTag(AgirTags.SOON + id).performScrollTo().assertIsNotEnabled().assert(hasClickAction().not())
         }
-        // "Témoigner" (AG-07) and the protest mode (AG-13) left the rubrics in preparation.
-        assertEquals(5, inPreparation.size)
+        // "Témoigner" (AG-07), the protest mode (AG-13), the solidarity funds (AG-10) and "Je veux aider" (AG-12) left the rubrics in preparation.
+        assertEquals(3, inPreparation.size)
         assertEquals("temoigner", available[2])
+        assertTrue("solidarite" in available && "aider" in available)
+        assertTrue("solidarite" !in inPreparation && "aider" !in inPreparation)
         onNodeWithText("Messagerie sans Internet").assertExists()
     }
 
@@ -126,7 +129,7 @@ class AgirScreenTest {
     }
 
     @Test
-    fun guidesLeadToComprendreAndCollectivesShowTheRoomsOfMessages() = runComposeUiTest {
+    fun guidesLeadToComprendreAndCollectivesToTheirDirectoryThenTheRoomsOfMessages() = runComposeUiTest {
         val harness = AgirHarness()
         setContent { harness.Content(360, 740) }
         awaitTag(AgirTags.HOME)
@@ -134,10 +137,18 @@ class AgirScreenTest {
         waitForIdle()
         assertEquals(listOf(Space.COMPRENDRE), harness.navigations)
 
+        // M24: the rubric opens the directory of the collectifs; the plain rooms of "Messages" stay one tap away.
         onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.COLLECTIVES.id).performScrollTo().performClick()
         waitForIdle()
         awaitTag(AgirTags.COLLECTIVES)
+        awaitTag(CollectivesTags.DIRECTORY)
+        onNodeWithTag(CollectivesTags.ROOMS).performClick()
+        waitForIdle()
+        awaitTag(AgirTags.ROOMS)
         awaitTag(GroupsTags.PAGE)
+        onNodeWithTag(AgirTags.BACK).performClick()
+        waitForIdle()
+        awaitTag(CollectivesTags.DIRECTORY)
         onNodeWithTag(AgirTags.BACK).performClick()
         waitForIdle()
         awaitTag(AgirTags.HOME)

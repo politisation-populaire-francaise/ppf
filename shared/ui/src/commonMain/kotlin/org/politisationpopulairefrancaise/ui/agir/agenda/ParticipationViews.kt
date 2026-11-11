@@ -36,6 +36,8 @@ import org.politisationpopulairefrancaise.core.agir.agenda.Mobilization
 import org.politisationpopulairefrancaise.core.agir.agenda.ParticipationRole
 import org.politisationpopulairefrancaise.core.agir.agenda.ParticipationStatus
 import org.politisationpopulairefrancaise.core.signing.EventSigner
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.PpfBadge
 import org.politisationpopulairefrancaise.ui.components.PpfCard
@@ -236,6 +238,8 @@ internal fun OrganisationResponses(
             sending = false
         }
     }
+    // The public answer is a publication: a compromised account no longer gives one (S-146); the private ones stay.
+    val canPublish = LocalCanPublish.current
     PpfCard(Modifier.fillMaxWidth().testTag(ParticipationTags.ORG_RESPONSE)) {
         Text(stringResource(Res.string.agenda_org_title, name), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
         val state = when {
@@ -259,7 +263,7 @@ internal fun OrganisationResponses(
                 PpfPrimaryButton(
                     onClick = { send(ParticipationStatus.ACCEPTED, ParticipationRole.PARTICIPANT) },
                     text = stringResource(Res.string.agenda_org_show, name),
-                    enabled = !sending,
+                    enabled = canPublish && !sending,
                     icon = Lucide.Eye,
                     modifier = Modifier.fillMaxWidth().testTag(ParticipationTags.ORG_SHOW),
                 )
@@ -276,7 +280,7 @@ internal fun OrganisationResponses(
                 PpfSecondaryButton(
                     onClick = { send(ParticipationStatus.ACCEPTED, ParticipationRole.CO_ORGANISER) },
                     text = stringResource(Res.string.agenda_org_co_organise, name),
-                    enabled = !sending,
+                    enabled = canPublish && !sending,
                     icon = Lucide.BadgeCheck,
                     modifier = Modifier.fillMaxWidth().testTag(ParticipationTags.ORG_CO_ORGANISE),
                 )
@@ -285,7 +289,7 @@ internal fun OrganisationResponses(
                 PpfTextButton(
                     onClick = { send(ParticipationStatus.DECLINED, ParticipationRole.PARTICIPANT) },
                     text = stringResource(Res.string.agenda_org_withdraw),
-                    enabled = !sending,
+                    enabled = canPublish && !sending,
                     color = palette.inkMuted,
                     modifier = Modifier.testTag(ParticipationTags.ORG_WITHDRAW),
                 )
@@ -297,6 +301,7 @@ internal fun OrganisationResponses(
                     modifier = Modifier.testTag(ParticipationTags.ORG_WITHDRAW_PRIVATE),
                 )
             }
+            PublishBlockedNotice()
         }
         Spacer(Modifier.height(8.dp))
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {

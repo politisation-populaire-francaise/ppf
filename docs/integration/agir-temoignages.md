@@ -168,3 +168,9 @@ C2PA (Coalition for Content Provenance and Authenticity) décrit un « manifeste
 4. Dans l’application, « Mes témoignages », « Actualiser » : l’état change (publié ou refusé avec le motif).
 5. Dans Agir, « Appels », l’appel à témoins d’exemple : « Je témoigne » ouvre le formulaire relié à l’appel.
 6. Sur téléphone (APK d’essai), la photo se choisit par le sélecteur de photos du système, sans aucune permission ; à tester en phase de test avec une vraie photo prise par le téléphone (vérifier dans la réponse de `/dev/testimonies` que la position a disparu).
+
+## 10. Compte déclaré compromis (S-146, 8 novembre 2026)
+
+Décision du chef d'équipe (8 novembre 2026) : un contenu en attente signé après la date « compromis depuis » de sa clé ne peut qu'être refusé ; signé avant, il reste en file avec une mention. Pour les témoignages, **le serveur ne peut pas l'appliquer, et c'est voulu** : l'enveloppe NIP-59 est signée par une clé jetable, le serveur ne connaît jamais le compte du témoin et ne doit jamais relier un témoignage à un compte (D-051). La file `agir.testimonies` reste donc sans mention.
+- Sur l'appareil, un compte déclaré compromis ne peut plus envoyer de témoignage : le bouton « Envoyer » lit `LocalCanPublish` et affiche `PublishBlockedNotice()`.
+- **À faire par le client de l'équipe** (quand il existera) : après le déchiffrement, lire la clé qui signe le témoignage, demander `GET /api/v1/accounts/{pubkey}/status`, puis appliquer la même règle (refus seulement si le témoignage a été signé après « compromis depuis » ; sinon une mention visible) avant toute publication. La requête révèle la clé au serveur : la faire par lots mélangés, comme les appareils pour leurs contacts (`docs/integration/compte-compromis.md`).

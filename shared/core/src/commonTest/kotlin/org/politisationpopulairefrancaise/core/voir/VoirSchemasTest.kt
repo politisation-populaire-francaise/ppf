@@ -252,7 +252,7 @@ class VoirSchemasTest {
         listOf(
             VoirSchemas.Rules.UNREADABLE, VoirSchemas.Rules.LINE_IGNORED, VoirSchemas.Rules.CASE_NEEDS_PROCEDURE, VoirSchemas.Rules.SENTENCE_ONLY_FOR_CASES,
             VoirSchemas.Rules.NO_AGENT_NAME, VoirSchemas.Rules.PUBLIC_FUNDING_YEAR_ONCE, VoirSchemas.Rules.MEASURE_ID_ONCE, VoirSchemas.Rules.MEASURE_PART,
-            VoirSchemas.Rules.DUPLICATE, VoirSchemas.Rules.NEXT_SPACE,
+            VoirSchemas.Rules.DUPLICATE, VoirSchemas.Rules.NEXT_SPACE, VoirSchemas.Rules.SEAT_NAME,
         ).forEach { assertNotNull(EditorialMessages.template(it), it) }
     }
 

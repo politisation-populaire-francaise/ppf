@@ -129,6 +129,16 @@ enum class RejectionReason {
 
     /** A notice that does not check out (signature, commitment, recovery key, dates). */
     INVALID_NOTICE,
+
+    // Collectifs of "Agir" (M24, D-087, D-190): codes of server.agir.collectives.CollectiveRules.
+    /** Founding a collectif needs an account validated in person (or a certified elected official). */
+    COLLECTIVE_NEEDS_VERIFIED,
+
+    /** What makes a collectif (its tags, its territory, its kind) never changes once founded. */
+    COLLECTIVE_IMMUTABLE,
+
+    /** Publishing in the name of the collectif needs one of its roles (founder or moderator). */
+    COLLECTIVE_ROLE_REQUIRED,
 }
 
 /**

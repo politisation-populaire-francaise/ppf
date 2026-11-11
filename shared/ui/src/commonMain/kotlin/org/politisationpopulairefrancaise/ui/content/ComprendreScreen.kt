@@ -133,6 +133,7 @@ import org.politisationpopulairefrancaise.ui.resources.space_comprendre
 import org.politisationpopulairefrancaise.ui.resources.space_revendications
 import org.politisationpopulairefrancaise.ui.resources.space_voir
 import org.politisationpopulairefrancaise.ui.resources.temoignages_content_type
+import org.politisationpopulairefrancaise.ui.resources.suites_content_type
 import org.politisationpopulairefrancaise.ui.resources.space_decider
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
@@ -626,12 +627,13 @@ private fun typeLabel(type: ArticleType): String = stringResource(
         ArticleType.QUI_DECIDE -> Res.string.comprendre_kind_who
         ArticleType.GLOSSAIRE -> Res.string.glossaire_kind
         ArticleType.REVENDICATION -> Res.string.space_revendications
-        ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE, ArticleType.PARTI -> Res.string.space_voir
+        ArticleType.INDICATEUR, ArticleType.FAIT, ArticleType.PERSONNE, ArticleType.TEXTE, ArticleType.MOUVEMENT, ArticleType.REPONSE, ArticleType.PARTI, ArticleType.TRANSPARENCE, ArticleType.VICTOIRE, ArticleType.COMMUNIQUE -> Res.string.space_voir
         ArticleType.ORGANISATION -> Res.string.organisations_content_type
         ArticleType.APPEL -> Res.string.appels_title
         ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION, ArticleType.ELECTION -> Res.string.space_decider
         ArticleType.TEMOIGNAGE -> Res.string.temoignages_content_type
         ArticleType.FICHE_PEDAGOGIQUE -> Res.string.comprendre_kind_teaching
+        ArticleType.SUITE -> Res.string.suites_content_type
         ArticleType.CAP -> Res.string.comprendre_kind_cap
     },
 )

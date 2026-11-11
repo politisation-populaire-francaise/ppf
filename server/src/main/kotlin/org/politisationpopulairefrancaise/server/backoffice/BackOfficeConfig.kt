@@ -31,6 +31,8 @@ data class BackOfficeConfig(
     val port: Int = DEFAULT_PORT,
     val auditPublicKey: PublicKey? = null,
     val maintenanceInterval: Duration = DEFAULT_MAINTENANCE_INTERVAL,
+    /** PPF_ENVIRONMENT, written in the QR code of a request for the root (D-141), so that the phone asks the right service. */
+    val environment: String = "development",
 ) {
     /** The WebAuthn relying party id: the host name of [origin]. */
     val rpId: String = URI(origin).host
@@ -75,7 +77,7 @@ data class BackOfficeConfig(
             require(port != publicPort) { "$PORT_VARIABLE must differ from the public port $publicPort" }
             val auditKey = env(AUDIT_KEY_VARIABLE)?.trim()?.takeIf { it.isNotEmpty() }?.let(::parseAuditKey)
             val interval = env(MAINTENANCE_VARIABLE)?.trim()?.toIntOrNull()?.takeIf { it >= 0 }?.minutes ?: DEFAULT_MAINTENANCE_INTERVAL
-            return BackOfficeConfig(checkedOrigin(origin, environment), port, auditKey, interval)
+            return BackOfficeConfig(checkedOrigin(origin, environment), port, auditKey, interval, environment)
         }
 
         /**

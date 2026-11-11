@@ -1,0 +1,24 @@
+-- Schema version 16 to 17 (2026-11-08, provisional number, after the notifications of Communauté in 15.sqm):
+-- « Mes élus ont voté » and the followed words of Voir (see ParliamentAlerts.sq, the reference for fresh
+-- installations; this file must stay identical to its CREATE statements).
+
+CREATE TABLE parliament_ballot_seen (
+    ballot_id TEXT NOT NULL PRIMARY KEY,
+    first_seen_at INTEGER NOT NULL
+);
+
+CREATE TABLE followed_word (
+    folded TEXT NOT NULL PRIMARY KEY,
+    word TEXT NOT NULL,
+    added_at INTEGER NOT NULL
+);
+
+CREATE TABLE parliament_alert_member (
+    member_id TEXT NOT NULL PRIMARY KEY,
+    added_at INTEGER NOT NULL
+);
+
+CREATE TABLE parliament_alert_option (
+    name TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);

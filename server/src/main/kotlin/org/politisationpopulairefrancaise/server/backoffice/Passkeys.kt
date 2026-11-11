@@ -162,6 +162,24 @@ class WebAuthn4jPasskeys(origin: String, private val rpId: String) : PasskeyVeri
     }
 }
 
+/**
+ * The COSE public key of a stored passkey, as the team list signed by the root names it (D-141): the
+ * attested credential data stored at registration is the zero AAGUID (16 bytes), the length of the
+ * credential id (2 bytes, big-endian), the credential id, then the COSE key; the signing service rebuilds
+ * exactly this data from the team list to check an approval.
+ */
+object CoseKeys {
+    fun of(credential: StoredCredential): ByteArray? = of(credential.attestedData, credential.credentialId)
+
+    fun of(attestedData: ByteArray, credentialId: ByteArray): ByteArray? {
+        val offset = 16 + 2 + credentialId.size
+        if (attestedData.size <= offset) return null
+        val length = ((attestedData[16].toInt() and 0xff) shl 8) or (attestedData[17].toInt() and 0xff)
+        if (length != credentialId.size || !attestedData.copyOfRange(18, offset).contentEquals(credentialId)) return null
+        return attestedData.copyOfRange(offset, attestedData.size)
+    }
+}
+
 /** A ceremony started by the server and waiting for the browser's answer (sign-in excepted: [SignInChallenges]). */
 sealed interface Ceremony {
     val challenge: ByteArray

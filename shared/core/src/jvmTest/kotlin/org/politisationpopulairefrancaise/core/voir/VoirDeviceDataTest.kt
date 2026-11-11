@@ -8,6 +8,7 @@ import org.politisationpopulairefrancaise.core.signing.ContentAddress
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentStore
 import org.politisationpopulairefrancaise.core.voir.parlement.StoredIndex
 import org.politisationpopulairefrancaise.core.voir.parlement.StoredParliamentPackage
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertStore
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -26,6 +27,10 @@ class VoirDeviceDataTest {
         views.save(listOf(RevendicationViews.ALL, RevendicationViews.FOLLOWED))
         parliament.saveIndex(StoredIndex("{}", "2026-11-08", 1))
         parliament.savePackage(StoredParliamentPackage("scrutins-an-2026-11", "b".repeat(64), "{}", null, 2))
+        val alerts = VoteAlertStore(database)
+        alerts.addWord("retraites", 3)
+        alerts.setEuropeans(setOf("pe:990001"))
+        alerts.markSeen(listOf("an:17:1"), 3)
 
         val part = VoirDeviceData(database)
         assertEquals("voir-data", part.erasableId)
@@ -35,6 +40,7 @@ class VoirDeviceDataTest {
         assertEquals(0, views.count())
         assertNull(parliament.index())
         assertEquals(0L, parliament.countPackages())
+        assertTrue(alerts.words().isEmpty() && alerts.europeans().isEmpty() && alerts.seen().isEmpty(), "the followed words never survive the erase")
         // Called again after a failure elsewhere: still nothing, no error.
         part.eraseFromDevice()
         assertTrue(follows.all().isEmpty())

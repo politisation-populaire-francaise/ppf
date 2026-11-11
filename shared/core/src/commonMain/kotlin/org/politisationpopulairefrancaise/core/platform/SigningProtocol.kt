@@ -242,4 +242,64 @@ object SigningRefusals {
 
     const val RATE_LIMITED: String = "rate_limited"
     const val UNAUTHORIZED: String = "unauthorized"
+
+    // Root requests (D-141, [RootRequests]).
+
+    /** An event of a root request is not signed by the root, or is neither a certificate nor a team list. */
+    const val NOT_A_ROOT_EVENT: String = "not_a_root_event"
+
+    /** A certificate or a revocation of a root request names a key the service does not know. */
+    const val UNKNOWN_KEY: String = "unknown_key"
+
+    /** A certificate or a revocation of a root request does not name exactly one use, the use of its key. */
+    const val WRONG_USES: String = "wrong_uses"
+
+    /** The validity of a certificate is unreadable, empty or longer than 90 days. */
+    const val BAD_VALIDITY: String = "bad_validity"
+
+    /** The status of a certificate is neither `active` nor `revoquee` with its effective date. */
+    const val BAD_STATUS: String = "bad_status"
+
+    /** The team list of a root request has another `d`, or no end within 90 days of its date. */
+    const val NOT_A_TEAM_LIST: String = "not_a_team_list"
+
+    /** Two events of one root request have the same address (one key, or two team lists). */
+    const val DUPLICATE_ADDRESS: String = "duplicate_address"
+
+    /** No pending root request has this id (never made, expired after 24 hours, dropped, or lost by a restart). */
+    const val UNKNOWN_REQUEST: String = "unknown_request"
 }
+
+/** `POST /v1/root-requests`: the unsigned events the root must sign, prepared by the back-office (1 to 100). */
+@Serializable
+data class RootRequestBody(val events: List<EventDraft>)
+
+/**
+ * The answer of `POST /v1/root-requests`: `201 {"id","sha256","expires_at"}`, or a refusal
+ * `{"status":"refused","code","detail"}`.
+ */
+@Serializable
+data class RootRequestResponse(
+    /** 128 random bits in lowercase hexadecimal. */
+    val id: String? = null,
+    /** [RootRequests.sha256] of the events. */
+    val sha256: String? = null,
+    @SerialName("expires_at") val expiresAt: Long? = null,
+    val status: String? = null,
+    val code: String? = null,
+    val detail: String? = null,
+) {
+    companion object {
+        const val REFUSED: String = "refused"
+    }
+}
+
+/** `GET /racine/demandes/{id}` on the approval origin: the pending request, as the owner's phone reads it. */
+@Serializable
+data class RootRequestView(
+    val id: String,
+    @SerialName("created_at") val createdAt: Long,
+    @SerialName("expires_at") val expiresAt: Long,
+    val sha256: String,
+    val events: List<EventDraft>,
+)

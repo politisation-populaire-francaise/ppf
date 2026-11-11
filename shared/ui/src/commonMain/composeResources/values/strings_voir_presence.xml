@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- « Présence et délégations » (VO-35), in the Parliament of « Voir ». -->
+    <string name="presence_entry_title">Présence et délégations</string>
+    <string name="presence_entry_text">Sur les scrutins publics solennels, par groupe : votes personnels, par délégation, non-votants.</string>
+    <string name="presence_title">Présence et délégations</string>
+    <string name="presence_chamber">%1$s · %2$d scrutins publics solennels, du %3$s au %4$s, sur cet appareil</string>
+    <string name="presence_definition_title">Définition</string>
+    <string name="presence_definition">Un scrutin public solennel est décidé par la Conférence des présidents de l’Assemblée nationale, en général pour le vote sur l’ensemble d’un texte important, à un moment choisi pour que le plus grand nombre de députés soit là. Pour chaque député en fonction aujourd’hui et chaque scrutin solennel de son mandat présent sur cet appareil, PPF compte une seule de ces quatre issues : a voté lui-même (pour, contre ou abstention) ; a voté par délégation (un autre député a voté pour lui, une seule délégation par député est permise) ; non-votant (par exemple le président de séance, avec la cause publiée) ; aucun vote enregistré (absent, ou présent sans voter : les données ouvertes ne le disent pas).</string>
+    <string name="presence_limits">Les groupes sont ceux d’aujourd’hui ; les députés qui ont quitté l’Assemblée ne sont plus dans la liste. Les motions de censure sont exclues : seuls les votes favorables y sont recensés (Constitution, article 49). Ce chiffre ne mesure ni le travail en commission ni les autres activités.</string>
+    <string name="presence_no_ranking">PPF ne classe jamais les groupes ni les élus selon ces chiffres : les groupes sont dans l’ordre alphabétique.</string>
+    <string name="presence_sources">Sources : données ouvertes de l’Assemblée nationale ; Règlement de l’Assemblée nationale, article 65-1 ; fiche de synthèse n° 56 « Les votes à l’Assemblée nationale ».</string>
+    <string name="presence_column_group">Groupe</string>
+    <string name="presence_column_personal">Eux-mêmes</string>
+    <string name="presence_column_delegated">Délégation</string>
+    <string name="presence_column_not_voting">Non-votants</string>
+    <string name="presence_column_without_vote">Sans vote</string>
+    <string name="presence_cell">%1$d % (%2$d)</string>
+    <string name="presence_row">%1$s (membres : %2$d ; votes attendus : %7$d) : ont voté eux-mêmes %3$d %, par délégation %4$d %, non-votants %5$d %, aucun vote enregistré %6$d %.</string>
+    <string name="presence_members">Membres : %1$d · votes attendus : %2$d</string>
+    <string name="presence_none">Aucun scrutin public solennel de l’Assemblée nationale n’est sur cet appareil. Téléchargez la liste des parlementaires et un mois de scrutins depuis la liste du Parlement.</string>
+    <string name="presence_other_chambers">Sénat et Parlement européen : les données importées ne distinguent pas encore de grands scrutins ; rien n’est affiché plutôt qu’une estimation.</string>
+</resources>

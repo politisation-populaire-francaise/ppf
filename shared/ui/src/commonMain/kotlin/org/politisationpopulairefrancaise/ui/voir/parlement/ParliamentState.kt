@@ -20,6 +20,13 @@ import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentOpening
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentRepository
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentSnapshot
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentStore
+import org.politisationpopulairefrancaise.core.voir.parlement.InMemoryVoteAlertStorage
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertStore
+import org.politisationpopulairefrancaise.core.voir.parrainages.SponsorshipsLoader
+import org.politisationpopulairefrancaise.core.voir.application.ApplicationLoader
+import org.politisationpopulairefrancaise.core.elus.ElusDirectory
+import org.politisationpopulairefrancaise.core.elus.ElusStore
+import org.politisationpopulairefrancaise.core.elus.InMemoryElusStorage
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.resources.Res
 
@@ -28,6 +35,12 @@ sealed interface ParliamentPage {
     data class OfMember(val id: String) : ParliamentPage
     data class OfBallot(val id: String) : ParliamentPage
     data object Week : ParliamentPage // « Cette semaine au Parlement » (ParliamentWeekScreen.kt)
+    data object MyVotes : ParliamentPage // « Mes élus ont voté » (MyVotesPage.kt, VO-34)
+    data object Presence : ParliamentPage // « Présence et délégations » (PresencePage.kt, VO-35)
+    data object Sponsorships : ParliamentPage // « Parrainages de la présidentielle 2027 » (SponsorshipsPage.kt, VO-37)
+    data class SponsorshipsOf(val candidate: String) : ParliamentPage
+    data object Application : ParliamentPage // « Applicomètre » (ApplicationPage.kt, VO-36)
+    data class ApplicationOf(val id: String) : ParliamentPage
 }
 
 /**
@@ -39,6 +52,12 @@ sealed interface ParliamentPage {
 class ParliamentState(
     private val repository: ParliamentRepository,
     private val scope: CoroutineScope,
+    /** « Mes élus ont voté » (VO-34): my officials, the followed words and members of the European Parliament. */
+    val myVotes: MyVotesState = MyVotesState(InMemoryVoteAlertStorage(), ElusDirectory(null, InMemoryElusStorage()), scope),
+    /** « Parrainages de la présidentielle 2027 » (VO-37). */
+    val sponsorships: SponsorshipsState = SponsorshipsState(SponsorshipsLoader(null, InMemoryParliamentStorage()), scope),
+    /** « Applicomètre » (VO-36). */
+    val application: LawApplicationState = LawApplicationState(ApplicationLoader(null, InMemoryParliamentStorage()), scope),
 ) {
     private val lock = Mutex()
 
@@ -92,6 +111,12 @@ class ParliamentState(
             load()
         }
         show(ParliamentPage.OfMember(id))
+    }
+
+    /** Opens the screen on « Mes élus ont voté » (a notification of VO-34). */
+    fun openMyVotes() {
+        open()
+        show(ParliamentPage.MyVotes)
     }
 
     fun show(page: ParliamentPage) {
@@ -159,6 +184,11 @@ fun rememberParliamentState(dependencies: AppDependencies): ParliamentState {
     val scope = rememberCoroutineScope()
     return remember(dependencies) {
         val storage = dependencies.database?.let(::ParliamentStore) ?: InMemoryParliamentStorage()
-        ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope)
+        val elus = ElusDirectory(dependencies.remote, dependencies.database?.let(::ElusStore) ?: InMemoryElusStorage())
+        // The same table as the notification source of the platform host (VO-34).
+        val myVotes = MyVotesState(dependencies.database?.let(::VoteAlertStore) ?: InMemoryVoteAlertStorage(), elus, scope)
+        val sponsorships = SponsorshipsState(SponsorshipsLoader(dependencies.remote, storage, bundled = ::bundledParliamentFile), scope)
+        val application = LawApplicationState(ApplicationLoader(dependencies.remote, storage, bundled = ::bundledParliamentFile), scope)
+        ParliamentState(ParliamentRepository(dependencies.remote, storage, trust = dependencies.openDataTrust, bundled = ::bundledParliamentFile), scope, myVotes, sponsorships, application)
     }
 }

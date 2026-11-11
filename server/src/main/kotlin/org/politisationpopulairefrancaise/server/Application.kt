@@ -27,6 +27,7 @@ import org.politisationpopulairefrancaise.server.agir.AgirSetup
 import org.politisationpopulairefrancaise.server.agir.AgirSpace
 import org.politisationpopulairefrancaise.server.agir.agendaSource
 import org.politisationpopulairefrancaise.server.agir.agirApi
+import org.politisationpopulairefrancaise.server.agir.collectives.CollectiveRules
 import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonyQueue
 import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySetup
 import org.politisationpopulairefrancaise.server.agir.testimonies.TestimonySpace
@@ -70,6 +71,7 @@ import org.politisationpopulairefrancaise.server.editorial.EditorialTexts
 import org.politisationpopulairefrancaise.server.editorial.SignedEditorialPublisher
 import org.politisationpopulairefrancaise.server.editorial.StorePublicationPort
 import org.politisationpopulairefrancaise.server.signing.HttpPlatformSigner
+import org.politisationpopulairefrancaise.server.signing.PlatformKeys
 import org.politisationpopulairefrancaise.server.signing.PlatformSigner
 import org.politisationpopulairefrancaise.server.signing.PlatformSignerConfig
 import org.politisationpopulairefrancaise.server.editorial.PublishedContents
@@ -120,8 +122,10 @@ import org.politisationpopulairefrancaise.server.revendications.RevendicationPro
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsConfig
 import org.politisationpopulairefrancaise.server.revendications.RevendicationsSetup
 import org.politisationpopulairefrancaise.server.revendications.revendicationsApi
+import org.politisationpopulairefrancaise.server.voir.DashboardService
 import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
 import org.politisationpopulairefrancaise.server.voir.VoirDatasets
+import org.politisationpopulairefrancaise.server.voir.dashboardRoutes
 import org.politisationpopulairefrancaise.server.comprendre.EditorialComprendreSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
@@ -141,6 +145,7 @@ import org.politisationpopulairefrancaise.server.urne.UrneClosureStatements
 import org.politisationpopulairefrancaise.server.urne.ValidationSessionsQueue
 import org.politisationpopulairefrancaise.server.urne.urneApi
 import org.politisationpopulairefrancaise.server.security.SecurityContactSetup
+import org.politisationpopulairefrancaise.server.signing.SignerAdmin
 import org.politisationpopulairefrancaise.web.ContentVerifier
 import org.politisationpopulairefrancaise.web.SecurityContact
 import org.politisationpopulairefrancaise.web.agendaPage
@@ -197,6 +202,9 @@ import javax.sql.DataSource
  *   the team back-office, off unless PPF_BACKOFFICE_ORIGIN is set (for example
  *   `https://equipe.preprod.politisation-populaire-francaise.org`; `http://localhost:8081` in development
  *   only). Its routes answer only on PPF_BACKOFFICE_PORT (default 8081), never on PORT; see [BackOfficeConfig].
+ * - PPF_SIGNER_URL, PPF_SIGNER_CLIENT_TOKEN_FILE, PPF_SIGNER_ROOT_PUBKEY: the signing service of the platform,
+ *   off unless PPF_SIGNER_URL is set; with the back-office, the page « Clés de la plateforme » and the copy of
+ *   the journal of the service (D-141); see [PlatformSignerConfig].
  * - PPF_VAPID_PRIVATE_KEY_FILE, PPF_PUSH_ALLOWED_HOSTS, PPF_PUSH_INTERNAL_URL, PPF_PUBLIC_URL: the push
  *   wake-ups (M31), off unless PPF_VAPID_PRIVATE_KEY_FILE is set, see [PushConfig].
  *
@@ -323,6 +331,10 @@ fun Application.module(
      */
     editorialPublisher: EditorialPublisher? = null,
 ) {
+    // The contents signed by a working key certified by the root for their use are platform contents (D-129,
+    // step 6, server side): accepted by the policy, and kept out of the legal register like the editorial ones.
+    @Suppress("NAME_SHADOWING")
+    val policy = policy.withPlatformKeys(platformSigner as? PlatformKeys ?: PlatformKeys.NONE)
     // Every stored public content enters the legal register, except those of the editorial keys (D-077).
     val repository = dataSource?.let { EventRepository(it, LegalRegister(policy::isEditor)) }
     // The open export (M34, S-48): the contents of the editorial keys and the tables each pole registers.
@@ -366,7 +378,7 @@ fun Application.module(
     val teamBackOffice: BackOffice? = when {
         backOffice == null -> null
         dataSource == null -> null.also { log.warn("Back-office: ${BackOfficeConfig.ORIGIN_VARIABLE} is set but no database is configured, back-office off.") }
-        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace)
+        else -> BackOfficeSpace.start(this, dataSource, backOffice, agirSpace, compromised, platformSigner as? SignerAdmin)
     }
     // The testimonies wait in the queue agir.testimonies (refusal only: the server cannot read them).
     testimonySpace?.let { teamBackOffice?.queues?.register(TestimonyQueue(it)) }
@@ -424,6 +436,8 @@ fun Application.module(
         EditorialDraftsPurge(drafts).start(this, 24.hours, log)
     }
     val limits = PostLimits(relay)
+    // The store of the ballot boxes (D-110), before the rooms: a collectif (M24, D-087) is founded by an account validated in person.
+    val urneStore = dataSource?.takeIf { urne.seeds != null }?.let { UrneStore(it, LegalRegister(policy::isEditor)) }
     // Rooms (NIP-29): directory, roles and moderation (D-131), guardrails of the creation (D-132).
     val groups = repository?.let {
         GroupDirectory(
@@ -435,12 +449,12 @@ fun Application.module(
                 isTrusted = policy::isEditor,
                 youngAccountDays = GroupGuardrails.youngAccountDaysFromEnvironment(),
             ),
+            collectives = CollectiveRules(urneStore, accountTypes, compromised),
         )
     }
     // Anonymous ballot boxes (D-110): closed on schedule, their keys and ballots then published; the
     // demands in debate get theirs, closed when they leave the debate.
     // Only a natural person votes (D-116): the editorial keys and the organisations of the directory are refused.
-    val urneStore = dataSource?.takeIf { urne.seeds != null }?.let { UrneStore(it, LegalRegister(policy::isEditor)) }
     val urnes = urneStore?.let { store ->
         val organisations = VerifiedOrganisations(store.dataSource, policy::isEditor)
         UrneService.create(
@@ -575,6 +589,7 @@ fun Application.module(
             archivesApi(archives)
             transparencyApi(dataSource) // Requisitions answered per month only (D-077).
             exportApi(openExport) // The open export and its datasets (M34, S-48).
+            dashboardRoutes(repository?.let { DashboardService(it) }) // « Tableau de bord » (M34, PP-07): /api/v1/tableau-de-bord and /tableau-de-bord.
             openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
             openExport?.let { export -> verifyPages(ContentVerifier { export.check(it) }) } // « Vérifier un contenu PPF » (S-141).
             agirSpace?.let { agendaPage(it.agendaSource()) }

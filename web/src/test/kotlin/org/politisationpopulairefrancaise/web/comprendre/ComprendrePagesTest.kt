@@ -52,7 +52,7 @@ class ComprendrePagesTest {
 
     @Test
     fun theBundledContentsAreAllRead() {
-        assertEquals(8, catalog.fiches.size)
+        assertEquals(20, catalog.fiches.size)
         assertEquals(19, catalog.parcours.size)
         assertEquals(6, catalog.decryptages.size)
         assertEquals(3, catalog.stories.size)
@@ -67,8 +67,7 @@ class ComprendrePagesTest {
         val unsigned = Article.build(stranger.publicKey, "garde-a-vue", "Fausse fiche", "Fausse.", emptyList(), ArticleType.FICHE_PRATIQUE, ContentOrigin.HUMAN, 1_900_000_000, 1_900_000_000, "Texte piégé.")
         val forged = stranger.sign(unsigned)
         val mixed = ComprendreCatalog.fromEvents(events + forged) { it == EditorialTrust.EXAMPLE_EDITOR }
-        assertEquals(EditorialTrust.EXAMPLE_EDITOR, mixed.fiche("garde-a-vue")!!.event.pubkey)
-        assertTrue(mixed.fiche("garde-a-vue")!!.title.contains("garde", ignoreCase = true))
+        assertEquals("Garde à vue : vos droits", mixed.fiche("garde-a-vue")!!.title)
         // A tampered event of the trusted key is refused too (its signature no longer matches).
         val original = events.first { it.tags.any { t -> t[0] == "d" && t[1] == "garde-a-vue" } }
         val tampered = original.copy(content = "Texte modifié.", createdAt = original.createdAt + 10)
@@ -102,7 +101,7 @@ class ComprendrePagesTest {
         val html = render { ficheDocument(catalog.fiche("garde-a-vue")!!, catalog) }
         checkPage(html)
         listOf("callout callout-en-bref", "callout callout-legal", "callout callout-illegal", "callout callout-conseil").forEach { assertTrue(html.contains(it), it) }
-        // A real content written with an AI (decision of the owner, 9 November 2026): no badge of example.
+        // A real content (owner's decision of 9 November 2026): no example badge, the origin is shown.
         assertFalse(html.contains("Contenu d’exemple"))
         assertTrue(html.contains("Rédigé avec l’aide d’une IA"))
         // External addresses: a link marked as leaving the site, without referrer.
@@ -111,7 +110,7 @@ class ComprendrePagesTest {
         val next = html.indexOf("Et maintenant ?")
         val sources = html.indexOf("id=\"sources\"")
         assertTrue(next in 1 until sources, "sources come last")
-        assertTrue(html.indexOf("Rédigé par l’équipe") > sources)
+        assertTrue(html.indexOf("class=\"origin\"") > sources)
     }
 
     @Test

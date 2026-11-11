@@ -152,8 +152,20 @@ class TestimonyLibrary(
 
     // --- Photo -----------------------------------------------------------------------------------
 
-    /** A file the user chose: its provenance is signed at once, before anything is changed (AG-54). */
-    fun attach(bytes: ByteArray, source: CaptureSource = CaptureSource.IMPORT) {
+    /**
+     * A photo of the protected camera (AG-58, D-089), taken at [takenAt]: attached like a chosen one,
+     * its provenance saying "camera" and when it was taken. A new form if the last testimony left.
+     */
+    fun attachFromCamera(bytes: ByteArray, takenAt: Long) {
+        if (sendState is SendState.Sent || sendState is SendState.Queued) sendState = SendState.Idle
+        attach(bytes, CaptureSource.CAMERA, capturedAt = takenAt)
+    }
+
+    /**
+     * A file the user chose: its provenance is signed at once, before anything is changed (AG-54);
+     * [capturedAt] when the device knows when it was taken (the protected camera), else now.
+     */
+    fun attach(bytes: ByteArray, source: CaptureSource = CaptureSource.IMPORT, capturedAt: Long? = null) {
         photoRefusal = null
         val kind = MediaSniffer.kindOf(bytes)
         val refusal = when {
@@ -171,7 +183,11 @@ class TestimonyLibrary(
         preparingPhoto = true
         scope.launch {
             try {
-                val provenance = Provenance.signWithOneTimeKey(bytes, mimeOf(kind), source)
+                val provenance = if (capturedAt != null) {
+                    Provenance.signWithOneTimeKey(bytes, mimeOf(kind), source, capturedAt)
+                } else {
+                    Provenance.signWithOneTimeKey(bytes, mimeOf(kind), source)
+                }
                 // Only the digest of the statement leaves (D-111); the stand-in stamps nothing yet.
                 runCatching { timestamping.stamp(provenance.id.hexToByteArray()) }
                 val prepared = withContext(io) {

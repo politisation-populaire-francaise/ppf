@@ -121,6 +121,7 @@ private fun FlowContent.navigation(auth: Authenticated, current: String?) {
             if (TEAM_PERMISSIONS.any(actor::has)) navLink("/equipe", BackOfficeTexts.NAV_TEAM, current)
             if (actor.has(Permissions.AUDIT_READ)) navLink("/journal", BackOfficeTexts.NAV_JOURNAL, current)
             if (actor.has(Permissions.LEGAL_REQUISITION)) navLink("/requisitions", BackOfficeTexts.NAV_REQUISITIONS, current)
+            if (actor.has(Permissions.PLATFORM_KEYS)) navLink(BackOffice.PLATFORM_PATH, BackOfficeTexts.NAV_PLATFORM_KEYS, current)
             if (actor.has(Permissions.VALIDATION_SESSION_OPEN) || actor.has(Permissions.TEAM_REVOKE) || TeamRole.VALIDATOR in actor.roles) {
                 navLink("/seances", BackOfficeTexts.NAV_SESSIONS, current)
             }
@@ -613,6 +614,7 @@ fun HTML.memberPage(auth: Authenticated, account: TeamAccount, grants: List<Role
                                 strong { +key.name }
                                 +" : ${BackOfficeTexts.KEYS_CREATED} "
                                 dateTime(key.createdAt)
+                                fingerprint(key)
                                 form(action = "/equipe/membres/${account.id}/cles/${key.id}/suppression", method = FormMethod.post) {
                                     csrfField(auth)
                                     button(type = ButtonType.submit, classes = "bo-button-secondary") { +BackOfficeTexts.MEMBER_KEY_DELETE }
@@ -1026,6 +1028,7 @@ fun HTML.keysPage(auth: Authenticated, keys: List<KeyInfo>, notice: Notice?) {
         h1 { +BackOfficeTexts.KEYS_TITLE }
         p { +BackOfficeTexts.KEYS_INTRO }
         section {
+            p(classes = "bo-hint") { +BackOfficeTexts.KEYS_FINGERPRINT_HINT }
             ul(classes = "bo-list") {
                 keys.forEach { key ->
                     li {
@@ -1034,6 +1037,7 @@ fun HTML.keysPage(auth: Authenticated, keys: List<KeyInfo>, notice: Notice?) {
                         dateTime(key.createdAt)
                         +", "
                         key.lastUsedAt?.let { used -> +"${BackOfficeTexts.KEYS_USED} "; dateTime(used) } ?: +BackOfficeTexts.KEYS_NEVER_USED
+                        fingerprint(key)
                         if (keys.size > 1) {
                             form(action = "/cles/${key.id}/suppression", method = FormMethod.post) {
                                 csrfField(auth)
@@ -1066,6 +1070,17 @@ fun HTML.keysPage(auth: Authenticated, keys: List<KeyInfo>, notice: Notice?) {
                 button(type = ButtonType.submit, classes = "bo-button-danger") { +BackOfficeTexts.KEYS_SELF_CUT_BUTTON }
             }
         }
+    }
+}
+
+/**
+ * The short fingerprint of a passkey ([org.politisationpopulairefrancaise.core.platform.PasskeyFingerprint]),
+ * the one the owner's phone shows before signing the team list (D-141).
+ */
+private fun FlowContent.fingerprint(key: KeyInfo) {
+    p(classes = "bo-fingerprint") {
+        +"${BackOfficeTexts.KEYS_FINGERPRINT} : "
+        code { +(key.fingerprint ?: BackOfficeTexts.KEYS_FINGERPRINT_UNKNOWN) }
     }
 }
 

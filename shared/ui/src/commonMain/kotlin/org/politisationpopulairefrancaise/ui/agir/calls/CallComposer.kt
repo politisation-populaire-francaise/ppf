@@ -10,12 +10,14 @@ import org.politisationpopulairefrancaise.core.agir.calls.CallDraft
 import org.politisationpopulairefrancaise.core.agir.calls.CallIssue
 import org.politisationpopulairefrancaise.core.agir.calls.CallRules
 import org.politisationpopulairefrancaise.core.agir.calls.CallType
+import org.politisationpopulairefrancaise.core.agir.collectives.CollectiveFormat
 import org.politisationpopulairefrancaise.core.local.LocalEventStore
 import org.politisationpopulairefrancaise.core.publication.PublicationPort
 import org.politisationpopulairefrancaise.core.publication.PublicationResult
 import org.politisationpopulairefrancaise.core.signing.EventSigner
 import org.politisationpopulairefrancaise.core.signing.SignedEvent
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.ui.agir.collectives.CollectiveLink
 
 /**
  * The state of the "Lancer un appel" form (AP-01, AP-10): the type, the draft, the acceptance of
@@ -37,6 +39,13 @@ class CallComposer(
 
     var draft: CallDraft by mutableStateOf(CallDraft())
     var charterAccepted: Boolean by mutableStateOf(false)
+
+    /**
+     * The collectif the call is launched in the name of (AG-50, D-087), set by its page; null for a
+     * call of the author alone. It adds the tag `ppf-collective`, which the server accepts from its
+     * founder, administrators and moderators only.
+     */
+    var collective: CollectiveLink? by mutableStateOf(null)
     var sending: Boolean by mutableStateOf(false)
         private set
     var outcome: CallSendOutcome? by mutableStateOf(null)
@@ -66,7 +75,8 @@ class CallComposer(
         if (!ready(issues(canFundraise))) return finish(CallSendOutcome.FAILED)
         sending = true
         try {
-            val event = signer.sign(draft.toUnsignedEvent(signer.publicKey, clock()))
+            val unsigned = draft.toUnsignedEvent(signer.publicKey, clock())
+            val event = signer.sign(collective?.let { CollectiveFormat.withCollective(unsigned, it.id) } ?: unsigned)
             withContext(Dispatchers.Default) { store.store(event, pending = true) }
             sent = event
             val result = remote?.publish(event) ?: PublicationResult.Unavailable()

@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Strike simulator of "Agir" (M35, AG-60), docs/integration/agir-simulateur-greve.md. Rules checked
+     on official sources on 9 November 2026. French, the user is addressed with "vous", typographic
+     apostrophe (’), no em dash. -->
+<resources>
+    <!-- Screen -->
+    <string name="greve_title">Simulateur du gréviste</string>
+    <string name="greve_description">Estimez ce qu’une grève retire de votre paie, et voyez ce que la loi demande avant de faire grève.</string>
+    <string name="greve_back">Retour à Solidarité</string>
+    <string name="greve_private">Ce que vous écrivez ici reste sur votre appareil, en mémoire, le temps de votre visite : rien n’est enregistré ni envoyé.</string>
+
+    <!-- Entry from the solidarity rubric -->
+    <string name="greve_entry_title">Simulateur du gréviste</string>
+    <string name="greve_entry_text">Combien une grève retire-t-elle de votre paie ? Préavis, déclaration : que demande la loi dans votre secteur ?</string>
+    <string name="greve_entry_open">Ouvrir le simulateur</string>
+
+    <!-- Status -->
+    <string name="greve_status_title">Votre statut</string>
+    <string name="greve_status_private">Salarié d’une entreprise</string>
+    <string name="greve_status_private_text">Secteur privé, y compris les entreprises publiques et les transports.</string>
+    <string name="greve_status_state">Fonction publique de l’État</string>
+    <string name="greve_status_state_text">Fonctionnaire ou contractuel de l’État : ministères, éducation nationale, établissements publics de l’État.</string>
+    <string name="greve_status_territorial">Fonction publique territoriale</string>
+    <string name="greve_status_territorial_text">Fonctionnaire ou contractuel d’une commune, d’un département, d’une région ou de leurs établissements.</string>
+    <string name="greve_status_hospital">Fonction publique hospitalière</string>
+    <string name="greve_status_hospital_text">Fonctionnaire ou contractuel d’un hôpital public ou d’un établissement social ou médico-social public.</string>
+
+    <!-- Sector -->
+    <string name="greve_sector_title">Votre secteur</string>
+    <string name="greve_sector_text">Il peut changer le préavis et la déclaration avant la grève.</string>
+    <string name="greve_sector_general">Autre secteur</string>
+    <string name="greve_sector_general_text">Aucun des cas ci-dessous.</string>
+    <string name="greve_sector_land_transport">Transport régulier de voyageurs</string>
+    <string name="greve_sector_land_transport_text">Bus, tramway, métro, train.</string>
+    <string name="greve_sector_air_transport">Transport aérien</string>
+    <string name="greve_sector_air_transport_text">Personnel navigant, escale, maintenance en ligne, sûreté, secours et incendie, péril animalier.</string>
+    <string name="greve_sector_private_public_service">Autre service public géré par une entreprise</string>
+    <string name="greve_sector_private_public_service_text">Une entreprise chargée de la gestion d’un service public, hors transports de voyageurs.</string>
+    <string name="greve_sector_primary_school">École maternelle ou élémentaire publique</string>
+    <string name="greve_sector_primary_school_text">Vous enseignez dans une école publique du premier degré.</string>
+    <string name="greve_sector_air_navigation">Navigation aérienne</string>
+    <string name="greve_sector_air_navigation_text">Contrôle, information de vol, alerte.</string>
+    <string name="greve_sector_territorial_continuity">Service territorial de continuité</string>
+    <string name="greve_sector_territorial_continuity_text">Déchets ménagers, transport public, aide aux personnes âgées ou handicapées, accueil des enfants de moins de 3 ans, périscolaire, restauration collective ou scolaire.</string>
+
+    <!-- Pay and working time -->
+    <string name="greve_pay_title">Votre rémunération</string>
+    <string name="greve_pay_label">Rémunération mensuelle brute, en euros</string>
+    <string name="greve_pay_hint">Par exemple 2 150,50</string>
+    <string name="greve_pay_help_private">Salaire mensuel brut, avec les primes et indemnités versées chaque mois.</string>
+    <string name="greve_pay_help_public">Traitement brut, indemnité de résidence et primes du mois (les primes annuelles divisées par 12, d’après l’an dernier). Sans le supplément familial de traitement, qui n’est pas retenu, ni les remboursements de frais.</string>
+    <string name="greve_pay_error">Écrivez un montant en euros, par exemple 2 150,50.</string>
+    <string name="greve_weekly_label">Heures de travail par semaine</string>
+    <string name="greve_weekly_hint">Par exemple 35</string>
+    <string name="greve_weekly_error">Écrivez un nombre d’heures entre 1 et 60, par exemple 35 ou 37,5.</string>
+    <string name="greve_day_hours_label">Heures prévues un jour de grève</string>
+    <string name="greve_day_hours_hint">Par exemple 7</string>
+    <string name="greve_hours_error">Écrivez un nombre d’heures, par exemple 2, 3,5 ou 1h30.</string>
+
+    <!-- Days of strike -->
+    <string name="greve_days_title">Vos jours de grève ce mois-ci</string>
+    <string name="greve_days_help_private">Seules les heures que vous deviez travailler et n’avez pas travaillées sont retenues.</string>
+    <string name="greve_days_help_state">Chaque jour de grève compte pour un trentième de votre rémunération, même pour une heure.</string>
+    <string name="greve_days_help_local">Une journée compte pour un trentième, une demi-journée pour un soixantième, une heure pour 1/151,67, au plus un trentième par jour.</string>
+    <string name="greve_day_label">Jour %1$d</string>
+    <string name="greve_kind_full">Journée</string>
+    <string name="greve_kind_half">Demi-journée</string>
+    <string name="greve_kind_hours">Heures</string>
+    <string name="greve_day_hours_field">Nombre d’heures de grève du jour %1$d</string>
+    <string name="greve_day_remove">Retirer le jour %1$d</string>
+    <string name="greve_day_add">Ajouter un jour de grève</string>
+    <string name="greve_days_max">Le simulateur compte un mois à la fois : faites une simulation par mois.</string>
+    <string name="greve_between_label">Jours sans service entre deux jours de grève</string>
+    <string name="greve_between_help">Week-end, jour férié ou repos compris entre deux jours de grève, si vous n’avez pas repris le travail entre les deux. Exemple : grève le vendredi et le lundi suivant, indiquez 2.</string>
+    <string name="greve_between_less">Un jour sans service de moins</string>
+    <string name="greve_between_more">Un jour sans service de plus</string>
+    <plurals name="greve_between_value">
+        <item quantity="one">%1$d jour sans service</item>
+        <item quantity="other">%1$d jours sans service</item>
+    </plurals>
+
+    <!-- Result -->
+    <string name="greve_result_title">Estimation</string>
+    <string name="greve_disclaimer">Estimation, pas un conseil juridique ni un bulletin de paie. Votre employeur peut calculer autrement : vérifiez avec votre syndicat ou votre service du personnel.</string>
+    <string name="greve_result_incomplete">Indiquez votre rémunération et vos jours de grève pour voir l’estimation.</string>
+    <string name="greve_result_amount">Retenue estimée : %1$s</string>
+    <string name="greve_result_share">soit %1$s de votre rémunération mensuelle brute.</string>
+    <string name="greve_result_capped">La grève couvre tout le mois : la retenue est limitée à votre rémunération du mois.</string>
+    <string name="greve_result_gross_private">Montant brut, arrondi au centime. L’effet sur votre salaire net n’est pas calculé.</string>
+    <string name="greve_result_gross_public">Montant brut, arrondi au centime. La part retenue n’est pas soumise à cotisations : la baisse de votre paie nette est un peu plus faible.</string>
+    <string name="greve_result_not_simulated">Le simulateur ne calcule pas encore la retenue d’une entreprise chargée d’un service public hors transports de voyageurs : le code du travail (article L2512-5) y prévoit une règle particulière, à confirmer. Le préavis et les sources ci-dessous restent valables.</string>
+    <string name="greve_detail_title">Détail</string>
+    <string name="greve_detail_day">Jour %1$d : %2$s</string>
+    <string name="greve_detail_full">journée entière</string>
+    <string name="greve_detail_half">demi-journée</string>
+    <string name="greve_detail_thirtieth">%1$s, un trentième</string>
+    <string name="greve_detail_sixtieth">%1$s, un soixantième</string>
+    <string name="greve_detail_hourly">%1$s, divisé par 151,67 heures</string>
+    <string name="greve_detail_hourly_capped">%1$s, limité à un trentième</string>
+    <string name="greve_detail_not_worked">%1$s non travaillées</string>
+    <string name="greve_detail_private_total">Heures retenues : %1$s sur %2$s heures par mois.</string>
+    <plurals name="greve_detail_between">
+        <item quantity="one">%1$d jour sans service compris dans la grève, un trentième</item>
+        <item quantity="other">%1$d jours sans service compris dans la grève, un trentième chacun</item>
+    </plurals>
+    <plurals name="greve_detail_thirtieths">
+        <item quantity="one">%1$d trentième retenu au total</item>
+        <item quantity="other">%1$d trentièmes retenus au total</item>
+    </plurals>
+
+    <!-- Rule -->
+    <string name="greve_rule_title">La règle appliquée</string>
+    <string name="greve_rule_private">Dans le privé, la retenue est strictement proportionnelle au temps de grève : salaire mensuel, divisé par les heures du mois, multiplié par les heures non travaillées. Heures du mois : %1$s (%2$s par semaine, multipliées par 52 et divisées par 12). Une retenue plus forte est interdite, comme toute mesure qui pénaliserait les grévistes.</string>
+    <string name="greve_rule_transport">Dans les transports réguliers de voyageurs, la rémunération est réduite en fonction de la durée non travaillée (code des transports, article L1324-11) : salaire mensuel, divisé par les heures du mois, multiplié par les heures de grève. Heures du mois : %1$s (%2$s par semaine, multipliées par 52 et divisées par 12).</string>
+    <string name="greve_rule_state">Dans la fonction publique de l’État, chaque jour de grève retire un trentième de la rémunération mensuelle, même si vous n’avez fait grève qu’une heure : c’est le trentième indivisible (code général de la fonction publique, article L711-3). Les jours sans service compris entre deux jours de grève comptent aussi, si vous n’avez pas repris le travail entre les deux.</string>
+    <string name="greve_rule_local">Dans les fonctions publiques territoriale et hospitalière, la retenue est proportionnelle à la durée de la grève : un trentième pour une journée, un soixantième pour une demi-journée, 1/151,67 par heure. Le simulateur limite les heures d’une même journée à un trentième. Les jours sans service compris entre deux jours de grève comptent pour un trentième chacun.</string>
+    <string name="greve_rule_not_simulated">Pour une entreprise chargée d’un service public hors transports de voyageurs, le code du travail (article L2512-5) prévoit une règle particulière, que le simulateur ne calcule pas encore.</string>
+    <string name="greve_sources_inline">Sources : %1$s</string>
+    <string name="greve_ai_line">Rédigé par l’IA, règles vérifiées le %1$s.</string>
+
+    <!-- Obligations -->
+    <string name="greve_before_title">Avant de faire grève</string>
+    <string name="greve_obligation_no_notice_private_title">Préavis : aucun dans le privé</string>
+    <string name="greve_obligation_no_notice_private_text">Dans une entreprise privée, la grève peut commencer à tout moment, sans préavis. Exception : dans les entreprises chargées d’un service public, un syndicat représentatif doit d’abord déposer un préavis.</string>
+    <string name="greve_obligation_notice_title">Préavis de cinq jours francs</string>
+    <string name="greve_obligation_notice_text">Dans les services publics, la grève doit être précédée d’un préavis déposé par un syndicat représentatif. Il précise les motifs, le lieu, l’heure de début et la durée, et doit arriver cinq jours francs avant le début de la grève. Ce n’est pas à vous de le déposer : vérifiez qu’un préavis couvre votre service et la date.</string>
+    <string name="greve_obligation_notice_territorial_text">Dans les collectivités, la grève doit être précédée d’un préavis déposé par un syndicat représentatif, qui arrive cinq jours francs avant le début de la grève et précise les motifs, le lieu, l’heure de début et la durée. Cette obligation ne s’applique pas dans les communes de 10 000 habitants ou moins. Ce n’est pas à vous de le déposer : vérifiez qu’un préavis couvre votre service et la date.</string>
+    <string name="greve_obligation_notice_school_text">Dans les écoles maternelles et élémentaires publiques, une négociation préalable entre l’État et les syndicats a lieu avant le préavis. Le préavis est ensuite déposé par un syndicat représentatif et doit arriver cinq jours francs avant la grève.</string>
+    <string name="greve_obligation_declaration_title">Déclaration individuelle</string>
+    <string name="greve_obligation_declaration_48_title">Déclaration individuelle : 48 heures avant</string>
+    <string name="greve_obligation_land_transport_text">Si votre poste figure dans l’accord collectif ou le plan de prévisibilité de votre entreprise, prévenez votre employeur au plus tard 48 heures avant de faire grève. Pour renoncer, ou pour reprendre le travail pendant la grève, prévenez-le 24 heures avant. Sans déclaration, une sanction disciplinaire est possible.</string>
+    <string name="greve_obligation_air_transport_text">Si votre absence affecte directement les vols, prévenez votre employeur au plus tard 48 heures avant de faire grève. Pour renoncer, ou pour reprendre le travail pendant la grève, prévenez-le 24 heures avant.</string>
+    <string name="greve_obligation_school_text">Quand un préavis a été déposé, déclarez votre intention de faire grève à l’autorité administrative au moins 48 heures avant, en comptant au moins un jour ouvré. La commune organise un accueil des élèves si au moins un quart des enseignants de l’école ont déclaré leur intention.</string>
+    <string name="greve_obligation_territorial_text">Quand un préavis a été déposé, informez votre collectivité au plus tard 48 heures avant de faire grève, en comptant au moins un jour ouvré. Pour renoncer, ou pour reprendre le travail, prévenez 24 heures avant. Si une grève en cours de service risque de le désorganiser gravement, votre collectivité peut vous demander de faire grève dès votre prise de service et jusqu’à son terme. Sans déclaration, une sanction disciplinaire est possible.</string>
+    <string name="greve_obligation_air_navigation_title">Déclaration individuelle : l’avant-veille à midi</string>
+    <string name="greve_obligation_air_navigation_text">Quand un préavis a été déposé, si votre absence affecte directement les vols, déclarez votre intention au plus tard à midi l’avant-veille de chaque journée de grève. Pour renoncer, prévenez au plus tard à 18 heures l’avant-veille.</string>
+    <string name="greve_obligation_none_text">Pour ce secteur, le simulateur ne connaît pas d’obligation de vous déclarer gréviste à l’avance. Des règles propres à votre service peuvent exister : renseignez-vous auprès de votre syndicat ou de votre service du personnel.</string>
+
+    <!-- Notes -->
+    <string name="greve_notes_title">À savoir aussi</string>
+    <string name="greve_note_accessories">La retenue porte sur le salaire et ses éventuels accessoires, par exemple une indemnité de déplacement.</string>
+    <string name="greve_note_payslip">La grève ne doit pas être mentionnée sur votre bulletin de paie.</string>
+    <string name="greve_note_no_discrimination">Faire grève ne peut entraîner aucune mesure discriminatoire, notamment sur la rémunération et les avantages sociaux.</string>
+    <string name="greve_note_bonuses">Une prime peut baisser à cause d’une absence pour grève seulement si toutes les absences, sauf celles que la loi assimile à du travail, la font baisser de la même façon. Le simulateur ne calcule pas l’effet sur les primes annuelles, le treizième mois ou l’intéressement.</string>
+    <string name="greve_note_fixed_days">Au forfait en jours, la retenue suit l’accord collectif de votre entreprise : le simulateur ne la calcule pas.</string>
+    <string name="greve_note_family_supplement">Le supplément familial de traitement est maintenu en entier, et les remboursements de frais ne sont pas touchés.</string>
+    <string name="greve_note_not_contributed">La part de rémunération non versée n’est pas soumise à cotisations.</string>
+    <string name="greve_note_seizable">La retenue ne doit pas dépasser la part saisissable de votre rémunération.</string>
+    <string name="greve_note_month">Aucun texte n’impose que la retenue soit faite sur la paie du mois de la grève : elle peut arriver plus tard.</string>
+    <string name="greve_note_leave">Un congé annuel accordé avant le dépôt du préavis n’est pas retenu ; un jour de récupération, si.</string>
+    <string name="greve_note_guards">Si vous travaillez par gardes de 24 heures, la retenue se calcule sur le nombre de gardes non faites par rapport au nombre moyen de gardes du mois : le simulateur ne fait pas ce calcul.</string>
+    <string name="greve_note_retirement_state">Les jours de grève non rémunérés, donc non cotisés, ne comptent pas pour la retraite.</string>
+    <string name="greve_note_retirement_local">Les jours de grève non rémunérés, donc non cotisés, ne comptent pas pour la retraite ; une journée en partie payée compte en entier dans votre durée d’assurance.</string>
+    <string name="greve_note_no_rotating">Dans les services publics, les grèves tournantes sont interdites, et l’heure de début et de fin de la grève est la même pour tous.</string>
+
+    <!-- Strike funds -->
+    <string name="greve_funds_title">Caisses de grève proches</string>
+    <string name="greve_funds_text">Des caisses de grève aident les grévistes à tenir. PPF ne reçoit ni ne fait transiter aucun argent : chaque caisse renvoie vers sa propre page de dons.</string>
+    <string name="greve_funds_near_label">Votre commune, département ou code postal</string>
+    <string name="greve_funds_near_hint">Par exemple Lille ou 59000</string>
+    <string name="greve_funds_near_private">Ce territoire reste sur votre appareil, en mémoire : il n’est ni enregistré ni envoyé.</string>
+    <string name="greve_funds_none">Aucune caisse de grève ouverte dans l’annuaire pour ce territoire.</string>
+    <string name="greve_funds_loading">Chargement de l’annuaire des caisses…</string>
+    <string name="greve_funds_all">Voir toutes les caisses de grève</string>
+
+    <!-- Sources -->
+    <string name="greve_sources_title">Sources officielles</string>
+    <string name="greve_sources_text">Chaque règle vient de ces textes, consultés le %1$s. Ils s’ouvrent hors de PPF.</string>
+    <string name="greve_leave_title">Vous quittez PPF</string>
+    <string name="greve_leave_text">Ce lien ouvre %1$s, un site officiel hors de PPF. PPF ne le contrôle pas.</string>
+    <string name="greve_leave_stay">Rester sur PPF</string>
+    <string name="greve_leave_open">Ouvrir la source</string>
+    <string name="greve_source_service_public_private">Service-public.gouv.fr : droit de grève d’un salarié du secteur privé (fiche F117)</string>
+    <string name="greve_source_service_public_public">Service-public.gouv.fr : droit de grève dans la fonction publique (fiche F499)</string>
+    <string name="greve_source_labour_l2511_1">Code du travail, article L2511-1</string>
+    <string name="greve_source_labour_l2512">Code du travail, articles L2512-1 à L2512-5 (services publics)</string>
+    <string name="greve_source_labour_l3242_1">Code du travail, article L3242-1 (mensualisation)</string>
+    <string name="greve_source_labour_l3121_27">Code du travail, article L3121-27 (durée légale de 35 heures)</string>
+    <string name="greve_source_cassation_1992">Cour de cassation, chambre sociale, 8 juillet 1992, n° 89-42.563</string>
+    <string name="greve_source_cassation_2008">Cour de cassation, chambre sociale, 13 novembre 2008, n° 06-44.608</string>
+    <string name="greve_source_cassation_2014">Cour de cassation, chambre sociale, 26 mars 2014, n° 12-18.125</string>
+    <string name="greve_source_cassation_2020">Cour de cassation, chambre sociale, 8 juillet 2020, n° 19-13.767</string>
+    <string name="greve_source_transport_l1324_1">Code des transports, article L1324-1</string>
+    <string name="greve_source_transport_l1324_7">Code des transports, article L1324-7</string>
+    <string name="greve_source_transport_l1324_11">Code des transports, articles L1324-7 à L1324-11</string>
+    <string name="greve_source_transport_l1114_3">Code des transports, article L1114-3</string>
+    <string name="greve_source_education_l133_4">Code de l’éducation, article L133-4</string>
+    <string name="greve_source_cgfp_l711">Code général de la fonction publique, articles L711-1 à L711-3</string>
+    <string name="greve_source_cgfp_l114">Code général de la fonction publique, articles L114-1 à L114-10</string>
+    <string name="greve_source_cgfp_l7">Code général de la fonction publique, article L7 (agent public)</string>
+    <string name="greve_source_state_council_1978">Conseil d’État, 7 juillet 1978, n° 03918</string>
+    <string name="greve_source_state_council_2009">Conseil d’État, Section, 17 juillet 2009, n° 303588</string>
+    <string name="greve_source_state_council_2013">Conseil d’État, 4 décembre 2013, n° 351229</string>
+    <string name="greve_source_senate_1999">Réponse ministérielle, JO Sénat du 7 janvier 1999, page 38</string>
+</resources>

@@ -47,6 +47,7 @@ import org.politisationpopulairefrancaise.core.agir.agenda.AgendaPeriod
 import org.politisationpopulairefrancaise.core.agir.agenda.AgendaQuery
 import org.politisationpopulairefrancaise.core.agir.agenda.Mobilization
 import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
+import org.politisationpopulairefrancaise.core.agir.poster.PosterContent
 import org.politisationpopulairefrancaise.ui.AppDependencies
 import org.politisationpopulairefrancaise.ui.account.AccountSession
 import org.politisationpopulairefrancaise.ui.account.AccountUiState
@@ -57,6 +58,11 @@ import org.politisationpopulairefrancaise.ui.agir.map.AgendaView
 import org.politisationpopulairefrancaise.ui.agir.map.AgendaViewChoice
 import org.politisationpopulairefrancaise.ui.agir.map.LocalAgendaMapRenderer
 import org.politisationpopulairefrancaise.ui.agir.map.rememberAgendaMapState
+import org.politisationpopulairefrancaise.ui.agir.poster.PosterExporter
+import org.politisationpopulairefrancaise.ui.agir.poster.PosterScanScreen
+import org.politisationpopulairefrancaise.ui.agir.poster.PosterScreen
+import org.politisationpopulairefrancaise.ui.agir.poster.PosterTags
+import org.politisationpopulairefrancaise.ui.agir.poster.rememberPlatformPosterExporter
 import org.politisationpopulairefrancaise.ui.components.ExampleBadge
 import org.politisationpopulairefrancaise.ui.components.InfoBox
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -68,10 +74,12 @@ import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTabs
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.PpfToolbarButton
+import org.politisationpopulairefrancaise.ui.components.qr.canScanQr
 import org.politisationpopulairefrancaise.ui.components.shortNpub
 import org.politisationpopulairefrancaise.ui.content.LibraryStatus
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
+import org.politisationpopulairefrancaise.ui.resources.affiche_scan
 import org.politisationpopulairefrancaise.ui.resources.agenda_chip_remove
 import org.politisationpopulairefrancaise.ui.resources.agenda_chip_text
 import org.politisationpopulairefrancaise.ui.resources.agenda_clear_all
@@ -181,6 +189,9 @@ object AgendaTags {
  * @param onOpenLink opens a web link once the user confirmed; the platform's browser by default
  * @param isVerifiedOrganisation whether a key is a verified organisation (its public answers are
  *   shown, D-044); by default, a key the directory names (the shell names verified organisations only)
+ * @param posterExporter draws and saves a poster of a mobilization (AG-61): a PDF on Android, a PNG
+ *   on the computer
+ * @param onOpenCall opens a call from its address read on a poster; null: the scan says where to find it
  */
 @Composable
 fun AgendaScreen(
@@ -194,6 +205,8 @@ fun AgendaScreen(
     exporter: CalendarExporter = rememberPlatformCalendarExporter(),
     onOpenLink: ((String) -> Unit)? = null,
     isVerifiedOrganisation: (String) -> Boolean = { organisationName(it) != null },
+    posterExporter: PosterExporter = rememberPlatformPosterExporter(),
+    onOpenCall: ((String) -> Unit)? = null,
 ) {
     val account = session.state as? AccountUiState.Ready
     val accountKey = account?.publicKey?.hex
@@ -206,6 +219,9 @@ fun AgendaScreen(
     val composer = agenda.composer
     // The choice "Liste" / "Carte" and the camera survive a visit to the detail (docs/integration/agir-carte.md).
     val map = rememberAgendaMapState()
+    // AG-61: the mobilization whose poster is being made, and whether a poster is being scanned (memory only).
+    var posterOf by remember { mutableStateOf<Mobilization?>(null) }
+    var scanning by remember { mutableStateOf(false) }
 
     // The caller's modifier may carry its own test tag (the first one wins): the screen's goes on an inner box.
     Box(modifier.fillMaxSize().background(PpfTheme.palette.surface1)) {
@@ -221,6 +237,33 @@ fun AgendaScreen(
                 )
                 return@Box
             }
+            // AG-61: the poster of a mobilization, and the scan of a poster, open over the agenda.
+            val poster = posterOf
+            if (poster != null) {
+                val hosting = agenda.participations.hosting(poster, names::counts)
+                val hosts = (listOf(poster.author) + hosting.confirmed).distinct()
+                val hostNames = hosts.map { partyName(names, it) }
+                val content = remember(poster.event.id, hosts) { PosterContent.of(poster, hosts) }
+                PosterScreen(content, hostNames, compact, posterExporter, onBack = { posterOf = null }, modifier = Modifier.fillMaxSize())
+                return@Box
+            }
+            if (scanning) {
+                PosterScanScreen(
+                    agenda = agenda,
+                    names = names,
+                    compact = compact,
+                    onBack = { scanning = false },
+                    onOpened = { scanning = false },
+                    modifier = Modifier.fillMaxSize(),
+                    onOpenCall = onOpenCall?.let { open ->
+                        { address: String ->
+                            scanning = false
+                            open(address)
+                        }
+                    },
+                )
+                return@Box
+            }
             var panel by remember { mutableStateOf(false) }
             val list: @Composable (Modifier) -> Unit = { listModifier ->
                 AgendaList(
@@ -232,6 +275,8 @@ fun AgendaScreen(
                     onCreateAccount = { onNavigate(Space.MON_ESPACE) },
                     modifier = listModifier,
                     map = map,
+                    // Reading a code needs a camera: the computer has none here (components/qr).
+                    onScan = if (canScanQr) ({ scanning = true }) else null,
                 )
             }
             val selected = agenda.selected
@@ -246,6 +291,7 @@ fun AgendaScreen(
                     onBack = onBack,
                     modifier = detailModifier,
                     signer = session.signer,
+                    onMakePoster = { posterOf = it },
                 )
             }
             when {
@@ -323,6 +369,7 @@ private fun AgendaList(
     onCreateAccount: () -> Unit,
     modifier: Modifier,
     map: AgendaMapState,
+    onScan: (() -> Unit)? = null,
 ) {
     val palette = PpfTheme.palette
     val tabs = listOfNotNull(AgendaTab.UPCOMING, AgendaTab.PAST, AgendaTab.MINE.takeIf { agenda.hasAccount })
@@ -363,7 +410,7 @@ private fun AgendaList(
                 if (agenda.tab == AgendaTab.MINE) {
                     MinePage(agenda, onPropose, onCreateAccount)
                 } else {
-                    ListPage(agenda, names, onOpenFilters, onPropose)
+                    ListPage(agenda, names, onOpenFilters, onPropose, onScan)
                 }
             }
         }
@@ -379,7 +426,7 @@ private fun tabLabel(tab: AgendaTab) = when (tab) {
 /** "À venir" or "Passés": tool bar, number, active filters, the map box, then the days. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: () -> Unit, onPropose: () -> Unit) {
+private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: () -> Unit, onPropose: () -> Unit, onScan: (() -> Unit)? = null) {
     val palette = PpfTheme.palette
     val filters = agenda.filters
     val now = agenda.now
@@ -395,6 +442,10 @@ private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: (
             modifier = Modifier.testTag(AgendaTags.FILTERS),
         )
         PpfPrimaryButton(onClick = onPropose, text = stringResource(Res.string.agenda_propose), icon = Lucide.Plus, modifier = Modifier.padding(vertical = 2.dp).testTag(AgendaTags.PROPOSE))
+        // AG-61: read the code of a poster (a phone's camera; absent where none reads codes).
+        if (onScan != null) {
+            PpfToolbarButton(icon = Lucide.Camera, text = stringResource(Res.string.affiche_scan), onClick = onScan, modifier = Modifier.testTag(PosterTags.SCAN))
+        }
     }
     Text(pluralStringResource(Res.plurals.agenda_count, shown.size, shown.size), style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag(AgendaTags.COUNT))
     if (filters.constraintCount > 0) ActiveFilters(agenda, names)

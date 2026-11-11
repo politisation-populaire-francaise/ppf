@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.messages
 
+import org.politisationpopulairefrancaise.ui.account.PublishBlockedNotice
+import org.politisationpopulairefrancaise.ui.account.LocalCanPublish
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -205,9 +207,12 @@ private fun RoomList(groups: GroupsLibrary, contentPadding: Dp) {
                         text = stringResource(Res.string.groups_create),
                         small = true,
                         icon = Lucide.Plus,
+                        // A compromised account creates no room (S-146).
+                        enabled = LocalCanPublish.current,
                         modifier = Modifier.testTag(GroupsTags.CREATE),
                     )
                 }
+                PublishBlockedNotice(Modifier.padding(top = 8.dp))
             }
         }
         if (territories.isNotEmpty()) {
@@ -266,6 +271,7 @@ private fun RoomList(groups: GroupsLibrary, contentPadding: Dp) {
                     onClick = { groups.beginCreation(named) },
                     text = if (named.isEmpty()) stringResource(Res.string.groups_create) else stringResource(Res.string.groups_create_named, named),
                     icon = Lucide.Plus,
+                    enabled = LocalCanPublish.current,
                     modifier = Modifier.testTag(GroupsTags.CREATE_FROM_QUERY),
                 )
             }

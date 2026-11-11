@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « Mes proches à mobiliser » of "Agir" (AG-63), docs/integration/agir-proches.md. A private list
+     kept on the device only. French, the user is addressed with "vous", typographic apostrophe (’),
+     no em dash. The texts never name the relative outside the list itself. -->
+<resources>
+    <!-- Rubric of the home of "Agir" -->
+    <string name="proches_rubric_title">Mes proches à mobiliser</string>
+    <string name="proches_rubric_text">Une liste rien qu’à vous, sur cet appareil : à qui parler, quoi partager, qui inviter.</string>
+
+    <!-- Screen -->
+    <string name="proches_title">Mes proches à mobiliser</string>
+    <string name="proches_description">Pensez à quelques proches, choisissez ce qui pourrait les intéresser et la prochaine étape. Cette liste reste sur cet appareil.</string>
+    <string name="proches_back">Retour à Agir</string>
+    <string name="proches_unavailable_title">Pas encore disponible sur cet appareil</string>
+    <string name="proches_unavailable_text">Cet appareil ne peut pas encore garder la liste. Elle arrivera avec l’application pour iPhone.</string>
+    <string name="proches_intro_title">Commencer votre liste</string>
+    <string name="proches_intro_text">Notez quelques proches que vous aimeriez entraîner avec vous. Pour chacun, l’application propose des contenus déjà sur votre appareil et vous rappelle la prochaine étape.</string>
+    <string name="proches_add">Ajouter un proche</string>
+    <string name="proches_full">Votre liste est pleine : %1$d proches au plus. Retirez-en un pour en ajouter un autre.</string>
+    <string name="proches_count">Votre liste : %1$d sur %2$d</string>
+    <string name="proches_write_failed">L’appareil n’a pas pu enregistrer ce changement. La liste affichée est celle qu’il garde.</string>
+
+    <!-- Warning before the first entry (GDPR, article 9) -->
+    <string name="proches_warning_title">Avant de commencer</string>
+    <string name="proches_warning_kept">Cette liste garde seulement un surnom, jusqu’à trois sujets qui pourraient intéresser la personne, une prochaine étape et, si vous le voulez, une date de rappel.</string>
+    <string name="proches_warning_device">Elle reste sur cet appareil. Elle n’est jamais envoyée, ni à PPF ni à personne, et n’est liée à aucun compte. L’effacement rapide l’efface.</string>
+    <string name="proches_warning_sensitive">Noter ce qu’une autre personne pourrait penser est une information sensible, qui la concerne elle. Un surnom suffit : n’écrivez jamais son nom complet, son numéro ni son adresse. Les sujets sont des thèmes, pas des opinions.</string>
+    <string name="proches_warning_cancel">Annuler</string>
+    <string name="proches_warning_start">Commencer ma liste</string>
+
+    <!-- Form -->
+    <string name="proches_form_add_title">Ajouter un proche</string>
+    <string name="proches_form_edit_title">Modifier</string>
+    <string name="proches_nickname_label">Surnom</string>
+    <string name="proches_nickname_placeholder">Un surnom suffit</string>
+    <string name="proches_nickname_help">Une initiale ou un mot à vous suffit, jamais son nom complet.</string>
+    <string name="proches_nickname_count">%1$d sur %2$d caractères</string>
+    <string name="proches_nickname_error">Écrivez un surnom pour enregistrer.</string>
+    <string name="proches_gone_error">Ce proche n’est plus dans votre liste.</string>
+    <string name="proches_subjects_title">Des sujets qui pourraient l’intéresser</string>
+    <string name="proches_subjects_help">Trois au plus. Des thèmes, pas des opinions : ils servent seulement à vous proposer des contenus.</string>
+    <string name="proches_subjects_full">Vous avez choisi trois sujets : retirez-en un pour en choisir un autre.</string>
+    <string name="proches_step_title">Prochaine étape</string>
+    <string name="proches_reminder_title">Me le rappeler</string>
+    <string name="proches_reminder_help">Le jour venu, ce proche s’affiche en haut de votre liste, avec « À faire aujourd’hui ». Les notifications viendront plus tard.</string>
+    <string name="proches_reminder_none">Pas de rappel</string>
+    <string name="proches_reminder_tomorrow">Demain</string>
+    <string name="proches_reminder_three_days">Dans 3 jours</string>
+    <string name="proches_reminder_week">Dans une semaine</string>
+    <string name="proches_reminder_two_weeks">Dans deux semaines</string>
+    <string name="proches_reminder_month">Dans un mois</string>
+    <string name="proches_reminder_date">Le %1$s</string>
+    <string name="proches_save">Enregistrer</string>
+    <string name="proches_cancel">Annuler</string>
+
+    <!-- The ladder -->
+    <string name="proches_step_talk">En parler</string>
+    <string name="proches_step_talk_text">Prendre le temps d’en discuter, sans chercher à convaincre à tout prix.</string>
+    <string name="proches_step_share">Partager un contenu</string>
+    <string name="proches_step_share_text">Une fiche, un parcours ou un appel qui touche à ses sujets.</string>
+    <string name="proches_step_invite">L’inviter à une mobilisation</string>
+    <string name="proches_step_invite_text">Un rassemblement, une réunion, une assemblée près de chez vous.</string>
+    <string name="proches_step_together">Y aller ensemble</string>
+    <string name="proches_step_together_text">Se donner rendez-vous et y aller à deux.</string>
+    <string name="proches_step_done">C’est fait</string>
+    <string name="proches_step_done_text">Vous pouvez garder ce proche dans la liste pour la suite, ou le retirer.</string>
+
+    <!-- The list -->
+    <string name="proches_today_title">À faire aujourd’hui</string>
+    <string name="proches_list_title">Ma liste</string>
+    <string name="proches_due_badge">À faire aujourd’hui</string>
+    <string name="proches_entry_step">Prochaine étape : %1$s</string>
+    <string name="proches_entry_subjects">Sujets : %1$s</string>
+    <string name="proches_entry_no_subject">Aucun sujet choisi</string>
+    <string name="proches_entry_reminder">Rappel le %1$s</string>
+    <string name="proches_next">Passer à : %1$s</string>
+    <string name="proches_edit">Modifier</string>
+    <string name="proches_remove">Retirer</string>
+    <string name="proches_remove_question">Retirer ce proche de votre liste ? Il est effacé de cet appareil.</string>
+    <string name="proches_remove_confirm">Retirer</string>
+    <string name="proches_remove_cancel">Annuler</string>
+
+    <!-- Contents that suit a relative -->
+    <string name="proches_suggestions_title">Des contenus sur ses sujets</string>
+    <string name="proches_suggestions_none">Pas encore de contenu sur ces sujets dans votre appareil. Ouvrez « Comprendre », l’agenda ou les appels pour en recevoir.</string>
+    <string name="proches_suggestions_no_subject">Choisissez un ou deux sujets pour voir des contenus adaptés.</string>
+    <string name="proches_kind_fiche">Fiche pratique</string>
+    <string name="proches_kind_course">Parcours</string>
+    <string name="proches_kind_mobilization">Mobilisation</string>
+    <string name="proches_kind_call">Appel</string>
+    <string name="proches_share">Partager</string>
+    <string name="proches_share_title">Partager ce contenu</string>
+    <string name="proches_copy">Copier le lien</string>
+    <string name="proches_copied">Lien copié</string>
+    <string name="proches_share_note">Le lien est l’adresse publique du contenu, sans rien qui dise qui le partage ni pour qui.</string>
+
+    <!-- What the list keeps -->
+    <string name="proches_privacy_title">Ce que garde cette liste</string>
+    <string name="proches_privacy_kept">Un surnom, jusqu’à trois sujets, une étape et une date de rappel, pour douze proches au plus : rien d’autre, ni nom, ni numéro, ni carnet d’adresses.</string>
+    <string name="proches_privacy_device">Elle reste sur cet appareil : elle n’est jamais envoyée, ni à PPF ni à personne, et n’est liée à aucun compte.</string>
+    <string name="proches_privacy_erase">L’effacement rapide et « Effacer mes clés » l’effacent. Le verrouillage de l’application la protège si votre téléphone est pris.</string>
+</resources>

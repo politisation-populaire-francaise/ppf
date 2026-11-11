@@ -1,0 +1,122 @@
+[
+ {
+  "Civilite": "Mme",
+  "Nom": "[EXEMPLE] EXEMPLAIRE",
+  "Prenom": "Camille",
+  "Mandat": "Maire",
+  "Circonscription": "Lyon",
+  "Departement": "Rhône",
+  "Candidat": "[EXEMPLE] CANDIDATE Alice",
+  "DatePublication": "2027-02-16T00:00:00"
+ },
+ {
+  "Civilite": "Mme",
+  "Nom": "[EXEMPLE] BROUILLON",
+  "Prenom": "Eden",
+  "Mandat": "Députée",
+  "Circonscription": "1ère circonscription",
+  "Departement": "Rhône",
+  "Candidat": "[EXEMPLE] PRÉTENDANT Bruno",
+  "DatePublication": "2027-02-16T00:00:00"
+ },
+ {
+  "Civilite": "M.",
+  "Nom": "[EXEMPLE] ÉBAUCHE",
+  "Prenom": "Andréa",
+  "Mandat": "Sénateur",
+  "Circonscription": "",
+  "Departement": "Rhône",
+  "Candidat": "[EXEMPLE] CANDIDATE Alice",
+  "DatePublication": "2027-02-19T00:00:00"
+ },
+ {
+  "Civilite": "M.",
+  "Nom": "[EXEMPLE] GABARIT",
+  "Prenom": "Andréa",
+  "Mandat": "Conseiller départemental",
+  "Circonscription": "",
+  "Departement": "Rhône",
+  "Candidat": "[EXEMPLE] POSTULANTE Chloé",
+  "DatePublication": "2027-02-19T00:00:00"
+ },
+ {
+  "Civilite": "M.",
+  "Nom": "[EXEMPLE] ILLUSTRATION",
+  "Prenom": "Sacha",
+  "Mandat": "Maire",
+  "Circonscription": "Villefranche-sur-Saône",
+  "Departement": "Rhône",
+  "Candidat": "[EXEMPLE] CANDIDATE Alice",
+  "DatePublication": "2027-02-19T00:00:00"
+ },
+ {
+  "Civilite": "Mme",
+  "Nom": "[EXEMPLE] MODÈLE",
+  "Prenom": "Lou",
+  "Mandat": "Maire",
+  "Circonscription": "Albigny-sur-Saône",
+  "Departement": "Rhône",
+  "Candidat": "[EXEMPLE] PRÉTENDANT Bruno",
+  "DatePublication": "2027-02-19T00:00:00"
+ },
+ {
+  "Civilite": "M.",
+  "Nom": "[EXEMPLE] PROTOTYPE",
+  "Prenom": "Noa",
+  "Mandat": "Maire",
+  "Circonscription": "Quimper",
+  "Departement": "Finistère",
+  "Candidat": "[EXEMPLE] CANDIDATE Alice",
+  "DatePublication": "2027-02-16T00:00:00"
+ },
+ {
+  "Civilite": "Mme",
+  "Nom": "[EXEMPLE] SPÉCIMEN",
+  "Prenom": "Gwen",
+  "Mandat": "Conseillère régionale",
+  "Circonscription": "Bretagne",
+  "Departement": "Finistère",
+  "Candidat": "[EXEMPLE] POSTULANTE Chloé",
+  "DatePublication": "2027-02-16T00:00:00"
+ },
+ {
+  "Civilite": "M.",
+  "Nom": "[EXEMPLE] TÉMOIN",
+  "Prenom": "Erwan",
+  "Mandat": "Maire délégué d'une commune associée ou d'une commune déléguée",
+  "Circonscription": "Commune déléguée d'exemple",
+  "Departement": "Finistère",
+  "Candidat": "[EXEMPLE] PRÉTENDANT Bruno",
+  "DatePublication": "2027-02-19T00:00:00"
+ },
+ {
+  "Civilite": "Mme",
+  "Nom": "[EXEMPLE] ÉPREUVE",
+  "Prenom": "Morgan",
+  "Mandat": "Maire",
+  "Circonscription": "Aix-en-Provence",
+  "Departement": "Bouches-du-Rhône",
+  "Candidat": "[EXEMPLE] POSTULANTE Chloé",
+  "DatePublication": "2027-02-19T00:00:00"
+ },
+ {
+  "Civilite": "M.",
+  "Nom": "[EXEMPLE] MAQUETTE",
+  "Prenom": "Ana",
+  "Mandat": "Représentant français au Parlement européen",
+  "Circonscription": "",
+  "Departement": "Parlement européen",
+  "Candidat": "[EXEMPLE] CANDIDATE Alice",
+  "DatePublication": "2027-02-19T00:00:00"
+ },
+ {
+  "Civilite": "Mme",
+  "Nom": "[EXEMPLE] ESSAI",
+  "Prenom": "Lou",
+  "Mandat": "Conseillère de Paris",
+  "Circonscription": "",
+  "Departement": "Paris",
+  "Candidat": "[EXEMPLE] PRÉTENDANT Bruno",
+  "DatePublication": "2027-02-19T00:00:00"
+ }
+]

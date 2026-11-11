@@ -6,6 +6,8 @@
 //   ./gradlew :tools:open-data-importer:run --args="--out build/parlement"
 //   ./gradlew :tools:open-data-importer:buildFatJar   (build/libs/ppf-open-data-importer.jar)
 
+import java.util.zip.ZipFile
+
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.kotlinSerialization)
@@ -42,6 +44,33 @@ tasks.register<Jar>("buildFatJar") {
     from(runtimeJars.map { classpath -> classpath.map { if (it.isDirectory) it else zipTree(it) } })
     exclude("META-INF/*.SF", "META-INF/*.DSA", "META-INF/*.RSA", "META-INF/*.EC", "module-info.class", "META-INF/versions/*/module-info.class")
 }
+
+// D-145: The open data importer never computes anonymous voting tokens. libsodium (the ristretto255 group of « une personne,
+// une voix », in shared/core since D-110), its native loader and JNA stay out of this container holding a
+// key; the check below fails the build if any of them comes back into ppf-open-data-importer.jar. JNA is excluded from the
+// runtime only: libsodium was its only user there, and a test library may still need it.
+configurations.matching { it.name == "runtimeClasspath" || it.name == "testRuntimeClasspath" }.configureEach {
+    exclude(group = "com.ionspin.kotlin")
+    exclude(group = "com.goterl")
+}
+configurations.matching { it.name == "runtimeClasspath" }.configureEach {
+    exclude(group = "net.java.dev.jna")
+}
+val forbiddenInImporterJar = listOf("com/ionspin/", "com/goterl/", "com/sun/jna/", "libsodium")
+val verifyImporterJar = tasks.register("verifyImporterJar") {
+    group = "verification"
+    description = "Checks that ppf-open-data-importer.jar holds neither libsodium, nor JNA, nor their native loader (D-145)."
+    val jar = tasks.named<Jar>("buildFatJar").flatMap { it.archiveFile }
+    inputs.file(jar)
+    val forbidden = forbiddenInImporterJar
+    doLast {
+        ZipFile(jar.get().asFile).use { zip ->
+            val found = zip.entries().asSequence().map { it.name }.filter { name -> forbidden.any { name.contains(it) } }.toList()
+            check(found.isEmpty()) { "ppf-open-data-importer.jar must not contain libsodium, JNA or their loader (D-145): ${found.take(5)}" }
+        }
+    }
+}
+tasks.named("check") { dependsOn(verifyImporterJar) }
 
 dependencies {
     implementation(project(":shared:core"))

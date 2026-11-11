@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- « Parrainages de la présidentielle 2027 » (VO-37), in the Parliament of « Voir ». Factual, identical for every candidate. -->
+    <string name="spons_entry_title">Parrainages de la présidentielle 2027</string>
+    <string name="spons_entry_text">Les élus qui ont présenté un candidat, tels que le Conseil constitutionnel les publie.</string>
+    <string name="spons_title">Parrainages de la présidentielle 2027</string>
+    <string name="spons_law">Pour être candidat, il faut au moins 500 présentations d’élus habilités (maires, parlementaires, conseillers départementaux et régionaux…), venant d’au moins 30 départements ou collectivités d’outre-mer, sans que plus d’un dixième viennent d’un même département. Le Conseil constitutionnel rend publics au moins deux fois par semaine le nom et la qualité des élus qui ont présenté un candidat (loi n° 62-1292 du 6 novembre 1962, article 3).</string>
+    <string name="spons_only_cc">Seul le Conseil constitutionnel arrête la liste des candidats. PPF reprend les listes publiées, sans rien y ajouter.</string>
+    <string name="spons_not_yet">Le Conseil constitutionnel publie les parrainages pendant la période de recueil, qui s’ouvre avec la publication du décret de convocation des électeurs, au début de l’année 2027. Ils apparaîtront ici.</string>
+    <string name="spons_download">Télécharger les parrainages publiés (%1$s)</string>
+    <string name="spons_update">Mettre à jour les parrainages (%1$s)</string>
+    <string name="spons_downloading">Téléchargement…</string>
+    <string name="spons_download_note">Le même fichier pour tout le monde : PPF ne sait pas ce que vous consultez.</string>
+    <string name="spons_published_on">Publications du Conseil constitutionnel jusqu’au %1$s · %2$d parrainages</string>
+    <string name="spons_mine_title">Vos élus ont parrainé</string>
+    <string name="spons_mine_none">Aucun de vos élus de « Mes élus » ne figure dans les listes publiées sur cet appareil.</string>
+    <string name="spons_mine_line">%1$s (%2$s) a présenté %3$s, publié le %4$s</string>
+    <string name="spons_candidates">Candidats présentés, par ordre alphabétique</string>
+    <string name="spons_candidate_figures">%1$d parrainages publiés · %2$d départements ou collectivités cités · au plus %3$d d’un même</string>
+    <string name="spons_candidate_title">Parrainages de %1$s</string>
+    <string name="spons_department_field">Département</string>
+    <string name="spons_department_none">Aucun parrainage publié pour ce département.</string>
+    <string name="spons_department_title">%1$s · %2$d parrainages</string>
+    <string name="spons_line">%1$s, %2$s</string>
+    <string name="spons_line_territory">%1$s, %2$s, %3$s</string>
+    <string name="spons_published">publié le %1$s</string>
+    <string name="spons_source">Source : Conseil constitutionnel, listes publiées sur data.gouv.fr (domaine public).</string>
+    <string name="spons_mandate_maire">Maire</string>
+    <string name="spons_mandate_maire_delegue">Maire d’une commune déléguée ou associée</string>
+    <string name="spons_mandate_maire_arrondissement">Maire d’arrondissement</string>
+    <string name="spons_mandate_depute">Membre de l’Assemblée nationale</string>
+    <string name="spons_mandate_senateur">Membre du Sénat</string>
+    <string name="spons_mandate_depute_europeen">Membre du Parlement européen</string>
+    <string name="spons_mandate_departemental">Membre du conseil départemental</string>
+    <string name="spons_mandate_regional">Membre du conseil régional</string>
+    <string name="spons_mandate_paris">Membre du Conseil de Paris</string>
+    <string name="spons_mandate_lyon">Membre du conseil de la métropole de Lyon</string>
+    <string name="spons_mandate_corse">Membre de l’Assemblée de Corse</string>
+    <string name="spons_mandate_afe">Membre de l’Assemblée des Français de l’étranger</string>
+    <string name="spons_mandate_epci">Présidence d’une intercommunalité</string>
+    <string name="spons_mandate_other">Autre mandat</string>
+</resources>

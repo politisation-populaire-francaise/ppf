@@ -60,6 +60,8 @@ require '^assets/composeResources/[^/]+/files/contents/comprendre\.json$' "bundl
 require '^assets/composeResources/[^/]+/files/contents/revendications\.json$' "bundled demands (revendications.json)"
 require '^assets/composeResources/[^/]+/files/contents/voir\.json$' "bundled contents of Voir (voir.json)"
 require '^assets/composeResources/[^/]+/files/contents/decider\.json$' "bundled contents of Decider (decider.json)"
+require '^assets/composeResources/[^/]+/files/contents/solidarite\.json$' "bundled solidarity funds and missions of Agir (solidarite.json)"
+require '^assets/composeResources/[^/]+/files/contents/suites\.json$' "bundled follow-ups of mobilizations of Agir (suites.json)"
 require '^assets/composeResources/[^/]+/font/atkinson_hyperlegible_regular\.ttf$' "bundled font (Atkinson Hyperlegible)"
 # Map of the agenda (docs/integration/agir-carte.md): the background bundled for use without network,
 # the glyphs of its labels, and the MapLibre native libraries for every supported architecture.
@@ -111,6 +113,16 @@ if [ "$not_debuggable" -eq 1 ]; then
         status=1
     else
         echo "ok   not debuggable"
+    fi
+    # Nothing leaves the phone by a backup or a device-to-device transfer (D-190): allowBackup stays
+    # false (Android 11 and older) and dataExtractionRules excludes every domain (Android 12 and later).
+    manifest_tree="$("$aapt2" dump xmltree --file AndroidManifest.xml "$apk" | tr -d '\r')"
+    if grep -qE 'android:allowBackup\([^)]*\)=false' <<<"$manifest_tree" \
+        && grep -qE 'android:dataExtractionRules\([^)]*\)=@' <<<"$manifest_tree"; then
+        echo "ok   no backup and no device-to-device transfer (allowBackup=false, dataExtractionRules)"
+    else
+        echo "UNEXPECTED  backup or device-to-device transfer allowed (allowBackup or dataExtractionRules missing)" >&2
+        status=1
     fi
 fi
 

@@ -6,12 +6,13 @@ import org.politisationpopulairefrancaise.core.db.PpfDatabase
 import org.politisationpopulairefrancaise.core.device.DeviceErasable
 import org.politisationpopulairefrancaise.core.revendications.RevendicationViewStore
 import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentStore
+import org.politisationpopulairefrancaise.core.voir.parlement.VoteAlertStore
 
 /**
  * The data of "Voir" in the local database, for the quick erase (S-44, M33): the contents the user
  * follows (they can reveal a political opinion), the views of the demands wall (themes, territories,
- * followed accounts), and the parliamentary open data downloaded (which months and chambers were
- * looked at). The drafts of requests and the anonymous reports waiting for a server live in memory
+ * followed accounts), the parliamentary open data downloaded (which months and chambers were
+ * looked at), and « Mes élus ont voté » (the followed words and the members of the European Parliament chosen). The drafts of requests and the anonymous reports waiting for a server live in memory
  * only; the interface forgets them with this part (`ui/voir`). The public copies of the contents
  * stay in the shared store of contents, erased by its own part (docs/integration/agir-securite-appareil.md).
  */
@@ -22,6 +23,8 @@ class VoirDeviceData(private val database: PpfDatabase) : DeviceErasable {
         ContentFollowStore(database).clear()
         RevendicationViewStore(database).reset()
         ParliamentStore(database).forget()
+        // « Mes élus ont voté » (VO-34): ballots seen, followed words, chosen members of the European Parliament, settings.
+        VoteAlertStore(database).forget()
     }
 
     companion object {
