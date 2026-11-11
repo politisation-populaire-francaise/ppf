@@ -87,8 +87,8 @@ class HarassmentKitScreenTest {
                 click(HarassmentTags.ADD)
                 awaitTag(HarassmentTags.FORM)
                 type(HarassmentTags.PLATFORM, "[EXEMPLE] Réseau social fictif")
-                type(HarassmentTags.DATE, "10/11/2026")
-                type(HarassmentTags.TIME, "21:30")
+                // The date and the hour of the day are filled in already (the moment the evidence is noted).
+                assertTrue(state().draft.seenDate.isNotBlank() && state().draft.seenTime.isNotBlank(), "at $width dp")
                 type(HarassmentTags.TEXT, "[EXEMPLE] Un message menaçant recopié mot pour mot.")
                 click(HarassmentTags.KEEP)
                 waitUntil(timeoutMillis = 20_000) { state().evidence.isNotEmpty() }
