@@ -58,6 +58,60 @@
         "sig": "d89d58578153a6aca649b4fab5d0e6078e3ec1dd303ca2fecc59556c35d3fff606311e3380e17c7952e585ee07f555dc71c8e6cc4ec35f1fd1c3747d628ba328"
     },
     {
+        "id": "e3b583c95f425532d96126e01a093b539c7d11593f1341759321de0eb24ce92a",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "80-pour-cent-des-lois-viennent-de-bruxelles"
+            ],
+            [
+                "title",
+                "« 80 % de nos lois viennent de Bruxelles »"
+            ],
+            [
+                "summary",
+                "Trompeur : l'influence européenne est réelle, mais ce chiffre vient d'une prévision de Jacques Delors en 1988, pas d'une mesure. Les études situent la part des lois françaises d'origine européenne entre 10 et 30 % environ, selon la méthode, avec de grands écarts selon les domaines."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "decryptage"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "europe"
+            ],
+            [
+                "t",
+                "institutions"
+            ],
+            [
+                "ppf-verdict",
+                "trompeur"
+            ],
+            [
+                "ppf-claim",
+                "80 % de nos lois viennent de Bruxelles."
+            ],
+            [
+                "ppf-claim-context",
+                "Formule répandue dans le débat public depuis les années 1990, reformulée ici par la rédaction"
+            ]
+        ],
+        "content": "::: en-bref\n- Le chiffre vient d'une **prévision** de Jacques Delors, président de la Commission européenne, en **1988** : il annonçait que d'ici dix ans, environ 80 % de la législation **économique** serait d'origine européenne.\n- Les études qui ont **mesuré** la part des lois françaises liées au droit européen trouvent plutôt **entre 10 et 30 %**, selon la méthode retenue.\n- Cette part est **très forte** dans certains domaines (agriculture, concurrence, commerce, environnement) et **faible** dans d'autres (école, justice pénale, impôts sur le revenu, retraites).\n:::\n\n## Ce que dit l'affirmation\n\nElle laisse entendre que l'Union européenne fait l'essentiel des lois qui s'appliquent en France, et que le Parlement français ne ferait plus qu'enregistrer.\n\n## Ce que disent les études\n\n- **L'origine du chiffre** : selon Public Sénat et l'Institut Jacques Delors, la seule source identifiée est une déclaration de Jacques Delors en 1988, qui prévoyait que 80 % de la législation économique, peut-être aussi fiscale et sociale, serait d'origine communautaire dix ans plus tard. C'était une prévision, limitée à certains domaines, pas une mesure.\n- **Les mesures** : une étude d'Yves Bertoncini pour l'Institut Jacques Delors conclut que la part des lois nationales d'origine européenne est « plus proche de 20 % que de 80 % ». Une équipe de Sciences Po Bordeaux, avec un critère très large (toute loi qui contient au moins une disposition liée à une contrainte européenne), trouve que dans environ 80 % des cas, les lois françaises sont adoptées **sans** contrainte européenne directe. Selon Toute l'Europe, les études situent la part des lois françaises d'origine européenne entre 10 et 30 %.\n- **Selon les domaines** : la part est bien plus forte là où l'Union a des compétences exclusives ou partagées (union douanière, concurrence, politique commerciale, agriculture et pêche, environnement, protection des consommateurs) que là où les États gardent la main (éducation, organisation de la santé, retraites, justice pénale, impôts directs).\n\n## Ce qui est exact dans l'idée\n\n- Le droit européen **prime** sur les lois françaises dans les domaines où l'Union est compétente, et les **règlements** européens s'appliquent directement, sans loi française.\n- Beaucoup de règles européennes passent par des **décrets** et des **arrêtés**, pas par des lois : compter les seules lois sous-estime l'influence européenne, compter toutes les normes la fait varier selon la méthode.\n- Les lois européennes ne sont pas faites « par Bruxelles » seule : elles sont proposées par la Commission, puis votées par le **Parlement européen**, élu par les citoyens, et par le **Conseil**, où siège le Gouvernement français.\n\n::: objections\n? « Si la France doit transposer les directives, c'est bien que l'Europe décide à sa place. »\n> La France participe au vote de chaque directive, au Conseil (par son Gouvernement) et au Parlement européen (par ses 81 députés européens). Et les études ne trouvent qu'une minorité de lois françaises liées à une contrainte européenne.\n? « Les études ne comptent que les lois, pas les décrets : la vraie part est bien plus forte. »\n> C'est une vraie limite, que les auteurs signalent eux-mêmes : la part varie selon ce qu'on compte. Mais aucune étude, quelle que soit sa méthode, ne retrouve 80 % pour l'ensemble du droit français.\n:::\n\n::: et-maintenant\n- [Comprendre qui décide quoi dans l'Union européenne](ppf:comprendre)\n- [Voter les revendications du mouvement](ppf:revendications)\n:::\n\n## Sources\n\n- Public Sénat, « Check Point : 80 % de nos lois sont-elles imposées par l'Union européenne ? », consulté le 2026-11-11 : https://www.publicsenat.fr/actualites/politique/check-point-80-de-nos-lois-sont-elles-imposees-par-l-union-europeenne-57198\n- Yves Bertoncini, Institut Jacques Delors, « L'UE et les normes nationales », consulté le 2026-11-11 : https://institutdelors.eu/content/uploads/2025/04/ueetnormes-bertoncini-ne-ijd-mai14-1.pdf\n- Yves Bertoncini, Institut Jacques Delors, « Bref » n° 13, consulté le 2026-11-11 : https://institutdelors.eu/content/uploads/2025/04/bref13-ybertoncini_01.pdf\n- Toute l'Europe, article sur la part des lois françaises d'origine européenne, consulté le 2026-11-11 : https://www.touteleurope.eu/?p=38363\n- Traité sur le fonctionnement de l'Union européenne, articles 3 et 4 (compétences exclusives et partagées), consulté le 2026-11-11 : https://eur-lex.europa.eu/legal-content/FR/TXT/?uri=CELEX:12012E/TXT\n",
+        "sig": "f0d13fee36fe059afe14597ac9f20fdf436a318f59b6a4980ac1726719736e8422dcc7f1490e896c502caad682b0cd5afdad9b4d7a9fd13c1d9465113241b3c6"
+    },
+    {
         "id": "ce9724fa074f64b439e5f71c2add355811d93a30be9e00d7093987686c6460b8",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1794225600,

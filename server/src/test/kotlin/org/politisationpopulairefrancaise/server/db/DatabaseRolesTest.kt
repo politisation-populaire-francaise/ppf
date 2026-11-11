@@ -92,10 +92,10 @@ class DatabaseRolesTest {
         // What an interrupted import left in the staging is cleared at the start of the next one, by the server role.
         val lock = assertNotNull(store.tryLock())
         lock.use {
-            val first = store.begin(it, "role-test", Instant.parse("2026-11-11T20:00:00Z"))
-            val second = store.begin(it, "role-test", Instant.parse("2026-11-11T20:05:00Z"))
+            val first = store.begin(it, "example", Instant.parse("2026-11-11T20:00:00Z"))
+            val second = store.begin(it, "example", Instant.parse("2026-11-11T20:05:00Z"))
             assertTrue(second > first)
-            it.connection.createStatement().use { statement -> statement.executeUpdate("DELETE FROM elus_import WHERE source = 'role-test'") }
+            it.connection.createStatement().use { statement -> statement.executeUpdate("DELETE FROM elus_import WHERE id = $second") }
         }
     }
 
