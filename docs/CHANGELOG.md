@@ -5,6 +5,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 ## Non publié
 
 ### Ajouté
+- Accueil d'« Agir » en quatre sections (11 novembre 2026, D-231) : « Se mobiliser », « Tenir dans la durée », « Fédérer son entourage », « Se protéger », sous la mise en avant de « S'engager en politique » ; carte du simulateur du gréviste dans « Tenir ».
 - Kit contre le harcèlement dans « Agir » (11 novembre 2026, AG-59, D-230) : preuves gardées chiffrées sur le téléphone avec leur empreinte, modèles de signalement (plateforme, PHAROS, plainte) remplis et copiés par la personne, jamais envoyés par PPF ; ouvert depuis la feuille AIDE et l'accueil d'« Agir ».
 - Appels « Faire grève » et « Bloquer » (11 novembre 2026, D-199) : deux types d'appels de plus ; un appel à bloquer est toujours relu avant publication et porte un encadré juridique (code de la route L412-1, code pénal 431-1) dans le formulaire et sur l'appel.
 - « Se réunir » dans « Agir » (11 novembre 2026, D-198) : collectifs, annuaire des organisations, guide « Créer une association » et salons réunis sur une page, que le tutoriel peut ouvrir.
