@@ -43,10 +43,10 @@ class LetterViewsTest {
             contentFollowStore = ContentFollowStore(database),
         )
         setContent {
-            Box(Modifier.requiredSize(420.dp, 900.dp)) {
+            Box(Modifier.requiredSize(420.dp, 760.dp)) {
                 val library = rememberContentLibrary(dependencies)
                 val state = rememberDeciderState(dependencies)
-                DeciderScreen(library, state, WindowClass.of(420f, 900f), now = { now }, dependencies = dependencies)
+                DeciderScreen(library, state, WindowClass.of(420f, 760f), now = { now }, dependencies = dependencies)
             }
         }
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(DeciderTags.card(SLUG)).fetchSemanticsNodes().isNotEmpty() }

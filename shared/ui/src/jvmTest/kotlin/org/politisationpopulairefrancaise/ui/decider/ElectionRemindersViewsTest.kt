@@ -55,12 +55,12 @@ class ElectionRemindersViewsTest {
             contentFollowStore = ContentFollowStore(database),
         )
         setContent {
-            Box(Modifier.requiredSize(420.dp, 900.dp)) {
+            Box(Modifier.requiredSize(420.dp, 760.dp)) {
                 val library = rememberContentLibrary(dependencies)
                 val state = rememberDeciderState(dependencies)
                 val scope = rememberCoroutineScope()
                 val reminders = remember { DeciderRemindersState(store, settings = null, scope = scope, clock = { now }) }
-                DeciderScreen(library, state, WindowClass.of(420f, 900f), now = { now }, dependencies = dependencies, reminders = reminders)
+                DeciderScreen(library, state, WindowClass.of(420f, 760f), now = { now }, dependencies = dependencies, reminders = reminders)
             }
         }
         waitFor(DeciderTags.card("election-exemple"))

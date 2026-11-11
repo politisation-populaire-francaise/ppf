@@ -44,10 +44,10 @@ class LocalPetitionViewsTest {
             database = database,
         )
         setContent {
-            Box(Modifier.requiredSize(420.dp, 900.dp)) {
+            Box(Modifier.requiredSize(420.dp, 760.dp)) {
                 val library = rememberContentLibrary(dependencies)
                 val state = rememberDeciderState(dependencies)
-                DeciderScreen(library, state, WindowClass.of(420f, 900f), now = { now }, dependencies = dependencies)
+                DeciderScreen(library, state, WindowClass.of(420f, 760f), now = { now }, dependencies = dependencies)
             }
         }
     }

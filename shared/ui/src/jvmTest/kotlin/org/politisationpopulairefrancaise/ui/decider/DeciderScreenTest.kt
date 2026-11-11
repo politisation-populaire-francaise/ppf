@@ -85,7 +85,7 @@ class DeciderScreenTest {
     @Test
     fun theThreeFlagshipToolsComeFirstAndOpenTheirPlace() = runComposeUiTest {
         val seen = show(width = 400)
-        onNodeWithTag(DeciderHighlightTags.item(DeciderHighlight.PETITIONS)).assert(has("4 pétitions ouvertes"))
+        onNodeWithTag(DeciderHighlightTags.item(DeciderHighlight.PETITIONS)).assert(has("8 pétitions ouvertes"))
         onNodeWithTag(DeciderHighlightTags.item(DeciderHighlight.REVENDICATIONS)).performClick()
         waitForIdle()
         assertEquals(listOf(Space.REVENDICATIONS), seen.navigations)
@@ -105,7 +105,7 @@ class DeciderScreenTest {
     fun theHomeShowsThePactAndTheOpenPetitions() = runComposeUiTest {
         show(width = 1000)
         onNodeWithTag(DeciderTags.card("pacte-election-exemple")).assert(has("3 candidats sur 4 ont répondu"))
-        onNodeWithText("Pétitions officielles ouvertes (4)").assertExists()
+        onNodeWithText("Pétitions officielles ouvertes (8)").assertExists()
         onNodeWithTag(DeciderTags.card("petition-an-ordre-public")).assert(has("${n(412_950)} signatures"))
         // « plus de 500 000 pétitionnaires » (Règlement de l'Assemblée, article 148, alinéa 6).
         onNodeWithTag(DeciderTags.card("petition-an-ordre-public")).assert(has("Plus que ${n(87_051)} signatures pour dépasser ${n(500_000)}"))

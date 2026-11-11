@@ -42,7 +42,7 @@ class DocumentRequestViewsTest {
             }
         }
         // Without answers, the letter keeps its blanks to fill in.
-        onNodeWithTag(DocumentRequestTags.TEXT).assert(has("[Nom de l’administration]")).assert(has("le 15 décembre 2026"))
+        onNodeWithTag(DocumentRequestTags.TEXT).assert(has("[Nom de l’administration]")).assert(has("Le 15 décembre 2026"))
         onNodeWithTag(DocumentRequestTags.ADMINISTRATION).performTextInput("[EXEMPLE] Mairie de Lyon")
         onNodeWithTag(DocumentRequestTags.DOCUMENT).performTextInput("[EXEMPLE] Délibération du 3 octobre 2026")
         onNodeWithTag(DocumentRequestTags.mode(DocumentAccessMode.COPY)).performScrollTo().performClick()
