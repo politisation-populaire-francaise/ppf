@@ -187,10 +187,7 @@ class ComprendreSchemasTest {
 
     @Test
     fun aCapTextNeedsItsNatureItsRankItsNextActionsAndItsSources() {
-        val next = "::: et-maintenant
-- [Trouver une action](ppf:agir)
-:::
-"
+        val next = "::: et-maintenant\n- [Trouver une action](ppf:agir)\n:::\n"
         val entries = common("ce-que-la-rue-a-gagne", null) + listOf("nature" to "position", "rank" to "1")
         assertEquals(emptyList(), check(ComprendreSchemas.CAP, entries, next + sources))
         assertEquals(listOf(listOf("ppf-nature", "position"), listOf("ppf-rank", "1")), tags(ComprendreSchemas.CAP, entries, next + sources))
