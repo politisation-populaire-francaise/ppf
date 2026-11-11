@@ -53,6 +53,7 @@ import org.politisationpopulairefrancaise.ui.agir.engagement.EngagementScreen
 import org.politisationpopulairefrancaise.ui.agir.federer.FedererScreen
 import org.politisationpopulairefrancaise.ui.agir.gather.GatherLinks
 import org.politisationpopulairefrancaise.ui.agir.kits.KitsScreen
+import org.politisationpopulairefrancaise.ui.agir.kits.rememberKitsFilters
 import org.politisationpopulairefrancaise.ui.agir.gather.GatherScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
@@ -199,6 +200,8 @@ fun AgirScreen(
         route = if (returnTo == AgirRoute.KITS) AgirRoute.KITS else AgirRoute.HOME
         returnTo = null
     }
+    // The filters of the kits survive opening a kit and coming back (D-233).
+    val kitsFilters = rememberKitsFilters()
     // Where the strike simulator leads back: the home, the kits or the funds it was opened from.
     var strikeReturn by rememberSaveable { mutableStateOf<AgirRoute?>(null) }
     val testimonyLibrary = testimonies ?: rememberTestimonyLibrary(dependencies, start = false)
@@ -427,6 +430,7 @@ fun AgirScreen(
                     },
                     modifier = Modifier.fillMaxSize(),
                     onBack = home,
+                    filters = kitsFilters,
                 )
                 AgirRoute.GATHER -> GatherScreen(
                     library = library,
