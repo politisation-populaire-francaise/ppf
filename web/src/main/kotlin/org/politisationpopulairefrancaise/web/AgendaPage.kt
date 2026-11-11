@@ -138,11 +138,12 @@ fun HTML.agendaDocument(query: AgendaQuery, events: List<SignedEvent>) {
     }
 }
 
-internal fun kotlinx.html.FlowContent.mobilization(event: SignedEvent) {
+/** One mobilization; [compact] (« En direct ») leaves out the description, the agenda page shows it. */
+internal fun kotlinx.html.FlowContent.mobilization(event: SignedEvent, compact: Boolean = false) {
     val start = event.firstTagValue(AgirFormats.TAG_START)?.toLongOrNull() ?: return
     val end = event.firstTagValue(AgirFormats.TAG_END)?.toLongOrNull()?.takeIf { it > start }
     val zone = zoneOf(event)
-    article(classes = "agenda-event") {
+    article(classes = if (compact) "agenda-event compact" else "agenda-event") {
         h3 {
             event.firstTagValue(AgirFormats.TAG_EVENT_STATUS)?.let(statusLabels::get)?.let { status ->
                 strong { +"$status : " }
@@ -171,7 +172,7 @@ internal fun kotlinx.html.FlowContent.mobilization(event: SignedEvent) {
                 dd { +(mobilizationTypeLabels[type] ?: type) }
             }
         }
-        val text = event.content.takeIf { it.isNotBlank() } ?: event.firstTagValue(AgirFormats.TAG_SUMMARY)
+        val text = event.content.takeIf { it.isNotBlank() && !compact } ?: event.firstTagValue(AgirFormats.TAG_SUMMARY)?.takeUnless { compact }
         text?.lines()?.filter { it.isNotBlank() }?.forEach { line -> p { +line } }
         event.tagValues(AgirFormats.TAG_LINK).firstOrNull(::isWebAddress)?.let { link ->
             p {

@@ -99,7 +99,7 @@ fun HTML.liveDocument(contents: LiveContents) {
             id = "mobilisations"
             h2 { +"Prochaines mobilisations" }
             if (contents.mobilizations.isEmpty()) p(classes = "muted") { +"Aucune mobilisation annoncée pour les semaines à venir." }
-            contents.mobilizations.forEach { mobilization(it) }
+            contents.mobilizations.forEach { mobilization(it, compact = true) }
             p(classes = "section-more") { a(href = "/agenda") { +"Tout l’agenda des mobilisations" } }
         }
         section {
