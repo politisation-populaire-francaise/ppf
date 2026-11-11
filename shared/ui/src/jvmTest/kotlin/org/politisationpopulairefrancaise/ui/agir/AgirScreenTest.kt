@@ -86,7 +86,7 @@ class AgirScreenTest {
             val harness = AgirHarness()
             setContent { harness.Content(width, 740) }
             awaitTag(AgirTags.HOME)
-            val tops = available.take(3).map { onNodeWithTag(AgirTags.RUBRIC + it).fetchSemanticsNode().boundsInRoot.top }
+            val tops = cards.take(3).map { onNodeWithTag(AgirTags.RUBRIC + it).fetchSemanticsNode().boundsInRoot.top }
             columns = tops.count { it == tops.first() }
         }
         return columns
