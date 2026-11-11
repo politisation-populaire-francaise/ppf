@@ -7,11 +7,11 @@ type: parcours
 origin: ai-assisted
 duration: 5
 published_at: 2026-11-07
-updated_at: 2026-11-09
+updated_at: 2026-11-11
 ---
 ::: en-bref
 - Pour voter, il faut être **inscrit sur une liste électorale**. Vérifiez-le en ligne en quelques minutes.
-- La présidentielle est annoncée pour **avril 2027** ; ses dates seront fixées par le **décret de convocation des électeurs**. Pour voter, la demande d'inscription doit être faite au plus tard le **sixième vendredi avant le scrutin**, en ligne comme en mairie.
+- La présidentielle est annoncée pour les **18 avril et 2 mai 2027**. Pour voter, la demande d'inscription doit être faite au plus tard le **sixième vendredi avant le scrutin**, soit le **vendredi 12 mars 2027**, en ligne comme en mairie (date à confirmer par le décret de convocation des électeurs).
 - Dans une commune de **1 000 habitants ou plus**, il faut présenter une **pièce d'identité** pour voter. La carte électorale n'est pas obligatoire.
 - Si vous ne pouvez pas vous déplacer, un autre électeur peut voter pour vous : c'est la **procuration**. Faites-la **le plus tôt possible**.
 :::
@@ -54,9 +54,9 @@ Le justificatif de domicile doit dater de moins de trois mois. On peut s'inscrir
 
 ## Les dates à retenir pour avril 2027
 
-Le Conseil des ministres du 1er juillet 2026 a annoncé les dates de l'élection présidentielle, avec un premier tour en avril 2027. En Guadeloupe, en Martinique, en Guyane, à Saint-Pierre-et-Miquelon, à Saint-Barthélemy, à Saint-Martin et en Polynésie française, on votera la veille, le samedi, à cause du décalage horaire (service-public.gouv.fr). Les dates ne seront fixées officiellement que par le décret de convocation des électeurs, qui doit paraître au moins dix semaines avant le premier tour (loi du 6 novembre 1962, article 1 bis) : vérifiez-les à ce moment-là.
+Le Conseil des ministres du 1er juillet 2026 a annoncé les dates de l'élection présidentielle : premier tour le dimanche 18 avril 2027, second tour le dimanche 2 mai 2027 (service-public.gouv.fr). En Guadeloupe, en Martinique, en Guyane, à Saint-Pierre-et-Miquelon, à Saint-Barthélemy, à Saint-Martin et en Polynésie française, on votera la veille, le samedi, à cause du décalage horaire (service-public.gouv.fr). Les dates ne seront fixées officiellement que par le décret de convocation des électeurs, qui doit paraître au moins dix semaines avant le premier tour (loi du 6 novembre 1962, article 1 bis) : vérifiez-les à ce moment-là.
 
-La règle de la date limite est simple : la demande d'inscription doit être faite au plus tard le **sixième vendredi avant le scrutin** (Code électoral, article L17). Depuis le 1er juillet 2026, c'est la même date en ligne et en mairie ; avant, la demande en ligne devait être faite deux jours plus tôt (décret du 12 juin 2026, service-public.gouv.fr). Pour le premier tour de la présidentielle, il suffira de compter six vendredis en arrière à partir de la date fixée par le décret. Le plus sûr reste de s'inscrire dès maintenant : c'est possible toute l'année.
+La règle de la date limite est simple : la demande d'inscription doit être faite au plus tard le **sixième vendredi avant le scrutin** (Code électoral, article L17). Depuis le 1er juillet 2026, c'est la même date en ligne et en mairie ; avant, la demande en ligne devait être faite deux jours plus tôt (décret du 12 juin 2026, service-public.gouv.fr). Pour un premier tour le 18 avril 2027, cela donne le **vendredi 12 mars 2027**, date également indiquée par le site d'information du gouvernement ; elle sera confirmée par le décret de convocation. Le plus sûr reste de s'inscrire dès maintenant : c'est possible toute l'année.
 
 Certaines personnes peuvent encore s'inscrire après cette date, jusqu'au dixième jour avant le scrutin. C'est le cas, notamment, après un déménagement pour raison professionnelle ou une mutation, après l'acquisition de la nationalité française, ou pour une personne devenue majeure après la date limite (Code électoral, article L30). En cas de doute, demandez à votre mairie.
 
@@ -125,7 +125,7 @@ La procuration vaut pour un tour, pour les deux tours, ou pour une durée choisi
 - Code électoral, article L62 (enveloppe, isoloir), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000039280718
 - Code électoral, article L62-1 (liste d'émargement), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964963
 - Loi n° 62-1292 du 6 novembre 1962, article 1 bis (décret de convocation), consulté le 2026-11-09 : https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000043303712
-- Service-public.gouv.fr, « Les dates de l'élection présidentielle de 2027 sont annoncées » (2 juillet 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/actualites/A15053
+- Service-public.gouv.fr, « Les dates de l'élection présidentielle de 2027 sont annoncées » (2 juillet 2026), consulté le 2026-11-11 : https://www.service-public.gouv.fr/particuliers/actualites/A15053
 - Service-public.gouv.fr, « Inscription sur les listes électorales : des changements à partir de juillet 2026 » (18 juin 2026, décret n° 2026-493 du 12 juin 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/actualites/A18967
 - Service-public.gouv.fr, « Listes électorales : en cas de première inscription » (vérifié le 3 mars 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1367
 - Service-public.gouv.fr, « Inscription sur la liste électorale : en cas de déménagement » (vérifié le 10 avril 2026), consulté le 2026-11-09 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1372
