@@ -11,7 +11,6 @@ import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.graphics.vector.addPathNodes
 import androidx.compose.ui.graphics.vector.group
-import androidx.compose.ui.graphics.vector.path
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.semantics.Role
@@ -67,9 +66,9 @@ fun ppfSymbol(bubble: Color, dot: Color): ImageVector =
         .apply {
             group(name = "frame", translationX = -5.2f, translationY = -3.2f) {
                 group(name = "gap", clipPathData = addPathNodes(GAP)) {
-                    path(fill = SolidColor(bubble), pathFillType = PathFillType.EvenOdd, pathData = addPathNodes(BUBBLE))
+                    addPath(pathData = addPathNodes(BUBBLE), pathFillType = PathFillType.EvenOdd, fill = SolidColor(bubble))
                 }
-                path(fill = SolidColor(dot), pathData = addPathNodes(DOT))
+                addPath(pathData = addPathNodes(DOT), fill = SolidColor(dot))
             }
         }
         .build()
