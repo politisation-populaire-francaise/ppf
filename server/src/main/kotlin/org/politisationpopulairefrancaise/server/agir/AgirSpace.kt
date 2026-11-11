@@ -80,7 +80,8 @@ class AgirSpace(
     private fun normalRoute(event: SignedEvent): Route = when (AgirRules.categoryOf(event)) {
         AgirCategory.MOBILIZATION -> if (isTrusted(event.pubkey)) Route.Publish else Route.Hold
         AgirCategory.CALL -> when (AgirRules.callTypeOf(event)) {
-            AgirFormats.CALL_TYPE_WITNESSES -> Route.Hold
+            // The calls for witnesses (AP-02) and to block (D-199) are always read by the team first.
+            in AgirFormats.CALL_TYPES_ALWAYS_REVIEWED -> Route.Hold
             AgirFormats.CALL_TYPE_FUNDRAISING -> if (isTrusted(event.pubkey)) Route.Publish else Route.Refuse(FUNDRAISING_REFUSED)
             else -> if (isTrusted(event.pubkey)) Route.Publish else Route.Hold
         }

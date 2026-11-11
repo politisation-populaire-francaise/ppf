@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The mobilizations happening right now, put forward on the map and in the agenda (D-197). -->
+<resources>
+    <string name="agenda_now_title">En ce moment</string>
+    <plurals name="agenda_now_count">
+        <item quantity="one">%1$d mobilisation en cours</item>
+        <item quantity="other">%1$d mobilisations en cours</item>
+    </plurals>
+    <plurals name="agenda_now_blockades">
+        <item quantity="one">dont %1$d blocage annoncé par ses organisateurs</item>
+        <item quantity="other">dont %1$d blocages annoncés par leurs organisateurs</item>
+    </plurals>
+    <plurals name="agenda_now_more">
+        <item quantity="one">et %1$d autre</item>
+        <item quantity="other">et %1$d autres</item>
+    </plurals>
+    <string name="agenda_now_open">Ouvrir %1$s</string>
+</resources>

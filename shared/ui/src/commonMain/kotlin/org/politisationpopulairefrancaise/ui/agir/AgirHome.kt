@@ -38,6 +38,10 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.WindowClass
 import org.politisationpopulairefrancaise.core.WindowWidthClass
+import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
+import org.politisationpopulairefrancaise.core.time.CivilDate
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.ui.agir.engagement.EngagementFeatured
 import org.politisationpopulairefrancaise.ui.agir.timer.TimerHomeBlock
 import org.politisationpopulairefrancaise.ui.components.BadgeStyle
 import org.politisationpopulairefrancaise.ui.components.PageHeader
@@ -75,6 +79,12 @@ import org.politisationpopulairefrancaise.ui.resources.agir_soon_text
 import org.politisationpopulairefrancaise.ui.resources.agir_soon_title
 import org.politisationpopulairefrancaise.ui.resources.agir_testify_text
 import org.politisationpopulairefrancaise.ui.resources.agir_testify_title
+import org.politisationpopulairefrancaise.ui.resources.engager_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.engager_rubric_title
+import org.politisationpopulairefrancaise.ui.resources.federer_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.gather_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.gather_rubric_title
+import org.politisationpopulairefrancaise.ui.resources.federer_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.proches_rubric_text
 import org.politisationpopulairefrancaise.ui.resources.proches_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.space_agir
@@ -104,8 +114,17 @@ object AgirRubrics {
     /** « Mes proches à mobiliser » (AG-63): the private list of a few relatives, on the device only. */
     val PROCHES = AgirRubric("proches", Res.string.proches_rubric_title, Res.string.proches_rubric_text, Lucide.UsersRound)
 
+    /** « Fédérer » (D-195): convince one's circle; the list of relatives, the kit and its cards to share. */
+    val FEDERER = AgirRubric("federer", Res.string.federer_rubric_title, Res.string.federer_rubric_text, Lucide.MessageCircle)
+
+    /** « S'engager en politique » (D-196, D-213): the steps in the order of the electoral calendar. */
+    val ENGAGER = AgirRubric("s-engager", Res.string.engager_rubric_title, Res.string.engager_rubric_text, Lucide.Vote)
+
+    /** « Se réunir » (D-198): collectifs, organisations, « Créer une association », rooms. */
+    val GATHER = AgirRubric("se-reunir", Res.string.gather_rubric_title, Res.string.gather_rubric_text, Lucide.Users)
+
     /** What can be opened today. */
-    val available: List<AgirRubric> = listOf(AGENDA, CALLS, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, PROCHES, COLLECTIVES, GUIDES)
+    val available: List<AgirRubric> = listOf(AGENDA, CALLS, FEDERER, ENGAGER, GATHER, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, PROCHES, COLLECTIVES, GUIDES)
 
     /** Planned but not ready: shown honestly, disabled, without any date. */
     val inPreparation: List<AgirRubric> = listOf(
@@ -141,7 +160,12 @@ fun agirColumns(width: Dp): Int = when {
  * preparation, disabled, with one honest line of explanation and no date.
  */
 @Composable
-internal fun AgirHome(windowClass: WindowClass, onOpen: (AgirRubric) -> Unit, modifier: Modifier = Modifier) {
+internal fun AgirHome(
+    windowClass: WindowClass,
+    onOpen: (AgirRubric) -> Unit,
+    modifier: Modifier = Modifier,
+    today: CivilDate = ParisTime.dateOf(ParisTime.epochDay(currentEpochSeconds())),
+) {
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
     Column(modifier.fillMaxSize().background(palette.surface1).verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp)) {
@@ -149,6 +173,8 @@ internal fun AgirHome(windowClass: WindowClass, onOpen: (AgirRubric) -> Unit, mo
             PageHeader(stringResource(Res.string.space_agir), stringResource(Res.string.agir_intro))
             // AG-55 « Sans nouvelles de moi »: the alerts of relatives first, then the person's own timer and the discreet lines.
             TimerHomeBlock(onOpenOwn = { onOpen(AgirRubrics.MANIFESTATION) }, modifier = Modifier.padding(top = 16.dp))
+            // D-213: « S'engager en politique » put forward, with the next milestone of the electoral calendar.
+            EngagementFeatured(today, onOpen = { onOpen(AgirRubrics.ENGAGER) }, modifier = Modifier.padding(top = 16.dp).widthIn(max = 720.dp))
             Spacer(Modifier.height(24.dp))
             SectionTitle(stringResource(Res.string.agir_rubrics_title))
             Spacer(Modifier.height(12.dp))

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Rubric « S'engager en politique » of « Agir » (D-196), in the order of the electoral calendar (D-213). -->
+<resources>
+    <string name="engager_rubric_title">S’engager en politique</string>
+    <string name="engager_rubric_text">S’inscrire sur les listes électorales, voter, se présenter, monter une liste, créer ou rejoindre un parti : dans l’ordre du calendrier.</string>
+    <string name="engager_featured_title">S’engager en politique</string>
+    <string name="engager_featured_next">Prochaine échéance : %1$s, %2$s.</string>
+    <string name="engager_featured_days">Dans %1$d jours.</string>
+    <string name="engager_featured_today">C’est aujourd’hui.</string>
+    <string name="engager_featured_open">Voir les étapes</string>
+    <string name="engager_title">S’engager en politique</string>
+    <string name="engager_description">Voter, se présenter, monter une liste, rejoindre ou créer un parti : les étapes dans l’ordre du calendrier électoral, avec les démarches officielles.</string>
+    <string name="engager_back">Revenir à l’accueil d’Agir</string>
+    <string name="engager_step">Étape %1$d</string>
+    <string name="engager_unconfirmed">date annoncée, à confirmer par le décret de convocation</string>
+    <string name="engager_checked">Dates relevées le %1$s sur les sites officiels.</string>
+    <string name="engager_source">Voir la source officielle</string>
+    <string name="engager_soon">Ce guide arrive avec la prochaine mise à jour des contenus.</string>
+    <string name="engager_in_comprendre">Ouvrir Comprendre (parcours « %1$s »)</string>
+
+    <string name="engager_register_title">S’inscrire sur les listes électorales</string>
+    <string name="engager_register_deadline">Pour voter à la présidentielle, inscrivez-vous au plus tard le %1$s (%2$s), en ligne ou en mairie. Après un déménagement, il faut se réinscrire dans sa nouvelle commune.</string>
+    <string name="engager_register_check">Vérifier mon inscription</string>
+    <string name="engager_register_how">M’inscrire : la démarche officielle</string>
+    <string name="engager_register_proxy">Voter par procuration</string>
+    <string name="engager_register_course">S’inscrire et voter</string>
+
+    <string name="engager_presidential_title">Voter à la présidentielle</string>
+    <string name="engager_presidential_text">Premier tour le %1$s, second tour le %2$s (%3$s). Comparez les candidats et leurs engagements, sur les mêmes questions pour tous.</string>
+    <string name="engager_presidential_open">Comparer dans Décider</string>
+
+    <string name="engager_stand_title">Se présenter, monter une liste</string>
+    <string name="engager_stand_text">Prochaines élections où l’on peut se présenter : départementales et régionales en mars 2028, européennes en 2029, municipales en mars 2032. Des élections partielles ont lieu toute l’année. Des législatives n’auront lieu avant 2029 qu’en cas de dissolution de l’Assemblée nationale.</string>
+    <string name="engager_stand_course">Se présenter à une élection</string>
+    <string name="engager_stand_list">Constituer une liste citoyenne</string>
+    <string name="engager_stand_2028">Se présenter aux départementales et régionales de 2028</string>
+    <string name="engager_stand_legislatives">Se présenter aux législatives</string>
+    <string name="engager_stand_mates">Trouver des colistiers dans les collectifs</string>
+
+    <string name="engager_party_title">Créer ou rejoindre un parti</string>
+    <string name="engager_party_text">Un parti est d’abord une association, avec un mandataire financier ou une association de financement. Les fiches des partis sont présentées de la même façon pour tous.</string>
+    <string name="engager_party_guide">Créer ou rejoindre un parti</string>
+    <string name="engager_party_sheets">Voir les fiches des partis</string>
+
+    <string name="engager_neutral_title">Les mêmes outils pour tous</string>
+    <string name="engager_neutral_text">PPF ne soutient aucune liste, aucun candidat et aucun parti : une association ne peut aider la campagne d’un candidat (code électoral, article L52-8). Ces outils sont ouverts à toutes et à tous, aux mêmes conditions.</string>
+    <string name="engager_neutral_source">Lire le code électoral (article L52-8)</string>
+    <string name="engager_milestone_inscription">dernier jour pour s’inscrire sur les listes électorales</string>
+    <string name="engager_milestone_tour1">premier tour de la présidentielle</string>
+    <string name="engager_milestone_tour2">second tour de la présidentielle</string>
+</resources>

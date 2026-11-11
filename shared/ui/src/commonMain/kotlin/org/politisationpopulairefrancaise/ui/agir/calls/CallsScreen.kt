@@ -91,6 +91,7 @@ import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 object CallTags {
     const val SCREEN = "calls-screen"
     const val BACK = "calls-back"
+    const val BLOCKADE_NOTICE = "calls-blockade-notice"
     const val WALL = "calls-wall"
     const val TAB = "calls-tab-" // followed by the tab name in lowercase
     const val FILTERS = "calls-filters"

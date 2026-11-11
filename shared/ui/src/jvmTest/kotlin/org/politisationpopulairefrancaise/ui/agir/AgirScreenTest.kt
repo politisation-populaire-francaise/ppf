@@ -55,7 +55,10 @@ class AgirScreenTest {
         }
         // "Témoigner" (AG-07), the protest mode (AG-13), the solidarity funds (AG-10) and "Je veux aider" (AG-12) left the rubrics in preparation.
         assertEquals(3, inPreparation.size)
-        assertEquals("temoigner", available[2])
+        assertEquals("federer", available[2])
+        assertEquals("s-engager", available[3])
+        assertEquals("se-reunir", available[4])
+        assertEquals("temoigner", available[5])
         assertTrue("solidarite" in available && "aider" in available)
         assertTrue("solidarite" !in inPreparation && "aider" !in inPreparation)
         onNodeWithText("Messagerie sans Internet").assertExists()
@@ -113,14 +116,14 @@ class AgirScreenTest {
             )
         }
         awaitTag(AgirTags.HOME)
-        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.AGENDA.id).performClick()
+        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.AGENDA.id).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag("plugged-agenda").assertExists()
         assertEquals(0, count(AgirTags.PENDING))
         onNodeWithTag("plugged-agenda-back").performClick()
         waitForIdle()
         awaitTag(AgirTags.HOME)
-        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.CALLS.id).performClick()
+        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.CALLS.id).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag("plugged-calls").assertExists()
         onNodeWithTag("plugged-calls-back").performClick()
@@ -184,7 +187,7 @@ class AgirScreenTest {
             )
         }
         awaitTag(AgirTags.HOME)
-        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.AGENDA.id).performClick()
+        onNodeWithTag(AgirTags.RUBRIC + AgirRubrics.AGENDA.id).performScrollTo().performClick()
         waitForIdle()
         waitUntil(timeoutMillis = 10_000) { harness.organisations.verified.isVerified(AgirFixtures.LANTERNE_ACCOUNT) }
         onNodeWithTag("plugged-organiser").performClick()

@@ -1564,3 +1564,33 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 ## D-194 (2026-11-09, numérotée le 2026-11-11) « Mes proches à mobiliser » (AG-63)
 
 - Décision écrite à la section 9 de `docs/integration/agir-proches.md` (liste privée sur l'appareil seulement, effacée avec les clés), complétée par D-190.
+
+## D-195 (2026-11-11) « Fédérer » : une rubrique d'« Agir » faite de ce qui existe
+
+- Contexte : demande de la propriétaire (fédérer son entourage, lui ouvrir les yeux, c'est agir ; feuille de route du MVP 1, jalon 2) ; le kit « Convaincre autour de soi » est écrit par la session Comprendre (fiche pratique `convaincre-autour-de-soi`).
+- Options : (A) une rubrique qui réutilise la liste des proches (AG-63) et lit le kit de Comprendre, découpé en cartes sur l'appareil ; (B) un nouveau type de contenu « carte à partager » signé à part ; (C) un simple lien vers la fiche dans Comprendre.
+- Choix (décision technique prise en autonomie) : **A**. Le kit reste la seule référence (sources, mention d'origine, relecture) ; l'application ne fait que le découper (arguments numérotés, bloc `::: objections`, liste « Le monde bouge ») et chaque carte partagée porte la mention « rédigé par l'IA » et l'adresse de la fiche complète. Rien n'est envoyé ni compté : partager et copier sont les gestes de la personne ; la liste des proches ne quitte jamais l'appareil. Sans le kit sur l'appareil, l'écran le dit.
+- Raison : aucun nouveau format à signer ni à relire, aucune donnée nouvelle ; B dédoublerait le contenu, C laisserait la personne sans rien à montrer pendant une discussion.
+
+## D-196 (2026-11-11) « S'engager en politique » : quatre étapes dans l'ordre du calendrier
+
+- Contexte : D-213 (propriétaire : l'inscription d'abord, puis les listes de candidats, priorités selon le calendrier, même outil pour tous) ; jalon 2 de `docs/ROADMAP-MVP1.md`.
+- Choix (décision technique prise en autonomie) : une rubrique d'« Agir » mise en avant sur son accueil par un bandeau qui donne la prochaine échéance et le nombre de jours ; quatre étapes : s'inscrire (date limite du vendredi 12 mars 2027, service officiel de vérification, démarche officielle, procuration, parcours « S'inscrire et voter »), voter à la présidentielle (18 avril et 2 mai 2027, vers « Décider »), se présenter et monter une liste (guides de Comprendre, collectifs pour trouver des colistiers), créer ou rejoindre un parti (guide, fiches des partis de « Voir ») ; l'encadré « Les mêmes outils pour tous » cite l'article L52-8. Les dates restent « annoncées, à confirmer par le décret de convocation » ; un guide absent de l'appareil est grisé avec une phrase honnête.
+- Sources relues le 11 novembre 2026 : info.gouv.fr, « Comment voter à la présidentielle 2027 ? » (inscription jusqu'au vendredi 12 mars 2027) ; service-public.gouv.fr F1939 (présidentielle les 18 avril et 2 mai 2027, départementales et régionales en mars 2028, européennes et législatives en 2029 sauf dissolution, municipales en 2032) ; service-public.gouv.fr R51788 (vérifier son inscription) et F1367 (s'inscrire).
+
+## D-197 (2026-11-11) Les mobilisations en cours mises en avant sur la carte et dans l'agenda
+
+- Contexte : tutoriel du premier lancement (D-216 : « la carte qui indique les manifestations en cours, idéalement les rues bloquées ») ; réponse du chef d'équipe sur les rues bloquées (D-190 : seulement les blocages annoncés dans l'agenda).
+- Choix (décision technique prise en autonomie) : un bandeau « En ce moment » au-dessus de la liste et de la carte de l'agenda, calculé sur l'appareil à partir des dates de l'agenda (`OngoingMobilizations`) : les mobilisations en cours, non annulées, celle qui finit le plus tôt en premier, trois nommées et les autres comptées, avec le nombre de blocages annoncés par leurs organisateurs. Jamais la position des forces de l'ordre (points d'attention n° 14 et 24).
+
+## D-198 (2026-11-11) « Se réunir » : une entrée claire dans « Agir »
+
+- Contexte : étape 4 du tutoriel et bouton « m'allier » (D-216) ; le bloc Communauté est gelé, ses salons sont réutilisés tels quels.
+- Choix (décision technique prise en autonomie) : une page « Se réunir » (route `AgirRoute.GATHER`, ouverte par la coquille avec `AgirScreen(requestedRoute)`) qui réunit les collectifs, l'annuaire des organisations, le guide « Créer une association » lu dans « Agir » et les salons ; chaque destination ramène à la page.
+
+## D-199 (2026-11-11) Appels « Faire grève » et « Bloquer »
+
+- Contexte : D-215 (propriétaire : « appels à la grève, à manifester, à soutenir, à bloquer, etc. ») ; les 13 types d'AP-01 n'avaient ni la grève ni le blocage. Réponse du chef d'équipe du 11 novembre 2026.
+- Choix : deux types de plus dans le format des appels, sans migration. « Faire grève » (`greve`) : `ppf-sector` (secteur ou entreprise), `start`, `ppf-organizer` ; réponse « Je soutiens » ; règle commune de publication. « Bloquer » (`bloquer`) : `start`, `location`, `ppf-organizer` ; réponse « J'y serai » ; toujours relu avant publication, comme les appels à témoins ; un encadré juridique toujours affiché dans le formulaire et sur l'appel distingue ce qui est légal (grève, piquet qui laisse passer les non-grévistes, fermeture volontaire d'un commerce) de ce qui expose à des poursuites (entrave à la circulation, code de la route, article L412-1 ; entrave concertée à la liberté du travail par des menaces ou des violences, code pénal, article 431-1), sans conseiller de moyen d'y échapper ; la charte refuse violence, dégradation et mise en danger, rappelle de ne jamais gêner les secours ni l'accès aux soins ; aucun appel ne vise une personne nommée ; l'espace de l'équipe rappelle ces motifs de refus.
+- Sources relues le 11 novembre 2026 : code de la route, article L412-1 (deux ans d'emprisonnement et 4 500 euros d'amende) ; code pénal, article 431-1 (version en vigueur depuis le 26 août 2021 : entrave « d'une manière concertée et à l'aide de menaces », un an et 15 000 euros ; forme aggravée par des coups, violences, voies de fait, destructions ou dégradations).
+- À faire relire par un avocat avant l'ouverture publique : l'encadré juridique, la charte des appels à bloquer et la question du statut d'éditeur de PPF pour les appels relus avant publication.

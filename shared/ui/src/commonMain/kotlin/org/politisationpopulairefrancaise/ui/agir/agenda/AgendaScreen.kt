@@ -46,6 +46,7 @@ import org.politisationpopulairefrancaise.core.WindowWidthClass
 import org.politisationpopulairefrancaise.core.agir.agenda.AgendaPeriod
 import org.politisationpopulairefrancaise.core.agir.agenda.AgendaQuery
 import org.politisationpopulairefrancaise.core.agir.agenda.Mobilization
+import org.politisationpopulairefrancaise.core.agir.agenda.OngoingMobilizations
 import org.politisationpopulairefrancaise.core.agir.agenda.ParisTime
 import org.politisationpopulairefrancaise.core.agir.poster.PosterContent
 import org.politisationpopulairefrancaise.ui.AppDependencies
@@ -397,6 +398,11 @@ private fun AgendaList(
                 if (agenda.tab != AgendaTab.MINE) AgendaViewChoice(map, Modifier.padding(horizontal = horizontal, vertical = 8.dp))
                 HorizontalDivider(color = palette.border)
             }
+        }
+        // D-197: what is happening right now, above the list and the map alike.
+        if (agenda.tab == AgendaTab.UPCOMING) {
+            val ongoing = remember(agenda.mobilizations, agenda.now) { OngoingMobilizations.of(agenda.mobilizations, agenda.now) }
+            OngoingBanner(ongoing, onOpen = agenda::open, modifier = Modifier.padding(horizontal = horizontal, vertical = 8.dp).widthIn(max = 720.dp))
         }
         if (map.view == AgendaView.MAP && agenda.tab != AgendaTab.MINE && LocalAgendaMapRenderer.current != null) {
             AgendaMapPane(agenda, map, onOpenFilters, Modifier.weight(1f).fillMaxWidth())
