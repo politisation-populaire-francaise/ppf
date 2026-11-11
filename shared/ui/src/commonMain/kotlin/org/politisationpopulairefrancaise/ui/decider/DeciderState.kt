@@ -22,6 +22,8 @@ import org.politisationpopulairefrancaise.ui.AppDependencies
 sealed interface DeciderDestination {
     data class Petition(val address: ContentAddress) : DeciderDestination
     data class Pacte(val address: ContentAddress) : DeciderDestination
+    /** The citizen deliberation on the measures of a pact (DE-25). */
+    data class Deliberation(val address: ContentAddress) : DeciderDestination
     /** The comparator of an election (DE-16). */
     data class Comparator(val address: ContentAddress) : DeciderDestination
     /** An election of the personal electoral calendar (DE-28). */

@@ -77,6 +77,7 @@ import org.politisationpopulairefrancaise.ui.voir.SectionHeader
 import org.politisationpopulairefrancaise.ui.voir.VoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.rememberVoirRequestSession
 import org.politisationpopulairefrancaise.ui.voir.withoutExample
+import org.politisationpopulairefrancaise.ui.resources.deliberation_section
 
 /**
  * "Décider" (vision, pillar 4: reprendre le pouvoir). This first version gathers what the law
@@ -102,7 +103,10 @@ fun DeciderScreen(
     dependencies: AppDependencies? = null,
     /** The reminders of the elections (DE-28), kept on the device; null where there is none (previews). */
     reminders: DeciderRemindersState? = null,
+    /** The account's signer, to propose and amend in a deliberation; null without an account. */
+    signer: org.politisationpopulairefrancaise.core.signing.EventSigner? = null,
 ) {
+    val deliberationComposer = remember(dependencies) { dependencies?.let { DeliberationComposer(it.contentStore, it.remote) } }
     val pastVotes = dependencies?.let { rememberPastVotesState(it) }
     val reports = dependencies?.let { rememberVoirRequestSession(it, messaging = null) }
     val photos = dependencies?.let { rememberComparatorPhotosState(it) }
@@ -140,9 +144,9 @@ fun DeciderScreen(
         Box(Modifier.fillMaxSize().testTag(DeciderTags.SCREEN)) {
             val current = state.current
             if (current == null) {
-                DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate, territories = rememberDeviceTerritories(dependencies), demands = library.revendications.size)
+                DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate, territories = rememberDeviceTerritories(dependencies), demands = library.revendications.size, deliberations = library.deliberations, nowSeconds = now())
             } else {
-                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos, reminders = reminders, dependencies = dependencies) }
+                key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos, reminders = reminders, dependencies = dependencies, deliberations = library.deliberations, deliberationComposer = deliberationComposer, signer = signer) }
             }
         }
     }
@@ -162,6 +166,9 @@ private fun DeciderHome(
     territories: Set<String> = emptySet(),
     /** The number of demands on the wall, for the highlight « Revendications ». */
     demands: Int = 0,
+    /** The citizen deliberations (DE-25), shown with the pact they prepare. */
+    deliberations: List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = emptyList(),
+    nowSeconds: Long = 0,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -221,6 +228,17 @@ private fun DeciderHome(
                 catalog.pactes.filter { it != pacte }.forEach { other ->
                     Spacer(Modifier.height(8.dp))
                     LinkRow(other.title.withoutExample(), Lucide.BadgeCheck, onClick = { state.open(DeciderDestination.Pacte(other.address)) }, modifier = Modifier.widthIn(max = 760.dp))
+                }
+            }
+        }
+        // The citizen deliberation on the measures of the pact (DE-25, MVP 1): propose, amend, vote.
+        if (deliberations.isNotEmpty()) {
+            Spacer(Modifier.height(24.dp))
+            Column(Modifier.widthIn(max = 760.dp).testTag(DeciderTags.section("deliberation"))) {
+                SectionHeader(stringResource(Res.string.deliberation_section))
+                deliberations.forEach { board ->
+                    Spacer(Modifier.height(8.dp))
+                    DeliberationCard(board, nowSeconds, onOpen = { state.open(DeciderDestination.Deliberation(board.address)) })
                 }
             }
         }
@@ -368,6 +386,9 @@ private fun DeciderDetail(
     photos: ComparatorPhotosState?,
     reminders: DeciderRemindersState?,
     dependencies: AppDependencies?,
+    deliberations: List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = emptyList(),
+    deliberationComposer: DeliberationComposer? = null,
+    signer: org.politisationpopulairefrancaise.core.signing.EventSigner? = null,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
@@ -391,6 +412,9 @@ private fun DeciderDetail(
                             onOpenBill = { onOpenVoir(it.address) },
                             wide = wide,
                         )
+                    } ?: Missing()
+                    is DeciderDestination.Deliberation -> deliberations.firstOrNull { it.address == current.address }?.let { board ->
+                        DeliberationPage(board, nowSeconds, deliberationComposer, signer)
                     } ?: Missing()
                     is DeciderDestination.Pacte -> catalog.pacte(current.address)?.let { pacte ->
                         PactePage(catalog.board(pacte, voir, today), state, actions, wide)

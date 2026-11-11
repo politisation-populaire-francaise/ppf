@@ -176,6 +176,10 @@ class ContentLibrary(
     var decider: DeciderCatalog by mutableStateOf(DeciderCatalog.EMPTY)
         private set
 
+    /** The citizen deliberations (DE-25: the measures of the Pacte), opened by the team, contributions reviewed by the server. */
+    var deliberations: List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> by mutableStateOf(emptyList())
+        private set
+
     /** [EXEMPLE] Reactions stay on the device until their privacy design is settled (M18). */
     var liked: Set<String> by mutableStateOf(emptySet())
         private set
@@ -448,7 +452,11 @@ class ContentLibrary(
             val deciderBlocks = DeciderCatalog.TYPES.flatMap { type -> store.byTag(listOf(Article.KIND), Article.TAG_TYPE, type.tagValue, limit = VOIR_LIMIT) }
                 .filter { trust.isTrusted(it.pubkey) }
                 .mapNotNull(Article::from)
-            Reloaded(guides, demands, own, posts, VoirCatalog.from(voirBlocks), DeciderCatalog.from(deciderBlocks))
+            // The deliberations: opened by the team only; propositions and amendments reach the device from the
+            // server, which serves a citizen's contribution only after the review of a person.
+            val deliberationEvents = org.politisationpopulairefrancaise.core.decider.DeliberationBoard.TYPES.flatMap { type -> store.byTag(listOf(Article.KIND), Article.TAG_TYPE, type, limit = VOIR_LIMIT) }
+            val deliberations = org.politisationpopulairefrancaise.core.decider.DeliberationBoard.from(deliberationEvents.filter { it.verify() }) { trust.isTrusted(it) }
+            Reloaded(guides, demands, own, posts, VoirCatalog.from(voirBlocks), DeciderCatalog.from(deciderBlocks), deliberations)
         }
         val freshGuides = fresh.guides
         val freshDemands = fresh.demands to fresh.own
@@ -458,6 +466,7 @@ class ContentLibrary(
         posts = fresh.posts
         voir = fresh.voir
         decider = fresh.decider
+        deliberations = fresh.deliberations
         selected = selected?.let { current -> freshGuides.firstOrNull { it.address == current.address } }
         selectedRevendication = selectedRevendication?.let { current ->
             freshDemands.first.firstOrNull { it.address == current.address } ?: freshDemands.second.firstOrNull { it.article.address == current.address }?.article
@@ -509,6 +518,7 @@ private class Reloaded(
     val posts: List<FeedPost>,
     val voir: VoirCatalog,
     val decider: DeciderCatalog,
+    val deliberations: List<org.politisationpopulairefrancaise.core.decider.DeliberationBoard> = emptyList(),
 )
 
 @Composable

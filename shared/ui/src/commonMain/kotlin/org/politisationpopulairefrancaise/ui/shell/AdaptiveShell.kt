@@ -583,6 +583,7 @@ private fun SpaceContent(
             },
             dependencies = dependencies,
             reminders = deciderReminders,
+            signer = accountSession.signer,
         )
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting, notifications = notificationsSettings)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
