@@ -241,7 +241,26 @@ fun RevendicationsScreen(
     val compact = windowClass.width == WindowWidthClass.COMPACT
     val selected = library.selectedRevendication
     val account = session.state as? AccountUiState.Ready
-    val context = RevendicationContext(followed = library.followed, myKey = account?.publicKey?.hex)
+    // What the views of MVP 1 need, all known on the device: the live results, the debates, the movement, the
+    // official petitions, the territory chosen here and the votes made here (none of it leaves the device).
+    val voting = org.politisationpopulairefrancaise.ui.urne.LocalVoting.current
+    val nearMe = rememberChosenTerritories(database)
+    val today = CivilDate.fromEpochSeconds(currentEpochSeconds())
+    val context = remember(library.followed, account, voting?.boxes, voting?.choices, library.debateCounts, library.revendications, library.decider, nearMe) {
+        val boxes = voting?.boxes.orEmpty()
+        val voted = voting?.choices.orEmpty().filterValues { it.first != null && it.first != org.politisationpopulairefrancaise.core.urne.UrneInfo.WITHDRAWN }.keys
+        RevendicationContext(
+            followed = library.followed,
+            myKey = account?.publicKey?.hex,
+            forCounts = boxes.mapNotNull { (subject, box) -> box.results?.let { subject to (it.citizens.counts["pour"] ?: 0L) } }.toMap(),
+            againstCounts = boxes.mapNotNull { (subject, box) -> box.results?.let { subject to (it.citizens.counts["contre"] ?: 0L) } }.toMap(),
+            debateCounts = library.debateCounts,
+            fromMovement = library.revendications.filter { library.movementCarriers(it) != null }.map { it.address.toString() }.toSet(),
+            atParliament = library.revendications.filter { library.decider.openPetitionFor(it.address, today) != null }.map { it.address.toString() }.toSet(),
+            nearMe = nearMe,
+            myVotes = boxes.filterValues { it.number in voted }.keys,
+        )
+    }
     var overlay by remember { mutableStateOf<Overlay?>(null) }
 
     val wall: @Composable (Modifier) -> Unit = { listModifier ->

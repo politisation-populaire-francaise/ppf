@@ -86,6 +86,7 @@ import org.politisationpopulairefrancaise.ui.resources.rv_save_as_view
 import org.politisationpopulairefrancaise.ui.resources.rv_section_authors
 import org.politisationpopulairefrancaise.ui.resources.rv_section_sort
 import org.politisationpopulairefrancaise.ui.resources.rv_section_status
+import org.politisationpopulairefrancaise.ui.resources.rv_section_scopes
 import org.politisationpopulairefrancaise.ui.resources.rv_section_territory
 import org.politisationpopulairefrancaise.ui.resources.rv_section_text
 import org.politisationpopulairefrancaise.ui.resources.rv_section_themes
@@ -102,6 +103,7 @@ object FilterPanelTags {
     const val THEME = "filter-theme-" // followed by the theme id
     const val TERRITORY = "filter-territory-" // followed by the folded territory
     const val STATUS = "filter-status-" // followed by the status tag
+    const val SCOPE = "filter-scope-" // followed by the scope name in lowercase
     const val AUTHORS = "filter-authors-" // followed by the scope name in lowercase
     const val TEXT = "filter-text"
     const val LOCKED = "filter-locked-" // followed by the criterion name in lowercase
@@ -261,6 +263,24 @@ fun RevendicationFilterPanel(
                             onClick = { draft = draft.copy(statuses = draft.statuses.toggle(status)) },
                             enabled = !isLocked,
                             modifier = Modifier.testTag(FilterPanelTags.STATUS + status.tagValue),
+                        )
+                    }
+                }
+            }
+
+            // MVP 1: where a demand comes from or stands (the movement, Parliament, closed, near me, my votes).
+            Section(stringResource(Res.string.rv_section_scopes)) {
+                val isLocked = RevendicationCriterion.SCOPES in locked
+                if (isLocked) LockedNote(RevendicationCriterion.SCOPES, viewName.orEmpty())
+                val chosen = if (isLocked) lockedQuery.scopes else draft.scopes
+                FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    org.politisationpopulairefrancaise.core.revendications.RevendicationScope.entries.forEach { scope ->
+                        PpfSelectableChip(
+                            label = stringResource(scopeLabelResource(scope)),
+                            selected = scope in chosen,
+                            onClick = { draft = draft.copy(scopes = draft.scopes.toggle(scope)) },
+                            enabled = !isLocked,
+                            modifier = Modifier.testTag(FilterPanelTags.SCOPE + scope.name.lowercase()),
                         )
                     }
                 }

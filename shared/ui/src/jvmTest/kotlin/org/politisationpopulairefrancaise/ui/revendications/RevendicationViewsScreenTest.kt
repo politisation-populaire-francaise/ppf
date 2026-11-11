@@ -207,7 +207,7 @@ class RevendicationViewsScreenTest {
     @Test
     fun theDefaultViewsAreTabsAndAThemeViewShowsOnlyItsDemands() = runComposeUiTest {
         openWall(memory())
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante"), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante"), tabIds())
         onNodeWithTag(RevendicationTags.TAB + "tout").assertIsSelected()
         assertCount("tout", "8 revendications")
         assertEquals(slugs.toSet(), slugsIn("tout"))
@@ -372,7 +372,7 @@ class RevendicationViewsScreenTest {
         waitUntil(timeoutMillis = 5_000) { store.layout()?.any { it is CustomRevendicationView } == true }
         val custom = store.layout()!!.filterIsInstance<CustomRevendicationView>().single()
         assertEquals("Lyon la nuit", custom.name)
-        assertEquals(listOf("tout", custom.id, "suivis", "theme:societe", "theme:sante"), tabIds())
+        assertEquals(listOf("tout", custom.id, "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante"), tabIds())
         onNodeWithTag(RevendicationTags.TAB + custom.id).assertIsSelected().assertTextEquals("Lyon la nuit")
         assertEquals(setOf("lyon-transports-nuit"), slugsIn(custom.id))
         // The filters became the view: Toutes has none left, and the new view has no filter of its own.
@@ -385,7 +385,7 @@ class RevendicationViewsScreenTest {
         waitForIdle()
         openSpace(Space.REVENDICATIONS)
         waitForDemands()
-        assertEquals(listOf("tout", custom.id, "suivis", "theme:societe", "theme:sante"), tabIds())
+        assertEquals(listOf("tout", custom.id, "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante"), tabIds())
         openView(custom.id)
         assertEquals(setOf("lyon-transports-nuit"), slugsIn(custom.id))
     }
@@ -409,7 +409,7 @@ class RevendicationViewsScreenTest {
         closeModal()
         waitUntil(timeoutMillis = 5_000) { store.layout()?.any { it is CustomRevendicationView } == true }
         val custom = store.layout()!!.filterIsInstance<CustomRevendicationView>().single()
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante", custom.id), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante", custom.id), tabIds())
         onNodeWithTag(RevendicationTags.TAB + custom.id).assertIsSelected()
         assertEquals(setOf("medecin-de-garde", "ateliers-numeriques-mairies"), slugsIn(custom.id))
 
@@ -423,13 +423,13 @@ class RevendicationViewsScreenTest {
         onNodeWithTag(RevendicationTags.TAB + custom.id).assertTextEquals("Médecins")
 
         // Move Santé before Société, then the custom view up once.
-        iconButton(ManageViewsTags.MOVE_UP + "suivis").assertIsNotEnabled() // Toutes stays first
+        iconButton(ManageViewsTags.MOVE_UP + "plus-de-pour").assertIsNotEnabled() // Toutes stays first
         iconButton(ManageViewsTags.MOVE_DOWN + custom.id).assertIsNotEnabled()
         iconButton(ManageViewsTags.MOVE_DOWN + "suivis").assertIsEnabled()
         onNodeWithTag(ManageViewsTags.MOVE_UP + "theme:sante").performScrollTo().performClick()
         onNodeWithTag(ManageViewsTags.MOVE_UP + custom.id).performScrollTo().performClick()
         waitForIdle()
-        assertEquals(listOf("tout", "suivis", "theme:sante", custom.id, "theme:societe"), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", custom.id, "theme:societe"), tabIds())
 
         // Remove a built-in view at once, and a custom view after its warning (the safe choice first).
         onNodeWithTag(ManageViewsTags.REMOVE + "theme:societe").performScrollTo().performClick()
@@ -438,19 +438,19 @@ class RevendicationViewsScreenTest {
         waitForIdle()
         onNodeWithTag(ManageViewsTags.KEEP).performClick()
         closeModal()
-        assertEquals(listOf("tout", "suivis", "theme:sante", custom.id), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", custom.id), tabIds())
         onNodeWithTag(ManageViewsTags.REMOVE + custom.id).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(ManageViewsTags.CONFIRM).performClick()
         closeModal()
-        assertEquals(listOf("tout", "suivis", "theme:sante"), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante"), tabIds())
 
         // Add a built-in view from the catalog.
         onNodeWithTag(ManageViewsTags.ADD).performScrollTo().performClick()
         onNodeWithTag(ManageViewsTags.CATALOG + "nationales").performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(ManageViewsTags.CATALOG + "nationales").assertDoesNotExist()
-        assertEquals(listOf("tout", "suivis", "theme:sante", "nationales"), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", "nationales"), tabIds())
         waitUntil(timeoutMillis = 5_000) { store.layout()?.map { it.id } == listOf("tout", "suivis", "theme:sante", "nationales") }
 
         // Reset asks first; keeping changes nothing, confirming brings the defaults back.
@@ -458,12 +458,12 @@ class RevendicationViewsScreenTest {
         waitForIdle()
         onNodeWithTag(ManageViewsTags.KEEP).performClick()
         closeModal()
-        assertEquals(listOf("tout", "suivis", "theme:sante", "nationales"), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", "nationales"), tabIds())
         onNodeWithTag(ManageViewsTags.RESET).performClick()
         waitForIdle()
         onNodeWithTag(ManageViewsTags.CONFIRM).performClick()
         closeModal()
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante"), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante"), tabIds())
         waitUntil(timeoutMillis = 5_000) { store.layout() == null }
         onNodeWithTag(ManageViewsTags.DONE).performClick()
         closeModal()
@@ -515,7 +515,7 @@ class RevendicationViewsScreenTest {
         val identity = InMemoryIdentityStore(StoredIdentity.of(phrase.deriveKeys(), phrase))
         openWall(AppDependencies(identity, contentStore = LocalEventStore(JvmDatabase.inMemory())))
         waitUntil(timeoutMillis = 5_000) { has(RevendicationTags.TAB + "mes-revendications") }
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante", "mes-revendications"), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante", "mes-revendications"), tabIds())
         openView("mes-revendications")
         assertCount("mes-revendications", "0 revendication")
         assertTrue(onAllNodesWithText("Vous n’avez pas encore proposé de revendication.").fetchSemanticsNodes().isNotEmpty())
@@ -575,7 +575,7 @@ class RevendicationViewsScreenTest {
     @Test
     fun tabletShowsOnePaneWithTheTitleAndTheViews() = runComposeUiTest {
         openWall(memory(), width = 800, height = 740)
-        assertEquals(listOf("tout", "suivis", "theme:societe", "theme:sante"), tabIds())
+        assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:societe", "theme:sante"), tabIds())
         openView("theme:sante")
         inPage("theme:sante", RevendicationTags.CARD + "medecin-de-garde").performScrollTo().performClick()
         waitForIdle()
