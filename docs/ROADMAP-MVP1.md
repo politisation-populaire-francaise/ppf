@@ -77,7 +77,7 @@ Les jalons 1 à 4 avancent sans serveur. Le jalon 5 est le chemin critique : san
 
 Règles : une idée par écran, moins d'une minute en tout, « Passer » toujours visible, lisible sans réseau, rejouable depuis Mon espace et la feuille AIDE, utilisable au lecteur d'écran et au clavier, textes externalisés.
 
-État au 11 novembre 2026 (branche du socle, pas encore dans `main`) : barres, espace « Appels », menu et tutoriel codés et testés aux trois formats et en grande police (D-181 à D-184) ; « m'allier » ouvre l'accueil d'Agir jusqu'à l'arrivée de sa page « Se réunir » (`AgirRoute.GATHER`) ; reste la passe de densité (« l'application est trop grande »).
+État au 11 novembre 2026 (branche du socle, pas encore dans `main`) : barres, espace « Appels », menu et tutoriel codés et testés aux trois formats et en grande police (D-181 à D-184) ; « m'allier » ouvre la page « Se réunir » d'Agir ; reste la passe de densité (« l'application est trop grande »).
 
 Honnêteté envers l'utilisateur : le tutoriel ne présente comme disponible que ce qui marche. Le 11 novembre 2026, ne sont pas encore codés : les rues bloquées sur la carte, la messagerie hors réseau (bitchat, phase 4), l'alerte aux street medics et l'alerte « Besoin d'un avocat » (conçues, elles demandent des organisations partenaires et la relecture d'un avocat). Ils apparaissent dans le tutoriel avec la mention « Bientôt », jusqu'à leur livraison.
 

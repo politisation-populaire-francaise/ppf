@@ -35,7 +35,27 @@ class SiteLayoutTest {
     fun noScriptAndNoExternalResource() {
         val html = render()
         assertFalse(html.contains("<script"))
-        assertFalse(Regex("https?://").containsMatchIn(html))
+        // Nothing is loaded from elsewhere: no source or link to another server.
+        assertFalse(Regex("""(src|href)="https?://""").containsMatchIn(html))
+        // The only absolute address is the preview image of a shared link, on our own domain (D-185).
+        val absolute = Regex("""https?://[^"]+""").findAll(html).map { it.value }.toList()
+        assertTrue(absolute.all { it.startsWith("https://politisation-populaire-francaise.org/") }, absolute.toString())
+    }
+
+    @Test
+    fun theSymbolOfPpfIsTheIconOfEveryPage() {
+        val html = render()
+        assertTrue(html.contains("href=\"/favicon.ico\""))
+        assertTrue(html.contains("href=\"/static/favicon.svg\""))
+        assertTrue(html.contains("href=\"/static/apple-touch-icon.png\""))
+        assertTrue(html.contains("property=\"og:image\" content=\"https://politisation-populaire-francaise.org/static/og-image-1200x630.png\""))
+        assertTrue(html.contains("og:image:alt"))
+        for (file in listOf("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "icon-maskable-192.png", "icon-maskable-512.png", "og-image-1200x630.png")) {
+            assertTrue(javaClass.classLoader.getResource("static/$file") != null, "static/$file is served")
+        }
+        val manifest = javaClass.classLoader.getResource("static/manifest.webmanifest")!!.readText()
+        assertTrue(manifest.contains("\"short_name\": \"Politisation\""))
+        assertTrue(manifest.contains("/static/icon-maskable-512.png"))
     }
 
     @Test

@@ -36,12 +36,15 @@ compose.desktop {
             licenseFile.set(rootProject.file("LICENSE"))
 
             windows {
+                // The symbol of PPF (design/identite, D-185): PNG images of the pack in one .ico file.
+                iconFile.set(project.file("icons/ppf.ico"))
                 menuGroup = "Politisation Populaire Française"
                 perUserInstall = true
                 // Stable identifier so that a new installer upgrades the previous one.
                 upgradeUuid = "7C2A1F6E-4B0D-4E0B-9C7D-5A3F1E2B8D01"
             }
             linux {
+                iconFile.set(project.file("icons/ppf.png"))
                 packageName = "politisation-populaire-francaise"
             }
             macOS {

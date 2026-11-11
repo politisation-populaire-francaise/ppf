@@ -43,6 +43,7 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.ui.components.ButtonPair
 import org.politisationpopulairefrancaise.ui.components.PpfPrimaryButton
+import org.politisationpopulairefrancaise.ui.components.PpfSymbol
 import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.SystemBack
@@ -117,8 +118,8 @@ enum class TutorialStep(val title: StringResource, val text: StringResource?, va
 }
 
 /**
- * The four buttons under « Je veux… » (D-216) and where they lead. « m'allier » opens Agir, whose
- * home lists the organisations and the collectives, until Agir offers to open that rubric directly.
+ * The four buttons under « Je veux… » (D-216) and the space each opens; « m'allier » opens the page
+ * « Se réunir » of Agir (collectives, organisations, rooms), asked by the shell.
  */
 enum class TutorialStart(val id: String, val label: StringResource, val description: StringResource, val space: Space) {
     ACT("agir", Res.string.tutorial_start_act, Res.string.tutorial_start_act_description, Space.AGIR),
@@ -130,12 +131,12 @@ enum class TutorialStart(val id: String, val label: StringResource, val descript
 /**
  * The tutorial of the first launch (D-211, D-216): one idea per screen, under a minute in all,
  * « Passer » always visible, readable without network (everything is in the application), usable
- * with a screen reader and a keyboard, on the three formats. [onFinish] receives the space chosen
+ * with a screen reader and a keyboard, on the three formats. [onFinish] receives the choice made
  * on the last screen, or null when the person skips it (the shell then opens « En direct »).
  * The back gesture goes to the previous screen, and leaves the tutorial from the first one.
  */
 @Composable
-fun FirstLaunchTutorial(onFinish: (Space?) -> Unit, modifier: Modifier = Modifier) {
+fun FirstLaunchTutorial(onFinish: (TutorialStart?) -> Unit, modifier: Modifier = Modifier) {
     val palette = PpfTheme.palette
     val steps = TutorialStep.entries
     var index by rememberSaveable { mutableIntStateOf(0) }
@@ -198,13 +199,18 @@ fun FirstLaunchTutorial(onFinish: (Space?) -> Unit, modifier: Modifier = Modifie
 }
 
 @Composable
-private fun StepContent(step: TutorialStep, compactIcon: Boolean, onFinish: (Space?) -> Unit) {
+private fun StepContent(step: TutorialStep, compactIcon: Boolean, onFinish: (TutorialStart?) -> Unit) {
     val palette = PpfTheme.palette
-    Box(
-        Modifier.size(if (compactIcon) 56.dp else 96.dp).background(palette.brandTint, CircleShape),
-        contentAlignment = Alignment.Center,
-    ) {
-        Icon(step.icon, contentDescription = null, tint = palette.brand, modifier = Modifier.size(if (compactIcon) 28.dp else 48.dp))
+    if (step == TutorialStep.WHY) {
+        // The first screen presents the platform with its symbol (D-185).
+        PpfSymbol(if (compactIcon) 56.dp else 96.dp)
+    } else {
+        Box(
+            Modifier.size(if (compactIcon) 56.dp else 96.dp).background(palette.brandTint, CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Icon(step.icon, contentDescription = null, tint = palette.brand, modifier = Modifier.size(if (compactIcon) 28.dp else 48.dp))
+        }
     }
     Spacer(Modifier.height(if (compactIcon) 12.dp else 24.dp))
     Text(
@@ -234,7 +240,7 @@ private fun StepContent(step: TutorialStep, compactIcon: Boolean, onFinish: (Spa
 
 /** « Je veux… » above the four buttons, without « je veux » in them (the owner's wording, D-216). */
 @Composable
-private fun StartChoices(onFinish: (Space?) -> Unit) {
+private fun StartChoices(onFinish: (TutorialStart?) -> Unit) {
     Text(
         text = stringResource(Res.string.tutorial_start_prompt),
         style = MaterialTheme.typography.titleMedium,
@@ -256,10 +262,10 @@ private fun StartChoices(onFinish: (Space?) -> Unit) {
 }
 
 @Composable
-private fun StartButton(choice: TutorialStart, onFinish: (Space?) -> Unit) {
+private fun StartButton(choice: TutorialStart, onFinish: (TutorialStart?) -> Unit) {
     val description = stringResource(choice.description)
     PpfPrimaryButton(
-        onClick = { onFinish(choice.space) },
+        onClick = { onFinish(choice) },
         text = stringResource(choice.label),
         modifier = Modifier.heightIn(min = 56.dp).semantics { contentDescription = description }.testTag(TutorialTags.start(choice)),
     )

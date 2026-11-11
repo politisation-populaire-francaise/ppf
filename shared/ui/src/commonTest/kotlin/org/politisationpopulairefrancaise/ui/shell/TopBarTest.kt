@@ -10,7 +10,9 @@ import androidx.compose.ui.semantics.SemanticsProperties
 import androidx.compose.ui.semantics.getOrNull
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assertIsDisplayed
+import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
+import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.v2.runComposeUiTest
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.Density
@@ -18,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.ui.PpfApp
 import org.politisationpopulairefrancaise.ui.agir.manifestation.ManifestationTags
+import org.politisationpopulairefrancaise.ui.components.SymbolTags
 import org.politisationpopulairefrancaise.ui.components.WordmarkTags
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -65,6 +68,24 @@ class TopBarTest {
                 val touch = node.touchBoundsInRoot
                 assertTrue(touch.width >= 48 * density.density - 0.5f && touch.height >= 48 * density.density - 0.5f, "$case: $tag is a ${touch.width / density.density} x ${touch.height / density.density} dp target")
             }
+        }
+    }
+
+    @Test
+    fun theSymbolOfPpfIsShownBesideTheNameWhereItFitsAndAtTheHeadOfTheMenu() {
+        // A computer: the symbol before the name in the top bar.
+        runComposeUiTest {
+            setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp() } }
+            waitForIdle()
+            assertTrue(onAllNodesWithTag(SymbolTags.SYMBOL).fetchSemanticsNodes().isNotEmpty(), "symbol in the bar of a computer")
+        }
+        // A phone: whatever the room, the name stays whole (D-182); the menu starts with the symbol.
+        runComposeUiTest {
+            setContent { Box(Modifier.requiredSize(360.dp, 740.dp)) { PpfApp() } }
+            waitForIdle()
+            onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
+            waitForIdle()
+            assertTrue(onAllNodesWithTag(SymbolTags.SYMBOL).fetchSemanticsNodes().isNotEmpty(), "symbol at the head of the menu")
         }
     }
 }
