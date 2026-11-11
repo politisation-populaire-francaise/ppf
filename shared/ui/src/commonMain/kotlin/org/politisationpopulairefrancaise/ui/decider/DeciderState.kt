@@ -78,6 +78,18 @@ class DeciderState(private val follows: ContentFollowStore?, private val scope: 
 
     fun home() = stack.clear()
 
+    /**
+     * A section of the home of "Décider" to bring into view (MVP 1: the official petitions, from the
+     * highlights at the top or from "En direct"); the home scrolls to it, then clears it.
+     */
+    var sectionToShow: DeciderHighlight? by mutableStateOf(null)
+
+    /** Opens the home of "Décider" on one of its flagship sections. */
+    fun showSection(section: DeciderHighlight) {
+        stack.clear()
+        sectionToShow = section
+    }
+
     fun isFollowed(address: ContentAddress): Boolean = address in followed
 
     fun toggleFollow(address: ContentAddress) {

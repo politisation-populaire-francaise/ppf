@@ -24,8 +24,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateMapOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -136,7 +140,7 @@ fun DeciderScreen(
         Box(Modifier.fillMaxSize().testTag(DeciderTags.SCREEN)) {
             val current = state.current
             if (current == null) {
-                DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate, territories = rememberDeviceTerritories(dependencies))
+                DeciderHome(catalog, voir, library.status, state, today, compact, columns, onNavigate, territories = rememberDeviceTerritories(dependencies), demands = library.revendications.size)
             } else {
                 key(current) { DeciderDetail(current, catalog, voir, state, actions, today, compact, wide, columns, onOpenVoir, nowSeconds = now(), pastVotes = pastVotes, reports = reports, photos = photos, reminders = reminders, dependencies = dependencies) }
             }
@@ -156,13 +160,40 @@ private fun DeciderHome(
     onNavigate: (Space) -> Unit,
     /** The commune chosen on the device and its department: the local elections, consultations and petitions. */
     territories: Set<String> = emptySet(),
+    /** The number of demands on the wall, for the highlight « Revendications ». */
+    demands: Int = 0,
 ) {
     val palette = PpfTheme.palette
     val padding = if (compact) 16.dp else 24.dp
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(padding)) {
+    val scroll = rememberScrollState()
+    // Where the flagship sections start in the page, to bring one into view (highlights, "En direct").
+    val sectionTops = remember { mutableStateMapOf<DeciderHighlight, Int>() }
+    val requested = state.sectionToShow
+    val requestedTop = requested?.let { sectionTops[it] }
+    LaunchedEffect(requested, requestedTop) {
+        if (requested != null && requestedTop != null) {
+            scroll.animateScrollTo(requestedTop)
+            state.sectionToShow = null
+        }
+    }
+    val pacteToOpen = catalog.currentPacte() ?: catalog.pactes.firstOrNull()
+    Column(Modifier.fillMaxSize().verticalScroll(scroll).padding(padding)) {
         PageHeader(stringResource(Res.string.space_decider), if (compact) null else stringResource(Res.string.desc_decider))
         Spacer(Modifier.height(8.dp))
         Text(stringResource(Res.string.decider_intro), style = MaterialTheme.typography.bodyLarge, color = palette.inkMuted, modifier = Modifier.widthIn(max = 760.dp))
+        // MVP 1 (jalon 3): the three flagship tools first, one touch each.
+        Spacer(Modifier.height(16.dp))
+        DeciderHighlights(
+            figures = DeciderHighlightFigures.of(demands, catalog, today),
+            onOpen = { highlight ->
+                when (highlight) {
+                    DeciderHighlight.REVENDICATIONS -> onNavigate(Space.REVENDICATIONS)
+                    DeciderHighlight.PETITIONS -> state.sectionToShow = DeciderHighlight.PETITIONS
+                    DeciderHighlight.PACTE -> pacteToOpen?.let { state.open(DeciderDestination.Pacte(it.address)) }
+                }
+            },
+            modifier = Modifier.widthIn(max = 760.dp),
+        )
         FollowedStrip(catalog, state)
         if (catalog.isEmpty && status != LibraryStatus.Loading) {
             Spacer(Modifier.height(16.dp))
@@ -205,7 +236,7 @@ private fun DeciderHome(
         Spacer(Modifier.height(24.dp))
         val open = catalog.openPetitions(today)
         val closed = catalog.closedPetitions(today)
-        Column(Modifier.testTag(DeciderTags.section("petitions"))) {
+        Column(Modifier.onGloballyPositioned { sectionTops[DeciderHighlight.PETITIONS] = it.positionInParent().y.toInt() }.testTag(DeciderTags.section("petitions"))) {
             SectionHeader(
                 stringResource(Res.string.decider_petitions_section_count, open.size),
                 action = stringResource(Res.string.decider_thresholds_link),

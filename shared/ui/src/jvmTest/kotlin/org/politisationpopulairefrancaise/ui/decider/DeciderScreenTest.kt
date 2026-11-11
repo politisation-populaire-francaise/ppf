@@ -6,6 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.test.ComposeUiTest
 import androidx.compose.ui.test.ExperimentalTestApi
 import androidx.compose.ui.test.assert
+import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithText
@@ -78,6 +79,26 @@ class DeciderScreenTest {
         }
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(DeciderTags.card("pacte-election-exemple")).fetchSemanticsNodes().isNotEmpty() }
         return seen
+    }
+
+    /** MVP 1 (jalon 3): the three flagship tools come first; each opens its place in one touch. */
+    @Test
+    fun theThreeFlagshipToolsComeFirstAndOpenTheirPlace() = runComposeUiTest {
+        val seen = show(width = 400)
+        onNodeWithTag(DeciderHighlightTags.item(DeciderHighlight.PETITIONS)).assert(has("4 pétitions ouvertes"))
+        onNodeWithTag(DeciderHighlightTags.item(DeciderHighlight.REVENDICATIONS)).performClick()
+        waitForIdle()
+        assertEquals(listOf(Space.REVENDICATIONS), seen.navigations)
+
+        onNodeWithTag(DeciderHighlightTags.item(DeciderHighlight.PETITIONS)).performClick()
+        waitForIdle()
+        mainClock.advanceTimeBy(1_000)
+        waitForIdle()
+        onNodeWithTag(DeciderTags.section("petitions")).assertIsDisplayed()
+
+        onNodeWithTag(DeciderHighlightTags.item(DeciderHighlight.PACTE)).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(DeciderTags.PACTE_METHOD).assertExists()
     }
 
     @Test

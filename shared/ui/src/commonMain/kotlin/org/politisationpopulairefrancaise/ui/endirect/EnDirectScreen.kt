@@ -97,6 +97,8 @@ fun EnDirectScreen(
     upcoming: (@Composable (Modifier) -> Unit)? = null,
     /** « Cette semaine au Parlement » (VO-31), filled by `ParliamentWeekSlot`; nothing when null. */
     parliamentWeek: (@Composable (Modifier) -> Unit)? = null,
+    /** « Décider ensemble » (MVP 1, jalon 3): demands, official petitions, Pacte, filled by `DeciderHighlights`. */
+    decider: (@Composable (Modifier) -> Unit)? = null,
     now: () -> Long = ::currentEpochSeconds,
 ) {
     val catalog = library.voir
@@ -224,6 +226,7 @@ fun EnDirectScreen(
                     }
                     Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(24.dp)) {
                         liveBlock()
+                        decider?.invoke(Modifier.fillMaxWidth())
                         headlineBlock()
                         upcomingBlock()
                         parliamentWeek?.invoke(Modifier.fillMaxWidth())
@@ -235,6 +238,7 @@ fun EnDirectScreen(
                 Column(Modifier.widthIn(max = 760.dp), verticalArrangement = Arrangement.spacedBy(24.dp)) {
                     liveBlock()
                     alertsBlock()
+                    decider?.invoke(Modifier.fillMaxWidth())
                     figuresBlock()
                     upcomingBlock()
                     parliamentWeek?.invoke(Modifier.fillMaxWidth())

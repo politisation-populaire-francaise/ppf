@@ -158,6 +158,10 @@ import org.politisationpopulairefrancaise.ui.resources.nav_disclaimer
 import org.politisationpopulairefrancaise.ui.resources.nav_search_soon
 import org.politisationpopulairefrancaise.ui.resources.space_mon_espace
 import org.politisationpopulairefrancaise.ui.decider.DeciderDestination
+import org.politisationpopulairefrancaise.ui.decider.DeciderHighlight
+import org.politisationpopulairefrancaise.ui.decider.DeciderHighlightFigures
+import org.politisationpopulairefrancaise.ui.decider.DeciderHighlights
+import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.ui.decider.DeciderScreen
 import org.politisationpopulairefrancaise.ui.decider.DeciderState
 import org.politisationpopulairefrancaise.ui.decider.DeciderRemindersState
@@ -507,6 +511,29 @@ private fun SpaceContent(
                 }
             },
             parliamentWeek = { slotModifier -> ParliamentWeekSlot(parliamentState, slotModifier) },
+            // MVP 1 (jalon 3): demands, official petitions and Pacte one touch away from "En direct".
+            decider = { slotModifier ->
+                val catalog = contentLibrary.decider
+                DeciderHighlights(
+                    figures = DeciderHighlightFigures.of(contentLibrary.revendications.size, catalog, CivilDate.fromEpochSeconds(currentEpochSeconds())),
+                    onOpen = { highlight ->
+                        when (highlight) {
+                            DeciderHighlight.REVENDICATIONS -> onNavigate(Space.REVENDICATIONS)
+                            DeciderHighlight.PETITIONS -> {
+                                deciderState.showSection(DeciderHighlight.PETITIONS)
+                                onNavigate(Space.DECIDER)
+                            }
+                            DeciderHighlight.PACTE -> {
+                                deciderState.home()
+                                (catalog.currentPacte() ?: catalog.pactes.firstOrNull())?.let { deciderState.open(DeciderDestination.Pacte(it.address)) }
+                                onNavigate(Space.DECIDER)
+                            }
+                        }
+                    },
+                    modifier = slotModifier,
+                    withTitle = true,
+                )
+            },
         )
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate, requests = voirRequests, parliament = parliamentState)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)
