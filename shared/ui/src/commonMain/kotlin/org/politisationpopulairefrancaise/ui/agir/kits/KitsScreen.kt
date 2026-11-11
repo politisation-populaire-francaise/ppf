@@ -107,6 +107,26 @@ internal fun goalLabel(goal: KitGoal): StringResource = when (goal) {
     KitGoal.SE_PROTEGER -> Res.string.kits_goal_se_proteger
 }
 
+/**
+ * The filters of the kits, kept by « Agir » while the person opens a kit and comes back (D-233): the same goal and
+ * the same use without network are still chosen.
+ */
+class KitsFilters(goalId: String? = null, offlineOnly: Boolean = false) {
+    var goalId: String? by mutableStateOf(goalId)
+    var offlineOnly: Boolean by mutableStateOf(offlineOnly)
+
+    companion object {
+        val Saver: androidx.compose.runtime.saveable.Saver<KitsFilters, Any> = androidx.compose.runtime.saveable.listSaver(
+            save = { listOf(it.goalId.orEmpty(), it.offlineOnly) },
+            restore = { KitsFilters((it[0] as String).ifEmpty { null }, it[1] as Boolean) },
+        )
+    }
+}
+
+/** The filters of the kits for as long as « Agir » is shown, restored after a rotation. */
+@Composable
+fun rememberKitsFilters(): KitsFilters = rememberSaveable(saver = KitsFilters.Saver) { KitsFilters() }
+
 /** A kit as the screen shows it: its title, its sentence, its icon; null for a guide not on the device yet. */
 private data class ShownKit(val kit: CitizenKit, val title: String, val text: String, val icon: ImageVector, val tool: Boolean)
 
@@ -124,11 +144,12 @@ fun KitsScreen(
     onOpenRubric: (String) -> Unit,
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
+    filters: KitsFilters = rememberKitsFilters(),
 ) {
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
-    var goalId by rememberSaveable { mutableStateOf<String?>(null) }
-    var offlineOnly by rememberSaveable { mutableStateOf(false) }
+    var goalId by filters::goalId
+    var offlineOnly by filters::offlineOnly
     var readingSlug by rememberSaveable { mutableStateOf<String?>(null) }
     val scroll = rememberScrollState()
     LaunchedEffect(readingSlug) { scroll.scrollTo(0) }
