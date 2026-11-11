@@ -175,7 +175,8 @@ fun ProtectedCameraTestimonyEntry(state: ProtectedCameraState, onOpen: () -> Uni
  *
  * Decrypted pixels exist only while this screen is shown and PPF is unlocked (M33); the window is
  * kept out of the recent applications and screenshots meanwhile ([KeepPhotosHidden]). [exporter]
- * replaces the platform's copy to the gallery (tests).
+ * replaces the platform's copy to the gallery (tests). [testifyLabel] names the button of [onTestify]
+ * (« Garder comme preuve » when the harassment kit opens the camera, AG-59).
  */
 @Composable
 fun ProtectedCameraScreen(
@@ -185,6 +186,7 @@ fun ProtectedCameraScreen(
     modifier: Modifier = Modifier,
     onTestify: ((bytes: ByteArray, takenAt: Long) -> Unit)? = null,
     exporter: GalleryExporter? = null,
+    testifyLabel: StringResource = Res.string.camera_testify,
 ) {
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
@@ -199,7 +201,7 @@ fun ProtectedCameraScreen(
     val viewing = state.viewing
     if (viewing != null) {
         SystemBack(enabled = true) { state.closeView() }
-        PhotoViewer(state, viewing, windowClass, onTestify, saver, modifier)
+        PhotoViewer(state, viewing, windowClass, onTestify, saver, modifier, testifyLabel)
         return
     }
     Column(modifier.fillMaxSize().background(palette.surface1).verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(ProtectedCameraTags.SCREEN)) {
@@ -363,6 +365,7 @@ private fun PhotoViewer(
     onTestify: ((bytes: ByteArray, takenAt: Long) -> Unit)?,
     exporter: GalleryExporter,
     modifier: Modifier,
+    testifyLabel: StringResource,
 ) {
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
@@ -388,7 +391,7 @@ private fun PhotoViewer(
             if (onTestify != null) {
                 PpfPrimaryButton(
                     onClick = { state.withBytes(id) { bytes, photo -> onTestify(bytes, photo.takenAt) } },
-                    text = stringResource(Res.string.camera_testify),
+                    text = stringResource(testifyLabel),
                     modifier = Modifier.testTag(ProtectedCameraTags.TESTIFY),
                     icon = Lucide.Send,
                 )
