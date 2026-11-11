@@ -23,7 +23,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
@@ -59,6 +63,7 @@ import org.politisationpopulairefrancaise.ui.components.PpfPrimaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfSelectableChip
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextField
+import org.politisationpopulairefrancaise.ui.components.PpfToolbarButton
 import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.ui.groups.GroupScreen
 import org.politisationpopulairefrancaise.ui.groups.GroupsStatus
@@ -75,6 +80,7 @@ import org.politisationpopulairefrancaise.ui.resources.collectifs_filter_clear
 import org.politisationpopulairefrancaise.ui.resources.collectifs_filter_near
 import org.politisationpopulairefrancaise.ui.resources.collectifs_filter_scope
 import org.politisationpopulairefrancaise.ui.resources.collectifs_filter_theme
+import org.politisationpopulairefrancaise.ui.resources.collectifs_filters_toggle
 import org.politisationpopulairefrancaise.ui.resources.collectifs_filter_type
 import org.politisationpopulairefrancaise.ui.resources.collectifs_intro
 import org.politisationpopulairefrancaise.ui.resources.collectifs_language_ar
@@ -176,6 +182,7 @@ object CollectivesTags {
     const val CANCEL = "collectifs-cancel"
     const val SUBMIT = "collectifs-submit"
     const val REFUSED = "collectifs-refused"
+    const val FILTERS_TOGGLE = "collectifs-filters-toggle"
 }
 
 /**
@@ -320,6 +327,8 @@ private fun CollectivesDirectory(
     val themes = library.themes
     val home = library.home
     val padding = if (compact) 16.dp else 24.dp
+    // The filters of theme, type and scope, folded until asked for (D-233); open while one applies.
+    var filtersOpen by rememberSaveable { mutableStateOf(query.theme != null || query.type != null || query.scope != null) }
     Box(Modifier.fillMaxSize().testTag(AgirTags.COLLECTIVES)) {
         LazyColumn(
             modifier = Modifier.fillMaxSize().testTag(CollectivesTags.LIST),
@@ -364,6 +373,16 @@ private fun CollectivesDirectory(
             }
             item(key = "filters") {
                 Column(Modifier.widthIn(max = 720.dp).fillMaxWidth()) {
+                    // Folded by default (D-233): on a phone the list starts on the first screen; the count says what applies.
+                    val active = listOf(query.theme, query.type, query.scope).count { it != null }
+                    PpfToolbarButton(
+                        icon = Lucide.SlidersHorizontal,
+                        text = stringResource(Res.string.collectifs_filters_toggle),
+                        onClick = { filtersOpen = !filtersOpen },
+                        count = active,
+                        modifier = Modifier.testTag(CollectivesTags.FILTERS_TOGGLE),
+                    )
+                    Spacer(Modifier.height(8.dp))
                     if (home.isNotEmpty()) {
                         PpfSelectableChip(
                             label = stringResource(Res.string.collectifs_filter_near),
@@ -374,7 +393,7 @@ private fun CollectivesDirectory(
                         )
                         Spacer(Modifier.height(8.dp))
                     }
-                    if (themes.isNotEmpty()) {
+                    if (filtersOpen && themes.isNotEmpty()) {
                         FilterTitle(Res.string.collectifs_filter_theme)
                         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                             themes.forEach { theme ->
@@ -382,16 +401,18 @@ private fun CollectivesDirectory(
                             }
                         }
                     }
-                    FilterTitle(Res.string.collectifs_filter_type)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        CollectiveType.entries.forEach { type ->
-                            PpfSelectableChip(stringResource(typeLabel(type)), query.type == type, { library.toggleType(type) }, Modifier.testTag(CollectivesTags.TYPE + type.tagValue))
+                    if (filtersOpen) {
+                        FilterTitle(Res.string.collectifs_filter_type)
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            CollectiveType.entries.forEach { type ->
+                                PpfSelectableChip(stringResource(typeLabel(type)), query.type == type, { library.toggleType(type) }, Modifier.testTag(CollectivesTags.TYPE + type.tagValue))
+                            }
                         }
-                    }
-                    FilterTitle(Res.string.collectifs_filter_scope)
-                    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                        CollectiveScope.entries.forEach { scope ->
-                            PpfSelectableChip(stringResource(scopeLabel(scope)), query.scope == scope, { library.toggleScope(scope) }, Modifier.testTag(CollectivesTags.SCOPE + scope.tagValue))
+                        FilterTitle(Res.string.collectifs_filter_scope)
+                        FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                            CollectiveScope.entries.forEach { scope ->
+                                PpfSelectableChip(stringResource(scopeLabel(scope)), query.scope == scope, { library.toggleScope(scope) }, Modifier.testTag(CollectivesTags.SCOPE + scope.tagValue))
+                            }
                         }
                     }
                     if (query.isFiltered) {
