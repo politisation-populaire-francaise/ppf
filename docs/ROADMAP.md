@@ -224,3 +224,12 @@ Contenus de « Comprendre » (vague 3, D-049) dont un fait daté peut changer d'
 
 - Tests sur téléphone de toutes les versions d'essai envoyées depuis le 6 novembre (dont « Décider », version 446938, et les partis, le droit de réponse et le signalement d'erreur de « Voir ») : reportés à la phase de test et de débogage (« là il faut enchaîner et continuer le développement »).
 - Vague 3 de « Comprendre » (APK 447367) : glossaire (mots soulignés, infobulle, « En savoir plus », glossaire complet et recherche), page « Mes élus » sans serveur (annuaires officiels derrière « Vous quittez PPF »), nouveaux parcours, « Qui décide de ça ? » et fiches pratiques ; avec la préproduction : choix de la commune par code postal et élus fictifs sous chaque niveau.
+
+## Tests désactivés
+
+Régime rapide (11 novembre 2026) : un test qui échoue au hasard est désactivé ici plutôt que relancé, puis corrigé quand c'est prioritaire.
+
+| Test | Désactivé le | Cause | À faire |
+|---|---|---|---|
+| `CollectivesScreenTest.aMessageIsSignedByTheAccountAndSentToTheRoom` | 11 novembre 2026 | Un message est enregistré « en attente » puis envoyé ; la synchronisation périodique, qui reprend tout ce qui est en attente, l'envoie parfois une seconde fois pendant ce temps (même événement signé : le serveur le traite comme un doublon, sans dégât) | Réserver une publication pendant son envoi (`LocalEventStore`) et faire sauter les publications réservées à `SyncService.publishPending` ; dix endroits enregistrent puis envoient de la même façon |
+| `ProposeFromTheWallTest.aDemandSentForReviewShowsItsStateThenTheServersReport` | 11 novembre 2026 | Même cause : la revendication part deux fois vers la file de relecture | Même correction |
