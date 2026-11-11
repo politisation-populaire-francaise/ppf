@@ -79,6 +79,11 @@ object SiteNavigation {
             NavLink("Constitution Citoyenne et Démocratique", "/decider#pacte"),
             NavLink("Délibération citoyenne", "/decider#deliberation"),
             NavLink("Pétitions ouvertes", "/decider#petitions-ouvertes"),
+            NavLink("Revendications", "/revendications"),
+            NavLink("Comparer les candidats", "/decider#comparateur"),
+            NavLink("Calendrier électoral", "/decider#calendrier"),
+            NavLink("Consultations publiques", "/decider#consultations"),
+            NavLink("Écrire à ses élus", "/decider#courriers"),
         ),
     )
 
