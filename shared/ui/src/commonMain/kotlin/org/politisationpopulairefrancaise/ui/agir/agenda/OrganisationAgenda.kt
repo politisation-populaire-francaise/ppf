@@ -37,6 +37,8 @@ import org.politisationpopulairefrancaise.ui.resources.agenda_role_co_organises
 import org.politisationpopulairefrancaise.ui.resources.agenda_role_organises
 import org.politisationpopulairefrancaise.ui.resources.agenda_role_participates
 import org.politisationpopulairefrancaise.ui.resources.agenda_upcoming_none
+import org.politisationpopulairefrancaise.ui.resources.agenda_near_you
+import org.politisationpopulairefrancaise.core.text.FrenchText
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** Test tags of the short lists of mobilizations (page of an organisation, "En direct"). */
@@ -82,16 +84,26 @@ fun OrganisationAgenda(
 
 /**
  * The next mobilizations of the agenda, the soonest first, for "En direct" (MA-02): at most [limit]
- * of them; a tap opens one through [onOpen] (the shell shows it in "Carte").
+ * of them; a tap opens one through [onOpen] (the shell shows it in "Carte"). With a [territory] (a commune or a
+ * department, as the mobilizations name it; the person's own choice, kept on the device), those of that territory
+ * come first, marked « Près de chez vous », then the others.
  */
 @Composable
 fun UpcomingMobilizations(
     agenda: AgendaLibrary,
     modifier: Modifier = Modifier,
     limit: Int = 3,
+    territory: String? = null,
     onOpen: (Mobilization) -> Unit,
 ) {
-    UpcomingList(agenda, AgendaQuery(), stringResource(Res.string.agenda_upcoming_none), limit, modifier, onOpen)
+    val folded = territory?.let(FrenchText::fold)?.takeIf { it.isNotEmpty() }
+    val near: ((Mobilization) -> Boolean)? = folded?.let { wanted -> { m: Mobilization -> FrenchText.fold(m.territory) == wanted } }
+    val nearLabel = stringResource(Res.string.agenda_near_you)
+    UpcomingList(
+        agenda, AgendaQuery(), stringResource(Res.string.agenda_upcoming_none), limit, modifier, onOpen,
+        role = if (near == null) null else { m -> if (near(m)) nearLabel else null },
+        first = near,
+    )
 }
 
 @Composable
@@ -103,11 +115,14 @@ private fun UpcomingList(
     modifier: Modifier,
     onOpen: (Mobilization) -> Unit,
     include: (Mobilization) -> Boolean = { true },
-    role: (@Composable (Mobilization) -> String)? = null,
+    role: (@Composable (Mobilization) -> String?)? = null,
+    /** Those that come first (near the person), the order kept within each group. */
+    first: ((Mobilization) -> Boolean)? = null,
 ) {
     LaunchedEffect(agenda) { agenda.start() }
     // Cancelled events stay in the agenda, but they are not "coming".
-    val upcoming = query.apply(agenda.known, agenda.now).filter { !it.cancelled && include(it) }.take(limit)
+    val coming = query.apply(agenda.known, agenda.now).filter { !it.cancelled && include(it) }
+    val upcoming = (if (first == null) coming else coming.sortedBy { if (first(it)) 0 else 1 }).take(limit)
     val palette = PpfTheme.palette
     Column(modifier.testTag(OrganisationAgendaTags.LIST), verticalArrangement = Arrangement.spacedBy(4.dp)) {
         if (upcoming.isEmpty()) {

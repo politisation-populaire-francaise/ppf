@@ -26,7 +26,6 @@ import org.jetbrains.compose.resources.stringResource
 import org.politisationpopulairefrancaise.core.agir.AgirHighlights
 import org.politisationpopulairefrancaise.core.agir.agenda.Mobilization
 import org.politisationpopulairefrancaise.core.agir.calls.Call
-import org.politisationpopulairefrancaise.core.agir.calls.ParisTime
 import org.politisationpopulairefrancaise.core.agir.kits.KitGoal
 import org.politisationpopulairefrancaise.ui.agir.calls.countdown
 import org.politisationpopulairefrancaise.ui.agir.calls.parisHour
@@ -127,13 +126,10 @@ private fun NowRow(icon: androidx.compose.ui.graphics.vector.ImageVector, badge:
     }
 }
 
-/** « Aujourd'hui », « Demain », or the day of the week and its date. */
+/** « Aujourd'hui », « Demain », or the day of the week and its date, as the days of the agenda. */
 @Composable
-private fun dayWord(start: Long, now: Long): String = when (ParisTime.calendarDaysBetween(now, start).toInt()) {
-    0 -> stringResource(Res.string.appels_countdown_today)
-    1 -> stringResource(Res.string.appels_countdown_tomorrow)
-    else -> org.politisationpopulairefrancaise.ui.agir.calls.parisDate(start)
-}
+private fun dayWord(start: Long, now: Long): String =
+    org.politisationpopulairefrancaise.ui.agir.agenda.dayHeader(org.politisationpopulairefrancaise.core.agir.agenda.ParisTime.moment(start).epochDay, now)
 
 /** « Je veux… »: one tap from a goal to the kits that serve it (D-232). */
 @OptIn(ExperimentalLayoutApi::class)

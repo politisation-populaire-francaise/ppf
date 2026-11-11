@@ -87,6 +87,8 @@ class AgirScreenTest {
             val harness = AgirHarness()
             setContent { harness.Content(width, 740) }
             awaitTag(AgirTags.HOME)
+            // « En ce moment » and « Je veux… » come first: bring the first section into view before measuring.
+            onNodeWithTag(AgirTags.SECTION + AgirRubrics.sections.first().id).performScrollTo()
             val tops = cards.take(3).map { onNodeWithTag(AgirTags.RUBRIC + it).fetchSemanticsNode().boundsInRoot.top }
             columns = tops.count { it == tops.first() }
         }
