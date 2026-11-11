@@ -139,12 +139,13 @@ private fun ComposeUiTest.click(tag: String) {
 class FedererScreenTest {
 
     @Test
-    fun withoutTheKitTheScreenSaysSoAndTheListOfRelativesOpensAndLeadsBack() = runComposeUiTest {
+    fun theBundledKitOfComprendreGivesCardsAndTheListOfRelativesOpensAndLeadsBack() = runComposeUiTest {
+        // The real kit « Convaincre autour de soi » is bundled with the application (Comprendre, main 044415a8).
         val harness = FedererHarness(withKit = false)
         openFederer(harness, 360)
-        awaitTag(FedererTags.KIT_MISSING)
-        assertEquals(0, count(FedererTags.KIT_OPEN))
-        assertEquals(0, count(FedererTags.CARD + "argument-1"))
+        awaitTag(FedererTags.CARD + "argument-1")
+        listOf("objection-1", "monde").forEach { id -> onNodeWithTag(FedererTags.CARD + id).performScrollTo() }
+        assertEquals(0, count(FedererTags.KIT_MISSING))
 
         // The list of relatives opens from « Fédérer » and its way back returns here, not to the home.
         click(FedererTags.PROCHES)
