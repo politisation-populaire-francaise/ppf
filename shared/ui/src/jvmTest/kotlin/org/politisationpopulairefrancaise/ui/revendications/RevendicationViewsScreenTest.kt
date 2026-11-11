@@ -451,7 +451,7 @@ class RevendicationViewsScreenTest {
         waitForIdle()
         onNodeWithTag(ManageViewsTags.CATALOG + "nationales").assertDoesNotExist()
         assertEquals(listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", "nationales"), tabIds())
-        waitUntil(timeoutMillis = 5_000) { store.layout()?.map { it.id } == listOf("tout", "suivis", "theme:sante", "nationales") }
+        waitUntil(timeoutMillis = 5_000) { store.layout()?.map { it.id } == listOf("tout", "plus-de-pour", "recentes", "du-mouvement", "au-parlement", "suivis", "theme:sante", "nationales") }
 
         // Reset asks first; keeping changes nothing, confirming brings the defaults back.
         onNodeWithTag(ManageViewsTags.RESET).performClick()
@@ -557,7 +557,7 @@ class RevendicationViewsScreenTest {
         // A swipe to the left shows the next view.
         onNodeWithTag(RevendicationTags.PAGE + "tout").performTouchInput { swipeLeft() }
         waitForIdle()
-        onNodeWithTag(RevendicationTags.TAB + "suivis").assertIsSelected()
+        onNodeWithTag(RevendicationTags.TAB + "plus-de-pour").assertIsSelected()
 
         // The detail of a demand opens alone, with a back button.
         openView("tout")
