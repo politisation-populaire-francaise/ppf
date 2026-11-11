@@ -27,5 +27,5 @@ Ce que l'outil vérifie maintenant, en plus de ce que faisaient `checkVoir` et `
 
 - `FieldType.Date(yearOnly)` n'est pas utilisé : l'application lit toutes les dates de « Voir » en `AAAA-MM-JJ` (date de fondation d'un parti, période d'un mouvement comprises).
 - Par rapport à l'exemple de la section 1.3 de `circuit-editorial.md` : `website` d'un parti ne se donne qu'une fois (l'application n'en lit qu'un) ; un nombre de sièges est un entier de 0 à 999 ; le résumé est obligatoire sauf pour un droit de réponse ; aucune section « ## Sources » n'est exigée dans le corps (les sources de « Voir » sont des étiquettes).
-- Pas encore décrit : le lien d'un fait vers un Pacte de « Décider » (`a` de rôle `pacte` et `ppf-pacte-measure`, section 4 septies de `FORMATS.md`), faute de type cible dans le moteur et de contenu qui l'utilise. À ajouter avec « Décider » quand un fait de suivi existera.
+- Pas encore décrit : le lien d'un fait vers une Constitution Citoyenne et Démocratique de « Décider » (`a` de rôle `pacte` et `ppf-pacte-measure`, section 4 septies de `FORMATS.md`), faute de type cible dans le moteur et de contenu qui l'utilise. À ajouter avec « Décider » quand un fait de suivi existera.
 - Les libellés (`voir.field.*`, `voir.help.*`, préfixes des listes) sont des clés de traduction, pas encore écrites dans les textes du back-office.
