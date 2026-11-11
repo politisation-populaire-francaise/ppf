@@ -103,7 +103,8 @@ class TeachingSheetTest {
         assertEquals(schema, EditorialSchemas.of(ArticleType.FICHE_PEDAGOGIQUE))
         assertEquals("enseignants", schema.sourceDirectory)
         assertEquals("comprendre.json", schema.bundle)
-        assertEquals(ComprendreSchemas.all.last(), schema, "written last in comprendre.json")
+        // Written after the other contents of comprendre.json; only the texts of the cap series (D-200) come after it.
+        assertEquals(listOf(schema, ComprendreSchemas.CAP), ComprendreSchemas.all.takeLast(2), "written last in comprendre.json, before the cap series")
         assertEquals(ArticleType.FICHE_PEDAGOGIQUE, ArticleType.fromTag("fiche-pedagogique"))
         assertEquals("/comprendre/enseignants/classe-le-referendum-lycee", ComprendreLinks.pathOf(ArticleType.FICHE_PEDAGOGIQUE, "classe-le-referendum-lycee"))
     }
