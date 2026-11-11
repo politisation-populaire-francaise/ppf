@@ -1594,6 +1594,19 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 - Point signalé : le dessin n'est pas le bloc-marque de l'État (pas de profil de Marianne dans des bandes tricolores), mais il associe une Marianne et le drapeau français ; à garder en tête pour la vérification d'antériorité à l'INPI et la relecture par un avocat avant l'ouverture publique.
 - Reste : de nouvelles bannières de réseaux sociaux au logo officiel.
 
+## D-188 (2026-11-11) Version d'essai Android sous 30 Mo : réduction du code par R8, sans renommage
+
+- Contexte : la version d'essai pesait 37,9 Mo (code non réduit 19,2 Mo, bibliothèques natives 13,4 Mo dont la carte, contenus 3,8 Mo) ; au-delà de 30 Mo, elle ne peut pas être envoyée facilement au téléphone de la propriétaire.
+- Choix (approuvé par le chef d'équipe) : réduction du code et des ressources par R8 sur la version d'essai, comme sur la version de publication, mais sans renommage des classes (`proguard-preview.pro` : `-dontobfuscate`), pour qu'un rapport de plantage nomme les vraies classes ; règles de conservation ajoutées pour la découverte du moteur réseau de Ktor et pour la signature secp256k1 (JNI). Si cela ne suffit pas : une version réservée aux processeurs arm64 (Galaxy A34), qui retire 6 Mo.
+- Risque : une erreur de réduction ne se voit qu'à l'exécution, et l'ordinateur n'a pas d'émulateur Android. Vérifications : contrôle du contenu de l'APK, suite d'interface, captures ; puis essai à la main de chaque écran sur le téléphone (liste dans `docs/GUIDE_PROPRIETAIRE.md`).
+
+## D-189 (2026-11-11) Contrôle d'entrée allégé sur l'ordinateur de la propriétaire (`ppfGate`)
+
+- Contexte : la vérification complète avant chaque entrée dans `main` (`build --continue :android:assemblePreview`, règle 5 bis du registre) prend environ 40 minutes sur l'ordinateur de développement, une seule à la fois. Mesure sur le journal du 11 novembre 2026 : 247 tâches exécutées, dont 65 pour les variantes Android de publication et de développement et le lint complet, 31 pour les cibles iOS, et les archives du serveur et du service de signature.
+- Choix (proposé par le socle, approuvé par le chef d'équipe ; usage local seulement, d'accord avec Mise en ligne) : une tâche Gradle racine `ppfGate` qui garde tous les tests (modules multiplateformes : tests JVM ; modules JVM : `check`, qui porte aussi la vérification des jars signés de D-145), la version d'essai Android (`assemblePreview`, avec ses contrôles « lint vital ») et l'application de bureau, suivie des trois scripts. Elle retire la version de publication Android et son R8, `assembleDebug`, le lint complet, les cibles iOS (aucun Mac) et les archives `dist`.
+- Ce qui n'est plus fait à chaque entrée locale reste fait ailleurs : l'intégration continue sur GitHub garde le `build` complet à chaque envoi (gratuit, dépôt public), et un `gradlew build` complet est lancé avant chaque version publiée.
+- Gain estimé : 15 à 20 minutes sur 40, et moins de mémoire ; à mesurer au premier passage. La règle 5 bis du registre et les consignes sont mises à jour par le chef d'équipe quand `ppfGate` est dans `main`.
+
 ## D-210 (2026-11-11) Cap du MVP 1 : Agir, puis Décider, puis Comprendre, et une ergonomie irréprochable
 
 - Contexte : la feuille de route suivie depuis le 5 novembre avançait sur tous les modules à la fois, sans version utilisable. Le mouvement social en cours rend urgente une première version réellement utile. Demande de la propriétaire du 11 novembre 2026 : « j'ai besoin d'un mvp 1 fonctionnel et ergonomique le plus rapidement possible ».
