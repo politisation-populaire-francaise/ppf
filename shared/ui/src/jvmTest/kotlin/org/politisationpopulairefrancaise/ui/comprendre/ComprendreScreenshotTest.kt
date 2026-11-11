@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.comprendre
 
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
@@ -75,7 +76,7 @@ class ComprendreScreenshotTest {
             waitForIdle()
             mainClock.advanceTimeBy(1_000)
         }
-        onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).performClick()
+        openSpace(Space.COMPRENDRE)
         waitForIdle()
         mainClock.advanceTimeBy(2_000)
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ComprendreTags.COURSE_CARD + loi.article.slug).fetchSemanticsNodes().isNotEmpty() }
@@ -126,7 +127,7 @@ class ComprendreScreenshotTest {
             waitForIdle()
             mainClock.advanceTimeBy(1_000)
         }
-        onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).performClick()
+        openSpace(Space.COMPRENDRE)
         waitForIdle()
         mainClock.advanceTimeBy(2_000)
         waitUntil(timeoutMillis = 10_000) { onAllNodesWithTag(ComprendreTags.CHECK_LIST).fetchSemanticsNodes().isNotEmpty() }

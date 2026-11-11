@@ -126,7 +126,6 @@ import org.politisationpopulairefrancaise.ui.resources.agenda_in_agir_title
 import org.politisationpopulairefrancaise.core.WindowHeightClass
 import org.politisationpopulairefrancaise.ui.components.Avatar
 import org.politisationpopulairefrancaise.ui.components.NavRow
-import org.politisationpopulairefrancaise.ui.components.NavSubRow
 import org.politisationpopulairefrancaise.ui.components.PpfIconButton
 import org.politisationpopulairefrancaise.ui.components.Wordmark
 import org.politisationpopulairefrancaise.ui.components.AdaptiveWordmark
@@ -138,6 +137,7 @@ import org.politisationpopulairefrancaise.ui.onboarding.rememberTutorialState
 import org.politisationpopulairefrancaise.ui.components.avatarLetters
 import org.politisationpopulairefrancaise.ui.comprendre.rememberComprendreLibrary
 import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
+import org.politisationpopulairefrancaise.ui.content.ComprendreSection
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
 import org.politisationpopulairefrancaise.ui.endirect.LatestCapBlock
 import org.politisationpopulairefrancaise.ui.endirect.LiveBoardState
@@ -165,7 +165,6 @@ import org.politisationpopulairefrancaise.ui.resources.action_my_space
 import org.politisationpopulairefrancaise.ui.resources.action_notifications_soon
 import org.politisationpopulairefrancaise.ui.resources.action_open_menu
 import org.politisationpopulairefrancaise.ui.resources.action_search_soon
-import org.politisationpopulairefrancaise.ui.resources.guides_title
 import org.politisationpopulairefrancaise.ui.resources.nav_disclaimer
 import org.politisationpopulairefrancaise.ui.resources.nav_search_soon
 import org.politisationpopulairefrancaise.ui.resources.space_mon_espace
@@ -283,6 +282,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val tutorial = rememberTutorialState(dependencies.tutorial)
     // A rubric of "Agir" asked by the shell (the last screen of the tutorial), forgotten once applied.
     var agirRoute by remember { mutableStateOf<AgirRoute?>(null) }
+    // A section of "Comprendre" asked by the menu (D-240), forgotten once shown.
+    var comprendreSection by remember { mutableStateOf<ComprendreSection?>(null) }
     RegisterErasable(dependencies, TutorialState.ERASABLE_ID) { dependencies.tutorial?.forget() }
     // How the person composed « En direct » (views, blocks), kept on the device only.
     val liveBoard = rememberLiveBoardState(dependencies.liveBoard)
@@ -400,6 +401,69 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 selected = it
                 centerOpen = false
             }
+            // The menu in seven rubrics (D-240): each sub-rubric opens its space on the right page.
+            val openMenuTarget: (MenuTarget) -> Unit = { target ->
+                when (target) {
+                    is MenuTarget.OpenSpace -> {
+                        // Like a tab: from elsewhere the space opens where it was left; from inside it, its home.
+                        if (selected == target.space) when (target.space) {
+                            Space.VOIR -> voirState.stack.clear()
+                            Space.DECIDER -> deciderState.home()
+                            Space.AGIR -> agirRoute = AgirRoute.HOME
+                            else -> Unit
+                        }
+                        navigate(target.space)
+                    }
+                    is MenuTarget.Agir -> {
+                        agirRoute = target.route
+                        navigate(Space.AGIR)
+                    }
+                    is MenuTarget.VoirAxisHome -> {
+                        voirState.stack.clear()
+                        voirState.axis = target.axis
+                        navigate(Space.VOIR)
+                    }
+                    is MenuTarget.Voir -> {
+                        voirState.stack.clear()
+                        voirState.open(target.destination)
+                        navigate(Space.VOIR)
+                    }
+                    is MenuTarget.Comprendre -> {
+                        comprendreSection = target.section
+                        navigate(Space.COMPRENDRE)
+                    }
+                    is MenuTarget.Decider -> {
+                        when (target.highlight) {
+                            null -> deciderState.home()
+                            DeciderHighlight.PACTE -> {
+                                deciderState.home()
+                                val catalog = contentLibrary.decider
+                                (catalog.currentPacte() ?: catalog.pactes.firstOrNull())?.let { deciderState.open(DeciderDestination.Pacte(it.address)) }
+                            }
+                            else -> deciderState.showSection(target.highlight)
+                        }
+                        navigate(Space.DECIDER)
+                    }
+                    MenuTarget.DeciderDocuments -> {
+                        deciderState.home()
+                        deciderState.open(DeciderDestination.Documents)
+                        navigate(Space.DECIDER)
+                    }
+                    is MenuTarget.Revendications -> {
+                        proposalComposer.open = false
+                        revendicationViews.select(target.viewId)
+                        navigate(Space.REVENDICATIONS)
+                    }
+                    MenuTarget.ProposeRevendication -> {
+                        proposalComposer.open = true
+                        navigate(Space.REVENDICATIONS)
+                    }
+                    is MenuTarget.Messages -> navigate(Space.MESSAGES)
+                    MenuTarget.HelpSheet -> help.open()
+                    MenuTarget.HarassmentKit -> help.openHarassmentKit()
+                    MenuTarget.Soon -> Unit
+                }
+            }
             // An entry of the centre opens what it points to when the shell knows the way; otherwise it is only marked read.
             val openTarget: (String?) -> Unit = { target ->
                 val conversation = target?.takeIf { it.startsWith(MESSAGES_TARGET) }?.removePrefix(MESSAGES_TARGET)
@@ -472,6 +536,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     proches = proches,
                     agirRoute = agirRoute,
                     onAgirRouteHandled = { agirRoute = null },
+                    comprendreSection = comprendreSection,
+                    onComprendreSectionHandled = { comprendreSection = null },
                     mailboxSetting = mailboxSetting,
                     notificationsSettings = notificationsSettings,
                     windowClass = windowClass,
@@ -482,6 +548,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 )
             }
             // AG-59: the kit against harassment, opened from the AIDE sheet, is drawn over the shell.
+            CompositionLocalProvider(LocalMenuTargetHandler provides openMenuTarget) {
             HarassmentKitLayer(help, windowClass) {
                 when {
                     // The tutorial takes the whole window; « Passer » or the end lead to « En direct » or to the chosen space.
@@ -505,6 +572,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     windowClass.width == WindowWidthClass.MEDIUM -> MediumShell(selected, navigate, account, bell, centerScreen ?: content)
                     else -> ExpandedShell(selected, navigate, account, bell, centerScreen ?: content)
                 }
+            }
             }
             HelpSheetHost(help)
             }
@@ -535,6 +603,8 @@ private fun SpaceContent(
     proches: ProchesState,
     agirRoute: AgirRoute?,
     onAgirRouteHandled: () -> Unit,
+    comprendreSection: ComprendreSection?,
+    onComprendreSectionHandled: () -> Unit,
     mailboxSetting: MailboxSetting,
     notificationsSettings: NotificationsSettingsState?,
     windowClass: WindowClass,
@@ -611,7 +681,7 @@ private fun SpaceContent(
             },
         )
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate, requests = voirRequests, parliament = parliamentState)
-        Space.COMPRENDRE -> ComprendreScreen(contentLibrary, comprendreLibrary, windowClass, modifier, onNavigate)
+        Space.COMPRENDRE -> ComprendreScreen(contentLibrary, comprendreLibrary, windowClass, modifier, onNavigate, requestedSection = comprendreSection, onSectionHandled = onComprendreSectionHandled)
         Space.AGIR -> {
             // The verified organisations name the organisers of the agenda and may call for donations.
             LaunchedEffect(organisationsLibrary) { organisationsLibrary.ensureStarted() }
@@ -662,7 +732,7 @@ private fun SpaceContent(
             reminders = deciderReminders,
             signer = accountSession.signer,
         )
-        Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting, notifications = notificationsSettings)
+        Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting, notifications = notificationsSettings, dashboard = true)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)
         Space.REVENDICATIONS -> RevendicationsScreen(
             contentLibrary,
@@ -731,10 +801,7 @@ private fun MenuDrawer(selected: Space, onSelect: (Space) -> Unit, modifier: Mod
         scrimColor = palette.scrim,
         drawerContent = {
             ModalDrawerSheet(drawerContainerColor = palette.surface0, drawerContentColor = palette.ink, windowInsets = menuInsets) {
-                MoreMenu(selected = selected, onSelect = {
-                    onSelect(it)
-                    scope.launch { drawerState.close() }
-                })
+                MoreMenu(selected = selected, onPicked = { scope.launch { drawerState.close() } })
             }
         },
     ) {
@@ -938,7 +1005,7 @@ private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifi
                 Spacer(Modifier.height(4.dp))
             }
             HorizontalDivider(Modifier.padding(horizontal = 12.dp, vertical = 8.dp), color = palette.border)
-            MoreRows(selected, onSelect)
+            RubricMenu(selected)
         }
         Disclaimer()
     }
@@ -946,7 +1013,7 @@ private fun SideBar(selected: Space, onSelect: (Space) -> Unit, modifier: Modifi
 
 /** The menu of phones: the full name, what is not in the bottom bar, the search to come, the disclaimer. */
 @Composable
-private fun MoreMenu(selected: Space, onSelect: (Space) -> Unit) {
+private fun MoreMenu(selected: Space, onPicked: () -> Unit) {
     Column(Modifier.fillMaxHeight()) {
         Column(Modifier.weight(1f).verticalScroll(rememberScrollState()).padding(horizontal = 12.dp, vertical = 16.dp)) {
             // The symbol of PPF and its full name, at the head of the menu (D-185).
@@ -955,30 +1022,13 @@ private fun MoreMenu(selected: Space, onSelect: (Space) -> Unit) {
                 Spacer(Modifier.width(10.dp))
                 Wordmark(large = true)
             }
-            Spacer(Modifier.height(16.dp))
-            MoreRows(selected, onSelect)
+            Spacer(Modifier.height(8.dp))
             SearchSoonRow()
+            Spacer(Modifier.height(8.dp))
+            // A sub-rubric chosen closes the menu of phones (its page is then on screen).
+            RubricMenu(selected, onPicked = onPicked)
         }
         Disclaimer()
-    }
-}
-
-@Composable
-private fun MoreRows(selected: Space, onSelect: (Space) -> Unit) {
-    moreSections.forEach { section ->
-        val isSelected = section.space == selected
-        NavRow(section.icon, stringResource(section.title), isSelected, { onSelect(section.space) }, Modifier.testTag(ShellTags.navItem(section.space)))
-        if (isSelected && section.space == Space.COMPRENDRE) {
-            Spacer(Modifier.height(4.dp))
-            NavSubRow(
-                label = stringResource(Res.string.guides_title),
-                current = true,
-                onClick = { onSelect(Space.COMPRENDRE) },
-                modifier = Modifier.testTag(ShellTags.subItem("fiches")),
-            )
-            Spacer(Modifier.height(4.dp))
-        }
-        Spacer(Modifier.height(4.dp))
     }
 }
 

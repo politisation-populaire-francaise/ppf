@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The menu in seven rubrics with sub-rubrics shown as an accordion (decision of the owner, 11 November 2026, D-240). -->
+<resources>
+    <string name="menu_informer">S’informer</string>
+    <string name="menu_comprendre">Comprendre</string>
+    <string name="menu_temoigner">Témoigner</string>
+    <string name="menu_revendiquer">Revendiquer</string>
+    <string name="menu_unir">S’unir et s’organiser</string>
+    <string name="menu_politiser">Se politiser</string>
+    <string name="menu_agir">Agir</string>
+
+    <string name="menu_expand">Afficher les sous-rubriques de %1$s</string>
+    <string name="menu_collapse">Masquer les sous-rubriques de %1$s</string>
+    <string name="menu_state_expanded">déplié</string>
+    <string name="menu_state_collapsed">replié</string>
+    <string name="menu_soon">Bientôt</string>
+    <string name="menu_my_space">Mon espace</string>
+
+    <string name="menu_home_informer">Accueil de S’informer</string>
+    <string name="menu_actu">Actu</string>
+    <string name="menu_mouvement">Le mouvement</string>
+    <string name="menu_pouvoir">Le pouvoir et le Parlement</string>
+    <string name="menu_partis">Partis politiques</string>
+    <string name="menu_responsables">Responsables publics</string>
+    <string name="menu_textes">Textes en discussion</string>
+    <string name="menu_libertes">Libertés et contre-pouvoirs</string>
+    <string name="menu_verifier">Vérifier une info reçue</string>
+    <string name="menu_transparence">Transparence de PPF</string>
+
+    <string name="menu_home_comprendre">Accueil de Comprendre</string>
+    <string name="menu_cap">Le cap du mouvement</string>
+    <string name="menu_cinq_minutes">Comprendre en 5 minutes</string>
+    <string name="menu_qui_decide">Qui décide ?</string>
+    <string name="menu_mes_elus">Mes élus</string>
+    <string name="menu_droits">Connaître ses droits</string>
+    <string name="menu_vrai_faux">Le vrai du faux</string>
+    <string name="menu_histoire">Histoire des luttes</string>
+    <string name="menu_glossaire">Glossaire</string>
+
+    <string name="menu_envoyer_temoignage">Envoyer un témoignage</string>
+    <string name="menu_camera">Caméra protégée</string>
+    <string name="menu_harcelement">Harcèlement en ligne</string>
+    <string name="menu_appels_temoins">Appels à témoins</string>
+    <string name="menu_mes_temoignages">Mes témoignages</string>
+
+    <string name="menu_toutes_revendications">Toutes les revendications</string>
+    <string name="menu_proposer">Proposer une revendication</string>
+    <string name="menu_mes_revendications">Mes revendications</string>
+    <string name="menu_constitution">Constitution Citoyenne et Démocratique</string>
+    <string name="menu_petitions">Pétitions officielles</string>
+    <string name="menu_petitions_locales">Pétitions locales</string>
+    <string name="menu_consultations">Consultations publiques</string>
+
+    <string name="menu_messages">Messages</string>
+    <string name="menu_collectifs">Collectifs</string>
+    <string name="menu_organisations">Associations et syndicats</string>
+    <string name="menu_se_reunir">Se réunir</string>
+    <string name="menu_federer">Fédérer mon entourage</string>
+    <string name="menu_proches">Mes proches à mobiliser</string>
+    <string name="menu_solidarite">Solidarité et caisses de grève</string>
+
+    <string name="menu_s_engager">S’engager en politique</string>
+    <string name="menu_elections">Prochaines élections</string>
+    <string name="menu_comparer">Comparer les candidats</string>
+    <string name="menu_interpeller">Interpeller mes élus</string>
+    <string name="menu_documents">Demander un document administratif</string>
+
+    <string name="menu_home_agir">Accueil d’Agir</string>
+    <string name="menu_appels">Appels à la mobilisation</string>
+    <string name="menu_carte">Carte et agenda</string>
+    <string name="menu_kits">Kits d’action citoyenne</string>
+    <string name="menu_simulateur">Simulateur du gréviste</string>
+    <string name="menu_manifestation">Mode manifestation</string>
+</resources>

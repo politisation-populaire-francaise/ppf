@@ -1,5 +1,8 @@
 package org.politisationpopulairefrancaise.ui.account
 
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.heading
+import org.politisationpopulairefrancaise.ui.resources.dashboard_settings_title
 import org.politisationpopulairefrancaise.ui.components.PpfSymbol
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
@@ -157,6 +160,8 @@ fun MySpaceScreen(
     mailbox: MailboxSetting? = null,
     /** The notifications of the device (M31); hidden when null. The categories other than messages need no account. */
     notifications: NotificationsSettingsState? = null,
+    /** The personal dashboard on top (E-04, shown by the shell); the account screen alone otherwise. */
+    dashboard: Boolean = false,
 ) {
     val compact = windowClass.width == WindowWidthClass.COMPACT
     Column(
@@ -166,6 +171,21 @@ fun MySpaceScreen(
         Column(Modifier.widthIn(max = 640.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
             PageHeader(stringResource(Res.string.space_mon_espace), stringResource(Res.string.desc_mon_espace))
             Spacer(Modifier.height(4.dp))
+            // E-04 (prototype): a personal dashboard first, the journey of the citizen and shortcuts; the account and settings below.
+            // A task of the account in progress (creating, restoring, protecting the device) stays first;
+            // otherwise the dashboard leads. Without an account it comes after the card that creates one.
+            val accountBusy = session.state.let { it is AccountUiState.Creating || it is AccountUiState.Restoring || it == AccountUiState.NoAccount } ||
+                session.lockStepPending || session.lostControl.state != null
+            if (dashboard && !accountBusy) {
+                CitizenDashboard()
+                Spacer(Modifier.height(8.dp))
+                Text(
+                    stringResource(Res.string.dashboard_settings_title),
+                    style = MaterialTheme.typography.titleMedium,
+                    color = PpfTheme.palette.ink,
+                    modifier = Modifier.semantics { heading() },
+                )
+            }
             val state = session.state
             if (session.lostControl.state != null && state != AccountUiState.Loading && state != AccountUiState.Unreadable) {
                 // "J'ai perdu le contrôle de mon compte" takes the page while it is open.
@@ -188,6 +208,7 @@ fun MySpaceScreen(
                     ReadyCards(session, state, windowClass, mailbox, notifications)
                 }
             }
+            if (dashboard && accountBusy) CitizenDashboard()
             // The lock, the hidden content and the quick erase of this device (M33), with or without an account.
             DeviceSecurityCard()
             // The tutorial of the first launch, to see again (D-216).

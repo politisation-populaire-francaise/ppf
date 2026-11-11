@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.content
 
+import org.politisationpopulairefrancaise.core.Space
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.ui.Modifier
@@ -40,13 +42,8 @@ class ComprendreScreenTest {
 
     private fun ComposeUiTest.openComprendre(dependencies: AppDependencies, width: Int, height: Int) {
         setContent { Box(Modifier.requiredSize(width.dp, height.dp)) { PpfApp(dependencies) } }
-        if (width < 600) {
-            // Phone: the sections are in the menu.
-            onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
-            waitForIdle()
-        }
-        onNodeWithText("Comprendre").performClick()
-        waitForIdle()
+        // The menu in seven rubrics (D-240): « Accueil de Comprendre », under its rubric.
+        openSpace(Space.COMPRENDRE)
         if (width < 600) {
             // Let the menu finish closing, otherwise its scrim swallows the next click.
             mainClock.advanceTimeBy(2_000)

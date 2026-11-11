@@ -64,51 +64,10 @@ import org.politisationpopulairefrancaise.ui.components.PpfSecondaryButton
 import org.politisationpopulairefrancaise.ui.components.PpfTextButton
 import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.ui.icons.Lucide
-import org.politisationpopulairefrancaise.ui.resources.Res
-import org.politisationpopulairefrancaise.ui.resources.tutorial_act_soon
-import org.politisationpopulairefrancaise.ui.resources.tutorial_act_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_act_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_bonnet
-import org.politisationpopulairefrancaise.ui.resources.tutorial_bonnet_description
-import org.politisationpopulairefrancaise.ui.resources.tutorial_demand_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_demand_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_how_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_how_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_inform_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_inform_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_marianne
-import org.politisationpopulairefrancaise.ui.resources.tutorial_marianne_description
-import org.politisationpopulairefrancaise.ui.resources.tutorial_next
-import org.politisationpopulairefrancaise.ui.resources.tutorial_politics_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_politics_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_previous
-import org.politisationpopulairefrancaise.ui.resources.tutorial_privacy_settings
-import org.politisationpopulairefrancaise.ui.resources.tutorial_privacy_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_privacy_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_skip
-import org.politisationpopulairefrancaise.ui.resources.tutorial_skip_description
-import org.politisationpopulairefrancaise.ui.resources.tutorial_soon
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_act
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_demand
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_gather
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_help
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_inform
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_politics
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_support
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_testify
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_start_understand
-import org.politisationpopulairefrancaise.ui.resources.tutorial_step
-import org.politisationpopulairefrancaise.ui.resources.tutorial_testify_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_testify_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_understand_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_understand_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_unite_soon
-import org.politisationpopulairefrancaise.ui.resources.tutorial_unite_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_unite_title
-import org.politisationpopulairefrancaise.ui.resources.tutorial_why_text
-import org.politisationpopulairefrancaise.ui.resources.tutorial_why_title
+import org.politisationpopulairefrancaise.ui.resources.*
 import org.politisationpopulairefrancaise.ui.theme.Callout
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.TextButton
 import org.politisationpopulairefrancaise.ui.theme.CalloutType
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
@@ -137,10 +96,10 @@ enum class TutorialIllustration(val image: DrawableResource, val description: St
 }
 
 /**
- * The screens of the tutorial, version 2 (11 November 2026, D-186): the owner's own words for the first
- * six, then four screens written at her request, the protection of data second to last, then where to
- * start. Each has a picture of hers or an icon. [soon] lists what the screen mentions but is not built
- * yet: it is shown in a « Bientôt » box, never as available.
+ * The screens of the tutorial, short version in white cards (D-241, 11 November 2026): one idea per
+ * screen, about twenty-five words, a unifying tone; the owner's long texts of version 2 (D-186) are
+ * kept in docs/ergonomie to be restored. FEATURES shows the seven rubrics as a list of pictograms.
+ * [soon] lists what the screen mentions but is not built yet: shown in a « Bientôt » box.
  */
 enum class TutorialStep(
     val title: StringResource,
@@ -150,17 +109,24 @@ enum class TutorialStep(
     val soon: StringResource? = null,
 ) {
     WHY(Res.string.tutorial_why_title, Res.string.tutorial_why_text, illustration = TutorialIllustration.MARIANNE),
-    HOW(Res.string.tutorial_how_title, Res.string.tutorial_how_text, illustration = TutorialIllustration.MARIANNE),
-    INFORM(Res.string.tutorial_inform_title, Res.string.tutorial_inform_text, icon = Lucide.Newspaper),
-    UNDERSTAND(Res.string.tutorial_understand_title, Res.string.tutorial_understand_text, icon = Lucide.Lightbulb),
-    TESTIFY(Res.string.tutorial_testify_title, Res.string.tutorial_testify_text, icon = Lucide.Megaphone),
-    DEMAND(Res.string.tutorial_demand_title, Res.string.tutorial_demand_text, illustration = TutorialIllustration.BONNET),
+    FEATURES(Res.string.tutorial_features_title, null),
+    ACT(Res.string.tutorial_act_title, Res.string.tutorial_act_text, icon = Lucide.MapPin, soon = Res.string.tutorial_act_soon),
     UNITE(Res.string.tutorial_unite_title, Res.string.tutorial_unite_text, icon = Lucide.Users, soon = Res.string.tutorial_unite_soon),
-    POLITICS(Res.string.tutorial_politics_title, Res.string.tutorial_politics_text, icon = Lucide.Vote),
-    ACT(Res.string.tutorial_act_title, Res.string.tutorial_act_text, icon = Lucide.HandFist, soon = Res.string.tutorial_act_soon),
+    VOICE(Res.string.tutorial_voice_title, Res.string.tutorial_voice_text, illustration = TutorialIllustration.BONNET),
     PRIVACY(Res.string.tutorial_privacy_title, Res.string.tutorial_privacy_text, icon = Lucide.ShieldCheck),
     START(Res.string.tutorial_start_title, null),
 }
+
+/** The seven rubrics of the menu (D-240), shown on the second screen: pictogram, name, three words. */
+private val tutorialFeatures: List<Triple<ImageVector, StringResource, StringResource>> = listOf(
+    Triple(Lucide.Newspaper, Res.string.tutorial_feature_informer, Res.string.tutorial_feature_informer_text),
+    Triple(Lucide.BookOpen, Res.string.tutorial_feature_comprendre, Res.string.tutorial_feature_comprendre_text),
+    Triple(Lucide.Camera, Res.string.tutorial_feature_temoigner, Res.string.tutorial_feature_temoigner_text),
+    Triple(Lucide.Megaphone, Res.string.tutorial_feature_revendiquer, Res.string.tutorial_feature_revendiquer_text),
+    Triple(Lucide.Users, Res.string.tutorial_feature_unir, Res.string.tutorial_feature_unir_text),
+    Triple(Lucide.Landmark, Res.string.tutorial_feature_politiser, Res.string.tutorial_feature_politiser_text),
+    Triple(Lucide.HandFist, Res.string.tutorial_feature_agir, Res.string.tutorial_feature_agir_text),
+)
 
 /**
  * Where the buttons of the tutorial lead: a space, sometimes a rubric of "Agir", or the AIDE sheet. The
@@ -207,70 +173,62 @@ fun FirstLaunchTutorial(onFinish: (TutorialStart?) -> Unit, modifier: Modifier =
     val step = steps[index]
     SystemBack(enabled = true) { if (index > 0) index-- else onFinish(null) }
     val paneTitle = stringResource(step.title)
+    // The blue of the identity around a white card (owner, 11 November 2026: « une belle card moderne, design a fond blanc »).
     Surface(
-        color = palette.surface1,
-        contentColor = palette.ink,
+        color = palette.brand,
+        contentColor = palette.onBrand,
         modifier = modifier.fillMaxSize().semantics { this.paneTitle = paneTitle }.testTag(TutorialTags.SCREEN),
     ) {
         Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
             // The counter and « Passer », always at the top, whatever the length of the text.
             Row(
-                Modifier.widthIn(max = 640.dp).fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 8.dp),
+                Modifier.widthIn(max = 560.dp).fillMaxWidth().padding(start = 20.dp, end = 8.dp, top = 8.dp),
                 verticalAlignment = Alignment.CenterVertically,
             ) {
                 Text(
                     text = stringResource(Res.string.tutorial_step, index + 1, steps.size),
                     style = MaterialTheme.typography.labelLarge,
-                    color = palette.inkMuted,
+                    color = palette.onBrand,
                     modifier = Modifier.weight(1f).semantics { liveRegion = LiveRegionMode.Polite }.testTag(TutorialTags.STEP),
                 )
                 val skip = stringResource(Res.string.tutorial_skip_description)
-                PpfTextButton(
+                TextButton(
                     onClick = { onFinish(null) },
-                    text = stringResource(Res.string.tutorial_skip),
+                    colors = ButtonDefaults.textButtonColors(contentColor = palette.onBrand),
                     modifier = Modifier.heightIn(min = PpfTheme.dimens.touchTarget).semantics { contentDescription = skip }.testTag(TutorialTags.SKIP),
-                )
+                ) { Text(stringResource(Res.string.tutorial_skip), style = MaterialTheme.typography.labelLarge) }
             }
-            ProgressDots(index, steps.size)
-            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-                // A tall phone keeps the picture of the owner above the text, which scrolls. Elsewhere the
-                // picture scrolls with the text, and a screen shorter than the window is centred in it
-                // (a computer: nothing piled up at the top of a large window).
-                val pinned = step.illustration?.banner == true && maxHeight >= 520.dp && maxWidth < 600.dp
-                val scroll = rememberScrollState()
-                LaunchedEffect(index) { scroll.scrollTo(0) }
-                Column(Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    if (pinned) {
-                        Box(Modifier.padding(start = 20.dp, end = 20.dp, top = 12.dp)) { Illustration(step.illustration!!) }
-                    }
-                    BoxWithConstraints(Modifier.weight(1f).fillMaxWidth()) {
-                        val viewport = maxHeight
-                        Column(
-                            Modifier.fillMaxWidth().verticalScroll(scroll).heightIn(min = viewport).padding(horizontal = 20.dp, vertical = 16.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                        ) {
-                            Column(Modifier.widthIn(max = 600.dp).fillMaxWidth()) {
-                                StepContent(step, showIllustration = !pinned, onFinish = onFinish)
+            BoxWithConstraints(Modifier.weight(1f).fillMaxWidth().padding(horizontal = 16.dp, vertical = 8.dp), contentAlignment = Alignment.Center) {
+                val cardMax = maxHeight
+                Surface(
+                    color = palette.surface2,
+                    contentColor = palette.ink,
+                    shape = RoundedCornerShape(24.dp),
+                    modifier = Modifier.widthIn(max = 520.dp).fillMaxWidth().heightIn(max = cardMax),
+                ) {
+                    Column(Modifier.padding(horizontal = 22.dp, vertical = 20.dp)) {
+                        val scroll = rememberScrollState()
+                        LaunchedEffect(index) { scroll.scrollTo(0) }
+                        Column(Modifier.weight(1f, fill = false).verticalScroll(scroll)) {
+                            StepContent(step, showIllustration = true, onFinish = onFinish)
+                        }
+                        Spacer(Modifier.height(16.dp))
+                        Box(Modifier.fillMaxWidth(), contentAlignment = Alignment.Center) { ProgressDots(index, steps.size) }
+                        // « Précédent » and « Suivant »; the last screen ends with its choices instead.
+                        Spacer(Modifier.height(12.dp))
+                        Row(horizontalArrangement = Arrangement.spacedBy(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                            if (index > 0) {
+                                PpfSecondaryButton(onClick = { index-- }, text = stringResource(Res.string.tutorial_previous), modifier = Modifier.testTag(TutorialTags.PREVIOUS))
+                            }
+                            Spacer(Modifier.weight(1f))
+                            if (index < steps.lastIndex) {
+                                PpfPrimaryButton(onClick = { index++ }, text = stringResource(Res.string.tutorial_next), modifier = Modifier.testTag(TutorialTags.NEXT))
                             }
                         }
                     }
                 }
             }
-            // « Précédent » and « Suivant »; the last screen ends with its choices instead.
-            Row(
-                Modifier.widthIn(max = 640.dp).fillMaxWidth().padding(horizontal = 20.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                if (index > 0) {
-                    PpfSecondaryButton(onClick = { index-- }, text = stringResource(Res.string.tutorial_previous), modifier = Modifier.testTag(TutorialTags.PREVIOUS))
-                }
-                Spacer(Modifier.weight(1f))
-                if (index < steps.lastIndex) {
-                    PpfPrimaryButton(onClick = { index++ }, text = stringResource(Res.string.tutorial_next), modifier = Modifier.testTag(TutorialTags.NEXT))
-                }
-            }
+            Spacer(Modifier.height(8.dp))
         }
     }
 }
@@ -305,7 +263,7 @@ private fun ColumnScope.StepContent(step: TutorialStep, showIllustration: Boolea
     }
     Text(
         text = stringResource(step.title),
-        style = MaterialTheme.typography.headlineSmall,
+        style = MaterialTheme.typography.titleLarge,
         color = palette.ink,
         textAlign = if (step == TutorialStep.START) TextAlign.Center else TextAlign.Start,
         modifier = Modifier.fillMaxWidth().semantics { heading() }.testTag(TutorialTags.TITLE),
@@ -313,6 +271,30 @@ private fun ColumnScope.StepContent(step: TutorialStep, showIllustration: Boolea
     step.text?.let {
         Spacer(Modifier.height(12.dp))
         TutorialMarkup(stringResource(it))
+    }
+    if (step == TutorialStep.FEATURES) {
+        Spacer(Modifier.height(12.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+            tutorialFeatures.forEach { (icon, name, text) ->
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(Modifier.size(36.dp).background(palette.brandTint, CircleShape), contentAlignment = Alignment.Center) {
+                        Icon(icon, contentDescription = null, tint = palette.brand, modifier = Modifier.size(18.dp))
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    val label = stringResource(name)
+                    val words = stringResource(text)
+                    Text(
+                        buildAnnotatedString {
+                            withStyle(SpanStyle(fontWeight = FontWeight.Bold, color = palette.ink)) { append(label) }
+                            append("  ")
+                            append(words)
+                        },
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = palette.inkMuted,
+                    )
+                }
+            }
+        }
     }
     step.soon?.let {
         Spacer(Modifier.height(8.dp))
@@ -345,7 +327,7 @@ private fun Illustration(illustration: TutorialIllustration) {
         painter = painterResource(illustration.image),
         contentDescription = stringResource(illustration.description),
         contentScale = ContentScale.Fit,
-        modifier = Modifier.widthIn(max = 600.dp).fillMaxWidth().aspectRatio(2f).testTag(TutorialTags.ILLUSTRATION),
+        modifier = Modifier.widthIn(max = 480.dp).fillMaxWidth().aspectRatio(2f).testTag(TutorialTags.ILLUSTRATION),
     )
 }
 

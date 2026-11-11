@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.revendications.propose
 
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.ui.test.ComposeTimeoutException
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
@@ -61,7 +62,7 @@ class ProposeFromTheWallTest {
 
     private fun ComposeUiTest.openForm(dependencies: AppDependencies) {
         setContent { Box(Modifier.requiredSize(1000.dp, 740.dp)) { PpfApp(dependencies) } }
-        onNodeWithTag(ShellTags.navItem(Space.REVENDICATIONS)).performClick()
+        openSpace(Space.REVENDICATIONS)
         waitOrDump("the form's button") { onAllNodesWithTag(RevendicationTags.PROPOSE).fetchSemanticsNodes().isNotEmpty() }
         onNode(hasTestTag(RevendicationTags.PROPOSE) and hasAnyAncestor(hasTestTag(RevendicationTags.PAGE + "tout"))).performScrollTo().performClick()
         waitForIdle()

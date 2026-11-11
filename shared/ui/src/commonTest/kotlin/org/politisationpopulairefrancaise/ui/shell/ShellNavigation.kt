@@ -6,6 +6,7 @@ import androidx.compose.ui.test.assertIsDisplayed
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onNodeWithTag
 import androidx.compose.ui.test.performClick
+import androidx.compose.ui.test.performScrollTo
 import org.politisationpopulairefrancaise.core.Space
 
 /**
@@ -17,10 +18,21 @@ import org.politisationpopulairefrancaise.core.Space
 fun ComposeUiTest.openSpace(space: Space) {
     val tag = ShellTags.navItem(space)
     val onScreen = runCatching { onNodeWithTag(tag).assertIsDisplayed() }.isSuccess
-    if (!onScreen && onAllNodesWithTag(ShellTags.MENU_BUTTON).fetchSemanticsNodes().isNotEmpty()) {
+    val menuShown = runCatching { onNodeWithTag(rubricTag(MenuRubric.INFORMER)).assertIsDisplayed() }.isSuccess
+    if (!onScreen && !menuShown && onAllNodesWithTag(ShellTags.MENU_BUTTON).fetchSemanticsNodes().isNotEmpty()) {
         onNodeWithTag(ShellTags.MENU_BUTTON).performClick()
         waitForIdle()
     }
+    // The menu in seven rubrics (D-240): the entry sits in its rubric, unfolded first when it is folded.
+    if (onAllNodesWithTag(tag).fetchSemanticsNodes().isEmpty()) {
+        rubricFor(space)?.let { rubric ->
+            runCatching { onNodeWithTag(rubricTag(rubric)).performScrollTo() }
+            onNodeWithTag(rubricTag(rubric)).performClick()
+            waitForIdle()
+        }
+    }
+    // The menu scrolls on small screens: bring the entry into view first.
+    runCatching { onNodeWithTag(tag).performScrollTo() }
     onNodeWithTag(tag).performClick()
     waitForIdle()
 }

@@ -1754,3 +1754,16 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
 
 - Contexte : la règle de modération de la propriétaire repose aussi sur les signalements des utilisateurs (« C'est l'ia qui filtre et l'equipe qui tranche ce qui est mis en alerte par l'ia, et y'a aussi les signalements des users ») ; aucun bouton n'existait (S-38). Proposition de la session Agir approuvée par le chef d'équipe le 11 novembre 2026.
 - Choix : un signalement est un dossier M30 (`ticket` / `report`) ouvert sans compte, son commentaire chiffré pour la boîte de l'équipe ; écart approuvé : pour ce seul sous-type, l'adresse du contenu (publique) et le code du motif sont aussi en clair (`report_content`, `report_reason`, migration V21), pour que le back-office regroupe les signalements par contenu avant que le client de l'équipe existe. La file ne masque rien ; la limitation de débit et la preuve de travail existantes s'appliquent. Composant commun `ReportContentButton(address)` (`shared/ui/.../components/ReportContent.kt`), branché sur les appels, les mobilisations et les revendications.
+
+## D-240 (2026-11-11) Menu en sept rubriques avec sous-rubriques en accordéon
+
+- Contexte : constats de la propriétaire sur le téléphone (menu latéral « beaucoup trop pauvre en liens d'accès rapides », sans indicateur de sous-menu, Comprendre qui ouvre sa page au lieu de se déplier) ; proposition de la session Ergonomie (`docs/projet/brainstorming-ergonomie.md`, E-02).
+- Décision de la propriétaire, 11 novembre 2026 : « J'aime bcp ta proposition de sous-rubrique, je valide on va tester ca comme ca et voir ce que ca donne » ; « oui on etait parti sur 4 pilliers mais en fait ca n'allait pas, le bon parcours utilisateur est ces 7 rubriques que je valide ».
+- Choix : le menu des téléphones et la barre latérale de l'ordinateur présentent S'informer (ancien Voir, libellé renommé), Comprendre, Témoigner, Revendiquer, S'unir et s'organiser, Se politiser, Agir ; un chevron indique le dépliage, une rubrique ouverte à la fois, celle de l'écran courant ouverte d'emblée ; chaque sous-rubrique ouvre un écran existant (« Bientôt » sinon). Les espaces et leurs identifiants stables ne changent pas (`Space`), Décider reste un espace atteint par Revendiquer et Se politiser. Modèle : `ui/shell/MenuTree.kt`, affichage : `ui/shell/RubricMenu.kt`.
+- À reporter dans la vision et les cahiers (quatre piliers remplacés par sept rubriques dans le parcours) : à faire valider par la propriétaire avant de modifier les documents définitifs.
+
+## D-241 (2026-11-11) Tutoriel court en cartes blanches, à l'essai
+
+- Contexte : la propriétaire juge les écrans du tutoriel trop longs, pas assez fédérateurs, et veut leur contenu dans « une belle card moderne, design a fond blanc ».
+- Décision de la propriétaire, 11 novembre 2026 : « Essayons tes textes courts pour visualiser et me faire une idée concrète mais sauvegarde mon texte pour qu'on puisse le retablir au cas ou ».
+- Choix : sept écrans (pourquoi, les sept rubriques en pictogrammes, Agir près de chez vous, s'unir, votre voix compte, protection et AIDE, par où commencer), environ vingt-cinq mots chacun, dans une carte blanche arrondie sur le bleu de l'identité. Ses textes de la version 2 (D-186) sont gardés mot pour mot dans `docs/ergonomie/tutoriel-v2-textes-proprietaire.xml`.

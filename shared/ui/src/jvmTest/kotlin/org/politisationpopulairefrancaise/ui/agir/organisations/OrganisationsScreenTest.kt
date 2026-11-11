@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.agir.organisations
 
+import org.politisationpopulairefrancaise.ui.shell.openSpace
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.requiredSize
 import androidx.compose.material3.Text
@@ -301,7 +302,7 @@ class OrganisationsScreenTest {
         val store = dependencies.contentStore!!
         assertTrue(store.byTag(listOf(30023), "ppf-type", "organisation", limit = 50).size == AgirFixtures.EXAMPLES.size, "the entries are on the device")
 
-        onNodeWithTag(ShellTags.navItem(Space.COMPRENDRE)).performClick()
+        openSpace(Space.COMPRENDRE)
         waitForIdle()
         awaitTag(ContentTags.GUIDE_CARD + "garde-a-vue")
         AgirFixtures.EXAMPLES.forEach { slug -> assertEquals(0, count(ContentTags.GUIDE_CARD + slug)) }

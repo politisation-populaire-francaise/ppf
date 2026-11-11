@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The tutorial of the first launch, version 2 (D-216, D-186): screens 1 to 6 are the owner's own words
+     (11 November 2026), only the French typography fixed; screens 7 to 10 were written by the lead at her
+     request, to be reread by her. Markup read by the application: **bold**, and "- " at the start of a
+     line for bullet lists. What is not built yet stays in the « Bientôt » box of its screen. -->
+<resources>
+    <string name="tutorial_skip">Passer</string>
+    <string name="tutorial_skip_description">Passer la présentation et ouvrir l’application</string>
+    <string name="tutorial_next">Suivant</string>
+    <string name="tutorial_previous">Précédent</string>
+    <string name="tutorial_soon">Bientôt</string>
+    <string name="tutorial_replay">Revoir la présentation de l’application</string>
+    <string name="tutorial_step">Étape %1$d sur %2$d</string>
+
+    <string name="tutorial_why_title">Ensemble, sauvons la démocratie !</string>
+    <string name="tutorial_why_text">Notre démocratie n’a jamais été autant piétinée qu’aujourd’hui : interdiction de manifester, répression et violence policière, arrestations massives et arbitraires, censure, ingérence du gouvernement au sein de l’institution judiciaire, disparition des contre-pouvoirs, utilisation d’armes de guerre contre la population, rejet de la voix citoyenne, 49.3 en cascade, mensonges, rejet du résultat des urnes lors des dernières législatives... la liste est bien trop longue.\n\nMais cela aura au moins permis une chose : l’éveil des citoyens sur ce qu’est devenue la France, la convergence de nos luttes, et plus important que tout : **la volonté d’agir et de reprendre le pouvoir citoyen, qui est le propre de la démocratie**.\n\n**Vous vous sentez dépassés, impuissants, en colère ?** Nous sommes des millions à ressentir la même chose ! Il est temps de **nous unir au-delà de nos orientations politiques** et de sauver notre démocratie !</string>
+    <string name="tutorial_how_title">Comment faire ?</string>
+    <string name="tutorial_how_text">L’association de la Politisation Populaire Française vous guide pas à pas pour que le pouvoir revienne enfin à celles et ceux qui sont censés le posséder dans une démocratie : aux citoyens et citoyennes. Nous mettons gratuitement à votre disposition des outils pour **s’Informer** ; **Comprendre** ; **Témoigner** ; **Revendiquer** ; **Communiquer, s’Unir et s’Organiser** ; **se Politiser** et **Agir**.\n\nNous centralisons l’information politique et celles des mouvements sociaux pour la rendre lisible et accessible à tous, sans censure, sans complaisance.</string>
+    <string name="tutorial_inform_title">S’informer : savoir, c’est pouvoir</string>
+    <string name="tutorial_inform_text">**Utilité** : Prendre connaissance, de façon chiffrée et sourcée, de ce qu’il se passe et ce que fait le pouvoir.\n\n**Objectifs**\n- Rendre visibles les mouvements sociaux et la réponse et réaction de l’État.\n- Montrer l’action réelle des responsables publics, en France et au niveau européen.\n- Rendre les programmes électoraux accessibles et donner des outils pour savoir quel candidat ou parti nous correspond le mieux pour un vote éclairé.\n- Surveiller l’état des libertés et des contre-pouvoirs.\n- Mettre en évidence le manque d’exemplarité et actes criminels et délictueux, quelle que soit l’appartenance politique.\n- Archiver l’histoire et décisions politiques et en faire un outil précieux pour éviter de reproduire les erreurs du passé.\n- etc.</string>
+    <string name="tutorial_understand_title">Comprendre : savoir pour pouvoir agir</string>
+    <string name="tutorial_understand_text">**Objectifs**\n- Savoir qui décide de ce qui touche sa vie et à quelle échelle.\n- Comprendre comment fonctionne la France, l’Europe, et les contraintes et enjeux liées à la mondialisation.\n- Savoir ce qu’est une vraie démocratie.\n- Comprendre les clivages et les divergences d’opinion.\n- Connaître et faire valoir ses droits et ses devoirs.\n- Démêler le vrai du faux.\n- Apprendre de l’histoire des luttes.\n- Comprendre le langage politique.\n- etc.</string>
+    <string name="tutorial_testify_title">Témoigner : faire entendre nos voix</string>
+    <string name="tutorial_testify_text">**Utilité** : permettre à chacun de rendre visible ce qu’il ou elle a vu ou vécu, en particulier pendant les mobilisations, sans s’exposer, et transformer ces témoignages en faits vérifiés et utiles.\n\n**Objectifs**\n- Libérer la parole et la porter jusqu’au gouvernement, la justice.\n- Mettre en lumière, documenter et chiffrer les discriminations, le racisme, l’homophobie, le sexisme, et toutes les injustices.\n- Documenter le mouvement social actuel et sa répression avec des preuves.\n- Protéger l’identité de la personne qui témoigne, des victimes et des passants.\n- Fournir des éléments exploitables par les avocats et les legal teams.\n- Diffuser les appels à témoins aux citoyens.\n- Lutter contre l’impunité, la justice à plusieurs vitesses et plusieurs mesures.</string>
+    <string name="tutorial_demand_title">Revendiquer : rendre le pouvoir au peuple</string>
+    <string name="tutorial_demand_text">**Utilité** : transformer les difficultés vécues par chacun en revendications collectives et clairement définies, concevoir et diffuser une **Constitution Citoyenne et Démocratique** commune aux responsables politiques.\n\n**Objectifs**\n- Donner à chacun un moyen simple de dire ce qui doit changer et d’en débattre publiquement.\n- Faire émerger les revendications les plus soutenues, sans doublons ni manipulation.\n- Montrer qu’une revendication rassemble au-delà des clivages, ce qui lui donne un vrai poids politique.\n- Concevoir la Constitution Citoyenne et Démocratique, et obtenir la signature des candidats pour toute élection.</string>
+    <string name="tutorial_unite_title">Communiquer, s’unir et s’organiser : seuls on subit, ensemble on pèse</string>
+    <string name="tutorial_unite_text">**Utilité** : trouver celles et ceux qui partagent vos combats près de chez vous, échanger en sécurité et agir de façon coordonnée.\n\n**Objectifs**\n- Rejoindre un collectif, une association ou un syndicat, ou créer le vôtre.\n- Échanger par messages privés chiffrés et dans des salons, sans dépendre des grandes plateformes.\n- Convaincre autour de soi : famille, collègues, voisins.\n- S’entraider pour tenir : caisses de grève, missions de bénévolat, solidarité.\n- Coordonner les actions entre collectifs et entre territoires.</string>
+    <string name="tutorial_unite_soon">Des salons privés ou réservés aux membres. Une messagerie sans réseau, de téléphone à téléphone.</string>
+    <string name="tutorial_politics_title">Se politiser : reprendre nos institutions</string>
+    <string name="tutorial_politics_text">**Utilité** : passer de la colère au pouvoir de décider, par le vote et par les mandats.\n\n**Objectifs**\n- S’inscrire sur les listes électorales et voter, y compris par procuration.\n- Connaître le calendrier des élections et ce que chaque mandat permet vraiment.\n- Se présenter, ou constituer une liste de candidats citoyens.\n- Créer ou rejoindre un parti, avec les mêmes outils pour tous.\n- Interpeller ses élus et signer les pétitions officielles.</string>
+    <string name="tutorial_act_title">Agir : passer à l’action, ensemble</string>
+    <string name="tutorial_act_text">**Utilité** : trouver en un geste ce que l’on peut faire, aujourd’hui, près de chez soi.\n\n**Objectifs**\n- Voir sur la carte et dans l’agenda les mobilisations en cours et à venir.\n- Répondre aux appels : faire grève, manifester, soutenir, bloquer.\n- Tenir dans la durée : simulateur du gréviste, caisses de grève.\n- Connaître ses droits grâce aux guides pratiques.\n- Se protéger : mode manifestation, minuteur « sans nouvelles de moi », caméra protégée.</string>
+    <string name="tutorial_act_soon">Les rues bloquées sur la carte.</string>
+    <string name="tutorial_privacy_title">Vos données vous appartiennent</string>
+    <string name="tutorial_privacy_text">**Utilité** : participer sans s’exposer.\n\n- Aucun compte pour lire. Aucun traceur, aucune publicité.\n- Pour participer, un pseudonyme suffit : ni nom, ni téléphone, ni e-mail.\n- Vos votes ne sont jamais reliés à vous.\n- Vos messages privés sont chiffrés : personne d’autre ne peut les lire, pas même nous.\n- Les réglages de confidentialité sont au plus protecteur dès le départ ; vous pouvez les modifier dans Mon espace.\n- Sur le téléphone : verrouillage par code, effacement rapide, application discrète.</string>
+    <string name="tutorial_privacy_settings">Régler ma confidentialité</string>
+    <string name="tutorial_start_title">Par où commencer ?</string>
+    <string name="tutorial_start_help">Recevoir de l’aide</string>
+    <string name="tutorial_start_inform">M’informer</string>
+    <string name="tutorial_start_understand">Comprendre</string>
+    <string name="tutorial_start_testify">Témoigner</string>
+    <string name="tutorial_start_demand">Revendiquer</string>
+    <string name="tutorial_start_gather">Rejoindre un collectif</string>
+    <string name="tutorial_start_politics">Me politiser</string>
+    <string name="tutorial_start_act">Agir</string>
+    <string name="tutorial_start_support">Soutenir</string>
+    <string name="tutorial_marianne_description">Illustration : une Marianne coiffée du bonnet phrygien brandit le drapeau français au milieu d’une foule de citoyens et de musiciens qui lèvent le poing.</string>
+    <string name="tutorial_bonnet_description">Illustration : un bonnet phrygien rouge.</string>
+</resources>

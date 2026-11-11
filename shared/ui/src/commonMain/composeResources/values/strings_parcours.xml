@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Mon espace as a dashboard, with the journey of the democratic citizen (prototype, session Ergonomie, 11 November 2026, E-04). -->
+<resources>
+    <string name="dashboard_journey_title">Mon parcours citoyen</string>
+    <string name="dashboard_journey_level">Niveau %1$d sur %2$d · %3$s</string>
+    <string name="dashboard_journey_progress">%1$d missions sur %2$d</string>
+    <string name="dashboard_journey_next">Prochaines missions</string>
+    <string name="dashboard_journey_done">Parcours terminé : bravo, vous êtes un acteur de la démocratie.</string>
+    <string name="dashboard_journey_private">Votre progression reste sur cet appareil, personne d’autre ne la voit.</string>
+    <string name="dashboard_journey_prototype">Version d’essai : la progression n’est pas encore enregistrée à la fermeture de l’application.</string>
+    <string name="dashboard_mission_minutes">%1$d min</string>
+    <string name="dashboard_mission_mark_done">Marquer « %1$s » comme fait</string>
+    <string name="dashboard_mission_mark_undone">Marquer « %1$s » comme à faire</string>
+    <string name="dashboard_mission_open">Y aller</string>
+    <string name="dashboard_shortcuts_title">Mes raccourcis</string>
+    <string name="dashboard_election_label">Présidentielle</string>
+    <string name="dashboard_election_days">J-%1$d</string>
+    <string name="dashboard_shortcut_nearby">Près de chez moi</string>
+    <string name="dashboard_shortcut_elus">Mes élus</string>
+    <string name="dashboard_shortcut_lesson">Leçon du jour</string>
+    <string name="dashboard_shortcut_demands">Mes revendications</string>
+    <string name="dashboard_add_widget">Ajouter un widget</string>
+    <string name="dashboard_settings_title">Mon compte et mes réglages</string>
+
+    <string name="journey_level_1">Curieux</string>
+    <string name="journey_level_2">Éclairé</string>
+    <string name="journey_level_3">Témoin</string>
+    <string name="journey_level_4">Engagé</string>
+    <string name="journey_level_5">Organisé</string>
+    <string name="journey_level_6">Citoyen actif</string>
+    <string name="journey_level_7">Acteur</string>
+
+    <string name="mission_chiffres">Voir les chiffres clés du mouvement</string>
+    <string name="mission_verifier">Vérifier une info reçue</string>
+    <string name="mission_actu">Parcourir l’Actu</string>
+    <string name="mission_cap">Lire le cap du mouvement</string>
+    <string name="mission_cinq_minutes">Finir un parcours « Comprendre en 5 minutes »</string>
+    <string name="mission_qui_decide">Trouver qui décide de ce qui me touche</string>
+    <string name="mission_temoigner">Savoir témoigner sans s’exposer</string>
+    <string name="mission_camera">Découvrir la caméra protégée</string>
+    <string name="mission_voter_revendication">Voter pour une revendication</string>
+    <string name="mission_constitution">Découvrir la Constitution Citoyenne et Démocratique</string>
+    <string name="mission_petition">Signer une pétition officielle</string>
+    <string name="mission_collectif">Trouver un collectif près de chez moi</string>
+    <string name="mission_federer">Convaincre un proche</string>
+    <string name="mission_listes">Vérifier mon inscription sur les listes électorales</string>
+    <string name="mission_elus">Connaître mes élus</string>
+    <string name="mission_interpeller">Interpeller un élu</string>
+    <string name="mission_appel">Répondre à un appel à la mobilisation</string>
+    <string name="mission_manifestation">Préparer le mode manifestation</string>
+</resources>

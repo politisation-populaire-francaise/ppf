@@ -168,13 +168,13 @@ class MySpaceScreenTest {
 
         // The secret key only appears after the warning is confirmed.
         onNodeWithTag(AccountTags.SECRET_KEY).assertDoesNotExist()
-        onNodeWithTag(AccountTags.SHOW_SECRET).performClick()
+        onNodeWithTag(AccountTags.SHOW_SECRET).performScrollTo().performClick()
         waitForIdle()
         onNodeWithText("Avant d’afficher").assertIsDisplayed()
         onNodeWithTag(AccountTags.DIALOG_CONFIRM).performClick()
         waitForIdle()
         onNodeWithTag(AccountTags.SECRET_KEY).assertTextContains("nsec10allq0gjx7fddtzef0ax00mdps9t2kmtrldkyjfs8l5xruwvh2dq0lhhkp")
-        onNodeWithText("Masquer").performClick()
+        onNodeWithText("Masquer").performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(AccountTags.SECRET_KEY).assertDoesNotExist()
 

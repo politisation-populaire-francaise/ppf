@@ -154,6 +154,9 @@ import org.politisationpopulairefrancaise.ui.glossaire.LocalGlossary
 import org.jetbrains.compose.resources.pluralStringResource
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.withFrameNanos
+import androidx.compose.ui.layout.onPlaced
+import androidx.compose.ui.layout.positionInParent
 import org.politisationpopulairefrancaise.ui.resources.organisations_content_type
 import org.politisationpopulairefrancaise.ui.resources.space_comprendre
 import org.politisationpopulairefrancaise.ui.resources.space_revendications
@@ -162,6 +165,9 @@ import org.politisationpopulairefrancaise.ui.resources.temoignages_content_type
 import org.politisationpopulairefrancaise.ui.resources.suites_content_type
 import org.politisationpopulairefrancaise.ui.resources.space_decider
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
+
+/** A section of the home of "Comprendre" that the menu can open directly (D-240). */
+enum class ComprendreSection { CAP, COURSES, WHO, ELUS, RIGHTS, CHECKS, HISTORY, GLOSSARY }
 
 object ContentTags {
     const val GUIDE_CARD = "article-" // followed by the slug
@@ -209,6 +215,8 @@ fun ComprendreScreen(
     windowClass: WindowClass,
     modifier: Modifier = Modifier,
     onNavigate: (Space) -> Unit = {},
+    requestedSection: ComprendreSection? = null,
+    onSectionHandled: () -> Unit = {},
 ) {
     // The bundled contents are imported by the library: read the courses once it is done, and after each synchronization.
     LaunchedEffect(library.status) { comprendre.reload() }
@@ -228,6 +236,21 @@ fun ComprendreScreen(
         openElus = { library.close(); comprendre.close(); comprendre.closeArticle(); elus?.openPage() },
         openGlossary = { comprendre.close(); comprendre.closeArticle(); library.close(); elus?.closePage(); glossary?.browse() },
     )
+    // A section asked by the menu (D-240): the glossary and « Mes élus » open their page, the others close
+    // what is open and scroll the home to their heading.
+    var sectionToScroll by remember { mutableStateOf<ComprendreSection?>(null) }
+    LaunchedEffect(requestedSection) {
+        val section = requestedSection ?: return@LaunchedEffect
+        when (section) {
+            ComprendreSection.GLOSSARY -> actions.openGlossary()
+            ComprendreSection.ELUS -> actions.openElus()
+            else -> {
+                comprendre.close(); comprendre.closeArticle(); library.close(); elus?.closePage(); glossary?.stopBrowsing()
+                sectionToScroll = section
+            }
+        }
+        onSectionHandled()
+    }
     // A content linked to an entry of the glossary (« Pour aller plus loin »): opened once it is read.
     val pending = glossary?.pendingContent
     LaunchedEffect(pending, comprendre.courses, comprendre.decryptages, comprendre.stories, comprendre.sheets, comprendre.dossiers, library.guides) {
@@ -273,7 +296,7 @@ fun ComprendreScreen(
             // The full glossary takes the whole space, with its own list and detail (D-048).
             glossary != null && glossary.browsing -> GlossaryScreen(glossary, windowClass, onBack = glossary::stopBrowsing, modifier = Modifier.fillMaxSize())
             twoPanes -> Row(Modifier.fillMaxSize()) {
-                ComprendreHome(library, comprendre, actions, Modifier.width(400.dp).fillMaxSize(), compact = false, withHeader = false)
+                ComprendreHome(library, comprendre, actions, Modifier.width(400.dp).fillMaxSize(), compact = false, withHeader = false, scrollTo = sectionToScroll, onScrolled = { sectionToScroll = null })
                 VerticalDivider(color = PpfTheme.palette.border)
                 if (hasDetail) {
                     Detail(onBack = false, detailModifier = Modifier.fillMaxSize())
@@ -284,7 +307,7 @@ fun ComprendreScreen(
                 }
             }
             hasDetail -> Detail(onBack = true, detailModifier = Modifier.fillMaxSize())
-            else -> ComprendreHome(library, comprendre, actions, Modifier.fillMaxSize(), compact = compact, withHeader = true)
+            else -> ComprendreHome(library, comprendre, actions, Modifier.fillMaxSize(), compact = compact, withHeader = true, scrollTo = sectionToScroll, onScrolled = { sectionToScroll = null })
         }
     }
     // The choice of the commune opens over the sheet or the page it was asked from.
@@ -307,6 +330,8 @@ private fun ComprendreHome(
     modifier: Modifier,
     compact: Boolean,
     withHeader: Boolean,
+    scrollTo: ComprendreSection? = null,
+    onScrolled: () -> Unit = {},
 ) {
     val palette = PpfTheme.palette
     var confirmClear by remember { mutableStateOf(false) }
@@ -329,7 +354,22 @@ private fun ComprendreHome(
     // and the themes and the search are the way to narrow the list.
     val horizontal = false
     val cardWidth = if (compact) 280.dp else 320.dp
-    Column(modifier.verticalScroll(rememberScrollState()).padding(if (compact) 16.dp else 24.dp).testTag(ComprendreTags.HOME)) {
+    val scroll = rememberScrollState()
+    // Where each section starts in the scrolled column, for the menu's sub-rubrics (D-240). A plain map,
+    // not a state: writing it during layout must not ask for another composition.
+    val anchors = remember { HashMap<ComprendreSection, Int>() }
+    val anchor: (ComprendreSection) -> Modifier = { section -> Modifier.onPlaced { anchors[section] = it.positionInParent().y.toInt() } }
+    LaunchedEffect(scrollTo) {
+        val target = scrollTo ?: return@LaunchedEffect
+        // The menu asks for a section of the whole home: the search and the theme are cleared first.
+        query = ""
+        themeKey = null
+        // A few frames for the home to be laid out, then the scroll to the heading.
+        repeat(10) { if (anchors[target] == null) withFrameNanos { } }
+        anchors[target]?.let { scroll.animateScrollTo(it) }
+        onScrolled()
+    }
+    Column(modifier.verticalScroll(scroll).padding(if (compact) 16.dp else 24.dp).testTag(ComprendreTags.HOME)) {
         Column(Modifier.widthIn(max = 760.dp)) {
             if (withHeader) {
                 PageHeader(stringResource(Res.string.space_comprendre), stringResource(Res.string.desc_comprendre))
@@ -388,6 +428,7 @@ private fun ComprendreHome(
             }
 
             // The series « Le cap du mouvement » (D-200, ROADMAP-MVP1 section 5) comes first: the priority of the MVP 1.
+            Spacer(anchor(ComprendreSection.CAP))
             if (capTexts.isNotEmpty()) {
                 HomeSection(stringResource(Res.string.comprendre_cap_title), stringResource(Res.string.comprendre_cap_intro), capTexts, ComprendreTags.CAP_LIST) { text ->
                     CapCard(text, onOpen = { actions.openArticle(text.article) }, selected = comprendre.openArticle?.address == text.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + text.article.slug))
@@ -396,7 +437,7 @@ private fun ComprendreHome(
             }
 
             if (!filtering || courses.isNotEmpty()) {
-                Column(Modifier.fillMaxWidth().testTag(ComprendreTags.COURSE_LIST)) {
+                Column(Modifier.fillMaxWidth().testTag(ComprendreTags.COURSE_LIST).then(anchor(ComprendreSection.COURSES))) {
                     SectionHeading(stringResource(Res.string.comprendre_courses_title), stringResource(Res.string.comprendre_courses_intro))
                     if (comprendre.courses.isEmpty() && library.status != LibraryStatus.Loading) {
                         Text(stringResource(Res.string.comprendre_courses_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
@@ -409,6 +450,7 @@ private fun ComprendreHome(
 
             if (!filtering) GlossarySection(actions.openGlossary)
 
+            Spacer(anchor(ComprendreSection.WHO))
             HomeSection(stringResource(Res.string.comprendre_who_title), stringResource(Res.string.comprendre_who_intro), sheets, ComprendreTags.WHO_LIST, horizontal, cardWidth) { sheet ->
                 QuiDecideCard(sheet, onOpen = { actions.openArticle(sheet.article) }, selected = comprendre.openArticle?.address == sheet.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + sheet.article.slug))
             }
@@ -416,13 +458,14 @@ private fun ComprendreHome(
                 Spacer(Modifier.height(if (comprendre.sheets.isEmpty()) 20.dp else 0.dp))
                 MesElusCard(elus, onOpen = actions.openElus, selected = elus.pageOpen)
             }
+            Spacer(anchor(ComprendreSection.CHECKS))
             HomeSection(stringResource(Res.string.comprendre_decryptages_title), stringResource(Res.string.comprendre_checks_intro), checks, ComprendreTags.CHECK_LIST, horizontal, cardWidth) { check ->
                 DecryptageCard(check, onOpen = { actions.openArticle(check.article) }, selected = comprendre.openArticle?.address == check.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + check.article.slug))
             }
 
             if (!filtering || guides.isNotEmpty()) {
                 Spacer(Modifier.height(20.dp))
-                Column(Modifier.fillMaxWidth().testTag(ContentTags.GUIDE_LIST)) {
+                Column(Modifier.fillMaxWidth().testTag(ContentTags.GUIDE_LIST).then(anchor(ComprendreSection.RIGHTS))) {
                     SectionHeading(stringResource(Res.string.comprendre_rights_title), stringResource(Res.string.comprendre_rights_intro))
                     if (library.guides.isEmpty() && library.status != LibraryStatus.Loading) {
                         Text(stringResource(Res.string.content_none), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
@@ -433,6 +476,7 @@ private fun ComprendreHome(
                 }
             }
 
+            Spacer(anchor(ComprendreSection.HISTORY))
             HomeSection(stringResource(Res.string.comprendre_history_title), stringResource(Res.string.comprendre_history_intro), stories, ComprendreTags.HISTORY_LIST, horizontal, cardWidth) { story ->
                 HistoryCard(story, onOpen = { actions.openArticle(story.article) }, selected = comprendre.openArticle?.address == story.article.address, modifier = Modifier.testTag(ComprendreTags.CARD + story.article.slug))
             }
