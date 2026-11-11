@@ -33,6 +33,8 @@ class PressPageTest {
         val ids = Regex("""\bid="([^"]+)"""").findAll(html).map { it.groupValues[1] }.toList()
         assertEquals(ids.distinct(), ids)
         assertFalse(html.contains("<script"))
-        assertFalse(html.contains("Marianne"))
+        // The press kit never borrows the State's identity; the official logo of PPF, a Marianne of its own
+        // (D-187), is only named in the alternative text of the share image, in the head of every page.
+        assertFalse(html.substringAfter("<body").contains("Marianne"))
     }
 }
