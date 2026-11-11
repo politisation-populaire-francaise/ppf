@@ -566,12 +566,14 @@ class ContactStore(private val dataSource: DataSource) {
         accessHash = getString("access_hash"),
         casePubkey = getString("case_pubkey"),
         lastActivityAt = instant("last_activity_at")!!,
+        reportContent = getString("report_content"),
+        reportReason = getString("report_reason"),
     )
 
     private companion object {
         const val SELECT =
             "SELECT c.number, c.type, c.subtype, c.category, c.motif, c.status, c.priority, c.assigned_to, c.received_at, c.deadline_at, c.deadline_kind, " +
                 "c.extended_at, c.extension_reason, c.decision_at, c.decision_author, c.concerns, c.closed_at, c.legal_hold_reason, c.legal_hold_review_at, " +
-                "c.legal_hold_alerted_at, c.anonymized_at, c.access_hash, c.case_pubkey, c.last_activity_at FROM contact_case"
+                "c.legal_hold_alerted_at, c.anonymized_at, c.access_hash, c.case_pubkey, c.last_activity_at, c.report_content, c.report_reason FROM contact_case"
     }
 }
