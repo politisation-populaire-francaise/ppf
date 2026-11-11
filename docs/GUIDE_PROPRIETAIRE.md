@@ -68,6 +68,20 @@ Quand je vous enverrai une version (seulement si vous la demandez), voici quoi r
 5. **Téléphone couché** : à gauche, une colonne avec les cinq entrées de la barre du bas, toutes visibles ; le reste est dans le menu.
 6. **Le logo officiel** (11 novembre 2026) : sur l'icône de l'application (fond blanc), à côté du nom en haut quand il y a la place, en tête du menu et en bas de Mon espace ; la présentation s'ouvre sur votre bannière à la Marianne. En mode discret (« Outils »), l'icône reste grise et neutre, même à l'ouverture.
 
+### Vérifier la version d'essai allégée (ajouté le 11 novembre 2026)
+
+Pour passer sous 30 Mo, la version d'essai est maintenant « réduite » à la compilation : l'outil retire le code qui ne sert pas. Une erreur de sa part ne se voit qu'en utilisant l'application, et je n'ai pas de téléphone pour l'essayer : votre essai compte. Dix minutes suffisent ; si un écran se ferme tout seul ou reste vide, notez lequel et envoyez-moi le rapport que l'application propose au lancement suivant.
+
+1. **Ouverture** : la présentation, puis En direct ; la barre du bas et la barre du haut.
+2. **Carte** : la carte s'affiche et se déplace au doigt.
+3. **Agir** : chaque rubrique s'ouvre (Se réunir, S'engager en politique, Fédérer, Témoigner, Solidarité, le simulateur du gréviste, les guides).
+4. **AIDE** : la feuille s'ouvre ; touchez un numéro (le téléphone propose d'appeler, vous pouvez annuler).
+5. **Compte** : dans Mon espace, créez un compte d'essai, notez la phrase de récupération, puis « Effacer mes clés ».
+6. **Messages** : ouvrez la messagerie et un salon.
+7. **Comprendre et Décider** : ouvrez une fiche pratique, une pétition, le mur des revendications.
+8. **Vote anonyme** : en bas de Mon espace, la ligne du contrôle du vote doit dire qu'il fonctionne sur ce téléphone.
+9. **Caméra** : dans le mode manifestation, la caméra protégée s'ouvre (accordez l'autorisation).
+
 ### Tester le compte (ajouté le 5 novembre 2026)
 
 Le compte est le premier élément réel de la phase 1. Il ne sert encore à rien d'autre qu'à exister : aucun contenu ne peut être publié. Il vous permet de vérifier la création, la sauvegarde et la restauration. Faites le test avec un compte d'essai, pas avec un compte que vous voudriez garder.
@@ -367,12 +381,12 @@ Sur l'ordinateur, l'écran se présente en deux colonnes.
 
 ### Tester l'espace « Décider » (ajouté le 7 novembre 2026)
 
-Les pétitions sont réelles depuis le 9 novembre 2026 : les deux pétitions ouvertes les plus signées sur le site de l'Assemblée nationale et sur celui du Sénat ce jour-là, avec le nombre de signatures relevé sur le site officiel et la mention « Rédigé par l'IA ». Le Pacte, les candidats et leurs réponses restent inventés et marqués [EXEMPLE]. Aucun compte n'est nécessaire, et tout marche sans réseau.
+Les pétitions sont réelles depuis le 9 novembre 2026 : les deux pétitions ouvertes les plus signées sur le site de l'Assemblée nationale et sur celui du Sénat ce jour-là, avec le nombre de signatures relevé sur le site officiel et la mention « Rédigé par l'IA ». La Constitution Citoyenne et Démocratique, les candidats et leurs réponses restent inventés et marqués [EXEMPLE]. Aucun compte n'est nécessaire, et tout marche sans réseau.
 
-1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Décider**. En haut, le **Pacte démocratique**, puis les **pétitions officielles ouvertes**, puis « Et aussi ».
-2. Touchez la carte du **Pacte**. Lisez l'encart « Les mêmes règles pour tous les candidats » (il dit maintenant qu'une réponse reçue après la date limite n'est pas comptée, votre décision du 7 novembre ; aucune réponse d'exemple n'est en retard), puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
+1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Décider**. En haut, la **Constitution Citoyenne et Démocratique**, puis les **pétitions officielles ouvertes**, puis « Et aussi ».
+2. Touchez la carte de la **Constitution Citoyenne et Démocratique**. Lisez l'encart « Les mêmes règles pour tous les candidats » (il dit maintenant qu'une réponse reçue après la date limite n'est pas comptée, votre décision du 7 novembre ; aucune réponse d'exemple n'est en retard), puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
 3. Touchez le nom d'un candidat : sa fiche s'ouvre dans « Voir ». Revenez avec le bouton retour.
-4. En bas de la page du Pacte, **Empreinte du texte envoyé** : cette suite de caractères changerait si un seul mot des mesures changeait. Touchez **Copier l'empreinte**.
+4. En bas de la page de la Constitution Citoyenne et Démocratique, **Empreinte du texte envoyé** : cette suite de caractères changerait si un seul mot des mesures changeait. Touchez **Copier l'empreinte**.
 5. Revenez à l'accueil de « Décider » et touchez la pétition **Retirer le projet de loi relatif à l'ordre public**. Vous voyez le compteur, la barre vers 500 000 signatures, puis chaque seuil avec **ce qu'il obtient** et, en orange, **ce qu'il ne garantit pas** (le débat se termine sans vote).
 6. Touchez **Signer sur le site officiel** : une mise en garde s'affiche avant d'ouvrir le vrai site de l'Assemblée nationale (sa page d'accueil, car la pétition est fictive). Touchez **Rester ici**.
 7. Plus bas, **Faire signer autour de vous** : touchez **Copier le message** et collez-le dans une note.
@@ -381,7 +395,7 @@ Les pétitions sont réelles depuis le 9 novembre 2026 : les deux pétitions ouv
 10. Touchez **Pétitions closes** : la pétition au Sénat sur les retraites montre ce qu'elle a obtenu.
 11. Allez dans **Mon espace** (l'avatar en haut à droite) : tout en bas, la version installée et votre système. Donnez-les-moi si vous me signalez un problème.
 
-Sur l'ordinateur, les réponses au Pacte forment un vrai tableau, une colonne par mesure.
+Sur l'ordinateur, les réponses à la Constitution Citoyenne et Démocratique forment un vrai tableau, une colonne par mesure.
 
 ### Vérifier que le vote anonyme peut marcher sur votre téléphone (ajouté le 7 novembre 2026)
 
@@ -396,7 +410,7 @@ Le vote anonyme (« une personne, une voix ») n'est pas encore ouvert, mais son
 
 Tout est inventé et marqué [EXEMPLE] : l'élection, les quatre candidats et leurs positions. Aucun compte n'est nécessaire, et tout marche sans réseau.
 
-1. Ouvrez **Décider**. Sous le Pacte démocratique, la rubrique **Comparer les candidats** affiche « 4 candidats, 3 thèmes ». Touchez la carte.
+1. Ouvrez **Décider**. Sous la Constitution Citoyenne et Démocratique, la rubrique **Comparer les candidats** affiche « 4 candidats, 3 thèmes ». Touchez la carte.
 2. L'encadré du haut rappelle les règles : mêmes thèmes, même ordre, ordre alphabétique, aucune consigne de vote.
 3. Sur le téléphone, touchez un thème (Démocratie, Santé, Logement) : les quatre candidats s'affichent dessous, toujours dans le même ordre. Quand un candidat n'a rien publié, la case dit « Pas de position publiée sur ce thème ».
 4. Touchez **Lire la source** : l'application demande d'abord si vous voulez quitter PPF. Touchez **Rester ici**.
@@ -704,9 +718,9 @@ Le site est la version de PPF pour les iPhone tant que l'application iOS n'exist
 ### Voir « Décider » sur le site, sur votre ordinateur (ajouté le 8 novembre 2026)
 
 1. Lancez le serveur de développement comme ci-dessus (`gradlew :server:runDev`) et attendez la ligne qui commence par « Décider: ».
-2. Ouvrez http://localhost:8080/decider : le Pacte démocratique d'exemple, les pétitions officielles ouvertes, puis à part les pétitions closes.
+2. Ouvrez http://localhost:8080/decider : la Constitution Citoyenne et Démocratique d'exemple, les pétitions officielles ouvertes, puis à part les pétitions closes.
 3. Ouvrez une pétition, par exemple http://localhost:8080/decider/petitions/petition-senat-2456 : le bouton « Signer sur le site officiel » mène au site du Sénat (marqué « site extérieur ») ; PPF ne recueille aucune signature. Plus bas : les relevés du compteur officiel, les étapes et les sources.
-4. Ouvrez le Pacte : http://localhost:8080/decider/pacte/pacte-election-exemple : les mesures, la méthode (même texte, même jour, même délai pour tous) et le tableau des réponses des candidats.
+4. Ouvrez la Constitution Citoyenne et Démocratique : http://localhost:8080/decider/pacte/pacte-election-exemple : les mesures, la méthode (même texte, même jour, même délai pour tous) et le tableau des réponses des candidats.
 5. Réduisez la fenêtre à la largeur d'un téléphone et passez Windows en mode sombre : tout reste lisible. Arrêtez le serveur à la fin (Ctrl+C).
 
 ## 3. Lancer l'application de bureau sur votre ordinateur

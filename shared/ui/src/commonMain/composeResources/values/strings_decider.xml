@@ -4,11 +4,11 @@
      official sources on 7 November 2026 (docs/integration/decider-petitions-droit.md). -->
 <resources>
     <!-- Home -->
-    <string name="decider_intro">Faire pression ensemble : les pétitions officielles, avec ce que leurs seuils obtiennent vraiment, et le Pacte démocratique envoyé à tous les candidats.</string>
-    <string name="decider_empty">Rien à afficher pour l’instant. Les pétitions et le Pacte apparaîtront ici dès leur publication.</string>
+    <string name="decider_intro">Faire pression ensemble : les pétitions officielles, avec ce que leurs seuils obtiennent vraiment, et la Constitution Citoyenne et Démocratique envoyée à tous les candidats.</string>
+    <string name="decider_empty">Rien à afficher pour l’instant. Les pétitions et la Constitution Citoyenne et Démocratique apparaîtront ici dès leur publication.</string>
     <string name="decider_followed">Ce que vous suivez</string>
     <string name="decider_followed_private">Cette liste reste sur votre appareil. Personne d’autre ne la voit.</string>
-    <string name="decider_pacte_section">Le Pacte démocratique</string>
+    <string name="decider_pacte_section">La Constitution Citoyenne et Démocratique</string>
     <string name="decider_pacte_section_intro">Une courte liste d’engagements précis, envoyée à tous les candidats d’une élection, avec le même texte et le même délai. Leurs réponses sont publiques.</string>
     <string name="decider_petitions_section_count">Pétitions officielles ouvertes (%1$d)</string>
     <string name="decider_petitions_section_intro">PPF relaie les pétitions déposées sur les sites officiels. La signature se fait toujours sur le site officiel, jamais ici.</string>
@@ -88,7 +88,7 @@
     <!-- The rules, platform by platform -->
     <string name="decider_thresholds_title">Comment fonctionnent les pétitions officielles</string>
     <string name="decider_thresholds_intro">Pour chaque plateforme officielle : qui peut signer, combien de temps, chaque seuil, ce qu’il obtient et ce qu’il ne garantit pas.</string>
-    <string name="decider_thresholds_truth">Une pétition, même très signée, n’oblige jamais le Parlement à voter. C’est pour changer cette règle que le Pacte démocratique peut proposer un vote obligatoire au-delà d’un seuil.</string>
+    <string name="decider_thresholds_truth">Une pétition, même très signée, n’oblige jamais le Parlement à voter. C’est pour changer cette règle que la Constitution Citoyenne et Démocratique peut proposer un vote obligatoire au-delà d’un seuil.</string>
     <string name="decider_platform_assemblee_what">Ouverte jusqu’à la fin de la législature, ou un an après avoir passé 100 000 signatures. Chaque pétition est renvoyée à une commission, qui nomme un rapporteur, puis la classe ou l’examine. Certaines commissions classent d’office les pétitions trop peu signées.</string>
     <string name="decider_platform_senat_what">Ouverte six mois après sa publication. Le dépôt est réservé aux personnes majeures.</string>
     <string name="decider_platform_cese_what">Le Conseil économique, social et environnemental représente la société civile organisée (syndicats, associations, entreprises). Il conseille le Gouvernement et le Parlement.</string>
@@ -117,18 +117,18 @@
 
     <!-- The democratic pact -->
     <string name="decider_pacte_status_proposed">Liste de départ, à voter</string>
-    <string name="decider_pacte_status_sent">Envoyé aux candidats</string>
+    <string name="decider_pacte_status_sent">Envoyée aux candidats</string>
     <string name="decider_pacte_status_closed">Élection passée, suivi des élus</string>
     <string name="decider_pacte_measures_count">%1$d mesures</string>
     <string name="decider_pacte_open">Voir les mesures et les réponses</string>
-    <string name="decider_pacte_proposed_line">Pas encore envoyé : la liste des mesures sera choisie par le vote des citoyens.</string>
+    <string name="decider_pacte_proposed_line">Pas encore envoyée : la liste des mesures sera choisie par le vote des citoyens.</string>
     <string name="decider_pacte_answered">%1$d candidats sur %2$d ont répondu.</string>
     <string name="decider_pacte_answered_final">Délai écoulé : %1$d candidats sur %2$d ont répondu.</string>
     <string name="decider_pacte_answered_until">%1$d candidats sur %2$d ont répondu. Réponses attendues jusqu’au %3$s.</string>
     <string name="decider_pacte_first_round">Premier tour le %1$s</string>
     <string name="decider_pacte_method_title">Les mêmes règles pour tous les candidats</string>
     <string name="decider_pacte_method_text">Le même texte, envoyé le même jour, avec le même délai, à tous les candidats sans exception. Ils apparaissent par ordre alphabétique. Chaque réponse est archivée avec son empreinte et sa date. Une réponse portant sur un autre texte, ou reçue après la date limite, n’est pas comptée : elle reste visible sous le tableau.</string>
-    <string name="decider_pacte_sent_on">Envoyé le %1$s aux %2$d candidats</string>
+    <string name="decider_pacte_sent_on">Envoyée le %1$s aux %2$d candidats</string>
     <string name="decider_pacte_deadline">Réponses attendues jusqu’au %1$s inclus</string>
     <string name="decider_pacte_deadline_passed">Délai écoulé le %1$s : l’absence de réponse est maintenant affichée « Sans réponse »</string>
     <string name="decider_pacte_measures_title">Les mesures</string>

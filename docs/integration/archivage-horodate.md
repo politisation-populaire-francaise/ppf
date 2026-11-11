@@ -1,7 +1,7 @@
 # Archivage horodaté : conception technique (D-111)
 
 - Pôle « Décider », 7 novembre 2026. Décision technique du chef d'équipe : D-111. Ce document précise comment la réaliser. Codé le 7 novembre 2026 : le format `.ots` et la vérification Bitcoin dans `core/archive`, puis le côté serveur (section 7) ; ce qui reste est en section 8.
-- But : prouver qu'un texte existait à une date donnée, sans qu'on puisse le nier ni le retoucher (CLAUDE.md, section 7 ; cahier des charges, 3.2). Premiers usages : le texte du Pacte et chaque réponse de candidat ; puis les copies archivées de « Voir » (M4) et les empreintes des témoignages d'« Agir » (M5).
+- But : prouver qu'un texte existait à une date donnée, sans qu'on puisse le nier ni le retoucher (CLAUDE.md, section 7 ; cahier des charges, 3.2). Premiers usages : le texte de la Constitution Citoyenne et Démocratique et chaque réponse de candidat ; puis les copies archivées de « Voir » (M4) et les empreintes des témoignages d'« Agir » (M5).
 - Faits vérifiés le 7 novembre 2026 dans les sources de python-opentimestamps, opentimestamps-server et opentimestamps-client, la RFC 3161 et les pages de FreeTSA (adresses en fin de document).
 
 ## 1. Ce qui sort du serveur, et rien d'autre
@@ -51,7 +51,7 @@ Production seulement par défaut ; la préproduction peut être réglée pour le
 
 - Une table de preuves sur le serveur (migration Flyway `V14__archives.sql`) : empreinte, lot, preuve `.ots`, état (dans la file, en attente, ancrée, vérifiée), hauteur, hachage et date du bloc, jeton RFC 3161, jour de la demande. Aucune donnée personnelle : seulement des empreintes de contenus publics.
 - API : `GET /api/v1/archives/<sha256>` (JSON : état, preuve en base64, bloc, jeton) et `GET /api/v1/archives/<sha256>.ots` (fichier binaire). L'étiquette `ppf-archive` existante garde son sens (empreinte, type de preuve, adresse de l'archive, date).
-- Ce qui est horodaté : l'identifiant de chaque événement publié des types `pacte` et `engagement` (il est lui-même un SHA-256 du contenu signé), l'empreinte du texte du Pacte, l'empreinte de chaque document reçu ; plus tard, les copies archivées de « Voir » et les empreintes des témoignages.
+- Ce qui est horodaté : l'identifiant de chaque événement publié des types `pacte` et `engagement` (il est lui-même un SHA-256 du contenu signé), l'empreinte du texte de la Constitution Citoyenne et Démocratique, l'empreinte de chaque document reçu ; plus tard, les copies archivées de « Voir » et les empreintes des témoignages.
 
 ## 6. Tests
 
@@ -79,7 +79,7 @@ Code dans `server/src/main/kotlin/.../server/archive/`, tests dans `server/src/t
 
 ## 8. Reste à faire
 
-- **Brancher `stamp()`** sur ce qui doit être horodaté : identifiant de chaque événement publié des types `pacte` et `engagement`, empreinte du texte du Pacte, empreinte de chaque document reçu ; plus tard, les copies archivées de « Voir » et les empreintes des témoignages. À faire avec le pôle concerné, dans le port de publication.
+- **Brancher `stamp()`** sur ce qui doit être horodaté : identifiant de chaque événement publié des types `pacte` et `engagement`, empreinte du texte de la Constitution Citoyenne et Démocratique, empreinte de chaque document reçu ; plus tard, les copies archivées de « Voir » et les empreintes des témoignages. À faire avec le pôle concerné, dans le port de publication.
 - **Épingler le certificat racine de FreeTSA** (`cacert.pem`, publié sur freetsa.org) et vérifier la chaîne jusqu'à lui : demande un téléchargement que la propriétaire doit accepter (nom, source, taille). En attendant, le jeton est vérifié avec le certificat joint et l'empreinte de ce certificat est gardée.
 - **Côté application** : afficher l'état de la preuve, le bloc et l'heure attestée, recalculer le chemin de Merkle sur l'appareil, proposer le fichier `.ots` à télécharger avec le guide de vérification par le client officiel.
 - **Liste des sorties** : reporter `docs/integration/archivage-egress.md` dans `infra/EGRESS.md` (Directeur technique) avant d'allumer l'archivage en préproduction ou en production.

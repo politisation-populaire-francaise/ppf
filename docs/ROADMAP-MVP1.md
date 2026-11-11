@@ -11,7 +11,7 @@ Le mouvement social est massif mais désorganisé. Deux craintes : qu'il s'essou
 Priorités, dans l'ordre :
 
 1. **Agir**, en entier si possible (la carte peut venir plus tard), avec deux ajouts mis en avant : **fédérer son entourage** et **s'engager en politique** (s'inscrire pour voter, se présenter, constituer une liste citoyenne, créer ou rejoindre un parti).
-2. **Décider** : revendications, pétitions officielles, Pacte démocratique.
+2. **Décider** : revendications, pétitions officielles, Constitution Citoyenne et Démocratique.
 3. **Comprendre** : les textes qui portent ce cap (limites de la manifestation, répression, autres formes d'action, mouvements dans le monde, mode d'emploi de l'engagement politique).
 4. **Ergonomie irréprochable** sur téléphone, tablette et ordinateur. Constat sur son Samsung Galaxy : l'application paraît trop grande, et les barres du haut et du bas passent sous les barres du téléphone.
 
@@ -24,7 +24,7 @@ Sans compte : lire, s'informer, trouver une action. Avec un compte pseudonyme : 
 - **Fédérer** : liste privée de proches à convaincre, argumentaires et réponses aux objections, contenus faciles à partager, affiches et tracts à code QR.
 - **S'engager en politique** : s'inscrire sur les listes électorales, se présenter, monter une liste citoyenne, créer ou rejoindre un parti, avec les mêmes outils pour tous.
 - **Se protéger** : bouton AIDE, mode manifestation, sécurité du téléphone, minuteur « sans nouvelles de moi », caméra protégée.
-- **Décider** : proposer et voter les revendications (une personne, une voix), signer les pétitions officielles sur leurs sites, suivre le Pacte démocratique et délibérer sur ses mesures.
+- **Décider** : proposer et voter les revendications (une personne, une voix), signer les pétitions officielles sur leurs sites, suivre la Constitution Citoyenne et Démocratique et délibérer sur ses mesures.
 - **Comprendre** : une série de textes courts et sourcés sur le cap du mouvement, plus les fiches pratiques et les parcours déjà écrits.
 
 ## 3. Où en est-on vraiment (11 novembre 2026)
@@ -44,7 +44,7 @@ Chaque jalon se termine par une version d'essai (APK) envoyée à la propriétai
 | **0. Remise en route** | Cette feuille de route, validée | Nouvelle équipe, règles du 9 novembre entrées dans `main` (fait), recherches sur le mouvement lancées (fait), décisions de la section 7 | 1 jour |
 | **1. Une application agréable sur votre téléphone** | Une version où rien ne passe sous les barres du téléphone, à la bonne taille, qui s'ouvre sur un court tutoriel, avec En direct, l'actualité, la carte, Agir et les appels à portée de pouce | Correction des barres du système sur les trois formats (**faite le 11 novembre 2026**, D-180, à confirmer sur le téléphone) ; passage en revue des tailles (barres, marges, textes) aux dimensions du Galaxy A34 et avec les réglages « grande police » ; **tutoriel du premier lancement** (voir plus bas ; **codé le 11 novembre 2026**, D-184, textes en attente de l'avis de la propriétaire) ; nouvelle barre du bas « En direct, Actu, Carte, Agir, Appels » et messagerie et bouton AIDE rouge dans la barre du haut (**codées le 11 novembre 2026**, D-183, bouton AIDE à plat D-181, nom en entier D-182) ; **rien n'est retiré** : tout ce qui est déjà codé reste actif et visible ; captures d'écran automatiques des écrans prioritaires | 3 à 5 jours |
 | **2. Agir** | Tout l'espace Agir, hors carte en direct | Entrée de la branche en attente (collectifs, minuteur, caméra protégée, simulateur du gréviste, affiche à code QR, « Et après ? », proches à mobiliser, 13 guides réels) ; kit contre le harcèlement et créneaux de bénévolat à finir ; **nouvelle rubrique « Fédérer »** ; **nouvelle rubrique « S'engager en politique »** ; passe d'ergonomie sur chaque écran | 1 à 2 semaines |
-| **3. Décider** | Revendications, pétitions officielles et Pacte mis en avant | Entrée de la branche en attente (rappels, courriers aux élus, consultations, pétitions locales, vraies pétitions) ; les trois fonctions phares en tête de l'espace et sur l'accueil ; délibération sur les mesures du Pacte ; passe d'ergonomie | 1 semaine, en partie en parallèle du jalon 2 |
+| **3. Décider** | Revendications, pétitions officielles et Constitution Citoyenne et Démocratique mises en avant | Entrée de la branche en attente (rappels, courriers aux élus, consultations, pétitions locales, vraies pétitions) ; les trois fonctions phares en tête de l'espace et sur l'accueil ; délibération sur les mesures de la Constitution Citoyenne et Démocratique ; passe d'ergonomie | 1 semaine, en partie en parallèle du jalon 2 |
 | **4. Comprendre : les textes du cap** | La série de textes prioritaires, lisible dans l'application et sur le site | Entrée des 124 vrais contenus ; série prioritaire (section 5) ; fiches de « S'engager en politique » et de « Fédérer » ; dossiers de recherche sourcés | En continu, dès le jalon 0 |
 | **5. Mise en ligne** | L'application reliée à un vrai serveur ; le site visible | Dépôt GitHub et vérifications automatiques ; serveur ; préproduction fermée ; textes légaux minimum (mentions légales, confidentialité, conditions d'utilisation, charte) ; relecture des propositions des citoyens par l'équipe ; puis ouverture selon la décision 1 | 1 semaine après les actions de la propriétaire (GitHub, serveur) |
 | **6. Ouverture et retours** | La version ouverte, et la liste des retours traités | Corrections rapides, mesure de ce qui sert vraiment, préparation du MVP 2 | Ensuite |
@@ -71,7 +71,7 @@ Les jalons 1 à 4 avancent sans serveur. Le jalon 5 est le chemin critique : san
 2. **Ici, vous êtes chez vous** : aucun compte demandé pour lire, aucun traceur, un pseudonyme si l'on veut participer.
 3. **Agir** : trouver une action près de chez soi, tenir, fédérer son entourage, s'engager en politique ; avec la **carte**, qui montre les manifestations en cours et, idéalement, les rues bloquées.
 4. **Se réunir** : rejoindre un collectif, une association ou un syndicat, ou en créer un ; communiquer (salons privés, publics, réservés ; messagerie hors réseau).
-5. **Décider** : voter les revendications, signer les pétitions officielles, peser sur les candidats avec le Pacte.
+5. **Décider** : voter les revendications, signer les pétitions officielles, peser sur les candidats avec la Constitution Citoyenne et Démocratique.
 6. **Aide** : urgence, street medics, avocat.
 7. **Par où commencer ?** : la phrase « Je veux… » au-dessus de quatre boutons, « agir », « donner mon avis », « comprendre », « m'allier », qui mènent au bon endroit.
 
@@ -98,7 +98,7 @@ Décisions de la propriétaire du 11 novembre 2026 : d'abord s'inscrire sur les 
 | Ordre | Échéance | Ce que l'application propose |
 |---|---|---|
 | 1 | **Inscription sur les listes électorales** : au plus tard le vendredi 12 mars 2027 pour la présidentielle (sixième vendredi avant le scrutin, code électoral, article L17 ; date à confirmer par le décret de convocation, pas encore publié) | S'inscrire, vérifier son inscription, se réinscrire après un déménagement, procuration, rappels |
-| 2 | **Présidentielle** : 18 avril et 2 mai 2027 (dates annoncées) | Pacte démocratique, comparateur, calendrier, parrainages |
+| 2 | **Présidentielle** : 18 avril et 2 mai 2027 (dates annoncées) | Constitution Citoyenne et Démocratique, comparateur, calendrier, parrainages |
 | 3 | **Législatives anticipées** : seulement si l'Assemblée est dissoute (scrutin 20 à 40 jours après la dissolution) ; sinon, législatives au plus tard en juin 2029 | Kit du candidat citoyen prêt à servir, « mode dissolution » |
 | 4 | **Départementales et régionales** : mars 2028 (binômes femme-homme, listes paritaires) ; financement de campagne à partir de septembre 2027 | Constituer un binôme ou une liste, mandataire financier, compte de campagne |
 | 5 | **Élections partielles** (municipales surtout), à tout moment ; européennes en juin 2029 ; municipales en mars 2032 | Guide de la liste citoyenne, retours d'expérience des listes citoyennes de 2020 et de 2026 |
@@ -112,7 +112,7 @@ Cadre légal à respecter (code électoral, article L52-8) : une association ne 
 
 - **Revendications** : mur, proposition guidée, vote anonyme « une personne, une voix » (faits) ; à faire : mise en avant, statut posé par l'équipe, pétition officielle épinglée quand une revendication prend de l'ampleur. Question à trancher au jalon 3 : comment éviter un mur vide le jour de l'ouverture (par exemple en y présentant, sourcées et attribuées à leurs auteurs, les revendications déjà portées par le mouvement, que les citoyens votent).
 - **Pétitions officielles** : règles des cinq plateformes et seuils (faits), 4 vraies pétitions (en attente), relevé automatique des compteurs (avec le serveur), rappels.
-- **Pacte démocratique** : tableau public par candidat (fait) ; à faire : délibération citoyenne sur les mesures (proposer, amender, voter), page du site.
+- **Constitution Citoyenne et Démocratique** : tableau public par candidat (fait) ; à faire : délibération citoyenne sur les mesures (proposer, amender, voter), page du site.
 - Suivent dans le même espace : calendrier électoral et rappels, interpeller ses élus, consultations publiques, pétitions locales.
 
 ## 5. Les textes prioritaires de « Comprendre »

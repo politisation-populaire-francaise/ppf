@@ -4,9 +4,13 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 
 ## Non publié
 
+### Modifié
+- Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
+
 ### Ajouté
 - Revendications sur le site (11 novembre 2026, D-152) : `/revendications`, celles du mouvement en tête, chacune avec qui la porte, qui la soutient publiquement et ses sources ; le vote reste dans l’application.
 - Rappels des pétitions officielles (11 novembre 2026) : une semaine avant la clôture et la veille, demandés sur la page de la pétition, gardés sur l’appareil.
+- **Version d'essai allégée et contrôle rapide** (11 novembre 2026, D-188, D-189) : APK réduit par R8 sans renommage (23,5 Mo au lieu de 37,9) ; tâche `ppfGate` facultative ; deux tests instables corrigés (attente d'une carte, remise à zéro de la base après un interblocage), deux désactivés (envoi en double par la synchronisation, listés dans la feuille de route).
 - Décider mis en avant (11 novembre 2026, MVP 1, jalon 3) : les trois fonctions phares (revendications, pétitions officielles, Pacte démocratique) en tête de Décider et sur « En direct ».
 - Mur des revendications allégé sur téléphone (11 novembre 2026) : Filtres, Tri et Personnaliser sur une ligne, « Proposer » à côté du nombre, explication repliée « Comment ça marche ? ».
 - Revendications déjà portées par le mouvement (11 novembre 2026, D-152, « Rédigé par l’IA ») : 15 revendications attribuées et sourcées, puce « Du mouvement », ouvertes au vote ; « Également portée par » pour toute revendication ; la démission du gouvernement, revendication citoyenne.
@@ -26,6 +30,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 - Série « Le cap du mouvement » (11 novembre 2026, feuille de route du MVP 1, section 5, D-200, D-212) : sept textes courts et sourcés dans `content/cap` (ce que la manifestation a gagné et ses limites ; maintien de l'ordre et libertés ; ce qui a fait céder un pouvoir ; le monde bouge ; qui négocie en notre nom ; prendre les mandats ; fédérer autour de soi), chacun relu sur ses sources le jour même et relié à une action de l'application. Nouveau type de contenu `cap` (à la fin de `ArticleType`), avec sa nature (`faits` ou `position`) et sa place dans la série ; une position rédigée par l'IA affiche « Position de PPF, rédigée par l'IA, en attente de relecture » dans l'application et sur le site ; section en tête de l'accueil de Comprendre et pages `/comprendre/cap`. Non compilé.
 - Guides « S'engager en politique » (11 novembre 2026, jalon 2) : fiches pratiques « Constituer une liste citoyenne aux municipales », « Se présenter aux départementales et aux régionales de mars 2028 », « Créer ou rejoindre un parti politique » ; parcours « S'inscrire et voter » mis à jour (présidentielle des 18 avril et 2 mai 2027, inscription jusqu'au 12 mars 2027).
 - Fiche pratique « Harcèlement en ligne et divulgation d'informations personnelles » (11 novembre 2026, pour le kit AG-59 d'Agir) et entrée de glossaire « Constitution Citoyenne et Démocratique » (D-154), repérée avant « Constitution » dans les textes ; le texte 6 du cap prend le nouveau nom.
+- Brouillons des textes légaux de la bêta (11 novembre 2026, `content/legal/`, pages du site `/mentions-legales`, `/confidentialite`, `/conditions-utilisation`, `/charte` et `/signaler`, liens en pied de page) : mentions légales, politique de confidentialité tirée du registre des données, conditions d'utilisation (DSA, article 14), charte de contenu (cahier des charges 9.3), procédure de signalement ; « PROJET, À FAIRE RELIRE PAR UN AVOCAT », blancs à remplir par la propriétaire.
 - Kit « Convaincre autour de soi » (11 novembre 2026, rubrique Fédérer d'Agir) : arguments courts, réponses aux objections et « le monde bouge » en une carte.
 - Mode animation des fiches pédagogiques et d'atelier (9 novembre 2026, CO-24 étape 2) : bouton « Lancer le mode animation » ; une diapositive à la fois, en grand, à projeter : questions du parcours, puis débat guidé et objections, la réponse ne s'affichant que sur un geste de l'animation ; clavier et télécommande de présentation (flèches, page précédente et suivante, Échap) ; hors ligne, sans compte, rien n'est enregistré.
 

@@ -8,7 +8,7 @@
 Tout ce qui compte des personnes, une par compte, sans qu'on puisse savoir qui :
 - **« Agir »** : le nombre de participants à une mobilisation (« J'y participe »), le nombre de soutiens d'un appel ;
 - **« Voir »** : les signalements chiffrés des citoyens (VO-03), un par compte et par événement ;
-- **« Décider »** : votations, votes des revendications, délibération sur le Pacte et les campagnes.
+- **« Décider »** : votations, votes des revendications, délibération sur la Constitution Citoyenne et Démocratique et les campagnes.
 
 Chaque objet compté a son **urne**. Un bulletin ne porte que l'urne, le niveau du votant et son choix ; jamais le compte.
 

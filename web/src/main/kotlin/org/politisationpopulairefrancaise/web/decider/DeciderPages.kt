@@ -121,11 +121,11 @@ fun HTML.deciderHomeDocument(
 ) {
     siteLayout(pageTitle = "Décider", currentSpace = Space.DECIDER) {
         h1 { +"Décider" }
-        p(classes = "lead") { +"Les pétitions officielles relayées par PPF et le Pacte démocratique proposé aux candidats. PPF n’adopte rien : ce sont les votes des citoyens qui choisissent." }
+        p(classes = "lead") { +"Les pétitions officielles relayées par PPF et la Constitution Citoyenne et Démocratique proposée aux candidats. PPF n’adopte rien : ce sont les votes des citoyens qui choisissent." }
         if (catalog.isEmpty) p(classes = "notice") { +"Aucun contenu publié pour l’instant." }
         val pactes = catalog.pactes
         if (pactes.isNotEmpty()) {
-            pageSection("pacte", "Pacte démocratique") {
+            pageSection("pacte", "Constitution Citoyenne et Démocratique") {
                 pactes.forEach { pacte -> pacteCard(pacte) }
             }
         }
@@ -255,7 +255,7 @@ fun HTML.pacteDocument(pacte: Pacte, board: PacteBoard) {
             ul {
                 li { +"Le même texte, envoyé le même jour, avec le même délai de réponse, à tous les candidats, sans exception." }
                 li { +"Les candidats sont rangés par ordre alphabétique ; une réponse reçue après la date limite n’est pas comptée, elle reste visible avec sa date de réception." }
-                pacte.sentOn?.let { li { +"Envoyé le " ; date(it) ; +"." } }
+                pacte.sentOn?.let { li { +"Envoyée le " ; date(it) ; +"." } }
                 pacte.deadline?.let { li { +"Date limite de réponse : " ; date(it) ; +"." } }
             }
         }
@@ -305,7 +305,7 @@ internal const val STARTING_PROPOSAL: String = "Proposition de départ, pas enco
 
 internal val STATUS_LABELS: Map<PacteStatus, String> = mapOf(
     PacteStatus.PROPOSED to "Proposition de départ",
-    PacteStatus.SENT to "Envoyé aux candidats",
+    PacteStatus.SENT to "Envoyée aux candidats",
     PacteStatus.CLOSED to "Élection passée",
 )
 

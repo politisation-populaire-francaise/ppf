@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- The citizen deliberation on the measures of the Pacte démocratique (DE-25, MVP 1).
+<!-- The citizen deliberation on the measures of the Constitution Citoyenne et Démocratique (formerly « Pacte démocratique », D-154; DE-25, MVP 1).
      French, typographic apostrophe (’), no em dash. -->
 <resources>
     <string name="deliberation_section">Délibération citoyenne sur les mesures</string>
@@ -12,7 +12,7 @@
     <string name="deliberation_state_soon">Ouverture des propositions le %1$s</string>
     <string name="deliberation_state_over">Délibération terminée : les résultats sont publiés</string>
     <string name="deliberation_card_count">Propositions publiées : %1$d</string>
-    <string name="deliberation_rules">PPF n’adopte rien : vos votes choisissent la rédaction de chaque mesure, puis les mesures du Pacte, de %1$d à %2$d parmi celles qui ont plus de « pour » que de « contre ». Le vote blanc est compté. Chaque proposition et chaque amendement est relu par une personne avant d’être publié.</string>
+    <string name="deliberation_rules">PPF n’adopte rien : vos votes choisissent la rédaction de chaque mesure, puis les mesures de la Constitution Citoyenne et Démocratique, de %1$d à %2$d parmi celles qui ont plus de « pour » que de « contre ». Le vote blanc est compté. Chaque proposition et chaque amendement est relu par une personne avant d’être publié.</string>
     <string name="deliberation_propose">Proposer une mesure</string>
     <string name="deliberation_amend">Proposer une autre rédaction</string>
     <string name="deliberation_no_proposition">Aucune proposition publiée pour l’instant.</string>

@@ -49,6 +49,8 @@ fun Route.webRoutes(voir: VoirSource? = null, comprendre: ComprendreSource? = nu
         val icon = Route::class.java.classLoader.getResourceAsStream("static/favicon.ico")?.use { it.readBytes() }
         if (icon == null) call.respond(HttpStatusCode.NotFound) else call.respondBytes(icon, ContentType("image", "x-icon"))
     }
+    // The legal texts (mentions légales, confidentialité, conditions, charte, signalement).
+    legalPages()
     voir?.let { voirPages(it) }
     comprendre?.let { comprendrePages(it) }
     // The petitions and the democratic pact (Décider), with the names of the candidates from "Voir".

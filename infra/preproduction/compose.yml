@@ -21,8 +21,10 @@ services:
     read_only: true
     # The only writable place. "exec": the signature library (secp256k1) unpacks its native code
     # there before loading it, which Docker's default tmpfs options (noexec) would forbid.
+    # 256m: the libsodium loader (VOPRF, D-145) copies the whole fat jar (85 MB) there
+    # before picking its native library; 64m made the server fail at start.
     tmpfs:
-      - /tmp:rw,exec,nosuid,nodev,size=64m
+      - /tmp:rw,exec,nosuid,nodev,size=256m
     security_opt:
       - no-new-privileges:true
     cap_drop:
@@ -113,7 +115,7 @@ services:
     deploy:
       resources:
         limits:
-          memory: 512M
+          memory: 768M  # tmpfs (/tmp, up to 256m) counts in this limit
           cpus: "0.5"
 
   # Database migrations, run once per deployment by infra/scripts/deploy.sh before the server

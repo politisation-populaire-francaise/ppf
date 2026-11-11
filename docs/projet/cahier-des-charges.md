@@ -1,9 +1,10 @@
 # Politisation Populaire Française : cahier des charges
 
-- Version : 2.3
-- Date : 8 novembre 2026
+- Version : 2.4
+- Date : 11 novembre 2026
 - Statut : définitif. Toute évolution passe d'abord par `brainstorming-cahier-des-charges.md`.
-- Documents liés : `vision.md` (pourquoi, version 4.3), `cahier-fonctionnel.md` (ce que fait le produit, version 2.2), `docs/DECISIONS.md` (décisions numérotées), `docs/FORMATS.md` (formats ouverts), `docs/THREAT_MODEL.md` (modèle de menaces), `docs/REGISTRE_DONNEES.md` (registre RGPD), `infra/EGRESS.md` (connexions sortantes du serveur).
+- Documents liés : `vision.md` (pourquoi, version 4.3), `cahier-fonctionnel.md` (ce que fait le produit, version 2.3), `docs/DECISIONS.md` (décisions numérotées), `docs/FORMATS.md` (formats ouverts), `docs/THREAT_MODEL.md` (modèle de menaces), `docs/REGISTRE_DONNEES.md` (registre RGPD), `infra/EGRESS.md` (connexions sortantes du serveur).
+- Origine de la version 2.4 : décision de la propriétaire du 11 novembre 2026, relayée par le chef d’équipe (D-154), mot pour mot : « le pacte démocratique/pacte citoyen et démocratique doit devenir partout y compris dans les documents du projet : Constitution Citoyenne et Démocratique ». Seul changement : le nom de l’ancien « Pacte démocratique », partout dans ce document ; la Constitution de 1958 garde son nom complet là où les deux pourraient se confondre.
 
 Ce document fixe **ce que la plateforme doit respecter** : périmètre, principes, architecture, technologies, sécurité, accessibilité, cadre légal, planning et moyens. Le détail des fonctionnalités se trouve dans le cahier fonctionnel.
 
@@ -41,7 +42,7 @@ Les identifiants M1 à M18 sont conservés, parce que le code et les documents y
 | **Voir** | M2 Observatoire : les chiffres (avec l'indice de gravité) ; M4 Documentation et archives (chronologie, archives horodatées, témoignages publiés) ; M9 International ; M17 Mettre en lumière (absorbe M13.2 : fiches des responsables publics et des partis, promesses, influence, intérêts, actes et discours de haine) ; M20 Le Parlement : votes et textes en cours (données ouvertes, D-064) ; M21 État du pays et argent public local (ajout du chef d'équipe, 7 novembre 2026) | Rendre visible, de façon chiffrée et sourcée, le mouvement, le pouvoir, les libertés et les contre-pouvoirs |
 | **Comprendre** | M13.1 « Qui décide de ça ? » et comprendre les élections ; M6 Fiches pratiques, décryptages (cinq verdicts), dossiers et glossaire ; M7 Histoire des luttes et valeurs (dont laïcité et lutte contre le fascisme) ; M8 Bibliothèque numérique ; M22 Simulateurs et visualisations ; M23 Apprendre pas à pas et en classe (enseignants et élèves) | Savoir qui décide de quoi, connaître ses droits, démêler le vrai du faux, apprendre de l'histoire des luttes |
 | **Agir** | M1 Carte et agenda des mobilisations ; M3 Annuaire des organisations ; M12 S'organiser (appels, guides, matériel) ; M24 Collectifs ; M5 Témoignages (témoigner, provenance, lanceurs d'alerte) ; M25 Secours, sécurité et défense en manifestation (mode manifestation, bouton AIDE) | Se mobiliser, s'organiser, s'entraider, témoigner |
-| **Décider** | M11 Mur des revendications ; M26 Questionnaire citoyen anonyme et baromètre politique ; M13.3 Revendiquer ; M10 Pétitions et mobilisation massive (dont pétitions locales) ; M13.5 Changer les règles (campagnes, baromètre des élus, Pacte démocratique et délibération citoyenne) ; M13.1 suite (interpeller ses élus, consultations publiques officielles) ; M13.4 S'organiser politiquement ; M13.6 Décider nous-mêmes (votations, assemblées tirées au sort) ; M13.7 Élections (calendrier électoral personnel) | Revendiquer, faire campagne, obliger élus et candidats à s'engager, se présenter, décider ensemble |
+| **Décider** | M11 Mur des revendications ; M26 Questionnaire citoyen anonyme et baromètre politique ; M13.3 Revendiquer ; M10 Pétitions et mobilisation massive (dont pétitions locales) ; M13.5 Changer les règles (campagnes, baromètre des élus, Constitution Citoyenne et Démocratique et délibération citoyenne) ; M13.1 suite (interpeller ses élus, consultations publiques officielles) ; M13.4 S'organiser politiquement ; M13.6 Décider nous-mêmes (votations, assemblées tirées au sort) ; M13.7 Élections (calendrier électoral personnel) | Revendiquer, faire campagne, obliger élus et candidats à s'engager, se présenter, décider ensemble |
 | **Mon espace** | M27 Mon espace (TE-01 à TE-09, dont « Mes élus », niveau de votant, mes votes et soutiens, mes suivis, mes rappels ; sauvegarde chiffrée S-112) | Le tableau de bord personnel, gardé sur l'appareil |
 | **Fil social** | M18 Fil social ; M28 Relations et cercles | La porte d'entrée : l'écran par défaut (D-023) |
 | **Messagerie** | M14 Messagerie chiffrée : par Internet dès la phase 1 (D-027, D-028), sans Internet en phase 4 | Échanger en privé et en collectif, même sans Internet ; elle a sa propre entrée dans la barre du bas (D-026) |
@@ -98,7 +99,7 @@ L'architecture cible est hybride. Elle est construite progressivement, mais **le
   - preuve principale **OpenTimestamps**, avec un petit client écrit par nous en Kotlin commun, au moins deux calendriers indépendants par empreinte, mise à niveau de la preuve une fois ancrée dans Bitcoin, format `.ots` standard vérifiable par le client officiel ;
   - preuve immédiate en complément, **horodatage RFC 3161** côté serveur seulement, auprès d'une autorité gratuite dont les conditions permettent cet usage, sans compte ni dépense ; à défaut, OpenTimestamps seul ;
   - seul le serveur contacte ces services et seule une empreinte sort, jamais un contenu ni une donnée d'utilisateur ;
-  - premiers usages : le texte du Pacte démocratique et chaque réponse de candidat (D-060), puis les copies archivées de « Voir » (M4) et les empreintes des témoignages (M5).
+  - premiers usages : le texte de la Constitution Citoyenne et Démocratique et chaque réponse de candidat (D-060), puis les copies archivées de « Voir » (M4) et les empreintes des témoignages (M5).
 - **Vote anonyme « une personne, une voix »** : socle commun de tous les votes et compteurs de participation (section 3.7).
 - **Vérification de l'authenticité** de tout contenu PPF, dans l'application et sur le site, même hors ligne (section 5.12).
 
@@ -149,7 +150,7 @@ Toutes les données que PPF publie ou échange suivent des formats ouverts et do
 | NIP-01 | Événement signé : format de tout contenu publié et de l'export JSON (D-018) |
 | NIP-19 | Clés lisibles « npub » (publique) et « nsec » (secrète) |
 | NIP-06 | Dérivation de la clé à partir de la phrase de récupération (D-017) |
-| NIP-23 | Contenus longs : fiches pratiques, parcours, dossiers, décryptages, histoire des luttes, glossaire, briques de « Voir », revendications, appels, fiches d'organisation, pétitions, Pacte et réponses, avec des étiquettes structurées `ppf-…` (D-022, D-033, D-034, D-038, D-039, D-048, D-059, D-060) |
+| NIP-23 | Contenus longs : fiches pratiques, parcours, dossiers, décryptages, histoire des luttes, glossaire, briques de « Voir », revendications, appels, fiches d'organisation, pétitions, Constitution Citoyenne et Démocratique et réponses, avec des étiquettes structurées `ppf-…` (D-022, D-033, D-034, D-038, D-039, D-048, D-059, D-060) |
 | NIP-52 | Mobilisations de l'agenda (événements de calendrier) et réponses publiques des organisations (D-039, D-045) |
 | NIP-17, NIP-44, NIP-59 | Messages privés chiffrés et leurs enveloppes (D-027) |
 | NIP-29 | Salons des collectifs gérés par le relais (D-027) |
@@ -165,7 +166,7 @@ Toutes les données que PPF publie ou échange suivent des formats ouverts et do
 
 ### 3.7 Vote anonyme « une personne, une voix »
 Méthode approuvée par la propriétaire (D-044), demandée pour la délibération citoyenne (D-062), précisée par ses réponses du 7 novembre 2026 (D-112) ; conception technique approuvée par le chef d'équipe (D-110 ; détail dans `docs/integration/une-personne-une-voix.md`).
-- **Usages** : votes du mur des revendications (M11) ; délibération citoyenne sur les mesures du Pacte démocratique et les modalités des campagnes (proposer, amender, voter), car leur liste de départ n'est qu'une proposition que « c'est le peuple qui doit la modifier et la valider via notre appli » (D-062) ; votations et assemblées citoyennes (M13.6) ; compteurs de participation d'« Agir » (D-044) ; signalements chiffrés des citoyens dans « Voir » (VO-03) ; décisions internes d'un collectif (AG-51).
+- **Usages** : votes du mur des revendications (M11) ; délibération citoyenne sur les mesures de la Constitution Citoyenne et Démocratique et les modalités des campagnes (proposer, amender, voter), car leur liste de départ n'est qu'une proposition que « c'est le peuple qui doit la modifier et la valider via notre appli » (D-062) ; votations et assemblées citoyennes (M13.6) ; compteurs de participation d'« Agir » (D-044) ; signalements chiffrés des citoyens dans « Voir » (VO-03) ; décisions internes d'un collectif (AG-51).
 - **Garanties** : le serveur ne peut pas relier un vote à un compte, même s'il le voulait (impossibilité mathématique, pas seulement une règle) ; ni téléphone, ni e-mail, ni pièce d'identité, ni adresse IP ; vote modifiable jusqu'à la clôture (D-112) ; vote possible hors ligne, envoyé au retour du réseau ; recomptage possible par n'importe qui après la clôture ; fonctionnement sur le serveur KVM 1.
 - **Trois niveaux de votants** (décision de la propriétaire, D-112) : **non vérifié** (inscription avec une preuve de travail) ; **vérifié** (validation en personne par un bénévole désigné par une organisation vérifiée de l'annuaire et agréé par PPF, sans noter aucune identité ni aucun lieu) ; **élu** (compte d'élu certifié en personne, mandat contrôlé dans l'annuaire officiel des élus, D-047). Pas de parrainage. Les organisations ne votent pas. Le niveau d'un compte est figé la semaine d'ouverture de chaque vote.
 - **Résultats** (D-112) : le vote des citoyens, avec les comptes vérifiés en premier, puis les comptes non vérifiés, puis le total des citoyens ; à part, le vote des élus, jamais additionné à celui des citoyens.
@@ -381,7 +382,7 @@ Modèles marqués « À FAIRE RELIRE PAR UN AVOCAT » : mentions légales (LCEN)
 - **Conservation des données d'identification** (ajout du chef d'équipe, 7 novembre 2026) : la LCEN (article 6) et ses décrets n° 2021-1362 et n° 2021-1363 du 20 octobre 2021 imposent aux hébergeurs de conserver certaines données permettant d'identifier les personnes qui ont contribué à la création d'un contenu. Cela peut entrer en contradiction avec la règle « aucune adresse IP journalisée » (section 5.1). Point à faire trancher par un avocat avant l'ouverture publique, puis à présenter à la propriétaire avec des options ; rien n'est changé à la règle actuelle en attendant.
 - **Droit électoral et financement politique** :
   - une personne morale (dont l'association PPF) ne peut ni financer une campagne électorale ni consentir à un candidat des avantages, y compris en nature (site, fichiers, communication) ;
-  - tout outil qui concerne des candidats (engagements, comparateur, baromètre) les traite tous de façon strictement identique, sans appel à voter ; pour le Pacte démocratique : même texte pour tous, vérifiable par son empreinte, même jour d'envoi et même délai, une ligne par candidat même sans réponse, ordre alphabétique, réponse arrivée après la date limite non comptée mais visible avec sa date (D-060, D-062) ; mêmes règles pour les questions citoyennes aux candidats (DE-30 : mêmes questions, même jour, même délai, absence de réponse affichée) et affichage factuel identique des parrainages, sans bouton pour interpeller les maires (VO-37) (brainstorming du 8 novembre 2026) ;
+  - tout outil qui concerne des candidats (engagements, comparateur, baromètre) les traite tous de façon strictement identique, sans appel à voter ; pour la Constitution Citoyenne et Démocratique : même texte pour tous, vérifiable par son empreinte, même jour d'envoi et même délai, une ligne par candidat même sans réponse, ordre alphabétique, réponse arrivée après la date limite non comptée mais visible avec sa date (D-060, D-062) ; mêmes règles pour les questions citoyennes aux candidats (DE-30 : mêmes questions, même jour, même délai, absence de réponse affichée) et affichage factuel identique des parrainages, sans bouton pour interpeller les maires (VO-37) (brainstorming du 8 novembre 2026) ;
   - les dons aux partis sont réservés aux personnes physiques (de nationalité française ou résidant en France) et plafonnés à 7 500 euros par personne et par an ; les dons à un candidat sont plafonnés à 4 600 euros par élection (montants à re-vérifier avant tout guide) ;
   - PPF peut lancer des appels à dons pour elle-même, comme les organisations vérifiées, jamais pour un candidat ou un parti (D-039) ;
   - veille sur les règles applicables en période électorale (propagande, sondages).
@@ -441,7 +442,7 @@ PPF héberge des contenus publiés par ses utilisateurs : elle est un service d'
 - **Droit de réponse** : publié sous le contenu, dans les trois jours de sa réception (LCEN, article 1-1, III, numérotation issue de la loi du 21 mai 2024, à revérifier sur Légifrance ; D-056) ; signalement d'une erreur anonyme par défaut, sous chaque contenu (D-056).
 
 ### 9.7 Outils électoraux et désignation d'un candidat
-- Les outils électoraux (Pacte démocratique, comparateur, baromètre des élus) suivent les règles de la section 9.2, comme les questions citoyennes aux candidats (DE-30), les parrainages de la présidentielle (VO-37) et, plus tard, la boussole 2027, dont la neutralité des thèses est relue par un avocat (DE-33) (brainstorming du 8 novembre 2026).
+- Les outils électoraux (Constitution Citoyenne et Démocratique, comparateur, baromètre des élus) suivent les règles de la section 9.2, comme les questions citoyennes aux candidats (DE-30), les parrainages de la présidentielle (VO-37) et, plus tard, la boussole 2027, dont la neutralité des thèses est relue par un avocat (DE-33) (brainstorming du 8 novembre 2026).
 - La désignation citoyenne d'un candidat (M13.7, phase 6) impose une vérification d'identité limitée à ce module, avec des données supprimées après le vote ; son cadre légal doit être validé par un avocat avant tout développement.
 
 ### 9.8 À faire relire par un avocat avant l'ouverture publique
@@ -466,7 +467,7 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
   - le soutien aux personnes interpellées et ses données d'infractions (RGPD, article 10) (AG-57) ;
   - les questions citoyennes aux candidats de 2027, au regard du traitement identique (section 9.2) (DE-30) ;
   - la neutralité des thèses de la boussole 2027 (DE-33) ;
-  - le jury citoyen du suivi des engagements du Pacte (méthode M17, droit de réponse) (DE-35) ;
+  - le jury citoyen du suivi des engagements de la Constitution Citoyenne et Démocratique (méthode M17, droit de réponse) (DE-35) ;
   - les collectivités partenaires, au regard de la communication en période électorale (DE-37) ;
   - le canari mensuel de la page de transparence technique (section 5.7) ;
   - le code PIN de contrainte, avis indispensable avant tout code (Code pénal, articles 434-4 et 434-15-2) (S-44, section 5.13).
@@ -475,7 +476,7 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
 
 ### 10.1 Contraintes de calendrier
 - Le mouvement social est en cours : une première version utilisable doit sortir le plus vite possible.
-- Élection présidentielle en avril 2027 : Pacte démocratique diffusé au début de l'année 2027, calendrier électoral personnel et comparateur avant le scrutin ; questions citoyennes aux candidats ouvertes en janvier 2027 (DE-30) et parrainages affichés en février et mars 2027 (VO-37) (brainstorming du 8 novembre 2026).
+- Élection présidentielle en avril 2027 : Constitution Citoyenne et Démocratique diffusée au début de l'année 2027, calendrier électoral personnel et comparateur avant le scrutin ; questions citoyennes aux candidats ouvertes en janvier 2027 (DE-30) et parrainages affichés en février et mars 2027 (VO-37) (brainstorming du 8 novembre 2026).
 - Législatives possibles à tout moment en cas de dissolution (notamment après la présidentielle), avec un scrutin 20 à 40 jours après la dissolution.
 
 ### 10.2 Phases
@@ -486,7 +487,7 @@ Doctrine de la propriétaire (D-044) : pousser le curseur au maximum, relecture 
   - Voir : observatoire avec les indicateurs prioritaires (M2) ; votes des parlementaires de la législature en cours (D-064, avancés de la phase 5) ; la chronologie et les fiches des responsables publics (M4, M17), prévues en phase 2, ont été commencées en phase 1 à la demande de la propriétaire (D-034, D-036) ;
   - Comprendre : fiches pratiques hors ligne (M6), parcours, « Qui décide de ça ? », « Mes élus » (D-047), glossaire (D-048) ; les décryptages et l'histoire des luttes, prévus en phase 2, ont été commencés en phase 1 à la demande de la propriétaire (D-038) ;
   - Agir : carte et agenda (M1), annuaire des organisations (M3), appels (M12) ;
-  - Décider, priorités liées au calendrier : mur des revendications avec vote protégé (M11), pétitions officielles (M10, commencées en phase 1, D-059), puis Pacte démocratique version 1 (M13.5) et sa délibération citoyenne (D-062), pour une diffusion au début de l'année 2027.
+  - Décider, priorités liées au calendrier : mur des revendications avec vote protégé (M11), pétitions officielles (M10, commencées en phase 1, D-059), puis Constitution Citoyenne et Démocratique version 1 (M13.5) et sa délibération citoyenne (D-062), pour une diffusion au début de l'année 2027.
 - **Phase 2** : témoignages avec leur provenance (M5), documentation et archives complètes (M4), suite des fiches des responsables publics, des décryptages et des pétitions commencés en phase 1, modération assistée par IA (après la décision sur l'hébergement du modèle). Décider : comparateur de la présidentielle 2027 (avant avril 2027), étages 1 à 5 de M13, dont le kit du candidat citoyen, prêt avant une éventuelle dissolution.
 - **Phase 3, résilience** : module Nostr, miroirs statiques, adresse .onion, Tor dans l'application. Étage 6 de M13 (votations et assemblées citoyennes). La méthode « une personne, une voix », dont ces outils dépendaient, est validée (D-112) : avancer les votations et les assemblées tirées au sort est une question à poser à la propriétaire (ajout du chef d'équipe, 7 novembre 2026).
 - **Phase 4** : messagerie hors ligne bitchat (M14).
@@ -562,7 +563,7 @@ Rien de ce qui dépend de ces questions n'est codé avant la réponse de la prop
 | D-039 à D-043, D-045, D-046, D-080 | Agir, agenda, appels, annuaire, carte, tuiles | 3.5, 4, 5.1 |
 | D-044 | Transparence d'abord, curseur au maximum | 2, 9.8 |
 | D-047, D-064 | Annuaire des élus, données du Parlement | 3.8 |
-| D-059 à D-062 | Pétitions, Pacte, Décider, statut de PPF, non-partisanerie | 1.5, 9.2 |
+| D-059 à D-062 | Pétitions, Constitution Citoyenne et Démocratique, Décider, statut de PPF, non-partisanerie | 1.5, 9.2 |
 | D-070 à D-074 | Déploiement, préproduction, durcissement, exemples | 3.5 |
 | D-110 à D-112 | Vote anonyme, archivage horodaté, niveaux de votants | 3.2, 3.7 |
 | D-120 (en cours) | Connexion de l'équipe par clé d'accès | 5.3 |

@@ -5,7 +5,7 @@
   - cahier fonctionnel 2.0, M13.7 (DE-16) et règle de méthode 9 (traitement identique) ;
   - cahier des charges, section 9.2 (droit électoral et financement politique) ;
   - données des votes de « Voir » (M20, D-064, D-065, dans `main` depuis le 7 novembre 2026) ;
-  - Pacte démocratique (DE-08, D-060, D-062).
+  - Constitution Citoyenne et Démocratique (DE-08, D-060, D-062).
 
 ## 1. Le cadre légal vérifié (Légifrance, version en vigueur au 7 novembre 2026)
 
@@ -28,7 +28,7 @@
 |---|---|---|
 | Identité | Nom, parti ou soutien déclaré, fonction actuelle | Liste officielle des candidats ; fiche du parti de « Voir » (M17) |
 | Programme, par thème | Pour chaque thème (les mêmes pour tous, par exemple les quinze thèmes des revendications), une ou deux phrases qui résument la position, avec une **citation courte** et le lien vers le document officiel du candidat | Programme publié par le candidat (page et date) |
-| Réponse au Pacte démocratique | Signé, refusé, en attente, sans réponse, mesure par mesure | Tableau du Pacte (D-060, D-062) |
+| Réponse à la Constitution Citoyenne et Démocratique | Signé, refusé, en attente, sans réponse, mesure par mesure | Tableau de la Constitution Citoyenne et Démocratique (D-060, D-062) |
 | Votes passés | Pour un candidat parlementaire ou eurodéputé : ses votes nominatifs sur les scrutins publics liés aux thèmes, en toutes lettres ; pour les autres, la mention « pas de mandat parlementaire » ; votes du groupe du parti à part, jamais attribués à la personne | Données ouvertes de « Voir » (M20) |
 | Faits | Seulement les faits de « Voir » qui visent la personne, avec la distinction établi, allégué, en cours d'enquête et le droit de réponse | « Voir » (M17) |
 
@@ -57,7 +57,7 @@ Rédaction :
   - sur un téléphone : un thème, puis tous les candidats l'un sous l'autre, dans le même ordre ;
   - sur une tablette ou un ordinateur : un tableau, avec un candidat par colonne ;
   - lecture d'écran ligne par ligne ; hors ligne.
-- **Site sans JavaScript** : la même grille (tâche « Pacte et pétitions sur le site »).
+- **Site sans JavaScript** : la même grille (tâche « Constitution Citoyenne et Démocratique et pétitions sur le site »).
 - **Aucune donnée sur l'utilisateur** : le comparateur ne sait pas ce qu'on regarde (contenus synchronisés en bloc, comme le reste). Aucun questionnaire de proximité, qui serait une opinion politique (RGPD, article 9).
 
 ## 4. Calendrier proposé
@@ -77,7 +77,7 @@ Rédaction :
 
 - Données des votes de « Voir » (M20) : dans `main`.
 - Fiches des partis de « Voir » (D-054).
-- Tableau du Pacte (fait).
+- Tableau de la Constitution Citoyenne et Démocratique (fait).
 - Archivage horodaté (serveur fait, branchement à faire).
 - Relecture par un avocat (L52-8), à ajouter à la liste des relectures de la section 9.8.
 

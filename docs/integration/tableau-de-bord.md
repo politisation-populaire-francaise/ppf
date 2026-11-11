@@ -18,7 +18,7 @@ Rédigé le 9 novembre 2026 par le pôle « Voir » (« [Voir] Team Dev 2 »), �
 | `organisations` | fiches d'organisations publiées (type `organisation`) | Compté par « Voir » |
 | `votes` | bulletins anonymes et votes publics des élus, sans les retraits, au mois de leur dernière réception (`UrneStore.votesByMonth`) | Compté par « Décider » depuis le 9 novembre 2026 (en production, quand les urnes sont configurées) |
 | `signatures` | relevés officiels des pétitions relayées : chaque mois ajoute ce que son dernier relevé dépasse du plus haut relevé d'avant (`DeciderDashboardFigures.signatures`) | Compté par « Décider » depuis le 9 novembre 2026 |
-| `engagements` | candidats qui ont signé au moins une mesure d'un Pacte, une fois par Pacte, au mois de leur première réponse signée (`DeciderDashboardFigures.engagements`) | Compté par « Décider » depuis le 9 novembre 2026 |
+| `engagements` | candidats qui ont signé au moins une mesure d'une Constitution Citoyenne et Démocratique, une fois par Constitution Citoyenne et Démocratique, au mois de leur première réponse signée (`DeciderDashboardFigures.engagements`) | Compté par « Décider » depuis le 9 novembre 2026 |
 | `collectifs` | collectifs et salons créés | Non mesuré : à fournir par « Communauté » |
 | `adherents` | nombre d'adhérents (PP-08, registre à part) | Non mesuré : après la création de l'association |
 | `argent-collecte`, `argent-redistribue` | trésorerie publique (PP-06), en centimes | Non mesuré : après PP-06 |
