@@ -44,12 +44,12 @@ Cette partie est la position de PPF, rédigée par l'IA et en attente de relectu
 
 1. **Chacun inscrit, et chacun inscrit quelqu'un.** Vérifier son inscription aujourd'hui, puis celle de trois proches.
 2. **Des listes partout où c'est possible.** Commencer par les partielles et préparer mars 2028 dès maintenant : trouver ses colistiers dans les collectifs, les syndicats, les associations.
-3. **Des candidats tenus par un mandat.** Les revendications votées par le mouvement deviennent des engagements publics, signés et archivés (le Pacte démocratique).
+3. **Des candidats tenus par un mandat.** Les revendications votées par le mouvement deviennent des engagements publics, signés et archivés (la Constitution Citoyenne et Démocratique).
 4. **La même règle pour tous.** PPF ne soutient aucune liste et ne finance personne : elle donne à tous les mêmes outils pour s'organiser.
 
 ::: et-maintenant
 - [Vérifier son inscription et s'inscrire sur les listes électorales](ppf:agir)
-- [Suivre le Pacte démocratique et les engagements des candidats](ppf:decider)
+- [Suivre la Constitution Citoyenne et Démocratique et les engagements des candidats](ppf:decider)
 - Lire les parcours « S'inscrire et voter » et « Se présenter à une élection ».
 :::
 

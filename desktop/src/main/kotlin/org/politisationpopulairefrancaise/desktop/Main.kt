@@ -1,9 +1,6 @@
 package org.politisationpopulairefrancaise.desktop
 
-import androidx.compose.runtime.remember
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import org.politisationpopulairefrancaise.ui.components.ppfSymbol
-import org.politisationpopulairefrancaise.ui.theme.LightPalette
+import org.politisationpopulairefrancaise.ui.components.ppfLogoPainter
 import org.politisationpopulairefrancaise.ui.onboarding.TutorialStore
 import java.io.File
 import androidx.compose.ui.unit.dp
@@ -68,8 +65,8 @@ fun main(args: Array<String>) {
         Window(
             onCloseRequest = ::exitApplication,
             title = AppInfo.NAME,
-            // The symbol of PPF in its light colours, as on the installer (D-185).
-            icon = rememberVectorPainter(remember { ppfSymbol(LightPalette.brand, LightPalette.accent) }),
+            // The official logo of PPF, as on the installer (D-187).
+            icon = ppfLogoPainter(),
             state = rememberWindowState(width = 1200.dp, height = 800.dp),
         ) {
             PpfApp(dependencies, crashReport = pendingCrash)

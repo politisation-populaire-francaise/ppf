@@ -131,7 +131,6 @@ import org.politisationpopulairefrancaise.ui.components.AdaptiveWordmark
 import org.politisationpopulairefrancaise.ui.components.PpfSymbol
 import org.politisationpopulairefrancaise.ui.onboarding.FirstLaunchTutorial
 import org.politisationpopulairefrancaise.ui.onboarding.ProvideTutorial
-import org.politisationpopulairefrancaise.ui.onboarding.TutorialStart
 import org.politisationpopulairefrancaise.ui.onboarding.TutorialState
 import org.politisationpopulairefrancaise.ui.onboarding.rememberTutorialState
 import org.politisationpopulairefrancaise.ui.components.avatarLetters
@@ -274,7 +273,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val security = rememberDeviceSecurity(dependencies)
     // The tutorial of the first launch (D-211, D-216), seen again from Mon espace and the AIDE sheet.
     val tutorial = rememberTutorialState(dependencies.tutorial)
-    // A rubric of "Agir" asked by the shell (« m'allier » of the tutorial opens « Se réunir »), forgotten once applied.
+    // A rubric of "Agir" asked by the shell (the last screen of the tutorial), forgotten once applied.
     var agirRoute by remember { mutableStateOf<AgirRoute?>(null) }
     RegisterErasable(dependencies, TutorialState.ERASABLE_ID) { dependencies.tutorial?.forget() }
     // The quick erase (S-44): the keys, with what « Effacer mes clés » already forgets (D-032, D-039), and the rally point.
@@ -467,8 +466,11 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     tutorial.isOpen -> FirstLaunchTutorial(
                         onFinish = { choice ->
                             tutorial.finish()
-                            if (choice == TutorialStart.ALLY) agirRoute = AgirRoute.GATHER
+                            // A rubric of "Agir" (Témoigner, Se réunir, S'engager, Solidarité) is opened by Agir itself.
+                            choice?.agirRoute?.let { agirRoute = it }
                             navigate(choice?.space ?: Space.default)
+                            // « Recevoir de l'aide »: the AIDE sheet, over « En direct ».
+                            if (choice?.opensHelp == true) help.open()
                         },
                         modifier = Modifier.fullWindowSafeArea(),
                     )

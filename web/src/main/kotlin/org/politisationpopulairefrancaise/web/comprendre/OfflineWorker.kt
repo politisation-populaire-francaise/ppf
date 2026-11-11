@@ -37,7 +37,7 @@ object OfflineWorker {
         "/static/site.css",
         "/static/fonts/atkinson_hyperlegible_regular.ttf",
         "/static/fonts/atkinson_hyperlegible_bold.ttf",
-        "/static/icon.svg",
+        "/static/icon-192.png",
         "/static/manifest.webmanifest",
         PWA_SCRIPT,
     )

@@ -7,8 +7,8 @@
     <string name="app_wordmark">Politisation
 Populaire Française</string>
     <string name="badge_example">[EXEMPLE]</string>
-    <!-- The symbol of PPF, for screen readers (design/identite, D-185). -->
-    <string name="symbol_description">Symbole de Politisation Populaire Française : une bulle de parole contenant trois silhouettes de taille croissante</string>
+    <!-- The official logo of PPF, for screen readers (design/identite/logo-officiel, D-187). -->
+    <string name="symbol_description">Logo de Politisation Populaire Française : une Marianne brandit le drapeau français au milieu d’une foule de citoyens</string>
 
     <!-- « Actu » is the name of the feed since 11 November 2026 (D-215); its stable id stays "fil". -->
     <string name="space_fil">Actu</string>

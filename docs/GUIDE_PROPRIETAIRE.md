@@ -66,7 +66,7 @@ Quand je vous enverrai une version (seulement si vous la demandez), voici quoi r
 3. **Barre du haut** : le menu, le nom en entier (sur deux ou trois lignes selon la place), le bouton AIDE rouge, plus petit et sans icône, la messagerie, la cloche et votre avatar. Rien ne déborde, même avec une grande police (Paramètres, Affichage, Taille et style de police).
 4. **Le menu** (en haut à gauche) : Voir, Comprendre, Décider, Revendications. Rien n'a été retiré.
 5. **Téléphone couché** : à gauche, une colonne avec les cinq entrées de la barre du bas, toutes visibles ; le reste est dans le menu.
-6. **Le symbole de PPF** (ajouté le 11 novembre 2026) : sur l'icône de l'application (bulle indigo et point rouge), à côté du nom en haut quand il y a la place, en tête du menu, sur le premier écran de la présentation et en bas de Mon espace. En mode discret (« Outils »), l'icône reste grise et neutre, même à l'ouverture.
+6. **Le logo officiel** (11 novembre 2026) : sur l'icône de l'application (fond blanc), à côté du nom en haut quand il y a la place, en tête du menu et en bas de Mon espace ; la présentation s'ouvre sur votre bannière à la Marianne. En mode discret (« Outils »), l'icône reste grise et neutre, même à l'ouverture.
 
 ### Tester le compte (ajouté le 5 novembre 2026)
 
@@ -300,6 +300,13 @@ Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre 
 10. En bas de l'écran de l'affiche, **Lire la fiche « Coller des affiches et distribuer des tracts »** ouvre la fiche pratique : où l'on peut afficher, ce que la loi demande, ce qui change pendant la campagne présidentielle.
 
 Pour imprimer : choisissez **taille réelle** (ou « 100 % ») dans la fenêtre d'impression, sinon le code QR rétrécit. Ce qui n'est pas encore là : l'iPhone, le PDF sur ordinateur, les affiches d'une fiche ou d'une revendication, les pages du site pour les affiches d'événements très longs.
+
+### Tester les « Kits d'action citoyenne » (ajouté le 11 novembre 2026)
+
+1. Ouvrez « Agir » : sous « S'engager en politique », touchez **Kits d'action citoyenne**.
+2. Sous « Je veux… », touchez **Faire grève** : il reste quatre kits (simulateur du gréviste, caisses, « Faire grève : vos droits », collecter de l'argent). Touchez de nouveau **Faire grève** pour tout revoir.
+3. Touchez **M'organiser** puis **Utilisable sans réseau** : les collectifs disparaissent (ils demandent le serveur), les guides restent.
+4. Touchez un guide : il s'ouvre dans Agir, avec ses sources ; la flèche revient aux kits. Touchez un outil (par exemple le simulateur) : il s'ouvre dans sa rubrique.
 
 ### Tester le kit contre le harcèlement (ajouté le 11 novembre 2026, sur le téléphone)
 

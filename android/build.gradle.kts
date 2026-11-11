@@ -100,11 +100,15 @@ android {
         // signature as the debug build, so it installs over it as an update, but NOT debuggable:
         // on a debuggable app anyone holding the phone with a USB cable can read the app's
         // private files ("run-as") and attach a debugger (OWASP MASVS-RESILIENCE). Code shrinking
-        // (R8) stays off here until it can be checked on a real phone: a shrinking mistake only
-        // shows at runtime, and there is no Android emulator on the owner's computer.
+        // (R8) is on since 11 November 2026 (D-188): the APK has to stay under 30 MB to be sent to a
+        // phone. Shrinking only, without renaming (`proguard-preview.pro`: -dontobfuscate), so that a
+        // mistake is easier to find in a crash report; to be checked screen by screen on a phone,
+        // since a shrinking mistake only shows at runtime.
         create("preview") {
             isDebuggable = false
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro", "proguard-preview.pro")
             applicationIdSuffix = ".test"
             versionNameSuffix = "-test"
             signingConfig = signingConfigs.getByName("debug")

@@ -57,7 +57,7 @@ class ComprendrePagesTest {
         assertEquals(6, catalog.decryptages.size)
         assertEquals(3, catalog.stories.size)
         assertEquals(12, catalog.sheets.size)
-        assertEquals(71, catalog.glossary.size)
+        assertEquals(72, catalog.glossary.size)
         assertNotNull(catalog.method)
     }
 

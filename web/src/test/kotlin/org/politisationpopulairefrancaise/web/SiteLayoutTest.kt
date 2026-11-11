@@ -46,11 +46,11 @@ class SiteLayoutTest {
     fun theSymbolOfPpfIsTheIconOfEveryPage() {
         val html = render()
         assertTrue(html.contains("href=\"/favicon.ico\""))
-        assertTrue(html.contains("href=\"/static/favicon.svg\""))
+        assertTrue(html.contains("href=\"/static/favicon-32x32.png\""))
         assertTrue(html.contains("href=\"/static/apple-touch-icon.png\""))
         assertTrue(html.contains("property=\"og:image\" content=\"https://politisation-populaire-francaise.org/static/og-image-1200x630.png\""))
         assertTrue(html.contains("og:image:alt"))
-        for (file in listOf("favicon.ico", "favicon.svg", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "icon-maskable-192.png", "icon-maskable-512.png", "og-image-1200x630.png")) {
+        for (file in listOf("favicon.ico", "favicon-16x16.png", "favicon-32x32.png", "apple-touch-icon.png", "icon-192.png", "icon-512.png", "icon-maskable-192.png", "icon-maskable-512.png", "og-image-1200x630.png")) {
             assertTrue(javaClass.classLoader.getResource("static/$file") != null, "static/$file is served")
         }
         val manifest = javaClass.classLoader.getResource("static/manifest.webmanifest")!!.readText()
