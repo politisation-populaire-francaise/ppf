@@ -83,6 +83,8 @@ import org.politisationpopulairefrancaise.ui.resources.engager_rubric_text
 import org.politisationpopulairefrancaise.ui.resources.engager_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.federer_rubric_text
 import org.politisationpopulairefrancaise.ui.resources.gather_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.harcelement_help_text
+import org.politisationpopulairefrancaise.ui.resources.harcelement_help_title
 import org.politisationpopulairefrancaise.ui.resources.gather_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.federer_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.proches_rubric_text
@@ -123,8 +125,11 @@ object AgirRubrics {
     /** « Se réunir » (D-198): collectifs, organisations, « Créer une association », rooms. */
     val GATHER = AgirRubric("se-reunir", Res.string.gather_rubric_title, Res.string.gather_rubric_text, Lucide.Users)
 
+    /** « Kit contre le harcèlement » (AG-59, D-230): opens the kit the shell draws over the window. */
+    val HARASSMENT = AgirRubric("harcelement", Res.string.harcelement_help_title, Res.string.harcelement_help_text, Lucide.ShieldCheck)
+
     /** What can be opened today. */
-    val available: List<AgirRubric> = listOf(AGENDA, CALLS, FEDERER, ENGAGER, GATHER, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, PROCHES, COLLECTIVES, GUIDES)
+    val available: List<AgirRubric> = listOf(AGENDA, CALLS, FEDERER, ENGAGER, GATHER, TESTIFY, MANIFESTATION, HARASSMENT, ORGANISATIONS, SOLIDARITY, HELP, PROCHES, COLLECTIVES, GUIDES)
 
     /** Planned but not ready: shown honestly, disabled, without any date. */
     val inPreparation: List<AgirRubric> = listOf(

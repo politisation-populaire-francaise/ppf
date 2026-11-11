@@ -300,6 +300,14 @@ Une mobilisation ou un appel devient une affiche A4 ou A3, fabriquée sur votre 
 
 Pour imprimer : choisissez **taille réelle** (ou « 100 % ») dans la fenêtre d'impression, sinon le code QR rétrécit. Ce qui n'est pas encore là : l'iPhone, le PDF sur ordinateur, les affiches d'une fiche ou d'une revendication, les pages du site pour les affiches d'événements très longs.
 
+### Tester le kit contre le harcèlement (ajouté le 11 novembre 2026, sur le téléphone)
+
+1. Touchez **AIDE**, puis **Harcèlement ou divulgation en ligne** (ou, dans « Agir », la carte du même nom).
+2. Touchez **Ajouter une preuve** : la date et l'heure sont déjà remplies. Écrivez une plateforme et un texte inventés (par exemple « [EXEMPLE] message reçu »), puis **Garder cette preuve** : la preuve apparaît avec son empreinte (une suite de chiffres et de lettres).
+3. Ouvrez l'onglet **PHAROS** : le texte du signalement reprend la preuve. **Copier le texte** le met dans le presse-papiers ; PPF n'envoie rien.
+4. Ouvrez la preuve, **Supprimer cette preuve**, puis **Annuler** : elle reste ; recommencez et confirmez : elle disparaît.
+5. Sur l'ordinateur, l'écran dit que les preuves ne sont gardées que sur un téléphone Android ; les modèles restent.
+
 ### Tester « S'engager en politique », « Se réunir », « En ce moment » et les appels à la grève et au blocage (ajouté le 11 novembre 2026)
 
 1. Ouvrez « Agir » : sous le titre, la carte **S'engager en politique** donne la prochaine échéance (le dernier jour pour s'inscrire sur les listes électorales, le vendredi 12 mars 2027) et le nombre de jours restants. Touchez **Voir les étapes** : quatre étapes dans l'ordre du calendrier. **Vérifier mon inscription** ouvre le service officiel (il demande FranceConnect) ; les guides s'ouvrent dans Agir ; **Trouver des colistiers dans les collectifs** ouvre les collectifs, et la flèche retour revient aux étapes.

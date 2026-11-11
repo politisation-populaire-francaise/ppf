@@ -281,6 +281,8 @@ fun AgirScreen(
                             AgirRubrics.FEDERER.id -> route = AgirRoute.FEDERER
                             AgirRubrics.ENGAGER.id -> route = AgirRoute.ENGAGER
                             AgirRubrics.GATHER.id -> route = AgirRoute.GATHER
+                            // AG-59: the kit is drawn by the shell over the window (HarassmentKitLayer).
+                            AgirRubrics.HARASSMENT.id -> help.openHarassmentKit()
                             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
                         }
                     },
