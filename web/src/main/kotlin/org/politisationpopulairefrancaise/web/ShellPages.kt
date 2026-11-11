@@ -13,6 +13,16 @@ import kotlinx.html.h3
 import kotlinx.html.id
 import kotlinx.html.li
 import kotlinx.html.p
+import kotlinx.html.nav
+import org.politisationpopulairefrancaise.core.agir.calls.Call
+import org.politisationpopulairefrancaise.core.editorial.Article
+import org.politisationpopulairefrancaise.core.editorial.RevendicationStatus
+import org.politisationpopulairefrancaise.core.endirect.LiveBlock
+import org.politisationpopulairefrancaise.core.endirect.LivePreset
+import org.politisationpopulairefrancaise.core.time.CivilDate
+import org.politisationpopulairefrancaise.core.voir.VoirAlert
+import org.politisationpopulairefrancaise.core.voir.VoirItem
+import org.politisationpopulairefrancaise.web.decider.RevendicationLinks
 import kotlinx.html.section
 import kotlinx.html.span
 import kotlinx.html.ul
@@ -50,6 +60,9 @@ class LiveContents(
     val voir: VoirCatalog? = null,
     val petitions: List<Petition> = emptyList(),
     val decryptages: List<NavLink> = emptyList(),
+    val alerts: List<VoirAlert> = emptyList(),
+    val calls: List<Call> = emptyList(),
+    val headline: Article? = null,
 )
 
 private const val LIVE_ITEMS: Int = 3
@@ -65,25 +78,32 @@ fun Route.shellPages(
     comprendre: ComprendreSource? = null,
     decider: DeciderSource? = null,
     agenda: AgendaSource? = null,
+    calls: CallsSource? = null,
 ) {
     get(SiteNavigation.HELP_PATH) { call.respondHtml { helpDocument() } }
     // The site opens on « En direct », as the application does.
-    get("/") {
-        val contents = liveContents(voir, comprendre, decider, agenda)
-        call.respondHtml { liveDocument(contents) }
-    }
-    get("/${Space.EN_DIRECT.id}") {
-        val contents = liveContents(voir, comprendre, decider, agenda)
-        call.respondHtml { liveDocument(contents) }
+    for (path in listOf("/", "/${Space.EN_DIRECT.id}")) {
+        get(path) {
+            val contents = liveContents(voir, comprendre, decider, agenda, calls)
+            val view = viewOf(call.request.queryParameters["vue"])
+            call.respondHtml { liveDocument(contents, view) }
+        }
     }
     appSpaces.forEach { space ->
         get("/${space.id}") { call.respondHtml { appSpaceDocument(space) } }
     }
 }
 
-private suspend fun liveContents(voir: VoirSource?, comprendre: ComprendreSource?, decider: DeciderSource?, agenda: AgendaSource?): LiveContents {
+private suspend fun liveContents(
+    voir: VoirSource?,
+    comprendre: ComprendreSource?,
+    decider: DeciderSource?,
+    agenda: AgendaSource?,
+    calls: CallsSource?,
+): LiveContents {
     val voirCatalog = voir?.catalog()?.takeUnless { it.isEmpty }
     val today = parisToday()
+    val now = java.time.Instant.now().epochSecond
     return LiveContents(
         mobilizations = agenda?.mobilizations(AgendaQuery()).orEmpty().take(LIVE_ITEMS),
         figures = voirCatalog?.let { catalog ->
@@ -95,31 +115,141 @@ private suspend fun liveContents(voir: VoirSource?, comprendre: ComprendreSource
         decryptages = comprendre?.catalog()?.decryptages?.take(LIVE_ITEMS)?.mapNotNull { d ->
             ComprendreLinks.pathOf(d.article)?.let { NavLink(d.article.title, it) }
         }.orEmpty(),
+        alerts = voirCatalog?.let { VoirAlert.of(it, today) }.orEmpty(),
+        calls = calls?.calls().orEmpty()
+            .filter { it.isOpen && (it.deadline == null || it.deadline!! >= now) }
+            .sortedBy { it.dueAt ?: Long.MAX_VALUE }
+            .take(LIVE_ITEMS),
+        headline = decider?.demands()?.let(::demandOfTheMoment),
     )
 }
+
+/** The demand of the moment, as in the application: a campaign first, then a demand kept, then a very supported one. */
+internal fun demandOfTheMoment(demands: List<Article>): Article? =
+    listOf(RevendicationStatus.CAMPAGNE, RevendicationStatus.RETENUE, RevendicationStatus.TRES_SOUTENUE)
+        .firstNotNullOfOrNull { status -> demands.firstOrNull { it.status == status } }
+
+/** The ready-made view asked by `?vue=` (« L'essentiel » otherwise), as in the application, without account nor script. */
+internal fun viewOf(parameter: String?): LivePreset = parameter?.let(LivePreset::fromId) ?: LivePreset.ESSENTIEL
 
 // ---------------------------------------------------------------------------------------------
 // En direct
 
-fun HTML.liveDocument(contents: LiveContents) {
+private val VIEW_LABELS: Map<LivePreset, String> = mapOf(
+    LivePreset.ESSENTIEL to "L’essentiel",
+    LivePreset.MOBILISATION to "Mobilisation",
+    LivePreset.POLITIQUE to "Politique",
+    LivePreset.PRES_DE_CHEZ_MOI to "Près de chez moi",
+)
+
+fun HTML.liveDocument(contents: LiveContents, view: LivePreset = LivePreset.ESSENTIEL) {
     siteLayout(pageTitle = "En direct", currentSpace = Space.EN_DIRECT) {
         h1 { +"En direct" }
-        p(classes = "lead") { +"Ce qu’il faut savoir en moins de trente secondes : les prochaines mobilisations, les chiffres clés, les derniers faits sourcés et ce qui se décide." }
+        p(classes = "lead") { +"Ce qu’il faut savoir en moins de trente secondes, en quatre vues : choisissez la vôtre. Dans l’application, chacun compose aussi les siennes." }
+        nav(classes = "view-tabs") {
+            attributes["aria-label"] = "Vues d’En direct"
+            ul {
+                LivePreset.entries.forEach { preset ->
+                    li {
+                        a(href = if (preset == LivePreset.ESSENTIEL) "/${Space.EN_DIRECT.id}" else "/${Space.EN_DIRECT.id}?vue=${preset.id}") {
+                            if (preset == view) attributes["aria-current"] = "page"
+                            +VIEW_LABELS.getValue(preset)
+                        }
+                    }
+                }
+            }
+        }
+        view.blocks.forEach { block -> liveBlock(block, contents) }
+        if (view == LivePreset.ESSENTIEL || view == LivePreset.POLITIQUE) {
+            section {
+                id = "vrai-faux"
+                h2 { +"Le vrai du faux" }
+                if (contents.decryptages.isEmpty()) p(classes = "muted") { +"Aucun décryptage publié pour l’instant." }
+                ul(classes = "card-list") { contents.decryptages.forEach { link -> li { a(href = link.href) { +link.label } } } }
+                p(classes = "section-more") { a(href = "${ComprendreLinks.HOME}/${ComprendreLinks.DECRYPTAGES}") { +"Tous les décryptages" } }
+            }
+        }
         section {
+            id = "application"
+            h2 { +"Dans l’application" }
+            p { +"Le fil en direct, vos rappels, la semaine au Parlement et les mobilisations de votre territoire sont dans l’application PPF, qui fonctionne aussi hors ligne. Elle s’ouvre d’abord en bêta, sur invitation." }
+        }
+    }
+}
+
+/** One block of the page, the same as in the application; those only the application has are left out. */
+private fun FlowContent.liveBlock(block: LiveBlock, contents: LiveContents) {
+    when (block) {
+        LiveBlock.ALERTS -> section {
+            id = "alertes"
+            h2 { +"Alertes" }
+            if (contents.alerts.isEmpty()) p(classes = "muted") { +"Aucun vote proche ni interdiction récente." }
+            ul(classes = "card-list") {
+                contents.alerts.forEach { alert ->
+                    li {
+                        when (alert) {
+                            is VoirAlert.UpcomingVote -> {
+                                p(classes = "kicker alert-kicker") { +(when (alert.daysLeft) { 0 -> "Vote aujourd’hui"; 1 -> "Vote demain"; else -> "Vote dans ${alert.daysLeft} jours" }) }
+                                a(href = VoirLinks.pathOf(VoirItem.OfText(alert.text))) { +alert.text.title }
+                            }
+                            is VoirAlert.ProtestBan -> {
+                                p(classes = "kicker alert-kicker") { +"Interdiction de manifester" }
+                                a(href = VoirLinks.pathOf(VoirItem.OfFact(alert.fact))) { +alert.fact.title }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        LiveBlock.UPCOMING -> section {
             id = "mobilisations"
             h2 { +"Prochaines mobilisations" }
             if (contents.mobilizations.isEmpty()) p(classes = "muted") { +"Aucune mobilisation annoncée pour les semaines à venir." }
             contents.mobilizations.forEach { mobilization(it, compact = true) }
-            p(classes = "section-more") { a(href = "/agenda") { +"Tout l’agenda des mobilisations" } }
+            p(classes = "section-more") { a(href = "/agenda") { +"Tout l’agenda, filtré par territoire" } }
         }
-        section {
+        LiveBlock.CALLS -> section {
+            id = "appels"
+            h2 { +"Appels qui pressent" }
+            if (contents.calls.isEmpty()) p(classes = "muted") { +"Aucun appel ouvert pour l’instant." }
+            ul(classes = "card-list") {
+                contents.calls.forEach { c ->
+                    li {
+                        a(href = callPath(c)) { +c.title }
+                        c.dueAt?.let { due -> p(classes = "muted") { +"Avant le ${CivilDate.fromEpochSeconds(due).toFrench()}" } }
+                    }
+                }
+            }
+            p(classes = "section-more") { a(href = "/appels") { +"Tous les appels ouverts" } }
+        }
+        LiveBlock.DECIDER -> section {
+            id = "decider"
+            h2 { +"Décider ensemble" }
+            ul(classes = "card-list") {
+                li { a(href = "${DeciderLinks.HOME}#pacte") { +"La Constitution Citoyenne et Démocratique" } }
+                contents.petitions.forEach { petition -> li { a(href = DeciderLinks.petition(petition)) { +petition.title } } }
+            }
+            p(classes = "section-more") { a(href = DeciderLinks.HOME) { +"Tout « Décider »" } }
+        }
+        LiveBlock.HEADLINE -> section {
+            id = "une"
+            h2 { +"Revendication à la une" }
+            val demand = contents.headline
+            if (demand == null) p(classes = "muted") { +"Aucune revendication en campagne pour l’instant." }
+            else {
+                p { a(href = RevendicationLinks.of(demand)) { +demand.title } }
+                demand.summary?.let { p { +it } }
+            }
+            p(classes = "section-more") { a(href = RevendicationLinks.HOME) { +"Le mur des revendications" } }
+        }
+        LiveBlock.FIGURES -> section {
             id = "chiffres"
             h2 { +"Chiffres clés" }
             if (contents.figures.isEmpty()) p(classes = "muted") { +"Les chiffres clés ne sont pas encore publiés." }
             div(classes = "card-grid") { contents.figures.forEach { keyFigureCard(it, level = 3) } }
             p(classes = "section-more") { a(href = VoirLinks.HOME) { +"Tous les chiffres de « Voir »" } }
         }
-        section {
+        LiveBlock.CHRONOLOGY -> section {
             id = "faits"
             h2 { +"Derniers faits sourcés" }
             val catalog = contents.voir
@@ -127,27 +257,8 @@ fun HTML.liveDocument(contents: LiveContents) {
             else contents.facts.forEach { factCard(it, catalog, level = 3) }
             p(classes = "section-more") { a(href = VoirLinks.CHRONOLOGY) { +"Toute la chronologie du mouvement" } }
         }
-        section {
-            id = "decider"
-            h2 { +"Ce qui se décide" }
-            ul(classes = "card-list") {
-                li { a(href = "${DeciderLinks.HOME}#pacte") { +"La Constitution Citoyenne et Démocratique" } }
-                contents.petitions.forEach { petition -> li { a(href = DeciderLinks.petition(petition)) { +petition.title } } }
-            }
-            p(classes = "section-more") { a(href = DeciderLinks.HOME) { +"Tout « Décider »" } }
-        }
-        section {
-            id = "vrai-faux"
-            h2 { +"Le vrai du faux" }
-            if (contents.decryptages.isEmpty()) p(classes = "muted") { +"Aucun décryptage publié pour l’instant." }
-            ul(classes = "card-list") { contents.decryptages.forEach { link -> li { a(href = link.href) { +link.label } } } }
-            p(classes = "section-more") { a(href = "${ComprendreLinks.HOME}/${ComprendreLinks.DECRYPTAGES}") { +"Tous les décryptages" } }
-        }
-        section {
-            id = "application"
-            h2 { +"Dans l’application" }
-            p { +"Le fil en direct, les alertes de votre territoire, la carte des mobilisations et les appels sont dans l’application PPF, qui fonctionne aussi hors ligne. Elle s’ouvre d’abord en bêta, sur invitation." }
-        }
+        // The live posts, the reminders, the week in Parliament and the news of PPF are in the application.
+        LiveBlock.LIVE, LiveBlock.PARLIAMENT, LiveBlock.REMINDERS, LiveBlock.NEWS -> Unit
     }
 }
 

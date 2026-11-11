@@ -139,6 +139,10 @@ import org.politisationpopulairefrancaise.ui.components.avatarLetters
 import org.politisationpopulairefrancaise.ui.comprendre.rememberComprendreLibrary
 import org.politisationpopulairefrancaise.ui.content.ComprendreScreen
 import org.politisationpopulairefrancaise.ui.content.ContentLibrary
+import org.politisationpopulairefrancaise.ui.endirect.LiveBoardState
+import org.politisationpopulairefrancaise.ui.endirect.RemindersBlock
+import org.politisationpopulairefrancaise.ui.endirect.UrgentCallsBlock
+import org.politisationpopulairefrancaise.ui.endirect.rememberLiveBoardState
 import org.politisationpopulairefrancaise.ui.content.rememberContentLibrary
 import org.politisationpopulairefrancaise.ui.feed.FeedScreen
 import org.politisationpopulairefrancaise.ui.glossaire.ProvideGlossary
@@ -278,6 +282,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // A rubric of "Agir" asked by the shell (the last screen of the tutorial), forgotten once applied.
     var agirRoute by remember { mutableStateOf<AgirRoute?>(null) }
     RegisterErasable(dependencies, TutorialState.ERASABLE_ID) { dependencies.tutorial?.forget() }
+    // How the person composed « En direct » (views, blocks), kept on the device only.
+    val liveBoard = rememberLiveBoardState(dependencies.liveBoard)
+    RegisterErasable(dependencies, LiveBoardState.ERASABLE_ID) { liveBoard.forget() }
     // The quick erase (S-44): the keys, with what « Effacer mes clés » already forgets (D-032, D-039), and the rally point.
     RegisterErasable(dependencies, "core-identity") {
         dependencies.identityStore.clear()
@@ -310,7 +317,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // Décider: the voting tokens, pending requests and choices of the device (S-44).
     RegisterErasable(dependencies, VotingState.ERASABLE_ID) { voting.eraseFromDevice() }
     // The personal reminders of the device (DE-28, S-98): every reminder and what it was asked for.
-    dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { ReminderStore(database) }) }
+    val reminderStore = dependencies.database?.let { database -> remember(database) { ReminderStore(database) } }
+    reminderStore?.let { RegisterErasable(dependencies, it) }
     // Décider: the private notes of the letters sent to one's elected officials (DE-09, D-119).
     dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { LetterNoteStore(database) }) }
     dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { DocumentRequestStore(database) }) }
@@ -391,34 +399,37 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 centerOpen = false
             }
             // An entry of the centre opens what it points to when the shell knows the way; otherwise it is only marked read.
-            val openEntry: (NotificationEntry) -> Unit = { entry ->
-                notificationCenter?.markRead(entry.id)
-                val conversation = entry.target?.takeIf { it.startsWith(MESSAGES_TARGET) }?.removePrefix(MESSAGES_TARGET)
+            val openTarget: (String?) -> Unit = { target ->
+                val conversation = target?.takeIf { it.startsWith(MESSAGES_TARGET) }?.removePrefix(MESSAGES_TARGET)
                 if (conversation != null) {
                     messaging.conversations.firstOrNull { it.id == conversation }?.conversation?.let(messaging::open)
                     navigate(Space.MESSAGES)
-                } else if (entry.target == AccountAlerts.MY_SPACE_TARGET) {
+                } else if (target == AccountAlerts.MY_SPACE_TARGET) {
                     navigate(Space.MON_ESPACE)
-                } else if (entry.target == VoteAlertCodes.TARGET) {
+                } else if (target == VoteAlertCodes.TARGET) {
                     // « Mes élus ont voté » (VO-34), in the Parliament of « Voir ».
                     parliamentState.openMyVotes()
                     navigate(Space.VOIR)
-                } else if (entry.target?.startsWith(DeciderRemindersState.ELECTION_TARGET) == true) {
-                    val id = entry.target.orEmpty().removePrefix(DeciderRemindersState.ELECTION_TARGET)
+                } else if (target?.startsWith(DeciderRemindersState.ELECTION_TARGET) == true) {
+                    val id = target.orEmpty().removePrefix(DeciderRemindersState.ELECTION_TARGET)
                     contentLibrary.decider.elections.firstOrNull { it.election.id == id }?.let { deciderState.open(DeciderDestination.Election(it.address)) }
                     navigate(Space.DECIDER)
-                } else if (entry.target == DeciderRemindersState.DOCUMENT_TARGET) {
+                } else if (target == DeciderRemindersState.DOCUMENT_TARGET) {
                     deciderState.open(DeciderDestination.Documents)
                     navigate(Space.DECIDER)
-                } else if (entry.target?.startsWith(DeciderRemindersState.CONSULTATION_TARGET) == true) {
-                    val slug = entry.target.orEmpty().removePrefix(DeciderRemindersState.CONSULTATION_TARGET)
+                } else if (target?.startsWith(DeciderRemindersState.CONSULTATION_TARGET) == true) {
+                    val slug = target.orEmpty().removePrefix(DeciderRemindersState.CONSULTATION_TARGET)
                     contentLibrary.decider.consultations.firstOrNull { it.article.slug == slug }?.let { deciderState.open(DeciderDestination.Consultation(it.address)) }
                     navigate(Space.DECIDER)
-                } else if (entry.target?.startsWith(DeciderRemindersState.PETITION_TARGET) == true) {
-                    val slug = entry.target.orEmpty().removePrefix(DeciderRemindersState.PETITION_TARGET)
+                } else if (target?.startsWith(DeciderRemindersState.PETITION_TARGET) == true) {
+                    val slug = target.orEmpty().removePrefix(DeciderRemindersState.PETITION_TARGET)
                     contentLibrary.decider.petitions.firstOrNull { it.article.slug == slug }?.let { deciderState.open(DeciderDestination.Petition(it.address)) }
                     navigate(Space.DECIDER)
                 }
+            }
+            val openEntry: (NotificationEntry) -> Unit = { entry ->
+                notificationCenter?.markRead(entry.id)
+                openTarget(entry.target)
             }
             val bell = notificationCenter?.let { center -> Bell(center.unreadCount) { centerOpen = true } }
             val center = notificationCenter
@@ -463,6 +474,9 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     notificationsSettings = notificationsSettings,
                     windowClass = windowClass,
                     modifier = modifier.testTag(ShellTags.CONTENT),
+                    liveBoard = liveBoard,
+                    reminderStore = reminderStore,
+                    openTarget = openTarget,
                 )
             }
             // AG-59: the kit against harassment, opened from the AIDE sheet, is drawn over the shell.
@@ -523,6 +537,9 @@ private fun SpaceContent(
     notificationsSettings: NotificationsSettingsState?,
     windowClass: WindowClass,
     modifier: Modifier,
+    liveBoard: LiveBoardState? = null,
+    reminderStore: ReminderStore? = null,
+    openTarget: (String?) -> Unit = {},
 ) {
     // The organisers of the agenda are named after the directory when they are verified organisations.
     val organisationName: (String) -> String? = { key -> organisationsLibrary.verified.organisationFor(key)?.name }
@@ -538,6 +555,19 @@ private fun SpaceContent(
                 }
             },
             parliamentWeek = { slotModifier -> ParliamentWeekSlot(parliamentState, slotModifier) },
+            board = liveBoard,
+            calls = { slotModifier ->
+                UrgentCallsBlock(callsLibrary, slotModifier) { call ->
+                    callsLibrary.open(call)
+                    onNavigate(Space.APPELS)
+                }
+            },
+            reminders = reminderStore?.let { store -> { slotModifier: Modifier -> RemindersBlock(store, slotModifier) { openTarget(it.target) } } },
+            onRefresh = {
+                contentLibrary.refresh()
+                agendaLibrary.refresh()
+                callsLibrary.refresh()
+            },
             // MVP 1 (jalon 3): demands, official petitions and Pacte one touch away from "En direct".
             decider = { slotModifier ->
                 val catalog = contentLibrary.decider

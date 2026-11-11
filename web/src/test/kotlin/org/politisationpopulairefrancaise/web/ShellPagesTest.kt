@@ -22,6 +22,20 @@ class ShellPagesTest {
     }
 
     @Test
+    fun theViewsOfEnDirectAreLinksThatOrderTheBlocks() {
+        val essential = createHTML().html { liveDocument(LiveContents()) }
+        assertTrue(essential.contains("<a href=\"/en-direct?vue=mobilisation\">Mobilisation</a>"))
+        assertTrue(essential.contains("<a href=\"/en-direct\" aria-current=\"page\">L’essentiel</a>"))
+        val mobilisation = createHTML().html { liveDocument(LiveContents(), viewOf("mobilisation")) }
+        // « Mobilisation »: the agenda and the calls first, no fact-checks.
+        assertTrue(mobilisation.indexOf("id=\"mobilisations\"") < mobilisation.indexOf("id=\"appels\""))
+        assertFalse(mobilisation.contains("id=\"vrai-faux\""))
+        assertTrue(mobilisation.contains("aria-current=\"page\">Mobilisation</a>"))
+        // An unknown view is « L'essentiel ».
+        assertTrue(viewOf("inconnue") == org.politisationpopulairefrancaise.core.endirect.LivePreset.ESSENTIEL)
+    }
+
+    @Test
     fun theHelpPageGivesTheEmergencyNumbersFirst() {
         val html = createHTML().html { helpDocument() }
         val samu = html.indexOf("href=\"tel:15\"")

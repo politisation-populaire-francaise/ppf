@@ -41,6 +41,10 @@ import java.io.File
 import javax.imageio.ImageIO
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
+import org.politisationpopulairefrancaise.core.endirect.LiveBlock
+import org.politisationpopulairefrancaise.core.endirect.LiveBoard
+import org.politisationpopulairefrancaise.core.endirect.LivePreset
 import kotlin.test.assertNotNull
 
 /** "En direct", from the contents bundled with the application, on a fixed day (7 November 2026). */
@@ -61,7 +65,7 @@ class EnDirectScreenTest {
         val navigations = mutableListOf<Space>()
     }
 
-    private fun ComposeUiTest.show(width: Int, upcoming: Boolean = false, dark: Boolean = false): Seen {
+    private fun ComposeUiTest.show(width: Int, upcoming: Boolean = false, dark: Boolean = false, store: LiveBoardStore? = null): Seen {
         val seen = Seen()
         val dependencies = dependencies()
         setContent {
@@ -77,6 +81,7 @@ class EnDirectScreenTest {
                         onNavigate = { seen.navigations += it },
                         upcoming = if (upcoming) ({ modifier -> Text("[EXEMPLE] Manifestation à venir", modifier.testTag("agenda-slot")) }) else null,
                         now = { noon7November },
+                        board = rememberLiveBoardState(store),
                     )
                 }
             }
@@ -127,6 +132,28 @@ class EnDirectScreenTest {
         onNodeWithTag(EnDirectTags.NEWS).performScrollTo().assertExists()
         onNodeWithTag(EnDirectTags.CHRONOLOGY).performScrollTo().assert(hasAnyDescendant(hasText("Quatrième journée nationale, la plus suivie depuis septembre")))
         onNodeWithTag("agenda-slot").performScrollTo().assertExists()
+    }
+
+    @Test
+    fun theViewsAndTheBlocksAreChosenAndKeptOnTheDevice() = runComposeUiTest {
+        val store = InMemoryLiveBoardStore()
+        show(400, store = store)
+        // « Politique » opens on the alerts, without the key figures.
+        onNodeWithTag(LiveBoardTags.view(LivePreset.POLITIQUE.id)).performClick()
+        waitForIdle()
+        onNodeWithTag(EnDirectTags.FIGURES).assertDoesNotExist()
+        onNodeWithTag(LiveBoardTags.CUSTOMIZE).performClick()
+        onNodeWithTag(LiveBoardTags.remove(LiveBlock.ALERTS)).performScrollTo().performClick()
+        onNodeWithTag(LiveBoardTags.add(LiveBlock.FIGURES)).performScrollTo().performClick()
+        onNodeWithTag(LiveBoardTags.DONE).performScrollTo().performClick()
+        waitForIdle()
+        onNodeWithTag(LiveBoardTags.EDITOR).assertDoesNotExist()
+        onNodeWithTag(EnDirectTags.ALERTS).assertDoesNotExist()
+        onNodeWithTag(EnDirectTags.FIGURES).performScrollTo().assertExists()
+        // Kept on the device, to be found again at the next opening.
+        val kept = LiveBoard.decode(store.load())
+        assertEquals(LivePreset.POLITIQUE.id, kept.selected.id)
+        assertTrue(LiveBlock.FIGURES in kept.selected.blocks && LiveBlock.ALERTS !in kept.selected.blocks)
     }
 
     @Test
