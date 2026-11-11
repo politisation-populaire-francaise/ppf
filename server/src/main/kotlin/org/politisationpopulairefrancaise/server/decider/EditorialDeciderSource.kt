@@ -52,6 +52,18 @@ class EditorialDeciderSource(
         org.politisationpopulairefrancaise.core.decider.DeliberationBoard.from(readEvents(types)) { policy.isEditor(it) }
     }
 
+    /**
+     * The demands of the wall signed by the editorial team (D-152: those of the movement, the citizen demands
+     * the team relays, the examples), the latest version of each, newest first.
+     */
+    override suspend fun demands(): List<Article> = withContext(Dispatchers.IO) {
+        readEvents(listOf(org.politisationpopulairefrancaise.core.editorial.ArticleType.REVENDICATION.tagValue))
+            .filter { policy.isEditor(it.pubkey) }
+            .mapNotNull(Article::from)
+            .groupBy { it.address }.values.map { versions -> versions.maxBy { it.updatedAt } }
+            .sortedWith(compareByDescending<Article> { it.updatedAt }.thenBy { it.title.lowercase() })
+    }
+
     /** Every stored content of these types, page after page (newest first), at most [MAX_EVENTS]. */
     private fun readEvents(types: List<String> = DeciderCatalog.TYPES.map { it.tagValue }): List<SignedEvent> {
         val seen = LinkedHashMap<String, SignedEvent>()

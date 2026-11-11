@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
+import org.politisationpopulairefrancaise.ui.components.ReportContentButton
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -274,6 +275,9 @@ internal fun MobilizationDetail(
             }
 
             MobilizationFollowUps(mobilization, agenda, openLink) // AG-62 « Et après ? », past mobilizations only (FollowUpsSection.kt)
+
+            // S-38, D-234: any user may report the mobilization to the team.
+            ReportContentButton(mobilization.address.toString())
 
             Spacer(Modifier.height(20.dp))
             Text(

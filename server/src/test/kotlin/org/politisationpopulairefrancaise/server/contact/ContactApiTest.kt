@@ -19,6 +19,8 @@ import io.ktor.server.testing.ApplicationTestBuilder
 import io.ktor.server.testing.testApplication
 import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.contact.CaseApi
+import org.politisationpopulairefrancaise.core.contact.ReportReason
+import org.politisationpopulairefrancaise.core.contact.ContentReports
 import org.politisationpopulairefrancaise.core.contact.CaseCode
 import org.politisationpopulairefrancaise.core.contact.CaseCreated
 import org.politisationpopulairefrancaise.core.contact.CaseCreation
@@ -110,6 +112,27 @@ class ContactApiTest {
     /** A member of the team, as a row only (the replies of the team name their author). */
     private fun teamAccount(): UUID = TestDatabase.dataSource.connection.use { connection ->
         BackOfficeTestData.accounts.create(connection, "Équipe ${UUID.randomUUID().toString().take(8)}", ByteArray(32).also { java.security.SecureRandom().nextBytes(it) }, null, clock.instant()).id
+    }
+
+    @Test
+    fun aReportKeepsItsContentAndReasonInClearAndTheReportsAreGroupedByContent() = testApplication {
+        // S-38, D-234: the address of the content and the reason in clear, the comment encrypted, the author unknown.
+        val client = server()
+        val address = "30023:${"a".repeat(64)}:appel-exemple"
+        val now = clock.instant().epochSecond
+        repeat(2) {
+            val prepared = runBlocking { ContentReports.prepare(address, ReportReason.HATE, "[EXEMPLE] Un commentaire.", ContactInbox.EXAMPLE, now) }
+            assertEquals(HttpStatusCode.Created, client.create(prepared.creation).status)
+            assertEquals(address, assertNotNull(store.find(prepared.creation.number)).reportContent)
+        }
+        assertEquals(listOf(ReportedContent(address, 2, listOf("haine"), clock.instant())), store.reportsByContent())
+        // Only a report carries them, well formed.
+        val bug = draft(CaseNature.Ticket(TicketSubtype.BUG)).creation().copy(reportContent = address, reportReason = "spam")
+        val refused = client.create(bug)
+        assertEquals(422, refused.status.value)
+        assertEquals("bad_report", errorOf(refused))
+        val badAddress = draft(CaseNature.Ticket(TicketSubtype.REPORT)).creation().copy(reportContent = "pas une adresse", reportReason = "spam")
+        assertEquals("bad_report", errorOf(client.create(badAddress)))
     }
 
     @Test

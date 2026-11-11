@@ -9,6 +9,7 @@ import kotlinx.html.InputType
 import kotlinx.html.a
 import kotlinx.html.button
 import kotlinx.html.caption
+import kotlinx.html.code
 import kotlinx.html.dd
 import kotlinx.html.div
 import kotlinx.html.dl
@@ -179,6 +180,38 @@ class ContactSection(
             h1 { +scope.title }
             p { +scope.intro }
             filterForm(this@inbox, filters, restricted)
+            // S-38, D-234: the open reports grouped by content, the most reported first; the list hides nothing by itself.
+            if (scope == ContactScope.ALL) {
+                val reported = store.reportsByContent()
+                section {
+                    attributes["aria-labelledby"] = "signalements"
+                    h2 { id = "signalements"; +ContactTexts.REPORTS_TITLE }
+                    p(classes = "bo-hint") { +ContactTexts.REPORTS_INTRO }
+                    if (reported.isEmpty()) {
+                        p { +ContactTexts.REPORTS_EMPTY }
+                    } else {
+                        table(classes = "bo-table") {
+                            caption { +ContactTexts.REPORTS_TITLE }
+                            thead {
+                                tr {
+                                    listOf(ContactTexts.COLUMN_CONTENT, ContactTexts.COLUMN_REPORTS, ContactTexts.COLUMN_REASONS, ContactTexts.COLUMN_LAST_REPORT)
+                                        .forEach { th { attributes["scope"] = "col"; +it } }
+                                }
+                            }
+                            tbody {
+                                reported.forEach { item ->
+                                    tr {
+                                        td { code { +item.address } }
+                                        td { +item.reports.toString() }
+                                        td { +item.reasons.joinToString(", ") { ContactTexts.reportReason(it) } }
+                                        td { dateTime(item.lastAt) }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             section {
                 attributes["aria-labelledby"] = "boite"
                 h2 { id = "boite"; +ContactTexts.INBOX_TITLE }

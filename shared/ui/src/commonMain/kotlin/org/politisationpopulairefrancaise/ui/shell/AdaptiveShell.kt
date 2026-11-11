@@ -65,6 +65,8 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.PaddingValues
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
+import org.politisationpopulairefrancaise.core.contact.CaseSender
+import org.politisationpopulairefrancaise.ui.components.LocalCaseSender
 import org.politisationpopulairefrancaise.ui.components.SystemBack
 import org.politisationpopulairefrancaise.core.comprendre.ComprendreDeviceData
 import org.politisationpopulairefrancaise.core.Space
@@ -376,7 +378,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     // The system's back leads from any space to « En direct »; the screens close what they opened first.
     SystemBack(enabled = selected != Space.default) { selected = Space.default }
 
-    ProvideTutorial(tutorial) { ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting, LocalPreparePhoneNotifications provides notificationsSettings) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
+    ProvideTutorial(tutorial) { ProvideGlossary(glossary) { ProvideHelp(help) { ProvidePublishing(accountSession) { CompositionLocalProvider(LocalVoting provides voting, LocalCaseSender provides (dependencies.remote as? CaseSender), LocalPreparePhoneNotifications provides notificationsSettings) { ProvideDeviceSecurity(security) { DeviceSecurityGate(security) {
         // The ink of the theme for every text of the shell, on every format: the scaffold of phones gave it,
         // the rail and the side bar of larger windows did not (black titles on the dark theme).
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) { CompositionLocalProvider(LocalContentColor provides palette.ink) {
@@ -411,6 +413,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 } else if (entry.target?.startsWith(DeciderRemindersState.CONSULTATION_TARGET) == true) {
                     val slug = entry.target.orEmpty().removePrefix(DeciderRemindersState.CONSULTATION_TARGET)
                     contentLibrary.decider.consultations.firstOrNull { it.article.slug == slug }?.let { deciderState.open(DeciderDestination.Consultation(it.address)) }
+                    navigate(Space.DECIDER)
+                } else if (entry.target?.startsWith(DeciderRemindersState.PETITION_TARGET) == true) {
+                    val slug = entry.target.orEmpty().removePrefix(DeciderRemindersState.PETITION_TARGET)
+                    contentLibrary.decider.petitions.firstOrNull { it.article.slug == slug }?.let { deciderState.open(DeciderDestination.Petition(it.address)) }
                     navigate(Space.DECIDER)
                 }
             }

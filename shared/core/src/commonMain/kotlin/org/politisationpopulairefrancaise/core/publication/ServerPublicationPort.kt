@@ -19,6 +19,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.builtins.ListSerializer
 import kotlinx.serialization.json.Json
+import org.politisationpopulairefrancaise.core.contact.CaseApi
+import org.politisationpopulairefrancaise.core.contact.CaseCreation
+import org.politisationpopulairefrancaise.core.contact.CaseSender
+import org.politisationpopulairefrancaise.core.contact.ReportOutcome
 import org.politisationpopulairefrancaise.core.decider.ComparatorPhotos
 import org.politisationpopulairefrancaise.core.elus.ElusReader
 import org.politisationpopulairefrancaise.core.groups.Group
@@ -44,10 +48,29 @@ class ServerPublicationPort(
     internal val client: HttpClient,
     /** Origin of the server, without trailing slash, e.g. "https://politisation-populaire-francaise.org". */
     internal val baseUrl: String,
-) : RemoteEvents, ProposalStatusSource, HeldStatusSource, CompromisedRefusals {
+) : RemoteEvents, ProposalStatusSource, HeldStatusSource, CompromisedRefusals, CaseSender {
 
     private val refused = MutableStateFlow<Set<String>>(emptySet())
     override val refusedAsCompromised: StateFlow<Set<String>> get() = refused
+
+    /** `POST /api/v1/cases` (M30): a report of a content, or any case (S-38, D-234). */
+    override suspend fun createCase(creation: CaseCreation): ReportOutcome {
+        val response = try {
+            client.post("$baseUrl${CaseApi.CASES}") {
+                contentType(ContentType.Application.Json)
+                setBody(CaseApi.json.encodeToString(CaseCreation.serializer(), creation))
+            }
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            return ReportOutcome.Unreachable
+        }
+        return when (response.status.value) {
+            in 200..299 -> ReportOutcome.Sent(creation.number)
+            in 500..599 -> ReportOutcome.Unreachable
+            else -> ReportOutcome.Refused(runCatching { json.decodeFromString(ApiErrorBody.serializer(), response.bodyAsText()).error }.getOrNull())
+        }
+    }
 
     override suspend fun publish(event: SignedEvent): PublicationResult {
         val response = try {

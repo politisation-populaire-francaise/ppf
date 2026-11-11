@@ -64,6 +64,7 @@ import org.politisationpopulairefrancaise.ui.agir.poster.PosterTags
 import org.politisationpopulairefrancaise.ui.agir.testimonies.LocalTestify
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.*
+import org.politisationpopulairefrancaise.ui.components.ReportContentButton
 import org.politisationpopulairefrancaise.ui.theme.Callout
 import org.politisationpopulairefrancaise.ui.theme.CalloutType
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
@@ -137,6 +138,8 @@ internal fun CallDetail(
 
             SectionTitle(stringResource(Res.string.appels_section_text))
             SelectionContainer { Text(call.text, style = MaterialTheme.typography.bodyLarge) }
+            // S-38, D-234: any user may report the call to the team.
+            ReportContentButton(call.address.toString())
 
             PracticalInformation(call, onOpenLink)
 
