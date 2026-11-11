@@ -27,7 +27,7 @@ Nouveau type `ppf-type` = `election` (ajouté à la fin de `ArticleType`), le m�
 ## 3. Dans l'application
 
 - **Mes élections** (dans « Décider » et dans « Mon espace », TE-09) : les prochains scrutins nationaux, et les scrutins locaux de la commune choisie dans « Mon territoire » (calcul sur l'appareil, rien n'est envoyé) ; pour chacun : les tours, chaque échéance avec ce qu'il faut faire, la mention « date annoncée, en attente du décret » tant qu'il le faut, et les liens officiels.
-- **Rappels** : désactivés par défaut (principe 10), proposés une fois ; programmés et gardés sur l'appareil seulement, par le centre de notifications de « Communauté » (M31) ; par défaut sept jours avant la date limite d'inscription, dix jours avant le scrutin pour la procuration, la veille du scrutin ; modifiables et effaçables dans « Mes rappels ».
+- **Rappels** : désactivés par défaut (principe 10), proposés sur la page de l'élection ; programmés et gardés sur l'appareil seulement, par le centre de notifications de « Communauté » (M31) ; sept jours avant chaque date limite d'inscription, dix jours avant chaque tour pour la procuration, la veille de chaque tour, à 10 h ; chaque sorte se coupe, chaque rappel se retire, sur la page de l'élection et, plus tard, dans « Mes rappels » (TE-09).
 - Hors ligne : le contenu `election` est groupé avec les autres contenus de « Décider » et synchronisé comme eux.
 - Le serveur ne sait jamais qui a programmé un rappel ni pour quelle commune.
 
@@ -35,5 +35,5 @@ Nouveau type `ppf-type` = `election` (ajouté à la fin de `ArticleType`), le m�
 
 1. Cœur : `ArticleType.ELECTION`, `ElectionCalendar` (lecture et contrôles), contrôles dans l'outil de signature ; contenu [EXEMPLE] d'une élection fictive.
 2. Écran « Mes élections » dans « Décider » et carte dans « Mon espace ».
-3. Rappels sur l'appareil, branchés sur le centre de notifications de « Communauté » quand il est dans `main`.
+3. Rappels sur l'appareil, branchés sur le centre de notifications de « Communauté » : **fait le 9 novembre 2026** (D-118, contrat commun `docs/integration/rappels.md`, section 4 pour les élections) ; sur ordinateur, un rappel s'affiche à l'ouverture de l'application. L'écran « Mes rappels » (TE-09) est à « Communauté ».
 4. Contenu réel de la présidentielle 2027 : rédigé par l'équipe dès la publication du décret de convocation, puis des législatives et municipales suivantes.

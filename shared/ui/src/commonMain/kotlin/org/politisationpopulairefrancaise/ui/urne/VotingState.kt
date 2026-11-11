@@ -25,6 +25,8 @@ import org.politisationpopulairefrancaise.core.decider.SupportThresholds
 import org.politisationpopulairefrancaise.core.territoires.Territoires
 import org.politisationpopulairefrancaise.core.urne.VoterStatus
 import org.politisationpopulairefrancaise.core.urne.LibsodiumRistretto255
+import org.politisationpopulairefrancaise.core.urne.MyBallot
+import org.politisationpopulairefrancaise.core.urne.MyBallotCheck
 import org.politisationpopulairefrancaise.core.urne.Ristretto255
 import org.politisationpopulairefrancaise.core.urne.UrneAnswer
 import org.politisationpopulairefrancaise.core.urne.UrneInfo
@@ -146,6 +148,33 @@ class VotingState internal constructor(
         val national = referential.national()?.france?.population?.municipale ?: return null
         val population = if (key == FRANCE) national else referential.resolve(key)?.population?.municipale ?: return null
         return SupportThresholds.of(population, national).also { thresholds[key] = it }
+    }
+
+    /**
+     * « Mon bulletin a été compté » (DE-29): downloads the list published at the closing of the box of [subject]
+     * (anonymous client, the same request whether or not this device voted there), replays the recount and looks
+     * for this device's ballot. Null when the box is not closed or the list cannot be had now. Nothing is sent
+     * about the device and nothing is kept: the answer lives only on the screen that asked for it.
+     */
+    suspend fun checkClosed(subject: String): MyBallotCheck? {
+        val box = boxes[subject]?.takeIf { it.closed } ?: return null
+        val voteRemote = remote ?: return null
+        val closing = when (val answer = voteRemote.closing(box.number)) {
+            is UrneAnswer.Ok -> answer.value
+            is UrneAnswer.Failure -> return null
+        }
+        return withContext(Dispatchers.Default) {
+            val group = try {
+                loadGroup()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Throwable) {
+                return@withContext null
+            }
+            // An elected official's vote is public (D-115): there is no anonymous ballot of theirs to look for.
+            val token = if (elected) null else store?.token(box.number)
+            MyBallot.check(box, token, closing, group)
+        }
     }
 
     private suspend fun session(): UrneSession? = sessionLock.withLock {

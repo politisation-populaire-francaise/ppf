@@ -120,7 +120,7 @@ class ScreenshotTest {
         mainClock.advanceTimeBy(1_000)
         waitForIdle()
         save("$prefix-revendications-filtrees")
-        onNodeWithTag(RevendicationTags.CUSTOMIZE).performClick()
+        onNodeWithTag(RevendicationTags.CUSTOMIZE).performScrollTo().performClick()
         waitForIdle()
         mainClock.advanceTimeBy(1_000)
         waitForIdle()

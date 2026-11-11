@@ -130,6 +130,24 @@ class UrneServiceTest {
     }
 
     @Test
+    fun theVotesOfTheDashboardAreCountedByMonthWithoutTheWithdrawals() {
+        val first = pubkey()
+        val second = pubkey()
+        listOf(first, second).forEach { service.register(it) }
+        val november = box("novembre", days = 60).number
+        vote(november, tokens(first).getValue(november), "pour")
+        val secondToken = tokens(second).getValue(november)
+        vote(november, secondToken, "contre")
+        assertEquals(mapOf("2026-11" to 2L), store.votesByMonth())
+        // A withdrawal is not a vote; a ballot is counted in the month of its last reception.
+        vote(november, secondToken, "retire")
+        assertEquals(mapOf("2026-11" to 1L), store.votesByMonth())
+        clock.instant = Instant.parse("2026-12-02T12:00:00Z")
+        vote(november, secondToken, "pour")
+        assertEquals(mapOf("2026-11" to 1L, "2026-12" to 1L), store.votesByMonth())
+    }
+
+    @Test
     fun aBoxOpenedLaterIsServedToAnAccountAlreadyServed() {
         val citizen = pubkey()
         service.register(citizen)

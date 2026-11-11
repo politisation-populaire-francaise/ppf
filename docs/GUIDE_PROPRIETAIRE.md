@@ -367,7 +367,7 @@ Sur l'ordinateur, l'écran se présente en deux colonnes.
 
 ### Tester l'espace « Décider » (ajouté le 7 novembre 2026)
 
-Tout est inventé et marqué [EXEMPLE] : pétitions, chiffres, élection, candidats et réponses. Seules les règles des pétitions sont réelles (vérifiées le 7 novembre 2026). Aucun compte n'est nécessaire, et tout marche sans réseau.
+Les pétitions sont réelles depuis le 9 novembre 2026 : les deux pétitions ouvertes les plus signées sur le site de l'Assemblée nationale et sur celui du Sénat ce jour-là, avec le nombre de signatures relevé sur le site officiel et la mention « Rédigé par l'IA ». Le Pacte, les candidats et leurs réponses restent inventés et marqués [EXEMPLE]. Aucun compte n'est nécessaire, et tout marche sans réseau.
 
 1. Ouvrez le menu (les trois traits en haut à gauche) et touchez **Décider**. En haut, le **Pacte démocratique**, puis les **pétitions officielles ouvertes**, puis « Et aussi ».
 2. Touchez la carte du **Pacte**. Lisez l'encart « Les mêmes règles pour tous les candidats » (il dit maintenant qu'une réponse reçue après la date limite n'est pas comptée, votre décision du 7 novembre ; aucune réponse d'exemple n'est en retard), puis les six mesures. Plus bas, chaque candidat a sa carte, par ordre alphabétique : Alex a tout signé, Camille a refusé une mesure (avec son commentaire), Dominique a répondu à trois mesures (les autres sont « En attente » jusqu'au 30 novembre), Sacha n'a pas répondu.
@@ -402,6 +402,62 @@ Tout est inventé et marqué [EXEMPLE] : l'élection, les quatre candidats et le
 4. Touchez **Lire la source** : l'application demande d'abord si vous voulez quitter PPF. Touchez **Rester ici**.
 5. **Sa fiche dans « Voir »** ouvre la fiche du candidat.
 6. Sur l'ordinateur, la même page est un tableau : une colonne par candidat, une ligne par thème.
+
+### Tester les rappels d'une élection (ajouté le 9 novembre 2026)
+
+L'élection est réelle : la présidentielle de 2027, dont les dates sont annoncées (premier tour le 18 avril 2027, second tour le 2 mai 2027) mais pas encore fixées par le décret de convocation. Aucun compte n'est nécessaire, et rien ne part sur Internet : les rappels restent sur l'appareil.
+
+1. Ouvrez **Décider**. Dans **Prochaines élections**, touchez la carte « Élection présidentielle de 2027 ».
+2. Descendez jusqu'à **Rappels** : rien n'est programmé tant que vous ne le demandez pas. Touchez **Me rappeler ces dates**. Sur le téléphone, Android vous demande d'autoriser les notifications de PPF : touchez **Autoriser** (si vous refusez, les rappels arriveront seulement dans la cloche de l'application).
+3. La liste **Prochains rappels** apparaît, avec la date et l'heure de chacun (par exemple « Veille du scrutin, le 17 avril 2027 à 10 h »).
+4. Coupez l'interrupteur **Veille du scrutin** : ces rappels disparaissent de la liste. Touchez la croix d'un rappel : il disparaît, et ne reviendra pas.
+5. Dans **Mon espace**, notifications : la ligne **Votes et pétitions** est allumée. Éteignez-la puis revenez sur l'élection : un encadré dit que les rappels ne s'afficheront pas, avec un bouton pour la rallumer.
+6. Touchez **Ne plus me rappeler cette élection** : tout est effacé, le bouton du début revient.
+7. Les vrais rappels arrivent à leur date ; pour en voir un tout de suite, il faudra une élection d'essai plus proche, préparée pour la phase de test.
+
+À l'installation, Android indique que PPF peut « se lancer au démarrage » (permission `RECEIVE_BOOT_COMPLETED`) : elle sert seulement à remettre l'alarme du prochain rappel après un redémarrage du téléphone, ne lit aucune donnée et n'envoie rien.
+
+### Tester les consultations publiques (ajouté le 9 novembre 2026)
+
+Depuis le 9 novembre 2026, la consultation est réelle : le débat public sur le projet de train Réunion Express, ouvert jusqu'au 26 novembre 2026. Comme il concerne La Réunion, il n'apparaît que si une commune de La Réunion est choisie sur l'appareil. Pour l'essayer : dans **Comprendre**, rubrique **Mes élus**, choisissez par exemple Saint-Denis (code postal 97400) ; rien n'est envoyé. Après le 26 novembre, la section disparaît jusqu'à la prochaine consultation. Aucun compte n'est nécessaire. Les étapes ci-dessous décrivent les consultations d'essai des tests automatiques ; sur le téléphone, vous verrez le débat de La Réunion à la place.
+
+1. Ouvrez **Décider** et descendez jusqu'à **Consultations publiques** : la consultation en ligne d'un ministère d'exemple (ouverte, avec le nombre de jours qui restent pour répondre), puis l'enquête publique d'exemple (« À venir », avec sa date d'ouverture).
+2. Touchez la consultation en ligne : la page dit qui l'organise, ses dates, ce que prévoit la loi (avec les articles), et que PPF ne recueille aucune réponse.
+3. Touchez **Répondre sur le site officiel** : l'application demande d'abord si vous voulez quitter PPF. Touchez **Rester ici** (l'adresse d'exemple ne mène nulle part).
+4. Revenez en arrière et ouvrez l'enquête publique. Dans **Rappels**, touchez **Me rappeler cette consultation** : deux rappels apparaissent, à l'ouverture et trois jours avant la clôture, à 10 h. Touchez **Ne plus me rappeler cette consultation** : tout est effacé.
+
+### Tester « Interpeller ses élus » (ajouté le 9 novembre 2026)
+
+Le modèle de courrier est réel et utilisable tel quel : il demande à un député ou à un sénateur comment il votera un texte, à choisir vous-même. Rien n'est envoyé : c'est vous qui envoyez le courrier, si vous le voulez.
+
+1. Ouvrez **Décider** et descendez jusqu'à **Interpeller ses élus**. Touchez le modèle « Avant un vote ».
+2. Sans commune choisie, la page vous le dit : le courrier garde « [Nom de l'élu] » et « [Votre commune] ». Pour voir le nom de vos élus s'inscrire, choisissez d'abord votre commune dans **Comprendre**, rubrique **Mes élus**, puis revenez sur le modèle.
+3. Modifiez le courrier directement dans la zone de texte, puis touchez **Copier le courrier** : un message confirme la copie. Collez-le dans une note pour vérifier.
+4. Les boutons de **Où l'envoyer** ouvrent, après « Vous quittez PPF », la page de contact officielle (des adresses d'exemple pour l'instant).
+5. Dans **Vos envois**, touchez **J'ai envoyé ce courrier** : une note apparaît avec la date du jour, gardée sur ce téléphone seulement. Touchez **J'ai reçu une réponse**, puis la croix pour effacer la note.
+6. Quittez la page : le texte du courrier n'est gardé nulle part.
+
+### Tester les pétitions locales (ajouté le 9 novembre 2026)
+
+La pétition locale est inventée et marquée [EXEMPLE] ; elle est rattachée au code de commune 69123, et n'apparaît que si cette commune est choisie sur l'appareil.
+
+1. Dans **Comprendre**, rubrique **Mes élus**, choisissez la commune 69123 (code postal 69001). Rien n'est envoyé : le code postal ne quitte pas l'appareil.
+2. Ouvrez **Décider** : la section **Pétitions locales** apparaît, avec « 640 signatures sur 1 200 demandées ».
+3. Touchez la carte : la page dit à quelle collectivité la demande s'adresse, comment signer (ici sur papier), et ce que dit la loi (un dixième des électeurs d'une commune, une seule demande par trimestre, le conseil décide librement).
+4. Sans commune choisie, la section n'apparaît pas.
+
+### Demander un document administratif (ajouté le 9 novembre 2026)
+
+1. Ouvrez **Décider**, section **Demander un document administratif**, puis **Rédiger une demande et suivre ses délais**.
+2. Écrivez une administration et un document, tous deux inventés et marqués [EXEMPLE] (par exemple « [EXEMPLE] Mairie de Lyon » et « [EXEMPLE] Délibération du 3 octobre 2026 »), choisissez **Copie papier** : la demande se remplit, avec les articles de loi. Touchez **Copier la demande**.
+3. Dans **Mes demandes**, laissez la date du jour ou écrivez une date passée (par exemple 09/10/2026), puis **Noter cette demande** : la demande apparaît avec la date limite de réponse. Avec une date de plus d'un mois, elle est dite refusée et la date limite pour saisir la CADA s'affiche ; **Préparer la saisine de la CADA** montre le texte à copier.
+4. **Effacer cette demande** la retire de l'appareil. Rien n'est envoyé à aucun moment.
+
+### « Mon bulletin a été compté » (ajouté le 9 novembre 2026)
+
+Quand une urne est close (par exemple une revendication que l'équipe a retenue), sa page propose **Recompter et vérifier mon bulletin**. Votre appareil télécharge la liste anonyme des bulletins, la même pour tout le monde, refait tout le compte et y cherche votre bulletin. Il vous dit si votre bulletin est compté avec votre choix, sans jamais afficher ce choix ni garder la réponse : elle ne peut servir de preuve à personne, et c'est voulu (personne ne peut vous obliger à prouver votre vote). En cas de problème, une alerte s'affiche.
+
+Pas encore essayable à la main : il faut qu'une urne soit close, ce que fait l'équipe depuis le back-office. Les tests automatiques vérifient la recherche du bulletin et le recomptage.
 
 ### Essayer le vote anonyme sur l'ordinateur (ajouté le 7 novembre 2026, au soir)
 
@@ -649,7 +705,7 @@ Le site est la version de PPF pour les iPhone tant que l'application iOS n'exist
 
 1. Lancez le serveur de développement comme ci-dessus (`gradlew :server:runDev`) et attendez la ligne qui commence par « Décider: ».
 2. Ouvrez http://localhost:8080/decider : le Pacte démocratique d'exemple, les pétitions officielles ouvertes, puis à part les pétitions closes.
-3. Ouvrez une pétition, par exemple http://localhost:8080/decider/petitions/petition-senat-indexation : le bouton « Signer sur le site officiel » mène au site du Sénat (marqué « site extérieur ») ; PPF ne recueille aucune signature. Plus bas : les relevés du compteur officiel, les étapes et les sources.
+3. Ouvrez une pétition, par exemple http://localhost:8080/decider/petitions/petition-senat-2456 : le bouton « Signer sur le site officiel » mène au site du Sénat (marqué « site extérieur ») ; PPF ne recueille aucune signature. Plus bas : les relevés du compteur officiel, les étapes et les sources.
 4. Ouvrez le Pacte : http://localhost:8080/decider/pacte/pacte-election-exemple : les mesures, la méthode (même texte, même jour, même délai pour tous) et le tableau des réponses des candidats.
 5. Réduisez la fenêtre à la largeur d'un téléphone et passez Windows en mode sombre : tout reste lisible. Arrêtez le serveur à la fin (Ctrl+C).
 

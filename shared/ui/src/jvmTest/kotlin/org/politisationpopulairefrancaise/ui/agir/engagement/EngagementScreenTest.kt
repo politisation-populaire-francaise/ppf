@@ -135,9 +135,9 @@ class EngagementScreenTest {
                 assertEquals(listOf(Engagement.CHECK_REGISTRATION, Engagement.L52_8), harness.uris.opened, "at $width dp")
 
                 // A guide on the device opens inside « Agir »; one not yet there is greyed out and says so.
-                // The guides of « Comprendre » are bundled; one not yet in the contents is greyed out.
+                // The guides of « Comprendre » are bundled, the legislative one included since Comprendre entered main.
                 assertEquals(1, count(EngagementTags.GUIDE + Engagement.GUIDE_CITIZEN_LIST))
-                assertEquals(1, count(EngagementTags.GUIDE_SOON + Engagement.GUIDE_LEGISLATIVES))
+                assertEquals(1, count(EngagementTags.GUIDE + Engagement.GUIDE_LEGISLATIVES))
                 click(EngagementTags.GUIDE + Engagement.GUIDE_PARTY)
                 awaitTag(ManifestationTags.GUIDE)
                 click(ManifestationTags.GUIDE_BACK)
@@ -157,7 +157,8 @@ class EngagementScreenTest {
         click(EngagementTags.PARTIES)
         click(EngagementTags.COURSE + Engagement.COURSE_REGISTER)
         assertEquals(listOf(Space.DECIDER, Space.VOIR, Space.COMPRENDRE), harness.navigations.toList())
-        assertEquals(1, count(EngagementTags.GUIDE_SOON + Engagement.GUIDE_LEGISLATIVES))
+        // The bundled guides are imported in the background: wait for the guide before counting it.
+        waitUntil(timeoutMillis = 60_000) { count(EngagementTags.GUIDE + Engagement.GUIDE_LEGISLATIVES) == 1 }
 
         // Running mates: the directory of the collectifs, whose way back returns to the steps.
         click(EngagementTags.COLLECTIVES)

@@ -24,8 +24,10 @@ import androidx.compose.ui.test.assertIsSelected
 import androidx.compose.ui.test.assertTextContains
 import androidx.compose.ui.test.assertTextEquals
 import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasAnyDescendant
 import androidx.compose.ui.test.hasContentDescription
 import androidx.compose.ui.test.hasTestTag
+import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onAllNodesWithTag
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onFirst
@@ -61,6 +63,7 @@ import org.politisationpopulairefrancaise.ui.shell.openSpace
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -92,8 +95,45 @@ class RevendicationViewsScreenTest {
     private fun ComposeUiTest.orderIn(viewId: String): List<String> =
         slugsIn(viewId).sortedBy { inPage(viewId, RevendicationTags.CARD + it).fetchSemanticsNode().positionInRoot.y }
 
+    /** The demands already carried by the movement (MVP 1), bundled beside the examples. */
+    private val movement = listOf(
+        "aides-sociales", "carburants-energie", "demission-du-president", "democratie", "droit-de-manifester", "etudiants",
+        "fin-de-parcoursup", "hausse-des-pensions", "hausse-du-smic", "justice-fiscale", "lycees", "negociations-salariales",
+        "planification", "point-d-indice", "services-publics",
+    ).map { "mouvement-$it" } + "demission-du-gouvernement"
+
+    /**
+     * [text] is what the examples alone give ("3 revendications"); the demands of the movement sit beside them.
+     * The examples are counted among the cards, and the number shown counts every card of the page.
+     */
     private fun ComposeUiTest.assertCount(viewId: String, text: String) {
-        inPage(viewId, RevendicationTags.COUNT).assertTextEquals(text)
+        assertEquals(text.substringBefore(' ').toInt(), slugsIn(viewId).size, text)
+        val cards = (slugs + movement).count { slug ->
+            onAllNodes(hasTestTag(RevendicationTags.CARD + slug) and hasAnyAncestor(hasTestTag(RevendicationTags.PAGE + viewId))).fetchSemanticsNodes().isNotEmpty()
+        }
+        inPage(viewId, RevendicationTags.COUNT).assertTextEquals(if (cards <= 1) "$cards revendication" else "$cards revendications")
+    }
+
+    /** MVP 1: a demand of the movement says so, and who carries it; an example does not. */
+    @Test
+    fun aDemandOfTheMovementSaysWhoCarriesIt() = runComposeUiTest {
+        openWall(memory())
+        inPage("tout", RevendicationTags.CARD + "mouvement-hausse-des-pensions").performScrollTo()
+            .assert(hasText("Du mouvement", substring = true))
+            .assert(hasText("Portée par :", substring = true))
+        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(RevendicationTags.CARD + "mouvement-hausse-des-pensions")), useUnmergedTree = true).fetchSemanticsNodes().isNotEmpty())
+        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(RevendicationTags.CARD + "medecin-de-garde")), useUnmergedTree = true).fetchSemanticsNodes().isEmpty())
+    }
+
+    /** D-152: a citizen demand names who else publicly supports it, without the chip of the movement. */
+    @Test
+    fun aCitizenDemandSaysWhoElseSupportsItPublicly() = runComposeUiTest {
+        openWall(memory())
+        val card = RevendicationTags.CARD + "demission-du-gouvernement"
+        inPage("tout", card).performScrollTo()
+        onNode(hasTestTag(RevendicationTags.SUPPORTERS) and hasAnyAncestor(hasTestTag(card)), useUnmergedTree = true)
+            .assertTextEquals("Également portée par : NPA-L’Anticapitaliste (parti politique), 4 novembre 2026")
+        assertTrue(onAllNodes(hasTestTag(RevendicationTags.MOVEMENT) and hasAnyAncestor(hasTestTag(card)), useUnmergedTree = true).fetchSemanticsNodes().isEmpty())
     }
 
     private fun ComposeUiTest.waitForDemands() {
@@ -147,6 +187,23 @@ class RevendicationViewsScreenTest {
 
     private fun persistent(database: PpfDatabase, identity: IdentityStore = InMemoryIdentityStore()) = AppDependencies.withDatabase(identity, database)
 
+    /** MVP 1 (Galaxy A34, 360 dp): one row of tools, the explanation folded into one line that unfolds on a touch. */
+    @Test
+    fun onAPhoneTheToolsShareOneRowAndTheExplanationIsFolded() = runComposeUiTest {
+        openWall(memory(), width = 360, height = 780)
+        val filters = inPage("tout", RevendicationTags.FILTERS).fetchSemanticsNode().boundsInRoot
+        val customize = inPage("tout", RevendicationTags.CUSTOMIZE).fetchSemanticsNode().boundsInRoot
+        assertEquals(filters.top, customize.top, "Filtres and Personnaliser share one row")
+        assertFalse(has(RevendicationTags.HOW_IT_WORKS_TEXT), "the explanation starts folded")
+
+        inPage("tout", RevendicationTags.HOW_IT_WORKS).performScrollTo().performClick()
+        waitForIdle()
+        assertTrue(has(RevendicationTags.HOW_IT_WORKS_TEXT), "a touch unfolds the explanation")
+        inPage("tout", RevendicationTags.HOW_IT_WORKS).performScrollTo().performClick()
+        waitForIdle()
+        assertFalse(has(RevendicationTags.HOW_IT_WORKS_TEXT), "a second touch folds it again")
+    }
+
     @Test
     fun theDefaultViewsAreTabsAndAThemeViewShowsOnlyItsDemands() = runComposeUiTest {
         openWall(memory())
@@ -178,7 +235,7 @@ class RevendicationViewsScreenTest {
         onNodeWithTag(FilterPanelTags.THEME + "education").performScrollTo().performClick()
         onNodeWithTag(FilterPanelTags.THEME + "education").assertIsOn()
         // The main button counts live.
-        onNodeWithTag(FilterPanelTags.APPLY).assertTextContains("Afficher 3 revendications")
+        onNodeWithTag(FilterPanelTags.APPLY).assertTextContains("Afficher 6 revendications") // 3 examples, 3 demands of the movement
         onNodeWithTag(FilterPanelTags.APPLY).performClick()
         closeModal()
         onNodeWithTag(FilterPanelTags.PANEL).assertDoesNotExist()
@@ -247,7 +304,7 @@ class RevendicationViewsScreenTest {
         onNodeWithTag(FilterPanelTags.THEME + "logement").assertIsOff().assertIsNotEnabled()
         // Other criteria stay free: the status narrows the view's demands.
         onNodeWithTag(FilterPanelTags.STATUS + "en-debat").performScrollTo().performClick()
-        onNodeWithTag(FilterPanelTags.APPLY).assertTextContains("Afficher 0 revendication")
+        onNodeWithTag(FilterPanelTags.APPLY).assertTextContains("Afficher 1 revendication") // the services publics of the movement
         onNodeWithTag(FilterPanelTags.STATUS + "en-debat").performClick()
         onNodeWithTag(FilterPanelTags.STATUS + "nouvelle").performClick()
         onNodeWithTag(FilterPanelTags.APPLY).performClick()

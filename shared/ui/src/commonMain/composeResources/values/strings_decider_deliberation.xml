@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The citizen deliberation on the measures of the Pacte démocratique (DE-25, MVP 1).
+     French, typographic apostrophe (’), no em dash. -->
+<resources>
+    <string name="deliberation_section">Délibération citoyenne sur les mesures</string>
+    <string name="deliberation_phase_propositions">Propositions</string>
+    <string name="deliberation_phase_amendments">Amendements</string>
+    <string name="deliberation_phase_vote">Vote final</string>
+    <string name="deliberation_phase_dates">%1$s : du %2$s au %3$s</string>
+    <string name="deliberation_phase_now">En cours</string>
+    <string name="deliberation_state_open">Étape en cours : %1$s, jusqu’au %2$s</string>
+    <string name="deliberation_state_soon">Ouverture des propositions le %1$s</string>
+    <string name="deliberation_state_over">Délibération terminée : les résultats sont publiés</string>
+    <string name="deliberation_card_count">Propositions publiées : %1$d</string>
+    <string name="deliberation_rules">PPF n’adopte rien : vos votes choisissent la rédaction de chaque mesure, puis les mesures du Pacte, de %1$d à %2$d parmi celles qui ont plus de « pour » que de « contre ». Le vote blanc est compté. Chaque proposition et chaque amendement est relu par une personne avant d’être publié.</string>
+    <string name="deliberation_propose">Proposer une mesure</string>
+    <string name="deliberation_amend">Proposer une autre rédaction</string>
+    <string name="deliberation_no_proposition">Aucune proposition publiée pour l’instant.</string>
+    <string name="deliberation_start_badge">Proposition de départ, pas encore votée</string>
+    <string name="deliberation_justification">Pourquoi : %1$s</string>
+    <string name="deliberation_amendments">Amendements mis au vote : %1$d</string>
+    <string name="deliberation_support">Soutenir cette proposition</string>
+    <string name="deliberation_supported">Soutenue, toucher pour retirer</string>
+    <string name="deliberation_support_unavailable">Le soutien demande un compte et l’urne de cette proposition ouverte.</string>
+    <string name="deliberation_form_proposition">Proposer une mesure</string>
+    <string name="deliberation_form_amendment">Proposer une autre rédaction</string>
+    <string name="deliberation_form_review">Votre contribution est signée par votre pseudonyme et relue par une personne de l’équipe (charte, faisabilité juridique, jamais ses préférences) avant d’être publiée. Une proposition et trois amendements au plus par compte.</string>
+    <string name="deliberation_form_title_label">La mesure, en une phrase</string>
+    <string name="deliberation_form_title_hint">Par exemple : abroger tel article de loi</string>
+    <string name="deliberation_form_text_label">Le texte de la mesure : ce qui change, le texte à modifier, le délai</string>
+    <string name="deliberation_form_wording_label">La nouvelle rédaction complète de la mesure</string>
+    <string name="deliberation_form_text_hint">Écrivez le texte complet</string>
+    <string name="deliberation_form_justification_label">Pourquoi (facultatif)</string>
+    <string name="deliberation_form_justification_hint">Vos arguments, vos sources</string>
+    <string name="deliberation_form_charter">J’ai lu la charte : pas d’appel à la violence, pas de données personnelles, pas d’attaque contre des personnes.</string>
+    <string name="deliberation_form_account">Créez un compte (une phrase secrète sur cet appareil) pour envoyer votre contribution.</string>
+    <string name="deliberation_form_send">Envoyer pour relecture</string>
+    <string name="deliberation_form_cancel">Annuler</string>
+    <string name="deliberation_form_close">Fermer</string>
+    <string name="deliberation_outcome_review">Envoyée : elle sera publiée après la relecture d’une personne de l’équipe.</string>
+    <string name="deliberation_outcome_published">Publiée.</string>
+    <string name="deliberation_outcome_waiting">Gardée sur cet appareil : elle partira dès que le réseau reviendra.</string>
+    <string name="deliberation_outcome_refused">Refusée par le serveur (règles ou limites de la délibération). Corrigez-la ou vérifiez l’étape en cours.</string>
+    <string name="deliberation_outcome_failed">L’envoi n’a pas abouti. Votre texte est conservé, réessayez.</string>
+</resources>

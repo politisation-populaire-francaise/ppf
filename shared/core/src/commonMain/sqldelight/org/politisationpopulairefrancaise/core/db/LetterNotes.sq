@@ -1,0 +1,35 @@
+-- Interpeller ses élus (DE-09, option A of D-119): what the person notes for herself or himself, on the device only,
+-- after sending a model letter: to whom, the day it was sent, and the day an answer came. Never sent, never published
+-- from here (a public counter, with anonymous tokens, comes with DE-23); erased by the quick erase (S-44).
+-- Added in schema version 18: existing databases get it through migrations/17.sqm.
+
+-- One letter sent: the model, the elected official as the directory names them (mandate, territory, name), the days.
+CREATE TABLE letter_note (
+    id TEXT NOT NULL PRIMARY KEY,
+    template TEXT NOT NULL,
+    mandate TEXT,
+    territory TEXT,
+    official TEXT,
+    sent_on INTEGER NOT NULL,
+    answered_on INTEGER
+);
+
+CREATE INDEX letter_note_template ON letter_note(template, sent_on);
+
+insertNote:
+INSERT OR REPLACE INTO letter_note(id, template, mandate, territory, official, sent_on, answered_on) VALUES (?, ?, ?, ?, ?, ?, ?);
+
+setAnswered:
+UPDATE letter_note SET answered_on = ? WHERE id = ?;
+
+deleteNote:
+DELETE FROM letter_note WHERE id = ?;
+
+deleteAllNotes:
+DELETE FROM letter_note;
+
+selectNotesOf:
+SELECT * FROM letter_note WHERE template = ? ORDER BY sent_on DESC, id ASC;
+
+countNotes:
+SELECT COUNT(*) FROM letter_note;

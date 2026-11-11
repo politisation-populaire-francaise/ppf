@@ -22,7 +22,35 @@ class DeciderCatalog(
     val positions: List<Position> = emptyList(),
     /** The elections of the personal electoral calendar (DE-28), the nearest first. */
     val elections: List<ElectionCalendar> = emptyList(),
+    /** The official public consultations (DE-27), the nearest last day first. */
+    val consultations: List<PublicConsultation> = emptyList(),
+    /** The model letters to one's elected officials (DE-09), in the order of their titles. */
+    val letters: List<LetterTemplate> = emptyList(),
+    /** The local petitions asking a collectivity for a consultation (DE-26). */
+    val localPetitions: List<LocalPetition> = emptyList(),
 ) {
+    /**
+     * The local petitions of [territories] (the codes of the commune chosen on the device and of its department), those
+     * still collecting first, then the others by their latest news.
+     */
+    fun localPetitionsFor(territories: Set<String>): List<LocalPetition> =
+        localPetitions.filter { it.territory in territories }
+            .sortedWith(compareBy<LocalPetition>({ !it.status.isCollecting }, { it.title }))
+
+    fun localPetition(address: ContentAddress): LocalPetition? = localPetitions.firstOrNull { it.address == address }
+
+    fun letter(address: ContentAddress): LetterTemplate? = letters.firstOrNull { it.address == address }
+
+    /**
+     * The consultations open on [today] then those to come, the nearest last day first; the local ones only for
+     * [territories] (codes kept on the device).
+     */
+    fun currentConsultations(today: CivilDate, territories: Set<String> = emptySet()): List<PublicConsultation> =
+        consultations.filter { !it.isOver(today) && (it.territory == null || it.territory in territories) }
+            .sortedWith(compareBy({ !it.isOpen(today) }, { it.closesOn }, { it.title }))
+
+    fun consultation(address: ContentAddress): PublicConsultation? = consultations.firstOrNull { it.address == address }
+
     /** The elections not over on [today], the nearest first; the local ones only for [territories] (codes kept on the device). */
     fun upcomingElections(today: CivilDate, territories: Set<String> = emptySet()): List<ElectionCalendar> =
         elections.filter { it.isUpcoming(today) && (it.territory == null || it.territory in territories) }
@@ -88,7 +116,7 @@ class DeciderCatalog(
         val EMPTY: DeciderCatalog = DeciderCatalog(emptyList(), emptyList(), emptyList())
 
         /** The editorial types read here, to ask the local copy for them. */
-        val TYPES: List<ArticleType> = listOf(ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION, ArticleType.ELECTION)
+        val TYPES: List<ArticleType> = listOf(ArticleType.PETITION, ArticleType.PACTE, ArticleType.ENGAGEMENT, ArticleType.COMPARATEUR, ArticleType.POSITION, ArticleType.ELECTION, ArticleType.CONSULTATION, ArticleType.MODELE_COURRIER, ArticleType.PETITION_LOCALE)
 
         private fun sortKey(title: String): String = FrenchText.fold(title.removePrefix(VoirCatalog.EXAMPLE_MARKER).trim())
 
@@ -109,6 +137,9 @@ class DeciderCatalog(
                 comparators = latest.mapNotNull(ComparatorSheet::from).sortedByDescending { it.article.updatedAt },
                 positions = latest.mapNotNull(Position::from),
                 elections = latest.mapNotNull(ElectionCalendar::from).sortedWith(compareBy({ it.firstDay ?: FAR_AWAY }, { it.election.label })),
+                consultations = latest.mapNotNull(PublicConsultation::from).sortedWith(compareBy({ it.closesOn }, { it.title })),
+                letters = latest.mapNotNull(LetterTemplate::from).sortedBy { sortKey(it.title) },
+                localPetitions = latest.mapNotNull(LocalPetition::from).sortedBy { sortKey(it.title) },
             )
         }
     }

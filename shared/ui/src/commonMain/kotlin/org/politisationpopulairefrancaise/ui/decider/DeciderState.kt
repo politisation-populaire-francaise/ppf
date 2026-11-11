@@ -22,10 +22,20 @@ import org.politisationpopulairefrancaise.ui.AppDependencies
 sealed interface DeciderDestination {
     data class Petition(val address: ContentAddress) : DeciderDestination
     data class Pacte(val address: ContentAddress) : DeciderDestination
+    /** The citizen deliberation on the measures of a pact (DE-25). */
+    data class Deliberation(val address: ContentAddress) : DeciderDestination
     /** The comparator of an election (DE-16). */
     data class Comparator(val address: ContentAddress) : DeciderDestination
     /** An election of the personal electoral calendar (DE-28). */
     data class Election(val address: ContentAddress) : DeciderDestination
+    /** An official public consultation (DE-27). */
+    data class Consultation(val address: ContentAddress) : DeciderDestination
+    /** A model letter to one's elected officials (DE-09). */
+    data class Letter(val address: ContentAddress) : DeciderDestination
+    /** A local petition asking a collectivity for a consultation (DE-26). */
+    data class LocalPetition(val address: ContentAddress) : DeciderDestination
+    /** Asking for an administrative document, and the requests noted on the device (DE-31). */
+    data object Documents : DeciderDestination
     /** The past votes of the party of one candidate of a comparator (DE-16, D-117). */
     data class PastVotes(val sheet: ContentAddress, val candidate: ContentAddress) : DeciderDestination
     /** The rules of the official petitions; [platform] opens one of them first. */
@@ -69,6 +79,18 @@ class DeciderState(private val follows: ContentFollowStore?, private val scope: 
     }
 
     fun home() = stack.clear()
+
+    /**
+     * A section of the home of "Décider" to bring into view (MVP 1: the official petitions, from the
+     * highlights at the top or from "En direct"); the home scrolls to it, then clears it.
+     */
+    var sectionToShow: DeciderHighlight? by mutableStateOf(null)
+
+    /** Opens the home of "Décider" on one of its flagship sections. */
+    fun showSection(section: DeciderHighlight) {
+        stack.clear()
+        sectionToShow = section
+    }
 
     fun isFollowed(address: ContentAddress): Boolean = address in followed
 

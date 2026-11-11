@@ -1388,6 +1388,58 @@
         "sig": "52fee1f2709e63953a0ae9ed34b9f7d1b4289039b075ac47843d9173fb797780c61492b53d0106a81bb177873ee6ea74a674abf86f497180b87aa11e12e44713"
     },
     {
+        "id": "d4fccb8d88de9eb606ae791841f7ee434dc31bec8024d76b83d6e5dd1b8dc2f4",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "glossaire-constitution-citoyenne-et-democratique"
+            ],
+            [
+                "title",
+                "Constitution Citoyenne et Démocratique"
+            ],
+            [
+                "summary",
+                "Liste de mesures votées par les citoyens dans l'application PPF, envoyée à tous les candidats avec la même question : s'engagent-ils à les appliquer ? Ce n'est pas un texte de loi."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "glossaire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "elections"
+            ],
+            [
+                "t",
+                "democratie"
+            ],
+            [
+                "ppf-variant",
+                "Constitution Citoyenne et Démocratique"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-constitution",
+                "",
+                "voir-aussi"
+            ]
+        ],
+        "content": "La Constitution Citoyenne et Démocratique est un outil de PPF, dans l'espace Décider. Les citoyens y proposent, amendent et votent des mesures : la liste de départ n'est qu'une proposition, c'est le vote qui la modifie et la valide.\n\nLa liste adoptée est envoyée à tous les candidats d'une élection, avec les mêmes règles pour chacun : le même texte, vérifiable par son empreinte, le même jour d'envoi et le même délai pour répondre. Chaque candidat a sa ligne, même sans réponse, dans l'ordre alphabétique. Les réponses signées sont archivées et datées, pour pouvoir suivre ensuite si les engagements sont tenus. PPF n'appelle à voter pour personne.\n\nÀ ne pas confondre avec la Constitution du 4 octobre 1958, la loi suprême du pays : la Constitution Citoyenne et Démocratique n'a aucune valeur juridique. Sa force vient du nombre de citoyens qui l'ont votée et des engagements publics des candidats.\n\n## Sources\n\n- Règles de la plateforme PPF pour les outils électoraux : cahier des charges, section 9.2 (même texte pour tous, même jour d'envoi, même délai, une ligne par candidat, ordre alphabétique), consulté le 2026-11-11\n- [Constitution du 4 octobre 1958, texte intégral en vigueur](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-11\n",
+        "sig": "32f33a49690f3997cf4664a95008bc3d1d976aa46daefae7446ac52027601dd4b9ff946c2ed4006de5ef9f37633a19ec4ed4a019c79217b73963be7b44896780"
+    },
+    {
         "id": "11a57fb7285b12208df6592f8a72e03e89c1cbba24dc41edd3b0fe16a0ad6c6d",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1794225600,
