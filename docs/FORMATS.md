@@ -86,6 +86,9 @@ Un contenu éditorial est un événement de type `30023` (NIP-23). Son `content`
 | `ppf-status` | Revendications seulement : `nouvelle`, `en-debat`, `tres-soutenue`, `retenue` ou `campagne` | Non |
 | `ppf-territory` | Revendications seulement : le territoire concerné (« France », un département, une métropole) | Non |
 | `ppf-territory-code` | Code du référentiel des territoires (section 4 nonies) à côté du libellé ; pas encore accepté par le serveur pour les revendications | Non |
+| `ppf-from` | Revendications de l’équipe seulement : `mouvement` pour une revendication déjà portée par le mouvement, relevée par PPF (D-152) ; lue seulement sur une clé de l’équipe | Non |
+| `ppf-carried-by` | Avec `ppf-from` : qui la porte, où et quand, une étiquette par organisation ou appel, dans l’ordre des sources (D-152) | Non |
+| `ppf-supported-by` | Toute revendication de l’équipe : une organisation (parti, syndicat, collectif) qui la soutient publiquement, avec la date ; sources dans le texte ; affichée « Également portée par » (D-152) | Non |
 | `ppf-duration` | Parcours : durée de lecture annoncée ; fiches pédagogiques : durée de la séance ; en minutes (1 à 240) | Non |
 | `ppf-rhythm` | Parcours seulement : rythme de lecture conseillé ; seule valeur, `quotidien` (une leçon, c'est-à-dire une étape, par jour, comme « Je découvre », CO-19). Simple suggestion affichée au lecteur, jamais un verrou ; une valeur inconnue est ignorée | Non |
 | `ppf-origin` | `human` (rédigé par un humain) ou `ai-assisted` (produit avec l'aide d'une IA) | Oui |
@@ -425,6 +428,45 @@ Règle d'entrée (décision de la propriétaire, Q1 option B ; `ComparatorSheet.
 | `ppf-territory-code` | Le territoire d'un scrutin local (référentiel des territoires) ; absent pour un scrutin national |
 
 Contrôles de l'outil de signature (avertissements, jamais un refus du droit par le code) : une inscription en mairie qui ne tombe pas le sixième vendredi avant le premier tour (code électoral, article L17), une échéance après le premier tour. L'application montre les élections à venir ; un scrutin local seulement pour les territoires gardés sur l'appareil.
+
+### Consultation publique officielle (`ppf-type` = `consultation`, DE-27, conception : `docs/integration/consultations-publiques.md`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-consultation-kind` | `consultation-ouverte` (consultation ouverte sur internet, CRPA L132-1 à L132-3), `participation-environnement` (participation du public par voie électronique, code de l'environnement L123-19 à L123-19-2), `enquete-publique` (code de l'environnement L123-1 et suivants), `debat-public` (débat public ou concertation préalable de la CNDP, code de l'environnement L121-1 et suivants), `consultation-locale` (consultation des électeurs ou référendum local, CGCT LO1112-1 et L1112-15 et suivants) |
+| `ppf-organizer` | Qui l'organise, comme son avis officiel le nomme (ministère, préfecture, CNDP, commune) |
+| `ppf-official-url` | La page officielle où l'on répond : `https`, sans nom d'utilisateur ni port ; PPF ne recueille aucune réponse |
+| `ppf-opened`, `ppf-closes` | Premier et dernier jour (inclus), écrits d'après l'avis officiel ; un dernier jour avant le premier rend la consultation illisible |
+| `ppf-territory-code` | Le territoire d'une consultation locale (référentiel des territoires) ; absent pour une consultation nationale |
+| corps | Le guide pour y répondre |
+
+Contrôles de l'outil de signature (avertissements, jamais un refus du droit par le code) : une durée plus courte que le minimum légal (15 jours pour une consultation ouverte, une participation du public ou une enquête publique ; 30 jours pour une enquête publique d'un projet soumis à évaluation environnementale, code de l'environnement L123-9), une page officielle hors de `.gouv.fr` (beaucoup d'enquêtes ont lieu sur le registre d'un prestataire ou le site d'une commune : à vérifier dans l'avis). L'application montre les consultations ouvertes puis à venir ; une consultation locale seulement pour les territoires gardés sur l'appareil.
+
+### Modèle de courrier à ses élus (`ppf-type` = `modele-courrier`, DE-09, conception : `docs/integration/interpeller-ses-elus.md`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-recipient` | À qui il s'adresse (au moins un, répété) : `maire`, `depute`, `senateur`, `departemental`, `regional`, `europeen` |
+| `ppf-subject` | L'objet du courrier |
+| `ppf-contact` | Où trouver les contacts officiels : `destinataire`, `libellé`, `page (https)` ; écrit et vérifié par l'équipe |
+| `a` rôle `texte` | Le texte de « Voir » dont il parle, s'il y en a un (le législomètre l'ouvrira avant un vote) |
+| corps | Le courrier, avec `{elu}`, `{commune}` et `{date}`, que l'application remplit sur l'appareil ; des crochets pour ce que la personne écrit elle-même |
+
+Le nom de l'élu vient de l'annuaire des élus de la commune choisie sur l'appareil (D-047), tel quel, sans civilité devinée ; la formule d'appel reste neutre (« Madame, Monsieur »). Contrôles de l'outil de signature (avertissements) : une marque entre accolades que l'application ne remplit pas, un destinataire sans contact officiel. PPF n'envoie rien et ne garde rien du courrier.
+
+### Pétition locale (`ppf-type` = `petition-locale`, DE-26, conception : `docs/integration/petitions-locales.md`)
+
+| Étiquette | Contenu |
+|---|---|
+| `ppf-territory-code` | La collectivité (référentiel des territoires : code INSEE d'une commune, code d'un département…) ; obligatoire |
+| `ppf-collectivity` | `nom`, `commune` (un dixième des électeurs) ou `autre` (un vingtième), CGCT L1112-16 |
+| `ppf-voters` | Les électeurs inscrits relevés par l'équipe : `nombre`, `date`, `source` ; le seuil est calculé sur l'appareil, arrondi à l'unité supérieure |
+| `ppf-local-status` | `en-collecte`, `deposee`, `inscrite`, `consultation-decidee`, `refusee` |
+| `ppf-official-url` | La page de signature de la collectivité, s'il y en a une (`https`, sans nom d'utilisateur ni port) |
+| `ppf-how-to-sign` | Comment signer sinon (sur papier, auprès des organisateurs) |
+| `ppf-count`, `ppf-milestone`, `ppf-opened` | Comme pour une pétition officielle : décomptes des organisateurs datés, étapes, début de la collecte |
+
+Contrôles de l'outil de signature (avertissements) : une collecte sans page ni façon de signer, plus de signatures que d'électeurs inscrits. PPF ne recueille aucune signature. L'application ne montre une pétition locale que pour la commune choisie sur l'appareil dans « Mes élus » et son département.
 
 ### Position d'un candidat (`ppf-type` = `position`)
 

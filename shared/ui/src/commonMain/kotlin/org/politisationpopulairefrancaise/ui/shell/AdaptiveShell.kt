@@ -161,8 +161,15 @@ import org.politisationpopulairefrancaise.ui.resources.guides_title
 import org.politisationpopulairefrancaise.ui.resources.nav_disclaimer
 import org.politisationpopulairefrancaise.ui.resources.nav_search_soon
 import org.politisationpopulairefrancaise.ui.resources.space_mon_espace
+import org.politisationpopulairefrancaise.ui.decider.DeciderDestination
+import org.politisationpopulairefrancaise.ui.decider.DeciderHighlight
+import org.politisationpopulairefrancaise.ui.decider.DeciderHighlightFigures
+import org.politisationpopulairefrancaise.ui.decider.DeciderHighlights
+import org.politisationpopulairefrancaise.core.time.CivilDate
 import org.politisationpopulairefrancaise.ui.decider.DeciderScreen
 import org.politisationpopulairefrancaise.ui.decider.DeciderState
+import org.politisationpopulairefrancaise.ui.decider.DeciderRemindersState
+import org.politisationpopulairefrancaise.ui.decider.rememberDeciderReminders
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
 import org.politisationpopulairefrancaise.ui.theme.LocalPpfDimens
 import org.politisationpopulairefrancaise.ui.theme.PpfDimens
@@ -170,6 +177,9 @@ import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
 import org.politisationpopulairefrancaise.core.social.CommunauteDeviceData
 import org.politisationpopulairefrancaise.core.notifications.NotificationEntry
+import org.politisationpopulairefrancaise.core.reminders.ReminderStore
+import org.politisationpopulairefrancaise.core.decider.DocumentRequestStore
+import org.politisationpopulairefrancaise.core.decider.LetterNoteStore
 import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
 import org.politisationpopulairefrancaise.ui.notifications.NotificationCenterScreen
 import org.politisationpopulairefrancaise.ui.notifications.NotificationsSettingsState
@@ -297,6 +307,11 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     dependencies.database?.let { database -> remember(database) { ComprendreDeviceData.erasables(database) }.forEach { RegisterErasable(dependencies, it) } }
     // Décider: the voting tokens, pending requests and choices of the device (S-44).
     RegisterErasable(dependencies, VotingState.ERASABLE_ID) { voting.eraseFromDevice() }
+    // The personal reminders of the device (DE-28, S-98): every reminder and what it was asked for.
+    dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { ReminderStore(database) }) }
+    // Décider: the private notes of the letters sent to one's elected officials (DE-09, D-119).
+    dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { LetterNoteStore(database) }) }
+    dependencies.database?.let { database -> RegisterErasable(dependencies, remember(database) { DocumentRequestStore(database) }) }
     // The views of the demands wall, kept for the whole run so that their filters survive a visit elsewhere.
     val revendicationViews = rememberRevendicationViewsState(dependencies.database, accountSession)
     // "Voir": the open page, the axis and the follows survive a visit to another space.
@@ -342,6 +357,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
     val mailboxSetting = rememberMailboxSetting(dependencies, accountKey)
     // The notification settings (Mon espace, M31); null without notifications.
     val notificationsSettings = rememberNotificationsSettings(dependencies, accountKey)
+    // The reminders of "Décider" (elections DE-28, consultations DE-27), planned again after each reading of its contents.
+    val deciderReminders = rememberDeciderReminders(dependencies, notificationsSettings, contentLibrary.decider)
     // A change of settings (details shown, a category enabled) is reflected at once in the centre.
     LaunchedEffect(notificationsSettings?.settings) { notificationCenter?.reload() }
     // The glossary (D-048): read once the bundled contents are imported and after each synchronization,
@@ -384,6 +401,17 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     // « Mes élus ont voté » (VO-34), in the Parliament of « Voir ».
                     parliamentState.openMyVotes()
                     navigate(Space.VOIR)
+                } else if (entry.target?.startsWith(DeciderRemindersState.ELECTION_TARGET) == true) {
+                    val id = entry.target.orEmpty().removePrefix(DeciderRemindersState.ELECTION_TARGET)
+                    contentLibrary.decider.elections.firstOrNull { it.election.id == id }?.let { deciderState.open(DeciderDestination.Election(it.address)) }
+                    navigate(Space.DECIDER)
+                } else if (entry.target == DeciderRemindersState.DOCUMENT_TARGET) {
+                    deciderState.open(DeciderDestination.Documents)
+                    navigate(Space.DECIDER)
+                } else if (entry.target?.startsWith(DeciderRemindersState.CONSULTATION_TARGET) == true) {
+                    val slug = entry.target.orEmpty().removePrefix(DeciderRemindersState.CONSULTATION_TARGET)
+                    contentLibrary.decider.consultations.firstOrNull { it.article.slug == slug }?.let { deciderState.open(DeciderDestination.Consultation(it.address)) }
+                    navigate(Space.DECIDER)
                 }
             }
             val bell = notificationCenter?.let { center -> Bell(center.unreadCount) { centerOpen = true } }
@@ -416,6 +444,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     parliamentState = parliamentState,
                     voirRequests = voirRequests,
                     deciderState = deciderState,
+                    deciderReminders = deciderReminders,
                     groupsLibrary = groupsLibrary,
                     organisationsLibrary = organisationsLibrary,
                     agendaLibrary = agendaLibrary,
@@ -475,6 +504,7 @@ private fun SpaceContent(
     parliamentState: ParliamentState,
     voirRequests: VoirRequestSession,
     deciderState: DeciderState,
+    deciderReminders: DeciderRemindersState?,
     groupsLibrary: GroupsLibrary,
     organisationsLibrary: OrganisationsLibrary,
     agendaLibrary: AgendaLibrary,
@@ -502,6 +532,29 @@ private fun SpaceContent(
                 }
             },
             parliamentWeek = { slotModifier -> ParliamentWeekSlot(parliamentState, slotModifier) },
+            // MVP 1 (jalon 3): demands, official petitions and Pacte one touch away from "En direct".
+            decider = { slotModifier ->
+                val catalog = contentLibrary.decider
+                DeciderHighlights(
+                    figures = DeciderHighlightFigures.of(contentLibrary.revendications.size, catalog, CivilDate.fromEpochSeconds(currentEpochSeconds())),
+                    onOpen = { highlight ->
+                        when (highlight) {
+                            DeciderHighlight.REVENDICATIONS -> onNavigate(Space.REVENDICATIONS)
+                            DeciderHighlight.PETITIONS -> {
+                                deciderState.showSection(DeciderHighlight.PETITIONS)
+                                onNavigate(Space.DECIDER)
+                            }
+                            DeciderHighlight.PACTE -> {
+                                deciderState.home()
+                                (catalog.currentPacte() ?: catalog.pactes.firstOrNull())?.let { deciderState.open(DeciderDestination.Pacte(it.address)) }
+                                onNavigate(Space.DECIDER)
+                            }
+                        }
+                    },
+                    modifier = slotModifier,
+                    withTitle = true,
+                )
+            },
         )
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate, requests = voirRequests, parliament = parliamentState)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, rememberComprendreLibrary(dependencies), windowClass, modifier, onNavigate)
@@ -552,6 +605,8 @@ private fun SpaceContent(
                 onNavigate(Space.VOIR)
             },
             dependencies = dependencies,
+            reminders = deciderReminders,
+            signer = accountSession.signer,
         )
         Space.MON_ESPACE -> MySpaceScreen(accountSession, windowClass, modifier, mailbox = mailboxSetting, notifications = notificationsSettings)
         Space.MESSAGES -> MessagesScreen(dependencies, accountSession, contentLibrary, messaging, windowClass, modifier, onNavigate, groups = groupsLibrary)

@@ -34,14 +34,31 @@ import kotlin.io.path.readText
  * deadline), on a link to an unknown slug, or on a candidate without a sheet in "Voir".
  */
 internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEvents: List<UnsignedEvent>) {
-    val directory = content.resolve("decider")
+    signDeciderDirectory(content.resolve("decider"), output.resolve("decider.json"), keys, voirEvents, "decider")
+    // The fictional contents the tests read (owner's decision of 9 November 2026: real contents in the application,
+    // fictional ones in the tests): signed apart, into the resources of the tests, never bundled with the application.
+    val tests = content.resolve(DECIDER_TESTS_DIRECTORY)
+    if (tests.isDirectory()) signDeciderDirectory(tests, deciderTestsOutput(content).resolve(DECIDER_TESTS_FILE), keys, voirEvents, "decider (tests)")
+}
+
+/** The fictional contents of « Décider » for the tests, under the content directory. */
+internal const val DECIDER_TESTS_DIRECTORY: String = "tests/decider"
+
+/** Their signed file, read by the tests of the interface and of the site. */
+internal const val DECIDER_TESTS_FILE: String = "decider-tests.json"
+
+/** `shared/ui/src/jvmTest/resources/contents` of the repository that holds [content]. */
+internal fun deciderTestsOutput(content: Path): Path =
+    content.toAbsolutePath().normalize().parent.resolve("shared/ui/src/jvmTest/resources/contents")
+
+private fun signDeciderDirectory(directory: Path, outputFile: Path, keys: IdentityKeys, voirEvents: List<UnsignedEvent>, label: String) {
     val documents = if (!directory.isDirectory()) emptyList() else Files.walk(directory).use { paths ->
         paths.filter { it.name.endsWith(".md") && !it.name.equals("README.md", ignoreCase = true) }.toList()
     }.sortedBy { directory.relativize(it).toString().replace('\\', '/') }
         .map { file -> parseDocument(directory.relativize(file).toString().replace('\\', '/'), file.readText()) }
     val author = keys.publicKey
     val bySlug = documents.associateBy { it.require("slug") }
-    check(bySlug.size == documents.size) { "decider: the same slug is used twice" }
+    check(bySlug.size == documents.size) { "$label: the same slug is used twice" }
 
     // The pacts first: the answers need the fingerprint of their text.
     val pacts = documents.filter { it.require("type") == ArticleType.PACTE.tagValue }.associate { document ->
@@ -58,7 +75,7 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
                 deciderEvent(document, author, listOf(listOf(DeciderTags.PACTE_TEXT, pacte.fingerprint)))
             }
             else -> deciderEvent(document, author, emptyList())
-        }.also { println("prepared decider/${document.name}") }
+        }.also { println("prepared $label/${document.name}") }
     }
 
     val articles = events.zip(documents).map { (event, document) -> readBack(event, document) }
@@ -71,7 +88,8 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
         val readable = catalog.petition(article.address) != null || catalog.pacte(article.address) != null ||
             catalog.engagements.any { it.address == article.address } ||
             catalog.comparators.any { it.address == article.address } || catalog.positions.any { it.article.address == article.address } ||
-            catalog.elections.any { it.address == article.address }
+            catalog.elections.any { it.address == article.address } || catalog.consultation(article.address) != null ||
+            catalog.letter(article.address) != null || catalog.localPetition(article.address) != null
         check(readable) { "${document.name}: the application would not read this block (check its fields; a petition needs its official site)" }
         article.event.tags.filter { it.size >= 4 && it[0] == VoirTags.LINK }.forEach { tag ->
             check(tag[1] in known) { "${document.name}: link to an unknown slug: ${tag[1].substringAfterLast(':')}" }
@@ -104,6 +122,18 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     catalog.elections.forEach { election ->
         election.warnings().forEach { println("decider: ${election.article.slug}: $it") }
     }
+    // The official consultations (DE-27): the dates come from the official notice; the tool only says what looks odd.
+    catalog.consultations.forEach { consultation ->
+        consultation.warnings().forEach { println("decider: ${consultation.article.slug}: $it") }
+    }
+    // The model letters (DE-09): a mark the application does not fill, a recipient without its official contact.
+    catalog.letters.forEach { letter ->
+        letter.warnings().forEach { println("decider: ${letter.article.slug}: $it") }
+    }
+    // The local petitions (DE-26): the counts come from the organizers; the tool only says what looks odd.
+    catalog.localPetitions.forEach { petition ->
+        petition.warnings().forEach { println("decider: ${petition.article.slug}: $it") }
+    }
     catalog.engagements.forEach { engagement ->
         val pacte = catalog.pacte(engagement.pacte) ?: error("${engagement.article.slug}: unknown pact")
         check(engagement.candidate in pacte.candidates) { "${engagement.article.slug}: ${engagement.candidate.identifier} is not a candidate of ${pacte.article.slug}" }
@@ -114,10 +144,12 @@ internal fun signDecider(content: Path, output: Path, keys: IdentityKeys, voirEv
     }
 
     val signer = LocalEventSigner(keys)
-    write(output.resolve("decider.json"), events.map { signer.signChecked(it) })
+    Files.createDirectories(outputFile.parent)
+    write(outputFile, events.map { signer.signChecked(it) })
     println(
-        "decider: ${catalog.petitions.size} petition(s), ${catalog.pactes.size} pact(s), ${catalog.engagements.size} answer(s), " +
-            "${catalog.comparators.size} comparator(s), ${catalog.positions.size} position(s), ${catalog.elections.size} election(s)",
+        "$label: ${catalog.petitions.size} petition(s), ${catalog.pactes.size} pact(s), ${catalog.engagements.size} answer(s), " +
+            "${catalog.comparators.size} comparator(s), ${catalog.positions.size} position(s), ${catalog.elections.size} election(s), " +
+            "${catalog.consultations.size} consultation(s), ${catalog.letters.size} letter(s), ${catalog.localPetitions.size} local petition(s)",
     )
 }
 

@@ -351,7 +351,7 @@ class ShellSafeAreaTest {
             onNodeWithTag(FilterPanelTags.CLOSE).performClick()
             settle()
 
-            onNodeWithTag(RevendicationTags.CUSTOMIZE).performClick()
+            onNodeWithTag(RevendicationTags.CUSTOMIZE).performScrollTo().performClick()
             settle()
             assertInSafeArea(device, bounds(ManageViewsTags.CLOSE), "close button of the views")
             assertEndsAt(device.safeBottom - 8, bounds(ManageViewsTags.DONE).bottom.value, "actions of the views")

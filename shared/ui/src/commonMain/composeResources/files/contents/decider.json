@@ -541,26 +541,213 @@
         "sig": "e1ae7b2ec9e1927eeaa9be7de56128018abbc9132302055c1ddd5a649efe9eeb1c4f2f0a51ac725ba0da838b175c643b5ac9e7f0a99d5897922caa5e9361f964"
     },
     {
-        "id": "0407115bbb580a168f4ab6ebb8329304da40621db887e3546df4123cc458abf5",
+        "id": "d7dbf400710596497035c6c0fe61f54ac54bee450de856355fe550236180a6a5",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
-        "created_at": 1794139200,
+        "created_at": 1794225600,
         "kind": 30023,
         "tags": [
             [
                 "d",
-                "election-exemple"
+                "debat-public-reunion-express"
             ],
             [
                 "title",
-                "[EXEMPLE] Élection présidentielle d’exemple"
+                "Débat public sur le projet de train Réunion Express"
             ],
             [
                 "summary",
-                "Les tours, les dates limites et les liens officiels, pour se préparer à voter."
+                "La Commission nationale du débat public organise un débat sur le projet de train de la Région Réunion : chacun peut poser ses questions et donner son avis."
             ],
             [
                 "published_at",
-                "1794139200"
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "consultation"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "transports"
+            ],
+            [
+                "t",
+                "environnement"
+            ],
+            [
+                "ppf-consultation-kind",
+                "debat-public"
+            ],
+            [
+                "ppf-organizer",
+                "Commission nationale du débat public, à la demande de la Région Réunion"
+            ],
+            [
+                "ppf-official-url",
+                "https://www.debatpublic.fr/projet-train-reunion-express"
+            ],
+            [
+                "ppf-opened",
+                "2026-08-19"
+            ],
+            [
+                "ppf-closes",
+                "2026-11-26"
+            ],
+            [
+                "ppf-territory-code",
+                "974"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Commission nationale du débat public, page du débat (dates, porteur du projet, façons de participer)",
+                "https://www.debatpublic.fr/projet-train-reunion-express",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Commission nationale du débat public, « Le débat est lancé » (clôture le 26 novembre 2026)",
+                "https://www.debatpublic.fr/projet-train-reunion-express/le-debat-est-lance-koman-mi-partisip-9414",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Code de l’environnement, article L121-1 (missions de la Commission nationale du débat public)",
+                "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000036671287",
+                "2026-11-09"
+            ],
+            [
+                "ppf-next",
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
+            ]
+        ],
+        "content": "## Ce que c’est\n\nLa Région Réunion, qui porte le projet de train Réunion Express, a saisi la Commission nationale du débat public (CNDP). Cette autorité administrative indépendante veille à la participation du public à l’élaboration des grands projets ; elle organise ce débat du 19 août au 26 novembre 2026, sur l’opportunité du projet et ses variantes.\n\n## Comment participer\n\n1. Posez vos questions à la Région Réunion et donnez votre avis sur la plateforme du débat, « Mi partisip » (participer-debat-projet-train-reunion-express.cndp.fr) : la CNDP annonce une réponse officielle en quinze jours.\n2. Découvrez le projet par le parcours en ligne de la CNDP (alon-koze-projet-train-reunion-express.cndp.fr) et la carte du tracé publiée par la Région.\n3. Venez aux rencontres annoncées dans le calendrier du débat : un atelier à La Possession le 10 novembre, un atelier sur les variantes Nord à Saint-Denis le 12 novembre, une réunion publique à Saint-Paul le 16 novembre 2026.\n4. Les organisations peuvent publier un cahier d’acteur.\n",
+        "sig": "fb621fe2983397a173a279647cbb59cd08a10aebceae2f5877628595c5a19e0ff49a4a71e829728b865386c7174298735c627137c514353b3abd0d84c7dde55c"
+    },
+    {
+        "id": "cd6cf919637c4025320e06aa3c14674110631cd35cd0a0a9333942b29eb6741d",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "demander-sa-position-avant-un-vote"
+            ],
+            [
+                "title",
+                "Avant un vote : demander sa position à son député ou à son sénateur"
+            ],
+            [
+                "summary",
+                "Un courrier court et poli pour demander à un parlementaire comment il votera un texte, et pourquoi."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "modele-courrier"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "démocratie"
+            ],
+            [
+                "ppf-recipient",
+                "depute"
+            ],
+            [
+                "ppf-recipient",
+                "senateur"
+            ],
+            [
+                "ppf-subject",
+                "Votre vote sur [titre du texte]"
+            ],
+            [
+                "ppf-contact",
+                "depute",
+                "Trouver son député et ses coordonnées (site de l’Assemblée nationale)",
+                "https://www.assemblee-nationale.fr/dyn/vos-deputes"
+            ],
+            [
+                "ppf-contact",
+                "senateur",
+                "Trouver son sénateur et ses coordonnées (site du Sénat)",
+                "https://www.senat.fr/senateurs/sencir.html"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Assemblée nationale, « Rechercher votre député »",
+                "https://www.assemblee-nationale.fr/dyn/vos-deputes",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Sénat, liste des sénateurs par département",
+                "https://www.senat.fr/senateurs/sencir.html",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Assemblée nationale, ordre du jour de la séance publique (textes à l’ordre du jour sur plusieurs semaines)",
+                "https://www.assemblee-nationale.fr/dyn/seance-publique",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Sénat, ordre du jour de la séance publique",
+                "https://www.senat.fr/ordre-du-jour/ordre-du-jour.html",
+                "2026-11-09"
+            ],
+            [
+                "ppf-next",
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
+            ]
+        ],
+        "content": "{commune}, le {date}\n\nÀ l’attention de {elu}\n\nObjet : votre vote sur [titre du texte]\n\nMadame, Monsieur,\n\nJ’habite {commune} et je vous écris au sujet de [titre du texte], qui sera bientôt soumis à votre vote.\n\n[Dites en deux ou trois phrases pourquoi ce texte vous concerne.]\n\nPourriez-vous me dire comment vous comptez voter, et pour quelles raisons ? Votre réponse m’aidera à comprendre les choix faits en mon nom.\n\nJe vous remercie de votre attention et vous prie d’agréer, Madame, Monsieur, l’expression de mes salutations respectueuses.\n\n[Votre nom]\n",
+        "sig": "e35ef1da92dd4fb3b753caecf477f5081153a16f98eca0f383e3030cc0e0ff3ae2a4ee0e79997be905e99af1bd144307ba7e73188f7c152155e7812b05444196"
+    },
+    {
+        "id": "495e0969e9556760cf70c65e051adddc2aecb4ae3e7a6574dbc8ced166fa126d",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "presidentielle-2027"
+            ],
+            [
+                "title",
+                "Élection présidentielle de 2027"
+            ],
+            [
+                "summary",
+                "Les dates annoncées des deux tours, la date limite d’inscription sur les listes électorales et les démarches officielles pour voter."
+            ],
+            [
+                "published_at",
+                "1794225600"
             ],
             [
                 "ppf-type",
@@ -568,7 +755,7 @@
             ],
             [
                 "ppf-origin",
-                "human"
+                "ai-assisted"
             ],
             [
                 "t",
@@ -576,8 +763,8 @@
             ],
             [
                 "ppf-election",
-                "election-exemple",
-                "Élection présidentielle d’exemple",
+                "presidentielle-2027",
+                "Élection présidentielle de 2027",
                 ""
             ],
             [
@@ -587,45 +774,74 @@
             [
                 "ppf-round",
                 "1",
-                "2027-03-07",
-                "",
+                "2027-04-18",
+                "2027-04-17",
                 "20:00"
             ],
             [
                 "ppf-round",
                 "2",
-                "2027-03-21",
-                "2027-03-20",
+                "2027-05-02",
+                "2027-05-01",
                 "20:00"
             ],
             [
                 "ppf-deadline",
                 "inscription-en-ligne",
-                "2027-01-27",
-                "https://exemple.invalid/inscription-en-ligne"
+                "2027-03-12",
+                "https://www.service-public.gouv.fr/particuliers/vosdroits/R16396"
             ],
             [
                 "ppf-deadline",
                 "inscription-mairie",
-                "2027-01-29",
-                "https://exemple.invalid/inscription-mairie"
-            ],
-            [
-                "ppf-deadline",
-                "procuration-conseillee",
-                "2027-02-25",
-                "https://exemple.invalid/procuration"
+                "2027-03-12",
+                "https://www.service-public.gouv.fr/particuliers/vosdroits/F34240"
             ],
             [
                 "ppf-source",
                 "texte-officiel",
-                "[EXEMPLE] Calendrier annoncé de l’élection d’exemple",
-                "https://exemple.invalid/calendrier",
-                "2026-11-08"
+                "Service-public.gouv.fr, « Élection présidentielle » : dates des tours et dates des prochaines élections (page vérifiée le 21 octobre 2026 par ses auteurs)",
+                "https://www.service-public.gouv.fr/particuliers/vosdroits/F1939",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Code électoral, article L17 : inscription au plus tard le sixième vendredi précédant le scrutin",
+                "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000032964790",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Service-public.gouv.fr, inscription sur les listes électorales",
+                "https://www.service-public.gouv.fr/particuliers/vosdroits/F34240",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Service-public.gouv.fr, vérifier son inscription électorale et son bureau de vote",
+                "https://www.service-public.gouv.fr/particuliers/vosdroits/R51788",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Service-public.gouv.fr, vote par procuration",
+                "https://www.service-public.gouv.fr/particuliers/vosdroits/F1604",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Service-public.gouv.fr, horaires des bureaux de vote",
+                "https://www.service-public.gouv.fr/particuliers/vosdroits/F16828",
+                "2026-11-09"
             ]
         ],
-        "content": "Contenu de démonstration : l’élection et ses dates sont fictives. Les vraies dates viennent du décret de convocation publié au Journal officiel ; tant qu’il ne l’est pas, elles sont seulement annoncées.\n",
-        "sig": "928bac6ac6e9df9cbe34a7dc50e109b2ab2db84fcf0fa860565c78822a01179124574db5d673df1f881f1d536c0b1842dfdbee9e42c96d9ef1b04b285b8ccb45"
+        "content": "## Les dates\n\nLe premier tour est annoncé le **dimanche 18 avril 2027** et le second tour le **dimanche 2 mai 2027** (service-public.gouv.fr). En Guadeloupe, en Guyane, en Martinique, en Polynésie française, à Saint-Barthélemy, à Saint-Martin et à Saint-Pierre-et-Miquelon, on vote la veille, les samedis 17 avril et 1er mai 2027, à cause du décalage horaire. À La Réunion, à Mayotte, en Nouvelle-Calédonie et à Wallis-et-Futuna, on vote les mêmes jours qu’en métropole. Pour les Français de l’étranger, les jours précis ne sont pas encore indiqués.\n\nCes dates sont **annoncées** : le 9 novembre 2026, aucune des pages officielles consultées ne cite encore le décret de convocation des électeurs. Ce décret, publié au Journal officiel, convoque les électeurs au moins dix semaines avant le premier tour ; c’est lui qui fixe les dates pour de bon.\n\n## S’inscrire sur les listes électorales\n\nVous pouvez vous inscrire jusqu’au **vendredi 12 mars 2027**, en ligne ou en mairie : c’est le sixième vendredi avant le premier tour, selon la règle générale du code électoral (article L17). Le décret de convocation le confirmera. Dans certaines situations particulières, décrites sur service-public.gouv.fr, la date limite est reportée au dixième jour avant le premier tour. Vérifiez votre inscription et votre bureau de vote sur le service officiel.\n\n## Voter par procuration\n\nLa demande se fait en ligne sur le service officiel, puis se confirme en personne au commissariat ou à la gendarmerie. Le service public conseille de la faire au plus tôt, pour être sûr de pouvoir voter par procuration le jour du vote.\n\n## Les horaires\n\nPour une élection présidentielle, on peut voter de 8 h à 19 h. Un arrêté du préfet peut avancer l’ouverture ou retarder la fermeture, sans dépasser 20 h : c’est l’heure retenue ici pour la fermeture des derniers bureaux.\n\n## Les autres élections\n\nSelon service-public.gouv.fr, aucune autre élection générale n’est prévue avant 2028 : les élections départementales et régionales sont annoncées en mars 2028, les élections européennes et législatives en 2029 (sauf dissolution de l’Assemblée nationale).\n",
+        "sig": "71097051067329134446ccbef87d6861d898d5b00c68b2907833059786c1a83659cc0d531e179779834b5161594caeb4c56898f56ea8192908c2feec4e8061fe"
     },
     {
         "id": "9148be193f4afeeb32aaff9a39c2890545017ce7d4c0537208e0819a905ab9b5",
@@ -1040,30 +1256,30 @@
         "sig": "8d631810bc90abc433eab71e9afca2b9d37d8ee884a8820919dbcdfb31283122eb31940631a41413a13124b332d9e9c7182f11dc47b68d4bbc7d00fc8e97b3a5"
     },
     {
-        "id": "665d250bdc7d4006dbcfd87d24a55f6956987d9b9a5ad3ae2daf88d9fb073e28",
+        "id": "6461531ba5095311d93aa2c9c5377c83221c439fb073cfb18b9e6a729babe939",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
-        "created_at": 1793966400,
+        "created_at": 1794225600,
         "kind": 30023,
         "tags": [
             [
                 "d",
-                "petition-an-ordre-public"
+                "petition-locale-exemple"
             ],
             [
                 "title",
-                "[EXEMPLE] Retirer le projet de loi relatif à l’ordre public lors des manifestations"
+                "[EXEMPLE] Demander une consultation des habitants sur un projet de parking d’exemple"
             ],
             [
                 "summary",
-                "Pétition déposée sur le site de l’Assemblée nationale, qui demande le retrait du texte avant son vote définitif."
+                "Des électeurs de la commune demandent au conseil municipal d’inscrire à son ordre du jour une consultation sur le projet."
             ],
             [
                 "published_at",
-                "1790856000"
+                "1794225600"
             ],
             [
                 "ppf-type",
-                "petition"
+                "petition-locale"
             ],
             [
                 "ppf-origin",
@@ -1071,11 +1287,95 @@
             ],
             [
                 "t",
-                "manifestations"
+                "démocratie locale"
+            ],
+            [
+                "ppf-territory-code",
+                "69123"
+            ],
+            [
+                "ppf-collectivity",
+                "Commune d’exemple",
+                "commune"
+            ],
+            [
+                "ppf-voters",
+                "12 000",
+                "2026-11-01",
+                "[EXEMPLE] listes électorales de la commune d’exemple"
+            ],
+            [
+                "ppf-local-status",
+                "en-collecte"
+            ],
+            [
+                "ppf-how-to-sign",
+                "[EXEMPLE] Sur papier, auprès des organisateurs, chaque samedi matin devant le marché : nom, prénom, adresse et signature de chaque électeur inscrit dans la commune."
+            ],
+            [
+                "ppf-count",
+                "640",
+                "2026-11-08",
+                "[EXEMPLE] décompte des organisateurs"
+            ],
+            [
+                "ppf-opened",
+                "2026-10-15"
+            ],
+            [
+                "ppf-milestone",
+                "2026-10-15",
+                "[EXEMPLE] Début de la collecte des signatures."
+            ],
+            [
+                "ppf-source",
+                "texte-officiel",
+                "Code général des collectivités territoriales, article L1112-16",
+                "https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000045210334",
+                "2026-11-09"
+            ],
+            [
+                "ppf-next",
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
+            ]
+        ],
+        "content": "Contenu de démonstration : la commune, le projet, les chiffres et les organisateurs sont fictifs.\n\n## Ce que demande la pétition\n\nQue le conseil municipal inscrive à son ordre du jour l’organisation d’une consultation des électeurs de la commune sur le projet de parking d’exemple.\n\n## Ce qui se passe ensuite\n\nQuand un dixième des électeurs inscrits a signé, la demande est déposée auprès du maire. Le conseil municipal décide librement d’organiser ou non la consultation ; s’il l’organise, son résultat est un avis.\n",
+        "sig": "0ea062c0616af13a6de7bf6c3f3b72dd17524d2b0433397618221c707e664a241bd1d56ebb015322b9afb4ed83aa31d6080776fa20eeba48db577ec8ec5b5c40"
+    },
+    {
+        "id": "ac50a813e78b004e4688e051531d710f10a275aff110c4dff9cf9b3ca74ca2e4",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-an-5103"
+            ],
+            [
+                "title",
+                "Non c’est Non, Monsieur Duplomb !"
+            ],
+            [
+                "summary",
+                "Pétition citoyenne déposée sur le site des pétitions de l’Assemblée nationale, renvoyée à la commission des affaires économiques."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
             ],
             [
                 "t",
-                "libertés"
+                "agriculture"
             ],
             [
                 "ppf-platform",
@@ -1083,19 +1383,19 @@
             ],
             [
                 "ppf-official-url",
-                "https://petitions.assemblee-nationale.fr/"
+                "https://petitions.assemblee-nationale.fr/initiatives/i-5103"
             ],
             [
                 "ppf-reference",
-                "n° 0000 (exemple)"
+                "n° 5103"
             ],
             [
                 "ppf-opened",
-                "2026-09-30"
+                "2026-02-02"
             ],
             [
                 "ppf-closes",
-                "2027-10-14"
+                "2027-02-02"
             ],
             [
                 "ppf-petition-status",
@@ -1103,37 +1403,23 @@
             ],
             [
                 "ppf-count",
-                "45210",
-                "2026-10-05",
+                "446290",
+                "2026-11-09",
                 "site des pétitions de l’Assemblée nationale"
             ],
             [
-                "ppf-count",
-                "103900",
-                "2026-10-15",
-                "site des pétitions de l’Assemblée nationale"
+                "ppf-source",
+                "parlement",
+                "Page officielle de la pétition n° 5103 (titre, dates, signatures)",
+                "https://petitions.assemblee-nationale.fr/initiatives/i-5103",
+                "2026-11-09"
             ],
             [
-                "ppf-count",
-                "412950",
-                "2026-11-06",
-                "site des pétitions de l’Assemblée nationale"
-            ],
-            [
-                "ppf-milestone",
-                "2026-10-14",
-                "Plus de 100 000 signatures : la pétition est mise en ligne sur le site de l’Assemblée et reste ouverte jusqu’au 14 octobre 2027."
-            ],
-            [
-                "ppf-milestone",
-                "2026-10-22",
-                "Renvoyée à la commission des lois, qui désigne une rapporteure (exemple)."
-            ],
-            [
-                "a",
-                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:pjl-ordre-public-manifestations",
-                "",
-                "texte"
+                "ppf-source",
+                "parlement",
+                "Site des pétitions de l’Assemblée nationale, pétitions classées par nombre de signatures",
+                "https://petitions.assemblee-nationale.fr/initiatives?order=most_voted",
+                "2026-11-09"
             ],
             [
                 "ppf-source",
@@ -1144,8 +1430,97 @@
             ],
             [
                 "ppf-next",
-                "Vos droits en manifestation",
-                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:droits-en-manifestation"
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
+            ]
+        ],
+        "content": "PPF relaie cette pétition parce qu’elle était, le 9 novembre 2026, l’une des deux pétitions ouvertes les plus signées sur le site de l’Assemblée nationale. Ce relais n’est pas une prise de position de PPF : la même règle vaut pour toutes les pétitions, quel que soit leur sujet.\n\n## Ce que demande la pétition\n\nSon titre : « Non c’est Non, Monsieur Duplomb ! ». Le texte complet, rédigé par son auteur, est sur le site officiel. Elle a été renvoyée à la commission des affaires économiques.\n\n## Où elle en est\n\n446 290 signatures lues sur le site officiel le 9 novembre 2026. La collecte est ouverte jusqu’au 2 février 2027, date indiquée sur le site.\n\n## Ce que peut obtenir une pétition à l’Assemblée\n\nAu-delà de 100 000 signatures, la pétition est mise en ligne sur le site de l’Assemblée nationale. Au-delà de 500 000 signatures venant d’au moins 30 départements ou collectivités d’outre-mer, la Conférence des présidents peut décider d’un débat en séance publique. Ce débat se termine sans vote.\n",
+        "sig": "e2cd31a64db059da7598ef2f32de35b1db3f3122cca5c866f6742ebc393f9a3cfba20f8f2d8459741e613c4bcab36315841974142453a8a5fa1aef8fc9bda6e5"
+    },
+    {
+        "id": "ab1e1592613de84270b978b3bf1d8d68e638222164d75c719c92d78fa0b109a1",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794225600,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "petition-an-5820"
+            ],
+            [
+                "title",
+                "Supprimer CNews de l’audiovisuel français"
+            ],
+            [
+                "summary",
+                "Pétition citoyenne déposée sur le site des pétitions de l’Assemblée nationale, renvoyée à la commission des affaires culturelles et de l’éducation."
+            ],
+            [
+                "published_at",
+                "1794225600"
+            ],
+            [
+                "ppf-type",
+                "petition"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "médias"
+            ],
+            [
+                "ppf-platform",
+                "assemblee"
+            ],
+            [
+                "ppf-official-url",
+                "https://petitions.assemblee-nationale.fr/initiatives/i-5820"
+            ],
+            [
+                "ppf-reference",
+                "n° 5820"
+            ],
+            [
+                "ppf-opened",
+                "2026-06-10"
+            ],
+            [
+                "ppf-closes",
+                "2029-06-19"
+            ],
+            [
+                "ppf-petition-status",
+                "ouverte"
+            ],
+            [
+                "ppf-count",
+                "1022150",
+                "2026-11-09",
+                "site des pétitions de l’Assemblée nationale"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Page officielle de la pétition n° 5820 (titre, dates, signatures)",
+                "https://petitions.assemblee-nationale.fr/initiatives/i-5820",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Site des pétitions de l’Assemblée nationale, pétitions classées par nombre de signatures",
+                "https://petitions.assemblee-nationale.fr/initiatives?order=most_voted",
+                "2026-11-09"
+            ],
+            [
+                "ppf-source",
+                "parlement",
+                "Règlement de l’Assemblée nationale, articles 147 à 151",
+                "https://www.assemblee-nationale.fr/dyn/17/divers/texte_reference/02_reglement_assemblee_nationale.html",
+                "2026-11-07"
             ],
             [
                 "ppf-next",
@@ -1153,30 +1528,30 @@
                 "space:revendications"
             ]
         ],
-        "content": "Contenu de démonstration : la pétition, son numéro et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site des pétitions de l’Assemblée nationale.\n\n## Ce que demande la pétition\n\nLe retrait du projet de loi, au motif qu’il restreint le droit de manifester sans étude de ses effets sur les libertés publiques.\n\n## Ce que peut obtenir une pétition à l’Assemblée\n\nAu-delà de 500 000 signatures venant d’au moins 30 départements, la Conférence des présidents peut décider d’un débat en séance. Ce débat se termine sans vote.\n",
-        "sig": "cfe93f55d980c9dc28898f552878d880feab025622c38215bb1865a24ac9a464897d79112138ad1ae71ff9330909102323cd52c3eda9c5d65c6c2fa0c123c7fe"
+        "content": "PPF relaie cette pétition parce qu’elle était, le 9 novembre 2026, l’une des deux pétitions ouvertes les plus signées sur le site de l’Assemblée nationale. Ce relais n’est pas une prise de position de PPF : la même règle vaut pour toutes les pétitions, quel que soit leur sujet.\n\n## Ce que demande la pétition\n\nSon titre : « Supprimer CNews de l’audiovisuel français ». Le texte complet, rédigé par son auteur, est sur le site officiel. Elle a été renvoyée à la commission des affaires culturelles et de l’éducation.\n\n## Où elle en est\n\n1 022 150 signatures lues sur le site officiel le 9 novembre 2026. La collecte est ouverte jusqu’au 19 juin 2029, date indiquée sur le site.\n\n## Ce que peut obtenir une pétition à l’Assemblée\n\nAu-delà de 100 000 signatures, la pétition est mise en ligne sur le site de l’Assemblée nationale. Au-delà de 500 000 signatures venant d’au moins 30 départements ou collectivités d’outre-mer, la Conférence des présidents peut décider d’un débat en séance publique. Ce débat se termine sans vote.\n",
+        "sig": "d307edb7f76f2ccc61d21a0df0dc39644dcff6353c2c67e54b3dd10015dae5d3bfaa42e10a48769cc7e322e395d67526996edfd833ebda996a82d488ad6fe3c5"
     },
     {
-        "id": "3900b9775888a663cf8fc5ce09068f02927013ba314323388ab8e96224334f72",
+        "id": "b8ba3b0f471df53dfdbcd9eef02c1a7254ad67fd3fda65ad5409abe101ea5feb",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
-        "created_at": 1793620800,
+        "created_at": 1794225600,
         "kind": 30023,
         "tags": [
             [
                 "d",
-                "petition-cese-vie-chere"
+                "petition-senat-2324"
             ],
             [
                 "title",
-                "[EXEMPLE] Un plan d’urgence contre la vie chère"
+                "Demande d’ouverture d’une enquête parlementaire sur la crise du travail à travers le syndrome d’épuisement professionnel"
             ],
             [
                 "summary",
-                "Pétition au Conseil économique, social et environnemental, ouverte aux personnes de 16 ans et plus."
+                "Pétition citoyenne déposée sur le site des pétitions du Sénat, qui demande une mission de contrôle."
             ],
             [
                 "published_at",
-                "1780488000"
+                "1794225600"
             ],
             [
                 "ppf-type",
@@ -1184,184 +1559,15 @@
             ],
             [
                 "ppf-origin",
-                "human"
+                "ai-assisted"
             ],
             [
                 "t",
-                "vie chère"
-            ],
-            [
-                "ppf-platform",
-                "cese"
-            ],
-            [
-                "ppf-official-url",
-                "https://petitions.lecese.fr/"
-            ],
-            [
-                "ppf-reference",
-                "exemple"
-            ],
-            [
-                "ppf-opened",
-                "2026-06-02"
-            ],
-            [
-                "ppf-closes",
-                "2027-06-02"
-            ],
-            [
-                "ppf-petition-status",
-                "ouverte"
-            ],
-            [
-                "ppf-count",
-                "98000",
-                "2026-09-01",
-                "site des pétitions du CESE"
-            ],
-            [
-                "ppf-count",
-                "152480",
-                "2026-11-02",
-                "site des pétitions du CESE"
-            ],
-            [
-                "ppf-milestone",
-                "2026-10-28",
-                "150 000 signataires atteints : le Bureau du CESE examine la recevabilité (exemple)."
-            ],
-            [
-                "ppf-source",
-                "texte-officiel",
-                "Ordonnance n° 58-1360 du 29 décembre 1958, article 4-1",
-                "https://www.legifrance.gouv.fr/loda/article_lc/LEGIARTI000042999544",
-                "2026-11-07"
-            ]
-        ],
-        "content": "Contenu de démonstration : la pétition et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site des pétitions du CESE.\n\nSi la pétition est recevable, le CESE rend un avis dans les six mois, publié au Journal officiel.\n",
-        "sig": "2097552cfd6923f2e72ee2d22f9c4a8b4495d2a762d36f093d1e935c9b57eb5f0018b6f2098e2403705ed94ecfcba9a1b2e1e1cc6d5bfb16b6caf47d77604529"
-    },
-    {
-        "id": "a0d90130f45fce49aa3490e67a32ea044c45a26cb4e0e77a58eeaca3fee387f3",
-        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
-        "created_at": 1793534400,
-        "kind": 30023,
-        "tags": [
-            [
-                "d",
-                "petition-ice-energie"
-            ],
-            [
-                "title",
-                "[EXEMPLE] Plafonner le prix de l’énergie pour les ménages en Europe"
-            ],
-            [
-                "summary",
-                "Initiative citoyenne européenne qui demande à la Commission une proposition de loi sur le prix de l’énergie."
-            ],
-            [
-                "published_at",
-                "1777982400"
-            ],
-            [
-                "ppf-type",
-                "petition"
-            ],
-            [
-                "ppf-origin",
-                "human"
+                "travail"
             ],
             [
                 "t",
-                "énergie"
-            ],
-            [
-                "t",
-                "vie chère"
-            ],
-            [
-                "t",
-                "Europe"
-            ],
-            [
-                "ppf-platform",
-                "ice"
-            ],
-            [
-                "ppf-official-url",
-                "https://citizens-initiative.europa.eu/"
-            ],
-            [
-                "ppf-reference",
-                "exemple"
-            ],
-            [
-                "ppf-opened",
-                "2026-05-04"
-            ],
-            [
-                "ppf-closes",
-                "2027-05-04"
-            ],
-            [
-                "ppf-petition-status",
-                "ouverte"
-            ],
-            [
-                "ppf-count",
-                "640200",
-                "2026-11-01",
-                "site de l’initiative citoyenne européenne"
-            ],
-            [
-                "ppf-source",
-                "texte-officiel",
-                "Règlement (UE) 2019/788 relatif à l’initiative citoyenne européenne",
-                "https://eur-lex.europa.eu/legal-content/FR/TXT/HTML/?uri=CELEX:32019R0788",
-                "2026-11-07"
-            ]
-        ],
-        "content": "Contenu de démonstration : l’initiative et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site de l’initiative citoyenne européenne.\n\nIl faut un million de signatures, avec le seuil national atteint dans au moins sept États. En France, ce seuil est de 58 320 signatures.\n",
-        "sig": "bdc9b286a342c90cd8cf130e4dbacee3388f8f9bc5776c756fff810b9f92b44544d0aa430e0863fedfeb8d879ca4b71d0c66c6cd8e5ebcb4643a53280d0f71f2"
-    },
-    {
-        "id": "858909256b17886399b916dd3e23eeb06f6bb5a1ec458340c6424e6a1193b107",
-        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
-        "created_at": 1793966400,
-        "kind": 30023,
-        "tags": [
-            [
-                "d",
-                "petition-senat-indexation"
-            ],
-            [
-                "title",
-                "[EXEMPLE] Indexer les salaires sur les prix"
-            ],
-            [
-                "summary",
-                "Pétition au Sénat pour l’inscription à l’ordre du jour de la proposition de loi d’indexation des salaires."
-            ],
-            [
-                "published_at",
-                "1789992000"
-            ],
-            [
-                "ppf-type",
-                "petition"
-            ],
-            [
-                "ppf-origin",
-                "human"
-            ],
-            [
-                "t",
-                "salaires"
-            ],
-            [
-                "t",
-                "vie chère"
+                "santé"
             ],
             [
                 "ppf-platform",
@@ -1369,19 +1575,19 @@
             ],
             [
                 "ppf-official-url",
-                "https://petitions.senat.fr/"
+                "https://petitions.senat.fr/initiatives/i-2324"
             ],
             [
                 "ppf-reference",
-                "exemple"
+                "SÉNAT-INIT-2026-07-2324"
             ],
             [
                 "ppf-opened",
-                "2026-09-20"
+                "2026-07-23"
             ],
             [
                 "ppf-closes",
-                "2027-03-20"
+                "2027-01-23"
             ],
             [
                 "ppf-petition-status",
@@ -1389,21 +1595,23 @@
             ],
             [
                 "ppf-count",
-                "18400",
-                "2026-10-01",
+                "2331",
+                "2026-11-09",
                 "site des pétitions du Sénat"
             ],
             [
-                "ppf-count",
-                "61300",
-                "2026-11-06",
-                "site des pétitions du Sénat"
+                "ppf-source",
+                "parlement",
+                "Page officielle de la pétition SÉNAT-INIT-2026-07-2324 (titre, dates, signatures)",
+                "https://petitions.senat.fr/initiatives/i-2324",
+                "2026-11-09"
             ],
             [
-                "a",
-                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:ppl-indexation-salaires",
-                "",
-                "texte"
+                "ppf-source",
+                "parlement",
+                "Site des pétitions du Sénat, pétitions classées par nombre de signatures",
+                "https://petitions.senat.fr/initiatives?order=most_voted",
+                "2026-11-09"
             ],
             [
                 "ppf-source",
@@ -1414,34 +1622,34 @@
             ],
             [
                 "ppf-next",
-                "Voir la proposition de loi",
-                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:ppl-indexation-salaires"
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
             ]
         ],
-        "content": "Contenu de démonstration : la pétition et ses chiffres sont fictifs. Le lien mène à l’accueil du vrai site des pétitions du Sénat.\n\nÀ 100 000 signatures en six mois, la Conférence des présidents du Sénat doit examiner la pétition.\n",
-        "sig": "aa0981740fd8077de8f9b7d0abb43c42dda7b4b2ddcb35e71185907b7ee5b46c93c1830ea540c7285e599578346eb24f56052fe1be6ab3acd0bfe52718392993"
+        "content": "PPF relaie cette pétition parce qu’elle était, le 9 novembre 2026, l’une des deux pétitions ouvertes les plus signées sur le site du Sénat. Ce relais n’est pas une prise de position de PPF : la même règle vaut pour toutes les pétitions, quel que soit leur sujet.\n\n## Ce que demande la pétition\n\nSon titre : « Demande d’ouverture d’une enquête parlementaire sur la crise du travail à travers le syndrome d’épuisement professionnel ». Elle demande une mission de contrôle. Le texte complet, rédigé par son auteur, est sur le site officiel.\n\n## Où elle en est\n\n2 331 signatures lues sur le site officiel le 9 novembre 2026, sur les 100 000 demandées. La collecte est ouverte du 23 juillet 2026 au 23 janvier 2027.\n\n## Ce que peut obtenir une pétition au Sénat\n\nUne pétition qui recueille au moins 100 000 signatures dans un délai de six mois est transmise à la Conférence des présidents, qui peut décider d’y donner suite, ou non.\n",
+        "sig": "5e72225a81b7d384483fdc41aca4a73e86c2de04e514670e52abf4f302549a73a018044bcf56a30d400b17ffbd3e7841ff6dcb1a8305ccb6f3007e3c5fbc59ab"
     },
     {
-        "id": "6a1f91ceeb42c432819f1cf7da03907149d5bc81c6ec0799923b47a5aeb1e471",
+        "id": "a4ec2062a52cf62e59b46932d25ea04cd7369a966bd5c50bea3124635de29dbc",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
-        "created_at": 1788955200,
+        "created_at": 1794225600,
         "kind": 30023,
         "tags": [
             [
                 "d",
-                "petition-senat-retraites"
+                "petition-senat-2456"
             ],
             [
                 "title",
-                "[EXEMPLE] Revaloriser les petites retraites au niveau des prix"
+                "Pour la fermeture de BFM TV et CNews : pour une information plus transparente et pluraliste"
             ],
             [
                 "summary",
-                "Pétition au Sénat close après six mois, au-delà de 100 000 signatures."
+                "Pétition citoyenne déposée sur le site des pétitions du Sénat, qui demande une mission de contrôle."
             ],
             [
                 "published_at",
-                "1770811200"
+                "1794225600"
             ],
             [
                 "ppf-type",
@@ -1449,11 +1657,11 @@
             ],
             [
                 "ppf-origin",
-                "human"
+                "ai-assisted"
             ],
             [
                 "t",
-                "retraites"
+                "médias"
             ],
             [
                 "ppf-platform",
@@ -1461,45 +1669,43 @@
             ],
             [
                 "ppf-official-url",
-                "https://petitions.senat.fr/"
+                "https://petitions.senat.fr/initiatives/i-2456"
             ],
             [
                 "ppf-reference",
-                "exemple"
+                "SÉNAT-INIT-2026-10-2456"
             ],
             [
                 "ppf-opened",
-                "2026-02-10"
+                "2026-10-30"
             ],
             [
                 "ppf-closes",
-                "2026-08-10"
+                "2027-04-30"
             ],
             [
                 "ppf-petition-status",
-                "close"
+                "ouverte"
             ],
             [
                 "ppf-count",
-                "64000",
-                "2026-04-01",
+                "4867",
+                "2026-11-09",
                 "site des pétitions du Sénat"
             ],
             [
-                "ppf-count",
-                "118400",
-                "2026-08-10",
-                "site des pétitions du Sénat"
+                "ppf-source",
+                "parlement",
+                "Page officielle de la pétition SÉNAT-INIT-2026-10-2456 (titre, dates, signatures)",
+                "https://petitions.senat.fr/initiatives/i-2456",
+                "2026-11-09"
             ],
             [
-                "ppf-milestone",
-                "2026-05-28",
-                "100 000 signatures en moins de quatre mois."
-            ],
-            [
-                "ppf-milestone",
-                "2026-09-09",
-                "La Conférence des présidents décide de créer une mission d’information (exemple)."
+                "ppf-source",
+                "parlement",
+                "Site des pétitions du Sénat, pétitions classées par nombre de signatures",
+                "https://petitions.senat.fr/initiatives?order=most_voted",
+                "2026-11-09"
             ],
             [
                 "ppf-source",
@@ -1510,11 +1716,11 @@
             ],
             [
                 "ppf-next",
-                "Voir le vote du Sénat sur la revalorisation",
-                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:vote-alex-revalorisation"
+                "Proposer une revendication sur ce sujet",
+                "space:revendications"
             ]
         ],
-        "content": "Contenu de démonstration : la pétition et ses chiffres sont fictifs.\n\nLa pétition a dépassé le seuil de 100 000 signatures dans les six mois. La Conférence des présidents l’a examinée et a choisi de créer une mission d’information plutôt que d’inscrire un débat.\n",
-        "sig": "9b6c36e0f9bb28cbeeb1cc38bcea724e91d92db6d16bbe060da7f5fbee51b08f6f7785cba9f4a9153f957eda2f041ca14829f875e991389bbecb6dbd67d79ede"
+        "content": "PPF relaie cette pétition parce qu’elle était, le 9 novembre 2026, l’une des deux pétitions ouvertes les plus signées sur le site du Sénat. Ce relais n’est pas une prise de position de PPF : la même règle vaut pour toutes les pétitions, quel que soit leur sujet.\n\n## Ce que demande la pétition\n\nSon titre : « Pour la fermeture de BFM TV et CNews : pour une information plus transparente et pluraliste ». Elle demande une mission de contrôle. Le texte complet, rédigé par son auteur, est sur le site officiel.\n\n## Où elle en est\n\n4 867 signatures lues sur le site officiel le 9 novembre 2026, sur les 100 000 demandées. La collecte est ouverte du 30 octobre 2026 au 30 avril 2027.\n\n## Ce que peut obtenir une pétition au Sénat\n\nUne pétition qui recueille au moins 100 000 signatures dans un délai de six mois est transmise à la Conférence des présidents, qui peut décider d’y donner suite, ou non.\n",
+        "sig": "c47e20995fe498f56b9b38348e416adf37a5db281d7e774c4fdbd83a1393d8ed83d7c1667b0dc2f6798da575eb71f4ba9ec822b380d6e342617db44a9ffc4aac"
     }
 ]

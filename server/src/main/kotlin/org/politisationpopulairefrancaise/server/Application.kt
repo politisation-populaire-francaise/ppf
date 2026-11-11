@@ -17,6 +17,7 @@ import io.ktor.server.response.respond
 import io.ktor.server.routing.get
 import io.ktor.server.routing.routing
 import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.runBlocking
 import org.politisationpopulairefrancaise.core.AppInfo
 import org.politisationpopulairefrancaise.core.HealthStatus
 import org.politisationpopulairefrancaise.server.accounts.AccountTypes
@@ -81,6 +82,7 @@ import kotlin.time.Duration.Companion.hours
 import org.politisationpopulairefrancaise.server.db.Database
 import org.politisationpopulairefrancaise.server.db.DatabaseConfig
 import org.politisationpopulairefrancaise.server.decider.ComparatorFreeze
+import org.politisationpopulairefrancaise.server.decider.DeciderDashboardFigures
 import org.politisationpopulairefrancaise.server.decider.ComparatorPhotosConfig
 import org.politisationpopulairefrancaise.server.decider.CompromisedAuthors
 import org.politisationpopulairefrancaise.server.decider.comparatorPhotosRoutes
@@ -126,6 +128,8 @@ import org.politisationpopulairefrancaise.server.voir.DashboardService
 import org.politisationpopulairefrancaise.server.voir.EditorialVoirSource
 import org.politisationpopulairefrancaise.server.voir.VoirDatasets
 import org.politisationpopulairefrancaise.server.voir.dashboardRoutes
+import org.politisationpopulairefrancaise.server.voir.DashboardProvider
+import org.politisationpopulairefrancaise.core.voir.DashboardMetric
 import org.politisationpopulairefrancaise.server.comprendre.EditorialComprendreSource
 import org.politisationpopulairefrancaise.server.tiles.TilesConfig
 import org.politisationpopulairefrancaise.server.tiles.tilesRoutes
@@ -488,6 +492,16 @@ fun Application.module(
     // One reading of the contents of "Décider" for the site and for the freeze of the comparators (DE-16).
     val deciderSource = repository?.let { EditorialDeciderSource(it, policy) }
     val comparatorFreeze = deciderSource?.let { source -> ComparatorFreeze(source::catalog) }
+    // The figures of « Décider » in the « Tableau de bord fédérateur » (PP-07): the ballots and the public votes of the
+    // elected officials, the official readings of the relayed petitions, the candidates who signed a pact; never a person.
+    val deciderFigures = buildMap<DashboardMetric, DashboardProvider> {
+        urneStore?.let { store -> put(DashboardMetric.VOTES, DashboardProvider { store.votesByMonth() }) }
+        deciderSource?.let { source ->
+            // A provider does not suspend: the catalog (kept 30 seconds by its source) is read here, on the dispatcher of the dashboard.
+            put(DashboardMetric.SIGNATURES, DashboardProvider { runBlocking { DeciderDashboardFigures.signatures(source.catalog()) } })
+            put(DashboardMetric.COMMITMENTS, DashboardProvider { runBlocking { DeciderDashboardFigures.engagements(source.catalog()) } })
+        }
+    }
     deliberationSubmissions?.let { teamBackOffice?.queues?.register(DeliberationQueue(it)) }
     // The sessions of the validators with an abnormal pace, for the administrators (D-112, design 8).
     if (urneStore != null && teamBackOffice != null) teamBackOffice.queues.register(ValidationSessionsQueue(urneStore.dataSource))
@@ -589,7 +603,7 @@ fun Application.module(
             archivesApi(archives)
             transparencyApi(dataSource) // Requisitions answered per month only (D-077).
             exportApi(openExport) // The open export and its datasets (M34, S-48).
-            dashboardRoutes(repository?.let { DashboardService(it) }) // « Tableau de bord » (M34, PP-07): /api/v1/tableau-de-bord and /tableau-de-bord.
+            dashboardRoutes(repository?.let { DashboardService(it, extra = deciderFigures) }) // « Tableau de bord » (M34, PP-07): /api/v1/tableau-de-bord and /tableau-de-bord.
             openExport?.let { openDataPage(it.pageSource()) } // The page /donnees of the site.
             openExport?.let { export -> verifyPages(ContentVerifier { export.check(it) }) } // « Vérifier un contenu PPF » (S-141).
             agirSpace?.let { agendaPage(it.agendaSource()) }

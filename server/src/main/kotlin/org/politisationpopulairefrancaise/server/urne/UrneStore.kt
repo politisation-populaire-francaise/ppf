@@ -158,6 +158,31 @@ class UrneStore(
             s.executeUpdate() == 1
         }
 
+    /**
+     * The « votes » of the « Tableau de bord fédérateur » (PP-07): the anonymous ballots and the public votes of the
+     * elected officials, withdrawals left out, by the month (`AAAA-MM`, Paris) of their last reception. Counts over every
+     * box at once: nothing about a box, a level or a choice.
+     */
+    fun votesByMonth(): Map<String, Long> = dataSource.connection.use { c ->
+        c.prepareStatement(
+            """
+            SELECT month, sum(n) FROM (
+                SELECT to_char(received_hour AT TIME ZONE 'Europe/Paris', 'YYYY-MM') AS month, count(*) AS n FROM ballot WHERE choice <> ? GROUP BY 1
+                UNION ALL
+                SELECT to_char(to_timestamp(created_at) AT TIME ZONE 'Europe/Paris', 'YYYY-MM') AS month, count(*) AS n FROM public_vote WHERE choice <> ? GROUP BY 1
+            ) AS counted GROUP BY month
+            """.trimIndent(),
+        ).use { s ->
+            s.setString(1, UrneInfo.WITHDRAWN)
+            s.setString(2, UrneInfo.WITHDRAWN)
+            s.executeQuery().use { r ->
+                val months = LinkedHashMap<String, Long>()
+                while (r.next()) months[r.getString(1)] = r.getLong(2)
+                months
+            }
+        }
+    }
+
     fun accountsByLevel(): Map<String, Long> = dataSource.connection.use { c ->
         c.createStatement().use { s ->
             s.executeQuery("SELECT level, count(*) FROM vote_account GROUP BY level").use { r ->

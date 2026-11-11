@@ -71,6 +71,11 @@ class ParliamentStoreTest {
                 driver.execute(null, "DROP TABLE parliament_alert_member", 0)
                 driver.execute(null, "DROP TABLE followed_word", 0)
                 driver.execute(null, "DROP TABLE parliament_ballot_seen", 0)
+                // Added by version 18 (reminders, letters, documents of Décider, 17.sqm), absent at version 11.
+                driver.execute(null, "DROP TABLE letter_note", 0)
+                driver.execute(null, "DROP TABLE document_request", 0)
+                driver.execute(null, "DROP TABLE reminder_plan", 0)
+                driver.execute(null, "DROP TABLE reminder", 0)
                 driver.execute(null, "DROP TABLE contact_verification", 0)
                 driver.execute(null, "DROP TABLE push_registration", 0)
                 driver.execute(null, "DROP TABLE notification_mark", 0)

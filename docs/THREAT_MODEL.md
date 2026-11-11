@@ -411,6 +411,49 @@ Conception : `docs/integration/compte-compromis.md`, section 8. Code : `core/ide
 | Ce que vérifie une personne révèle ce qu'elle a reçu | Rien n'est enregistré ni journalisé ; le contenu collé n'est jamais réécrit dans la page ; dans l'application, la vérification se fait sur l'appareil, sans connexion | |
 | Requête démesurée | 96 Kio au plus pour un contenu collé, corps lu par un canal borné, `413` au-delà | |
 
+## Ajout du 9 novembre 2026 : rappels personnels sur l'appareil (DE-28, S-98, D-118)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Le serveur apprend qui suit quelle élection, quelle consultation, quel événement, quelle commune (intérêt politique, RGPD article 9) | Les rappels sont programmés, gardés et affichés sur l'appareil seulement ; aucune requête n'est faite pour eux, l'alarme d'Android ne lance que le tour du centre sur l'appareil | |
+| Quelqu'un voit l'écran verrouillé, ou prend le téléphone | Écran verrouillé : « PPF : nouvelle activité », jamais le texte ; titre et détail cachés par défaut même déverrouillé ; verrouillage de l'application (S-43) ; effacement rapide (S-44, partie `core-reminders`) | |
+| Une autre application déclenche les rappels ou les fait taire | Récepteur de l'alarme non exporté (intention explicite de l'application) ; récepteur du redémarrage qui n'accepte que l'action envoyée par le système, et qui ne fait que relire l'appareil | |
+| Un rappel arrive trop tard (alarme retardée par Android, téléphone éteint, application de bureau fermée) | Rappels 7 à 10 jours avant les dates limites ; la page de l'élection montre toujours toutes les dates ; l'écran dit que sur ordinateur un rappel s'affiche à l'ouverture | Notifications locales programmées sur iPhone avec l'application iOS |
+
+## Ajout du 9 novembre 2026 : demander un document administratif (DE-31)
+
+| Menace | Parade | Statut |
+|---|---|---|
+| Une demande révèle un engagement (permis contesté, enquête, conflit avec une mairie) | Rien n'est envoyé : la demande part du courriel ou de la lettre de la personne ; seules les notes restent sur l'appareil, effaçables une à une et par l'effacement rapide (`decider-documents`) ; le texte de la demande n'est jamais gardé | Fait (non compilé) |
+| Téléphone saisi : la liste des demandes lue | Verrouillage de l'application et effacement rapide (S-43, S-44) ; détails des rappels cachés par défaut dans le centre | Fait (non compilé) |
+| Délai mal compté, recours perdu | Délais vérifiés sur Légifrance et cités ; dates dites indicatives, de date à date ; l'accusé de réception fait foi | Fait (non compilé) |
+| Ma Dada publie la demande, la réponse et les documents | L'écran le dit avant le départ (« Vous quittez PPF ») et la déconseille pour un document personnel | Fait (non compilé) |
+
+## Ajout du 9 novembre 2026 : « Mon bulletin a été compté » (DE-29)
+
+| Menace | Parade | Statut |
+|---|---|---|
+| Serveur qui retire ou change un bulletin accepté, ou publie de faux totaux | Chaque appareil cherche son bulletin par son identifiant secret dans la liste publiée et rejoue le recomptage ; alerte affichée, et chacun peut refaire le recomptage avec la même liste | Fait (non compilé) |
+| Serveur qui annonce une autre clé à la clôture | La clé du niveau de l'appareil est celle épinglée à la réception du jeton ; limite : les autres niveaux sont vérifiés avec les clés de la clôture | Fait, limite écrite (`docs/integration/mon-bulletin-compte.md`) |
+| Apprendre qui a voté en voyant qui télécharge la liste d'une urne | Même bouton pour tous, aucune vérification automatique, client anonyme sans compte ni connexion partagée ; reste l'adresse réseau commune (limite R5, jusqu'à Tor en phase 3), et aucune adresse IP n'est journalisée | Fait (non compilé) |
+| Contrainte ou achat de vote : prouver son choix à un tiers | Aucun reçu : réponse jamais gardée, sans le choix, sans `y` ni jeton, sans copie ni partage ; l'identifiant `y` ne quitte l'appareil que dans le bulletin anonyme | Fait (non compilé) |
+
+## Ajout du 9 novembre 2026 : questionnaire citoyen anonyme (M26, prévu, analyse d'impact)
+
+| Menace | Parade prévue (rien n'est codé) | Statut |
+|---|---|---|
+| Réidentification d'un votant en croisant ses réponses (département, âge, sexe, bord) et son vote dans la liste publiée des bulletins | Réponses jamais dans la liste publiée, répartitions signées puis effacement des réponses bulletin par bulletin, seuil par case, une catégorie à la fois, région pour une question nationale | Décidé (D-150, seuil de 20) ; à coder après la relecture juridique de l'analyse |
+| Accès au serveur pendant le vote | Table à part, aucun écran du back-office, journal d'audit, envoi différé des bulletins (D-112), aucune IP | Décidé (D-150) ; à coder après la relecture juridique |
+
+## Ajout du 9 novembre 2026 : interpeller ses élus (DE-09, étape 1)
+
+| Menace | Parade en place | Prévu |
+|---|---|---|
+| Le serveur, ou quelqu'un qui le contrôle, apprend à qui une personne écrit et ce qu'elle écrit (opinion politique, RGPD article 9) | Le modèle est rempli et modifié sur l'appareil, le texte n'est gardé nulle part ; la personne envoie elle-même le courrier ; « J'ai envoyé ce courrier » et « J'ai reçu une réponse » restent sur l'appareil (D-119, option A) | Compteurs publics avec DE-23 (D-119, option B) : chaque déclaration par un jeton anonyme des urnes, jamais reliée à un compte, affichée à partir de 5 |
+| Une autre application lit le presse-papiers après « Copier le courrier » | Conseil affiché sur la page (n'écrire que ce qu'on accepte de voir lu par l'équipe de l'élu) ; Android 13 et plus signale la lecture du presse-papiers | |
+| Quelqu'un prend le téléphone et voit à quels élus la personne a écrit | Verrouillage de l'application (S-43), effacement rapide (S-44, partie `decider-courriers`), chaque note effaçable | |
+| Un modèle pousse à l'injure ou à la menace envers un élu | Modèles écrits et relus par l'équipe (charte de contenu, section 9.3), formule neutre, demande de position ou d'explication seulement | |
+
 ## Ajout du 8 novembre 2026 : solidarité et bénévolat (M35 : AG-10, AG-12)
 
 Détail : `docs/integration/agir-solidarite.md`, section 4.

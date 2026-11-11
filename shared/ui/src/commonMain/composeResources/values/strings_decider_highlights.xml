@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The three flagship tools of "Décider" (MVP 1, jalon 3), at the top of Décider and on En direct.
+     French, typographic apostrophe (’), no em dash. -->
+<resources>
+    <string name="decider_highlights_title">Décider ensemble</string>
+    <string name="decider_highlight_demands">Revendications</string>
+    <plurals name="decider_highlight_demands_count">
+        <item quantity="one">%1$d revendication, proposez et votez</item>
+        <item quantity="other">%1$d revendications, proposez et votez</item>
+    </plurals>
+    <string name="decider_highlight_demands_none">Proposez la première, votez pour celles des autres</string>
+    <string name="decider_highlight_petitions">Pétitions officielles</string>
+    <plurals name="decider_highlight_petitions_count">
+        <item quantity="one">%1$d pétition ouverte, à signer sur le site officiel</item>
+        <item quantity="other">%1$d pétitions ouvertes, à signer sur les sites officiels</item>
+    </plurals>
+    <string name="decider_highlight_petitions_none">Les règles et les seuils des sites officiels</string>
+    <string name="decider_highlight_pacte">Pacte démocratique</string>
+    <plurals name="decider_highlight_pacte_measures">
+        <item quantity="one">%1$d mesure, ce que les candidats s’engagent à faire</item>
+        <item quantity="other">%1$d mesures, ce que les candidats s’engagent à faire</item>
+    </plurals>
+    <string name="decider_highlight_pacte_none">Ce que les candidats s’engagent à faire</string>
+</resources>

@@ -63,7 +63,7 @@ class ComprendreScreenTest {
         val dependencies = dependencies()
         openComprendre(dependencies, width = 1000, height = 740)
         waitForGuides()
-        assertEquals(20, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "fiche-pratique").size)
+        assertEquals(22, dependencies.contentStore!!.byTag(listOf(30023), "ppf-type", "fiche-pratique").size)
         onNodeWithTag(ContentTags.GUIDE_CARD + "droits-en-manifestation").assertExists()
         onNodeWithTag(ContentTags.GUIDE_CARD + "filmer-les-forces-de-l-ordre").assertExists()
         onNodeWithText("Hors ligne", substring = true).assertExists()

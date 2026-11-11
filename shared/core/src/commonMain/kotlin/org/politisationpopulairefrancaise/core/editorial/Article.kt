@@ -99,6 +99,24 @@ enum class ArticleType(val tagValue: String) {
     COMMUNIQUE("communique"),
 
     /**
+     * An official public consultation relayed by "Décider" (DE-27; core.decider.PublicConsultation): its organizer, its
+     * kind, its dates and the official page where one answers; the body is the guide to answer it.
+     */
+    CONSULTATION("consultation"),
+
+    /**
+     * A model letter to one's elected officials (DE-09; core.decider.LetterTemplate): recipients, subject, the letter to
+     * fill in on the device, the official contacts. PPF sends nothing.
+     */
+    MODELE_COURRIER("modele-courrier"),
+
+    /**
+     * A local petition asking a collectivity for a consultation (DE-26; core.decider.LocalPetition, CGCT L1112-16): the
+     * collectivity, its registered voters, where to sign, the counts and what became of it. PPF collects no signature.
+     */
+    PETITION_LOCALE("petition-locale"),
+
+    /**
      * A text of the series « Le cap du mouvement » (docs/ROADMAP-MVP1.md, section 5; D-200): short, sourced, linked
      * to an action; sourced facts or a position of PPF (`ppf-nature`), read by `core.comprendre.CapText`.
      */

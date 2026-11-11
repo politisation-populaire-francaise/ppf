@@ -1,0 +1,81 @@
+-- Personal reminders (S-98, TE-09; first use: the electoral calendar of Décider, DE-28,
+-- docs/integration/rappels.md). Programmed and kept on the device only: the server never knows
+-- that a reminder exists, for which election or which commune. The notification centre (M31)
+-- shows each reminder once its time has come, like any other novelty of the device.
+-- Added in schema version 18: existing databases get it through migrations/17.sqm.
+
+-- One reminder: when it is due, what it says (texts written by the space that planned it, in the
+-- language of the interface) and where it leads. [owner] names what planned it, such as
+-- "decider:election:<id>", so a space can plan again the reminders of one of its contents.
+CREATE TABLE reminder (
+    id TEXT NOT NULL PRIMARY KEY,
+    owner TEXT NOT NULL,
+    category TEXT NOT NULL,
+    title TEXT NOT NULL,
+    detail TEXT,
+    target TEXT,
+    due_at INTEGER NOT NULL,
+    created_at INTEGER NOT NULL
+);
+
+CREATE INDEX reminder_due_at ON reminder(due_at, id);
+
+CREATE INDEX reminder_owner ON reminder(owner, due_at);
+
+-- What the user asked to be reminded of for a content whose reminders a space plans again when
+-- the content changes (an election whose decree moves a date): the kinds chosen, and the
+-- reminders removed one by one, which a new planning never brings back.
+CREATE TABLE reminder_plan (
+    owner TEXT NOT NULL PRIMARY KEY,
+    kinds TEXT NOT NULL,
+    removed TEXT NOT NULL DEFAULT '',
+    created_at INTEGER NOT NULL
+);
+
+insertReminder:
+INSERT OR REPLACE INTO reminder(id, owner, category, title, detail, target, due_at, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteReminder:
+DELETE FROM reminder WHERE id = ?;
+
+deleteFutureOf:
+DELETE FROM reminder WHERE owner = ? AND due_at > ?;
+
+deleteAllOf:
+DELETE FROM reminder WHERE owner = ?;
+
+deleteRemindersBefore:
+DELETE FROM reminder WHERE due_at < ?;
+
+deleteAllReminders:
+DELETE FROM reminder;
+
+selectReminder:
+SELECT * FROM reminder WHERE id = ?;
+
+selectUpcoming:
+SELECT * FROM reminder WHERE due_at > ? ORDER BY due_at ASC, id ASC LIMIT ?;
+
+selectUpcomingOf:
+SELECT * FROM reminder WHERE owner = ? AND due_at > ? ORDER BY due_at ASC, id ASC;
+
+selectDue:
+SELECT * FROM reminder WHERE category = ? AND due_at > ? AND due_at <= ? ORDER BY due_at ASC, id ASC LIMIT ?;
+
+nextDueAfter:
+SELECT MIN(due_at) FROM reminder WHERE due_at > ?;
+
+selectPlan:
+SELECT * FROM reminder_plan WHERE owner = ?;
+
+selectPlans:
+SELECT * FROM reminder_plan WHERE owner LIKE ? ORDER BY created_at ASC, owner ASC;
+
+upsertPlan:
+INSERT OR REPLACE INTO reminder_plan(owner, kinds, removed, created_at) VALUES (?, ?, ?, ?);
+
+deletePlan:
+DELETE FROM reminder_plan WHERE owner = ?;
+
+deleteAllPlans:
+DELETE FROM reminder_plan;

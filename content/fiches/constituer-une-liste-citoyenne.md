@@ -27,7 +27,7 @@ Commencez par un petit groupe, puis ouvrez des réunions publiques : quels probl
 ## Étape 2 : former une liste complète et paritaire
 
 - **Le nombre de candidats** : au moins autant que de sièges à pourvoir, au plus deux de plus, dans un ordre qui ne peut plus changer (code électoral, article L260). Dans une commune de moins de 1 000 habitants, la liste est « réputée complète » avec jusqu'à deux candidats de moins (article L252).
-- **La parité** : une femme et un homme en alternance, du premier au dernier nom.
+- **La parité** : une femme et un homme en alternance, du premier au dernier nom (article L264).
 - **Qui peut être candidat** : avoir 18 ans et être électeur de la commune, ou y être inscrit au rôle des contributions directes au 1er janvier de l'année de l'élection (article L228).
 
 Dans les villages, réunir assez de candidats est souvent l'étape la plus difficile : commencez tôt.

@@ -317,6 +317,8 @@ private fun FeedPage(
                         library.openRevendication(revendication)
                         onNavigate(Space.REVENDICATIONS)
                     },
+                    movement = library.movementCarriers(revendication),
+                    supporters = library.demandSupporters(revendication),
                 )
             }
             return@LazyColumn
