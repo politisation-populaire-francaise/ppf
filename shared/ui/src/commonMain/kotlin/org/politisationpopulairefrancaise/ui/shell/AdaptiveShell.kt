@@ -412,6 +412,10 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                     val slug = entry.target.orEmpty().removePrefix(DeciderRemindersState.CONSULTATION_TARGET)
                     contentLibrary.decider.consultations.firstOrNull { it.article.slug == slug }?.let { deciderState.open(DeciderDestination.Consultation(it.address)) }
                     navigate(Space.DECIDER)
+                } else if (entry.target?.startsWith(DeciderRemindersState.PETITION_TARGET) == true) {
+                    val slug = entry.target.orEmpty().removePrefix(DeciderRemindersState.PETITION_TARGET)
+                    contentLibrary.decider.petitions.firstOrNull { it.article.slug == slug }?.let { deciderState.open(DeciderDestination.Petition(it.address)) }
+                    navigate(Space.DECIDER)
                 }
             }
             val bell = notificationCenter?.let { center -> Bell(center.unreadCount) { centerOpen = true } }

@@ -411,6 +411,7 @@ private fun DeciderDetail(
                             actions = actions,
                             onOpenBill = { onOpenVoir(it.address) },
                             wide = wide,
+                            reminders = reminders,
                         )
                     } ?: Missing()
                     is DeciderDestination.Deliberation -> deliberations.firstOrNull { it.address == current.address }?.let { board ->
