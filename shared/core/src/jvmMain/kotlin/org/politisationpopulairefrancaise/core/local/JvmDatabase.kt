@@ -13,6 +13,13 @@ object JvmDatabase {
         return PpfDatabase(JdbcSqliteDriver("jdbc:sqlite:${file.toAbsolutePath()}", Properties(), PpfDatabase.Schema))
     }
 
-    /** For tests: lives only as long as the driver. */
-    fun inMemory(): PpfDatabase = PpfDatabase(JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY, Properties(), PpfDatabase.Schema))
+    /**
+     * For tests: lives only as long as the driver. Safe when several threads use it at once (contents
+     * imported in the background while a screen reads): see [SharedMemoryDriver].
+     */
+    fun inMemory(): PpfDatabase {
+        val driver = SharedMemoryDriver()
+        PpfDatabase.Schema.create(driver)
+        return PpfDatabase(driver)
+    }
 }
