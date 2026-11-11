@@ -171,14 +171,14 @@ class EngagementScreenTest {
     fun theHighlightCountsTheDaysToTheNextMilestoneAndKeepsOnlyTheInvitationOnceAllArePast() {
         runComposeUiTest {
             setContent { PpfTheme { EngagementFeatured(CivilDate(2026, 11, 11), onOpen = {}) } }
-            onNodeWithTag(EngagementFeaturedTags.NEXT)
+            onNodeWithTag(EngagementFeaturedTags.NEXT, useUnmergedTree = true)
                 .assertTextContains("dernier jour pour s’inscrire sur les listes électorales, vendredi 12 mars 2027", substring = true)
                 .assertTextContains("Dans 121 jours", substring = true)
         }
         runComposeUiTest {
             setContent { PpfTheme { EngagementFeatured(CivilDate(2027, 5, 3), onOpen = {}) } }
             awaitTag(EngagementFeaturedTags.OPEN)
-            assertTrue(count(EngagementFeaturedTags.NEXT) == 0)
+            assertTrue(count(EngagementFeaturedTags.NEXT, unmerged = true) == 0)
         }
     }
 }

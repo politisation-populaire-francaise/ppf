@@ -137,7 +137,6 @@ fun EngagementScreen(
     modifier: Modifier = Modifier,
     onBack: (() -> Unit)? = null,
 ) {
-    LaunchedEffect(library) { library.start() }
     val palette = PpfTheme.palette
     val compact = windowClass.width == WindowWidthClass.COMPACT
     var readingSlug by rememberSaveable { mutableStateOf<String?>(null) }
