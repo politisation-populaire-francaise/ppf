@@ -281,7 +281,7 @@ class DeciderScreenTest {
     fun afterTheDeadlineSilenceIsShownAsNoAnswer() = runComposeUiTest {
         show(width = 1000, today = CivilDate(2026, 12, 1))
         onNodeWithTag(DeciderTags.card("pacte-election-exemple")).assert(has("Délai écoulé"))
-        onNodeWithTag(DeciderTags.card("pacte-election-exemple")).performClick()
+        onNodeWithTag(DeciderTags.card("pacte-election-exemple")).performScrollTo().performClick()
         waitForIdle()
         onNodeWithTag(DeciderTags.BOARD).performScrollTo().assert(has("Sans réponse"))
     }
@@ -289,7 +289,7 @@ class DeciderScreenTest {
     @Test
     fun aCandidateOpensTheirSheetInVoir() = runComposeUiTest {
         val seen = show(width = 1000)
-        onNodeWithTag(DeciderTags.card("pacte-election-exemple")).performClick()
+        onNodeWithTag(DeciderTags.card("pacte-election-exemple")).performScrollTo().performClick()
         waitForIdle()
         // The table scrolls sideways inside the page: bring the table into view first.
         onNodeWithTag(DeciderTags.BOARD).performScrollTo()
