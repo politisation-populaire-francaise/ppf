@@ -88,8 +88,14 @@ jobs:
       - name: Restore the shared test signing key
         if: ${{ env.PPF_TEST_KEYSTORE_PASSWORD != '' }}
         run: echo "${{ secrets.PPF_TEST_KEYSTORE_B64 }}" | base64 -d > "$PPF_TEST_KEYSTORE"
+      # gradle.properties keeps small heaps for the owner's computer (faulty memory);
+      # the GitHub runner has 16 GB, and the Kotlin compiler ran out of 2 GB on shared/ui.
       - name: Build, test and package
-        run: ./gradlew build :android:assemblePreview :desktop:packageDeb :server:buildFatJar :tools:open-data-importer:buildFatJar :signer:buildFatJar --console=plain
+        run: >-
+          ./gradlew build :android:assemblePreview :desktop:packageDeb :server:buildFatJar
+          :tools:open-data-importer:buildFatJar :signer:buildFatJar --console=plain
+          "-Dorg.gradle.jvmargs=-Xmx5g -XX:+UseParallelGC -Dfile.encoding=UTF-8"
+          "-Pkotlin.daemon.jvmargs=-Xmx5g -XX:+UseParallelGC"
       - name: Forbidden dependency groups
         run: bash tools/check-dependencies.sh
       - name: APK contents, not debuggable, test signature
