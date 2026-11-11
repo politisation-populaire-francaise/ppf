@@ -35,7 +35,7 @@ data class PpfDimens(
     val bottomBarLabelSize: TextUnit = 12.sp,
     val bottomBarLabelLineHeight: TextUnit = 14.sp,
     /** The entries of the rail when the window is low (a phone in landscape). */
-    val compactRailItemHeight: Dp = 52.dp,
+    val compactRailItemHeight: Dp = 48.dp,
     /** The side bar of wide windows. */
     val sideBarWidth: Dp = 280.dp,
     /** The wordmark of the top bars: the full name, on two or three lines (D-182). */

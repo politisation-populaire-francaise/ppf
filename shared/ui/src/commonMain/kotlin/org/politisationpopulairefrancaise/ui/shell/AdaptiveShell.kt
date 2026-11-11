@@ -674,7 +674,7 @@ private fun LowShell(
                 Column(
                     // The tag first: the rail is its background, from the edge of the screen, camera hole included.
                     Modifier.testTag(ShellTags.NAV_RAIL).fillMaxHeight().background(palette.surface0).sideNavigationSafeArea()
-                        .verticalScroll(rememberScrollState()).width(80.dp).padding(vertical = 4.dp)
+                        .verticalScroll(rememberScrollState()).width(80.dp)
                         .selectableGroup(),
                     verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally,
@@ -870,17 +870,18 @@ private fun TopBar(
     val palette = PpfTheme.palette
     Column(Modifier.background(palette.surface0)) {
         Row(
-            modifier = Modifier.fillMaxWidth().topBarSafeArea().height(PpfTheme.dimens.topBarHeight).padding(horizontal = 4.dp),
+            // No outer margin: the 48 dp buttons already leave space around their icons, the name gets the room.
+            modifier = Modifier.fillMaxWidth().topBarSafeArea().height(PpfTheme.dimens.topBarHeight),
             verticalAlignment = Alignment.CenterVertically,
         ) {
             if (onMenu != null) {
                 PpfIconButton(Lucide.Menu, stringResource(Res.string.action_open_menu), onMenu, Modifier.testTag(ShellTags.MENU_BUTTON), tint = palette.ink)
             }
-            AdaptiveWordmark(Modifier.weight(1f).padding(start = if (onMenu != null) 4.dp else 12.dp, end = 4.dp))
+            AdaptiveWordmark(Modifier.weight(1f).padding(start = if (onMenu != null) 0.dp else 16.dp, end = 8.dp))
             // Phones: the AIDE button sits in the top bar, where it never covers a list, a composer or
             // its send button; tablets and computers have it at the head of the rail and of the side bar.
             if (onMenu != null) {
-                HelpButton(Modifier.padding(end = 4.dp), compact = true)
+                HelpButton(compact = true)
             } else {
                 PpfIconButton(Lucide.Search, stringResource(Res.string.action_search_soon), onClick = { }, enabled = false)
             }

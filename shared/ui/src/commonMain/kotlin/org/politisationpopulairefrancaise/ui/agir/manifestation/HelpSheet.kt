@@ -105,7 +105,7 @@ fun HelpButton(modifier: Modifier = Modifier, fullWidth: Boolean = false, stacke
             .semantics { contentDescription = description }
             .testTag(ManifestationTags.HELP_BUTTON),
     ) {
-        Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = 14.sp, letterSpacing = 1.sp, maxLines = 1)
+        Text(stringResource(Res.string.help_button), fontWeight = FontWeight.Bold, fontSize = 14.sp, letterSpacing = 0.5.sp, maxLines = 1)
     }
 }
 

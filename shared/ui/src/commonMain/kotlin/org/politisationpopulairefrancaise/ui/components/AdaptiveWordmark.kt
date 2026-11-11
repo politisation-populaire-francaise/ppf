@@ -47,8 +47,9 @@ fun AdaptiveWordmark(modifier: Modifier = Modifier) {
         twoLines to style(dimens.wordmarkSize),
         oneWordPerLine to style(dimens.wordmarkSize),
         oneWordPerLine to style(dimens.wordmarkSmallSize),
-        // The same drawn size whatever the font setting: sp divided by the font scale.
+        // The same drawn size whatever the font setting (sp divided by the font scale), then a little smaller.
         oneWordPerLine to style((dimens.wordmarkSmallSize.value / fontScale).sp),
+        oneWordPerLine to style((dimens.wordmarkSmallSize.value * 0.9f / fontScale).sp),
     )
     val measurer = rememberTextMeasurer()
     BoxWithConstraints(modifier, contentAlignment = Alignment.CenterStart) {
