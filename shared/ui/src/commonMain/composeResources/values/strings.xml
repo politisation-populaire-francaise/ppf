@@ -53,6 +53,8 @@ Populaire Française</string>
     <string name="layout_size">Largeur %1$d dp, hauteur %2$d dp.</string>
     <string name="platform_label">Plateforme : %1$s %2$s.</string>
     <string name="version_label">Version %1$s.</string>
+    <!-- The window in dp and the font setting, for the reports of testers (D-183). -->
+    <string name="window_label">Fenêtre de %1$d × %2$d dp, police %3$s.</string>
 
     <string name="skeleton_notice">[EXEMPLE] Squelette de la phase 0. Cet écran sert uniquement à vérifier l’affichage sur téléphone, tablette et ordinateur. Il ne contient aucun contenu réel.</string>
 

@@ -69,7 +69,8 @@ class DensityScreenshotTest {
 
     /** The top of the first node whose tag is [tag] (or starts with it), in dp from the top of the window. */
     private fun ComposeUiTest.topOf(tag: String, prefix: Boolean = false): String {
-        val found = nodes(tag, prefix)
+        // Only what is drawn: a list composes some items ahead of time, not placed (their bounds are empty).
+        val found = nodes(tag, prefix).filter { it.layoutInfo.isPlaced && it.boundsInRoot.height > 0f }
         if (found.isEmpty()) return "absent"
         return "%.0f dp".format(found.minOf { it.boundsInRoot.top } / density.density)
     }
@@ -82,7 +83,7 @@ class DensityScreenshotTest {
         val dir = directory ?: return
         dir.mkdirs()
         val report = StringBuilder("# Densité, mesurée par DensityScreenshotTest\n\n")
-        report.append("| Téléphone | Police | Barres (système et application) | En direct : premier bloc | Revendications : première carte | Agir : première rubrique |\n|---|---|---|---|---|---|\n")
+        report.append("| Téléphone | Police | Barres (système et application) | Revendications : première carte | Agir : première rubrique |\n|---|---|---|---|---|\n")
         for (device in phones) for (scale in fontScales) runDesktopComposeUiTest(width = device.width, height = device.height) {
             val dependencies = AppDependencies.withDatabase(InMemoryIdentityStore(), JvmDatabase.inMemory())
             setContent {
@@ -102,8 +103,8 @@ class DensityScreenshotTest {
             save("$prefix-en-direct")
 
             openSpace(Space.REVENDICATIONS)
-            await(RevendicationTags.CARD, prefix = true)
-            val firstDemand = topOf(RevendicationTags.CARD, prefix = true)
+            await(RevendicationTags.CARD + "lyon-transports-nuit")
+            val firstDemand = topOf(RevendicationTags.CARD + "lyon-transports-nuit")
             save("$prefix-revendications")
 
             onNodeWithTag(ShellTags.navItem(Space.AGIR)).performClick()

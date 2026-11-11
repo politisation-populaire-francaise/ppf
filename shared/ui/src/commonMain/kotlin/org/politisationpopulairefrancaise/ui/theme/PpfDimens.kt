@@ -42,6 +42,20 @@ data class PpfDimens(
     val wordmarkSize: TextUnit = 14.sp,
     /** Its size when one word per line at [wordmarkSize] does not fit (small phone, large font). */
     val wordmarkSmallSize: TextUnit = 12.sp,
-)
+    /** The title of a page ([PageHeader][org.politisationpopulairefrancaise.ui.components.PageHeader]). */
+    val pageTitleSize: TextUnit = 28.sp,
+    val pageTitleLineHeight: TextUnit = 34.sp,
+    /** The inner margin of a card. */
+    val cardPadding: Dp = 16.dp,
+) {
+    companion object {
+        /**
+         * The sizes of phones (compact width), given by the shell: titles of pages and margins of cards
+         * a step smaller, so that more of each screen shows above the fold (« l'application est trop
+         * grande », 11 November 2026). Touch targets and bars are unchanged.
+         */
+        val compact: PpfDimens = PpfDimens(pageTitleSize = 24.sp, pageTitleLineHeight = 30.sp, cardPadding = 14.dp)
+    }
+}
 
 val LocalPpfDimens = staticCompositionLocalOf { PpfDimens() }

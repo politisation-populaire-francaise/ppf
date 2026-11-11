@@ -160,6 +160,8 @@ import org.politisationpopulairefrancaise.ui.resources.space_mon_espace
 import org.politisationpopulairefrancaise.ui.decider.DeciderScreen
 import org.politisationpopulairefrancaise.ui.decider.DeciderState
 import org.politisationpopulairefrancaise.ui.decider.rememberDeciderState
+import org.politisationpopulairefrancaise.ui.theme.LocalPpfDimens
+import org.politisationpopulairefrancaise.ui.theme.PpfDimens
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import org.politisationpopulairefrancaise.core.notifications.AccountAlerts
 import org.politisationpopulairefrancaise.core.social.CommunauteDeviceData
@@ -352,6 +354,8 @@ fun AdaptiveShell(dependencies: AppDependencies) {
         // the rail and the side bar of larger windows did not (black titles on the dark theme).
         BoxWithConstraints(Modifier.fillMaxSize().background(palette.surface1)) { CompositionLocalProvider(LocalContentColor provides palette.ink) {
             val windowClass = WindowClass.of(widthDp = maxWidth.value, heightDp = maxHeight.value)
+            // Phones get the compact sizes of the tokens (titles, margins of cards); larger windows the usual ones.
+            CompositionLocalProvider(LocalPpfDimens provides if (windowClass.width == WindowWidthClass.COMPACT) PpfDimens.compact else PpfDimens()) {
             val account = accountSession.state as? AccountUiState.Ready
             val navigate: (Space) -> Unit = {
                 selected = it
@@ -433,6 +437,7 @@ fun AdaptiveShell(dependencies: AppDependencies) {
                 else -> ExpandedShell(selected, navigate, account, bell, centerScreen ?: content)
             }
             HelpSheetHost(help)
+            }
         } }
     } } } } } } }
 }

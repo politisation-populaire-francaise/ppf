@@ -74,7 +74,7 @@ fun PpfCard(
     modifier: Modifier = Modifier,
     onClick: (() -> Unit)? = null,
     selected: Boolean = false,
-    contentPadding: PaddingValues = PaddingValues(16.dp),
+    contentPadding: PaddingValues = PaddingValues(PpfTheme.dimens.cardPadding),
     content: @Composable ColumnScope.() -> Unit,
 ) {
     val palette = PpfTheme.palette
@@ -460,7 +460,12 @@ fun SettingRow(label: String, divider: Boolean = true, trailing: @Composable Row
 @Composable
 fun PageHeader(title: String, description: String? = null, modifier: Modifier = Modifier) {
     Column(modifier) {
-        Text(title, style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
+        val dimens = PpfTheme.dimens
+        Text(
+            title,
+            style = MaterialTheme.typography.headlineMedium.copy(fontSize = dimens.pageTitleSize, lineHeight = dimens.pageTitleLineHeight),
+            modifier = Modifier.semantics { heading() },
+        )
         if (description != null) {
             Spacer(Modifier.height(6.dp))
             Text(description, style = MaterialTheme.typography.bodyLarge, color = PpfTheme.palette.inkMuted)

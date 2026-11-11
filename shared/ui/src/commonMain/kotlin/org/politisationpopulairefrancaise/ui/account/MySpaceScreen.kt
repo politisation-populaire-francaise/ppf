@@ -1,5 +1,9 @@
 package org.politisationpopulairefrancaise.ui.account
 
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalWindowInfo
+import kotlin.math.roundToInt
+import org.politisationpopulairefrancaise.ui.resources.window_label
 import org.politisationpopulairefrancaise.ui.components.ButtonPair
 import org.politisationpopulairefrancaise.ui.onboarding.LocalTutorial
 import org.politisationpopulairefrancaise.ui.onboarding.TutorialTags
@@ -191,8 +195,17 @@ fun MySpaceScreen(
             }
             // Which version is installed, on which system: what a tester reports with a problem.
             val platform = currentPlatform()
+            // The size of the window in dp and the font setting: what a tester reports about a layout (D-183).
+            val density = LocalDensity.current
+            val window = LocalWindowInfo.current.containerSize
+            val windowLine = stringResource(
+                Res.string.window_label,
+                (window.width / density.density).roundToInt(),
+                (window.height / density.density).roundToInt(),
+                ((density.fontScale * 100).roundToInt() / 100.0).toString().replace('.', ','),
+            )
             Text(
-                stringResource(Res.string.version_label, AppInfo.VERSION) + " · " + stringResource(Res.string.platform_label, platform.name, platform.version),
+                stringResource(Res.string.version_label, AppInfo.VERSION) + " · " + stringResource(Res.string.platform_label, platform.name, platform.version) + " · " + windowLine,
                 style = MaterialTheme.typography.bodySmall,
                 color = PpfTheme.palette.inkSubtle,
                 modifier = Modifier.padding(top = 12.dp).testTag(MY_SPACE_VERSION_TAG),
