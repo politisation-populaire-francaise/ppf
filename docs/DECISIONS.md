@@ -1508,7 +1508,7 @@ Format : D-numéro, date, titre ; contexte ; options ; décision ; raison ; cons
   - dernier écran : « Recevoir de l'aide » en rouge sur toute la largeur (ouvre la feuille AIDE), puis deux colonnes : M'informer (En direct), Comprendre, Témoigner (rubrique d'Agir), Revendiquer (mur des revendications), Rejoindre un collectif (« Se réunir » d'Agir), Me politiser (« S'engager en politique »), Agir, Soutenir (« Solidarité » d'Agir) ; une paire de boutons passe l'un sous l'autre quand un libellé ne tient pas ; la phrase « Je veux… » est retirée (les libellés sont déjà à la première personne) ;
   - le logo ne figure plus sur le premier écran : la bannière de la propriétaire le remplace ; rien d'autre n'y est ajouté (« non n'ajoute rien au premier écran je verrai ça avec des avocats »).
 - Textes : balisage simple dans les chaînes de `strings_tutoriel.xml` (`**gras**`, lignes « - » pour les listes), lu par `TutorialMarkup`.
-- Point signalé au chef d'équipe, sans rien changer à ses mots : « celles et ceux qui sont censées » (accord).
+- Seul changement dans ses mots, à la demande du chef d'équipe : l'accord « celles et ceux qui sont censés » (« censées » dans son texte).
 
 ## D-187 (2026-11-11) Logo officiel : la Marianne de la propriétaire, décliné par support
 
