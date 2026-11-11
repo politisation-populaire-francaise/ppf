@@ -81,6 +81,7 @@ import org.politisationpopulairefrancaise.ui.resources.engager_soon
 import org.politisationpopulairefrancaise.ui.resources.engager_source
 import org.politisationpopulairefrancaise.ui.resources.engager_stand_2028
 import org.politisationpopulairefrancaise.ui.resources.engager_stand_course
+import org.politisationpopulairefrancaise.ui.resources.engager_stand_legislatives
 import org.politisationpopulairefrancaise.ui.resources.engager_stand_list
 import org.politisationpopulairefrancaise.ui.resources.engager_stand_mates
 import org.politisationpopulairefrancaise.ui.resources.engager_stand_text
@@ -210,6 +211,7 @@ fun EngagementScreen(
                 Source(Engagement.CALENDAR_SOURCE, EngagementTags.SOURCE + "calendrier")
                 guide(Engagement.GUIDE_CITIZEN_LIST, Res.string.engager_stand_list)
                 guide(Engagement.GUIDE_2028, Res.string.engager_stand_2028)
+                guide(Engagement.GUIDE_LEGISLATIVES, Res.string.engager_stand_legislatives)
                 CourseLink(Engagement.COURSE_STAND, Res.string.engager_stand_course, links.openComprendre)
                 PpfSecondaryButton(
                     onClick = links.openCollectives,

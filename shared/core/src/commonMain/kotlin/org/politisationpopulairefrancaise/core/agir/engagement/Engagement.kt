@@ -68,6 +68,7 @@ object Engagement {
     const val COURSE_STAND: String = "se-presenter-a-une-election"
     const val GUIDE_CITIZEN_LIST: String = "constituer-une-liste-citoyenne"
     const val GUIDE_2028: String = "se-presenter-departementales-regionales-2028"
+    const val GUIDE_LEGISLATIVES: String = "se-presenter-aux-legislatives"
     const val GUIDE_PARTY: String = "creer-ou-rejoindre-un-parti"
 
     /** The dated milestones, in calendar order. */
