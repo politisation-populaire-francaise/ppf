@@ -24,19 +24,20 @@ Le conseil départemental gère notamment l'action sociale (enfance, personnes �
 
 - Chaque canton élit **deux conseillers de sexe différent**, qui se présentent en binôme (code électoral, article L191).
 - Un binôme est élu au premier tour s'il obtient la majorité absolue des suffrages exprimés et un nombre de voix égal au quart des électeurs inscrits ; sinon, il y a un second tour, où la majorité relative suffit (article L193).
-- Chaque candidat a un remplaçant du même sexe. Pour se maintenir au second tour, il faut avoir obtenu un nombre de voix au moins égal à 12,5 % des électeurs inscrits. Les formulaires de candidature (cerfa n° 15244 pour le candidat, n° 15245 pour le remplaçant) sont disponibles sur service-public.gouv.fr.
+- Les deux candidats déposent une déclaration conjointe avant chaque tour ; chaque candidat a un remplaçant du même sexe. Pour se présenter au second tour, un binôme doit avoir obtenu au premier tour un nombre de voix au moins égal à 12,5 % des électeurs inscrits (article L210-1). Les formulaires de candidature (cerfa n° 15244 pour le candidat, n° 15245 pour le remplaçant) sont disponibles sur service-public.gouv.fr.
 
 ## Les régionales : une liste par région
 
 - Le scrutin est **proportionnel**, par listes (service-public.gouv.fr).
 - La liste qui obtient la majorité absolue au premier tour, ou le plus de voix au second, reçoit **un quart des sièges** ; le reste est réparti à la proportionnelle entre les listes ayant au moins 5 % des suffrages exprimés. Chaque liste est constituée **d'autant de sections qu'il y a de départements** dans la région (article L338).
+- Dans chaque section, les candidats alternent, une femme et un homme (article L346). La liste se dépose à la préfecture de région au plus tard le quatrième lundi avant le scrutin, à midi ; pour le second tour, au plus tard le mardi qui suit le premier tour, à 18 heures (article L350).
 - Une liste régionale demande donc des candidats dans chaque département : c'est une affaire de coalition, à préparer longtemps à l'avance.
 
 ## Financer la campagne
 
 - **Interdit** : tout don, bien ou service à prix réduit venant d'une personne morale (entreprise, association, collectivité), sauf d'un parti politique (article L52-8).
 - **Autorisé** : les dons de personnes physiques, 4 600 euros au plus par personne pour une même élection (article L52-8).
-- **Mandataire** : chaque candidat, binôme ou liste déclare un mandataire, personne physique ou association de financement électorale, qui recueille les fonds sur un compte unique (article L52-4).
+- **Mandataire** : chaque candidat, binôme ou liste déclare un mandataire, personne physique ou association de financement électorale, qui recueille les fonds pendant les six mois précédant le premier jour du mois de l'élection, jusqu'au dépôt du compte de campagne (article L52-4).
 
 ## Ce qu'on peut faire dès maintenant
 
@@ -56,6 +57,8 @@ Le conseil départemental gère notamment l'action sociale (enfance, personnes �
 - Service-public.gouv.fr, « Calendrier des prochaines élections » (fiche F1939), vérifiée le 9 novembre 2026, consulté le 2026-11-11 : https://www.service-public.gouv.fr/particuliers/vosdroits/F1939
 - Code électoral, articles L191 et L192 (binômes), version en vigueur, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000027573170/
 - Code électoral, article L193 (élection au premier et au second tour), version en vigueur, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148477
+- Code électoral, article L210-1 (déclaration conjointe, remplaçant, seuil du second tour), version en vigueur depuis le 2 février 2018, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000036563365
 - Code électoral, articles L338 et L338-1 (conseillers régionaux), version en vigueur, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/codes/id/LEGISCTA000006148519/
+- Code électoral, articles L346 à L352 (listes régionales, dépôt), version en vigueur au 11 novembre 2026, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148561
 - Code électoral, articles L52-4 et L52-8 (mandataire, dons), version en vigueur au 10 novembre 2026, consulté le 2026-11-11 : https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148459/
 - Service-public.gouv.fr, formulaire cerfa n° 15244 (déclaration de candidature aux élections départementales), consulté le 2026-11-11 : https://www.service-public.gouv.fr/simulateur/calcul/15244
