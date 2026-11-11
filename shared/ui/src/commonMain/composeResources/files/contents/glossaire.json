@@ -282,6 +282,68 @@
         "sig": "4482b42b0439228b16806db3dfce5c23413c4fc624747d178f15652830ec3912753f7584fe28c525c7001f329319954f3ef7416e8d3691c39b9653ab89e5c108"
     },
     {
+        "id": "0669f1c5a641ad3dd626f6a34fbb5163820cd7908bad9209c3bafd552b083f57",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "glossaire-arcom"
+            ],
+            [
+                "title",
+                "Arcom"
+            ],
+            [
+                "summary",
+                "Autorité de régulation de la communication audiovisuelle et numérique : autorité indépendante qui attribue les fréquences de télévision et de radio et veille au pluralisme."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "glossaire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "medias"
+            ],
+            [
+                "t",
+                "institutions"
+            ],
+            [
+                "ppf-variant",
+                "Arcom"
+            ],
+            [
+                "ppf-variant",
+                "Autorité de régulation de la communication audiovisuelle et numérique"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-hatvp",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:qui-controle-les-medias",
+                "",
+                "lie"
+            ]
+        ],
+        "content": "L'Arcom régule la télévision, la radio et certaines plateformes numériques. Elle attribue les fréquences, veille au pluralisme de l'information et examine les changements de propriétaire des chaînes, en application de la loi du 30 septembre 1986 relative à la liberté de communication.\n\nSon collège compte neuf membres ; son président est nommé par le président de la République, et six membres sont désignés par les présidents de l'Assemblée nationale et du Sénat. Elle ne contrôle pas la presse écrite.\n\nExemple : une personne estime qu'une chaîne de télévision a manqué à ses obligations de pluralisme et adresse un signalement à l'Arcom.\n\n## Sources\n\n- [Loi n° 86-1067 du 30 septembre 1986 relative à la liberté de communication](https://www.legifrance.gouv.fr/loda/id/JORFTEXT000000512205/), consulté le 2026-11-11\n- [Sénat, rapport n° 68 (2025-2026), synthèse](https://www.senat.fr/rap/r25-068/r25-068-syn.pdf), consulté le 2026-11-11\n",
+        "sig": "fcb6a57d3cfd0cdf81ebd5080a2fe3a271fd32e0d207b08043aede5701c10affa1164a41ef604bc27b198abe0a1f699452ffd4fcc13c9e92ed51154006195194"
+    },
+    {
         "id": "f0251de6781d211b2990e3a56a4dad999eb2e84b0b005aa710602d86e5d8db61",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1794225600,
@@ -2032,6 +2094,78 @@
         "sig": "aacf8ccfb34bd4699a76b1a07ded4d4d6661586074e9d24803a7c5a75d81b5e803d4c8216811183b35f416d15a5fc0f604939c0dc1309ed8c8cec2df3d0daed6"
     },
     {
+        "id": "2eb2dba57f89deaff0b42d1f629efcb5c4981ad234ea91354940f94248f244a0",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "glossaire-deficit-public"
+            ],
+            [
+                "title",
+                "Déficit public"
+            ],
+            [
+                "summary",
+                "Ce qui manque en une année quand les dépenses des administrations publiques dépassent leurs recettes ; 5,1 % du PIB en 2025."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "glossaire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "budget"
+            ],
+            [
+                "t",
+                "economie"
+            ],
+            [
+                "t",
+                "finances-publiques"
+            ],
+            [
+                "ppf-variant",
+                "déficit public"
+            ],
+            [
+                "ppf-variant",
+                "déficits publics"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-dette-publique",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-loi-de-finances",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dette-et-deficit-de-quoi-parle-t-on",
+                "",
+                "lie"
+            ]
+        ],
+        "content": "Le déficit public est la différence, sur une année, entre les dépenses et les recettes de l'ensemble des administrations publiques : État, Sécurité sociale et collectivités locales. Il est comblé par l'emprunt, ce qui augmente la dette.\n\nEn 2025, il s'élevait à 152,5 milliards d'euros, soit 5,1 % du PIB, après 5,8 % en 2024, selon l'Insee.\n\nExemple : si l'État et les autres administrations dépensent 100 et ne perçoivent que 91, le déficit est de 9, qu'il faut emprunter.\n\n## Sources\n\n- [Insee, compte provisoire des administrations publiques pour 2025](https://www.insee.fr/fr/statistiques/8956575), consulté le 2026-11-11\n",
+        "sig": "39370bb2904c19001920f5027f6facbef7581a2c1f33276803a7ada66bd2a3285caff1b2be2333e2f1d527f6d4e90a9a1ad9cf935b40a88cd3e11158d5366a27"
+    },
+    {
         "id": "1efabcfd64b9666e73dcdacecfce7babb40dc557b90986fae98035a2eed57089",
         "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
         "created_at": 1794225600,
@@ -2234,6 +2368,78 @@
         ],
         "content": "Un député est un membre de l'Assemblée nationale. Il y a au plus 577 députés (Constitution, article 24). Chacun est élu dans une circonscription, au scrutin uninominal majoritaire à deux tours : on vote pour une personne, pas pour une liste (Code électoral, article L123).\n\nPour être élu dès le premier tour, il faut la majorité absolue des suffrages exprimés et un nombre de voix au moins égal au quart des électeurs inscrits. Sinon, un second tour a lieu, et celui qui obtient le plus de voix l'emporte (article L126). Pour se présenter au second tour, il faut en principe avoir obtenu au moins 12,5 % des électeurs inscrits (article L162). Le mandat dure cinq ans, sauf dissolution.\n\nMême élu dans une circonscription, le député vote les lois pour tout le pays. Il peut déposer des propositions de loi et des amendements, contrôler l'action du Gouvernement et signer une motion de censure. Il ne peut pas être en même temps ministre (Constitution, article 23).\n\nExemple : pour signaler la fermeture d'un service public dans votre secteur, vous pouvez écrire au député de votre circonscription.\n\nÀ ne pas confondre avec les députés européens, élus au Parlement européen, ni avec les sénateurs.\n\n## Sources\n\n- [Constitution du 4 octobre 1958, texte intégral en vigueur (articles 23 et 24)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/texte-integral-de-la-constitution-du-4-octobre-1958-en-vigueur), consulté le 2026-11-09\n- [Code électoral, articles L123 à L126 (mode de scrutin des députés)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006070239/LEGISCTA000006148464/), consulté le 2026-11-09\n- [Code électoral, article L162 (second tour)](https://www.legifrance.gouv.fr/codes/article_lc/LEGIARTI000006353380), consulté le 2026-11-09\n- [Service-public.gouv.fr, « Élections législatives »](https://www.service-public.gouv.fr/particuliers/vosdroits/F1943), consulté le 2026-11-09\n",
         "sig": "c5dcf45752f7ad414c74810180a0198fc7e7f8200afb7aa595a3a08e6ca836f7be977be274ce70bb7ca3806d370ad25b702795fb65b4ef2708b8b282b15a564c"
+    },
+    {
+        "id": "1c04eb8b7bdfe043663dc0fc502d3a883090984146c1f13ff593b64ad59e87c4",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "glossaire-dette-publique"
+            ],
+            [
+                "title",
+                "Dette publique"
+            ],
+            [
+                "summary",
+                "Total des emprunts de l'État, de la Sécurité sociale et des collectivités locales qui n'ont pas encore été remboursés ; 119 % du PIB fin juin 2026."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "glossaire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "budget"
+            ],
+            [
+                "t",
+                "economie"
+            ],
+            [
+                "t",
+                "finances-publiques"
+            ],
+            [
+                "ppf-variant",
+                "dette publique"
+            ],
+            [
+                "ppf-variant",
+                "dettes publiques"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-deficit-public",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-loi-de-finances",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:dette-et-deficit-de-quoi-parle-t-on",
+                "",
+                "lie"
+            ]
+        ],
+        "content": "La dette publique est la somme de ce que doivent l'État, les organismes de Sécurité sociale et les collectivités locales. Elle augmente chaque année du montant du déficit. On la mesure le plus souvent « au sens de Maastricht », la définition commune des pays de l'Union européenne.\n\nFin juin 2026, elle atteignait 3 595,5 milliards d'euros, soit 119,0 % du PIB, selon l'Insee.\n\nExemple : quand l'État emprunte pour rembourser un emprunt arrivé à échéance, la dette ne change pas ; quand il emprunte pour couvrir le déficit de l'année, elle augmente.\n\n## Sources\n\n- [Insee, Informations rapides n° 239 (29 septembre 2026)](https://www.insee.fr/fr/statistiques/9053525), consulté le 2026-11-11\n",
+        "sig": "f849f578a5027e5ed2c4ae90dac0fa894483db85243721f51dde7839361e2b7fffbb18fa2ec0bcc294019f9c67c2f14188293d0b1aa2ef127665b0b831dae88a"
     },
     {
         "id": "8b7377f2c76c97f0325d785f2ef35d60ba2f3a76331933bc50d878bfac07093a",
@@ -2968,6 +3174,68 @@
         ],
         "content": "Le droit de grève est reconnu par le préambule de la Constitution de 1946 : il « s'exerce dans le cadre des lois qui le réglementent ».\n\nDans le secteur privé, une grève suppose trois conditions :\n- un arrêt total du travail ;\n- un arrêt collectif, en principe d'au moins deux salariés ;\n- des revendications professionnelles connues de l'employeur, comme les salaires ou les conditions de travail.\n\nAucun préavis n'est exigé dans le privé, et il n'est pas nécessaire d'être syndiqué pour faire grève. Dans les services publics, en revanche, un préavis est obligatoire.\n\nFaire grève suspend le contrat de travail sans le rompre. La retenue sur le salaire doit être proportionnelle à la durée de l'arrêt. Un salarié ne peut être ni sanctionné ni licencié pour avoir fait grève, sauf faute lourde, comme une participation personnelle et active à des violences ou à des dégradations (Code du travail, article L2511-1).\n\nCertains agents publics n'ont pas le droit de grève, comme les fonctionnaires actifs de la police nationale, les militaires ou les magistrats judiciaires.\n\nExemple : les salariés d'un entrepôt arrêtent ensemble le travail pour demander une hausse des salaires. Ils n'ont pas à prévenir à l'avance, mais l'employeur doit connaître leurs revendications au moment de l'arrêt.\n\nÀ ne pas confondre avec une manifestation, qui est un rassemblement sur la voie publique : on peut faire grève sans manifester, et manifester sans faire grève.\n\n## Sources\n\n- [Préambule de la Constitution du 27 octobre 1946 (alinéa 7)](https://www.conseil-constitutionnel.fr/le-bloc-de-constitutionnalite/preambule-de-la-constitution-du-27-octobre-1946), consulté le 2026-11-09\n- [Code du travail, articles L2511-1 à L2512-5 (exercice du droit de grève)](https://www.legifrance.gouv.fr/codes/section_lc/LEGITEXT000006072050/LEGISCTA000006160748/), consulté le 2026-11-09\n- [Service-public.gouv.fr, « Droit de grève d'un salarié du secteur privé »](https://www.service-public.gouv.fr/particuliers/vosdroits/F117), consulté le 2026-11-09\n- [Service-public.gouv.fr, « Droit de grève dans la fonction publique »](https://www.service-public.gouv.fr/particuliers/vosdroits/F499), consulté le 2026-11-09\n",
         "sig": "f68b7979e2b6841858e85ddb0b6101bd0a337c825a77b5929b3504839bdf9de61eb6132dcb6ecd244a3b8f3749afd2abf9b5f1a3936d95c3ba461c2e9c52a482"
+    },
+    {
+        "id": "6c7b126db6d999cc87f102c86c7cc0663c290b2b311b492811d7501be720a49d",
+        "pubkey": "23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f",
+        "created_at": 1794398400,
+        "kind": 30023,
+        "tags": [
+            [
+                "d",
+                "glossaire-hatvp"
+            ],
+            [
+                "title",
+                "HATVP"
+            ],
+            [
+                "summary",
+                "Haute Autorité pour la transparence de la vie publique : autorité indépendante qui contrôle les déclarations des responsables publics et tient le répertoire des lobbies."
+            ],
+            [
+                "published_at",
+                "1794398400"
+            ],
+            [
+                "ppf-type",
+                "glossaire"
+            ],
+            [
+                "ppf-origin",
+                "ai-assisted"
+            ],
+            [
+                "t",
+                "transparence"
+            ],
+            [
+                "t",
+                "institutions"
+            ],
+            [
+                "ppf-variant",
+                "HATVP"
+            ],
+            [
+                "ppf-variant",
+                "Haute Autorité pour la transparence de la vie publique"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:glossaire-defenseur-des-droits",
+                "",
+                "voir-aussi"
+            ],
+            [
+                "a",
+                "30023:23484985405d16929a93f9aea29135678ad0ced909bf5a264f7b923d619b012f:lobbies-et-patrimoine-des-elus",
+                "",
+                "lie"
+            ]
+        ],
+        "content": "La Haute Autorité pour la transparence de la vie publique reçoit et contrôle les déclarations d'intérêts et de situation patrimoniale des membres du gouvernement, des parlementaires, des principaux élus locaux et de nombreux hauts responsables, et en publie une grande partie sur son site.\n\nElle tient aussi le répertoire des représentants d'intérêts, où les lobbies doivent s'inscrire et déclarer leurs activités : 3 716 inscrits le 11 novembre 2026 selon son site. Elle peut transmettre un dossier à la justice.\n\nExemple : avant un vote sur l'énergie, une personne consulte le répertoire pour voir quelles organisations ont déclaré des actions auprès des députés sur ce sujet.\n\n## Sources\n\n- [HATVP, page d'accueil](https://www.hatvp.fr/), consulté le 2026-11-11\n- [HATVP, « Le répertoire »](https://www.hatvp.fr/le-repertoire/), consulté le 2026-11-11\n",
+        "sig": "a1a8fae0fbf667dbab7ab1cd584dc69e5f4096d4d3df632fdf520bac61b0e95ef39f020bbc526ecb1a51a12c9b1ccd3e0733e93d8757183045d58e995c40473e"
     },
     {
         "id": "679b8a974010fea70ce6d2e377d5e5467ac5d545b7c359d97804d19790aeac22",
