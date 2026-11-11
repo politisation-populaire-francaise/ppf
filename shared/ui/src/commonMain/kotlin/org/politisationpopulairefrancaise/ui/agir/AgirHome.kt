@@ -82,6 +82,8 @@ import org.politisationpopulairefrancaise.ui.resources.agir_testify_title
 import org.politisationpopulairefrancaise.ui.resources.engager_rubric_text
 import org.politisationpopulairefrancaise.ui.resources.engager_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.federer_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.gather_rubric_text
+import org.politisationpopulairefrancaise.ui.resources.gather_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.federer_rubric_title
 import org.politisationpopulairefrancaise.ui.resources.proches_rubric_text
 import org.politisationpopulairefrancaise.ui.resources.proches_rubric_title
@@ -118,8 +120,11 @@ object AgirRubrics {
     /** « S'engager en politique » (D-196, D-213): the steps in the order of the electoral calendar. */
     val ENGAGER = AgirRubric("s-engager", Res.string.engager_rubric_title, Res.string.engager_rubric_text, Lucide.Vote)
 
+    /** « Se réunir » (D-198): collectifs, organisations, « Créer une association », rooms. */
+    val GATHER = AgirRubric("se-reunir", Res.string.gather_rubric_title, Res.string.gather_rubric_text, Lucide.Users)
+
     /** What can be opened today. */
-    val available: List<AgirRubric> = listOf(AGENDA, CALLS, FEDERER, ENGAGER, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, PROCHES, COLLECTIVES, GUIDES)
+    val available: List<AgirRubric> = listOf(AGENDA, CALLS, FEDERER, ENGAGER, GATHER, TESTIFY, MANIFESTATION, ORGANISATIONS, SOLIDARITY, HELP, PROCHES, COLLECTIVES, GUIDES)
 
     /** Planned but not ready: shown honestly, disabled, without any date. */
     val inPreparation: List<AgirRubric> = listOf(

@@ -51,6 +51,8 @@ import org.politisationpopulairefrancaise.ui.agir.organisations.rememberOrganisa
 import org.politisationpopulairefrancaise.ui.agir.engagement.EngagementLinks
 import org.politisationpopulairefrancaise.ui.agir.engagement.EngagementScreen
 import org.politisationpopulairefrancaise.ui.agir.federer.FedererScreen
+import org.politisationpopulairefrancaise.ui.agir.gather.GatherLinks
+import org.politisationpopulairefrancaise.ui.agir.gather.GatherScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesScreen
 import org.politisationpopulairefrancaise.ui.agir.proches.ProchesState
 import org.politisationpopulairefrancaise.ui.agir.proches.rememberProchesState
@@ -112,6 +114,9 @@ enum class AgirRoute(val id: String) {
 
     /** « S'engager en politique » (D-196, D-213): four steps in the order of the electoral calendar. */
     ENGAGER("s-engager"),
+
+    /** « Se réunir » (D-198): collectifs, organisations, « Créer une association », rooms; the tutorial's « m'allier ». */
+    GATHER("se-reunir"),
 }
 
 /** A screen of another block plugged into "Agir": it fills [modifier] and offers a way back with [onBack]. */
@@ -175,6 +180,8 @@ fun AgirScreen(
     }
     // Where the back button of the directory leads when a plugged screen opened an organisation's page.
     var returnTo by rememberSaveable { mutableStateOf<AgirRoute?>(null) }
+    // Where the plain rooms lead back: the directory of the collectifs, or « Se réunir » when opened from it.
+    var roomsReturn by rememberSaveable { mutableStateOf(AgirRoute.COLLECTIVES) }
     val directory = organisations ?: rememberOrganisationsLibrary(dependencies)
     val selectedOrganisation = directory.selected
     LaunchedEffect(selectedOrganisation?.address) {
@@ -217,19 +224,23 @@ fun AgirScreen(
     SystemBack(enabled = route != AgirRoute.HOME) {
         if (route == AgirRoute.ORGANISATIONS && directory.selected != null) {
             directory.close()
-            returnTo?.let { route = it }
-            returnTo = null
+            // A page opened from the directory reached by « Se réunir » closes back to the directory.
+            if (returnTo != AgirRoute.GATHER) {
+                returnTo?.let { route = it }
+                returnTo = null
+            }
         } else if (route == AgirRoute.TESTIFY && returnTo != null) {
             route = returnTo ?: AgirRoute.HOME
             returnTo = null
         } else if (route == AgirRoute.ROOMS) {
-            // The plain rooms were opened from the directory of the collectifs: back to it.
-            route = AgirRoute.COLLECTIVES
+            // The plain rooms were opened from the directory of the collectifs or from « Se réunir »: back there.
+            route = roomsReturn
         } else if (route == AgirRoute.SOLIDARITY && solidarityLibrary.hasSelection) {
             // The page of a fund or a mission closes first, back to the list.
             solidarityLibrary.closeSelection()
-        } else if (route == AgirRoute.COLLECTIVES && returnTo == AgirRoute.ENGAGER) {
-            route = AgirRoute.ENGAGER
+        } else if ((route == AgirRoute.COLLECTIVES || route == AgirRoute.ORGANISATIONS) && returnTo != null) {
+            // Opened from « S'engager en politique » or « Se réunir »: back there.
+            route = returnTo ?: AgirRoute.HOME
             returnTo = null
         } else if (route == AgirRoute.PROCHES && returnTo == AgirRoute.FEDERER) {
             // The list was opened from « Fédérer »: back to it.
@@ -269,6 +280,7 @@ fun AgirScreen(
                             AgirRubrics.PROCHES.id -> route = AgirRoute.PROCHES
                             AgirRubrics.FEDERER.id -> route = AgirRoute.FEDERER
                             AgirRubrics.ENGAGER.id -> route = AgirRoute.ENGAGER
+                            AgirRubrics.GATHER.id -> route = AgirRoute.GATHER
                             AgirRubrics.GUIDES.id -> onNavigate(Space.COMPRENDRE)
                         }
                     },
@@ -300,9 +312,13 @@ fun AgirScreen(
                         returnTo = null
                     },
                     onNavigate = onNavigate,
-                    onOpenRooms = { route = AgirRoute.ROOMS },
+                    onOpenRooms = {
+                        roomsReturn = AgirRoute.COLLECTIVES
+                        route = AgirRoute.ROOMS
+                    },
                     onCreateRoom = {
                         rooms.beginCreation("")
+                        roomsReturn = AgirRoute.COLLECTIVES
                         route = AgirRoute.ROOMS
                     },
                     onOpenMobilization = { mobilization ->
@@ -315,7 +331,7 @@ fun AgirScreen(
                     },
                     modifier = Modifier.fillMaxSize(),
                 )
-                AgirRoute.ROOMS -> Collectives(dependencies, rooms, session, windowClass, onNavigate, onBack = { route = AgirRoute.COLLECTIVES })
+                AgirRoute.ROOMS -> Collectives(dependencies, rooms, session, windowClass, onNavigate, onBack = { route = roomsReturn })
                 AgirRoute.MANIFESTATION -> ManifestationScreen(
                     help, windowClass, onBack = home, camera = camera,
                     // « Témoigner avec cette photo » of the protected camera: the form opens with the photo; back returns here.
@@ -368,6 +384,26 @@ fun AgirScreen(
                         route = returnTo ?: AgirRoute.HOME
                         returnTo = null
                     },
+                )
+                AgirRoute.GATHER -> GatherScreen(
+                    library = library,
+                    windowClass = windowClass,
+                    links = GatherLinks(
+                        openCollectives = {
+                            returnTo = AgirRoute.GATHER
+                            route = AgirRoute.COLLECTIVES
+                        },
+                        openOrganisations = {
+                            returnTo = AgirRoute.GATHER
+                            route = AgirRoute.ORGANISATIONS
+                        },
+                        openRooms = {
+                            roomsReturn = AgirRoute.GATHER
+                            route = AgirRoute.ROOMS
+                        },
+                    ),
+                    modifier = Modifier.fillMaxSize(),
+                    onBack = home,
                 )
                 AgirRoute.ENGAGER -> EngagementScreen(
                     library = library,
