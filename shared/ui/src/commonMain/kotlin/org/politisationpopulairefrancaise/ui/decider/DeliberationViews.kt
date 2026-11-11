@@ -272,7 +272,7 @@ private fun ResultsLine(subject: String) {
     val results = LocalVoting.current?.box(subject)?.results ?: return
     fun count(choice: String) = FrenchNumbers.format((results.citizens.counts[choice] ?: 0L).toDouble())
     Text(
-        if (results.citizens.hidden) stringResource(Res.string.urne_results_too_few, results.minimum ?: 5) else stringResource(Res.string.urne_results_line, count(FOR), count(AGAINST), count(BLANK)),
+        stringResource(Res.string.urne_results_line, count(FOR), count(AGAINST), count(BLANK)),
         style = MaterialTheme.typography.bodyMedium,
     )
 }

@@ -132,7 +132,7 @@ internal fun CallDetail(
             }
             AnswerCard(call, library)
             val isAuthor = accountKey != null && call.author == accountKey
-            SlotsCard(call, library.slots, messagingSigner?.takeIf { isAuthor }, eventSigner?.takeIf { isAuthor })
+            SlotsCard(call, library.slots, messagingSigner?.takeIf { isAuthor }, eventSigner?.takeIf { isAuthor }, published = own == null || own.state == OwnDemandState.PUBLISHED)
             if (call.type == CallType.TEMOINS) {
                 InfoBox(Lucide.ShieldCheck) { Text(stringResource(Res.string.appels_witnesses_info), style = MaterialTheme.typography.bodyMedium) }
             }

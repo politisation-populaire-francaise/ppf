@@ -123,7 +123,8 @@ class UrneApiTest {
         assertEquals(HttpStatusCode.OK, client.register().status, "registering twice changes nothing")
         val status = client.status()
         assertEquals("non-verifie", status.level)
-        assertEquals(2, status.pending.size, "every open box, wanted or not")
+        // Every open box, wanted or not (D-155: the demands stored by other tests may have theirs too).
+        assertTrue(status.pending.size >= 2, "every open box, wanted or not")
         val tokens = client.tokensFor(status.pending)
         assertTrue(client.status().pending.isEmpty(), "one token per box and account, never a second one")
         val (number, pair) = tokens.entries.first()
@@ -179,7 +180,7 @@ class UrneApiTest {
         assertEquals(HttpStatusCode.OK, once.status)
         val twice = client.askTokens(first)
         assertEquals(once.bodyAsText(), twice.bodyAsText())
-        assertEquals(listOf(pending[1]), client.status().pending)
+        assertEquals(pending.drop(1), client.status().pending)
         // The very same authorization header cannot be used twice.
         val header = auth("/api/v1/urnes/me", "GET", null, 0)
         assertEquals(HttpStatusCode.OK, client.get("/api/v1/urnes/me") { header(HttpHeaders.Authorization, header) }.status)

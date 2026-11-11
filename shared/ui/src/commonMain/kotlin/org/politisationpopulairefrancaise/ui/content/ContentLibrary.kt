@@ -215,6 +215,48 @@ class ContentLibrary(
         return demands.carriers(article)
     }
 
+    /**
+     * The debate of [demand] (DE-20): the comments the server holds, asked by the tag of the demand and kept on the
+     * device, plus those of the device not sent yet; the newest first. Offline, the copy of the device only.
+     */
+    suspend fun debateOf(demand: Article): List<org.politisationpopulairefrancaise.core.revendications.DebateComment> = withContext(Dispatchers.Default) {
+        val debate = org.politisationpopulairefrancaise.core.revendications.DemandDebate
+        val address = demand.address.toString()
+        val fetched = when (
+            val result = remote?.fetchByTags(
+                listOf(org.politisationpopulairefrancaise.core.publication.TagFilter(debate.TAG_ROOT, address)),
+                RemoteFilter(kinds = listOf(debate.KIND), limit = 200),
+            )
+        ) {
+            is FetchResult.Events -> result.events.filter { it.verify() }.onEach { store?.store(it) }
+            else -> emptyList()
+        }
+        val local = store?.byTag(listOf(debate.KIND), debate.TAG_ROOT, address, limit = 500).orEmpty()
+        debate.of(local + fetched, demand.address)
+    }
+
+    /** Publishes a comment of the debate, kept on the device first (offline-first), sent by the screen itself. */
+    suspend fun sendDebate(
+        signer: EventSigner,
+        demand: Article,
+        stance: org.politisationpopulairefrancaise.core.revendications.DebateStance,
+        text: String,
+    ): org.politisationpopulairefrancaise.core.publication.PublicationResult {
+        val unsigned = org.politisationpopulairefrancaise.core.revendications.DemandDebate.build(signer.publicKey, demand.address, stance, text, org.politisationpopulairefrancaise.core.time.currentEpochSeconds())
+        val event = signer.sign(unsigned)
+        val local = store
+        val unavailable = org.politisationpopulairefrancaise.core.publication.PublicationResult.Unavailable()
+        if (local == null) return remote?.publish(event) ?: unavailable
+        withContext(Dispatchers.Default) { local.storeSending(event) }
+        val result = local.sending(event) { remote?.publish(event) ?: unavailable }
+        when (result) {
+            is org.politisationpopulairefrancaise.core.publication.PublicationResult.Accepted -> withContext(Dispatchers.Default) { local.markPublished(event.id) }
+            is org.politisationpopulairefrancaise.core.publication.PublicationResult.Rejected -> withContext(Dispatchers.Default) { local.delete(event.id) }
+            else -> Unit
+        }
+        return result
+    }
+
     fun start() {
         if (store == null) {
             status = LibraryStatus.Unavailable

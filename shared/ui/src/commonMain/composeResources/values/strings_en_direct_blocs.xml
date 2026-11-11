@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- « En direct » composé par chacun : les vues, les blocs et leur réglage (demande de la propriétaire du 11 novembre 2026). -->
+<resources>
+    <string name="live_views">Vues d’En direct</string>
+    <string name="live_view_essentiel">L’essentiel</string>
+    <string name="live_view_mobilisation">Mobilisation</string>
+    <string name="live_view_politique">Politique</string>
+    <string name="live_view_pres_de_chez_moi">Près de chez moi</string>
+
+    <string name="live_block_en_cours">En cours</string>
+    <string name="live_block_alertes">Alertes</string>
+    <string name="live_block_mobilisations">Prochaines mobilisations</string>
+    <string name="live_block_appels">Appels qui pressent</string>
+    <string name="live_block_decider">Décider ensemble</string>
+    <string name="live_block_une">Revendication à la une</string>
+    <string name="live_block_chiffres">Chiffres clés</string>
+    <string name="live_block_parlement">Cette semaine au Parlement</string>
+    <string name="live_block_rappels">Mes rappels</string>
+    <string name="live_block_actu">L’actu de PPF</string>
+    <string name="live_block_chronologie">Chronologie du mouvement</string>
+
+    <string name="live_customize">Personnaliser</string>
+    <string name="live_customize_description">Personnaliser les blocs d’En direct</string>
+    <string name="live_customize_title">Les blocs de « %1$s »</string>
+    <string name="live_customize_hint">Ajoutez, retirez et rangez les blocs. Ce réglage reste sur cet appareil, il n’est envoyé nulle part.</string>
+    <string name="live_customize_done">Terminé</string>
+    <string name="live_move_up">Monter « %1$s »</string>
+    <string name="live_move_down">Descendre « %1$s »</string>
+    <string name="live_remove">Retirer « %1$s »</string>
+    <string name="live_add_title">Ajouter un bloc</string>
+    <string name="live_add_none">Tous les blocs sont déjà dans cette vue.</string>
+    <string name="live_reset">Remettre la vue d’origine</string>
+    <string name="live_new_view">Créer ma vue</string>
+    <string name="live_new_view_name">Nom de la nouvelle vue</string>
+    <string name="live_new_view_hint">Elle reprend les blocs de la vue affichée ; vous les changez ensuite.</string>
+    <string name="live_new_view_create">Créer</string>
+    <string name="live_delete_view">Supprimer « %1$s »</string>
+    <string name="live_refresh">Actualiser</string>
+    <string name="live_view_empty">Cette vue n’a aucun bloc. Touchez « Personnaliser » pour en ajouter.</string>
+    <string name="live_see_all">Voir tout</string>
+
+    <string name="live_live_none">Aucune mobilisation en cours en ce moment.</string>
+    <string name="live_news_none">Pas de nouvelle publication de PPF.</string>
+    <string name="live_chronology_none">Rien de recensé pour l’instant.</string>
+    <string name="live_figures_none">Les chiffres clés ne sont pas encore publiés.</string>
+    <string name="live_headline_none">Aucune revendication en campagne pour l’instant.</string>
+    <string name="live_calls_none">Aucun appel ouvert pour l’instant.</string>
+    <string name="live_calls_due">Avant le %1$s</string>
+    <string name="live_reminders_none">Aucun rappel prévu. Ils se posent depuis l’agenda, les élections, les consultations et les pétitions.</string>
+    <string name="live_reminder_due">Le %1$s</string>
+</resources>

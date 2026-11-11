@@ -34,8 +34,6 @@ import org.politisationpopulairefrancaise.ui.resources.urne_demand_opening
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_line
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_public
 import org.politisationpopulairefrancaise.ui.resources.urne_elected_recorded
-import org.politisationpopulairefrancaise.ui.resources.urne_elected_too_few
-import org.politisationpopulairefrancaise.ui.resources.urne_results_too_few
 import org.politisationpopulairefrancaise.ui.resources.urne_need_account
 import org.politisationpopulairefrancaise.ui.resources.urne_no_token
 import org.politisationpopulairefrancaise.ui.resources.urne_not_voted
@@ -49,6 +47,7 @@ import org.politisationpopulairefrancaise.ui.resources.urne_stage_petition
 import org.politisationpopulairefrancaise.ui.resources.urne_supports_line
 import org.politisationpopulairefrancaise.ui.resources.urne_unavailable
 import org.politisationpopulairefrancaise.ui.resources.urne_vote_blank
+import org.politisationpopulairefrancaise.ui.resources.urne_your_vote
 import org.politisationpopulairefrancaise.ui.resources.urne_withdraw
 import org.politisationpopulairefrancaise.ui.resources.urne_withdrawn
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
@@ -61,6 +60,8 @@ object DemandVoteTags {
     const val FOR = "revendication-vote-for"
     const val AGAINST = "revendication-vote-against"
     const val BLANK = "revendication-vote-blank"
+    const val YOUR_VOTE = "revendication-your-vote"
+    const val DEBATE = "revendication-debate"
     const val STATUS = "revendication-vote-status"
     const val RESULTS = "revendication-vote-results"
     const val WITHDRAW = "revendication-vote-withdraw"
@@ -85,6 +86,8 @@ fun DemandVoteRow(
     detailed: Boolean = false,
     /** The demand's `ppf-territory-code` (D-090): its thresholds of supports (D-115); France without one. */
     territoryCode: String? = null,
+    /** « Débat » (DE-20): opens the demand, where its debate is; no button where the debate is already shown. */
+    onDebate: (() -> Unit)? = null,
 ) {
     val voting = LocalVoting.current
     val box = voting?.box(subject)
@@ -125,16 +128,14 @@ fun DemandVoteRow(
                 active = state?.choice == BLANK,
                 modifier = Modifier.testTag(DemandVoteTags.BLANK),
             )
-            // The debate itself (arguments for and against) comes later.
-            ActionButton(Lucide.MessageCircle, stringResource(Res.string.revendication_debate), onClick = { }, enabled = false)
+            if (onDebate != null) {
+                ActionButton(Lucide.MessageCircle, stringResource(Res.string.revendication_debate), onClick = onDebate, enabled = true, modifier = Modifier.testTag(DemandVoteTags.DEBATE))
+            }
         }
         box?.results?.let { results ->
+            // The results show from the first ballot (D-156).
             Text(
-                if (results.citizens.hidden) {
-                    stringResource(Res.string.urne_results_too_few, results.minimum ?: 5)
-                } else {
-                    stringResource(Res.string.urne_results_line, count(results.citizens, FOR), count(results.citizens, AGAINST), count(results.citizens, BLANK))
-                },
+                stringResource(Res.string.urne_results_line, count(results.citizens, FOR), count(results.citizens, AGAINST), count(results.citizens, BLANK)),
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.testTag(DemandVoteTags.RESULTS),
             )
@@ -153,9 +154,7 @@ fun DemandVoteRow(
                     SupportThresholds.Stage.BELOW -> Unit
                 }
             }
-            if (results.electedOfficials.hidden) {
-                Text(stringResource(Res.string.urne_elected_too_few, results.minimum ?: 5), style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
-            } else if (results.electedOfficials.ballots > 0) {
+            if (results.electedOfficials.ballots > 0) {
                 Text(
                     stringResource(Res.string.urne_elected_line, count(results.electedOfficials, FOR), count(results.electedOfficials, AGAINST), count(results.electedOfficials, BLANK)),
                     style = MaterialTheme.typography.bodySmall,
@@ -176,6 +175,18 @@ fun DemandVoteRow(
             state.choice == UrneInfo.WITHDRAWN -> stringResource(Res.string.urne_withdrawn)
             !state.sent -> stringResource(Res.string.urne_sending)
             else -> stringResource(Res.string.urne_recorded)
+        }
+        // After a vote, the choice made on this device, in words (the ballot itself leaves later, anonymous).
+        val chosen = state?.choice?.takeIf { it != UrneInfo.WITHDRAWN && voting?.elected != true }
+        if (chosen != null) {
+            val label = stringResource(
+                when (chosen) {
+                    FOR -> Res.string.revendication_vote_for
+                    AGAINST -> Res.string.revendication_vote_against
+                    else -> Res.string.urne_vote_blank
+                },
+            )
+            Text(stringResource(Res.string.urne_your_vote, label), style = MaterialTheme.typography.labelLarge, color = palette.brand, modifier = Modifier.testTag(DemandVoteTags.YOUR_VOTE))
         }
         Text(status, style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.testTag(DemandVoteTags.STATUS))
         // An account declared compromised gets no new token (S-146), but the tokens already on this device stay the

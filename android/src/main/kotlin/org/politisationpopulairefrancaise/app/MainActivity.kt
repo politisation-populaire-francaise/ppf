@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.app
 
+import org.politisationpopulairefrancaise.ui.endirect.LiveBoardStore
 import org.politisationpopulairefrancaise.ui.onboarding.TutorialStore
 import android.Manifest
 import android.content.pm.PackageManager
@@ -59,6 +60,7 @@ class MainActivity : ComponentActivity() {
             securityStorage = AndroidDeviceSecurityStorage(applicationContext),
             // The tutorial of the first launch (D-216): seen or not, kept on the phone only.
             tutorial = FileTutorialStore(File(filesDir, "tutorial-seen")),
+            liveBoard = FileLiveBoardStore(File(filesDir, "en-direct-blocs.txt")),
             closeApplication = {
                 finishAndRemoveTask()
                 Process.killProcess(Process.myPid())
@@ -120,5 +122,22 @@ private class FileTutorialStore(private val file: File) : TutorialStore {
 
     override fun forget() {
         check(!file.exists() || file.delete()) { "tutorial flag not erased" }
+    }
+}
+
+/**
+ * How the person composed « En direct » (views and blocks): a few lines of text in the private
+ * directory of the application, never sent. Erased by the quick erase.
+ */
+private class FileLiveBoardStore(private val file: File) : LiveBoardStore {
+    override fun load(): String? = file.takeIf { it.exists() }?.readText()
+
+    override fun save(text: String) {
+        file.parentFile?.mkdirs()
+        file.writeText(text)
+    }
+
+    override fun forget() {
+        check(!file.exists() || file.delete()) { "live board not erased" }
     }
 }
