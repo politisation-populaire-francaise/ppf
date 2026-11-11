@@ -58,6 +58,8 @@ import org.politisationpopulairefrancaise.ui.components.PpfCard
 import org.politisationpopulairefrancaise.ui.icons.Lucide
 import org.politisationpopulairefrancaise.ui.resources.Res
 import org.politisationpopulairefrancaise.ui.resources.agir_agenda_text
+import org.politisationpopulairefrancaise.ui.resources.agir_soon_hide
+import org.politisationpopulairefrancaise.ui.resources.agir_soon_show
 import org.politisationpopulairefrancaise.ui.resources.agir_agenda_title
 import org.politisationpopulairefrancaise.ui.resources.agir_calls_text
 import org.politisationpopulairefrancaise.ui.resources.agir_calls_title
