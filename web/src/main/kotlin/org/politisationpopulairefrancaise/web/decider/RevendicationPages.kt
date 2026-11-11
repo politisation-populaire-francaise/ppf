@@ -28,7 +28,7 @@ internal object RevendicationLinks {
     fun of(article: Article): String = "$HOME/${article.slug}"
 }
 
-private val STATUS_LABELS: Map<RevendicationStatus, String> = mapOf(
+private val DEMAND_STATUS_LABELS: Map<RevendicationStatus, String> = mapOf(
     RevendicationStatus.NOUVELLE to "Nouvelle",
     RevendicationStatus.EN_DEBAT to "En débat",
     RevendicationStatus.TRES_SOUTENUE to "Très soutenue",
@@ -51,7 +51,7 @@ private fun FlowContent.attribution(article: Article) {
 
 private fun FlowContent.demandCard(article: Article) {
     article(classes = "card") {
-        article.status?.let { p { badge(STATUS_LABELS.getValue(it), if (it == RevendicationStatus.CAMPAGNE) BadgeTone.WARNING else BadgeTone.NEUTRAL) } }
+        article.status?.let { p { badge(DEMAND_STATUS_LABELS.getValue(it), if (it == RevendicationStatus.CAMPAGNE) BadgeTone.WARNING else BadgeTone.NEUTRAL) } }
         h3 { a(href = RevendicationLinks.of(article)) { +article.title } }
         article.summary?.let { p { +it } }
         attribution(article)
@@ -85,7 +85,7 @@ fun HTML.revendicationDocument(article: Article) {
     siteLayout(pageTitle = article.title, currentSpace = Space.REVENDICATIONS) {
         p(classes = "breadcrumb") { a(href = RevendicationLinks.HOME) { +"Revendications" } }
         h1 { +article.title }
-        article.status?.let { p { badge(STATUS_LABELS.getValue(it)) } }
+        article.status?.let { p { badge(DEMAND_STATUS_LABELS.getValue(it)) } }
         article.summary?.let { p(classes = "lead") { +it } }
         attribution(article)
         p(classes = "notice") { +"Pour voter Pour, Contre ou Blanc, ouvrez cette revendication dans l’application PPF." }
