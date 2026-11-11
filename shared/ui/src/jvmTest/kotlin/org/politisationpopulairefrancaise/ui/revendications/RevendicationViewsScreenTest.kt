@@ -61,6 +61,7 @@ import org.politisationpopulairefrancaise.ui.shell.openSpace
 import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -146,6 +147,23 @@ class RevendicationViewsScreenTest {
     private fun memory() = AppDependencies(identityStore = InMemoryIdentityStore(), contentStore = LocalEventStore(JvmDatabase.inMemory()))
 
     private fun persistent(database: PpfDatabase, identity: IdentityStore = InMemoryIdentityStore()) = AppDependencies.withDatabase(identity, database)
+
+    /** MVP 1 (Galaxy A34, 360 dp): one row of tools, the explanation folded into one line that unfolds on a touch. */
+    @Test
+    fun onAPhoneTheToolsShareOneRowAndTheExplanationIsFolded() = runComposeUiTest {
+        openWall(memory(), width = 360, height = 780)
+        val filters = inPage("tout", RevendicationTags.FILTERS).fetchSemanticsNode().boundsInRoot
+        val customize = inPage("tout", RevendicationTags.CUSTOMIZE).fetchSemanticsNode().boundsInRoot
+        assertEquals(filters.top, customize.top, "Filtres and Personnaliser share one row")
+        assertFalse(has(RevendicationTags.HOW_IT_WORKS_TEXT), "the explanation starts folded")
+
+        inPage("tout", RevendicationTags.HOW_IT_WORKS).performScrollTo().performClick()
+        waitForIdle()
+        assertTrue(has(RevendicationTags.HOW_IT_WORKS_TEXT), "a touch unfolds the explanation")
+        inPage("tout", RevendicationTags.HOW_IT_WORKS).performScrollTo().performClick()
+        waitForIdle()
+        assertFalse(has(RevendicationTags.HOW_IT_WORKS_TEXT), "a second touch folds it again")
+    }
 
     @Test
     fun theDefaultViewsAreTabsAndAThemeViewShowsOnlyItsDemands() = runComposeUiTest {

@@ -43,7 +43,11 @@
     <string name="rv_sort_updated">Mises à jour récentes</string>
     <string name="rv_sort_popular_note">Provisoire : selon l’avancement de la revendication, en attendant l’ouverture des votes.</string>
     <string name="rv_customize">Personnaliser</string>
+    <string name="rv_how_it_works">Comment ça marche ?</string>
+    <string name="rv_how_it_works_open">explication dépliée</string>
+    <string name="rv_how_it_works_closed">explication repliée</string>
     <string name="rv_propose">Proposer une revendication</string>
+    <string name="rv_propose_short">Proposer</string>
     <plurals name="rv_count">
         <item quantity="one">%1$d revendication</item>
         <item quantity="other">%1$d revendications</item>

@@ -90,6 +90,13 @@ import org.politisationpopulairefrancaise.ui.resources.desc_revendications
 import org.politisationpopulairefrancaise.ui.resources.revendication_argument
 import org.politisationpopulairefrancaise.ui.resources.revendication_back
 import org.politisationpopulairefrancaise.ui.resources.revendications_intro
+import org.politisationpopulairefrancaise.ui.resources.rv_how_it_works
+import org.politisationpopulairefrancaise.ui.resources.rv_propose_short
+import org.politisationpopulairefrancaise.ui.resources.rv_how_it_works_closed
+import org.politisationpopulairefrancaise.ui.resources.rv_how_it_works_open
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.ui.semantics.stateDescription
 import org.politisationpopulairefrancaise.ui.resources.revendications_none
 import org.politisationpopulairefrancaise.ui.resources.rv_chip_remove
 import org.politisationpopulairefrancaise.ui.resources.rv_chip_text
@@ -153,6 +160,9 @@ object RevendicationTags {
     const val CUSTOMIZE = "revendication-customize"
     const val PROPOSE = "revendication-propose"
     const val COUNT = "revendication-count"
+    /** The one-line "Comment ça marche ?" that unfolds the explanation of the wall (MVP 1, lighter header). */
+    const val HOW_IT_WORKS = "revendication-how-it-works"
+    const val HOW_IT_WORKS_TEXT = "revendication-how-it-works-text"
     const val CHIP = "revendication-chip-" // followed by "theme:<id>", "territory:<key>", "status:<tag>", "authors" or "text"
     const val CLEAR_ALL = "revendication-clear-all"
     const val EMPTY = "revendication-empty"
@@ -424,14 +434,17 @@ private fun WallPage(
         verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         Column(Modifier.widthIn(max = 720.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            // MVP 1 (Galaxy A34, 360 dp): the first card must show high on the screen. Filters, sort and
+            // "Personnaliser" share one row of chips, the number of demands sits beside "Proposer", and the
+            // explanation folds into one line "Comment ça marche ?".
             Toolbar(
                 activeCount = active.constraintCount,
                 sort = effective.sort ?: RevendicationSort.NEWEST,
                 onFilters = onOpenFilters,
                 onSort = { views.setFilters(view.id, filters.copy(sort = it)) },
-                onPropose = onPropose,
+                onManage = onManage,
             )
-            // The number of demands and what the view shows, with the entry that changes the views.
+            // The number of demands and what the view shows, with "Proposer" when it is offered.
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Column(Modifier.weight(1f)) {
                     Text(
@@ -439,18 +452,18 @@ private fun WallPage(
                         style = MaterialTheme.typography.titleSmall,
                         modifier = Modifier.testTag(RevendicationTags.COUNT),
                     )
-                    Text(viewDescription(view), style = MaterialTheme.typography.bodyMedium, color = palette.inkSubtle)
+                    Text(viewDescription(view), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, maxLines = 2)
                 }
-                Spacer(Modifier.width(8.dp))
-                PpfToolbarButton(icon = Lucide.Settings, text = stringResource(Res.string.rv_customize), onClick = onManage, modifier = Modifier.testTag(RevendicationTags.CUSTOMIZE))
+                if (onPropose != null) {
+                    Spacer(Modifier.width(8.dp))
+                    PpfPrimaryButton(onClick = onPropose, text = stringResource(if (compact) Res.string.rv_propose_short else Res.string.rv_propose), icon = Lucide.Plus, modifier = Modifier.testTag(RevendicationTags.PROPOSE))
+                }
             }
             if (active.constraintCount > 0) {
                 ActiveFilters(active, territories, onChange = { views.setFilters(view.id, it) }, onClearAll = { views.clearFilters(view.id) })
             }
             if (view.id == RevendicationViews.ALL_ID) {
-                InfoBox(Lucide.ScrollText) {
-                    Text(stringResource(Res.string.revendications_intro), style = MaterialTheme.typography.bodyMedium)
-                }
+                HowItWorks()
             }
             if (results.isEmpty()) {
                 EmptyState(
@@ -474,18 +487,50 @@ private fun WallPage(
     }
 }
 
-/** Filters (with the number of active ones), sort and, when offered, propose. */
-@OptIn(ExperimentalLayoutApi::class)
+/**
+ * The explanation of the wall folded into one line (MVP 1): a touch unfolds it, a second folds it again.
+ * Folded by default, so that the first card shows high on a phone; the state survives a rotation.
+ */
+@Composable
+private fun HowItWorks() {
+    val palette = PpfTheme.palette
+    var open by rememberSaveable { mutableStateOf(false) }
+    val state = stringResource(if (open) Res.string.rv_how_it_works_open else Res.string.rv_how_it_works_closed)
+    Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+        Surface(
+            onClick = { open = !open },
+            shape = MaterialTheme.shapes.small,
+            color = palette.surface0,
+            contentColor = palette.brand,
+            modifier = Modifier.semantics { stateDescription = state }.testTag(RevendicationTags.HOW_IT_WORKS),
+        ) {
+            Row(Modifier.heightIn(min = 48.dp).padding(horizontal = 4.dp), verticalAlignment = Alignment.CenterVertically) {
+                Icon(Lucide.CircleQuestionMark, contentDescription = null, modifier = Modifier.size(18.dp))
+                Spacer(Modifier.width(8.dp))
+                Text(stringResource(Res.string.rv_how_it_works), style = MaterialTheme.typography.labelLarge)
+                Spacer(Modifier.width(4.dp))
+                Icon(if (open) Lucide.ChevronUp else Lucide.ChevronDown, contentDescription = null, modifier = Modifier.size(18.dp))
+            }
+        }
+        if (open) {
+            InfoBox(Lucide.ScrollText, Modifier.testTag(RevendicationTags.HOW_IT_WORKS_TEXT)) {
+                Text(stringResource(Res.string.revendications_intro), style = MaterialTheme.typography.bodyMedium)
+            }
+        }
+    }
+}
+
+/** Filters (with the number of active ones), sort and "Personnaliser", on one row of chips that scrolls when narrow. */
 @Composable
 private fun Toolbar(
     activeCount: Int,
     sort: RevendicationSort,
     onFilters: () -> Unit,
     onSort: (RevendicationSort) -> Unit,
-    onPropose: (() -> Unit)?,
+    onManage: () -> Unit,
 ) {
     var sortMenu by remember { mutableStateOf(false) }
-    FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(0.dp)) {
+    Row(Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp), verticalAlignment = Alignment.CenterVertically) {
         val filtersLabel = stringResource(Res.string.rv_filters)
         PpfToolbarButton(
             icon = Lucide.SlidersHorizontal,
@@ -524,9 +569,7 @@ private fun Toolbar(
                 }
             }
         }
-        if (onPropose != null) {
-            PpfPrimaryButton(onClick = onPropose, text = stringResource(Res.string.rv_propose), icon = Lucide.Plus, modifier = Modifier.padding(vertical = 2.dp).testTag(RevendicationTags.PROPOSE))
-        }
+        PpfToolbarButton(icon = Lucide.Settings, text = stringResource(Res.string.rv_customize), onClick = onManage, modifier = Modifier.testTag(RevendicationTags.CUSTOMIZE))
     }
 }
 
