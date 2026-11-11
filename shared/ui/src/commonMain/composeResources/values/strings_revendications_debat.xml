@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The debate of a demand (DE-20, MVP 1). French, typographic apostrophe (’), no em dash. -->
+<resources>
+    <string name="debate_title">Débat (%1$d)</string>
+    <string name="debate_all">Tous (%1$d)</string>
+    <string name="debate_stance_pour">Pour</string>
+    <string name="debate_stance_contre">Contre</string>
+    <string name="debate_stance_mitige">Mitigé</string>
+    <string name="debate_rules">Les règles du débat : un argument par message, des faits sourcés quand c’est possible, aucune attaque contre une personne, aucun appel à la violence, aucune donnée personnelle. Vous publiez sous votre pseudonyme. Chacun peut signaler un message ; une personne de l’équipe décide.</string>
+    <string name="debate_stance_question">Votre position</string>
+    <string name="debate_form_label">Votre argument (%1$d caractères au plus)</string>
+    <string name="debate_form_hint">Pourquoi êtes-vous pour, contre ou mitigé ?</string>
+    <string name="debate_need_account">Créez un compte (une phrase secrète sur cet appareil) pour participer au débat. La lecture reste libre.</string>
+    <string name="debate_send">Publier</string>
+    <string name="debate_sent">Publié.</string>
+    <string name="debate_sent_later">Gardé sur cet appareil : il partira dès que le réseau reviendra.</string>
+    <string name="debate_refused">Refusé par le serveur. Vérifiez la longueur et les règles du débat.</string>
+    <string name="debate_empty">Aucun message pour l’instant : lancez le débat.</string>
+    <string name="debate_author">Pseudonyme %1$s, le %2$s</string>
+</resources>

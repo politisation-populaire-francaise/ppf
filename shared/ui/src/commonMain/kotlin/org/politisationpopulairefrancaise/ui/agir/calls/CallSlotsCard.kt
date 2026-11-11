@@ -150,7 +150,7 @@ class SlotsLibrary(
 
 /** AP-11: the slots of a call, with their places, the user's signups and, for the author, the names signed up. */
 @Composable
-internal fun SlotsCard(call: Call, slotsLibrary: SlotsLibrary, organizer: MessagingSigner?, organizerSigner: EventSigner? = null) {
+internal fun SlotsCard(call: Call, slotsLibrary: SlotsLibrary, organizer: MessagingSigner?, organizerSigner: EventSigner? = null, published: Boolean = true) {
     val slots = call.slots
     if (slots.isEmpty()) return
     val palette = PpfTheme.palette
@@ -167,7 +167,7 @@ internal fun SlotsCard(call: Call, slotsLibrary: SlotsLibrary, organizer: Messag
     PpfCard(Modifier.fillMaxWidth().testTag(SlotTags.CARD)) {
         Text(stringResource(Res.string.slots_title), style = MaterialTheme.typography.titleSmall, modifier = Modifier.semantics { heading() })
         Spacer(Modifier.height(4.dp))
-        Text(stringResource(Res.string.slots_intro), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
+        Text(stringResource(if (published) Res.string.slots_intro else Res.string.slots_not_published), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle)
         slots.forEach { slot ->
             Spacer(Modifier.height(12.dp))
             Column(Modifier.fillMaxWidth().testTag(SlotTags.SLOT + slot.id), verticalArrangement = Arrangement.spacedBy(4.dp)) {
@@ -197,6 +197,7 @@ internal fun SlotsCard(call: Call, slotsLibrary: SlotsLibrary, organizer: Messag
                     }
                     slot.end <= now -> PpfSecondaryButton({}, stringResource(Res.string.slots_over), enabled = false, modifier = Modifier.testTag(SlotTags.SIGNUP + slot.id))
                     taken != null && taken >= slot.places -> PpfSecondaryButton({}, stringResource(Res.string.slots_full), enabled = false, modifier = Modifier.testTag(SlotTags.SIGNUP + slot.id))
+                    !published -> Unit
                     else -> PpfPrimaryButton({ signingUp = slot }, stringResource(Res.string.slots_signup), enabled = call.isOpen, modifier = Modifier.testTag(SlotTags.SIGNUP + slot.id))
                 }
                 names?.let { all ->
