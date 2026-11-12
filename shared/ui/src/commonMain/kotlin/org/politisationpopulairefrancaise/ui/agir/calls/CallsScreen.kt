@@ -107,6 +107,8 @@ object CallTags {
     const val SORT_OPTION = "calls-sort-" // followed by newest, deadline
     const val SORT_NOTE = "calls-sort-note"
     const val LAUNCH = "calls-launch"
+    const val URGENT = "calls-urgent"
+    const val QUICK_TYPE = "calls-quick-type-"
     const val COUNT = "calls-count"
     const val CARD = "call-" // followed by the slug
     const val EMPTY = "calls-empty"
@@ -320,7 +322,8 @@ private fun Wall(
                     }
                     Column(Modifier.weight(1f)) {
                         Text(stringResource(Res.string.appels_title), style = MaterialTheme.typography.headlineMedium, modifier = Modifier.semantics { heading() })
-                        Text(stringResource(Res.string.appels_description), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
+                        // On a phone the wall comes first: the presentation stays on wider screens.
+                        if (!compact) Text(stringResource(Res.string.appels_description), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted)
                     }
                 }
                 val tabs = CallsTab.entries
@@ -350,6 +353,7 @@ private fun Wall(
                     onLaunch = { library.composer.open = true },
                 )
                 if (tab == CallsTab.ALL) {
+                    QuickTypes(library)
                     if (filtersShown) FilterPanel(library, onHide = { filtersShown = false })
                     if (query.constraintCount > 0) ActiveFilters(library)
                 }
@@ -625,6 +629,11 @@ internal fun CallCard(
         FlowRow(horizontalArrangement = Arrangement.spacedBy(8.dp), verticalArrangement = Arrangement.spacedBy(6.dp)) {
             TypeBadge(call.type)
             if (!call.isOpen) PpfBadge(stringResource(Res.string.appels_status_closed), BadgeStyle.NEUTRAL)
+            // Due within three days: said at the top of the card, where the eye starts.
+            val deadline = call.deadline
+            if (call.isOpen && deadline != null && deadline >= now && deadline - now <= URGENT_SECONDS) {
+                PpfBadge(countdown(deadline, now), BadgeStyle.WARNING, Modifier.testTag(CallTags.URGENT))
+            }
             if (own != null && own.state != OwnDemandState.PUBLISHED) OwnStateBadge(own.state)
             if (call.isExample) ExampleBadge()
         }
@@ -645,6 +654,29 @@ internal fun CallCard(
         if (responded) {
             Spacer(Modifier.height(8.dp))
             PpfBadge(stringResource(Res.string.appels_answered_badge), BadgeStyle.SUCCESS, Modifier.testTag(CallTags.ANSWERED_BADGE))
+        }
+    }
+}
+
+/** A call due within this many seconds is marked urgent on its card (as in « En ce moment »). */
+private const val URGENT_SECONDS: Long = org.politisationpopulairefrancaise.core.agir.AgirHighlights.URGENT_SECONDS
+
+/** The types most called for, one tap each, above the full filters. */
+private val QUICK_TYPES = listOf(CallType.MANIFESTER, CallType.GREVE, CallType.PETITION, CallType.BENEVOLES, CallType.SOUTENIR, CallType.SE_REUNIR)
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun QuickTypes(library: CallsLibrary) {
+    val query = library.query
+    Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        QUICK_TYPES.forEach { type ->
+            val selected = type in query.types
+            PpfSelectableChip(
+                label = stringResource(typeLabelResource(type)),
+                selected = selected,
+                onClick = { library.query = query.copy(types = if (selected) query.types - type else query.types + type) },
+                modifier = Modifier.testTag(CallTags.QUICK_TYPE + type.tagValue),
+            )
         }
     }
 }

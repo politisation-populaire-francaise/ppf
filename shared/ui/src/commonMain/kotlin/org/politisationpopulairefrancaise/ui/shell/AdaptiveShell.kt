@@ -697,6 +697,7 @@ private fun SpaceContent(
                             dependencies, accountSession, windowClass, inner, onNavigate, agenda = agendaLibrary, organisationName = organisationName,
                             // A call read on a poster (AG-61, D-190): "Agir" sees it selected and opens its calls.
                             onOpenCall = { address -> callsLibrary.openAddress(address) },
+                            embedded = true,
                         )
                     }
                 },

@@ -1,5 +1,10 @@
 package org.politisationpopulairefrancaise.ui.agir.agenda
 
+import androidx.compose.foundation.horizontalScroll
+import org.politisationpopulairefrancaise.ui.components.PpfSelectableChip
+import org.politisationpopulairefrancaise.ui.resources.agenda_quick_today
+import org.politisationpopulairefrancaise.ui.resources.agenda_quick_week
+import org.politisationpopulairefrancaise.ui.resources.agenda_quick_month
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -128,6 +133,7 @@ object AgendaTags {
     const val REFRESH = "agenda-refresh"
     const val FILTERS = "agenda-filters"
     const val PROPOSE = "agenda-propose"
+    const val QUICK_PERIOD = "agenda-quick-period-"
     const val COUNT = "agenda-count"
     const val DAY = "agenda-day-" // followed by the local day number, or "ongoing"
     const val CARD = "agenda-card-" // followed by the identifier of the mobilization
@@ -208,6 +214,8 @@ fun AgendaScreen(
     isVerifiedOrganisation: (String) -> Boolean = { organisationName(it) != null },
     posterExporter: PosterExporter = rememberPlatformPosterExporter(),
     onOpenCall: ((String) -> Unit)? = null,
+    /** Shown inside « Agir », under its own title: the agenda does not repeat one. */
+    embedded: Boolean = false,
 ) {
     val account = session.state as? AccountUiState.Ready
     val accountKey = account?.publicKey?.hex
@@ -278,6 +286,7 @@ fun AgendaScreen(
                     map = map,
                     // Reading a code needs a camera: the computer has none here (components/qr).
                     onScan = if (canScanQr) ({ scanning = true }) else null,
+                    embedded = embedded,
                 )
             }
             val selected = agenda.selected
@@ -371,6 +380,7 @@ private fun AgendaList(
     modifier: Modifier,
     map: AgendaMapState,
     onScan: (() -> Unit)? = null,
+    embedded: Boolean = false,
 ) {
     val palette = PpfTheme.palette
     val tabs = listOfNotNull(AgendaTab.UPCOMING, AgendaTab.PAST, AgendaTab.MINE.takeIf { agenda.hasAccount })
@@ -379,11 +389,15 @@ private fun AgendaList(
         Surface(color = palette.surface0, contentColor = palette.ink) {
             Column {
                 Row(Modifier.fillMaxWidth().padding(start = horizontal, end = 8.dp, top = 12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = stringResource(Res.string.agenda_title),
-                        style = MaterialTheme.typography.headlineSmall,
-                        modifier = Modifier.weight(1f).semantics { heading() }.testTag(AgendaTags.TITLE),
-                    )
+                    if (embedded) {
+                        Spacer(Modifier.weight(1f))
+                    } else {
+                        Text(
+                            text = stringResource(Res.string.agenda_title),
+                            style = MaterialTheme.typography.headlineSmall,
+                            modifier = Modifier.weight(1f).semantics { heading() }.testTag(AgendaTags.TITLE),
+                        )
+                    }
                     if (agenda.status != LibraryStatus.Offline && agenda.status != LibraryStatus.Unavailable) {
                         PpfIconButton(Lucide.RefreshCw, stringResource(Res.string.agenda_refresh), agenda::refresh, Modifier.testTag(AgendaTags.REFRESH))
                     }
@@ -451,6 +465,24 @@ private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: (
         // AG-61: read the code of a poster (a phone's camera; absent where none reads codes).
         if (onScan != null) {
             PpfToolbarButton(icon = Lucide.Camera, text = stringResource(Res.string.affiche_scan), onClick = onScan, modifier = Modifier.testTag(PosterTags.SCAN))
+        }
+    }
+    // « Aujourd'hui », « Cette semaine », « Ce mois-ci »: the periods of the filters, one tap each.
+    if (agenda.tab == AgendaTab.UPCOMING) {
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            listOf(
+                AgendaPeriod.Today to Res.string.agenda_quick_today,
+                AgendaPeriod.ThisWeek to Res.string.agenda_quick_week,
+                AgendaPeriod.ThisMonth to Res.string.agenda_quick_month,
+            ).forEach { (period, label) ->
+                val selected = filters.period == period
+                PpfSelectableChip(
+                    label = stringResource(label),
+                    selected = selected,
+                    onClick = { agenda.filters = filters.copy(period = if (selected) AgendaPeriod.Anytime else period) },
+                    modifier = Modifier.testTag(AgendaTags.QUICK_PERIOD + period::class.simpleName.orEmpty().lowercase()),
+                )
+            }
         }
     }
     Text(pluralStringResource(Res.plurals.agenda_count, shown.size, shown.size), style = MaterialTheme.typography.titleSmall, modifier = Modifier.testTag(AgendaTags.COUNT))

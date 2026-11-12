@@ -49,9 +49,11 @@ data class CallQuery(
     fun matches(call: Call, now: Long): Boolean {
         if (types.isNotEmpty() && call.type !in types) return false
         if (territories.isNotEmpty() && FrenchText.fold(call.territory) !in territories) return false
+        // A call whose deadline has passed is over in practice: it leaves the open calls for the closed ones.
+        val over = !call.isOpen || call.deadline?.let { it < now } == true
         when (status) {
-            CallStatusFilter.OPEN -> if (!call.isOpen) return false
-            CallStatusFilter.CLOSED -> if (call.isOpen) return false
+            CallStatusFilter.OPEN -> if (over) return false
+            CallStatusFilter.CLOSED -> if (!over) return false
             CallStatusFilter.ALL -> Unit
         }
         val due = call.dueAt

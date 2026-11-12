@@ -2,6 +2,9 @@
 <!-- « En ce moment » and the folded rubrics in preparation on the home of « Agir ». -->
 <resources>
     <string name="agenda_near_you">Près de chez vous</string>
+    <string name="agenda_quick_today">Aujourd’hui</string>
+    <string name="agenda_quick_week">Cette semaine</string>
+    <string name="agenda_quick_month">Ce mois-ci</string>
     <string name="agir_now_title">En ce moment</string>
     <string name="agir_now_empty">Aucune mobilisation ni échéance d’appel dans les prochains jours. À vous de lancer quelque chose :</string>
     <string name="agir_now_under_way">En cours</string>
