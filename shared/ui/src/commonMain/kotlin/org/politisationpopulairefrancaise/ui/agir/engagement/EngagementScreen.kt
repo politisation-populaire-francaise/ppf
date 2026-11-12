@@ -1,5 +1,18 @@
 package org.politisationpopulairefrancaise.ui.agir.engagement
 
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.launch
+import org.politisationpopulairefrancaise.core.time.currentEpochSeconds
+import org.politisationpopulairefrancaise.ui.resources.engager_when_before
+import org.politisationpopulairefrancaise.ui.resources.engager_when_rounds
+import org.politisationpopulairefrancaise.ui.resources.engager_when_stand
+import org.politisationpopulairefrancaise.ui.resources.engager_when_party
+import org.politisationpopulairefrancaise.ui.resources.engager_now
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -96,6 +109,8 @@ object EngagementTags {
     const val SCREEN = "engager-screen"
     const val BACK = "engager-back"
     const val STEP = "engager-step-" // followed by the step id
+    const val SUMMARY = "engager-summary"
+    const val SUMMARY_STEP = "engager-summary-step-"
     const val GUIDE = "engager-guide-" // followed by the slug of the guide
     const val GUIDE_SOON = "engager-guide-soon-" // followed by the slug of the guide
     const val COURSE = "engager-course-" // followed by the slug of the course
@@ -159,12 +174,17 @@ fun EngagementScreen(
                 PpfIconButton(Lucide.ArrowLeft, stringResource(Res.string.engager_back), onBack, Modifier.testTag(EngagementTags.BACK), tint = palette.ink)
             }
             PageHeader(stringResource(Res.string.engager_title), stringResource(Res.string.engager_description))
+            // The four steps at a glance, the one of the moment marked; a tap brings it into view.
+            val requesters = remember { EngagementStep.entries.associateWith { BringIntoViewRequester() } }
+            val scope = rememberCoroutineScope()
+            StepsSummary(currentStep(ParisTime.dateOf(ParisTime.epochDay(currentEpochSeconds()))), onSelect = { step -> scope.launch { requesters.getValue(step).bringIntoView() } })
+            val stepModifier: (EngagementStep) -> Modifier = { step -> Modifier.bringIntoViewRequester(requesters.getValue(step)) }
 
             val guide: @Composable (String, StringResource) -> Unit = { slug, label ->
                 GuideLink(slug, label, available = guideOf(slug) != null) { readingSlug = slug }
             }
 
-            Step(EngagementStep.REGISTER, 1, Res.string.engager_register_title, Lucide.Vote) {
+            Step(EngagementStep.REGISTER, 1, Res.string.engager_register_title, Lucide.Vote, stepModifier(EngagementStep.REGISTER)) {
                 val deadline = Engagement.REGISTRATION_DEADLINE
                 Text(
                     stringResource(Res.string.engager_register_deadline, longDate(deadline), stringResource(Res.string.engager_unconfirmed)),
@@ -188,7 +208,7 @@ fun EngagementScreen(
                 CourseLink(Engagement.COURSE_REGISTER, Res.string.engager_register_course, links.openComprendre)
             }
 
-            Step(EngagementStep.PRESIDENTIAL, 2, Res.string.engager_presidential_title, Lucide.Landmark) {
+            Step(EngagementStep.PRESIDENTIAL, 2, Res.string.engager_presidential_title, Lucide.Landmark, stepModifier(EngagementStep.PRESIDENTIAL)) {
                 Text(
                     stringResource(
                         Res.string.engager_presidential_text,
@@ -206,7 +226,7 @@ fun EngagementScreen(
                 )
             }
 
-            Step(EngagementStep.STAND, 3, Res.string.engager_stand_title, Lucide.Megaphone) {
+            Step(EngagementStep.STAND, 3, Res.string.engager_stand_title, Lucide.Megaphone, stepModifier(EngagementStep.STAND)) {
                 Text(stringResource(Res.string.engager_stand_text), style = MaterialTheme.typography.bodyLarge)
                 Source(Engagement.CALENDAR_SOURCE, EngagementTags.SOURCE + "calendrier")
                 guide(Engagement.GUIDE_CITIZEN_LIST, Res.string.engager_stand_list)
@@ -221,7 +241,7 @@ fun EngagementScreen(
                 )
             }
 
-            Step(EngagementStep.PARTY, 4, Res.string.engager_party_title, Lucide.Building2) {
+            Step(EngagementStep.PARTY, 4, Res.string.engager_party_title, Lucide.Building2, stepModifier(EngagementStep.PARTY)) {
                 Text(stringResource(Res.string.engager_party_text), style = MaterialTheme.typography.bodyLarge)
                 guide(Engagement.GUIDE_PARTY, Res.string.engager_party_guide)
                 PpfSecondaryButton(
@@ -248,9 +268,9 @@ fun EngagementScreen(
 
 /** A numbered step of the calendar, its title and what it offers. */
 @Composable
-private fun Step(step: EngagementStep, number: Int, title: StringResource, icon: ImageVector, content: @Composable ColumnScope.() -> Unit) {
+private fun Step(step: EngagementStep, number: Int, title: StringResource, icon: ImageVector, modifier: Modifier = Modifier, content: @Composable ColumnScope.() -> Unit) {
     val palette = PpfTheme.palette
-    PpfCard(Modifier.fillMaxWidth().testTag(EngagementTags.STEP + step.id)) {
+    PpfCard(modifier.fillMaxWidth().testTag(EngagementTags.STEP + step.id)) {
         PpfBadge(stringResource(Res.string.engager_step, number), BadgeStyle.NEUTRAL)
         Spacer(Modifier.height(8.dp))
         Row(verticalAlignment = Alignment.CenterVertically) {
@@ -260,6 +280,47 @@ private fun Step(step: EngagementStep, number: Int, title: StringResource, icon:
         }
         Spacer(Modifier.height(8.dp))
         Column(verticalArrangement = Arrangement.spacedBy(8.dp), content = content)
+    }
+}
+
+/** The step of the moment in the electoral calendar: register until the deadline, then vote, then stand. */
+internal fun currentStep(today: org.politisationpopulairefrancaise.core.time.CivilDate): EngagementStep = when {
+    today <= Engagement.REGISTRATION_DEADLINE.date -> EngagementStep.REGISTER
+    today <= Engagement.PRESIDENTIAL_SECOND_ROUND.date -> EngagementStep.PRESIDENTIAL
+    else -> EngagementStep.STAND
+}
+
+/** The four steps in one card: number, name, when, and « C'est maintenant » on the step of the moment. */
+@Composable
+private fun StepsSummary(current: EngagementStep, onSelect: (EngagementStep) -> Unit) {
+    val palette = PpfTheme.palette
+    val rows = listOf(
+        Triple(EngagementStep.REGISTER, Res.string.engager_register_title, stringResource(Res.string.engager_when_before, longDate(Engagement.REGISTRATION_DEADLINE))),
+        Triple(EngagementStep.PRESIDENTIAL, Res.string.engager_presidential_title, stringResource(Res.string.engager_when_rounds, longDate(Engagement.PRESIDENTIAL_FIRST_ROUND), longDate(Engagement.PRESIDENTIAL_SECOND_ROUND))),
+        Triple(EngagementStep.STAND, Res.string.engager_stand_title, stringResource(Res.string.engager_when_stand)),
+        Triple(EngagementStep.PARTY, Res.string.engager_party_title, stringResource(Res.string.engager_when_party)),
+    )
+    PpfCard(Modifier.fillMaxWidth().testTag(EngagementTags.SUMMARY)) {
+        rows.forEachIndexed { index, (step, title, moment) ->
+            if (index > 0) Spacer(Modifier.height(4.dp))
+            PpfCard(onClick = { onSelect(step) }, modifier = Modifier.fillMaxWidth().testTag(EngagementTags.SUMMARY_STEP + step.id)) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        Modifier.size(32.dp).background(if (step == current) palette.brand else palette.brandTint, CircleShape),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Text((index + 1).toString(), style = MaterialTheme.typography.titleSmall, color = if (step == current) palette.surface0 else palette.brand)
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Column(Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(2.dp)) {
+                        Text(stringResource(title), style = MaterialTheme.typography.titleSmall)
+                        Text(moment, style = MaterialTheme.typography.bodySmall, color = palette.inkMuted)
+                        if (step == current) PpfBadge(stringResource(Res.string.engager_now), BadgeStyle.SUCCESS)
+                    }
+                    Icon(Lucide.ChevronDown, contentDescription = null, tint = palette.inkSubtle, modifier = Modifier.size(20.dp))
+                }
+            }
+        }
     }
 }
 

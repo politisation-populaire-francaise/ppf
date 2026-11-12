@@ -35,7 +35,7 @@
     <string name="engager_stand_list">Constituer une liste citoyenne</string>
     <string name="engager_stand_2028">Se présenter aux départementales et régionales de 2028</string>
     <string name="engager_stand_legislatives">Se présenter aux législatives</string>
-    <string name="engager_stand_mates">Trouver des colistiers dans les collectifs</string>
+    <string name="engager_stand_mates">Trouver des colistiers</string>
 
     <string name="engager_party_title">Créer ou rejoindre un parti</string>
     <string name="engager_party_text">Un parti est d’abord une association, avec un mandataire financier ou une association de financement. Les fiches des partis sont présentées de la même façon pour tous.</string>
@@ -48,4 +48,9 @@
     <string name="engager_milestone_inscription">dernier jour pour s’inscrire sur les listes électorales</string>
     <string name="engager_milestone_tour1">premier tour de la présidentielle</string>
     <string name="engager_milestone_tour2">second tour de la présidentielle</string>
+    <string name="engager_when_before">Avant le %1$s</string>
+    <string name="engager_when_rounds">%1$s et %2$s</string>
+    <string name="engager_when_stand">Prochaines élections : mars 2028</string>
+    <string name="engager_when_party">Quand vous le voulez</string>
+    <string name="engager_now">C’est maintenant</string>
 </resources>

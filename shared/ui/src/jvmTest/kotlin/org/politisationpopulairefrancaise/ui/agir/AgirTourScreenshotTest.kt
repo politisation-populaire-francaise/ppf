@@ -70,24 +70,44 @@ class AgirTourScreenshotTest {
         pages(name, pages)
     }
 
-    @Test
-    fun phoneTour() = runComposeUiTest {
+    /** One rubric of « Agir » on a fresh phone screen: [open] reaches it from the home. */
+    private fun tour(name: String, pages: Int = 3, open: ComposeUiTest.() -> Boolean) = runComposeUiTest {
         if (directory == null) return@runComposeUiTest
         val dependencies = AgirFixtures.dependencies()
         setContent { Box(Modifier.requiredSize(360.dp, 760.dp)) { PpfTheme(darkTheme = false) { AdaptiveShell(dependencies) } } }
         settle()
         home()
-        pages("tour-accueil", 5)
-        open(AgirRubrics.AGENDA.id, "tour-agenda")
-        open(AgirRubrics.CALLS.id, "tour-appels")
-        open(AgirRubrics.KITS.id, "tour-kits")
-        open(AgirRubrics.FEDERER.id, "tour-federer")
-        home()
-        if (runCatching { onNodeWithTag(org.politisationpopulairefrancaise.ui.agir.engagement.EngagementFeaturedTags.OPEN).performScrollTo().performClick() }.isSuccess) {
+        if (open()) {
             settle()
-            pages("tour-engager")
+            pages(name, pages)
         }
-        open(AgirRubrics.GATHER.id, "tour-se-reunir", 2)
-        open(AgirRubrics.SOLIDARITY.id, "tour-solidarite", 2)
     }
+
+    private fun ComposeUiTest.rubric(id: String): Boolean = runCatching { onNodeWithTag(AgirTags.RUBRIC + id).performScrollTo().performClick() }.isSuccess
+
+    @Test
+    fun homeScreen() = tour("tour-accueil", 5) { true }
+
+    @Test
+    fun agenda() = tour("tour-agenda") { rubric(AgirRubrics.AGENDA.id) }
+
+    @Test
+    fun calls() = tour("tour-appels") { rubric(AgirRubrics.CALLS.id) }
+
+    @Test
+    fun kits() = tour("tour-kits") { rubric(AgirRubrics.KITS.id) }
+
+    @Test
+    fun federer() = tour("tour-federer") { rubric(AgirRubrics.FEDERER.id) }
+
+    @Test
+    fun engager() = tour("tour-engager") {
+        runCatching { onNodeWithTag(org.politisationpopulairefrancaise.ui.agir.engagement.EngagementFeaturedTags.OPEN).performScrollTo().performClick() }.isSuccess
+    }
+
+    @Test
+    fun gather() = tour("tour-se-reunir", 2) { rubric(AgirRubrics.GATHER.id) }
+
+    @Test
+    fun solidarity() = tour("tour-solidarite", 2) { rubric(AgirRubrics.SOLIDARITY.id) }
 }
