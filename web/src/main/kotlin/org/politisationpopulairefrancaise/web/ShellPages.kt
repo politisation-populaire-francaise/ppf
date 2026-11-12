@@ -258,7 +258,7 @@ private fun FlowContent.liveBlock(block: LiveBlock, contents: LiveContents) {
             p(classes = "section-more") { a(href = VoirLinks.CHRONOLOGY) { +"Toute la chronologie du mouvement" } }
         }
         // The live posts, the reminders, the week in Parliament and the news of PPF are in the application.
-        LiveBlock.LIVE, LiveBlock.PARLIAMENT, LiveBlock.REMINDERS, LiveBlock.NEWS -> Unit
+        LiveBlock.LIVE, LiveBlock.PARLIAMENT, LiveBlock.REMINDERS, LiveBlock.NEWS, LiveBlock.CAP, LiveBlock.ELUS -> Unit
     }
 }
 

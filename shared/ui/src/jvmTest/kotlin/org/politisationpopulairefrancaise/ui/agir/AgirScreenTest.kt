@@ -89,8 +89,9 @@ class AgirScreenTest {
             awaitTag(AgirTags.HOME)
             // « En ce moment » and « Je veux… » come first: bring the first section into view before measuring.
             onNodeWithTag(AgirTags.SECTION + AgirRubrics.sections.first().id).performScrollTo()
-            val tops = cards.take(3).map { onNodeWithTag(AgirTags.RUBRIC + it).fetchSemanticsNode().positionInRoot.y }
-            columns = tops.count { it == tops.first() }
+            // The number of distinct left edges among the first three cards is the number of columns.
+            val lefts = cards.take(3).map { onNodeWithTag(AgirTags.RUBRIC + it).fetchSemanticsNode().positionInRoot.x.toInt() }
+            columns = lefts.distinct().size
         }
         return columns
     }
