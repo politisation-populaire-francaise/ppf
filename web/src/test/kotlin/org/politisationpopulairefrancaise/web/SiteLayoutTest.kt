@@ -27,15 +27,17 @@ class SiteLayoutTest {
 
     @Test
     fun currentSpaceIsMarked() {
-        // A space without sub-sections is a plain link.
-        assertTrue(render(Space.CARTE).contains("<a href=\"/carte\" class=\"nav-link\" aria-current=\"page\">"))
-        // A pillar opens its accordion, and its first sub-section (its own page) is marked.
+        // « En direct » is a plain link.
+        assertTrue(render(Space.EN_DIRECT).contains("<a href=\"/en-direct\" class=\"nav-link\" aria-current=\"page\">"))
+        // The rubric of the space opens its accordion, and the page of the space itself is marked.
         val html = render(Space.AGIR)
         assertTrue(html.contains("<details class=\"nav-group\" open=\"open\">"))
-        assertTrue(html.contains("<a href=\"/agir\" aria-current=\"page\">Toutes les rubriques</a>"))
-        assertTrue(html.contains("<a href=\"/agenda\">Agenda des mobilisations</a>"))
+        assertTrue(html.contains("<a href=\"/agir\" aria-current=\"page\">Accueil d’Agir</a>"))
+        assertTrue(html.contains("<a href=\"/agenda\">Carte et agenda</a>"))
         // The other accordions stay closed.
         assertTrue(Regex("<details class=\"nav-group\" open").findAll(html).count() == 1)
+        // What only comes later is announced, without a link.
+        assertTrue(html.contains("Appels à témoins<span class=\"soon-badge\">Bientôt</span>"))
     }
 
     @Test
@@ -83,11 +85,11 @@ class SiteLayoutTest {
     }
 
     @Test
-    fun theNavigationFollowsTheOrderOfTheApplication() {
-        // D-215: the menu lists the spaces in the order of the application, "Fil" is shown as "Actu".
+    fun theNavigationFollowsTheMenuOfTheApplication() {
+        // D-240: « En direct », then the seven rubrics of the application, in its order and with its labels.
         val html = render()
         val menu = html.substring(html.indexOf("<nav class=\"sidenav\""), html.indexOf("</nav>"))
-        val labels = listOf("En direct", "Actu", "Carte", "Agir", "Appels", "Voir", "Comprendre", "Décider", "Revendications")
+        val labels = listOf("En direct", "S’informer", "Comprendre", "Témoigner", "Revendiquer", "S’unir et s’organiser", "Se politiser", "Agir")
         val positions = labels.map { menu.indexOf("<span class=\"nav-label\">$it</span>") }
         assertTrue(positions.all { it >= 0 }, "every label is in the navigation: $positions")
         assertTrue(positions == positions.sorted(), "in this order: $labels")

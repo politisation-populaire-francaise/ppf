@@ -4,24 +4,31 @@ import org.politisationpopulairefrancaise.core.Space
 import org.politisationpopulairefrancaise.core.comprendre.ComprendreLinks
 import org.politisationpopulairefrancaise.core.voir.VoirLinks
 
-/** A link of the side menu, under a space. */
-data class NavLink(val label: String, val href: String)
+/** A sub-rubric of the side menu: its label and its page; without page, it is announced as coming. */
+data class NavLink(val label: String, val href: String?)
 
 /**
- * One space of the side menu: its label, its icon (an id of `/static/icons.svg`, the Lucide icon of
- * the application) and its sub-sections, shown in an accordion. Without sub-sections the entry is a
- * plain link.
+ * One rubric of the side menu, as in the application (D-240): its label, its icon (an id of
+ * `/static/icons.svg`, the Lucide icon of the application), its home page when it has one, the
+ * spaces of the site it covers (to open it on their pages) and its sub-rubrics, in an accordion.
  */
-data class NavEntry(val space: Space, val icon: String, val children: List<NavLink> = emptyList()) {
-    val label: String get() = spaceLabels.getValue(space)
-    val href: String get() = "/${space.id}"
+data class NavRubric(
+    val id: String,
+    val label: String,
+    val icon: String,
+    val home: String?,
+    val spaces: Set<Space>,
+    val children: List<NavLink>,
+) {
+    /** Where the rubric leads in the rail of icons: its home, else its first page. */
+    val href: String get() = home ?: children.firstNotNullOf { it.href }
 }
 
 /**
- * The menu of the site, in the order of the application (D-215): the daily entries first, then the
- * rest of the pillars and the wall of demands. Messages and Mon espace are in the top bar, as in the
- * application. The sub-sections point at pages of the site; what only exists in the application is
- * presented on the page of its space.
+ * The menu of the site, the same as the one of the application (owner's session « Ergonomie »,
+ * D-240): « En direct », then the seven rubrics from getting informed to acting, with the same
+ * labels and in the same order (`ui/shell/MenuTree.kt`, `strings_menu.xml`). A sub-rubric that only
+ * exists in the application leads to the page of its space, which says so.
  */
 object SiteNavigation {
     const val HELP_PATH: String = "/aide"
@@ -42,58 +49,92 @@ object SiteNavigation {
 
     fun iconOf(space: Space): String = icons.getValue(space)
 
-    private val children: Map<Space, List<NavLink>> = mapOf(
-        Space.AGIR to listOf(
-            NavLink("Toutes les rubriques", "/agir"),
-            NavLink("Agenda des mobilisations", "/agenda"),
-            NavLink("Appels à agir", "/agir/appels"),
-            NavLink("Kits d’action citoyenne", AgirSitePaths.KITS),
-            NavLink("S’engager en politique", AgirSitePaths.ENGAGER),
-            NavLink("Collectifs", AgirSitePaths.COLLECTIVES),
-            NavLink("Solidarité et caisses de grève", AgirSitePaths.SOLIDARITY),
-            NavLink("Annuaire des organisations", "/organisations"),
-            NavLink("Témoigner", "/agir#temoigner"),
+    private fun fiche(list: String): String = "${ComprendreLinks.HOME}/$list"
+
+    val rubrics: List<NavRubric> = listOf(
+        NavRubric(
+            "s-informer", "S’informer", "newspaper", VoirLinks.HOME, setOf(Space.VOIR, Space.FIL),
+            listOf(
+                NavLink("Accueil de S’informer", VoirLinks.HOME),
+                NavLink("Actu", "/${Space.FIL.id}"),
+                NavLink("Le mouvement", "${VoirLinks.HOME}#mouvement"),
+                NavLink("Le pouvoir et le Parlement", "${VoirLinks.HOME}#pouvoir"),
+                NavLink("Partis politiques", "${VoirLinks.HOME}/partis"),
+                NavLink("Responsables publics", "${VoirLinks.HOME}/personnes"),
+                NavLink("Textes en discussion", "${VoirLinks.HOME}#pouvoir"),
+                NavLink("Libertés et contre-pouvoirs", "${VoirLinks.HOME}#libertes"),
+                NavLink("Vérifier une info reçue", "/verifier"),
+                NavLink("Transparence de PPF", "/transparence"),
+            ),
         ),
-        Space.VOIR to listOf(
-            NavLink("Vue d’ensemble", VoirLinks.HOME),
-            NavLink("Le mouvement", "${VoirLinks.HOME}#mouvement"),
-            NavLink("Le pouvoir", "${VoirLinks.HOME}#pouvoir"),
-            NavLink("Les libertés", "${VoirLinks.HOME}#libertes"),
-            NavLink("Responsables publics", "${VoirLinks.HOME}/personnes"),
-            NavLink("Partis politiques", "${VoirLinks.HOME}/partis"),
-            NavLink("Chronologie du mouvement", VoirLinks.CHRONOLOGY),
-            NavLink("Observatoire des libertés", VoirLinks.LIBERTIES),
-            NavLink("Tableau de bord", "/tableau-de-bord"),
-            NavLink("Journal des corrections", VoirLinks.CORRECTIONS),
+        NavRubric(
+            "comprendre", "Comprendre", "book-open", ComprendreLinks.HOME, setOf(Space.COMPRENDRE),
+            listOf(
+                NavLink("Accueil de Comprendre", ComprendreLinks.HOME),
+                NavLink("Le cap du mouvement", fiche(ComprendreLinks.CAP)),
+                NavLink("Comprendre en 5 minutes", fiche(ComprendreLinks.PARCOURS)),
+                NavLink("Qui décide ?", fiche(ComprendreLinks.QUI_DECIDE)),
+                NavLink("Mes élus", ComprendreLinks.HOME),
+                NavLink("Connaître ses droits", fiche(ComprendreLinks.FICHES)),
+                NavLink("Le vrai du faux", fiche(ComprendreLinks.DECRYPTAGES)),
+                NavLink("Histoire des luttes", fiche(ComprendreLinks.HISTOIRE)),
+                NavLink("Glossaire", fiche(ComprendreLinks.GLOSSAIRE)),
+            ),
         ),
-        Space.COMPRENDRE to listOf(
-            NavLink("Vue d’ensemble", ComprendreLinks.HOME),
-            NavLink("Fiches pratiques", "${ComprendreLinks.HOME}/${ComprendreLinks.FICHES}"),
-            NavLink("Comprendre en 5 minutes", "${ComprendreLinks.HOME}/${ComprendreLinks.PARCOURS}"),
-            NavLink("Le vrai du faux", "${ComprendreLinks.HOME}/${ComprendreLinks.DECRYPTAGES}"),
-            NavLink("Qui décide de ça ?", "${ComprendreLinks.HOME}/${ComprendreLinks.QUI_DECIDE}"),
-            NavLink("Le cap du mouvement", "${ComprendreLinks.HOME}/${ComprendreLinks.CAP}"),
-            NavLink("Histoire des luttes", "${ComprendreLinks.HOME}/${ComprendreLinks.HISTOIRE}"),
-            NavLink("Glossaire", "${ComprendreLinks.HOME}/${ComprendreLinks.GLOSSAIRE}"),
-            NavLink("Pour les enseignants", "${ComprendreLinks.HOME}/${ComprendreLinks.ENSEIGNANTS}"),
-            NavLink("Lire hors ligne", ComprendreLinks.OFFLINE),
+        NavRubric(
+            "temoigner", "Témoigner", "camera", null, emptySet(),
+            listOf(
+                NavLink("Envoyer un témoignage", "/agir#temoigner"),
+                NavLink("Caméra protégée", HELP_PATH),
+                NavLink("Harcèlement en ligne", HELP_PATH),
+                NavLink("Appels à témoins", null),
+                NavLink("Mes témoignages", null),
+            ),
         ),
-        Space.DECIDER to listOf(
-            NavLink("Vue d’ensemble", "/decider"),
-            NavLink("Constitution Citoyenne et Démocratique", "/decider#pacte"),
-            NavLink("Délibération citoyenne", "/decider#deliberation"),
-            NavLink("Pétitions ouvertes", "/decider#petitions-ouvertes"),
-            NavLink("Revendications", "/revendications"),
-            NavLink("Comparer les candidats", "/decider#comparateur"),
-            NavLink("Calendrier électoral", "/decider#calendrier"),
-            NavLink("Consultations publiques", "/decider#consultations"),
-            NavLink("Écrire à ses élus", "/decider#courriers"),
+        NavRubric(
+            "revendiquer", "Revendiquer", "megaphone", "/revendications", setOf(Space.REVENDICATIONS),
+            listOf(
+                NavLink("Toutes les revendications", "/revendications"),
+                NavLink("Proposer une revendication", "/revendications"),
+                NavLink("Mes revendications", "/revendications"),
+                NavLink("Constitution Citoyenne et Démocratique", "/decider#pacte"),
+                NavLink("Pétitions officielles", "/decider#petitions-ouvertes"),
+                NavLink("Pétitions locales", "/decider"),
+                NavLink("Consultations publiques", "/decider#consultations"),
+            ),
+        ),
+        NavRubric(
+            "s-unir", "S’unir et s’organiser", "users", null, setOf(Space.MESSAGES),
+            listOf(
+                NavLink("Messages", "/${Space.MESSAGES.id}"),
+                NavLink("Collectifs", "/agir/collectifs"),
+                NavLink("Associations et syndicats", "/organisations"),
+                NavLink("Se réunir", "/agir#collectifs"),
+                NavLink("Fédérer mon entourage", "/agir"),
+                NavLink("Mes proches à mobiliser", "/agir"),
+                NavLink("Solidarité et caisses de grève", "/agir/solidarite"),
+            ),
+        ),
+        NavRubric(
+            "se-politiser", "Se politiser", "landmark", "/decider", setOf(Space.DECIDER),
+            listOf(
+                NavLink("S’engager en politique", "/agir/s-engager"),
+                NavLink("Prochaines élections", "/decider#calendrier"),
+                NavLink("Comparer les candidats", "/decider#comparateur"),
+                NavLink("Interpeller mes élus", "/decider#courriers"),
+                NavLink("Demander un document administratif", "/decider"),
+            ),
+        ),
+        NavRubric(
+            "agir", "Agir", "hand-fist", "/agir", setOf(Space.AGIR, Space.APPELS, Space.CARTE),
+            listOf(
+                NavLink("Accueil d’Agir", "/agir"),
+                NavLink("Appels à la mobilisation", "/appels"),
+                NavLink("Carte et agenda", "/agenda"),
+                NavLink("Kits d’action citoyenne", "/agir/kits"),
+                NavLink("Simulateur du gréviste", "/agir"),
+                NavLink("Mode manifestation", HELP_PATH),
+            ),
         ),
     )
-
-    /** The daily entries, as in the bottom bar of the phone application. */
-    val quick: List<NavEntry> = Space.quickAccess.map { NavEntry(it, iconOf(it), children[it].orEmpty()) }
-
-    /** The rest, as in the menu of the application. */
-    val more: List<NavEntry> = Space.more.map { NavEntry(it, iconOf(it), children[it].orEmpty()) }
 }

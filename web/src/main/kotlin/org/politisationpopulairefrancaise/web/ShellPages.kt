@@ -63,6 +63,7 @@ class LiveContents(
     val alerts: List<VoirAlert> = emptyList(),
     val calls: List<Call> = emptyList(),
     val headline: Article? = null,
+    val cap: Article? = null,
 )
 
 private const val LIVE_ITEMS: Int = 3
@@ -104,6 +105,7 @@ private suspend fun liveContents(
     val voirCatalog = voir?.catalog()?.takeUnless { it.isEmpty }
     val today = parisToday()
     val now = java.time.Instant.now().epochSecond
+    val comprendreCatalog = comprendre?.catalog()
     return LiveContents(
         mobilizations = agenda?.mobilizations(AgendaQuery()).orEmpty().take(LIVE_ITEMS),
         figures = voirCatalog?.let { catalog ->
@@ -112,9 +114,10 @@ private suspend fun liveContents(
         facts = voirCatalog?.chronology()?.take(LIVE_ITEMS).orEmpty(),
         voir = voirCatalog,
         petitions = decider?.catalog()?.openPetitions(today)?.take(LIVE_ITEMS).orEmpty(),
-        decryptages = comprendre?.catalog()?.decryptages?.take(LIVE_ITEMS)?.mapNotNull { d ->
+        decryptages = comprendreCatalog?.decryptages?.take(LIVE_ITEMS)?.mapNotNull { d ->
             ComprendreLinks.pathOf(d.article)?.let { NavLink(d.article.title, it) }
         }.orEmpty(),
+        cap = comprendreCatalog?.capTexts?.maxByOrNull { it.article.publishedAt ?: 0L }?.article,
         alerts = voirCatalog?.let { VoirAlert.of(it, today) }.orEmpty(),
         calls = calls?.calls().orEmpty()
             .filter { it.isOpen && (it.deadline == null || it.deadline!! >= now) }
@@ -257,8 +260,20 @@ private fun FlowContent.liveBlock(block: LiveBlock, contents: LiveContents) {
             else contents.facts.forEach { factCard(it, catalog, level = 3) }
             p(classes = "section-more") { a(href = VoirLinks.CHRONOLOGY) { +"Toute la chronologie du mouvement" } }
         }
-        // The live posts, the reminders, the week in Parliament and the news of PPF are in the application.
-        LiveBlock.LIVE, LiveBlock.PARLIAMENT, LiveBlock.REMINDERS, LiveBlock.NEWS, LiveBlock.CAP, LiveBlock.ELUS -> Unit
+        LiveBlock.CAP -> section {
+            id = "cap"
+            h2 { +"Le cap du mouvement" }
+            val text = contents.cap
+            val path = text?.let { ComprendreLinks.pathOf(it) }
+            if (text == null || path == null) p(classes = "muted") { +"Aucun texte publié pour l’instant." }
+            else {
+                p { a(href = path) { +text.title } }
+                text.summary?.let { p { +it } }
+            }
+            p(classes = "section-more") { a(href = "${ComprendreLinks.HOME}/${ComprendreLinks.CAP}") { +"Toute la série" } }
+        }
+        // The live posts, the reminders, the week in Parliament, the news of PPF and my elected officials are in the application.
+        LiveBlock.LIVE, LiveBlock.PARLIAMENT, LiveBlock.REMINDERS, LiveBlock.NEWS, LiveBlock.ELUS -> Unit
     }
 }
 

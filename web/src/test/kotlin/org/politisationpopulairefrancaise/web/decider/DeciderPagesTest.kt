@@ -52,7 +52,7 @@ class DeciderPagesTest {
         assertEquals(5, catalog.petitions.size)
         val html = render { deciderHomeDocument(catalog, today) }
         checkPage(html)
-        assertTrue(html.contains("<a href=\"/decider\" aria-current=\"page\">Vue d’ensemble</a>"))
+        assertTrue(html.contains("<a href=\"/decider\" class=\"nav-link nav-rail-link\" aria-current=\"page\" title=\"Se politiser\">"))
         assertTrue(html.contains("href=\"/decider/pacte/pacte-election-exemple\""))
         listOf("petition-an-ordre-public", "petition-cese-vie-chere", "petition-ice-energie", "petition-senat-indexation", "petition-senat-retraites")
             .forEach { assertTrue(html.contains("href=\"/decider/petitions/$it\""), it) }

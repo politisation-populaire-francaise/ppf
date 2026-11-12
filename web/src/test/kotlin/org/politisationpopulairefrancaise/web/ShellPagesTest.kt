@@ -54,8 +54,8 @@ class ShellPagesTest {
         }
         val agir = createHTML().html { appSpaceDocument(Space.AGIR) }
         // Every anchor of the menu of "Agir" leads to a section of the page.
-        SiteNavigation.quick.first { it.space == Space.AGIR }.children
-            .mapNotNull { it.href.substringAfter("/agir#", "").ifEmpty { null } }
+        SiteNavigation.rubrics.flatMap { it.children }
+            .mapNotNull { it.href?.substringAfter("/agir#", "")?.ifEmpty { null } }
             .forEach { anchor -> assertTrue(agir.contains("id=\"$anchor\""), anchor) }
         assertTrue(agir.contains("href=\"/agenda\""))
     }
