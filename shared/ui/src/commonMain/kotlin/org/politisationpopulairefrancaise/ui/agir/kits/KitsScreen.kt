@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.agir.kits
 
+import org.politisationpopulairefrancaise.ui.resources.kits_group_tools
+import org.politisationpopulairefrancaise.ui.resources.kits_group_guides
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -87,6 +89,7 @@ import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 
 /** Test tags of « Kits d'action citoyenne ». */
 object KitsTags {
+    const val GROUP = "kits-group-"
     const val SCREEN = "kits-screen"
     const val BACK = "kits-back"
     const val GOAL = "kits-goal-" // followed by the goal id
@@ -204,10 +207,19 @@ fun KitsScreen(
             if (shown.isEmpty()) {
                 Text(stringResource(Res.string.kits_empty), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.testTag(KitsTags.EMPTY))
             }
+            // Tools first, then guides, each under its own heading: two short lists read better than one long one.
+            listOf(true to Res.string.kits_group_tools, false to Res.string.kits_group_guides).forEach { (tools, groupTitle) ->
+            val group = shown.filter { it.tool == tools }
+            if (group.isEmpty()) return@forEach
+            Text(
+                stringResource(groupTitle, group.size),
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.padding(top = 8.dp).semantics { heading() }.testTag(KitsTags.GROUP + if (tools) "outils" else "guides"),
+            )
             BoxWithConstraints(Modifier.fillMaxWidth()) {
                 val columns = agirColumns(maxWidth)
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    shown.chunked(columns).forEach { row ->
+                    group.chunked(columns).forEach { row ->
                         Row(Modifier.fillMaxWidth().height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                             row.forEach { item ->
                                 KitCard(item, compact, Modifier.weight(1f).fillMaxHeight()) {
@@ -221,6 +233,7 @@ fun KitsScreen(
                         }
                     }
                 }
+            }
             }
         }
     }

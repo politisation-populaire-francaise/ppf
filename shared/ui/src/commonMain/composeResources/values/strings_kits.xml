@@ -26,4 +26,6 @@
     <string name="kits_poster_title">Affiche et tract à code QR</string>
     <string name="kits_poster_text">Depuis une mobilisation de l’agenda, une affiche ou un tract à imprimer, avec un code QR qui contient l’événement, lisible même sans réseau.</string>
     <string name="kits_empty">Aucun kit ne correspond à ces filtres.</string>
+    <string name="kits_group_tools">Outils de l’application (%1$d)</string>
+    <string name="kits_group_guides">Guides pratiques (%1$d)</string>
 </resources>
