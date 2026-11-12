@@ -96,7 +96,17 @@ class CallsLibrary(
     private val bundled: suspend () -> ByteArray? = { runCatching { Res.readBytes(BUNDLED_FILE) }.getOrNull() },
     /** The slots of the calls (AP-11): the user's signups, the server and the reminders. */
     val slots: SlotsLibrary = SlotsLibrary(null, null, null, clock),
+    /** « Près de chez moi »: reads the commune of « Mes élus » on the device. */
+    private val territoryOf: suspend () -> org.politisationpopulairefrancaise.ui.agir.MyTerritory? = { null },
 ) {
+    /** The person's territory, once read ([loadTerritory]); null when none is chosen. */
+    var territory: org.politisationpopulairefrancaise.ui.agir.MyTerritory? by mutableStateOf(null)
+        private set
+
+    suspend fun loadTerritory() {
+        territory = territoryOf()
+    }
+
     private val responseWrites = Mutex()
 
     var status: LibraryStatus by mutableStateOf(LibraryStatus.Loading)
@@ -428,6 +438,7 @@ fun rememberCallsLibrary(dependencies: AppDependencies, start: Boolean = true): 
             scope = scope,
             responses = dependencies.database?.let(::CallResponseStore),
             slots = SlotsLibrary(dependencies.database?.let(::SlotSignupStore), dependencies.remote as? SlotClient, dependencies.database?.let { ReminderStore(it) }),
+            territoryOf = { org.politisationpopulairefrancaise.ui.agir.MyTerritory.of(dependencies) },
         ).also { if (start) it.start() }
     }
 }

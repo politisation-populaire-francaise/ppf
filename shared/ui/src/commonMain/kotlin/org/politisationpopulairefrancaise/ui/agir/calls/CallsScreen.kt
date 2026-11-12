@@ -109,6 +109,7 @@ object CallTags {
     const val LAUNCH = "calls-launch"
     const val URGENT = "calls-urgent"
     const val QUICK_TYPE = "calls-quick-type-"
+    const val QUICK_NEAR = "calls-quick-near"
     const val COUNT = "calls-count"
     const val CARD = "call-" // followed by the slug
     const val EMPTY = "calls-empty"
@@ -668,7 +669,18 @@ private val QUICK_TYPES = listOf(CallType.MANIFESTER, CallType.GREVE, CallType.P
 @Composable
 private fun QuickTypes(library: CallsLibrary) {
     val query = library.query
+    LaunchedEffect(library) { library.loadTerritory() }
     Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        // « Près de chez vous »: the commune of « Mes élus » and its department.
+        library.territory?.let { territory ->
+            val near = query.territories == territory.keys
+            PpfSelectableChip(
+                label = stringResource(Res.string.agenda_near_you),
+                selected = near,
+                onClick = { library.query = query.copy(territories = if (near) emptySet() else territory.keys) },
+                modifier = Modifier.testTag(CallTags.QUICK_NEAR),
+            )
+        }
         QUICK_TYPES.forEach { type ->
             val selected = type in query.types
             PpfSelectableChip(
