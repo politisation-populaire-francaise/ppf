@@ -93,7 +93,7 @@ class ComprendrePagesTest {
         listOf("Connaître ses droits", "Comprendre en 5 minutes", "Qui décide de ça ?", "Le vrai du faux", "Histoire des luttes", "Glossaire", "Notre méthode").forEach { assertTrue(html.contains(it), it) }
         listOf("/comprendre/fiches", "/comprendre/parcours", "/comprendre/decryptages", "/comprendre/histoire", "/comprendre/qui-decide", "/comprendre/glossaire", "/comprendre/methode", "/comprendre/hors-ligne")
             .forEach { assertTrue(html.contains("href=\"$it"), it) }
-        assertTrue(html.contains("<a href=\"/comprendre\" aria-current=\"page\">Vue d’ensemble</a>"))
+        assertTrue(html.contains("<a href=\"/comprendre\" aria-current=\"page\">Accueil de Comprendre</a>"))
     }
 
     @Test

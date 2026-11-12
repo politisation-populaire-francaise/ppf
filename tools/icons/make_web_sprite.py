@@ -10,7 +10,7 @@ from pathlib import Path
 ICONS = [
     "radio", "newspaper", "map", "megaphone", "hand-fist", "eye", "book-open", "vote", "scroll-text",
     "message-square", "circle-user-round", "menu", "chevron-down", "life-buoy", "phone", "calendar",
-    "external-link", "search",
+    "external-link", "search", "camera", "users", "landmark",
 ]
 
 root = Path(__file__).resolve().parents[2]

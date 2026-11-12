@@ -67,7 +67,7 @@ class VoirPagesTest {
         assertTrue(html.contains("href=\"/voir/methode\""))
         // The placeholder of the phase 0 is gone.
         assertFalse(html.contains("emplacement réservé"))
-        assertTrue(html.contains("<a href=\"/voir\" aria-current=\"page\">Vue d’ensemble</a>"))
+        assertTrue(html.contains("<a href=\"/voir\" aria-current=\"page\">Accueil de S’informer</a>"))
     }
 
     @Test

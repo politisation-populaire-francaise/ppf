@@ -143,9 +143,17 @@ fun HTML.siteLayout(pageTitle: String, currentSpace: Space? = null, content: MAI
             nav(classes = "sidenav") {
                 id = "menu"
                 attributes["aria-label"] = "Navigation principale"
-                ul(classes = "nav-list") { SiteNavigation.quick.forEach { li { navEntry(it, currentSpace) } } }
+                ul(classes = "nav-list") {
+                    li {
+                        a(href = "/${Space.EN_DIRECT.id}", classes = "nav-link") {
+                            if (currentSpace == Space.EN_DIRECT) attributes["aria-current"] = "page"
+                            icon(SiteNavigation.iconOf(Space.EN_DIRECT))
+                            span(classes = "nav-label") { +spaceLabels.getValue(Space.EN_DIRECT) }
+                        }
+                    }
+                }
                 div(classes = "nav-divider") { attributes["role"] = "separator" }
-                ul(classes = "nav-list") { SiteNavigation.more.forEach { li { navEntry(it, currentSpace) } } }
+                ul(classes = "nav-list") { SiteNavigation.rubrics.forEach { li { navRubric(it, currentSpace) } } }
                 p(classes = "nav-disclaimer") { +NAV_DISCLAIMER }
             }
             // On a phone, a tap beside the open menu closes it.
@@ -172,37 +180,34 @@ private fun FlowContent.topIcon(space: Space, currentSpace: Space?) {
     }
 }
 
-private fun LI.navEntry(entry: NavEntry, currentSpace: Space?) {
-    val current = entry.space == currentSpace
-    if (entry.children.isEmpty()) {
-        a(href = entry.href, classes = "nav-link") {
-            if (current) attributes["aria-current"] = "page"
-            icon(entry.icon)
-            span(classes = "nav-label") { +entry.label }
-        }
-        return
-    }
-    // In the rail of icons, the pillar is a plain link to its page.
-    a(href = entry.href, classes = "nav-link nav-rail-link") {
+private fun LI.navRubric(rubric: NavRubric, currentSpace: Space?) {
+    val current = currentSpace != null && currentSpace in rubric.spaces
+    // In the rail of icons, the rubric is a plain link to its home.
+    a(href = rubric.href, classes = "nav-link nav-rail-link") {
         if (current) attributes["aria-current"] = "page"
-        attributes["title"] = entry.label
-        icon(entry.icon)
-        span(classes = "nav-label") { +entry.label }
+        attributes["title"] = rubric.label
+        icon(rubric.icon)
+        span(classes = "nav-label") { +rubric.label }
     }
     details(classes = "nav-group") {
         if (current) attributes["open"] = "open"
         summary(classes = "nav-link" + if (current) " is-current" else "") {
-            icon(entry.icon)
-            span(classes = "nav-label") { +entry.label }
+            icon(rubric.icon)
+            span(classes = "nav-label") { +rubric.label }
             icon("chevron-down", classes = "icon chevron")
         }
         ul(classes = "nav-sub") {
-            entry.children.forEachIndexed { index, child ->
+            rubric.children.forEach { child ->
                 li {
-                    a(href = child.href) {
-                        // The first link is the page of the space itself.
-                        if (current && index == 0) attributes["aria-current"] = "page"
-                        +child.label
+                    val href = child.href
+                    if (href == null) {
+                        span(classes = "nav-soon") { +child.label; span(classes = "soon-badge") { +"Bientôt" } }
+                    } else {
+                        a(href = href) {
+                            // The page of the current space itself.
+                            if (currentSpace != null && href == "/${currentSpace.id}") attributes["aria-current"] = "page"
+                            +child.label
+                        }
                     }
                 }
             }
