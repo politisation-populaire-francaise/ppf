@@ -73,9 +73,11 @@ internal fun AgirNowCard(
     modifier: Modifier = Modifier,
     territory: MyTerritory? = null,
     onChooseTerritory: (() -> Unit)? = null,
+    isMine: (Mobilization) -> Boolean = { false },
 ) {
     val palette = PpfTheme.palette
     val nearLabel = stringResource(Res.string.agenda_near_you)
+    val mineLabel = stringResource(Res.string.agir_now_my_collective)
     val near: (String) -> String? = { place -> if (territory?.isNear(place) == true) nearLabel else null }
     PpfCard(modifier.fillMaxWidth().testTag(AgirNowTags.CARD)) {
         Text(stringResource(Res.string.agir_now_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
@@ -96,7 +98,7 @@ internal fun AgirNowCard(
                 badge = if (AgirHighlights.isUnderWay(mobilization, now)) stringResource(Res.string.agir_now_under_way) else dayWord(mobilization.start, now),
                 badgeStyle = if (AgirHighlights.isUnderWay(mobilization, now)) BadgeStyle.SUCCESS else BadgeStyle.BRAND,
                 title = mobilization.displayTitle,
-                line = listOfNotNull(parisHour(mobilization.start), mobilization.territory, near(mobilization.territory)).joinToString(" · "),
+                line = listOfNotNull(parisHour(mobilization.start), mobilization.territory, if (isMine(mobilization)) mineLabel else near(mobilization.territory)).joinToString(" · "),
                 onClick = { actions.openMobilization(mobilization) },
                 modifier = Modifier.testTag(AgirNowTags.MOBILIZATION + mobilization.address),
             )

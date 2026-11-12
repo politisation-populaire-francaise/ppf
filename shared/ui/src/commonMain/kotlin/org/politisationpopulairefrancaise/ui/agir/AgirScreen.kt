@@ -310,6 +310,10 @@ fun AgirScreen(
                 AgirRoute.HOME -> {
                     // « En ce moment » reads the agenda and the calls already on the device (loaded once, like their screens).
                     var territory by remember { mutableStateOf<MyTerritory?>(null) }
+                    // The events of the collectifs the person joined (on the device) come first.
+                    val isMine: (org.politisationpopulairefrancaise.core.agir.agenda.Mobilization) -> Boolean = { m ->
+                        org.politisationpopulairefrancaise.core.agir.collectives.CollectiveFormat.collectiveOf(m.event)?.let { id -> groups?.isMember(id) } == true
+                    }
                     LaunchedEffect(Unit) {
                         agendaOfCollectives.start()
                         callsOfCollectives.start()
@@ -322,7 +326,8 @@ fun AgirScreen(
                             returnTo = null
                             openRubric(rubric)
                         },
-                        highlights = AgirHighlights.of(agendaOfCollectives.mobilizations, callsOfCollectives.calls, now, near = territory?.let { t -> t::isNear }),
+                        highlights = AgirHighlights.of(agendaOfCollectives.mobilizations, callsOfCollectives.calls, now, near = territory?.let { t -> t::isNear }, mine = isMine),
+                        isMine = isMine,
                         territory = territory,
                         // The commune is chosen once, in « Mes élus » (Comprendre), and stays on the device.
                         onChooseTerritory = { onNavigate(Space.COMPRENDRE) },

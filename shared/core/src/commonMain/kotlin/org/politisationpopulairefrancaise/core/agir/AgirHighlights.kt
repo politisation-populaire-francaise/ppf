@@ -19,15 +19,22 @@ data class AgirHighlights(val mobilizations: List<Mobilization>, val urgentCalls
         val EMPTY = AgirHighlights(emptyList(), emptyList())
 
         /**
-         * [near] (the person's territory, chosen on the device) puts what happens near them first; the order is kept
-         * within each group.
+         * [mine] (the events of the person's collectifs, joined on the device) come first, then [near] (the person's
+         * territory, chosen on the device), then the others; the order is kept within each group.
          */
-        fun of(mobilizations: List<Mobilization>, calls: List<Call>, now: Long, max: Int = MAX_ITEMS, near: ((String) -> Boolean)? = null): AgirHighlights {
+        fun of(
+            mobilizations: List<Mobilization>,
+            calls: List<Call>,
+            now: Long,
+            max: Int = MAX_ITEMS,
+            near: ((String) -> Boolean)? = null,
+            mine: ((Mobilization) -> Boolean)? = null,
+        ): AgirHighlights {
             val rank: (String) -> Int = { territory -> if (near?.invoke(territory) == true) 0 else 1 }
             return AgirHighlights(
                 mobilizations = mobilizations
                     .filter { !it.cancelled && !it.isPast(now) && it.start <= now + AHEAD_SECONDS }
-                    .sortedWith(compareBy<Mobilization> { rank(it.territory) }.thenBy { it.start }.thenBy { it.displayTitle })
+                    .sortedWith(compareBy<Mobilization> { if (mine?.invoke(it) == true) -1 else rank(it.territory) }.thenBy { it.start }.thenBy { it.displayTitle })
                     .take(max),
                 urgentCalls = calls
                     .filter { call -> call.isOpen && call.deadline?.let { it in now..(now + URGENT_SECONDS) } == true }

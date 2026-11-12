@@ -215,6 +215,7 @@ internal fun AgirHome(
     onGoal: ((KitGoal) -> Unit)? = null,
     territory: MyTerritory? = null,
     onChooseTerritory: (() -> Unit)? = null,
+    isMine: (org.politisationpopulairefrancaise.core.agir.agenda.Mobilization) -> Boolean = { false },
 ) {
     var soonOpen by rememberSaveable { mutableStateOf(false) }
     val palette = PpfTheme.palette
@@ -226,7 +227,7 @@ internal fun AgirHome(
             TimerHomeBlock(onOpenOwn = { onOpen(AgirRubrics.MANIFESTATION) }, modifier = Modifier.padding(top = 16.dp))
             // « En ce moment »: what is happening this week, one tap away; or the two ways to start something.
             if (highlights != null && nowActions != null) {
-                AgirNowCard(highlights, now, nowActions, Modifier.padding(top = 16.dp).widthIn(max = 720.dp), territory, onChooseTerritory)
+                AgirNowCard(highlights, now, nowActions, Modifier.padding(top = 16.dp).widthIn(max = 720.dp), territory, onChooseTerritory, isMine)
             }
             // « Je veux… »: from a goal straight to its kits.
             if (onGoal != null) AgirGoals(onGoal, Modifier.padding(top = 16.dp).widthIn(max = 720.dp))
