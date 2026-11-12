@@ -49,6 +49,8 @@ object AgirNowTags {
     const val LAUNCH = "agir-now-launch"
     const val GOAL = "agir-goal-" // followed by the id of the goal
     const val SOON_TOGGLE = "agir-soon-toggle"
+    const val TERRITORY = "agir-now-territory"
+    const val CHOOSE_TERRITORY = "agir-now-choose-territory"
 }
 
 /** What « En ce moment » opens: a mobilization of the agenda, a call, or the forms to propose one. */
@@ -64,10 +66,25 @@ class AgirNowActions(
  * tap away; when nothing is urgent, the two ways to start something. Read from the contents already on the device.
  */
 @Composable
-internal fun AgirNowCard(highlights: AgirHighlights, now: Long, actions: AgirNowActions, modifier: Modifier = Modifier) {
+internal fun AgirNowCard(
+    highlights: AgirHighlights,
+    now: Long,
+    actions: AgirNowActions,
+    modifier: Modifier = Modifier,
+    territory: MyTerritory? = null,
+    onChooseTerritory: (() -> Unit)? = null,
+) {
     val palette = PpfTheme.palette
+    val nearLabel = stringResource(Res.string.agenda_near_you)
+    val near: (String) -> String? = { place -> if (territory?.isNear(place) == true) nearLabel else null }
     PpfCard(modifier.fillMaxWidth().testTag(AgirNowTags.CARD)) {
         Text(stringResource(Res.string.agir_now_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
+        // Near me first: the commune of « Mes élus », or the way to choose it.
+        if (territory != null) {
+            Text(stringResource(Res.string.agir_now_near_first, territory.commune), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.testTag(AgirNowTags.TERRITORY))
+        } else if (onChooseTerritory != null) {
+            org.politisationpopulairefrancaise.ui.components.PpfTextButton(onChooseTerritory, stringResource(Res.string.agir_now_choose_territory), Modifier.testTag(AgirNowTags.CHOOSE_TERRITORY))
+        }
         if (highlights.isEmpty) {
             Spacer(Modifier.height(6.dp))
             Text(stringResource(Res.string.agir_now_empty), style = MaterialTheme.typography.bodyMedium, color = palette.inkMuted, modifier = Modifier.testTag(AgirNowTags.EMPTY))
@@ -79,7 +96,7 @@ internal fun AgirNowCard(highlights: AgirHighlights, now: Long, actions: AgirNow
                 badge = if (AgirHighlights.isUnderWay(mobilization, now)) stringResource(Res.string.agir_now_under_way) else dayWord(mobilization.start, now),
                 badgeStyle = if (AgirHighlights.isUnderWay(mobilization, now)) BadgeStyle.SUCCESS else BadgeStyle.BRAND,
                 title = mobilization.displayTitle,
-                line = "${parisHour(mobilization.start)} · ${mobilization.territory}",
+                line = listOfNotNull(parisHour(mobilization.start), mobilization.territory, near(mobilization.territory)).joinToString(" · "),
                 onClick = { actions.openMobilization(mobilization) },
                 modifier = Modifier.testTag(AgirNowTags.MOBILIZATION + mobilization.address),
             )
@@ -95,7 +112,7 @@ internal fun AgirNowCard(highlights: AgirHighlights, now: Long, actions: AgirNow
                 badge = countdown(requireNotNull(call.deadline), now),
                 badgeStyle = BadgeStyle.WARNING,
                 title = call.displayTitle,
-                line = call.territory,
+                line = listOfNotNull(call.territory, near(call.territory)).joinToString(" · "),
                 onClick = { actions.openCall(call) },
                 modifier = Modifier.testTag(AgirNowTags.CALL + call.address),
             )

@@ -18,16 +18,23 @@ data class AgirHighlights(val mobilizations: List<Mobilization>, val urgentCalls
 
         val EMPTY = AgirHighlights(emptyList(), emptyList())
 
-        fun of(mobilizations: List<Mobilization>, calls: List<Call>, now: Long, max: Int = MAX_ITEMS): AgirHighlights = AgirHighlights(
-            mobilizations = mobilizations
-                .filter { !it.cancelled && !it.isPast(now) && it.start <= now + AHEAD_SECONDS }
-                .sortedWith(compareBy<Mobilization> { it.start }.thenBy { it.displayTitle })
-                .take(max),
-            urgentCalls = calls
-                .filter { call -> call.isOpen && call.deadline?.let { it in now..(now + URGENT_SECONDS) } == true }
-                .sortedBy { it.deadline }
-                .take(max),
-        )
+        /**
+         * [near] (the person's territory, chosen on the device) puts what happens near them first; the order is kept
+         * within each group.
+         */
+        fun of(mobilizations: List<Mobilization>, calls: List<Call>, now: Long, max: Int = MAX_ITEMS, near: ((String) -> Boolean)? = null): AgirHighlights {
+            val rank: (String) -> Int = { territory -> if (near?.invoke(territory) == true) 0 else 1 }
+            return AgirHighlights(
+                mobilizations = mobilizations
+                    .filter { !it.cancelled && !it.isPast(now) && it.start <= now + AHEAD_SECONDS }
+                    .sortedWith(compareBy<Mobilization> { rank(it.territory) }.thenBy { it.start }.thenBy { it.displayTitle })
+                    .take(max),
+                urgentCalls = calls
+                    .filter { call -> call.isOpen && call.deadline?.let { it in now..(now + URGENT_SECONDS) } == true }
+                    .sortedWith(compareBy<Call> { rank(it.territory) }.thenBy { it.deadline })
+                    .take(max),
+            )
+        }
 
         /** Whether [mobilization] is under way at [now]. */
         fun isUnderWay(mobilization: Mobilization, now: Long): Boolean = mobilization.start <= now && !mobilization.isPast(now)

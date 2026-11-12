@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.agir.agenda
 
+import org.politisationpopulairefrancaise.ui.resources.agenda_near_you
 import androidx.compose.foundation.horizontalScroll
 import org.politisationpopulairefrancaise.ui.components.PpfSelectableChip
 import org.politisationpopulairefrancaise.ui.resources.agenda_quick_today
@@ -134,6 +135,7 @@ object AgendaTags {
     const val FILTERS = "agenda-filters"
     const val PROPOSE = "agenda-propose"
     const val QUICK_PERIOD = "agenda-quick-period-"
+    const val QUICK_NEAR = "agenda-quick-near"
     const val COUNT = "agenda-count"
     const val DAY = "agenda-day-" // followed by the local day number, or "ongoing"
     const val CARD = "agenda-card-" // followed by the identifier of the mobilization
@@ -220,6 +222,9 @@ fun AgendaScreen(
     val account = session.state as? AccountUiState.Ready
     val accountKey = account?.publicKey?.hex
     LaunchedEffect(agenda) { agenda.start() }
+    // « Près de chez moi »: the commune of « Mes élus », read on the device.
+    var territory by remember { mutableStateOf<org.politisationpopulairefrancaise.ui.agir.MyTerritory?>(null) }
+    LaunchedEffect(dependencies) { territory = org.politisationpopulairefrancaise.ui.agir.MyTerritory.of(dependencies) }
     LaunchedEffect(agenda, accountKey) { agenda.setAccount(accountKey) }
     // Where the user's proposals stand is asked again each time the agenda is shown.
     LaunchedEffect(agenda) { agenda.refreshReviews() }
@@ -287,6 +292,7 @@ fun AgendaScreen(
                     // Reading a code needs a camera: the computer has none here (components/qr).
                     onScan = if (canScanQr) ({ scanning = true }) else null,
                     embedded = embedded,
+                    territory = territory,
                 )
             }
             val selected = agenda.selected
@@ -381,6 +387,7 @@ private fun AgendaList(
     map: AgendaMapState,
     onScan: (() -> Unit)? = null,
     embedded: Boolean = false,
+    territory: org.politisationpopulairefrancaise.ui.agir.MyTerritory? = null,
 ) {
     val palette = PpfTheme.palette
     val tabs = listOfNotNull(AgendaTab.UPCOMING, AgendaTab.PAST, AgendaTab.MINE.takeIf { agenda.hasAccount })
@@ -430,7 +437,7 @@ private fun AgendaList(
                 if (agenda.tab == AgendaTab.MINE) {
                     MinePage(agenda, onPropose, onCreateAccount)
                 } else {
-                    ListPage(agenda, names, onOpenFilters, onPropose, onScan)
+                    ListPage(agenda, names, onOpenFilters, onPropose, onScan, territory)
                 }
             }
         }
@@ -446,7 +453,7 @@ private fun tabLabel(tab: AgendaTab) = when (tab) {
 /** "À venir" or "Passés": tool bar, number, active filters, the map box, then the days. */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: () -> Unit, onPropose: () -> Unit, onScan: (() -> Unit)? = null) {
+private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: () -> Unit, onPropose: () -> Unit, onScan: (() -> Unit)? = null, territory: org.politisationpopulairefrancaise.ui.agir.MyTerritory? = null) {
     val palette = PpfTheme.palette
     val filters = agenda.filters
     val now = agenda.now
@@ -470,6 +477,15 @@ private fun ListPage(agenda: AgendaLibrary, names: AgendaNames, onOpenFilters: (
     // « Aujourd'hui », « Cette semaine », « Ce mois-ci »: the periods of the filters, one tap each.
     if (agenda.tab == AgendaTab.UPCOMING) {
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            if (territory != null) {
+                val near = filters.territories == territory.keys
+                PpfSelectableChip(
+                    label = stringResource(Res.string.agenda_near_you),
+                    selected = near,
+                    onClick = { agenda.filters = filters.copy(territories = if (near) emptySet() else territory.keys) },
+                    modifier = Modifier.testTag(AgendaTags.QUICK_NEAR),
+                )
+            }
             listOf(
                 AgendaPeriod.Today to Res.string.agenda_quick_today,
                 AgendaPeriod.ThisWeek to Res.string.agenda_quick_week,

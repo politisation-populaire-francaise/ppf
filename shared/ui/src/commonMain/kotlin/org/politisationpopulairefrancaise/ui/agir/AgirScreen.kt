@@ -1,5 +1,6 @@
 package org.politisationpopulairefrancaise.ui.agir
 
+import androidx.compose.runtime.remember
 import org.politisationpopulairefrancaise.core.agir.AgirHighlights
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -308,9 +309,11 @@ fun AgirScreen(
             when (route) {
                 AgirRoute.HOME -> {
                     // « En ce moment » reads the agenda and the calls already on the device (loaded once, like their screens).
+                    var territory by remember { mutableStateOf<MyTerritory?>(null) }
                     LaunchedEffect(Unit) {
                         agendaOfCollectives.start()
                         callsOfCollectives.start()
+                        territory = MyTerritory.of(dependencies)
                     }
                     val now = agendaOfCollectives.now
                     AgirHome(
@@ -319,7 +322,10 @@ fun AgirScreen(
                             returnTo = null
                             openRubric(rubric)
                         },
-                        highlights = AgirHighlights.of(agendaOfCollectives.mobilizations, callsOfCollectives.calls, now),
+                        highlights = AgirHighlights.of(agendaOfCollectives.mobilizations, callsOfCollectives.calls, now, near = territory?.let { t -> t::isNear }),
+                        territory = territory,
+                        // The commune is chosen once, in « Mes élus » (Comprendre), and stays on the device.
+                        onChooseTerritory = { onNavigate(Space.COMPRENDRE) },
                         now = now,
                         nowActions = AgirNowActions(
                             openMobilization = { agendaOfCollectives.open(it); route = AgirRoute.AGENDA },

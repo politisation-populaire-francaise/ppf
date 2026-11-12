@@ -23,4 +23,13 @@ class AgirHighlightsTest {
         assertTrue(AgirHighlights.isUnderWay(underWay, now))
         assertTrue(AgirHighlights.of(listOf(far, past), emptyList(), now).isEmpty)
     }
+
+    @Test
+    fun nearThePersonComesFirst() = runTest {
+        val now = AgendaTimes.NOW
+        val paris = fixtures.mobilization("paris", territory = "Paris")
+        val lyon = fixtures.mobilization("lyon", territory = "Lyon", start = AgendaTimes.SATURDAY_17H, end = null)
+        val highlights = AgirHighlights.of(listOf(paris, lyon), emptyList(), now, near = { it == "Lyon" })
+        assertEquals(listOf("lyon", "paris"), highlights.mobilizations.map { it.identifier })
+    }
 }
