@@ -117,8 +117,12 @@ fun EnDirectScreen(
     elus: (@Composable (Modifier) -> Unit)? = null,
     /** Asks every source of the page for its news; no button when null. */
     onRefresh: (() -> Unit)? = null,
+    /** Whether the data saver mode is on: no automatic refresh then (the button stays). */
+    dataSaver: () -> Boolean = { false },
 ) {
     val boardState = board ?: remember { LiveBoardState(null) }
+    // « En direct » stays alive: its sources are asked again every few minutes while it is on screen.
+    onRefresh?.let { LiveAutoRefresh(it, dataSaver) }
     val catalog = library.voir
     val nowSeconds = now()
     val today = CivilDate.fromEpochSeconds(nowSeconds)

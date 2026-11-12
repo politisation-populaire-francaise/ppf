@@ -681,6 +681,7 @@ private fun SpaceContent(
                 agendaLibrary.refresh()
                 callsLibrary.refresh()
             },
+            dataSaver = dependencies.dataSaver,
             // MVP 1 (jalon 3): demands, official petitions and Pacte one touch away from "En direct".
             decider = { slotModifier ->
                 val catalog = contentLibrary.decider

@@ -1,6 +1,17 @@
 package org.politisationpopulairefrancaise.ui.endirect
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.withContext
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.minutes
 import androidx.compose.runtime.Stable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -73,3 +84,37 @@ class LiveBoardState(private val store: LiveBoardStore?) {
 
 @Composable
 fun rememberLiveBoardState(store: LiveBoardStore?): LiveBoardState = remember(store) { LiveBoardState(store) }
+
+/** How often « En direct » asks its sources for news while it is on screen. */
+val LIVE_REFRESH_EVERY: Duration = 3.minutes
+
+/**
+ * « En direct » kept alive: while the page is on screen and the application in front, it asks its sources for news
+ * every [every]; never in data saver mode (checked at each turn, the person may switch it on at any time), never in
+ * the background. The wait runs on a background thread, outside the clock of the screen, so a test never waits for it.
+ */
+@Composable
+fun LiveAutoRefresh(refresh: () -> Unit, dataSaver: () -> Boolean, every: Duration = LIVE_REFRESH_EVERY) {
+    val owner = LocalLifecycleOwner.current
+    var inFront by remember(owner) { mutableStateOf(owner.lifecycle.currentState.isAtLeast(Lifecycle.State.STARTED)) }
+    DisposableEffect(owner) {
+        val observer = LifecycleEventObserver { _, event ->
+            when (event) {
+                Lifecycle.Event.ON_START -> inFront = true
+                Lifecycle.Event.ON_STOP -> inFront = false
+                else -> Unit
+            }
+        }
+        owner.lifecycle.addObserver(observer)
+        onDispose { owner.lifecycle.removeObserver(observer) }
+    }
+    val currentRefresh by rememberUpdatedState(refresh)
+    val currentDataSaver by rememberUpdatedState(dataSaver)
+    LaunchedEffect(inFront, every) {
+        if (!inFront) return@LaunchedEffect
+        while (true) {
+            withContext(Dispatchers.Default) { delay(every) }
+            if (!currentDataSaver()) currentRefresh()
+        }
+    }
+}

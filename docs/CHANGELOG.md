@@ -6,6 +6,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 
 ### Modifié
 - « En direct », près de chez moi (12 novembre 2026) : les prochaines mobilisations de la commune choisie dans « Mes élus » (ou, à défaut, de son département) passent en premier, marquées « Près de chez vous » ; la commune se choisit directement depuis « En direct » (bloc des mobilisations et bloc « Mes élus »), avec la même fenêtre que « Mes élus », et reste sur l’appareil.
+- « En direct » vivant (12 novembre 2026) : tant qu’il est à l’écran et l’application au premier plan, il redemande les nouvelles de ses sources toutes les 3 minutes ; jamais en mode économie de données ni en arrière-plan ; le bouton « Actualiser » reste.
 - Accueil de Décider (12 novembre 2026) : les pétitions ouvertes, puis la Constitution Citoyenne et Démocratique et sa délibération, avant le calendrier et le reste.
 - Ergonomie (11 novembre 2026, D-240, D-241) : menu en sept rubriques (S'informer, Comprendre, Témoigner, Revendiquer, S'unir et s'organiser, Se politiser, Agir) avec sous-rubriques en accordéon ; tutoriel court en cartes blanches, à l'essai ; bouton AIDE plus petit dans la barre du téléphone.
 - Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
