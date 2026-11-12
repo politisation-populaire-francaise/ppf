@@ -6,7 +6,8 @@
     <string name="agenda_quick_week">Cette semaine</string>
     <string name="agenda_quick_month">Ce mois-ci</string>
     <string name="agir_now_near_first">Près de chez vous d’abord : %1$s</string>
-    <string name="agir_now_choose_territory">Voir d’abord ce qui se passe près de chez moi : choisir ma commune dans « Mes élus »</string>
+    <string name="agir_now_choose_territory">Voir d’abord ce qui se passe près de chez moi : choisir ma commune</string>
+    <string name="agir_now_change_territory">Changer</string>
     <string name="agir_now_my_collective">Mon collectif</string>
     <string name="agir_now_title">En ce moment</string>
     <string name="agir_now_empty">Aucune mobilisation ni échéance d’appel dans les prochains jours. À vous de lancer quelque chose :</string>

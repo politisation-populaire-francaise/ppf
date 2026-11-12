@@ -1,5 +1,7 @@
 package org.politisationpopulairefrancaise.ui.agir
 
+import org.politisationpopulairefrancaise.ui.components.CommuneChoiceDialog
+import org.politisationpopulairefrancaise.ui.components.rememberCommuneChoice
 import androidx.compose.runtime.remember
 import org.politisationpopulairefrancaise.core.agir.AgirHighlights
 import androidx.compose.foundation.background
@@ -310,6 +312,10 @@ fun AgirScreen(
                 AgirRoute.HOME -> {
                     // « En ce moment » reads the agenda and the calls already on the device (loaded once, like their screens).
                     var territory by remember { mutableStateOf<MyTerritory?>(null) }
+                    // One « Mon territoire » for the whole application: the commune of « Mes élus », chosen here with its own dialog.
+                    val communeChoice = rememberCommuneChoice(dependencies)
+                    LaunchedEffect(communeChoice.version) { territory = MyTerritory.of(dependencies) }
+                    CommuneChoiceDialog(communeChoice)
                     // The events of the collectifs the person joined (on the device) come first.
                     val isMine: (org.politisationpopulairefrancaise.core.agir.agenda.Mobilization) -> Boolean = { m ->
                         org.politisationpopulairefrancaise.core.agir.collectives.CollectiveFormat.collectiveOf(m.event)?.let { id -> groups?.isMember(id) } == true
@@ -317,7 +323,6 @@ fun AgirScreen(
                     LaunchedEffect(Unit) {
                         agendaOfCollectives.start()
                         callsOfCollectives.start()
-                        territory = MyTerritory.of(dependencies)
                     }
                     val now = agendaOfCollectives.now
                     AgirHome(
@@ -329,8 +334,8 @@ fun AgirScreen(
                         highlights = AgirHighlights.of(agendaOfCollectives.mobilizations, callsOfCollectives.calls, now, near = territory?.let { t -> t::isNear }, mine = isMine),
                         isMine = isMine,
                         territory = territory,
-                        // The commune is chosen once, in « Mes élus » (Comprendre), and stays on the device.
-                        onChooseTerritory = { onNavigate(Space.COMPRENDRE) },
+                        // The commune is chosen once for the whole application and stays on the device.
+                        onChooseTerritory = communeChoice::open,
                         now = now,
                         nowActions = AgirNowActions(
                             openMobilization = { agendaOfCollectives.open(it); route = AgirRoute.AGENDA },

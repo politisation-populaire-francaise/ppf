@@ -83,7 +83,10 @@ internal fun AgirNowCard(
         Text(stringResource(Res.string.agir_now_title), style = MaterialTheme.typography.titleMedium, modifier = Modifier.semantics { heading() })
         // Near me first: the commune of « Mes élus », or the way to choose it.
         if (territory != null) {
-            Text(stringResource(Res.string.agir_now_near_first, territory.commune), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.testTag(AgirNowTags.TERRITORY))
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(stringResource(Res.string.agir_now_near_first, territory.commune), style = MaterialTheme.typography.bodySmall, color = palette.inkSubtle, modifier = Modifier.weight(1f).testTag(AgirNowTags.TERRITORY))
+                if (onChooseTerritory != null) org.politisationpopulairefrancaise.ui.components.PpfTextButton(onChooseTerritory, stringResource(Res.string.agir_now_change_territory), Modifier.testTag(AgirNowTags.CHOOSE_TERRITORY))
+            }
         } else if (onChooseTerritory != null) {
             org.politisationpopulairefrancaise.ui.components.PpfTextButton(onChooseTerritory, stringResource(Res.string.agir_now_choose_territory), Modifier.testTag(AgirNowTags.CHOOSE_TERRITORY))
         }
