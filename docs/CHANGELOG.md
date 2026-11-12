@@ -10,6 +10,7 @@ Format inspiré de « Keep a Changelog ». Versions selon la gestion sémantique
 - Le « Pacte démocratique » devient la « Constitution Citoyenne et Démocratique » (11 novembre 2026, D-154) : application, site, back-office, contenus et documents ; identifiants techniques inchangés.
 
 ### Ajouté
+- Ergonomie d’Agir (12 novembre 2026) : « En ce moment » et « Je veux… » en tête de l’accueil, rubriques en préparation repliées ; agenda à un seul titre avec puces Aujourd’hui, Cette semaine, Ce mois-ci ; mur des appels allégé, puces de type, urgence sur les cartes, appels échus avec les clos ; sommaire des étapes de « S’engager » avec l’étape du moment ; kits en deux groupes ; test d’intégration de bout en bout d’un appel à créneaux et script de contrôle de la préproduction.
 - Proposer une revendication (12 novembre 2026) : parcours court, la revendication, ses thèmes et son territoire suffisent ; les précisions sont facultatives et repliées.
 - Carte et détail d’une revendication (12 novembre 2026) : jauge Pour, Contre, Blanc dès le premier vote, en mots et en couleurs ; nombre de messages sur « Débat » ; titre mis en avant, résumé sur trois lignes.
 - Vues du mur des revendications (12 novembre 2026) : Plus de pour, Plus de contre, Récentes, Les plus débattues, Du mouvement, Au Parlement, Rejetées ou closes, Près de chez moi, Mes votes ; personnalisables comme les autres, calculées sur l’appareil.
