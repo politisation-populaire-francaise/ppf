@@ -1,5 +1,11 @@
 package org.politisationpopulairefrancaise.ui.shell
 
+import org.politisationpopulairefrancaise.ui.agir.MyTerritory
+import org.politisationpopulairefrancaise.core.text.FrenchText
+import org.politisationpopulairefrancaise.ui.comprendre.elus.CommuneChooserDialog
+import org.politisationpopulairefrancaise.ui.components.PpfTextButton
+import org.politisationpopulairefrancaise.ui.resources.live_upcoming_choose
+import org.politisationpopulairefrancaise.ui.endirect.LiveBoardTags
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -619,13 +625,29 @@ private fun SpaceContent(
     val organisationName: (String) -> String? = { key -> organisationsLibrary.verified.organisationFor(key)?.name }
     when (selected) {
         Space.FIL -> FeedScreen(contentLibrary, accountSession, windowClass, onNavigate, modifier)
-        // The coming mobilisations will plug the agenda of "Agir" into EnDirectScreen(upcoming = ...).
-        Space.EN_DIRECT -> EnDirectScreen(
+        Space.EN_DIRECT -> {
+          // « Mon territoire »: the commune of « Mes élus » (on the device), chosen here with the same dialog.
+          val elusLibrary = comprendreLibrary.elus
+          var territory by remember { mutableStateOf<MyTerritory?>(null) }
+          LaunchedEffect(elusLibrary) { elusLibrary?.load() }
+          LaunchedEffect(elusLibrary?.mine) { territory = MyTerritory.of(dependencies) }
+          elusLibrary?.let { CommuneChooserDialog(it) }
+          EnDirectScreen(
             contentLibrary, voirState, modifier, onNavigate,
             upcoming = { slotModifier ->
-                UpcomingMobilizations(agendaLibrary, slotModifier) { mobilization ->
-                    agendaLibrary.open(mobilization)
-                    onNavigate(Space.CARTE)
+                Column(slotModifier) {
+                    // Those of the commune come first; when none names it, those of the department.
+                    val near = territory?.let { t ->
+                        val commune = FrenchText.fold(t.commune)
+                        if (agendaLibrary.known.any { FrenchText.fold(it.territory) == commune }) t.commune else t.department ?: t.commune
+                    }
+                    UpcomingMobilizations(agendaLibrary, Modifier.fillMaxWidth(), territory = near) { mobilization ->
+                        agendaLibrary.open(mobilization)
+                        onNavigate(Space.CARTE)
+                    }
+                    if (territory == null && elusLibrary != null) {
+                        PpfTextButton(elusLibrary::startChoosing, stringResource(Res.string.live_upcoming_choose), Modifier.testTag(LiveBoardTags.CHOOSE_COMMUNE))
+                    }
                 }
             },
             parliamentWeek = { slotModifier -> ParliamentWeekSlot(parliamentState, slotModifier) },
@@ -646,8 +668,11 @@ private fun SpaceContent(
             elus = comprendreLibrary.elus?.let { library ->
                 { slotModifier: Modifier ->
                     MyElusBlock(library, slotModifier) {
-                        library.openPage()
-                        onNavigate(Space.COMPRENDRE)
+                        // No commune yet: it is chosen right here; then the officials open in Comprendre.
+                        if (library.mine == null) library.startChoosing() else {
+                            library.openPage()
+                            onNavigate(Space.COMPRENDRE)
+                        }
                     }
                 }
             },
@@ -680,6 +705,7 @@ private fun SpaceContent(
                 )
             },
         )
+        }
         Space.VOIR -> VoirScreen(contentLibrary, voirState, windowClass, modifier, onNavigate, requests = voirRequests, parliament = parliamentState)
         Space.COMPRENDRE -> ComprendreScreen(contentLibrary, comprendreLibrary, windowClass, modifier, onNavigate, requestedSection = comprendreSection, onSectionHandled = onComprendreSectionHandled)
         Space.AGIR -> {

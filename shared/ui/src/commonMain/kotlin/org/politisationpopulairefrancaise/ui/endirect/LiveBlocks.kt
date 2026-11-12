@@ -100,6 +100,7 @@ import org.politisationpopulairefrancaise.ui.theme.PpfTheme
 /** Test tags of the blocks and of their setting. */
 object LiveBoardTags {
     const val VIEWS = "en-direct-views"
+    const val CHOOSE_COMMUNE = "en-direct-choose-commune"
     const val CUSTOMIZE = "en-direct-customize"
     const val EDITOR = "en-direct-editor"
     const val DONE = "en-direct-editor-done"
