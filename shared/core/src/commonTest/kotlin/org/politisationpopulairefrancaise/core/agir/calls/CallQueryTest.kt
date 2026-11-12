@@ -6,6 +6,7 @@ import org.politisationpopulairefrancaise.core.agir.calls.CallFixtures.unsignedF
 import org.politisationpopulairefrancaise.core.text.FrenchText
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 import kotlin.test.assertNotNull
 
 class CallQueryTest {
@@ -93,8 +94,11 @@ class CallQueryTest {
                 .withDate(AgirFormats.TAG_DEADLINE, DateTimeText("12/11/2026", "")),
             slug = "passe",
         )
-        val sorted = CallQuery(sort = CallSort.DEADLINE).apply(all + passed, NOW + 7 * day).map { it.slug }
-        assertEquals(listOf("benevoles", "petition", "information", "passe", "assemblee"), sorted)
+        // Among all the calls, the passed one after those still due; it is no longer among the open ones.
+        val sorted = CallQuery(sort = CallSort.DEADLINE, status = CallStatusFilter.ALL).apply(all + passed, NOW + 7 * day).map { it.slug }
+        assertEquals(listOf("benevoles", "petition", "information", "passe", "assemblee"), sorted.filter { it in setOf("benevoles", "petition", "information", "passe", "assemblee") })
+        assertTrue("passe" !in CallQuery(sort = CallSort.DEADLINE).apply(all + passed, NOW + 7 * day).map { it.slug })
+        assertTrue("passe" in CallQuery(status = CallStatusFilter.CLOSED).apply(all + passed, NOW + 7 * day).map { it.slug })
     }
 
     @Test
