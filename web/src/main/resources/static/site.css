@@ -1431,6 +1431,12 @@ a.gloss:hover {
   margin-top: 0.25rem;
 }
 
+/* « En direct »: the posts of PPF; « En cours » in the accent colour, as in the application. */
+.live-post { padding: 0.75rem 0; border-bottom: 1px solid var(--border); }
+.live-post:last-child { border-bottom: 0; }
+.live-post p { margin: 0.25rem 0; }
+.live-now > h2 { color: var(--accent-ink); }
+
 @media print {
   .topbar,
   .site-footer,

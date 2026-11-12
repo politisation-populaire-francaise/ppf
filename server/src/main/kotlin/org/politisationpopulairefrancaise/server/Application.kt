@@ -644,6 +644,8 @@ fun Application.module(
                     organisations = repository?.let { organisationsSource(it, policy::isEditor) },
                     collectives = groups?.let(::collectivesSource),
                 ),
+                posts = repository?.let { livePostsSource(it, policy::isEditor) },
+                parliament = parliamentWeekSource(),
             )
         }
         if (backOffice != null && teamBackOffice != null) {

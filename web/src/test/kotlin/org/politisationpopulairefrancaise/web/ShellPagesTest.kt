@@ -22,6 +22,34 @@ class ShellPagesTest {
     }
 
     @Test
+    fun thePostsOfPpfAndTheWeekInParliamentAreOnTheSite() {
+        val week = org.politisationpopulairefrancaise.core.voir.parlement.WeekItem(
+            id = "an-1",
+            chamber = org.politisationpopulairefrancaise.core.voir.parlement.Chamber.AN,
+            start = "2026-11-17T15:00",
+            kind = org.politisationpopulairefrancaise.core.voir.parlement.SittingKind.PLENARY,
+            title = "Questions au Gouvernement",
+            url = "https://www.assemblee-nationale.fr/agenda",
+        )
+        val contents = LiveContents(
+            posts = listOf(
+                LivePost("a", "Rassemblement en cours place de la République.", 1_794_000_000, example = true, live = true),
+                LivePost("b", "Le point de la semaine.", 1_793_900_000, example = false, live = false),
+            ),
+            parliament = listOf(week),
+        )
+        val html = createHTML().html { liveDocument(contents) }
+        for (id in listOf("en-cours", "actu", "parlement")) assertTrue(html.contains("id=\"$id\""), id)
+        // The live post goes to « En cours », the other one to « L'actu de PPF », the example marked as such.
+        assertTrue(html.indexOf("Rassemblement en cours") in html.indexOf("id=\"en-cours\"")..html.indexOf("id=\"alertes\""))
+        assertTrue(html.indexOf("Le point de la semaine") > html.indexOf("id=\"actu\""))
+        assertTrue(html.contains("[EXEMPLE]"))
+        assertTrue(html.contains("Assemblée nationale · 17 novembre 2026 · 15h00"))
+        assertTrue(html.contains("Questions au Gouvernement"))
+        assertTrue(html.contains("(site extérieur)"))
+    }
+
+    @Test
     fun theViewsOfEnDirectAreLinksThatOrderTheBlocks() {
         val essential = createHTML().html { liveDocument(LiveContents()) }
         assertTrue(essential.contains("<a href=\"/en-direct?vue=mobilisation\">Mobilisation</a>"))

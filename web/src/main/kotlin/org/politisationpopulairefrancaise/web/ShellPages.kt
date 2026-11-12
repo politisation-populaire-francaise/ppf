@@ -20,6 +20,14 @@ import org.politisationpopulairefrancaise.core.editorial.RevendicationStatus
 import org.politisationpopulairefrancaise.core.endirect.LiveBlock
 import org.politisationpopulairefrancaise.core.endirect.LivePreset
 import org.politisationpopulairefrancaise.core.time.CivilDate
+import org.politisationpopulairefrancaise.core.voir.parlement.AgendaStatus
+import org.politisationpopulairefrancaise.core.voir.parlement.Chamber
+import org.politisationpopulairefrancaise.core.voir.parlement.ParliamentWeek
+import org.politisationpopulairefrancaise.core.voir.parlement.WeekItem
+import org.politisationpopulairefrancaise.web.voir.BadgeTone
+import org.politisationpopulairefrancaise.web.voir.badge
+import org.politisationpopulairefrancaise.web.voir.date
+import org.politisationpopulairefrancaise.web.voir.externalLink
 import org.politisationpopulairefrancaise.core.voir.VoirAlert
 import org.politisationpopulairefrancaise.core.voir.VoirItem
 import org.politisationpopulairefrancaise.web.decider.RevendicationLinks
@@ -64,7 +72,44 @@ class LiveContents(
     val calls: List<Call> = emptyList(),
     val headline: Article? = null,
     val cap: Article? = null,
+    /** The latest posts of PPF (editorial keys only), the newest first. */
+    val posts: List<LivePost> = emptyList(),
+    /** « Cette semaine au Parlement »: the coming sittings, from the package `semaine`. */
+    val parliament: List<WeekItem> = emptyList(),
 )
+
+/** A short post of PPF, as « En direct » shows it on the site (signed by an editorial key; checked by the server). */
+class LivePost(val id: String, val text: String, val createdAt: Long, val example: Boolean, val live: Boolean) {
+    companion object {
+        /** The topic of the posts of a day of mobilisation (the same as in the application). */
+        const val LIVE_TOPIC: String = "en-direct"
+        private const val EXAMPLE_MARKER = "[EXEMPLE]"
+
+        fun of(event: SignedEvent): LivePost {
+            val content = event.content.trimStart()
+            return LivePost(
+                id = event.id,
+                text = content.removePrefix(EXAMPLE_MARKER).trim(),
+                createdAt = event.createdAt,
+                example = content.startsWith(EXAMPLE_MARKER),
+                live = LIVE_TOPIC in event.tagValues("t"),
+            )
+        }
+    }
+}
+
+/** The short posts signed by an editorial key, the newest first (the server filters the keys). */
+fun interface LivePostsSource {
+    suspend fun posts(): List<SignedEvent>
+}
+
+/** The package `semaine` of the parliamentary open data, when it has been imported. */
+fun interface ParliamentWeekSource {
+    suspend fun week(): ParliamentWeek?
+}
+
+private const val LIVE_PARLIAMENT: Int = 5
+private const val POST_MAX_CHARS: Int = 400
 
 private const val LIVE_ITEMS: Int = 3
 private const val LIVE_FIGURES: Int = 4
@@ -80,12 +125,14 @@ fun Route.shellPages(
     decider: DeciderSource? = null,
     agenda: AgendaSource? = null,
     calls: CallsSource? = null,
+    posts: LivePostsSource? = null,
+    parliament: ParliamentWeekSource? = null,
 ) {
     get(SiteNavigation.HELP_PATH) { call.respondHtml { helpDocument() } }
     // The site opens on « En direct », as the application does.
     for (path in listOf("/", "/${Space.EN_DIRECT.id}")) {
         get(path) {
-            val contents = liveContents(voir, comprendre, decider, agenda, calls)
+            val contents = liveContents(voir, comprendre, decider, agenda, calls, posts, parliament)
             val view = viewOf(call.request.queryParameters["vue"])
             call.respondHtml { liveDocument(contents, view) }
         }
@@ -101,6 +148,8 @@ private suspend fun liveContents(
     decider: DeciderSource?,
     agenda: AgendaSource?,
     calls: CallsSource?,
+    posts: LivePostsSource?,
+    parliament: ParliamentWeekSource?,
 ): LiveContents {
     val voirCatalog = voir?.catalog()?.takeUnless { it.isEmpty }
     val today = parisToday()
@@ -124,6 +173,8 @@ private suspend fun liveContents(
             .sortedBy { it.dueAt ?: Long.MAX_VALUE }
             .take(LIVE_ITEMS),
         headline = decider?.demands()?.let(::demandOfTheMoment),
+        posts = posts?.posts().orEmpty().map(LivePost::of).sortedByDescending { it.createdAt },
+        parliament = parliament?.week()?.upcoming(today).orEmpty().filter { it.status != AgendaStatus.CANCELLED }.take(LIVE_PARLIAMENT),
     )
 }
 
@@ -175,7 +226,7 @@ fun HTML.liveDocument(contents: LiveContents, view: LivePreset = LivePreset.ESSE
         section {
             id = "application"
             h2 { +"Dans l’application" }
-            p { +"Le fil en direct, vos rappels, la semaine au Parlement et les mobilisations de votre territoire sont dans l’application PPF, qui fonctionne aussi hors ligne. Elle s’ouvre d’abord en bêta, sur invitation." }
+            p { +"Vos vues personnelles, vos rappels, vos élus et les mobilisations de votre commune en premier sont dans l’application PPF, qui fonctionne aussi hors ligne. Elle s’ouvre d’abord en bêta, sur invitation." }
         }
     }
 }
@@ -272,8 +323,60 @@ private fun FlowContent.liveBlock(block: LiveBlock, contents: LiveContents) {
             }
             p(classes = "section-more") { a(href = "${ComprendreLinks.HOME}/${ComprendreLinks.CAP}") { +"Toute la série" } }
         }
-        // The live posts, the reminders, the week in Parliament, the news of PPF and my elected officials are in the application.
-        LiveBlock.LIVE, LiveBlock.PARLIAMENT, LiveBlock.REMINDERS, LiveBlock.NEWS, LiveBlock.ELUS -> Unit
+        LiveBlock.LIVE -> section(classes = "live-now") {
+            id = "en-cours"
+            h2 { +"En cours" }
+            val live = contents.posts.filter { it.live }.take(LIVE_ITEMS)
+            if (live.isEmpty()) p(classes = "muted") { +"Aucune mobilisation en cours en ce moment." }
+            live.forEach { livePost(it) }
+        }
+        LiveBlock.NEWS -> section {
+            id = "actu"
+            h2 { +"L’actu de PPF" }
+            val news = contents.posts.filterNot { it.live }.take(LIVE_ITEMS)
+            if (news.isEmpty()) p(classes = "muted") { +"Pas de nouvelle publication de PPF." }
+            news.forEach { livePost(it) }
+            p(classes = "section-more") { a(href = "/${Space.FIL.id}") { +"Tout le fil, dans l’application" } }
+        }
+        LiveBlock.PARLIAMENT -> section {
+            id = "parlement"
+            h2 { +"Cette semaine au Parlement" }
+            if (contents.parliament.isEmpty()) p(classes = "muted") { +"Aucune séance annoncée pour les quinze prochains jours." }
+            ul(classes = "card-list") {
+                contents.parliament.forEach { item ->
+                    li {
+                        p(classes = "kicker") {
+                            +listOfNotNull(CHAMBER_LABELS.getValue(item.chamber), item.day?.toFrench(), item.startTime?.replace(':', 'h')).joinToString(" · ")
+                            if (item.status == AgendaStatus.PROVISIONAL) +" · prévisionnel"
+                        }
+                        val title = (item.title ?: item.body ?: "Séance").take(POST_MAX_CHARS)
+                        val url = item.url
+                        if (url != null && url.startsWith("https://")) p { externalLink(url, title) } else p { +title }
+                    }
+                }
+            }
+            p(classes = "muted") { +"Agendas publics de l’Assemblée nationale, du Sénat et du Parlement européen (données ouvertes)." }
+            p(classes = "section-more") { a(href = "${VoirLinks.HOME}#pouvoir") { +"Le pouvoir et le Parlement" } }
+        }
+        // My reminders and my elected officials stay on the device: they are in the application.
+        LiveBlock.REMINDERS, LiveBlock.ELUS -> Unit
+    }
+}
+
+private val CHAMBER_LABELS: Map<Chamber, String> = mapOf(
+    Chamber.AN to "Assemblée nationale",
+    Chamber.SENAT to "Sénat",
+    Chamber.PE to "Parlement européen",
+)
+
+/** One post of PPF: its day, its text (cut when long), the example badge when it is one. */
+private fun FlowContent.livePost(post: LivePost) {
+    div(classes = "live-post") {
+        p(classes = "kicker") {
+            if (post.example) badge("[EXEMPLE]", BadgeTone.WARNING)
+            date(CivilDate.fromEpochSeconds(post.createdAt))
+        }
+        p { +(if (post.text.length > POST_MAX_CHARS) post.text.take(POST_MAX_CHARS).trimEnd() + "…" else post.text) }
     }
 }
 

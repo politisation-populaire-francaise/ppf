@@ -68,6 +68,10 @@ private fun readFile(file: Path): ByteArray? {
     return runCatching { Files.readAllBytes(file) }.getOrNull()
 }
 
+/** The bytes of the package [name] of the current index (the checks of [readPackage]); null when absent. */
+internal fun readOpenDataPackage(directory: Path, name: String): ByteArray? =
+    if (ParliamentFormat.isPackageName(name)) readPackage(directory, name) else null
+
 /** A package of the current index only; the file name is the checked package name. */
 private fun readPackage(directory: Path, name: String): ByteArray? {
     val index = readFile(directory.resolve(OpenDataConfig.INDEX_FILE))?.let { bytes ->

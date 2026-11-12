@@ -51,6 +51,9 @@ fun Route.webRoutes(
     agenda: AgendaSource? = null,
     /** The published calls, organisations and collectifs of « Agir », for the search of the site. */
     agirSearch: AgirSearchSources = AgirSearchSources(),
+    /** « En direct »: the posts of PPF and the week in Parliament. */
+    posts: LivePostsSource? = null,
+    parliament: ParliamentWeekSource? = null,
 ) {
     staticResources("/static", "static")
     // Browsers ask for /favicon.ico at the root by themselves: the same file as in /static.
@@ -65,7 +68,7 @@ fun Route.webRoutes(
     // The petitions and the democratic pact (Décider), with the names of the candidates from "Voir".
     decider?.let { deciderPages(it, voir) }
     // « En direct », AIDE and the spaces that only exist in the application (the shell of the site, D-215).
-    shellPages(voir, comprendre, decider, agenda, agirSearch.calls)
+    shellPages(voir, comprendre, decider, agenda, agirSearch.calls, posts, parliament)
     // The lists of parties and public persons of "Voir", and the search over the whole site.
     voir?.let { voirListPages(it) }
     searchPage(voir, comprendre, decider, agirSearch)
